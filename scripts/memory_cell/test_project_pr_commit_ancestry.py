@@ -92,13 +92,9 @@ class RegisteredAncestryTests(unittest.TestCase):
             elif change == "parents":
                 observed[case["head_sha"]]["parents"] = [c]
             elif change == "late":
-                observed[case["head_sha"]]["committed_at"] = (
-                    "2026-10-13T00:00:00Z"
-                )
+                observed[case["head_sha"]]["committed_at"] = "2026-10-13T00:00:00Z"
             else:
-                observed[case["head_sha"]]["authored_at"] = (
-                    "2026-10-13T00:00:00Z"
-                )
+                observed[case["head_sha"]]["authored_at"] = "2026-10-13T00:00:00Z"
             with self.subTest(change=change), self.assertRaises(ValueError):
                 check_case(case, observed)
 

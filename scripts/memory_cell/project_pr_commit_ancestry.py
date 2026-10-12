@@ -48,9 +48,7 @@ def check_case(case, records):
             or len(record["parents"]) > 2
             or len(set(record["parents"])) != len(record["parents"])
             or any(
-                type(p) is not str
-                or HEX40.fullmatch(p) is None
-                or p == oid
+                type(p) is not str or HEX40.fullmatch(p) is None or p == oid
                 for p in record["parents"]
             )
         ):
@@ -90,9 +88,7 @@ def check_case(case, records):
             len(records[oid]["parents"]) == 2 for oid in names
         ),
         out_of_register_parent_edges=sum(
-            p not in registered
-            for oid in names
-            for p in records[oid]["parents"]
+            p not in registered for oid in names for p in records[oid]["parents"]
         ),
         all_registered_commits_reachable=not unproven,
         full_pull_request_ancestry_certified=False,
@@ -176,8 +172,7 @@ def run(source, original, out, *, sha, offline=False):
         if (
             output.is_symlink()
             or not output.is_dir()
-            or {p.name for p in output.iterdir()}
-            != {"inventory.json", "READY.json"}
+            or {p.name for p in output.iterdir()} != {"inventory.json", "READY.json"}
         ):
             raise ValueError("unsealed or contaminated ancestry output directory")
         raw, raw_sha = read_receipt(output / "inventory.json")
@@ -197,8 +192,7 @@ def run(source, original, out, *, sha, offline=False):
             or not 1 <= raw["remote_git_object_requests"] <= 128
             or raw.get("schema") != SCHEMA
             or raw.get("original_source_sha256") != sha
-            or raw.get("original_ready_sha256")
-            != reopened["original_ready_sha256"]
+            or raw.get("original_ready_sha256") != reopened["original_ready_sha256"]
             or raw.get("complete_original_git_commit_objects") is not True
             or ready
             != dict(

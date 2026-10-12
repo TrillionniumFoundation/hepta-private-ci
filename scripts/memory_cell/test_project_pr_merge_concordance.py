@@ -28,7 +28,9 @@ class MergeConcordanceTests(unittest.TestCase):
                 item = dict(path=part, type="tree", mode="040000", sha=child)
                 tree["tree"].append(item)
                 self.fixture.objects[repo, "trees", child] = dict(
-                    sha=child, truncated=False, tree=[],
+                    sha=child,
+                    truncated=False,
+                    tree=[],
                 )
             root = item["sha"]
         self.fixture.objects[repo, "trees", root]["tree"].append(
@@ -43,8 +45,10 @@ class MergeConcordanceTests(unittest.TestCase):
             return "common-previous/" + oid + ".blob"
 
         report = inspect(
-            self.fixture.manifest, parent if parent is not None else self.parent,
-            ObjectReader(self.fixture.fetch), retain,
+            self.fixture.manifest,
+            parent if parent is not None else self.parent,
+            ObjectReader(self.fixture.fetch),
+            retain,
         )
         return report, seen
 
@@ -62,7 +66,9 @@ class MergeConcordanceTests(unittest.TestCase):
         previous = b"original before merge"
         old = blob_sha(previous)
         self.fixture.objects[self.case["repo"], "blobs", old] = dict(
-            sha=old, size=len(previous), encoding="base64",
+            sha=old,
+            size=len(previous),
+            encoding="base64",
             content=base64.b64encode(previous).decode(),
         )
         for i, file in enumerate(files[:3]):
@@ -73,7 +79,8 @@ class MergeConcordanceTests(unittest.TestCase):
         result, saved = self.run_comparison()
         by_path = {
             r["head_path"]: r["classification"]
-            for r in result["rows"] if r["project"] == self.case["repo"]
+            for r in result["rows"]
+            if r["project"] == self.case["repo"]
         }
         self.assertEqual(by_path[files[0]["path"]], "identical-to-both-parents")
         self.assertEqual(by_path[files[1]["path"]], "changed-from-identical-parents")
@@ -86,7 +93,8 @@ class MergeConcordanceTests(unittest.TestCase):
         self.install(self.case["parents"][0], case_file["path"], case_file["blob_sha"])
         result, _ = self.run_comparison()
         row = next(
-            r for r in result["rows"]
+            r
+            for r in result["rows"]
             if r["project"] == self.case["repo"] and r["head_path"] == case_file["path"]
         )
         self.assertEqual(row["classification"], "absent-one")
@@ -99,7 +107,9 @@ class MergeConcordanceTests(unittest.TestCase):
             self.install(parent, case_file["path"], fabricated)
         wrong = b"wrong"
         self.fixture.objects[self.case["repo"], "blobs", fabricated] = dict(
-            sha=fabricated, size=len(wrong), encoding="base64",
+            sha=fabricated,
+            size=len(wrong),
+            encoding="base64",
             content=base64.b64encode(wrong).decode(),
         )
         with self.assertRaises(ValueError):

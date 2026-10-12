@@ -35,13 +35,16 @@ def fixture():
         original_source_manifest_sha256=PIN,
         context_sha256=digest(canonical(context) + b"\n"),
         complete_pr_diff_certified=False,
-        independent_semantic_review=False, model_calls=0,
+        independent_semantic_review=False,
+        model_calls=0,
         production_accepted=False,
     )
     inspected = dict(
         schema="hepta.memorycell.first-parent-offline-reopen.v1",
-        original_file_count=80, offline_source_hash_verification=True,
-        human_review_performed=False, model_calls=0,
+        original_file_count=80,
+        offline_source_hash_verification=True,
+        human_review_performed=False,
+        model_calls=0,
         production_accepted=False,
     )
     return case.manifest, packet, context, ready, inspected
@@ -54,29 +57,42 @@ class ReviewBindingTests(unittest.TestCase):
         self.assertEqual(report["unsigned_questions"], 16)
         self.assertEqual(report["source_file_bindings"], 80)
         self.assertEqual(report["unsigned_question_file_references"], 160)
-        self.assertEqual(
-            report["comparison_counts"]["ambiguous-multi-parent-head"], 31
-        )
+        self.assertEqual(report["comparison_counts"]["ambiguous-multi-parent-head"], 31)
         self.assertEqual(
             report["comparison_counts"]["unresolved-renamed-previous-path"], 1
         )
-        self.assertTrue(any(
-            f["comparison_status"] == "byte-different-versus-first-parent"
-            for q in report["questions"] for f in q["verified_first_parent_files"]
-        ))
-        self.assertTrue(all(
-            q["answer_gold"] is None
-            and q["reviewer_verdict"] == "unreviewed"
-            and q["decoded_parent_diff_available"] is False
-            for q in report["questions"]
-        ))
+        self.assertTrue(
+            any(
+                f["comparison_status"] == "byte-different-versus-first-parent"
+                for q in report["questions"]
+                for f in q["verified_first_parent_files"]
+            )
+        )
+        self.assertTrue(
+            all(
+                q["answer_gold"] is None
+                and q["reviewer_verdict"] == "unreviewed"
+                and q["decoded_parent_diff_available"] is False
+                for q in report["questions"]
+            )
+        )
         self.assertFalse(report["full_pr_diff_certified"])
         self.assertFalse(report["production_accepted"])
         self.assertIsNone(report["semantic_citation_precision"])
 
     def test_tampering_cannot_transform_source_into_authoritative_reviews(self):
-        for field in ("head", "parent", "status", "digest", "question", "review",
-                      "drop", "promote", "reopen", "merge"):
+        for field in (
+            "head",
+            "parent",
+            "status",
+            "digest",
+            "question",
+            "review",
+            "drop",
+            "promote",
+            "reopen",
+            "merge",
+        ):
             data = deepcopy(fixture())
             manifest, packet, context, ready, verified = data
             if field == "head":
@@ -88,7 +104,9 @@ class ReviewBindingTests(unittest.TestCase):
             elif field == "digest":
                 ready["context_sha256"] = "e" * 64
             elif field == "question":
-                packet["questions"][0]["verified_head_files"][0]["byte_sha256"] = "f" * 64
+                packet["questions"][0]["verified_head_files"][0]["byte_sha256"] = (
+                    "f" * 64
+                )
             elif field == "review":
                 packet["questions"][0]["reviewer_verdict"] = "accepted"
             elif field == "drop":
@@ -98,10 +116,11 @@ class ReviewBindingTests(unittest.TestCase):
             elif field == "reopen":
                 verified["offline_source_hash_verification"] = False
             else:
-                next(r for r in context["files"] if
-                     r["comparison_status"] == "ambiguous-multi-parent-head")[
-                    "first_parent_commit_sha"
-                ] = "f" * 40
+                next(
+                    r
+                    for r in context["files"]
+                    if r["comparison_status"] == "ambiguous-multi-parent-head"
+                )["first_parent_commit_sha"] = "f" * 40
             if field != "digest":
                 ready["context_sha256"] = digest(canonical(context) + b"\n")
             with self.subTest(field=field), self.assertRaises(ValueError):

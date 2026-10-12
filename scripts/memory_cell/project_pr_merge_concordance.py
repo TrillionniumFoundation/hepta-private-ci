@@ -13,8 +13,15 @@ from pathlib import Path
 
 from project_pr_parent_context import parent_tree_entry, reopen_parent
 from project_pr_source_materialize import (
-    MAX_BLOB, ObjectReader, atomic_json, blob_sha, canonical, decode_blob,
-    digest, github_json, strict_json,
+    MAX_BLOB,
+    ObjectReader,
+    atomic_json,
+    blob_sha,
+    canonical,
+    decode_blob,
+    digest,
+    github_json,
+    strict_json,
 )
 from project_pr_source_precommit import audit, read_pinned
 
@@ -22,8 +29,12 @@ SCHEMA = "hepta.memorycell.merge-parent-concordance.v1"
 MAX_BYTES = 24 * 1024 * 1024
 MAX_REQUESTS = 512
 STATES = (
-    "unresolved-rename", "absent-both", "absent-one", "parents-diverge",
-    "identical-to-both-parents", "changed-from-identical-parents",
+    "unresolved-rename",
+    "absent-both",
+    "absent-one",
+    "parents-diverge",
+    "identical-to-both-parents",
+    "changed-from-identical-parents",
 )
 
 
@@ -89,8 +100,13 @@ def inspect(manifest, parent, reader, retain):
                 raise ValueError("original head-source binding drift")
             if len(case["parents"]) == 1:
                 continue
-            if len(case["parents"]) != 2 or original["comparison_status"] != "ambiguous-multi-parent-head":
-                raise ValueError("two-parent audit requires the unresolved legacy record")
+            if (
+                len(case["parents"]) != 2
+                or original["comparison_status"] != "ambiguous-multi-parent-head"
+            ):
+                raise ValueError(
+                    "two-parent audit requires the unresolved legacy record"
+                )
             entries = (
                 [None, None]
                 if file["status"] == "renamed"
@@ -99,7 +115,9 @@ def inspect(manifest, parent, reader, retain):
                     for p in parents
                 ]
             )
-            state = classify(file["blob_sha"], *entries, renamed=file["status"] == "renamed")
+            state = classify(
+                file["blob_sha"], *entries, renamed=file["status"] == "renamed"
+            )
             before_sha = before_digest = before_file = None
             if state in ("identical-to-both-parents", "changed-from-identical-parents"):
                 before_sha = entries[0]["blob_sha"]
@@ -113,29 +131,43 @@ def inspect(manifest, parent, reader, retain):
                         raise ValueError("invalid prior source SHA-addressed blob")
                     before_digest = digest(raw)
                     before_file = retain(before_sha, raw)
-            rows.append(dict(
-                project=case["repo"], partition=case["partition"],
-                pull_number=case["pull_number"], head_sha=case["head_sha"],
-                head_path=file["path"], head_blob_sha1=file["blob_sha"],
-                head_sha256=original["original_head_sha256"],
-                parent_commits=list(case["parents"]),
-                parent_trees=[p["tree_sha"] for p in parents],
-                parent_entries=entries, classification=state,
-                common_previous_blob_sha1=before_sha,
-                common_previous_sha256=before_digest,
-                common_previous_path=before_file,
-                complete_pr_base_diff_certified=False,
-                independent_review=None,
-            ))
+            rows.append(
+                dict(
+                    project=case["repo"],
+                    partition=case["partition"],
+                    pull_number=case["pull_number"],
+                    head_sha=case["head_sha"],
+                    head_path=file["path"],
+                    head_blob_sha1=file["blob_sha"],
+                    head_sha256=original["original_head_sha256"],
+                    parent_commits=list(case["parents"]),
+                    parent_trees=[p["tree_sha"] for p in parents],
+                    parent_entries=entries,
+                    classification=state,
+                    common_previous_blob_sha1=before_sha,
+                    common_previous_sha256=before_digest,
+                    common_previous_path=before_file,
+                    complete_pr_base_diff_certified=False,
+                    independent_review=None,
+                )
+            )
     if index != 80 or len(rows) != 31:
         raise ValueError("fixed 80/31 original Git source census changed")
     return dict(
-        schema=SCHEMA, original_file_count=80, merge_file_count=31,
-        classification_counts=dict(sorted(Counter(r["classification"] for r in rows).items())),
-        rows=rows, both_parents_required=True,
+        schema=SCHEMA,
+        original_file_count=80,
+        merge_file_count=31,
+        classification_counts=dict(
+            sorted(Counter(r["classification"] for r in rows).items())
+        ),
+        rows=rows,
+        both_parents_required=True,
         single_parent_selection_prohibited=True,
-        complete_pr_base_diff_certified=False, independent_review=None,
-        answer_labels_read=False, model_calls=0, production_accepted=False,
+        complete_pr_base_diff_certified=False,
+        independent_review=None,
+        answer_labels_read=False,
+        model_calls=0,
+        production_accepted=False,
     )
 
 
@@ -144,8 +176,10 @@ def reopen(manifest, original_dir, parent_dir, output, *, source_sha):
     folder = Path(output)
     store = folder / "common-previous"
     if (
-        folder.is_symlink() or not folder.is_dir()
-        or store.is_symlink() or not store.is_dir()
+        folder.is_symlink()
+        or not folder.is_dir()
+        or store.is_symlink()
+        or not store.is_dir()
         or (folder / "INCOMPLETE.json").exists()
     ):
         raise ValueError("incomplete or unsafe merge-source archive")
@@ -173,7 +207,8 @@ def reopen(manifest, original_dir, parent_dir, output, *, source_sha):
         raise ValueError("untrusted or promoted two-parent source artifact")
     expected = [
         (c["repo"], c["pull_number"], f["path"])
-        for c in manifest["cases"] if len(c["parents"]) == 2
+        for c in manifest["cases"]
+        if len(c["parents"]) == 2
         for f in c["files"]
     ]
     actual = [(r["project"], r["pull_number"], r["head_path"]) for r in report["rows"]]
@@ -184,10 +219,7 @@ def reopen(manifest, original_dir, parent_dir, output, *, source_sha):
         for r in previous["files"]
     }
     cases = {(c["repo"], c["pull_number"]): c for c in manifest["cases"]}
-    receipts = {
-        (r["project"], r["pull_number"]): r
-        for r in previous["parent_commits"]
-    }
+    receipts = {(r["project"], r["pull_number"]): r for r in previous["parent_commits"]}
     found, counts = {}, Counter()
     for row in report["rows"]:
         key = (row["project"], row["pull_number"])
@@ -202,14 +234,16 @@ def reopen(manifest, original_dir, parent_dir, output, *, source_sha):
             or row["head_blob_sha1"] != original["original_head_sha1"]
             or row["head_sha256"] != original["original_head_sha256"]
             or row["parent_commits"] != case["parents"]
-            or row["parent_trees"] != [
-                p["tree_sha"] for p in receipts[key]["parents"]
-            ]
-            or not isinstance(entries, list) or len(entries) != 2
+            or row["parent_trees"] != [p["tree_sha"] for p in receipts[key]["parents"]]
+            or not isinstance(entries, list)
+            or len(entries) != 2
             or any(
-                e is not None and (
-                    not isinstance(e, dict) or set(e) != {"blob_sha", "mode"}
-                    or not isinstance(e["blob_sha"], str) or len(e["blob_sha"]) != 40
+                e is not None
+                and (
+                    not isinstance(e, dict)
+                    or set(e) != {"blob_sha", "mode"}
+                    or not isinstance(e["blob_sha"], str)
+                    or len(e["blob_sha"]) != 40
                     or e["mode"] not in ("100644", "100755")
                 )
                 for e in entries
@@ -238,7 +272,11 @@ def reopen(manifest, original_dir, parent_dir, output, *, source_sha):
                 if row["common_previous_path"] != "common-previous/" + oid + ".blob":
                     raise ValueError("missing common previous byte member")
                 blob = store / (oid + ".blob")
-                if blob.is_symlink() or not blob.is_file() or blob.stat().st_size > MAX_BLOB:
+                if (
+                    blob.is_symlink()
+                    or not blob.is_file()
+                    or blob.stat().st_size > MAX_BLOB
+                ):
                     raise ValueError("unsafe previous Git blob")
                 raw = blob.read_bytes()
                 if blob_sha(raw) != oid or digest(raw) != row["common_previous_sha256"]:
@@ -246,25 +284,34 @@ def reopen(manifest, original_dir, parent_dir, output, *, source_sha):
                 if oid in found and found[oid] != (len(raw), digest(raw)):
                     raise ValueError("same Git identity with incompatible contents")
                 found[oid] = len(raw), digest(raw)
-        elif any(row[key] is not None for key in (
-            "common_previous_blob_sha1", "common_previous_sha256", "common_previous_path"
-        )):
+        elif any(
+            row[key] is not None
+            for key in (
+                "common_previous_blob_sha1",
+                "common_previous_sha256",
+                "common_previous_path",
+            )
+        ):
             raise ValueError("ambiguous parent was relabelled as known")
     if (
         dict(sorted(counts.items())) != report.get("classification_counts")
         or {p.name for p in store.iterdir()} != {oid + ".blob" for oid in found}
         or ready.get("common_previous_files") != len(found)
-        or ready.get("common_previous_bytes") != sum(length for length, _ in found.values())
+        or ready.get("common_previous_bytes")
+        != sum(length for length, _ in found.values())
         or ready.get("merge_file_count") != 31
         or sum(length for length, _ in found.values()) > MAX_BYTES
     ):
         raise ValueError("incomplete or tampered common-source store")
     return dict(
         schema="hepta.memorycell.merge-parent-reopen.v1",
-        merge_file_count=31, matched_previous_blobs=len(found),
+        merge_file_count=31,
+        matched_previous_blobs=len(found),
         classification_counts=dict(sorted(counts.items())),
-        unchanged_git_bytes_verified=True, independent_review=None,
-        model_calls=0, production_accepted=False,
+        unchanged_git_bytes_verified=True,
+        independent_review=None,
+        model_calls=0,
+        production_accepted=False,
     )
 
 
@@ -296,26 +343,35 @@ def collect(manifest, original_dir, parent_dir, output, *, source_sha, fetch):
 
     try:
         report = inspect(
-            manifest, read_canonical(Path(parent_dir) / "context.json")[0],
-            ObjectReader(fetch, request_limit=MAX_REQUESTS), retain,
+            manifest,
+            read_canonical(Path(parent_dir) / "context.json")[0],
+            ObjectReader(fetch, request_limit=MAX_REQUESTS),
+            retain,
         )
         atomic_json(output / "concordance.json", report)
         ready = dict(
             schema="hepta.memorycell.merge-parent-ready.v1",
-            source_manifest_sha256=source_sha, parent_context_sha256=parent_hash,
+            source_manifest_sha256=source_sha,
+            parent_context_sha256=parent_hash,
             concordance_sha256=digest((output / "concordance.json").read_bytes()),
-            merge_file_count=31, common_previous_files=len(kept),
-            common_previous_bytes=total, production_accepted=False,
+            merge_file_count=31,
+            common_previous_files=len(kept),
+            common_previous_bytes=total,
+            production_accepted=False,
         )
         atomic_json(output / "READY.json", ready)
         return reopen(manifest, original_dir, parent_dir, output, source_sha=source_sha)
     except Exception as error:
         # An invalid offline reopen must not leave a successful commit marker.
         (output / "READY.json").unlink(missing_ok=True)
-        atomic_json(output / "INCOMPLETE.json", dict(
-            status="incomplete", error_type=type(error).__name__,
-            production_accepted=False,
-        ))
+        atomic_json(
+            output / "INCOMPLETE.json",
+            dict(
+                status="incomplete",
+                error_type=type(error).__name__,
+                production_accepted=False,
+            ),
+        )
         raise
 
 
@@ -331,12 +387,18 @@ if __name__ == "__main__":
     manifest = read_pinned(args.manifest, args.source_sha256)
     if args.reopen_only:
         result = reopen(
-            manifest, args.original, args.parents, args.output,
+            manifest,
+            args.original,
+            args.parents,
+            args.output,
             source_sha=args.source_sha256,
         )
     else:
         result = collect(
-            manifest, args.original, args.parents, args.output,
+            manifest,
+            args.original,
+            args.parents,
+            args.output,
             source_sha=args.source_sha256,
             fetch=lambda repo, category, oid: github_json(
                 repo, category, oid, token=os.environ.get("GITHUB_TOKEN")

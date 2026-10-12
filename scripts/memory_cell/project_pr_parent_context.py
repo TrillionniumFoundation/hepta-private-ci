@@ -15,8 +15,17 @@ import os
 from pathlib import Path
 
 from project_pr_source_materialize import (
-    MAX_BLOB, ObjectReader, atomic_json, blob_sha, canonical, check_sha,
-    decode_blob, digest, github_json, reopen_materialized, verify_head,
+    MAX_BLOB,
+    ObjectReader,
+    atomic_json,
+    blob_sha,
+    canonical,
+    check_sha,
+    decode_blob,
+    digest,
+    github_json,
+    reopen_materialized,
+    verify_head,
 )
 from project_pr_source_precommit import CUT, PARTITIONS, audit, read_pinned, timestamp
 
@@ -59,8 +68,10 @@ def parent_tree_entry(reader, repo, root_tree, path):
                 return None
             tree_sha = check_sha(node.get("sha"))
         else:
-            if (node.get("type") != "blob"
-                    or node.get("mode") not in ("100644", "100755")):
+            if node.get("type") != "blob" or node.get("mode") not in (
+                "100644",
+                "100755",
+            ):
                 raise ValueError("nonregular original first-parent source path")
             return dict(
                 blob_sha=check_sha(node.get("sha")),
@@ -79,13 +90,26 @@ def inspect(manifest, originals, reader, *, retain):
     if not isinstance(originals, list) or len(originals) != 80:
         raise ValueError("complete original head-byte inventory required")
     expected = [
-        (case["repo"], case["partition"], case["pull_number"],
-         case["head_sha"], file["path"], file["blob_sha"])
-        for case in manifest["cases"] for file in case["files"]
+        (
+            case["repo"],
+            case["partition"],
+            case["pull_number"],
+            case["head_sha"],
+            file["path"],
+            file["blob_sha"],
+        )
+        for case in manifest["cases"]
+        for file in case["files"]
     ]
     given = [
-        (rec["project"], rec["partition"], rec["pull_number"],
-         rec["head_sha"], rec["path"], rec["blob_sha"])
+        (
+            rec["project"],
+            rec["partition"],
+            rec["pull_number"],
+            rec["head_sha"],
+            rec["path"],
+            rec["blob_sha"],
+        )
         for rec in originals
     ]
     if given != expected:
@@ -103,23 +127,33 @@ def inspect(manifest, originals, reader, *, retain):
             committed = timestamp(parent["committer"]["date"])
             if committed > timestamp(CUT):
                 raise ValueError("parent commit postdates original frozen research cut")
-            bound_parents.append(dict(
-                commit_sha=sha, tree_sha=tree_oid,
-                committed_at_utc=committed.astimezone(timezone.utc).isoformat(),
-            ))
-        parent_receipts.append(dict(
-            project=case["repo"], pull_number=case["pull_number"],
-            head_sha=case["head_sha"], parents=bound_parents,
-            first_parent_is_complete_pull_request_base=False,
-        ))
+            bound_parents.append(
+                dict(
+                    commit_sha=sha,
+                    tree_sha=tree_oid,
+                    committed_at_utc=committed.astimezone(timezone.utc).isoformat(),
+                )
+            )
+        parent_receipts.append(
+            dict(
+                project=case["repo"],
+                pull_number=case["pull_number"],
+                head_sha=case["head_sha"],
+                parents=bound_parents,
+                first_parent_is_complete_pull_request_base=False,
+            )
+        )
         for f in case["files"]:
             if len(records) >= 80:
                 raise ValueError("extra source file beyond 80-row cohort")
             original = originals[len(records)]
             record = dict(
-                project=case["repo"], partition=case["partition"],
-                pull_number=case["pull_number"], head_sha=case["head_sha"],
-                original_path=f["path"], declared_pr_file_status=f["status"],
+                project=case["repo"],
+                partition=case["partition"],
+                pull_number=case["pull_number"],
+                head_sha=case["head_sha"],
+                original_path=f["path"],
+                declared_pr_file_status=f["status"],
                 original_head_sha1=f["blob_sha"],
                 original_head_sha256=original["sha256"],
                 previous_git_blob_sha1=None,
@@ -198,7 +232,9 @@ def collect_parent(manifest, original_root, destination, *, manifest_sha, fetch)
     if destination.exists() or destination.is_symlink():
         raise ValueError("parent context must have a new output directory")
     validated = reopen_materialized(
-        manifest, original_root, manifest_sha=manifest_sha,
+        manifest,
+        original_root,
+        manifest_sha=manifest_sha,
     )
     inventory_path = original_root / "inventory.json"
     if inventory_path.is_symlink() or not inventory_path.is_file():
@@ -207,6 +243,7 @@ def collect_parent(manifest, original_root, destination, *, manifest_sha, fetch)
     if digest(raw_inventory) != validated["original_inventory_sha256"]:
         raise ValueError("original source inventory drift")
     from project_pr_source_materialize import strict_json
+
     inventory = strict_json(raw_inventory.decode("utf-8"))
     destination.mkdir(parents=True, exist_ok=False)
     blobdir = destination / "before-blobs"
@@ -232,9 +269,7 @@ def collect_parent(manifest, original_root, destination, *, manifest_sha, fetch)
     reader = ObjectReader(fetch, request_limit=MAX_PARENT_REQUESTS)
     try:
         result = inspect(manifest, inventory["originals"], reader, retain=retain)
-        if {x.name for x in blobdir.iterdir()} != {
-            sha + ".blob" for sha in seen
-        }:
+        if {x.name for x in blobdir.iterdir()} != {sha + ".blob" for sha in seen}:
             raise ValueError("unexpected first-parent evidence member")
         result.update(
             original_source_manifest_sha256=manifest_sha,
@@ -261,26 +296,33 @@ def collect_parent(manifest, original_root, destination, *, manifest_sha, fetch)
         return ready
     except Exception as error:
         if not (destination / "READY.json").exists():
-            atomic_json(destination / "INCOMPLETE.json", dict(
-                status="incomplete", failure_type=type(error).__name__,
-                parent_blobs_written=len(seen),
-                complete_pr_diff_certified=False,
-                production_accepted=False,
-            ))
+            atomic_json(
+                destination / "INCOMPLETE.json",
+                dict(
+                    status="incomplete",
+                    failure_type=type(error).__name__,
+                    parent_blobs_written=len(seen),
+                    complete_pr_diff_certified=False,
+                    production_accepted=False,
+                ),
+            )
         raise
-
 
 
 def reopen_parent(manifest, original_root, destination, *, manifest_sha):
     """Independent local recheck of every retained first-parent source byte."""
     validated = reopen_materialized(
-        manifest, original_root, manifest_sha=manifest_sha,
+        manifest,
+        original_root,
+        manifest_sha=manifest_sha,
     )
     directory = Path(destination)
     store = directory / "before-blobs"
     if (
-        directory.is_symlink() or not directory.is_dir()
-        or store.is_symlink() or not store.is_dir()
+        directory.is_symlink()
+        or not directory.is_dir()
+        or store.is_symlink()
+        or not store.is_dir()
         or (directory / "INCOMPLETE.json").exists()
     ):
         raise ValueError("incomplete or unsafe first-parent archive")
@@ -291,6 +333,7 @@ def reopen_parent(manifest, original_root, destination, *, manifest_sha):
             raise ValueError("missing or oversized first-parent metadata")
         raw = path.read_bytes()
         from project_pr_source_materialize import strict_json
+
         obj = strict_json(raw.decode("utf-8"))
         if not isinstance(obj, dict) or raw != canonical(obj) + b"\n":
             raise ValueError("noncanonical first-parent metadata")
@@ -306,8 +349,7 @@ def reopen_parent(manifest, original_root, destination, *, manifest_sha):
         or ready.get("original_source_manifest_sha256") != manifest_sha
         or report.get("original_inventory_sha256")
         != validated["original_inventory_sha256"]
-        or report.get("original_ready_sha256")
-        != validated["original_ready_sha256"]
+        or report.get("original_ready_sha256") != validated["original_ready_sha256"]
         or ready.get("context_sha256") != report_sha
         or report.get("original_file_count") != 80
         or ready.get("original_file_count") != 80
@@ -327,17 +369,31 @@ def reopen_parent(manifest, original_root, destination, *, manifest_sha):
     ):
         raise ValueError("untrusted or promoted original first-parent receipt")
     expected = [
-        (case["repo"], case["partition"], case["pull_number"],
-         case["head_sha"], file["path"], file["status"], file["blob_sha"])
-        for case in manifest["cases"] for file in case["files"]
+        (
+            case["repo"],
+            case["partition"],
+            case["pull_number"],
+            case["head_sha"],
+            file["path"],
+            file["status"],
+            file["blob_sha"],
+        )
+        for case in manifest["cases"]
+        for file in case["files"]
     ]
     rows = report.get("files")
     if not isinstance(rows, list) or len(rows) != 80:
         raise ValueError("missing original first-parent file census")
     actual = [
-        (row["project"], row["partition"], row["pull_number"],
-         row["head_sha"], row["original_path"],
-         row["declared_pr_file_status"], row["original_head_sha1"])
+        (
+            row["project"],
+            row["partition"],
+            row["pull_number"],
+            row["head_sha"],
+            row["original_path"],
+            row["declared_pr_file_status"],
+            row["original_head_sha1"],
+        )
         for row in rows
     ]
     if actual != expected or len(set(actual)) != 80:
@@ -348,9 +404,11 @@ def reopen_parent(manifest, original_root, destination, *, manifest_sha):
         if status not in CATEGORIES:
             raise ValueError("invalid first-parent outcome")
         counter[status] += 1
-        if row["full_pr_base_diff_certified"] is not False or row[
-            "human_semantic_review_performed"
-        ] is not False or row["independent_source_sufficiency"] is not None:
+        if (
+            row["full_pr_base_diff_certified"] is not False
+            or row["human_semantic_review_performed"] is not False
+            or row["independent_source_sufficiency"] is not None
+        ):
             raise ValueError("fabricated parent diff or reviewer qualification")
         if status == "byte-different-versus-first-parent":
             oid = check_sha(row["previous_git_blob_sha1"])
@@ -358,7 +416,11 @@ def reopen_parent(manifest, original_root, destination, *, manifest_sha):
             if row["before_blob_path"] != filename:
                 raise ValueError("first-parent file path identity drift")
             path = store / (oid + ".blob")
-            if path.is_symlink() or not path.is_file() or path.stat().st_size > MAX_BLOB:
+            if (
+                path.is_symlink()
+                or not path.is_file()
+                or path.stat().st_size > MAX_BLOB
+            ):
                 raise ValueError("missing or unsafe original first-parent blob")
             raw = path.read_bytes()
             if blob_sha(raw) != oid or digest(raw) != row["previous_sha256"]:
@@ -370,14 +432,18 @@ def reopen_parent(manifest, original_root, destination, *, manifest_sha):
                 total += len(raw)
         elif row["before_blob_path"] is not None:
             raise ValueError("invented source bytes for unresolved first-parent row")
-        if status in ("ambiguous-multi-parent-head",
-                      "unresolved-renamed-previous-path",
-                      "added-at-first-parent-step",
-                      "modified-absent-at-first-parent"):
+        if status in (
+            "ambiguous-multi-parent-head",
+            "unresolved-renamed-previous-path",
+            "added-at-first-parent-step",
+            "modified-absent-at-first-parent",
+        ):
             if row["previous_git_blob_sha1"] is not None:
                 raise ValueError("fabricated previous file for unresolved parent")
-        if status in ("unchanged-versus-first-parent",
-                      "added-already-present-in-first-parent"):
+        if status in (
+            "unchanged-versus-first-parent",
+            "added-already-present-in-first-parent",
+        ):
             if (
                 row["previous_git_blob_sha1"] != row["original_head_sha1"]
                 or row["previous_sha256"] != row["original_head_sha256"]
@@ -398,9 +464,7 @@ def reopen_parent(manifest, original_root, destination, *, manifest_sha):
     ):
         raise ValueError("first-parent Git commits differ from frozen manifest")
     if (
-        {path.name for path in store.iterdir()} != {
-            oid + ".blob" for oid in visited
-        }
+        {path.name for path in store.iterdir()} != {oid + ".blob" for oid in visited}
         or dict(sorted(counter.items())) != report["comparison_counts"]
         or total > MAX_PARENT_BYTES
         or type(report.get("parent_unique_blob_count")) is not int
@@ -439,12 +503,16 @@ def main():
     manifest = read_pinned(args.manifest, args.source_sha256)
     if args.reopen_only:
         receipt = reopen_parent(
-            manifest, args.original, args.destination,
+            manifest,
+            args.original,
+            args.destination,
             manifest_sha=args.source_sha256,
         )
     else:
         receipt = collect_parent(
-            manifest, args.original, args.destination,
+            manifest,
+            args.original,
+            args.destination,
             manifest_sha=args.source_sha256,
             fetch=lambda repo, kind, oid: github_json(
                 repo, kind, oid, token=os.environ.get("GITHUB_TOKEN")

@@ -10,8 +10,7 @@ from project_pr_review_packet import compile_packet
 
 PIN = "ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463"
 SOURCE = (
-    Path(__file__).resolve().parent
-    / "data/real-project-pr-source-cut-20261012.json"
+    Path(__file__).resolve().parent / "data/real-project-pr-source-cut-20261012.json"
 )
 
 
@@ -83,9 +82,7 @@ class BlindPacketTests(unittest.TestCase):
         self.assertEqual(
             sum(len(r["verified_head_files"]) for r in packet["questions"]), 160
         )
-        self.assertEqual(
-            len({r["task_id"] for r in packet["questions"]}), 16
-        )
+        self.assertEqual(len({r["task_id"] for r in packet["questions"]}), 16)
         self.assertTrue(
             all(
                 r["answer_gold"] is None

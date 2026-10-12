@@ -36,8 +36,7 @@ def compile_packet(manifest, inventory, readback, *, inventory_sha256):
         or inventory.get("schema")
         != "hepta.memorycell.real-project-immutable-source-bytes.v1"
         or not isinstance(readback, dict)
-        or readback.get("schema")
-        != "hepta.memorycell.real-project-source-readback.v1"
+        or readback.get("schema") != "hepta.memorycell.real-project-source-readback.v1"
         or readback.get("offline_reopen_without_network") is not True
         or readback.get("verified_file_bindings") != 80
         or readback.get("model_calls") != 0
@@ -204,9 +203,7 @@ def export(source, original, output, *, source_sha256):
     if output.exists() or output.is_symlink() or not output.parent.is_dir():
         raise ValueError("new regular review-output destination required")
     manifest = read_pinned(source, source_sha256)
-    readback = reopen_materialized(
-        manifest, original, manifest_sha=source_sha256
-    )
+    readback = reopen_materialized(manifest, original, manifest_sha=source_sha256)
     inventory_path = original / "inventory.json"
     raw = inventory_path.read_bytes()
     inventory = strict_json(raw.decode("utf-8"))
@@ -231,7 +228,9 @@ if __name__ == "__main__":
     cli.add_argument("--source-sha256", required=True)
     args = cli.parse_args()
     output = export(
-        args.source, args.original, args.output,
+        args.source,
+        args.original,
+        args.output,
         source_sha256=args.source_sha256,
     )
     print(

@@ -27,6 +27,7 @@ SHA1 = re.compile(r"[a-f0-9]{40}\Z")
 
 def strict_json(data):
     """Reject ambiguous HTTP metadata, duplicate fields and nonfinite numbers."""
+
     def pairs(items):
         out = {}
         for key, value in items:
@@ -50,7 +51,9 @@ def digest(raw):
 
 
 def canonical(obj):
-    return json.dumps(obj, sort_keys=True, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode()
+    return json.dumps(
+        obj, sort_keys=True, ensure_ascii=False, separators=(",", ":"), allow_nan=False
+    ).encode()
 
 
 def check_sha(sha):
@@ -65,7 +68,10 @@ def github_json(repo, category, oid, *, token=None):
         raise ValueError("unregistered Git object request")
     oid = check_sha(oid)
     url = f"https://api.github.com/repos/{repo}/git/{category}/{oid}"
-    headers = {"Accept": "application/vnd.github+json", "User-Agent": "hepta-memory-source-cut/1"}
+    headers = {
+        "Accept": "application/vnd.github+json",
+        "User-Agent": "hepta-memory-source-cut/1",
+    }
     if token:
         headers["Authorization"] = "Bearer " + token
     request = Request(url, headers=headers)
@@ -76,7 +82,9 @@ def github_json(repo, category, oid, *, token=None):
                 raise ValueError("non-success immutable Git object fetch")
             raw = response.read(limit + 1)
     except (HTTPError, URLError) as exc:
-        raise ValueError("original Git object unavailable; snapshot incomplete") from exc
+        raise ValueError(
+            "original Git object unavailable; snapshot incomplete"
+        ) from exc
     if not raw or len(raw) > limit:
         raise ValueError("GitHub object response exceeds research acquisition bound")
     obj = strict_json(raw.decode("utf-8"))
@@ -100,7 +108,9 @@ class ObjectReader:
         key = (repo, category, check_sha(oid))
         if key not in self.cache:
             if self.count >= self.limit:
-                raise ValueError("remote Git request limit reached; snapshot incomplete")
+                raise ValueError(
+                    "remote Git request limit reached; snapshot incomplete"
+                )
             self.count += 1
             obj = self.fetch(*key)
             if not isinstance(obj, dict) or obj.get("sha") != oid:
@@ -133,13 +143,21 @@ def verify_head(row, reader):
 def bind_path(row, file, reader):
     """Walk an exact pinned tree; do not use moving branches or PR endpoints."""
     path = file["path"]
-    if not isinstance(path, str) or not path or any(x in ("", ".", "..") for x in path.split("/")):
+    if (
+        not isinstance(path, str)
+        or not path
+        or any(x in ("", ".", "..") for x in path.split("/"))
+    ):
         raise ValueError("unsafe original path")
     repo, tree_sha = row["repo"], check_sha(row["tree_sha"])
     components = path.split("/")
     for index, component in enumerate(components):
         tree = reader.get(repo, "trees", tree_sha)
-        if tree.get("truncated") is not False or not isinstance(tree.get("tree"), list) or len(tree["tree"]) > 10000:
+        if (
+            tree.get("truncated") is not False
+            or not isinstance(tree.get("tree"), list)
+            or len(tree["tree"]) > 10000
+        ):
             raise ValueError("unbounded or truncated original Git tree")
         entries = [e for e in tree["tree"] if e.get("path") == component]
         if len(entries) != 1:
@@ -154,7 +172,9 @@ def bind_path(row, file, reader):
             or entry.get("mode") not in ("100644", "100755")
             or entry.get("sha") != file["blob_sha"]
         ):
-            raise ValueError("file path, executable mode or SHA differs from frozen tree")
+            raise ValueError(
+                "file path, executable mode or SHA differs from frozen tree"
+            )
     return entry["mode"]
 
 
@@ -187,8 +207,14 @@ def collect(manifest, out, *, manifest_sha, fetch, max_total=MAX_TOTAL):
     """Only publish READY after ALL eight PR trees and ALL source blobs match."""
     if type(max_total) is not int or not 1 <= max_total <= MAX_TOTAL:
         raise ValueError("unregistered original-source byte limit")
-    if out.exists() or manifest.get("model_executions") != 0 or manifest.get("no_answers_or_labels") is not True:
-        raise ValueError("output must be new and source cut must contain no answer or model execution")
+    if (
+        out.exists()
+        or manifest.get("model_executions") != 0
+        or manifest.get("no_answers_or_labels") is not True
+    ):
+        raise ValueError(
+            "output must be new and source cut must contain no answer or model execution"
+        )
     reader = ObjectReader(fetch)
     out.mkdir(parents=True, exist_ok=False)
     originals = out / "blobs"
@@ -206,53 +232,81 @@ def collect(manifest, out, *, manifest_sha, fetch, max_total=MAX_TOTAL):
                     obj = reader.get(row["repo"], "blobs", oid)
                     raw = decode_blob(obj, oid)
                     if total + len(raw) > max_total:
-                        raise ValueError("cumulative original-source byte bound exceeded")
+                        raise ValueError(
+                            "cumulative original-source byte bound exceeded"
+                        )
                     total += len(raw)
                     location = originals / (oid + ".blob")
                     with location.open("xb") as stream:
                         stream.write(raw)
                         stream.flush()
                         os.fsync(stream.fileno())
-                    blobs[oid] = dict(sha256=digest(raw), bytes=len(raw), blob_path="blobs/" + oid + ".blob")
-                files.append(dict(
-                    project=row["repo"], partition=row["partition"],
-                    pull_number=row["pull_number"], head_sha=row["head_sha"],
-                    tree_sha=row["tree_sha"], path=file["path"],
-                    blob_sha=oid, mode=mode, **blobs[oid],
-                ))
+                    blobs[oid] = dict(
+                        sha256=digest(raw),
+                        bytes=len(raw),
+                        blob_path="blobs/" + oid + ".blob",
+                    )
+                files.append(
+                    dict(
+                        project=row["repo"],
+                        partition=row["partition"],
+                        pull_number=row["pull_number"],
+                        head_sha=row["head_sha"],
+                        tree_sha=row["tree_sha"],
+                        path=file["path"],
+                        blob_sha=oid,
+                        mode=mode,
+                        **blobs[oid],
+                    )
+                )
         if len(files) != 80 or len(manifest["cases"]) != 8:
             raise ValueError("incomplete original frozen project source census")
         inventory = dict(
             schema="hepta.memorycell.real-project-immutable-source-bytes.v1",
-            source_cut_utc=CUT, source_manifest_sha256=manifest_sha,
-            projects=len(PARTITIONS), source_prs=len(manifest["cases"]),
-            original_file_bindings=len(files), unique_blobs=len(blobs),
-            total_unique_original_bytes=total, remote_objects_read=reader.count,
-            originals=files, selection_or_evaluation_labels_read=False,
+            source_cut_utc=CUT,
+            source_manifest_sha256=manifest_sha,
+            projects=len(PARTITIONS),
+            source_prs=len(manifest["cases"]),
+            original_file_bindings=len(files),
+            unique_blobs=len(blobs),
+            total_unique_original_bytes=total,
+            remote_objects_read=reader.count,
+            originals=files,
+            selection_or_evaluation_labels_read=False,
             prompt_injection_from_sources_executed=False,
-            human_review_performed=False, model_calls=0,
-            semantic_citation_precision=None, production_accepted=False,
+            human_review_performed=False,
+            model_calls=0,
+            semantic_citation_precision=None,
+            production_accepted=False,
         )
         atomic_json(out / "inventory.json", inventory)
         ready = dict(
             schema="hepta.memorycell.real-project-original-source-ready.v1",
             inventory_sha256=digest((out / "inventory.json").read_bytes()),
             source_manifest_sha256=manifest_sha,
-            original_file_bindings=80, unique_blobs=len(blobs),
-            original_byte_count=total, original_objects_verified=True,
+            original_file_bindings=80,
+            unique_blobs=len(blobs),
+            original_byte_count=total,
+            original_objects_verified=True,
             independent_semantic_review=False,
-            model_training_or_inference=False, production_accepted=False,
+            model_training_or_inference=False,
+            production_accepted=False,
         )
         atomic_json(out / "READY.json", ready)
         return ready
     except Exception as exc:
         # A partial staging directory is evidence of failure, never READY.
         if not (out / "READY.json").exists():
-            atomic_json(out / "INCOMPLETE.json", dict(
-                status="incomplete", reason=type(exc).__name__,
-                original_file_bindings_verified=len(files),
-                verified_unique_bytes=total, research_result_valid=False,
-            ))
+            atomic_json(
+                out / "INCOMPLETE.json",
+                dict(
+                    status="incomplete",
+                    reason=type(exc).__name__,
+                    original_file_bindings_verified=len(files),
+                    verified_unique_bytes=total,
+                    research_result_valid=False,
+                ),
+            )
         raise
 
 
@@ -287,8 +341,10 @@ def reopen_materialized(manifest, output, *, manifest_sha):
     inventory, inventory_sha = read_record("inventory.json")
     ready, ready_sha = read_record("READY.json")
     if (
-        inventory.get("schema") != "hepta.memorycell.real-project-immutable-source-bytes.v1"
-        or ready.get("schema") != "hepta.memorycell.real-project-original-source-ready.v1"
+        inventory.get("schema")
+        != "hepta.memorycell.real-project-immutable-source-bytes.v1"
+        or ready.get("schema")
+        != "hepta.memorycell.real-project-original-source-ready.v1"
         or inventory.get("source_cut_utc") != CUT
         or inventory.get("source_manifest_sha256") != manifest_sha
         or ready.get("source_manifest_sha256") != manifest_sha
@@ -318,8 +374,13 @@ def reopen_materialized(manifest, output, *, manifest_sha):
         raise ValueError("invalid original source inventory or false review authority")
     expected = [
         (
-            case["repo"], case["partition"], case["pull_number"],
-            case["head_sha"], case["tree_sha"], file["path"], file["blob_sha"],
+            case["repo"],
+            case["partition"],
+            case["pull_number"],
+            case["head_sha"],
+            case["tree_sha"],
+            file["path"],
+            file["blob_sha"],
         )
         for case in manifest["cases"]
         for file in case["files"]
@@ -329,8 +390,13 @@ def reopen_materialized(manifest, output, *, manifest_sha):
         raise ValueError("missing original source binding")
     recorded = [
         (
-            row["project"], row["partition"], row["pull_number"],
-            row["head_sha"], row["tree_sha"], row["path"], row["blob_sha"],
+            row["project"],
+            row["partition"],
+            row["pull_number"],
+            row["head_sha"],
+            row["tree_sha"],
+            row["path"],
+            row["blob_sha"],
         )
         for row in actual
     ]
@@ -341,9 +407,19 @@ def reopen_materialized(manifest, output, *, manifest_sha):
     for row in actual:
         oid = check_sha(row["blob_sha"])
         if (
-            set(row) != {
-                "project", "partition", "pull_number", "head_sha", "tree_sha",
-                "path", "blob_sha", "mode", "sha256", "bytes", "blob_path",
+            set(row)
+            != {
+                "project",
+                "partition",
+                "pull_number",
+                "head_sha",
+                "tree_sha",
+                "path",
+                "blob_sha",
+                "mode",
+                "sha256",
+                "bytes",
+                "blob_path",
             }
             or row["mode"] not in ("100644", "100755")
             or row["blob_path"] != "blobs/" + oid + ".blob"
@@ -413,7 +489,9 @@ def main():
     else:
         token = os.environ.get("GITHUB_TOKEN")
         receipt = collect(
-            manifest, args.output, manifest_sha=args.source_sha256,
+            manifest,
+            args.output,
+            manifest_sha=args.source_sha256,
             fetch=lambda repo, kind, oid: github_json(repo, kind, oid, token=token),
         )
     print(json.dumps(receipt, sort_keys=True, allow_nan=False))
