@@ -49,6 +49,12 @@ jobs:
             --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
             2>&1 | tee /tmp/hepta-project-source-bytes/acquire.log
           test -f /tmp/hepta-project-source-bytes/original/READY.json
+      - name: Reopen all 80 original Git byte bindings from disk in a separate process
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_source_materialize.py             scripts/memory_cell/data/real-project-pr-source-cut-20261012.json             /tmp/hepta-project-source-bytes/original             --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463             --reopen-only 2>&1 | tee /tmp/hepta-project-source-bytes/reopen.log
       - name: Seal tested source and byte-level receipts
         if: always()
         run: |

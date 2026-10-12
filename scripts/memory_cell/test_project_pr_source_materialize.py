@@ -12,6 +12,7 @@ import unittest
 from project_pr_source_materialize import (
     ObjectReader, atomic_json, bind_path, blob_sha, collect, decode_blob, digest,
     verify_head,
+    reopen_materialized,
 )
 
 
@@ -74,6 +75,53 @@ class FrozenGitTests(unittest.TestCase):
         self.assertFalse(ready["independent_semantic_review"])
         with self.assertRaises(ValueError):
             collect(self.manifest, self.output, manifest_sha="f"*64, fetch=self.fetch)
+
+    def test_readback_verifies_all_original_blobs_without_fetch_or_gold(self):
+        ready = collect(
+            self.manifest, self.output, manifest_sha="f"*64, fetch=self.fetch
+        )
+        report = reopen_materialized(
+            self.manifest, self.output, manifest_sha="f"*64
+        )
+        self.assertEqual(report["verified_file_bindings"], 80)
+        self.assertEqual(report["verified_git_blobs"], ready["unique_blobs"])
+        self.assertEqual(report["verified_unique_bytes"], ready["original_byte_count"])
+        self.assertEqual(report["model_calls"], 0)
+        self.assertFalse(report["independent_human_semantic_review"])
+        self.assertFalse(report["production_accepted"])
+
+    def test_readback_detects_blob_tamper_symlink_extra_and_false_review(self):
+        for kind in ("blob", "symlink", "extra", "authority", "binding"):
+            with self.subTest(kind=kind):
+                output = Path(self.temp.name) / ("readback-" + kind)
+                collect(self.manifest, output, manifest_sha="f"*64, fetch=self.fetch)
+                manifest = deepcopy(self.manifest)
+                first = manifest["cases"][0]["files"][0]["blob_sha"]
+                blob_path = output / "blobs" / (first + ".blob")
+                if kind == "blob":
+                    blob_path.write_bytes(blob_path.read_bytes() + b"tamper")
+                elif kind == "symlink":
+                    blob_path.unlink()
+                    blob_path.symlink_to("/etc/passwd")
+                elif kind == "extra":
+                    (output / "blobs" / "unexpected.blob").write_bytes(b"extra")
+                elif kind == "authority":
+                    value = json.loads((output / "inventory.json").read_text())
+                    value["human_review_performed"] = True
+                    raw = json.dumps(
+                        value, sort_keys=True, ensure_ascii=False,
+                        separators=(",", ":"), allow_nan=False
+                    ).encode() + b"\n"
+                    (output / "inventory.json").write_bytes(raw)
+                    ready = json.loads((output / "READY.json").read_text())
+                    ready["inventory_sha256"] = hashlib.sha256(raw).hexdigest()
+                    (output / "READY.json").write_text(json.dumps(
+                        ready, sort_keys=True, separators=(",", ":")
+                    ) + "\n")
+                else:
+                    manifest["cases"][0]["files"][0]["path"] = "renamed.py"
+                with self.assertRaises(ValueError):
+                    reopen_materialized(manifest, output, manifest_sha="f"*64)
 
     def test_parent_tree_and_mode_mismatch_rejected(self):
         for kind in ("parent", "head_tree", "symlink", "absent", "wrong_file_sha"):

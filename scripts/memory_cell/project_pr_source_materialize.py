@@ -256,19 +256,167 @@ def collect(manifest, out, *, manifest_sha, fetch, max_total=MAX_TOTAL):
         raise
 
 
+def reopen_materialized(manifest, output, *, manifest_sha):
+    """Recheck all 80 retained original Git blobs after a separate process opens READY.
+
+    The precommitted manifest is independently SHA-pinned by the CLI. This
+    read-only byte check is not a second Git fetch, semantic review, model run,
+    source sufficiency judgment or production authorization.
+    """
+    root = Path(output)
+    blobs_dir = root / "blobs"
+    if (
+        root.is_symlink()
+        or not root.is_dir()
+        or blobs_dir.is_symlink()
+        or not blobs_dir.is_dir()
+        or (root / "INCOMPLETE.json").exists()
+    ):
+        raise ValueError("missing, symlinked or incomplete original source directory")
+
+    def read_record(filename):
+        path = root / filename
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > 256 * 1024:
+            raise ValueError("missing or oversized source receipt")
+        raw = path.read_bytes()
+        data = strict_json(raw.decode("utf-8"))
+        if not isinstance(data, dict) or raw != canonical(data) + b"\n":
+            raise ValueError("ambiguous or noncanonical source receipt")
+        return data, digest(raw)
+
+    inventory, inventory_sha = read_record("inventory.json")
+    ready, ready_sha = read_record("READY.json")
+    if (
+        inventory.get("schema") != "hepta.memorycell.real-project-immutable-source-bytes.v1"
+        or ready.get("schema") != "hepta.memorycell.real-project-original-source-ready.v1"
+        or inventory.get("source_cut_utc") != CUT
+        or inventory.get("source_manifest_sha256") != manifest_sha
+        or ready.get("source_manifest_sha256") != manifest_sha
+        or ready.get("inventory_sha256") != inventory_sha
+        or type(inventory.get("projects")) is not int
+        or inventory["projects"] != len(PARTITIONS)
+        or type(inventory.get("source_prs")) is not int
+        or inventory["source_prs"] != 8
+        or type(inventory.get("original_file_bindings")) is not int
+        or inventory["original_file_bindings"] != 80
+        or type(ready.get("original_file_bindings")) is not int
+        or ready["original_file_bindings"] != 80
+        or type(inventory.get("remote_objects_read")) is not int
+        or not 1 <= inventory["remote_objects_read"] <= MAX_REQUESTS
+        or inventory.get("selection_or_evaluation_labels_read") is not False
+        or inventory.get("prompt_injection_from_sources_executed") is not False
+        or inventory.get("human_review_performed") is not False
+        or type(inventory.get("model_calls")) is not int
+        or inventory["model_calls"] != 0
+        or inventory.get("semantic_citation_precision") is not None
+        or inventory.get("production_accepted") is not False
+        or ready.get("original_objects_verified") is not True
+        or ready.get("independent_semantic_review") is not False
+        or ready.get("model_training_or_inference") is not False
+        or ready.get("production_accepted") is not False
+    ):
+        raise ValueError("invalid original source inventory or false review authority")
+    expected = [
+        (
+            case["repo"], case["partition"], case["pull_number"],
+            case["head_sha"], case["tree_sha"], file["path"], file["blob_sha"],
+        )
+        for case in manifest["cases"]
+        for file in case["files"]
+    ]
+    actual = inventory.get("originals")
+    if not isinstance(actual, list) or len(actual) != 80:
+        raise ValueError("missing original source binding")
+    recorded = [
+        (
+            row["project"], row["partition"], row["pull_number"],
+            row["head_sha"], row["tree_sha"], row["path"], row["blob_sha"],
+        )
+        for row in actual
+    ]
+    if recorded != expected or len(set(recorded)) != 80:
+        raise ValueError("original project, commit, path or file identity changed")
+
+    visited = {}
+    for row in actual:
+        oid = check_sha(row["blob_sha"])
+        if (
+            set(row) != {
+                "project", "partition", "pull_number", "head_sha", "tree_sha",
+                "path", "blob_sha", "mode", "sha256", "bytes", "blob_path",
+            }
+            or row["mode"] not in ("100644", "100755")
+            or row["blob_path"] != "blobs/" + oid + ".blob"
+            or type(row["bytes"]) is not int
+            or not 0 <= row["bytes"] <= MAX_BLOB
+            or not isinstance(row["sha256"], str)
+            or not re.fullmatch(r"[0-9a-f]{64}", row["sha256"])
+        ):
+            raise ValueError("invalid original Git blob binding")
+        if oid in visited:
+            if visited[oid] != (row["sha256"], row["bytes"]):
+                raise ValueError("identical original Git blob has contradictory bytes")
+            continue
+        path = blobs_dir / (oid + ".blob")
+        if path.is_symlink() or not path.is_file() or path.stat().st_size > MAX_BLOB:
+            raise ValueError("missing, symlinked or oversized original file")
+        raw = path.read_bytes()
+        if (
+            len(raw) != row["bytes"]
+            or blob_sha(raw) != oid
+            or digest(raw) != row["sha256"]
+        ):
+            raise ValueError("stored original source differs from pinned Git bytes")
+        visited[oid] = (row["sha256"], len(raw))
+    if {p.name for p in blobs_dir.iterdir()} != {oid + ".blob" for oid in visited}:
+        raise ValueError("missing or extraneous retained original Git blobs")
+    total = sum(n for _, n in visited.values())
+    if (
+        total > MAX_TOTAL
+        or type(inventory.get("unique_blobs")) is not int
+        or inventory["unique_blobs"] != len(visited)
+        or type(ready.get("unique_blobs")) is not int
+        or ready["unique_blobs"] != len(visited)
+        or type(inventory.get("total_unique_original_bytes")) is not int
+        or inventory["total_unique_original_bytes"] != total
+        or type(ready.get("original_byte_count")) is not int
+        or ready["original_byte_count"] != total
+    ):
+        raise ValueError("retained original source totals differ from committed READY")
+    return dict(
+        schema="hepta.memorycell.real-project-source-readback.v1",
+        generating_source_manifest_sha256=manifest_sha,
+        original_ready_sha256=ready_sha,
+        original_inventory_sha256=inventory_sha,
+        verified_file_bindings=len(actual),
+        verified_git_blobs=len(visited),
+        verified_unique_bytes=total,
+        offline_reopen_without_network=True,
+        model_calls=0,
+        independent_human_semantic_review=False,
+        production_accepted=False,
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("source", type=Path)
     parser.add_argument("output", type=Path)
     parser.add_argument("--source-sha256", required=True)
+    parser.add_argument("--reopen-only", action="store_true")
     args = parser.parse_args()
     manifest = read_pinned(args.source, args.source_sha256)
-    token = os.environ.get("GITHUB_TOKEN")
-    ready = collect(
-        manifest, args.output, manifest_sha=args.source_sha256,
-        fetch=lambda repo, kind, oid: github_json(repo, kind, oid, token=token),
-    )
-    print(json.dumps(ready, sort_keys=True, allow_nan=False))
+    if args.reopen_only:
+        receipt = reopen_materialized(
+            manifest, args.output, manifest_sha=args.source_sha256
+        )
+    else:
+        token = os.environ.get("GITHUB_TOKEN")
+        receipt = collect(
+            manifest, args.output, manifest_sha=args.source_sha256,
+            fetch=lambda repo, kind, oid: github_json(repo, kind, oid, token=token),
+        )
+    print(json.dumps(receipt, sort_keys=True, allow_nan=False))
 
 
 if __name__ == "__main__":

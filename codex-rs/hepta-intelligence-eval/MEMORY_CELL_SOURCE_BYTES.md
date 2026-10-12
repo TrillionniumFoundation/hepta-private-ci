@@ -42,3 +42,11 @@ Hosted source acquisition:
 Original pre-review source cut remains unchanged and external SHA256-pinned.
 These tests contain synthetic Git objects only. All existing Architecture,
 blocking CI, performance and independent acceptance gates remain in force.
+
+A separate read-only `--reopen-only` process now reopens the completed corpus
+without GitHub or a model, validates canonical READY/inventory bytes, all eighty
+original file path/commit bindings, every retained Git SHA-1/SHA-256 and size,
+rejects symlinks or unregistered blobs, and checks retained byte totals. This is
+an integrity check, **not** independent source sufficiency review or answer
+annotation. It never alters the source corpus, admits a trained model, or
+changes the four-project source cutoff.
