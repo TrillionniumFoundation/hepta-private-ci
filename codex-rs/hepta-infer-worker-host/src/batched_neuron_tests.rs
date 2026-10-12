@@ -593,7 +593,7 @@ fn legacy_group_commit_failure_denies_remaining_intents_without_claiming_them() 
     assert_eq!(completed.outcomes.len(), 2);
     assert!(completed.outcomes[0].result.is_ok());
     assert!(matches!(
-        completed.outcomes[1].result,
+        &completed.outcomes[1].result,
         Err(BatchWorkerErrorV1::TelemetryUnavailable)
     ));
     assert_eq!(completed.pending, 0);
