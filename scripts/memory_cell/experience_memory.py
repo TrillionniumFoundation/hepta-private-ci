@@ -188,9 +188,7 @@ class ExperienceReader(ReferenceReader):
             raise ValueError("unregistered source-only curriculum")
         if binding_objective not in ("completion_ce", "source_margin"):
             raise ValueError("unregistered source-only learning objective")
-        if binding_objective == "source_margin" and (
-            curriculum != "single_hop" or loss_backend != "full"
-        ):
+        if binding_objective == "source_margin" and curriculum != "single_hop":
             raise ValueError("source binding trial requires original full Qwen loss")
         if curriculum == "source_two_hop":
             from source_composition_curriculum import combine_source_examples
@@ -284,7 +282,7 @@ class ExperienceReader(ReferenceReader):
                         ids[:first_target],
                         active_examples[index]["target"],
                         binding_pairs[index]["negative_value"],
-                        backend="full",
+                        backend=loss_backend,
                     )
                     projection_positions = paired_charge["actual_projection_positions"]
                 elif loss_backend == "full":
