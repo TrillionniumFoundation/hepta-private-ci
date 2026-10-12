@@ -359,8 +359,18 @@ fn whole_root_restore_of_signed_minimum_is_not_external_anti_rollback_evidence()
         .expect("remove current record");
     fs::remove_file(root.path().join(crate::durable::SIDECAR_LOCK_FILE))
         .expect("remove continuity lock");
-    fs::write(root.path().join(STORE_FILE), &saved_record)
-        .expect("restore original signed bytes");
+    {
+        use std::io::Write as _;
+        use std::os::unix::fs::OpenOptionsExt as _;
+        let mut restored = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .open(root.path().join(STORE_FILE))
+            .expect("restore private signed bytes");
+        restored.write_all(&saved_record).expect("restore bytes");
+        restored.sync_all().expect("restore record durability");
+    }
     // An unmatched record without the lock must still fail closed.
     assert!(CellSplitSupervisorMinimumFileStoreV1::open_existing(
         root.path(), signer.clone(),
@@ -368,10 +378,16 @@ fn whole_root_restore_of_signed_minimum_is_not_external_anti_rollback_evidence()
     // Restoring both independently valid local files can defeat this
     // *local-only* continuity indicator; that is precisely why an external
     // rollback-resistant witness is a separate production requirement.
-    fs::write(
-        root.path().join(crate::durable::SIDECAR_LOCK_FILE),
-        b"",
-    ).expect("restore local continuity marker");
+    {
+        use std::os::unix::fs::OpenOptionsExt as _;
+        let lock = fs::OpenOptions::new()
+            .write(true)
+            .create_new(true)
+            .mode(0o600)
+            .open(root.path().join(crate::durable::SIDECAR_LOCK_FILE))
+            .expect("restore private local continuity marker");
+        lock.sync_all().expect("restore lock marker durability");
+    }
     let mut restored = CellSplitSupervisorMinimumFileStoreV1::open_existing(
         root.path(), signer.clone(),
     ).expect("old signed snapshot is locally indistinguishable");
