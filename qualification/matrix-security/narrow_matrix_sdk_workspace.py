@@ -57,7 +57,9 @@ def rewrite_workspace(raw):
             or "exclude" in workspace or "default-members" in workspace):
         raise ValueError("unexpected full-workspace membership contract")
     sdk = doc.get("workspace", {}).get("dependencies", {}).get("matrix-sdk")
-    if (type(sdk) is not dict or type(sdk.get("path")) is not str
+    if (type(sdk) is not dict
+            or set(sdk) != {"path", "default-features", "features"}
+            or type(sdk.get("path")) is not str
             or not sdk["path"].startswith("../")
             or sdk.get("default-features") is not False
             or sdk.get("features") != ["e2e-encryption", "sqlite"]):
