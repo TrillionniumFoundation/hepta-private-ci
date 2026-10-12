@@ -3,4 +3,7 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "code-mode-host",
     crate_name = "codex_code_mode_host",
+    # V8 platform and configurable address space are process-global.
+    # Run every test, but serialize in-process V8 initialization per binary.
+    unit_test_args = ["--test-threads=1"],
 )
