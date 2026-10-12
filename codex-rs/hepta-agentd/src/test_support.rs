@@ -122,6 +122,10 @@ impl CognitiveTestHost {
         state.attach_cognitive_store(Arc::clone(&store))?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
+        // Match the production startup sequence. The control health endpoint
+        // may report ready only after the current store and revocation
+        // prerequisites have been observed; do not mock readiness.
+        state.mark_runtime_prerequisites_ready()?;
 
         codex_utils_home_dir::set_process_codex_home_override(
             AbsolutePathBuf::from_absolute_path(identity.home_root.clone())?,

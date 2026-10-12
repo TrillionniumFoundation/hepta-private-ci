@@ -1060,14 +1060,18 @@ mod tests {
             ),
             Err(Error::FeatureOutputMismatch)
         );
-        assert_eq!(worker.driver.batch_calls(), 2);
+        // The CPU reference driver counts only completed batches. The
+        // rejected mixed-head cohort entered the driver but did not complete,
+        // so it cannot increment successful batch accounting.
+        assert_eq!(worker.driver.batch_calls(), 1);
         assert!(worker.poisoned);
         assert!(worker.active_requests.is_empty());
         assert_eq!(
             worker.run_shared_neuron_features_batch_v2(100, "model.gated", vec![a]),
             Err(Error::IndeterminateLifecycle)
         );
-        assert_eq!(worker.driver.batch_calls(), 2);
+        // A poisoned worker never starts another physical batch.
+        assert_eq!(worker.driver.batch_calls(), 1);
     }
 
     #[test]
