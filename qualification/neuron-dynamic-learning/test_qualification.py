@@ -1,4 +1,5 @@
 """Offline adversarial contract tests; no fabricated pretrained model claims."""
+import copy
 import hashlib
 import json
 import tempfile
@@ -9,7 +10,7 @@ import numpy as np
 
 from cell_learning import (
     DynamicCell, LearningContractError, Q24, budgeted_cell, paired_future_score,
-    q24_reference, rust_candidate_digest,
+    q24_reference, rust_candidate_digest, validate_rust_candidate,
 )
 from offline_stem import (
     OfflineSharedStem, StemQualificationError, digest, joint_text,
@@ -149,6 +150,48 @@ class DynamicLearning(unittest.TestCase):
         )
         drive, prediction = q24_reference(fixture_q24(), [Q24, Q24])
         self.assertEqual((drive, prediction), ([3 * Q24 // 2], [3 * Q24 // 4]))
+
+    def test_rust_gate_rejects_bad_shapes_coerced_numbers_and_forged_identity(self):
+        valid = fixture_q24()
+        self.assertEqual(validate_rust_candidate(valid), 14)
+        invalid_cases = [
+            ("extra tensor value", lambda x: x["down_q24"].append(0)),
+            ("missing tensor value", lambda x: x["up_q24"].pop()),
+            ("wrong output shape", lambda x: x.update({"output_width": 2})),
+            ("bool coefficient", lambda x: x["gate_bias_q24"].__setitem__(0, True)),
+            ("coerced float", lambda x: x["up_q24"].__setitem__(0, float(Q24))),
+            ("out of range", lambda x: x["cell_state_q24"].__setitem__(0, 8 * Q24 + 1)),
+            ("integer dimension bool", lambda x: x.update({"rank": True})),
+            ("extra unknown field", lambda x: x.update({"authority": "production"})),
+            ("missing field", lambda x: x.pop("prediction_bias_q24")),
+            ("zero encoder", lambda x: x.update({"encoder_digest": "0" * 64})),
+            ("uppercase encoder", lambda x: x.update({"encoder_digest": "A" * 64})),
+            ("unsafe Cell identity", lambda x: x.update({"cell_identity": "../cell"})),
+            ("non-ascii Cell identity", lambda x: x.update({"cell_identity": "神经元"})),
+        ]
+        for name, mutation in invalid_cases:
+            with self.subTest(name=name):
+                item = copy.deepcopy(valid)
+                mutation(item)
+                with self.assertRaises(LearningContractError):
+                    validate_rust_candidate(item)
+                with self.assertRaises(LearningContractError):
+                    rust_candidate_digest(item)
+                with self.assertRaises(LearningContractError):
+                    q24_reference(item, [Q24, Q24])
+        for bad_inputs in (
+                [True, Q24], [Q24, float(Q24)],
+                [Q24 + 1, Q24], [Q24],
+                np.array([Q24, Q24]), [0, "0"]):
+            with self.subTest(input=str(bad_inputs)):
+                with self.assertRaises(LearningContractError):
+                    q24_reference(valid, bad_inputs)
+        for bad_id, bad_digest in (
+                ("../wrong", "a" * 64),
+                ("cell.a", "0" * 64),
+                ("cell.a", "A" * 64)):
+            with self.assertRaises(LearningContractError):
+                DynamicCell.initialize(bad_id, bad_digest, 2, 2, 1, seed=4)
 
     def test_real_sgd_improves_future_on_synthetic_task_not_production(self):
         rng = np.random.default_rng(42)
