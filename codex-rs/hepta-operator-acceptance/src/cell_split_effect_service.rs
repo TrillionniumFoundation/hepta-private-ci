@@ -60,8 +60,20 @@ pub trait CellSplitDurableEffectBackendV1 {
         intent: &CellSplitExecutionIntentV1,
         effect: &CellSplitOwnedEffectV1,
     ) -> Result<bool, Self::Error>;
-    /// Monotonic owner sequence, read from durable state; never zero.
+    /// The original durable owner frontier, not an in-memory call counter.
     fn current_sequence(&mut self) -> Result<u64, Self::Error>;
+
+    /// An intent-scoped frontier is needed for create-only CAS and migration
+    /// owners: their immutable commit marker advances the committed revision
+    /// although the predecessor artifact/checkpoint remains unchanged.
+    /// Owners with a globally monotonic durable journal can use the default.
+    fn current_sequence_for_intent(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<u64, Self::Error> {
+        let _ = intent;
+        self.current_sequence()
+    }
 }
 
 /// One pinned RPC owner; four distinct instances and signing keys are required.
@@ -164,7 +176,7 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                 // existing or statically reported effect could be adopted.
                 let predecessor_sequence = self
                     .backend
-                    .current_sequence()
+                    .current_sequence_for_intent(&request.intent)
                     .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
                 if predecessor_sequence == 0 {
                     return Err(CellSplitEffectRpcErrorV1::Invalid(
@@ -201,7 +213,7 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                 // observation just as signed recovery readbacks do.
                 let before = self
                     .backend
-                    .current_sequence()
+                    .current_sequence_for_intent(&request.intent)
                     .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
                 let observed = self
                     .backend
@@ -209,7 +221,7 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                     .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
                 let after = self
                     .backend
-                    .current_sequence()
+                    .current_sequence_for_intent(&request.intent)
                     .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
                 if before == 0
                     || before != after
@@ -238,7 +250,7 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                 let committed = self.read_verified(&request.intent)?;
                 let sequence = self
                     .backend
-                    .current_sequence()
+                    .current_sequence_for_intent(&request.intent)
                     .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
                 if sequence == 0
                     || committed
@@ -279,7 +291,7 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                 }
                 let final_sequence = self
                     .backend
-                    .current_sequence()
+                    .current_sequence_for_intent(&request.intent)
                     .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
                 if final_sequence != sequence {
                     return Err(CellSplitEffectRpcErrorV1::Invalid(
@@ -401,7 +413,7 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
             // before acknowledgement.
             let durable_sequence = self
                 .backend
-                .current_sequence()
+                .current_sequence_for_intent(intent)
                 .map_err(|error| CellSplitEffectRpcErrorV1::Rejected(error.to_string()))?;
             if durable_sequence == 0 || committed.owner_sequence > durable_sequence {
                 return Err(CellSplitEffectRpcErrorV1::Invalid(
