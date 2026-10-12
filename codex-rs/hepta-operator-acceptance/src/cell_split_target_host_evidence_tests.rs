@@ -481,7 +481,79 @@ fn signed_owner_transcript_for_host(
             idempotency_key,
             previous_receipt_digest: predecessor.clone(),
         };
-        let owner_bytes = canonical_json(&intent).expect("fixture original receipt");
+        let owner_bytes = match index {
+            2 => {
+                // Independent CNS runtime original, bound to the exact host
+                // route before the outer CNS effect signer seals its receipt.
+                let mut original = crate::CellSplitCnsRuntimeCommitV1 {
+                    idempotency_key: intent.idempotency_key.clone(),
+                    cns_id: "cns.fixture".to_string(),
+                    predecessor_route_digest: PARENT_ROUTE.to_string(),
+                    successor_route_digest: CHILD_ROUTE.to_string(),
+                    predecessor_generation: plan.parent_generation,
+                    successor_generation: plan.child_generation,
+                    authority_epoch: 7,
+                    committed_sequence: 3,
+                    original_runtime_receipt_bytes: Vec::new(),
+                    original_runtime_signature_bytes: Vec::new(),
+                };
+                original.original_runtime_receipt_bytes =
+                    crate::CellSplitCnsRuntimeAttestationV1::for_commit(
+                        &plan, &original,
+                    )
+                    .canonical_bytes()
+                    .expect("typed original CNS runtime");
+                original.original_runtime_signature_bytes = key(71)
+                    .sign(&original.original_runtime_receipt_bytes)
+                    .to_bytes()
+                    .to_vec();
+                canonical_json(&original).expect("original signed CNS cutover")
+            }
+            3 => {
+                // The Supervisor original journal is signed with a *distinct*
+                // key and a domain-separated payload, not the outer owner key.
+                let checkpoint = serde_json::json!({
+                    "schemaVersion": 1,
+                    "operationId": plan.split_id,
+                    "domainId": "scope.fixture",
+                    "oldGeneration": plan.parent_generation,
+                    "newGeneration": plan.child_generation,
+                    "authorityEpoch": 7,
+                    "phase": "retired",
+                    "revision": 4,
+                    "unknownEffectCount": 0,
+                    "receiptDigest": "99".repeat(32),
+                });
+                let checkpoint_bytes =
+                    canonical_json(&checkpoint).expect("original Supervisor journal");
+                let mut signing_bytes =
+                    b"hepta.supervisor.cell-split.original-journal.v1\0".to_vec();
+                signing_bytes.extend_from_slice(
+                    &(intent.idempotency_key.len() as u64).to_be_bytes(),
+                );
+                signing_bytes.extend_from_slice(intent.idempotency_key.as_bytes());
+                signing_bytes.extend_from_slice(
+                    &(checkpoint_bytes.len() as u64).to_be_bytes(),
+                );
+                signing_bytes.extend_from_slice(&checkpoint_bytes);
+                let original = crate::CellSplitSupervisorCommitV1 {
+                    idempotency_key: intent.idempotency_key.clone(),
+                    domain_id: "scope.fixture".to_string(),
+                    handoff_plan_digest: "aa".repeat(32),
+                    old_generation: plan.parent_generation,
+                    new_generation: plan.child_generation,
+                    authority_epoch: 7,
+                    committed_revision: 4,
+                    original_checkpoint_bytes: checkpoint_bytes,
+                    original_checkpoint_signature_bytes: key(72)
+                        .sign(&signing_bytes)
+                        .to_bytes()
+                        .to_vec(),
+                };
+                canonical_json(&original).expect("original signed terminal journal")
+            }
+            _ => canonical_json(&intent).expect("fixture original receipt"),
+        };
         let mut receipt = crate::CellSplitExecutionReceiptV1 {
             intent,
             owner_sequence: index as u64 + 1,
