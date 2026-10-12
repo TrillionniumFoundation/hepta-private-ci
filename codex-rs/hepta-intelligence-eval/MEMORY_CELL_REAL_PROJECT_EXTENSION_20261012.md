@@ -64,3 +64,30 @@ projects, with failure denominators, cited full prerequisite chains and
 complete lifecycle costs. This cohort is retrospective public software
 history, NOT a new real future production observation or signed independent
 semantic judgment. Production qualification remains false.
+
+## Upstream Git blob correction after exact-source CI failure
+
+Source-only workflow [38276687685](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38276687685)
+failed three manifest tests because the frozen extension recorded a
+**39-character** blob ID for `tokio-util/tests/length_delimited.rs`.
+This is an original input-record defect, **not** a reason to relax the
+40-character Git object contract or infer a model-quality failure.
+
+The object was checked directly against the original
+`tokio-rs/tokio` commit
+`b0b3a24a033d8cfe2742a81de49c2fb06d89fba2`, whose tree is
+`0b02c3c7c950373f96377b8f9d305ac7831ba20a`.
+The authentic blob SHA-1 at that exact path is
+`41f79024cd9c9f445fd2d8b0c023c87e4d54231d`.
+The previous manifest omitted the final `d`. This forward-only source
+correction changes the extension's **external byte SHA-256**; the
+workflow computes a fresh external digest and verifies it before
+generating its unsigned review worklist. The project partition, UTC
+source cutoff, original commit/tree SHA, 14 commit identities and 32
+file occurrences are unchanged.
+
+Only this Git object ID was independently retrieved by this repair.
+Neither the other original source bytes nor human entailment judgments
+have thereby been verified. The six projects remain **unreviewed,
+not model ready, not production qualified**, with independent source
+families and effective sample size unproven.

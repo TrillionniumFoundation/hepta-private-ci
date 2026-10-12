@@ -26,6 +26,23 @@ class ProjectExtensionTests(unittest.TestCase):
         cls.content = EXTENSION.read_bytes()
         cls.manifest = json.loads(cls.content)
 
+    def test_upstream_tokio_blob_object_id_is_complete_and_pinned(self):
+        # Verified against the immutable tokio-rs/tokio Git tree
+        # b0b3a24a033d8cfe2742a81de49c2fb06d89fba2. A 39-digit
+        # Git SHA is not repaired by guessing the final nibble.
+        tokio = next(
+            item for item in self.manifest["cases"]
+            if item["repo"] == "tokio-rs/tokio"
+        )
+        file = next(
+            item for item in tokio["files"]
+            if item["path"] == "tokio-util/tests/length_delimited.rs"
+        )
+        self.assertEqual(
+            file["blob_sha"], "41f79024cd9c9f445fd2d8b0c023c87e4d54231d"
+        )
+        self.assertEqual(len(file["blob_sha"]), 40)
+
     def test_real_source_only_six_project_extension(self):
         observed = audit(self.manifest)
         self.assertEqual(observed["combined_project_proxies"], 10)
