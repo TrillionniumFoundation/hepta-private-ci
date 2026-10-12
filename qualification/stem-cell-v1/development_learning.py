@@ -66,12 +66,13 @@ def validate_rows(rows, training_labels, *, classes):
 
 
 def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, seed=19,
-                        parameter_budget=16384):
+                        parameter_budget=16384, head_batch_size=1):
     """Actual shared forwards and per-Cell SGD; no heldout gold enters this API."""
     cells = validate_rows(rows, training_labels, classes=classes)
     if (not isinstance(engine, SharedStemEngine) or type(steps) is not int or not 1 <= steps <= 1000
             or type(seed) is not int or not 0 <= seed < 2**31
-            or type(parameter_budget) is not int or not 1 <= parameter_budget <= 262144):
+            or type(parameter_budget) is not int or not 1 <= parameter_budget <= 262144
+            or type(head_batch_size) is not int or not 1 <= head_batch_size <= 32):
         raise ValueError("invalid trial envelope")
     # Preflight against the selected backend before any work, including later batches.
     for row in rows:
@@ -92,22 +93,55 @@ def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, see
     widths = {len(f.values) for f in features}
     if len(widths) != 1 or (next(iter(widths)) + 1) * classes > parameter_budget:
         raise ValueError("feature width or physical Head budget mismatch")
-    # Ordinary, non-inference tensors permit autograd for Heads, never the Stem.
-    x = torch.tensor([f.values for f in features], dtype=torch.float32)
+    # Materialize repeated in-scope input features only once in the grouped path.
+    # Raw feature objects remain held above and are NOT counted as tensor bytes.
+    unique, feature_rows, remap = {}, [], []
+    for row, feature in zip(rows, features):
+        key = row.request.cache_key()
+        if head_batch_size == 1:
+            remap.append(len(feature_rows))
+            feature_rows.append(feature.values)
+        else:
+            if key not in unique:
+                unique[key] = len(feature_rows)
+                feature_rows.append(feature.values)
+            elif tuple(feature_rows[unique[key]]) != feature.values:
+                raise ValueError("different features for the same immutable input")
+            remap.append(unique[key])
+    x = torch.tensor(feature_rows, dtype=torch.float32)
     encoding = encode_clock.finish()
     predictions, receipts = [], {}
+    initials, training_indices, training_gold, heldout_indices = [], [], [], []
     for index, cell in enumerate(cells):
         with torch.random.fork_rng(devices=[]):
             torch.manual_seed(seed + index)
-            initial = nn.Linear(x.shape[1], classes)
+            initials.append(nn.Linear(x.shape[1], classes))
         train = [i for i, r in enumerate(rows) if r.request.cell_id == cell and r.split == 'train']
-        heldout = [i for i, r in enumerate(rows) if r.request.cell_id == cell and r.split == 'heldout']
-        labels = torch.tensor([training_labels[rows[i].request.request_id] for i in train], dtype=torch.long)
+        heldout_indices.append([i for i, r in enumerate(rows)
+                                if r.request.cell_id == cell and r.split == 'heldout'])
+        training_indices.append(torch.tensor([remap[i] for i in train], dtype=torch.long))
+        training_gold.append(torch.tensor([training_labels[rows[i].request.request_id] for i in train],
+                                         dtype=torch.long))
+    grouped_training = None
+    if head_batch_size > 1:
+        from development_head_training import fit_linear_cells
+        candidates, grouped_training = fit_linear_cells(
+            tuple(initials), x, tuple(training_indices), tuple(training_gold),
+            seeds=tuple(seed+i for i in range(len(cells))), steps=steps, group_size=head_batch_size)
+    for index, cell in enumerate(cells):
+        initial = initials[index]
         original = parameter_digest(initial)
-        candidate, receipt = fit_candidate(initial, x[train], labels, steps=steps, seed=seed+index)
+        if grouped_training is None:
+            candidate, receipt = fit_candidate(initial, x[training_indices[index]], training_gold[index],
+                                                steps=steps, seed=seed+index)
+        else:
+            candidate = candidates[index]
+            # Group-level time must not be duplicated as if it were independent per-Cell time.
+            receipt = grouped_training['cells'][index]
+        heldout = heldout_indices[index]
         infer_clock = PhaseClock()
         with torch.no_grad():
-            old, new = initial.eval()(x[heldout]), candidate(x[heldout])
+            old, new = initial.eval()(x[[remap[i] for i in heldout]]), candidate(x[[remap[i] for i in heldout]])
         if not torch.isfinite(old).all() or not torch.isfinite(new).all():
             raise ValueError("nonfinite prediction")
         if original != parameter_digest(initial):
@@ -123,6 +157,9 @@ def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, see
     return {"predictions": predictions, "cells": receipts, "encoding": encoding, "total": clock.finish(),
             "encoder_calls": sum(o.backend_calls for o in observations),
             "encoder_batch_widths": [w for o in observations for w in o.backend_batch_widths],
+            "head_batch_size": head_batch_size, "grouped_training": grouped_training,
+            "logical_feature_rows": len(rows), "materialized_feature_rows": len(x),
+            "materialized_feature_tensor_bytes": x.numel() * x.element_size(),
             "simulated_encoder": any(o.simulated for o in observations),
             "scored_heldout_labels": False, "independent_provenance_verified": False,
             "production_authorized": False}
@@ -164,7 +201,9 @@ def run_local(args):
     validate_rows(rows, labels, classes=args.classes)
     if (type(args.steps) is not int or not 1 <= args.steps <= 1000
             or type(args.parameter_budget) is not int or not 1 <= args.parameter_budget <= 262144
-            or type(args.max_tokens) is not int or not 1 <= args.max_tokens <= 8192):
+            or type(args.max_tokens) is not int or not 1 <= args.max_tokens <= 8192
+            or type(getattr(args, 'head_batch_size', 1)) is not int
+            or not 1 <= getattr(args, 'head_batch_size', 1) <= 32):
         raise ValueError("invalid pre-load resource envelope")
     r = rows[0].request
     if r.encoder_digest != args.snapshot_sha256:
@@ -180,7 +219,8 @@ def run_local(args):
                                   max_tokens=args.max_tokens, device='cpu')
     load = load_clock.finish()
     report = run_shared_learning(SharedStemEngine(backend), rows, labels, classes=args.classes,
-                                 steps=args.steps, parameter_budget=args.parameter_budget)
+                                 steps=args.steps, parameter_budget=args.parameter_budget,
+                                 head_batch_size=getattr(args, 'head_batch_size', 1))
     # Persistent source changes must be detected before publishing predictions.
     read_pinned_json(args.rows, args.rows_sha256)
     read_pinned_json(args.labels, args.labels_sha256)
@@ -207,4 +247,5 @@ if __name__ == '__main__':
     parser.add_argument('--steps', type=int, default=80)
     parser.add_argument('--parameter-budget', type=int, default=16384)
     parser.add_argument('--max-tokens', type=int, default=512)
+    parser.add_argument('--head-batch-size', type=int, default=1)
     run_local(parser.parse_args())
