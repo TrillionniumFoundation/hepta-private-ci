@@ -887,6 +887,16 @@ fn parse_digest32(value: &str) -> Result<Digest32, Error> {
 }
 
 pub fn canonical_neuron_feature_payload_digest(request: &NeuronFeatureRequest) -> String {
+    canonical_neuron_feature_payload_digest_with_slice(request, &request.feature_vector_q24)
+}
+
+/// Recompute the exact v1 signed payload from an immutable borrowed feature
+/// buffer. The batched worker keeps only an Arc-backed feature vector while
+/// waiting for final-use, so it must not clone an owned request just to hash.
+pub(crate) fn canonical_neuron_feature_payload_digest_with_slice(
+    request: &NeuronFeatureRequest,
+    features: &[i64],
+) -> String {
     use sha2::Digest as _;
     use sha2::Sha256;
 
@@ -899,8 +909,8 @@ pub fn canonical_neuron_feature_payload_digest(request: &NeuronFeatureRequest) -
     hasher.update(request.head_digest.as_bytes());
     hasher.update(request.weights_digest.as_bytes());
     hasher.update(request.input_digest.as_bytes());
-    hasher.update((request.feature_vector_q24.len() as u64).to_be_bytes());
-    for value in &request.feature_vector_q24 {
+    hasher.update((features.len() as u64).to_be_bytes());
+    for value in features {
         hasher.update(value.to_be_bytes());
     }
     hasher.update((request.expected_output_width as u64).to_be_bytes());
