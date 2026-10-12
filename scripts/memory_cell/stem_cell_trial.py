@@ -1029,10 +1029,12 @@ def run(staged, ranker_dir, output):
             raise ValueError("Shadow source Reader changed fixed weights or prompt")
         shadow_reader_session = ExactReaderCache(shadow_reader_generator)
 
-        def answer_pairwise_shadow(q, evidence, record_key):
-            return shadow_reader_session.answer(
-                q, evidence, record_key, revoked=set()
-            )
+        def answer_pairwise_shadow(
+            q, evidence, record_key, *, _session=shadow_reader_session
+        ):
+            # Capture the isolated session at definition time. Cleanup below
+            # cannot unbind a closure's runtime Reader dependency.
+            return _session.answer(q, evidence, record_key, revoked=set())
 
         pairwise_shadow_reader_raw = run_final_shadow_reader(
             qs, pairwise_shadow_choices, attempts,
