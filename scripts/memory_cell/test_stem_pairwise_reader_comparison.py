@@ -89,7 +89,8 @@ def fixture():
 def get_evidence(q, selected):
     return (dict(
         id="window-" + str(selected), label="E1", root="source-root",
-        scope=q.scope, observed_at="2023-04-10", excerpt="Real source",
+        scope=q.scope, observed_at="2023-04-10",
+        excerpt=("Updated evidence: GOOD" if selected else "Original evidence: BASE"),
     ),)
 
 

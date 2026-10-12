@@ -43,7 +43,7 @@ def effective_heldout_subjects(plan, paired_bridge):
     families = plan["question_families"]
     routes = plan["routes"]
     if (
-        paired_bridge["schema"] != "hepta.stem-train-heldout-diagnostic-gap.v4"
+        paired_bridge["schema"] != "hepta.stem-train-heldout-diagnostic-gap.v5"
         or paired_bridge["production_accepted"] is not False
         or paired_bridge["posthoc_source_annotations_only"] is not True
         or paired_bridge["native_document_support_vs_abstention_separate"] is not True
