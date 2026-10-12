@@ -313,7 +313,8 @@ def codex_rust_crate(
     for binary, crate_root in binary_crate_root_overrides.items():
         if binary not in binaries:
             fail("Bazel binary-root override does not name a registered binary: " + binary)
-        if not crate_root.startswith("src/") or not crate_root.endswith(".rs") or ".." in crate_root:
+        is_local_source = crate_root.startswith("src/") and crate_root.endswith(".rs")
+        if not is_local_source or ".." in crate_root:
             fail("Bazel binary-root override escapes crate source: " + crate_root)
         binaries[binary] = crate_root
 
