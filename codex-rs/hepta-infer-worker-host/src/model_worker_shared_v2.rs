@@ -363,6 +363,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
             self.poisoned = true;
             return Err(error);
         }
+        let resident_floor = loaded.handle.observed_memory_bytes;
         let mut outputs = Vec::with_capacity(requests.len());
         for (request, batch_result) in requests.iter().zip(observed) {
             if batch_result.request_id != request.authorization.request_id
@@ -442,7 +443,8 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 status,
                 drive_q24: features.drive_q24,
                 prediction_q24: features.prediction_q24,
-                observed_memory_bytes: features.observed_memory_bytes,
+                // Reusing an Arc does not change the loaded-model resident floor.
+                observed_memory_bytes: features.observed_memory_bytes.max(resident_floor),
                 transient_allocation_bytes: features.transient_allocation_bytes,
                 queue_age_micros: features.queue_age_micros,
                 latency_micros: features.latency_micros,
