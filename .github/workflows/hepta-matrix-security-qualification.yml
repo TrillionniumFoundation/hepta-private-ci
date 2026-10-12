@@ -98,7 +98,7 @@ jobs:
   minimal-anymap-backport-source-probe:
     name: Minimal signed-release anymap3 backport (read-only source check)
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -124,12 +124,84 @@ jobs:
           python3 qualification/matrix-security/minimal_backport_probe.py \
             --release upstream-release --migration upstream-anymap-commit \
             --output "$RUNNER_TEMP/hepta-matrix-minimal-backport.json"
+      # This is a disposable upstream-source experiment, NOT a patch of Hepta's
+      # real Cargo graph and not a way to bypass the mandatory cargo-deny gate.
+      - name: Apply exact upstream AnyMap3 migration to isolated release clone
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/matrix-security/disposable_backport_probe.py \
+            --release upstream-release --migration upstream-anymap-commit \
+            --destination "$RUNNER_TEMP/hepta-matrix-anymap3-stage" \
+            --output "$RUNNER_TEMP/hepta-matrix-anymap3-stage.json"
+      - name: Install candidate's pinned minimum Rust compiler
+        run: rustup toolchain install 1.96.0 --profile minimal
+      - name: Resolve genuinely patched upstream Cargo graph (candidate only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          timeout 480 cargo +1.96.0 metadata \
+            --manifest-path "$RUNNER_TEMP/hepta-matrix-anymap3-stage/Cargo.toml" \
+            --format-version=1 > "$RUNNER_TEMP/hepta-matrix-anymap3-metadata.json" \
+            2> "$RUNNER_TEMP/hepta-matrix-anymap3-stderr.log"
+          status=$?
+          set -e
+          CARGO_RESOLUTION_STATUS="$status" python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"])
+          code = int(os.environ["CARGO_RESOLUTION_STATUS"])
+          metadata = {}
+          if code == 0:
+              metadata = json.loads((root / "hepta-matrix-anymap3-metadata.json").read_text())
+          packages = metadata.get("packages", [])
+          present = lambda name: sorted(p["version"] for p in packages if p["name"] == name)
+          crypto = present("matrix-sdk-crypto")
+          no_legacy = code == 0 and not present("anymap2")
+          crypto_fixed = bool(crypto) and all(
+              tuple(int(n) for n in v.split(".")[:2]) >= (0, 19) for v in crypto
+          )
+          report = {
+              "schema": "hepta.matrix-disposable-anymap3-resolution.v1",
+              "cargo_resolution_status": code,
+              "cargo_resolution_completed": code == 0,
+              "matrix_sdk_versions": present("matrix-sdk"),
+              "matrix_crypto_versions": crypto,
+              "anymap2_versions": present("anymap2"),
+              "anymap3_versions": present("anymap3"),
+              "no_anymap2": no_legacy,
+              "patched_crypto_in_upstream": crypto_fixed,
+              "hepta_lock_updated": False,
+              "hepta_sdk_integration_verified": False,
+              "cargo_deny_verified": False,
+              "wal_recovery_verified": False,
+              "e2ee_verified": False,
+              "production_authorized": False,
+          }
+          (root / "hepta-matrix-anymap3-resolution.json").write_text(
+              json.dumps(report, sort_keys=True, indent=2) + "\n"
+          )
+          print(json.dumps(report, sort_keys=True, indent=2))
+          if code == 0 and not (no_legacy and crypto_fixed):
+              raise SystemExit("candidate upstream graph still has unresolved security prerequisites")
+          PY
+          if [ "$status" != 0 ]; then
+            echo "Pinned upstream patched Cargo graph could not be resolved (NOT waived)."
+            tail -n 80 "$RUNNER_TEMP/hepta-matrix-anymap3-stderr.log"
+            exit "$status"
+          fi
       - name: Upload exact-commit source compatibility evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: hepta-matrix-minimal-anymap3-${{ github.run_id }}
-          path: ${{ runner.temp }}/hepta-matrix-minimal-backport.json
+          path: |
+            ${{ runner.temp }}/hepta-matrix-minimal-backport.json
+            ${{ runner.temp }}/hepta-matrix-anymap3-stage.json
+            ${{ runner.temp }}/hepta-matrix-anymap3-resolution.json
+            ${{ runner.temp }}/hepta-matrix-anymap3-stderr.log
           if-no-files-found: warn
           retention-days: 14
       - name: Source tracked files unchanged
