@@ -47,3 +47,33 @@ it cannot be used to forge archived no-change outcomes.
 Run exact-SHA Cargo check/test/Rustfmt/Clippy for hepta-learning-ledger,
 hepta-agentd and the independent Neuron trial CI. No production
 route, permission, rollout or retained model state is modified.
+
+## Bounded one-to-one Observer-signed cohort
+
+A single valid per-Episode Observer signature does not by itself prevent
+the same committed Neuron tick from being credited to several Episodes.
+The additive read-only Ledger
+\`read_observer_linked_neuron_cohort_v1\` verifies one independent
+Observer signature for the complete frozen cohort (maximum 256 terminal
+Episodes per diagnostic). The canonical signature payload binds every
+native Decision/Outcome pair, Objective, selected candidate/policy/source,
+and one distinct external Agentd tick-observation digest and Generation.
+The canonical mapping is sorted by Episode identity, not caller order.
+
+The native Ledger owner requires no missing/duplicate/extraneous Episodes,
+no duplicate Tick digests, no Pending or Censored outcomes, and an Observer
+signature issued after **every** matched finalization. The signer must be
+independent of **every** Decision generator. It rereads the live Ledger
+source and withdrawal frontier after verifying the signature. The output
+is a data-free, recomputable \`NeuronTrialObservedCohortV1\` with DENY_ALL;
+its digest is not an authorization credential.
+
+A test uses an actual frozen native Ledger and independently signed
+Observer fixture to prove admission and reject early/wrong-role signatures
+and swapped tick digests. Additional negative protocol tests demonstrate
+that even a caller-rehashed two-Episode source cannot double-credit one
+Tick or omit an Episode. They do NOT claim those fabricated cases came
+from the real Owner. This read does not persist a historical tick journal;
+a production evaluation must still preserve independent tick evidence,
+ensure uniqueness across separate windows, and authenticate the actually
+selected CNS/Cell/model/Artifact physical runtime at every final use.
