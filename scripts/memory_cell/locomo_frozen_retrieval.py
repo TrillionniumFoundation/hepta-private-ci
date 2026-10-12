@@ -21,7 +21,11 @@ SOURCE_SHA = "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
 PROFILE = "hepta.memorycell.locomo-family-only-pilot.v1"
 SCHEMA = "hepta.memorycell.locomo-frozen-retrieval.v1"
 SPLITS = ("train", "selection", "evaluation")
-ARMS = ("lexical_k2", "lexical_k4", "lexical_k8", "recent_k2", "recent_k4", "recent_k8")
+ARMS = (
+    "lexical_k2", "lexical_k4", "lexical_k8",
+    "recent_k2", "recent_k4", "recent_k8",
+    "fusion_k2", "fusion_k4", "fusion_k8",
+)
 WORD = re.compile(r"[a-z0-9]+")
 
 
@@ -107,6 +111,9 @@ def _documents(population, documents):
                 raise ValueError("bad source asset metadata")
             doc["assets"] = list(doc["assets"])
             entries[doc["identity"]] = doc
+    # Question observation time is a hard causal visibility boundary.
+    from evidence_bundle import observed_time
+
     roots = {}
     for split in SPLITS:
         for row in population["splits"][split]:
@@ -114,6 +121,9 @@ def _documents(population, documents):
             docs = [entries[k] for k in ids]  # Fail on an absent original source.
             if any(d["scope"] != row["scope"] for d in docs):
                 raise ValueError("cross-scope source selected")
+            query_time = observed_time(row["observation_time"])
+            if any(observed_time(d["observed_at"]) > query_time for d in docs):
+                raise ValueError("future source observation at query time")
             census = [(d["identity"], d["root"], d["observed_at"],
                        sha256(d["content"].encode()).hexdigest()) for d in docs]
             if (digest(census) != row["source_census_sha256"] or
@@ -205,7 +215,21 @@ def _rank(query, docs):
     recent = [d["identity"] for d in sorted(
         docs, key=lambda d: (observed_time(d["observed_at"]), d["identity"]),
         reverse=True)]
-    return lexical, recent
+    return lexical, recent, _fusion(lexical, recent)
+
+
+def _fusion(lexical, recent):
+    """Fixed equal-weight reciprocal-rank fusion; no labels or trained head."""
+    if (len(lexical) != len(set(lexical)) or
+        len(recent) != len(set(recent)) or
+        set(lexical) != set(recent)):
+        raise ValueError("unmatched source population for rank fusion")
+    a = {identity: rank for rank, identity in enumerate(lexical, start=1)}
+    b = {identity: rank for rank, identity in enumerate(recent, start=1)}
+    return sorted(a, key=lambda identity: (
+        -(1.0 / (60 + a[identity]) + 1.0 / (60 + b[identity])),
+        identity,
+    ))
 
 
 def retrieve(public_dir, output_dir):
@@ -216,9 +240,10 @@ def retrieve(public_dir, output_dir):
     for split in SPLITS:
         for row in population["splits"][split]:
             docs = [entries[k] for k in row["source_ids"]]
-            lexical, recent = _rank(row, docs)
+            lexical, recent, fusion = _rank(row, docs)
             for arm in ARMS:
-                order = lexical if arm.startswith("lexical") else recent
+                order = (lexical if arm.startswith("lexical") else
+                         recent if arm.startswith("recent") else fusion)
                 k = int(arm.rsplit("k", 1)[1])
                 chosen = order[:k]
                 decisions.append(dict(
@@ -275,10 +300,11 @@ def _verified_decisions(public_dir, decisions_dir):
     for split in SPLITS:
         for row in public["splits"][split]:
             docs = [entries[s] for s in row["source_ids"]]
-            lexical, recent = _rank(row, docs)
+            lexical, recent, fusion = _rank(row, docs)
             for arm in ARMS:
-                expected_ids = (lexical if arm.startswith("lexical") else recent)[
-                    :int(arm.rsplit("k", 1)[1])]
+                order = (lexical if arm.startswith("lexical") else
+                         recent if arm.startswith("recent") else fusion)
+                expected_ids = order[:int(arm.rsplit("k", 1)[1])]
                 actual = by_key[(row["question_id"], arm)]
                 if (actual["selected"] != expected_ids or
                     actual["selected_source_bytes"] != sum(
@@ -294,7 +320,7 @@ def _score_one_split(public, decisions, split, targets):
     scored = {}
     for arm in ARMS:
         questions = public["splits"][split]
-        valid_count = covered = unknown = total_bytes = 0
+        valid_count = covered = unknown = out_of_pool = total_bytes = 0
         per_family = {}
         for q in questions:
             t = targets[q["question_id"]]
@@ -306,7 +332,15 @@ def _score_one_split(public, decisions, split, targets):
                 type(t.get("unanswerable")) is not bool or
                 not isinstance(t.get("unresolved_support"), list)):
                 raise ValueError("invalid original target annotation")
-            valid = bool(t["support"]) and not t["unanswerable"] and not t["unresolved_support"]
+            if (any(type(source) is not str or not source for source in t["support"] + t["unresolved_support"]) or
+                len(set(t["support"])) != len(t["support"]) or
+                len(set(t["unresolved_support"])) != len(t["unresolved_support"])):
+                raise ValueError("invalid native support-source identity")
+            missing_source = bool(set(t["support"]) - set(q["source_ids"]))
+            if missing_source:
+                out_of_pool += 1
+            valid = (bool(t["support"]) and not t["unanswerable"] and
+                     not t["unresolved_support"] and not missing_source)
             if valid:
                 valid_count += 1
                 family["eligible"] += 1
@@ -318,6 +352,7 @@ def _score_one_split(public, decisions, split, targets):
         scored[arm] = dict(planned=len(questions), eligible=valid_count,
                            full_annotated_support_covered=covered,
                            unknown_or_unanswerable=unknown,
+                           annotated_support_outside_original_pool=out_of_pool,
                            selected_source_bytes=total_bytes,
                            per_family=per_family,
                            missing_outcome_lower=covered/len(questions),

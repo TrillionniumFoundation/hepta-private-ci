@@ -126,7 +126,7 @@ class FrozenLoCoMoTests(unittest.TestCase):
         receipt=self.retrieval()
         self.assertEqual(receipt["planned_questions"], 80)
         self.assertEqual(receipt["planned_arms"], 6)
-        self.assertEqual(len((self.root/"retrieved/decisions.jsonl").read_bytes().splitlines()), 480)
+        self.assertEqual(len((self.root/"retrieved/decisions.jsonl").read_bytes().splitlines()), 720)
         self.assertFalse(receipt["labels_opened"])
         self.assertEqual(receipt["model_generations"], 0)
 
@@ -187,6 +187,53 @@ class FrozenLoCoMoTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             m.write_once(self.root/"once",b"x")
 
+
+    def test_fixed_rank_fusion_is_deterministic_and_gold_blind(self):
+        self.assertEqual(m._fusion(["a", "b", "c"], ["c", "a", "b"]), ["a", "c", "b"])
+        with self.assertRaises(ValueError):
+            m._fusion(["a", "b", "b"], ["c", "a", "b"])
+        self.retrieval()
+        payload = (self.root / "retrieved/decisions.jsonl").read_bytes()
+        rows = [m.strict_json(line) for line in payload.splitlines()]
+        self.assertEqual(len(rows), 720)
+        self.assertEqual(sum(row["arm"] == "fusion_k4" for row in rows), 80)
+        self.assertNotIn(b"UNPUBLISHED_GOLD_", payload)
+
+    def test_future_source_rejects_even_a_rehashed_matching_census(self):
+        population = json.loads(json.dumps(self.population))
+        changed = list(self.docs)
+        changed[0] = Document(**(changed[0].__dict__ | {
+            "observed_at": "2027-01-01T00:00:00Z"
+        }))
+        by_id = {doc.identity: doc for doc in changed}
+        for split in m.SPLITS:
+            for row in population["splits"][split]:
+                if row["scope"] == changed[0].scope:
+                    census = [(by_id[k].identity, by_id[k].root,
+                               by_id[k].observed_at,
+                               m.sha256(by_id[k].content.encode()).hexdigest())
+                              for k in row["source_ids"]]
+                    row["source_census_sha256"] = m.digest(census)
+        with self.assertRaisesRegex(ValueError, "future source"):
+            m._documents(population, changed)
+
+    def test_out_of_pool_support_is_unknown_not_a_retrieval_miss(self):
+        self.retrieval()
+        questions = self.population["splits"]["selection"]
+        targets = {q["question_id"]: dict(self.targets[q["question_id"]])
+                   for q in questions}
+        targets[questions[0]["question_id"]]["support"] = ["missing-original-id"]
+        path = self.root / "selection-outside-pool.json"
+        m.write_once(path, m.canonical(targets) + b"\n")
+        result = m.score_selection(
+            self.public, self.root / "retrieved", path,
+            self.root / "selection-outside-result.json",
+        )
+        for arm in m.ARMS:
+            scored = result["selection_scores"][arm]
+            self.assertEqual(scored["annotated_support_outside_original_pool"], 1)
+            self.assertEqual(scored["unknown_or_unanswerable"], 1)
+            self.assertEqual(scored["eligible"], 15)
 
 if __name__ == "__main__":
     unittest.main()

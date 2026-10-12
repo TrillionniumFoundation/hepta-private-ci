@@ -27,8 +27,8 @@ copied to the reader artifact. Sources are original published conversation
 turns and optionally provided captions, not authenticated image observations.
 
 A separate `retrieve` job downloads **only the public artifact** and saves a
-full immutable decision journal: 80 questions × 6 fixed source-only arms
-(lexical BM25 and recency, each top-2/top-4/top-8) = 480 decisions. All original
+full immutable decision journal: 80 questions × 9 fixed source-only arms
+(lexical BM25, recency and fixed reciprocal-rank fusion, each top-2/top-4/top-8) = 720 decisions. All original
 source excerpts remain unchanged. BM25 and recency are **simple non-neural
 controls**, not a dense hybrid RAG competitor or a reader success claim.
 Selected source byte totals are measured; they are not Qwen tokenizer counts.
@@ -55,3 +55,16 @@ The parent two-corpus admission gate and production acceptance remain closed.
 source changes. Inspect its four jobs `publish -> retrieve -> select -> evaluate`,
 original receipts, tested commit and SHA256SUMS; do not use model/parameter claims
 from a source-only run.
+
+## Frozen fusion and causal validation
+
+Nine arms now include fixed equal-weight BM25/recency RRF (rank constant 60,
+source-ID tie-break). The three fusion arms share precisely the existing source
+pool, no trainable parameters and no gold input. All 720 selections are durable
+before selection labels open, and the held-out evaluation labels remain separate.
+The published query observation time is enforced as a source visibility cutoff;
+a document from the future fails even if its changed native census is rehashed.
+Original support IDs missing from that exact query's source pool are recorded
+as unresolved/out-of-pool, never a retrieval miss or an eligible negative.
+This is only label-level source-ID coverage, NOT semantic sufficiency, trained
+memory benefit, dense-hybrid RAG, actual reader execution or production acceptance.
