@@ -45,7 +45,7 @@ class StagingTests(unittest.TestCase):
 
 
     def test_isolated_upstream_sqlite_arm_removes_only_the_obsolete_patch(self):
-        patch = '[patch.crates-io]\\n' + SQLITE_PATCH_SPEC + '\\n'
+        patch = '[patch.crates-io]\n' + SQLITE_PATCH_SPEC + '\n'
         source = self.source/'codex-rs/Cargo.toml'
         stage = self.stage/'codex-rs/Cargo.toml'
         source.write_text(source.read_text() + patch)
@@ -63,7 +63,7 @@ class StagingTests(unittest.TestCase):
         self.assertFalse(result['production_authorized'])
 
     def test_retained_sqlite_arm_keeps_exact_source_patch(self):
-        patch = '[patch.crates-io]\\n' + SQLITE_PATCH_SPEC + '\\n'
+        patch = '[patch.crates-io]\n' + SQLITE_PATCH_SPEC + '\n'
         stage = self.stage/'codex-rs/Cargo.toml'
         stage.write_text(stage.read_text()+patch)
         result = stage_manifest(self.source,self.stage,self.sha)
@@ -76,19 +76,19 @@ class StagingTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'not the exact pinned source'):
             stage_manifest(self.source,self.stage,self.sha,sqlite_arm='use_upstream_sqlite')
         stage = self.stage/'codex-rs/Cargo.toml'
-        stage.write_text(stage.read_text()+'[patch.crates-io]\\n'+
-                         SQLITE_PATCH_SPEC.replace('0.18.0','0.18.1')+'\\n')
+        stage.write_text(stage.read_text()+'[patch.crates-io]\n'+
+                         SQLITE_PATCH_SPEC.replace('0.18.0','0.18.1')+'\n')
         with self.assertRaisesRegex(ValueError,'not the exact pinned source'):
             stage_manifest(self.source,self.stage,self.sha,sqlite_arm='use_upstream_sqlite')
 
     def test_sqlite_arm_never_weakens_e2ee_or_touches_source_lock(self):
         stage=self.stage/'codex-rs/Cargo.toml'
-        stage.write_text(stage.read_text()+'[patch.crates-io]\\n'+SQLITE_PATCH_SPEC+'\\n')
+        stage.write_text(stage.read_text()+'[patch.crates-io]\n'+SQLITE_PATCH_SPEC+'\n')
         lock=self.source/'codex-rs/Cargo.lock'
-        lock.write_text('immutable original lock\\n')
+        lock.write_text('immutable original lock\n')
         result=stage_manifest(self.source,self.stage,self.sha,
                               sqlite_arm='use_upstream_sqlite')
-        self.assertEqual(lock.read_text(),'immutable original lock\\n')
+        self.assertEqual(lock.read_text(),'immutable original lock\n')
         self.assertTrue(result['preserved_e2ee_and_sqlite'])
         self.assertEqual(result['affected_workspace_files'],['codex-rs/Cargo.toml'])
         self.assertFalse(result['cargo_graph_resolution_passed'])
