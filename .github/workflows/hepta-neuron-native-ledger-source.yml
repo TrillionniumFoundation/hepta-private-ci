@@ -4,9 +4,11 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-learning-ledger/src/neuron_trial_source.rs"
+      - "codex-rs/hepta-learning-ledger/src/neuron_trial_observed_tick.rs"
       - "codex-rs/hepta-learning-ledger/src/neuron_trial_source_tests.rs"
       - "codex-rs/hepta-learning-ledger/src/lib.rs"
       - "qualification/neuron-model-trials/NATIVE_LEDGER_SOURCE.md"
+      - "qualification/neuron-model-trials/NATIVE_OBSERVER_TICK_JOIN.md"
       - ".github/workflows/hepta-neuron-native-ledger-source.yml"
   workflow_dispatch:
 

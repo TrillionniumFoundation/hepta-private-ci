@@ -5,12 +5,14 @@ on:
     paths:
       - "codex-rs/hepta-agentd/src/shared_terminal_cell.rs"
       - "codex-rs/hepta-agentd/src/neuron_runtime.rs"
+      - "codex-rs/hepta-learning-ledger/src/neuron_trial_observed_tick.rs"
       - "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs"
       - "codex-rs/hepta-agentd/src/neuron_selected_artifact.rs"
       - "qualification/neuron-model-trials/NATIVE_SELECTED_MODEL_DESCRIPTOR.md"
       - "codex-rs/hepta-agentd/src/lib.rs"
       - "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs"
       - "qualification/neuron-model-trials/NATIVE_OBSERVATION_REPLAY_SOURCE.md"
+      - "qualification/neuron-model-trials/NATIVE_OBSERVER_TICK_JOIN.md"
       - ".github/workflows/hepta-neuron-native-replay-source.yml"
   workflow_dispatch:
 

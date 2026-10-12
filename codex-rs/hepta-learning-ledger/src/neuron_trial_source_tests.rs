@@ -452,3 +452,141 @@ fn native_owner_reopens_durable_ledger_and_preserves_freeze_identity() {
     assert_eq!(source.terminal_joins.len(), 1);
     assert!(source.validate_integrity());
 }
+
+#[test]
+fn native_observer_signs_one_real_frozen_decision_and_terminal_neuron_tick_link() {
+    use codex_hepta_types::Generation;
+    use crate::neuron_trial_observed_tick::neuron_trial_observer_tick_link_payload_v1;
+
+    let fixture = Fixture::new();
+    let mut writer = fixture.writer();
+    let head = append_decision(&mut writer);
+    append_terminal(&mut writer, head);
+    let (snapshot, plan, frozen_signature, dataset) = freeze(&writer);
+    let source = writer
+        .read_neuron_trial_source_v1(&snapshot, &plan, &frozen_signature, &dataset, 50)
+        .unwrap();
+    let pair = &source.terminal_joins[0];
+    let tick_digest = digest("actual-committed-neuron-tick");
+    let tick_generation = Generation::new(1).unwrap();
+    let payload = neuron_trial_observer_tick_link_payload_v1(
+        &source,
+        pair,
+        tick_digest,
+        plan.objective_digest,
+        tick_generation,
+    )
+    .unwrap();
+    let mut observer = signed(
+        &writer,
+        "observer",
+        LearningEvidenceRoleV1::Observer,
+        &payload,
+    );
+    // The independent Observer cannot certify a future terminal Outcome
+    // before its own authenticated 46-second finalization.
+    assert!(writer
+        .read_observer_linked_neuron_tick_v1(
+            &snapshot,
+            &plan,
+            &frozen_signature,
+            &dataset,
+            &pair.episode_id,
+            tick_digest,
+            plan.objective_digest,
+            tick_generation,
+            &observer,
+            50,
+        )
+        .is_err());
+    observer.issued_at = 50;
+    observer.signature = SigningKey::from_bytes(&[signer_seed("observer"); 32])
+        .sign(&observer.signing_bytes())
+        .to_bytes();
+    let receipt = writer
+        .read_observer_linked_neuron_tick_v1(
+            &snapshot,
+            &plan,
+            &frozen_signature,
+            &dataset,
+            &pair.episode_id,
+            tick_digest,
+            plan.objective_digest,
+            tick_generation,
+            &observer,
+            50,
+        )
+        .unwrap();
+    assert!(receipt.validate_integrity());
+    assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
+    assert_eq!(receipt.tick_observation_digest, tick_digest);
+    assert_eq!(receipt.decision_event_digest, pair.decision_event_digest);
+    assert_eq!(receipt.observer_controller_id, id("observer-controller"));
+    assert_eq!(receipt.observer_signed_at, 50);
+
+    let mut changed = receipt.clone();
+    changed.tick_observation_digest = digest("another-tick");
+    assert!(!changed.validate_integrity());
+    assert!(writer
+        .read_observer_linked_neuron_tick_v1(
+            &snapshot,
+            &plan,
+            &frozen_signature,
+            &dataset,
+            &pair.episode_id,
+            digest("another-tick"),
+            plan.objective_digest,
+            tick_generation,
+            &observer,
+            50,
+        )
+        .is_err());
+    assert!(writer
+        .read_observer_linked_neuron_tick_v1(
+            &snapshot,
+            &plan,
+            &frozen_signature,
+            &dataset,
+            &id("unknown-episode"),
+            tick_digest,
+            plan.objective_digest,
+            tick_generation,
+            &observer,
+            50,
+        )
+        .is_err());
+    assert!(writer
+        .read_observer_linked_neuron_tick_v1(
+            &snapshot,
+            &plan,
+            &frozen_signature,
+            &dataset,
+            &pair.episode_id,
+            tick_digest,
+            digest("wrong-objective"),
+            tick_generation,
+            &observer,
+            50,
+        )
+        .is_err());
+    let wrong_role = signed(
+        &writer,
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        &payload,
+    );
+    assert!(writer
+        .read_observer_linked_neuron_tick_v1(
+            &snapshot,
+            &plan,
+            &frozen_signature,
+            &dataset,
+            &pair.episode_id,
+            tick_digest,
+            plan.objective_digest,
+            tick_generation,
+            &wrong_role,
+            50,
+        )
+        .is_err());
+}

@@ -77,3 +77,11 @@ fn agentd_observed_tick_api_requires_real_owner_and_strict_final_witness() {
         AgentdNeuronOwner::revalidate_current_tick_observation_v1;
     let _ = (execute, current);
 }
+
+#[test]
+fn agentd_observer_tick_join_requires_live_neuron_and_ledger_owners() {
+    // Type-check the concrete product ingress: no caller-supplied bare
+    // Ledger/source digest can bypass the Agentd Neuron witness check.
+    let _read =
+        AgentdNeuronOwner::<StubWitness, StubInferenceControl>::read_observer_linked_tick_v1;
+}

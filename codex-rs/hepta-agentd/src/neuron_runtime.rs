@@ -9,6 +9,14 @@
 use codex_hepta_learning_artifacts::ArtifactSelectionVerifierV1;
 use codex_hepta_learning_artifacts::SignedArtifactSelectionV1;
 use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
+use codex_hepta_learning_ledger::DatasetFreezePlanV2;
+use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_learning_ledger::LedgerSnapshot;
+use codex_hepta_learning_ledger::LedgerWriter;
+use codex_hepta_learning_ledger::NeuronTrialObservedTickLinkV1;
+use codex_hepta_learning_ledger::NeuronTrialSourceError;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
+use codex_hepta_types::StableId;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::InferenceControlModelPort;
 use codex_hepta_neuron::NeuronInferenceControlPort;
@@ -24,6 +32,29 @@ use crate::neuron_selected_artifact::NeuronCandidateModelArtifactV1;
 use crate::neuron_selected_artifact::verify_pinned_neuron_model_descriptor_v1;
 use crate::neuron_tick_observation::AgentdNeuronTickObservationV1;
 use crate::neuron_tick_observation::from_actual_committed_tick;
+
+/// Caller holds preexisting owner handles; the only way through is an
+/// actual Agentd Neuron witness read followed by a live native Ledger read.
+/// No source text, model Q24 vectors, label or route claim is exported.
+pub struct NeuronTrialTickObserverContextV1<'a> {
+    pub ledger: &'a LedgerWriter,
+    pub frozen_ledger: &'a LedgerSnapshot,
+    pub freeze_plan: &'a DatasetFreezePlanV2,
+    pub signed_freeze: &'a SignedLearningEvidenceV1,
+    pub dataset: &'a DatasetSnapshotReceiptV3,
+    pub episode_id: &'a StableId,
+    pub tick: &'a AgentdNeuronTickObservationV1,
+    pub signed_observer_link: &'a SignedLearningEvidenceV1,
+    pub now: u64,
+}
+
+#[derive(Debug, thiserror::Error)]
+pub enum NeuronTrialTickObserverErrorV1 {
+    #[error("Neuron owner witness: {0}")]
+    Neuron(#[from] NeuronRuntimeError),
+    #[error("current native Ledger/Observer: {0}")]
+    Ledger(#[from] NeuronTrialSourceError),
+}
 
 pub struct AgentdNeuronOwner<W, P>
 where
@@ -89,6 +120,30 @@ where
             return Err(NeuronRuntimeError::ModelBindingMismatch);
         }
         Ok(())
+    }
+
+    /// Admit a post-commit tick to one native Ledger Episode only after a
+    /// separately trusted Observer signed the exact causal correlation.
+    /// This is a read-only diagnostic and NOT CNS/Artifact route selection.
+    pub fn read_observer_linked_tick_v1(
+        &self,
+        query: &NeuronTrialTickObserverContextV1<'_>,
+    ) -> Result<NeuronTrialObservedTickLinkV1, NeuronTrialTickObserverErrorV1> {
+        self.revalidate_current_tick_observation_v1(query.tick)?;
+        let link = query.ledger.read_observer_linked_neuron_tick_v1(
+            query.frozen_ledger,
+            query.freeze_plan,
+            query.signed_freeze,
+            query.dataset,
+            query.episode_id,
+            query.tick.diagnostic_digest,
+            query.tick.objective_digest,
+            query.tick.generation,
+            query.signed_observer_link,
+            query.now,
+        )?;
+        self.revalidate_current_tick_observation_v1(query.tick)?;
+        Ok(link)
     }
 
     /// Return the exact locally loaded model configuration and a checkpoint
