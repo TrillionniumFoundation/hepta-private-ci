@@ -931,7 +931,11 @@ fn partial_owner_rpc_frame_times_out_without_signing_or_mutation() {
 
 #[test]
 fn owner_rpc_timeout_must_be_bounded_and_nonzero() {
-    for timeout in [Duration::ZERO, Duration::from_secs(31)] {
+    for timeout in [
+        Duration::ZERO,
+        Duration::from_nanos(1),
+        Duration::from_secs(31),
+    ] {
         assert!(matches!(
             CellSplitEffectServiceV1::new_with_io_timeout(
                 CellSplitExecutionStepV1::ArtifactCas,
