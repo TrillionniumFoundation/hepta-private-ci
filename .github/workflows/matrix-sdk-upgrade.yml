@@ -13,6 +13,32 @@ on:
 permissions:
   contents: read
 jobs:
+  bazel-source-format:
+    name: Matrix exact-head Bazel/Starlark format (read-only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact security migration SHA
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned DotSlash launcher
+        uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Require canonical Matrix CLI/Bazel source formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          # Print the exact buildifier diff on failure, without ever mutating
+          # tracked files or relaxing global CI's canonical formatting gate.
+          if ! dotslash ./tools/buildifier -mode=check -lint=off codex-rs/cli/BUILD.bazel defs.bzl; then
+            dotslash ./tools/buildifier -mode=diff -lint=off codex-rs/cli/BUILD.bazel defs.bzl || true
+            exit 1
+          fi
+          git diff --check
+          git diff --exit-code
+
   dependency-advisory-audit:
     name: Matrix exact-head cargo-deny (no advisory waivers)
     runs-on: ubuntu-24.04
