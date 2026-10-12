@@ -634,3 +634,36 @@ fn invalid_pre_driver_neuron_request_does_not_quarantine_healthy_backend() {
         ExecutionStatus::Succeeded
     );
 }
+
+#[test]
+fn malformed_post_driver_terminal_receipt_quarantines_worker_generation() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.typed-terminal-corrupt".to_owned(),
+        3,
+        grant(),
+        Driver {
+            // A failed terminal cannot attach successful output vectors.
+            fail_terminal: true,
+            ..Driver::default()
+        },
+    )
+    .unwrap();
+    worker.load_model(100, manifest()).unwrap();
+    let result = worker.run_neuron_features_receipt(100, "model.1", neuron_feature_request());
+    assert!(matches!(result, Err(Error::FeatureContract)));
+    assert_eq!(worker.driver.neuron_calls, 1);
+    assert!(worker.is_quarantined());
+
+    // Even though a terminal (Failed) status was observed, the invalid typed
+    // response means the Worker cannot be reused until independent recovery.
+    worker.driver.fail_terminal = false;
+    let mut next = neuron_feature_request();
+    next.authorization.request_id = "request.terminal2".into();
+    next.authorization.reservation_id = "reservation.terminal2".into();
+    assert!(matches!(
+        worker.run_neuron_features_receipt(100, "model.1", next),
+        Err(Error::WorkerQuarantined)
+    ));
+    assert_eq!(worker.driver.neuron_calls, 1);
+}
