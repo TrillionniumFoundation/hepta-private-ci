@@ -179,17 +179,24 @@ def trace_report(workload, events):
     # feature source can fabricate almost-free 4096-Cell inference. Warm caches
     # from before this workload are deliberately unsupported without a
     # separately authenticated owner receipt and a new protocol revision.
-    cold_sources = defaultdict(list)
+    # Retain the earliest completed cold source per exact scoped input.
+    # A list scan for every cache hit is quadratic for one heavily repeated
+    # input (up to 4,096 logical Cells). This map is linear in trace size,
+    # preserves the same-clock ordering check, and cannot widen cache reuse.
+    earliest_cold_completion = {}
     for request in requests_trace.values():
         if request["status"] == "ok" and request["path"] == "cold_encoder":
             key = (request["scope"], request["generation"], request["model_digest"],
                    requests[request["request_id"]]["input_key"])
-            cold_sources[key].append(request["end_us"])
+            prior = earliest_cold_completion.get(key)
+            if prior is None or request["end_us"] < prior:
+                earliest_cold_completion[key] = request["end_us"]
     for request in requests_trace.values():
         if request["status"] == "ok" and request["path"] == "cache_hit_head":
             key = (request["scope"], request["generation"], request["model_digest"],
                    requests[request["request_id"]]["input_key"])
-            if not any(end <= request["start_us"] for end in cold_sources.get(key, ())):
+            completed_at = earliest_cold_completion.get(key)
+            if completed_at is None or completed_at > request["start_us"]:
                 raise ValueError("cache hit lacks a completed same-scope cold source")
     ok = [r for r in requests_trace.values() if r["status"] == "ok"]
     lat = {}
