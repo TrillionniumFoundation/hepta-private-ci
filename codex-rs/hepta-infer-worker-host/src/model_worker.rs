@@ -492,7 +492,8 @@ pub struct StemFinalUseEntryEvidenceV1 {
 
 fn stem_final_use_entry_evidence_digest_v1(
     evidence: &StemFinalUseEntryEvidenceV1,
-    bound: &BoundStemFeatureExecutionV1,
+    stem_feature_ref_digest: Digest32,
+    scoped_input_digest: Digest32,
 ) -> Digest32 {
     let epoch_bytes = evidence.claimed_authority_epoch.to_be_bytes();
     let revision_bytes = evidence.claimed_revocation_revision.to_be_bytes();
@@ -504,8 +505,8 @@ fn stem_final_use_entry_evidence_digest_v1(
         evidence.verified_token_witness_digest.as_array(),
         evidence.final_use_binding_digest.as_array(),
         evidence.worker_receipt_digest.as_array(),
-        bound.stem_feature_ref_digest.as_array(),
-        bound.scoped_input_digest.as_array(),
+        stem_feature_ref_digest.as_array(),
+        scoped_input_digest.as_array(),
     ])
 }
 
@@ -531,7 +532,11 @@ pub fn validate_stem_final_use_entry_evidence_v1(
         || bound.final_use_binding_digest != Some(evidence.final_use_binding_digest)
         || bound.worker_receipt.receipt_digest != evidence.worker_receipt_digest
         || evidence.linked_evidence_digest
-            != stem_final_use_entry_evidence_digest_v1(evidence, bound)
+            != stem_final_use_entry_evidence_digest_v1(
+                evidence,
+                bound.stem_feature_ref_digest,
+                bound.scoped_input_digest,
+            )
     {
         return Err(Error::FinalUseDenied);
     }
@@ -1003,8 +1008,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             worker_receipt_digest: receipt.worker_receipt.receipt_digest,
             linked_evidence_digest: Digest32::ZERO,
         };
-        evidence.linked_evidence_digest =
-            stem_final_use_entry_evidence_digest_v1(&evidence, &receipt);
+        evidence.linked_evidence_digest = stem_final_use_entry_evidence_digest_v1(
+            &evidence,
+            receipt.stem_feature_ref_digest,
+            receipt.scoped_input_digest,
+        );
         receipt.final_use_entry_evidence = Some(evidence);
         validate_stem_final_use_entry_evidence_v1(&receipt)?;
         Ok(receipt)
