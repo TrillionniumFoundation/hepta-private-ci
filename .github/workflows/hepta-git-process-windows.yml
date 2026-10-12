@@ -1,0 +1,64 @@
+name: Hepta Git process tree Windows regression
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/git-utils/**"
+      - ".github/workflows/hepta-git-process-windows.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-git-process-windows-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-process-tree:
+    name: Verify real Git descendant cleanup on Windows
+    runs-on: windows-latest
+    timeout-minutes: 45
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - name: Checkout exact PR head without retained credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bind exact candidate and observe toolchain
+        shell: pwsh
+        run: |
+          if ((git rev-parse HEAD).Trim() -ne "${{ github.event.pull_request.head.sha || github.sha }}") { throw "incorrect candidate HEAD" }
+          git diff --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Set-Location codex-rs
+          rustc --version --verbose
+          cargo --version
+      - name: Run Windows Git process-tree timeout regression
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          cargo test --locked -p codex-git-utils --lib git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running -- --exact --nocapture
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cargo test --locked -p codex-git-utils --lib git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running -- --exact --nocapture
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Validate fixture source formatting
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          cargo fmt --package codex-git-utils -- --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify tracked checkout is unchanged
+        if: always()
+        shell: pwsh
+        run: |
+          git diff --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
