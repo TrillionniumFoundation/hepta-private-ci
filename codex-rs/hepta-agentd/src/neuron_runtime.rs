@@ -131,13 +131,6 @@ where
         &self.runtime
     }
 
-    pub fn runtime_mut(&mut self) -> &mut NeuronRuntime<W> {
-        &mut self.runtime
-    }
-
-    pub fn inference_control_mut(&mut self) -> &mut P {
-        &mut self.inference_control
-    }
 }
 
 #[cfg(test)]

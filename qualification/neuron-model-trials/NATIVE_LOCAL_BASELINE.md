@@ -24,6 +24,15 @@ replacement model, infer a route, or bypass the Journal/Witness checks.
 The Agentd type-check test pins the concrete owner API. The native runtime
 tests exercise real checkpoint and witness behavior.
 
+The Agentd product wrapper exposes no mutable reference to the underlying
+NeuronRuntime or inference-control port. The old public runtime_mut() and
+inference_control_mut() escape hatches were removed: external callers must
+enter the bounded InferenceControlModelPort path through tick(), and cannot
+inject a raw NeuronModelPort by obtaining the runtime from the wrapper.
+This closes a bypass in the wrapper API; the public lower-level NeuronRuntime
+and host-supplied trait still require independently authenticated startup
+composition, not local-model fixture authorization.
+
 No model is invoked and no state, authority or production route is mutated.
 Tests cover initial missing checkpoint, correct local tuple, mutation of
 immutable fields, witness regression/false advance and pending post-commit
