@@ -1,0 +1,78 @@
+name: Hepta System2 completed Reader verified-output boundary
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_reader_proof_boundary.py"
+      - "scripts/memory_cell/test_system2_reader_proof_boundary.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_VERIFIED_OUTPUT_BOUNDARY.md"
+      - ".github/workflows/hepta-system2-reader-proof-boundary.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-reader-proof-boundary-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  verify-sealed-reader-output:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned scoped lint without pretrained Reader inference
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-proof-boundary
+          python3 -m venv /tmp/proof-boundary-python
+          /tmp/proof-boundary-python/bin/pip install ruff==0.15.8 > /tmp/system2-proof-boundary/install.log 2>&1
+          /tmp/proof-boundary-python/bin/pip freeze > /tmp/system2-proof-boundary/environment.txt
+          /tmp/proof-boundary-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_reader_proof_boundary.py scripts/memory_cell/test_system2_reader_proof_boundary.py | tee /tmp/system2-proof-boundary/lint.log
+          /tmp/proof-boundary-python/bin/python -m compileall -q scripts/memory_cell/system2_reader_proof_boundary.py scripts/memory_cell/test_system2_reader_proof_boundary.py
+      - name: Verify externally pinned complete historical Reader responses
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11743040489/zip > scripts/memory_cell/hosted-original-100.zip
+          printf '%s  %s\n' 7a0cb798418e7b00ac5258c26617f05e547be9f4c428bb82fb13428ec98647e2 scripts/memory_cell/hosted-original-100.zip | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11751525542/zip > scripts/memory_cell/hosted-prompt-180.zip
+          printf '%s  %s\n' ff8caeea43ad029167d52107947b483a44e77e60aa92927211626ef105e935b7 scripts/memory_cell/hosted-prompt-180.zip | sha256sum -c -
+      - name: Run original-source evidence and model-response integrity tests
+        run: |
+          set -euo pipefail
+          /tmp/proof-boundary-python/bin/python -m unittest discover -s scripts/memory_cell -p test_system2_reader_proof_boundary.py -v > /tmp/system2-proof-boundary/tests.log 2>&1 || { tail -100 /tmp/system2-proof-boundary/tests.log; exit 1; }
+          tail -8 /tmp/system2-proof-boundary/tests.log
+          /tmp/proof-boundary-python/bin/python scripts/memory_cell/system2_reader_proof_boundary.py scripts/memory_cell/hosted-original-100.zip scripts/memory_cell/hosted-prompt-180.zip /tmp/system2-proof-boundary/read-only-audit.json > /tmp/system2-proof-boundary/execution.log 2>&1 || { tail -80 /tmp/system2-proof-boundary/execution.log; exit 1; }
+          tail -1 /tmp/system2-proof-boundary/execution.log
+          /tmp/proof-boundary-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/system2-proof-boundary/read-only-audit.json')
+          r=json.loads(p.read_text())
+          assert len(r['group_results'])==12
+          assert r['distinct_synthetic_questions']==20 and r['neural_new_calls']==0
+          assert r['neural_reader_accuracy_improved'] is False
+          assert r['production_accepted'] is False
+          PY
+      - name: Preserve exact input identity, audit and source manifest
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-proof-boundary/source
+          git rev-parse HEAD > /tmp/system2-proof-boundary/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/system2-proof-boundary/tested-tree.txt
+          cp scripts/memory_cell/{system2_reader_proof_boundary.py,test_system2_reader_proof_boundary.py} /tmp/system2-proof-boundary/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_VERIFIED_OUTPUT_BOUNDARY.md .github/workflows/hepta-system2-reader-proof-boundary.yml /tmp/system2-proof-boundary/source/
+          (cd /tmp/system2-proof-boundary && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-reader-proof-boundary
+          path: /tmp/system2-proof-boundary
+          if-no-files-found: error
