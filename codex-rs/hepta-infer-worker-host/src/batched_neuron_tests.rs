@@ -147,6 +147,16 @@ fn runner_with_batch_size(
     model: ModelManifest,
     batch_size: usize,
 ) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
+    runner_with_driver(signing_key, directory, model, batch_size, Driver)
+}
+
+fn runner_with_driver<D: ModelDriver + NeuronFeatureDriver>(
+    signing_key: &SigningKey,
+    directory: &std::path::Path,
+    model: ModelManifest,
+    batch_size: usize,
+    driver: D,
+) -> AuthenticatedNeuronMicrobatchWorkerV1<D> {
     let head = FinalUseRevocations {
         authority_epoch: 9,
         revision: 1,
@@ -170,7 +180,7 @@ fn runner_with_batch_size(
         maximum_memory_bytes: 4096,
         semantic_digest: digest(b"resource-grant").to_string(),
     };
-    let mut worker = InferenceWorker::new(100, "worker-one".into(), 3, grant, Driver).unwrap();
+    let mut worker = InferenceWorker::new(100, "worker-one".into(), 3, grant, driver).unwrap();
     worker.load_model(100, model).unwrap();
     AuthenticatedNeuronMicrobatchWorkerV1::new(
         worker,
@@ -352,6 +362,96 @@ fn same_lane_three_item_group_preserves_independent_final_use_nonces() {
         )
     }));
     // This verifies admission grouping, not physical backend batching.
+}
+
+
+struct SlowFirstDriver {
+    calls: Arc<AtomicU64>,
+}
+
+impl ModelDriver for SlowFirstDriver {
+    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+        let mut driver = Driver;
+        driver.load(manifest)
+    }
+
+    fn run(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &WorkerRequest,
+    ) -> Result<DriverRunObservation, Error> {
+        let mut driver = Driver;
+        driver.run(handle, request)
+    }
+
+    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
+        let mut driver = Driver;
+        driver.unload(handle)
+    }
+}
+
+impl NeuronFeatureDriver for SlowFirstDriver {
+    fn run_neuron_features(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error> {
+        if self.calls.fetch_add(1, Ordering::SeqCst) == 0 {
+            std::thread::sleep(Duration::from_millis(30));
+        }
+        let mut driver = Driver;
+        driver.run_neuron_features(handle, request)
+    }
+}
+
+#[test]
+fn slow_first_item_cannot_execute_expired_second_item_using_stale_poll_time() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[31; 32]);
+    let calls = Arc::new(AtomicU64::new(0));
+    let (model, fixture, key) = fixture_request();
+    let mut execution = runner_with_driver(
+        &signer,
+        dir.path(),
+        model,
+        2,
+        SlowFirstDriver {
+            calls: Arc::clone(&calls),
+        },
+    );
+    for (index, deadline_ms) in [(0_u8, 9_000_u64), (1_u8, 108_u64)] {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("deadline-request-{index}");
+        request.authorization.reservation_id = format!("deadline-reservation-{index}");
+        request.authorization.deadline_ms = deadline_ms;
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("deadline-grant-{index}");
+        grant.grant.nonce = [index + 1; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        execution
+            .enqueue(100, "model".to_string(), request, key.clone(), grant)
+            .unwrap();
+    }
+
+    let completed = execution.poll_and_execute(101).unwrap();
+    assert_eq!(completed.outcomes.len(), 2);
+    assert!(matches!(
+        &completed.outcomes[0].result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    ));
+    assert!(matches!(
+        &completed.outcomes[1].result,
+        Err(BatchWorkerErrorV1::DeadlineExpired)
+    ));
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    assert_eq!(execution.pending(), 0);
 }
 
 #[derive(Debug)]
