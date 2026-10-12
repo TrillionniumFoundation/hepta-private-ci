@@ -61,6 +61,36 @@ def exact_pr_run(run: dict, repo: str, number: int, head: str, base: str) -> boo
     return False
 
 
+def prospective_merge_identity(repo: str, number: int, head: str, base: str) -> dict:
+    """Check the actual GitHub-generated merge commit, not an old PR URL.
+
+    A successful source-head workflow cannot certify a prospective base
+    merge. Missing or stale refs MUST be represented as a blocking result.
+    GitHub may leave refs/pull/N/merge pointing at an older candidate.
+    """
+    try:
+        ref = gh_json(f"repos/{repo}/git/ref/pull/{number}/merge")
+        merge_sha = ref.get("object", {}).get("sha", "")
+        if ref.get("ref") != f"refs/pull/{number}/merge" or not SHA.fullmatch(
+            merge_sha
+        ):
+            raise ValueError("missing or malformed prospective merge ref")
+        commit = gh_json(f"repos/{repo}/git/commits/{merge_sha}")
+        parents = [item.get("sha") for item in commit.get("parents", [])]
+        valid = parents == [base, head]
+        return {
+            "status": "exact" if valid else "stale_merge_parents",
+            "merge_sha": merge_sha,
+            "parent_shas": parents,
+            "qualified": valid,
+        }
+    except (OSError, subprocess.CalledProcessError, ValueError, KeyError, TypeError):
+        return {
+            "status": "missing_or_unreadable_merge_ref",
+            "qualified": False,
+        }
+
+
 def evaluate(pr: dict, runs: Sequence[dict], repo: str, number: int, sha: str) -> dict:
     _, base = validate_pr(pr, repo, number, sha)
     statuses = {}
@@ -103,7 +133,13 @@ def current(repo: str, number: int, sha: str) -> tuple[dict, dict]:
     runs = response.get("workflow_runs")
     if not isinstance(runs, list):
         raise ValueError("GitHub Actions did not return the exact-head run list")
-    return pr, evaluate(pr, runs, repo, number, sha)
+    report = evaluate(pr, runs, repo, number, sha)
+    merge = prospective_merge_identity(
+        repo, number, sha, pr["base"]["sha"]
+    )
+    report["prospective_merge_ref"] = merge
+    report["qualified"] = report["qualified"] and merge["qualified"]
+    return pr, report
 
 
 def main() -> int:
