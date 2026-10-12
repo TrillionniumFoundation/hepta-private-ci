@@ -15,6 +15,7 @@ use crate::durable::SIDECAR_LOCK_FILE;
 use crate::durable::SidecarLock;
 use crate::durable::canonical_json;
 use crate::durable::lock_sidecar;
+use crate::durable::reject_recreated_sidecar_for_owner_history;
 use crate::durable::secure_read;
 use crate::durable::secure_root;
 use crate::durable::sha256;
@@ -187,7 +188,19 @@ impl<P: CellSplitSupervisorRuntimePortV1> CellSplitSupervisorFenceOwnerV1<P> {
             Err(error) if error.kind() == ErrorKind::NotFound => false,
             Err(error) => return Err(error.into()),
         };
+        reject_recreated_sidecar_for_owner_history(
+            &root,
+            initialized_before,
+            &[FROZEN],
+            &["cell-split-supervisor-"],
+        )?;
         let lock = lock_sidecar(&root)?;
+        reject_recreated_sidecar_for_owner_history(
+            &root,
+            initialized_before,
+            &[FROZEN],
+            &["cell-split-supervisor-"],
+        )?;
         let frozen = canonical_json(&(plan.clone(), binding.clone()))?;
         match fs::symlink_metadata(root.join(FROZEN)) {
             Ok(_) if secure_read(&root.join(FROZEN), MAX_FROZEN_BYTES)? != frozen => {
