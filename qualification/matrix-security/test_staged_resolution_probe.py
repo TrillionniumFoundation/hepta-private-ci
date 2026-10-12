@@ -15,7 +15,7 @@ class StagingTests(unittest.TestCase):
         self.stage=base/'stage'
         for p in (self.source,self.stage):
             (p/'codex-rs').mkdir(parents=True)
-            (p/'codex-rs/Cargo.toml').write_text('[workspace.dependencies]\\n'+SOURCE_SPEC+'\\n')
+            (p/'codex-rs/Cargo.toml').write_text('[workspace.dependencies]\n'+SOURCE_SPEC+'\n')
         subprocess.run(['git','init','-q',str(self.stage)],check=True)
         subprocess.run(['git','-C',str(self.stage),'add','.'],check=True)
         subprocess.run(['git','-C',str(self.stage),'-c','user.name=Test','-c','user.email=ci@example.invalid','commit','-qm','fixture'],check=True)
@@ -23,7 +23,7 @@ class StagingTests(unittest.TestCase):
 
     def test_candidate_modifies_only_isolated_stage(self):
         r=stage_manifest(self.source,self.stage,self.sha)
-        self.assertEqual((self.source/'codex-rs/Cargo.toml').read_text(),'[workspace.dependencies]\\n'+SOURCE_SPEC+'\\n')
+        self.assertEqual((self.source/'codex-rs/Cargo.toml').read_text(),'[workspace.dependencies]\n'+SOURCE_SPEC+'\n')
         self.assertIn(CANDIDATE_SPEC,(self.stage/'codex-rs/Cargo.toml').read_text())
         self.assertTrue(r['preserved_e2ee_and_sqlite'])
         self.assertFalse(r['production_authorized'])
