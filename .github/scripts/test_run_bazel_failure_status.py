@@ -69,8 +69,12 @@ class BazelFailureStatusTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.env["BAZEL_PROBE_FAIL"] = "1"
         result, calls = self.run_wrapper(
-            "--print-failed-action-summary", "--print-failed-test-logs",
-            "--", "test", "--", "//fake:target"
+            "--print-failed-action-summary",
+            "--print-failed-test-logs",
+            "--",
+            "test",
+            "--",
+            "//fake:target",
         )
         self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
         self.assertIn("undefined symbol: __stack_chk_fail", result.stdout)
