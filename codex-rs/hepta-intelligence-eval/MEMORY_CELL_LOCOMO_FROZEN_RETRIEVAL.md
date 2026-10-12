@@ -33,14 +33,14 @@ source excerpts remain unchanged. BM25 and recency are **simple non-neural
 controls**, not a dense hybrid RAG competitor or a reader success claim.
 Selected source byte totals are measured; they are not Qwen tokenizer counts.
 
-Only after all 480 selections have been saved and sha256-pinned does a distinct
+Only after all 720 selections have been saved and sha256-pinned does a distinct
 `select` job receive **selection-family targets only**, to pick an arm by
 highest exact published support-source coverage, then lower source bytes. The
 held-out evaluation targets are a **different GitHub Actions artifact** and are
 not mounted in the selection job. A later `evaluate` job opens only the original
 evaluation-family target subset after verifying that the selected policy and
 entire raw retrieval journal are frozen. The independent scorer recomputes
-all 480 selections without using gold, then reports annotated source-ID
+all 720 selections without using gold, then reports annotated source-ID
 coverage and unknown/unanswerable bounds at the original family-proxy level.
 No invalid/unresolved or absent support is silently counted as covered.
 

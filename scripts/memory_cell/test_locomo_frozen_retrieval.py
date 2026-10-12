@@ -122,11 +122,12 @@ class FrozenLoCoMoTests(unittest.TestCase):
         self.assertEqual(len(blob.splitlines()), 90)
         self.assertEqual(m.read_public(self.public)[2]["target_file_in_reader_inputs"], False)
 
-    def test_all_eighty_questions_and_six_frozen_conditions(self):
+    def test_all_eighty_questions_and_nine_frozen_conditions(self):
         receipt=self.retrieval()
         self.assertEqual(receipt["planned_questions"], 80)
-        self.assertEqual(receipt["planned_arms"], 6)
-        self.assertEqual(len((self.root/"retrieved/decisions.jsonl").read_bytes().splitlines()), 720)
+        self.assertEqual(len(m.ARMS), 9)
+        self.assertEqual(receipt["planned_arms"], len(m.ARMS))
+        self.assertEqual(len((self.root/"retrieved/decisions.jsonl").read_bytes().splitlines()), 80 * len(m.ARMS))
         self.assertFalse(receipt["labels_opened"])
         self.assertEqual(receipt["model_generations"], 0)
 
