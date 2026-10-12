@@ -4,6 +4,7 @@ import unittest
 from pathlib import Path
 
 from minimal_backport_probe import CHANGESET, probe
+from disposable_backport_probe import stage_candidate
 
 
 class MinimalBackportTests(unittest.TestCase):
@@ -124,6 +125,92 @@ class MinimalBackportTests(unittest.TestCase):
         self.assertFalse(report["upstream_raw_patch_applies_clean"])
         self.assertFalse(report["production_authorized"])
         self.assertIn('unrelated_new_dependency', manifest.read_text())
+
+    def test_stages_pinned_source_backport_without_touching_release(self):
+        stage = Path(self.tmp.name) / "disposable-stage"
+        original_manifest = (
+            self.release / "crates/matrix-sdk/Cargo.toml"
+        ).read_bytes()
+        original_lock = (self.release / "Cargo.lock").read_bytes()
+        result = stage_candidate(
+            self.release, self.patch, stage,
+            release_sha=self.release_sha, migration_sha=self.patch_sha,
+        )
+        self.assertEqual(result["schema"], "hepta.matrix-disposable-anymap3-source.v1")
+        self.assertEqual(result["changed_source_files"], [
+            "crates/matrix-sdk/Cargo.toml",
+            "crates/matrix-sdk/src/event_handler/mod.rs",
+        ])
+        self.assertTrue(result["anymap2_source_dependency_removed"])
+        self.assertFalse(result["cargo_resolution_verified"])
+        self.assertFalse(result["cargo_deny_verified"])
+        self.assertFalse(result["production_authorized"])
+        self.assertEqual(
+            subprocess.check_output(
+                ["git", "-C", str(stage), "rev-parse", "HEAD"], text=True
+            ).strip(),
+            self.release_sha,
+        )
+        modified = subprocess.check_output(
+            ["git", "-C", str(stage), "diff", "--name-only"], text=True
+        ).splitlines()
+        self.assertEqual(set(modified), set(result["changed_source_files"]))
+        self.assertIn(
+            "anymap3",
+            (stage / "crates/matrix-sdk/Cargo.toml").read_text(),
+        )
+        self.assertNotIn(
+            "anymap2",
+            (stage / "crates/matrix-sdk/Cargo.toml").read_text(),
+        )
+        self.assertEqual(
+            (self.release / "crates/matrix-sdk/Cargo.toml").read_bytes(),
+            original_manifest,
+        )
+        self.assertEqual((self.release / "Cargo.lock").read_bytes(), original_lock)
+        self.assertFalse(subprocess.check_output([
+            "git", "-C", str(self.release), "status", "--porcelain"
+        ]).strip())
+        self.assertFalse(subprocess.check_output([
+            "git", "-C", str(self.patch), "status", "--porcelain"
+        ]).strip())
+
+    def test_disposable_stage_refuses_existing_nested_or_wrong_commit(self):
+        destination = Path(self.tmp.name) / "disposable-stage"
+        destination.mkdir()
+        with self.assertRaisesRegex(ValueError, "new, separate"):
+            stage_candidate(
+                self.release, self.patch, destination,
+                release_sha=self.release_sha, migration_sha=self.patch_sha,
+            )
+        with self.assertRaisesRegex(ValueError, "new, separate"):
+            stage_candidate(
+                self.release, self.patch, self.release / "nested-stage",
+                release_sha=self.release_sha, migration_sha=self.patch_sha,
+            )
+        destination.rmdir()
+        with self.assertRaisesRegex(ValueError, "expected"):
+            stage_candidate(
+                self.release, self.patch, destination,
+                release_sha="0" * 40, migration_sha=self.patch_sha,
+            )
+        self.assertFalse(destination.exists())
+
+    def test_conflicted_patch_never_creates_disposable_stage(self):
+        source = self.release / "crates/matrix-sdk/src/event_handler/mod.rs"
+        source.write_text(
+            "use anymap2::CloneAny;\n"
+            "type OtherMap = anymap2::Map<dyn CloneAny>;\n"
+        )
+        self._commit(self.release, "unexpected event-handler shape")
+        self.release_sha = self._sha(self.release)
+        stage = Path(self.tmp.name) / "should-not-exist"
+        with self.assertRaisesRegex(ValueError, "incompatible"):
+            stage_candidate(
+                self.release, self.patch, stage,
+                release_sha=self.release_sha, migration_sha=self.patch_sha,
+            )
+        self.assertFalse(stage.exists())
 
     def test_reject_nested_or_same_checkout_paths(self):
         with self.assertRaisesRegex(ValueError, "separate"):
