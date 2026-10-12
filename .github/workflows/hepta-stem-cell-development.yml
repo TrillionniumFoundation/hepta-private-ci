@@ -47,7 +47,7 @@ jobs:
             "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip freeze
             "$RUNNER_TEMP/stem-development-venv/bin/python" -m unittest -v \
               test_shared_encoder_eviction development_tensor_checks development_repository_checks \
-              development_study_checks
+              development_study_checks public_structural_checks
           } 2>&1 | tee "$RUNNER_TEMP/stem-development-tests.txt"
       - name: Preserve exact-source result including failures
         if: always()
@@ -62,3 +62,92 @@ jobs:
         run: |
           git diff --check
           git diff --exit-code
+
+
+  public-pretrained-execution:
+    name: Pinned BGE and public CLINC eight-intent physical execution
+    needs: tensor-mechanisms
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: qualification/stem-cell-v1
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - name: Checkout exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind original source and isolated physical environment
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/stem-public-evidence"
+          git rev-parse HEAD > "$RUNNER_TEMP/stem-public-evidence/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/stem-public-evidence/source-tree.txt"
+          git archive --format=tar.gz HEAD qualification/stem-cell-v1 > "$RUNNER_TEMP/stem-public-evidence/source.tar.gz"
+          python3 -m venv "$RUNNER_TEMP/stem-public-venv"
+          "$RUNNER_TEMP/stem-public-venv/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          "$RUNNER_TEMP/stem-public-venv/bin/pip" install numpy==2.2.6 safetensors==0.7.0 transformers==4.57.3 huggingface-hub==0.36.0
+          "$RUNNER_TEMP/stem-public-venv/bin/pip" freeze > "$RUNNER_TEMP/stem-public-evidence/environment.txt"
+      - name: Provision only pinned public bytes, keeping any failed attempt
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-public-venv/bin/python" qualification/stem-cell-v1/public_structural_stage.py \
+            --output "$RUNNER_TEMP/stem-public-inputs" \
+            2>&1 | tee "$RUNNER_TEMP/stem-public-evidence/staging.log"
+      - name: Execute existing offline Encoder and five-arm learning
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-public-venv/bin/python"
+          STAGE="$RUNNER_TEMP/stem-public-inputs"
+          DATA_SHA=$("$PY" -c 'import json,sys; print(json.load(open(sys.argv[1]))["dataset_sha256"])' "$STAGE/stage.json")
+          MODEL_SHA=$("$PY" -c 'import json,sys; print(json.load(open(sys.argv[1]))["snapshot_sha256"])' "$STAGE/stage.json")
+          FRONTIER=$("$PY" -c 'import hashlib; print(hashlib.sha256(b"non-authorizing-public-research-scope").hexdigest())')
+          "$PY" qualification/stem-cell-v1/development_study.py \
+            --dataset "$STAGE/dataset.jsonl" --dataset-sha256 "$DATA_SHA" \
+            --snapshot "$STAGE/model" --snapshot-sha256 "$MODEL_SHA" \
+            --config "$STAGE/config.jsonl" --source-root "$PWD" --expected-source-sha "$(git rev-parse HEAD)" \
+            --revocation-frontier-sha256 "$FRONTIER" --output "$RUNNER_TEMP/stem-public-evidence/study" \
+            2>&1 | tee "$RUNNER_TEMP/stem-public-evidence/execution.log"
+      - name: Separate saved-tensor replay and sealed-label scoring
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-public-venv/bin/python"
+          OUT="$RUNNER_TEMP/stem-public-evidence"
+          "$PY" qualification/stem-cell-v1/development_study_replay.py \
+            --run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --output "$OUT/replay.json" 2>&1 | tee "$OUT/replay.log"
+          "$PY" qualification/stem-cell-v1/development_study_review.py \
+            --run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --output "$OUT/scores.json" 2>&1 | tee "$OUT/scoring.log"
+      - name: Retain provenance and failures, never pretrained weights
+        if: always()
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/stem-public-evidence"
+          mkdir -p "$OUT/inputs"
+          for name in PLAN.json FAILED.json stage.json publisher-model-pins.json publisher.json dataset.jsonl config.jsonl dataset-provenance.json CLINC_LICENSE.txt; do
+            if [ -f "$RUNNER_TEMP/stem-public-inputs/$name" ]; then
+              cp "$RUNNER_TEMP/stem-public-inputs/$name" "$OUT/inputs/$name"
+            fi
+          done
+          git diff --check
+          git diff --exit-code
+      - name: Upload original execution records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-public-execution-${{ github.run_id }}
+          path: ${{ runner.temp }}/stem-public-evidence
+          if-no-files-found: error
+          retention-days: 30
