@@ -43,21 +43,24 @@ bazel_query_args+=("$query_expression")
 # (including binary/proto output) must remain byte-for-byte unchanged.
 query_output=""
 read_query_output=0
-for arg in "${query_args[@]}"; do
-  if [[ $read_query_output -eq 1 ]]; then
-    query_output="$arg"
-    read_query_output=0
-    continue
-  fi
-  case "$arg" in
-    --output)
-      read_query_output=1
-      ;;
-    --output=*)
-      query_output="${arg#--output=}"
-      ;;
-  esac
-done
+# Bash 3.2 treats an empty array expansion as unbound under nounset.
+if (( ${#query_args[@]} > 0 )); then
+  for arg in "${query_args[@]}"; do
+    if [[ $read_query_output -eq 1 ]]; then
+      query_output="$arg"
+      read_query_output=0
+      continue
+    fi
+    case "$arg" in
+      --output)
+        read_query_output=1
+        ;;
+      --output=*)
+        query_output="${arg#--output=}"
+        ;;
+    esac
+  done
+fi
 
 if [[ "${RUNNER_OS:-}" == "Windows" && "$query_output" == "label" ]]; then
   # Native Windows Bazel emits CRLF. Publish labels only after the query

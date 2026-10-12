@@ -319,23 +319,58 @@ fi
         self.assertEqual(result.returncode, 37, result.stderr)
         self.assertEqual(result.stdout, b"")
 
+    def test_query_without_options_preserves_expression_and_raw_output(self) -> None:
+        roster = self.root / "query raw bytes"
+        original = b"//pkg:first\r\n\x00trailing\r\n"
+        roster.write_bytes(original)
+        expression = 'kind("rust_library", //pkg/...)'
+        self.env["BAZEL_PROBE_QUERY_FILE"] = str(roster)
+        for runner_os in ("Linux", "macOS", "Windows"):
+            with self.subTest(runner_os=runner_os):
+                self.env["RUNNER_OS"] = runner_os
+                if self.log.exists():
+                    self.log.unlink()
+                result = subprocess.run(
+                    [
+                        self.bash,
+                        str(SCRIPTS / "run-bazel-query-ci.sh"),
+                        "--",
+                        expression,
+                    ],
+                    env=self.env,
+                    check=False,
+                    capture_output=True,
+                    timeout=60,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout, original)
+                calls = [
+                    json.loads(line)
+                    for line in self.log.read_text(encoding="utf-8").splitlines()
+                ]
+                self.assertEqual(len(calls), 1)
+                self.assertEqual(
+                    calls[0][calls[0].index("query") + 1 :],
+                    ["--repo_contents_cache=job scoped cache", expression],
+                )
+
     def test_query_cleanup_failure_preserves_failure_status_and_withholds_roster(
         self,
     ) -> None:
-        tools = self.root / "fake cleanup tools"
-        tools.mkdir()
-        cleanup = tools / "rm"
-        cleanup.write_text(
-            '#!/bin/sh\nprintf "%s\\n" "$@" > "$BAZEL_PROBE_RM_LOG"\nexit 23\n',
+        driver = self.root / "query cleanup failure.sh"
+        # Git/bin/bash.exe prepends Git's tools to PATH before starting Bash.
+        # Install the fault in that shell so its real rm cannot shadow it.
+        driver.write_text(
+            'rm() {\n'
+            '  printf "%s\\n" "$@" > "$BAZEL_PROBE_RM_LOG"\n'
+            '  return 23\n'
+            '}\n'
+            'source "$@"\n',
             encoding="utf-8",
+            newline="\n",
         )
-        if os.name != "nt":
-            cleanup.chmod(0o755)
         cleanup_log = self.root / "cleanup-path.txt"
-        self.env.update(
-            PATH=str(tools) + os.pathsep + self.env["PATH"],
-            BAZEL_PROBE_RM_LOG=str(cleanup_log),
-        )
+        self.env["BAZEL_PROBE_RM_LOG"] = str(cleanup_log)
         for query_failure, expected_status in ((False, 23), (True, 37)):
             with self.subTest(query_failure=query_failure):
                 if query_failure:
@@ -347,6 +382,7 @@ fi
                     result = subprocess.run(
                         [
                             self.bash,
+                            str(driver),
                             str(SCRIPTS / "run-bazel-query-ci.sh"),
                             "--output=label",
                             "--",
