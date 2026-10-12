@@ -29,9 +29,12 @@ jobs:
       - name: Install exact Rust toolchain
         shell: bash
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
-      - name: Verify exact workspace Rust formatting
+      - name: Verify exact changed crate Rust formatting
         shell: bash
-        run: cargo +1.95.0 fmt --all -- --check
+        # Full-repository fmt remains covered by the original blocking-ci.
+        # On Windows, fmt --all invokes rustfmt with a command line longer
+        # than the Windows process limit (os error 206) before it reads source.
+        run: cargo +1.95.0 fmt -p codex-core -- --check
       - name: Compile and execute all terminal-ack policy tests
         shell: bash
         run: cargo +1.95.0 test --locked -p codex-core --lib client_provider_policy_tests -- --nocapture
