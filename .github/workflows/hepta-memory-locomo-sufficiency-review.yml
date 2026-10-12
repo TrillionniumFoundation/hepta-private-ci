@@ -92,3 +92,31 @@ jobs:
             /tmp/locomo-unreviewed-worklists/auditor-source-commit.txt
             /tmp/locomo-worklist-manifest.log
           if-no-files-found: warn
+
+  # Produce official Ruff formatting fixes as an artifact; never write to the branch.
+  format-candidate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Format source with the repository's pinned Ruff toolchain
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format \
+            scripts/memory_cell/locomo_sufficiency_worklist.py \
+            scripts/memory_cell/test_locomo_sufficiency_worklist.py
+          mkdir -p /tmp/locomo-source-format
+          cp scripts/memory_cell/locomo_sufficiency_worklist.py \
+            scripts/memory_cell/test_locomo_sufficiency_worklist.py \
+            /tmp/locomo-source-format/
+          git rev-parse HEAD > /tmp/locomo-source-format/tested-commit.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: locomo-reviewed-ruff-source-${{ github.sha }}
+          path: /tmp/locomo-source-format
+          if-no-files-found: warn
