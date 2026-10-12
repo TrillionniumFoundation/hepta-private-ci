@@ -104,6 +104,74 @@ class ExactPrCiTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 GATE.evaluate(candidate, [], REPO, 1468, HEAD)
 
+    def test_exact_prospective_merge_parents_are_required(self):
+        merge = "d" * 40
+        cases = [
+            ([BASE, HEAD], "exact", True),
+            ([BASE, "c" * 40], "stale_merge_parents", False),
+            (["c" * 40, HEAD], "stale_merge_parents", False),
+            ([HEAD, BASE], "stale_merge_parents", False),
+            ([BASE], "stale_merge_parents", False),
+        ]
+        for parents, status, qualified in cases:
+            with self.subTest(parents=parents):
+                with mock.patch.object(
+                    GATE, "gh_json",
+                    side_effect=[
+                        {
+                            "ref": "refs/pull/1468/merge",
+                            "object": {"sha": merge},
+                        },
+                        {"parents": [{"sha": sha} for sha in parents]},
+                    ],
+                ) as fetch:
+                    result = GATE.prospective_merge_identity(
+                        REPO, 1468, HEAD, BASE
+                    )
+                self.assertEqual(result["status"], status)
+                self.assertEqual(result["qualified"], qualified)
+                self.assertEqual(fetch.call_count, 2)
+
+    def test_missing_or_unreadable_prospective_merge_is_not_green(self):
+        for response in [
+            {"ref": "refs/pull/1468/head", "object": {"sha": "d" * 40}},
+            {"ref": "refs/pull/1468/merge", "object": {"sha": "invalid"}},
+        ]:
+            with self.subTest(response=response):
+                with mock.patch.object(GATE, "gh_json", return_value=response):
+                    result = GATE.prospective_merge_identity(
+                        REPO, 1468, HEAD, BASE
+                    )
+                self.assertFalse(result["qualified"])
+                self.assertEqual(
+                    result["status"], "missing_or_unreadable_merge_ref"
+                )
+
+    def test_current_rejects_old_merge_ref_even_with_three_green_runs(self):
+        jobs = [run(name) for name in GATE.REQUIRED]
+        stale = "c" * 40
+        with mock.patch.object(
+            GATE, "gh_json",
+            side_effect=[
+                pr(),
+                {"workflow_runs": jobs},
+                {
+                    "ref": "refs/pull/1468/merge",
+                    "object": {"sha": "d" * 40},
+                },
+                {"parents": [{"sha": BASE}, {"sha": stale}]},
+            ],
+        ):
+            _, result = GATE.current(REPO, 1468, HEAD)
+        self.assertFalse(result["qualified"])
+        self.assertEqual(
+            result["prospective_merge_ref"]["status"],
+            "stale_merge_parents",
+        )
+        self.assertEqual(
+            set(result["required_pull_request_runs"].values()), {"success"}
+        )
+
     def test_dispatch_only_invokes_existing_manual_workflows(self):
         with mock.patch.object(
             GATE, "current", side_effect=[(pr(), {"qualified": False}), (pr(), {})]
