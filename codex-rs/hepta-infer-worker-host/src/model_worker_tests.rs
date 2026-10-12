@@ -319,21 +319,14 @@ fn typed_neuron_worker_enforces_model_and_reservation_token_limits_before_driver
     assert_eq!(worker.driver.neuron_calls, 1);
 }
 
-
 #[test]
 fn typed_neuron_driver_actual_token_overrun_is_rejected_and_cannot_replay() {
     let driver = Driver {
         neuron_consumed_tokens: Some(17),
         ..Driver::default()
     };
-    let mut worker = InferenceWorker::new(
-        100,
-        "worker.typed-usage".to_owned(),
-        3,
-        grant(),
-        driver,
-    )
-    .unwrap();
+    let mut worker =
+        InferenceWorker::new(100, "worker.typed-usage".to_owned(), 3, grant(), driver).unwrap();
     let mut constrained = manifest();
     constrained.maximum_tokens = 16;
     worker.load_model(100, constrained).unwrap();
