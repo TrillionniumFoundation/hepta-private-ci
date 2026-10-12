@@ -5,11 +5,9 @@ Unknown scores remain unknown. Raw answers are never rewritten. The review queue
 hides arm names but supplies no fabricated reviewer, reference answer or verdict.
 """
 import argparse
-from collections import Counter, defaultdict
 import hashlib
 import json
 from pathlib import Path
-import re
 
 from system2_native_receipt import index_rows, number, strict_json, verified_archive
 
@@ -247,5 +245,7 @@ if __name__ == "__main__":
     (args.output/"blind-review.jsonl").write_text("".join(json.dumps(r,ensure_ascii=False,allow_nan=False)+"\n" for r in queue))
     display = {k:v for k,v in result.items() if k not in ("by_family","fit_diagnostics","native_run_summary")}
     print("OUTCOME_AUDIT="+json.dumps(display,sort_keys=True,allow_nan=False))
-    print("FIT_DIAGNOSTICS="+json.dumps(result["fit_diagnostics"],sort_keys=True,allow_nan=False))
+    fit_display = [dict(family=r["family"],method=r["method"],status=r.get("status",r.get("receipt",{}).get("status")),
+        direct_solves=r.get("receipt",{}).get("direct_solves"),disposition=r.get("disposition")) for r in result["fit_diagnostics"]]
+    print("FIT_DIAGNOSTICS="+json.dumps(fit_display,sort_keys=True,allow_nan=False))
     print("FAMILY_METRICS="+json.dumps(result["by_family"],sort_keys=True,allow_nan=False))
