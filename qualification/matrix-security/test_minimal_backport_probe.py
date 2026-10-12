@@ -22,7 +22,11 @@ class MinimalBackportTests(unittest.TestCase):
             '[dependencies]\nanymap2={version="0.13.0",default-features=false}\n'
         )
         (sdk / "src/event_handler/mod.rs").write_text(
-            "use anymap2::CloneAny;\n// Stable adjacent context\ntype AnyMap = anymap2::Map<dyn CloneAny>;\n"
+            "use anymap2::any::CloneAny;\n"
+            "// stable adjacent context A\n"
+            "type AnyMap = anymap2::Map<dyn CloneAny>;\n"
+            "// stable adjacent context B\n"
+            "type OtherMap = anymap2::Map<dyn CloneAny>;\n"
         )
         (self.release / "Cargo.lock").write_text("[[package]]\nname=\"anymap2\"\nversion=\"0.13.0\"\n")
         self._commit(self.release, "release")
@@ -34,7 +38,11 @@ class MinimalBackportTests(unittest.TestCase):
             '[dependencies]\nanymap3={version="1.1.0",default-features=false}\n'
         )
         (self.patch / "crates/matrix-sdk/src/event_handler/mod.rs").write_text(
-            "use anymap3::CloneAny;\n// Stable adjacent context\ntype AnyMap = anymap3::Map<dyn CloneAny>;\n"
+            "use anymap3::CloneAny;\n"
+            "// stable adjacent context A\n"
+            "type AnyMap = anymap3::Map<dyn CloneAny>;\n"
+            "// stable adjacent context B\n"
+            "type OtherMap = anymap3::Map<dyn CloneAny>;\n"
         )
         self._commit(self.patch, "upstream anymap3 migration")
         self.patch_sha = self._sha(self.patch)
@@ -60,6 +68,7 @@ class MinimalBackportTests(unittest.TestCase):
         self.assertTrue(report["source_patch_applies_clean"])
         self.assertEqual(set(report["upstream_commit_changed_files"]), CHANGESET)
         self.assertEqual(len(report["source_patch_sha256"]), 64)
+        self.assertEqual(report["source_patch_translation_count"], 4)
         self.assertFalse(report["production_authorized"])
         self.assertFalse(report["cargo_deny_verified"])
         self.assertIn("anymap2", (self.release / "crates/matrix-sdk/Cargo.toml").read_text())
