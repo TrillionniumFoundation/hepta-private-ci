@@ -144,7 +144,43 @@ class RoutedBasis(nn.Module):
         return self.bank(x[:, :-1], ids)
 
 
-def structural_arms(bank, x, labels, heldout, *, steps=80, seed=13):
+class RouteAwareUnsplit(nn.Module):
+    """Single route-conditioned model with the split's exact parameter budget.
+
+    Binary routing is public input to ALL controls. This model has no Cell IDs,
+    births or topology: it interpolates private coefficients/gates in one Head.
+    At routes 0/1 it contains the two-specialist function as an exact control.
+    Equal functions are intentional: a Cell identity alone is not new capacity.
+    """
+
+    def __init__(self, bank):
+        super().__init__()
+        if len(bank.cell_ids) != 1 or not bank.awake[0]:
+            raise ValueError("single awake parent required")
+        self.width, self.classes = bank.width, bank.classes
+        self.base = deepcopy(bank.base).requires_grad_(False)
+        self.basis = nn.Parameter(bank.basis.detach().clone(), requires_grad=False)
+        self.register_buffer("gate_axes", bank.gate_axes.detach().clone())
+        self.coefficients = nn.Parameter(bank.coefficients.detach().repeat(2, 1))
+        self.gates = nn.Parameter(bank.gates.detach().repeat(2, 1))
+
+    def forward(self, x):
+        checked_tensor(x, 2, "observed route features")
+        if x.shape[1] != self.width + 1 or x.dtype != self.base.weight.dtype:
+            raise ValueError("route-inclusive feature width/dtype mismatch")
+        route = x[:, -1:]
+        if not bool(((route == 0) | (route == 1)).all()):
+            raise ValueError("public binary route required")
+        features = x[:, :-1]
+        coefficients = (1 - route) * self.coefficients[0] + route * self.coefficients[1]
+        gates = (1 - route) * self.gates[0] + route * self.gates[1]
+        activation = torch.sigmoid((features @ self.gate_axes.T * gates[:, :-1]).sum(1) + gates[:, -1])
+        residual = torch.einsum("bd,rdk,br->bk", features, self.basis, coefficients)
+        return self.base(features) + activation[:, None] * residual
+
+
+
+def structural_arms(bank, x, labels, heldout, *, train_fold, holdout_fold, steps=80, seed=13):
     """Split vs frozen parent, same parent, equal-local-budget wide Head and data.
 
     All arms see the same public route feature. The larger-data arm sees twice
@@ -158,6 +194,7 @@ def structural_arms(bank, x, labels, heldout, *, steps=80, seed=13):
     if x.shape[1] != bank.width + 1 or heldout.shape[1] != x.shape[1]:
         raise ValueError("route-inclusive feature width mismatch")
     labels_checked(labels, len(x), bank.classes)
+    validate_folds(train_fold, holdout_fold, len(x), len(heldout))
     split = split_candidate(bank, bank.cell_ids[0], "candidate-child",
                             maximum_local_parameters=2 * (2 * bank.rank + 1))
     budget = split.parameter_counts()["cell_local"]
@@ -171,15 +208,22 @@ def structural_arms(bank, x, labels, heldout, *, steps=80, seed=13):
         wide = nn.Sequential(nn.Linear(x.shape[1], hidden), nn.Tanh(), nn.Linear(hidden, bank.classes))
     assert sum(p.numel() for p in wide.parameters()) <= budget
     arms = {"parent": RoutedBasis(bank, split=False), "split": RoutedBasis(split, split=True),
-            "wide_head": wide, "more_data": RoutedBasis(bank, split=False)}
+            "wide_head": wide, "more_data": RoutedBasis(bank, split=False),
+            "route_aware_unsplit": RouteAwareUnsplit(bank),
+            "route_aware_more_data": RouteAwareUnsplit(bank)}
     initial_identity = parameter_digest(bank)
     out = {}
     for name, model in arms.items():
-        n = len(x) if name == "more_data" else len(x) // 2
+        n = len(x) if name in ("more_data", "route_aware_more_data") else len(x) // 2
         _, receipt = paired_predictions(model, x[:n], labels[:n], heldout, steps=steps, seed=seed)
         receipt["training_rows_available"] = n
         receipt["all_parameter_count"] = sum(p.numel() for p in model.parameters())
         receipt["shared_basis_counted"] = name != "wide_head"
+        receipt["state_tensor_bytes"] = sum(v.numel() * v.element_size() for v in model.state_dict().values())
+        receipt["public_route_used"] = name not in ("parent", "more_data")
+        receipt["logical_cells"] = 2 if name == "split" else 1
+        receipt["fold_isolation_checked"] = True
+        receipt["fold_provenance_authenticated"] = False
         out[name] = receipt
     if parameter_digest(bank) != initial_identity:
         raise RuntimeError("structural experiment mutated selected parent")
@@ -195,10 +239,11 @@ class RecurrentClassifier(nn.Module):
         self.output = nn.Linear(width, classes)
         self.depth = depth
 
-    def forward(self, x):
+    def forward(self, x, *, depth=None):
+        checked_tensor(x, 3, "observed recurrent features")
         valid = torch.ones(x.shape[:2], dtype=torch.bool)
         initial = torch.zeros(len(x), x.shape[-1], dtype=x.dtype)
-        state, _ = self.recurrence(x, valid, initial, depth=self.depth)
+        state, _ = self.recurrence(x, valid, initial, depth=self.depth if depth is None else depth)
         return self.output(state)
 
 
@@ -207,19 +252,39 @@ def run_depth_candidates(model, x, *, depths=(1, 2, 4)):
     if (type(depths) is not tuple or not depths or len(set(depths)) != len(depths)
             or any(type(d) is not int or not 1 <= d <= 32 for d in depths)):
         raise ValueError("invalid depth controls")
-    before = model.depth
     out = {}
-    try:
-        for depth in depths:
-            clock = PhaseClock()
-            model.depth = depth
-            with torch.no_grad():
-                logits = model(x).clone()
-            out[depth] = {"logits": logits, "sequential_depth": depth,
-                          "cell_transitions": len(x) * depth, **clock.finish()}
-    finally:
-        model.depth = before
+    for depth in depths:
+        clock = PhaseClock()
+        with torch.no_grad():
+            logits = model(x, depth=depth).clone()
+        out[depth] = {"logits": logits, "sequential_depth": depth,
+                      "cell_transitions": len(x) * depth, **clock.finish()}
     return out
+
+
+@torch.no_grad()
+def incremental_depth_candidates(model, x, *, depths=(1, 2, 4)):
+    """Pay for shared recurrence prefixes once, retain each depth's own readout.
+
+    All input tokens must already be observed. No label, reward, future outcome
+    or stopping policy is accepted. This reuses computation within ONE arm only;
+    it does not borrow intermediate states from the independent fixed controls.
+    """
+    checked_tensor(x, 3, "observed recurrent features")
+    if (type(depths) is not tuple or not depths or len(set(depths)) != len(depths)
+            or any(type(d) is not int or not 1 <= d <= 32 for d in depths)):
+        raise ValueError("invalid depth controls")
+    clock = PhaseClock()
+    state = torch.zeros(len(x), x.shape[-1], dtype=x.dtype)
+    valid = torch.ones(x.shape[:2], dtype=torch.bool)
+    outputs = {}
+    for depth in range(1, max(depths) + 1):
+        state, _ = model.recurrence(x, valid, state, depth=1)
+        if depth in depths:
+            outputs[depth] = model.output(state).clone()
+    return {"depths": outputs, "cell_transitions": len(x) * max(depths),
+            "readout_calls": len(depths), "maximum_depth": max(depths),
+            **clock.finish(), "production_authorized": False}
 
 
 @dataclass(frozen=True)

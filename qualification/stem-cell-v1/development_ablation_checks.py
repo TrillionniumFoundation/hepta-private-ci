@@ -11,8 +11,8 @@ import torch
 from torch import nn
 
 from development_ablation import (
-    ChanceEdge, ComputeOption, FoldIdentity, InformationState, RecurrentClassifier,
-    finite_compute_allocation, fit_candidate, paired_predictions, run_depth_candidates,
+    ChanceEdge, ComputeOption, FoldIdentity, InformationState, RecurrentClassifier, RouteAwareUnsplit, RoutedBasis,
+    finite_compute_allocation, fit_candidate, paired_predictions, run_depth_candidates, incremental_depth_candidates,
     structural_arms, validate_folds,
 )
 from development_generation import (
@@ -77,8 +77,11 @@ class ControlledLearningTests(unittest.TestCase):
         x = torch.cat((torch.randn(32, 4), torch.arange(32).remainder(2)[:, None]), 1)
         y = ((x[:, 0] > 0).long() ^ x[:, -1].long())
         before = parameter_digest(bank)
-        reports = structural_arms(bank, x, y, x[:8], steps=3)
-        self.assertEqual(set(reports), {'parent', 'split', 'wide_head', 'more_data'})
+        reports = structural_arms(bank, x, y, torch.randn(8, 5).sign().abs(), steps=3,
+                                  train_fold=FoldIdentity('fixture', tuple(f't{i}' for i in range(32)), (1,)*32),
+                                  holdout_fold=FoldIdentity('fixture', tuple(f'h{i}' for i in range(8)), (2,)*8))
+        self.assertEqual(set(reports), {'parent', 'split', 'wide_head', 'more_data',
+                                        'route_aware_unsplit', 'route_aware_more_data'})
         self.assertEqual(reports['more_data']['training_rows_available'], 32)
         self.assertEqual(reports['parent']['training_rows_available'], 16)
         self.assertLessEqual(reports['wide_head']['fit']['trainable_parameters'], 34)
@@ -117,6 +120,69 @@ class ControlledLearningTests(unittest.TestCase):
         out, receipt = fit_candidate(model, x, y, steps=5)
         self.assertNotEqual(parameter_digest(model), parameter_digest(out))
         self.assertEqual(receipt['steps'], 5)
+
+    def test_incremental_depth_reuses_only_own_prefix_and_matches_fixed(self):
+        model = RecurrentClassifier(8, 2, depth=2)
+        x = torch.randn(4, 3, 8)
+        before = parameter_digest(model)
+        fixed = run_depth_candidates(model, x, depths=(1, 2, 4))
+        shared = incremental_depth_candidates(model, x, depths=(1, 2, 4))
+        for depth in (1, 2, 4):
+            self.assertTrue(torch.equal(fixed[depth]['logits'], shared['depths'][depth]))
+        self.assertEqual(shared['cell_transitions'], 16)
+        self.assertEqual(sum(v['cell_transitions'] for v in fixed.values()), 28)
+        self.assertEqual(shared['readout_calls'], 3)
+        self.assertEqual(model.depth, 2)
+        self.assertEqual(before, parameter_digest(model))
+
+    def test_invalid_incremental_depths(self):
+        for depths in ((0,), (1, 1), (True,), (33,), ()):
+            with self.assertRaises(ValueError):
+                incremental_depth_candidates(RecurrentClassifier(4, 2, depth=1),
+                                             torch.zeros(2, 3, 4), depths=depths)
+
+
+class FairStructureTests(unittest.TestCase):
+    setUpClass = classmethod(ControlledLearningTests.setUpClass.__func__)
+    tearDownClass = classmethod(ControlledLearningTests.tearDownClass.__func__)
+    setUp = ControlledLearningTests.setUp
+    tearDown = ControlledLearningTests.tearDown
+
+    def test_unsplit_contains_split_function_and_same_trainable_budget(self):
+        bank = BasisCellHeads(4, 2, 8, ('p',))
+        split = RoutedBasis(split_candidate(bank, 'p', 'c', maximum_local_parameters=34), split=True)
+        unsplit = RouteAwareUnsplit(bank)
+        with torch.no_grad():
+            split.bank.coefficients.normal_()
+            split.bank.gates.normal_()
+            unsplit.coefficients.copy_(split.bank.coefficients)
+            unsplit.gates.copy_(split.bank.gates)
+        x = torch.cat((torch.randn(32, 4), torch.arange(32).remainder(2)[:, None]), 1)
+        self.assertTrue(torch.equal(split(x), unsplit(x)))
+        self.assertEqual(sum(p.numel() for p in split.parameters() if p.requires_grad),
+                         sum(p.numel() for p in unsplit.parameters() if p.requires_grad))
+        self.assertFalse(hasattr(unsplit, 'cell_ids'))
+
+    def test_equal_information_and_training_remove_spurious_split_advantage(self):
+        bank = BasisCellHeads(4, 2, 8, ('p',))
+        x = torch.cat((torch.randn(32, 4), torch.arange(32).remainder(2)[:, None]), 1)
+        y = (x[:, 0] > 0).long() ^ x[:, -1].long()
+        split = RoutedBasis(split_candidate(bank, 'p', 'c', maximum_local_parameters=34), split=True)
+        unsplit = RouteAwareUnsplit(bank)
+        a, _ = fit_candidate(split, x, y, steps=20)
+        b, _ = fit_candidate(unsplit, x, y, steps=20)
+        self.assertTrue(torch.allclose(a(x), b(x), atol=1e-6, rtol=0))
+
+    def test_structure_fold_overlap_fails_before_optimizer(self):
+        from unittest.mock import patch
+        x = torch.zeros(8, 5)
+        fold = FoldIdentity('s', tuple(str(i) for i in range(8)), (1,)*8)
+        with patch('development_ablation.paired_predictions') as fit:
+            with self.assertRaises(ValueError):
+                structural_arms(BasisCellHeads(4, 2, 8, ('p',)), x,
+                                torch.zeros(8, dtype=torch.long), x,
+                                train_fold=fold, holdout_fold=fold)
+            fit.assert_not_called()
 
 
 class AllocationTests(unittest.TestCase):

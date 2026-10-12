@@ -19,7 +19,7 @@ from torch import nn
 from development_ablation import (
     ChanceEdge, ComputeOption, FoldIdentity, InformationState, PhaseClock,
     RecurrentClassifier, finite_compute_allocation, fit_candidate,
-    paired_predictions, run_depth_candidates, structural_arms, validate_folds,
+    paired_predictions, run_depth_candidates, incremental_depth_candidates, structural_arms, validate_folds,
 )
 from development_generation import CodecSpec, SharedByteGenerator, fit_generator, render_generated
 from development_native import DecisionIR, Rule, benchmark_fixed_policy
@@ -92,7 +92,9 @@ def run_study(*, output: Path):
             xt = torch.cat((heldout, torch.arange(32).remainder(2)[:, None]), 1)
             y = labels ^ x[:, -1].long()
             yg = gold ^ xt[:, -1].long()
-            structural = structural_arms(BasisCellHeads(4, 2, 16, ('parent',)), x, y, xt, steps=120)
+            structural = structural_arms(BasisCellHeads(4, 2, 16, ('parent',)), x, y, xt, steps=120,
+                train_fold=FoldIdentity('synthetic', tuple(f't{i}' for i in range(64)), (1,)*64),
+                holdout_fold=FoldIdentity('synthetic', tuple(f'h{i}' for i in range(32)), (2,)*32))
             stage2 = {name: summarize_pair(receipt, yg) for name, receipt in structural.items()}
 
             sequence = torch.randn(32, 3, 8)
@@ -108,6 +110,12 @@ def run_study(*, output: Path):
             # Independent exact cheap control has the same observed features.
             exact = (test_sequence[:, :, 0].sum(1) > 0).long()
             stage3['cheap_exact_accuracy'] = float((exact == sequence_gold).float().mean())
+            shared_depths = incremental_depth_candidates(reasoner, test_sequence)
+            if any(not torch.equal(depth_reports[d]['logits'], v) for d, v in shared_depths['depths'].items()):
+                raise RuntimeError('shared-prefix/fixed-depth numerical mismatch')
+            stage3['shared_prefix'] = {k: v for k, v in shared_depths.items() if k != 'depths'}
+            stage3['shared_prefix']['all_logits_equal_to_fixed'] = True
+            stage3['independent_fixed_transitions'] = sum(v['cell_transitions'] for v in depth_reports.values())
             stage3['training'] = reasoner_fit
             stage3['heldout_sequence_lengths'] = [5]
             stage3['semantic_reasoning_claim'] = False
@@ -128,6 +136,12 @@ def run_study(*, output: Path):
             frozen_outputs = generator.generate(ct, mt, maximum_bytes=8)
             candidate, gen_fit = fit_generator(generator, c, m, targets, steps=200)
             trained_outputs = candidate.generate(ct, mt, maximum_bytes=8)
+            # Fixed condition interventions; neither receives target bytes.
+            condition_controls = {
+                'zero_condition': candidate.generate(torch.zeros_like(ct), mt, maximum_bytes=8),
+                'permuted_within_modality': candidate.generate(
+                    ct.reshape(4, 4, -1).roll(1, dims=1).reshape_as(ct), mt, maximum_bytes=8),
+            }
             rendered = render_generated(trained_outputs, test_specs)
             # Freeze inference bytes before comparing any test target payload.
             records = []
@@ -145,6 +159,12 @@ def run_study(*, output: Path):
                       'frozen_exact_payloads': sum(tuple(t) == o and end for t,o,end in zip(test_targets, frozen_outputs['tokens'], frozen_outputs['terminated'])),
                       'trained_exact_payloads': sum(tuple(t) == o and end for t,o,end in zip(test_targets, trained_outputs['tokens'], trained_outputs['terminated'])),
                       'cases': len(test_targets), 'outputs': records,
+                      'conditioning_controls': {
+                          name: {'exact_payloads': sum(tuple(t) == o and end for t, o, end in
+                                    zip(test_targets, arm['tokens'], arm['terminated'])),
+                                 'generated_tokens_sha256': hashlib.sha256(json.dumps(arm['tokens']).encode()).hexdigest(),
+                                 'inference': {k: v for k, v in arm.items() if k != 'tokens'}}
+                          for name, arm in condition_controls.items()},
                       'inference': {k:v for k,v in trained_outputs.items() if k != 'tokens'},
                       'general_multimodal_capability_established': False}
 
