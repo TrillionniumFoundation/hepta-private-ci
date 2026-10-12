@@ -72,6 +72,56 @@ jobs:
           git diff --check
           git diff --exit-code
 
+  safe-yaml-lock-diagnostic:
+    name: Safe YAML parser lockfile + targeted compatibility (diagnostic only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - name: Checkout exact security candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+      - name: Resolve pinned safe YAML graph without altering advisories
+        shell: bash
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          # Exact Cargo resolver output is the source of truth for the changed
+          # lockfile. This job must NOT commit or deploy the generated result.
+          cargo metadata --format-version 1 > /dev/null
+          git diff --check
+          git diff --no-ext-diff -- Cargo.lock | head -n 1600
+      - name: Compile actual migrated YAML frontmatter owners
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked -p codex-core-plugins -p codex-external-agent-migration -p codex-skills -p codex-skills-extension --all-targets
+          cargo test --locked -p codex-core-plugins command_migration --lib
+          cargo test --locked -p codex-external-agent-migration subagents --lib
+      - name: Preserve exact solver-generated lock patch
+        if: always() && !cancelled()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --binary -- codex-rs/Cargo.lock > "$RUNNER_TEMP/safe-yaml-cargo-lock.patch"
+          git diff --check
+      - name: Upload diagnostic-only dependency patch
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-safe-yaml-cargo-lock-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/safe-yaml-cargo-lock.patch
+          retention-days: 7
+
   sdk-protocol:
     name: Matrix SDK (${{ matrix.qualification }})
     strategy:
