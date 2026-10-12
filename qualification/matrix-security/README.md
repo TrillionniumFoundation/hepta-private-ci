@@ -175,3 +175,35 @@ problem. Each arm retains E2EE, `sqlite`, and the unchanged real
 `deny.toml` and source `Cargo.lock`; neither is a remediated production
 configuration. Reports include the arm, actual resolver exit code and
 dependency versions, and remain `production_authorized=false`.
+
+## Exact obsolete async-trait lock repin in isolated diagnostics
+
+The pinned Matrix 0.19.1 candidate currently requires `async-trait ^0.1.92`,
+while Hepta's existing `Cargo.lock` contains `async-trait 0.1.89`. The genuine
+disposable resolver log first failed on this specific stale transitive lock;
+neither that failure nor a future successful lock update is an advisory waiver.
+
+`isolated_lock_repin_probe.py` is a **read-only classifier**. It requires all
+of the following before authorizing the *diagnostic job* to attempt anything:
+
+- Exactly the observed Cargo `async-trait` selection conflict with
+  Matrix SDK `0.19.1`, minimum `0.1.92` and tonic's locked `0.1.89`.
+- The exact audited Git revision
+  `b3c07ea6ba6e8e46e30811c0500b04505c4be9f9`, both
+  `e2e-encryption` and `sqlite`, and `default-features = false`.
+- Exactly one stale `async-trait 0.1.89` package in the *disposable* lock.
+
+Only then does the CI run `cargo +1.96.0 update -p async-trait --precise
+0.1.92` with `--manifest-path` **under the detached temporary worktree**,
+followed by another real `cargo metadata` resolution. The first and second
+errors, update status, lock/manifest digests, and resolved versions remain
+separate diagnostics; none is copied into the real repository.
+
+The next conflict may be another stale lock, incompatible SQLite
+`libsqlite3-sys` versions, an upstream MSRV constraint, or a source API
+break. A successful metadata pass is only evidence of dependency resolution,
+**not** evidence of an audited Rust upgrade, stable Cargo/Bazel locks, clean
+`cargo-deny`, safe E2EE, WAL recovery, or production fitness.
+
+The hard `matrix_dependency_gate.py --require-safe` remains mandatory and
+fails independently until the real source graph and runtime are remediated.
