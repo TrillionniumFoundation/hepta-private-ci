@@ -89,6 +89,11 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
     except ValueError:
         errors.append("MATRIX_SDK_VERSION_NOT_FIXED")
         desired_tuple = (0, 0, 0)
+    # A bare "0.19.1" in Cargo.toml is a *caret* requirement, not an
+    # exact pin even if today's lock happens to resolve 0.19.1.
+    if desired_tuple >= (0, 19, 0) and not re.fullmatch(
+            r"=\d+\.\d+\.\d+", desired):
+        errors.append("MATRIX_SDK_CARGO_REQUIREMENT_NOT_EXACT")
     features = set(sdk.get("features", [])) if isinstance(sdk.get("features", []), list) else set()
     if not {"e2e-encryption", "sqlite"}.issubset(features) or sdk.get("default-features") is not False:
         errors.append("REQUIRED_E2EE_SQLITE_FEATURES_REDUCED")
