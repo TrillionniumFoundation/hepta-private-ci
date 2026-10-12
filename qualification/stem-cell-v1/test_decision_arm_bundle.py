@@ -98,6 +98,7 @@ class DecisionArmBundleTests(unittest.TestCase):
                         "safetensors_shards": 1,
                         "production_authorization": False,
                     },
+                    "checkpoint_and_dataset_reverified_before_scoring_output": True,
                     "pretrained_typed_decision_head_existed": False,
                     "checkpoint_zero_shot_score_emitted": False,
                 })
@@ -205,6 +206,7 @@ class DecisionArmBundleTests(unittest.TestCase):
                     **original["verified_encoder_loading"], "missing_keys": 1,
                 }),
                 ("checkpoint_zero_shot_score_emitted", True),
+                ("checkpoint_and_dataset_reverified_before_scoring_output", False),
                 ("verified_exact_tensor_materialization", {
                     **original["verified_exact_tensor_materialization"],
                     "all_state_dict_tensors_compared": False,
