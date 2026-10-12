@@ -527,7 +527,11 @@ fn validate_request(now_ms: u64, value: &WorkerRequest) -> Result<(), Error> {
         || value.maximum_tokens > MAX_TOKENS
         || value.reservation_maximum_tokens == 0
         || value.reservation_maximum_tokens > MAX_TOKENS
+        || value.maximum_tokens > value.reservation_maximum_tokens
     {
+        // A valid numeric reservation cannot be oversubscribed by a feature
+        // request, whether single, backend-batched, or cancelled. Keep this
+        // invariant in the common validator used by every Worker entrypoint.
         return Err(Error::TokenLimit);
     }
     if now_ms >= value.deadline_ms {
