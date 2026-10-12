@@ -807,23 +807,37 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         self.active_requests
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
-        // This is a post-driver resource check: the physical operation may
-        // have happened. The owning ModelPort MUST classify this error as
-        // Indeterminate and may not replay the consumed durable reservation.
+        let observed = match observed {
+            Ok(observed) => observed,
+            Err(error) => {
+                // A failing physical backend might already have mutated its
+                // model/device state. Quarantine the entire instance, not
+                // merely the one durable reservation that was tombstoned.
+                self.quarantined = true;
+                return Err(error);
+            }
+        };
+        // These are POST-driver observations. An overrun is not evidence that
+        // the backend remained safe for a fresh reservation/model invocation.
         if observed.consumed_tokens > request.authorization.maximum_tokens
             || observed.consumed_tokens > request.authorization.reservation_maximum_tokens
             || observed.consumed_tokens > loaded.manifest.maximum_tokens
         {
+            self.quarantined = true;
             return Err(Error::TokenLimit);
         }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            self.quarantined = true;
             return Err(Error::ModelCapacity);
         }
         let status = if !observed.terminal_observed {
+            self.quarantined = true;
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
-            validate_neuron_feature_output(&request, &observed)?;
+            if let Err(error) = validate_neuron_feature_output(&request, &observed) {
+                self.quarantined = true;
+                return Err(error);
+            }
             ExecutionStatus::Succeeded
         } else {
             ExecutionStatus::Failed

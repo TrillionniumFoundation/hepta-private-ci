@@ -573,6 +573,7 @@ fn fsynced_neuron_token_overrun_is_indeterminate_and_not_replayable_after_crash(
     assert!(!port.reservation_unconsumed());
     drop(port);
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert!(worker.is_quarantined(), "post-dispatch token overrun must quarantine backend");
     assert_eq!(
         owner.get(request.request_id.as_str()).unwrap().state,
         RequestState::Dispatching

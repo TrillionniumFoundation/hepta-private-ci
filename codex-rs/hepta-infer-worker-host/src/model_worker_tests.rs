@@ -267,6 +267,7 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
         worker.run_neuron_features(100, "model.1", neuron_feature_request()),
         Err(Error::FeatureOutputMismatch)
     );
+    assert!(worker.is_quarantined(), "post-driver identity corruption quarantines the Worker");
 }
 
 #[test]
@@ -340,6 +341,7 @@ fn typed_neuron_driver_actual_token_overrun_is_rejected_and_cannot_replay() {
         Err(Error::TokenLimit)
     );
     assert_eq!(worker.driver.neuron_calls, 1);
+    assert!(worker.is_quarantined());
     assert_eq!(
         worker.run_neuron_features(100, "model.1", request),
         Err(Error::NeuronReservationReplay)
@@ -351,9 +353,12 @@ fn typed_neuron_driver_actual_token_overrun_is_rejected_and_cannot_replay() {
     fresh.authorization.maximum_tokens = 16;
     fresh.authorization.reservation_maximum_tokens = 16;
     worker.driver.neuron_consumed_tokens = Some(16);
-    let within = worker.run_neuron_features(100, "model.1", fresh).unwrap();
-    assert_eq!(within.consumed_tokens, 16);
-    assert_eq!(worker.driver.neuron_calls, 2);
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", fresh),
+        Err(Error::WorkerQuarantined),
+        "a fresh reservation must not rehabilitate an overrun backend"
+    );
+    assert_eq!(worker.driver.neuron_calls, 1);
 }
 
 #[test]
@@ -577,5 +582,55 @@ fn driver_reused_opaque_handle_quarantines_instead_of_unloading_live_model() {
     assert_eq!(
         worker.run(100, "model.1", request()),
         Err(Error::WorkerQuarantined)
+    );
+}
+
+#[test]
+fn unobserved_physical_neuron_terminality_quarantines_backend_for_new_requests() {
+    let driver = Driver {
+        indeterminate: true,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.neuron-unknown".to_owned(), 3, grant(), driver).unwrap();
+    worker.load_model(100, manifest()).unwrap();
+    let observed = worker
+        .run_neuron_features(100, "model.1", neuron_feature_request())
+        .unwrap();
+    assert_eq!(observed.status, ExecutionStatus::Indeterminate);
+    assert!(!observed.terminal_observed);
+    assert!(worker.is_quarantined());
+    let mut fresh = neuron_feature_request();
+    fresh.authorization.request_id = "request.unknown2".into();
+    fresh.authorization.reservation_id = "reservation.unknown2".into();
+    worker.driver.indeterminate = false;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", fresh),
+        Err(Error::WorkerQuarantined)
+    );
+    assert_eq!(worker.driver.neuron_calls, 1);
+}
+
+#[test]
+fn invalid_pre_driver_neuron_request_does_not_quarantine_healthy_backend() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.neuron-preflight".to_owned(), 3, grant(), Driver::default())
+            .unwrap();
+    worker.load_model(100, manifest()).unwrap();
+    let mut invalid = neuron_feature_request();
+    invalid.feature_vector_q24[0] += 1;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", invalid),
+        Err(Error::PayloadMismatch)
+    );
+    assert!(!worker.is_quarantined());
+    let mut healthy = neuron_feature_request();
+    healthy.authorization.request_id = "request.valid2".into();
+    healthy.authorization.reservation_id = "reservation.valid2".into();
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", healthy)
+            .unwrap()
+            .status,
+        ExecutionStatus::Succeeded
     );
 }

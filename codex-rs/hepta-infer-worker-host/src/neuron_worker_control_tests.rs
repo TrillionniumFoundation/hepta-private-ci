@@ -343,6 +343,7 @@ fn post_driver_token_overrun_is_indeterminate_and_unrepeatable_across_ports() {
         assert!(!port.reservation_unconsumed());
     }
     assert_eq!(calls.load(Ordering::SeqCst), 1);
+    assert!(worker.is_quarantined());
     let mut recreated = WorkerNeuronControlPort::from_reserved_worker(
         &mut worker,
         "model.1".to_owned(),
