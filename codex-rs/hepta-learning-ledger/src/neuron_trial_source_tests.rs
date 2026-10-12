@@ -455,8 +455,8 @@ fn native_owner_reopens_durable_ledger_and_preserves_freeze_identity() {
 
 #[test]
 fn native_observer_signs_one_real_frozen_decision_and_terminal_neuron_tick_link() {
-    use codex_hepta_types::Generation;
     use crate::neuron_trial_observed_tick::neuron_trial_observer_tick_link_payload_v1;
+    use codex_hepta_types::Generation;
 
     let fixture = Fixture::new();
     let mut writer = fixture.writer();
@@ -485,20 +485,22 @@ fn native_observer_signs_one_real_frozen_decision_and_terminal_neuron_tick_link(
     );
     // The independent Observer cannot certify a future terminal Outcome
     // before its own authenticated 46-second finalization.
-    assert!(writer
-        .read_observer_linked_neuron_tick_v1(
-            &snapshot,
-            &plan,
-            &frozen_signature,
-            &dataset,
-            &pair.episode_id,
-            tick_digest,
-            plan.objective_digest,
-            tick_generation,
-            &observer,
-            50,
-        )
-        .is_err());
+    assert!(
+        writer
+            .read_observer_linked_neuron_tick_v1(
+                &snapshot,
+                &plan,
+                &frozen_signature,
+                &dataset,
+                &pair.episode_id,
+                tick_digest,
+                plan.objective_digest,
+                tick_generation,
+                &observer,
+                50,
+            )
+            .is_err()
+    );
     observer.issued_at = 50;
     observer.signature = SigningKey::from_bytes(&[signer_seed("observer"); 32])
         .sign(&observer.signing_bytes())
@@ -527,75 +529,83 @@ fn native_observer_signs_one_real_frozen_decision_and_terminal_neuron_tick_link(
     let mut changed = receipt.clone();
     changed.tick_observation_digest = digest("another-tick");
     assert!(!changed.validate_integrity());
-    assert!(writer
-        .read_observer_linked_neuron_tick_v1(
-            &snapshot,
-            &plan,
-            &frozen_signature,
-            &dataset,
-            &pair.episode_id,
-            digest("another-tick"),
-            plan.objective_digest,
-            tick_generation,
-            &observer,
-            50,
-        )
-        .is_err());
-    assert!(writer
-        .read_observer_linked_neuron_tick_v1(
-            &snapshot,
-            &plan,
-            &frozen_signature,
-            &dataset,
-            &id("unknown-episode"),
-            tick_digest,
-            plan.objective_digest,
-            tick_generation,
-            &observer,
-            50,
-        )
-        .is_err());
-    assert!(writer
-        .read_observer_linked_neuron_tick_v1(
-            &snapshot,
-            &plan,
-            &frozen_signature,
-            &dataset,
-            &pair.episode_id,
-            tick_digest,
-            digest("wrong-objective"),
-            tick_generation,
-            &observer,
-            50,
-        )
-        .is_err());
+    assert!(
+        writer
+            .read_observer_linked_neuron_tick_v1(
+                &snapshot,
+                &plan,
+                &frozen_signature,
+                &dataset,
+                &pair.episode_id,
+                digest("another-tick"),
+                plan.objective_digest,
+                tick_generation,
+                &observer,
+                50,
+            )
+            .is_err()
+    );
+    assert!(
+        writer
+            .read_observer_linked_neuron_tick_v1(
+                &snapshot,
+                &plan,
+                &frozen_signature,
+                &dataset,
+                &id("unknown-episode"),
+                tick_digest,
+                plan.objective_digest,
+                tick_generation,
+                &observer,
+                50,
+            )
+            .is_err()
+    );
+    assert!(
+        writer
+            .read_observer_linked_neuron_tick_v1(
+                &snapshot,
+                &plan,
+                &frozen_signature,
+                &dataset,
+                &pair.episode_id,
+                tick_digest,
+                digest("wrong-objective"),
+                tick_generation,
+                &observer,
+                50,
+            )
+            .is_err()
+    );
     let wrong_role = signed(
         &writer,
         "generator",
         LearningEvidenceRoleV1::Generator,
         &payload,
     );
-    assert!(writer
-        .read_observer_linked_neuron_tick_v1(
-            &snapshot,
-            &plan,
-            &frozen_signature,
-            &dataset,
-            &pair.episode_id,
-            tick_digest,
-            plan.objective_digest,
-            tick_generation,
-            &wrong_role,
-            50,
-        )
-        .is_err());
+    assert!(
+        writer
+            .read_observer_linked_neuron_tick_v1(
+                &snapshot,
+                &plan,
+                &frozen_signature,
+                &dataset,
+                &pair.episode_id,
+                tick_digest,
+                plan.objective_digest,
+                tick_generation,
+                &wrong_role,
+                50,
+            )
+            .is_err()
+    );
 }
 
 #[test]
 fn native_observer_cohort_is_signed_complete_and_rejects_reused_tick() {
-    use codex_hepta_types::Generation;
     use crate::neuron_trial_observer_cohort::NeuronTrialCohortTickV1;
     use crate::neuron_trial_observer_cohort::neuron_trial_observer_cohort_payload_v1;
+    use codex_hepta_types::Generation;
 
     let fixture = Fixture::new();
     let mut writer = fixture.writer();
@@ -621,17 +631,19 @@ fn native_observer_cohort_is_signed_complete_and_rejects_reused_tick() {
     );
     // The Observer cannot attest terminal labels before the actual Outcome
     // finalization, even if an attacker already knows the frozen event hashes.
-    assert!(writer
-        .read_observer_linked_neuron_cohort_v1(
-            &snapshot,
-            &plan,
-            &frozen_signature,
-            &dataset,
-            &[tick.clone()],
-            &signature,
-            50,
-        )
-        .is_err());
+    assert!(
+        writer
+            .read_observer_linked_neuron_cohort_v1(
+                &snapshot,
+                &plan,
+                &frozen_signature,
+                &dataset,
+                &[tick.clone()],
+                &signature,
+                50,
+            )
+            .is_err()
+    );
     signature.issued_at = 50;
     signature.signature = SigningKey::from_bytes(&[signer_seed("observer"); 32])
         .sign(&signature.signing_bytes())
@@ -672,38 +684,37 @@ fn native_observer_cohort_is_signed_complete_and_rejects_reused_tick() {
         LearningEvidenceRoleV1::Generator,
         &payload,
     );
-    assert!(writer
-        .read_observer_linked_neuron_cohort_v1(
-            &snapshot,
-            &plan,
-            &frozen_signature,
-            &dataset,
-            &[tick.clone()],
-            &wrong_role,
-            50,
-        )
-        .is_err());
+    assert!(
+        writer
+            .read_observer_linked_neuron_cohort_v1(
+                &snapshot,
+                &plan,
+                &frozen_signature,
+                &dataset,
+                &[tick.clone()],
+                &wrong_role,
+                50,
+            )
+            .is_err()
+    );
     let modified = NeuronTrialCohortTickV1 {
         tick_observation_digest: digest("different-tick"),
         ..tick.clone()
     };
-    assert!(writer
-        .read_observer_linked_neuron_cohort_v1(
-            &snapshot,
-            &plan,
-            &frozen_signature,
-            &dataset,
-            &[modified],
-            &signature,
-            50,
-        )
-        .is_err());
-    assert!(neuron_trial_observer_cohort_payload_v1(
-        &source,
-        plan.objective_digest,
-        &[],
-    )
-    .is_err());
+    assert!(
+        writer
+            .read_observer_linked_neuron_cohort_v1(
+                &snapshot,
+                &plan,
+                &frozen_signature,
+                &dataset,
+                &[modified],
+                &signature,
+                50,
+            )
+            .is_err()
+    );
+    assert!(neuron_trial_observer_cohort_payload_v1(&source, plan.objective_digest, &[],).is_err());
 
     // Deliberately self-consistent FAKE source is enough for a structural
     // rejection test; only LedgerWriter can admit a genuine source. A single
@@ -721,12 +732,14 @@ fn native_observer_cohort_is_signed_complete_and_rejects_reused_tick() {
         tick_observation_digest: tick.tick_observation_digest,
         tick_generation: tick.tick_generation,
     };
-    assert!(neuron_trial_observer_cohort_payload_v1(
-        &fabricated,
-        plan.objective_digest,
-        &[tick.clone(), reused],
-    )
-    .is_err());
+    assert!(
+        neuron_trial_observer_cohort_payload_v1(
+            &fabricated,
+            plan.objective_digest,
+            &[tick.clone(), reused],
+        )
+        .is_err()
+    );
     // A frozen no-change cohort cannot silently mix two model generations,
     // even if the two tick digests are unique and the caller rehashes metadata.
     let mixed_generation = NeuronTrialCohortTickV1 {
@@ -734,38 +747,49 @@ fn native_observer_cohort_is_signed_complete_and_rejects_reused_tick() {
         tick_observation_digest: digest("other-generation-tick"),
         tick_generation: Generation::new(2).unwrap(),
     };
-    assert!(neuron_trial_observer_cohort_payload_v1(
-        &fabricated,
-        plan.objective_digest,
-        &[tick.clone(), mixed_generation],
-    )
-    .is_err());
+    assert!(
+        neuron_trial_observer_cohort_payload_v1(
+            &fabricated,
+            plan.objective_digest,
+            &[tick.clone(), mixed_generation],
+        )
+        .is_err()
+    );
     let duplicated = NeuronTrialCohortTickV1 {
         tick_observation_digest: digest("different-unique-tick"),
         ..tick.clone()
     };
-    assert!(neuron_trial_observer_cohort_payload_v1(
-        &fabricated,
-        plan.objective_digest,
-        &[tick.clone(), duplicated],
-    )
-    .is_err());
-    assert!(neuron_trial_observer_cohort_payload_v1(
-        &fabricated,
-        plan.objective_digest,
-        &[tick.clone()],
-    )
-    .is_err());
+    assert!(
+        neuron_trial_observer_cohort_payload_v1(
+            &fabricated,
+            plan.objective_digest,
+            &[tick.clone(), duplicated],
+        )
+        .is_err()
+    );
+    assert!(
+        neuron_trial_observer_cohort_payload_v1(
+            &fabricated,
+            plan.objective_digest,
+            &[tick.clone()],
+        )
+        .is_err()
+    );
     fabricated.pending_episodes += 1;
     fabricated.diagnostic_digest = fabricated.computed_digest();
-    assert!(neuron_trial_observer_cohort_payload_v1(
-        &fabricated,
-        plan.objective_digest,
-        &[tick, NeuronTrialCohortTickV1 {
-            episode_id: second.episode_id,
-            tick_observation_digest: digest("distinct-tick"),
-            tick_generation: Generation::new(1).unwrap(),
-        }],
-    )
-    .is_err());
+    assert!(
+        neuron_trial_observer_cohort_payload_v1(
+            &fabricated,
+            plan.objective_digest,
+            &[
+                tick,
+                NeuronTrialCohortTickV1 {
+                    episode_id: second.episode_id,
+                    tick_observation_digest: digest("distinct-tick"),
+                    tick_generation: Generation::new(1).unwrap(),
+                }
+            ],
+        )
+        .is_err()
+    );
 }

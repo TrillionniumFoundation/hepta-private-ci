@@ -231,9 +231,9 @@ impl LedgerWriter {
             let outcome = outcomes
                 .get(&pair.episode_id)
                 .ok_or(NeuronTrialSourceError::Invalid("missing frozen Outcome"))?;
-            let finalized_at = outcome
-                .finalized_at
-                .ok_or(NeuronTrialSourceError::Invalid("missing terminal finalization"))?;
+            let finalized_at = outcome.finalized_at.ok_or(NeuronTrialSourceError::Invalid(
+                "missing terminal finalization",
+            ))?;
             if observer_signed_batch.issued_at < finalized_at
                 || verified.principal().principal_id == decision.generator_id
                 || verified.controller_id() == &decision.generator_controller_id

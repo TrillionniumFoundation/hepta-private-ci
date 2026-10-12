@@ -96,7 +96,9 @@ pub fn neuron_trial_observer_tick_link_payload_v1(
         || tick_observation_digest.is_zero()
         || tick_objective_digest.is_zero()
     {
-        return Err(NeuronTrialSourceError::Invalid("invalid observer tick source"));
+        return Err(NeuronTrialSourceError::Invalid(
+            "invalid observer tick source",
+        ));
     }
     let mut bytes = LINK_DOMAIN.to_vec();
     bytes.extend_from_slice(source.frozen_dataset_digest.as_array());
@@ -141,20 +143,19 @@ impl LedgerWriter {
         now: u64,
     ) -> Result<NeuronTrialObservedTickLinkV1, NeuronTrialSourceError> {
         if tick_objective_digest != plan.objective_digest {
-            return Err(NeuronTrialSourceError::Invalid("Neuron tick objective mismatch"));
+            return Err(NeuronTrialSourceError::Invalid(
+                "Neuron tick objective mismatch",
+            ));
         }
-        let source = self.read_neuron_trial_source_v1(
-            frozen_ledger,
-            plan,
-            signed_freeze,
-            dataset,
-            now,
-        )?;
+        let source =
+            self.read_neuron_trial_source_v1(frozen_ledger, plan, signed_freeze, dataset, now)?;
         let pair = source
             .terminal_joins
             .iter()
             .find(|join| &join.episode_id == episode_id)
-            .ok_or(NeuronTrialSourceError::Invalid("terminal episode not in native cohort"))?;
+            .ok_or(NeuronTrialSourceError::Invalid(
+                "terminal episode not in native cohort",
+            ))?;
         let mut native_decision = None;
         let mut finalized_at = None;
         for record in frozen_ledger.records() {
@@ -213,13 +214,8 @@ impl LedgerWriter {
         // No yield or asynchronous owner mutation occurs here. Nonetheless,
         // re-read the source after verifying the independent signature so a
         // corrected/withdrawn lineage cannot pass merely on a stale digest.
-        if self.read_neuron_trial_source_v1(
-            frozen_ledger,
-            plan,
-            signed_freeze,
-            dataset,
-            now,
-        )? != source
+        if self.read_neuron_trial_source_v1(frozen_ledger, plan, signed_freeze, dataset, now)?
+            != source
         {
             return Err(NeuronTrialSourceError::Invalid(
                 "native Ledger cohort changed during Observer validation",
