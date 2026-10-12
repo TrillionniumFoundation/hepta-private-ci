@@ -23,6 +23,8 @@ fn plan() -> CellSplitPlanV1 {
         scope_digest: digest(b"scope"),
         predecessor_id: id("cell:parent"),
         child_id: id("cell:child"),
+        predecessor_artifact_id: id("artifact:parent"),
+        child_artifact_id: id("artifact:child"),
         selected_candidate_id: id("candidate:child-1"),
         predecessor_generation: generation(7),
         child_generation: generation(8),
@@ -535,6 +537,26 @@ fn selection_candidate_mapping_changes_operation_keys() {
         left.operation_key(CellSplitStepV1::CnsRouteCutover),
         right.operation_key(CellSplitStepV1::CnsRouteCutover)
     );
+}
+
+#[test]
+fn artifact_identity_is_independent_from_cell_and_candidate_ids() {
+    let p = plan();
+    assert_ne!(p.child_id, p.child_artifact_id);
+    assert_ne!(p.selected_candidate_id, p.child_artifact_id);
+    let mut switched_artifact = p.clone();
+    switched_artifact.child_artifact_id = id("artifact:other-child");
+    assert_ne!(p.binding_digest(), switched_artifact.binding_digest());
+    assert_ne!(
+        p.operation_key(CellSplitStepV1::ArtifactCas),
+        switched_artifact.operation_key(CellSplitStepV1::ArtifactCas)
+    );
+    let mut stale_lineage = p.clone();
+    stale_lineage.predecessor_artifact_id = id("artifact:wrong-parent");
+    assert_ne!(p.binding_digest(), stale_lineage.binding_digest());
+    let mut invalid_lineage = p.clone();
+    invalid_lineage.child_artifact_id = invalid_lineage.predecessor_artifact_id.clone();
+    assert_eq!(invalid_lineage.validate(), Err(CellSplitErrorV1::InvalidPlan));
 }
 
 #[test]
