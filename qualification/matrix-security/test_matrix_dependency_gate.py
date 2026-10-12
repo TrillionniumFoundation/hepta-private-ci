@@ -64,6 +64,38 @@ class AuditTests(unittest.TestCase):
         self.assertFalse(r['matrix_e2ee_verified'])
         self.assertFalse(r['production_authorized'])
 
+    def test_cargo_strict_equals_pin_matches_safe_019_lock_without_waiver(self):
+        # Cargo's '=0.19.1' is more restrictive than the plain 0.19.1
+        # original research notation. It is neither a range nor a lock drift.
+        self.workspace['workspace']['dependencies']['matrix-sdk']['version']='=0.19.1'
+        self.workspace['patch']['crates-io'].clear()
+        self.toolchain['toolchain']['channel']='1.96.0'
+        for pkg in self.lock['package']:
+            if pkg['name'].startswith('matrix-sdk'):
+                pkg['version']='0.19.1'
+            if pkg['name']=='matrix-sdk':
+                pkg['dependencies']=[value.replace('anymap2','anymap3')
+                                     for value in pkg['dependencies']]
+            if pkg['name']=='anymap2':
+                pkg['name']='anymap3'
+                pkg['version']='1.1.0'
+        report=self.result()
+        self.assertTrue(report['static_prerequisites_passed'],report['blocking_prerequisites'])
+        self.assertEqual(report['matrix_sdk_requested_version'],'=0.19.1')
+        self.assertFalse(report['cargo_deny_verified'])
+        self.assertFalse(report['matrix_e2ee_verified'])
+        self.assertFalse(report['production_authorized'])
+        # An exact manifest declaration MUST still match Cargo.lock.
+        self.lock['package'][2]['version']='0.18.0'
+        self.assertIn('MATRIX_SDK_WORKSPACE_LOCK_MISMATCH',
+                      self.result()['blocking_prerequisites'])
+
+    def test_cargo_ranges_and_double_equals_do_not_become_exact_pins(self):
+        self.assertEqual(version('=0.19.1'),(0,19,1))
+        for value in ('==0.19.1','>=0.19.1','~0.19.1','^0.19.1','0.19.*'):
+            with self.assertRaises(ValueError):
+                version(value)
+
     def test_advisory_ignore_makes_security_check_fail(self):
         self.deny['advisories']['ignore']=[{'id':ADVISORY_CRYPTO,'reason':'pretend'}]
         self.assertIn('FORBIDDEN_ADVISORY_IGNORE:'+ADVISORY_CRYPTO, self.result()['blocking_prerequisites'])
