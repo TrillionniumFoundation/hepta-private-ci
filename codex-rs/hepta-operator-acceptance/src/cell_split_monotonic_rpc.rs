@@ -299,16 +299,9 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
             challenge_nonce: request.challenge_nonce,
             signature_bytes: Vec::new(),
         };
-        proof.signature_bytes = self
-            .signer
-            .sign(
-                &cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
-                    .map_err(|_| CellSplitMonotonicRpcErrorV1::Invalid)?,
-            )
-            .to_bytes()
-            .to_vec();
-        // Signing is not a commit. A fresh third read must prove the same
-        // durable source before writing this positive evidence to the socket.
+        // The third durable-state read and process-local highwater fence
+        // both precede signing. Invalid or regressed state cannot even create
+        // a positive signature to accidentally expose.
         if self.read_verified_domain(&first.journal_domain_id)? != first {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);
         }
@@ -335,7 +328,15 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
             }
             _ => {}
         }
-        // Record before sending: the signature already exists and a failed
+        proof.signature_bytes = self
+            .signer
+            .sign(
+                &cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
+                    .map_err(|_| CellSplitMonotonicRpcErrorV1::Invalid)?,
+            )
+            .to_bytes()
+            .to_vec();
+        // Record before sending: the signature now exists and a failed
         // socket acknowledgement must not allow a later downgraded signature.
         self.signed_highwater
             .insert(first.journal_domain_id.clone(), first);
