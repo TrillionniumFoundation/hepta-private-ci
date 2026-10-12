@@ -201,6 +201,40 @@ fn validate_item(
     Ok(())
 }
 
+/// The typed feature identity binds Scope, principal and purpose. Local
+/// request data remains non-authorizing until the independent production owner
+/// authenticates its source. Never put distinct partitions into one physical
+/// backend call; validate each member before any capacity or backend mutation.
+fn validate_batch_partition_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<(), Error> {
+    let first = requests.first().ok_or(Error::FeatureLimit)?;
+    if requests
+        .iter()
+        .any(|item| {
+            item.scope_id != first.scope_id
+                || item.principal_id != first.principal_id
+                || item.purpose_id != first.purpose_id
+        })
+    {
+        return Err(Error::FeatureContract);
+    }
+    Ok(())
+}
+
+/// The minimum memory needed for independent Q24 output buffers across the
+/// entire batch. Immutable input features are not re-materialized per Cell.
+/// This is a conservative admission floor, NOT measured backend RSS/scratch.
+fn minimum_batch_output_bytes_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<u64, Error> {
+    requests.iter().try_fold(0_u64, |total, item| {
+        let width =
+            u64::try_from(item.expected_output_width).map_err(|_| Error::ArithmeticOverflow)?;
+        let bytes = width
+            .checked_mul(2)
+            .and_then(|elements| elements.checked_mul(8))
+            .ok_or(Error::ArithmeticOverflow)?;
+        total.checked_add(bytes).ok_or(Error::ArithmeticOverflow)
+    })
+}
+
 impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
     /// Admits and executes an immutable-feature batch without ever expanding
     /// Arc<[i64]> into the old per-request Vec. Returns all rows or an error.
@@ -218,6 +252,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
         if requests.is_empty() || requests.len() > MAX_BATCH_ITEMS_V2 {
             return Err(Error::FeatureLimit);
         }
+        validate_batch_partition_v2(&requests)?;
         let maximum = self.grant.maximum_active_requests.min(MAX_ACTIVE_REQUESTS);
         if self
             .active_requests
@@ -260,6 +295,24 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
             if !reservation_ids.insert(item.authorization.reservation_id.as_str()) {
                 return Err(Error::FeatureContract);
             }
+        }
+
+        // Even a correct batch can exhaust its worker grant through many
+        // independent drive/prediction buffers. Reject before touching
+        // capacity counters or invoking a backend; do not multiply shared Arc
+        // input features into the calculation.
+        let resident_bytes = self
+            .models
+            .values()
+            .try_fold(0_u64, |total, loaded| {
+                total.checked_add(loaded.handle.observed_memory_bytes)
+            })
+            .ok_or(Error::ArithmeticOverflow)?;
+        let minimum_bytes = resident_bytes
+            .checked_add(minimum_batch_output_bytes_v2(&requests)?)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if minimum_bytes > self.grant.maximum_memory_bytes {
+            return Err(Error::ModelCapacity);
         }
 
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
@@ -450,6 +503,17 @@ mod tests {
     }
 
     #[test]
+    fn batch_output_memory_floor_counts_each_cell_without_cloning_shared_input() {
+        let shared = frame(2);
+        let a = req("cell.a", "request.a", Arc::clone(&shared));
+        let b = req("cell.b", "request.b", Arc::clone(&shared));
+        assert!(Arc::ptr_eq(&a.snapshot, &b.snapshot));
+        // Two Q24 output vectors, width two, for each of two Cells.
+        assert_eq!(minimum_batch_output_bytes_v2(&[a, b]), Ok(64));
+        assert_eq!(minimum_batch_output_bytes_v2(&[]), Ok(0));
+    }
+
+    #[test]
     fn zero_copy_shared_arc_and_cell_binding_are_in_digest() {
         let shared = frame(2);
         let a = req("cell.a", "request.a", Arc::clone(&shared));
@@ -480,6 +544,46 @@ mod tests {
             maximum_tokens: 64,
         };
         assert!(validate_item(&a, 10, 3, 2, &manifest).is_ok());
+        let same_partition = req("cell.b", "req.2", frame(2));
+        assert!(validate_batch_partition_v2(&[a.clone(), same_partition.clone()]).is_ok());
+        // Both members below have individually valid content and lease
+        // payload digests. Only the cross-principal/purpose *cohort* is
+        // forbidden: an untrusted Caller must not use a CPU/GPU batch to
+        // coalesce two independently scoped feature identities.
+        for other_principal in [true, false] {
+            let mut mixed = same_partition.clone();
+            let mut other_snapshot = (*mixed.snapshot).clone();
+            if other_principal {
+                mixed.principal_id = id("principal.other");
+                other_snapshot.identity.principal_id = mixed.principal_id.clone();
+            } else {
+                mixed.purpose_id = id("purpose.other");
+                other_snapshot.identity.purpose_id = mixed.purpose_id.clone();
+            }
+            mixed.snapshot = Arc::new(other_snapshot);
+            let payload = canonical_shared_neuron_payload_digest_v2(&mixed).expect("mixed payload");
+            mixed.authorization.payload_digest = payload.clone();
+            mixed.authorization.lease_payload_digest = payload;
+            assert!(validate_item(&mixed, 10, 3, 2, &manifest).is_ok());
+            assert_eq!(
+                validate_batch_partition_v2(&[a.clone(), mixed]),
+                Err(Error::FeatureContract)
+            );
+        }
+        let mut other_scope = same_partition.clone();
+        other_scope.scope_id = id("scope.other");
+        let mut other_snapshot = (*other_scope.snapshot).clone();
+        other_snapshot.identity.scope_id = other_scope.scope_id.clone();
+        other_scope.snapshot = Arc::new(other_snapshot);
+        let scoped_payload =
+            canonical_shared_neuron_payload_digest_v2(&other_scope).expect("scoped payload");
+        other_scope.authorization.payload_digest = scoped_payload.clone();
+        other_scope.authorization.lease_payload_digest = scoped_payload;
+        assert!(validate_item(&other_scope, 10, 3, 2, &manifest).is_ok());
+        assert_eq!(
+            validate_batch_partition_v2(&[a.clone(), other_scope]),
+            Err(Error::FeatureContract)
+        );
         assert_eq!(
             validate_item(&a, 1000, 3, 2, &manifest),
             Err(Error::FeatureContract)
