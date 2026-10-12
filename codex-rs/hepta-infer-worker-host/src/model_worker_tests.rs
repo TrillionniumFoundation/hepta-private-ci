@@ -5,6 +5,7 @@ struct Driver {
     fail_terminal: bool,
     indeterminate: bool,
     corrupt_neuron_head: bool,
+    neuron_calls: usize,
     loaded: usize,
     unload_attempts: usize,
     fail_load: bool,
@@ -71,6 +72,7 @@ impl NeuronFeatureDriver for Driver {
         _handle: &DriverModelHandle,
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
+        self.neuron_calls += 1;
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
                 terminal_observed: false,
@@ -262,6 +264,58 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
         worker.run_neuron_features(100, "model.1", neuron_feature_request()),
         Err(Error::FeatureOutputMismatch)
     );
+}
+
+#[test]
+fn typed_neuron_worker_enforces_model_and_reservation_token_limits_before_driver() {
+    let mut constrained = manifest();
+    constrained.maximum_tokens = 16;
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.typed-token-ceiling".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .unwrap();
+    worker.load_model(100, constrained).unwrap();
+
+    // Worker model is frozen at 16, but the typed request asks for 64.
+    let too_large = neuron_feature_request();
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", too_large.clone()),
+        Err(Error::TokenLimit)
+    );
+    assert_eq!(worker.driver.neuron_calls, 0);
+    // A failed pre-driver attempt still consumed this identity; never replay.
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", too_large),
+        Err(Error::NeuronReservationReplay)
+    );
+
+    // Even within the model's budget, do not exceed the reservation quota.
+    let mut unreserved = neuron_feature_request();
+    unreserved.authorization.request_id = "request.token2".to_string();
+    unreserved.authorization.reservation_id = "reservation.token2".to_string();
+    unreserved.authorization.maximum_tokens = 16;
+    unreserved.authorization.reservation_maximum_tokens = 8;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", unreserved),
+        Err(Error::TokenLimit)
+    );
+    assert_eq!(worker.driver.neuron_calls, 0);
+
+    // A distinct, legitimately bounded identity reaches the actual driver.
+    let mut valid = neuron_feature_request();
+    valid.authorization.request_id = "request.token3".to_string();
+    valid.authorization.reservation_id = "reservation.token3".to_string();
+    valid.authorization.maximum_tokens = 16;
+    valid.authorization.reservation_maximum_tokens = 16;
+    let observation = worker
+        .run_neuron_features(100, "model.1", valid)
+        .unwrap();
+    assert_eq!(observation.status, ExecutionStatus::Succeeded);
+    assert_eq!(worker.driver.neuron_calls, 1);
 }
 
 #[test]

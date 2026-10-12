@@ -700,6 +700,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::ModelMismatch);
         }
+        // Never rely solely on the upstream durable owner to enforce token
+        // budgets. Ordinary Worker::run checks both limits; the typed Neuron
+        // path must impose the same bounds before invoking the real driver.
+        if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens
+            || request.authorization.maximum_tokens
+                > request.authorization.reservation_maximum_tokens
+        {
+            return Err(Error::TokenLimit);
+        }
         let payload_digest = canonical_neuron_feature_payload_digest(&request);
         if request.authorization.payload_digest != payload_digest
             || request.authorization.lease_payload_digest != payload_digest

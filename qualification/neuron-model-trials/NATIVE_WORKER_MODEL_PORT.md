@@ -265,3 +265,17 @@ Crash recovery, current signed resource grants, actual CAS load and CNS
 selection remain separate gates. This code never changes production
 selection, release, final-use permission, model rankings or NDU.
 
+
+## Defense-in-depth: enforce typed Neuron token quotas inside the Worker
+
+The durable inference.control assignment already bounds the requested tokens
+against its approved reservation and loaded model. The Worker also validates
+the two limits again immediately before a typed `NeuronFeatureDriver` call,
+matching the ordinary `InferenceWorker::run` budget check. This does not
+change any grant, permit more tokens or create another admission owner.
+
+The native regression confirms that both an over-manifest limit and an
+over-reservation limit fail without calling the physical driver, that the
+first rejected request cannot be replayed, and that a fresh valid token
+reservation still succeeds. This is a fixture driver test, not a production
+throughput or model-quality result.
