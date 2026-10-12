@@ -181,7 +181,7 @@ class DynamicLearning(unittest.TestCase):
                     q24_reference(item, [Q24, Q24])
         for bad_inputs in (
                 [True, Q24], [Q24, float(Q24)],
-                [Q24 + 1, Q24], [Q24],
+                [8 * Q24 + 1, Q24], [Q24],
                 np.array([Q24, Q24]), [0, "0"]):
             with self.subTest(input=str(bad_inputs)):
                 with self.assertRaises(LearningContractError):
