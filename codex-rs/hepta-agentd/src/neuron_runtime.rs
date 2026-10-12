@@ -393,13 +393,18 @@ fn require_owner_issued_cohort(
         }
         previous = Some(observed);
     }
-    let mut used = BTreeSet::new();
+    let mut used_episodes = BTreeSet::new();
+    let mut used_tick_digests = BTreeSet::new();
     for row in requested {
-        if !used.insert(&row.episode_id)
+        if !used_episodes.insert(&row.episode_id)
+            || !used_tick_digests.insert(row.tick_observation_digest)
             || seen_ticks.get(&row.tick_observation_digest) != Some(&row.tick_generation)
         {
             return Err(NeuronRuntimeError::ModelBindingMismatch);
         }
+    }
+    if used_tick_digests.len() != seen_ticks.len() {
+        return Err(NeuronRuntimeError::ModelBindingMismatch);
     }
     Ok(())
 }

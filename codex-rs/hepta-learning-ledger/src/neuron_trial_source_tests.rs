@@ -651,6 +651,10 @@ fn native_observer_cohort_is_signed_complete_and_rejects_reused_tick() {
     assert_eq!(received.authority, AuthorityPosture::DENY_ALL);
     assert_eq!(received.ticks, vec![tick.clone()]);
     assert_eq!(received.observer_controller_id, id("observer-controller"));
+    assert!(!received.observer_trust_digest.is_zero());
+    let mut forged_trust = received.clone();
+    forged_trust.observer_trust_digest = digest("different-observer-trust");
+    assert!(!forged_trust.validate_integrity());
     let mut forged_mixed = received.clone();
     forged_mixed.ticks.push(NeuronTrialCohortTickV1 {
         episode_id: id("new-episode"),

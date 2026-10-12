@@ -229,6 +229,11 @@ fn owner_issued_cohort_requires_contiguous_distinct_ticks_and_exact_episode_mapp
     assert!(super::require_owner_issued_cohort(&history, &forged).is_err());
     let mut duplicate = rows.clone();
     duplicate[1].tick_observation_digest = duplicate[0].tick_observation_digest;
+    // Both Episodes exist, but one actual owner-issued Tick is double-credited
+    // and the other never credited. Reject at Agentd BEFORE Ledger signature.
+    assert!(super::require_owner_issued_cohort(&history, &duplicate).is_err());
+    let mut duplicate = rows.clone();
+    duplicate[0].tick_observation_digest = duplicate[1].tick_observation_digest;
     assert!(super::require_owner_issued_cohort(&history, &duplicate).is_err());
     let mut generation_drift = rows.clone();
     generation_drift[1].tick_generation = Generation::new(10).unwrap();

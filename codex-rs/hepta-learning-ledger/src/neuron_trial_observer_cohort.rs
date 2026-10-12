@@ -42,6 +42,8 @@ pub struct NeuronTrialObservedCohortV1 {
     pub ledger_source_digest: Digest32,
     pub observer_principal_id: StableId,
     pub observer_controller_id: StableId,
+    /// Exact verified independent Observer trust distribution at read time.
+    pub observer_trust_digest: Digest32,
     pub observer_signature_digest: Digest32,
     pub observer_signed_at: u64,
     /// Canonical ascending Episode order.
@@ -58,6 +60,7 @@ impl NeuronTrialObservedCohortV1 {
         bytes.extend_from_slice(self.ledger_source_digest.as_array());
         push_id(&mut bytes, &self.observer_principal_id);
         push_id(&mut bytes, &self.observer_controller_id);
+        bytes.extend_from_slice(self.observer_trust_digest.as_array());
         bytes.extend_from_slice(self.observer_signature_digest.as_array());
         bytes.extend_from_slice(&self.observer_signed_at.to_be_bytes());
         bytes.extend_from_slice(&(self.ticks.len() as u64).to_be_bytes());
@@ -75,6 +78,7 @@ impl NeuronTrialObservedCohortV1 {
         if self.authority != AuthorityPosture::DENY_ALL
             || self.frozen_dataset_digest.is_zero()
             || self.ledger_source_digest.is_zero()
+            || self.observer_trust_digest.is_zero()
             || self.observer_signature_digest.is_zero()
             || self.observer_signed_at == 0
             || self.ticks.is_empty()
@@ -258,6 +262,7 @@ impl LedgerWriter {
             ledger_source_digest: source.diagnostic_digest,
             observer_principal_id: verified.principal().principal_id.clone(),
             observer_controller_id: verified.controller_id().clone(),
+            observer_trust_digest: verified.trust_digest(),
             observer_signature_digest: Digest32::of_bytes(&signed_bytes),
             observer_signed_at: observer_signed_batch.issued_at,
             ticks: ordered,

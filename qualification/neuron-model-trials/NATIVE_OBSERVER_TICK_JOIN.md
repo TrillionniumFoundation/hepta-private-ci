@@ -119,3 +119,11 @@ issued series. A separate durable trusted evidence owner must still retain
 the original source observations, historical signed Tick acknowledgements,
 cross-window uniqueness, actual CNS/Artifact selected model and elapsed
 outcomes before production no-change/NDU evaluation can be authorized.
+
+## Enforced one-to-one Episode/Tick mapping and Observer trust pin
+
+The Agentd owner now rejects a complete batch if the same actual issued Tick
+is mapped to two different Episodes, before consulting the independent Ledger.
+The Ledger batch receipt also binds the verified Observer trust-distribution
+digest to its canonical checksum, consistent with the single-Episode receipt.
+Both remain DENY_ALL; physical no-change evaluation requires live owner checks.
