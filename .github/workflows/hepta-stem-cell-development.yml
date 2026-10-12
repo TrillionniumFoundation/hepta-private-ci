@@ -51,7 +51,7 @@ jobs:
               test_shared_encoder_eviction development_tensor_checks development_repository_checks \
               development_study_checks public_structural_checks \
               selection_replay_checks serving_probe_checks public_corpus_checks historical_feature_checks \
-              shared_cell_execution_checks multicell_execution_checks
+              shared_cell_execution_checks multicell_execution_checks bge_snapshot_checks
           } 2>&1 | tee "$RUNNER_TEMP/stem-development-tests.txt"
       - name: Preserve exact-source result including failures
         if: always()
@@ -105,6 +105,7 @@ jobs:
           set -euo pipefail
           "$RUNNER_TEMP/stem-public-venv/bin/python" qualification/stem-cell-v1/public_structural_stage.py \
             --output "$RUNNER_TEMP/stem-public-inputs" --partition-policy protected_content_groups_v2 \
+            --snapshot-policy bge-pinned-position-buffer-v1 \
             2>&1 | tee "$RUNNER_TEMP/stem-public-evidence/staging.log"
       - name: Execute existing offline Encoder and five-arm learning
         env:

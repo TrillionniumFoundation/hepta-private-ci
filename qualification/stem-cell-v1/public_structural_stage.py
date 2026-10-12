@@ -1,7 +1,8 @@
 """Explicit public-input provisioner for an isolated research host.
 
 Only this staging command has network access. The existing inference loader
-stays offline/safetensors-only; no fallback, conversion, signer or deployment.
+stays offline/safetensors-only. Explicit pinned buffer conversion is a separate
+opt-in staging recipe; no fallback, signer or deployment.
 """
 from __future__ import annotations
 
@@ -22,6 +23,7 @@ WEIGHTS_SHA256 = "3c9f31665447c8911517620762200d2245a2518d6e7208acc78cd9db317e21
 MODEL_FILES = ("config.json", "model.safetensors", "special_tokens_map.json",
                "tokenizer.json", "tokenizer_config.json", "vocab.txt")
 MAX_FILE_BYTES = 160_000_000
+SNAPSHOT_POLICIES = ("published_strict_v1", "bge-pinned-position-buffer-v1")
 
 
 def download_checked(url, destination, expected_size, algorithm, expected_hash):
@@ -80,7 +82,9 @@ def model_pins(info):
     return pins
 
 
-def stage(output, *, partition_policy=STRICT_PARTITIONS):
+def stage(output, *, partition_policy=STRICT_PARTITIONS, snapshot_policy="published_strict_v1"):
+    if snapshot_policy not in SNAPSHOT_POLICIES:
+        raise ValueError("unknown explicit snapshot policy")
     if partition_policy not in PARTITION_POLICIES:
         raise ValueError("unknown explicit partition policy")
     output = Path(output)
@@ -92,7 +96,7 @@ def stage(output, *, partition_policy=STRICT_PARTITIONS):
     write_once(output / "PLAN.json", {"model": MODEL, "revision": REVISION,
         "weights_sha256": WEIGHTS_SHA256, "data_revision": DATA_REVISION,
         "data_git_blob": DATA_GIT_BLOB, "time_basis": "publisher_partition",
-        "partition_policy": partition_policy,
+        "partition_policy": partition_policy, "snapshot_policy": snapshot_policy,
         "production_authorized": False})
     try:
         # Validate real task data before spending resources downloading weights.
@@ -107,7 +111,7 @@ def stage(output, *, partition_policy=STRICT_PARTITIONS):
         info = HfApi().model_info(MODEL, revision=REVISION, files_metadata=True, token=False)
         pins = model_pins(info)
         write_once(output / "publisher-model-pins.json", pins)
-        snapshot = output / "model"
+        snapshot = output / ("model" if snapshot_policy == "published_strict_v1" else "publisher-model")
         snapshot.mkdir()
         observed = {}
         for name, (size, algorithm, expected) in pins.items():
@@ -119,9 +123,16 @@ def stage(output, *, partition_policy=STRICT_PARTITIONS):
                 or config.get("max_position_embeddings") != 512
                 or "auto_map" in config or "auto_map" in tokenizer):
             raise ValueError("unexpected native BGE model/tokenizer architecture")
+        canonicalization = None
+        if snapshot_policy == "bge-pinned-position-buffer-v1":
+            from bge_snapshot_canonicalization import canonicalize
+            canonicalization = canonicalize(snapshot, output / "model")
+            snapshot = output / "model"
         from model_runner import snapshot_digest
         result = {"schema": "hepta.stem.public-stage.v1", "model": MODEL, "revision": REVISION,
-            "partition_policy": partition_policy, "snapshot_sha256": snapshot_digest(snapshot), "model_files": observed,
+            "partition_policy": partition_policy, "snapshot_policy": snapshot_policy,
+            "canonicalization": canonicalization, "snapshot_sha256": snapshot_digest(snapshot), "model_files": observed,
+            "model_files_scope": "unchanged published files; derived identity is in canonicalization",
             "model_license": "MIT", "dataset_sha256": dataset_sha, "config_sha256": config_sha,
             "cpu_ns": time.process_time_ns() - start_cpu, "wall_ns": time.perf_counter_ns() - start_wall,
             "genuine_future_windows": False, "production_authorized": False}
@@ -138,5 +149,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--partition-policy", choices=PARTITION_POLICIES, default=STRICT_PARTITIONS)
+    parser.add_argument("--snapshot-policy", choices=SNAPSHOT_POLICIES, default="published_strict_v1")
     args = parser.parse_args()
-    stage(args.output, partition_policy=args.partition_policy)
+    stage(args.output, partition_policy=args.partition_policy, snapshot_policy=args.snapshot_policy)
