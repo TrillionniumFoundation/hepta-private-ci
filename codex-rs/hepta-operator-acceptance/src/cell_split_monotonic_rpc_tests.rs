@@ -440,3 +440,139 @@ fn independent_server_rejects_caller_supplied_highwater_and_missing_domain() {
     assert!(service.serve_connection(&mut server).is_err());
     assert!(file.exists());
 }
+
+fn write_test_frontier_revision(
+    path: &Path,
+    revision: u64,
+    source_sequence: u64,
+    checkpoint_byte: &str,
+) {
+    let bytes = std::fs::read(path).expect("read original external registry");
+    let mut record: CellSplitMonotonicDurableFrontierV1 =
+        serde_json::from_slice(&bytes).expect("typed external frontier");
+    record.journal_revision = revision;
+    record.durable_source_sequence = source_sequence;
+    record.minimum_checkpoint_digest = checkpoint_byte.repeat(32);
+    record.original_store_record_digest = checkpoint_byte.repeat(32);
+    std::fs::write(
+        path,
+        crate::durable::canonical_json(&record).expect("canonical replacement"),
+    )
+    .expect("write independent test registry");
+    std::fs::File::open(path)
+        .expect("reopen current registry")
+        .sync_all()
+        .expect("persist source-only registry");
+}
+
+fn request_from_monotonic_service(
+    service: &mut CellSplitMonotonicRpcServiceV1<DiskAuthoritativeRegistry>,
+    challenge_byte: &str,
+) -> Result<(), CellSplitMonotonicRpcErrorV1> {
+    let (mut client, mut server) = std::os::unix::net::UnixStream::pair().expect("socket pair");
+    let nonce = challenge_byte.repeat(32);
+    send_frame(
+        &mut client,
+        &CellSplitMonotonicRpcRequestV1 {
+            schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.into(),
+            method: READ_METHOD.into(),
+            journal_domain_id: DOMAIN.into(),
+            challenge_nonce: nonce.clone(),
+        },
+    )
+    .expect("bounded request");
+    service.serve_connection(&mut server)?;
+    let received: CellSplitMonotonicRpcResponseV1 =
+        receive_frame(&mut client).expect("signed response");
+    assert!(received.error.is_none());
+    let proof = received.proof.expect("positive signed proof");
+    assert_eq!(proof.challenge_nonce, nonce);
+    signer()
+        .verifying_key()
+        .verify_strict(
+            &cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
+                .expect("canonical proof payload"),
+            &Signature::from_slice(&proof.signature_bytes).expect("signature"),
+        )
+        .expect("independently pinned signed proof");
+    Ok(())
+}
+
+#[test]
+fn signer_process_cannot_resign_regressed_or_rewritten_domain_highwater() {
+    let root = tempfile::tempdir().expect("independent source-only registry");
+    let file = write_test_registry(root.path());
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        DiskAuthoritativeRegistry::open(file.clone()),
+        signer(),
+        Duration::from_secs(2),
+    )
+    .expect("pinned monotonic signer");
+
+    request_from_monotonic_service(&mut service, "aa").expect("original signed highwater");
+    // A valid, fsynced *older* copy is still readable and locally
+    // self-consistent. Re-signing it would create a rollback proof.
+    write_test_frontier_revision(&file, 9, 40, "cc");
+    assert!(matches!(
+        request_from_monotonic_service(&mut service, "bb"),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+    // Even equal revision/sequence must not silently change an identity.
+    write_test_frontier_revision(&file, 10, 41, "dd");
+    assert!(matches!(
+        request_from_monotonic_service(&mut service, "cc"),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+    // A real newer committed domain record may legitimately be signed.
+    write_test_frontier_revision(&file, 11, 42, "ee");
+    request_from_monotonic_service(&mut service, "dd").expect("forward monotonic progression");
+    write_test_frontier_revision(&file, 10, 41, "ff");
+    assert!(matches!(
+        request_from_monotonic_service(&mut service, "ee"),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+}
+
+#[test]
+fn signer_process_refuses_source_sequence_and_epoch_regressions() {
+    let root = tempfile::tempdir().expect("source-only registry");
+    let file = write_test_registry(root.path());
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        DiskAuthoritativeRegistry::open(file.clone()),
+        signer(),
+        Duration::from_secs(2),
+    )
+    .expect("independent signer");
+    request_from_monotonic_service(&mut service, "aa").expect("initial highwater");
+
+    // A larger logical revision must not mask rollback of the original
+    // durable source sequence when a local registry was restored.
+    let original: CellSplitMonotonicDurableFrontierV1 =
+        serde_json::from_slice(&std::fs::read(&file).expect("record")).expect("frontier");
+    let mut changed = original.clone();
+    changed.journal_revision += 1;
+    changed.durable_source_sequence -= 1;
+    std::fs::write(
+        &file,
+        crate::durable::canonical_json(&changed).expect("canonical"),
+    )
+    .expect("write regressed sequence");
+    assert!(matches!(
+        request_from_monotonic_service(&mut service, "bb"),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+
+    // A lower epoch is not a successor even if revision and sequence rise.
+    changed.journal_authority_epoch -= 1;
+    changed.journal_revision += 1;
+    changed.durable_source_sequence = original.durable_source_sequence + 1;
+    std::fs::write(
+        &file,
+        crate::durable::canonical_json(&changed).expect("canonical"),
+    )
+    .expect("write regressed authority epoch");
+    assert!(matches!(
+        request_from_monotonic_service(&mut service, "cc"),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+}
