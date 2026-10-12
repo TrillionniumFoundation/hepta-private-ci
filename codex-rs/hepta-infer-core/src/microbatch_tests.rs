@@ -75,6 +75,47 @@ fn immutable_payload_is_shared_without_vector_copy() {
 }
 
 #[test]
+fn rejected_future_admission_never_poisoned_monotonic_clock() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    q.enqueue(10, intent("original", "scope-a", 1, 1, 100))
+        .unwrap();
+
+    let mut invalid_digest = intent("invalid", "scope-b", 1, 1, 2_000);
+    invalid_digest.feature_digest = Digest32::ZERO;
+    assert_eq!(
+        q.enqueue(1_000, invalid_digest),
+        Err(SchedulerErrorV1::EmptyDigest)
+    );
+
+    // The rejected request is not a clock observation: time 11 remains valid.
+    q.enqueue(11, intent("accepted", "scope-b", 1, 1, 100))
+        .unwrap();
+
+    assert_eq!(
+        q.enqueue(999, intent("accepted", "scope-b", 1, 1, 2_000)),
+        Err(SchedulerErrorV1::DuplicateRequest)
+    );
+
+    // Neither the invalid feature nor the duplicate may advance the clock.
+    assert_eq!(q.pending(), 2);
+    assert!(q.poll(20).unwrap().batch.is_some());
+}
+
+#[test]
+fn rejected_expired_request_does_not_fence_later_valid_admission() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    q.enqueue(4, intent("first", "one", 1, 1, 100)).unwrap();
+    assert_eq!(
+        q.enqueue(200, intent("expired", "two", 1, 1, 100)),
+        Err(SchedulerErrorV1::Expired)
+    );
+    q.enqueue(5, intent("second", "two", 1, 1, 100))
+        .unwrap();
+    assert_eq!(q.pending(), 2);
+    assert_eq!(q.poll(15).unwrap().pending, 1);
+}
+
+#[test]
 fn capacity_duplicate_and_expired_fail_closed() {
     let mut conf = limits();
     conf.max_pending = 1;
