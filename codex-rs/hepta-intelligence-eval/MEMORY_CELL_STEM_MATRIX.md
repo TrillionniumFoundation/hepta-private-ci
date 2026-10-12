@@ -1382,3 +1382,35 @@ The experiment is explicitly marked
 `format_change_not_a_memory_learning_gain=true`,
 `semantic_citation_precision=null`, and
 `production_accepted=false`.
+
+## Actual pretrained frozen-Encoder pairwise loss shadow (separate from the six-arm matrix)
+
+A new **source-only** experimental branch inside the native CPU test runs
+a distinct pairwise-linear and pairwise-gated Head using the *original frozen*
+Encoder Features (no extra Encoder call). Unlike the ordinary
+multi-positive/null SGD, the training-only pairwise objective compares the
+highest native-labelled positive score against the strongest **weak distractor**
+among the registered TRAIN candidates; the null/abstention output is not fit.
+Each of the two Head kinds has a separate persistent General and Temporal
+state trained at fixed 16/32/48 prefixes, 128 SGD steps per checkpoint,
+`lr=0.03` and `margin=1.0`. These budgets are fixed in the
+pre-run manifest, **not selected on test or transfer labels**.
+
+All 12 separate pairwise Head fits and 192 label-blind source-only
+test/select/retention/transfer selections are sealed before native held-out
+support annotations are opened. Each shadow Head is separately persisted
+and reloaded with strict original Encoder, source-root and tensor SHA checks.
+No new Reader call is made, and the original frozen Reader, six policy
+Head tensors, 576 original policy answers and source cut are verified
+unchanged. Failures remain in a full planned shadow denominator.
+
+After all choices are fixed, retrospective weak **document-source** support
+gains and regressions versus the original frozen top-1 are tallied separately
+by stage, phase and Head. A positive shadow source-only result is **not** a
+Reader answer gain, independently reviewed window entailment, citation
+precision, statistical proof of independent-family generalization, or
+production-ready policy. A loss or regression in test/transfer is
+preserved, never masked by selected favorable rows. The independent
+research module and its tiny real-Torch test have their own hosted CI,
+and any changed native run must obtain its own exact-source terminal
+status before declaring even shadow outcomes.

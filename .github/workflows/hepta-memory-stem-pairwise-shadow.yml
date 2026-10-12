@@ -6,6 +6,8 @@ on:
     paths:
       - "scripts/memory_cell/stem_pairwise_shadow.py"
       - "scripts/memory_cell/test_stem_pairwise_shadow.py"
+      - "scripts/memory_cell/stem_native_pairwise_shadow.py"
+      - "scripts/memory_cell/test_stem_native_pairwise_shadow.py"
       - ".github/workflows/hepta-memory-stem-pairwise-shadow.yml"
 permissions:
   contents: read
@@ -40,15 +42,16 @@ jobs:
           set -euo pipefail
           git rev-parse HEAD > /tmp/stem-pairwise-receipt/tested-commit.txt
           git rev-parse HEAD^{tree} > /tmp/stem-pairwise-receipt/tested-tree.txt
-          /tmp/stem-pairwise-env/bin/python -m unittest -v test_stem_pairwise_shadow 2>&1 | tee /tmp/stem-pairwise-receipt/tests.log
-          /tmp/stem-pairwise-env/bin/python -m compileall -q scripts/memory_cell/stem_pairwise_shadow.py scripts/memory_cell/test_stem_pairwise_shadow.py
-          /tmp/stem-pairwise-env/bin/ruff check --select F,E9 scripts/memory_cell/stem_pairwise_shadow.py scripts/memory_cell/test_stem_pairwise_shadow.py 2>&1 | tee /tmp/stem-pairwise-receipt/lint.log
+          /tmp/stem-pairwise-env/bin/python -m unittest -v test_stem_pairwise_shadow test_stem_native_pairwise_shadow 2>&1 | tee /tmp/stem-pairwise-receipt/tests.log
+          /tmp/stem-pairwise-env/bin/python -m compileall -q scripts/memory_cell/stem_pairwise_shadow.py scripts/memory_cell/test_stem_pairwise_shadow.py scripts/memory_cell/stem_native_pairwise_shadow.py scripts/memory_cell/test_stem_native_pairwise_shadow.py
+          /tmp/stem-pairwise-env/bin/ruff check --select F,E9 scripts/memory_cell/stem_pairwise_shadow.py scripts/memory_cell/test_stem_pairwise_shadow.py scripts/memory_cell/stem_native_pairwise_shadow.py scripts/memory_cell/test_stem_native_pairwise_shadow.py 2>&1 | tee /tmp/stem-pairwise-receipt/lint.log
       - name: Retain source, every failing log, and file checksums
         if: always()
         run: |
           set -euo pipefail
           mkdir -p /tmp/stem-pairwise-receipt/source
           cp scripts/memory_cell/stem_pairwise_shadow.py scripts/memory_cell/test_stem_pairwise_shadow.py /tmp/stem-pairwise-receipt/source/
+          cp scripts/memory_cell/stem_native_pairwise_shadow.py scripts/memory_cell/test_stem_native_pairwise_shadow.py /tmp/stem-pairwise-receipt/source/
           cp .github/workflows/hepta-memory-stem-pairwise-shadow.yml /tmp/stem-pairwise-receipt/source/
           (cd /tmp/stem-pairwise-receipt && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

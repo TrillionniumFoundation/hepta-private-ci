@@ -46,6 +46,11 @@ from stem_reader_paired_control import compare_frozen_to_no_evidence
 from stem_cell_geometry import inspect_selection, summarize_geometry
 from stem_cell_training_probe import train_probe, summarize_train_probes
 from stem_head_fit_dynamics import compare_train_head_before_after
+from stem_native_pairwise_shadow import (
+    native_pairwise_shadow,
+    review_pairwise_shadow,
+)
+from selector_evaluation import support_indices
 from stem_cell_shadow_scale import (
     calibrate_shadow_scale,
     choose_shadow,
@@ -197,6 +202,12 @@ def run(staged, ranker_dir, output):
             "diagnostic separate from the six learned policies"
         ),
         score_geometry_policy="frozen-native-logits-versus-head; forced-top1; label-free",
+        pairwise_shadow_protocol=(
+            "separate TRAIN-only frozen-Encoder linear+gated Heads; "
+            "3 persistent checkpoints; 128 steps each; SGD lr0.03; "
+            "weak-positive-versus-hardest-distractor margin1; "
+            "192 label-blind choices; zero new Reader calls; no policy-arm change"
+        ),
         training_probe_policy="three-way frozen Encoder vs adapted Encoder vs saved Head; only train cut",
         calibration_or_final_label_hyperparameter_search=False,
         reference_oracle="post-policy answer-dependent source span; NOT independently verified gold evidence",
@@ -927,6 +938,28 @@ def run(staged, ranker_dir, output):
             pools,
         )
         write(output / "shadow-provenance.json", shadow_provenance)
+        # An independent pairwise-ranking loss tests whether native weak source
+        # support can teach a distinct Head without null-logit shortcuts.
+        # Original 576 policy answers are already sealed. This produces only
+        # label-blind SOURCE CHOICES and NEVER calls Reader or Encoder.
+        frozen_head_snapshots = {
+            key: sha256(head.export()) for key, head in heads.items()
+        }
+        previous_reader_accounting = reader_session.summary()
+        pairwise_shadow_fits, pairwise_shadow_choices = native_pairwise_shadow(
+            qs, rows, initial_features, cut, plan["routes"], output,
+        )
+        if (
+            reader_session.summary() != previous_reader_accounting
+            or any(
+                sha256(heads[key].export()) != before
+                for key, before in frozen_head_snapshots.items()
+            )
+        ):
+            raise ValueError("pairwise shadow mutated original Reader or six Heads")
+        write(output / "pairwise-shadow-train-fits.json", pairwise_shadow_fits)
+        for record in pairwise_shadow_choices:
+            append(output / "pairwise-shadow-label-blind-choices.jsonl", record)
         census = validate_census(attempts, plan)
         scored = [
             score_attempt(
@@ -937,6 +970,24 @@ def run(staged, ranker_dir, output):
             for item in attempts
         ]
         write(output / "scored-policy-attempts.json", scored)
+        # Gold document support is read only AFTER the 192 shadow selections.
+        pairwise_shadow_report = review_pairwise_shadow(
+            qs, pairwise_shadow_fits, pairwise_shadow_choices,
+            {
+                (a["stage"], a["phase"], a["question_id"]): a
+                for a in attempts if a["arm"] == "frozen_rerank"
+            },
+            pools,
+            {
+                q.identity: source_for[q.identity].targets[q.identity]
+                for phase in PHASES for q in qs[phase]
+            },
+            support_indices=support_indices,
+        )
+        write(
+            output / "pairwise-shadow-posthoc-source-support.json",
+            pairwise_shadow_report,
+        )
         # The shadow candidate choices were sealed before ANY native
         # post-hoc target annotations are used to judge support.
         shadow_source_report = summarize_shadow_heldout(
@@ -1139,6 +1190,7 @@ def run(staged, ranker_dir, output):
             shadow_source_calibrations=shadow_calibrations,
             shadow_source_provenance=shadow_provenance,
             shadow_source_support_postpolicy=shadow_source_report,
+            native_pairwise_shadow_source_only=pairwise_shadow_report,
             census=census,
             **summarize(scored),
             learning=learning,

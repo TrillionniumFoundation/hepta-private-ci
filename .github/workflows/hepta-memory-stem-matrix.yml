@@ -9,6 +9,8 @@ on:
       - "scripts/memory_cell/stem_score_replay.py"
       - "scripts/memory_cell/test_stem_score_replay.py"
       - "scripts/memory_cell/stem_head_fit_dynamics.py"
+      - "scripts/memory_cell/stem_native_pairwise_shadow.py"
+      - "scripts/memory_cell/test_stem_native_pairwise_shadow.py"
       - "scripts/memory_cell/stem_train_heldout_bridge.py"
       - "scripts/memory_cell/stem_effective_n.py"
       - "scripts/memory_cell/test_stem_effective_n.py"
@@ -85,7 +87,7 @@ jobs:
         run: |
           set -euo pipefail
           /tmp/stem-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/stem-native/tests.log
-          /tmp/stem-python/bin/ruff check --select F,E9 scripts/memory_cell/stem_cell*.py scripts/memory_cell/test_stem_cell*.py scripts/memory_cell/stem_head_fit_dynamics.py scripts/memory_cell/test_stem_head_fit_dynamics.py scripts/memory_cell/stem_train_heldout_bridge.py scripts/memory_cell/test_stem_train_heldout_bridge.py scripts/memory_cell/stem_native_null_ablation.py scripts/memory_cell/test_stem_native_null_ablation.py scripts/memory_cell/stem_effective_n.py scripts/memory_cell/test_stem_effective_n.py scripts/memory_cell/stem_null_reader_splice.py scripts/memory_cell/test_stem_null_reader_splice.py scripts/memory_cell/stem_score_replay.py scripts/memory_cell/test_stem_score_replay.py 2>&1 | tee /tmp/stem-native/lint.log
+          /tmp/stem-python/bin/ruff check --select F,E9 scripts/memory_cell/stem_cell*.py scripts/memory_cell/test_stem_cell*.py scripts/memory_cell/stem_head_fit_dynamics.py scripts/memory_cell/test_stem_head_fit_dynamics.py scripts/memory_cell/stem_train_heldout_bridge.py scripts/memory_cell/test_stem_train_heldout_bridge.py scripts/memory_cell/stem_native_null_ablation.py scripts/memory_cell/test_stem_native_null_ablation.py scripts/memory_cell/stem_effective_n.py scripts/memory_cell/test_stem_effective_n.py scripts/memory_cell/stem_null_reader_splice.py scripts/memory_cell/test_stem_null_reader_splice.py scripts/memory_cell/stem_score_replay.py scripts/memory_cell/test_stem_score_replay.py scripts/memory_cell/stem_native_pairwise_shadow.py scripts/memory_cell/test_stem_native_pairwise_shadow.py 2>&1 | tee /tmp/stem-native/lint.log
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: memory-native-staged-inputs
@@ -167,6 +169,7 @@ jobs:
           cp scripts/memory_cell/stem_reader_*.py scripts/memory_cell/test_stem_reader_*.py /tmp/stem-native/source/
           cp scripts/memory_cell/stem_audit_candidate.py scripts/memory_cell/test_stem_audit_candidate.py /tmp/stem-native/source/
           cp scripts/memory_cell/stem_head_fit_dynamics.py scripts/memory_cell/test_stem_head_fit_dynamics.py /tmp/stem-native/source/
+          cp scripts/memory_cell/stem_native_pairwise_shadow.py scripts/memory_cell/test_stem_native_pairwise_shadow.py /tmp/stem-native/source/
           cp scripts/memory_cell/stem_train_heldout_bridge.py scripts/memory_cell/test_stem_train_heldout_bridge.py /tmp/stem-native/source/
           cp scripts/memory_cell/stem_native_null_ablation.py scripts/memory_cell/test_stem_native_null_ablation.py /tmp/stem-native/source/
           cp scripts/memory_cell/stem_null_reader_splice.py scripts/memory_cell/test_stem_null_reader_splice.py /tmp/stem-native/source/
