@@ -258,6 +258,52 @@ fn coalesced_scope_reuses_its_stale_round_robin_slot_on_readmission() {
 }
 
 #[test]
+fn stale_coalesced_slots_cannot_hide_an_urgent_request() {
+    let mut config = limits();
+    config.max_batch_size = 4;
+    config.max_lanes_per_poll = 4;
+    config.max_wait_ms = 100;
+    let mut q = BoundedMicrobatchSchedulerV1::new(config).unwrap();
+
+    // The first native batch consumes four physical lanes, leaving three
+    // stale round-robin slots ahead of two still-live scopes.
+    for number in 0..4 {
+        q.enqueue(
+            1,
+            intent(
+                &format!("coalesced-{number}"),
+                &format!("a-{number}"),
+                1,
+                1,
+                50,
+            ),
+        )
+        .unwrap();
+    }
+    q.enqueue(1, intent("waiting", "b-waiting", 1, 1, 1_000))
+        .unwrap();
+    q.enqueue(1, intent("urgent", "c-urgent", 1, 1, 2))
+        .unwrap();
+
+    let first = q.poll_physically_compatible(1).unwrap();
+    assert_eq!(first.scanned_lanes, 4);
+    assert_eq!(first.batch.unwrap().requests.len(), 4);
+    assert_eq!(q.round_robin.len(), 5);
+
+    // Three stale slots do not use up the four-live-lane scan budget.
+    // The not-yet-ready scope must not hide an urgent later scope.
+    let second = q.poll(1).unwrap();
+    assert_eq!(second.scanned_lanes, 2);
+    let ready = second.batch.expect("urgent request must be observed");
+    assert_eq!(ready.requests[0].request_id, id("urgent"));
+    assert_eq!(q.pending(), 1);
+
+    let last = q.poll(101).unwrap().batch.unwrap();
+    assert_eq!(last.requests[0].request_id, id("waiting"));
+    assert_eq!(q.pending(), 0);
+}
+
+#[test]
 fn repeated_cross_scope_coalescing_never_accumulates_duplicate_queue_slots() {
     let mut config = limits();
     config.max_batch_size = 2;
