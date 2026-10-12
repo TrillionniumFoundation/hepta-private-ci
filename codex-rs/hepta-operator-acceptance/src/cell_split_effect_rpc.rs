@@ -332,6 +332,7 @@ impl CellSplitExecutionPortV1 for CellSplitUnixEffectPortV1 {
     }
 }
 
+#[cfg(test)]
 pub(crate) fn send_frame<T: Serialize>(
     stream: &mut UnixStream,
     value: &T,
@@ -348,6 +349,7 @@ pub(crate) fn send_frame<T: Serialize>(
     Ok(())
 }
 
+#[cfg(test)]
 pub(crate) fn receive_frame<T: DeserializeOwned>(
     stream: &mut UnixStream,
 ) -> Result<T, CellSplitEffectRpcErrorV1> {
