@@ -460,8 +460,10 @@ fn requires_original_runtime_effect_and_exact_live_route() {
         cns.verify_current(&request, &first)
             .expect("current runtime route")
     );
-    cns.commit_once(&request)
-        .expect("no duplicate runtime cutover");
+    assert!(matches!(
+        cns.commit_once(&request),
+        Err(CellSplitCnsCutoverErrorV1::Ambiguous)
+    ));
     drop(cns);
 
     let mut recovered = owner(root.path(), ready);
