@@ -53,7 +53,7 @@ def rewrite_manifest(original, cargo_dir, minimal_source):
         source = original.decode("utf-8")
         manifest = tomllib.loads(source)
     except (UnicodeError, tomllib.TOMLDecodeError) as error:
-        raise ValueError("unparseable original manifest") from error
+        raise ValueError("unparsable original manifest") from error
     candidate = Path(minimal_source).resolve()
     cargo_dir = Path(cargo_dir).resolve()
     if candidate == cargo_dir or candidate in cargo_dir.parents or cargo_dir in candidate.parents:
