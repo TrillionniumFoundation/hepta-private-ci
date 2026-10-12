@@ -80,6 +80,51 @@ def exact_count(value: Any, field: str, *, allow_zero: bool = True) -> int:
     return value
 
 
+def validate_run_numbers(entry: dict[str, Any], scope: int, mode: str) -> dict[str, Any]:
+    """Validate one host row *before* spending resources on the other 15 runs."""
+    key = (scope, mode)
+    vals = {
+        field: (
+            exact_count(
+                entry.get(field), f"{scope}/{mode}/{field}",
+                allow_zero=field not in ("attempted", "completed"),
+            )
+            if field in COUNT_FIELDS
+            else positive_number(
+                entry.get(field), f"{scope}/{mode}/{field}",
+                allow_zero=field != "elapsed_seconds",
+            )
+        )
+        for field in FIELDS
+    }
+    if vals["completed"] + vals["failed_requests"] != vals["attempted"]:
+        raise InvalidEvidence(f"{key}: inconsistent terminal request accounting")
+    if not vals["p50_ms"] <= vals["p95_ms"] <= vals["p99_ms"]:
+        raise InvalidEvidence(f"{key}: percentiles out of order")
+    if vals["native_batch_requests"] > vals["completed"]:
+        raise InvalidEvidence(f"{key}: impossible native batch accounting")
+    if vals["native_batch_requests"] and not vals["native_backend_calls"]:
+        raise InvalidEvidence(
+            f"{key}: native batch requests without a backend call"
+        )
+    if vals["negative_transfer_rate"] > 1:
+        raise InvalidEvidence(f"{key}: negative-transfer rate is not a fraction")
+    vals["throughput_rps"] = vals["completed"] / vals["elapsed_seconds"]
+    vals["cpu_per_request_s"] = vals["cpu_seconds"] / vals["completed"]
+    vals["communication_per_request_bytes"] = (
+        vals["communication_bytes"] / vals["completed"]
+    )
+    vals["fsync_per_request"] = vals["fsync_count"] / vals["completed"]
+    vals["lock_wait_per_request_ms"] = vals["lock_wait_ms"] / vals["completed"]
+    vals["failure_rate"] = vals["failed_requests"] / vals["attempted"]
+    vals["native_batch_requests_per_call"] = (
+        vals["native_batch_requests"] / vals["native_backend_calls"]
+        if vals["native_backend_calls"]
+        else 0.0
+    )
+    return vals
+
+
 def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str, Any]:
     if packet.get("schema") != "hepta.cell-split.performance.v1":
         raise InvalidEvidence("unsupported schema")
@@ -114,46 +159,8 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
             raise InvalidEvidence(
                 f"{scope}/{mode}: missing canonical attempted request trace SHA-256"
             )
-        vals = {
-            field: (
-                exact_count(
-                    entry.get(field), f"{scope}/{mode}/{field}",
-                    allow_zero=field not in ("attempted", "completed"),
-                )
-                if field in COUNT_FIELDS
-                else positive_number(
-                    entry.get(field), f"{scope}/{mode}/{field}",
-                    allow_zero=field != "elapsed_seconds",
-                )
-            )
-            for field in FIELDS
-        }
+        vals = validate_run_numbers(entry, scope, mode)
         vals[TRACE_FIELD] = trace
-        if vals["completed"] + vals["failed_requests"] != vals["attempted"]:
-            raise InvalidEvidence(f"{key}: inconsistent terminal request accounting")
-        if not vals["p50_ms"] <= vals["p95_ms"] <= vals["p99_ms"]:
-            raise InvalidEvidence(f"{key}: percentiles out of order")
-        if vals["native_batch_requests"] > vals["completed"]:
-            raise InvalidEvidence(f"{key}: impossible native batch accounting")
-        if vals["native_batch_requests"] and not vals["native_backend_calls"]:
-            raise InvalidEvidence(
-                f"{key}: native batch requests without a backend call"
-            )
-        if vals["negative_transfer_rate"] > 1:
-            raise InvalidEvidence(f"{key}: negative-transfer rate is not a fraction")
-        vals["throughput_rps"] = vals["completed"] / vals["elapsed_seconds"]
-        vals["cpu_per_request_s"] = vals["cpu_seconds"] / vals["completed"]
-        vals["communication_per_request_bytes"] = (
-            vals["communication_bytes"] / vals["completed"]
-        )
-        vals["fsync_per_request"] = vals["fsync_count"] / vals["completed"]
-        vals["lock_wait_per_request_ms"] = vals["lock_wait_ms"] / vals["completed"]
-        vals["failure_rate"] = vals["failed_requests"] / vals["attempted"]
-        vals["native_batch_requests_per_call"] = (
-            vals["native_batch_requests"] / vals["native_backend_calls"]
-            if vals["native_backend_calls"]
-            else 0.0
-        )
         measurements[key] = vals
     if len(measurements) != 16:
         raise InvalidEvidence("missing mode/scope combination")
