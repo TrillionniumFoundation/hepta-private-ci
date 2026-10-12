@@ -202,3 +202,31 @@ fn minimum_store_denies_publication_without_independent_journal_admission() {
         .expect("independently admitted durable publication");
     assert_eq!(admission.checks, 3);
 }
+
+#[test]
+fn partial_independent_store_rollback_cannot_reinitialize_minimum() {
+    let original = subject();
+    for missing in [STORE_FILE, crate::durable::SIDECAR_LOCK_FILE] {
+        let root = private_root();
+        let signer = SigningKey::from_bytes(&[91; 32]);
+        {
+            let mut admitted = VerifiedOriginalMinimum {
+                allow: true,
+                checks: 0,
+            };
+            let mut store = CellSplitSupervisorMinimumFileStoreV1::open(
+                root.path(), signer.clone(),
+            ).expect("first independent writer");
+            store.publish_once(&original, &mut admitted)
+                .expect("real fsync of original minimum");
+        }
+        fs::remove_file(root.path().join(missing))
+            .expect("simulate lost continuity evidence");
+        assert!(CellSplitSupervisorMinimumFileStoreV1::open(
+            root.path(), signer.clone(),
+        ).is_err(), "a missing paired continuity file may not be regenerated");
+        assert!(CellSplitSupervisorMinimumFileStoreV1::open_existing(
+            root.path(), signer,
+        ).is_err(), "read-only recovery must also reject partial restore");
+    }
+}
