@@ -697,6 +697,35 @@ impl FinalUseAuthority {
         Ok(result)
     }
 
+    /// Admit one physical batch only after EVERY independently signed grant
+    /// has been durably claimed and revalidated at the same effect boundary.
+    /// An active fence acquired for the first token blocks revocation updates
+    /// while the remaining tokens are checked; no driver call runs on failure.
+    /// Invalid/uncertain effects never refund already-claimed nonces.
+    pub fn with_verified_batch_effect<T>(
+        &self,
+        entries: Vec<(VerifiedUseToken, FinalUseBinding)>,
+        consumer: impl FnOnce() -> T,
+    ) -> Result<T, FinalUseError> {
+        const MAX_PHYSICAL_BATCH: usize = 256;
+        if entries.is_empty() || entries.len() > MAX_PHYSICAL_BATCH {
+            return Err(FinalUseError::InvalidGrant);
+        }
+        let mut nonces = BTreeSet::new();
+        for (token, binding) in &entries {
+            if token.grant.binding != *binding || !nonces.insert(token.grant.nonce) {
+                return Err(FinalUseError::BindingMismatch);
+            }
+        }
+        let mut guards = Vec::with_capacity(entries.len());
+        for (token, binding) in entries {
+            guards.push(self.enter_verified_effect(token, &binding)?);
+        }
+        let output = consumer();
+        drop(guards);
+        Ok(output)
+    }
+
     /// Guard an async provider effect without holding the owner mutex over
     /// await. Revocation commits return `DispatchInProgress` while active;
     /// completion, panic or future cancellation releases the fence.

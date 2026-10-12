@@ -32,6 +32,9 @@ pub struct InferenceIntentV1 {
     pub request_id: StableId,
     pub key: MicrobatchKeyV1,
     pub feature_digest: Digest32,
+    /// Exact encoder identity required to coalesce physical work across scopes.
+    /// Legacy per-scope planning may leave this as None.
+    pub encoder_digest: Option<Digest32>,
     /// Optional immutable payload shared across batch consumers.
     pub shared_features: Option<SharedFeatureBufferV1>,
     pub deadline_ms: u64,
@@ -151,6 +154,9 @@ impl BoundedMicrobatchSchedulerV1 {
         {
             return Err(SchedulerErrorV1::FeatureMismatch);
         }
+        if intent.encoder_digest.is_some_and(|digest| digest.is_zero()) {
+            return Err(SchedulerErrorV1::EmptyDigest);
+        }
         if intent.key.route_fence == 0 || intent.key.authority_epoch == 0 {
             return Err(SchedulerErrorV1::InvalidFence);
         }
@@ -163,12 +169,16 @@ impl BoundedMicrobatchSchedulerV1 {
         if self.pending() >= self.limits.max_pending {
             return Err(SchedulerErrorV1::Capacity);
         }
-        if self
-            .lanes
-            .get(&intent.key)
-            .is_some_and(|lane| lane.len() >= self.limits.max_batch_size)
-        {
-            return Err(SchedulerErrorV1::LaneCapacity);
+        if let Some(lane) = self.lanes.get(&intent.key) {
+            if lane.len() >= self.limits.max_batch_size {
+                return Err(SchedulerErrorV1::LaneCapacity);
+            }
+            if lane
+                .front()
+                .is_some_and(|front| front.intent.encoder_digest != intent.encoder_digest)
+            {
+                return Err(SchedulerErrorV1::FeatureMismatch);
+            }
         }
         let key = intent.key.clone();
         let id = intent.request_id.clone();
@@ -276,6 +286,12 @@ impl BoundedMicrobatchSchedulerV1 {
         dropped
     }
 }
+
+#[path = "microbatch_compatible.rs"]
+mod compatible;
+pub use compatible::PhysicalBatchCompatibilityV1;
+pub use compatible::PhysicalMicrobatchPlanV1;
+pub use compatible::PhysicalMicrobatchPollV1;
 
 #[cfg(test)]
 #[path = "microbatch_tests.rs"]

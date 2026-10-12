@@ -888,3 +888,66 @@ fn missing_or_truncated_claim_journal_fails_closed_on_restart() {
         );
     }
 }
+
+#[test]
+fn physical_batch_fences_revocation_until_all_signed_items_complete() {
+    let (authority, first, _directory) = fixture().unwrap();
+    let signer = SigningKey::from_bytes(&[47; 32]);
+    let mut second = first.clone();
+    second.grant.grant_id = "read-two".into();
+    second.grant.nonce = [6; 32];
+    second.grant.binding.request_sha256 = [6; 32];
+    second.signature = signer
+        .sign(&second.grant.signing_bytes().unwrap())
+        .to_bytes()
+        .to_vec();
+
+    let binding_one = first.grant.binding.clone();
+    let binding_two = second.grant.binding.clone();
+    let token_one = authority.claim(&first, &binding_one).unwrap();
+    let token_two = authority.claim(&second, &binding_two).unwrap();
+    let updater = authority.clone();
+    let entered = authority
+        .with_verified_batch_effect(
+            vec![(token_one, binding_one), (token_two, binding_two)],
+            || {
+                updater.update_revocations(FinalUseRevocations {
+                    authority_epoch: 9,
+                    revision: 2,
+                    revoked_grant_ids: BTreeSet::new(),
+                })
+            },
+        )
+        .unwrap();
+    assert_eq!(entered, Err(FinalUseError::DispatchInProgress));
+    assert_eq!(authority.capacity().unwrap().used_nonces, 2);
+    authority
+        .update_revocations(FinalUseRevocations {
+            authority_epoch: 9,
+            revision: 2,
+            revoked_grant_ids: BTreeSet::new(),
+        })
+        .unwrap();
+}
+
+#[test]
+fn physical_batch_rejects_substituted_binding_before_driver_call() {
+    let (authority, first, _directory) = fixture().unwrap();
+    let binding = first.grant.binding.clone();
+    let token = authority.claim(&first, &binding).unwrap();
+    let mut wrong = binding;
+    wrong.payload_sha256 = [7; 32];
+    let mut dispatched = false;
+    assert_eq!(
+        authority.with_verified_batch_effect(vec![(token, wrong)], || {
+            dispatched = true;
+        }),
+        Err(FinalUseError::BindingMismatch),
+    );
+    assert!(!dispatched);
+    assert_eq!(
+        authority.with_verified_batch_effect(Vec::new(), || dispatched = true),
+        Err(FinalUseError::InvalidGrant)
+    );
+    assert!(!dispatched);
+}

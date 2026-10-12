@@ -67,6 +67,7 @@ fn workload_64_256_1024_4096_scope_cells() {
                     request_id: id(format!("req-{scope_index}-{local}")),
                     key: key.clone(),
                     feature_digest: shared.digest(),
+                    encoder_digest: None,
                     shared_features: Some(shared.clone()),
                     deadline_ms: 100_000,
                 });
@@ -180,6 +181,69 @@ fn workload_64_256_1024_4096_scope_cells() {
             percentile_ns(&mut cache_ns, 50),
             percentile_ns(&mut cache_ns, 95),
             percentile_ns(&mut cache_ns, 99),
+            linux_rss_kib(),
+        );
+    }
+}
+
+/// Scheduling-only test. This is NOT actual GPU execution or 4096-Cell
+/// throughput, only bounded grouping of requests from independent scopes.
+#[test]
+#[ignore = "requires explicit --run-ignored on a benchmark host"]
+fn cross_scope_compatible_scheduling_64_256_1024_4096() {
+    for scopes in [64_usize, 256, 1024, 4096] {
+        let mut scheduler = BoundedMicrobatchSchedulerV1::new(MicrobatchLimitsV1 {
+            max_pending: 16_384,
+            max_batch_size: 64,
+            max_lanes_per_poll: 64,
+            max_wait_ms: 5,
+        })
+        .unwrap();
+        let feature = SharedFeatureBufferV1::from_vec(vec![1 << 24; 128]).unwrap();
+        let began = Instant::now();
+        for index in 0..scopes {
+            scheduler
+                .enqueue(
+                    1,
+                    InferenceIntentV1 {
+                        request_id: id(format!("cell-request-{index}")),
+                        key: MicrobatchKeyV1 {
+                            scope_id: id(format!("cell-scope-{index}")),
+                            model_digest: digest("pinned-model"),
+                            generation: Generation::new(1).unwrap(),
+                            route_fence: u64::try_from(index + 1).unwrap(),
+                            authority_epoch: 1,
+                        },
+                        feature_digest: feature.digest(),
+                        encoder_digest: Some(digest("pinned-encoder")),
+                        shared_features: Some(feature.clone()),
+                        deadline_ms: 10_000,
+                    },
+                )
+                .unwrap();
+        }
+        let admission_ns = began.elapsed().as_nanos();
+        let began = Instant::now();
+        let mut batches = 0_usize;
+        let mut seen = 0_usize;
+        while scheduler.pending() != 0 {
+            let poll = scheduler.poll_physical_compatible(7).unwrap();
+            assert!(poll.scanned_lanes <= 64);
+            let group = poll.batch.unwrap();
+            assert_eq!(group.compatibility.encoder_digest, digest("pinned-encoder"));
+            assert_eq!(
+                group.authority,
+                codex_hepta_types::AuthorityPosture::DENY_ALL
+            );
+            seen += group.requests.len();
+            batches += 1;
+        }
+        assert_eq!(seen, scopes);
+        assert_eq!(batches, scopes / 64);
+        eprintln!(
+            "HEPTA_CROSS_SCOPE_PLANNER_ONLY scopes={scopes} batch_groups={batches} \
+             admission_ns={admission_ns} poll_ns={} rss_kib={:?}",
+            began.elapsed().as_nanos(),
             linux_rss_kib(),
         );
     }

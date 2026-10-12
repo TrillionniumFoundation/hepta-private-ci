@@ -1043,8 +1043,14 @@ mod tests {
             execution.role_step.receipt.state_successor_digest,
             initial.state_digest
         );
-        let directory =
-            std::env::temp_dir().join(format!("hepta-memory-read-state-{}", std::process::id()));
+        let nonce = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .expect("system clock")
+            .as_nanos();
+        let directory = std::env::temp_dir().join(format!(
+            "hepta-memory-read-state-{}-{nonce}",
+            std::process::id()
+        ));
         std::fs::create_dir_all(&directory).expect("directory");
         let path = directory.join("state.snapshot");
         let successor = state_owner
@@ -1093,7 +1099,8 @@ mod tests {
                 .is_err()
         );
         let mut future_generation = definition;
-        future_generation.generation = Generation::new(2).expect("generation");
+        future_generation.generation = Generation::new(3).expect("future generation");
+        assert_ne!(future_generation.generation, successor.generation);
         assert!(
             DurableMemoryReadStateOwnerV1::reopen(&path, future_generation, owner_id, key,)
                 .is_err()

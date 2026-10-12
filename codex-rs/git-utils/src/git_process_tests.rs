@@ -4,7 +4,43 @@ use pretty_assertions::assert_eq;
 #[cfg(windows)]
 use std::process::Stdio;
 use std::time::Duration;
+
+#[cfg(windows)]
+fn encoded_powershell_command(script: &str) -> String {
+    // PowerShell -EncodedCommand requires UTF-16LE encoded as RFC 4648
+    // base64. An alphabet-only argument avoids Windows Start-Process joining
+    // -Command script fragments into ambiguous unquoted argv tokens.
+    const ALPHABET: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let bytes: Vec<u8> = script.encode_utf16().flat_map(u16::to_le_bytes).collect();
+    let mut result = String::with_capacity(bytes.len().div_ceil(3) * 4);
+    for part in bytes.chunks(3) {
+        let packed = (u32::from(part[0]) << 16)
+            | (u32::from(*part.get(1).unwrap_or(&0)) << 8)
+            | u32::from(*part.get(2).unwrap_or(&0));
+        result.push(char::from(ALPHABET[((packed >> 18) & 0x3f) as usize]));
+        result.push(char::from(ALPHABET[((packed >> 12) & 0x3f) as usize]));
+        result.push(if part.len() >= 2 {
+            char::from(ALPHABET[((packed >> 6) & 0x3f) as usize])
+        } else {
+            '='
+        });
+        result.push(if part.len() >= 3 {
+            char::from(ALPHABET[(packed & 0x3f) as usize])
+        } else {
+            '='
+        });
+    }
+    result
+}
 use tokio::process::Command;
+
+#[cfg(windows)]
+#[test]
+fn powershell_child_command_uses_utf16le_base64_for_non_ascii_scripts() {
+    assert_eq!(encoded_powershell_command("A"), "QQA=");
+    assert_eq!(encoded_powershell_command("AB"), "QQBCAA==");
+    assert_eq!(encoded_powershell_command("😀"), "PdgA3g==");
+}
 
 #[derive(Clone, Copy)]
 enum GitWrapperLifetime {
@@ -39,17 +75,20 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     let mut command = {
         let mut command = Command::new("powershell.exe");
         let child_command = "Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready; while (-not (Test-Path $env:RELEASE_CHILD_FILE)) { Start-Sleep -Milliseconds 25 }; Start-Sleep -Seconds 1; Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived; Start-Sleep -Seconds 60";
+        let encoded_child = encoded_powershell_command(child_command);
         let wrapper_command = match wrapper_lifetime {
             GitWrapperLifetime::WaitForChild => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
+                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', '{encoded_child}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); Wait-Process -Id $child.Id"
             ),
             GitWrapperLifetime::ExitBeforeTimeout => format!(
-                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-Command', '{child_command}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
+                "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-EncodedCommand', '{encoded_child}') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) {{ Start-Sleep -Milliseconds 25 }}"
             ),
         };
+        // Encode the wrapper too. Nested PowerShell command lines otherwise
+        // depend on the Windows process argument joiner's quoting rules.
         command
-            .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command);
+            .args(["-NoProfile", "-NonInteractive", "-EncodedCommand"])
+            .arg(encoded_powershell_command(&wrapper_command));
         command
     };
     command

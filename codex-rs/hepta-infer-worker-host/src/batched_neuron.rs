@@ -43,6 +43,7 @@ pub enum BatchWorkerErrorV1 {
     Authority,
     Worker,
     Capacity,
+    TelemetryUnavailable,
 }
 
 #[derive(Debug)]
@@ -77,6 +78,7 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<StableId>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
+    metrics_poisoned: bool,
     maximum_ids: usize,
 }
 
@@ -138,6 +140,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
+            metrics_poisoned: false,
             maximum_ids: limits.max_pending,
         })
     }
@@ -181,6 +184,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         if signed.grant.binding != binding {
             return Err(BatchWorkerErrorV1::InvalidBinding);
         }
+        let encoder_digest = Digest32::from_str(&request.encoder_digest)
+            .map_err(|_| BatchWorkerErrorV1::InvalidBinding)?;
         let feature =
             SharedFeatureBufferV1::from_vec(std::mem::take(&mut request.feature_vector_q24))
                 .map_err(|_| BatchWorkerErrorV1::InvalidRequest)?;
@@ -191,6 +196,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                     request_id: id.clone(),
                     key,
                     feature_digest: feature.digest(),
+                    encoder_digest: Some(encoder_digest),
                     shared_features: Some(feature.clone()),
                     deadline_ms: request.authorization.deadline_ms,
                 },
@@ -309,6 +315,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         removed
     }
 }
+
+#[path = "batched_neuron_physical.rs"]
+mod physical;
 
 #[cfg(test)]
 #[path = "batched_neuron_tests.rs"]
