@@ -15,7 +15,7 @@ from pathlib import Path
 import time
 
 from bundle_reader import GENERATION
-from experience_memory import ExperienceReader
+from experience_memory import ExperienceReader, render
 from native import Question, digest
 from source_paraphrase_probe import paraphrase_writer_question
 from source_recall_probe import ARMS, actual_generate, probe, source_probe_plan
@@ -247,6 +247,15 @@ def paired_probe(
     targets = {q.identity: item["target"] for q, item in zip(questions, selected, strict=True)}
     if len(targets) != len(questions):
         raise ValueError("duplicate source question")
+    # Render the full REAL Reader input, including explicit source scope,
+    # before any model call. Equal input tokens for different questions
+    # cannot count as two independent tests, even if labels differ.
+    planned_prompts = {
+        q.identity: digest(render(reader.tokenizer, q, [], []))
+        for q in questions
+    }
+    if len(set(planned_prompts.values())) != len(questions):
+        raise ValueError("colliding source questions have indistinguishable Reader prompts")
     output.mkdir()
     plan = dict(
         schema="hepta.source-decode-factorial.plan.v1",
@@ -259,6 +268,8 @@ def paired_probe(
         question_mode=question_mode,
         questions=[asdict(q) for q in questions],
         source_targets_sha256=digest(targets),
+        exact_empty_context_prompt_sha256_by_question=planned_prompts,
+        exact_prompt_collision_rejected_before_generation=True,
         options=dict(
             greedy=GENERATION,
             beam2=GENERATION
@@ -309,6 +320,12 @@ def paired_probe(
             for line in original.decode().splitlines()
         ]
         digests[decoder] = hashlib.sha256(original).hexdigest()
+    # Reject a tokenizer/prompt drift after preregistration. All raw
+    # journal rows exist before these checks and before target scoring.
+    for decoder in DECODERS:
+        for row in records[decoder]:
+            if row["prompt_sha256"] != planned_prompts.get(row["question_id"]):
+                raise ValueError("actual Reader prompt differs from preregistered input")
     result = summarize(records["greedy"], records["beam2"], targets)
     result.update(
         generating_commit=source_commit,

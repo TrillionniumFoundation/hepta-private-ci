@@ -35,7 +35,9 @@ class UniqueQuestionTokenizer:
     eos_token_id = 2
 
     def apply_chat_template(self, messages, **kwargs):
-        text = json.loads(messages[1]["content"])["question"]
+        # The native Reader sees the *entire* JSON user prompt, including
+        # explicit memory_scope. Ignoring scope merges incompatible targets.
+        text = messages[1]["content"]
         return [1, *text.encode("utf-8")]
 
 
@@ -148,6 +150,28 @@ class DecoderFactorialTests(unittest.TestCase):
                 original = (base / decoder / "raw-answers.jsonl").read_text()
                 self.assertNotIn('"target"', original)
                 self.assertEqual(len(original.splitlines()), 4)
+
+    def test_same_tokens_with_different_scope_fail_before_generation(self):
+        class ScopeErasingTokenizer(UniqueQuestionTokenizer):
+            def apply_chat_template(self, messages, **kwargs):
+                # This is deliberately NOT the actual Reader contract.
+                text = json.loads(messages[1]["content"])["question"]
+                return [1, *text.encode("utf-8")]
+
+        self.reader.tokenizer = ScopeErasingTokenizer()
+        calls = []
+        with tempfile.TemporaryDirectory() as root:
+            destination = Path(root) / "factorial"
+            with self.assertRaisesRegex(ValueError, "colliding source questions"):
+                paired_probe(
+                    self.reader, self.docs, destination,
+                    snapshot_sha="a" * 64, writer_source="b" * 40,
+                    source_commit="c" * 40, maximum=2,
+                    greedy=lambda *args: calls.append("greedy"),
+                    beam=lambda *args: calls.append("beam"),
+                )
+            self.assertEqual(calls, [])
+            self.assertFalse(destination.exists())
 
     def test_generation_failure_persists_without_false_joint_success(self):
         calls = 0
