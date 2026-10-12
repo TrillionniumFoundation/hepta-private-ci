@@ -492,7 +492,6 @@ impl NeuronBackendBatchDriver for CpuGatedHeadDriver {
         let mut members = Vec::with_capacity(requests.len());
         let mut tracked_outputs = 0u64;
         for (index, request) in requests.iter().enumerate() {
-            let per_member_started = Instant::now();
             let (drive, prediction) = results[index]
                 .take()
                 .ok_or(Error::FeatureBatchMismatch)?;
@@ -516,11 +515,10 @@ impl NeuronBackendBatchDriver for CpuGatedHeadDriver {
                     transient_allocation_bytes: u64::try_from(temporary)
                         .map_err(|_| Error::ArithmeticOverflow)?,
                     queue_age_micros: 0,
-                    latency_micros: per_member_started
-                        .elapsed()
-                        .as_micros()
-                        .try_into()
-                        .unwrap_or(u64::MAX),
+                    // Set to the shared real backend-batch duration below:
+                    // per-lane standalone compute time is not measurable after
+                    // physically grouped coefficient traversal.
+                    latency_micros: 0,
                 },
             });
         }
@@ -535,11 +533,18 @@ impl NeuronBackendBatchDriver for CpuGatedHeadDriver {
             .and_then(|n| n.checked_add(tracked_outputs))
             .and_then(|n| n.checked_add(tracked_accumulator_peak))
             .ok_or(Error::ArithmeticOverflow)?;
+        // All lanes complete at the same backend-batch boundary. Reporting
+        // a fresh 0us timer *after* computing each lane would understate
+        // latency; do not invent a per-Cell arithmetic share of batch time.
+        let backend_elapsed_micros = started.elapsed().as_micros().try_into().unwrap_or(u64::MAX);
+        for member in &mut members {
+            member.observation.latency_micros = backend_elapsed_micros;
+        }
         Ok(DriverNeuronBackendBatch {
             batch_digest: batch_digest.to_string(),
             members,
             observed_peak_memory_bytes: peak,
-            backend_elapsed_micros: started.elapsed().as_micros().try_into().unwrap_or(u64::MAX),
+            backend_elapsed_micros,
         })
     }
 }
