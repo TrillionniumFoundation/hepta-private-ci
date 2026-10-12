@@ -61,6 +61,47 @@ jobs:
           git diff --check
           git diff --exit-code
 
+  minimal-sdk-backport-source:
+    name: P0 minimal upstream anymap3 source compatibility (not production)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: b18166c68bb958a21f0bca8b2d8320cb53583362
+          path: upstream-release
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: 9c5fdd2cf5be1b7b8b20541e56d7a109db968534
+          path: upstream-anymap-commit
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Require exact release/source patch compatibility
+        run: |
+          python3 qualification/matrix-security/minimal_backport_probe.py \
+            --release upstream-release --migration upstream-anymap-commit \
+            --output "$RUNNER_TEMP/hepta-matrix-minimal-backport.json"
+      - name: Preserve exact immutable upstream evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-matrix-minimal-backport-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-matrix-minimal-backport.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: No changes to tracked repository source
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
   yaml-prettier-diagnostic:
     name: Capture exact workflow Prettier patch (diagnostic only)
     runs-on: ubuntu-24.04
