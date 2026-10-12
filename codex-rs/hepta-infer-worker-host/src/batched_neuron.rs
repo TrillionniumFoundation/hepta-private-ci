@@ -293,7 +293,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                 .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
                             });
                             if let Some(sink) = &self.metric_sink {
-                                if sink.record(PhaseMetricEventV1 {
+                                let observation = PhaseMetricEventV1 {
                                     scope_digest: Digest32::of_bytes(
                                         batch.key.scope_id.as_str().as_bytes(),
                                     ),
@@ -302,7 +302,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                     latency_micros: u64::try_from(start.elapsed().as_micros())
                                         .unwrap_or(u64::MAX),
                                     succeeded: result.is_ok(),
-                                }).is_err() {
+                                };
+                                if sink.record(observation).is_err() {
                                     self.metrics_poisoned = true;
                                 }
                             }
