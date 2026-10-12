@@ -65,8 +65,16 @@ mod tests {
     }
 
     #[test]
-    fn sandbox_feature_matches_linked_v8() {
-        assert_eq!(super::linked_v8_has_sandbox(), cfg!(feature = "sandbox"));
+    fn sandbox_feature_requires_a_sandbox_enabled_linked_v8() {
+        // The prebuilt native V8 library may have sandboxing enabled even when
+        // this Rust target does not enable the optional sandbox feature.
+        // Enabling the feature must never silently link an unsandboxed binary.
+        if cfg!(feature = "sandbox") {
+            assert!(
+                super::linked_v8_has_sandbox(),
+                "sandbox feature requires sandbox-enabled native V8"
+            );
+        }
     }
 
     #[test]

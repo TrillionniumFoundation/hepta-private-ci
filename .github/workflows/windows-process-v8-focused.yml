@@ -1,0 +1,79 @@
+name: Windows Git process and V8 sandbox conformance
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/git-utils/src/git_process_tests.rs"
+      - "codex-rs/v8-poc/src/lib.rs"
+      - "codex-rs/hepta-authbus/src/authority_schema_tests.rs"
+      - ".github/workflows/windows-process-v8-focused.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-process-v8-focused-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-process-v8-focused:
+    name: Native Windows Git child and linked V8 invariants
+    runs-on: windows-latest
+    timeout-minutes: 45
+    environment:
+      name: bazel
+      deployment: false
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Verify tested candidate and pristine source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Prepare pinned native Windows Bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+
+      - name: Exercise child readiness and process-tree timeout semantics
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs --windows-msvc-host-platform --remote-download-toplevel -- test --platforms=//:windows_x86_64_msvc --test_filter=git_process::tests::timed_out --test_output=errors -- //codex-rs/git-utils:git-utils-unit-tests
+
+      - name: Verify linked V8 sandbox matches the Rust requested guarantee
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs --windows-msvc-host-platform --remote-download-toplevel -- test --platforms=//:windows_x86_64_msvc --test_filter=sandbox_feature_requires_a_sandbox_enabled_linked_v8 --test_output=errors -- //codex-rs/v8-poc:v8-poc-unit-tests
+
+      - name: Reopen copied authority schema on Windows after durable flush
+        shell: bash
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs --windows-msvc-host-platform --remote-download-toplevel -- test --platforms=//:windows_x86_64_msvc --test_filter=authority_schema::tests::missing_and_replaced_authority_triggers_fail_closed_on_reopen --test_output=errors -- //codex-rs/hepta-authbus:hepta-authbus-unit-tests
+
+      - name: Verify exact source unchanged
+        if: always()
+        shell: bash
+        run: |
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
