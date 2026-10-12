@@ -25,7 +25,12 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 def version(value):
-    match = re.fullmatch(r"(\d+)\.(\d+)(?:\.(\d+))?", value)
+    # Cargo's leading '=' is a *strict exact version requirement*, unlike
+    # caret/range syntax. Keep both exact forms accepted without masking
+    # stale Cargo.lock entries, unmaintained dependencies or advisory ignores.
+    if not isinstance(value, str):
+        raise ValueError("fixed release version must be a string")
+    match = re.fullmatch(r"=?(\d+)\.(\d+)(?:\.(\d+))?", value)
     if not match:
         raise ValueError(f"invalid fixed release version {value!r}")
     return tuple(int(n) for n in match.groups(default="0"))
