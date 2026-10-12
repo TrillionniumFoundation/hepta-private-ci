@@ -31,6 +31,15 @@ pub struct DriverNeuronBackendBatch {
 /// Only a backend with a real batch implementation may implement this trait.
 /// There is deliberately no default that sequentially calls run_neuron_features.
 pub trait NeuronBackendBatchDriver: NeuronFeatureDriver {
+    /// A conservative, numeric allocation floor computed without dispatching
+    /// the backend. Every implementation MUST provide this; there is no
+    /// permissive default or per-request fallback. This is not process RSS.
+    fn preflight_neuron_backend_batch_bytes(
+        &self,
+        handle: &DriverModelHandle,
+        requests: &[NeuronFeatureRequest],
+    ) -> Result<u64, Error>;
+
     fn run_neuron_backend_batch(
         &mut self,
         handle: &DriverModelHandle,
@@ -147,6 +156,20 @@ impl<D: ModelDriver + NeuronBackendBatchDriver> InferenceWorker<D> {
             {
                 return Err(Error::PayloadMismatch);
             }
+        }
+
+        // Reject a batch that cannot fit its *minimum tracked* numeric
+        // allocations before invoking any backend. A backend must still report
+        // its real observations; post-dispatch excess remains indeterminate.
+        let planned_peak = self
+            .driver
+            .preflight_neuron_backend_batch_bytes(&loaded.handle, &requests)?;
+        if planned_peak < loaded.handle.observed_memory_bytes
+            || planned_peak
+                .checked_add(other_model_resident_bytes)
+                .is_none_or(|all| all > self.grant.maximum_memory_bytes)
+        {
+            return Err(Error::ModelCapacity);
         }
 
         let handle = loaded.handle.clone();
