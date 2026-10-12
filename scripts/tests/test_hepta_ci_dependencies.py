@@ -123,6 +123,13 @@ class GitGraphTests(unittest.TestCase):
         self.git("init", "-q")
         self.git("config", "user.name", "CI regression")
         self.git("config", "user.email", "ci@example.invalid")
+        # These disposable Git graphs are read and removed immediately.
+        # Git auto-maintenance can spawn a background writer in .git after the
+        # test returns, causing TemporaryDirectory.cleanup to race and fail.
+        # Disable that unrelated background task only in this test fixture,
+        # not in the actual dependency impact selector.
+        self.git("config", "maintenance.auto", "false")
+        self.git("config", "gc.auto", "0")
         self.write(
             "codex-rs/Cargo.toml",
             """[workspace]
