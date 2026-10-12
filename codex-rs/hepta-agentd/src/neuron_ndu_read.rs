@@ -139,6 +139,15 @@ impl NduReadVerifierV1 {
         if current != signed.snapshot {
             return Err(NduReadVerificationErrorV1::StaleFrontier);
         }
+        // A protected frontier read can outlast a short-lived signed NDU
+        // receipt. A pre-I/O time sample cannot authorize final-use later.
+        let checked_at = self
+            .clock
+            .now_unix_ms()
+            .map_err(|_| NduReadVerificationErrorV1::ClockUnavailable)?;
+        if checked_at < now || checked_at >= signed.expires_at_unix_ms {
+            return Err(NduReadVerificationErrorV1::Expired);
+        }
         let mut exact = b"hepta.ndu.verified-read-packet.v1".to_vec();
         exact.extend_from_slice(&(signed_bytes.len() as u64).to_be_bytes());
         exact.extend_from_slice(&signed_bytes);
