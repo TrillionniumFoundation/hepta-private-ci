@@ -52,10 +52,37 @@ fn synthetic_decision(episode: &str, controller: &str) -> LedgerEvent {
         authentication_digest: actor_auth(),
     })
 }
+// Only synthetic local typed V2 Outcome; no broker price or execution PnL.
+fn synthetic_terminal_outcome() -> LedgerEvent {
+    LedgerEvent::AuthenticatedOutcomeV2(crate::AuthenticatedOutcomeRecordV2 {
+        record_id: id("outcome-episode-1"),
+        outcome_id: id("outcome-label-test-only"),
+        episode_id: id("episode-1"),
+        observer_id: id("synthetic-obs"),
+        observer_controller_id: id("original-observer.controller"),
+        observer_credential_chain_digest: dg("observer-credential"),
+        observer_signing_key_digest: dg("observer-key"),
+        observer_scope_digest: dg("synthetic-ledger-scope"),
+        observer_authority_epoch: 3,
+        observed_at: Some(40_000),
+        value: Some(codex_hepta_types::FixedQ32::ONE),
+        unit_profile_digest: dg("PRICE_BPS_SYNTHETIC_NOT_NET_PNL"),
+        support_digest: dg("synthetic-outcome-support"),
+        latest_observable_at: 41_000,
+        expected_delay_profile_digest: dg("synthetic-horizon"),
+        terminality: crate::AuthenticatedOutcomeTerminality::Terminal,
+        censoring_reason: None,
+        correction_predecessor: None,
+        finalized_at: Some(41_500),
+        authentication_digest: dg("independent-observer-authentication"),
+    })
+}
+
 struct Fixture {
     dir: PathBuf,
     ledger: DurableLedger,
     witness: LedgerWitnessStore,
+    nonce_journal: crate::AckOnlyGrantNonceJournalV1,
     root: AckOnlyRootPinV1,
     delegation: AckOnlyRootDelegationV1,
     cut: AckOnlyCurrentRevocationCutV1,
@@ -82,6 +109,15 @@ impl Fixture {
             std::process::id()
         ));
         fs::create_dir(&dir).unwrap();
+        let nonce_dir = dir.join("owner-nonce-journal");
+        fs::create_dir(&nonce_dir).unwrap();
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            fs::set_permissions(&nonce_dir, fs::Permissions::from_mode(0o700)).unwrap();
+        }
+        let nonce_journal =
+            crate::AckOnlyGrantNonceJournalV1::open_preexisting(&nonce_dir).unwrap();
         let binding = dg("test-only-ackonly-ledger-binding");
         let mut ledger = DurableLedger::create(new_file(&dir, "ledger"), binding, 16).unwrap();
         let witness = LedgerWitnessStore::create(new_file(&dir, "witness"), binding).unwrap();
@@ -194,6 +230,7 @@ impl Fixture {
             dir,
             ledger,
             witness,
+            nonce_journal,
             root,
             delegation,
             cut,
@@ -205,6 +242,42 @@ impl Fixture {
             escrow_key,
         }
     }
+    fn prepare_one_unacknowledged_terminal_outcome(&mut self) {
+        let first = self.ledger.records().unwrap()[0].clone();
+        let prior = LedgerAnchor {
+            sequence: first.sequence.get(),
+            chain_digest: first.chain_digest,
+        };
+        let before = self.witness.frontier().unwrap();
+        self.witness
+            .advance(
+                before,
+                LedgerWitnessFrontier {
+                    anchor: prior,
+                    segment: None,
+                    sealed: false,
+                },
+            )
+            .unwrap();
+        let receipt = self
+            .ledger
+            .append(first.chain_digest, synthetic_terminal_outcome())
+            .unwrap();
+        assert_eq!(receipt.sequence.get(), 2);
+        self.escrow.previous_witness = prior;
+        self.escrow.target_anchor = LedgerAnchor {
+            sequence: 2,
+            chain_digest: receipt.chain_digest,
+        };
+        self.escrow.target_event_digest = receipt.event_digest;
+        self.escrow.original_record_id = id("outcome-episode-1");
+        self.escrow.original_authentication_digest = dg("independent-observer-authentication");
+        self.escrow.original_actor_evidence_issued_at = 42_000;
+        self.escrow.escrow_held_at = 43_000;
+        self.escrow.original_append_started_at = 44_000;
+        self.resign_escrow();
+    }
+
     fn resign_root_delegation(&mut self) {
         self.delegation.root_signature = self
             .root_key
@@ -243,6 +316,7 @@ impl Fixture {
         reconcile_one_existing_ack_qualification(
             &self.ledger,
             &mut self.witness,
+            &mut self.nonce_journal,
             &AckOnlyRecoveryProofV1 {
                 root: &self.root,
                 delegation: &self.delegation,
@@ -436,4 +510,425 @@ fn real_original_product_key_enrollment_is_not_conferred_by_local_test_root() {
     let mut f = Fixture::new();
     let r = f.try_repair(NOW).unwrap();
     assert!(r.qualification_only_no_product_authority);
+}
+
+#[test]
+fn exact_authenticated_terminal_outcome_ack_only_never_appends_new_ledger_event() {
+    let mut f = Fixture::new();
+    f.prepare_one_unacknowledged_terminal_outcome();
+    assert_eq!(f.ledger.records().unwrap().len(), 2);
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 1);
+    let original_bytes = fs::read(f.dir.join("ledger")).unwrap();
+    let receipt = f.try_repair(NOW).expect("exact original typed Outcome ACK");
+    assert_eq!(receipt.previous_witness.sequence, 1);
+    assert_eq!(receipt.acknowledged_witness.sequence, 2);
+    assert!(receipt.ledger_record_count_unchanged);
+    assert_eq!(original_bytes, fs::read(f.dir.join("ledger")).unwrap());
+    assert_eq!(f.ledger.records().unwrap().len(), 2);
+    let witnessed = fs::read(f.dir.join("witness")).unwrap();
+    assert_eq!(
+        f.try_repair(NOW),
+        Err(AckOnlyRecoveryError::AlreadyAcknowledged)
+    );
+    assert_eq!(witnessed, fs::read(f.dir.join("witness")).unwrap());
+}
+
+#[test]
+fn previously_acknowledged_terminal_outcome_cold_reopens_new_native_file_handles() {
+    let mut f = Fixture::new();
+    f.prepare_one_unacknowledged_terminal_outcome();
+    let binding = f.ledger.binding_digest();
+    let escrowed = f.try_repair(NOW).unwrap();
+    assert_eq!(escrowed.acknowledged_witness.sequence, 2);
+    let ledger = fs::read(f.dir.join("ledger")).unwrap();
+    let witness = fs::read(f.dir.join("witness")).unwrap();
+    let serial = NEXT.fetch_add(1, Ordering::Relaxed);
+    let recovered_dir = std::env::temp_dir().join(format!(
+        "hepta-ackonly-outcome-cold-files-{}-{serial}",
+        std::process::id()
+    ));
+    fs::create_dir(&recovered_dir).unwrap();
+    fs::write(recovered_dir.join("ledger"), &ledger).unwrap();
+    fs::write(recovered_dir.join("witness"), &witness).unwrap();
+    drop(f);
+    let witnessed = LedgerWitnessStore::recover(
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(recovered_dir.join("witness"))
+            .unwrap(),
+        binding,
+    )
+    .unwrap();
+    let anchor = witnessed.frontier().unwrap().anchor;
+    assert_eq!(anchor.sequence, 2);
+    let recovered = DurableLedger::recover(
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(recovered_dir.join("ledger"))
+            .unwrap(),
+        binding,
+        16,
+        crate::LedgerRecovery::Acknowledged(anchor),
+    )
+    .unwrap();
+    assert_eq!(recovered.records().unwrap().len(), 2);
+    assert_eq!(
+        recovered.records().unwrap()[1].chain_digest,
+        anchor.chain_digest
+    );
+    assert!(matches!(
+        &recovered.records().unwrap()[1].event,
+        LedgerEvent::AuthenticatedOutcomeV2(_)
+    ));
+    assert_eq!(fs::read(recovered_dir.join("ledger")).unwrap(), ledger);
+    assert_eq!(fs::read(recovered_dir.join("witness")).unwrap(), witness);
+    drop(recovered);
+    drop(witnessed);
+    fs::remove_dir_all(recovered_dir).unwrap();
+}
+
+#[test]
+fn terminal_outcome_recovery_authority_cannot_share_decision_generator_controller() {
+    let mut f = Fixture::new();
+    f.prepare_one_unacknowledged_terminal_outcome();
+    f.delegation.authority_controller_id = id("original-generator.controller");
+    f.resign_root_delegation();
+    assert_eq!(
+        f.try_repair(NOW),
+        Err(AckOnlyRecoveryError::ActorControllerNotIndependent)
+    );
+    f.delegation.authority_controller_id = id("RECOVERY.CONTROLLER");
+    f.delegation.escrow_controller_id = id("original-generator.controller");
+    f.resign_root_delegation();
+    assert_eq!(
+        f.try_repair(NOW),
+        Err(AckOnlyRecoveryError::ActorControllerNotIndependent)
+    );
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 1);
+}
+
+#[test]
+fn different_original_policy_objective_cannot_receive_recovery_ack() {
+    let mut f = Fixture::new();
+    f.root.objective_digest = dg("new-different-objective-not-source");
+    f.resign_root_delegation();
+    f.escrow.objective_digest = f.root.objective_digest;
+    f.resign_escrow();
+    f.grant.objective_digest = f.root.objective_digest;
+    f.resign_grant();
+    assert_eq!(
+        f.try_repair(NOW),
+        Err(AckOnlyRecoveryError::MismatchedWitnessOrLedger)
+    );
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+}
+
+#[test]
+fn recovery_nonce_is_durable_before_witness_advances_and_cannot_be_reused() {
+    let mut f = Fixture::new();
+    let folder = f.dir.join("owner-nonce-journal");
+    assert!(fs::read_dir(&folder).unwrap().next().is_none());
+    f.try_repair(NOW).unwrap();
+    let entries = fs::read_dir(&folder)
+        .unwrap()
+        .collect::<Result<Vec<_>, _>>()
+        .unwrap();
+    assert_eq!(entries.len(), 1);
+    let reservation = fs::read(entries[0].path()).unwrap();
+    assert!(!reservation.is_empty());
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 1);
+    assert_eq!(
+        f.try_repair(NOW),
+        Err(AckOnlyRecoveryError::AlreadyAcknowledged)
+    );
+    assert_eq!(entries.len(), fs::read_dir(&folder).unwrap().count());
+}
+
+#[test]
+fn interrupted_nonce_reservation_must_hold_instead_of_late_witness_ack() {
+    let mut f = Fixture::new();
+    // Simulates a crash AFTER the nonce reservation file was fsynced
+    // and BEFORE the independent Witness was permitted to advance.
+    f.nonce_journal.reserve(&f.grant).unwrap();
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+    assert_eq!(
+        f.try_repair(NOW),
+        Err(AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate)
+    );
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+    assert_eq!(f.ledger.records().unwrap().len(), 1);
+}
+
+#[test]
+fn same_grant_nonce_in_another_clone_with_same_owner_store_is_rejected() {
+    let mut f = Fixture::new();
+    let original = f.nonce_journal.reserve(&f.grant).unwrap();
+    let folder = f.dir.join("owner-nonce-journal");
+    let mut opened = crate::AckOnlyGrantNonceJournalV1::open_preexisting(&folder).unwrap();
+    assert_eq!(
+        opened.reserve(&f.grant),
+        Err(AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate)
+    );
+    assert!(!original.is_zero());
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+}
+
+#[test]
+fn invalid_signature_cannot_consume_an_owner_held_nonce_or_write_witness() {
+    let mut f = Fixture::new();
+    f.grant.recovery_signature[13] ^= 1;
+    assert_eq!(
+        f.try_repair(NOW),
+        Err(AckOnlyRecoveryError::InvalidRecoveryGrant)
+    );
+    assert!(
+        fs::read_dir(f.dir.join("owner-nonce-journal"))
+            .unwrap()
+            .next()
+            .is_none()
+    );
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+}
+
+#[cfg(unix)]
+#[test]
+fn nonce_directory_must_preexist_be_owner_private_and_not_symlink() {
+    use std::os::unix::fs::{PermissionsExt, symlink};
+    let f = Fixture::new();
+    let path = f.dir.join("too-open-dir");
+    fs::create_dir(&path).unwrap();
+    fs::set_permissions(&path, fs::Permissions::from_mode(0o755)).unwrap();
+    assert!(matches!(
+        crate::AckOnlyGrantNonceJournalV1::open_preexisting(&path),
+        Err(AckOnlyRecoveryError::NonceStoreUnavailable)
+    ));
+    fs::set_permissions(&path, fs::Permissions::from_mode(0o700)).unwrap();
+    let alias = f.dir.join("symlink-to-owner-nonce");
+    symlink(f.dir.join("owner-nonce-journal"), &alias).unwrap();
+    assert!(matches!(
+        crate::AckOnlyGrantNonceJournalV1::open_preexisting(&alias),
+        Err(AckOnlyRecoveryError::NonceStoreUnavailable)
+    ));
+}
+
+#[test]
+fn child_only_readonly_original_native_ledger_recovery() {
+    // Spawned by the parent test using the separately launched Rust test
+    // executable as a REAL new process. No production source is read.
+    let Ok(root) = std::env::var("HEPTA_ACKONLY_CHILD_TEST_DIR") else {
+        return;
+    };
+    let path = PathBuf::from(root);
+    let mode = std::env::var("HEPTA_ACKONLY_CHILD_TEST_MODE").unwrap();
+    assert!(["pending", "acked"].contains(&mode.as_str()));
+    let binding = dg("test-only-ackonly-ledger-binding");
+    let witness_bytes = fs::read(path.join("witness")).unwrap();
+    let ledger_bytes = fs::read(path.join("ledger")).unwrap();
+    let witness = LedgerWitnessStore::recover(
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(path.join("witness"))
+            .unwrap(),
+        binding,
+    )
+    .unwrap();
+    let anchor = witness.frontier().unwrap().anchor;
+    assert_eq!(anchor.sequence, if mode == "pending" { 1 } else { 2 });
+    let recovered = DurableLedger::recover(
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(path.join("ledger"))
+            .unwrap(),
+        binding,
+        16,
+        crate::LedgerRecovery::Acknowledged(anchor),
+    )
+    .unwrap();
+    let records = recovered.records().unwrap();
+    assert_eq!(records.len(), 2);
+    assert_eq!(records[1].sequence.get(), 2);
+    assert!(matches!(
+        &records[1].event,
+        LedgerEvent::AuthenticatedOutcomeV2(_)
+    ));
+    if mode == "acked" {
+        assert_eq!(anchor.chain_digest, records[1].chain_digest);
+    } else {
+        assert_eq!(anchor.chain_digest, records[0].chain_digest);
+    }
+    assert_eq!(fs::read(path.join("ledger")).unwrap(), ledger_bytes);
+    assert_eq!(fs::read(path.join("witness")).unwrap(), witness_bytes);
+}
+
+fn new_process_readback(mode: &str) {
+    let mut f = Fixture::new();
+    f.prepare_one_unacknowledged_terminal_outcome();
+    if mode == "acked" {
+        f.try_repair(NOW).unwrap();
+    }
+    let seq = if mode == "pending" { 1 } else { 2 };
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, seq);
+    let id = NEXT.fetch_add(1, Ordering::Relaxed);
+    let dir = std::env::temp_dir().join(format!(
+        "hepta-ackonly-native-subproc-{}-{id}",
+        std::process::id()
+    ));
+    fs::create_dir(&dir).unwrap();
+    let original_ledger = fs::read(f.dir.join("ledger")).unwrap();
+    let original_witness = fs::read(f.dir.join("witness")).unwrap();
+    fs::write(dir.join("ledger"), &original_ledger).unwrap();
+    fs::write(dir.join("witness"), &original_witness).unwrap();
+    drop(f);
+    let result = std::process::Command::new(std::env::current_exe().unwrap())
+        .args([
+            "--exact",
+            "ack_only_recovery::tests::child_only_readonly_original_native_ledger_recovery",
+            "--nocapture",
+        ])
+        .env("HEPTA_ACKONLY_CHILD_TEST_DIR", &dir)
+        .env("HEPTA_ACKONLY_CHILD_TEST_MODE", mode)
+        .output()
+        .unwrap();
+    assert!(
+        result.status.success(),
+        "{}",
+        String::from_utf8_lossy(&result.stderr)
+    );
+    assert!(String::from_utf8_lossy(&result.stdout).contains("1 passed"));
+    assert_eq!(fs::read(dir.join("ledger")).unwrap(), original_ledger);
+    assert_eq!(fs::read(dir.join("witness")).unwrap(), original_witness);
+    fs::remove_dir_all(dir).unwrap();
+}
+
+#[test]
+fn genuine_second_native_process_recovers_one_outcome_unwitnessed_without_changing_source() {
+    new_process_readback("pending");
+}
+
+#[test]
+fn genuine_second_native_process_recovers_acked_terminal_outcome_from_separate_files() {
+    new_process_readback("acked");
+}
+
+#[test]
+fn simultaneous_claims_for_same_nonce_only_one_wins_in_one_owner_directory() {
+    let f = Fixture::new();
+    let grant = f.grant.clone();
+    let owner_dir = f.dir.join("owner-nonce-journal");
+    let barrier = std::sync::Arc::new(std::sync::Barrier::new(3));
+    // Eagerly start both threads before releasing the barrier.
+    // A lazy iterator here would deadlock with a 3-party barrier.
+    let mut tasks = Vec::with_capacity(2);
+    for _ in 0..2 {
+        let dir = owner_dir.clone();
+        let same_grant = grant.clone();
+        let start = barrier.clone();
+        tasks.push(std::thread::spawn(move || {
+            let mut store = crate::AckOnlyGrantNonceJournalV1::open_preexisting(&dir).unwrap();
+            start.wait();
+            store.reserve(&same_grant)
+        }));
+    }
+    barrier.wait();
+    let results = tasks
+        .into_iter()
+        .map(|t| t.join().unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(results.iter().filter(|r| r.is_ok()).count(), 1);
+    assert_eq!(
+        results
+            .iter()
+            .filter(|r| matches!(
+                r,
+                Err(AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate)
+            ))
+            .count(),
+        1
+    );
+    assert_eq!(fs::read_dir(owner_dir).unwrap().count(), 1);
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+}
+
+#[test]
+fn existing_indeterminate_reservation_is_never_cleared_by_new_store_open() {
+    let mut f = Fixture::new();
+    let dir = f.dir.join("owner-nonce-journal");
+    let token = f.nonce_journal.reserve(&f.grant).unwrap();
+    assert!(!token.is_zero());
+    // The prior actor's reservation file was synced, and another
+    // process opens the original owner-pinned directory after restart.
+    let mut next = crate::AckOnlyGrantNonceJournalV1::open_preexisting(&dir).unwrap();
+    assert_eq!(
+        next.reserve(&f.grant),
+        Err(AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate)
+    );
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+    assert_eq!(f.ledger.records().unwrap().len(), 1);
+}
+
+#[cfg(unix)]
+#[test]
+fn replaced_owner_nonce_path_is_not_an_authorized_reservation_store() {
+    use std::os::unix::fs::symlink;
+    let mut f = Fixture::new();
+    let old = f.dir.join("owner-nonce-journal");
+    let renamed = f.dir.join("owner-nonce-journal-original");
+    fs::rename(&old, &renamed).unwrap();
+    let attacker = f.dir.join("new-root-not-original-owner");
+    fs::create_dir(&attacker).unwrap();
+    symlink(&attacker, &old).unwrap();
+    assert_eq!(
+        f.try_repair(NOW),
+        Err(AckOnlyRecoveryError::NonceStoreUnavailable)
+    );
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+    assert_eq!(fs::read_dir(&renamed).unwrap().count(), 0);
+    assert_eq!(fs::read_dir(&attacker).unwrap().count(), 0);
+}
+
+#[test]
+fn child_only_fsync_nonce_then_deliberately_terminate_before_any_witness_write() {
+    let Ok(dir) = std::env::var("HEPTA_ACKONLY_CHILD_NONCE_DIR") else {
+        return;
+    };
+    // Entirely separate process reserves the SAME original synthetic
+    // grant nonce. The child then exits without giving the parent a
+    // witness ACK. Not a physical hardware power-loss test.
+    let f = Fixture::new();
+    let mut store = crate::AckOnlyGrantNonceJournalV1::open_preexisting(Path::new(&dir)).unwrap();
+    store.reserve(&f.grant).unwrap();
+    drop(f);
+    std::process::exit(47);
+}
+
+#[test]
+fn another_native_process_exits_after_nonce_fsync_then_parent_must_hold() {
+    let mut f = Fixture::new();
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+    let dir = f.dir.join("owner-nonce-journal");
+    let report=std::process::Command::new(std::env::current_exe().unwrap())
+        .args(["--exact",
+            "ack_only_recovery::tests::child_only_fsync_nonce_then_deliberately_terminate_before_any_witness_write",
+            "--nocapture"])
+        .env("HEPTA_ACKONLY_CHILD_NONCE_DIR",&dir)
+        .output().unwrap();
+    assert_eq!(
+        report.status.code(),
+        Some(47),
+        "{}",
+        String::from_utf8_lossy(&report.stderr)
+    );
+    assert_eq!(fs::read_dir(&dir).unwrap().count(), 1);
+    // Child died after durable grant reservation: reusing the same
+    // original proof is not automatically permitted to finish an ACK.
+    assert_eq!(
+        f.try_repair(NOW),
+        Err(AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate)
+    );
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+    assert_eq!(f.ledger.records().unwrap().len(), 1);
 }

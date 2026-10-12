@@ -100,3 +100,17 @@ NOT claimed. Exact original Cargo.lock is unchanged.
 Do not install this qualification feature or promote models based on
 its synthetic keys/tests. Keep the security review and product release
 status HOLD.
+
+## Follow-up qualification (Phase 4P, child Draft)
+
+The parent PR's 15 new tests, missing nonce store and Outcome cold-reopen
+observations describe the ORIGINAL Phase4P parent baseline only. See
+ACK_ONLY_OUTCOME_NONCE_QUALIFICATION.md for the new DEFAULT-OFF,
+feature-gated owner-held fsynced recovery nonce, synthetic V2 terminal
+Outcome exact Witness ACK, true SECOND Rust process ledger readback,
+and controlled post-nonce-fsync process-exit refusal tests.
+
+These child-branch source tests improve local ACK-only reliability.
+They do NOT supply the missing product-pinned global nonce authority,
+independent real Mac/X230 preappend Escrow, trusted current root cut,
+physical power-loss proof or original trade after-cost PnL.
