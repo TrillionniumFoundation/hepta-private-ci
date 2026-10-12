@@ -58,11 +58,23 @@ fn read_only_descriptor(security: &SECURITY_ATTRIBUTES) -> io::Result<()> {
         return Err(io::Error::last_os_error());
     }
     let mut ace = ptr::null_mut();
-    if unsafe {
-        GetAce(dacl, /*dwaceindex*/ 0, &mut ace)
-    } == 0
-    {
+    if unsafe { GetAce(dacl, /*dwaceindex*/ 0, &mut ace) } == 0 {
         return Err(io::Error::last_os_error());
+    }
+    if ace.is_null() {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "security fixture returned a null ACE",
+        ));
+    }
+    let header = unsafe { &*(ace as *const ACE_HEADER) };
+    if header.AceType != ACCESS_ALLOWED_ACE_TYPE
+        || !sid_length_fits_ace(usize::from(header.AceSize), 0)
+    {
+        return Err(io::Error::new(
+            io::ErrorKind::InvalidData,
+            "security fixture returned an invalid allow ACE",
+        ));
     }
     // Restrict only this new fixture's descriptor before creation. No existing
     // object is made public or has its owner/security changed for this test.
