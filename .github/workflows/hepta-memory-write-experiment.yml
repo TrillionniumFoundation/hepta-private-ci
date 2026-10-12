@@ -2,7 +2,7 @@ name: MemoryCell source-only write and fresh task reads
 on:
   push:
     branches:
-      - "codex/memory-cell-evidence-20261008"
+      - "codex/memory-source-write-locked-b7ea9319-20261012"
     paths:
       - "scripts/memory_cell/experience_*.py"
       - "scripts/memory_cell/test_experience_*.py"
@@ -30,7 +30,7 @@ concurrency:
   # GitHub replaces an older pending run in the same group even when
   # cancel-in-progress is false. Bind this expensive source-before-task
   # experiment to its exact generating SHA; no unrelated push may displace it.
-  group: memory-source-write-1452-${{ github.sha }}
+  group: memory-source-write-frozen-b7ea9319-20261012-${{ github.sha }}
   cancel-in-progress: false
 jobs:
   repository-format:
