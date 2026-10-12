@@ -13,6 +13,14 @@ async fn historical_pool(displaced: bool) -> SqlitePool {
         .connect("sqlite::memory:")
         .await
         .expect("SQLite owner");
+    // The Clippy exception is confined to this disposable in-memory
+    // migration oracle; a future file-backed source must use codex-state.
+    let main_file: String =
+        sqlx::query_scalar("SELECT file FROM pragma_database_list WHERE name = 'main'")
+            .fetch_one(&pool)
+            .await
+            .expect("reference SQLite main database");
+    assert!(main_file.is_empty(), "historical migration oracle must be in-memory");
     let mut connection = pool.acquire().await.expect("owner connection");
     connection
         .ensure_migrations_table("_sqlx_migrations")
