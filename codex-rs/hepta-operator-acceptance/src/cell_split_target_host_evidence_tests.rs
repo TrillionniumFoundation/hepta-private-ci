@@ -277,7 +277,7 @@ fn signed_production_evidence_replays_and_measures_cpu_and_gpu() {
 }
 
 #[test]
-fn signed_production_evidence_store_reopens_only_after_verified_atomic_write() {
+fn signed_production_evidence_store_is_create_only_idempotent_and_reopens_original() {
     let payload = complete_recorder();
     let host = key(37);
     let observer = key(41);
@@ -310,6 +310,58 @@ fn signed_production_evidence_store_reopens_only_after_verified_atomic_write() {
         CellSplitTargetHostEvidenceStoreV1::reopen(&path, &trust).expect("reopen evidence");
     assert_eq!(reopened, envelope);
     assert_eq!(replayed, stored);
+
+    // Identical original evidence is safe to replay, but no different signed
+    // report may reuse its durable path. This is an anti-overwrite guarantee,
+    // not an external anti-rollback witness for whole-directory restoration.
+    let original_bytes = std::fs::read(&path).expect("original durable evidence");
+    assert_eq!(
+        CellSplitTargetHostEvidenceStoreV1::persist(&path, &envelope, &trust)
+            .expect("idempotent exact original bytes"),
+        stored,
+    );
+    assert_eq!(
+        std::fs::read(&path).expect("replayed durable bytes"),
+        original_bytes,
+    );
+
+    let second_observer = key(43);
+    let mut rotated_trust = trust.clone();
+    rotated_trust.observer_keys.insert(
+        "observer-secondary".to_string(),
+        second_observer.verifying_key(),
+    );
+    let different_signed_history = payload
+        .sign(
+            "host-signer",
+            &host,
+            [("observer-secondary".to_string(), second_observer)],
+        )
+        .expect("independently signed alternate history");
+    assert!(
+        verify_cell_split_target_host_evidence(&different_signed_history, &rotated_trust)
+            .is_ok(),
+        "both histories are individually valid but cannot share one witness path",
+    );
+    assert!(
+        CellSplitTargetHostEvidenceStoreV1::persist(
+            &path,
+            &different_signed_history,
+            &rotated_trust,
+        )
+        .is_err(),
+        "another valid signature is not authority to overwrite original evidence",
+    );
+    assert_eq!(
+        std::fs::read(&path).expect("original must survive rejected overwrite"),
+        original_bytes,
+    );
+    assert_eq!(
+        CellSplitTargetHostEvidenceStoreV1::reopen(&path, &trust)
+            .expect("original history remains verifiable")
+            .0,
+        envelope,
+    );
 
     let mut tampered = std::fs::read(&path).expect("read stored evidence");
     tampered[0] ^= 1;
