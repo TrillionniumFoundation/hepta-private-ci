@@ -172,6 +172,52 @@ class BatchTests(unittest.TestCase):
         self.assertIs(cache.get(key), good)
         self.assertEqual(cache.size_bytes, original_size)
 
+    def test_cache_batch_conflict_is_prevalidated_before_first_member_insert(self):
+        from shared_encoder_batch import ScopedFeatureCache
+
+        cache = ScopedFeatureCache(128 * 1024)
+        alpha = req(1, "alpha").cache_key()
+        beta = req(2, "beta").cache_key()
+        verified_alpha = FrozenFeature.from_values([0.25] * 8, 2, "mean")
+        verified_beta = FrozenFeature.from_values([0.5] * 8, 2, "mean")
+        prior_beta = FrozenFeature.from_values([0.75] * 8, 2, "mean")
+        cache.put(beta, prior_beta)
+        before = (cache.size_bytes, cache.evictions, tuple(cache._entries))
+        with self.assertRaisesRegex(ValueError, "different feature content"):
+            cache.put_many(((alpha, verified_alpha), (beta, verified_beta)))
+        self.assertEqual(
+            (cache.size_bytes, cache.evictions, tuple(cache._entries)), before)
+        self.assertIsNone(cache.get(alpha))
+        self.assertIs(cache.get(beta), prior_beta)
+
+    def test_reentrant_backend_cache_conflict_cannot_publish_first_new_feature(self):
+        # A backend callback may complete with valid tensor shapes after a
+        # second owner introduced a conflicting key between preflight and the
+        # cache publication boundary. Reject the entire new insertion batch.
+        class ReentrantBackend(FakeBackend):
+            def encode_many(self, texts, mode):
+                result = super().encode_many(texts, mode)
+                self.inject_into.put(
+                    req(2, "beta").cache_key(),
+                    FrozenFeature.from_values([0.75] * self.width, 2, mode))
+                return result
+
+        backend = ReentrantBackend(width=8)
+        engine = SharedStemEngine(backend, max_cache_bytes=128 * 1024)
+        backend.inject_into = engine.cache
+        with self.assertRaisesRegex(ValueError, "different feature content"):
+            engine.run([req(1, "alpha"), req(2, "beta")])
+        self.assertIsNone(engine.cache.get(req(1, "alpha").cache_key()))
+        self.assertIsNotNone(engine.cache.get(req(2, "beta").cache_key()))
+        self.assertEqual(len(backend.calls), 1)
+        # A rejected invocation did not silently publish the first result.
+        # A later retry must recompute alpha rather than claim a cache hit.
+        backend.inject_into = type("NoopCache", (), {"put": lambda self, *_: None})()
+        result = engine.run([req(3, "alpha")])
+        self.assertEqual(result.backend_calls, 1)
+        self.assertEqual(result.cache_hits, 0)
+
+
     def test_feature_tokens_and_scalar_type_are_strictly_bounded(self):
         for tokens in (True, -1, 0, 8193):
             with self.assertRaisesRegex(ValueError, "shape"):
