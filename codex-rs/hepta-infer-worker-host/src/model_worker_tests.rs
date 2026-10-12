@@ -1237,11 +1237,22 @@ fn batch_peak_includes_other_models_loaded_in_worker_generation() {
     let mut second = manifest();
     second.model_id = "model.2".to_string();
     worker.load_model(100, second).expect("second model load");
+    // Include the second live handle in the generation-wide tracked peak
+    // BEFORE physical dispatch. Preflight rejection cannot be reclassified
+    // as a post-dispatch mismatch or indeterminate execution.
     assert_eq!(
         worker.run_neuron_features_backend_batch(100, "model.1", two_batch_requests()),
-        Err(Error::FeatureBatchMismatch),
+        Err(Error::ModelCapacity),
     );
-    assert!(worker.requires_external_recovery());
+    assert_eq!(worker.driver.backend_calls, 0);
+    assert!(!worker.requires_external_recovery());
+    // This is an inclusive bound, not a permanent denial after valid
+    // preflight; exactly 4096 bytes allows the same requests to execute.
+    worker.grant.maximum_memory_bytes = 4_096;
+    let success = worker
+        .run_neuron_features_backend_batch(100, "model.1", two_batch_requests())
+        .expect("same generation can execute at the exact aggregate grant");
+    assert_eq!(success.receipts.len(), 2);
     assert_eq!(worker.driver.backend_calls, 1);
 }
 
