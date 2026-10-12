@@ -129,6 +129,8 @@ pub enum Error {
     /// Driver release failed: keep the handle accounted and block every use.
     /// Restart under a new generation only after independent reconciliation.
     ModelUnloadIndeterminate,
+    /// Loading or post-load cleanup may have left unknown resident resources.
+    /// Deny every operation in this generation until independent reconciliation.
     ModelLoadIndeterminate,
     ModelMismatch,
     PayloadMismatch,
