@@ -825,6 +825,22 @@ impl NeuronFeatureDriver for MockBatchDriver {
 }
 
 impl NeuronBackendBatchDriver for MockBatchDriver {
+    fn preflight_neuron_backend_batch_bytes(
+        &self,
+        handle: &DriverModelHandle,
+        requests: &[NeuronFeatureRequest],
+    ) -> Result<u64, Error> {
+        // Sequential fixture driver claims a 2 KiB scratch minimum. This is
+        // a fabricated test bound, not real process RSS or a tensor benchmark.
+        if requests.is_empty() {
+            return Err(Error::FeatureBatchLimit);
+        }
+        handle
+            .observed_memory_bytes
+            .checked_add(2_048)
+            .ok_or(Error::ArithmeticOverflow)
+    }
+
     fn run_neuron_backend_batch(
         &mut self,
         handle: &DriverModelHandle,
