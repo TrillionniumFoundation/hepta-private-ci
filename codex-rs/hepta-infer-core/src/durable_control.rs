@@ -119,6 +119,10 @@ pub struct RequestRecord {
     pub reservation: Option<Reservation>,
     pub assignment: Option<Assignment>,
     pub terminal_observation_digest: Option<String>,
+    /// Durable one-shot pre-effect fence for native signed Stem dispatch.
+    /// Old journal records replay as None. Possession of this digest is NOT
+    /// a signed final-use grant or proof of a physical Worker effect.
+    pub effect_binding_digest: Option<String>,
     pub consumed_tokens: u32,
     pub usage_units: u64,
 }
@@ -335,6 +339,40 @@ impl DurableInferenceControl {
         })
     }
 
+    /// Durably reserve the exact *one and only* potential effect attempt.
+    ///
+    /// The caller must already have independently validated its signed
+    /// final-use authority. This write-ahead fence is deliberately completed
+    /// before any Driver call; recovery sees the marker and MUST reconcile
+    /// instead of issuing a second execution. A digest is not authorization.
+    ///
+    /// Historical Assigned requests without a marker keep their V1 replay
+    /// semantics, but the signed Stem path must require this transition.
+    pub fn begin_effect(
+        &mut self,
+        request_id: &str,
+        expected_revision: u64,
+        final_use_binding_digest: String,
+    ) -> Result<ControlReceipt, Error> {
+        validate_identity(request_id, "request")?;
+        validate_digest(&final_use_binding_digest, "final-use binding")?;
+        let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
+        if record.revision != expected_revision {
+            return Err(Error::StaleRevision);
+        }
+        if record.state != RequestState::Assigned || record.effect_binding_digest.is_some() {
+            return Err(Error::InvalidTransition);
+        }
+        if record.reservation.is_none() || record.assignment.is_none() {
+            return Err(Error::InvalidTransition);
+        }
+        self.commit(Event::BeginEffect {
+            request_id: request_id.to_string(),
+            expected_revision,
+            final_use_binding_digest,
+        })
+    }
+
     pub fn cancel(
         &mut self,
         request_id: &str,
@@ -488,6 +526,11 @@ enum Event {
         expected_revision: u64,
         assignment: Assignment,
     },
+    BeginEffect {
+        request_id: String,
+        expected_revision: u64,
+        final_use_binding_digest: String,
+    },
     Cancel {
         request_id: String,
         expected_revision: u64,
@@ -506,6 +549,7 @@ impl Event {
             Self::Submit(request) => &request.request_id,
             Self::Reserve { request_id, .. }
             | Self::Assign { request_id, .. }
+            | Self::BeginEffect { request_id, .. }
             | Self::Cancel { request_id, .. }
             | Self::Settle { request_id, .. } => request_id,
         }
@@ -534,6 +578,7 @@ fn apply_event(
                     reservation: None,
                     assignment: None,
                     terminal_observation_digest: None,
+                    effect_binding_digest: None,
                     consumed_tokens: 0,
                     usage_units: 0,
                 },
@@ -565,6 +610,24 @@ fn apply_event(
             }
             record.assignment = Some(assignment.clone());
             record.state = RequestState::Assigned;
+            record.revision = next_revision(record.revision)?;
+        }
+        Event::BeginEffect {
+            request_id,
+            expected_revision,
+            final_use_binding_digest,
+        } => {
+            let record = records.get_mut(request_id).ok_or(Error::RequestNotFound)?;
+            require_revision(record, *expected_revision, replay)?;
+            validate_digest(final_use_binding_digest, "final-use binding")?;
+            if record.state != RequestState::Assigned
+                || record.effect_binding_digest.is_some()
+                || record.reservation.is_none()
+                || record.assignment.is_none()
+            {
+                return Err(Error::InvalidTransition);
+            }
+            record.effect_binding_digest = Some(final_use_binding_digest.clone());
             record.revision = next_revision(record.revision)?;
         }
         Event::Cancel {
@@ -742,6 +805,11 @@ fn encode_event(event: &Event) -> String {
             "assign|{request_id}|{expected_revision}|{}|{}|{}",
             assignment.worker_id, assignment.worker_generation, assignment.assignment_digest
         ),
+        Event::BeginEffect {
+            request_id,
+            expected_revision,
+            final_use_binding_digest,
+        } => format!("effect-v1|{request_id}|{expected_revision}|{final_use_binding_digest}"),
         Event::Cancel {
             request_id,
             expected_revision,
@@ -827,6 +895,13 @@ fn decode_event(line: &str) -> Result<Event, Error> {
                 assignment_digest: (*assignment_digest).to_string(),
             },
         }),
+        ["effect-v1", request_id, revision, final_use_binding_digest] => {
+            Ok(Event::BeginEffect {
+                request_id: (*request_id).to_string(),
+                expected_revision: parse_u64(revision)?,
+                final_use_binding_digest: (*final_use_binding_digest).to_string(),
+            })
+        }
         ["cancel", request_id, revision] => Ok(Event::Cancel {
             request_id: (*request_id).to_string(),
             expected_revision: parse_u64(revision)?,
