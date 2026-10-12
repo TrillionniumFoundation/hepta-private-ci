@@ -419,7 +419,6 @@ fn uncertain_unload_remains_accounted_and_rejects_all_future_use() {
     );
 }
 
-
 #[test]
 fn loading_two_models_cannot_double_spend_total_worker_memory() {
     let mut worker = InferenceWorker::new(
@@ -433,7 +432,9 @@ fn loading_two_models_cannot_double_spend_total_worker_memory() {
         },
     )
     .expect("worker");
-    worker.load_model(100, manifest()).expect("first 3 KiB model");
+    worker
+        .load_model(100, manifest())
+        .expect("first 3 KiB model");
     let mut second = manifest();
     second.model_id = "model.2".to_string();
     assert_eq!(
@@ -443,7 +444,10 @@ fn loading_two_models_cannot_double_spend_total_worker_memory() {
     assert_eq!(worker.models.len(), 1);
     assert_eq!(worker.driver.loaded, 1);
     assert_eq!(worker.driver.unload_calls, 1);
-    assert!(!worker.load_indeterminate, "successful cleanup permits retry");
+    assert!(
+        !worker.load_indeterminate,
+        "successful cleanup permits retry"
+    );
     assert!(!worker.requires_external_recovery());
 
     worker.driver.reported_memory_bytes = 1_024;
@@ -477,7 +481,9 @@ fn invalid_load_handle_is_cleaned_up_once_before_retry() {
     assert!(!worker.load_indeterminate);
 
     worker.driver.invalid_handle = false;
-    worker.load_model(100, manifest()).expect("retry after proven cleanup");
+    worker
+        .load_model(100, manifest())
+        .expect("retry after proven cleanup");
 }
 
 #[test]
@@ -879,8 +885,10 @@ fn batch_preflight_rejects_partial_payload_and_duplicate_without_dispatch() {
     // The reservation ID is outside the feature payload digest, so this
     // regression exercises the explicit batch admission fence.
     let mut duplicate_reservation = two_batch_requests();
-    duplicate_reservation[1].authorization.reservation_id =
-        duplicate_reservation[0].authorization.reservation_id.clone();
+    duplicate_reservation[1].authorization.reservation_id = duplicate_reservation[0]
+        .authorization
+        .reservation_id
+        .clone();
     assert_eq!(
         worker.run_neuron_features_backend_batch(100, "model.1", duplicate_reservation),
         Err(Error::FeatureBatchMismatch)
