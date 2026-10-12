@@ -1251,3 +1251,55 @@ fn neuron_batch_and_single_share_manifest_token_ceiling_on_cancelled_inputs() {
     assert_eq!(worker.driver.backend_calls, 1);
     worker.unload_model(100, "model.1").expect("releasable");
 }
+
+#[test]
+fn reservation_token_bound_is_shared_by_generic_single_batch_and_cancelled_neuron_paths() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.reservation-bound".to_string(),
+        3,
+        grant(),
+        MockBatchDriver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+
+    let mut generic = request();
+    generic.reservation_maximum_tokens = 32;
+    assert_eq!(worker.run(100, "model.1", generic), Err(Error::TokenLimit));
+    assert_eq!(worker.driver.inner.run_calls, 0);
+
+    let mut single = neuron_feature_request();
+    single.authorization.reservation_maximum_tokens = 32;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", single),
+        Err(Error::TokenLimit)
+    );
+    assert_eq!(worker.driver.inner.feature_run_calls, 0);
+
+    let mut cancelled = neuron_feature_request();
+    cancelled.authorization.cancelled = true;
+    cancelled.authorization.reservation_maximum_tokens = 32;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", cancelled),
+        Err(Error::TokenLimit),
+        "cancellation cannot bypass a narrower reservation"
+    );
+
+    let mut members = two_batch_requests();
+    members[1].authorization.reservation_maximum_tokens = 32;
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", members),
+        Err(Error::TokenLimit)
+    );
+    assert_eq!(worker.driver.backend_calls, 0);
+    assert!(!worker.requires_external_recovery(), "all rejected before backend");
+
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request())
+            .expect("legitimate reserved request")
+            .status,
+        ExecutionStatus::Succeeded
+    );
+    assert_eq!(worker.driver.inner.feature_run_calls, 1);
+}
