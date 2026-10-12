@@ -5,6 +5,9 @@ struct Driver {
     fail_terminal: bool,
     indeterminate: bool,
     corrupt_neuron_head: bool,
+    fail_provider_dispatch: bool,
+    fail_feature_dispatch: bool,
+    missing_output_digest: bool,
     invalid_handle: bool,
     fail_unload: bool,
     loaded: usize,
@@ -28,6 +31,9 @@ impl ModelDriver for Driver {
         _handle: &DriverModelHandle,
         _request: &WorkerRequest,
     ) -> Result<DriverRunObservation, Error> {
+        if self.fail_provider_dispatch {
+            return Err(Error::DriverFailure("provider execution unknown".to_string()));
+        }
         if self.indeterminate {
             return Ok(DriverRunObservation {
                 terminal_observed: false,
@@ -40,7 +46,11 @@ impl ModelDriver for Driver {
         Ok(DriverRunObservation {
             terminal_observed: true,
             succeeded: !self.fail_terminal,
-            output_digest: Some("9".repeat(64)),
+            output_digest: if self.missing_output_digest {
+                None
+            } else {
+                Some("9".repeat(64))
+            },
             consumed_tokens: 16,
             observed_memory_bytes: 1_024,
         })
@@ -61,6 +71,9 @@ impl NeuronFeatureDriver for Driver {
         _handle: &DriverModelHandle,
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
+        if self.fail_feature_dispatch {
+            return Err(Error::DriverFailure("neuron execution unknown".to_string()));
+        }
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
                 terminal_observed: false,
@@ -395,6 +408,162 @@ fn multi_model_resident_memory_cannot_exceed_total_worker_grant() {
     assert_eq!(worker.load_model(100, second), Err(Error::ModelCapacity));
     assert_eq!(worker.models.len(), 1);
     assert_eq!(worker.driver.loaded, 1);
+}
+
+#[test]
+fn ordinary_predispatch_rejection_does_not_poison_single_feature_worker() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.predispatch".into(), 3, grant(), Driver::default())
+            .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let mut changed = neuron_feature_request();
+    changed.feature_vector_q24[0] += 1;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", changed),
+        Err(Error::PayloadMismatch)
+    );
+    assert!(!worker.poisoned);
+    assert_eq!(
+        worker
+            .run_neuron_features(100, "model.1", neuron_feature_request())
+            .expect("healthy worker")
+            .status,
+        ExecutionStatus::Succeeded
+    );
+}
+
+#[test]
+fn unknown_single_neuron_result_fences_generation_and_releases_slots() {
+    for driver in [
+        Driver {
+            indeterminate: true,
+            ..Driver::default()
+        },
+        Driver {
+            fail_feature_dispatch: true,
+            ..Driver::default()
+        },
+    ] {
+        let mut worker = InferenceWorker::new(
+            100,
+            "worker.unknown-feature".into(),
+            3,
+            grant(),
+            driver,
+        )
+        .expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        let response = worker.run_neuron_features(100, "model.1", neuron_feature_request());
+        match response {
+            Ok(observed) => assert_eq!(observed.status, ExecutionStatus::Indeterminate),
+            Err(error) => assert!(matches!(error, Error::DriverFailure(_))),
+        }
+        assert!(worker.poisoned);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.1"].active_requests, 0);
+        assert_eq!(
+            worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+            Err(Error::IndeterminateLifecycle)
+        );
+    }
+}
+
+#[test]
+fn corrupt_single_neuron_observation_fences_generation() {
+    for driver in [
+        Driver {
+            corrupt_neuron_head: true,
+            ..Driver::default()
+        },
+        Driver {
+            fail_terminal: true,
+            ..Driver::default()
+        },
+    ] {
+        let mut worker = InferenceWorker::new(
+            100,
+            "worker.bad-feature".into(),
+            3,
+            grant(),
+            driver,
+        )
+        .expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        assert_eq!(
+            worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+            Err(Error::FeatureOutputMismatch)
+        );
+        assert!(worker.poisoned);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.1"].active_requests, 0);
+        assert_eq!(
+            worker.run(100, "model.1", request()),
+            Err(Error::IndeterminateLifecycle)
+        );
+    }
+}
+
+#[test]
+fn provider_unknown_or_invalid_terminal_receipt_never_retries() {
+    for driver in [
+        Driver {
+            fail_provider_dispatch: true,
+            ..Driver::default()
+        },
+        Driver {
+            missing_output_digest: true,
+            ..Driver::default()
+        },
+        Driver {
+            indeterminate: true,
+            ..Driver::default()
+        },
+    ] {
+        let mut worker = InferenceWorker::new(
+            100,
+            "worker.bad-provider".into(),
+            3,
+            grant(),
+            driver,
+        )
+        .expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        let result = worker.run(100, "model.1", request());
+        match result {
+            Ok(observed) => assert_eq!(observed.status, ExecutionStatus::Indeterminate),
+            Err(error) => assert!(matches!(
+                error,
+                Error::DriverFailure(_) | Error::MissingTerminalOutput
+            )),
+        }
+        assert!(worker.poisoned);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.1"].active_requests, 0);
+        assert_eq!(
+            worker.run(100, "model.1", request()),
+            Err(Error::IndeterminateLifecycle)
+        );
+    }
+}
+
+#[test]
+fn definitive_terminal_provider_failure_does_not_poison_worker() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.terminal-failure".into(),
+        3,
+        grant(),
+        Driver {
+            fail_terminal: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let observation = worker.run(100, "model.1", request()).expect("definitive failure");
+    assert_eq!(observation.status, ExecutionStatus::Failed);
+    assert!(observation.terminal_observed);
+    assert!(!worker.poisoned);
 }
 
 #[test]
