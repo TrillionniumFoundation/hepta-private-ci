@@ -405,7 +405,7 @@ pub(crate) fn send_frame_with_deadline<T: Serialize>(
 }
 
 fn frame_deadline(timeout: Duration) -> Result<Instant, CellSplitEffectRpcErrorV1> {
-    if timeout.is_zero() || timeout > Duration::from_secs(30) {
+    if timeout < Duration::from_millis(1) || timeout > Duration::from_secs(30) {
         return Err(CellSplitEffectRpcErrorV1::Invalid("RPC frame timeout"));
     }
     Instant::now()
@@ -730,8 +730,7 @@ mod tests {
                 thread::sleep(Duration::from_millis(10));
             }
         });
-        let keys =
-            [1_u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
+        let keys = [1_u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
         let mut client = CellSplitUnixEffectPortV1::new(
             [
                 socket,
