@@ -1,0 +1,113 @@
+name: Hepta Matrix advisory upgrade probe (non-accepting)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/hepta-matrix-advisory-upgrade-probe.yml"
+      - "qualification/matrix-sdk-security/UPGRADE_PROBE.md"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  matrix-compatibility-probe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - name: Checkout exact experimental SHA without stored credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+
+      - name: Resolve Matrix SDK 0.19.1 in a disposable checkout
+        id: resolve
+        shell: bash
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/matrix-advisory"
+          mkdir -p "$OUT"
+          git rev-parse HEAD > "$OUT/source-sha.txt"
+          cp Cargo.lock "$OUT/baseline-Cargo.lock"
+          python3 - <<'PY'
+          from pathlib import Path
+          file = Path("Cargo.toml")
+          content = file.read_text()
+          old = 'matrix-sdk = { version = "0.18.0",'
+          new = 'matrix-sdk = { version = "=0.19.1",'
+          if content.count(old) != 1:
+              raise SystemExit("Unexpected Matrix SDK version or manifest")
+          file.write_text(content.replace(old, new))
+          PY
+          set +e
+          cargo update -p matrix-sdk --precise 0.19.1 2>&1 | tee "$OUT/cargo-update.log"
+          code=$?
+          set -e
+          printf '%s\n' "$code" > "$OUT/resolve-exit.txt"
+          if [ "$code" -ne 0 ]; then
+            exit "$code"
+          fi
+          cp Cargo.lock "$OUT/proposed-Cargo.lock"
+          git diff -- Cargo.toml Cargo.lock > "$OUT/proposed-upgrade.patch"
+          cargo tree --locked -i anymap2 > "$OUT/anymap2-tree.txt" 2>&1 || true
+          cargo tree --locked -i matrix-sdk-crypto > "$OUT/matrix-crypto-tree.txt" 2>&1 || true
+          python3 - <<'PY'
+          import json
+          import os
+          import tomllib
+          from pathlib import Path
+          rows = tomllib.loads(Path("Cargo.lock").read_text())["package"]
+          names = ["matrix-sdk", "matrix-sdk-base", "matrix-sdk-crypto", "anymap2", "anymap3"]
+          result = {name: sorted({row["version"] for row in rows if row["name"] == name}) for name in names}
+          Path(os.environ["RUNNER_TEMP"], "matrix-advisory", "resolved-packages.json").write_text(json.dumps(result, indent=2) + "\n")
+          print(result)
+          PY
+
+      - name: Compile Matrix SDK host and daemon after temporary upgrade
+        id: compile
+        if: steps.resolve.outcome == 'success'
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked --package codex-hepta-matrix-sdk --package codex-hepta-matrixd --all-targets 2>&1 | tee "$RUNNER_TEMP/matrix-advisory/cargo-check.log"
+
+      - name: Check unignored security advisories with existing cargo-deny action
+        id: advisories
+        if: steps.resolve.outcome == 'success'
+        continue-on-error: true
+        uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246
+        with:
+          rust-version: 1.95.0
+          manifest-path: ./codex-rs/Cargo.toml
+
+      - name: Retain exact-source upgrade diagnostics, not production acceptance
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-matrix-advisory-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/matrix-advisory/
+          if-no-files-found: error
+          retention-days: 7
+
+      - name: Refuse an unsafe or incomplete dependency upgrade
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ '${{ steps.resolve.outcome }}' != success || '${{ steps.compile.outcome }}' != success || '${{ steps.advisories.outcome }}' != success ]]; then
+            echo "::error::Matrix migration needs successful resolution, host compilation AND zero unignored advisories"
+            exit 1
+          fi
