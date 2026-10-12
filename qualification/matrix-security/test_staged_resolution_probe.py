@@ -3,7 +3,7 @@ import tempfile
 from pathlib import Path
 import unittest
 
-from staged_resolution_probe import stage_manifest, CANDIDATE_SPEC, SOURCE_SPEC
+from staged_resolution_probe import stage_manifest, CANDIDATE_SPEC, SOURCE_SPEC, SQLITE_PATCH_SPEC
 
 
 class StagingTests(unittest.TestCase):
@@ -42,6 +42,56 @@ class StagingTests(unittest.TestCase):
         path.write_text(path.read_text().replace('"e2e-encryption", ','') )
         with self.assertRaises(ValueError):
             stage_manifest(self.source,self.stage,self.sha)
+
+
+    def test_isolated_upstream_sqlite_arm_removes_only_the_obsolete_patch(self):
+        patch = '[patch.crates-io]\\n' + SQLITE_PATCH_SPEC + '\\n'
+        source = self.source/'codex-rs/Cargo.toml'
+        stage = self.stage/'codex-rs/Cargo.toml'
+        source.write_text(source.read_text() + patch)
+        stage.write_text(stage.read_text() + patch)
+        result = stage_manifest(
+            self.source, self.stage, self.sha,
+            sqlite_arm='use_upstream_sqlite',
+        )
+        self.assertEqual(result['schema'],'hepta.matrix-sdk-cargo-resolution-probe.v2')
+        self.assertEqual(result['sqlite_arm'],'use_upstream_sqlite')
+        self.assertFalse(result['legacy_sqlite_patch_preserved'])
+        self.assertIn(SQLITE_PATCH_SPEC,source.read_text())
+        self.assertNotIn(SQLITE_PATCH_SPEC,stage.read_text())
+        self.assertIn(CANDIDATE_SPEC,stage.read_text())
+        self.assertFalse(result['production_authorized'])
+
+    def test_retained_sqlite_arm_keeps_exact_source_patch(self):
+        patch = '[patch.crates-io]\\n' + SQLITE_PATCH_SPEC + '\\n'
+        stage = self.stage/'codex-rs/Cargo.toml'
+        stage.write_text(stage.read_text()+patch)
+        result = stage_manifest(self.source,self.stage,self.sha)
+        self.assertTrue(result['legacy_sqlite_patch_preserved'])
+        self.assertIn(SQLITE_PATCH_SPEC,stage.read_text())
+
+    def test_unregistered_or_missing_sqlite_patch_is_rejected(self):
+        with self.assertRaisesRegex(ValueError,'unregistered'):
+            stage_manifest(self.source,self.stage,self.sha,sqlite_arm='disable_e2ee')
+        with self.assertRaisesRegex(ValueError,'not the exact pinned source'):
+            stage_manifest(self.source,self.stage,self.sha,sqlite_arm='use_upstream_sqlite')
+        stage = self.stage/'codex-rs/Cargo.toml'
+        stage.write_text(stage.read_text()+'[patch.crates-io]\\n'+
+                         SQLITE_PATCH_SPEC.replace('0.18.0','0.18.1')+'\\n')
+        with self.assertRaisesRegex(ValueError,'not the exact pinned source'):
+            stage_manifest(self.source,self.stage,self.sha,sqlite_arm='use_upstream_sqlite')
+
+    def test_sqlite_arm_never_weakens_e2ee_or_touches_source_lock(self):
+        stage=self.stage/'codex-rs/Cargo.toml'
+        stage.write_text(stage.read_text()+'[patch.crates-io]\\n'+SQLITE_PATCH_SPEC+'\\n')
+        lock=self.source/'codex-rs/Cargo.lock'
+        lock.write_text('immutable original lock\\n')
+        result=stage_manifest(self.source,self.stage,self.sha,
+                              sqlite_arm='use_upstream_sqlite')
+        self.assertEqual(lock.read_text(),'immutable original lock\\n')
+        self.assertTrue(result['preserved_e2ee_and_sqlite'])
+        self.assertEqual(result['affected_workspace_files'],['codex-rs/Cargo.toml'])
+        self.assertFalse(result['cargo_graph_resolution_passed'])
 
 
 if __name__=='__main__':
