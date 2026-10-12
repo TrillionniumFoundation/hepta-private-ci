@@ -63,6 +63,7 @@ def run(output, profile="exact_v1", **options):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--tracking-control-profile', choices=('all_steps_v1','learned_belief_v1'), default='all_steps_v1')
     parser.add_argument('--tracking-record-profile', choices=('retained_objects_v1','serialized_records_v2'), default='retained_objects_v1')
     parser.add_argument('--tracking-feature-profile', choices=('ordinal_sensitive_v1','local_participant_v2'), default='ordinal_sensitive_v1')
     parser.add_argument('--tracking-source', choices=('generated', 'bbh'), default='generated')
@@ -84,5 +85,5 @@ if __name__=='__main__':
     if args.profile == "verified_tracking_v1":
         options = dict(backend=args.backend, publisher_root=args.publisher_root,
                        model_dir=args.model_dir, tracking_source=args.tracking_source,
-                       feature_profile=args.tracking_feature_profile, record_profile=args.tracking_record_profile)
+                       feature_profile=args.tracking_feature_profile, record_profile=args.tracking_record_profile, control_profile=args.tracking_control_profile)
     run(args.output, args.profile, **options)
