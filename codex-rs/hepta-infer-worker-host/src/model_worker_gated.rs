@@ -1005,6 +1005,27 @@ mod tests {
             );
             assert_eq!(worker.driver.batch_calls(), 0);
         }
+        // Even when the per-request lease payload is recomputed to match
+        // forged metadata, real Q24 bytes must be hashed before dispatch.
+        let mut forged = b.clone();
+        let mut forged_snapshot = (*forged.snapshot).clone();
+        forged_snapshot.content_digest = Digest32::of_bytes(b"forged-feature-content");
+        forged.snapshot = std::sync::Arc::new(forged_snapshot);
+        let forged_payload = super::super::canonical_shared_neuron_payload_digest_v2(&forged)
+            .expect("forged payload binding");
+        forged.authorization.payload_digest = forged_payload.clone();
+        forged.authorization.lease_payload_digest = forged_payload;
+        assert_eq!(
+            worker.run_shared_neuron_features_batch_v2(
+                100,
+                "model.gated",
+                vec![a.clone(), forged],
+            ),
+            Err(Error::FeatureContract)
+        );
+        assert_eq!(worker.driver.batch_calls(), 0);
+        assert!(worker.active_requests.is_empty());
+
         let results = worker
             .run_shared_neuron_features_batch_v2(100, "model.gated", vec![a, b])
             .expect("batched references");
