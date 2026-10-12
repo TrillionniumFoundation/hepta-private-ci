@@ -49,6 +49,98 @@ fn private_root() -> tempfile::TempDir {
     root
 }
 
+fn replace_held_lock_path(root: &Path) {
+    use std::os::unix::fs::OpenOptionsExt as _;
+
+    let lock = root.join(crate::durable::SIDECAR_LOCK_FILE);
+    fs::remove_file(&lock).expect("unlink held lock path");
+    fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .mode(0o600)
+        .open(&lock)
+        .expect("create independent unlocked inode");
+}
+
+#[test]
+fn detached_minimum_lock_cannot_publish_or_sign_current_state() {
+    let root = private_root();
+    let signer = SigningKey::from_bytes(&[91; 32]);
+    let mut admission = VerifiedOriginalMinimum {
+        allow: true,
+        checks: 0,
+    };
+    let mut store = CellSplitSupervisorMinimumFileStoreV1::open(root.path(), signer)
+        .expect("first minimum store");
+    replace_held_lock_path(root.path());
+    assert!(
+        store.publish_once(&subject(), &mut admission).is_err(),
+        "an unlinked OS lock cannot protect a new durable publication"
+    );
+    assert_eq!(admission.checks, 0);
+    assert!(!root.path().join(STORE_FILE).exists());
+}
+
+#[test]
+fn detached_minimum_lock_denies_challenge_after_durable_publication() {
+    let root = private_root();
+    let signer = SigningKey::from_bytes(&[91; 32]);
+    let mut store = CellSplitSupervisorMinimumFileStoreV1::open(root.path(), signer)
+        .expect("first minimum store");
+    let mut admission = VerifiedOriginalMinimum {
+        allow: true,
+        checks: 0,
+    };
+    store
+        .publish_once(&subject(), &mut admission)
+        .expect("original minimum");
+    assert!(store.read_current(&subject(), &"aa".repeat(32)).is_ok());
+    replace_held_lock_path(root.path());
+    assert!(
+        store.read_current(&subject(), &"bb".repeat(32)).is_err(),
+        "a valid old record cannot be freshly attested under a detached lock"
+    );
+    assert!(
+        store.publish_once(&subject(), &mut admission).is_err(),
+        "idempotent replay also requires the original live writer lock"
+    );
+}
+
+#[test]
+fn external_minimum_admission_cannot_replace_writer_lock_mid_publication() {
+    struct RebindDuringAdmission<'a> {
+        root: &'a Path,
+        checks: usize,
+    }
+
+    impl CellSplitSupervisorMinimumAdmissionPortV1 for RebindDuringAdmission<'_> {
+        type Error = &'static str;
+
+        fn verify_original_minimum(
+            &mut self,
+            _subject: &CellSplitSupervisorMinimumSubjectV1,
+        ) -> Result<(), Self::Error> {
+            self.checks += 1;
+            if self.checks == 1 {
+                replace_held_lock_path(self.root);
+            }
+            Ok(())
+        }
+    }
+
+    let root = private_root();
+    let signer = SigningKey::from_bytes(&[91; 32]);
+    let mut store = CellSplitSupervisorMinimumFileStoreV1::open(root.path(), signer)
+        .expect("first minimum store");
+    let mut admission = RebindDuringAdmission {
+        root: root.path(),
+        checks: 0,
+    };
+    assert!(store.publish_once(&subject(), &mut admission).is_err());
+    assert_eq!(admission.checks, 1);
+    assert!(!root.path().join(STORE_FILE).exists());
+}
+
 #[test]
 fn independent_minimum_requires_durable_publication_and_live_challenge() {
     let root = private_root();
