@@ -418,12 +418,11 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
         .bind(id.as_array().as_slice()).execute(&store.pool).await.unwrap();
     // The original issuer keeps only its one real message, so this test
     // measures global terminal pruning, not the independent issuer quota.
-    let original_issuer_rows: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM authbus_outbox WHERE issuer_id = 'issuer:queue'",
-    )
-    .fetch_one(&store.pool)
-    .await
-    .unwrap();
+    let original_issuer_rows: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM authbus_outbox WHERE issuer_id = 'issuer:queue'")
+            .fetch_one(&store.pool)
+            .await
+            .unwrap();
     assert_eq!(original_issuer_rows, 1);
     let (issuer, message) = fixture(2, u64::MAX);
     assert!(matches!(

@@ -10,12 +10,8 @@ fn encoded_powershell_command(script: &str) -> String {
     // PowerShell -EncodedCommand requires UTF-16LE encoded as RFC 4648
     // base64. An alphabet-only argument avoids Windows Start-Process joining
     // -Command script fragments into ambiguous unquoted argv tokens.
-    const ALPHABET: &[u8; 64] =
-        b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-    let bytes: Vec<u8> = script
-        .encode_utf16()
-        .flat_map(u16::to_le_bytes)
-        .collect();
+    const ALPHABET: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let bytes: Vec<u8> = script.encode_utf16().flat_map(u16::to_le_bytes).collect();
     let mut result = String::with_capacity(bytes.len().div_ceil(3) * 4);
     for part in bytes.chunks(3) {
         let packed = (u32::from(part[0]) << 16)
