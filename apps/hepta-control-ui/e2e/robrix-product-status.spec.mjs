@@ -22,31 +22,112 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  await writeFile(testInfo.outputPath('binding.json'),JSON.stringify(binding,null,2)+'\n');
  await writeFile(testInfo.outputPath('ui-build-manifest.json'),manifestBytes);
  const faults=[],responses=[],requests=[],errors=[],faultCases=[],networkFailures=[],finishedResponses=[];const pendingFonts=new Set();
+ // Diagnostic observers only: do not consume bodies, cancel requests, alter cache,
+ // replace SDK APIs, or waive any existing font/console/lifecycle assertion.
+ const diagnosticStart=performance.now(),fontRequests=[],fontEvents=[],fontResponseFinished=[],consoleEvents=[],cdpFontEvents=[],diagnosticWaits=[];
+ let diagnosticComplete=false,diagnosticFailed=false;
+ const diagnosticOverflow={fontRequests:0,fontEvents:0,consoleEvents:0,cdpFontEvents:0};
+ const diagnosticMs=()=>Math.round((performance.now()-diagnosticStart)*1000)/1000;
+ const appendDiagnostic=(name,values,value)=>{if(diagnosticComplete)return;if(values.length<512)values.push(value);else diagnosticOverflow[name]++;};
+ const diagnosticPath=value=>{try{return new URL(value,baseURL).pathname.slice(0,512);}catch{return 'unavailable';}};
+ const diagnosticError=value=>String(value).match(/net::[A-Z_]+|ERR_[A-Z_]+/)?.[0]??(value===null?null:'unclassified-error');
+ const diagnosticFrame=frame=>({functionName:frame.functionName.slice(0,120),path:diagnosticPath(frame.url),lineNumber:frame.lineNumber,columnNumber:frame.columnNumber});
+ async function settleFontObservations(scope){
+  let timer;const observedCount=fontResponseFinished.length;
+  try{
+   const completed=await Promise.race([Promise.allSettled(fontResponseFinished).then(()=>true),new Promise(resolve=>{timer=setTimeout(()=>resolve(false),2000);})]);
+   const settled=completed&&observedCount===fontResponseFinished.length;
+   if(diagnosticWaits.length<4)diagnosticWaits.push({scope,settled,observedCount,observations:fontResponseFinished.length,ms:diagnosticMs()});
+   return settled;
+  }finally{clearTimeout(timer);}
+ }
+ const fontRequestIds=new Map(),cdpFontIds=new Set();let cdp=null,browserLifecycle=null;
+ function fontRecord(request){
+  if(!fontRequestIds.has(request)){
+   if(diagnosticComplete||fontRequestIds.size>=512){diagnosticOverflow.fontRequests++;return null;}
+   const id=fontRequestIds.size+1;let frameUrl;
+   try{frameUrl=diagnosticPath(request.frame().url());}catch{frameUrl='unavailable';}
+   const redirectedFrom=request.redirectedFrom();
+   fontRequestIds.set(request,id);
+   appendDiagnostic('fontRequests',fontRequests,{id,path:diagnosticPath(request.url()),method:request.method(),resourceType:request.resourceType(),isNavigationRequest:request.isNavigationRequest(),frameUrl,redirectedFrom:redirectedFrom?diagnosticPath(redirectedFrom.url()):null,phase,ms:diagnosticMs()});
+  }
+  return fontRequestIds.get(request);
+ }
+ function fontEvent(request,event,details={}){
+  if(diagnosticComplete)return;
+  const id=fontRecord(request);if(id===null)return;
+  appendDiagnostic('fontEvents',fontEvents,{id,event,phase,ms:diagnosticMs(),...details});
+ }
+ function cdpFontEvent(event,details){appendDiagnostic('cdpFontEvents',cdpFontEvents,{event,phase,ms:diagnosticMs(),...details});}
+ async function observeFontInitiators(){
+  // The product config is Chromium-only. CDP is passive observation here: no
+  // Fetch domain, request interception, cache overrides or response body reads.
+  cdp=await page.context().newCDPSession(page);
+  cdp.on('Network.requestWillBeSent',event=>{
+   if(!/\.(?:ttf|otf)(?:[?#]|$)/i.test(event.request.url))return;
+   if(diagnosticComplete)return;
+   if(!cdpFontIds.has(event.requestId)&&cdpFontIds.size>=512){diagnosticOverflow.cdpFontEvents++;return;}
+   cdpFontIds.add(event.requestId);
+   const initiator=event.initiator;
+   cdpFontEvent('requestWillBeSent',{requestId:event.requestId,path:diagnosticPath(event.request.url),method:event.request.method,type:event.type,loaderId:event.loaderId,frameId:event.frameId,documentPath:diagnosticPath(event.documentURL),timestamp:event.timestamp,initiator:{type:initiator.type,path:initiator.url?diagnosticPath(initiator.url):null,lineNumber:initiator.lineNumber,columnNumber:initiator.columnNumber,callFrames:initiator.stack?.callFrames?.slice(0,12).map(diagnosticFrame),parentCallFrames:initiator.stack?.parent?.callFrames?.slice(0,12).map(diagnosticFrame)}});
+  });
+  cdp.on('Network.responseReceived',event=>{
+   if(!cdpFontIds.has(event.requestId))return;
+   const response=event.response;
+   cdpFontEvent('responseReceived',{requestId:event.requestId,timestamp:event.timestamp,type:event.type,path:diagnosticPath(response.url),status:response.status,mimeType:response.mimeType,protocol:response.protocol,fromDiskCache:response.fromDiskCache,fromServiceWorker:response.fromServiceWorker,encodedDataLength:response.encodedDataLength,timing:response.timing});
+  });
+  cdp.on('Network.loadingFinished',event=>{if(cdpFontIds.has(event.requestId))cdpFontEvent('loadingFinished',{requestId:event.requestId,timestamp:event.timestamp,encodedDataLength:event.encodedDataLength});});
+  cdp.on('Network.loadingFailed',event=>{if(cdpFontIds.has(event.requestId))cdpFontEvent('loadingFailed',{requestId:event.requestId,timestamp:event.timestamp,type:event.type,errorText:diagnosticError(event.errorText),canceled:event.canceled,blockedReason:event.blockedReason,corsError:event.corsErrorStatus?.corsError});});
+  await cdp.send('Network.enable');
+  await page.addInitScript(()=>{
+   window.__heptaProductLifecycle=[];window.__heptaProductLifecycleOverflow=0;
+   const record=event=>{
+    if(window.__heptaProductLifecycle.length>=128){window.__heptaProductLifecycleOverflow++;return;}
+    window.__heptaProductLifecycle.push({type:event.type,ms:performance.now(),visibility:document.visibilityState,persisted:event.persisted??null,target:event.target?.nodeName??null});
+   };
+   for(const type of ['pagehide','pageshow','beforeunload'])window.addEventListener(type,record,{capture:true});
+   for(const type of ['visibilitychange','webglcontextlost','webglcontextrestored'])document.addEventListener(type,record,{capture:true});
+  });
+ }
  const ownerUrl=new URL('/api/hepta/owner-status',baseURL).href,runtimeUrl=new URL('/api/hepta/runtime',baseURL).href,sdkUrl=new URL('/makepad_platform/web.js',baseURL).href;
  let phase='initial',nextRequestId=0;const requestRecords=new Map(),proofs={},cancellations=[];
  function requestRecord(request){
   if(!requestRecords.has(request)){const record={id:++nextRequestId,url:request.url(),method:request.method(),phase};requestRecords.set(request,record);requests.push(record);}
   return requestRecords.get(request);
  }
- function rawAudit(){return {binding,scenario,errors,requests,responses,failures:networkFailures,cancellations,proofs,sdkUrl,runtimeUrl,ownerUrl,faults};}
+ function rawAudit(){return {binding,scenario,errors,requests,responses,failures:networkFailures,cancellations,proofs,sdkUrl,runtimeUrl,ownerUrl,faults,fontDiagnostics:{fontRequests,fontEvents,cdpFontEvents,consoleEvents,browserLifecycle,diagnosticOverflow,diagnosticWaits}};}
  async function audit(name){
   await Promise.all(finishedResponses);
+  await settleFontObservations(name);
   const raw=rawAudit();await writeFile(testInfo.outputPath(name+'-raw.json'),JSON.stringify(raw,null,2)+'\n');
   const result=auditProductConsole(raw);await writeFile(testInfo.outputPath(name+'.json'),JSON.stringify(result,null,2)+'\n');
   expect(result.passed).toBe(true);expect(faults).toEqual([]);return result;
  }
  const font=request=>/\.(?:ttf|otf)(?:[?#]|$)/i.test(request.url());
- page.on('request',request=>{if(font(request))pendingFonts.add(request);});
- page.on('requestfinished',request=>pendingFonts.delete(request));
- page.on('requestfailed',request=>{pendingFonts.delete(request);if(font(request))faults.push({kind:'font request failed',url:request.url(),error:request.failure()?.errorText});if(new URL(request.url()).pathname.startsWith('/api/hepta/'))networkFailures.push({...requestRecord(request),error:request.failure()?.errorText});});
+ page.on('request',request=>{if(font(request)){pendingFonts.add(request);fontEvent(request,'request');}});
+ page.on('requestfinished',request=>{pendingFonts.delete(request);if(font(request))fontEvent(request,'requestfinished');});
+ page.on('requestfailed',request=>{pendingFonts.delete(request);if(font(request)){fontEvent(request,'requestfailed',{error:diagnosticError(request.failure()?.errorText)});faults.push({kind:'font request failed',url:request.url(),error:request.failure()?.errorText});}if(new URL(request.url()).pathname.startsWith('/api/hepta/'))networkFailures.push({...requestRecord(request),error:request.failure()?.errorText});});
  page.on('pageerror',error=>faults.push(error.message));
- page.on('console',message=>{if(message.type()==='error')errors.push({text:message.text(),url:message.location().url,phase});});
+ page.on('console',message=>{const text=message.text(),location=message.location();const kind=/webgl.*context.*lost|context.*lost/i.test(text)?'context-lost':/webgl.*context.*restor|context.*restor/i.test(text)?'context-restored':/\[makepad\]\[http\]\[err\]/.test(text)?'sdk-http-error':/\[makepad\]\[http\]\[fail\]/.test(text)?'sdk-http-status-failure':'other';appendDiagnostic('consoleEvents',consoleEvents,{type:message.type(),kind,path:diagnosticPath(location.url),lineNumber:location.lineNumber,columnNumber:location.columnNumber,characters:text.length,phase,ms:diagnosticMs()});if(message.type()==='error')errors.push({text:message.text(),url:message.location().url,phase});});
+ page.on('response',response=>{
+  const request=response.request();if(!font(request)||diagnosticComplete)return;
+  if(fontResponseFinished.length>=512){diagnosticOverflow.fontEvents++;return;}
+  fontEvent(request,'response',{status:response.status()});
+  fontResponseFinished.push(response.finished().then(async error=>{
+   fontEvent(request,'response.finished',{error:diagnosticError(error)});
+   if(error===null&&!diagnosticComplete){
+    try{const sizes=await request.sizes();fontEvent(request,'response.sizes',{responseBodySize:sizes.responseBodySize});}
+    catch(error){fontEvent(request,'response.sizes unavailable',{error:diagnosticError(error)});}
+   }
+  },error=>fontEvent(request,'response.finished rejected',{error:diagnosticError(error)})));
+ });
  page.on('request',request=>{if(new URL(request.url()).pathname.startsWith('/api/hepta/'))requestRecord(request);});
  page.on('response',response=>{if(new URL(response.url()).pathname.startsWith('/api/hepta/')){
   const record={...requestRecord(response.request()),status:response.status(),finished:false};responses.push(record);
   finishedResponses.push(response.finished().then(error=>{record.finished=error===null;record.finishError=error?String(error):null;},error=>{record.finishError=String(error);}));
  }});
  try {
+ await observeFontInitiators();
  await page.setViewportSize({width,height:800});await page.goto('/');
  await expect(page.locator('canvas')).toBeVisible();await expect(page.locator('.canvas_loader')).toBeHidden({timeout:60000});
  const settle=()=>page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
@@ -147,5 +228,34 @@ for(const width of [1280,640])for(const scenario of ['timeout','navigation','bac
  const errorAudit=await audit('final-read-audit');
  const bytes=await readFile(screenshot);
  await writeFile(testInfo.outputPath('receipt.json'),JSON.stringify({...binding,width,ownerAttached:false,legacyRuntimeAvailable:false,requests,responses,errorAudit,faults,faultCases,networkFailures,scenario,proofs,cancellations,physicalBackgroundQualified:false,png:{name:'owner-not-attached.png',bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')},ocr:text},null,2)+'\n');
- }finally{await writeFile(testInfo.outputPath('raw-request-audit.json'),JSON.stringify(rawAudit(),null,2)+'\n');}
+ }catch(error){diagnosticFailed=true;throw error;}finally{
+  // Preserve diagnostics even when initial-read-audit fails. Never wait without
+  // bound for unfinished font responses during another failing test path.
+  const fontCompletionSettled=await settleFontObservations('finally');
+  diagnosticComplete=true;
+  let lifecycleTimer;
+  try{browserLifecycle=await Promise.race([
+   page.evaluate(()=>({events:window.__heptaProductLifecycle??[],overflow:window.__heptaProductLifecycleOverflow??0,readyState:document.readyState,visibility:document.visibilityState,bootPhase:document.documentElement.dataset.heptaBootPhase??null,canvas:[...document.querySelectorAll('canvas')].map(canvas=>({width:canvas.width,height:canvas.height}))})).catch(()=>({observationError:'page-unavailable'})),
+   new Promise(resolve=>{lifecycleTimer=setTimeout(()=>resolve({observationError:'observation-deadline'}),1000);})
+  ]);}finally{clearTimeout(lifecycleTimer);}
+  browserLifecycle.fontCompletionSettled=fontCompletionSettled;
+  const raw=rawAudit();
+  try{await writeFile(testInfo.outputPath('raw-request-audit.json'),JSON.stringify(raw,null,2)+'\n');}
+  finally{
+   try{
+    if(diagnosticFailed||faults.length){
+     // Structured path-only records remain useful without parsing truncated JSON.
+     const identity={sourceSha,sourceTree:binding.sourceTree,uiSourceIdentity:binding.uiSourceIdentity,uiManifestSha256:binding.uiManifestSha256,gatewayBinarySha256:gateway.binarySha256};
+     console.log(JSON.stringify({scope:'strict font lifecycle diagnostic summary; not acceptance',identity,scenario,width,diagnosticWaits,diagnosticOverflow,fontRequestCount:fontRequests.length,truncatedFontRequests:Math.max(0,fontRequests.length-24),consoleEvents:consoleEvents.slice(0,32),truncatedConsoleEvents:Math.max(0,consoleEvents.length-32),lifecycle:{...browserLifecycle,events:browserLifecycle.events?.slice(0,16),truncatedEvents:Math.max(0,(browserLifecycle.events?.length??0)-16)}}));
+     for(const request of fontRequests.slice(0,24)){
+      const related=cdpFontEvents.filter(event=>event.event==='requestWillBeSent'&&event.path===request.path);
+      const cdpRequests=related.slice(0,2).map(event=>({requestId:event.requestId,method:event.method,type:event.type,ms:event.ms,initiator:{...event.initiator,callFrames:event.initiator.callFrames?.slice(0,2),parentCallFrames:event.initiator.parentCallFrames?.slice(0,2)},events:cdpFontEvents.filter(item=>item.requestId===event.requestId&&item.event!=='requestWillBeSent').slice(0,4)}));
+      const events=fontEvents.filter(event=>event.id===request.id);
+      console.log(JSON.stringify({scope:'strict font request diagnostic; not acceptance',scenario,width,request,events:events.slice(0,8),truncatedEvents:Math.max(0,events.length-8),cdpRequests,truncatedCdpRequests:Math.max(0,related.length-2)}));
+     }
+    }
+   }catch{console.log('strict font lifecycle diagnostics could not be serialized');}
+   finally{if(cdp)await cdp.detach().catch(()=>{});}
+  }
+ }
 });
