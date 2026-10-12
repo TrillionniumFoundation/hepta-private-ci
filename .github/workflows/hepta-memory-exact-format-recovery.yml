@@ -1,0 +1,59 @@
+name: MemoryCell isolated exact Ruff recovery
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - .github/workflows/hepta-memory-exact-format-recovery.yml
+permissions:
+  contents: write
+jobs:
+  exact-format-recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - name: Apply exactly the five already diagnosed Ruff formatting fixes
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user uv==0.8.22
+          export PATH="$HOME/.local/bin:$PATH"
+          files=(
+            scripts/memory_cell/stem_native_nonpromotion.py
+            scripts/memory_cell/strong_rag_fourrun_audit.py
+            scripts/memory_cell/strong_rag_host_cost_audit.py
+            scripts/memory_cell/test_stem_native_nonpromotion.py
+            scripts/memory_cell/test_strong_rag_fourrun_audit.py
+          )
+          python3 - <<'PY'
+          import ast, json
+          from pathlib import Path
+          paths = ['scripts/memory_cell/stem_native_nonpromotion.py', 'scripts/memory_cell/strong_rag_fourrun_audit.py', 'scripts/memory_cell/strong_rag_host_cost_audit.py', 'scripts/memory_cell/test_stem_native_nonpromotion.py', 'scripts/memory_cell/test_strong_rag_fourrun_audit.py']
+          Path('/tmp/asts.json').write_text(json.dumps({p:ast.dump(ast.parse(Path(p).read_text())) for p in paths}))
+          PY
+          uv run --frozen --project scripts ruff format "${files[@]}"
+          python3 - <<'PY'
+          import ast, json
+          from pathlib import Path
+          old=json.loads(Path('/tmp/asts.json').read_text())
+          for p, before in old.items():
+              assert ast.dump(ast.parse(Path(p).read_text())) == before, p
+          PY
+          git diff --check
+          git diff --name-only > /tmp/changed
+          python3 - <<'PY'
+          from pathlib import Path
+          allowed={'scripts/memory_cell/stem_native_nonpromotion.py','scripts/memory_cell/strong_rag_fourrun_audit.py','scripts/memory_cell/strong_rag_host_cost_audit.py','scripts/memory_cell/test_stem_native_nonpromotion.py','scripts/memory_cell/test_strong_rag_fourrun_audit.py'}
+          changed=set(Path('/tmp/changed').read_text().splitlines())
+          assert changed == allowed, (changed,allowed)
+          PY
+          git rm .github/workflows/hepta-memory-exact-format-recovery.yml
+          git add -- "${files[@]}"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'style(memory-cell): repair five inherited Ruff blockers without AST changes'
+          git push origin HEAD:refs/heads/codex/memory-cell-evidence-20261008
+          echo "FIX_COMMIT=$(git rev-parse HEAD)"
