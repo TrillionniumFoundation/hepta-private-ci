@@ -1,0 +1,60 @@
+name: Hepta Matrix SDK security prerequisites (hard gate)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'qualification/matrix-security/**'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'codex-rs/deny.toml'
+      - 'codex-rs/rust-toolchain.toml'
+      - 'codex-rs/hepta-matrix-sdk/**'
+      - 'codex-rs/hepta-matrixd/Cargo.toml'
+      - 'codex-rs/third_party/matrix-sdk-sqlite-*/**'
+      - '.github/workflows/hepta-matrix-security-qualification.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: matrix-security-prerequisites-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  no-waiver-crypto-migration:
+    name: Verify Matrix dependency graph without advisory waivers
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Bind exact tested revision
+        run: git rev-parse HEAD HEAD^{tree}
+      - name: Contract and anti-bypass tests
+        run: |
+          python3 -m compileall -q qualification/matrix-security
+          python3 -m unittest discover -v -s qualification/matrix-security -p 'test_*.py'
+      - name: Record lock graph and unresolved security blockers
+        if: always()
+        run: |
+          python3 qualification/matrix-security/matrix_dependency_gate.py \
+            --root . --output "$RUNNER_TEMP/hepta-matrix-security-prerequisites.json"
+      - name: Preserve read-only audit evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-matrix-security-prerequisites-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-matrix-security-prerequisites.json
+          if-no-files-found: error
+          retention-days: 14
+      # This MUST fail while Matrix 0.18, anymap2, or any security waiver
+      # remains. It supplements rather than substitutes global cargo-deny.
+      - name: Non-waivable dependency security gate
+        run: python3 qualification/matrix-security/matrix_dependency_gate.py --root . --require-safe
+      - name: Ensure checkout was not modified
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
