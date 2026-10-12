@@ -315,6 +315,15 @@ fn stale_observation_blocks_further_mutations() {
     assert!(ledger.drive(&mut owners).expect("cutover").completed);
     owners.actual.remove(&(CellSplitStepV1::StateMigration as u8));
     assert_eq!(ledger.drive(&mut owners), Err(CellSplitErrorV1::Conflict));
+    // A historical terminal ledger+observer ACK is not a current-production
+    // readiness claim after a failed external re-observation.
+    assert!(!ledger.progress().completed);
+    assert_eq!(owners.attempts.len(), 5);
+
+    // Reinstating authoritative state allows full readback+observer revalidation,
+    // without replaying any of the already committed external effects.
+    owners.install(&p, CellSplitStepV1::StateMigration);
+    assert!(ledger.drive(&mut owners).expect("verified recovery").completed);
     assert_eq!(owners.attempts.len(), 5);
 }
 
