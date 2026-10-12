@@ -314,7 +314,10 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 }
 
 fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
-    let parsed: YamlValue = serde_yaml::from_str(raw_frontmatter).ok()?;
+    let parsed: YamlValue = serde_yaml::from_str_with_options(
+        raw_frontmatter,
+        serde_yaml::options! { reject_unsupported_tags: true },
+    ).ok()?;
     let mapping = parsed.as_object()?;
     mapping.iter().find_map(|(key, value)| {
         if key.as_str()?.trim() == "description" {
