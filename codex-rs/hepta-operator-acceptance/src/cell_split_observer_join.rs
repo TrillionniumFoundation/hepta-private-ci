@@ -16,6 +16,9 @@ use ed25519_dalek::VerifyingKey;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
+use crate::CellSplitCnsRuntimeAttestationV1;
+use crate::CellSplitCnsRuntimeCommitV1;
+use crate::CellSplitSupervisorCommitV1;
 use crate::CellSplitExecutionPortV1;
 #[cfg(unix)]
 use crate::CellSplitUnixEffectPortV1;
@@ -78,6 +81,26 @@ pub struct CellSplitObserverJoinReceiptV1 {
     pub joined_payload_digest: String,
     pub four_current_owner_readbacks: bool,
     pub independently_signed_host_and_observer: bool,
+    pub production_activation_authorized: bool,
+}
+
+/// Independently provisioned original runtime keys. These MUST differ from
+/// all outer four-owner keys, host signers, and Observer signers.
+pub struct CellSplitObserverOriginalRuntimeTrustV1<'a> {
+    pub cns_original_runtime_key: &'a VerifyingKey,
+    pub supervisor_original_journal_key: &'a VerifyingKey,
+}
+
+/// Additional read-only proof that the original CNS runtime and Supervisor
+/// journal records are independently signed and agree with the host events.
+/// Neither this record nor the ordinary Observer join is a final-use grant.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CellSplitObserverDeepReceiptV1 {
+    pub join: CellSplitObserverJoinReceiptV1,
+    pub original_cns_runtime_digest: String,
+    pub original_supervisor_journal_digest: String,
+    pub independently_signed_original_runtime_and_journal: bool,
     pub production_activation_authorized: bool,
 }
 
@@ -286,4 +309,197 @@ pub(crate) fn verify_cell_split_observer_join_with_port_v1<P: CellSplitExecution
         independently_signed_host_and_observer: true,
         production_activation_authorized: false,
     })
+}
+
+
+/// Strict production-facing read-only verifier: besides the four original
+/// outer signatures, check the independently pinned *inner* CNS and Supervisor
+/// signatures. The trusted runtime signer is never learned from host evidence.
+#[cfg(unix)]
+#[allow(clippy::too_many_arguments)]
+pub fn verify_cell_split_observer_join_deep_v1(
+    join: &CellSplitSignedObserverJoinV1,
+    transcript: &CellSplitExecutionTranscriptV1,
+    owner_trust: &CellSplitOwnerTrustV1,
+    evidence: &CellSplitSignedTargetHostEvidenceV1,
+    evidence_policy: &CellSplitTargetHostEvidenceTrustPolicyV1,
+    original_runtime_trust: &CellSplitObserverOriginalRuntimeTrustV1<'_>,
+    live_owners: &mut CellSplitUnixEffectPortV1,
+) -> Result<CellSplitObserverDeepReceiptV1, CellSplitObserverJoinErrorV1> {
+    if !live_owners.uses_exact_owner_keys(owner_trust.owner_verifying_keys()) {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "live RPC trust pins differ from four original effect owners",
+        ));
+    }
+    verify_cell_split_observer_join_deep_with_port_v1(
+        join,
+        transcript,
+        owner_trust,
+        evidence,
+        evidence_policy,
+        original_runtime_trust,
+        live_owners,
+    )
+}
+
+/// Testable pure checker around injected read-only ports. Only the pinned
+/// Unix-socket wrapper above is production-facing.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn verify_cell_split_observer_join_deep_with_port_v1<P: CellSplitExecutionPortV1>(
+    join: &CellSplitSignedObserverJoinV1,
+    transcript: &CellSplitExecutionTranscriptV1,
+    owner_trust: &CellSplitOwnerTrustV1,
+    evidence: &CellSplitSignedTargetHostEvidenceV1,
+    evidence_policy: &CellSplitTargetHostEvidenceTrustPolicyV1,
+    original_runtime_trust: &CellSplitObserverOriginalRuntimeTrustV1<'_>,
+    live_owners: &mut P,
+) -> Result<CellSplitObserverDeepReceiptV1, CellSplitObserverJoinErrorV1> {
+    let originals = verify_original_runtime_receipts_v1(
+        transcript,
+        owner_trust,
+        evidence,
+        evidence_policy,
+        original_runtime_trust,
+    )?;
+    let join_receipt = verify_cell_split_observer_join_with_port_v1(
+        join,
+        transcript,
+        owner_trust,
+        evidence,
+        evidence_policy,
+        live_owners,
+    )?;
+    Ok(CellSplitObserverDeepReceiptV1 {
+        join: join_receipt,
+        original_cns_runtime_digest: originals.0,
+        original_supervisor_journal_digest: originals.1,
+        independently_signed_original_runtime_and_journal: true,
+        production_activation_authorized: false,
+    })
+}
+
+fn verify_original_runtime_receipts_v1(
+    transcript: &CellSplitExecutionTranscriptV1,
+    owner_trust: &CellSplitOwnerTrustV1,
+    evidence: &CellSplitSignedTargetHostEvidenceV1,
+    evidence_policy: &CellSplitTargetHostEvidenceTrustPolicyV1,
+    runtime_trust: &CellSplitObserverOriginalRuntimeTrustV1<'_>,
+) -> Result<(String, String), CellSplitObserverJoinErrorV1> {
+    verify_cell_split_execution_transcript_signatures_v1(transcript, owner_trust)
+        .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
+            "original owner transcript signature or lineage failed",
+        ))?;
+    verify_cell_split_target_host_evidence(evidence, evidence_policy)
+        .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
+            "signed original host lifecycle failed verification",
+        ))?;
+    let cns_key = runtime_trust.cns_original_runtime_key;
+    let supervisor_key = runtime_trust.supervisor_original_journal_key;
+    if cns_key.is_weak()
+        || supervisor_key.is_weak()
+        || cns_key == supervisor_key
+        || owner_trust.contains_owner_key(cns_key)
+        || owner_trust.contains_owner_key(supervisor_key)
+        || evidence_policy.host_keys.values().any(|key| key == cns_key || key == supervisor_key)
+        || evidence_policy.observer_keys.values().any(|key| key == cns_key || key == supervisor_key)
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "original runtime keys are not independent from owners and Observer",
+        ));
+    }
+
+    let cns = &transcript.receipts[2];
+    let original_cns: CellSplitCnsRuntimeCommitV1 =
+        serde_json::from_slice(&cns.owner_receipt_bytes)?;
+    let plan = &transcript.plan;
+    let host_route = evidence.payload.events.iter()
+        .find(|event| event.event_kind == CellSplitTargetHostEventKindV1::RouteCutover)
+        .ok_or(CellSplitObserverJoinErrorV1::Invalid("missing host cutover event"))?;
+    if original_cns.idempotency_key != cns.intent.idempotency_key
+        || original_cns.committed_sequence != cns.owner_sequence
+        || original_cns.predecessor_route_digest != host_route.predecessor_digest
+        || original_cns.successor_route_digest != host_route.route_digest
+        || original_cns.original_runtime_receipt_bytes.is_empty()
+        || original_cns.original_runtime_receipt_bytes.len() > 32 * 1024
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "original CNS runtime cutover differs from host and owner receipt",
+        ));
+    }
+    CellSplitCnsRuntimeAttestationV1::verify_original_bytes(plan, &original_cns)
+        .map_err(CellSplitObserverJoinErrorV1::Invalid)?;
+    verify_pinned_signature(
+        cns_key,
+        &original_cns.original_runtime_receipt_bytes,
+        &original_cns.original_runtime_signature_bytes,
+        "independent original CNS runtime signature is invalid",
+    )?;
+
+    let supervisor = &transcript.receipts[3];
+    let journal: CellSplitSupervisorCommitV1 =
+        serde_json::from_slice(&supervisor.owner_receipt_bytes)?;
+    if journal.idempotency_key != supervisor.intent.idempotency_key
+        || journal.committed_revision != supervisor.owner_sequence
+        || journal.old_generation != plan.parent_generation
+        || journal.new_generation != plan.child_generation
+        || journal.original_checkpoint_bytes.is_empty()
+        || journal.original_checkpoint_bytes.len() > 32 * 1024
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "original Supervisor receipt differs from frozen split",
+        ));
+    }
+    // The Supervisor original signer domain-separates the durable handoff
+    // checkpoint from ordinary RPC or join signatures.
+    let mut payload = b"hepta.supervisor.cell-split.original-journal.v1\0".to_vec();
+    payload.extend_from_slice(&(journal.idempotency_key.len() as u64).to_be_bytes());
+    payload.extend_from_slice(journal.idempotency_key.as_bytes());
+    payload.extend_from_slice(&(journal.original_checkpoint_bytes.len() as u64).to_be_bytes());
+    payload.extend_from_slice(&journal.original_checkpoint_bytes);
+    verify_pinned_signature(
+        supervisor_key,
+        &payload,
+        &journal.original_checkpoint_signature_bytes,
+        "independent original Supervisor journal signature is invalid",
+    )?;
+
+    // The detached journal signature must cover an actual terminal handoff
+    // for this split, not arbitrary bytes signed by the Supervisor identity.
+    let checkpoint: serde_json::Value =
+        serde_json::from_slice(&journal.original_checkpoint_bytes)?;
+    if checkpoint.get("phase").and_then(|v| v.as_str()) != Some("retired")
+        || checkpoint.get("operationId").and_then(|v| v.as_str())
+            != Some(plan.split_id.as_str())
+        || checkpoint.get("domainId").and_then(|v| v.as_str())
+            != Some(journal.domain_id.as_str())
+        || checkpoint.get("oldGeneration").and_then(|v| v.as_u64())
+            != Some(plan.parent_generation)
+        || checkpoint.get("newGeneration").and_then(|v| v.as_u64())
+            != Some(plan.child_generation)
+        || checkpoint.get("authorityEpoch").and_then(|v| v.as_u64())
+            != Some(journal.authority_epoch)
+        || checkpoint.get("revision").and_then(|v| v.as_u64())
+            != Some(journal.committed_revision)
+        || checkpoint.get("unknownEffectCount").and_then(|v| v.as_u64()) != Some(0)
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "signed original Supervisor checkpoint is not a terminal handoff",
+        ));
+    }
+    Ok((
+        sha256(&original_cns.original_runtime_receipt_bytes),
+        sha256(&journal.original_checkpoint_bytes),
+    ))
+}
+
+fn verify_pinned_signature(
+    key: &VerifyingKey,
+    message: &[u8],
+    signature: &[u8],
+    reason: &'static str,
+) -> Result<(), CellSplitObserverJoinErrorV1> {
+    let parsed = Signature::from_slice(signature)
+        .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(reason))?;
+    key.verify_strict(message, &parsed)
+        .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(reason))
 }
