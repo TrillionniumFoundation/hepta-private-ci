@@ -1100,3 +1100,113 @@ fn new_execute_cannot_adopt_effect_created_after_negative_preflight() {
     assert!(recovery.readback.is_some());
     assert_eq!(service.backend().commits, 0);
 }
+
+#[test]
+fn new_execute_rejects_an_effect_that_appears_during_precommit_frontier_read() {
+    let root = tempfile::tempdir().expect("owner root");
+    let backend = MutateAtFrontierRead {
+        inner: DiskEffect::new(root.path().to_path_buf(), "cas-owner"),
+        intent: intent(),
+        mode: MutationAtFrontier::CommitBeforeNegativeSignature,
+        sequence_reads: 0,
+    };
+    let mut service = CellSplitEffectServiceV1::new(
+        CellSplitExecutionStepV1::ArtifactCas,
+        "cas-owner".into(),
+        intent().plan_digest,
+        SigningKey::from_bytes(&[1; 32]),
+        backend,
+    )
+    .expect("service");
+    let (mut client, mut server) = UnixStream::pair().expect("socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::Execute,
+            intent: intent(),
+            challenge_nonce: None,
+        },
+    )
+    .expect("execute request");
+    assert!(matches!(
+        service.serve_connection(&mut server),
+        Err(CellSplitEffectRpcErrorV1::Invalid(
+            "effect already committed before new execute intent"
+        ))
+    ));
+    // The independently racing mutation is the only committed effect.
+    assert_eq!(service.backend().sequence_reads, 1);
+    assert_eq!(service.backend().inner.commits, 1);
+}
+
+#[test]
+fn new_execute_requires_fresh_original_owner_frontier_advance() {
+    let root = tempfile::tempdir().expect("owner root");
+    let mut backend = DiskEffect::new(root.path().to_path_buf(), "cas-owner");
+    // Create real durable effect bytes while falsely retaining the same
+    // original owner frontier before and after commit.
+    backend.sequence_override = Some(7);
+    let mut service = CellSplitEffectServiceV1::new(
+        CellSplitExecutionStepV1::ArtifactCas,
+        "cas-owner".into(),
+        intent().plan_digest,
+        SigningKey::from_bytes(&[1; 32]),
+        backend,
+    )
+    .expect("service");
+    let (mut client, mut server) = UnixStream::pair().expect("socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::Execute,
+            intent: intent(),
+            challenge_nonce: None,
+        },
+    )
+    .expect("execute request");
+    assert!(matches!(
+        service.serve_connection(&mut server),
+        Err(CellSplitEffectRpcErrorV1::Invalid(
+            "effect did not advance original durable owner frontier"
+        ))
+    ));
+    assert_eq!(service.backend().commits, 1);
+    assert!(root.path().join("committed").exists());
+    // An ambiguous effect is reconciled read-only, not retried.
+}
+
+#[test]
+fn new_execute_rejects_unavailable_frontier_without_committing() {
+    let root = tempfile::tempdir().expect("owner root");
+    let mut backend = DiskEffect::new(root.path().to_path_buf(), "cas-owner");
+    backend.sequence_override = Some(0);
+    let mut service = CellSplitEffectServiceV1::new(
+        CellSplitExecutionStepV1::ArtifactCas,
+        "cas-owner".into(),
+        intent().plan_digest,
+        SigningKey::from_bytes(&[1; 32]),
+        backend,
+    )
+    .expect("service");
+    let (mut client, mut server) = UnixStream::pair().expect("socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::Execute,
+            intent: intent(),
+            challenge_nonce: None,
+        },
+    )
+    .expect("execute request");
+    assert!(matches!(
+        service.serve_connection(&mut server),
+        Err(CellSplitEffectRpcErrorV1::Invalid(
+            "owner frontier unavailable before execute"
+        ))
+    ));
+    assert_eq!(service.backend().commits, 0);
+    assert!(!root.path().join("committed").exists());
+}
