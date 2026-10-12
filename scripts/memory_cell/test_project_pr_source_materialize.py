@@ -35,6 +35,7 @@ class FrozenGitTests(unittest.TestCase):
             self.objects[repo, "commits", head] = dict(
                 sha=head, tree=dict(sha=root), parents=[dict(sha=parent)],
                 author=dict(date="2026-10-11T08:00:00Z"),
+                committer=dict(date="2026-10-11T08:00:00Z"),
             )
             self.objects[repo, "trees", root] = dict(
                 sha=root, truncated=False, tree=[dict(path="folder", type="tree", mode="040000", sha=intermediate)],
@@ -50,6 +51,7 @@ class FrozenGitTests(unittest.TestCase):
             self.cases.append(dict(
                 repo=repo, partition="evaluation", pull_number=100+index,
                 head_sha=head, tree_sha=root, parents=[parent],
+                head_committed_at="2026-10-11T08:00:00Z",
                 files=[dict(path=f"folder/file{j}.txt", blob_sha=oid) for j in range(10)],
             ))
         self.manifest = dict(model_executions=0, no_answers_or_labels=True, cases=self.cases)
@@ -94,6 +96,32 @@ class FrozenGitTests(unittest.TestCase):
                 output = Path(self.temp.name) / ("partial-" + kind)
                 with self.assertRaises(ValueError):
                     collect(self.manifest, output, manifest_sha="f"*64, fetch=lambda *key: deepcopy(obj[key]))
+                self.assertTrue((output / "INCOMPLETE.json").exists())
+                self.assertFalse((output / "READY.json").exists())
+
+    def test_sealed_committer_cut_cannot_be_bypassed_by_backdated_author(self):
+        for kind in ("future_committer", "different_pinned_date", "missing_committer",
+                     "malformed_committer", "future_author"):
+            with self.subTest(kind=kind):
+                obj = deepcopy(self.objects)
+                manifest = deepcopy(self.manifest)
+                row = manifest["cases"][0]
+                commit = obj[row["repo"], "commits", row["head_sha"]]
+                if kind == "future_committer":
+                    # Author is still before the cut, but this Git object is not.
+                    commit["committer"]["date"] = "2026-10-13T08:00:00Z"
+                elif kind == "different_pinned_date":
+                    row["head_committed_at"] = "2026-10-10T08:00:00Z"
+                elif kind == "missing_committer":
+                    del commit["committer"]
+                elif kind == "malformed_committer":
+                    commit["committer"]["date"] = "yesterday"
+                elif kind == "future_author":
+                    commit["author"]["date"] = "2026-10-13T08:00:00Z"
+                output = Path(self.temp.name) / ("committer-" + kind)
+                with self.assertRaises(ValueError):
+                    collect(manifest, output, manifest_sha="f"*64,
+                            fetch=lambda *key: deepcopy(obj[key]))
                 self.assertTrue((output / "INCOMPLETE.json").exists())
                 self.assertFalse((output / "READY.json").exists())
 

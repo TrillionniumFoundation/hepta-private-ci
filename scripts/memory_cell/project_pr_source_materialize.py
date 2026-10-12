@@ -8,7 +8,6 @@ cannot publish READY. Retrieved source is untrusted data, never instructions.
 
 import argparse
 import base64
-from datetime import datetime
 import hashlib
 import json
 import os
@@ -17,7 +16,7 @@ import re
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
-from project_pr_source_precommit import CUT, PARTITIONS, read_pinned
+from project_pr_source_precommit import CUT, PARTITIONS, read_pinned, timestamp
 
 MAX_BLOB = 1024 * 1024
 MAX_TOTAL = 24 * 1024 * 1024
@@ -118,14 +117,17 @@ def verify_head(row, reader):
         or [p.get("sha") for p in commit.get("parents", [])] != row["parents"]
     ):
         raise ValueError("frozen Git head does not bind recorded tree and parents")
-    author = commit.get("author", {})
+    # A backdated Git author timestamp cannot move a later committed HEAD
+    # into a source-only cohort. The *committer* clock is what the sealed
+    # head_committed_at field records; author and committer are distinct.
     try:
-        authored = datetime.fromisoformat(author["date"].replace("Z", "+00:00"))
-        cut = datetime.fromisoformat(CUT.replace("Z", "+00:00"))
-        if authored > cut or authored.tzinfo is None:
-            raise ValueError("source was committed after frozen cut")
-    except (KeyError, AttributeError) as exc:
-        raise ValueError("missing original commit timestamp") from exc
+        authored = timestamp(commit["author"]["date"])
+        committed = timestamp(commit["committer"]["date"])
+        declared = timestamp(row["head_committed_at"])
+    except (KeyError, TypeError, AttributeError, ValueError) as exc:
+        raise ValueError("missing or invalid pinned Git commit dates") from exc
+    if authored > timestamp(CUT) or committed > timestamp(CUT) or committed != declared:
+        raise ValueError("frozen head committer date differs from the precommitted cut")
 
 
 def bind_path(row, file, reader):
