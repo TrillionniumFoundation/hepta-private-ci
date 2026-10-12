@@ -67,23 +67,49 @@ def compare_local(upstream, local_root):
     manifest=tomllib.loads((local_root/'codex-rs/Cargo.toml').read_text(encoding='utf-8'))
     toolchain=tomllib.loads((local_root/'codex-rs/rust-toolchain.toml').read_text(encoding='utf-8'))
     rust=toolchain['toolchain']['channel']
-    sysversion=manifest['workspace']['dependencies']['libsqlite3-sys']['version']
-    current=manifest['workspace']['dependencies']['matrix-sdk']['version']
-    patch=manifest['patch']['crates-io']['matrix-sdk-sqlite']['path']
+    workspace=manifest['workspace']['dependencies']
+    sysversion=workspace['libsqlite3-sys']['version']
+    local_sdk=workspace['matrix-sdk']
+    current=local_sdk['version']
+    patches=manifest.get('patch',{}).get('crates-io',{})
+    sqlite_patch=patches.get('matrix-sdk-sqlite')
+    sdk_patch=patches.get('matrix-sdk')
     issues=[]
     if version(rust) < version(upstream['rust_msr_version']):
         issues.append('LOCAL_RUST_TOOLCHAIN_BELOW_PINNED_UPSTREAM_MSRV')
     if version(sysversion)[:2] != (0,38):
         issues.append('LIBSQLITE3_SYS_037_VS_UPSTREAM_RUSQLITE_040_LINKS_038')
-    if current != upstream['sdk_version']:
+    if version(current) != version(upstream['sdk_version']):
         issues.append('HEPTA_MATRIX_SDK_RELEASE_NEEDS_MIGRATION')
-    if 'matrix-sdk-sqlite-0.18.0' in patch:
+    features=set(local_sdk.get('features',[]))
+    if (local_sdk.get('default-features') is not False or
+            not {'e2e-encryption','sqlite'}.issubset(features)):
+        issues.append('HEPTA_E2EE_SQLITE_FEATURES_MISSING')
+    # Modern SDK 0.19.1 intentionally uses its reviewed native SQLite crate,
+    # not Hepta's *obsolete* 0.18 patch. A missing sqlite patch is not an
+    # excuse to accept an unpinned SDK source or disabled WAL recovery.
+    if sqlite_patch is not None:
+        patch=sqlite_patch.get('path') if isinstance(sqlite_patch,dict) else None
+        if patch == 'third_party/matrix-sdk-sqlite-0.18.0':
+            issues.append('HEPTA_SQLITE_PATCH_STILL_018')
+        elif patch != f"third_party/matrix-sdk-sqlite-{upstream['sqlite_version']}":
+            issues.append('HEPTA_SQLITE_PATCH_NOT_SAME_PINNED_RELEASE')
+        sqlite_mode='version_pinned_local_sqlite_patch'
+    elif version(current) >= (0,19,0):
+        sqlite_mode='pinned_sdk_native_sqlite_requires_wal_qualification'
+        if not (isinstance(sdk_patch,dict) and
+                sdk_patch.get('path') ==
+                f"third_party/matrix-sdk-{upstream['sdk_version']}"):
+            issues.append('HEPTA_NATIVE_SQLITE_UPSTREAM_SDK_SOURCE_UNBOUND')
+    else:
+        sqlite_mode='unreviewed_missing_legacy_patch'
         issues.append('HEPTA_SQLITE_PATCH_STILL_018')
     return {**upstream,
         'local_rust':rust,
         'local_libsqlite3_sys':sysversion,
         'local_matrix_sdk_version':current,
-        'migration_blockers':issues,
+        'local_sqlite_source_mode':sqlite_mode,
+        'migration_blockers':sorted(set(issues)),
         'migration_ready':False,
         'upstream_source_reviewed':False,
         'full_E2EE_restoration_verified':False,
@@ -102,7 +128,9 @@ def main(argv=None):
     report=compare_local(inspect_upstream(args.upstream,args.expected_sha,source_head=observed),args.root)
     args.output.write_text(json.dumps(report,sort_keys=True,indent=2)+'\n',encoding='utf-8')
     print(json.dumps(report,sort_keys=True,indent=2))
-    return 0 if report['upstream_manifest_shape_ok'] else 3
+    # A successful offline source read is NOT a release gate, but known local
+    # migration incompatibilities must not pass the prerequisite job.
+    return 0 if report['upstream_manifest_shape_ok'] and not report['migration_blockers'] else 3
 
 
 if __name__=='__main__':
