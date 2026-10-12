@@ -6,8 +6,10 @@ rust_library(
     crate_name = "codex_hepta_operator_acceptance",
     crate_root = "src/lib.rs",
     edition = "2024",
-    visibility = ["//visibility:private"],
+    visibility = ["//codex-rs/hepta-supervisor:__pkg__"],
     deps = [
+        "//codex-rs/hepta-neuron",
+        "//codex-rs/hepta-types",
         "@crates//:base64",
         "@crates//:ed25519-dalek",
         "@crates//:libc",

@@ -8,6 +8,10 @@
 //! checks, terminal receipts and restart reconciliation without pretending to
 //! be a live TaskFlow/CNS/transport/effect deployment.
 
+#[path = "control_wal.rs"]
+mod control_wal;
+pub use control_wal::ScopedControlWalOwnerV1;
+
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
@@ -245,6 +249,8 @@ pub enum ControlOwnerErrorV1 {
     UnexpectedReconciliation,
     DurableIo,
     InvalidDurableSnapshot,
+    WriterUnavailable,
+    StaleWriter,
     BackendReceiptMismatch,
 }
 
@@ -310,8 +316,13 @@ impl DurableControlRoleOwnerV1 {
     pub fn open(path: impl AsRef<Path>) -> Result<Self, ControlOwnerErrorV1> {
         let path = path.as_ref().to_path_buf();
         reject_durable_path(&path)?;
+        let _writer_lock = lock_durable_control_writer(&path)?;
         if !path.exists() {
-            let mut file = File::create(&path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+            let mut file = fs::OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&path)
+                .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
             let mut initial = Vec::new();
             initial.extend_from_slice(DURABLE_CONTROL_MAGIC_V1);
             initial.extend_from_slice(&0_u32.to_be_bytes());
@@ -329,6 +340,37 @@ impl DurableControlRoleOwnerV1 {
         let bytes = fs::read(&path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
         let inner = decode_durable_control(&bytes)?;
         Ok(Self { path, inner })
+    }
+
+    // A stale process may not overwrite a newer durable generation or dispatch.
+    // The OS lock spans read/compare/write/rename and the containing-dir sync.
+    fn apply_mutation<T>(
+        &mut self,
+        mutation: impl FnOnce(&mut InMemoryControlRoleOwnerV1) -> Result<T, ControlOwnerErrorV1>,
+    ) -> Result<T, ControlOwnerErrorV1> {
+        // Do the O(n) state clone, mutation and encoding outside the OS lock.
+        // Only the short authoritative compare/rename/fsync is serialized.
+        let mut candidate = self.inner.clone();
+        // A local MissingDispatch or stale generation may be caused by a
+        // newer writer, not by invalid caller intent. Never return the
+        // speculative result before checking the authoritative disk frontier.
+        let mutation_result = mutation(&mut candidate);
+        let encoded = if mutation_result.is_ok() && candidate != self.inner {
+            Some(encode_durable_control(&candidate)?)
+        } else {
+            None
+        };
+        let _writer_lock = lock_durable_control_writer(&self.path)?;
+        let bytes = fs::read(&self.path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+        if decode_durable_control(&bytes)? != self.inner {
+            return Err(ControlOwnerErrorV1::StaleWriter);
+        }
+        let output = mutation_result?;
+        if let Some(encoded) = encoded {
+            persist_durable_control(&self.path, &encoded)?;
+            self.inner = candidate;
+        }
+        Ok(output)
     }
 
     #[must_use]
@@ -356,11 +398,10 @@ impl DurableControlRoleOwnerV1 {
     }
 
     pub fn set_now_ms(&mut self, now_ms: u64) -> Result<(), ControlOwnerErrorV1> {
-        let mut candidate = self.inner.clone();
-        candidate.set_now_ms(now_ms);
-        persist_durable_control(&self.path, &candidate)?;
-        self.inner = candidate;
-        Ok(())
+        self.apply_mutation(|owner| {
+            owner.set_now_ms(now_ms);
+            Ok(())
+        })
     }
 
     pub fn activate_generation(
@@ -369,11 +410,9 @@ impl DurableControlRoleOwnerV1 {
         generation: Generation,
         route_fence_digest: Digest32,
     ) -> Result<Digest32, ControlOwnerErrorV1> {
-        let mut candidate = self.inner.clone();
-        let digest = candidate.activate_generation(cell_id, generation, route_fence_digest)?;
-        persist_durable_control(&self.path, &candidate)?;
-        self.inner = candidate;
-        Ok(digest)
+        self.apply_mutation(|owner| {
+            owner.activate_generation(cell_id, generation, route_fence_digest)
+        })
     }
 }
 
@@ -382,22 +421,14 @@ impl ControlRoleOwnerV1 for DurableControlRoleOwnerV1 {
         &mut self,
         intent: ControlDispatchIntentV1,
     ) -> Result<ControlDispatchReceiptV1, ControlOwnerErrorV1> {
-        let mut candidate = self.inner.clone();
-        let receipt = candidate.prepare(intent)?;
-        persist_durable_control(&self.path, &candidate)?;
-        self.inner = candidate;
-        Ok(receipt)
+        self.apply_mutation(|owner| owner.prepare(intent))
     }
 
     fn forward(
         &mut self,
         dispatch_id: &StableId,
     ) -> Result<ControlDispatchReceiptV1, ControlOwnerErrorV1> {
-        let mut candidate = self.inner.clone();
-        let receipt = candidate.forward(dispatch_id)?;
-        persist_durable_control(&self.path, &candidate)?;
-        self.inner = candidate;
-        Ok(receipt)
+        self.apply_mutation(|owner| owner.forward(dispatch_id))
     }
 
     fn record_terminal(
@@ -405,22 +436,14 @@ impl ControlRoleOwnerV1 for DurableControlRoleOwnerV1 {
         dispatch_id: &StableId,
         terminal_receipt_digest: Digest32,
     ) -> Result<ControlDispatchReceiptV1, ControlOwnerErrorV1> {
-        let mut candidate = self.inner.clone();
-        let receipt = candidate.record_terminal(dispatch_id, terminal_receipt_digest)?;
-        persist_durable_control(&self.path, &candidate)?;
-        self.inner = candidate;
-        Ok(receipt)
+        self.apply_mutation(|owner| owner.record_terminal(dispatch_id, terminal_receipt_digest))
     }
 
     fn reconcile_restart(
         &mut self,
         dispatch_id: &StableId,
     ) -> Result<ControlDispatchReceiptV1, ControlOwnerErrorV1> {
-        let mut candidate = self.inner.clone();
-        let receipt = candidate.reconcile_restart(dispatch_id)?;
-        persist_durable_control(&self.path, &candidate)?;
-        self.inner = candidate;
-        Ok(receipt)
+        self.apply_mutation(|owner| owner.reconcile_restart(dispatch_id))
     }
 }
 
@@ -713,6 +736,35 @@ impl ControlRoleOwnerV1 for InMemoryControlRoleOwnerV1 {
     }
 }
 
+// A separate lock inode survives replacing the current-state snapshot.
+fn lock_durable_control_writer(path: &Path) -> Result<File, ControlOwnerErrorV1> {
+    let lock_path = path.with_extension("control.writer.lock");
+    reject_durable_path(&lock_path)?;
+    let mut options = fs::OpenOptions::new();
+    options.read(true).write(true).create(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.mode(0o600);
+    }
+    let lock = options
+        .open(&lock_path)
+        .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        let meta = lock
+            .metadata()
+            .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+        if !meta.is_file() || meta.nlink() != 1 || meta.mode() & 0o077 != 0 {
+            return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
+        }
+    }
+    lock.try_lock()
+        .map_err(|_| ControlOwnerErrorV1::WriterUnavailable)?;
+    Ok(lock)
+}
+
 fn reject_durable_path(path: &Path) -> Result<(), ControlOwnerErrorV1> {
     if let Ok(metadata) = fs::symlink_metadata(path)
         && (metadata.file_type().is_symlink() || !metadata.is_file())
@@ -722,11 +774,12 @@ fn reject_durable_path(path: &Path) -> Result<(), ControlOwnerErrorV1> {
     Ok(())
 }
 
-fn persist_durable_control(
-    path: &Path,
+fn encode_durable_control(
     owner: &InMemoryControlRoleOwnerV1,
-) -> Result<(), ControlOwnerErrorV1> {
-    reject_durable_path(path)?;
+) -> Result<Vec<u8>, ControlOwnerErrorV1> {
+    if owner.records.len() > DURABLE_CONTROL_MAX_RECORDS_V1 {
+        return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
+    }
     let mut bytes = Vec::with_capacity(128 + owner.records.len() * 512);
     bytes.extend_from_slice(DURABLE_CONTROL_MAGIC_V1);
     put_u32(&mut bytes, owner.records.len())?;
@@ -745,6 +798,14 @@ fn persist_durable_control(
     put_u64(&mut bytes, owner.now_ms);
     let checksum = digest_bytes(b"hepta.cell-role.control-owner.snapshot.v1", &[&bytes]);
     bytes.extend_from_slice(checksum.as_array());
+    if bytes.len() > DURABLE_CONTROL_MAX_FILE_BYTES_V1 {
+        return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
+    }
+    Ok(bytes)
+}
+
+fn persist_durable_control(path: &Path, bytes: &[u8]) -> Result<(), ControlOwnerErrorV1> {
+    reject_durable_path(path)?;
     let temp = path.with_extension("control.snapshot.tmp");
     reject_durable_path(&temp)?;
     let mut file = fs::OpenOptions::new()
@@ -757,10 +818,24 @@ fn persist_durable_control(
         .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
     drop(file);
     fs::rename(&temp, path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
-    if let Some(parent) = path.parent()
-        && let Ok(directory) = File::open(parent)
+    #[cfg(unix)]
     {
-        let _ = directory.sync_all();
+        let parent = path
+            .parent()
+            .filter(|parent| !parent.as_os_str().is_empty())
+            .unwrap_or_else(|| Path::new("."));
+        File::open(parent)
+            .and_then(|directory| directory.sync_all())
+            .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
+    }
+    #[cfg(not(unix))]
+    {
+        // std has no portable parent-directory fsync on Windows. Flush the
+        // replaced file, and leave power-loss qualification to the actual
+        // platform-specific host rather than inventing a durability witness.
+        File::open(path)
+            .and_then(|file| file.sync_all())
+            .map_err(|_| ControlOwnerErrorV1::DurableIo)?;
     }
     Ok(())
 }
@@ -1271,6 +1346,96 @@ mod tests {
                 .expect("late forward retry"),
             reconciled
         );
+    }
+
+    struct DurableTestDirectory(std::path::PathBuf);
+
+    impl DurableTestDirectory {
+        fn new() -> Self {
+            let root = std::env::temp_dir().join(format!(
+                "hepta-control-exclusive-{}-{}",
+                std::process::id(),
+                std::time::SystemTime::now()
+                    .duration_since(std::time::UNIX_EPOCH)
+                    .expect("clock")
+                    .as_nanos()
+            ));
+            std::fs::create_dir(&root).expect("test directory");
+            Self(root)
+        }
+
+        fn file(&self) -> std::path::PathBuf {
+            self.0.join("control")
+        }
+    }
+
+    impl Drop for DurableTestDirectory {
+        fn drop(&mut self) {
+            let _ = std::fs::remove_dir_all(&self.0);
+        }
+    }
+
+    #[test]
+    fn durable_control_stale_open_owner_cannot_overwrite_newer_state() {
+        let root = DurableTestDirectory::new();
+        let path = root.file();
+        let mut first = DurableControlRoleOwnerV1::open(&path).expect("first");
+        let mut second = DurableControlRoleOwnerV1::open(&path).expect("second");
+        first
+            .activate_generation(
+                StableId::new("cell.control").expect("id"),
+                Generation::new(3).expect("generation"),
+                digest("fence"),
+            )
+            .expect("committed generation");
+        assert_eq!(
+            second.prepare(intent(ControlOperationKindV1::Router)),
+            Err(ControlOwnerErrorV1::StaleWriter)
+        );
+        let mut reopened = DurableControlRoleOwnerV1::open(&path).expect("reopen");
+        let prepared = reopened
+            .prepare(intent(ControlOperationKindV1::Router))
+            .expect("new writer");
+        assert_eq!(prepared.status, ControlDispatchStatusV1::Prepared);
+        assert_eq!(
+            first.forward(&prepared.dispatch_id),
+            Err(ControlOwnerErrorV1::StaleWriter)
+        );
+    }
+
+    #[test]
+    fn durable_control_rejects_os_writer_lock_contention() {
+        let root = DurableTestDirectory::new();
+        let path = root.file();
+        let mut owner = DurableControlRoleOwnerV1::open(&path).expect("open");
+        let guard = lock_durable_control_writer(&path).expect("hold lock");
+        assert_eq!(
+            owner.prepare(intent(ControlOperationKindV1::ActionProposal)),
+            Err(ControlOwnerErrorV1::WriterUnavailable)
+        );
+        drop(guard);
+        owner
+            .activate_generation(
+                StableId::new("cell.control").expect("id"),
+                Generation::new(3).expect("generation"),
+                digest("fence"),
+            )
+            .expect("writer after release");
+    }
+
+    #[test]
+    fn idempotent_durable_control_retry_does_not_rewrite_snapshot() {
+        let root = DurableTestDirectory::new();
+        let path = root.file();
+        let mut owner = DurableControlRoleOwnerV1::open(&path).expect("open");
+        owner
+            .prepare(intent(ControlOperationKindV1::Planner))
+            .expect("first");
+        let before = std::fs::read(&path).expect("read");
+        owner
+            .prepare(intent(ControlOperationKindV1::Planner))
+            .expect("repeat");
+        assert_eq!(std::fs::read(&path).expect("read"), before);
     }
 
     #[test]

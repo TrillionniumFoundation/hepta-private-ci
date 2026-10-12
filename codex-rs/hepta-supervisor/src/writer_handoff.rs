@@ -176,6 +176,17 @@ impl WriterHandoffCheckpointV1 {
     pub fn rollback_predecessor(&self) -> Digest32 {
         self.plan.rollback_predecessor_digest
     }
+
+    /// The exact canonical serialized checkpoint record used by the fsynced
+    /// handoff journal, suitable for an independent Supervisor signing owner.
+    /// A caller cannot substitute a structurally plausible but uncommitted
+    /// digest: content integrity is checked before exposing receipt bytes.
+    pub fn canonical_receipt_bytes_v1(&self) -> Result<Vec<u8>, WriterHandoffErrorV1> {
+        if self.receipt_digest != checkpoint_digest(self) {
+            return Err(WriterHandoffErrorV1::Corrupt);
+        }
+        encode_checkpoint(self)
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -344,15 +355,79 @@ impl DurableWriterHandoffJournalV1 {
         &self.checkpoint
     }
 
+    /// Re-read the original durable checkpoint chain from the exclusively
+    /// locked file before any externally signed readback or CellSplit retirement.
+    ///
+    /// A cached in-memory checkpoint is not evidence that a non-cooperating
+    /// writer has not replaced, truncated, or appended to the actual journal.
+    /// This check is read-only; an unexpected or incomplete tail fails closed
+    /// instead of being truncated into a plausible successful checkpoint.
+    pub fn verify_current_on_disk(&mut self) -> Result<(), WriterHandoffErrorV1> {
+        if self.poisoned {
+            return Err(WriterHandoffErrorV1::Poisoned);
+        }
+        let result = self.verify_current_on_disk_inner();
+        if result.is_err() {
+            self.poisoned = true;
+        }
+        result
+    }
+
+    fn verify_current_on_disk_inner(&mut self) -> Result<(), WriterHandoffErrorV1> {
+        let length = self.file.metadata()?.len();
+        if length > MAX_JOURNAL_BYTES {
+            return Err(WriterHandoffErrorV1::JournalTooLarge);
+        }
+        if length != self.durable_length {
+            return Err(WriterHandoffErrorV1::Corrupt);
+        }
+        self.file.seek(SeekFrom::Start(0))?;
+        let mut bytes = Vec::new();
+        Read::take(&mut self.file, MAX_JOURNAL_BYTES + 1).read_to_end(&mut bytes)?;
+        if bytes.len() as u64 != self.durable_length
+            || self.file.metadata()?.len() != self.durable_length
+            || !bytes.starts_with(MAGIC)
+        {
+            return Err(WriterHandoffErrorV1::Corrupt);
+        }
+        let mut cursor = MAGIC.len();
+        let mut previous: Option<WriterHandoffCheckpointV1> = None;
+        while cursor < bytes.len() {
+            let relative_newline = bytes[cursor..]
+                .iter()
+                .position(|byte| *byte == b'\n')
+                .ok_or(WriterHandoffErrorV1::Corrupt)?;
+            let end = cursor + relative_newline;
+            if end == cursor || end - cursor > MAX_RECORD_BYTES {
+                return Err(WriterHandoffErrorV1::Corrupt);
+            }
+            let checkpoint = decode_checkpoint(&bytes[cursor..end])?;
+            // The signer must attest bytes which are *identical* to the
+            // original fsynced frame, not a normalized reserialization of
+            // attacker-controlled noncanonical JSON with the same digest.
+            if encode_checkpoint(&checkpoint)? != bytes[cursor..end] {
+                return Err(WriterHandoffErrorV1::Corrupt);
+            }
+            validate_recovered_checkpoint(previous.as_ref(), &checkpoint)?;
+            previous = Some(checkpoint);
+            cursor = end + 1;
+        }
+        if previous.as_ref() != Some(&self.checkpoint) {
+            return Err(WriterHandoffErrorV1::Corrupt);
+        }
+        self.file.seek(SeekFrom::Start(self.durable_length))?;
+        Ok(())
+    }
+
     /// Persist one observed handoff phase. Exact retries of the currently
     /// committed checkpoint are idempotent and never append another record.
     pub fn advance(
         &mut self,
         step: WriterHandoffAdvanceV1,
     ) -> Result<WriterHandoffCheckpointV1, WriterHandoffErrorV1> {
-        if self.poisoned {
-            return Err(WriterHandoffErrorV1::Poisoned);
-        }
+        // A stale or tampered WAL cannot succeed even on an exact
+        // idempotent retry of the in-memory checkpoint.
+        self.verify_current_on_disk()?;
         if step.phase == self.checkpoint.phase
             && step.evidence_digest == self.checkpoint.evidence_digest
             && (step.outbox_watermark == self.checkpoint.outbox_watermark
@@ -850,6 +925,73 @@ mod tests {
         assert!(journal.checkpoint().new_writer_admission_open());
         assert_eq!(journal.checkpoint().plan.old_generation.get(), 2);
         assert_eq!(journal.checkpoint().plan.new_generation.get(), 8);
+    }
+
+    #[test]
+    fn live_writer_rejects_tampered_idempotent_retry() {
+        let temp = TempDir::new().expect("temp");
+        let mut journal =
+            DurableWriterHandoffJournalV1::create(file(&temp), plan()).expect("original journal");
+        let path = temp.path().join("writer-handoff.log");
+        let original = std::fs::read(&path).expect("original bytes");
+        let marker = b"\"phase\":\"prepared\"";
+        let start = original
+            .windows(marker.len())
+            .position(|part| part == marker)
+            .expect("original prepared phase");
+        let mut corrupted = original.clone();
+        corrupted[start + 9] = b'x';
+        std::fs::write(&path, corrupted).expect("uncooperative writer changed file");
+        // This would previously have been a successful cached no-op.
+        assert_eq!(
+            journal.advance(step(WriterHandoffPhaseV1::Prepared, "migration-plan")),
+            Err(WriterHandoffErrorV1::Corrupt)
+        );
+        std::fs::write(&path, original).expect("restore disk bytes");
+        assert_eq!(
+            journal.advance(step(WriterHandoffPhaseV1::Prepared, "migration-plan")),
+            Err(WriterHandoffErrorV1::Poisoned)
+        );
+    }
+
+    #[test]
+    fn live_writer_rejects_noncanonical_equal_length_json() {
+        let temp = TempDir::new().expect("temp");
+        let mut journal =
+            DurableWriterHandoffJournalV1::create(file(&temp), plan()).expect("journal");
+        let path = temp.path().join("writer-handoff.log");
+        let original = std::fs::read_to_string(&path).expect("original canonical WAL");
+        let from = "\"revision\":1,\"phase\":\"prepared\"";
+        let to = "\"phase\":\"prepared\",\"revision\":1";
+        assert!(original.contains(from));
+        assert_eq!(from.len(), to.len());
+        let replaced = original.replacen(from, to, 1);
+        assert_eq!(original.len(), replaced.len());
+        // Same parsed checkpoint and valid semantic receipt digest, but
+        // different actual fsynced bytes: no normalized receipt laundering.
+        std::fs::write(&path, replaced).expect("reordered JSON fields");
+        assert_eq!(
+            journal.advance(step(WriterHandoffPhaseV1::Prepared, "migration-plan")),
+            Err(WriterHandoffErrorV1::Corrupt)
+        );
+    }
+
+    #[test]
+    fn live_writer_rejects_unknown_appended_tail_before_transition() {
+        let temp = TempDir::new().expect("temp");
+        let mut journal =
+            DurableWriterHandoffJournalV1::create(file(&temp), plan()).expect("original journal");
+        let path = temp.path().join("writer-handoff.log");
+        let mut bytes = std::fs::read(&path).expect("original");
+        bytes.extend_from_slice(b"{\"uncommitted\":");
+        std::fs::write(&path, bytes).expect("external torn append");
+        assert_eq!(
+            journal.advance(step(
+                WriterHandoffPhaseV1::AdmissionStopped,
+                "admission-stopped"
+            )),
+            Err(WriterHandoffErrorV1::Corrupt)
+        );
     }
 
     #[test]

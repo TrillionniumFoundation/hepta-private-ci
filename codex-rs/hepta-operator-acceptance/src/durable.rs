@@ -18,6 +18,7 @@ use crate::AcceptanceError;
 #[path = "durable_windows.rs"]
 mod windows;
 
+pub(crate) const SIDECAR_LOCK_FILE: &str = ".operator-acceptance.lock";
 pub(crate) const MAX_SMALL_FILE_BYTES: usize = 1024 * 1024;
 pub(crate) const MAX_ARTIFACT_BYTES: u64 = 2 * 1024 * 1024 * 1024;
 
@@ -246,6 +247,68 @@ pub(crate) struct SidecarLock {
     _file: File,
 }
 
+impl SidecarLock {
+    /// A held OS file lock is not proof that the directory still names the
+    /// same inode: an uncooperative writer can unlink/recreate the lock path.
+    /// Keep the single-writer assumption fail-closed across long readbacks
+    /// and asynchronous effect callbacks, not only during initial open.
+    pub(crate) fn verify_current(&self, root: &Path) -> Result<(), AcceptanceError> {
+        verify_secure_directory(root, "sidecar directory")?;
+        let path = root.join(SIDECAR_LOCK_FILE);
+        let held = self._file.metadata()?;
+        let at_path = std::fs::metadata(&path)?;
+        let link = std::fs::symlink_metadata(&path)?;
+        verify_regular_metadata(&held, "sidecar lock")?;
+        if link.file_type().is_symlink()
+            || !same_file_snapshot(&held, &at_path)
+            || !same_file_snapshot(&held, &link)
+        {
+            return Err(invalid(
+                "held sidecar lock no longer names the live lock path",
+            ));
+        }
+        #[cfg(windows)]
+        {
+            let snapshot = windows::FileSnapshot::capture(&self._file, "sidecar lock")?;
+            windows::verify_unchanged(&self._file, &path, &snapshot, "sidecar lock")?;
+        }
+        Ok(())
+    }
+}
+
+/// A missing lock path does not mean an owner namespace is new. In particular,
+/// the previous writer may still hold a detached inode after an unlink. Before
+/// creating a replacement lock, reject recognizable immutable owner state.
+/// Call again after acquiring the new lock to fence races with path creation.
+/// Whole-root rollback still needs an independently retained witness.
+pub(crate) fn reject_recreated_sidecar_for_owner_history(
+    root: &Path,
+    original_lock_present: bool,
+    owned_filenames: &[&str],
+    owned_prefixes: &[&str],
+) -> Result<(), AcceptanceError> {
+    if original_lock_present {
+        return Ok(());
+    }
+    verify_secure_directory(root, "sidecar owner directory")?;
+    for entry in std::fs::read_dir(root)? {
+        let filename = entry?.file_name();
+        let name = filename
+            .to_str()
+            .ok_or_else(|| invalid("non-UTF8 entry in owner directory"))?;
+        if owned_filenames.contains(&name)
+            || owned_prefixes
+                .iter()
+                .any(|prefix| name.starts_with(*prefix))
+        {
+            return Err(invalid(
+                "initialized durable owner lost its original sidecar writer lock",
+            ));
+        }
+    }
+    Ok(())
+}
+
 pub(crate) fn lock_sidecar(root: &Path) -> Result<SidecarLock, AcceptanceError> {
     open_sidecar_lock(root, /*create*/ true)
 }
@@ -256,7 +319,7 @@ pub(crate) fn lock_existing_sidecar(root: &Path) -> Result<SidecarLock, Acceptan
 
 fn open_sidecar_lock(root: &Path, create: bool) -> Result<SidecarLock, AcceptanceError> {
     verify_secure_directory(root, "sidecar directory")?;
-    let path = root.join(".operator-acceptance.lock");
+    let path = root.join(SIDECAR_LOCK_FILE);
     let mut options = OpenOptions::new();
     options.create(create).read(true).write(true);
     #[cfg(unix)]

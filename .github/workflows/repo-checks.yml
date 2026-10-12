@@ -78,7 +78,18 @@ jobs:
         with:
           version: "0.11.3"
       - name: Check formatting (run `just fmt` to fix)
-        run: just fmt-check
+        run: |
+          if just fmt-check; then
+            exit 0
+          fi
+          echo "::group::Exact Ruff formatting diff"
+          uv run --frozen --project scripts ruff format --diff scripts .github || true
+          echo "::endgroup::"
+          echo "::group::Exact Buildifier formatting diff"
+          ./tools/buildifier -d codex-rs/hepta-operator-acceptance/BUILD.bazel || true
+          echo "::endgroup::"
+          # Diagnostics do not waive the original formatting failure.
+          exit 1
 
       - name: Prettier (run `pnpm run format:fix` to fix)
         run: pnpm run format

@@ -49,6 +49,7 @@ impl CellSplitCanaryReceiptV1 {
             || dispatch_receipt_digest.is_zero()
             || old_route_fence_digest.is_zero()
             || child_route_digest.is_zero()
+            || observed_requests == 0
             || failed_requests > observed_requests
         {
             return Err(CellSplitLifecycleErrorV1::InvalidEvidence);
@@ -93,7 +94,7 @@ impl CellSplitCanaryReceiptV1 {
     }
 
     fn passes(&self) -> bool {
-        self.failed_requests == 0 && self.rollback_verified
+        self.observed_requests > 0 && self.failed_requests == 0 && self.rollback_verified
     }
 }
 

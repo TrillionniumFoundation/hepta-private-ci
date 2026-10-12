@@ -20,6 +20,9 @@ production-cognitive-write = []
 # product mutation profile. It never substitutes for production authority.
 qualification-cognitive-write = ["production-cognitive-write"]
 qualification-legacy-learning-write = ["codex-hepta-learning-ledger/qualification-legacy-write"]
+# Opt-in source bridge: independent NDU/Selector preflight before the pinned
+# four-owner CellSplit coordinator. No default serving or release authority.
+cell-split-operator-bridge = ["dep:codex-hepta-operator-acceptance"]
 
 [[bin]]
 name = "codex-hepta-agentd"
@@ -97,6 +100,9 @@ tokio = { workspace = true, features = [
     "time",
 ] }
 tokio-util = { workspace = true }
+
+[target.'cfg(unix)'.dependencies]
+codex-hepta-operator-acceptance = { path = "../hepta-operator-acceptance", optional = true }
 
 [dev-dependencies]
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }

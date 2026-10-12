@@ -125,8 +125,8 @@ struct AdvancingClock(AtomicUsize);
 
 impl AuthorityClock for AdvancingClock {
     fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
-        // The verifier constructor and first preflight sample see a live grant.
-        // The second time sample occurs after independent frontier I/O.
+        // Construction and preflight are valid. The independent Control
+        // read finishes only after the NDU read grant has expired.
         let reading = self.0.fetch_add(1, Ordering::SeqCst);
         Ok(if reading <= 1 { 1000 } else { 1200 })
     }

@@ -16,7 +16,6 @@ use base64::engine::general_purpose::STANDARD as BASE64;
 use ed25519_dalek::Signature;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
-use ed25519_dalek::Verifier;
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
@@ -45,6 +44,10 @@ const PRODUCTION_ORIGIN: &str = "production-target-host";
 const SIMULATION_ORIGIN: &str = "source-simulation";
 const SIGNATURE_ALGORITHM: &str = CELL_SPLIT_TARGET_HOST_EVIDENCE_SIGNATURE_ALGORITHM_V1;
 const MAX_EVENTS: usize = 4_096;
+const MAX_OBSERVER_SIGNATURES: usize = 16;
+const MAX_ID_BYTES: usize = 256;
+const MAX_NONCE_BYTES: usize = 256;
+const MAX_EVIDENCE_BYTES: usize = crate::durable::MAX_SMALL_FILE_BYTES;
 const ZERO_DIGEST: &str = "0000000000000000000000000000000000000000000000000000000000000000";
 
 /// The host class that produced a resource sample.  A production receipt must
@@ -191,20 +194,50 @@ impl CellSplitTargetHostEvidenceTrustPolicyV1 {
         }
         let host_keys = decode_trusted_keys(file.host_keys, "host")?;
         let observer_keys = decode_trusted_keys(file.observer_keys, "observer")?;
+        if host_keys
+            .values()
+            .any(|host| observer_keys.values().any(|observer| observer == host))
+        {
+            return Err(invalid("host and observer trust keys must be independent"));
+        }
         Ok(Self {
             host_keys,
             observer_keys,
         })
     }
 
-    /// Decode a trust policy from a regular file using the same race and
-    /// symlink checks as the durable evidence store.
+    /// Legacy file-only policy loading cannot establish an independent trust
+    /// root. A secure file mode or a self-reported digest does not prove that
+    /// host/Observer verification keys were approved by deployment authority.
+    /// Never silently downgrade production evidence admission to this path.
     pub fn from_json_file(
-        path: impl AsRef<Path>,
+        _path: impl AsRef<Path>,
     ) -> Result<Self, CellSplitTargetHostEvidenceErrorV1> {
+        Err(invalid(
+            "target-host trust policy requires an external SHA-256 pin",
+        ))
+    }
+
+    /// Read a private policy with an independently supplied exact-byte pin.
+    /// The pin must come from the deployment authority, NOT the policy file,
+    /// evidence envelope or a digest calculated from either at the CLI.
+    pub fn from_json_file_pinned(
+        path: impl AsRef<Path>,
+        externally_pinned_sha256: &str,
+    ) -> Result<Self, CellSplitTargetHostEvidenceErrorV1> {
+        if !digest_shape(externally_pinned_sha256) {
+            return Err(invalid(
+                "invalid external target-host trust policy SHA-256 pin",
+            ));
+        }
         let bytes =
             crate::durable::secure_read(path.as_ref(), crate::durable::MAX_SMALL_FILE_BYTES)
                 .map_err(|error| durable_error(error.to_string()))?;
+        if sha256(&bytes) != externally_pinned_sha256 {
+            return Err(invalid(
+                "target-host trust policy differs from externally pinned bytes",
+            ));
+        }
         Self::from_json_bytes(&bytes)
     }
 
@@ -214,6 +247,15 @@ impl CellSplitTargetHostEvidenceTrustPolicyV1 {
     pub fn to_json_bytes(&self) -> Result<Vec<u8>, CellSplitTargetHostEvidenceErrorV1> {
         if self.host_keys.is_empty() || self.observer_keys.is_empty() {
             return Err(invalid("target-host trust policy is empty"));
+        }
+        let mut unique_keys = BTreeSet::new();
+        if self
+            .host_keys
+            .values()
+            .chain(self.observer_keys.values())
+            .any(|key| key.is_weak() || !unique_keys.insert(key.to_bytes()))
+        {
+            return Err(invalid("weak, duplicate or shared host/observer trust key"));
         }
         let file = CellSplitTargetHostEvidenceTrustPolicyFileV1 {
             schema: CELL_SPLIT_TARGET_HOST_TRUST_POLICY_SCHEMA_V1.to_string(),
@@ -257,9 +299,10 @@ impl CellSplitTargetHostEvidenceAdapterV1 {
 /// Durable owner for an already signed target-host evidence envelope.
 ///
 /// The owner verifies the envelope against the externally pinned trust policy
-/// before writing it, uses the same private atomic-replace protocol as the
-/// operator acceptance sidecars, and verifies the exact persisted bytes on
-/// reopen.  It deliberately accepts no unsigned payload and never creates a
+/// before writing it, publishes a create-only immutable original evidence
+/// file, and verifies the exact persisted bytes on reopen. Repeated identical
+/// reports are idempotent; differently signed historical reports MUST NOT
+/// overwrite one another under the same witness path. It never creates a
 /// production receipt from the source simulation harness.
 #[derive(Clone, Copy, Debug, Default)]
 pub struct CellSplitTargetHostEvidenceStoreV1;
@@ -292,9 +335,26 @@ impl CellSplitTargetHostEvidenceStoreV1 {
         let receipt = verify_cell_split_target_host_evidence(envelope, policy)?;
         let bytes = envelope.canonical_bytes()?;
         let path = path.as_ref();
-        let temporary = path.with_extension("target-host-evidence.tmp");
-        crate::durable::write_private_atomic_replace(path, &temporary, &bytes)
-            .map_err(|error| durable_error(error.to_string()))?;
+        // A verified historical report is an original operation witness, not
+        // a mutable cache. Create-new is atomic across competing writers and
+        // fsyncs both the file and parent directory. Replacing it with another
+        // valid signed report could silently rewind the observed lifecycle.
+        match crate::durable::write_private_new(path, &bytes) {
+            Ok(()) => {}
+            Err(crate::AcceptanceError::Io(ref error))
+                if error.kind() == std::io::ErrorKind::AlreadyExists =>
+            {
+                let original =
+                    crate::durable::secure_read(path, crate::durable::MAX_SMALL_FILE_BYTES)
+                        .map_err(|error| durable_error(error.to_string()))?;
+                if original != bytes {
+                    return Err(invalid(
+                        "original signed target-host evidence is immutable; use a new witness path",
+                    ));
+                }
+            }
+            Err(error) => return Err(durable_error(error.to_string())),
+        }
         Ok(receipt)
     }
 
@@ -477,8 +537,11 @@ impl CellSplitTargetHostEvidenceRecorderV1 {
             || p.schema_version != 1
             || p.origin != PRODUCTION_ORIGIN
             || p.split_id.is_empty()
+            || p.split_id.len() > MAX_ID_BYTES
             || p.target_host_id.is_empty()
+            || p.target_host_id.len() > MAX_ID_BYTES
             || p.target_host_nonce.is_empty()
+            || p.target_host_nonce.len() > MAX_NONCE_BYTES
             || !digest_shape(&p.target_host_attestation_digest)
             || p.parent_generation == 0
             || p.parent_generation.checked_add(1) != Some(p.child_generation)
@@ -533,7 +596,16 @@ pub fn verify_cell_split_target_host_evidence_json(
     bytes: &[u8],
     policy: &CellSplitTargetHostEvidenceTrustPolicyV1,
 ) -> Result<CellSplitTargetHostProductionReceiptV1, CellSplitTargetHostEvidenceErrorV1> {
+    if bytes.is_empty() || bytes.len() > MAX_EVIDENCE_BYTES {
+        return Err(invalid("target-host evidence exceeds bounded input"));
+    }
     let envelope: CellSplitSignedTargetHostEvidenceV1 = serde_json::from_slice(bytes)?;
+    // Verify signatures over one unambiguous transport representation.
+    // Otherwise equivalent pretty/reordered JSON can produce distinct audit
+    // objects while reusing the exact same signed evidence payload.
+    if envelope.canonical_bytes()? != bytes {
+        return Err(invalid("signed evidence input is not canonical JSON"));
+    }
     verify_cell_split_target_host_evidence(&envelope, policy)
 }
 
@@ -549,6 +621,14 @@ pub fn verify_cell_split_target_host_evidence(
     {
         return Err(invalid("signed evidence envelope header"));
     }
+    // Apply the same input bound to the in-memory/store path as to JSON
+    // ingestion; otherwise a purportedly verified report might be written
+    // durably but could never be reopened through the bounded reader.
+    if envelope.canonical_bytes()?.len() > MAX_EVIDENCE_BYTES {
+        return Err(invalid(
+            "signed evidence envelope exceeds durable read bound",
+        ));
+    }
     let payload = &envelope.payload;
     replay_payload(payload)?;
     let payload_bytes = payload.canonical_bytes()?;
@@ -557,8 +637,12 @@ pub fn verify_cell_split_target_host_evidence(
         .get(&envelope.host_signature.signer_id)
         .ok_or_else(|| invalid("host signer is not trusted"))?;
     verify_signature(&envelope.host_signature, host_key, &payload_bytes)?;
-    if envelope.observer_signatures.is_empty() {
-        return Err(invalid("independent observer signature is required"));
+    if envelope.observer_signatures.is_empty()
+        || envelope.observer_signatures.len() > MAX_OBSERVER_SIGNATURES
+    {
+        return Err(invalid(
+            "bounded independent observer signatures are required",
+        ));
     }
     let mut observer_ids = BTreeSet::new();
     let mut observer_signature_digests = Vec::with_capacity(envelope.observer_signatures.len());
@@ -581,7 +665,11 @@ pub fn verify_cell_split_target_host_evidence(
     let mut hardware = BTreeSet::new();
     let mut resource_sample_count = 0;
     for event in &payload.events {
-        if let Some(sample) = &event.resource {
+        if event.event_kind == CellSplitTargetHostEventKindV1::ResourceMeasurement {
+            let sample = event
+                .resource
+                .as_ref()
+                .ok_or_else(|| invalid("resource event has no sample"))?;
             resource_sample_count += 1;
             validate_resource(sample)?;
             hardware.insert(sample.hardware);
@@ -622,6 +710,7 @@ fn decode_trusted_keys(
     role: &str,
 ) -> Result<BTreeMap<String, VerifyingKey>, CellSplitTargetHostEvidenceErrorV1> {
     let mut decoded = BTreeMap::new();
+    let mut seen_keys = BTreeSet::new();
     for (signer_id, value) in encoded {
         if signer_id.is_empty() {
             return Err(invalid(format!("duplicate or empty {role} signer id")));
@@ -634,6 +723,12 @@ fn decode_trusted_keys(
             .map_err(|_| invalid(format!("{role} verifying key must be 32 bytes")))?;
         let key = VerifyingKey::from_bytes(&bytes)
             .map_err(|_| invalid(format!("malformed {role} verifying key")))?;
+        if key.is_weak() {
+            return Err(invalid(format!("weak {role} verifying key")));
+        }
+        if !seen_keys.insert(key.to_bytes()) {
+            return Err(invalid(format!("duplicate {role} signer verification key")));
+        }
         if decoded.insert(signer_id, key).is_some() {
             return Err(invalid(format!("duplicate {role} signer id")));
         }
@@ -652,6 +747,9 @@ fn verify_signature(
     expected_key: &VerifyingKey,
     payload: &[u8],
 ) -> Result<(), CellSplitTargetHostEvidenceErrorV1> {
+    if expected_key.is_weak() {
+        return Err(invalid("weak externally pinned verifying key"));
+    }
     let key_bytes = BASE64
         .decode(&signature.verifying_key_base64)
         .map_err(|_| invalid("malformed verifying key"))?;
@@ -664,7 +762,7 @@ fn verify_signature(
     let signature = Signature::from_slice(&signature_bytes)
         .map_err(|_| invalid("malformed Ed25519 signature"))?;
     expected_key
-        .verify(payload, &signature)
+        .verify_strict(payload, &signature)
         .map_err(|_| invalid("signature verification failed"))
 }
 
@@ -675,8 +773,11 @@ fn replay_payload(
         || payload.schema_version != 1
         || payload.origin != PRODUCTION_ORIGIN
         || payload.split_id.is_empty()
+        || payload.split_id.len() > MAX_ID_BYTES
         || payload.target_host_id.is_empty()
+        || payload.target_host_id.len() > MAX_ID_BYTES
         || payload.target_host_nonce.is_empty()
+        || payload.target_host_nonce.len() > MAX_NONCE_BYTES
         || !digest_shape(&payload.target_host_attestation_digest)
         || payload.parent_generation == 0
         || payload.parent_generation.checked_add(1) != Some(payload.child_generation)
@@ -702,6 +803,13 @@ fn replay_payload(
     let mut previous_timestamp = 0_u128;
     let mut operation_ids = BTreeSet::new();
     let mut receipt_digests = BTreeSet::new();
+    // The lifecycle stages are not independently interchangeable. A valid
+    // signature over a forged event stream cannot promote a recovery observed
+    // on one route while the route-cutover/rollback evidence refers to another.
+    let mut active_child_route = None;
+    let mut original_parent_route = None;
+    let mut restored_parent_route = None;
+    let mut committed_tombstone = None;
     for (offset, event) in payload.events.iter().enumerate() {
         if event.sequence != offset as u64 + 1
             || event.split_id != payload.split_id
@@ -710,7 +818,8 @@ fn replay_payload(
             || event.child_generation != payload.child_generation
             || event.previous_event_digest != previous_digest
             || event.operation_id.is_empty()
-            || event.receipt_digest.is_empty()
+            || event.operation_id.len() > MAX_ID_BYTES
+            || !digest_shape(&event.receipt_digest)
             || event.occurred_at_unix_nanos <= previous_timestamp
             || !operation_ids.insert(event.operation_id.clone())
             || !receipt_digests.insert(event.receipt_digest.clone())
@@ -719,6 +828,49 @@ fn replay_payload(
             return Err(invalid("event replay or hash chain"));
         }
         validate_event_payload(event, payload)?;
+        // Bind *actual* stage output to the following recovery and rollback
+        // operations. This comparison is in addition to the signed hash chain.
+        match event.event_kind {
+            CellSplitTargetHostEventKindV1::ArtifactLoaded => {}
+            CellSplitTargetHostEventKindV1::RouteCutover => {
+                active_child_route = Some(event.route_digest.as_str());
+                original_parent_route = Some(event.predecessor_digest.as_str());
+            }
+            CellSplitTargetHostEventKindV1::RestartRecovered
+            | CellSplitTargetHostEventKindV1::PowerLossRecovered => {
+                if active_child_route != Some(event.route_digest.as_str()) {
+                    return Err(invalid("recovery did not preserve committed child route"));
+                }
+            }
+            CellSplitTargetHostEventKindV1::RollbackCompleted => {
+                if active_child_route != Some(event.predecessor_digest.as_str())
+                    || original_parent_route != Some(event.route_digest.as_str())
+                    || Some(event.route_digest.as_str()) == active_child_route
+                {
+                    return Err(invalid("rollback did not restore predecessor route"));
+                }
+                restored_parent_route = Some(event.route_digest.as_str());
+            }
+            CellSplitTargetHostEventKindV1::TombstoneCommitted => {
+                if restored_parent_route != Some(event.route_digest.as_str())
+                    || restored_parent_route != Some(event.predecessor_digest.as_str())
+                {
+                    return Err(invalid("tombstone did not bind restored parent route"));
+                }
+                committed_tombstone = Some(event.tombstone_digest.as_str());
+            }
+            CellSplitTargetHostEventKindV1::NoResurrectionVerified => {
+                if restored_parent_route != Some(event.route_digest.as_str())
+                    || restored_parent_route != Some(event.predecessor_digest.as_str())
+                    || committed_tombstone != Some(event.tombstone_digest.as_str())
+                {
+                    return Err(invalid(
+                        "no-resurrection evidence is not bound to tombstone",
+                    ));
+                }
+            }
+            CellSplitTargetHostEventKindV1::ResourceMeasurement => {}
+        }
         if !matches!(
             event.event_kind,
             CellSplitTargetHostEventKindV1::ResourceMeasurement
@@ -749,39 +901,64 @@ fn validate_event_payload(
     event: &CellSplitTargetHostEventV1,
     payload: &CellSplitTargetHostEvidenceV1,
 ) -> Result<(), CellSplitTargetHostEvidenceErrorV1> {
+    // A lifecycle can only load, serve, recover and eventually tombstone the
+    // exact child artifact selected for this split. Empty or alternate child
+    // bindings in later receipts are not harmless metadata omissions.
+    if !matches!(
+        event.event_kind,
+        CellSplitTargetHostEventKindV1::ResourceMeasurement
+    ) && event.artifact_digest != payload.child_artifact_digest
+    {
+        return Err(invalid(
+            "lifecycle event refers to a different child artifact",
+        ));
+    }
+    // A hardware measurement is a typed, independently observable event.
+    // Attaching extra resource samples to a lifecycle acknowledgement must
+    // never inflate the hardware classes or measurement counts admitted by
+    // the host/Observer evidence verifier, even when the log is re-signed.
+    if event.event_kind != CellSplitTargetHostEventKindV1::ResourceMeasurement
+        && event.resource.is_some()
+    {
+        return Err(invalid(
+            "resource sample is not a ResourceMeasurement event",
+        ));
+    }
     match event.event_kind {
-        CellSplitTargetHostEventKindV1::ArtifactLoaded => {
-            if event.artifact_digest != payload.child_artifact_digest {
-                return Err(invalid("loaded artifact differs from child artifact"));
-            }
-        }
+        CellSplitTargetHostEventKindV1::ArtifactLoaded => {}
         CellSplitTargetHostEventKindV1::RouteCutover => {
-            if event.route_digest.is_empty() || event.predecessor_digest.is_empty() {
+            if !digest_shape(&event.route_digest) || !digest_shape(&event.predecessor_digest) {
                 return Err(invalid("route cutover receipt is incomplete"));
             }
         }
         CellSplitTargetHostEventKindV1::RestartRecovered => {
-            if event.receipt_digest.is_empty() {
-                return Err(invalid("restart recovery receipt is incomplete"));
+            if !digest_shape(&event.route_digest) {
+                return Err(invalid("restart recovery route is not a digest"));
             }
         }
         CellSplitTargetHostEventKindV1::PowerLossRecovered => {
-            if event.receipt_digest.is_empty() || !digest_shape(&event.fault_injection_digest) {
+            if !digest_shape(&event.route_digest) || !digest_shape(&event.fault_injection_digest) {
                 return Err(invalid("power-loss witness is incomplete"));
             }
         }
         CellSplitTargetHostEventKindV1::RollbackCompleted => {
-            if event.predecessor_digest.is_empty() {
+            if !digest_shape(&event.predecessor_digest) || !digest_shape(&event.route_digest) {
                 return Err(invalid("rollback predecessor is missing"));
             }
         }
         CellSplitTargetHostEventKindV1::TombstoneCommitted => {
-            if !digest_shape(&event.tombstone_digest) {
+            if !digest_shape(&event.tombstone_digest)
+                || !digest_shape(&event.route_digest)
+                || !digest_shape(&event.predecessor_digest)
+            {
                 return Err(invalid("tombstone digest is malformed"));
             }
         }
         CellSplitTargetHostEventKindV1::NoResurrectionVerified => {
-            if event.tombstone_digest.is_empty() || event.predecessor_digest.is_empty() {
+            if !digest_shape(&event.tombstone_digest)
+                || !digest_shape(&event.predecessor_digest)
+                || !digest_shape(&event.route_digest)
+            {
                 return Err(invalid("no-resurrection witness is incomplete"));
             }
         }
@@ -799,10 +976,14 @@ fn validate_event_payload(
 fn validate_resource(
     resource: &CellSplitTargetResourceSampleV1,
 ) -> Result<(), CellSplitTargetHostEvidenceErrorV1> {
+    let source = resource.measurement_source.to_ascii_lowercase();
     if resource.hardware_model.is_empty()
+        || resource.hardware_model.len() > MAX_ID_BYTES
         || resource.measurement_source.is_empty()
-        || resource.measurement_source.contains("simulation")
-        || resource.measurement_source.contains("fixture")
+        || resource.measurement_source.len() > MAX_ID_BYTES
+        || ["simulation", "fixture", "synthetic", "mock"]
+            .iter()
+            .any(|marker| source.contains(marker))
         || !digest_shape(&resource.hardware_attestation_digest)
         || resource.sample_count == 0
         || resource.latency_micros == 0
@@ -864,7 +1045,11 @@ fn canonical<T: Serialize>(value: &T) -> Result<Vec<u8>, CellSplitTargetHostEvid
 }
 
 fn digest_shape(value: &str) -> bool {
-    value.len() == 64 && value.bytes().all(|byte| byte.is_ascii_hexdigit())
+    value.len() == 64
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+        && value.bytes().any(|byte| byte != b'0')
 }
 
 fn invalid(message: impl Into<String>) -> CellSplitTargetHostEvidenceErrorV1 {

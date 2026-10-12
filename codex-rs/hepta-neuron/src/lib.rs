@@ -104,6 +104,7 @@ pub use qualification::ablate_sparse_config;
 pub use qualification::requires_external_replay_ablation;
 pub use qualification::summarize_resource_samples;
 pub use runtime::NeuronRuntime;
+pub use runtime::neuron_tick_final_use_binding_v1;
 pub use runtime_types::AnchorWitnessStore;
 pub use runtime_types::LocalModelRuntimeReceiptV1;
 pub use runtime_types::NeuronCalibrationProfileV1;

@@ -298,6 +298,24 @@ impl CellStateMigrationV1 {
         self.fence_digest
     }
 
+    /// Immutable migration identity, checked again by the durable batch owner.
+    #[must_use]
+    pub fn operation_id(&self) -> &StableId {
+        &self.operation_id
+    }
+
+    /// The acknowledged parent journal anchor; never derive it from child files.
+    #[must_use]
+    pub const fn parent_anchor(&self) -> JournalAnchor {
+        self.parent_anchor
+    }
+
+    /// Evaluation subject that binds every projected child to the split.
+    #[must_use]
+    pub const fn split_digest(&self) -> Digest32 {
+        self.split_digest
+    }
+
     #[must_use]
     pub fn children(&self) -> &[CellStateSplitChildV1] {
         &self.children

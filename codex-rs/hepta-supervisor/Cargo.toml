@@ -17,6 +17,9 @@ qualification = []
 # Explicit build opt-in for externally authorized mutation; default daemons
 # remain lifecycle-only and keep signed mutation admission fail-closed.
 production-authority = []
+# Explicit opt-in for the real journal/CellSplit protocol adapter. Never
+# activate in the default Supervisor daemon or use fixture authorization.
+cell-split-supervisor-port = ["dep:codex-hepta-operator-acceptance"]
 
 [[bin]]
 name = "hepta-supervisord"
@@ -64,6 +67,7 @@ codex-hepta-control-plane = { path = "../hepta-control-plane" }
 codex-hepta-fleet = { workspace = true }
 codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
 codex-hepta-memory = { workspace = true }
+codex-hepta-operator-acceptance = { path = "../hepta-operator-acceptance", optional = true }
 codex-hepta-matrix-protocol = { workspace = true }
 codex-hepta-paths = { workspace = true }
 codex-hepta-types = { workspace = true }

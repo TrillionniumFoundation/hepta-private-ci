@@ -60,3 +60,57 @@ fn tampered_group_is_rejected_and_phase_times_failures() {
         Err(MetricsJournalErrorV1::Corrupt)
     ));
 }
+
+#[test]
+fn replay_exposes_exact_committed_count_without_counting_unsynced_staging() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("metrics");
+    let first_head;
+    {
+        let mut writer = MetricsGroupCommitV1::open(&path).unwrap();
+        assert_eq!(writer.committed_rows(), 0);
+        assert_eq!(writer.committed_groups(), 0);
+        writer.stage(sample(MetricPhaseV1::Admission)).unwrap();
+        writer.stage(sample(MetricPhaseV1::Microbatch)).unwrap();
+        let receipt = writer.flush().unwrap().unwrap();
+        first_head = receipt.head_digest;
+        assert_eq!(writer.committed_rows(), 2);
+        assert_eq!(writer.committed_groups(), 1);
+        writer.stage(sample(MetricPhaseV1::NeuronFeature)).unwrap();
+        assert_eq!(writer.pending(), 1);
+        assert_eq!(writer.committed_rows(), 2);
+        // A process crash here would discard this staged row, not certify it.
+    }
+    let mut reopened = MetricsGroupCommitV1::open(&path).unwrap();
+    assert_eq!(reopened.committed_rows(), 2);
+    assert_eq!(reopened.committed_groups(), 1);
+    assert_eq!(reopened.committed_head(), first_head);
+    assert_eq!(reopened.pending(), 0);
+    assert!(reopened.flush().unwrap().is_none());
+    reopened
+        .stage(sample(MetricPhaseV1::NeuronFeature))
+        .unwrap();
+    assert_eq!(reopened.flush().unwrap().unwrap().sequence, 2);
+    drop(reopened);
+    let final_view = MetricsGroupCommitV1::open(&path).unwrap();
+    assert_eq!(final_view.committed_rows(), 3);
+    assert_eq!(final_view.committed_groups(), 2);
+}
+
+#[test]
+fn replay_rejects_modified_committed_payload_without_skipping_corruption() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("metrics");
+    {
+        let mut writer = MetricsGroupCommitV1::open(&path).unwrap();
+        writer.stage(sample(MetricPhaseV1::Signature)).unwrap();
+        writer.flush().unwrap().unwrap();
+    }
+    let original = std::fs::read_to_string(&path).unwrap();
+    assert!(original.contains(":42:1"));
+    std::fs::write(&path, original.replace(":42:1", ":43:1")).unwrap();
+    assert!(matches!(
+        MetricsGroupCommitV1::open(&path),
+        Err(MetricsJournalErrorV1::Corrupt)
+    ));
+}

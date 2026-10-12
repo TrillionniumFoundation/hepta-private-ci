@@ -45,22 +45,27 @@ impl FakeRuntime {
         CellSplitTargetHostOperationReceiptV1 {
             operation_id: format!("operation-{n}"),
             occurred_at_unix_nanos: self.next_timestamp,
-            artifact_digest: (name == "load")
-                .then(|| CHILD.to_string())
-                .unwrap_or_default(),
-            route_digest: (name == "route")
-                .then(|| "route-child".to_string())
-                .unwrap_or_default(),
-            predecessor_digest: matches!(name, "route" | "rollback" | "resurrection")
-                .then(|| "route-parent-fence".to_string())
-                .unwrap_or_default(),
+            artifact_digest: CHILD.to_string(),
+            route_digest: match name {
+                "route" | "restart" | "power-loss" => crate::durable::sha256(b"route-child"),
+                "rollback" | "tombstone" | "resurrection" => {
+                    crate::durable::sha256(b"route-parent")
+                }
+                _ => String::new(),
+            },
+            predecessor_digest: match name {
+                "route" => crate::durable::sha256(b"route-parent"),
+                "rollback" => crate::durable::sha256(b"route-child"),
+                "tombstone" | "resurrection" => crate::durable::sha256(b"route-parent"),
+                _ => String::new(),
+            },
             tombstone_digest: matches!(name, "tombstone" | "resurrection")
                 .then(|| TOMBSTONE.to_string())
                 .unwrap_or_default(),
             fault_injection_digest: (name == "power-loss")
                 .then(|| ATTESTATION.to_string())
                 .unwrap_or_default(),
-            receipt_digest: format!("receipt-{n}"),
+            receipt_digest: crate::durable::sha256(format!("receipt-{n}").as_bytes()),
         }
     }
 }

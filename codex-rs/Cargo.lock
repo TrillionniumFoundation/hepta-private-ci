@@ -3492,6 +3492,7 @@ dependencies = [
  "codex-hepta-neuron",
  "codex-hepta-objective",
  "codex-hepta-operations",
+ "codex-hepta-operator-acceptance",
  "codex-hepta-paths",
  "codex-hepta-plasticity",
  "codex-hepta-prompt-optimizer",
@@ -4050,6 +4051,7 @@ dependencies = [
 name = "codex-hepta-neuron"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-contracts",
  "codex-hepta-infer-core",
  "codex-hepta-types",
  "pretty_assertions",
@@ -4086,6 +4088,8 @@ name = "codex-hepta-operator-acceptance"
 version = "0.0.0"
 dependencies = [
  "base64 0.22.1",
+ "codex-hepta-neuron",
+ "codex-hepta-types",
  "ed25519-dalek",
  "libc",
  "pretty_assertions",
@@ -4159,6 +4163,7 @@ dependencies = [
  "codex-hepta-control-plane",
  "codex-hepta-intelligence",
  "codex-hepta-learning-ledger",
+ "codex-hepta-operator-acceptance",
  "codex-hepta-paths",
  "codex-hepta-plasticity",
  "codex-hepta-types",
@@ -4214,6 +4219,7 @@ dependencies = [
  "codex-hepta-intelligence-eval",
  "codex-hepta-matrix-protocol",
  "codex-hepta-memory",
+ "codex-hepta-operator-acceptance",
  "codex-hepta-paths",
  "codex-hepta-types",
  "codex-uds",

@@ -11,7 +11,6 @@ use std::str::FromStr;
 use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
-use std::time::Duration;
 use std::time::Instant;
 
 use codex_hepta_contracts::FinalUseAuthority;
@@ -37,16 +36,12 @@ use crate::model_worker::canonical_neuron_feature_payload_digest;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 
-const MAX_TERMINAL_REQUEST_IDS: usize = 1_048_576;
+// This is a generation-lifetime deduplication bound, not the concurrent
+// scheduler max_pending. Exhaustion requires an externally fenced rollover.
+const MAX_WORKER_RETIRED_IDS: usize = 1_048_576;
 
-/// Fixed-size local replay fingerprint: never evict IDs while an owner lives.
-/// A new owner generation must reconcile durable control state before serving;
-/// the independent Final-use nonce ledger remains the cross-restart fence.
-fn terminal_request_fingerprint(id: &StableId) -> Digest32 {
-    Digest32::of_parts(&[
-        b"hepta.infer-worker.terminal-request-id.v1\0",
-        id.as_str().as_bytes(),
-    ])
+fn retired_identity(id: &StableId) -> Digest32 {
+    Digest32::of_parts(&[b"hepta.worker.retired-request.v1", id.as_str().as_bytes()])
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -58,6 +53,7 @@ pub enum BatchWorkerErrorV1 {
     Scheduler(SchedulerErrorV1),
     Authority,
     Worker,
+    BatchUnsupported,
     Capacity,
 }
 
@@ -111,15 +107,24 @@ pub fn neuron_batch_final_use_binding_v1(
     }
     let payload_digest =
         Digest32::from_str(&payload_hex).map_err(|_| BatchWorkerErrorV1::InvalidBinding)?;
-    let request_id = request.authorization.request_id.as_bytes();
-    let reservation_id = request.authorization.reservation_id.as_bytes();
-    let model_id = request.authorization.model_digest.as_bytes();
+    // Exact-request final use must also cover quota, reservation model, and
+    // cancellation state. A signed feature payload alone does not authorize
+    // changes to the surrounding worker/reservation claims.
+    let authorization = &request.authorization;
     let mut request_bytes = b"hepta.worker.batch-request.v1".to_vec();
-    for field in [request_id, reservation_id, model_id] {
+    for field in [
+        authorization.request_id.as_bytes(),
+        authorization.reservation_id.as_bytes(),
+        authorization.model_digest.as_bytes(),
+        authorization.reservation_model_digest.as_bytes(),
+    ] {
         request_bytes.extend_from_slice(&(field.len() as u64).to_be_bytes());
         request_bytes.extend_from_slice(field);
     }
-    request_bytes.extend_from_slice(&request.authorization.deadline_ms.to_be_bytes());
+    request_bytes.extend_from_slice(&authorization.deadline_ms.to_be_bytes());
+    request_bytes.extend_from_slice(&authorization.maximum_tokens.to_be_bytes());
+    request_bytes.extend_from_slice(&authorization.reservation_maximum_tokens.to_be_bytes());
+    request_bytes.push(u8::from(authorization.cancelled));
     request_bytes.extend_from_slice(payload_digest.as_array());
 
     let mut scope_bytes = b"hepta.worker.batch-scope.v1".to_vec();
@@ -165,15 +170,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         self
     }
 
-    /// Source-side telemetry readiness is a separate acceptance barrier.
-    /// An absent, failed, or unflushed Evidence sink never makes this owner ready.
-    /// Telemetry failure does not retroactively undo or retry an external effect.
+    /// Production readiness is a separate Evidence barrier, never implicit
+    /// authorization from one successful model execution. A failed write
+    /// remains latched even if the current metric sink later reports healthy.
     pub fn production_metrics_ready(&self) -> bool {
         self.metric_sink.as_ref().is_some_and(|sink| sink.healthy())
             && self.failed_metrics.load(Ordering::Acquire) == 0
     }
 
-    /// Call outside a model effect boundary, after all admitted work settles.
+    /// Flush only after worker effects have settled; do not replay an effect
+    /// when telemetry is uncommitted or unavailable.
     pub fn flush_production_metrics(&self) -> bool {
         let Some(sink) = &self.metric_sink else {
             return false;
@@ -189,32 +195,6 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         self.pending.len()
     }
 
-    /// Telemetry is non-authorizing. Its sink exposes a separate health and
-    /// durable flush barrier to the production acceptance owner.
-    fn emit_metric(
-        &self,
-        scope: &StableId,
-        request_id: &StableId,
-        phase: PhaseMetricKindV1,
-        elapsed: Duration,
-        succeeded: bool,
-    ) {
-        if let Some(sink) = &self.metric_sink {
-            if sink
-                .record(PhaseMetricEventV1 {
-                    scope_digest: Digest32::of_bytes(scope.as_str().as_bytes()),
-                    operation_digest: Digest32::of_bytes(request_id.as_str().as_bytes()),
-                    phase,
-                    latency_micros: u64::try_from(elapsed.as_micros()).unwrap_or(u64::MAX),
-                    succeeded,
-                })
-                .is_err()
-            {
-                self.failed_metrics.fetch_add(1, Ordering::Release);
-            }
-        }
-    }
-
     /// Admission copies no feature vector; queued payloads share Arc<[i64]>.
     /// Final-use signature verification and durable nonce claim occur only at
     /// actual worker execution, immediately before the model driver is called.
@@ -226,18 +206,22 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         key: MicrobatchKeyV1,
         signed: SignedFinalUseGrant,
     ) -> Result<(), BatchWorkerErrorV1> {
-        let id = StableId::new(request.authorization.request_id.clone())
-            .map_err(|_| BatchWorkerErrorV1::InvalidRequest)?;
-        let scope = key.scope_id.clone();
         let started = Instant::now();
-        let result = self.enqueue_inner(now_ms, model_id, request, key, signed, id.clone());
-        self.emit_metric(
-            &scope,
-            &id,
-            PhaseMetricKindV1::Admission,
-            started.elapsed(),
-            result.is_ok(),
-        );
+        let scope_digest = Digest32::of_bytes(key.scope_id.as_str().as_bytes());
+        let operation_digest = Digest32::of_bytes(request.authorization.request_id.as_bytes());
+        let result = self.enqueue_inner(now_ms, model_id, request, key, signed);
+        if let Some(sink) = &self.metric_sink {
+            let metric_result = sink.record(PhaseMetricEventV1 {
+                scope_digest,
+                operation_digest,
+                phase: PhaseMetricKindV1::Admission,
+                latency_micros: u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX),
+                succeeded: result.is_ok(),
+            });
+            if metric_result.is_err() {
+                self.failed_metrics.fetch_add(1, Ordering::Release);
+            }
+        }
         result
     }
 
@@ -248,21 +232,23 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         mut request: NeuronFeatureRequest,
         key: MicrobatchKeyV1,
         signed: SignedFinalUseGrant,
-        id: StableId,
     ) -> Result<(), BatchWorkerErrorV1> {
-        if self.retired.contains(&terminal_request_fingerprint(&id))
-            || self.pending.contains_key(&id)
-        {
+        let id = StableId::new(request.authorization.request_id.clone())
+            .map_err(|_| BatchWorkerErrorV1::InvalidRequest)?;
+        if self.retired.contains(&retired_identity(&id)) || self.pending.contains_key(&id) {
             return Err(BatchWorkerErrorV1::Duplicate);
         }
         if self.pending.len() >= self.maximum_pending
-            || self.retired.len() + self.pending.len() >= MAX_TERMINAL_REQUEST_IDS
+            || self.retired.len() + self.pending.len() >= MAX_WORKER_RETIRED_IDS
         {
             return Err(BatchWorkerErrorV1::Capacity);
         }
         if key.generation.get() != self.worker.worker_generation()
             || key.authority_epoch != self.worker.authority_epoch()
             || signed.grant.authority_epoch != key.authority_epoch
+            || !self
+                .worker
+                .model_matches_digest(&model_id, key.model_digest)
             || request.authorization.cancelled
         {
             return Err(BatchWorkerErrorV1::InvalidBinding);
@@ -305,84 +291,103 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         &mut self,
         now_ms: u64,
     ) -> Result<BatchWorkerPollV1, BatchWorkerErrorV1> {
-        let scheduled_at = Instant::now();
+        let started = Instant::now();
         let poll = self
             .scheduler
-            .poll(now_ms)
+            .poll_physically_compatible(now_ms)
             .map_err(BatchWorkerErrorV1::Scheduler)?;
-        if let Some(batch) = &poll.batch {
-            if let Some(first) = batch.requests.first() {
-                // Records planning latency, not physical encoder batch execution.
-                self.emit_metric(
-                    &batch.key.scope_id,
-                    &first.request_id,
-                    PhaseMetricKindV1::Microbatch,
-                    scheduled_at.elapsed(),
-                    true,
-                );
+        if let (Some(sink), Some(batch)) = (&self.metric_sink, &poll.batch) {
+            // One phase sample per admitted request, not just the first
+            // member of a batch (which would silently undercount throughput).
+            for intent in &batch.requests {
+                let metric_result = sink.record(PhaseMetricEventV1 {
+                    scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
+                    operation_digest: Digest32::of_bytes(intent.request_id.as_str().as_bytes()),
+                    phase: PhaseMetricKindV1::Microbatch,
+                    latency_micros: u64::try_from(started.elapsed().as_micros())
+                        .unwrap_or(u64::MAX),
+                    succeeded: true,
+                });
+                if metric_result.is_err() {
+                    self.failed_metrics.fetch_add(1, Ordering::Release);
+                }
             }
         }
         for id in &poll.expired_request_ids {
             self.pending.remove(id);
-            self.retired.insert(terminal_request_fingerprint(id));
+            self.retired.insert(retired_identity(&id));
         }
         let mut outcomes = Vec::new();
         if let Some(batch) = poll.batch {
-            for intent in batch.requests {
-                let id = intent.request_id;
-                let started = Instant::now();
-                self.retired.insert(terminal_request_fingerprint(&id));
-                let outcome = match self.pending.remove(&id) {
-                    None => Err(BatchWorkerErrorV1::NoAdmission),
-                    Some(mut pending) => {
-                        if pending.feature.digest() != intent.feature_digest
-                            || pending.signed.grant.authority_epoch != batch.key.authority_epoch
-                        {
-                            Err(BatchWorkerErrorV1::InvalidBinding)
-                        } else {
-                            pending.request.feature_vector_q24 =
-                                pending.feature.as_slice().to_vec();
-                            let result = FinalUseAuthority::claim(
-                                &self.authority,
-                                &pending.signed,
-                                &pending.binding,
-                            )
-                            .map_err(|_| BatchWorkerErrorV1::Authority)
-                            .and_then(|token| {
-                                FinalUseAuthority::with_verified_effect(
+            if batch.requests.len() > 1 {
+                outcomes.extend(self.execute_native_batch(now_ms, &batch.key, batch.requests));
+            } else {
+                for intent in batch.requests {
+                    let id = intent.request_id;
+                    self.retired.insert(retired_identity(&id));
+                    let outcome = match self.pending.remove(&id) {
+                        None => Err(BatchWorkerErrorV1::NoAdmission),
+                        Some(mut pending) => {
+                            if pending.feature.digest() != intent.feature_digest
+                                || pending.signed.grant.authority_epoch != batch.key.authority_epoch
+                            {
+                                Err(BatchWorkerErrorV1::InvalidBinding)
+                            } else {
+                                pending.request.feature_vector_q24 =
+                                    pending.feature.as_slice().to_vec();
+                                let start = Instant::now();
+                                let result = FinalUseAuthority::claim(
                                     &self.authority,
-                                    token,
+                                    &pending.signed,
                                     &pending.binding,
-                                    || {
-                                        self.worker.run_neuron_features_receipt(
-                                            now_ms,
-                                            &pending.model_id,
-                                            pending.request,
-                                        )
-                                    },
                                 )
                                 .map_err(|_| BatchWorkerErrorV1::Authority)
-                                .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
-                            });
-                            result
+                                .and_then(|token| {
+                                    FinalUseAuthority::with_verified_effect(
+                                        &self.authority,
+                                        token,
+                                        &pending.binding,
+                                        || {
+                                            self.worker.run_neuron_features_receipt(
+                                                now_ms,
+                                                &pending.model_id,
+                                                pending.request,
+                                            )
+                                        },
+                                    )
+                                    .map_err(|_| BatchWorkerErrorV1::Authority)
+                                    .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
+                                });
+                                if let Some(sink) = &self.metric_sink {
+                                    let metric_result = sink.record(PhaseMetricEventV1 {
+                                        scope_digest: Digest32::of_bytes(
+                                            batch.key.scope_id.as_str().as_bytes(),
+                                        ),
+                                        operation_digest: Digest32::of_bytes(
+                                            id.as_str().as_bytes(),
+                                        ),
+                                        phase: PhaseMetricKindV1::NeuronFeature,
+                                        latency_micros: u64::try_from(start.elapsed().as_micros())
+                                            .unwrap_or(u64::MAX),
+                                        succeeded: matches!(
+                                            &result,
+                                            Ok(receipt) if receipt.status
+                                                == NeuronFeatureTerminalStatusV1::Succeeded
+                                        ),
+                                    });
+                                    if metric_result.is_err() {
+                                        self.failed_metrics.fetch_add(1, Ordering::Release);
+                                    }
+                                }
+                                result
+                            }
                         }
-                    }
-                };
-                let succeeded = matches!(
-                    &outcome,
-                    Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
-                );
-                self.emit_metric(
-                    &batch.key.scope_id,
-                    &id,
-                    PhaseMetricKindV1::NeuronFeature,
-                    started.elapsed(),
-                    succeeded,
-                );
-                outcomes.push(BatchWorkerItemOutcomeV1 {
-                    request_id: id,
-                    result: outcome,
-                });
+                    };
+                    outcomes.push(BatchWorkerItemOutcomeV1 {
+                        request_id: id,
+                        result: outcome,
+                    });
+                }
             }
         }
         Ok(BatchWorkerPollV1 {
@@ -391,6 +396,132 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             scanned_lanes: poll.scanned_lanes,
             pending: self.pending.len(),
         })
+    }
+
+    /// One physical model-driver call for the entire homogeneous batch. If
+    /// any member cannot be authenticated/fenced, none crosses the model
+    /// boundary. All dequeued identities are terminal, even after unknown
+    /// backend outcomes: replay requires external reconciliation.
+    fn execute_native_batch(
+        &mut self,
+        now_ms: u64,
+        key: &MicrobatchKeyV1,
+        intents: Vec<InferenceIntentV1>,
+    ) -> Vec<BatchWorkerItemOutcomeV1> {
+        let started = Instant::now();
+        let mut items = Vec::with_capacity(intents.len());
+        for intent in intents {
+            self.retired.insert(retired_identity(&intent.request_id));
+            let pending = self.pending.remove(&intent.request_id);
+            items.push((intent, pending));
+        }
+
+        let executed = (|| -> Result<Vec<NeuronFeatureReceiptV1>, BatchWorkerErrorV1> {
+            let mut model_id: Option<&str> = None;
+            let mut requests = Vec::with_capacity(items.len());
+            for (intent, pending) in &items {
+                let pending = pending.as_ref().ok_or(BatchWorkerErrorV1::NoAdmission)?;
+                if pending.feature.digest() != intent.feature_digest
+                    || !intent.key.physical_compatible_with(key)
+                    || pending.signed.grant.authority_epoch != intent.key.authority_epoch
+                    || pending.request.authorization.request_id != intent.request_id.as_str()
+                {
+                    return Err(BatchWorkerErrorV1::InvalidBinding);
+                }
+                if let Some(previous) = model_id {
+                    if previous != pending.model_id {
+                        return Err(BatchWorkerErrorV1::InvalidBinding);
+                    }
+                } else {
+                    // Reject unsupported batches before allocating or
+                    // hashing any re-materialized feature vector, and before
+                    // any signed nonce can be consumed.
+                    if !self.worker.can_run_neuron_feature_batch(&pending.model_id) {
+                        return Err(BatchWorkerErrorV1::BatchUnsupported);
+                    }
+                    model_id = Some(&pending.model_id);
+                }
+                let mut request = pending.request.clone();
+                request.feature_vector_q24 = pending.feature.as_slice().to_vec();
+                if neuron_batch_final_use_binding_v1(
+                    self.worker.worker_id(),
+                    &intent.key,
+                    &request,
+                )? != pending.binding
+                {
+                    return Err(BatchWorkerErrorV1::InvalidBinding);
+                }
+                requests.push(request);
+            }
+            let model_id = model_id.ok_or(BatchWorkerErrorV1::NoAdmission)?.to_owned();
+            // Prevalidate all members before one durable nonce-group claim.
+            // A denied member never causes a partially dispatched model batch.
+            let entries = items
+                .iter()
+                .map(|(_, pending)| {
+                    let pending = pending.as_ref().ok_or(BatchWorkerErrorV1::NoAdmission)?;
+                    Ok((&pending.signed, &pending.binding))
+                })
+                .collect::<Result<Vec<_>, BatchWorkerErrorV1>>()?;
+            let tokens = self
+                .authority
+                .claim_batch(&entries)
+                .map_err(|_| BatchWorkerErrorV1::Authority)?;
+            let claimed = tokens
+                .into_iter()
+                .zip(items.iter())
+                .map(|(token, (_, pending))| {
+                    let pending = pending.as_ref().ok_or(BatchWorkerErrorV1::NoAdmission)?;
+                    Ok((token, pending.binding.clone()))
+                })
+                .collect::<Result<Vec<_>, BatchWorkerErrorV1>>()?;
+            FinalUseAuthority::with_verified_effect_batch(&self.authority, claimed, || {
+                self.worker
+                    .run_neuron_features_batch_receipts(now_ms, &model_id, requests)
+            })
+            .map_err(|_| BatchWorkerErrorV1::Authority)?
+            .map_err(|error| match error {
+                crate::model_worker::Error::BatchUnsupported => {
+                    BatchWorkerErrorV1::BatchUnsupported
+                }
+                _ => BatchWorkerErrorV1::Worker,
+            })
+        })();
+
+        let mut results = match executed {
+            Ok(receipts) if receipts.len() == items.len() => {
+                receipts.into_iter().map(Ok).collect::<Vec<_>>()
+            }
+            Ok(_) => vec![Err(BatchWorkerErrorV1::Worker); items.len()],
+            Err(error) => vec![Err(error); items.len()],
+        };
+        items
+            .into_iter()
+            .zip(results.drain(..))
+            .map(|((intent, _), result)| {
+                if let Some(sink) = &self.metric_sink {
+                    let metric_result = sink.record(PhaseMetricEventV1 {
+                        scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
+                        operation_digest: Digest32::of_bytes(intent.request_id.as_str().as_bytes()),
+                        phase: PhaseMetricKindV1::NeuronFeature,
+                        latency_micros: u64::try_from(started.elapsed().as_micros())
+                            .unwrap_or(u64::MAX),
+                        succeeded: matches!(
+                            &result,
+                            Ok(receipt) if receipt.status
+                                == NeuronFeatureTerminalStatusV1::Succeeded
+                        ),
+                    });
+                    if metric_result.is_err() {
+                        self.failed_metrics.fetch_add(1, Ordering::Release);
+                    }
+                }
+                BatchWorkerItemOutcomeV1 {
+                    request_id: intent.request_id,
+                    result,
+                }
+            })
+            .collect()
     }
 
     /// Cutover drops all stale queued requests without ever invoking a driver.
@@ -406,7 +537,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 .retain_scope_binding(scope, generation, fence, authority_epoch);
         for id in &removed {
             self.pending.remove(id);
-            self.retired.insert(terminal_request_fingerprint(id));
+            self.retired.insert(retired_identity(&id));
         }
         removed
     }

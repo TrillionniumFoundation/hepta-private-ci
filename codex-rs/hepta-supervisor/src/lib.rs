@@ -3,6 +3,9 @@
 //! The supervisor does not execute turns or forward messages, models, or tokens.
 
 mod authority_signer;
+mod cell_split_finalization;
+#[cfg(all(unix, feature = "cell-split-supervisor-port"))]
+mod cell_split_supervisor_runtime_port;
 mod control;
 mod daemon;
 mod daemon_client;
@@ -45,6 +48,12 @@ pub use authority_signer::load_signing_key_from_fd;
 pub use authority_signer::load_signing_key_from_path;
 pub use authority_signer::read_request;
 pub use authority_signer::sign_request;
+pub use cell_split_finalization::CellSplitFinalizationAuthorityV1;
+pub use cell_split_finalization::CellSplitFinalizationBindingV1;
+pub use cell_split_finalization::CellSplitFinalizationErrorV1;
+pub use cell_split_finalization::CellSplitSupervisorJournalFinalizerV1;
+#[cfg(all(unix, feature = "cell-split-supervisor-port"))]
+pub use cell_split_supervisor_runtime_port::CellSplitSupervisorJournalRuntimePortV1;
 pub use daemon::PRODUCTION_AUTHORITY_FEATURE_ENABLED;
 pub use daemon::run_supervisord;
 pub use daemon::run_supervisord_with_grant_verifier;
