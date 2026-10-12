@@ -79,6 +79,12 @@ class UpstreamTests(unittest.TestCase):
         no_e2ee=compare_local(upstream,self.root)
         self.assertIn('HEPTA_E2EE_SQLITE_FEATURES_MISSING',
                       no_e2ee['migration_blockers'])
+        file.write_text(secured.replace(
+            'matrix-sdk={version="=0.19.1"',
+            'matrix-sdk={version="0.19.1"'))
+        floating=compare_local(upstream,self.root)
+        self.assertIn('HEPTA_MATRIX_SDK_REQUIREMENT_NOT_EXACT',
+                      floating['migration_blockers'])
 
     def test_missing_legacy_sqlite_patch_is_not_a_safe_018_configuration(self):
         file=self.root/'codex-rs/Cargo.toml'
