@@ -405,7 +405,9 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitDurableEffectBackendV1
         self.authorize_execute(intent)?;
         if let Some(bytes) = self.read_manifest(intent)? {
             if self.verify_manifest(intent, &bytes)? {
-                return Ok(());
+                // A signed prior child batch is available through ReadBack,
+                // but must not be adopted as a new Execute effect.
+                return Err(CellSplitChildStateCasErrorV1::Ambiguous);
             }
             return Err(CellSplitChildStateCasErrorV1::Invalid);
         }
