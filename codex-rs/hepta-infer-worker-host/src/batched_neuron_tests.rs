@@ -789,3 +789,52 @@ fn stale_scope_cutover_denies_entire_cross_scope_batch_without_any_nonce_claim()
     assert_eq!(owner.authority.capacity().unwrap().used_nonces, 0);
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
 }
+
+
+#[test]
+fn two_exact_route_guards_stay_held_until_physical_backend_completes() {
+    let directory = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[61; 32]);
+    let (model, fixture, base) = fixture_request();
+    let calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let active_guards = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut owner = runner_with_guard_probe(
+        &signer,
+        directory.path(),
+        model,
+        2,
+        calls.clone(),
+        Some((active_guards.clone(), 2)),
+    )
+    .with_current_scope_routes(std::sync::Arc::new(CountingCurrentScopeRoutesV1 {
+        active: active_guards.clone(),
+    }));
+    for index in 0_u8..2 {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("held-route-{index}");
+        request.authorization.reservation_id = format!("held-reservation-{index}");
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let mut key = base.clone();
+        key.scope_id = StableId::new(format!("held-scope-{index}")).unwrap();
+        key.route_fence = 15 + u64::from(index);
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("held-grant-{index}");
+        grant.grant.nonce = [index + 111; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        owner
+            .enqueue(100, "model".to_owned(), request, key, grant)
+            .unwrap();
+    }
+    let completed = owner.poll_and_execute_physical(106).unwrap();
+    assert_eq!(completed.outcomes.len(), 2);
+    assert!(completed.outcomes.iter().all(|result| result.result.is_ok()));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    // This is a mock guard-lifetime proof, not a CNS production deployment.
+    assert_eq!(active_guards.load(std::sync::atomic::Ordering::SeqCst), 0);
+}
