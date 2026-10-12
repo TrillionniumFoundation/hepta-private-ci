@@ -158,7 +158,10 @@ fn repair_frontmatter_scalar_fields(frontmatter: &str) -> Option<String> {
             repaired_lines.push(line.to_string());
             continue;
         }
-        if matches!(first_char, '\'' | '"') {
+        if matches!(first_char, '\'' | '"' | '!' | '&' | '*') {
+            // Do not rewrite rejected YAML tags or anchored/aliased values
+            // into quoted strings; the second parse must retain the original
+            // parser's security-relevant syntax and rejection semantics.
             repaired_lines.push(line.to_string());
             continue;
         }
@@ -173,7 +176,11 @@ fn repair_frontmatter_scalar_fields(frontmatter: &str) -> Option<String> {
             }
         }
         let invalid_flow_like_scalar = matches!(first_char, '[' | '{' | '@' | '`')
-            && serde_yaml::from_str_with_options::<serde_json::Value>(scalar, safe_yaml_options()).is_err();
+            && serde_yaml::from_str_with_options::<serde_json::Value>(
+                scalar,
+                safe_yaml_options(),
+            )
+            .is_err();
         if !has_colon_separator && !invalid_flow_like_scalar {
             repaired_lines.push(line.to_string());
             continue;
