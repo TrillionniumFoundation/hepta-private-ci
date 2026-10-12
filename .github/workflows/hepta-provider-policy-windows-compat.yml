@@ -24,7 +24,7 @@ jobs:
           persist-credentials: false
       - name: Pin matching MSVC Rust toolchain and fmt
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
-      - name: Reject Rustfmt drift without editing source
-        run: cargo +1.95.0 fmt --all -- --check
+      - name: Reject changed-core Rustfmt drift without Windows command-length overflow
+        run: rustfmt +1.95.0 --edition 2024 --check core/src/client_provider_policy_tests.rs
       - name: Compile and run real provider terminal-acknowledgement unit tests
         run: cargo +1.95.0 test --locked -p codex-core --lib client_provider_policy_tests -- --nocapture
