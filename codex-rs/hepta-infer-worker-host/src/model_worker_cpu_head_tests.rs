@@ -179,9 +179,10 @@ fn native_cpu_rejects_tampered_tensors_and_head_identity() {
     assert!(!worker.requires_external_recovery());
     // A legitimate paired request must still execute in this same generation:
     // this proves the malformed input never reached the physical backend.
+    let good_weights = worker.driver.manifest.weights_digest.clone();
     let healthy = vec![
-        cpu_request(11, heads[0].clone(), worker.driver.manifest.weights_digest.clone()),
-        cpu_request(12, heads[1].clone(), worker.driver.manifest.weights_digest.clone()),
+        cpu_request(11, heads[0].clone(), good_weights.clone()),
+        cpu_request(12, heads[1].clone(), good_weights),
     ];
     let valid = worker
         .run_neuron_features_backend_batch(100, "model.cpu-head", healthy)
