@@ -236,6 +236,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         &mut self,
         now_ms: u64,
     ) -> Result<BatchWorkerPollV1, BatchWorkerErrorV1> {
+        if self.metrics_poisoned || self.metric_sink.as_ref().is_none_or(|sink| !sink.healthy()) {
+            return Err(BatchWorkerErrorV1::TelemetryUnavailable);
+        }
+        let currentness = self
+            .scope_currentness
+            .as_ref()
+            .ok_or(BatchWorkerErrorV1::ScopeFenceUnavailable)?;
         let poll = self
             .scheduler
             .poll(now_ms)
@@ -247,6 +254,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         let mut outcomes = Vec::new();
         if let Some(batch) = poll.batch {
             for intent in batch.requests {
+                let scope_binding = intent.key.clone();
                 let id = intent.request_id;
                 self.retired.insert(id.clone());
                 let outcome = match self.pending.remove(&id) {
@@ -272,18 +280,26 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                     token,
                                     &pending.binding,
                                     || {
-                                        self.worker.run_neuron_features_receipt(
-                                            now_ms,
-                                            &pending.model_id,
-                                            pending.request,
-                                        )
+                                        let guard = currentness
+                                            .enter_current(std::slice::from_ref(&scope_binding))
+                                            .map_err(|_| BatchWorkerErrorV1::ScopeFenceDenied)?;
+                                        let result = self
+                                            .worker
+                                            .run_neuron_features_receipt(
+                                                now_ms,
+                                                &pending.model_id,
+                                                pending.request,
+                                            )
+                                            .map_err(|_| BatchWorkerErrorV1::Worker);
+                                        drop(guard);
+                                        result
                                     },
                                 )
                                 .map_err(|_| BatchWorkerErrorV1::Authority)
-                                .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
+                                .and_then(|inner| inner)
                             });
                             if let Some(sink) = &self.metric_sink {
-                                let _ = sink.record(PhaseMetricEventV1 {
+                                if sink.record(PhaseMetricEventV1 {
                                     scope_digest: Digest32::of_bytes(
                                         batch.key.scope_id.as_str().as_bytes(),
                                     ),
@@ -292,7 +308,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                     latency_micros: u64::try_from(start.elapsed().as_micros())
                                         .unwrap_or(u64::MAX),
                                     succeeded: result.is_ok(),
-                                });
+                                }).is_err() {
+                                    self.metrics_poisoned = true;
+                                }
                             }
                             result
                         }
