@@ -24,6 +24,7 @@ use codex_hepta_infer_core::microbatch::MicrobatchKeyV1;
 use codex_hepta_infer_core::microbatch::MicrobatchLimitsV1;
 use codex_hepta_infer_core::microbatch::SchedulerErrorV1;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::PhaseMetricEventV1;
 use codex_hepta_types::PhaseMetricKindV1;
 use codex_hepta_types::PhaseMetricSinkV1;
@@ -52,6 +53,9 @@ fn terminal_request_fingerprint(id: &StableId) -> Digest32 {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BatchWorkerErrorV1 {
     InvalidRequest,
+    DeadlineExpired,
+    MetricsUnavailable,
+    ScopeFenced,
     InvalidBinding,
     Duplicate,
     NoAdmission,
@@ -59,6 +63,53 @@ pub enum BatchWorkerErrorV1 {
     Authority,
     Worker,
     Capacity,
+}
+
+/// Current live Control/CNS cut for one scope. Never derive this from the
+/// signed request or from a performance cache; the cut must be independent.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct LiveNeuronScopeBindingV1 {
+    pub model_digest: Digest32,
+    pub generation: Generation,
+    pub route_fence: u64,
+    pub authority_epoch: u64,
+}
+
+impl LiveNeuronScopeBindingV1 {
+    pub fn matches(&self, key: &MicrobatchKeyV1) -> bool {
+        self.model_digest == key.model_digest
+            && self.generation == key.generation
+            && self.route_fence == key.route_fence
+            && self.authority_epoch == key.authority_epoch
+    }
+}
+
+/// Product-supplied live Control/CNS frontier. Implementations must fetch an
+/// independently protected current cut and fail closed on missing, stale or
+/// unavailable state. A cached signed grant cannot stand in for this read.
+pub trait LiveNeuronScopeFrontierV1: std::fmt::Debug + Send + Sync {
+    fn latest(
+        &self,
+        scope: &StableId,
+    ) -> Result<LiveNeuronScopeBindingV1, BatchWorkerErrorV1>;
+}
+
+fn check_live_scope(
+    frontier: Option<&Arc<dyn LiveNeuronScopeFrontierV1>>,
+    key: &MicrobatchKeyV1,
+) -> Result<(), BatchWorkerErrorV1> {
+    let Some(frontier) = frontier else {
+        // The qualification-only owner has no serving authority by itself.
+        return Ok(());
+    };
+    let current = frontier
+        .latest(&key.scope_id)
+        .map_err(|_| BatchWorkerErrorV1::ScopeFenced)?;
+    if current.matches(key) {
+        Ok(())
+    } else {
+        Err(BatchWorkerErrorV1::ScopeFenced)
+    }
 }
 
 #[derive(Debug)]
@@ -93,6 +144,7 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
+    live_frontier: Option<Arc<dyn LiveNeuronScopeFrontierV1>>,
     failed_metrics: AtomicU64,
     maximum_pending: usize,
 }
@@ -140,6 +192,12 @@ pub fn neuron_batch_final_use_binding_v1(
     })
 }
 
+/// Never reuse the initial poll timestamp for later driver effects in a batch.
+/// The caller's clock reading is advanced using monotonic elapsed time.
+fn elapsed_now_ms(initial_ms: u64, started: Instant) -> u64 {
+    initial_ms.saturating_add(u64::try_from(started.elapsed().as_millis()).unwrap_or(u64::MAX))
+}
+
 impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1<D> {
     pub fn new(
         worker: InferenceWorker<D>,
@@ -155,6 +213,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
+            live_frontier: None,
             failed_metrics: AtomicU64::new(0),
             maximum_pending: limits.max_pending,
         })
@@ -162,6 +221,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
 
     pub fn with_metric_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
         self.metric_sink = Some(sink);
+        self
+    }
+
+    /// The production facade makes this live frontier mandatory. This
+    /// qualification constructor remains usable for isolated state tests.
+    pub fn with_live_frontier(mut self, frontier: Arc<dyn LiveNeuronScopeFrontierV1>) -> Self {
+        self.live_frontier = Some(frontier);
         self
     }
 
@@ -267,6 +333,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         {
             return Err(BatchWorkerErrorV1::InvalidBinding);
         }
+        check_live_scope(self.live_frontier.as_ref(), &key)?;
         let binding = neuron_batch_final_use_binding_v1(self.worker.worker_id(), &key, &request)?;
         if signed.grant.binding != binding {
             return Err(BatchWorkerErrorV1::InvalidBinding);
@@ -339,10 +406,17 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                             || pending.signed.grant.authority_epoch != batch.key.authority_epoch
                         {
                             Err(BatchWorkerErrorV1::InvalidBinding)
+                        } else if elapsed_now_ms(now_ms, scheduled_at) >= intent.deadline_ms {
+                            // Expiry is terminal without consuming a final-use nonce.
+                            Err(BatchWorkerErrorV1::DeadlineExpired)
+                        } else if check_live_scope(self.live_frontier.as_ref(), &batch.key).is_err()
+                        {
+                            Err(BatchWorkerErrorV1::ScopeFenced)
                         } else {
                             pending.request.feature_vector_q24 =
                                 pending.feature.as_slice().to_vec();
-                            let result = FinalUseAuthority::claim(
+                            let frontier = self.live_frontier.as_ref();
+                            FinalUseAuthority::claim(
                                 &self.authority,
                                 &pending.signed,
                                 &pending.binding,
@@ -354,17 +428,27 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                     token,
                                     &pending.binding,
                                     || {
-                                        self.worker.run_neuron_features_receipt(
-                                            now_ms,
-                                            &pending.model_id,
-                                            pending.request,
-                                        )
+                                        // A cutover while the signed nonce was persisted
+                                        // must fail closed at the actual driver boundary.
+                                        check_live_scope(frontier, &batch.key)?;
+                                        // Signature verification / durable nonce I/O can
+                                        // outlast the request. Recheck at physical entry.
+                                        let dispatch_ms = elapsed_now_ms(now_ms, scheduled_at);
+                                        if dispatch_ms >= intent.deadline_ms {
+                                            return Err(BatchWorkerErrorV1::DeadlineExpired);
+                                        }
+                                        self.worker
+                                            .run_neuron_features_receipt(
+                                                dispatch_ms,
+                                                &pending.model_id,
+                                                pending.request,
+                                            )
+                                            .map_err(|_| BatchWorkerErrorV1::Worker)
                                     },
                                 )
                                 .map_err(|_| BatchWorkerErrorV1::Authority)
-                                .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
-                            });
-                            result
+                                .and_then(|inner| inner)
+                            })
                         }
                     }
                 };
@@ -409,6 +493,94 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             self.retired.insert(terminal_request_fingerprint(id));
         }
         removed
+    }
+}
+
+/// Production-facing facade. It never exposes the ungated in-memory worker.
+///
+/// An admitted effect is never retried merely because telemetry failed after
+/// dispatch. Instead the completed outcomes are returned with an explicit
+/// sink-flush status, and all subsequent admissions fail closed.
+pub struct ProductionNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureDriver> {
+    inner: AuthenticatedNeuronMicrobatchWorkerV1<D>,
+}
+
+#[derive(Debug)]
+pub struct ProductionBatchPollV1 {
+    pub poll: BatchWorkerPollV1,
+    /// True only after the configured sink acknowledged flush. The host must
+    /// independently ensure the sink is the durable Evidence implementation.
+    pub metrics_flush_acknowledged: bool,
+}
+
+impl<D: ModelDriver + NeuronFeatureDriver> ProductionNeuronMicrobatchWorkerV1<D> {
+    /// The host must provide its independently initialized durable Evidence
+    /// sink. The unconfigured qualification constructor is not exposed here.
+    pub fn new(
+        worker: InferenceWorker<D>,
+        authority: FinalUseAuthority,
+        limits: MicrobatchLimitsV1,
+        metrics: Arc<dyn PhaseMetricSinkV1>,
+        frontier: Arc<dyn LiveNeuronScopeFrontierV1>,
+    ) -> Result<Self, BatchWorkerErrorV1> {
+        if !metrics.healthy() {
+            return Err(BatchWorkerErrorV1::MetricsUnavailable);
+        }
+        let inner = AuthenticatedNeuronMicrobatchWorkerV1::new(worker, authority, limits)?
+            .with_metric_sink(metrics)
+            .with_live_frontier(frontier);
+        Ok(Self { inner })
+    }
+
+    pub fn pending(&self) -> usize {
+        self.inner.pending()
+    }
+
+    pub fn production_metrics_ready(&self) -> bool {
+        self.inner.production_metrics_ready()
+    }
+
+    pub fn enqueue(
+        &mut self,
+        now_ms: u64,
+        model_id: String,
+        request: NeuronFeatureRequest,
+        key: MicrobatchKeyV1,
+        signed: SignedFinalUseGrant,
+    ) -> Result<(), BatchWorkerErrorV1> {
+        if !self.production_metrics_ready() {
+            return Err(BatchWorkerErrorV1::MetricsUnavailable);
+        }
+        self.inner.enqueue(now_ms, model_id, request, key, signed)
+    }
+
+    /// The flush happens after obtaining physical driver outcomes. A failed
+    /// flush is reported without discarding those outcomes or retrying an
+    /// indeterminate external effect.
+    pub fn poll_and_execute(
+        &mut self,
+        now_ms: u64,
+    ) -> Result<ProductionBatchPollV1, BatchWorkerErrorV1> {
+        if !self.production_metrics_ready() {
+            return Err(BatchWorkerErrorV1::MetricsUnavailable);
+        }
+        let poll = self.inner.poll_and_execute(now_ms)?;
+        let metrics_flush_acknowledged = self.inner.flush_production_metrics();
+        Ok(ProductionBatchPollV1 {
+            poll,
+            metrics_flush_acknowledged,
+        })
+    }
+
+    /// Emergency generation cutover remains available when telemetry fails.
+    pub fn fence_scope(
+        &mut self,
+        scope: &StableId,
+        generation: codex_hepta_types::Generation,
+        fence: u64,
+        authority_epoch: u64,
+    ) -> Vec<StableId> {
+        self.inner.fence_scope(scope, generation, fence, authority_epoch)
     }
 }
 
