@@ -226,8 +226,6 @@ def paired_probe(
     greedy=actual_generate,
     beam=beam2_generate,
 ):
-    from span_supervision import strict_json
-
     if (
         output.exists()
         or question_mode not in ("training", "paraphrase")
@@ -291,12 +289,24 @@ def paired_probe(
             question_mode=question_mode,
             training=training,
         )
+    def unique_object(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError("duplicate journal field")
+            result[key] = value
+        return result
+
+    def reject_nonfinite(value):
+        raise ValueError("nonfinite journal value")
+
     records = {}
     digests = {}
     for decoder in DECODERS:
         original = (output / decoder / "raw-answers.jsonl").read_bytes()
         records[decoder] = [
-            strict_json(line) for line in original.decode().splitlines()
+            json.loads(line, object_pairs_hook=unique_object, parse_constant=reject_nonfinite)
+            for line in original.decode().splitlines()
         ]
         digests[decoder] = hashlib.sha256(original).hexdigest()
     result = summarize(records["greedy"], records["beam2"], targets)
