@@ -181,6 +181,23 @@ class GeneralizationBridgeTests(unittest.TestCase):
         self.assertEqual(summary["source_compared"], 3)
         self.assertEqual(summary["source_unresolved_or_unselected"], 1)
 
+    def test_missing_answerable_heldout_source_comparison_is_inconclusive(self):
+        plan, learning, scored, targets = fixture()
+        for row in scored:
+            if (row["stage"], row["phase"], row["question_id"]) == (
+                48, "transfer", "transfer-0"
+            ):
+                row.pop("selected", None)
+                row.pop("pool_digest", None)
+        report = train_to_heldout_gap(plan, learning, scored, targets)
+        current = report["by_checkpoint_cell_arm"]["48/gated/general"]
+        self.assertFalse(current["heldout_source_comparison_complete"])
+        self.assertIsNone(current["train_fit_but_no_heldout_native_source_net_gain"])
+        self.assertLess(
+            current["heldout_answerable_source_scored"],
+            current["heldout_answerable_source_planned"],
+        )
+
     def test_retrieval_pool_identity_and_family_mismatch_fail(self):
         for field, value in (
             ("pool_digest", "changed-pool"),
