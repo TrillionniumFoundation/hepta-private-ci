@@ -947,6 +947,16 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
         ).expect("original CNS, original terminal journal and four current owners");
     assert_eq!(current.verification_count, 4);
     assert!(accepted.independently_signed_original_runtime_and_journal);
+    assert_eq!(
+        accepted.supervisor_minimum_checkpoint_digest,
+        pinned_checkpoint_digest,
+    );
+    assert_eq!(
+        accepted.supervisor_minimum_observer_witness_digest,
+        crate::durable::sha256(
+            &canonical_json(&minimum_signature).expect("minimum witness"),
+        ),
+    );
     // Correct terminal checkpoint bytes plus an attacker-issued "minimum"
     // are not independent anti-rollback evidence. The matching digest alone
     // must not pass the original Observer's pinned signer boundary.
