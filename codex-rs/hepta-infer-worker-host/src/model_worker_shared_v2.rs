@@ -339,8 +339,17 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
         }
         loaded.active_requests = loaded.active_requests.saturating_sub(requests.len());
 
-        let observed = driver_result?;
+        let observed = match driver_result {
+            Ok(observed) => observed,
+            Err(_) => {
+                // A physical feature batch with missing driver completion
+                // cannot safely be retried under the same generation.
+                self.poisoned = true;
+                return Err(Error::IndeterminateLifecycle);
+            }
+        };
         if observed.len() != requests.len() {
+            self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
         }
         let mut outputs = Vec::with_capacity(requests.len());
@@ -348,6 +357,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
             if batch_result.request_id != request.authorization.request_id
                 || batch_result.payload_digest != request.authorization.payload_digest
             {
+                self.poisoned = true;
                 return Err(Error::PayloadMismatch);
             }
             let features = batch_result.feature;
@@ -355,7 +365,11 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 || features.encoder_digest != request.snapshot.identity.encoder_digest.to_string()
                 || features.head_digest != request.head_digest
             {
+                self.poisoned = true;
                 return Err(Error::FeatureOutputMismatch);
+            }
+            if !features.terminal_observed {
+                self.poisoned = true;
             }
             let status = if !features.terminal_observed {
                 ExecutionStatus::Indeterminate
@@ -373,9 +387,11 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                         .chain(features.prediction_q24.iter())
                         .any(|v| !(-MAX_FEATURE_ABS_Q24..=MAX_FEATURE_ABS_Q24).contains(v))
                 {
+                    self.poisoned = true;
                     return Err(Error::FeatureOutputMismatch);
                 }
             } else if !features.drive_q24.is_empty() || !features.prediction_q24.is_empty() {
+                self.poisoned = true;
                 return Err(Error::FeatureOutputMismatch);
             }
             let identity_digest = request
