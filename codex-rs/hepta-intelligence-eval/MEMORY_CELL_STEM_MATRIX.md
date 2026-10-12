@@ -1094,3 +1094,31 @@ cost is charged separately. All outcomes are classified development
 diagnostics with `production_accepted=false`,
 `semantic_citation_precision=null`, and no independence claim.
 
+
+## Immutable TRAIN-only frozen retrieval grid: revalidate the winner
+
+The next frozen-RAG candidate experiment sweeps only the previously
+preregistered **10 RRF policies** (channel-k 64/128, lexical weights
+0/0.25/0.5/0.75/1), retaining the original MiniLM Encoder, exact
+strict-as-of source index and unchanged `WindowBudget`. It generates all
+80×10 label-blind candidate receipts before any native-document support
+labels are opened. The retriever setting is selected using the **48 TRAIN
+questions only**, by source-family macro recall; evaluation labels cannot
+choose a policy.
+
+The registered TRAIN winner's **complete 10-policy scorecard, question-set
+digest, macro objective, source-family/scored denominators and tie-break
+rule** are now revalidated *before* the 32 held-out native support labels
+are scored. Arbitrary or nonfinite values, reordered or missing policies,
+swapped winning RRF settings, forged chronology/index hashes, and nonboolean
+original candidate-replay attestations reject. The evaluation exports
+the number of distinct native source families in each phase and across
+all 32 questions separately from repeated question counts. These development
+families are **not** authenticated independent future populations.
+
+A retrieval rescue means only that an original publisher-labelled
+native document appears among the fixed candidate windows. It does not
+show passage entailment, a correct Reader answer, improved citations,
+retention, or a production p95/cost gain. An all-grid *post-hoc* upper
+bound is explicitly distinguished from the single TRAIN-selected policy,
+and none of its evaluation-label-derived winners may be promoted.

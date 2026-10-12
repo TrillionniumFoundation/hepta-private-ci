@@ -1,6 +1,7 @@
 """Synthetic fail-closed frozen RRF source-recall grid; no model downloads."""
 
 from types import SimpleNamespace as Obj
+from copy import deepcopy
 import unittest
 
 from stem_frozen_retrieval_grid import (
@@ -10,6 +11,7 @@ from stem_frozen_retrieval_grid import (
     evaluate_fixed,
     label_key,
     select_from_train,
+    verify_train_selection,
     validate_unlabelled,
 )
 from stem_frozen_retrieval_grid_trial import verify_pinned_replay_question
@@ -253,6 +255,85 @@ class FrozenGridTests(unittest.TestCase):
         self.assertEqual(result["results"]["test"]["planned"], 8)
         self.assertEqual(result["results"]["test"]["unscored_original_question"], 2)
         self.assertEqual(result["results"]["test"]["scored_original_question"], 6)
+
+    def test_train_grid_scorecard_is_sealed_before_heldout_review(self):
+        plan, rows, targets = fixture()
+        unlabeled = validate_unlabelled(plan, rows)
+        train = {qid: targets[qid] for qid in plan["questions"]["train"]}
+        selected = select_from_train(plan, unlabeled, train)
+        self.assertEqual(verify_train_selection(plan, selected)["id"], "k128/lex0.75")
+        eval_targets = {
+            qid: targets[qid]
+            for phase in PHASES[1:] for qid in plan["questions"][phase]
+        }
+        score = evaluate_fixed(plan, unlabeled, eval_targets, selected)
+        self.assertTrue(score["train_policy_revalidated_against_original_scorecard"])
+        self.assertEqual(score["results"]["test"]["original_planned_family_count"], 6)
+        self.assertEqual(score["results"]["test"]["native_scored_family_count"], 6)
+        self.assertEqual(score["distinct_heldout_question_source_families"], 6)
+        self.assertTrue(score["independent_family_effect_not_verified"])
+
+    def test_forged_train_winner_or_source_cohort_is_rejected(self):
+        plan, rows, targets = fixture()
+        unlabelled = validate_unlabelled(plan, rows)
+        chosen = select_from_train(
+            plan, unlabelled,
+            {qid: targets[qid] for qid in plan["questions"]["train"]},
+        )
+        cases = ("winner", "cohort", "domain", "score", "candidate",
+                 "order", "flag", "baseline", "ntrain")
+        for mode in cases:
+            forged = deepcopy(chosen)
+            if mode == "winner":
+                forged["selected_policy"] = "k64/lex0.00"
+            elif mode == "cohort":
+                forged["train_cohort_sha256"] = "0" * 64
+            elif mode == "domain":
+                forged["eligible_policy_ids"] = forged["eligible_policy_ids"][:-1]
+            elif mode == "score":
+                forged["all_candidates"][0]["family_macro_window_recall"] = float("nan")
+            elif mode == "candidate":
+                forged["all_candidates"][0]["channel_k"] = 999
+            elif mode == "order":
+                forged["all_candidates"].reverse()
+            elif mode == "flag":
+                forged["evaluation_labels_were_not_read_to_select"] = 1
+            elif mode == "baseline":
+                forged["baseline_policy"] = "k128/lex0.75"
+            else:
+                forged["train_question_count"] = 16
+            with self.subTest(mode=mode), self.assertRaises(ValueError):
+                verify_train_selection(plan, forged)
+
+    def test_weak_candidate_digest_and_replay_flag_must_be_canonical(self):
+        for mode in ("index-nonhex", "pool-nonhex", "replay-truthy-string"):
+            plan, rows, _ = fixture()
+            row = rows[0]
+            if mode == "index-nonhex":
+                row["original_as_of_index_sha256"] = "g" * 64
+            elif mode == "pool-nonhex":
+                row["pool_sha256"] = "!" * 64
+            else:
+                row["replayed_original_pool_sha256"] = "yes"
+            with self.subTest(mode=mode), self.assertRaises(ValueError):
+                validate_unlabelled(plan, rows)
+
+    def test_posthoc_ceiling_cannot_accept_forged_evaluation_winner(self):
+        plan, rows, targets = fixture()
+        unlabeled = validate_unlabelled(plan, rows)
+        selected = select_from_train(
+            plan, unlabeled,
+            {qid: targets[qid] for qid in plan["questions"]["train"]},
+        )
+        selected["selected_policy"] = "k64/lex0.00"
+        eval_targets = {
+            qid: targets[qid] for phase in PHASES[1:]
+            for qid in plan["questions"][phase]
+        }
+        with self.assertRaises(ValueError):
+            posthoc_all_registered_grid_ceiling(
+                plan, unlabeled, eval_targets, selected,
+            )
 
     def test_a_different_registered_grid_cannot_be_injected(self):
         with self.assertRaisesRegex(ValueError, "preregistered"):

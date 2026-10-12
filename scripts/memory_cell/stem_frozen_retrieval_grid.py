@@ -8,6 +8,7 @@ receipt is retained. Labels are weak source support, not passage entailment.
 
 from collections import defaultdict
 import math
+import re
 
 from native import digest
 from sessions import source_id
@@ -62,9 +63,9 @@ def validate_unlabelled(plan, records):
             or len(set(windows)) != len(windows)
             or not set(windows).issubset(ids)
             or not isinstance(row["original_as_of_index_sha256"], str)
-            or len(row["original_as_of_index_sha256"]) != 64
+            or re.fullmatch(r"[0-9a-f]{64}", row["original_as_of_index_sha256"]) is None
             or not isinstance(row["pool_sha256"], str)
-            or len(row["pool_sha256"]) != 64
+            or re.fullmatch(r"[0-9a-f]{64}", row["pool_sha256"]) is None
             or row.get("source_text_exported") is not False
             or row.get("read_targets_for_retrieval") is not False
         ):
@@ -76,7 +77,7 @@ def validate_unlabelled(plan, records):
         for qid in cohorts[phase]:
             family = plan["question_families"][qid]
             original = observed[(phase, qid, label_key(BASELINE))]
-            if not original.get("replayed_original_pool_sha256"):
+            if original.get("replayed_original_pool_sha256") is not True:
                 raise ValueError("original frozen pool identity not reproduced")
             pins = {
                 (
@@ -164,14 +165,73 @@ def select_from_train(plan, unlabelled, targets):
     )
 
 
+def verify_train_selection(plan, selection):
+    """Reject a rewritten winner/selection receipt before held-out labels enter.
+
+    This checks the complete frozen 10-policy TRAIN scorecard. It cannot
+    authenticate the native labels independently and is not a success gate.
+    """
+    expected = [label_key(policy) for policy in GRID]
+    if (
+        not isinstance(selection, dict)
+        or selection.get("schema") != "hepta.stem-frozen-retrieval-train-grid.v1"
+        or selection.get("train_only") is not True
+        or selection.get("evaluation_labels_were_not_read_to_select") is not True
+        or selection.get("production_accepted") is not False
+        or selection.get("train_question_count") != 48
+        or selection.get("train_cohort_sha256") != digest(plan["questions"]["train"])
+        or selection.get("baseline_policy") != label_key(BASELINE)
+        or selection.get("eligible_policy_ids") != expected
+        or not isinstance(selection.get("all_candidates"), list)
+        or len(selection["all_candidates"]) != len(GRID)
+    ):
+        raise ValueError("unbound or post-hoc retriever TRAIN policy selection")
+    valid = []
+    for (k, weight), entry in zip(GRID, selection["all_candidates"], strict=True):
+        if (
+            not isinstance(entry, dict)
+            or entry.get("id") != label_key((k, weight))
+            or entry.get("channel_k") != k
+            or entry.get("lexical_weight") != weight
+            or type(entry.get("training_families")) is not int
+            or entry["training_families"] < 1
+            or type(entry.get("scored")) is not int
+            or type(entry.get("unscored")) is not int
+            or entry["scored"] < 1
+            or entry["unscored"] < 0
+            or entry["scored"] + entry["unscored"] != 48
+            or type(entry.get("family_macro_window_recall")) not in (float, int)
+            or not math.isfinite(entry["family_macro_window_recall"])
+            or not 0 <= entry["family_macro_window_recall"] <= 1
+        ):
+            raise ValueError("frozen TRAIN grid scorecard changed or nonfinite")
+        valid.append(entry)
+    chosen = min(
+        valid,
+        key=lambda x: (
+            -round(x["family_macro_window_recall"], 12),
+            x["channel_k"],
+            abs(x["lexical_weight"] - BASELINE[1]),
+            x["lexical_weight"],
+        ),
+    )
+    if (
+        selection.get("selected_policy") != chosen["id"]
+        or selection.get("selected_channel_k") != chosen["channel_k"]
+        or selection.get("selected_lexical_weight") != chosen["lexical_weight"]
+    ):
+        raise ValueError("TRAIN-only winner does not match recorded frozen scorecard")
+    return chosen
+
+
 def evaluate_fixed(plan, unlabelled, targets, selection):
     """Held-out labels only after the TRAIN-only choice is immutable."""
+    verify_train_selection(plan, selection)
     eval_ids = [q for p in PHASES[1:] for q in plan["questions"][p]]
     if (
-        selection["selected_policy"] not in {label_key(c) for c in GRID}
-        or set(targets) != set(eval_ids)
-        or not selection["train_only"]
-        or not selection["evaluation_labels_were_not_read_to_select"]
+        set(targets) != set(eval_ids)
+        or len(eval_ids) != 32
+        or len(set(eval_ids)) != 32
     ):
         raise ValueError("evaluation targets changed calibration selection")
     out, decisions = {}, []
@@ -180,6 +240,12 @@ def evaluate_fixed(plan, unlabelled, targets, selection):
         for qid in plan["questions"][phase]:
             a = unlabelled[(phase, qid, label_key(BASELINE))]
             b = unlabelled[(phase, qid, selection["selected_policy"])]
+            if (
+                a["source_family"] != b["source_family"]
+                or a["source_family"] != plan["question_families"][qid]
+                or a["original_as_of_index_sha256"] != b["original_as_of_index_sha256"]
+            ):
+                raise ValueError("retrieval evaluation changed native family or as-of index")
             original, proposed = annotate(a, targets[qid]), annotate(b, targets[qid])
             counts["planned"] += 1
             row = dict(
@@ -212,9 +278,17 @@ def evaluate_fixed(plan, unlabelled, targets, selection):
                     proposed[0] and not proposed[1]
                 )
             decisions.append(row)
+        all_rows = [row for row in decisions if row["phase"] == phase]
+        counts["original_planned_family_count"] = len({
+            row["source_family"] for row in all_rows
+        })
+        counts["native_scored_family_count"] = len({
+            row["source_family"] for row in all_rows
+            if row["native_support_resolved"]
+        })
         out[phase] = dict(counts)
     return dict(
-        schema="hepta.stem-frozen-retrieval-grid-eval.v1",
+        schema="hepta.stem-frozen-retrieval-grid-eval.v2",
         source_only_ablation=True,
         same_original_frozen_encoder=True,
         same_query_and_source_time_pins=True,
@@ -222,6 +296,11 @@ def evaluate_fixed(plan, unlabelled, targets, selection):
         same_candidate_window_budget=True,
         selected_policy=selection["selected_policy"],
         matched_question_count=32,
+        distinct_heldout_question_source_families=len({
+            row["source_family"] for row in decisions
+        }),
+        independent_family_effect_not_verified=True,
+        train_policy_revalidated_against_original_scorecard=True,
         results=out,
         decisions=decisions,
         independent_native_document_entailment_verified=False,
@@ -239,6 +318,7 @@ def posthoc_all_registered_grid_ceiling(plan, unlabelled, targets, selection):
     This is NOT a deployable oracle, hyperparameter search, or Reader score.
     No ID of a hindsight-winning eval policy is selected or returned.
     """
+    verify_train_selection(plan, selection)
     eval_ids = [q for p in PHASES[1:] for q in plan["questions"][p]]
     if (
         set(targets) != set(eval_ids)
