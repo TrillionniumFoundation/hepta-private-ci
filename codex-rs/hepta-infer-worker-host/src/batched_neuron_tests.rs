@@ -618,13 +618,8 @@ fn unavailable_production_metric_sink_blocks_dispatch_but_allows_fence_cutover()
     let signer = SigningKey::from_bytes(&[35; 32]);
     let (model, request, key) = fixture_request();
     let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
-    let mut worker = production_runner(
-        &signer,
-        dir.path(),
-        model,
-        Arc::new(UnavailableMetricSink),
-    )
-    .unwrap();
+    let metrics: Arc<dyn PhaseMetricSinkV1> = Arc::new(UnavailableMetricSink);
+    let mut worker = production_runner(&signer, dir.path(), model, metrics).unwrap();
     // The admission operation is harmless, but its lost observation latches
     // production-not-ready before any physical model effect.
     worker
@@ -666,13 +661,8 @@ fn failed_flush_does_not_erase_completed_final_use_outcome_or_trigger_retry() {
     let signer = SigningKey::from_bytes(&[37; 32]);
     let (model, request, key) = fixture_request();
     let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
-    let mut worker = production_runner(
-        &signer,
-        dir.path(),
-        model,
-        Arc::new(FailingFlushSink),
-    )
-    .unwrap();
+    let metrics: Arc<dyn PhaseMetricSinkV1> = Arc::new(FailingFlushSink);
+    let mut worker = production_runner(&signer, dir.path(), model, metrics).unwrap();
     worker
         .enqueue(100, "model".into(), request, key, signed(&signer, binding))
         .unwrap();
