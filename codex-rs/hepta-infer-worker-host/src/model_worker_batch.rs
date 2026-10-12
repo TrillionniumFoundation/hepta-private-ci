@@ -183,8 +183,17 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
         }
         loaded.active_requests = loaded.active_requests.saturating_sub(requests.len());
 
-        let observations = driver_result?;
+        let observations = match driver_result {
+            Ok(observations) => observations,
+            Err(_) => {
+                // A batch may have physically executed before its transport
+                // reported failure. Never admit a retry on this generation.
+                self.poisoned = true;
+                return Err(Error::IndeterminateLifecycle);
+            }
+        };
         if observations.len() != requests.len() {
+            self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
         }
         let mut result = Vec::with_capacity(requests.len());
@@ -192,6 +201,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
             if batch_item.request_id != request.authorization.request_id
                 || batch_item.payload_digest != request.authorization.payload_digest
             {
+                self.poisoned = true;
                 return Err(Error::PayloadMismatch);
             }
             let observed = batch_item.feature;
@@ -199,12 +209,19 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
                 || observed.encoder_digest != request.encoder_digest
                 || observed.head_digest != request.head_digest
             {
+                self.poisoned = true;
                 return Err(Error::FeatureOutputMismatch);
+            }
+            if !observed.terminal_observed {
+                self.poisoned = true;
             }
             let status = if !observed.terminal_observed {
                 ExecutionStatus::Indeterminate
             } else if observed.succeeded {
-                validate_neuron_feature_output(request, &observed)?;
+                if let Err(error) = validate_neuron_feature_output(request, &observed) {
+                    self.poisoned = true;
+                    return Err(error);
+                }
                 ExecutionStatus::Succeeded
             } else {
                 ExecutionStatus::Failed
@@ -213,6 +230,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
             if status != ExecutionStatus::Succeeded
                 && (!observed.drive_q24.is_empty() || !observed.prediction_q24.is_empty())
             {
+                self.poisoned = true;
                 return Err(Error::FeatureOutputMismatch);
             }
             result.push(NeuronFeatureExecutionObservation {
