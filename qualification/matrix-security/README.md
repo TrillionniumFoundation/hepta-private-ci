@@ -6,6 +6,22 @@ ignore advisories, reduce `cargo-deny` coverage, disable end-to-end encryption,
 remove Matrix support, or change a trust root. The existing global `cargo-deny`
 remains a separate mandatory failure until the actual dependency graph is safe.
 
+## Matrix family graph integrity guard (2026-10-12)
+
+The prerequisite checker now rejects SDK/Base/Crypto/SQLite **mixed major.minor
+families**, missing or duplicated component versions, and graph entries that
+claim a safe component without an actual path from the selected `matrix-sdk`.
+This closes a false-green case where a synthetic graph advertised Crypto 0.19
+but still contained a Base or SQLite 0.18 package. Patch revisions within one
+minor family need not be identical.
+
+`static_graph_advisory_candidates_clean` means only that the audited lock
+structure satisfies these offline *candidate* conditions. The stronger
+`security_advisories_resolved` is always `false` in this static tool, even
+for an artificial all-0.19/AnyMap3 fixture. Only real unchanged `cargo deny`,
+approved pinned source, Matrix E2EE and actual SQLite WAL crash/recovery runs
+can establish remediation. None are bypassed by these new unit tests.
+
 ## Confirmed evidence on the 2026-10-12 research HEAD
 
 - `codex-rs/Cargo.toml` pins `matrix-sdk 0.18.0` with **both** `e2e-encryption`
