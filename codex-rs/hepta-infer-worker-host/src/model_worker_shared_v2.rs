@@ -388,11 +388,15 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 return Err(Error::FeatureOutputMismatch);
             }
             if !features.terminal_observed {
+                // A physical batch has one externally visible outcome:
+                // never return successful Cells alongside an uncertain Cell.
                 self.poisoned = true;
+                if !features.drive_q24.is_empty() || !features.prediction_q24.is_empty() {
+                    return Err(Error::FeatureOutputMismatch);
+                }
+                return Err(Error::IndeterminateLifecycle);
             }
-            let status = if !features.terminal_observed {
-                ExecutionStatus::Indeterminate
-            } else if features.succeeded {
+            let status = if features.succeeded {
                 ExecutionStatus::Succeeded
             } else {
                 ExecutionStatus::Failed
@@ -702,6 +706,7 @@ mod tests {
         batches: usize,
         oversized_transient: bool,
         bounded_transient: bool,
+        non_terminal_last_row: bool,
     }
 
     impl ModelDriver for AmbiguousPhysicalV2Driver {
@@ -735,8 +740,8 @@ mod tests {
             requests: &[SharedNeuronFeatureRequestV2],
         ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error> {
             self.batches += 1;
-            if self.oversized_transient || self.bounded_transient {
-                return Ok(requests
+            if self.oversized_transient || self.bounded_transient || self.non_terminal_last_row {
+                let mut observations: Vec<_> = requests
                     .iter()
                     .map(|request| NeuronFeatureBatchItemObservationV2 {
                         request_id: request.authorization.request_id.clone(),
@@ -762,7 +767,15 @@ mod tests {
                             latency_micros: 0,
                         },
                     })
-                    .collect());
+                    .collect();
+                if self.non_terminal_last_row {
+                    if let Some(last) = observations.last_mut() {
+                        last.feature.terminal_observed = false;
+                        last.feature.drive_q24.clear();
+                        last.feature.prediction_q24.clear();
+                    }
+                }
+                return Ok(observations);
             }
             Err(Error::DriverFailure("physical V2 batch may have executed".into()))
         }
@@ -827,6 +840,63 @@ mod tests {
             worker.unload_model(100, "model.shared-v2"),
             Err(Error::IndeterminateLifecycle)
         );
+    }
+
+
+    #[test]
+    fn nonterminal_shared_batch_never_publishes_earlier_success_or_allows_retry() {
+        let snapshot = frame(2);
+        let grant = super::super::ResourceGrant {
+            grant_id: "grant.nonterminal-v2".into(),
+            authority_epoch: 2,
+            generation: 3,
+            expires_at_ms: 10_000,
+            revoked: false,
+            maximum_models: 1,
+            maximum_active_requests: 4,
+            maximum_memory_bytes: 4096,
+            semantic_digest: "1".repeat(64),
+        };
+        let driver = AmbiguousPhysicalV2Driver {
+            non_terminal_last_row: true,
+            ..AmbiguousPhysicalV2Driver::default()
+        };
+        let mut worker =
+            InferenceWorker::new(100, "worker.nonterminal-v2".into(), 3, grant, driver)
+                .expect("worker");
+        let manifest = super::super::ModelManifest {
+            model_id: "model.shared-v2".into(),
+            model_digest: "b".repeat(64),
+            weights_digest: "e".repeat(64),
+            tokenizer_digest: snapshot.identity.tokenizer_digest.to_string(),
+            preprocessor_digest: snapshot.identity.normalizer_digest.to_string(),
+            quantization_digest: snapshot.identity.quantization_digest.to_string(),
+            runtime_digest: "1".repeat(64),
+            device_digest: "2".repeat(64),
+            maximum_tokens: 64,
+        };
+        worker.load_model(100, manifest).expect("loaded");
+        let requests = vec![
+            req("cell.a", "request.a", Arc::clone(&snapshot)),
+            req("cell.b", "request.b", Arc::clone(&snapshot)),
+        ];
+        assert_eq!(
+            worker.run_shared_neuron_features_batch_v2(
+                100, "model.shared-v2", requests.clone()
+            ),
+            Err(Error::IndeterminateLifecycle)
+        );
+        assert!(worker.poisoned);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.shared-v2"].active_requests, 0);
+        assert_eq!(worker.driver.batches, 1);
+        assert_eq!(
+            worker.run_shared_neuron_features_batch_v2(
+                100, "model.shared-v2", requests
+            ),
+            Err(Error::IndeterminateLifecycle)
+        );
+        assert_eq!(worker.driver.batches, 1);
     }
 
     #[test]

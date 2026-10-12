@@ -232,11 +232,15 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
                 return Err(Error::FeatureOutputMismatch);
             }
             if !observed.terminal_observed {
+                // One missing physical terminal seals the whole batch. Never
+                // expose earlier success rows while a later row is uncertain.
                 self.poisoned = true;
+                if !observed.drive_q24.is_empty() || !observed.prediction_q24.is_empty() {
+                    return Err(Error::FeatureOutputMismatch);
+                }
+                return Err(Error::IndeterminateLifecycle);
             }
-            let status = if !observed.terminal_observed {
-                ExecutionStatus::Indeterminate
-            } else if observed.succeeded {
+            let status = if observed.succeeded {
                 if let Err(error) = validate_neuron_feature_output(request, &observed) {
                     self.poisoned = true;
                     return Err(error);
@@ -314,6 +318,7 @@ mod tests {
         truncated: bool,
         corrupt_head: bool,
         indeterminate_with_output: bool,
+        non_terminal_last_row: bool,
         swap_items: bool,
         fail_after_execution: bool,
     }
@@ -382,6 +387,13 @@ mod tests {
                     },
                 })
                 .collect();
+            if self.non_terminal_last_row {
+                if let Some(last) = outputs.last_mut() {
+                    last.feature.terminal_observed = false;
+                    last.feature.drive_q24.clear();
+                    last.feature.prediction_q24.clear();
+                }
+            }
             if self.truncated {
                 outputs.pop();
             }
@@ -667,6 +679,29 @@ mod tests {
             );
             assert_eq!(worker.driver.batches, 1);
         }
+    }
+
+
+    #[test]
+    fn nonterminal_row_never_publishes_earlier_success_or_allows_retry() {
+        let mut worker = worker(BatchMock {
+            non_terminal_last_row: true,
+            ..BatchMock::default()
+        });
+        let requests = vec![feature("request.1", 'b'), feature("request.2", 'c')];
+        assert_eq!(
+            worker.run_neuron_features_batch(100, "model.v2", requests.clone()),
+            Err(Error::IndeterminateLifecycle)
+        );
+        assert!(worker.poisoned);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.v2"].active_requests, 0);
+        assert_eq!(worker.driver.batches, 1);
+        assert_eq!(
+            worker.run_neuron_features_batch(100, "model.v2", requests),
+            Err(Error::IndeterminateLifecycle)
+        );
+        assert_eq!(worker.driver.batches, 1);
     }
 
     #[test]
