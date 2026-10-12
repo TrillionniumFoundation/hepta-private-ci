@@ -5,6 +5,8 @@ on:
       - codex/memory-cell-evidence-20261008
     paths:
       - "scripts/memory_cell/strong_rag_trial.py"
+      - "scripts/memory_cell/strong_rag_host_gate.py"
+      - "scripts/memory_cell/test_strong_rag_host_gate.py"
       - "scripts/memory_cell/strong_rag_shards.py"
       - "scripts/memory_cell/test_strong_rag_shards.py"
       - "scripts/memory_cell/historical_event_citation_chain.py"
@@ -102,6 +104,11 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Verify BF16 CPU hardware before model downloads
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/strong-rag-evidence
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/strong-rag-evidence/host-qualification.json
       - name: Restore exact historical source, calibration/test census and index bytes
         env:
           GH_TOKEN: ${{ github.token }}
@@ -207,7 +214,7 @@ jobs:
               cp -a "/tmp/strong-rag-evidence/$directory" "$checkpoint/"
             fi
           done
-          for filename in input-pin.txt inventory.json stage.json publisher.json environment.txt prep.log calibration.log calibration-resources.txt tests.log; do
+          for filename in input-pin.txt inventory.json stage.json publisher.json environment.txt prep.log calibration.log calibration-resources.txt tests.log host-qualification.json; do
             if [ -f "/tmp/strong-rag-evidence/$filename" ]; then
               cp "/tmp/strong-rag-evidence/$filename" "$checkpoint/$filename"
             fi
@@ -232,7 +239,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/strong-rag-evidence/source
-          cp scripts/memory_cell/strong_rag_trial.py scripts/memory_cell/test_strong_rag_trial.py scripts/memory_cell/strong_rag_hop_control.py scripts/memory_cell/test_strong_rag_hop_control.py scripts/memory_cell/strong_rag_receipt.py scripts/memory_cell/test_strong_rag_receipt.py scripts/memory_cell/strong_rag_repeatability.py scripts/memory_cell/test_strong_rag_repeatability.py scripts/memory_cell/strong_rag_stability.py scripts/memory_cell/test_strong_rag_stability.py scripts/memory_cell/historical_event_citation_chain.py scripts/memory_cell/test_historical_event_citation_chain.py scripts/memory_cell/test_strong_rag_citation_bridge.py /tmp/strong-rag-evidence/source/
+          cp scripts/memory_cell/strong_rag_trial.py scripts/memory_cell/test_strong_rag_trial.py scripts/memory_cell/strong_rag_hop_control.py scripts/memory_cell/test_strong_rag_hop_control.py scripts/memory_cell/strong_rag_receipt.py scripts/memory_cell/test_strong_rag_receipt.py scripts/memory_cell/strong_rag_repeatability.py scripts/memory_cell/test_strong_rag_repeatability.py scripts/memory_cell/strong_rag_stability.py scripts/memory_cell/test_strong_rag_stability.py scripts/memory_cell/historical_event_citation_chain.py scripts/memory_cell/test_historical_event_citation_chain.py scripts/memory_cell/test_strong_rag_citation_bridge.py scripts/memory_cell/strong_rag_host_gate.py scripts/memory_cell/test_strong_rag_host_gate.py /tmp/strong-rag-evidence/source/
           git rev-parse HEAD > /tmp/strong-rag-evidence/tested-commit.txt
           (cd /tmp/strong-rag-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

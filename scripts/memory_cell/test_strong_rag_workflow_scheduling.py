@@ -97,6 +97,18 @@ class ScopedResearchWorkflowTests(unittest.TestCase):
         self.assertIn('test -z "$(find "$checkpoint" -type l -print -quit)"', reader)
         self.assertIn("SHA256SUMS", reader)
 
+    def test_bf16_eligibility_checked_on_actual_reader_runner(self):
+        reader = self.text.split("\n  reader:\n", 1)[1].split(
+            "\n  independent-replay:\n", 1
+        )[0]
+        eligible = reader.index("Verify BF16 CPU hardware before model downloads")
+        staging = reader.index("Stage pinned research-only Qwen reader")
+        self.assertLess(eligible, staging)
+        self.assertIn("host-qualification.json", reader)
+        self.assertIn("scripts/memory_cell/strong_rag_host_gate.py", reader)
+        self.assertIn("scripts/memory_cell/test_strong_rag_host_gate.py", reader)
+        self.assertIn("if: always()", reader)
+
     def test_global_format_remains_separately_observable(self):
         self.assertNotIn("\n  format:\n", self.text)
         standalone = WORKFLOW.with_name("hepta-memory-review-format-final.yml")

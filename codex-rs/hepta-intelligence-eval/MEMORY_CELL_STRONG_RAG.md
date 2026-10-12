@@ -472,3 +472,46 @@ qualification is established until a fresh exact-source hosted run completes
 and the independent verifier checks the generated answers and runtime
 receipts.
 
+## Exact hosted BF16 hardware failure and gate (2026-10-12)
+
+The hosted pinned Qwen reader reached real calibration in two completed
+attempts: [38152358214](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38152358214)
+and [38163763497](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38163763497).
+Both passed the source-only preflight, but the very first model response
+took 923.275 and 922.323 seconds respectively, exceeding the unchanged
+180-second per-call qualification limit. These runs did not complete calibration
+or evaluate any final questions. Their sealed incomplete artifacts remain
+evidence of attempted inference, **not** model improvement.
+
+Run 38163763497 saved a valid SHA256SUMS census of 16 checkpoint members;
+its sole real answer used 504 complete input tokens, generated seven tokens
+and returned `site_ [E1]` instead of an acceptable task identifier.
+The host runtime receipt identified AMD EPYC 7763 (Zen 3, AVX2 without
+AVX512-BF16/AMX-BF16), two configured intra-op PyTorch threads, and
+approximately 100% CPU utilization during the slow generation.
+The exact Qwen model inventory digest was unchanged:
+`f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225`.
+The earlier successful 48-answer Qwen reader archive used the same model
+inventory, completed 418.819 summed reader-seconds, with a 7.871-second
+median per response and 16.046-second maximum. Different host capabilities
+are the leading explanation, not evidence of retriever or weight drift.
+
+`strong_rag_host_gate.py` now executes on the **actual reader runner**
+before downloading the source archive, pretrained encoder or 6.18 GB of
+Qwen weight files. For the original x86-64 BF16 eager CPU path, every
+visible logical processor must advertise `avx512_bf16` or `amx_bf16`.
+Any insufficient or contradictory CPU description fails closed, emits
+`host-qualification.json` before exiting and preserves it in the
+`memory-strong-rag-calibrated-reader` diagnostic archive (and a calibration
+checkpoint if a calibration started). The gate never swaps reader family,
+casts or quantizes weights, reuses answers from another source, or alters
+the original 180-second response qualification. ISA eligibility by itself
+does **not** prove the runner will meet the 180-second runtime limit.
+
+Standard GitHub-hosted x64 runner labels specify OS/vCPUs, not guaranteed
+BF16-capable CPU models. If no compatible host is allocated, an eligible
+reader run cannot complete on that host; use an explicitly qualified,
+authorized BF16-capable/GPU runner if one becomes available rather than
+claiming that repeated failing queues establish new memory evidence.
+No prospective independence, semantic citation precision, parametric gain
+or production acceptance is established by this machine guard.
