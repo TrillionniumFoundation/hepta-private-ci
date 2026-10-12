@@ -126,6 +126,16 @@ pub enum Error {
     RequestCapacity,
     ModelAlreadyLoaded,
     ModelNotLoaded,
+    /// Driver release failed: keep the handle accounted and block every use.
+    /// Restart under a new generation only after independent reconciliation.
+    ModelUnloadIndeterminate,
+    /// Loading or post-load cleanup may have left unknown resident resources.
+    /// Deny every operation in this generation until independent reconciliation.
+    ModelLoadIndeterminate,
+    /// A driver executed or may have executed without a complete canonical
+    /// terminal observation. No run, batch, load or unload can be retried in
+    /// this Worker generation until a separate recovery owner reconciles it.
+    ExecutionIndeterminate,
     ModelMismatch,
     PayloadMismatch,
     TokenLimit,
@@ -137,6 +147,8 @@ pub enum Error {
     FeatureLimit,
     FeatureOutputMismatch,
     FeatureContract,
+    FeatureBatchLimit,
+    FeatureBatchMismatch,
 }
 
 impl fmt::Display for Error {
@@ -162,6 +174,7 @@ struct LoadedModel {
     manifest: ModelManifest,
     handle: DriverModelHandle,
     active_requests: usize,
+    unload_indeterminate: bool,
 }
 
 #[derive(Debug)]
@@ -170,6 +183,11 @@ pub struct InferenceWorker<D: ModelDriver> {
     generation: u64,
     grant: ResourceGrant,
     driver: D,
+    // A driver may have allocated resources even when load returns Err or
+    // its subsequent rollback fails. Without an independently reconciled
+    // handle, this generation must reject every further operation.
+    load_indeterminate: bool,
+    execution_indeterminate: bool,
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
 }
@@ -192,6 +210,8 @@ impl<D: ModelDriver> InferenceWorker<D> {
             generation,
             grant,
             driver,
+            load_indeterminate: false,
+            execution_indeterminate: false,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
         })
@@ -199,6 +219,17 @@ impl<D: ModelDriver> InferenceWorker<D> {
 
     pub fn worker_id(&self) -> &str {
         &self.worker_id
+    }
+
+    /// Read-only signal for the product Supervisor. An ambiguous load or
+    /// unload must be persisted and reconciled outside this volatile Worker
+    /// before it can be restarted under a new generation. This function does
+    /// not issue a recovery receipt or authorize a restart.
+    #[must_use]
+    pub fn requires_external_recovery(&self) -> bool {
+        self.load_indeterminate
+            || self.execution_indeterminate
+            || self.models.values().any(|model| model.unload_indeterminate)
     }
 
     pub fn load_model(
@@ -215,10 +246,39 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            self.driver.unload(handle)?;
+        // ResourceGrant covers the entire Worker generation, not just the
+        // newest handle. Sum conservative per-handle resident claims before
+        // dispatch; arithmetic overflow is a denied admission.
+        let resident = self.models.values().try_fold(0_u64, |sum, loaded| {
+            sum.checked_add(loaded.handle.observed_memory_bytes)
+                .ok_or(Error::ArithmeticOverflow)
+        })?;
+        let handle = match self.driver.load(&manifest) {
+            Ok(handle) => handle,
+            Err(_error) => {
+                // A load error provides no terminal no-allocation receipt.
+                // Report the typed indeterminate status immediately so the
+                // owning Supervisor cannot mistake this for a safe retry.
+                // Driver-specific diagnostics belong to its own receipt/log.
+                self.load_indeterminate = true;
+                return Err(Error::ModelLoadIndeterminate);
+            }
+        };
+        let invalid_handle = validate_identity(&handle.opaque_id, "model handle").err();
+        let total_resident = resident.checked_add(handle.observed_memory_bytes);
+        if invalid_handle.is_some()
+            || total_resident.is_none_or(|total| total > self.grant.maximum_memory_bytes)
+        {
+            // Roll back only once. If the driver cannot confirm cleanup, no
+            // later request/load/unload in this generation may reuse the
+            // possibly allocated model memory or a stale opaque handle.
+            if self.driver.unload(handle).is_err() {
+                self.load_indeterminate = true;
+                return Err(Error::ModelLoadIndeterminate);
+            }
+            if let Some(error) = invalid_handle {
+                return Err(error);
+            }
             return Err(Error::ModelCapacity);
         }
         let observation = ModelLoadObservation {
@@ -234,6 +294,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
                 manifest,
                 handle,
                 active_requests: 0,
+                unload_indeterminate: false,
             },
         );
         Ok(observation)
@@ -256,6 +317,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.unload_indeterminate {
+            return Err(Error::ModelUnloadIndeterminate);
+        }
         if request.model_digest != loaded.manifest.model_digest
             || request.reservation_model_digest != loaded.manifest.model_digest
         {
@@ -293,27 +357,47 @@ impl<D: ModelDriver> InferenceWorker<D> {
         let observed = self.driver.run(&loaded.handle, &request);
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        let observed = match observed {
+            Ok(value) => value,
+            Err(_) => {
+                // The driver did not prove that an invocation never started.
+                // Reusing this generation could duplicate an effect or touch
+                // a resource whose true terminal state is unknown.
+                self.execution_indeterminate = true;
+                return Err(Error::ExecutionIndeterminate);
+            }
+        };
+        if !observed.terminal_observed {
+            self.execution_indeterminate = true;
+        }
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
+            self.execution_indeterminate = true;
             return Err(Error::TokenLimit);
         }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            self.execution_indeterminate = true;
             return Err(Error::ModelCapacity);
         }
         let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
             (ExecutionStatus::Indeterminate, None, false)
         } else if observed.succeeded {
-            let output = observed
-                .output_digest
-                .as_ref()
-                .ok_or(Error::MissingTerminalOutput)?;
-            validate_digest(output, "output")?;
+            let Some(output) = observed.output_digest.as_ref() else {
+                self.execution_indeterminate = true;
+                return Err(Error::MissingTerminalOutput);
+            };
+            if let Err(error) = validate_digest(output, "output") {
+                self.execution_indeterminate = true;
+                return Err(error);
+            }
             (ExecutionStatus::Succeeded, observed.output_digest, true)
         } else {
             if let Some(output) = &observed.output_digest {
-                validate_digest(output, "output")?;
+                if let Err(error) = validate_digest(output, "output") {
+                    self.execution_indeterminate = true;
+                    return Err(error);
+                }
             }
             (ExecutionStatus::Failed, observed.output_digest, true)
         };
@@ -338,12 +422,21 @@ impl<D: ModelDriver> InferenceWorker<D> {
     ) -> Result<ModelUnloadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
-        let loaded = self.models.get(model_id).ok_or(Error::ModelNotLoaded)?;
+        let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if loaded.active_requests != 0 {
             return Err(Error::ActiveRequests);
         }
-        let loaded = self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
-        self.driver.unload(loaded.handle)?;
+        if loaded.unload_indeterminate {
+            // A failed driver release may have partially freed the model.
+            // Never re-run a possibly non-idempotent release or reopen it.
+            return Err(Error::ModelUnloadIndeterminate);
+        }
+        // Keep the exact handle in the model registry until driver release is
+        // observed. Failed release retains the capacity claim permanently
+        // within this generation, forbidding duplicate load and every run.
+        loaded.unload_indeterminate = true;
+        self.driver.unload(loaded.handle.clone())?;
+        self.models.remove(model_id).ok_or(Error::ModelNotLoaded)?;
         Ok(ModelUnloadObservation {
             model_id: model_id.to_string(),
             worker_generation: self.generation,
@@ -352,6 +445,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
     }
 
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
+        if self.load_indeterminate {
+            return Err(Error::ModelLoadIndeterminate);
+        }
+        if self.execution_indeterminate {
+            return Err(Error::ExecutionIndeterminate);
+        }
         validate_grant(now_ms, &self.grant)
     }
 }
@@ -516,6 +615,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             return Err(Error::RequestCapacity);
         }
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.unload_indeterminate {
+            return Err(Error::ModelUnloadIndeterminate);
+        }
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
             || request.weights_digest != loaded.manifest.weights_digest
@@ -560,14 +662,27 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         self.active_requests
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        let observed = match observed {
+            Ok(value) => value,
+            Err(_) => {
+                self.execution_indeterminate = true;
+                return Err(Error::ExecutionIndeterminate);
+            }
+        };
+        if !observed.terminal_observed {
+            self.execution_indeterminate = true;
+        }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            self.execution_indeterminate = true;
             return Err(Error::ModelCapacity);
         }
         let status = if !observed.terminal_observed {
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
-            validate_neuron_feature_output(&request, &observed)?;
+            if let Err(error) = validate_neuron_feature_output(&request, &observed) {
+                self.execution_indeterminate = true;
+                return Err(error);
+            }
             ExecutionStatus::Succeeded
         } else {
             ExecutionStatus::Failed
@@ -603,54 +718,69 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     ) -> Result<NeuronFeatureReceiptV1, Error> {
         let request_copy = request.clone();
         let observed = self.run_neuron_features(now_ms, model_id, request)?;
-        let generation =
-            Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
-        let control_request = NeuronFeatureRequestV1 {
-            request_id: StableId::new(request_copy.authorization.request_id)
-                .map_err(|_| Error::FeatureContract)?,
-            generation,
-            model_id: StableId::new(observed.manifest.model_id.clone())
-                .map_err(|_| Error::FeatureContract)?,
-            encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
-            head_digest: parse_digest32(&request_copy.head_digest)?,
-            weights_digest: parse_digest32(&request_copy.weights_digest)?,
-            input_digest: parse_digest32(&request_copy.input_digest)?,
-            feature_vector_q24: request_copy.feature_vector_q24,
-            expected_output_width: request_copy.expected_output_width,
-        };
-        let runtime_tuple = NeuronModelRuntimeTupleV1 {
-            model_id: control_request.model_id.clone(),
-            model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
-            weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
-            tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
-            preprocessor_digest: parse_digest32(&observed.manifest.preprocessor_digest)?,
-            quantization_digest: parse_digest32(&observed.manifest.quantization_digest)?,
-            runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
-            device_digest: parse_digest32(&observed.manifest.device_digest)?,
-        };
-        let status = match observed.status {
-            ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
-            ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
-            ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
-            ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
-        };
-        build_neuron_feature_receipt_v1(
-            &control_request,
-            runtime_tuple,
-            NeuronFeatureObservationV1 {
-                encoder_digest: parse_digest32(&observed.encoder_digest)?,
-                head_digest: parse_digest32(&observed.head_digest)?,
-                drive_q24: observed.drive_q24,
-                prediction_q24: observed.prediction_q24,
-                observed_memory_bytes: observed.observed_memory_bytes,
-                transient_allocation_bytes: observed.transient_allocation_bytes,
-                queue_age_micros: observed.queue_age_micros,
-                latency_micros: observed.latency_micros,
-                status,
-            },
-        )
-        .map_err(|_| Error::FeatureContract)
+        match project_neuron_feature_receipt(request_copy, observed) {
+            Ok(receipt) => Ok(receipt),
+            Err(error) => {
+                self.execution_indeterminate = true;
+                Err(error)
+            }
+        }
     }
+}
+
+/// Project an already verified native worker observation into the canonical
+/// inference-control model receipt without executing the backend again.
+fn project_neuron_feature_receipt(
+    request_copy: NeuronFeatureRequest,
+    observed: NeuronFeatureExecutionObservation,
+) -> Result<NeuronFeatureReceiptV1, Error> {
+    let generation =
+        Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
+    let control_request = NeuronFeatureRequestV1 {
+        request_id: StableId::new(request_copy.authorization.request_id)
+            .map_err(|_| Error::FeatureContract)?,
+        generation,
+        model_id: StableId::new(observed.manifest.model_id.clone())
+            .map_err(|_| Error::FeatureContract)?,
+        encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
+        head_digest: parse_digest32(&request_copy.head_digest)?,
+        weights_digest: parse_digest32(&request_copy.weights_digest)?,
+        input_digest: parse_digest32(&request_copy.input_digest)?,
+        feature_vector_q24: request_copy.feature_vector_q24,
+        expected_output_width: request_copy.expected_output_width,
+    };
+    let runtime_tuple = NeuronModelRuntimeTupleV1 {
+        model_id: control_request.model_id.clone(),
+        model_manifest_digest: parse_digest32(&observed.manifest.model_digest)?,
+        weights_digest: parse_digest32(&observed.manifest.weights_digest)?,
+        tokenizer_digest: parse_digest32(&observed.manifest.tokenizer_digest)?,
+        preprocessor_digest: parse_digest32(&observed.manifest.preprocessor_digest)?,
+        quantization_digest: parse_digest32(&observed.manifest.quantization_digest)?,
+        runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
+        device_digest: parse_digest32(&observed.manifest.device_digest)?,
+    };
+    let status = match observed.status {
+        ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
+        ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
+        ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
+        ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
+    };
+    build_neuron_feature_receipt_v1(
+        &control_request,
+        runtime_tuple,
+        NeuronFeatureObservationV1 {
+            encoder_digest: parse_digest32(&observed.encoder_digest)?,
+            head_digest: parse_digest32(&observed.head_digest)?,
+            drive_q24: observed.drive_q24,
+            prediction_q24: observed.prediction_q24,
+            observed_memory_bytes: observed.observed_memory_bytes,
+            transient_allocation_bytes: observed.transient_allocation_bytes,
+            queue_age_micros: observed.queue_age_micros,
+            latency_micros: observed.latency_micros,
+            status,
+        },
+    )
+    .map_err(|_| Error::FeatureContract)
 }
 
 fn parse_digest32(value: &str) -> Result<Digest32, Error> {
@@ -711,6 +841,44 @@ fn validate_neuron_feature_output(
     validate_digest(&value.head_digest, "head")?;
     Ok(())
 }
+
+#[path = "model_worker_batch.rs"]
+mod batch;
+
+pub use batch::DriverNeuronBackendBatch;
+pub use batch::DriverNeuronBatchMember;
+pub use batch::NeuronBackendBatchDriver;
+pub use batch::NeuronBackendBatchReceipt;
+pub use batch::canonical_neuron_batch_digest;
+
+#[path = "model_worker_cpu_head.rs"]
+mod cpu_head;
+
+pub use cpu_head::CpuGatedHead;
+pub use cpu_head::CpuGatedHeadDriver;
+pub use cpu_head::cpu_gated_bundle_weights_digest;
+
+#[path = "model_worker_stem_projection.rs"]
+pub mod stem_projection;
+
+#[path = "model_worker_stem_artifact.rs"]
+mod stem_artifact;
+
+pub use stem_artifact::SelectedStemProjectionReaderV1;
+pub use stem_artifact::StemCpuHeadBatchItemV1;
+pub use stem_artifact::StemCpuHeadBatchUseV1;
+pub use stem_artifact::StemCpuHeadUseV1;
+pub use stem_artifact::StemProjectionArtifactError;
+pub use stem_artifact::StemProjectionOwnerFenceV1;
+pub use stem_artifact::StemProjectionReadObservationV1;
+
+#[path = "model_worker_stem_head_artifact.rs"]
+mod stem_head_artifact;
+
+pub use stem_head_artifact::SelectedStemHeadBankReaderV1;
+pub use stem_head_artifact::StemHeadArtifactError;
+pub use stem_head_artifact::StemHeadBankReadObservationV1;
+pub use stem_head_artifact::encode_cpu_head_bank_candidate_v1;
 
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]

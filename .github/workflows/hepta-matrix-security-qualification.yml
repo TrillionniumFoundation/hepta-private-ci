@@ -1,0 +1,586 @@
+name: Hepta Matrix SDK security prerequisites (hard gate)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'qualification/matrix-security/**'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'codex-rs/deny.toml'
+      - 'codex-rs/rust-toolchain.toml'
+      - 'codex-rs/hepta-matrix-sdk/**'
+      - 'codex-rs/hepta-matrixd/Cargo.toml'
+      - 'codex-rs/third_party/matrix-sdk-sqlite-*/**'
+      - '.github/workflows/hepta-matrix-security-qualification.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: matrix-security-prerequisites-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  no-waiver-crypto-migration:
+    name: Verify Matrix dependency graph without advisory waivers
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Bind exact tested revision
+        run: git rev-parse HEAD HEAD^{tree}
+      - name: Contract and anti-bypass tests
+        run: |
+          python3 -m compileall -q qualification/matrix-security
+          python3 -m unittest discover -v -s qualification/matrix-security -p 'test_*.py'
+      - name: Record lock graph and unresolved security blockers
+        if: always()
+        run: |
+          python3 qualification/matrix-security/matrix_dependency_gate.py \
+            --root . --output "$RUNNER_TEMP/hepta-matrix-security-prerequisites.json"
+      - name: Preserve read-only audit evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-matrix-security-prerequisites-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-matrix-security-prerequisites.json
+          if-no-files-found: error
+          retention-days: 14
+      # This MUST fail while Matrix 0.18, anymap2, or any security waiver
+      # remains. It supplements rather than substitutes global cargo-deny.
+      - name: Non-waivable dependency security gate
+        run: python3 qualification/matrix-security/matrix_dependency_gate.py --root . --require-safe
+      - name: Ensure checkout was not modified
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+  pinned-upstream-source-probe:
+    name: Fixed upstream source manifest (candidate only, no execution)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Read-only checkout of exact upstream revision
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: b3c07ea6ba6e8e46e30811c0500b04505c4be9f9
+          persist-credentials: false
+          path: upstream
+      - name: Inspect fixed manifests without compiling upstream code
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/matrix-security/upstream_source_probe.py \
+            --root . --upstream upstream \
+            --expected-sha b3c07ea6ba6e8e46e30811c0500b04505c4be9f9 \
+            --output "$RUNNER_TEMP/hepta-matrix-upstream-probe.json"
+      - name: Preserve candidate compatibility report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-matrix-upstream-compat-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-matrix-upstream-probe.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: No tracked repo mutations
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  minimal-anymap-backport-source-probe:
+    name: Minimal signed-release anymap3 backport (read-only source check)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Read upstream 0.19.1 signed release commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: b18166c68bb958a21f0bca8b2d8320cb53583362
+          path: upstream-release
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Read exact upstream anymap3 migration and its parent
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: 9c5fdd2cf5be1b7b8b20541e56d7a109db968534
+          path: upstream-anymap-commit
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Verify only upstream source hunks apply to published release
+        run: |
+          python3 qualification/matrix-security/minimal_backport_probe.py \
+            --release upstream-release --migration upstream-anymap-commit \
+            --output "$RUNNER_TEMP/hepta-matrix-minimal-backport.json"
+      # This is a disposable upstream-source experiment, NOT a patch of Hepta's
+      # real Cargo graph and not a way to bypass the mandatory cargo-deny gate.
+      - name: Apply exact upstream AnyMap3 migration to isolated release clone
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/matrix-security/disposable_backport_probe.py \
+            --release upstream-release --migration upstream-anymap-commit \
+            --destination "$RUNNER_TEMP/hepta-matrix-anymap3-stage" \
+            --output "$RUNNER_TEMP/hepta-matrix-anymap3-stage.json"
+      - name: Install candidate's pinned minimum Rust compiler
+        run: rustup toolchain install 1.96.0 --profile minimal
+      - name: Resolve genuinely patched upstream Cargo graph (candidate only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          timeout 480 cargo +1.96.0 metadata \
+            --manifest-path "$RUNNER_TEMP/hepta-matrix-anymap3-stage/Cargo.toml" \
+            --format-version=1 > "$RUNNER_TEMP/hepta-matrix-anymap3-metadata.json" \
+            2> "$RUNNER_TEMP/hepta-matrix-anymap3-stderr.log"
+          status=$?
+          set -e
+          CARGO_RESOLUTION_STATUS="$status" python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"])
+          code = int(os.environ["CARGO_RESOLUTION_STATUS"])
+          metadata = {}
+          if code == 0:
+              metadata = json.loads((root / "hepta-matrix-anymap3-metadata.json").read_text())
+          packages = metadata.get("packages", [])
+          present = lambda name: sorted(p["version"] for p in packages if p["name"] == name)
+          crypto = present("matrix-sdk-crypto")
+          no_legacy = code == 0 and not present("anymap2")
+          crypto_fixed = bool(crypto) and all(
+              tuple(int(n) for n in v.split(".")[:2]) >= (0, 19) for v in crypto
+          )
+          report = {
+              "schema": "hepta.matrix-disposable-anymap3-resolution.v1",
+              "cargo_resolution_status": code,
+              "cargo_resolution_completed": code == 0,
+              "matrix_sdk_versions": present("matrix-sdk"),
+              "matrix_crypto_versions": crypto,
+              "anymap2_versions": present("anymap2"),
+              "anymap3_versions": present("anymap3"),
+              "no_anymap2": no_legacy,
+              "patched_crypto_in_upstream": crypto_fixed,
+              "hepta_lock_updated": False,
+              "hepta_sdk_integration_verified": False,
+              "cargo_deny_verified": False,
+              "wal_recovery_verified": False,
+              "e2ee_verified": False,
+              "production_authorized": False,
+          }
+          (root / "hepta-matrix-anymap3-resolution.json").write_text(
+              json.dumps(report, sort_keys=True, indent=2) + "\n"
+          )
+          print(json.dumps(report, sort_keys=True, indent=2))
+          if code == 0 and not (no_legacy and crypto_fixed):
+              raise SystemExit("candidate upstream graph still has unresolved security prerequisites")
+          PY
+          if [ "$status" != 0 ]; then
+            echo "Pinned upstream patched Cargo graph could not be resolved (NOT waived)."
+            tail -n 80 "$RUNNER_TEMP/hepta-matrix-anymap3-stderr.log"
+            exit "$status"
+          fi
+      - name: Upload exact-commit source compatibility evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-matrix-minimal-anymap3-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-matrix-minimal-backport.json
+            ${{ runner.temp }}/hepta-matrix-anymap3-stage.json
+            ${{ runner.temp }}/hepta-matrix-anymap3-resolution.json
+            ${{ runner.temp }}/hepta-matrix-anymap3-stderr.log
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Source tracked files unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  # Next non-promoting P0 proof: actually compile the smallest reviewed source
+  # candidate.  This is separate from the real Hepta lock/crypto/WAL/E2EE gate.
+  minimal-backport-native-compile:
+    name: Compile isolated Matrix anymap3/E2EE/SQLite candidate (NOT acceptance)
+    needs: minimal-anymap-backport-source-probe
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Read exact signed-release source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: b18166c68bb958a21f0bca8b2d8320cb53583362
+          path: upstream-release
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Read exact AnyMap3 upstream change
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: 9c5fdd2cf5be1b7b8b20541e56d7a109db968534
+          path: upstream-anymap-commit
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Stage minimum source delta outside tested checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD HEAD^{tree}
+          python3 qualification/matrix-security/disposable_backport_probe.py \
+            --release upstream-release --migration upstream-anymap-commit \
+            --destination "$RUNNER_TEMP/matrix-backport-compile" \
+            --output "$RUNNER_TEMP/matrix-backport-source.json"
+      - name: Install pinned upstream minimum Rust
+        run: rustup toolchain install 1.96.0 --profile minimal
+      - name: Resolve actual staged cargo graph and reject vulnerable dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 900 cargo +1.96.0 metadata \
+            --manifest-path "$RUNNER_TEMP/matrix-backport-compile/Cargo.toml" \
+            --format-version 1 > "$RUNNER_TEMP/matrix-backport-metadata.json" \
+            2> "$RUNNER_TEMP/matrix-backport-metadata.stderr"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"])
+          packages = json.loads((root / "matrix-backport-metadata.json").read_text())["packages"]
+          select = lambda name: [p["version"] for p in packages if p["name"] == name]
+          crypto = select("matrix-sdk-crypto")
+          assert select("matrix-sdk") == ["0.19.1"], "wrong Matrix SDK package"
+          assert not select("anymap2"), "legacy anymap2 remains resolved"
+          assert select("anymap3"), "maintained AnyMap replacement missing"
+          assert crypto and all(tuple(map(int, v.split(".")[:2])) >= (0, 19) for v in crypto), (
+              "unpatched Matrix crypto remains resolved"
+          )
+          print(json.dumps({
+              "schema": "hepta.matrix-isolated-backport-compilation-prerequisite.v1",
+              "matrix_sdk": select("matrix-sdk"),
+              "crypto": crypto, "anymap2": select("anymap2"), "anymap3": select("anymap3"),
+              "real_hepta_lock_updated": False, "e2ee_runtime_tested": False,
+              "sqlite_wal_recovery_tested": False, "cargo_deny_verified": False,
+              "production_authorized": False,
+          }, sort_keys=True))
+          PY
+      - name: Compile pinned native SDK with required E2EE and SQLite features
+        shell: bash
+        run: |
+          set -uo pipefail
+          status=0
+          timeout 1800 cargo +1.96.0 check --locked \
+            --manifest-path "$RUNNER_TEMP/matrix-backport-compile/Cargo.toml" \
+            -p matrix-sdk --lib --no-default-features \
+            --features e2e-encryption,sqlite \
+            > "$RUNNER_TEMP/matrix-backport-cargo.stdout" \
+            2> "$RUNNER_TEMP/matrix-backport-cargo.stderr" || status=$?
+          STATUS="$status" python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"])
+          code = int(os.environ["STATUS"])
+          (root / "matrix-backport-compilation.json").write_text(json.dumps({
+              "schema": "hepta.matrix-isolated-source-compile.v1",
+              "source": "signed-release-0.19.1-plus-exact-upstream-anymap3-backport",
+              "cargo_exit_code": code, "cargo_check_passed": code == 0,
+              "features": ["e2e-encryption", "sqlite"], "rust_version": "1.96.0",
+              "hepta_source_modified": False, "hepta_cargo_lock_updated": False,
+              "hepta_matrix_api_compat_verified": False, "hepta_e2ee_verified": False,
+              "hepta_wal_recovery_verified": False, "cargo_deny_verified": False,
+              "production_authorized": False,
+          }, indent=2, sort_keys=True) + "\n")
+          PY
+          if [ "$status" -ne 0 ]; then
+            tail -n 100 "$RUNNER_TEMP/matrix-backport-cargo.stderr"
+          fi
+          exit "$status"
+      - name: Preserve non-authorizing compiler and source evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-isolated-anymap3-compile-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/matrix-backport-source.json
+            ${{ runner.temp }}/matrix-backport-compilation.json
+            ${{ runner.temp }}/matrix-backport-cargo.stdout
+            ${{ runner.temp }}/matrix-backport-cargo.stderr
+            ${{ runner.temp }}/matrix-backport-metadata.stderr
+          if-no-files-found: warn
+          retention-days: 14
+      - name: No original repository changes
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  # Compile the real Hepta Matrix callers, not merely upstream matrix-sdk.
+  # This is an isolated compatibility experiment; no production dependency,
+  # lock, trust anchor or security policy is changed.
+  disposable-hepta-matrix-adapter-compile:
+    name: Compile Hepta Matrix adapters against pinned secure candidate (diagnostic only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Create independent source-fenced Matrix compatibility candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_SHA="${{ github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          STAGE="$RUNNER_TEMP/hepta-matrix-adapter-$GITHUB_RUN_ID"
+          git worktree add --detach "$STAGE" "$SOURCE_SHA"
+          python3 qualification/matrix-security/staged_resolution_probe.py \
+            --source . --stage "$STAGE" --sha "$SOURCE_SHA" \
+            --sqlite-arm use_upstream_sqlite \
+            --output "$RUNNER_TEMP/hepta-matrix-adapter-stage.json"
+          printf 'HEPTA_MATRIX_ADAPTER_STAGE=%s\n' "$STAGE" >> "$GITHUB_ENV"
+          printf 'HEPTA_MATRIX_SOURCE_SHA=%s\n' "$SOURCE_SHA" >> "$GITHUB_ENV"
+      - name: Install isolated candidate Rust 1.96 without changing project toolchain
+        run: rustup toolchain install 1.96.0 --profile minimal
+      - name: Resolve exact candidate graph and only the proven stale lock conflict
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CARGO_NET_GIT_FETCH_WITH_CLI=true
+          manifest="$HEPTA_MATRIX_ADAPTER_STAGE/codex-rs/Cargo.toml"
+          set +e
+          timeout 600 cargo +1.96.0 metadata --manifest-path "$manifest" \
+            --format-version=1 > "$RUNNER_TEMP/hepta-matrix-adapter-metadata.json" \
+            2> "$RUNNER_TEMP/hepta-matrix-adapter-metadata.stderr"
+          status=$?
+          set -e
+          if [ "$status" -ne 0 ] && python3 qualification/matrix-security/isolated_lock_repin_probe.py \
+            --stderr "$RUNNER_TEMP/hepta-matrix-adapter-metadata.stderr" \
+            --manifest "$manifest" \
+            --lock "$HEPTA_MATRIX_ADAPTER_STAGE/codex-rs/Cargo.lock" \
+            --output "$RUNNER_TEMP/hepta-matrix-adapter-repin.json"; then
+            timeout 180 cargo +1.96.0 update --manifest-path "$manifest" \
+              -p async-trait --precise 0.1.92 \
+              > "$RUNNER_TEMP/hepta-matrix-adapter-repin.log" 2>&1
+            timeout 600 cargo +1.96.0 metadata --manifest-path "$manifest" \
+              --format-version=1 > "$RUNNER_TEMP/hepta-matrix-adapter-metadata.json" \
+              2> "$RUNNER_TEMP/hepta-matrix-adapter-metadata.stderr"
+          elif [ "$status" -ne 0 ]; then
+            tail -n 90 "$RUNNER_TEMP/hepta-matrix-adapter-metadata.stderr"
+            exit "$status"
+          fi
+          # Preflight is fail closed on anymap2, unpatched crypto, mixed SDK
+          # family, wrong Git SHA, disabled E2EE/SQLite or unlinked Hepta owners.
+          python3 qualification/matrix-security/adapter_candidate_gate.py \
+            --metadata "$RUNNER_TEMP/hepta-matrix-adapter-metadata.json" \
+            --source-manifest codex-rs/Cargo.toml \
+            --staged-manifest "$manifest" \
+            --output "$RUNNER_TEMP/hepta-matrix-adapter-preflight.json"
+      - name: Compile actual Hepta Matrix SDK and Matrixd targets with pinned SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          export CARGO_NET_GIT_FETCH_WITH_CLI=true
+          set +e
+          timeout 2100 cargo +1.96.0 check --locked \
+            --manifest-path "$HEPTA_MATRIX_ADAPTER_STAGE/codex-rs/Cargo.toml" \
+            -p codex-hepta-matrix-sdk -p codex-hepta-matrixd \
+            --all-targets \
+            > "$RUNNER_TEMP/hepta-matrix-adapter-check.stdout" \
+            2> "$RUNNER_TEMP/hepta-matrix-adapter-check.stderr"
+          status=$?
+          set -e
+          CARGO_CHECK_EXIT_CODE="$status" python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          status = int(os.environ["CARGO_CHECK_EXIT_CODE"])
+          report = {
+              "schema": "hepta.matrix-disposable-adapter-compile.v1",
+              "source_sha": os.environ["HEPTA_MATRIX_SOURCE_SHA"],
+              "rust_version": "1.96.0 (staged only)",
+              "hepta_matrix_sdk_and_matrixd_all_targets_checked": status == 0,
+              "cargo_exit_code": status,
+              "production_cargo_lock_updated": False,
+              "production_source_modified": False,
+              "independent_security_review_approved": False,
+              "cargo_deny_verified": False,
+              "e2ee_interoperability_verified": False,
+              "sqlite_wal_crash_recovery_verified": False,
+              "production_authorized": False,
+          }
+          path = Path(os.environ["RUNNER_TEMP"]) / "hepta-matrix-adapter-compile.json"
+          path.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
+          print(json.dumps(report, sort_keys=True))
+          PY
+          if [ "$status" -ne 0 ]; then
+            tail -n 120 "$RUNNER_TEMP/hepta-matrix-adapter-check.stderr"
+          fi
+          exit "$status"
+      - name: Preserve real compiler evidence without security promotion
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-matrix-disposable-adapter-compile-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-matrix-adapter-stage.json
+            ${{ runner.temp }}/hepta-matrix-adapter-repin.json
+            ${{ runner.temp }}/hepta-matrix-adapter-repin.log
+            ${{ runner.temp }}/hepta-matrix-adapter-metadata.stderr
+            ${{ runner.temp }}/hepta-matrix-adapter-preflight.json
+            ${{ runner.temp }}/hepta-matrix-adapter-check.stdout
+            ${{ runner.temp }}/hepta-matrix-adapter-check.stderr
+            ${{ runner.temp }}/hepta-matrix-adapter-compile.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Discard disposable worktree; original source and locks must remain unchanged
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${HEPTA_MATRIX_ADAPTER_STAGE:-}" ] &&
+             [ -d "$HEPTA_MATRIX_ADAPTER_STAGE" ]; then
+            git worktree remove --force "$HEPTA_MATRIX_ADAPTER_STAGE"
+          fi
+          git diff --check
+          git diff --exit-code
+
+  disposable-cargo-resolution-probe:
+    name: Disposable pinned SDK Cargo resolver (${{ matrix.sqlite_arm }}, diagnostic only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 24
+    strategy:
+      fail-fast: false
+      matrix:
+        sqlite_arm: [retain_legacy_sqlite_patch, use_upstream_sqlite]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      # github and matrix are valid here; runner.temp is not available at job.env.
+      # Put the disposable worktree in a unique sibling of github.workspace.
+      STAGE: ${{ github.workspace }}/../hepta-matrix-stage-${{ github.run_id }}-${{ matrix.sqlite_arm }}
+      RESOLVE_ARM: ${{ matrix.sqlite_arm }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Stage exact source in disposable detached worktree
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git worktree add --detach "$STAGE" "$SOURCE_SHA"
+          python3 qualification/matrix-security/staged_resolution_probe.py --source . --stage "$STAGE" --sha "$SOURCE_SHA" --sqlite-arm "$RESOLVE_ARM" --output "$RUNNER_TEMP/hepta-matrix-resolution-stage.json"
+      - name: Install candidate upstream minimum Rust compiler
+        run: rustup toolchain install 1.96.0 --profile minimal
+      - name: Resolve pinned matrix-sdk Git graph without compiling external source
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          timeout 480 cargo +1.96.0 metadata --manifest-path "$STAGE/codex-rs/Cargo.toml" --format-version=1 > "$RUNNER_TEMP/hepta-matrix-metadata.json" 2> "$RUNNER_TEMP/hepta-matrix-metadata-stderr.log"
+          result=$?
+          initial_result="$result"
+          update_result="not_attempted"
+          set -e
+          # The resolver is permitted to adjust ONE stale transitive lock
+          # version only in the disposable worktree, only after the exact
+          # previously observed async-trait 0.1.89/0.1.92 conflict is proven.
+          # Unknown errors, source/feature drift and security changes fail
+          # closed. Never edit real Cargo.lock, ignore an advisory, or claim
+          # model/recovery readiness from a dependency graph.
+          if [ "$result" -ne 0 ] && python3 qualification/matrix-security/isolated_lock_repin_probe.py \
+            --stderr "$RUNNER_TEMP/hepta-matrix-metadata-stderr.log" \
+            --manifest "$STAGE/codex-rs/Cargo.toml" \
+            --lock "$STAGE/codex-rs/Cargo.lock" \
+            --output "$RUNNER_TEMP/hepta-matrix-async-trait-repin-plan.json"; then
+            cp "$RUNNER_TEMP/hepta-matrix-metadata-stderr.log" \
+              "$RUNNER_TEMP/hepta-matrix-metadata-first-stderr.log"
+            set +e
+            timeout 180 cargo +1.96.0 update \
+              --manifest-path "$STAGE/codex-rs/Cargo.toml" \
+              -p async-trait --precise 0.1.92 \
+              > "$RUNNER_TEMP/hepta-matrix-async-trait-update.log" 2>&1
+            update_result=$?
+            if [ "$update_result" -eq 0 ]; then
+              timeout 480 cargo +1.96.0 metadata \
+                --manifest-path "$STAGE/codex-rs/Cargo.toml" \
+                --format-version=1 \
+                > "$RUNNER_TEMP/hepta-matrix-metadata.json" \
+                2> "$RUNNER_TEMP/hepta-matrix-metadata-stderr.log"
+              result=$?
+            fi
+            set -e
+          fi
+          CARGO_INITIAL_STATUS="$initial_result" CARGO_UPDATE_STATUS="$update_result" CARGO_RESOLUTION_STATUS="$result" python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          status=int(os.environ['CARGO_RESOLUTION_STATUS'])
+          data={}
+          if status==0:
+              data=json.loads((root/'hepta-matrix-metadata.json').read_text())
+          pkgs=data.get('packages',[])
+          names=('matrix-sdk','matrix-sdk-base','matrix-sdk-crypto','matrix-sdk-sqlite','anymap2','anymap3','libsqlite3-sys')
+          versions={name:sorted(x['version'] for x in pkgs if x['name']==name) for name in names}
+          out={'schema':'hepta.matrix-sdk-resolution-result.v2',
+               'sqlite_arm':os.environ['RESOLVE_ARM'],
+               'status_code':status,'cargo_resolution_completed':status==0,
+               'initial_resolution_status':int(os.environ['CARGO_INITIAL_STATUS']),
+               'disposable_async_trait_repin_attempted':os.environ['CARGO_UPDATE_STATUS']!='not_attempted',
+               'disposable_async_trait_update_status':(
+                   None if os.environ['CARGO_UPDATE_STATUS']=='not_attempted'
+                   else int(os.environ['CARGO_UPDATE_STATUS'])),
+               'no_production_lock_mutation':True,
+               'exact_upstream_sha':'b3c07ea6ba6e8e46e30811c0500b04505c4be9f9',
+               'versions':versions,
+               'no_anymap2':status==0 and not versions['anymap2'],
+               'fixed_crypto_observed':status==0 and bool(versions['matrix-sdk-crypto']) and all(tuple(map(int,v.split('.'))) >= (0,19,0) for v in versions['matrix-sdk-crypto']),
+               'production_authorized':False,'cargo_deny_verified':False,
+               'hepta_e2ee_wal_recovery_verified':False}
+          (root/'hepta-matrix-resolution-result.json').write_text(json.dumps(out,indent=2,sort_keys=True)+'\n')
+          print(json.dumps(out,indent=2,sort_keys=True))
+          PY
+          if [ "$result" != 0 ]; then
+            echo "Pinned candidate resolver failed (not waived): exit $result"
+            tail -n 90 "$RUNNER_TEMP/hepta-matrix-metadata-stderr.log"
+          fi
+          # Diagnostic only. This job never relaxes the separate hard gate.
+      - name: Upload immutable research diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-matrix-cargo-resolution-${{ github.run_id }}-${{ matrix.sqlite_arm }}
+          path: |
+            ${{ runner.temp }}/hepta-matrix-resolution-stage.json
+            ${{ runner.temp }}/hepta-matrix-resolution-result.json
+            ${{ runner.temp }}/hepta-matrix-metadata-stderr.log
+            ${{ runner.temp }}/hepta-matrix-metadata-first-stderr.log
+            ${{ runner.temp }}/hepta-matrix-async-trait-repin-plan.json
+            ${{ runner.temp }}/hepta-matrix-async-trait-update.log
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Restore isolation and assert source clean
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -e "$STAGE"; then git worktree remove --force "$STAGE"; fi
+          git diff --check
+          git diff --exit-code
