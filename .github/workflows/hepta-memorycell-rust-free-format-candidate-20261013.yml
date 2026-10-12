@@ -1,0 +1,88 @@
+name: MemoryCell source-only mechanical format candidate 20261013
+on:
+  push:
+    branches:
+      - codex/memorycell-format-source-20261013
+    paths:
+      - .github/workflows/hepta-memorycell-rust-free-format-candidate-20261013.yml
+permissions:
+  contents: read
+jobs:
+  mechanical-format:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 637f8ee2dcc7d47d72938e74e0a69d8c9a2b9ccb
+          persist-credentials: true
+      - uses: ./.github/actions/setup-ci
+      - name: Apply repository Ruff format and require AST identity
+        env:
+          BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
+          EXPECTED: 637f8ee2dcc7d47d72938e74e0a69d8c9a2b9ccb
+          TARGET: codex/memorycell-format-candidate-20261013
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-format-evidence
+          python3 -m pip install --user uv==0.8.22
+          export PATH="$HOME/.local/bin:$PATH"
+          test "$(git rev-parse HEAD)" = "$EXPECTED"
+          git fetch --no-tags --depth=1 origin "$BASE"
+          git fetch --no-tags origin "refs/heads/$TARGET"
+          test "$(git rev-parse FETCH_HEAD)" = "$EXPECTED"
+          printf '%s\n' "$EXPECTED" > /tmp/hepta-format-evidence/source-commit.txt
+          just fmt --base "$BASE" 2>&1 | tee /tmp/hepta-format-evidence/format.log
+          python3 - <<'PY'
+          import ast
+          import json
+          from pathlib import Path
+          import subprocess
+          import hashlib
+
+          paths = subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines()
+          if not 1 <= len(paths) <= 120:
+              raise ValueError("unexpected format census")
+          audit = []
+          for name in paths:
+              p = Path(name)
+              if not (name.endswith(".py") and
+                      (name.startswith("scripts/memory_cell/") or name.startswith(".github/scripts/"))):
+                  raise ValueError("non-Python or unauthorized formatting change: " + name)
+              if p.is_symlink() or not p.is_file() or p.stat().st_size > 512000:
+                  raise ValueError("unsafe formatted file")
+              original = subprocess.check_output(["git", "show", "HEAD:" + name])
+              updated = p.read_bytes()
+              if ast.dump(ast.parse(original.decode("utf8"))) != ast.dump(ast.parse(updated.decode("utf8"))):
+                  raise ValueError("Python AST changed: " + name)
+              audit.append({"path": name, "sha256": hashlib.sha256(updated).hexdigest(),
+                            "source_sha256": hashlib.sha256(original).hexdigest(), "contract": "AST-identical"})
+          Path("/tmp/hepta-format-evidence/changed.json").write_text(json.dumps(audit, indent=2) + "\n")
+          print("FORMAT_AUDIT_COUNT", len(audit))
+          PY
+          git diff --check
+          just fmt --check --base "$BASE" 2>&1 | tee /tmp/hepta-format-evidence/check.log
+          git add -u -- scripts/memory_cell .github/scripts
+          git diff --cached --check
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'style(memory-cell): AST-identical scoped Ruff corrections'
+          git rev-parse HEAD > /tmp/hepta-format-evidence/candidate-sha.txt
+          git push origin "HEAD:refs/heads/$TARGET"
+          printf 'FORMAT_CANDIDATE=%s\n' "$(cat /tmp/hepta-format-evidence/candidate-sha.txt)"
+      - name: Preserve source identity and diagnostics
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-format-evidence
+          git rev-parse HEAD > /tmp/hepta-format-evidence/observed-sha.txt
+          (cd /tmp/hepta-format-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-memorycell-mechanical-format-20261013
+          path: /tmp/hepta-format-evidence
+          if-no-files-found: error
