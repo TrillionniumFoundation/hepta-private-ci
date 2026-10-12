@@ -711,6 +711,33 @@ fn neuron_driver_total_reported_peak_cannot_bypass_memory_resource_grant() {
 }
 
 #[cfg(unix)]
+fn verified_stem_cas_fixture(
+    source: &StemFeatureRefV1,
+) -> (
+    crate::stem_artifact_cas::VerifiedStemCasArtifactsV1,
+    tempfile::TempDir,
+) {
+    use crate::stem_artifact_cas::StemArtifactCasVerifierV1;
+
+    // Physical fixture files, not declarations of a digest. The real loader
+    // must later consume an independently verified immutable artifact pack.
+    let root = tempfile::tempdir().expect("private CAS fixture root");
+    for (digest, bytes) in [
+        (source.stem_weights_digest, &b"verified-stem-by-owner"[..]),
+        (source.tokenizer_digest, &b"stem-tokenizer"[..]),
+        (source.preprocessor_digest, &b"stem-preprocessor"[..]),
+        (source.projection_digest, &b"matryoshka-256-q24"[..]),
+    ] {
+        std::fs::write(root.path().join(digest.to_string()), bytes)
+            .expect("real artifact role bytes in CAS");
+    }
+    let cas = StemArtifactCasVerifierV1::open(root.path(), 4096)
+        .expect("audited private read-only CAS root");
+    let proof = cas.verify_selected(source).expect("genuine matched blob hashes");
+    (proof, root)
+}
+
+#[cfg(unix)]
 fn signed_stem_final_use_fixture(
     binding: codex_hepta_contracts::FinalUseBinding,
 ) -> (
@@ -781,6 +808,7 @@ fn signed_final_use_enters_the_native_worker_and_remains_nonpromoting() {
         .load_model(100, manifest())
         .expect("load real Head fixture");
     let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
+    let (verified_artifacts, _cas_root) = verified_stem_cas_fixture(&source);
     let expected = worker
         .expected_stem_final_use_binding_v1(
             100,
@@ -808,6 +836,7 @@ fn signed_final_use_enters_the_native_worker_and_remains_nonpromoting() {
             VerifiedStemFeatureDispatchV1 {
                 source: &source,
                 access: &access,
+                verified_artifacts: &verified_artifacts,
                 selected_head: head,
                 feature_vector_q24: &features,
                 authorization,
@@ -842,6 +871,7 @@ fn final_use_different_signed_request_or_authority_is_rejected() {
     .expect("worker");
     worker.load_model(100, manifest()).expect("load");
     let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (verified_artifacts, _cas_root) = verified_stem_cas_fixture(&source);
     let binding = worker
         .expected_stem_final_use_binding_v1(100, &source, &access, head.clone(), &features, &auth)
         .expect("frozen request proposal");
@@ -861,6 +891,7 @@ fn final_use_different_signed_request_or_authority_is_rejected() {
             VerifiedStemFeatureDispatchV1 {
                 source: &source,
                 access: &access,
+                verified_artifacts: &verified_artifacts,
                 selected_head: head.clone(),
                 feature_vector_q24: &features,
                 authorization: amended_auth,
@@ -885,6 +916,7 @@ fn final_use_different_signed_request_or_authority_is_rejected() {
             VerifiedStemFeatureDispatchV1 {
                 source: &source,
                 access: &access,
+                verified_artifacts: &verified_artifacts,
                 selected_head: head,
                 feature_vector_q24: &features,
                 authorization: auth,
@@ -902,6 +934,7 @@ fn final_use_revocation_after_claim_fences_worker_effect_entry() {
             .expect("worker");
     worker.load_model(100, manifest()).expect("load");
     let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (verified_artifacts, _cas_root) = verified_stem_cas_fixture(&source);
     let binding = worker
         .expected_stem_final_use_binding_v1(100, &source, &access, head.clone(), &features, &auth)
         .expect("frozen binding");
@@ -924,6 +957,7 @@ fn final_use_revocation_after_claim_fences_worker_effect_entry() {
             VerifiedStemFeatureDispatchV1 {
                 source: &source,
                 access: &access,
+                verified_artifacts: &verified_artifacts,
                 selected_head: head,
                 feature_vector_q24: &features,
                 authorization: auth,
