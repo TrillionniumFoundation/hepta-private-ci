@@ -21,26 +21,7 @@ def forward_shared(bank, features, feature_indices, cell_indices, *,
     matrix-library workspace, inputs, model storage or backward saved tensors.
     No intermediate survives this call; parameter changes cannot hit a stale cache.
     """
-    if not isinstance(bank, BasisCellHeads):
-        raise ValueError("existing BasisCellHeads required")
-    checked_tensor(features, 2, "shared features")
-    if (features.shape[1] != bank.width or features.dtype != bank.base.weight.dtype
-            or not 1 <= len(features) <= 4096
-            or type(maximum_scratch_elements) is not int
-            or not 1 <= maximum_scratch_elements <= MAX_ELEMENTS):
-        raise ValueError("invalid shared features or scratch limit")
-    for ids, limit in ((feature_indices, len(features)), (cell_indices, len(bank.cell_ids))):
-        if (not isinstance(ids, torch.Tensor) or ids.dtype != torch.long
-                or ids.device.type != "cpu" or ids.ndim != 1 or not 1 <= len(ids) <= 4096
-                or bool(((ids < 0) | (ids >= limit)).any())):
-            raise ValueError("invalid bounded feature/Cell indices")
-    if feature_indices.shape != cell_indices.shape:
-        raise ValueError("unpaired feature and Cell rows")
-    if torch.unique(feature_indices).numel() != len(features):
-        raise ValueError("unreferenced feature rows are not shared work")
-    active = torch.unique(cell_indices).tolist()
-    if any(not bank.awake[i] for i in active):
-        raise ValueError("dormant Cell cannot execute")
+    _validate_request(bank, features, feature_indices, cell_indices, maximum_scratch_elements)
     u, n, r, k = len(features), len(cell_indices), bank.rank, bank.classes
     # All gathers, multiply outputs and retained projection results, not merely
     # the packed output. Fail before either projection is dispatched.
@@ -62,3 +43,27 @@ def forward_shared(bank, features, feature_indices, cell_indices, *,
     if not torch.isfinite(output).all():
         raise ValueError("nonfinite shared Cell output")
     return output
+
+
+def _validate_request(bank, features, feature_indices, cell_indices, maximum_scratch_elements):
+    """Common bounded research preflight; not a source or permission attestation."""
+    if not isinstance(bank, BasisCellHeads):
+        raise ValueError("existing BasisCellHeads required")
+    checked_tensor(features, 2, "shared features")
+    if (features.shape[1] != bank.width or features.dtype != bank.base.weight.dtype
+            or not 1 <= len(features) <= 4096
+            or type(maximum_scratch_elements) is not int
+            or not 1 <= maximum_scratch_elements <= MAX_ELEMENTS):
+        raise ValueError("invalid shared features or scratch limit")
+    for ids, limit in ((feature_indices, len(features)), (cell_indices, len(bank.cell_ids))):
+        if (not isinstance(ids, torch.Tensor) or ids.dtype != torch.long
+                or ids.device.type != "cpu" or ids.ndim != 1 or not 1 <= len(ids) <= 4096
+                or bool(((ids < 0) | (ids >= limit)).any())):
+            raise ValueError("invalid bounded feature/Cell indices")
+    if feature_indices.shape != cell_indices.shape:
+        raise ValueError("unpaired feature and Cell rows")
+    if torch.unique(feature_indices).numel() != len(features):
+        raise ValueError("unreferenced feature rows are not shared work")
+    active = torch.unique(cell_indices).tolist()
+    if any(not bank.awake[i] for i in active):
+        raise ValueError("dormant Cell cannot execute")

@@ -159,7 +159,7 @@ def probe(bank, features, fids, cids, *, repeats=3):
                 "encoder_calls_this_run": 0, "rss_measured": False, "production_authorized": False}
 
 
-def execute(archive, output, *, synthetic_scaling=False):
+def execute(archive, output, *, synthetic_scaling=False, bounded_serving=False):
     """Fixed four-Cell protocol; saved parameters/predictions precede scoring."""
     total_cpu, total_wall = time.process_time_ns(), time.perf_counter_ns()
     output = Path(output); output.mkdir(parents=True, exist_ok=False)
@@ -176,7 +176,8 @@ def execute(archive, output, *, synthetic_scaling=False):
         "imported_source_files": imports, "python": platform.python_version(),
         "torch": torch.__version__, "torch_threads": torch.get_num_threads(), "cells": 4, "classes": 4, "rank": 8, "seed": 7347,
         "base_steps": 200, "steps_each_cell": 200, "synthetic_scaling": synthetic_scaling,
-        "source_file_sha256": source_hashes, "fresh_encoder_execution": False})
+        "source_file_sha256": source_hashes, "fresh_encoder_execution": False,
+        "bounded_serving": bounded_serving})
     try:
         inventory, ids, raw, reference, _ = load_reference(archive)
         rows, raw, config = derive_study(inventory, ids, raw)
@@ -226,6 +227,10 @@ def execute(archive, output, *, synthetic_scaling=False):
         write_once(output/"predictions.json", predictions)
         measured = probe(learned, x, fids, cids)
         write_once(output/"trained-serving.json", measured)
+        if bounded_serving:
+            from bounded_multicell_probe import probe_bounded
+            with torch.no_grad():
+                write_once(output/"bounded-trained-serving.json", probe_bounded(learned, x, fids, cids))
         if synthetic_scaling:
             for size in (64, 256, 1024, 4096):
                 bank = BasisCellHeads(learned.width, 4, 8, tuple(f"fixture-{i}" for i in range(size)), seed=7347)
@@ -239,6 +244,22 @@ def execute(archive, output, *, synthetic_scaling=False):
                     result = probe(bank, x[:unique], torch.arange(size)%unique, torch.arange(size))
                     result["private_coefficients_synthetic_not_trained"] = True
                     write_once(output/f"synthetic-{size}-{unique}.json", result)
+                    if bounded_serving:
+                        with torch.no_grad():
+                            bounded = probe_bounded(bank, x[:unique], torch.arange(size)%unique, torch.arange(size))
+                        bounded["private_coefficients_synthetic_not_trained"] = True
+                        write_once(output/f"bounded-synthetic-{size}-{unique}.json", bounded)
+        if synthetic_scaling and bounded_serving:
+            bank = BasisCellHeads(512, 64, 32, tuple(f"untrained-{i}" for i in range(64)), seed=7)
+            g = torch.Generator().manual_seed(53)
+            with torch.no_grad():
+                bank.coefficients.normal_(0, .03, generator=g)
+                bank.gates.normal_(0, .03, generator=g)
+                artificial = torch.randn(32, 512, generator=g)
+                bounded = probe_bounded(bank, artificial, torch.arange(1024)%32,
+                                        torch.zeros(1024, dtype=torch.long))
+            bounded["all_parameters_and_inputs_synthetic_not_trained"] = True
+            write_once(output/"bounded-single-active-large-head.json", bounded)
         files = {p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in output.iterdir() if p.is_file()}
         report = {"schema": "hepta.stem.multicell-run.v1",
             "calibration_selection_performed": False,
@@ -320,6 +341,8 @@ if __name__ == "__main__":
     parser.add_argument("--archive", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--synthetic-scaling", action="store_true")
+    parser.add_argument("--bounded-serving", action="store_true",
+                        help="also run common-validation and 1 MiB tiled inference comparison")
     parser.add_argument("--review-run", type=Path)
     args = parser.parse_args()
     torch.set_num_threads(2)
@@ -327,4 +350,5 @@ if __name__ == "__main__":
     if args.review_run:
         review(args.archive, args.review_run, args.output)
     else:
-        execute(args.archive, args.output, synthetic_scaling=args.synthetic_scaling)
+        execute(args.archive, args.output, synthetic_scaling=args.synthetic_scaling,
+                bounded_serving=args.bounded_serving)
