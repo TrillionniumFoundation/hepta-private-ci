@@ -90,7 +90,7 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
     failed_metrics: AtomicU64,
-    maximum_ids: usize,
+    maximum_pending: usize,
 }
 
 pub fn neuron_batch_final_use_binding_v1(
@@ -161,7 +161,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             retired: BTreeSet::new(),
             metric_sink: None,
             failed_metrics: AtomicU64::new(0),
-            maximum_ids: MAX_WORKER_RETIRED_IDS,
+            maximum_pending: limits.max_pending,
         })
     }
 
@@ -238,7 +238,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         if self.retired.contains(&retired_identity(&id)) || self.pending.contains_key(&id) {
             return Err(BatchWorkerErrorV1::Duplicate);
         }
-        if self.retired.len() + self.pending.len() >= self.maximum_ids {
+        if self.pending.len() >= self.maximum_pending
+            || self.retired.len() + self.pending.len() >= MAX_WORKER_RETIRED_IDS
+        {
             return Err(BatchWorkerErrorV1::Capacity);
         }
         if key.generation.get() != self.worker.worker_generation()
