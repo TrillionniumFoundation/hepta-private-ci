@@ -109,7 +109,7 @@ def run(output, evidence_dir):
         for trained in TEACHERS:
             scores=[scalar_score(routers[trained]['state'],r['features']) for r in teacher['selection']]
             for objective in TEACHERS:selectors[trained+'_'+objective]=select(teacher['selection'],scores,objective)
-        selectors['confidence_outcome']=select(teacher['selection'],[1-r['features'][0] for r in teacher['selection']],'outcome')
+        selectors['confidence_outcome']=select(teacher['selection'],[1-r['features'][0] for r in teacher['selection']],'outcome',score_kind='confidence_complement')
         selectors['best_fixed']=2 if math.fsum(r['outcome_gain']-PRICE for r in teacher['selection'])>0 else 1
         jobs.append({'phase':'selector','cpu_ns':time.process_time_ns()-selector_start})
         policy={'routers':routers,'selectors':selectors,'new_frames_not_used_in_fit_or_selection':True}

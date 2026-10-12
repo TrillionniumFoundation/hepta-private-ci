@@ -44,11 +44,24 @@ def fit(torch, rows, teacher):
             'rows_sha256':digest(rows),'cpu_ns':time.process_time_ns()-started}
 
 
-def select(rows, scores, objective):
+def select(rows, scores, objective, *, score_kind="probability"):
     require(objective in TEACHERS and 1 <= len(rows) <= 512 and len(rows)==len(scores)
         and all(r['source_id'].startswith('selection:') for r in rows)
         and len({r['source_id'] for r in rows})==len(rows), 'selection-only outcomes')
-    require(all(type(p) in (int,float) and math.isfinite(p) and 0<=p<=1 for p in scores), 'finite scores')
+    require(score_kind in ('probability','confidence_complement'), 'declared selection score kind')
+    require(all(type(p) in (int,float) and math.isfinite(p) for p in scores), 'finite scores')
+    if score_kind == 'probability':
+        require(all(0<=p<=1 for p in scores), 'finite scores')
+    else:
+        # Rank scores are the original 1-p, not claimed calibrated probabilities.
+        # Retain tiny signed roundoff exactly; never clip ties or relax model checks.
+        for row, score in zip(rows, scores):
+            f = row.get('features')
+            require(type(f) is list and len(f)==15 and
+                    all(type(x) in (int,float) and math.isfinite(x) for x in f), 'confidence features')
+            p = f[:3]
+            require(p == sorted(p, reverse=True) and min(p)>=0 and
+                    abs(math.fsum(p)-1)<1e-10 and score==1-p[0], 'bound confidence complement')
     require(all(type(r[objective+'_gain']) in (float,int) and math.isfinite(r[objective+'_gain']) and -2.04-1e-12<=r[objective+'_gain']<=2.04+1e-12 for r in rows),'finite selection gain')
     grid=[]
     for threshold in sorted(set([0.,1.01,*scores])):
