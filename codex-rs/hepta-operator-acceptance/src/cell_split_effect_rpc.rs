@@ -713,4 +713,31 @@ mod tests {
         let paths = [0, 1, 2, 3].map(|i| root.path().join(format!("{i}.sock")));
         assert!(CellSplitUnixEffectPortV1::new(paths, [key; 4], Duration::from_secs(1)).is_err());
     }
+
+    #[test]
+    fn rpc_client_refuses_trickled_response() {
+        use std::io::Write as _;
+        let root = tempfile::tempdir().expect("root");
+        let socket = root.path().join("cas.sock");
+        let listener = UnixListener::bind(&socket).expect("socket");
+        let server = thread::spawn(move || {
+            let (mut stream, _) = listener.accept().expect("accepted");
+            let _: CellSplitEffectRpcRequestV1 = receive_frame(&mut stream).expect("request");
+            for byte in [0_u8, 0, 0, 4, b'n', b'u', b'l', b'l'] {
+                if stream.write_all(&[byte]).is_err() { break; }
+                thread::sleep(Duration::from_millis(10));
+            }
+        });
+        let keys = [1_u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
+        let mut client = CellSplitUnixEffectPortV1::new(
+            [socket, root.path().join("migration.sock"), root.path().join("cns.sock"), root.path().join("supervisor.sock")],
+            keys,
+            Duration::from_millis(45),
+        ).expect("client");
+        assert!(matches!(client.execute(&intent()),
+            Err(CellSplitEffectRpcErrorV1::Invalid("RPC frame deadline exceeded"))
+                | Err(CellSplitEffectRpcErrorV1::Io(_))
+        ));
+        server.join().expect("server");
+    }
 }
