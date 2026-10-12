@@ -124,6 +124,16 @@ def validate_run_numbers(entry: dict[str, Any], scope: int, mode: str) -> dict[s
     )
     return vals
 
+
+def exact_per_request_count_regressed(
+    candidate: dict[str, Any], baseline: dict[str, Any], field: str
+) -> bool:
+    """Compare count/request ratios with exact integers, even beyond 2**53."""
+    return (
+        candidate[field] * baseline["completed"]
+        > baseline[field] * candidate["completed"]
+    )
+
 def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str, Any]:
     if packet.get("schema") != "hepta.cell-split.performance.v1":
         raise InvalidEvidence("unsupported schema")
@@ -219,14 +229,18 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
                 )
         for key in (
             "cpu_per_request_s",
-            "communication_per_request_bytes",
-            "fsync_per_request",
             "lock_wait_per_request_ms",
             "rss_peak_bytes",
             "recovery_ms",
         ):
             if optimized[key] > logical[key]:
                 violations.append(f"{scope}: optimized {key} regressed")
+        for field, metric in (
+            ("communication_bytes", "communication_per_request_bytes"),
+            ("fsync_count", "fsync_per_request"),
+        ):
+            if exact_per_request_count_regressed(optimized, logical, field):
+                violations.append(f"{scope}: optimized {metric} regressed")
         if optimized["failure_rate"] > logical["failure_rate"]:
             violations.append(f"{scope}: optimized failure rate regressed")
         if optimized["negative_transfer_rate"] > logical["negative_transfer_rate"]:
@@ -244,14 +258,18 @@ def analyze(packet: dict[str, Any], max_p99_regression: float = 0.0) -> dict[str
                 )
         for key in (
             "cpu_per_request_s",
-            "communication_per_request_bytes",
-            "fsync_per_request",
             "lock_wait_per_request_ms",
             "rss_peak_bytes",
             "recovery_ms",
         ):
             if physical[key] > baseline[key]:
                 violations.append(f"{scope}: physical {key} regressed")
+        for field, metric in (
+            ("communication_bytes", "communication_per_request_bytes"),
+            ("fsync_count", "fsync_per_request"),
+        ):
+            if exact_per_request_count_regressed(physical, baseline, field):
+                violations.append(f"{scope}: physical {metric} regressed")
         if physical["failure_rate"] > baseline["failure_rate"]:
             violations.append(f"{scope}: physical failure rate regressed")
         if physical["negative_transfer_rate"] > baseline["negative_transfer_rate"]:
