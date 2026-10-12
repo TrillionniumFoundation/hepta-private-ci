@@ -313,6 +313,11 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
                 if (first.journal_authority_epoch, first.journal_revision)
                     < (previous.journal_authority_epoch, previous.journal_revision)
                     || first.durable_source_sequence < previous.durable_source_sequence
+                    // A changed high-water requires a new *durable* source
+                    // commit. A caller cannot promote revision/epoch/digests
+                    // merely by rewriting the same source-sequence record.
+                    || (first.durable_source_sequence == previous.durable_source_sequence
+                        && &first != previous)
                     || ((first.journal_authority_epoch, first.journal_revision)
                         == (previous.journal_authority_epoch, previous.journal_revision)
                         && (first.minimum_checkpoint_digest
