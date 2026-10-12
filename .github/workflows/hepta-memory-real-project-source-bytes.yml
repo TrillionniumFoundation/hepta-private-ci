@@ -8,6 +8,8 @@ on:
       - scripts/memory_cell/test_project_pr_source_materialize.py
       - scripts/memory_cell/project_pr_review_packet.py
       - scripts/memory_cell/project_pr_parent_context.py
+      - scripts/memory_cell/project_pr_parent_review_packet.py
+      - scripts/memory_cell/test_project_pr_parent_review_packet.py
       - scripts/memory_cell/test_project_pr_parent_context.py
       - scripts/memory_cell/test_project_pr_review_packet.py
       - scripts/memory_cell/project_pr_source_precommit.py
@@ -37,6 +39,7 @@ jobs:
           python3 -m py_compile scripts/memory_cell/project_pr_source_materialize.py
           python3 -m unittest discover -s scripts/memory_cell -p 'test_project_pr_parent_context.py' -v 2>&1 | tee /tmp/hepta-project-source-bytes/parent-tests.log
           python3 -m py_compile scripts/memory_cell/project_pr_parent_context.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_project_pr_parent_review_packet.py -v 2>&1 | tee /tmp/hepta-project-source-bytes/parent-packet-tests.log
       - name: Check exact new source formatting, not a bypass of repository gates
         run: |
           set -euo pipefail
@@ -48,6 +51,8 @@ jobs:
             scripts/memory_cell/test_project_pr_review_packet.py \
             scripts/memory_cell/project_pr_parent_context.py \
             scripts/memory_cell/test_project_pr_parent_context.py \
+            scripts/memory_cell/project_pr_parent_review_packet.py \
+            scripts/memory_cell/test_project_pr_parent_review_packet.py \
             2>&1 | tee /tmp/hepta-project-source-bytes/format.log
       - name: Fetch exact precommitted Git blobs into a bounded read-only corpus
         env:
@@ -102,6 +107,18 @@ jobs:
             /tmp/hepta-project-source-bytes/first-parent \
             --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
             --reopen-only 2>&1 | tee /tmp/hepta-project-source-bytes/parent-reopen.log
+      - name: Bind first-parent source bytes to all sixteen unsigned review questions
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/project_pr_parent_review_packet.py \
+            scripts/memory_cell/data/real-project-pr-source-cut-20261012.json \
+            /tmp/hepta-project-source-bytes/original \
+            /tmp/hepta-project-source-bytes/first-parent \
+            /tmp/hepta-project-source-bytes/unsigned-first-parent-review.json \
+            --source-sha256 ef2a46ce037db4a91affddd2498eb8e089771ae5734bc13c56cb8a97b840a463 \
+            2>&1 | tee /tmp/hepta-project-source-bytes/parent-packet.log
       - name: Seal tested source and byte-level receipts
         if: always()
         run: |
@@ -113,6 +130,8 @@ jobs:
              scripts/memory_cell/test_project_pr_review_packet.py \
              scripts/memory_cell/project_pr_parent_context.py \
              scripts/memory_cell/test_project_pr_parent_context.py \
+             scripts/memory_cell/project_pr_parent_review_packet.py \
+             scripts/memory_cell/test_project_pr_parent_review_packet.py \
              /tmp/hepta-project-source-bytes/research-source/
           git rev-parse HEAD > /tmp/hepta-project-source-bytes/tested-commit.txt
           (cd /tmp/hepta-project-source-bytes && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
