@@ -417,6 +417,57 @@ impl NeuronFeatureDriver for CpuGatedHeadDriver {
 }
 
 impl NeuronBackendBatchDriver for CpuGatedHeadDriver {
+    fn preflight_neuron_backend_batch_bytes(
+        &self,
+        handle: &DriverModelHandle,
+        requests: &[NeuronFeatureRequest],
+    ) -> Result<u64, Error> {
+        if requests.is_empty() || requests.len() > 32 {
+            return Err(Error::FeatureBatchLimit);
+        }
+        let input_width = requests[0].feature_vector_q24.len();
+        let mut members_by_head = BTreeMap::<&str, usize>::new();
+        let mut output_bytes = 0usize;
+        for request in requests {
+            let head = self.validate_selected(handle, request)?;
+            if request.feature_vector_q24.len() != input_width {
+                return Err(Error::FeatureBatchMismatch);
+            }
+            // This is a minimum tracked numeric allocation, not actual RSS.
+            // Scalar and batch paths allocate both Q24 output arrays per Cell.
+            let member_bytes = head
+                .output_width
+                .checked_mul(2)
+                .and_then(|n| n.checked_mul(std::mem::size_of::<i64>()))
+                .ok_or(Error::ArithmeticOverflow)?;
+            output_bytes = output_bytes
+                .checked_add(member_bytes)
+                .ok_or(Error::ArithmeticOverflow)?;
+            let count = members_by_head.entry(&request.head_digest).or_insert(0);
+            *count = count.checked_add(1).ok_or(Error::ArithmeticOverflow)?;
+        }
+        let accumulator_bytes = members_by_head
+            .values()
+            .copied()
+            .max()
+            .unwrap_or(0)
+            .checked_mul(3)
+            .and_then(|n| n.checked_mul(std::mem::size_of::<i128>()))
+            .ok_or(Error::ArithmeticOverflow)?;
+        let input_bytes = requests
+            .len()
+            .checked_mul(input_width)
+            .and_then(|n| n.checked_mul(std::mem::size_of::<i64>()))
+            .ok_or(Error::ArithmeticOverflow)?;
+        let transient = input_bytes
+            .checked_add(output_bytes)
+            .and_then(|n| n.checked_add(accumulator_bytes))
+            .ok_or(Error::ArithmeticOverflow)?;
+        self.tracked_weights_bytes
+            .checked_add(u64::try_from(transient).map_err(|_| Error::ArithmeticOverflow)?)
+            .ok_or(Error::ArithmeticOverflow)
+    }
+
     fn run_neuron_backend_batch(
         &mut self,
         handle: &DriverModelHandle,
