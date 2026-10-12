@@ -169,3 +169,129 @@ jobs:
           path: ${{ runner.temp }}/safe-yaml-bazel/
           if-no-files-found: error
           retention-days: 7
+
+  publish-reviewed-bazel-blob:
+    # One-shot transfer of the reviewed native artifact, not a qualification gate.
+    # No checkout, dependency execution, ref write, approval or deployment.
+    # Remove this job when the exact blob is committed through the ordinary API.
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
+      github.event.pull_request.number == 1668 &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'fix/pon-yaml-prerequisite-rejection-20261013'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: write
+    steps:
+      - name: Upload only the exact reviewed generated lock blob
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PYBLOB'
+          """Publish one reviewed, immutable Bazel-generated Git blob; never mutate a ref."""
+          import base64
+          import hashlib
+          import io
+          import json
+          import os
+          import urllib.error
+          import urllib.parse
+          import urllib.request
+          import zipfile
+          
+          REPO = "TrillionniumFoundation/hepta-private-ci"
+          API = "https://api.github.com/repos/" + REPO
+          ARTIFACT = 11771830688
+          RUN = 38299978867
+          SOURCE = "d1b2b8dff170334a4e03a6e70d2023ba8c7adeee"
+          TREE = "a32db415c526f75735faf2dfa6b75ca85170feac"
+          ZIP_SHA = "26a7fe788daabe25659f8a401881f41b15452c7aaf53b4a0ae316944bed2956b"
+          LOCK_SHA = "8839abba4baa3c436ad1f655ece3254b4aaa8926a9b20dc981295eb216b2f5d3"
+          LOCK_BLOB = "3c82fa1427923b7893bc488598bb0efbb1226f67"
+          BASE_BLOB = "fbce837efaef4e3d8a9f258c4e22bdbf3bff42ae"
+          
+          class NoRedirect(urllib.request.HTTPRedirectHandler):
+              def redirect_request(self, req, fp, code, msg, headers, newurl):
+                  return None
+          
+          opener = urllib.request.build_opener(NoRedirect)
+          
+          def read_response(response, maximum):
+              data = response.read(maximum + 1)
+              if len(data) > maximum:
+                  raise ValueError("response exceeds fixed bound")
+              return data
+          
+          def api(path, payload=None):
+              headers = {"Authorization": "Bearer " + os.environ["GH_TOKEN"],
+                         "Accept": "application/vnd.github+json"}
+              data = None if payload is None else json.dumps(payload).encode()
+              if data is not None:
+                  headers["Content-Type"] = "application/json"
+              request = urllib.request.Request(API + path, data=data, headers=headers)
+              with opener.open(request, timeout=60) as response:
+                  return json.loads(read_response(response, 2_000_000))
+          
+          def blob(data):
+              return hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
+          
+          metadata = api(f"/actions/artifacts/{ARTIFACT}")
+          assert metadata["id"] == ARTIFACT and metadata["expired"] is False
+          assert metadata["workflow_run"]["id"] == RUN
+          assert metadata["workflow_run"]["head_sha"] == SOURCE
+          assert metadata["digest"] == "sha256:" + ZIP_SHA
+          assert metadata["size_in_bytes"] == 460987
+          request = urllib.request.Request(API + f"/actions/artifacts/{ARTIFACT}/zip",
+              headers={"Authorization": "Bearer " + os.environ["GH_TOKEN"]})
+          try:
+              with opener.open(request, timeout=60) as response:
+                  archive = read_response(response, 500_000)
+          except urllib.error.HTTPError as error:
+              if error.code != 302:
+                  raise
+              location = error.headers["Location"]
+              error.close()
+              parsed = urllib.parse.urlsplit(location)
+              assert parsed.scheme == "https" and parsed.username is None and parsed.password is None
+              assert parsed.port in (None, 443)
+              assert parsed.hostname and (parsed.hostname.endswith(".blob.core.windows.net")
+                                          or parsed.hostname.endswith(".githubusercontent.com"))
+              # A signed artifact URL is read WITHOUT forwarding the repository token.
+              with opener.open(urllib.request.Request(location), timeout=60) as response:
+                  archive = read_response(response, 500_000)
+          assert hashlib.sha256(archive).hexdigest() == ZIP_SHA
+          with zipfile.ZipFile(io.BytesIO(archive)) as package:
+              names = package.namelist()
+              assert len(names) == len(set(names)) == 6
+              assert set(names) == {"MODULE.bazel.lock", "MODULE.bazel.lock.sha256", "MODULE.bazel.lock.patch",
+                                   "generation.log", "original-MODULE.bazel.lock", "source.txt"}
+              assert sum(item.file_size for item in package.infolist()) < 4_000_000
+              assert package.read("source.txt").decode().splitlines() == [SOURCE, TREE]
+              original = package.read("original-MODULE.bazel.lock")
+              content = package.read("MODULE.bazel.lock")
+          assert blob(original) == BASE_BLOB
+          assert len(content) == 1706852
+          assert hashlib.sha256(content).hexdigest() == LOCK_SHA and blob(content) == LOCK_BLOB
+          before, after = json.loads(original), json.loads(content)
+          expected_add = {"annotate-snippets_0.12.5", "arraydeque_0.5.1", "encoding_rs_io_0.1.8",
+                          "granit-parser_1.3.0", "nohash-hasher_0.2.0", "serde-saphyr_1.3.0"}
+          expected_remove = {"serde_yaml_0.9.34+deprecated", "unsafe-libyaml_0.2.11"}
+          facts = "@@rules_rs+//rs:extensions.bzl%crate"
+          old_facts, new_facts = before["facts"][facts], after["facts"][facts]
+          assert set(new_facts) - set(old_facts) == expected_add
+          assert set(old_facts) - set(new_facts) == expected_remove
+          for key in expected_remove:
+              del old_facts[key]
+          for key in expected_add:
+              old_facts[key] = new_facts[key]
+          assert before == after
+          # Upload inert bytes only. No commit, branch, tag, review or release API is used.
+          result = api("/git/blobs", {"content": base64.b64encode(content).decode("ascii"), "encoding": "base64"})
+          assert result["sha"] == LOCK_BLOB
+          print(json.dumps({"operation": "reviewed_blob_upload_only", "artifact_id": ARTIFACT,
+                            "source": SOURCE, "blob": result["sha"], "sha256": LOCK_SHA,
+                            "refs_mutated": False, "qualification": False}, sort_keys=True))
+          PYBLOB
