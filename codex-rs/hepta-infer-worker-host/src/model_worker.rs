@@ -750,13 +750,18 @@ pub struct VerifiedStemFeatureDispatchV1<'a> {
 /// Canonical exact source/request payload digest used by the existing Worker
 /// path. A final-use issuer must sign the resulting expected binding, not
 /// replace a missing or mismatched lease payload.
-fn stem_final_use_request_digest_v1(
+fn stem_final_use_request_digest_v2(
     authorization: &WorkerRequest,
     grant: &ResourceGrant,
+    worker_id: &str,
     ref_digest: Digest32,
 ) -> Digest32 {
-    let mut raw = b"hepta.infer-worker.stem-final-use-request.v1".to_vec();
+    // V2 additionally fences the independently selected physical Worker.
+    // Same Scope, weights, reservation and resource grant MUST NOT allow a
+    // signed token prepared for Worker A to enter Worker B.
+    let mut raw = b"hepta.infer-worker.stem-final-use-request.v2".to_vec();
     for field in [
+        worker_id,
         &authorization.request_id,
         &authorization.reservation_id,
         &authorization.model_digest,
@@ -855,9 +860,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         Ok(FinalUseBinding {
             subject_id: source.principal_id.to_string(),
             destination_id: format!("neuron.head:{head_id}"),
-            request_sha256: stem_final_use_request_digest_v1(
+            request_sha256: stem_final_use_request_digest_v2(
                 authorization,
                 &self.grant,
+                &self.worker_id,
                 bound.feature_ref_digest,
             )
             .into_array(),
