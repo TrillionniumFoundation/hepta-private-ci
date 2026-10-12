@@ -147,6 +147,16 @@ fn runner_with_batch_size(
     model: ModelManifest,
     batch_size: usize,
 ) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
+    runner_with_driver(signing_key, directory, model, batch_size, Driver)
+}
+
+fn runner_with_driver<D: ModelDriver + NeuronFeatureDriver>(
+    signing_key: &SigningKey,
+    directory: &std::path::Path,
+    model: ModelManifest,
+    batch_size: usize,
+    driver: D,
+) -> AuthenticatedNeuronMicrobatchWorkerV1<D> {
     let head = FinalUseRevocations {
         authority_epoch: 9,
         revision: 1,
@@ -170,7 +180,7 @@ fn runner_with_batch_size(
         maximum_memory_bytes: 4096,
         semantic_digest: digest(b"resource-grant").to_string(),
     };
-    let mut worker = InferenceWorker::new(100, "worker-one".into(), 3, grant, Driver).unwrap();
+    let mut worker = InferenceWorker::new(100, "worker-one".into(), 3, grant, driver).unwrap();
     worker.load_model(100, model).unwrap();
     AuthenticatedNeuronMicrobatchWorkerV1::new(
         worker,
@@ -462,4 +472,144 @@ fn terminal_replay_capacity_is_independent_of_active_microbatch_capacity() {
         ),
         Err(BatchWorkerErrorV1::Duplicate)
     );
+}
+
+
+struct PhysicalDriver {
+    batch_calls: Arc<std::sync::atomic::AtomicUsize>,
+}
+
+impl ModelDriver for PhysicalDriver {
+    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+        Driver.load(manifest)
+    }
+
+    fn run(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &WorkerRequest,
+    ) -> Result<DriverRunObservation, Error> {
+        Driver.run(handle, request)
+    }
+
+    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
+        Driver.unload(handle)
+    }
+}
+
+impl NeuronFeatureDriver for PhysicalDriver {
+    fn run_neuron_features(
+        &mut self,
+        _handle: &DriverModelHandle,
+        _request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error> {
+        Err(Error::FeatureContract)
+    }
+
+    fn supports_native_neuron_batch(&self) -> bool {
+        true
+    }
+
+    fn run_neuron_features_batch(
+        &mut self,
+        handle: &DriverModelHandle,
+        requests: &[NeuronFeatureRequest],
+    ) -> Result<Vec<DriverNeuronFeatureObservation>, Error> {
+        self.batch_calls.fetch_add(1, Ordering::SeqCst);
+        let mut scalar = Driver;
+        requests
+            .iter()
+            .map(|request| scalar.run_neuron_features(handle, request))
+            .collect()
+    }
+}
+
+#[test]
+fn opt_in_driver_executes_one_physical_batch_under_independent_grants() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[51; 32]);
+    let (model, fixture, key) = fixture_request();
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut execution = runner_with_driver(
+        &signer,
+        dir.path(),
+        model,
+        2,
+        PhysicalDriver {
+            batch_calls: Arc::clone(&calls),
+        },
+    );
+    for i in 0_u8..2 {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("native-request-{i}");
+        request.authorization.reservation_id = format!("native-reservation-{i}");
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("native-final-use-{i}");
+        grant.grant.nonce = [i + 1; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        execution
+            .enqueue(100, "model".to_owned(), request, key.clone(), grant)
+            .unwrap();
+    }
+    let completed = execution.poll_and_execute(101).unwrap();
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    assert_eq!(completed.outcomes.len(), 2);
+    assert_eq!(completed.pending, 0);
+    assert!(completed.outcomes.iter().all(|outcome| matches!(
+        &outcome.result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    )));
+}
+
+#[test]
+fn invalid_signed_grant_denies_whole_physical_batch_without_driver_entry() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[52; 32]);
+    let (model, fixture, key) = fixture_request();
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut execution = runner_with_driver(
+        &signer,
+        dir.path(),
+        model,
+        2,
+        PhysicalDriver {
+            batch_calls: Arc::clone(&calls),
+        },
+    );
+    for i in 0_u8..2 {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("denied-request-{i}");
+        request.authorization.reservation_id = format!("denied-reservation-{i}");
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("denied-final-use-{i}");
+        grant.grant.nonce = [i + 1; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        if i == 1 {
+            grant.signature[0] ^= 1;
+        }
+        execution
+            .enqueue(100, "model".to_owned(), request, key.clone(), grant)
+            .unwrap();
+    }
+    let completed = execution.poll_and_execute(101).unwrap();
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+    assert_eq!(completed.outcomes.len(), 2);
+    assert!(completed
+        .outcomes
+        .iter()
+        .all(|outcome| outcome.result == Err(BatchWorkerErrorV1::Authority)));
 }
