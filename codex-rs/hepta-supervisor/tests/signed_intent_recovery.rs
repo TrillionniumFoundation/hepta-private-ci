@@ -122,7 +122,8 @@ fn write_intent_raw(
 }
 
 #[test]
-fn unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence() -> Result<(), SupervisorError> {
+fn unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence()
+-> Result<(), SupervisorError> {
     let fleet = fleet()?;
     let starting =
         fleet
@@ -185,7 +186,12 @@ fn unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence
     assert!(report.faults.is_empty());
     assert!(recovered.production_recovery_required(&fleet.agent_id)?);
     assert!(recovered.any_production_recovery_required());
-    assert!(!recovered.snapshot(&fleet.agent_id).expect("snapshot").active);
+    assert!(
+        !recovered
+            .snapshot(&fleet.agent_id)
+            .expect("snapshot")
+            .active
+    );
     let terminal = read_signed_intent(record.layout.run_root())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         .expect("still fenced signed intent");
