@@ -53,12 +53,8 @@ class SourceBindingTests(unittest.TestCase):
         )
         self.assertEqual(missing, ())
         self.assertEqual(pair[0]["negative_value"], "mode_33334444")
-        self.assertEqual(
-            pair[0]["negative_category"], "same_entity_different_relation"
-        )
-        self.assertEqual(
-            pair[2]["negative_category"], "same_relation_different_entity"
-        )
+        self.assertEqual(pair[0]["negative_category"], "same_entity_different_relation")
+        self.assertEqual(pair[2]["negative_category"], "same_relation_different_entity")
         self.assertEqual(pair[3]["negative_value"], "mode_99990000")
         self.assertEqual(
             source_hard_negatives(
@@ -84,23 +80,32 @@ class SourceBindingTests(unittest.TestCase):
         changed[0]["target"] = "mode_deadbeef"
         with self.assertRaises(ValueError):
             source_hard_negatives(
-                changed, docs, SourceTokenizer(),
-                allowed_roots={x.root for x in docs}, revoked=set()
+                changed,
+                docs,
+                SourceTokenizer(),
+                allowed_roots={x.root for x in docs},
+                revoked=set(),
             )
         changed = copy.deepcopy(examples())
         changed[3]["query"]["scope"] = "a"
         with self.assertRaises(ValueError):
             source_hard_negatives(
-                changed, docs, SourceTokenizer(),
-                allowed_roots={x.root for x in docs}, revoked=set()
+                changed,
+                docs,
+                SourceTokenizer(),
+                allowed_roots={x.root for x in docs},
+                revoked=set(),
             )
 
     def test_zero_available_negatives_do_not_turn_into_synthetic_null(self):
         docs = sources()
         one = examples()[:1]
         pair, missing = source_hard_negatives(
-            one, docs, SourceTokenizer(),
-            allowed_roots={x.root for x in docs}, revoked=set()
+            one,
+            docs,
+            SourceTokenizer(),
+            allowed_roots={x.root for x in docs},
+            revoked=set(),
         )
         self.assertEqual(pair, {})
         self.assertEqual(missing, ("qa0",))
@@ -121,7 +126,8 @@ class SourceBindingTests(unittest.TestCase):
         self.assertTrue(
             any(
                 p.grad is not None and p.grad.abs().sum().item() > 0
-                for p in model.parameters() if p.requires_grad
+                for p in model.parameters()
+                if p.requires_grad
             )
         )
         self.assertTrue(torch.isfinite(loss))
@@ -148,12 +154,17 @@ class SourceBindingTests(unittest.TestCase):
             ("A", "B", []),
             ("A", "B", [True]),
         ):
-            with self.subTest(target=target, negative=negative), self.assertRaises(
-                ValueError
+            with (
+                self.subTest(target=target, negative=negative),
+                self.assertRaises(ValueError),
             ):
                 binding_margin_loss(
-                    model, SourceTokenizer(), prompt, target, negative,
-                    backend="supervised_positions"
+                    model,
+                    SourceTokenizer(),
+                    prompt,
+                    target,
+                    negative,
+                    backend="supervised_positions",
                 )
         self.assertEqual(model.calls, 0)
 

@@ -21,8 +21,7 @@ TREE = "87e3b17a0601c17712b9512fc01eadc123060391"
 ZIP_SHA256 = "07b0f15ec150cc9817db6bfc9b4bae1e2c06a5296ca2ba3c4c7895da18b99e2f"
 ORIGINAL_RUN = 38202116864
 ARTIFACT_ID = 11726530850
-ARMS = ("prototype", "linear", "gated", "lineage_lora_gated",
-        "independent_lora_gated")
+ARMS = ("prototype", "linear", "gated", "lineage_lora_gated", "independent_lora_gated")
 
 
 def interpret_current(gate, exact, panel):
@@ -71,9 +70,7 @@ def interpret_current(gate, exact, panel):
     require(
         all(
             row["matched"] == 96
-            and row["changed_top1"] == (
-                1 if arm == "lineage_lora_gated" else 0
-            )
+            and row["changed_top1"] == (1 if arm == "lineage_lora_gated" else 0)
             and row["changed_answer_bytes"] == 0
             and row["native_support_gains"] == row["native_support_regressions"] == 0
             for arm, row in changes.items()
@@ -110,16 +107,13 @@ def confirm_sole_real_selection_flip(plan, original, scored):
     if len(original) != 576 or len(scored) != 576:
         raise ValueError("576 original and scored rows required")
     observed = {
-        (r["stage"], r["phase"], r["question_id"], r["arm"]): r
-        for r in original
+        (r["stage"], r["phase"], r["question_id"], r["arm"]): r for r in original
     }
     evaluated = {
-        (r["stage"], r["phase"], r["question_id"], r["arm"]): r
-        for r in scored
+        (r["stage"], r["phase"], r["question_id"], r["arm"]): r for r in scored
     }
     require(
-        len(observed) == len(evaluated) == 576
-        and set(observed) == set(evaluated),
+        len(observed) == len(evaluated) == 576 and set(observed) == set(evaluated),
         "duplicate or unpaired original rank decisions",
     )
     flips = []
@@ -142,20 +136,32 @@ def confirm_sole_real_selection_flip(plan, original, scored):
             and frozen["answer"] == learned["answer"],
             "unequal Reader/pool or changed answer behind rank difference",
         )
-        flips.append(dict(
-            stage=stage, phase=phase, question_id=question_id, arm=arm,
-            frozen_selected=frozen["selected"],
-            learned_selected=learned["selected"],
-            frozen_weak_native_support=a["source_choice_correct"],
-            learned_weak_native_support=b["source_choice_correct"],
-            answer_bytes_changed=frozen["answer"] != learned["answer"],
-        ))
-    expected = [dict(
-        stage=48, phase="retention", question_id="locomo:conv-43/q217",
-        arm="lineage_lora_gated", frozen_selected=1, learned_selected=7,
-        frozen_weak_native_support=0, learned_weak_native_support=0,
-        answer_bytes_changed=False,
-    )]
+        flips.append(
+            dict(
+                stage=stage,
+                phase=phase,
+                question_id=question_id,
+                arm=arm,
+                frozen_selected=frozen["selected"],
+                learned_selected=learned["selected"],
+                frozen_weak_native_support=a["source_choice_correct"],
+                learned_weak_native_support=b["source_choice_correct"],
+                answer_bytes_changed=frozen["answer"] != learned["answer"],
+            )
+        )
+    expected = [
+        dict(
+            stage=48,
+            phase="retention",
+            question_id="locomo:conv-43/q217",
+            arm="lineage_lora_gated",
+            frozen_selected=1,
+            learned_selected=7,
+            frozen_weak_native_support=0,
+            learned_weak_native_support=0,
+            answer_bytes_changed=False,
+        )
+    ]
     require(
         flips == expected,
         "previously unreviewed or displaced native candidate choice",
@@ -183,9 +189,7 @@ def audit_zip(path):
         scored = archive.json("comparison/scored-policy-attempts.json")
         fit = archive.json("comparison/within-head-train-fit.json")
         ceiling = archive.json("comparison/post-policy-native-source-ceiling.json")
-        panel = effective_heldout_subjects(
-            plan, report["train_to_heldout_diagnostic"]
-        )
+        panel = effective_heldout_subjects(plan, report["train_to_heldout_diagnostic"])
         gate = audit_nonpromotion(report)
         exact = audit_exact_paired_choices(
             plan, raw, scored, report, fit, ceiling, panel
@@ -214,13 +218,18 @@ def main():
     with args.output.open("x", encoding="utf-8") as file:
         json.dump(result, file, indent=2, sort_keys=True, allow_nan=False)
         file.write("\n")
-    print(json.dumps(dict(
-        schema=result["schema"],
-        run=result["original_run_id"],
-        original_policy_attempts=result["complete_original_policy_attempts"],
-        learned_arms=result["learned_arms"],
-        production_accepted=False,
-    ), sort_keys=True))
+    print(
+        json.dumps(
+            dict(
+                schema=result["schema"],
+                run=result["original_run_id"],
+                original_policy_attempts=result["complete_original_policy_attempts"],
+                learned_arms=result["learned_arms"],
+                production_accepted=False,
+            ),
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":

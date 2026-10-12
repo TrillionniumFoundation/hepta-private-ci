@@ -189,9 +189,12 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                             or len(original_evidence) > 1
                             or len(learned_evidence) > 1
                         ):
-                            raise ValueError("matched Reader source evidence receipt invalid")
+                            raise ValueError(
+                                "matched Reader source evidence receipt invalid"
+                            )
                         if (
-                            b_selection and l_selection
+                            b_selection
+                            and l_selection
                             and baseline["selected"] == learned["selected"]
                             and original_evidence != learned_evidence
                         ):

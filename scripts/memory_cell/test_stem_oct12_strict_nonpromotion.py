@@ -56,10 +56,14 @@ class NewStrictRejectionTests(unittest.TestCase):
         verdict = interpret_current(*fixtures())
         self.assertEqual(verdict["complete_original_policy_attempts"], 576)
         self.assertEqual(verdict["failed_policy_attempts"], 0)
-        self.assertEqual(verdict["independent_test_transfer_question_units_per_arm"], 16)
+        self.assertEqual(
+            verdict["independent_test_transfer_question_units_per_arm"], 16
+        )
         self.assertTrue(verdict["no_observed_learner_vs_frozen_correct_decision_gain"])
         self.assertTrue(verdict["exactly_one_real_selection_flip_with_no_support_gain"])
-        self.assertEqual(verdict["learned_arms"]["lineage_lora_gated"]["changed_top1"], 1)
+        self.assertEqual(
+            verdict["learned_arms"]["lineage_lora_gated"]["changed_top1"], 1
+        )
         self.assertIsNone(verdict["semantic_citation_precision"])
         self.assertFalse(verdict["scale_out_permitted"])
         self.assertFalse(verdict["production_accepted"])
@@ -130,20 +134,31 @@ def native_policy_fixture():
         for phase in phases:
             questions = (
                 ["locomo:conv-43/q217", *[f"retention-{i}" for i in range(7)]]
-                if phase == "retention" else [f"{phase}-{i}" for i in range(8)]
+                if phase == "retention"
+                else [f"{phase}-{i}" for i in range(8)]
             )
             for question in questions:
                 for arm in arms:
                     selected = (
-                        7 if (stage, phase, question, arm)
-                        == (48, "retention", "locomo:conv-43/q217",
-                            "lineage_lora_gated") else 1
+                        7
+                        if (stage, phase, question, arm)
+                        == (
+                            48,
+                            "retention",
+                            "locomo:conv-43/q217",
+                            "lineage_lora_gated",
+                        )
+                        else 1
                     )
                     record = dict(
-                        stage=stage, phase=phase, question_id=question,
-                        arm=arm, selected=selected,
+                        stage=stage,
+                        phase=phase,
+                        question_id=question,
+                        arm=arm,
+                        selected=selected,
                         pool_digest="immutable-pool-" + question,
-                        family="family-" + question, cell="general",
+                        family="family-" + question,
+                        cell="general",
                         answer="Same frozen Reader answer.",
                         receipt=dict(
                             generator_identity="reader-pin",
@@ -151,10 +166,15 @@ def native_policy_fixture():
                         ),
                     )
                     records.append(record)
-                    judged.append(dict(
-                        stage=stage, phase=phase, question_id=question,
-                        arm=arm, source_choice_correct=0,
-                    ))
+                    judged.append(
+                        dict(
+                            stage=stage,
+                            phase=phase,
+                            question_id=question,
+                            arm=arm,
+                            source_choice_correct=0,
+                        )
+                    )
     return records, judged
 
 
@@ -172,21 +192,31 @@ class ExactChangedDecisionTests(unittest.TestCase):
         for corruption in ("extra", "support", "answer", "missing"):
             raw, judged = native_policy_fixture()
             altered = next(
-                row for row in raw if row["stage"] == 48
+                row
+                for row in raw
+                if row["stage"] == 48
                 and row["phase"] == "retention"
                 and row["question_id"] == "locomo:conv-43/q217"
                 and row["arm"] == "lineage_lora_gated"
             )
             if corruption == "extra":
-                extra = next(row for row in raw if row["stage"] == 16
-                             and row["phase"] == "test"
-                             and row["arm"] == "gated")
+                extra = next(
+                    row
+                    for row in raw
+                    if row["stage"] == 16
+                    and row["phase"] == "test"
+                    and row["arm"] == "gated"
+                )
                 extra["selected"] = 3
             elif corruption == "support":
-                evidence = next(row for row in judged if row["stage"] == 48
-                                and row["phase"] == "retention"
-                                and row["question_id"] == "locomo:conv-43/q217"
-                                and row["arm"] == "lineage_lora_gated")
+                evidence = next(
+                    row
+                    for row in judged
+                    if row["stage"] == 48
+                    and row["phase"] == "retention"
+                    and row["question_id"] == "locomo:conv-43/q217"
+                    and row["arm"] == "lineage_lora_gated"
+                )
                 evidence["source_choice_correct"] = 1
             elif corruption == "answer":
                 altered["answer"] = "Counterfactual generated change."

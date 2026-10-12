@@ -16,8 +16,15 @@ from stem_cell import MAX_ROOTS, MAX_SEEN, sha256
 
 @torch.enable_grad()
 def fit_pairwise_shadow(
-    head, rows, cut, *, revoked, steps=128, lr=0.03,
-    margin=1.0, pair_ceiling=1000000,
+    head,
+    rows,
+    cut,
+    *,
+    revoked,
+    steps=128,
+    lr=0.03,
+    margin=1.0,
+    pair_ceiling=1000000,
 ):
     """SGD on the hardest labelled-positive against hardest weak-negative.
 
@@ -32,11 +39,15 @@ def fit_pairwise_shadow(
         or head.quarantined
         or not isinstance(rows, (tuple, list))
         or not 1 <= len(rows) <= 256
-        or type(steps) is not int or not 1 <= steps <= 2048
-        or type(pair_ceiling) is not int or not 1 <= pair_ceiling <= 10000000
-        or type(lr) not in (int, float) or not math.isfinite(lr)
+        or type(steps) is not int
+        or not 1 <= steps <= 2048
+        or type(pair_ceiling) is not int
+        or not 1 <= pair_ceiling <= 10000000
+        or type(lr) not in (int, float)
+        or not math.isfinite(lr)
         or not 0 < lr <= 0.1
-        or type(margin) not in (int, float) or not math.isfinite(margin)
+        or type(margin) not in (int, float)
+        or not math.isfinite(margin)
         or not 0 <= margin <= 8
         or not isinstance(revoked, set)
         or not cut.admission_digest
@@ -61,7 +72,9 @@ def fit_pairwise_shadow(
             or len(set(positives)) != len(positives)
             or any(type(i) is not int or not 0 <= i < n for i in positives)
         ):
-            raise ValueError("unregistered, withdrawn or misbound weak TRAIN supervision")
+            raise ValueError(
+                "unregistered, withdrawn or misbound weak TRAIN supervision"
+            )
         seen.add(f.question_id)
         all_roots.update(f.roots)
         if 0 < len(positives) < n:
@@ -69,11 +82,7 @@ def fit_pairwise_shadow(
         else:
             omitted.append(f.question_id)
 
-    if (
-        not eligible
-        or len(head.seen | seen) > MAX_SEEN
-        or len(all_roots) > MAX_ROOTS
-    ):
+    if not eligible or len(head.seen | seen) > MAX_SEEN or len(all_roots) > MAX_ROOTS:
         raise ValueError("no contrastive TRAIN pair or bounded lineage exceeded")
 
     eligible.sort(key=lambda row: (row.features.family, row.features.question_id))
@@ -115,9 +124,8 @@ def fit_pairwise_shadow(
             losses.append(float(loss.detach()))
         if not consumed:
             raise ValueError("no pairwise Head update fits remaining budget")
-        if (
-            not torch.equal(head.null.weight, null_weight)
-            or not torch.equal(head.null.bias, null_bias)
+        if not torch.equal(head.null.weight, null_weight) or not torch.equal(
+            head.null.bias, null_bias
         ):
             raise ValueError("pairwise Head optimization mutated null output")
     except Exception:
@@ -138,15 +146,19 @@ def fit_pairwise_shadow(
         observed_original_reader_calls=0,
         checkpoint_pre_sha256=sha256(before_blob),
         checkpoint_post_sha256=sha256(after_blob),
-        requested_steps=steps, consumed_steps=consumed,
-        prior_cumulative_steps=prior_steps, cumulative_steps=head.steps,
+        requested_steps=steps,
+        consumed_steps=consumed,
+        prior_cumulative_steps=prior_steps,
+        cumulative_steps=head.steps,
         cumulative_pair_evaluations=head.pair_evaluations,
         admitted_training_rows=len(rows),
         distinct_eligible_contrastive_questions=len(eligible),
         pair_ineligible_weak_label_questions=len(omitted),
         pair_ineligible_question_ids=sorted(omitted),
-        lr=lr, target_margin=margin,
-        first_loss=losses[0], last_loss=losses[-1],
+        lr=lr,
+        target_margin=margin,
+        first_loss=losses[0],
+        last_loss=losses[-1],
         tensor_delta_squared_norm=tensor_delta,
         wall_seconds=time.perf_counter() - elapsed_start,
         weak_distractors_not_verified_hard_negatives=True,

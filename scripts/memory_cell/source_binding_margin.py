@@ -43,7 +43,9 @@ def source_hard_negatives(examples, documents, tokenizer, *, allowed_roots, revo
     scopes = {}
     for doc in documents:
         scopes.setdefault(doc.scope, []).append(doc)
-    projections = {scope: EventProjection(tuple(rows)) for scope, rows in scopes.items()}
+    projections = {
+        scope: EventProjection(tuple(rows)) for scope, rows in scopes.items()
+    }
     rows, identities = [], set()
     for idx, ex in enumerate(examples):
         if (
@@ -68,12 +70,13 @@ def source_hard_negatives(examples, documents, tokenizer, *, allowed_roots, revo
             facts = [projection.facts[source] for source in ex["sources"]]
         except KeyError as error:
             raise ValueError("source example references an absent fact") from error
-        if (
-            len({(f["entity"], f["attribute"], f["value"]) for f in facts}) != 1
-            or facts[0]["value"] != ex.get("target")
-        ):
+        if len(
+            {(f["entity"], f["attribute"], f["value"]) for f in facts}
+        ) != 1 or facts[0]["value"] != ex.get("target"):
             raise ValueError("target is not an unambiguous original source value")
-        source_roots = tuple(sorted(projection.originals[x].root for x in ex["sources"]))
+        source_roots = tuple(
+            sorted(projection.originals[x].root for x in ex["sources"])
+        )
         if not set(source_roots) <= set(allowed_roots):
             raise ValueError("source ancestry differs from admission")
         rows.append(
