@@ -14,6 +14,12 @@ default-run = "codex"
 name = "codex"
 path = "src/codex.rs"
 
+# Preserve the package-named binary for existing callers without compiling
+# the unwrapped shared src/main.rs as a separate executable.
+[[bin]]
+name = "codex-cli"
+path = "src/codex.rs"
+
 [[bin]]
 name = "hepta"
 path = "src/hepta.rs"
