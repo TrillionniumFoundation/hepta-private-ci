@@ -31,6 +31,7 @@ struct FixturePort {
     drop_ack: bool,
     reject_signature: bool,
     tamper_frozen_during_preflight: Option<std::path::PathBuf>,
+    tamper_during_live_readback: Rc<RefCell<Option<std::path::PathBuf>>>,
     revoke_previous_during_preflight: bool,
 }
 
@@ -41,6 +42,7 @@ impl FixturePort {
             drop_ack: false,
             reject_signature: false,
             tamper_frozen_during_preflight: None,
+            tamper_during_live_readback: Rc::new(RefCell::new(None)),
             revoke_previous_during_preflight: false,
         }
     }
@@ -122,6 +124,9 @@ impl CellSplitExecutionPortV1 for FixturePort {
         receipt: &CellSplitExecutionReceiptV1,
     ) -> Result<(), Self::Error> {
         self.observed.borrow_mut().verifications += 1;
+        if let Some(path) = self.tamper_during_live_readback.borrow_mut().take() {
+            fs::write(path, b"{}").map_err(|_| "fixture could not tamper local readback frame")?;
+        }
         if self.reject_signature || receipt.owner_signature_bytes.len() != 64 {
             return Err("signature rejected");
         }
@@ -1092,6 +1097,43 @@ fn pending_step_recovery_rejects_dangling_successor_frame() {
         .is_err()
     );
     assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
+fn transcript_rejects_local_evidence_replacement_during_live_owner_verification() {
+    // Every signed remote receipt remains current. Tampering only with the
+    // local frozen plan, pinned owner keys or an earlier committed frame
+    // *during* the remote read must nevertheless prevent a positive result.
+    for (filename, expected_error) in [
+        (
+            "cell-split-frozen-plan.json",
+            "frozen identity changed during live owner readback",
+        ),
+        (
+            "cell-split-owner-trust-pins.json",
+            "frozen identity changed during live owner readback",
+        ),
+        (
+            "cell-split-00-committed.json",
+            "committed frame changed during live owner readback",
+        ),
+    ] {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        let port = FixturePort::new(state.clone());
+        let tamper = port.tamper_during_live_readback.clone();
+        let mut owner =
+            CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("owner");
+        for _ in 0..4 {
+            owner.advance().expect("committed original effect");
+        }
+        *tamper.borrow_mut() = Some(root.path().join(filename));
+        assert!(matches!(
+            owner.verified_transcript(),
+            Err(CellSplitExecutionErrorV1::Invalid(reason)) if reason == expected_error
+        ), "unexpected transcript outcome for {filename}");
+        assert_eq!(state.borrow().executions, 4);
+    }
 }
 
 #[test]
