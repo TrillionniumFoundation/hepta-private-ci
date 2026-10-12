@@ -1,0 +1,63 @@
+name: Hepta Cell development tensor mechanisms (research only)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/**"
+      - ".github/workflows/hepta-stem-cell-development.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stem-development-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  tensor-mechanisms:
+    name: Source-bound CPU tensor and repository composition tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [head, merge]
+    steps:
+      - name: Checkout exact source or prospective merge
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Create isolated CPU tensor environment
+        run: |
+          python3 -m venv "$RUNNER_TEMP/stem-development-venv"
+          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install \
+            --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install numpy==2.2.6
+      - name: Execute actual arithmetic and existing repository entrypoints
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          {
+            git rev-parse HEAD
+            git rev-parse HEAD^{tree}
+            "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip freeze
+            "$RUNNER_TEMP/stem-development-venv/bin/python" -m unittest -v \
+              test_shared_encoder_eviction development_tensor_checks development_repository_checks
+          } 2>&1 | tee "$RUNNER_TEMP/stem-development-tests.txt"
+      - name: Preserve exact-source result including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-development-${{ matrix.source }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/stem-development-tests.txt
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Check source unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code

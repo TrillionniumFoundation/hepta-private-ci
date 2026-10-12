@@ -246,12 +246,17 @@ class SharedStemEngine:
                 batch_bytes.extend(encoded)
         ident = hashlib.sha256(batch_bytes).hexdigest()
         missing = OrderedDict()
+        # Keep borrowed immutable hits alive until every batch member resolves.
+        # Inserting cold results may evict them from the bounded LRU.
+        local_results = {}
         hits = 0
         for r in requests:
             key = r.cache_key()
-            if self.cache.get(key) is None:
+            cached = self.cache.get(key)
+            if cached is None:
                 missing.setdefault(key, r.text)
             else:
+                local_results[key] = cached
                 hits += 1
         calls = 0
         batch_widths = []
@@ -272,9 +277,7 @@ class SharedStemEngine:
             for k, out in zip(keys, verified):
                 self.cache.put(k, out)
             # When cache is disabled/too small, use invocation-local results.
-            local_results = dict(zip(keys, verified))
-        else:
-            local_results = {}
+            local_results.update(zip(keys, verified))
         receipts = []
         ephemeral_features = []
         for r in requests:
