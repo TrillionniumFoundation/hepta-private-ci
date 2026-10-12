@@ -22,8 +22,8 @@ use crate::cell_split_effect_rpc::CellSplitEffectRpcErrorV1;
 use crate::cell_split_effect_rpc::CellSplitEffectRpcRequestV1;
 use crate::cell_split_effect_rpc::CellSplitEffectRpcResponseV1;
 use crate::cell_split_effect_rpc::cell_split_effect_readback_signing_payload_v1;
-use crate::cell_split_effect_rpc::receive_frame;
-use crate::cell_split_effect_rpc::send_frame;
+use crate::cell_split_effect_rpc::receive_frame_with_deadline;
+use crate::cell_split_effect_rpc::send_frame_with_deadline;
 use crate::cell_split_execution_signing_payload_v1;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
@@ -135,7 +135,8 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
     ) -> Result<(), CellSplitEffectRpcErrorV1> {
         stream.set_read_timeout(Some(self.io_timeout))?;
         stream.set_write_timeout(Some(self.io_timeout))?;
-        let request: CellSplitEffectRpcRequestV1 = receive_frame(stream)?;
+        let request: CellSplitEffectRpcRequestV1 =
+            receive_frame_with_deadline(stream, self.io_timeout)?;
         self.validate(&request)?;
         let action = request.action;
         let (receipt, readback) = match action {
@@ -288,7 +289,7 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                 (receipt, Some(readback))
             }
         };
-        send_frame(
+        send_frame_with_deadline(
             stream,
             &CellSplitEffectRpcResponseV1 {
                 schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
@@ -297,6 +298,7 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                 readback,
                 error: None,
             },
+            self.io_timeout,
         )
     }
 
