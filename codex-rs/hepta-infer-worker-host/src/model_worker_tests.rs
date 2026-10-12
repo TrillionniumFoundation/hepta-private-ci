@@ -1188,3 +1188,71 @@ fn revoked_signed_stem_stays_indeterminate_and_cannot_be_dispatched_again() {
         RequestState::Indeterminate,
     );
 }
+
+
+#[cfg(unix)]
+#[test]
+fn assigned_signed_stem_after_owner_restart_is_reconciliation_only() {
+    use codex_hepta_infer_core::durable_control::Assignment;
+    use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+    use codex_hepta_infer_core::durable_control::RequestState;
+
+    let directory = tempfile::tempdir().expect("restart journal");
+    let path = directory.path().join("stem-assigned.journal");
+    let mut worker =
+        InferenceWorker::new(100, "worker.restart".into(), 3, grant(), Driver::default())
+            .expect("worker");
+    worker.load_model(100, manifest()).expect("loaded");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (mut control, revision) = durable_stem_control_fixture(
+        &path, &worker, &source, &access, &head, &features, &auth, None,
+    );
+    // This is the actual existing WAL Append+Flush+fsync transition that
+    // would precede a signed effect. Simulate process disappearance here.
+    control
+        .assign(
+            &auth.request_id,
+            revision,
+            Assignment {
+                worker_id: worker.worker_id().to_string(),
+                worker_generation: 3,
+                assignment_digest: Digest32::of_bytes(b"real-assigned-attempt").to_string(),
+            },
+        )
+        .expect("durably assigned before effect");
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(&path, 8).expect("real reopen");
+    assert_eq!(
+        reopened.get(&auth.request_id).expect("record").state,
+        RequestState::Assigned,
+    );
+    let binding = worker
+        .expected_stem_final_use_binding_v1(
+            100, &source, &access, head.clone(), &features, &auth,
+        )
+        .expect("same immutable signed binding");
+    let (authority, signed, _dir) = signed_stem_final_use_fixture(binding.clone());
+    let token = authority.claim(&signed, &binding).expect("fresh verified token");
+    assert!(matches!(
+        worker.dispatch_verified_stem_durable_v1(
+            &mut reopened,
+            &authority,
+            token,
+            100,
+            revision,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                selected_head: head,
+                feature_vector_q24: &features,
+                authorization: auth.clone(),
+            },
+        ),
+        Err(crate::stem_durable_owner::StemDurableErrorV1::ReconciliationOnly)
+    ));
+    assert_eq!(
+        reopened.get(&auth.request_id).expect("still assigned").state,
+        RequestState::Assigned,
+    );
+}
