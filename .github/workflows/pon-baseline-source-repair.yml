@@ -11,7 +11,7 @@ jobs:
     timeout-minutes: 20
     env:
       EXPECTED_SOURCE: 106400a5ffc7ef969dbe0812c1cda869323b59e1
-      OUT: ${{ runner.temp }}/pon-baseline-source
+      OUT: /tmp/pon-baseline-source-${{ github.run_id }}-${{ github.run_attempt }}
       PYTHONDONTWRITEBYTECODE: '1'
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -124,6 +124,6 @@ jobs:
         if: always()
         with:
           name: pon-baseline-source-repair-${{ github.run_id }}
-          path: ${{ runner.temp }}/pon-baseline-source
+          path: ${{ env.OUT }}
           if-no-files-found: error
           retention-days: 14
