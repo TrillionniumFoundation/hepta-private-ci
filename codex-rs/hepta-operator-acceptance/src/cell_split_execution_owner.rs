@@ -676,6 +676,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             return Err(CellSplitExecutionErrorV1::Invalid("owner trust pins drift"));
         }
         let mut predecessor = self.plan_digest.clone();
+        // Retain the original bounded on-disk frames during the live owner
+        // readbacks. A callback may take time; rechecking only the remote
+        // effects would permit local journal or trust-frame replacement
+        // between the first read and a reported verified transcript.
+        let mut local_frames = Vec::with_capacity(self.cursor);
         let mut receipts = if collect_receipts {
             Vec::with_capacity(self.cursor)
         } else {
@@ -700,6 +705,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             self.port
                 .verify_committed(&intent, &receipt)
                 .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            local_frames.push((prepared, bytes));
             if collect_receipts {
                 predecessor = receipt.receipt_digest.clone();
                 receipts.push(receipt);
@@ -736,6 +742,27 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             {
                 return Err(CellSplitExecutionErrorV1::Invalid(
                     "pending cursor changed; reopen required",
+                ));
+            }
+        }
+        // An original owner might have been slow or adversarial while it
+        // returned a signed live receipt. Do not publish a verified view from
+        // locally replaced plan, signer pins or previously checked prefix.
+        // These are at most four frames and are only reread on a cold
+        // execution/qualification boundary, never per neuron inference tick.
+        if read_frame(&self.root.join("cell-split-frozen-plan.json"))? != Some(frozen)
+            || read_frame(&self.root.join("cell-split-owner-trust-pins.json"))? != Some(pinned)
+        {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "frozen identity changed during live owner readback",
+            ));
+        }
+        for (index, (prepared, committed)) in local_frames.into_iter().enumerate() {
+            if read_frame(&frame_path(&self.root, index, "prepared"))? != Some(prepared)
+                || read_frame(&frame_path(&self.root, index, "committed"))? != Some(committed)
+            {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "committed frame changed during live owner readback",
                 ));
             }
         }
