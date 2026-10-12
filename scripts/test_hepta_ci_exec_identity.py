@@ -32,8 +32,10 @@ class HiddenSourceIdentityTests(GitExecutionFixture):
         self.hidden_before("--skip-worktree")
 
     def test_hidden_unchanged_paths_are_refused_without_clearing_user_flags(self):
-        for flag, undo in (("--assume-unchanged", "--no-assume-unchanged"),
-                           ("--skip-worktree", "--no-skip-worktree")):
+        for flag, undo in (
+            ("--assume-unchanged", "--no-assume-unchanged"),
+            ("--skip-worktree", "--no-skip-worktree"),
+        ):
             with self.subTest(flag=flag):
                 self.git("update-index", flag, "input")
                 before = (self.repo / ".git/index").read_bytes()
@@ -97,10 +99,14 @@ class HiddenSourceIdentityTests(GitExecutionFixture):
     def test_ambient_git_dir_cannot_attest_a_different_checkout(self):
         foreign = self.root / "foreign"
         foreign.mkdir()
+
         def git(*args):
             return subprocess.check_output(
-                ["git", "-C", str(foreign), *args], text=True,
-                stderr=subprocess.PIPE).strip()
+                ["git", "-C", str(foreign), *args],
+                text=True,
+                stderr=subprocess.PIPE,
+            ).strip()
+
         git("init", "-q")
         git("config", "user.name", "foreign-test")
         git("config", "user.email", "foreign@example.invalid")
@@ -109,9 +115,12 @@ class HiddenSourceIdentityTests(GitExecutionFixture):
         git("commit", "-qm", "foreign")
         claimed = git("rev-parse", "HEAD")
         self.assertNotEqual(claimed, self.source)
-        result = self.execute(GIT_DIR=str(foreign / ".git"),
-                              GIT_WORK_TREE=str(foreign),
-                              SOURCE_SHA=claimed, TESTED_SHA=claimed)
+        result = self.execute(
+            GIT_DIR=str(foreign / ".git"),
+            GIT_WORK_TREE=str(foreign),
+            SOURCE_SHA=claimed,
+            TESTED_SHA=claimed,
+        )
         self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
         self.assertFalse(self.marker.exists())
         self.assertEqual(self.receipt()["before"]["commit"], self.source)
@@ -149,8 +158,11 @@ class HiddenSourceIdentityTests(GitExecutionFixture):
     def test_metadata_reads_do_not_execute_a_configured_fsmonitor(self):
         hook = self.root / "monitor"
         observed = self.root / "monitor-called"
-        hook.write_text("#!/bin/sh\nprintf called > " + shlex.quote(str(observed)) +
-                        "\nprintf 'token\\000'\n")
+        hook.write_text(
+            "#!/bin/sh\nprintf called > "
+            + shlex.quote(str(observed))
+            + "\nprintf 'token\\000'\n"
+        )
         hook.chmod(0o700)
         self.git("config", "core.fsmonitor", str(hook))
         result = self.execute()

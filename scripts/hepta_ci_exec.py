@@ -28,7 +28,9 @@ def git(*args: str) -> str:
     # ambient repository/index selectors, replacements or fsmonitor hooks
     # attest a different checkout. The executed command's environment is not
     # rewritten here; this metadata reader is not a command sandbox.
-    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env = {
+        key: value for key, value in os.environ.items() if not key.startswith("GIT_")
+    }
     env.update(
         GIT_CONFIG_NOSYSTEM="1",
         GIT_CONFIG_GLOBAL=os.devnull,
@@ -59,7 +61,9 @@ def identity() -> dict:
         "commit": git("rev-parse", "HEAD"),
         "tree": git("rev-parse", "HEAD^{tree}"),
         "parents": [line[7:] for line in metadata if line.startswith("parent ")],
-        "dirty": bool(hidden or git("status", "--porcelain", "--untracked-files=normal")),
+        "dirty": bool(
+            hidden or git("status", "--porcelain", "--untracked-files=normal")
+        ),
     }
 
 
