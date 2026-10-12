@@ -225,6 +225,10 @@ fn uncertain_unload_remains_accounted_and_rejects_all_future_use() {
         "driver resource is not claimed freed"
     );
     assert_eq!(worker.driver.unload_calls, 1);
+    assert!(
+        worker.requires_external_recovery(),
+        "uncertain unload must be visible to the product recovery owner"
+    );
     assert_eq!(
         worker.run(100, "model.1", request()),
         Err(Error::ModelUnloadIndeterminate)
@@ -271,6 +275,7 @@ fn loading_two_models_cannot_double_spend_total_worker_memory() {
     assert_eq!(worker.driver.loaded, 1);
     assert_eq!(worker.driver.unload_calls, 1);
     assert!(!worker.load_indeterminate, "successful cleanup permits retry");
+    assert!(!worker.requires_external_recovery());
 
     worker.driver.reported_memory_bytes = 1_024;
     assert!(
@@ -325,6 +330,7 @@ fn failed_load_rollback_seals_generation_without_losing_capacity_safety() {
         Err(Error::ModelLoadIndeterminate)
     );
     assert!(worker.load_indeterminate);
+    assert!(worker.requires_external_recovery());
     assert_eq!(worker.driver.loaded, 1);
     assert_eq!(worker.driver.unload_calls, 1);
     assert_eq!(
@@ -362,6 +368,7 @@ fn load_driver_error_without_terminal_cleanup_proof_seals_generation() {
     );
     assert_eq!(worker.driver.loaded, 1);
     assert!(worker.load_indeterminate);
+    assert!(worker.requires_external_recovery());
     assert_eq!(
         worker.load_model(100, manifest()),
         Err(Error::ModelLoadIndeterminate)
@@ -421,6 +428,7 @@ fn observed_unload_releases_the_registered_handle_once() {
     assert_eq!(worker.driver.loaded, 0);
     assert_eq!(worker.driver.unload_calls, 1);
     assert_eq!(worker.models.len(), 0);
+    assert!(!worker.requires_external_recovery());
     assert_eq!(
         worker.run(100, "model.1", request()),
         Err(Error::ModelNotLoaded)
