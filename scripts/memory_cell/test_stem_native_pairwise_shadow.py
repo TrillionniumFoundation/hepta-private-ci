@@ -64,6 +64,9 @@ def targets_and_frozen(questions, encoded):
                 frozen[(stage, phase, qid)] = dict(
                     status="succeeded", selected=1,
                     pool_digest=encoded[qid].pool_digest,
+                    family=encoded[qid].family,
+                    cell=("general" if int(qid.split("-")[-1]) % 2 == 0
+                          else "temporal"),
                 )
     return pools, targets, frozen
 
@@ -199,7 +202,9 @@ class NativePairwiseShadowTests(unittest.TestCase):
     def test_failed_before_selection_remains_unknown_not_source_gain(self):
         args, fits, choices = self.run_fixture()
         pools, targets, frozen = targets_and_frozen(args[0], args[2])
-        frozen[(48, "test", "test-0")] = dict(status="failed")
+        frozen[(48, "test", "test-0")] = dict(
+            status="failed", cell="general", family="family"
+        )
         report = review_pairwise_shadow(
             args[0], fits, choices, frozen, pools, targets,
             support_indices=support_indices,
@@ -237,7 +242,9 @@ class NativePairwiseShadowTests(unittest.TestCase):
     def test_failed_before_selection_does_not_consult_missing_source_pool(self):
         args, fits, choices = self.run_fixture()
         pools, targets, frozen = targets_and_frozen(args[0], args[2])
-        frozen[(48, "test", "test-0")] = dict(status="failed")
+        frozen[(48, "test", "test-0")] = dict(
+            status="failed", cell="general", family="family"
+        )
         pools.pop("test-0")
         report = review_pairwise_shadow(
             args[0], fits, choices, frozen, pools, targets,
@@ -247,6 +254,45 @@ class NativePairwiseShadowTests(unittest.TestCase):
         self.assertEqual(report["frozen_selector_unobserved_or_empty"], 1)
         self.assertEqual(report["source_label_scored"], 7)
         self.assertEqual(report["source_label_unresolved_or_failure"], 1)
+
+    def test_saved_shadow_head_sha_must_match_actual_checkpoint(self):
+        args, fits, choices = self.run_fixture()
+        pools, targets, frozen = targets_and_frozen(args[0], args[2])
+        candidate = next(
+            row for row in choices
+            if (row["stage"], row["phase"], row["question_id"], row["arm"])
+            == (48, "test", "test-0", "pairwise_linear")
+        )
+        candidate["head_sha256"] = "0" * 64
+        with self.assertRaisesRegex(ValueError, "saved fitted checkpoint"):
+            review_pairwise_shadow(
+                args[0], fits, choices, frozen, pools, targets,
+                support_indices=support_indices,
+            )
+
+    def test_original_family_route_and_no_reader_call_drift_rejected(self):
+        for case in ("family", "route", "leak", "reader"):
+            args, fits, choices = self.run_fixture()
+            pools, targets, frozen = targets_and_frozen(args[0], args[2])
+            item = next(row for row in choices
+                        if row["stage"] == 48
+                        and row["phase"] == "test"
+                        and row["question_id"] == "test-0")
+            if case == "family":
+                frozen[(48, "test", "test-0")]["family"] = "unbound-family"
+            elif case == "route":
+                item["cell"] = "temporal"
+            elif case == "leak":
+                item["training_labels_or_test_gold_in_answer"] = True
+            else:
+                item["actual_reader_calls"] = 1
+            with self.subTest(case=case), self.assertRaisesRegex(
+                ValueError, "source-family, Cell route or zero-Reader"
+            ):
+                review_pairwise_shadow(
+                    args[0], fits, choices, frozen, pools, targets,
+                    support_indices=support_indices,
+                )
 
     def test_failed_reader_does_not_allow_forged_pool_or_out_of_range_top1(self):
         for tamper in ("changed_pool", "out_of_bounds", "bool_selected"):

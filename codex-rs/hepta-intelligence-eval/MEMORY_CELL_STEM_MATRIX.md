@@ -1453,3 +1453,19 @@ inventing a candidate pool. Tampered source-window identity, reordered
 evidence or a mismatched seal now fails closed. This has no effect on the
 original six-arm Reader answers or training and does not turn a
 source-only Shadow improvement into validated entailment or QA gain.
+
+## Bind each Shadow choice to the fitted checkpoint and source-family route
+
+The post-answer Shadow auditor now independently verifies that every
+successful source-only decision has the **exact Head SHA-256 of the
+persisted/reloaded fit at that stage, arm and Cell**. A forged or stale
+model snapshot is a hard error, not a measured source improvement.
+
+The original frozen Reader's question source-family and Cell route must
+match the Shadow decision, whether or not the Reader successfully
+generated an answer. No evaluation label was allowed into the Shadow
+decision and its reported actual Reader-call count must equal zero.
+These checks complement the original ordered candidate-window identity
+and actual pool-seal checks, preserving the complete frozen-vs-shadow
+posthoc denominator. They do not measure answer quality or grant
+independent semantic citation/prospective production authority.

@@ -205,7 +205,7 @@ def review_pairwise_shadow(questions, fits, decisions, frozen_predictions,
         (stage, arm, cell)
         for stage in STAGES for arm, _ in SHADOWS for cell in CELLS
     }
-    seen_fits = set()
+    seen_fits, fitted = set(), {}
     for fit in fits:
         key = (fit["stage"], fit["arm"], fit["cell"])
         if (
@@ -223,6 +223,7 @@ def review_pairwise_shadow(questions, fits, decisions, frozen_predictions,
         ):
             raise ValueError("incomplete, unbound or falsely successful shadow fit")
         seen_fits.add(key)
+        fitted[key] = fit
     if seen_fits != expected_fits:
         raise ValueError("missing actual native shadow fit")
     result = {}
@@ -244,6 +245,25 @@ def review_pairwise_shadow(questions, fits, decisions, frozen_predictions,
                         or row["status"] not in ("succeeded", "failed")
                     ):
                         raise ValueError("unknown baseline or shadow execution status")
+                    if (
+                        row.get("cell") != base.get("cell")
+                        or row.get("family") != base.get("family")
+                        or row.get("cell") not in CELLS
+                        or row.get("training_labels_or_test_gold_in_answer") is not False
+                        or row.get("actual_reader_calls") != 0
+                    ):
+                        raise ValueError(
+                            "shadow source-family, Cell route or zero-Reader contract drift"
+                        )
+                    if row["status"] == "succeeded":
+                        fit = fitted[(stage, arm, row["cell"])]
+                        if (
+                            fit["status"] != "succeeded"
+                            or row.get("head_sha256") != fit.get("final_head_sha256")
+                        ):
+                            raise ValueError(
+                                "Shadow decision Head differs from saved fitted checkpoint"
+                            )
                     # Reader generation may fail after the original selector
                     # has already committed a top-1. Never discard that
                     # observed SOURCE decision because generation failed.
@@ -318,6 +338,9 @@ def review_pairwise_shadow(questions, fits, decisions, frozen_predictions,
         observed_reader_calls=0,
         weak_negative_documents_not_independent_entailment=True,
         actual_window_identities_and_digest_verified=True,
+        original_source_family_and_cell_route_verified=True,
+        shadow_head_sha_matched_to_persistent_fit=True,
+        no_reader_calls_or_evaluation_labels_in_shadow_decision_verified=True,
         failed_reader_source_choices_retained_when_observed=True,
         by_checkpoint_phase_arm=result,
         production_accepted=False,
