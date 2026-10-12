@@ -42,18 +42,31 @@ pub trait NeuronFeatureBatchDriver: ModelDriver + NeuronFeatureDriver {
     ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error>;
 }
 
-/// Admission floor for independent Q24 drive/prediction output buffers.
-/// Precomputed V1 input vectors already exist; this is not measured RSS.
-fn minimum_neuron_batch_output_bytes(requests: &[NeuronFeatureRequest]) -> Result<u64, Error> {
-    requests.iter().try_fold(0_u64, |total, item| {
-        let width =
-            u64::try_from(item.expected_output_width).map_err(|_| Error::ArithmeticOverflow)?;
-        let bytes = width
-            .checked_mul(2)
-            .and_then(|elements| elements.checked_mul(8))
-            .ok_or(Error::ArithmeticOverflow)?;
-        total.checked_add(bytes).ok_or(Error::ArithmeticOverflow)
-    })
+/// Conservative Q24 admission budget for the reference CPU Head:
+/// all independent drive/prediction output buffers plus the largest gated
+/// intermediate live during sequential row execution. The V1 input Vecs
+/// already exist and are not copied here. This is not measured backend RSS;
+/// other drivers must additionally enforce their actual peak allocations.
+fn minimum_neuron_batch_tensor_bytes(requests: &[NeuronFeatureRequest]) -> Result<u64, Error> {
+    let (output_bytes, peak_gated_bytes) =
+        requests.iter().try_fold((0_u64, 0_u64), |(total, peak), item| {
+            let width =
+                u64::try_from(item.expected_output_width).map_err(|_| Error::ArithmeticOverflow)?;
+            let input_width = u64::try_from(item.feature_vector_q24.len())
+                .map_err(|_| Error::ArithmeticOverflow)?;
+            let outputs = width
+                .checked_mul(2)
+                .and_then(|elements| elements.checked_mul(8))
+                .ok_or(Error::ArithmeticOverflow)?;
+            let gated = input_width.checked_mul(8).ok_or(Error::ArithmeticOverflow)?;
+            Ok::<_, Error>((
+                total.checked_add(outputs).ok_or(Error::ArithmeticOverflow)?,
+                peak.max(gated),
+            ))
+        })?;
+    output_bytes
+        .checked_add(peak_gated_bytes)
+        .ok_or(Error::ArithmeticOverflow)
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceWorker<D> {
@@ -141,7 +154,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
             })
             .ok_or(Error::ArithmeticOverflow)?;
         let minimum_bytes = resident_bytes
-            .checked_add(minimum_neuron_batch_output_bytes(&requests)?)
+            .checked_add(minimum_neuron_batch_tensor_bytes(&requests)?)
             .ok_or(Error::ArithmeticOverflow)?;
         if minimum_bytes > self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
@@ -481,6 +494,25 @@ mod tests {
                 "model.v2",
                 vec![feature("request.1", 'b'), feature("request.2", 'c')],
             ),
+            Err(Error::ModelCapacity)
+        );
+        assert_eq!(worker.driver.batches, 0);
+        assert_eq!(worker.driver.single_calls, 0);
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(worker.models["model.v2"].active_requests, 0);
+    }
+
+    #[test]
+    fn batch_peak_gated_scratch_is_admitted_before_backend_dispatch() {
+        let a = feature("request.1", 'b');
+        let b = feature("request.2", 'c');
+        // Both outputs persist (2 * 3 * 2 * 8 = 96 bytes), and the
+        // reference CPU Head needs one additional width-two Q24 gated
+        // vector (16 bytes). No request's pre-existing input Vec is copied.
+        assert_eq!(minimum_neuron_batch_tensor_bytes(&[a.clone(), b.clone()]), Ok(112));
+        let mut worker = worker_with_memory_budget(BatchMock::default(), 1024 + 96);
+        assert_eq!(
+            worker.run_neuron_features_batch(100, "model.v2", vec![a, b]),
             Err(Error::ModelCapacity)
         );
         assert_eq!(worker.driver.batches, 0);
