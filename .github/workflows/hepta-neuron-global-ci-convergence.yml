@@ -1,0 +1,85 @@
+name: Hepta Stem Global CI Convergence
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'codex-rs/core/src/client_provider_policy_tests.rs'
+      - 'codex-rs/core/src/client.rs'
+      - 'codex-rs/hepta-agentd/**'
+      - 'codex-rs/hepta-contracts/**'
+      - 'codex-rs/hepta-prompt-registry/**'
+      - 'codex-rs/utils/path-utils/**'
+      - 'codex-rs/Cargo.lock'
+      - '.github/workflows/hepta-neuron-global-ci-convergence.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  exact-source-format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install exact native toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Do not relax repository formatting
+        run: cargo +1.95.0 fmt --all -- --check
+
+  core-provider-policy-linux:
+    needs: exact-source-format
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component clippy
+      - name: Run real original policy ACK tests with the new typed context
+        run: |
+          cargo +1.95.0 test --locked -p codex-core --lib 'client_provider_policy_tests::' -- --nocapture
+      - name: Preserve strict core library lint checks
+        run: cargo +1.95.0 clippy --locked -p codex-core --lib -- -D warnings
+
+  core-provider-policy-windows:
+    needs: exact-source-format
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Windows toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - name: Compile and exercise the exact MSVC provider-policy regression
+        run: cargo +1.95.0 test --locked -p codex-core --lib 'client_provider_policy_tests::' -- --nocapture
+
+  signed-stem-contract:
+    needs: exact-source-format
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - name: Validate exact native scoped Stem and signed Final-use contracts
+        run: |
+          cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib 'model_worker::tests::' -- --nocapture
