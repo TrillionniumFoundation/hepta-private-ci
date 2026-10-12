@@ -31,6 +31,14 @@ def record(qid, arm, answer, *, failed=False):
     return row
 
 
+class UniqueQuestionTokenizer:
+    eos_token_id = 2
+
+    def apply_chat_template(self, messages, **kwargs):
+        text = json.loads(messages[1]["content"])["question"]
+        return [1, *text.encode("utf-8")]
+
+
 class DecoderFactorialTests(unittest.TestCase):
     def setUp(self):
         self.docs = (
@@ -38,6 +46,7 @@ class DecoderFactorialTests(unittest.TestCase):
             source("b", "site_b", scope="b"),
         )
         self.reader = FakeReader(self.docs)
+        self.reader.tokenizer = UniqueQuestionTokenizer()
         self.targets = {"a": "site_a", "b": "site_b"}
         self.greedy = [
             record(qid, arm, "wrong")
