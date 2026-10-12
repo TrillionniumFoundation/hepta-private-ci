@@ -7,6 +7,7 @@ from stem_worker_binding import (
     qualification_only_receipt,
     scoped_worker_input_digest_v1,
     stem_feature_ref_digest_v1,
+    signed_worker_request_digest_v2,
 )
 
 
@@ -68,6 +69,52 @@ class StemWorkerBindingTests(unittest.TestCase):
             changed = dict(first)
             changed[field] = new
             self.assertNotEqual(observed, scoped_worker_input_digest_v1(changed), field)
+
+
+    def test_signed_final_use_exact_v2_cross_language_and_worker_identity(self):
+        authorization = {
+            "request_id": "request.1",
+            "reservation_id": "reservation.1",
+            "model_digest": "2" * 64,
+            "payload_digest": "3" * 64,
+            "lease_payload_digest": "3" * 64,
+            "reservation_model_digest": "2" * 64,
+            "maximum_tokens": 64,
+            "reservation_maximum_tokens": 64,
+            "deadline_ms": 9000,
+            "cancelled": False,
+        }
+        grant = {
+            "grant_id": "grant.1",
+            "semantic_digest": "1" * 64,
+            "authority_epoch": 2,
+            "generation": 3,
+            "expires_at_ms": 10000,
+        }
+        ref = hashlib.sha256(b"bound-feature-ref").hexdigest()
+
+        def bound(worker_id="worker.identity-A", auth=authorization, resource=grant):
+            return signed_worker_request_digest_v2(worker_id, auth, resource, ref)
+
+        self.assertEqual(
+            bound(),
+            "1edca4a4866ed8e285c1126c3073fc3fdbbc3a087d5c55cd37066700d3e71d1c",
+        )
+        self.assertNotEqual(bound(), bound(worker_id="worker.identity-B"))
+        self.assertNotEqual(bound(), bound(auth={**authorization, "maximum_tokens": 63}))
+        self.assertNotEqual(bound(), bound(resource={**grant, "generation": 4}))
+        for bad_worker in ("", "worker with space", "用户", "a" * 129):
+            with self.subTest(worker=bad_worker), self.assertRaises(ValueError):
+                bound(worker_id=bad_worker)
+        for bad_field, bad_value in (
+            ("cancelled", 0),
+            ("maximum_tokens", -1),
+            ("maximum_tokens", 1 << 32),
+            ("deadline_ms", 1 << 64),
+            ("payload_digest", "0" * 64),
+        ):
+            with self.subTest(field=bad_field), self.assertRaises(ValueError):
+                bound(auth={**authorization, bad_field: bad_value})
 
     def test_noncanonical_or_tampered_fields_fail_closed(self):
         source = fixture()
