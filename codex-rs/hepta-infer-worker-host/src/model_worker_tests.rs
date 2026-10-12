@@ -986,6 +986,19 @@ fn signed_stem_final_use_never_moves_across_worker_instances() {
     assert_eq!(a.payload_sha256, b.payload_sha256);
     assert_ne!(a.request_sha256, b.request_sha256);
 
+    // The same request/grant and domain-separated bytes are independently
+    // pinned by Python's signed_worker_request_digest_v2 test fixture.
+    let golden = stem_final_use_request_digest_v2(
+        &request(),
+        &grant(),
+        "worker.identity-A",
+        Digest32::of_bytes(b"bound-feature-ref"),
+    );
+    assert_eq!(
+        golden.to_string(),
+        "1edca4a4866ed8e285c1126c3073fc3fdbbc3a087d5c55cd37066700d3e71d1c"
+    );
+
     let (authority, signed, _root) = signed_stem_final_use_fixture(a.clone());
     let token = authority.claim(&signed, &a).expect("verified Worker A claim");
 
