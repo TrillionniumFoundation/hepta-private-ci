@@ -8,6 +8,8 @@ import unittest
 from unittest.mock import patch
 
 from narrow_matrix_sdk_workspace import (
+    PINNED_MIGRATION_SHA,
+    PINNED_RELEASE_SHA,
     SOURCE_SCHEMA,
     digest,
     inspect_cargo_metadata,
@@ -153,6 +155,9 @@ class NarrowWorkspaceTests(unittest.TestCase):
             stage = root / "stage"
             (stage / "codex-rs").mkdir(parents=True)
             (stage / ".git").write_text("gitdir: /nonexistent/original\n")
+            (root / "sdk/crates/matrix-sdk").mkdir(parents=True)
+            (root / "sdk/crates/matrix-sdk/Cargo.toml").write_text(
+                '[package]\\nname = "matrix-sdk"\\nversion = "0.19.1"\\n')
             cargo = stage / "codex-rs/Cargo.toml"
             source = cargo_fixture()
             cargo.write_bytes(source)
@@ -161,6 +166,10 @@ class NarrowWorkspaceTests(unittest.TestCase):
                 "schema": SOURCE_SCHEMA,
                 "hepta_source_sha": sha,
                 "hepta_candidate_manifest_sha256": digest(source),
+                "signed_upstream_release_sha": PINNED_RELEASE_SHA,
+                "upstream_anymap_change_sha": PINNED_MIGRATION_SHA,
+                "minimal_upstream_patch_sha256": "f" * 64,
+                "sdk_source_root": str(root / "sdk"),
                 "production_authorized": False,
                 "cargo_resolution_verified": False,
             }
@@ -182,6 +191,9 @@ class NarrowWorkspaceTests(unittest.TestCase):
             stage = root / "stage"
             (stage / "codex-rs").mkdir(parents=True)
             (stage / ".git").write_text("gitdir: /nonexistent/original\n")
+            (root / "sdk/crates/matrix-sdk").mkdir(parents=True)
+            (root / "sdk/crates/matrix-sdk/Cargo.toml").write_text(
+                '[package]\\nname = "matrix-sdk"\\nversion = "0.19.1"\\n')
             cargo = stage / "codex-rs/Cargo.toml"
             source = cargo_fixture()
             cargo.write_bytes(source)
@@ -190,11 +202,21 @@ class NarrowWorkspaceTests(unittest.TestCase):
                 "schema": SOURCE_SCHEMA,
                 "hepta_source_sha": sha,
                 "hepta_candidate_manifest_sha256": "c" * 64,
+                "signed_upstream_release_sha": PINNED_RELEASE_SHA,
+                "upstream_anymap_change_sha": PINNED_MIGRATION_SHA,
+                "minimal_upstream_patch_sha256": "f" * 64,
+                "sdk_source_root": str(root / "sdk"),
                 "production_authorized": False,
                 "cargo_resolution_verified": False,
             }
-            with patch("narrow_matrix_sdk_workspace._git", side_effect=lambda *a: sha):
-                with self.assertRaises(ValueError):
+            def fake_git(root_path, *parts):
+                if parts == ("rev-parse", "HEAD"):
+                    return sha
+                if parts == ("diff", "--name-only"):
+                    return "codex-rs/Cargo.toml"
+                raise AssertionError(parts)
+            with patch("narrow_matrix_sdk_workspace._git", side_effect=fake_git):
+                with self.assertRaisesRegex(ValueError, "mutated source candidate"):
                     stage_narrow_sdk(stage, report, sha)
             self.assertEqual(cargo.read_bytes(), source)
 
