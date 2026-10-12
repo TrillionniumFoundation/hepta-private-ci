@@ -9,6 +9,16 @@ use std::path::Path;
 
 const MAX_RUNFILES_MANIFEST_BYTES: u64 = 32 * 1024 * 1024;
 
+/// Match a Bazel runfile name byte-for-byte. Only the *first* separator
+/// separates the logical name from the physical filename, which may contain
+/// spaces on hosted Windows runners.
+fn find_runfile_entry<'a>(contents: &'a str, exact_key: &str) -> Option<&'a str> {
+    contents.lines().find_map(|entry| {
+        let (key, physical_path) = entry.split_once(' ')?;
+        (key == exact_key && !physical_path.is_empty()).then_some(physical_path)
+    })
+}
+
 /// Bazel on Windows commonly uses manifest-only runfiles. In that profile
 /// CARGO_BIN_EXE_* is an rlocation key, not an ordinary filesystem path.
 /// Look up the *exact declared* helper in the runfiles manifest; never
@@ -31,20 +41,15 @@ fn resolve_helper_executable(candidate: PathBuf) -> Result<PathBuf> {
     );
     let contents = std::fs::read_to_string(manifest_path)?;
     let runfile_key = candidate.to_string_lossy().replace('\\', "/");
-    for entry in contents.lines() {
-        if let Some((key, path)) = entry.split_once(' ')
-            && key == runfile_key
-        {
-            let resolved = PathBuf::from(path);
-            anyhow::ensure!(
-                resolved.is_absolute() && resolved.is_file(),
-                "declared helper runfile is not an existing absolute regular file: {}",
-                resolved.display()
-            );
-            return Ok(resolved);
-        }
-    }
-    anyhow::bail!("setup helper runfile not declared in manifest: {runfile_key}")
+    let mapped = find_runfile_entry(&contents, &runfile_key)
+        .with_context(|| format!("setup helper runfile not declared in manifest: {runfile_key}"))?;
+    let resolved = PathBuf::from(mapped);
+    anyhow::ensure!(
+        resolved.is_absolute() && resolved.is_file(),
+        "declared helper runfile is not an existing absolute regular file: {}",
+        resolved.display()
+    );
+    Ok(resolved)
 }
 use windows_sys::Win32::Foundation::FreeLibrary;
 use windows_sys::Win32::System::LibraryLoader::FindResourceW;
@@ -122,4 +127,26 @@ fn setup_helper_embeds_as_invoker_manifest() -> Result<()> {
     }
 
     Ok(())
+}
+
+#[test]
+fn exact_windows_runfile_resolution_preserves_paths_with_spaces_and_rejects_near_matches() {
+    let fixture = concat!(
+        "_main/codex-rs/windows-sandbox-rs/other.exe C:\\temp\\other.exe\n",
+        "_main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe ",
+        "C:\\Program Files\\sandbox tools\\codex-windows-sandbox-setup.exe\n",
+    );
+    let key = "_main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe";
+    assert_eq!(
+        find_runfile_entry(fixture, key),
+        Some(r"C:\Program Files\sandbox tools\codex-windows-sandbox-setup.exe")
+    );
+    assert_eq!(
+        find_runfile_entry(fixture, "codex-windows-sandbox-setup.exe"),
+        None
+    );
+    assert_eq!(
+        find_runfile_entry(fixture, "_main/codex-rs/windows-sandbox-rs/other.exe.backup"),
+        None
+    );
 }
