@@ -613,6 +613,31 @@ fn read_only_transcript_rejects_post_open_pending_intent_tampering() {
 }
 
 #[test]
+fn pending_intent_is_rechecked_after_live_owner_readback() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut port = FixturePort::new(state.clone());
+    port.drop_ack = true;
+    let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+        .expect("frozen owner");
+    assert!(owner.advance().is_err(), "external effect has no acknowledgement");
+    let pending = root.path().join("cell-split-00-prepared.json");
+    let original = fs::read(&pending).expect("durable prepared intent");
+    super::verify_pending_frame_unchanged(root.path(), 0, &original)
+        .expect("unchanged original pending frame");
+
+    fs::write(&pending, b"{}").expect("replace pending bytes during slow readback");
+    assert!(matches!(
+        super::verify_pending_frame_unchanged(root.path(), 0, &original),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "pending frame changed during live owner readback"
+        ))
+    ));
+    assert_eq!(state.borrow().executions, 1, "never replay unknown effect");
+    assert_eq!(owner.completed_steps(), 0);
+}
+
+#[test]
 fn post_open_frozen_plan_tampering_fences_first_effect() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
