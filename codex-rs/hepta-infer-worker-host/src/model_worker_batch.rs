@@ -110,10 +110,15 @@ impl<D: ModelDriver + NeuronBackendBatchDriver> InferenceWorker<D> {
         let input_width = exemplar.feature_vector_q24.len();
         let output_width = exemplar.expected_output_width;
         let mut seen = BTreeSet::new();
+        let mut seen_reservations = BTreeSet::new();
         for request in &requests {
             validate_request(now_ms, &request.authorization)?;
             validate_neuron_feature_request(request)?;
+            // Each WorkerRequest binds one reservation to one request. A batch
+            // must not double-spend that reservation even with distinct request
+            // IDs and independently computed per-input payload digests.
             if !seen.insert(request.authorization.request_id.clone())
+                || !seen_reservations.insert(request.authorization.reservation_id.clone())
                 || self
                     .active_requests
                     .contains_key(&request.authorization.request_id)
