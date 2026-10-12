@@ -1,4 +1,4 @@
-# Trigger only the isolated candidate at the exact reviewed source; no production writes.
+# Trigger isolated format candidate only; preserve the workflow and never force-push.
 name: MemoryCell one-shot exact-source formatting candidate
 on:
   push:
@@ -65,10 +65,15 @@ jobs:
           git diff --check
           just fmt --check --base "$BASE" 2>&1 | tee /tmp/memory-atomic-format/check.log
           git add -- $(git diff --name-only)
-          git rm .github/workflows/hepta-memory-atomic-format.yml
+          git diff --cached --check
+          # This job must NOT delete/modify its own workflow. GitHub Actions
+          # contents:write cannot push commits updating .github/workflows/*
+          # without a separately granted workflows permission. The isolated
+          # candidate branch is pre-created at the exact invoking source SHA.
+          git diff --cached --name-only > /tmp/memory-atomic-format/staged-paths.txt
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'style(memory-cell): apply AST-equivalent hosted format and remove one-shot tool'
+          git commit -m 'style(memory-cell): AST-identical isolated Python format candidate'
           git push origin "HEAD:refs/heads/codex/memory-atomic-format-${GITHUB_RUN_ID}"
           git rev-parse HEAD > /tmp/memory-atomic-format/candidate-sha.txt
           echo "FORMAT_CANDIDATE=$(cat /tmp/memory-atomic-format/candidate-sha.txt)"
