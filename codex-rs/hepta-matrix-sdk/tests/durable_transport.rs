@@ -687,6 +687,7 @@ fn sdk_database_and_journal_links_are_rejected_before_sqlite_open() -> TestResul
         ("state", "matrix-sdk-state.sqlite3"),
         ("state", "matrix-sdk-crypto.sqlite3"),
         ("cache", "matrix-sdk-event-cache.sqlite3"),
+        ("cache", "matrix-sdk-media.sqlite3"),
     ] {
         for suffix in ["", "-wal", "-shm", "-journal"] {
             for hard_link in [false, true] {

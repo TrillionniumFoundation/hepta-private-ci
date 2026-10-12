@@ -226,3 +226,26 @@ clock, serialize CURRENT and revocation publication against dispatch, bind a
 live generation fence, and persist independently authenticated execution
 receipts. It must not treat an equal timestamp, a digest or an L1 fixture
 as final-use authority.
+
+
+## Dual-CAS identical signed CURRENT snapshot (L1 split-view guard)
+
+Both selected CAS artifacts must be registered in **one Artifact Registry** for
+this Stem/Head composition. In addition to an identical selection-time
+argument, the single-Cell and 2–32-member batch dispatchers now require the
+Projection's `VerifiedCurrentRegistryViewV1` and the Head bank's
+`VerifiedCurrentRegistryViewV1` to have **exactly matching registry snapshot
+receipt, authenticated witness digest and pinned owner-trust digest** before
+accessing either candidate or invoking the model. Two individually valid
+signatures are not sufficient when they refer to different generations of the
+shared registry.
+
+The negative regression creates two genuine owner-signed CURRENT views:
+an earlier Registry snapshot and a later one containing an additional
+registration. Mixing them is rejected even when they have the same signing
+key and selection-time argument. This avoids split-view replay but does **not**
+prove live freshness: the product Owner must still serialize trusted CURRENT
+acquisition, revocation publication and execution. This reader cannot issue
+Final-use authority, recovery grants or durable WAL commits. Fail closed if the
+two artifacts cannot be verified against the same Registry snapshot.
+

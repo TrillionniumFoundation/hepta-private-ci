@@ -609,3 +609,27 @@ declaration means legacy single-input execution (N=1); it cannot be used
 to claim an N>1 trial. This is a budget/trace-consistency check,
 not independent hardware attestation or permission to compare actual
 inference p99 from different hardware.
+
+
+## Cache admission accounting: boxed Python objects (2026-10-12)
+
+The shadow `SharedStemEngine` and `ProjectedStemEngine` retain Python tuples
+of boxed f32 and Q24 numbers, rather than contiguous 4-byte / 8-byte native
+tensors. Charging only `width × element_bytes` substantially undercounts
+resident heap use and invalidates 4096-Cell cache-capacity comparisons. Both
+bounded LRUs now charge a conservative **Python-object resident estimate**
+including key fields, stored metadata, tuple storage, boxed elements and an
+OrderedDict/allocator margin; they refuse oversize inserts and evict before
+admission. This may reduce cache hits when the actual configured budget is
+small, as it should. The original float32/Q24 canonical feature hashes are
+unchanged.
+
+`cache_bytes` and `projection_cache_bytes` therefore describe the
+**accounted retained shadow cache estimate**, not packed tensor bytes, process
+RSS, CUDA allocations, temporary Encoder/Head activations or WAL usage.
+True host CPU/RSS/GPU and p95/p99 measurements still require a target-worker
+run. Tests check that a raw 768-float `3072`-byte budget cannot silently
+retain the boxed vector and that a `16`-byte raw Q24 budget cannot retain a
+boxed projected feature. Mock 4096-Cell reuse remains L1-only, not throughput
+or production RAM evidence.
+

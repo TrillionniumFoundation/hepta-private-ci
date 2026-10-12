@@ -196,7 +196,8 @@ class ProjectionTests(unittest.TestCase):
         self.assertEqual(projected_calls, 1)
         self.assertEqual(in_batch, 31)
         self.assertEqual(cache_hits, 4064)
-        self.assertEqual(runner.cache.bytes_used, 16)
+        self.assertGreater(runner.cache.bytes_used, 16)
+        self.assertLessEqual(runner.cache.bytes_used, runner.cache.maximum_bytes)
 
     def test_preflight_denies_changed_projection_before_encoder_call(self):
         from dataclasses import replace
@@ -224,14 +225,30 @@ class ProjectionTests(unittest.TestCase):
             runner.run([Request('req.1'),Request('req.2')])
         self.assertEqual(runner.cache.bytes_used,0)
 
+    def test_projection_cache_does_not_admit_boxed_q24_at_raw_bytes_limit(self):
+        from stem_projection import ProjectedStemEngine
+        fake = Engine((feature((.5, -.25, .125)),))
+        runner = ProjectedStemEngine(
+            fake, spec(), maximum_projection_cache_bytes=16,
+        )
+        first = runner.run([Request("req.cached.q24")])
+        self.assertEqual(first.projection_calls, 1)
+        self.assertEqual(runner.cache.bytes_used, 0)
+        self.assertEqual(
+            runner.run([Request("req.cached.q24.2")]).projection_cache_hits, 0
+        )
+        self.assertEqual(runner.cache.bytes_used, 0)
+
     def test_cache_bounded_and_corrupt_float_rejected(self):
         fake=Engine((feature((.5,-.25,.125)),))
-        runner=ProjectedStemEngine(fake,spec(),maximum_projection_cache_bytes=16)
+        runner=ProjectedStemEngine(fake,spec(),maximum_projection_cache_bytes=3000)
         runner.run([Request('req.1')])
-        self.assertEqual(runner.cache.bytes_used,16)
+        self.assertGreater(runner.cache.bytes_used,16)
+        self.assertLessEqual(runner.cache.bytes_used, runner.cache.maximum_bytes)
         from dataclasses import replace
         runner.run([replace(Request('req.2'), input_digest=d('3'))])
-        self.assertEqual(runner.cache.bytes_used,16)
+        self.assertGreater(runner.cache.bytes_used,16)
+        self.assertLessEqual(runner.cache.bytes_used, runner.cache.maximum_bytes)
         src = feature((.5,-.25,.125))
         src.values = (float('nan'), -.25, .125)
         with self.assertRaises(ValueError):

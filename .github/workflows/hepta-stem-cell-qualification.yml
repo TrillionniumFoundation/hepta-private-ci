@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - "qualification/stem-cell-v1/**"
+      - "qualification/matrix-security/**"
+      - ".github/workflows/hepta-matrix-security-qualification.yml"
       - "codex-rs/hepta-infer-worker-host/src/model_worker*.rs"
       - "codex-rs/hepta-infer-worker-host/Cargo.toml"
       - "codex-rs/Cargo.lock"
@@ -46,11 +48,58 @@ jobs:
         run: |
           python3 -m compileall -q qualification/stem-cell-v1
           python3 -m unittest discover -v -s qualification/stem-cell-v1 -p 'test_*.py'
+          # Read-only Matrix SDK blocker and staged dependency-resolution
+          # contracts. Passing these tests cannot clear cargo-deny.
+          python3 -m compileall -q qualification/matrix-security
+          python3 -m unittest discover -v -s qualification/matrix-security -p 'test_*.py'
           # Exercise all BuildBuddy/Bazel wrapper transports with a fake
           # executable; no network or real model data is needed here.
           python3 -m unittest discover -v -s .github/scripts -p 'test_run_bazel_ci.py'
           python3 -m json.tool qualification/stem-cell-v1/protocol.json > /dev/null
       - name: Check tested source remains unmodified
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  minimal-sdk-backport-source:
+    name: P0 minimal upstream anymap3 source compatibility (not production)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: b18166c68bb958a21f0bca8b2d8320cb53583362
+          path: upstream-release
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: 9c5fdd2cf5be1b7b8b20541e56d7a109db968534
+          path: upstream-anymap-commit
+          fetch-depth: 2
+          persist-credentials: false
+      - name: Validate narrow backport parser before upstream qualification
+        run: python3 -m unittest discover -v -s qualification/matrix-security -p 'test_minimal_backport_probe.py'
+      - name: Require exact release/source patch compatibility
+        run: |
+          python3 qualification/matrix-security/minimal_backport_probe.py \
+            --release upstream-release --migration upstream-anymap-commit \
+            --output "$RUNNER_TEMP/hepta-matrix-minimal-backport.json"
+      - name: Preserve exact immutable upstream evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-matrix-minimal-backport-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-matrix-minimal-backport.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: No changes to tracked repository source
+        if: always()
         run: |
           git diff --check
           git diff --exit-code
@@ -75,9 +124,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          pnpm exec prettier --write .github/workflows/hepta-stem-cell-qualification.yml
-          git diff --binary -- .github/workflows/hepta-stem-cell-qualification.yml > "$RUNNER_TEMP/stem-prettier.patch"
-          git restore --worktree -- .github/workflows/hepta-stem-cell-qualification.yml
+          # Capture exact formatting drift for BOTH workflow files. Never
+          # use formatter output as an acceptance waiver or leave a dirty tree.
+          pnpm exec prettier --write .github/workflows/hepta-stem-cell-qualification.yml .github/workflows/hepta-matrix-security-qualification.yml
+          git diff --binary -- .github/workflows/hepta-stem-cell-qualification.yml .github/workflows/hepta-matrix-security-qualification.yml > "$RUNNER_TEMP/stem-prettier.patch"
+          git restore --worktree -- .github/workflows/hepta-stem-cell-qualification.yml .github/workflows/hepta-matrix-security-qualification.yml
           git diff --check
           git diff --exit-code
       - name: Upload formatter patch
