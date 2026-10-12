@@ -123,14 +123,14 @@ class CandidatePreflightTests(unittest.TestCase):
                       audit(data, ORIGINAL, STAGED)["errors"])
 
     def test_disposable_manifest_cannot_modify_unrelated_dependencies(self):
-        other = STAGED + b'# harmless-looking but unauthorized change\\n'
+        other = STAGED + b'# unauthorized comment'
         self.assertIn(
             "DISPOSABLE_WORKSPACE_MANIFEST_UNAUTHORIZED_DRIFT",
             audit(fixture(), ORIGINAL, other)["errors"]
         )
-        # The staged SQLx/SQLite features cannot silently change in an
-        # otherwise pinned candidate, even if metadata says E2EE is enabled.
-        changed = STAGED.replace(b"\\"sqlite\\"]", b"\\"sqlite\\", \\"extra\\"]")
+        # E2EE/SQLite scope cannot silently widen; a valid TOML feature edit
+        # still differs from the approved exact two-change candidate.
+        changed = STAGED.replace(b'"sqlite"', b'"sqlite", "extra"')
         self.assertIn(
             "DISPOSABLE_WORKSPACE_MANIFEST_UNAUTHORIZED_DRIFT",
             audit(fixture(), ORIGINAL, changed)["errors"]
