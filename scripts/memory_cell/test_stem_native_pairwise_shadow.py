@@ -50,10 +50,13 @@ def targets_and_frozen(questions, encoded):
             qid = q.identity
             # The original frozen scores [0.2,0.5] select index 1;
             # the weak source id at index 0 is only opened AFTER choices.
-            pools[qid] = Obj(windows=(
-                Obj(source_id="doc-positive"),
-                Obj(source_id="doc-distractor"),
-            ))
+            pools[qid] = Obj(
+                windows=(
+                    Obj(source_id="doc-positive", identity=lambda: "a"),
+                    Obj(source_id="doc-distractor", identity=lambda: "b"),
+                ),
+                seal=lambda: "pool",
+            )
             targets[qid] = Target(
                 "target", "fixture", ("doc-positive",), False,
             )
@@ -208,6 +211,42 @@ class NativePairwiseShadowTests(unittest.TestCase):
             self.assertEqual(case["frozen_selector_unobserved_or_empty"], 1)
             self.assertEqual(case["source_label_scored"], 7)
             self.assertEqual(case["source_label_unresolved_or_failure"], 1)
+
+    def test_saved_candidate_window_bytes_are_bound_to_original_pool(self):
+        for case in ("wrong_seal", "changed_order", "forged_window_identity"):
+            args, fits, choices = self.run_fixture()
+            pools, targets, frozen = targets_and_frozen(args[0], args[2])
+            pool = pools["test-0"]
+            if case == "wrong_seal":
+                pool.seal = lambda: "altered-pool"
+            elif case == "changed_order":
+                pool.windows = tuple(reversed(pool.windows))
+            else:
+                pool.windows = (
+                    Obj(source_id="doc-positive", identity=lambda: "forged"),
+                    pool.windows[1],
+                )
+            with self.subTest(case=case), self.assertRaisesRegex(
+                ValueError, "source windows differ"
+            ):
+                review_pairwise_shadow(
+                    args[0], fits, choices, frozen, pools, targets,
+                    support_indices=support_indices,
+                )
+
+    def test_failed_before_selection_does_not_consult_missing_source_pool(self):
+        args, fits, choices = self.run_fixture()
+        pools, targets, frozen = targets_and_frozen(args[0], args[2])
+        frozen[(48, "test", "test-0")] = dict(status="failed")
+        pools.pop("test-0")
+        report = review_pairwise_shadow(
+            args[0], fits, choices, frozen, pools, targets,
+            support_indices=support_indices,
+        )["by_checkpoint_phase_arm"]["48/test/pairwise_linear"]
+        self.assertEqual(report["attempted"], 8)
+        self.assertEqual(report["frozen_selector_unobserved_or_empty"], 1)
+        self.assertEqual(report["source_label_scored"], 7)
+        self.assertEqual(report["source_label_unresolved_or_failure"], 1)
 
     def test_failed_reader_does_not_allow_forged_pool_or_out_of_range_top1(self):
         for tamper in ("changed_pool", "out_of_bounds", "bool_selected"):

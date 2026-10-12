@@ -1437,3 +1437,19 @@ selectors and Shadow inference failures. A forged pool digest or out-of-range
 selection is rejected rather than laundered into a result. No new model
 call, Reader answer, semantic citation authority or production promotion
 is created by this retrospective correction.
+
+## Verify original source-window bytes when reviewing Shadow choices
+
+A reader failure with an already saved frozen top-1 is still eligible for
+read-only source-rank comparison. The review must additionally verify that
+the *actual retained WindowPool* seals to the registered frozen/shadow
+candidate-pool digest and that the **ordered original window identity
+hashes** match the Shadow Head's saved candidate-IDs digest. Merely
+comparing two reported metadata digests is insufficient if the
+post-generation pool has changed.
+
+A source-free or failed-before-selection case remains unscored without
+inventing a candidate pool. Tampered source-window identity, reordered
+evidence or a mismatched seal now fails closed. This has no effect on the
+original six-arm Reader answers or training and does not turn a
+source-only Shadow improvement into validated entailment or QA gain.

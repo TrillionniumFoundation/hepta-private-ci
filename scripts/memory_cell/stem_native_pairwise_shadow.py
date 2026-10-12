@@ -244,7 +244,6 @@ def review_pairwise_shadow(questions, fits, decisions, frozen_predictions,
                         or row["status"] not in ("succeeded", "failed")
                     ):
                         raise ValueError("unknown baseline or shadow execution status")
-                    target, pool = targets[qid], pools[qid]
                     # Reader generation may fail after the original selector
                     # has already committed a top-1. Never discard that
                     # observed SOURCE decision because generation failed.
@@ -253,6 +252,18 @@ def review_pairwise_shadow(questions, fits, decisions, frozen_predictions,
                         baseline_unselected += 1
                         uncertain += 1
                         continue
+                    target = targets[qid]
+                    pool = pools.get(qid)
+                    if (
+                        pool is None
+                        or not callable(getattr(pool, "seal", None))
+                        or pool.seal() != row["pool_digest"]
+                        or digest(tuple(w.identity() for w in pool.windows))
+                        != row["candidate_ids_digest"]
+                    ):
+                        raise ValueError(
+                            "shadow source windows differ from sealed original candidate pool"
+                        )
                     if type(selected) is not int or not 0 <= selected < len(pool.windows):
                         raise ValueError("detached frozen top-1 in source-only audit")
                     if base.get("pool_digest") != row["pool_digest"]:
@@ -306,6 +317,8 @@ def review_pairwise_shadow(questions, fits, decisions, frozen_predictions,
         total_label_blind_decisions=len(decisions),
         observed_reader_calls=0,
         weak_negative_documents_not_independent_entailment=True,
+        actual_window_identities_and_digest_verified=True,
+        failed_reader_source_choices_retained_when_observed=True,
         by_checkpoint_phase_arm=result,
         production_accepted=False,
         independently_established_generalization=False,
