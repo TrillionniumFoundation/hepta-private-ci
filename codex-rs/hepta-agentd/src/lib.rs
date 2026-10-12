@@ -65,6 +65,8 @@ pub use browser_servo::BrowserServoProcessConfig;
 pub use browser_servo::BrowserServoTransport;
 pub use browser_servo::ChildBrowserTransport;
 #[cfg(all(unix, feature = "cell-split-operator-bridge"))]
+pub use cell_split_execution::CellSplitCurrentControlSnapshotV1;
+#[cfg(all(unix, feature = "cell-split-operator-bridge"))]
 pub use cell_split_execution::CellSplitScopeSelectionAdmissionV1;
 #[cfg(all(unix, feature = "cell-split-operator-bridge"))]
 pub use cell_split_execution::advance_scope_bound_selected_cell_split_v1;
