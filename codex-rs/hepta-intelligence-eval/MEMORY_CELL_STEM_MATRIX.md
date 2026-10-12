@@ -1583,3 +1583,22 @@ the delivered evidence. Failed/unscored attempts remain in the original
 8-per-phase/arm denominator. This is **consistency validation only**;
 there are no new Reader calls, semantic citation verdicts, unseen cohorts,
 confidence claims, or production acceptance in this change.
+
+## Independent post-answer policy score and citation arithmetic
+
+The native experiment now preserves all 576 original answer attempts before
+scoring and independently verifies the complete post-policy result against
+unchanged raw prediction records. The new bounded
+`stem_postpolicy_integrity.py` checks the original frozen-source candidate
+pool, selected source, native document-level weak support, actual Reader
+delivered excerpt, original question and canonical request hash; it rejects
+forged correctness flags, answer-F1, citation counts, modified predictions
+and any future/cross-scope source entering the candidate pool. Reader
+failures stay in the original denominator and cannot acquire invented
+answer or citation precision. Ten fixture attacks cover these cases.
+
+This is a **post-policy integrity audit**, not a more powerful trained Head,
+a new Reader execution, an independent semantic entailment judge or an
+untouched prospective data cohort. No benchmark source label is read before
+the original answers are saved, and no training, routing, decoding or
+production decision is changed by this report.

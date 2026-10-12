@@ -68,6 +68,7 @@ from stem_cell_shadow_scale import (
     verify_shadow_source_receipts,
 )
 from stem_cell_cache import SharedFeatureCache
+from stem_postpolicy_integrity import audit_policy_scoring
 from stem_cell_protocol import (
     ARMS,
     CURVE,
@@ -1070,6 +1071,26 @@ def run(staged, ranker_dir, output):
             for item in attempts
         ]
         write(output / "scored-policy-attempts.json", scored)
+        # Scoring is downstream of all original Reader answers. Independently
+        # recheck the saved 576 policy records against the exact as-of window
+        # pool and native weak document-support annotations. A forged score,
+        # altered raw answer, invalid citation receipt or future source fails
+        # closed without changing any Head/Reader result.
+        independent_policy_integrity = audit_policy_scoring(
+            plan, attempts, scored, pools,
+            {
+                q.identity: q
+                for phase in PHASES for q in qs[phase]
+            },
+            {
+                q.identity: source_for[q.identity].targets[q.identity]
+                for phase in PHASES for q in qs[phase]
+            },
+        )
+        write(
+            output / "postpolicy-score-integrity.json",
+            independent_policy_integrity,
+        )
         pairwise_shadow_reader_review = review_final_shadow_reader(
             pairwise_shadow_reader_raw, attempts,
             {
@@ -1328,6 +1349,7 @@ def run(staged, ranker_dir, output):
             pairwise_shadow_reader_usage=pairwise_shadow_reader_usage,
             matched_objective_shadow_source_only=matched_objective_review,
             census=census,
+            independent_postpolicy_score_integrity=independent_policy_integrity,
             **summarize(scored),
             learning=learning,
             rollback=rollback,

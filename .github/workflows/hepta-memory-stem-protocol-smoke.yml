@@ -28,6 +28,8 @@ on:
       - "scripts/memory_cell/test_locomo_budget_frontier.py"
       - "scripts/memory_cell/locomo_frozen_reader_pair.py"
       - "scripts/memory_cell/test_locomo_frozen_reader_pair.py"
+      - "scripts/memory_cell/stem_postpolicy_integrity.py"
+      - "scripts/memory_cell/test_stem_postpolicy_integrity.py"
       - "scripts/memory_cell/stem_score_replay.py"
       - "scripts/memory_cell/test_stem_score_replay.py"
       - "scripts/memory_cell/stem_cell_shadow_scale.py"
@@ -73,6 +75,8 @@ jobs:
           git rev-parse HEAD > /tmp/stem-protocol/tested-commit.txt
           git rev-parse HEAD^{tree} > /tmp/stem-protocol/tested-tree.txt
           python3 -m compileall -q             scripts/memory_cell/stem_cell_time.py             scripts/memory_cell/stem_cell_time_preflight.py             scripts/memory_cell/stem_cell_temporal.py             scripts/memory_cell/stem_cell_geometry.py             scripts/memory_cell/stem_cell_training_probe.py             scripts/memory_cell/stem_cell_trial.py \
+            scripts/memory_cell/stem_postpolicy_integrity.py \
+            scripts/memory_cell/test_stem_postpolicy_integrity.py \
             scripts/memory_cell/stem_score_replay.py \
             scripts/memory_cell/test_stem_score_replay.py \
             scripts/memory_cell/stem_reader_zero_evidence.py \
@@ -91,6 +95,7 @@ jobs:
             test_stem_null_reader_splice \
             test_stem_cell_shadow_scale \
             test_stem_score_replay \
+            test_stem_postpolicy_integrity \
             test_locomo_frozen_retrieval \
             test_locomo_budget_frontier \
             test_locomo_frozen_reader_pair \
@@ -107,6 +112,7 @@ jobs:
           cp scripts/memory_cell/stem_audit_candidate.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_cell_trial.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_pairwise_reader_comparison.py scripts/memory_cell/test_stem_pairwise_reader_comparison.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_postpolicy_integrity.py scripts/memory_cell/test_stem_postpolicy_integrity.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_score_replay.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/test_stem_score_replay.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/locomo_frozen_retrieval.py /tmp/stem-protocol/source/
