@@ -40,6 +40,12 @@ jobs:
           Set-Location codex-rs
           rustc --version --verbose
           cargo --version
+      - name: Validate fixture source formatting
+        working-directory: codex-rs
+        shell: pwsh
+        run: |
+          cargo fmt --package codex-git-utils -- --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Run Windows Git process-tree timeout regression
         working-directory: codex-rs
         shell: pwsh
@@ -47,12 +53,6 @@ jobs:
           cargo test --locked -p codex-git-utils --lib git_process::tests::timed_out_git_wrapper_does_not_leave_child_process_running -- --exact --nocapture
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --locked -p codex-git-utils --lib git_process::tests::timed_out_exited_git_wrapper_does_not_leave_child_process_running -- --exact --nocapture
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Validate fixture source formatting
-        working-directory: codex-rs
-        shell: pwsh
-        run: |
-          cargo fmt --package codex-git-utils -- --check
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify tracked checkout is unchanged
         if: always()
