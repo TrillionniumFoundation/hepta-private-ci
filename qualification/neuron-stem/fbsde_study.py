@@ -11,7 +11,10 @@ import fbsde_tree
 
 
 def run(output, profile="exact_v1", **options):
-    require(profile in ("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1"), "study profile")
+    require(profile in ("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1", "continuation_workspace_v1"), "study profile")
+    if profile == "continuation_workspace_v1":
+        from fbsde_workspace_study import run as run_workspace
+        return run_workspace(output)
     if profile == "riccati_solver_v1":
         from fbsde_riccati_study import run as run_riccati
         return run_riccati(output)
@@ -58,7 +61,7 @@ def run(output, profile="exact_v1", **options):
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output',type=Path,required=True)
-    parser.add_argument("--profile", choices=("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1"), default="exact_v1")
+    parser.add_argument("--profile", choices=("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1", "continuation_workspace_v1"), default="exact_v1")
     parser.add_argument("--cohort", choices=("banking_v1", "travel_guard_v1"), default="banking_v1")
     parser.add_argument("--backend", choices=("hashing_reference_v1", "mmbert"), default="hashing_reference_v1")
     parser.add_argument("--kernel-profile", choices=("uniform_joint_v1", "joint_backoff_cv_v2"), default="uniform_joint_v1")
