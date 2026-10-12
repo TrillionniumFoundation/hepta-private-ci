@@ -65,7 +65,7 @@ jobs:
         run: cargo test --locked -p codex-hepta-infer-worker-host --lib neuron_worker_control::tests
       - name: Native Worker lifecycle regression
         run: cargo test --locked -p codex-hepta-infer-worker-host --lib model_worker::tests
-      - name: Stream-verify actual on-disk model weight source
+      - name: Verify real weight-file SHA-256 and preopened FD-bound load
         run: cargo test --locked -p codex-hepta-infer-worker-host --lib model_worker::neuron_weight_file::tests
       - name: Verify durable inference-control assigned Worker source
         run: cargo test --locked -p codex-hepta-infer-worker-host --lib neuron_durable_assignment::tests

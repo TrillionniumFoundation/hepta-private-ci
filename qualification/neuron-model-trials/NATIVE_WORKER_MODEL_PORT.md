@@ -375,3 +375,30 @@ after verification or a driver loading different bytes remain possible until
 the real host pins the same immutable handle through load and final-use.
 This never dispatches a model, changes a route, or grants production use.
 All returned receipts are `DENY_ALL` and cannot satisfy NDU/promotion.
+
+## Preopened-FD, hash-before-driver model load (diagnostic)
+
+New `NeuronPreopenedWeightModelDriver` is opt-in with NO fallback to
+`ModelDriver::load`. `InferenceWorker::load_model_from_preopened_weight_file_v1`
+takes a host-opened `File` by ownership, validates the grant and manifest,
+streams the COMPLETE file (2 GiB ceiling) into a SHA-256 comparison with
+that manifest, rejects digest/size/mutation differences, rewinds the SAME
+File and MOVES it into the specialized driver's loading method.
+
+The ordinary Worker admission remains shared: handle uniqueness, cumulative
+resident-memory budget, quarantine before the driver call and cleanup of
+rejected handles. An indeterminate physical load quarantines the Worker
+instance. The diagnostic receipt binds actual preloaded file digest, length,
+model and handle identity, Worker generation, and `DENY_ALL` authority.
+
+Tests use a real preopened temporary file and a driver that reads ONLY that
+file; wrong bytes are rejected before driver entry while unknown driver
+outcomes quarantine the Worker. No synthetic throughput is presented as real
+Laya inference.
+
+**Limit:** an opaque malicious driver could ignore the passed descriptor,
+and a concurrently writable file could change after hashing. A trusted host
+must guarantee immutable CAS file provenance, actual loader behavior,
+current signed Final-use, generation fences and an independently verified
+physical ArtifactLoadReceipt. This is not evidence of serving CNS selection,
+Neuron learning gains, or authority to promote a production model.

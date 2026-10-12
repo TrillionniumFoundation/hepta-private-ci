@@ -14,9 +14,13 @@ use std::str::FromStr;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
+use super::DriverModelHandle;
 use super::Error;
 use super::InferenceWorker;
 use super::ModelDriver;
+use super::ModelLoadObservation;
+use super::ModelManifest;
+use super::validate_manifest;
 
 const DOMAIN: &[u8] = b"hepta.inference.worker.neuron-weight-file.diagnostic.v1\0";
 const MAX_WEIGHT_FILE_BYTES: u64 = 2 * 1024 * 1024 * 1024;
@@ -194,6 +198,141 @@ pub fn inspect_loaded_neuron_weight_file_v1<D: ModelDriver>(
     Ok(diagnostic)
 }
 
+
+/// Separate physical-load contract: the Worker transfers OWNERSHIP of the same
+/// preopened file that it just fully hashed. There is deliberately no fallback
+/// to ModelDriver::load (which has no file input). Drivers must not reopen an
+/// unrelated path or silently load a different checkpoint.
+///
+/// An external physical loader is still a separate trust boundary: the Worker
+/// cannot attest that an opaque implementation actually used the transferred
+/// descriptor, or that hostile writers did not mutate the file concurrently.
+pub trait NeuronPreopenedWeightModelDriver: ModelDriver {
+    fn load_from_preopened_weight_file(
+        &mut self,
+        manifest: &ModelManifest,
+        weights: File,
+    ) -> Result<DriverModelHandle, Error>;
+}
+
+const LOAD_DOMAIN: &[u8] = b"hepta.inference.worker.neuron-file-bound-load.diagnostic.v1\0";
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NeuronFileBoundModelLoadV1 {
+    pub model_load: ModelLoadObservation,
+    pub manifest_model_digest: Digest32,
+    pub preloaded_file_digest: Digest32,
+    pub file_bytes: u64,
+    pub diagnostic_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+impl NeuronFileBoundModelLoadV1 {
+    /// Self-consistency only; not a signed ArtifactLoadReceipt or CNS selection.
+    #[must_use]
+    pub fn computed_digest(&self) -> Digest32 {
+        let mut bytes = LOAD_DOMAIN.to_vec();
+        for id in [
+            self.model_load.model_id.as_str(),
+            self.model_load.handle_id.as_str(),
+        ] {
+            let raw = id.as_bytes();
+            bytes.extend_from_slice(&(raw.len() as u64).to_be_bytes());
+            bytes.extend_from_slice(raw);
+        }
+        bytes.extend_from_slice(&self.model_load.worker_generation.to_be_bytes());
+        bytes.extend_from_slice(&self.model_load.observed_memory_bytes.to_be_bytes());
+        bytes.push(u8::from(self.model_load.terminal_observed));
+        bytes.extend_from_slice(self.manifest_model_digest.as_array());
+        bytes.extend_from_slice(self.preloaded_file_digest.as_array());
+        bytes.extend_from_slice(&self.file_bytes.to_be_bytes());
+        Digest32::of_bytes(&bytes)
+    }
+
+    #[must_use]
+    pub fn validate_integrity(&self) -> bool {
+        self.authority == AuthorityPosture::DENY_ALL
+            && self.model_load.terminal_observed
+            && self.model_load.worker_generation > 0
+            && self.model_load.observed_memory_bytes > 0
+            && !self.model_load.model_id.is_empty()
+            && !self.model_load.handle_id.is_empty()
+            && !self.manifest_model_digest.is_zero()
+            && !self.preloaded_file_digest.is_zero()
+            && (1..=MAX_WEIGHT_FILE_BYTES).contains(&self.file_bytes)
+            && !self.diagnostic_digest.is_zero()
+            && self.diagnostic_digest == self.computed_digest()
+    }
+}
+
+impl<D: NeuronPreopenedWeightModelDriver> InferenceWorker<D> {
+    /// Strict opt-in physical-load path: stream-verify the entire host-opened
+    /// weight file against the manifest, rewind it, and MOVE the same File to
+    /// the driver for its load operation. Never call legacy path-based load.
+    ///
+    /// The caller must supply a trusted immutable CAS descriptor and actual
+    /// trusted time/selection/Final-use fencing. Hash-before-load closes the
+    /// obvious separate-file substitution but does NOT attest external code.
+    pub fn load_model_from_preopened_weight_file_v1(
+        &mut self,
+        now_ms: u64,
+        manifest: ModelManifest,
+        mut weights: File,
+    ) -> Result<NeuronFileBoundModelLoadV1, NeuronWeightFileDiagnosticErrorV1> {
+        self.validate_current_grant(now_ms)?;
+        validate_manifest(&manifest)?;
+        if self.models.contains_key(&manifest.model_id) {
+            return Err(Error::ModelAlreadyLoaded.into());
+        }
+        if self.models.len() >= self.grant.maximum_models.min(super::MAX_MODELS) {
+            return Err(Error::ModelCapacity.into());
+        }
+        let expected = Digest32::from_str(&manifest.weights_digest)
+            .map_err(|_| NeuronWeightFileDiagnosticErrorV1::ManifestDigest)?;
+        let model_digest = Digest32::from_str(&manifest.model_digest)
+            .map_err(|_| NeuronWeightFileDiagnosticErrorV1::ManifestDigest)?;
+        if expected.is_zero() || model_digest.is_zero() {
+            return Err(NeuronWeightFileDiagnosticErrorV1::ManifestDigest);
+        }
+        let before = weights.metadata()?;
+        if !before.is_file() || before.len() == 0 {
+            return Err(NeuronWeightFileDiagnosticErrorV1::InvalidFile);
+        }
+        if before.len() > MAX_WEIGHT_FILE_BYTES {
+            return Err(NeuronWeightFileDiagnosticErrorV1::TooLarge);
+        }
+        let before_modified = before.modified()?;
+        weights.seek(SeekFrom::Start(0))?;
+        let measured = Digest32::of_reader(&mut weights, MAX_WEIGHT_FILE_BYTES)?;
+        let after = weights.metadata()?;
+        if !after.is_file()
+            || after.len() != before.len()
+            || after.modified()? != before_modified
+        {
+            return Err(NeuronWeightFileDiagnosticErrorV1::ChangedDuringRead);
+        }
+        if measured != expected {
+            return Err(NeuronWeightFileDiagnosticErrorV1::DigestMismatch);
+        }
+        weights.seek(SeekFrom::Start(0))?;
+        // load_model_with owns normal quarantine, resident budget, handle
+        // uniqueness and failure clean-up. The FD is moved exactly once.
+        let model_load = self.load_model_with(now_ms, manifest, move |driver, selected| {
+            driver.load_from_preopened_weight_file(selected, weights)
+        })?;
+        let mut receipt = NeuronFileBoundModelLoadV1 {
+            model_load,
+            manifest_model_digest: model_digest,
+            preloaded_file_digest: measured,
+            file_bytes: before.len(),
+            diagnostic_digest: Digest32::ZERO,
+            authority: AuthorityPosture::DENY_ALL,
+        };
+        receipt.diagnostic_digest = receipt.computed_digest();
+        Ok(receipt)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::io::Read;
@@ -342,5 +481,152 @@ mod tests {
                 Err(NeuronWeightFileDiagnosticErrorV1::InvalidFile)
             );
         }
+    }
+
+    struct FileDriver {
+        seen: std::sync::Arc<std::sync::Mutex<Vec<Digest32>>>,
+        fail_fd: bool,
+    }
+
+    impl ModelDriver for FileDriver {
+        fn load(&mut self, _: &ModelManifest) -> Result<DriverModelHandle, Error> {
+            Err(Error::DriverFailure("legacy pathless load not permitted".into()))
+        }
+
+        fn run(
+            &mut self,
+            _: &DriverModelHandle,
+            _: &WorkerRequest,
+        ) -> Result<DriverRunObservation, Error> {
+            Err(Error::DriverFailure("not a Neuron forward test".into()))
+        }
+
+        fn unload(&mut self, _: DriverModelHandle) -> Result<(), Error> {
+            Ok(())
+        }
+    }
+
+    impl NeuronPreopenedWeightModelDriver for FileDriver {
+        fn load_from_preopened_weight_file(
+            &mut self,
+            _: &ModelManifest,
+            mut weights: File,
+        ) -> Result<DriverModelHandle, Error> {
+            let actual = Digest32::of_reader(&mut weights, MAX_WEIGHT_FILE_BYTES)
+                .map_err(|error| Error::DriverFailure(error.to_string()))?;
+            self.seen.lock().unwrap().push(actual);
+            if self.fail_fd {
+                return Err(Error::DriverFailure("unknown physical loader outcome".into()));
+            }
+            Ok(DriverModelHandle {
+                opaque_id: "file-loaded.1".into(),
+                observed_memory_bytes: 1_024,
+            })
+        }
+    }
+
+    #[test]
+    fn file_owned_load_hashes_then_transfers_identical_preopened_fd_to_driver() {
+        let bytes = vec![0x61_u8; 210_000];
+        let seen = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+        let mut worker = InferenceWorker::new(
+            100,
+            "worker.1".into(),
+            3,
+            grant(),
+            FileDriver {
+                seen: seen.clone(),
+                fail_fd: false,
+            },
+        )
+        .unwrap();
+        let mut file = tempfile::tempfile().unwrap();
+        file.write_all(&bytes).unwrap();
+        file.seek(SeekFrom::Start(91)).unwrap();
+        let receipt = worker
+            .load_model_from_preopened_weight_file_v1(101, manifest(&bytes), file)
+            .unwrap();
+        assert!(receipt.validate_integrity());
+        assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
+        assert_eq!(receipt.preloaded_file_digest, Digest32::of_bytes(&bytes));
+        assert_eq!(receipt.file_bytes, bytes.len() as u64);
+        assert_eq!(receipt.model_load.handle_id, "file-loaded.1");
+        assert_eq!(*seen.lock().unwrap(), vec![Digest32::of_bytes(&bytes)]);
+        assert!(!worker.is_quarantined());
+    }
+
+    #[test]
+    fn file_owned_load_rejects_wrong_digest_before_physical_driver_and_can_retry() {
+        let bytes = vec![0x43_u8; 257];
+        let seen = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+        let mut worker = InferenceWorker::new(
+            100,
+            "worker.1".into(),
+            3,
+            grant(),
+            FileDriver {
+                seen: seen.clone(),
+                fail_fd: false,
+            },
+        )
+        .unwrap();
+        let mut corrupt = tempfile::tempfile().unwrap();
+        corrupt.write_all(b"wrong-weight-file").unwrap();
+        assert_eq!(
+            worker.load_model_from_preopened_weight_file_v1(
+                101,
+                manifest(&bytes),
+                corrupt,
+            ),
+            Err(NeuronWeightFileDiagnosticErrorV1::DigestMismatch)
+        );
+        assert!(seen.lock().unwrap().is_empty());
+        assert!(!worker.is_quarantined());
+        let mut genuine = tempfile::tempfile().unwrap();
+        genuine.write_all(&bytes).unwrap();
+        let approved = worker
+            .load_model_from_preopened_weight_file_v1(101, manifest(&bytes), genuine)
+            .unwrap();
+        assert!(approved.validate_integrity());
+        assert_eq!(seen.lock().unwrap().len(), 1);
+    }
+
+    #[test]
+    fn file_owned_load_unknown_driver_result_quarantines_worker_generation() {
+        let bytes = vec![0x62_u8; 512];
+        let seen = std::sync::Arc::new(std::sync::Mutex::new(Vec::new()));
+        let mut worker = InferenceWorker::new(
+            100,
+            "worker.1".into(),
+            3,
+            grant(),
+            FileDriver {
+                seen: seen.clone(),
+                fail_fd: true,
+            },
+        )
+        .unwrap();
+        let mut genuine = tempfile::tempfile().unwrap();
+        genuine.write_all(&bytes).unwrap();
+        assert!(matches!(
+            worker.load_model_from_preopened_weight_file_v1(
+                101,
+                manifest(&bytes),
+                genuine,
+            ),
+            Err(NeuronWeightFileDiagnosticErrorV1::Worker(Error::DriverFailure(_)))
+        ));
+        assert_eq!(seen.lock().unwrap().len(), 1);
+        assert!(worker.is_quarantined());
+        let mut second = tempfile::tempfile().unwrap();
+        second.write_all(&bytes).unwrap();
+        assert_eq!(
+            worker.load_model_from_preopened_weight_file_v1(
+                102,
+                manifest(&bytes),
+                second,
+            ),
+            Err(NeuronWeightFileDiagnosticErrorV1::Worker(Error::WorkerQuarantined))
+        );
     }
 }

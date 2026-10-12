@@ -253,6 +253,17 @@ impl<D: ModelDriver> InferenceWorker<D> {
         now_ms: u64,
         manifest: ModelManifest,
     ) -> Result<ModelLoadObservation, Error> {
+        self.load_model_with(now_ms, manifest, |driver, selected| driver.load(selected))
+    }
+
+    /// Shared single-owner admission for legacy and explicitly file-bound loads.
+    /// An FD-bound path never falls back to ModelDriver::load.
+    pub(crate) fn load_model_with(
+        &mut self,
+        now_ms: u64,
+        manifest: ModelManifest,
+        loader: impl FnOnce(&mut D, &ModelManifest) -> Result<DriverModelHandle, Error>,
+    ) -> Result<ModelLoadObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_manifest(&manifest)?;
         if self.models.contains_key(&manifest.model_id) {
@@ -276,7 +287,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
         // entire Worker before calling it: only a fully checked live handle or
         // independently completed cleanup can release this fence.
         self.quarantined = true;
-        let handle = self.driver.load(&manifest)?;
+        let handle = loader(&mut self.driver, &manifest)?;
         if validate_identity(&handle.opaque_id, "model handle").is_err() {
             return self.dispose_failed_load(handle, Error::InvalidIdentity("model handle"));
         }
@@ -934,6 +945,8 @@ fn validate_neuron_feature_output(
 
 #[path = "neuron_weight_file.rs"]
 mod neuron_weight_file;
+pub use neuron_weight_file::NeuronFileBoundModelLoadV1;
+pub use neuron_weight_file::NeuronPreopenedWeightModelDriver;
 pub use neuron_weight_file::NeuronWeightFileDiagnosticErrorV1;
 pub use neuron_weight_file::NeuronWeightFileDiagnosticV1;
 pub use neuron_weight_file::inspect_loaded_neuron_weight_file_v1;
