@@ -606,9 +606,24 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         self.cursor
     }
 
+    /// Structural ledger status only. NEVER use as production readiness: a
+    /// historically committed effect may have been revoked or rolled back by
+    /// an external Owner since the last call to advance/open.
     #[must_use]
     pub fn is_complete(&self) -> bool {
         self.cursor == STEP_COUNT
+    }
+
+    /// A verified current terminal status, requiring a fresh signed readback
+    /// from ALL four original effect owners. No observer/activation authority
+    /// is granted by this result. Incomplete history remains false without
+    /// querying Owner ports that have not yet received an intent.
+    pub fn verified_complete(&mut self) -> Result<bool, CellSplitExecutionErrorV1> {
+        if !self.is_complete() {
+            return Ok(false);
+        }
+        self.verify_committed_prefix()?;
+        Ok(true)
     }
 
     /// Export a four-effect proof only while every original commit is still
