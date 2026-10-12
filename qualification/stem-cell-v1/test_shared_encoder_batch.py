@@ -291,6 +291,95 @@ class BatchTests(unittest.TestCase):
 
 @unittest.skipUnless(importlib.util.find_spec("torch") is not None, "torch optional")
 class RealTorchBatchPathTests(unittest.TestCase):
+    def test_local_hf_checkpoint_requires_all_materialized_safetensors(self):
+        import sys
+        import tempfile
+        from pathlib import Path
+        from types import ModuleType
+        import torch
+        from model_runner import snapshot_digest
+
+        class FakeEncoder(torch.nn.Module):
+            def __init__(self, value):
+                super().__init__()
+                self.weight = torch.nn.Parameter(torch.tensor([value]))
+
+        class FakeReader:
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *_args):
+                return False
+
+            def keys(self):
+                return ["weight"]
+
+            def get_tensor(self, key):
+                if key != "weight":
+                    raise ValueError("wrong checkpoint tensor")
+                return torch.tensor([0.5])
+
+        clean = {"missing_keys": [], "unexpected_keys": [],
+                 "mismatched_keys": [], "error_msgs": []}
+        state = {"model_weight": 0.5, "report": clean, "give_report": True}
+
+        def local_model(*_args, **kwargs):
+            self.assertTrue(kwargs["local_files_only"])
+            self.assertFalse(kwargs["trust_remote_code"])
+            self.assertTrue(kwargs["use_safetensors"])
+            self.assertTrue(kwargs["output_loading_info"])
+            obj = FakeEncoder(state["model_weight"])
+            if state["give_report"]:
+                return obj, state["report"]
+            return obj
+
+        fake_transformers = ModuleType("transformers")
+        fake_transformers.AutoTokenizer = SimpleNamespace(
+            from_pretrained=lambda *a, **kw: object())
+        fake_transformers.AutoModel = SimpleNamespace(from_pretrained=local_model)
+        fake_safetensors = ModuleType("safetensors")
+        fake_safetensors.safe_open = lambda *_a, **_kw: FakeReader()
+        replacements = {
+            "transformers": fake_transformers,
+            "safetensors": fake_safetensors,
+        }
+        missing = object()
+        old = {key: sys.modules.get(key, missing) for key in replacements}
+        with tempfile.TemporaryDirectory() as root:
+            folder = Path(root)
+            (folder / "config.json").write_text('{"synthetic":true}')
+            (folder / "model.safetensors").write_bytes(
+                b"fake tensor bytes not a real pretrained model")
+            params = dict(
+                expected_snapshot_digest=snapshot_digest(folder),
+                preprocessor_digest=D("b"), runtime_digest=D("c"),
+                max_tokens=64, device="cpu",
+            )
+            try:
+                sys.modules.update(replacements)
+                backend = FrozenLocalHfBackend(folder, **params)
+                self.assertTrue(backend.verified_loading["complete"])
+                self.assertTrue(backend.verified_materialization["complete"])
+                self.assertEqual(backend.verified_materialization["tensor_count"], 1)
+                self.assertFalse(backend.model.weight.requires_grad)
+                state["report"] = {**clean, "missing_keys": ["weight"]}
+                with self.assertRaisesRegex(ValueError, "partially initialized"):
+                    FrozenLocalHfBackend(folder, **params)
+                state["report"] = clean
+                state["model_weight"] = 0.75
+                with self.assertRaisesRegex(ValueError, "differs from pinned"):
+                    FrozenLocalHfBackend(folder, **params)
+                state["model_weight"] = 0.5
+                state["give_report"] = False
+                with self.assertRaisesRegex(ValueError, "complete HF loading report"):
+                    FrozenLocalHfBackend(folder, **params)
+            finally:
+                for key, value in old.items():
+                    if value is missing:
+                        sys.modules.pop(key, None)
+                    else:
+                        sys.modules[key] = value
+
     def make_backend(self, *, left_padding=False):
         import torch
 
