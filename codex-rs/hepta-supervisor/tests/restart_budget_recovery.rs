@@ -256,7 +256,7 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             .iter()
             .any(|event| matches!(
                 &event.kind,
-                SupervisorEventKind::AutomaticRestartQueued { attempt: 2 }
+                SupervisorEventKind::RestartQueued
             ))
     );
     assert_eq!(
@@ -286,9 +286,17 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             .iter()
             .any(|event| matches!(
                 &event.kind,
-                SupervisorEventKind::AutomaticRestartQueued { attempt: 3 }
+                SupervisorEventKind::RestartQueued
             ))
     );
+    // The second recovery must preserve attempt-three's full 1,000 ms
+    // exponential delay. This is stronger evidence of the persisted attempt
+    // than the generic in-memory RestartQueued event name.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(999)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&agent_id), 3);
     now += Duration::from_secs(1);
     assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(control.spawn_count(&agent_id), 4);
