@@ -118,3 +118,27 @@ fn writable_metrics_directory_is_not_accepted_as_production_writer() {
         Err(MetricsJournalErrorV1::UnsafePath)
     ));
 }
+
+#[cfg(unix)]
+#[test]
+fn existing_hardlink_alias_cannot_become_a_second_metrics_writer() {
+    let dir = tempfile::tempdir().expect("private metrics directory");
+    let path = dir.path().join("metrics");
+    {
+        let mut first = MetricsGroupCommitV1::open(&path).expect("create journal");
+        first.stage(sample(MetricPhaseV1::Wal)).expect("stage");
+        first.flush().expect("durable first group");
+    }
+    let original = fs::read(&path).expect("original metrics");
+    let alias = dir.path().join("metrics-alias");
+    fs::hard_link(&path, &alias).expect("link original metrics inode");
+    for unsafe_path in [&path, &alias] {
+        assert!(matches!(
+            MetricsGroupCommitV1::open(unsafe_path),
+            Err(MetricsJournalErrorV1::UnsafePath)
+        ));
+    }
+    assert_eq!(fs::read(&path).expect("no writes to unsafe inode"), original);
+    fs::remove_file(&alias).expect("remove hardlink");
+    assert!(MetricsGroupCommitV1::open(&path).is_ok());
+}

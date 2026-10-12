@@ -240,8 +240,9 @@ fn check_journal_path(path: &Path) -> Result<(), MetricsJournalErrorV1> {
             }
             #[cfg(unix)]
             {
+                use std::os::unix::fs::MetadataExt;
                 use std::os::unix::fs::PermissionsExt;
-                if metadata.permissions().mode() & 0o077 != 0 {
+                if metadata.permissions().mode() & 0o077 != 0 || metadata.nlink() != 1 {
                     return Err(MetricsJournalErrorV1::UnsafePath);
                 }
             }
@@ -268,6 +269,8 @@ fn check_open_file(path: &Path, file: &File) -> Result<(), MetricsJournalErrorV1
             || on_path.permissions().mode() & 0o077 != 0
             || actual.dev() != on_path.dev()
             || actual.ino() != on_path.ino()
+            || actual.nlink() != 1
+            || on_path.nlink() != 1
         {
             return Err(MetricsJournalErrorV1::UnsafePath);
         }

@@ -133,3 +133,31 @@ fn native_production_bootstrap_requires_exclusive_wal_and_metrics_writers() {
     let reopened = open_metrics_bound_native_control_v1(&journal, 32).expect("both locks released");
     assert!(reopened.production_metrics_ready());
 }
+
+#[cfg(unix)]
+#[test]
+fn native_production_bootstrap_denies_hardlinked_metrics_without_touching_wal() {
+    let dir = tempfile::tempdir().expect("private root");
+    let journal = dir.path().join("control.wal");
+    let metrics = production_metrics_journal_path_v1(&journal).expect("metrics path");
+    {
+        let mut owner = open_metrics_bound_native_control_v1(&journal, 32)
+            .expect("initial production owner");
+        owner
+            .reserve_native(native_request("request.1"), 1)
+            .expect("durable native WAL");
+        assert!(owner.flush_production_metrics());
+    }
+    let wal_before = std::fs::read(&journal).expect("WAL before");
+    let metrics_before = std::fs::read(&metrics).expect("metrics before");
+    let alias = dir.path().join("metrics-second-name");
+    std::fs::hard_link(&metrics, &alias).expect("hardlink metrics inode");
+    assert!(open_metrics_bound_native_control_v1(&journal, 32).is_err());
+    assert_eq!(std::fs::read(&journal).expect("WAL unchanged"), wal_before);
+    assert_eq!(std::fs::read(&metrics).expect("metrics unchanged"), metrics_before);
+    std::fs::remove_file(&alias).expect("unlink alias");
+    let reopened = open_metrics_bound_native_control_v1(&journal, 32)
+        .expect("recovery once metrics alias removed");
+    assert!(reopened.native_record("request.1").is_some());
+    assert!(reopened.production_metrics_ready());
+}
