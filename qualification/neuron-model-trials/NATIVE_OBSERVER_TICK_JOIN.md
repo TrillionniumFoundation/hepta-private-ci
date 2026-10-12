@@ -95,6 +95,14 @@ matching previous checkpoint, and the same Scope, Objective and Generation.
 Model identity cannot change inside the exclusive NeuronRuntime instance.
 Direct ticks, failed execution or Witness uncertainty clear the trail.
 
+Both Agentd observer-link entrypoints are single-use. The legacy
+single-Episode read now consumes that SAME live issuance, so it cannot be
+followed by a cohort read that credits the same tick again. Neither entry
+can be used twice in the same running Agentd owner, whether the independent
+Observer signature was accepted or rejected. This does not provide global
+or cross-restart uniqueness: a durable external Observer/evidence owner must
+still enforce that independently.
+
 AgentdNeuronOwner::read_observer_linked_cohort_v1 verifies the complete series
 against the exact Observer-signed native Ledger batch, requires one unique
 owner-issued tick per Episode, rechecks the current Witness before and after,

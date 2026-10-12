@@ -132,7 +132,10 @@ where
         if prior.len() >= MAX_ISSUED_OBSERVED_TICKS {
             return Err(NeuronRuntimeError::InvalidInput);
         }
-        let attempted = (|| {
+        let attempted = (|| -> Result<
+            (NeuronRuntimeOutputV1, AgentdNeuronTickObservationV1),
+            NeuronRuntimeError,
+        > {
             let input_digest = input.semantic_digest()?;
             // The native Runtime reconciles a pending Witness CAS using the
             // original input, without reinvoking the worker on retry.
@@ -180,24 +183,39 @@ where
     /// separately trusted Observer signed the exact causal correlation.
     /// This is a read-only diagnostic and NOT CNS/Artifact route selection.
     pub fn read_observer_linked_tick_v1(
-        &self,
+        &mut self,
         query: &NeuronTrialTickObserverContextV1<'_>,
     ) -> Result<NeuronTrialObservedTickLinkV1, NeuronTrialTickObserverErrorV1> {
-        self.revalidate_current_tick_observation_v1(query.tick)?;
-        let link = query.ledger.read_observer_linked_neuron_tick_v1(
-            query.frozen_ledger,
-            query.freeze_plan,
-            query.signed_freeze,
-            query.dataset,
-            query.episode_id,
-            query.tick.diagnostic_digest,
-            query.tick.objective_digest,
-            query.tick.generation,
-            query.signed_observer_link,
-            query.now,
-        )?;
-        self.revalidate_current_tick_observation_v1(query.tick)?;
-        Ok(link)
+        // This and the complete-cohort path share one single-use issuance.
+        // Even a rejected Observer signature consumes the process-local trail.
+        self.issued_cohort.clear();
+        let latest = self.issued_tick.take();
+        (|| -> Result<NeuronTrialObservedTickLinkV1, NeuronTrialTickObserverErrorV1> {
+            require_owner_issued_tick(latest.as_ref(), query.tick)?;
+            let before = self.read_local_checkpoint_binding_v1()?;
+            if query.tick.local_checkpoint_binding_digest != before.binding_digest
+                || query.tick.checkpoint_after != before.anchor.checkpoint_digest
+                || query.tick.logical_sequence != before.anchor.sequence
+            {
+                return Err(NeuronRuntimeError::ModelBindingMismatch.into());
+            }
+            let link = query.ledger.read_observer_linked_neuron_tick_v1(
+                query.frozen_ledger,
+                query.freeze_plan,
+                query.signed_freeze,
+                query.dataset,
+                query.episode_id,
+                query.tick.diagnostic_digest,
+                query.tick.objective_digest,
+                query.tick.generation,
+                query.signed_observer_link,
+                query.now,
+            )?;
+            if self.read_local_checkpoint_binding_v1()? != before {
+                return Err(NeuronRuntimeError::ModelBindingMismatch.into());
+            }
+            Ok(link)
+        })()
     }
 
     /// Verify an entire Observer-signed native Ledger cohort against actual
@@ -214,7 +232,7 @@ where
     ) -> Result<NeuronTrialObservedCohortV1, NeuronTrialTickObserverErrorV1> {
         let trail = std::mem::take(&mut self.issued_cohort);
         let latest = self.issued_tick.take();
-        let result = (|| {
+        let result = (|| -> Result<NeuronTrialObservedCohortV1, NeuronTrialTickObserverErrorV1> {
             let last = trail.last().ok_or(NeuronRuntimeError::ModelBindingMismatch)?;
             require_owner_issued_tick(latest.as_ref(), last)?;
             // Revalidate the current Journal/Witness both before and after the
