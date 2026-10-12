@@ -9,6 +9,9 @@ struct Driver {
     fail_load_after_allocation: bool,
     fail_run_after_execution: bool,
     fail_feature_run_after_execution: bool,
+    missing_run_output_digest: bool,
+    overrun_run_tokens: bool,
+    overrun_run_memory: bool,
     run_calls: usize,
     feature_run_calls: usize,
     invalid_handle: bool,
@@ -58,9 +61,17 @@ impl ModelDriver for Driver {
         Ok(DriverRunObservation {
             terminal_observed: true,
             succeeded: !self.fail_terminal,
-            output_digest: Some("9".repeat(64)),
-            consumed_tokens: 16,
-            observed_memory_bytes: 1_024,
+            output_digest: if self.missing_run_output_digest {
+                None
+            } else {
+                Some("9".repeat(64))
+            },
+            consumed_tokens: if self.overrun_run_tokens { 65 } else { 16 },
+            observed_memory_bytes: if self.overrun_run_memory {
+                8_192
+            } else {
+                1_024
+            },
         })
     }
 
@@ -265,6 +276,55 @@ fn failed_driver_run_is_never_retried_without_external_recovery() {
         worker.load_model(100, other),
         Err(Error::ExecutionIndeterminate)
     );
+}
+
+#[test]
+fn malformed_terminal_output_and_post_driver_resource_overruns_fence_generation() {
+    for (fixture, first_error) in [
+        (
+            Driver {
+                missing_run_output_digest: true,
+                ..Driver::default()
+            },
+            Error::MissingTerminalOutput,
+        ),
+        (
+            Driver {
+                overrun_run_tokens: true,
+                ..Driver::default()
+            },
+            Error::TokenLimit,
+        ),
+        (
+            Driver {
+                overrun_run_memory: true,
+                ..Driver::default()
+            },
+            Error::ModelCapacity,
+        ),
+    ] {
+        let mut worker = InferenceWorker::new(
+            100,
+            "worker.invalid-terminal".to_string(),
+            3,
+            grant(),
+            fixture,
+        )
+        .expect("worker");
+        worker.load_model(100, manifest()).expect("load");
+        assert_eq!(worker.run(100, "model.1", request()), Err(first_error));
+        assert!(worker.requires_external_recovery());
+        assert_eq!(worker.driver.run_calls, 1);
+        assert_eq!(
+            worker.run(100, "model.1", request()),
+            Err(Error::ExecutionIndeterminate)
+        );
+        assert_eq!(worker.driver.run_calls, 1);
+        assert_eq!(
+            worker.unload_model(100, "model.1"),
+            Err(Error::ExecutionIndeterminate)
+        );
+    }
 }
 
 #[test]
@@ -596,6 +656,12 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
     assert_eq!(
         worker.run_neuron_features(100, "model.1", neuron_feature_request()),
         Err(Error::FeatureOutputMismatch)
+    );
+    assert!(worker.requires_external_recovery());
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ExecutionIndeterminate),
+        "a forged Head identity cannot be used as a safe retry baseline"
     );
 }
 
