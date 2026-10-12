@@ -212,6 +212,23 @@ fn validate_batch_partition_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Res
     Ok(())
 }
 
+/// The minimum memory needed for independent Q24 output buffers across the
+/// entire batch. Immutable input features are not re-materialized per Cell.
+/// This is a conservative admission floor, NOT measured backend RSS/scratch.
+fn minimum_batch_output_bytes_v2(
+    requests: &[SharedNeuronFeatureRequestV2],
+) -> Result<u64, Error> {
+    requests.iter().try_fold(0_u64, |total, item| {
+        let width = u64::try_from(item.expected_output_width)
+            .map_err(|_| Error::ArithmeticOverflow)?;
+        let bytes = width
+            .checked_mul(2)
+            .and_then(|elements| elements.checked_mul(8))
+            .ok_or(Error::ArithmeticOverflow)?;
+        total.checked_add(bytes).ok_or(Error::ArithmeticOverflow)
+    })
+}
+
 impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
     /// Admits and executes an immutable-feature batch without ever expanding
     /// Arc<[i64]> into the old per-request Vec. Returns all rows or an error.
@@ -272,6 +289,24 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
             if !reservation_ids.insert(item.authorization.reservation_id.as_str()) {
                 return Err(Error::FeatureContract);
             }
+        }
+
+        // Even a correct batch can exhaust its worker grant through many
+        // independent drive/prediction buffers. Reject before touching
+        // capacity counters or invoking a backend; do not multiply shared Arc
+        // input features into the calculation.
+        let resident_bytes = self
+            .models
+            .values()
+            .try_fold(0_u64, |total, loaded| {
+                total.checked_add(loaded.handle.observed_memory_bytes)
+            })
+            .ok_or(Error::ArithmeticOverflow)?;
+        let minimum_bytes = resident_bytes
+            .checked_add(minimum_batch_output_bytes_v2(&requests)?)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if minimum_bytes > self.grant.maximum_memory_bytes {
+            return Err(Error::ModelCapacity);
         }
 
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
@@ -456,6 +491,17 @@ mod tests {
         value.authorization.payload_digest = digest.clone();
         value.authorization.lease_payload_digest = digest;
         value
+    }
+
+    #[test]
+    fn batch_output_memory_floor_counts_each_cell_without_cloning_shared_input() {
+        let shared = frame(2);
+        let a = req("cell.a", "request.a", Arc::clone(&shared));
+        let b = req("cell.b", "request.b", Arc::clone(&shared));
+        assert!(Arc::ptr_eq(&a.snapshot, &b.snapshot));
+        // Two Q24 output vectors, width two, for each of two Cells.
+        assert_eq!(minimum_batch_output_bytes_v2(&[a, b]), Ok(64));
+        assert_eq!(minimum_batch_output_bytes_v2(&[]), Ok(0));
     }
 
     #[test]
