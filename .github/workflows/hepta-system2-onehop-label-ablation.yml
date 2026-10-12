@@ -5,7 +5,10 @@ on:
     paths:
       - "scripts/memory_cell/system2_onehop_label_ablation.py"
       - "scripts/memory_cell/test_system2_onehop_label_ablation.py"
+      - "scripts/memory_cell/system2_onehop_label_pair_audit.py"
+      - "scripts/memory_cell/test_system2_onehop_label_pair_audit.py"
       - "codex-rs/hepta-ndu/research/SYSTEM2_ONEHOP_LABEL_ABLATION.md"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_ONEHOP_LABEL_PAIR_AUDIT.md"
       - ".github/workflows/hepta-system2-onehop-label-ablation.yml"
 permissions:
   contents: read
@@ -56,7 +59,7 @@ jobs:
             exit 1
           fi
           tail -6 /tmp/system2-onehop-label/full-regression.log
-          /tmp/onehop-label-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_onehop_label_ablation.py scripts/memory_cell/test_system2_onehop_label_ablation.py scripts/memory_cell/system2_onehop_reader.py scripts/memory_cell/system2_onehop_cardinality.py | tee /tmp/system2-onehop-label/lint.log
+          /tmp/onehop-label-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_onehop_label_ablation.py scripts/memory_cell/test_system2_onehop_label_ablation.py scripts/memory_cell/system2_onehop_reader.py scripts/memory_cell/system2_onehop_cardinality.py scripts/memory_cell/system2_onehop_label_pair_audit.py scripts/memory_cell/test_system2_onehop_label_pair_audit.py | tee /tmp/system2-onehop-label/lint.log
       - name: Restore only the original pinned Reader weights and tokenizer
         env:
           GH_TOKEN: ${{ github.token }}
@@ -101,6 +104,21 @@ jobs:
           set -euo pipefail
           /usr/bin/time -v -o /tmp/system2-onehop-label/resources.txt /tmp/onehop-label-python/bin/python scripts/memory_cell/system2_onehop_label_ablation.py "$HEPTA_SYSTEM2_CARDINALITY_ARCHIVE" /tmp/memory-inputs/reader /tmp/system2-onehop-label/trial --development > /tmp/system2-onehop-label/execution.log 2>&1 || { tail -120 /tmp/system2-onehop-label/execution.log; exit 1; }
           tail -1 /tmp/system2-onehop-label/execution.log
+      - name: Post-seal independent paired labels and token-cost audit (no model calls)
+        if: always()
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          if [ ! -e /tmp/system2-onehop-label/trial/raw-seal.json ]; then
+            printf '%s\n' '{"audit_available":false,"reader_model_results_not_completed":true}' > /tmp/system2-onehop-label/audit-unavailable.json
+            exit 0
+          fi
+          /tmp/onehop-label-python/bin/python scripts/memory_cell/system2_onehop_label_pair_audit.py \
+            "$HEPTA_SYSTEM2_CARDINALITY_ARCHIVE" \
+            /tmp/system2-onehop-label/trial \
+            /tmp/system2-onehop-label/paired-label-postseal-audit.json \
+            --source-commit "$HEPTA_MEMORY_TESTED_COMMIT"
       - name: Preserve all source, sealed answers, failures and reproducible hashes
         if: always()
         run: |
@@ -109,7 +127,8 @@ jobs:
           git rev-parse HEAD > /tmp/system2-onehop-label/tested-commit.txt
           git rev-parse HEAD^{tree} > /tmp/system2-onehop-label/tested-tree.txt
           cp scripts/memory_cell/{system2_onehop_label_ablation.py,test_system2_onehop_label_ablation.py,system2_onehop_cardinality.py,system2_onehop_reader.py,system2_multihop_evidence.py,system2_multihop_trial.py} /tmp/system2-onehop-label/source/
-          cp codex-rs/hepta-ndu/research/SYSTEM2_ONEHOP_LABEL_ABLATION.md .github/workflows/hepta-system2-onehop-label-ablation.yml /tmp/system2-onehop-label/source/
+          cp scripts/memory_cell/{system2_onehop_label_pair_audit.py,test_system2_onehop_label_pair_audit.py} /tmp/system2-onehop-label/source/
+          cp codex-rs/hepta-ndu/research/{SYSTEM2_ONEHOP_LABEL_ABLATION.md,SYSTEM2_ONEHOP_LABEL_PAIR_AUDIT.md} .github/workflows/hepta-system2-onehop-label-ablation.yml /tmp/system2-onehop-label/source/
           (cd /tmp/system2-onehop-label && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
