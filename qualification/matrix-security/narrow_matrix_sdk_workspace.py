@@ -157,14 +157,37 @@ def inspect_cargo_metadata(payload, *, candidate_root, stage_root):
     """Refuse old crypto, old anymap, CLI/Starlark or foreign SDK resolution."""
     if type(payload) is not bytes or not 0 < len(payload) <= MAX_METADATA:
         raise ValueError("unbounded/incomplete Cargo metadata")
+    def unique_keys(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate Cargo metadata key")
+            result[key] = value
+        return result
+
+    def reject_json_constant(value):
+        raise ValueError(f"non-finite Cargo metadata constant: {value}")
+
     try:
-        data = json.loads(payload)
+        data = json.loads(payload, object_pairs_hook=unique_keys,
+                          parse_constant=reject_json_constant)
     except (UnicodeError, ValueError) as error:
         raise ValueError("malformed Cargo metadata") from error
-    if type(data) is not dict or type(data.get("packages")) is not list:
+    if (type(data) is not dict or type(data.get("packages")) is not list
+            or type(data.get("workspace_members")) is not list):
         raise ValueError("missing actual Cargo package graph")
     packages = data["packages"]
-    members = set(data.get("workspace_members", []))
+    for item in packages:
+        if (type(item) is not dict or type(item.get("name")) is not str
+                or type(item.get("version")) is not str
+                or type(item.get("id")) is not str
+                or type(item.get("manifest_path")) is not str):
+            raise ValueError("malformed Cargo package identity")
+    raw_members = data["workspace_members"]
+    if (not raw_members or any(type(member) is not str for member in raw_members)
+            or len(raw_members) != len(set(raw_members))):
+        raise ValueError("missing/duplicate Cargo workspace member")
+    members = set(raw_members)
     selected = [p for p in packages if p.get("name") == "codex-hepta-matrix-sdk"]
     sdk = [p for p in packages if p.get("name") == "matrix-sdk"]
     crypto = [p for p in packages if p.get("name") == "matrix-sdk-crypto"]
