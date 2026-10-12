@@ -21,9 +21,8 @@ fn windows_git_child_lifetime_fixture() {
     if std::env::var_os("CODEX_GIT_PROCESS_TEST_CHILD").is_none() {
         return;
     }
-    let ready = std::path::PathBuf::from(
-        std::env::var_os("CHILD_READY_FILE").expect("child ready path"),
-    );
+    let ready =
+        std::path::PathBuf::from(std::env::var_os("CHILD_READY_FILE").expect("child ready path"));
     let release = std::path::PathBuf::from(
         std::env::var_os("RELEASE_CHILD_FILE").expect("child release path"),
     );
