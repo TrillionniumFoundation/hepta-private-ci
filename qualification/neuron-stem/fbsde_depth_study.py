@@ -17,7 +17,7 @@ from fbsde_tracking_feedback import (load_base, validate_feedback, fit_candidate
 from fbsde_tracking_feedback_data import FAMILIAR, REPAIR, CALIBRATION, HELDOUT, local_rows, generate, task
 from fbsde_tracking import lexical_vector, slot_text
 from fbsde_depth_policy import (PROFILE, GAIN_PRICE, THRESHOLDS, features, fit_router,
-    select_threshold, scalar_score, allocate)
+    select_threshold, scalar_score, allocate, ENGINES)
 
 MODES = ('no_checks','myopic','full','confidence','frozen','learned','learned_complete','confidence_complete','verify_all_unique','exact_reverse')
 
@@ -32,7 +32,7 @@ def teacher_row(row):
             'one':one,'two':two,'problem_sha256':problem.identity}
 
 
-def execute(problem, public, mode, bundle):
+def execute(problem, public, mode, bundle, *, planning_engine=ENGINES[0]):
     started = time.process_time_ns(); known = (); remaining = 2; routes = []; decisions = []; checks = []
     if mode == 'exact_reverse':
         t = task(public); holder = t['query']
@@ -47,7 +47,7 @@ def execute(problem, public, mode, bundle):
             elif mode in ('no_checks','verify_all_unique'):
                 d = plan(problem,known,horizon=0); decisions.append(d); action = d['action']
             else:
-                d, route = allocate(problem,known,remaining,mode,bundle)
+                d, route = allocate(problem,known,remaining,mode,bundle,engine=planning_engine)
                 decisions.append(d); routes.append(route); action = d['action']
             if not action.startswith('verify:'):
                 holder = None if action == 'abstain' else int(action.split(':')[1]); break
@@ -67,11 +67,12 @@ def execute(problem, public, mode, bundle):
         'production_promotion_permitted':False}
 
 
-def run(output, evidence_dir):
+def run(output, evidence_dir, planning_engine=ENGINES[0]):
     import torch
+    require(planning_engine in ENGINES, 'explicit planning engine')
     output = Path(output); output.mkdir(parents=True,exist_ok=False)
     start = time.process_time_ns(); torch.set_num_threads(2)
-    write_once(output/'plan.json', {'profile':PROFILE,'modes':MODES,'teacher_counts':[256,64,64],
+    write_once(output/'plan.json', {'profile':PROFILE,'planning_engine':planning_engine,'modes':MODES,'teacher_counts':[256,64,64],
         'teacher_seeds':[15485863,15485917,15485933],'router_seed':982451653,
         'selection_profiles':['registered_coarse_v1','validation_breakpoints_v2'],
         'complete_grid_added_after_coarse_run_but_uses_selection_rows_only':True,
@@ -79,7 +80,7 @@ def run(output, evidence_dir):
         'max_checks':2,'check_cost':.02,'cpu_limit_ns':100_000_000,
         'semantic_evaluation':'inherited_feedback_frames_exploratory_reuse',
         'router_teacher':'label_free_numerical_beliefs_not_real_world_rewards',
-        'sources':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in Path(__file__).parent.glob('fbsde_depth*.py')},
+        'sources':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [*Path(__file__).parent.glob('fbsde_depth*.py'),Path(__file__).with_name('fbsde_planning_workspace.py'),Path(__file__).with_name('fbsde_tracking_control.py')]},
         'production_promotion_permitted':False})
     budget = {'used':0,'limit':256*1024*1024}
     proposals = RecordBuffer(budget); priors = RecordBuffer(budget); rows = {m:RecordBuffer(budget) for m in MODES}
@@ -159,7 +160,7 @@ def run(output, evidence_dir):
             order = list(MODES); random.Random(32452867+i).shuffle(order)
             for mode in order:
                 active = {'phase':'planning','source_id':src['source_id'],'mode':mode}
-                rows[mode].append(execute(problem,src,mode,bundle))
+                rows[mode].append(execute(problem,src,mode,bundle,planning_engine=planning_engine))
         require(snapshot_id==digest(states_json(models)) and [identity(m) for m in members]==parent['members'],
                 'inference changed immutable models')
     except Exception as error:
@@ -188,7 +189,7 @@ def run(output, evidence_dir):
                 'depth2_calls':sum(q['selected_depth']==2 for r in sub for q in r['routes']),
                 'planner_nodes':sum(q['planner_nodes'] for r in sub for q in r['routes'])+
                     sum(d['nodes'] for r in sub if not r['routes'] for d in r['decisions'])}
-    result = {'profile':PROFILE,'summary':summary,'router_parameters':fit['parameters'],
+    result = {'profile':PROFILE,'planning_engine':planning_engine,'summary':summary,'router_parameters':fit['parameters'],
         'jobs_once':jobs,'adaptation_jobs_once':adapt_jobs,'shared_proposal_cpu_ns':shared_cpu,
         'belief_build_cpu_ns':build_cpu,'cpu_before_audit_ns':time.process_time_ns()-start,
         'model_test_deep_calls':sum(r['deeper'] for r in model_test),

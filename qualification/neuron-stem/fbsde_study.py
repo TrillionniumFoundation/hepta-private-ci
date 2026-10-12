@@ -75,6 +75,7 @@ def run(output, profile="exact_v1", **options):
 
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--depth-planning-engine', choices=('fresh_solve_v1','shared_continuation_v2'), default='fresh_solve_v1')
     parser.add_argument('--tracking-control-profile', choices=('all_steps_v1','learned_belief_v1','shared_head_mixture_v2'), default='all_steps_v1')
     parser.add_argument('--tracking-record-profile', choices=('retained_objects_v1','serialized_records_v2'), default='retained_objects_v1')
     parser.add_argument('--tracking-feature-profile', choices=('ordinal_sensitive_v1','local_participant_v2'), default='ordinal_sensitive_v1')
@@ -94,6 +95,8 @@ if __name__=='__main__':
     if args.profile in ("novelty_calibration_v1", "verified_feedback_learning_v1", "learned_depth_allocation_v1"):
         require(args.evidence_dir is not None and args.backend == "hashing_reference_v1", "explicit frozen lexical Head source required")
         options = dict(evidence_dir=args.evidence_dir)
+    if args.profile == 'learned_depth_allocation_v1':
+        options['planning_engine'] = args.depth_planning_engine
     if args.profile == "cpu_tail_replay_v1":
         require(args.evidence_dir is not None, "replay evidence directory required")
         options = dict(evidence_dir=args.evidence_dir, repeats=args.replay_count, model_dir=args.model_dir)

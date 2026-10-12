@@ -80,6 +80,9 @@ def audit(root):
             design['modes']==list(MODES) and design['teacher_counts']==[256,64,64] and
             design['gain_price']==.002 and design['max_checks']==2 and design['check_cost']==.02 and
             design['cpu_limit_ns']==100_000_000,'frozen design/strong controls')
+    engine=design.get('planning_engine','fresh_solve_v1')
+    require(engine in ('fresh_solve_v1','shared_continuation_v2') and
+            result.get('planning_engine','fresh_solve_v1')==engine,'planning engine identity')
     teachers={s:read('teacher-'+s) for s in ('train','selection','model_test')}
     seen=set();references=0
     for (split,rows),n,seed in zip(teachers.items(),design['teacher_counts'],design['teacher_seeds']):
@@ -176,6 +179,18 @@ def audit(root):
                                 and route['mode']==mode and route['returned'] is True and ns(route['cpu_ns'])<=100_000_000
                                 and route['bundle_sha256']==digest(bundle),'paid current routing')
                             require(ns(route['planner_cpu_ns'])<=route['cpu_ns'],'unpaid planner work')
+                            require(route.get('planning_engine','fresh_solve_v1')==engine,'route engine drift')
+                            if engine=='shared_continuation_v2':
+                                scratch=route['workspace']
+                                require(set(scratch)=={'new_value_nodes','value_cache_hits','conditional_state_hits',
+                                    'conditional_outcome_hits','retained_value_rows','retained_state_rows',
+                                    'retained_outcome_rows','closed'} and scratch['closed'] is True,
+                                    'complete closed decision workspace')
+                                for key in set(scratch)-{'closed'}: ns(scratch[key])
+                                require(scratch['new_value_nodes']==route['planner_nodes'] and
+                                    all(scratch[k]==0 for k in ('retained_value_rows','retained_state_rows','retained_outcome_rows')),
+                                    'retained scratch or unpaid new nodes')
+                            else: require(route.get('workspace') is None,'fresh solve cannot claim reused work')
                             require(type(route['planner_nodes']) is int and 1<=route['planner_nodes']<=20000
                                 and type(route['one_step_nodes']) is int and 0<=route['one_step_nodes']<=route['planner_nodes'],'combined node budget')
                             if remaining==2 and mode!='full':
