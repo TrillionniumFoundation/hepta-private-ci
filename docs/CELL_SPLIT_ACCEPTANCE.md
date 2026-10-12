@@ -233,3 +233,24 @@ the current CNS/Supervisor state still requires a separately held monotonic
 anti-rollback witness and live owner attestation. The historical
 `productionGatePassed` receipt is **not** a production-activation grant,
 and this source change is not target-host qualification.
+
+
+### External policy pin for host/Observer evidence verification
+
+The `hepta-operator-acceptance target-host-evidence verify`, `ingest` and
+`store` CLI operations now require an additional
+`<externally-pinned-policy-sha256>` argument, positioned immediately after
+`<trust-policy-json>`. They validate the private trust policy's exact bytes
+against that independent lowercase SHA-256 **before reading the report**.
+The legacy unpinned `from_json_file` loader now denies access; library
+callers with externally supplied trusted bytes may use `from_json_bytes`,
+while production file loading must use `from_json_file_pinned`.
+
+The external pin must come from the deployment's independent trust policy
+authority, never be computed from the same host-provided file or evidence.
+A well-formed policy substituting different host/Observer verification keys
+cannot make its own evidence trusted merely by residing at the expected path.
+Even a correctly pinned policy and immutable historical evidence file do
+not provide current CNS state, anti-rollback across whole-directory restore,
+real NDU/Selector final-use or production activation. Exact-head CI remains
+required before interpreting this source change as validated.
