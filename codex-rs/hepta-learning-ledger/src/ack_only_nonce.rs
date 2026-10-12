@@ -1,12 +1,10 @@
-//! Feature-gated test-only durable recovery-grant nonce reservation.
-//! This journal MUST be an independently owner-pinned stable directory,
-//! not freshly selected by a submitted grant/caller. An indeterminate
-//! reservation is never cleared or retried automatically: HOLD.
+//! FEATURE-GATED TEST ONLY: persist a *target-event* reservation BEFORE
+//! persisting the separate RecoveryGrant nonce, and both BEFORE witness ACK.
+//! Neither file is ever deleted/replaced/reissued on indeterminate outcomes.
 //!
-//! Reservations are O_EXCL before any Witness ACK. This is NOT a
-//! globally replicated nonce owner, independent product authority,
-//! trusted clock, actual crash/powercut durability attestation, or
-//! an approval to repair the original market PAPER ledger.
+//! Storage authority is LOCAL: the PRODUCT host must pin the same owner dir
+//! across all workers, hosts and clones. This code is NOT a global owner,
+//! escrow signer, trusted time source or production RecoveryAuthority.
 use std::fs::{self, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -15,29 +13,28 @@ use codex_hepta_types::Digest32;
 
 use crate::ack_only_recovery::{AckOnlyRecoveryError, AckOnlyRecoveryGrantV1};
 
-const DOMAIN: &[u8] = b"hepta.ackonly-qualification-reserved-once.v1";
+const NONCE_DOMAIN: &[u8] = b"hepta.ackonly-qualification-reserved-once.v2";
+const TARGET_DOMAIN: &[u8] = b"hepta.ackonly-qualification-event-target-once.v1";
 
 pub struct AckOnlyGrantNonceJournalV1 {
     directory: File,
     path: PathBuf,
 }
+
 impl AckOnlyGrantNonceJournalV1 {
-    /// The product host, never a submitted grant, supplies this preexisting
-    /// owner-only and stable directory. No auto-create or symlink following.
+    /// The product host, never an incoming grant, must provision a fixed,
+    /// independently owner-pinned private nonce journal. Default feature OFF.
     pub fn open_preexisting(path: &Path) -> Result<Self, AckOnlyRecoveryError> {
-        // On UNIX, open the exact DIRECTORY handle without following a
-        // symlink, then compare fstat and lstat identities. No caller may
-        // substitute a different original nonce owner during this open.
         #[cfg(unix)]
         {
             use rustix::fs::{self as unixfs, Mode, OFlags};
             use std::os::unix::fs::{MetadataExt, PermissionsExt};
             let before = fs::symlink_metadata(path)
                 .map_err(|_| AckOnlyRecoveryError::NonceStoreUnavailable)?;
-            if !before.is_dir() || before.file_type().is_symlink()
+            if !before.is_dir()
+                || before.file_type().is_symlink()
                 || before.permissions().mode() & 0o777 != 0o700
-                // Safe rustix wrapper, preserving forbid(unsafe_code).
-                || before.uid()!=rustix::process::geteuid().as_raw()
+                || before.uid() != rustix::process::geteuid().as_raw()
             {
                 return Err(AckOnlyRecoveryError::NonceStoreUnavailable);
             }
@@ -79,33 +76,40 @@ impl AckOnlyGrantNonceJournalV1 {
         }
     }
 
-    pub(crate) fn reserve(
-        &mut self,
-        grant: &AckOnlyRecoveryGrantV1,
-    ) -> Result<Digest32, AckOnlyRecoveryError> {
-        self.reserve_with_after_check(grant, || {})
+    /// A grant's *target* fingerprint deliberately EXCLUDES grant ID, nonce,
+    /// issuance window and signature. Two independently valid DIFFERENT
+    /// RecoveryGrants for the SAME durable original event must collide.
+    fn target_digest(grant: &AckOnlyRecoveryGrantV1) -> Digest32 {
+        let mut bytes = TARGET_DOMAIN.to_vec();
+        for digest in [
+            grant.ledger_binding,
+            grant.objective_digest,
+            grant.original_authentication_digest,
+            grant.previous_witness.chain_digest,
+            grant.target_anchor.chain_digest,
+            grant.target_event_digest,
+        ] {
+            bytes.extend_from_slice(digest.as_array());
+        }
+        bytes.extend_from_slice(&grant.previous_witness.sequence.to_be_bytes());
+        bytes.extend_from_slice(&grant.target_anchor.sequence.to_be_bytes());
+        let id = grant.original_record_id.as_str().as_bytes();
+        bytes.extend_from_slice(&(id.len() as u64).to_be_bytes());
+        bytes.extend_from_slice(id);
+        Digest32::of_bytes(&bytes)
     }
 
-    #[cfg(test)]
-    pub(crate) fn reserve_with_test_rebind(
-        &mut self,
-        grant: &AckOnlyRecoveryGrantV1,
-        injected_rebind: impl FnOnce(),
-    ) -> Result<Digest32, AckOnlyRecoveryError> {
-        self.reserve_with_after_check(grant, injected_rebind)
+    fn hex(digest: Digest32) -> String {
+        const DIGITS: &[u8; 16] = b"0123456789abcdef";
+        let mut value = String::with_capacity(64);
+        for byte in digest.as_array() {
+            value.push(char::from(DIGITS[usize::from(byte >> 4)]));
+            value.push(char::from(DIGITS[usize::from(byte & 0x0f)]));
+        }
+        value
     }
 
-    /// Private injection seam used ONLY for adversarial tests to arrange an
-    /// exact rename+rebind BETWEEN the precheck and dirfd-relative create.
-    /// In production the closure is hardwired to the empty no-op above.
-    fn reserve_with_after_check(
-        &mut self,
-        grant: &AckOnlyRecoveryGrantV1,
-        after_precheck: impl FnOnce(),
-    ) -> Result<Digest32, AckOnlyRecoveryError> {
-        // Catch a swapped directory/symlink between initialization and
-        // reservation. This is still a qualification-level check, NOT an
-        // openat2 / mount-namespace proof of a product owner-pinned store.
+    fn ensure_owner_path_is_original_fd(&self) -> Result<(), AckOnlyRecoveryError> {
         #[cfg(unix)]
         {
             use std::os::unix::fs::{MetadataExt, PermissionsExt};
@@ -124,75 +128,128 @@ impl AckOnlyGrantNonceJournalV1 {
             {
                 return Err(AckOnlyRecoveryError::NonceStoreUnavailable);
             }
+            Ok(())
         }
-        // Test-only race hook: even if the OWNER directory pathname is
-        // renamed or replaced NOW, all subsequent filesystem creation is
-        // rooted in the open directory FD, never redirected to new path.
-        after_precheck();
-        let mut filename = String::from("nonce-");
-        for part in grant.grant_nonce.as_array() {
-            use std::fmt::Write as _;
-            write!(filename, "{part:02x}")
-                .map_err(|_| AckOnlyRecoveryError::NonceStoreUnavailable)?;
-        }
-        // Every grant that attempts to use the SAME nonce in this
-        // authoritative original owner directory maps to ONE file.
-        // Create the deterministic name RELATIVE TO THE PINNED OPEN DIRFD.
-        // The old OpenOptions::open(self.path.join(...)) would re-resolve the
-        // path after the inode check, leaving a TOCTOU redirection window.
-        #[cfg(unix)]
-        let mut file = {
-            use rustix::fs::{Mode, OFlags, openat};
-            // Safe rustix openat resolves only relative to the pinned
-            // open directory handle and preserves forbid(unsafe_code).
-            let flags =
-                OFlags::WRONLY | OFlags::CREATE | OFlags::EXCL | OFlags::NOFOLLOW | OFlags::CLOEXEC;
-            let mode = Mode::from_bits_truncate(0o600);
-            match openat(&self.directory, filename.as_str(), flags, mode) {
-                Ok(fd) => File::from(fd),
-                Err(error) if error == rustix::io::Errno::EXIST => {
-                    return Err(AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate);
-                }
-                Err(_) => return Err(AckOnlyRecoveryError::NonceStoreUnavailable),
-            }
-        };
         #[cfg(not(unix))]
-        let mut file: File = {
-            return Err(AckOnlyRecoveryError::NonceStoreUnavailable);
-        };
-        let mut bytes = DOMAIN.to_vec();
-        bytes.extend_from_slice(grant.grant_nonce.as_array());
-        bytes.extend_from_slice(Digest32::of_bytes(&grant.signing_bytes()).as_array());
-        bytes.extend_from_slice(&grant.recovery_signature);
-        let receipt = Digest32::of_bytes(&bytes);
-        // Never delete a possibly partially written reservation. Retain
-        // it as an indeterminate proof requiring manual reconciliation.
-        file.write_all(&bytes)
-            .and_then(|_| file.sync_all())
-            .and_then(|_| self.directory.sync_all())
-            .map_err(|_| AckOnlyRecoveryError::NonceStoreUnavailable)?;
-        // Refuse success if the submitted owner path was replaced while
-        // fsync ran; the nonce remains reserved in the original dirfd.
-        // Never delete an ambiguous reservation or proceed to Witness ACK.
+        {
+            Err(AckOnlyRecoveryError::NonceStoreUnavailable)
+        }
+    }
+
+    /// Never resolve a mutable pathname for file creation. The held dirfd
+    /// must remain authoritative even across rename+rebind TOCTOU attempts.
+    fn create_once(
+        &self,
+        filename: &str,
+        already_used: AckOnlyRecoveryError,
+    ) -> Result<File, AckOnlyRecoveryError> {
         #[cfg(unix)]
         {
-            use std::os::unix::fs::{MetadataExt, PermissionsExt};
-            let actual = self
-                .directory
-                .metadata()
-                .map_err(|_| AckOnlyRecoveryError::NonceStoreUnavailable)?;
-            let visible = fs::symlink_metadata(&self.path)
-                .map_err(|_| AckOnlyRecoveryError::NonceStoreUnavailable)?;
-            if !visible.is_dir()
-                || visible.file_type().is_symlink()
-                || visible.dev() != actual.dev()
-                || visible.ino() != actual.ino()
-                || visible.uid() != actual.uid()
-                || visible.permissions().mode() & 0o777 != 0o700
-            {
-                return Err(AckOnlyRecoveryError::NonceStoreUnavailable);
+            use rustix::fs::{Mode, OFlags, openat};
+            let flags =
+                OFlags::WRONLY | OFlags::CREATE | OFlags::EXCL | OFlags::NOFOLLOW | OFlags::CLOEXEC;
+            match openat(
+                &self.directory,
+                filename,
+                flags,
+                Mode::from_bits_truncate(0o600),
+            ) {
+                Ok(fd) => Ok(File::from(fd)),
+                Err(error) if error == rustix::io::Errno::EXIST => Err(already_used),
+                Err(_) => Err(AckOnlyRecoveryError::NonceStoreUnavailable),
             }
         }
-        Ok(receipt)
+        #[cfg(not(unix))]
+        {
+            let _ = (filename, already_used);
+            Err(AckOnlyRecoveryError::NonceStoreUnavailable)
+        }
+    }
+
+    fn persist_one(&self, mut file: File, data: &[u8]) -> Result<(), AckOnlyRecoveryError> {
+        // Every partial reservation is permanent HOLD. Even if sync fails,
+        // no filename is removed or rewritten by this component.
+        file.write_all(data)
+            .and_then(|_| file.sync_all())
+            .and_then(|_| self.directory.sync_all())
+            .map_err(|_| AckOnlyRecoveryError::NonceStoreUnavailable)
+    }
+
+    pub(crate) fn reserve(
+        &mut self,
+        grant: &AckOnlyRecoveryGrantV1,
+    ) -> Result<Digest32, AckOnlyRecoveryError> {
+        self.reserve_with_hooks(grant, || {}, || {})
+    }
+
+    #[cfg(test)]
+    pub(crate) fn reserve_with_test_rebind(
+        &mut self,
+        grant: &AckOnlyRecoveryGrantV1,
+        injected_rebind: impl FnOnce(),
+    ) -> Result<Digest32, AckOnlyRecoveryError> {
+        self.reserve_with_hooks(grant, injected_rebind, || {})
+    }
+
+    #[cfg(test)]
+    pub(crate) fn reserve_with_test_target_fsync_exit(
+        &mut self,
+        grant: &AckOnlyRecoveryGrantV1,
+        injected_exit: impl FnOnce(),
+    ) -> Result<Digest32, AckOnlyRecoveryError> {
+        self.reserve_with_hooks(grant, || {}, injected_exit)
+    }
+
+    /// Test-only hooks permit precise fault injection after the owner FD
+    /// precheck or target-file fsync. Normal callers get TWO hardcoded
+    /// no-op hooks above; nothing in production can choose a callback.
+    fn reserve_with_hooks(
+        &mut self,
+        grant: &AckOnlyRecoveryGrantV1,
+        after_precheck: impl FnOnce(),
+        after_target_fsync: impl FnOnce(),
+    ) -> Result<Digest32, AckOnlyRecoveryError> {
+        self.ensure_owner_path_is_original_fd()?;
+        after_precheck();
+
+        // FIRST reserve the immutable original Ledger event/ACK pair, so a
+        // completely DIFFERENT signed grant nonce cannot recover the SAME
+        // original event a second time within this owner-held directory.
+        let target = Self::target_digest(grant);
+        let target_filename = format!("target-{}", Self::hex(target));
+        let target_file = self.create_once(
+            &target_filename,
+            AckOnlyRecoveryError::EventAlreadyReservedOrIndeterminate,
+        )?;
+        let mut target_bytes = TARGET_DOMAIN.to_vec();
+        target_bytes.extend_from_slice(target.as_array());
+        target_bytes.extend_from_slice(grant.grant_nonce.as_array());
+        target_bytes.extend_from_slice(Digest32::of_bytes(&grant.signing_bytes()).as_array());
+        target_bytes.extend_from_slice(&grant.recovery_signature);
+        self.persist_one(target_file, &target_bytes)?;
+
+        // A crash RIGHT HERE is deliberately fail-closed: target remains
+        // reserved, nonce does not exist, and another grant must not retry.
+        after_target_fsync();
+
+        // SECOND enforce global-by-nonce uniqueness within this SAME owner
+        // directory. If the nonce already belongs to a different target,
+        // the target reservation above stays as an indeterminate HOLD.
+        let nonce_filename = format!("nonce-{}", Self::hex(grant.grant_nonce));
+        let nonce_file = self.create_once(
+            &nonce_filename,
+            AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate,
+        )?;
+        let mut nonce_bytes = NONCE_DOMAIN.to_vec();
+        nonce_bytes.extend_from_slice(grant.grant_nonce.as_array());
+        nonce_bytes.extend_from_slice(target.as_array());
+        nonce_bytes.extend_from_slice(Digest32::of_bytes(&grant.signing_bytes()).as_array());
+        nonce_bytes.extend_from_slice(&grant.recovery_signature);
+        self.persist_one(nonce_file, &nonce_bytes)?;
+        self.ensure_owner_path_is_original_fd()?;
+
+        let mut receipt_bytes = target_bytes;
+        receipt_bytes.extend_from_slice(&nonce_bytes);
+        Ok(Digest32::of_bytes(&receipt_bytes))
     }
 }

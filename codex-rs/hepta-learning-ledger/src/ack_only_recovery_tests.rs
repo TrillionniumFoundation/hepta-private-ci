@@ -339,6 +339,7 @@ fn synthetically_root_delegated_ack_only_repairs_one_preexisting_record_without_
     assert_eq!(receipt.previous_witness.sequence, 0);
     assert_eq!(receipt.acknowledged_witness.sequence, 1);
     assert!(receipt.witness_synced);
+    assert!(!receipt.reserved_event_target_and_nonce_receipt.is_zero());
     assert!(receipt.ledger_record_count_unchanged);
     assert!(receipt.qualification_only_no_product_authority);
     assert_eq!(f.ledger.records().unwrap().len(), 1);
@@ -635,9 +636,16 @@ fn recovery_nonce_is_durable_before_witness_advances_and_cannot_be_reused() {
         .unwrap()
         .collect::<Result<Vec<_>, _>>()
         .unwrap();
-    assert_eq!(entries.len(), 1);
-    let reservation = fs::read(entries[0].path()).unwrap();
-    assert!(!reservation.is_empty());
+    assert_eq!(entries.len(), 2, "target and nonce both durably reserved");
+    let names = entries
+        .iter()
+        .map(|e| e.file_name().to_string_lossy().to_string())
+        .collect::<Vec<_>>();
+    assert_eq!(names.iter().filter(|x| x.starts_with("target-")).count(), 1);
+    assert_eq!(names.iter().filter(|x| x.starts_with("nonce-")).count(), 1);
+    for item in &entries {
+        assert!(!fs::read(item.path()).unwrap().is_empty());
+    }
     assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 1);
     assert_eq!(
         f.try_repair(NOW),
@@ -655,7 +663,7 @@ fn interrupted_nonce_reservation_must_hold_instead_of_late_witness_ack() {
     assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
     assert_eq!(
         f.try_repair(NOW),
-        Err(AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate)
+        Err(AckOnlyRecoveryError::EventAlreadyReservedOrIndeterminate)
     );
     assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
     assert_eq!(f.ledger.records().unwrap().len(), 1);
@@ -669,7 +677,7 @@ fn same_grant_nonce_in_another_clone_with_same_owner_store_is_rejected() {
     let mut opened = crate::AckOnlyGrantNonceJournalV1::open_preexisting(&folder).unwrap();
     assert_eq!(
         opened.reserve(&f.grant),
-        Err(AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate)
+        Err(AckOnlyRecoveryError::EventAlreadyReservedOrIndeterminate)
     );
     assert!(!original.is_zero());
     assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
@@ -844,12 +852,12 @@ fn simultaneous_claims_for_same_nonce_only_one_wins_in_one_owner_directory() {
             .iter()
             .filter(|r| matches!(
                 r,
-                Err(AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate)
+                Err(AckOnlyRecoveryError::EventAlreadyReservedOrIndeterminate)
             ))
             .count(),
         1
     );
-    assert_eq!(fs::read_dir(owner_dir).unwrap().count(), 1);
+    assert_eq!(fs::read_dir(owner_dir).unwrap().count(), 2);
     assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
 }
 
@@ -864,7 +872,7 @@ fn existing_indeterminate_reservation_is_never_cleared_by_new_store_open() {
     let mut next = crate::AckOnlyGrantNonceJournalV1::open_preexisting(&dir).unwrap();
     assert_eq!(
         next.reserve(&f.grant),
-        Err(AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate)
+        Err(AckOnlyRecoveryError::EventAlreadyReservedOrIndeterminate)
     );
     assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
     assert_eq!(f.ledger.records().unwrap().len(), 1);
@@ -922,12 +930,12 @@ fn another_native_process_exits_after_nonce_fsync_then_parent_must_hold() {
         "{}",
         String::from_utf8_lossy(&report.stderr)
     );
-    assert_eq!(fs::read_dir(&dir).unwrap().count(), 1);
+    assert_eq!(fs::read_dir(&dir).unwrap().count(), 2);
     // Child died after durable grant reservation: reusing the same
     // original proof is not automatically permitted to finish an ACK.
     assert_eq!(
         f.try_repair(NOW),
-        Err(AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate)
+        Err(AckOnlyRecoveryError::EventAlreadyReservedOrIndeterminate)
     );
     assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
     assert_eq!(f.ledger.records().unwrap().len(), 1);
@@ -958,8 +966,8 @@ fn atomic_openat_dirfd_blocks_exact_between_check_and_open_path_race() {
     let kept = f.dir.join("owner-nonce-journal-RENAMED-ORIGINAL");
     assert_eq!(
         fs::read_dir(&kept).unwrap().count(),
-        1,
-        "pinned original openat dirfd receives original reservation"
+        2,
+        "pinned original openat dirfd receives both target and nonce reservations"
     );
     assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
     assert_eq!(f.ledger.records().unwrap().len(), 1);
@@ -987,5 +995,279 @@ fn preexisting_nonce_filename_symlink_is_not_followed_or_overwritten() {
         "O_EXCL + NOFOLLOW must not follow nonce symlink"
     );
     assert!(nonce_path.is_symlink());
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+}
+
+#[test]
+fn second_distinct_signed_nonce_for_same_durable_event_is_denied_before_ack() {
+    let mut f = Fixture::new();
+    let first = f.nonce_journal.reserve(&f.grant).unwrap();
+    assert!(!first.is_zero());
+    let original_ledger = fs::read(f.dir.join("ledger")).unwrap();
+    let original_witness = fs::read(f.dir.join("witness")).unwrap();
+
+    // A test RecoveryAuthority signs a genuinely different, valid nonce
+    // for the same record/previous Witness. Prior nonce-only journal
+    // incorrectly considered this independent event recovery eligible.
+    f.grant.grant_nonce = dg("second-authenticated-grant-nonce-same-original-event");
+    f.resign_grant();
+    assert_eq!(
+        f.try_repair(NOW),
+        Err(AckOnlyRecoveryError::EventAlreadyReservedOrIndeterminate)
+    );
+    assert_eq!(
+        fs::read_dir(f.dir.join("owner-nonce-journal"))
+            .unwrap()
+            .count(),
+        2
+    );
+    assert_eq!(fs::read(f.dir.join("ledger")).unwrap(), original_ledger);
+    assert_eq!(fs::read(f.dir.join("witness")).unwrap(), original_witness);
+}
+
+#[test]
+fn identical_nonce_on_different_original_target_cannot_pass_local_owner_journal() {
+    let mut f = Fixture::new();
+    let first = f.nonce_journal.reserve(&f.grant).unwrap();
+    assert!(!first.is_zero());
+    let mut other = f.grant.clone();
+    other.original_record_id = id("another-completely-different-source-record");
+    other.target_event_digest = dg("different-fabricated-target-event");
+    other.target_anchor.chain_digest = dg("different-original-chain-anchor");
+    // The same grant nonce cannot be spent to recover this other target,
+    // even if different target reservation is fsynced first.
+    assert_eq!(
+        f.nonce_journal.reserve(&other),
+        Err(AckOnlyRecoveryError::NonceAlreadyReservedOrIndeterminate)
+    );
+    let store = f.dir.join("owner-nonce-journal");
+    assert_eq!(
+        fs::read_dir(store).unwrap().count(),
+        3,
+        "both targets remain reserved, original nonce only"
+    );
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+    assert_eq!(f.ledger.records().unwrap().len(), 1);
+}
+
+#[test]
+fn child_only_reserve_exact_target_then_exit_before_nonce_file() {
+    let Ok(dir) = std::env::var("HEPTA_ACKONLY_CHILD_TARGET_DIR") else {
+        return;
+    };
+    let f = Fixture::new();
+    let mut reopened =
+        crate::AckOnlyGrantNonceJournalV1::open_preexisting(Path::new(&dir)).unwrap();
+    // A distinct native Rust PROCESS exits AFTER target file and
+    // directory fsync, BEFORE any nonce file can be created. No file
+    // deletion, retries, or partial success claims.
+    let _ = reopened.reserve_with_test_target_fsync_exit(&f.grant, || {
+        std::process::exit(49);
+    });
+    panic!("child must have exited at target fsync");
+}
+
+#[test]
+fn crashed_process_between_target_and_nonce_prevents_alternate_signed_grant() {
+    let mut f = Fixture::new();
+    let dir = f.dir.join("owner-nonce-journal");
+    let call = std::process::Command::new(std::env::current_exe().unwrap())
+        .args([
+            "--exact",
+            "ack_only_recovery::tests::child_only_reserve_exact_target_then_exit_before_nonce_file",
+            "--nocapture",
+        ])
+        .env("HEPTA_ACKONLY_CHILD_TARGET_DIR", &dir)
+        .output()
+        .unwrap();
+    assert_eq!(
+        call.status.code(),
+        Some(49),
+        "{}",
+        String::from_utf8_lossy(&call.stderr)
+    );
+    let list = fs::read_dir(&dir)
+        .unwrap()
+        .collect::<Result<Vec<_>, _>>()
+        .unwrap();
+    assert_eq!(list.len(), 1);
+    let name = list[0].file_name().to_string_lossy().to_string();
+    assert!(name.starts_with("target-"));
+    assert!(!fs::read(list[0].path()).unwrap().is_empty());
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+    f.grant.grant_nonce = dg("valid-different-grant-nonce-after-crashed-target");
+    f.resign_grant();
+    // The ORIGINAL already fsynced target key still denies even a
+    // different valid nonce after the first process died.
+    assert_eq!(
+        f.try_repair(NOW),
+        Err(AckOnlyRecoveryError::EventAlreadyReservedOrIndeterminate)
+    );
+    assert_eq!(fs::read_dir(&dir).unwrap().count(), 1);
+    assert_eq!(f.ledger.records().unwrap().len(), 1);
+}
+
+#[test]
+fn two_concurrent_distinct_signed_grants_for_same_target_reserve_once() {
+    let f = Fixture::new();
+    let root = f.dir.join("owner-nonce-journal");
+    let one = f.grant.clone();
+    let mut two = f.grant.clone();
+    two.grant_nonce = dg("different-authenticated-grant-nonce-same-target-race");
+    let start = std::sync::Arc::new(std::sync::Barrier::new(3));
+    let mut threads = Vec::new();
+    for grant in [one, two] {
+        let dir = root.clone();
+        let barrier = start.clone();
+        threads.push(std::thread::spawn(move || {
+            let mut journal = crate::AckOnlyGrantNonceJournalV1::open_preexisting(&dir).unwrap();
+            barrier.wait();
+            journal.reserve(&grant)
+        }));
+    }
+    start.wait();
+    let results = threads
+        .into_iter()
+        .map(|task| task.join().unwrap())
+        .collect::<Vec<_>>();
+    assert_eq!(results.iter().filter(|r| r.is_ok()).count(), 1);
+    assert_eq!(
+        results
+            .iter()
+            .filter(|r| matches!(
+                r,
+                Err(AckOnlyRecoveryError::EventAlreadyReservedOrIndeterminate)
+            ))
+            .count(),
+        1
+    );
+    assert_eq!(fs::read_dir(root).unwrap().count(), 2);
+    assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
+}
+
+#[cfg(unix)]
+#[test]
+fn event_target_and_nonce_files_created_private_with_distinct_domain_bound_bytes() {
+    use std::os::unix::fs::PermissionsExt;
+    let mut f = Fixture::new();
+    let path = f.dir.join("owner-nonce-journal");
+    f.nonce_journal.reserve(&f.grant).unwrap();
+    let mut target_file = None;
+    let mut nonce_file = None;
+    for item in fs::read_dir(&path).unwrap() {
+        let item = item.unwrap();
+        assert_eq!(item.metadata().unwrap().permissions().mode() & 0o777, 0o600);
+        let file_data = fs::read(item.path()).unwrap();
+        let file_name = item.file_name().to_string_lossy().to_string();
+        if file_name.starts_with("target-") {
+            assert!(file_data.starts_with(b"hepta.ackonly-qualification-event-target-once.v1"));
+            target_file = Some(file_data);
+        } else if file_name.starts_with("nonce-") {
+            assert!(file_data.starts_with(b"hepta.ackonly-qualification-reserved-once.v2"));
+            nonce_file = Some(file_data);
+        } else {
+            panic!("unrecognized reservation file");
+        }
+    }
+    assert!(target_file.is_some());
+    assert!(nonce_file.is_some());
+    assert_ne!(target_file, nonce_file);
+    assert_eq!(fs::read_dir(path).unwrap().count(), 2);
+}
+
+#[cfg(unix)]
+#[test]
+fn symlink_at_event_target_filename_denied_before_creating_nonce_or_witness() {
+    use std::os::unix::fs::symlink;
+    let mut baseline = Fixture::new();
+    baseline.nonce_journal.reserve(&baseline.grant).unwrap();
+    let original = baseline.dir.join("owner-nonce-journal");
+    let target_filename = fs::read_dir(&original)
+        .unwrap()
+        .filter_map(Result::ok)
+        .map(|entry| entry.file_name().to_string_lossy().to_string())
+        .find(|name| name.starts_with("target-"))
+        .unwrap();
+    let mut victim = Fixture::new();
+    let path = victim.dir.join("owner-nonce-journal");
+    let would_be_target = victim.dir.join("attack-target-outside-directory");
+    symlink(&would_be_target, path.join(target_filename)).unwrap();
+    assert_eq!(
+        victim.try_repair(NOW),
+        Err(AckOnlyRecoveryError::EventAlreadyReservedOrIndeterminate)
+    );
+    assert!(!would_be_target.exists());
+    assert_eq!(fs::read_dir(path).unwrap().count(), 1);
+    assert_eq!(victim.witness.frontier().unwrap().anchor.sequence, 0);
+    assert_eq!(victim.ledger.records().unwrap().len(), 1);
+}
+
+#[cfg(unix)]
+#[test]
+fn child_only_replay_competing_signed_event_nonce_in_other_native_process() {
+    let Ok(owner) = std::env::var("HEPTA_ACKONLY_TARGET_RACE_OWNER") else {
+        return;
+    };
+    let flag = std::env::var("HEPTA_ACKONLY_TARGET_RACE_VARIANT").unwrap();
+    let start = std::env::var("HEPTA_ACKONLY_TARGET_RACE_BARRIER").unwrap();
+    assert!(flag == "first" || flag == "different-grant");
+    let mut f = Fixture::new();
+    if flag == "different-grant" {
+        f.grant.grant_nonce = dg("another-physically-concurrent-original-event-grant");
+        f.grant.grant_id = id("another-concurrent-Grant-for-same-original-target");
+        f.resign_grant();
+    }
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(3);
+    while !Path::new(&start).exists() {
+        assert!(
+            std::time::Instant::now() < deadline,
+            "child did not receive independent starting barrier"
+        );
+        std::thread::sleep(std::time::Duration::from_millis(1));
+    }
+    let mut store = crate::AckOnlyGrantNonceJournalV1::open_preexisting(Path::new(&owner)).unwrap();
+    let result = store.reserve(&f.grant);
+    drop(store);
+    drop(f);
+    match result {
+        Ok(_) => std::process::exit(0),
+        Err(AckOnlyRecoveryError::EventAlreadyReservedOrIndeterminate) => std::process::exit(51),
+        unexpected => panic!("unrecognized concurrent native event result: {unexpected:?}"),
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn two_separate_rust_processes_compete_on_one_event_with_different_nonces() {
+    let f = Fixture::new();
+    let directory = f.dir.join("owner-nonce-journal");
+    let barrier = f.dir.join("both-processes-start-now");
+    let child = std::env::current_exe().unwrap();
+    let mut a=std::process::Command::new(&child)
+        .args(["--exact",
+            "ack_only_recovery::tests::child_only_replay_competing_signed_event_nonce_in_other_native_process",
+            "--nocapture"])
+        .env("HEPTA_ACKONLY_TARGET_RACE_OWNER",&directory)
+        .env("HEPTA_ACKONLY_TARGET_RACE_VARIANT","first")
+        .env("HEPTA_ACKONLY_TARGET_RACE_BARRIER",&barrier)
+        .spawn().unwrap();
+    let mut b=std::process::Command::new(&child)
+        .args(["--exact",
+            "ack_only_recovery::tests::child_only_replay_competing_signed_event_nonce_in_other_native_process",
+            "--nocapture"])
+        .env("HEPTA_ACKONLY_TARGET_RACE_OWNER",&directory)
+        .env("HEPTA_ACKONLY_TARGET_RACE_VARIANT","different-grant")
+        .env("HEPTA_ACKONLY_TARGET_RACE_BARRIER",&barrier)
+        .spawn().unwrap();
+    // Release both independently running processes together. Neither
+    // receives any production credentials or touches source Ledger.
+    fs::write(&barrier, b"go").unwrap();
+    let statuses = [a.wait().unwrap().code(), b.wait().unwrap().code()];
+    let successes = statuses.iter().filter(|s| **s == Some(0)).count();
+    let rejected = statuses.iter().filter(|s| **s == Some(51)).count();
+    assert_eq!(successes, 1, "exactly one independent process may reserve");
+    assert_eq!(rejected, 1, "other differently signed grant is rejected");
+    assert_eq!(fs::read_dir(directory).unwrap().count(), 2);
+    assert_eq!(f.ledger.records().unwrap().len(), 1);
     assert_eq!(f.witness.frontier().unwrap().anchor.sequence, 0);
 }
