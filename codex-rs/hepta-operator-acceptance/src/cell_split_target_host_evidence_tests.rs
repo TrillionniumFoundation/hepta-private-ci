@@ -1166,6 +1166,7 @@ struct SignedMonotonicFrontierFixture {
     subject: crate::CellSplitSupervisorMinimumSubjectV1,
     store_record_digest: String,
     revision_override: Option<u64>,
+    advance_on_second: bool,
     reads: usize,
 }
 
@@ -1190,7 +1191,11 @@ impl crate::CellSplitSupervisorMonotonicFrontierPortV1
             schema: crate::CELL_SPLIT_SUPERVISOR_MONOTONIC_FRONTIER_SCHEMA_V1.into(),
             journal_domain_id: journal_domain_id.into(),
             journal_authority_epoch: self.subject.journal_authority_epoch,
-            journal_revision: self.revision_override.unwrap_or(self.subject.journal_revision),
+            journal_revision: if self.advance_on_second && self.reads == 2 {
+                self.subject.journal_revision + 1
+            } else {
+                self.revision_override.unwrap_or(self.subject.journal_revision)
+            },
             minimum_checkpoint_digest: self.subject.minimum_checkpoint_digest.clone(),
             original_store_record_digest: self.store_record_digest.clone(),
             challenge_nonce: challenge_nonce.into(),
@@ -1282,6 +1287,7 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
         subject: subject.clone(),
         store_record_digest: "dd".repeat(32),
         revision_override: None,
+        advance_on_second: false,
         reads: 0,
     };
 
@@ -1362,6 +1368,32 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
         ).is_err(), "older signed minimum cannot beat a newer high-water mark");
     assert_eq!(stale.verification_count, 0);
     frontier.revision_override = None;
+
+    // The high-water may advance while the four current owner receipts are
+    // being checked. A second fresh monotonic challenge must catch that
+    // movement even if the local minimum file remains unchanged.
+    frontier.advance_on_second = true;
+    frontier.reads = 0;
+    let mut changed = CurrentEffectFixture::new(&transcript);
+    assert!(crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join, &transcript, &owner_trust, &envelope,
+            &policy(&host, &observer), &runtime_trust,
+            &minimum_store_key, &mut external,
+            &frontier_key, &mut frontier, &mut changed,
+        ).is_err(), "monotonic frontier advanced during owner verification");
+    assert_eq!(changed.verification_count, 4);
+    frontier.advance_on_second = false;
+
+    let mut shared_key = CurrentEffectFixture::new(&transcript);
+    assert!(crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join, &transcript, &owner_trust, &envelope,
+            &policy(&host, &observer), &runtime_trust,
+            &minimum_store_key, &mut external,
+            &minimum_store_key, &mut frontier, &mut shared_key,
+        ).is_err(), "the monotonic frontier signer cannot reuse the local minimum key");
+    assert_eq!(shared_key.verification_count, 0);
 
     let mut denied = CurrentEffectFixture::new(&transcript);
     assert!(crate::cell_split_observer_join::
