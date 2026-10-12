@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import './font-diagnostic-browser-identity.test.mjs';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {sdkProbeLocations,validateDelivery} from '../tools/font-delivery-diagnostic.mjs';
+import {REQUIRED_PRODUCT_FONT_PATHS,sdkProbeLocations,validateDelivery} from '../tools/font-delivery-diagnostic.mjs';
 import {EventEmitter} from 'node:events';
 import {writeControl,CONTROL_BODY} from '../tools/font-transport-fixture.mjs';
 const source=`async function consume(){
@@ -22,8 +22,11 @@ test('source locations are exact and reject changed or duplicated boundaries',()
  assert.deepEqual(sdkProbeLocations(source),{delivery:{lineNumber:6,columnNumber:1},finish:{lineNumber:10,columnNumber:2}});
  for(const changed of [source.replace('await reader.read()','await response.arrayBuffer()'),source+source,source.replace('network_http_finish','other')])assert.throws(()=>sdkProbeLocations(changed));
 });
-const manifest={files:{'font.otf':{bytes:4,sha256:'a'.repeat(64)}}};
-const good=()=>({installed:true,errors:[],overflow:0,requests:['/font.otf'],records:[{path:'/font.otf',key:'1',bytes:4,wasmBytes:4,sha256:'a'.repeat(64),eof:true}],finishes:[{key:'1',bytes:4,aborted:false}]});
+const manifest={files:Object.fromEntries(REQUIRED_PRODUCT_FONT_PATHS.map(path=>[path.slice(1),{bytes:4,sha256:'a'.repeat(64)}]))};
+const good=()=>({installed:true,errors:[],overflow:0,requests:[...REQUIRED_PRODUCT_FONT_PATHS],
+ records:REQUIRED_PRODUCT_FONT_PATHS.map((path,i)=>({path,key:String(i),bytes:4,wasmBytes:4,sha256:'a'.repeat(64),eof:true})),
+ finishes:REQUIRED_PRODUCT_FONT_PATHS.map((_,i)=>({key:String(i),bytes:4,aborted:false})),
+});
 test('requires EOF, exact manifest bytes/hash and nonaborted normal finalization',()=>{
  assert.equal(validateDelivery(good(),manifest),true);
  for(const change of [
@@ -71,19 +74,58 @@ test('truncation closes the real socket short of declared length; complete reach
  }
 });
 
-test('every manifest font is mandatory, with no duplicates or outside paths',()=>{
- const catalog={files:Object.fromEntries(Array.from({length:8},(_,i)=>['font'+i+'.otf',{bytes:4,sha256:'a'.repeat(64)}]))};
- const complete={installed:true,errors:[],overflow:0,
-  requests:Object.keys(catalog.files).map(path=>'/'+path),
-  records:Object.keys(catalog.files).map((path,i)=>({...good().records[0],path:'/'+path,key:String(i)})),
-  finishes:Object.keys(catalog.files).map((_,i)=>({...good().finishes[0],key:String(i)})),
- };
+test('product coverage is mandatory while unrequested packaged fonts are optional',()=>{
+ const unused=['IBMPlexSans-BoldItalic.ttf','IBMPlexSans-Italic.ttf','LiberationMono-Regular.ttf','fa-solid-900.ttf'];
+ const catalog={files:{...manifest.files,...Object.fromEntries(unused.map(name=>['makepad_widgets/resources/'+name,{bytes:4,sha256:'a'.repeat(64)}]))}};
+ const complete=good();
+ assert.equal(Object.keys(catalog.files).length,12);
  assert.equal(validateDelivery(complete,catalog),true);
  for(const change of [
   r=>{r.requests.splice(1);r.records.splice(1);r.finishes.splice(1);},
   r=>r.requests[7]=r.requests[0],r=>r.requests[7]='/outside.otf',
   r=>r.records[7].path=r.records[0].path,r=>r.finishes.push(r.finishes[0]),
  ]){const observed=structuredClone(complete);change(observed);assert.equal(validateDelivery(observed,catalog),false);}
+});
+
+test('required coverage follows Rust font families and explicit math asset registration',async()=>{
+ const styles=await readFile(new URL('../rust/robrix-ui/src/robrix/styles.rs',import.meta.url),'utf8');
+ const app=await readFile(new URL('../rust/robrix-ui/src/app.rs',import.meta.url),'utf8');
+ const families=[...new Set([...styles.matchAll(/crate_resource\("([^":]+):([^"\n]+\.(?:ttf|otf))"\)/g)].map(match=>'/'+match[1]+'/'+match[2]))];
+ assert.equal(families.length,7);
+ assert.match(app,/app_main!\(App, font_set: International, font_assets: \[MATH_VIEW_FONT_ASSET\]/);
+ assert.deepEqual([...REQUIRED_PRODUCT_FONT_PATHS].sort(),[...families,'/makepad_widgets/resources/NewCMMath-Regular.otf'].sort());
+});
+
+test('zero requests and each required-font omission fail even with matching remaining records',()=>{
+ assert.equal(validateDelivery({...good(),requests:[],records:[],finishes:[]},manifest),false);
+ for(const path of REQUIRED_PRODUCT_FONT_PATHS){
+  const report=good(),key=report.records.find(record=>record.path===path).key;
+  report.requests=report.requests.filter(request=>request!==path);
+  report.records=report.records.filter(record=>record.path!==path);
+  report.finishes=report.finishes.filter(finish=>finish.key!==key);
+  assert.equal(validateDelivery(report,manifest),false,path);
+  const reduced=structuredClone(manifest);delete reduced.files[path.slice(1)];
+  assert.equal(validateDelivery(report,reduced),false,path);
+  assert.equal(validateDelivery(good(),reduced),false,path);
+ }
+});
+
+test('every additional requested font retains one-to-one manifest integrity and finalization',()=>{
+ const path='/makepad_widgets/resources/IBMPlexSans-Italic.ttf';
+ const catalog={files:{...manifest.files,[path.slice(1)]:{bytes:4,sha256:'a'.repeat(64)}}};
+ const complete=good();complete.requests.push(path);
+ complete.records.push({...complete.records[0],path,key:'optional'});
+ complete.finishes.push({...complete.finishes[0],key:'optional'});
+ assert.equal(validateDelivery(complete,catalog),true);
+ for(const change of [
+  r=>r.records.at(-1).bytes--,r=>r.records.at(-1).wasmBytes--,
+  r=>r.records.at(-1).sha256='b'.repeat(64),r=>r.records.at(-1).eof=false,
+  r=>r.finishes.at(-1).bytes--,r=>r.finishes.at(-1).aborted=true,
+  r=>r.records.pop(),r=>r.finishes.pop(),r=>r.records.at(-1).path='/outside.otf',
+  r=>r.finishes.at(-1).key='orphan',r=>r.records.at(-1).key=r.records[0].key,
+  r=>r.requests.push(path),
+ ]){const report=structuredClone(complete);change(report);assert.equal(validateDelivery(report,catalog),false);}
+ assert.equal(validateDelivery(complete,manifest),false);
 });
 
 test('diagnostic pixel plans require all projects, captures and source identity',async()=>{

@@ -24,12 +24,28 @@ export function sdkProbeLocations(source){
   finish:locate(/(?<=network_http_finish\(entry\)\s*\{\s*)if\s*\(/g),
  };
 }
+// Required by robrix/styles.rs HEPTA_REGULAR/HEPTA_BOLD plus app.rs's
+// explicit MATH_VIEW_FONT_ASSET at the pinned Makepad revision. Packaged font
+// inventory is larger than product use; observed requests cannot define coverage.
+export const REQUIRED_PRODUCT_FONT_PATHS=Object.freeze([
+ '/hepta_robrix_ui/resources/fonts/NotoSansSC-Regular.otf',
+ '/hepta_robrix_ui/resources/fonts/NotoSansSC-Bold.otf',
+ '/makepad_widgets/resources/IBMPlexSans-Text.ttf',
+ '/makepad_widgets/resources/IBMPlexSans-SemiBold.ttf',
+ '/makepad_widgets/resources/LXGWWenKaiRegular.ttf',
+ '/makepad_widgets/resources/LXGWWenKaiBold.ttf',
+ '/makepad_widgets/resources/NotoColorEmoji.ttf',
+ '/makepad_widgets/resources/NewCMMath-Regular.otf',
+]);
 const expectedFontPaths=manifest=>Object.keys(manifest.files).filter(path=>/\.(ttf|otf)$/.test(path)).map(path=>'/'+path).sort();
 export function validateDelivery(report,manifest){
- const expected=expectedFontPaths(manifest);
+ const expected=expectedFontPaths(manifest),requested=new Set(report.requests);
  if(!report.installed||report.errors.length||report.overflow) return false;
- if(!expected.length||expected.length>LIMIT||JSON.stringify([...report.requests].sort())!==JSON.stringify(expected)
-  ||report.records.length!==expected.length||report.finishes.length!==expected.length)return false;
+ if(!expected.length||expected.length>LIMIT||requested.size!==report.requests.length
+  ||REQUIRED_PRODUCT_FONT_PATHS.some(path=>!expected.includes(path)||!requested.has(path))
+  ||report.requests.some(path=>!expected.includes(path))
+  ||report.records.length!==requested.size||report.finishes.length!==requested.size
+  ||new Set(report.records.map(record=>record.key)).size!==requested.size)return false;
  return report.requests.every(path=>{
   const records=report.records.filter(record=>record.path===path);
   if(records.length!==1)return false;
