@@ -1625,3 +1625,37 @@ separately. Reordered, fabricated, transitive, future, cross-question or
 changed-answer reuse is rejected. This is retrospective internal provenance,
 **not** cryptographic host attestation or independent semantic review. Existing
 576 model answers, ranking heads, source labels and production gates are unchanged.
+
+## Pinned strict-run Reader JSON echo reproducibility — October 11 versus 12
+
+`stem_reader_echo_repeatability.py` compares **two complete original
+strict-as-of Reader executions** with externally pinned generating commit,
+tree, archived ZIP SHA-256 and every internal `SHA256SUMS` member. Both
+retain 576/576 successful six-arm policy executions and use the exact same
+32 preregistered held-out questions and identical frozen Reader model
+inventory, prompt, input payload, retrieval pool and generation cap
+(`max_new_tokens=96`). The two executions are **repeat runs, not 64
+independent questions**.
+
+Among the 32 unique final-checkpoint **frozen-evidence** Reader responses
+in *each* run, 13 start with the original input JSON's
+`{"question":` field, 12 are a byte-exact prefix of that input JSON,
+15 reach the full 96-token generation ceiling and **zero contain
+emitted structural citation markers**. All 32 answer strings, generated
+token SHA-256s, Reader profiles and delivered source bytes match
+across both runs. On the separately instantiated, same-weight
+**no-evidence** controls, 8/32 begin with input JSON, only 2/32 are
+exact input JSON prefixes, 5/32 hit the 96-token ceiling, and
+zero contain citation markers; these 32 are again byte-identical across
+runs. No original answers/source contents are exported in the
+diagnostic report, only per-question SHA-256 and classification flags.
+
+This **output-pathology audit is not independent semantic
+correctness**: a JSON prefix is a structural prompt-echo signal,
+a completion cap is a resource ceiling, and zero emitted citations
+makes semantic citation precision **undefined, not 100%**. Both
+original runs remain development-only with `production_accepted=false`.
+The result prioritizes a separately preregistered *same-Reader
+JSON-versus-flat formatting / sufficient-evidence diagnostic* over
+scaling the number of Cells, training steps or Head parameters.
+Reader-format controls must never be counted as a learned-memory gain.
