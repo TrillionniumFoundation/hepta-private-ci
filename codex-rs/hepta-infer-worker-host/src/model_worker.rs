@@ -218,7 +218,15 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
+        let handle = match self.driver.load(&manifest) {
+            Ok(handle) => handle,
+            Err(error) => {
+                // A failed load does not prove the driver left no physical
+                // state behind. Only a fresh owner/generation may retry.
+                self.poisoned = true;
+                return Err(error);
+            }
+        };
         if let Err(error) = validate_identity(&handle.opaque_id, "model handle") {
             if self.driver.unload(handle).is_err() {
                 self.poisoned = true;
@@ -313,27 +321,46 @@ impl<D: ModelDriver> InferenceWorker<D> {
         let observed = self.driver.run(&loaded.handle, &request);
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        // Once physical dispatch started, a driver error gives no reliable
+        // evidence that the provider did nothing. Reconcile before retrying.
+        let observed = match observed {
+            Ok(observed) => observed,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error);
+            }
+        };
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
+            self.poisoned = true;
             return Err(Error::TokenLimit);
         }
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            self.poisoned = true;
             return Err(Error::ModelCapacity);
         }
         let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
+            // Indeterminate is returned as an observation, but future
+            // dispatch is forbidden until owner reconciliation/new generation.
+            self.poisoned = true;
             (ExecutionStatus::Indeterminate, None, false)
         } else if observed.succeeded {
-            let output = observed
-                .output_digest
-                .as_ref()
-                .ok_or(Error::MissingTerminalOutput)?;
-            validate_digest(output, "output")?;
+            let Some(output) = observed.output_digest.as_ref() else {
+                self.poisoned = true;
+                return Err(Error::MissingTerminalOutput);
+            };
+            if let Err(error) = validate_digest(output, "output") {
+                self.poisoned = true;
+                return Err(error);
+            }
             (ExecutionStatus::Succeeded, observed.output_digest, true)
         } else {
             if let Some(output) = &observed.output_digest {
-                validate_digest(output, "output")?;
+                if let Err(error) = validate_digest(output, "output") {
+                    self.poisoned = true;
+                    return Err(error);
+                }
             }
             (ExecutionStatus::Failed, observed.output_digest, true)
         };
@@ -594,14 +621,33 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         self.active_requests
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        // Physical dispatch is already attempted: never retry on uncertain
+        // driver state merely because active request slots were released.
+        let observed = match observed {
+            Ok(observed) => observed,
+            Err(error) => {
+                self.poisoned = true;
+                return Err(error);
+            }
+        };
         if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+            self.poisoned = true;
             return Err(Error::ModelCapacity);
         }
+        if observed.encoder_digest != request.encoder_digest
+            || observed.head_digest != request.head_digest
+        {
+            self.poisoned = true;
+            return Err(Error::FeatureOutputMismatch);
+        }
         let status = if !observed.terminal_observed {
+            self.poisoned = true;
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
-            validate_neuron_feature_output(&request, &observed)?;
+            if let Err(error) = validate_neuron_feature_output(&request, &observed) {
+                self.poisoned = true;
+                return Err(error);
+            }
             ExecutionStatus::Succeeded
         } else {
             ExecutionStatus::Failed
@@ -609,6 +655,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if status != ExecutionStatus::Succeeded
             && (!observed.drive_q24.is_empty() || !observed.prediction_q24.is_empty())
         {
+            self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
         }
         Ok(NeuronFeatureExecutionObservation {
@@ -642,7 +689,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     ) -> Result<NeuronFeatureReceiptV1, Error> {
         let request_copy = request.clone();
         let observed = self.run_neuron_features(now_ms, model_id, request)?;
-        project_neuron_feature_receipt_v1(request_copy, observed)
+        let receipt = project_neuron_feature_receipt_v1(request_copy, observed);
+        if receipt.is_err() {
+            // A physical invocation succeeded, but its typed evidence could
+            // not be verified. Do not execute more work on this generation.
+            self.poisoned = true;
+        }
+        receipt
     }
 }
 
