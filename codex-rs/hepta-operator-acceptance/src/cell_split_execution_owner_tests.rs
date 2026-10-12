@@ -1099,6 +1099,46 @@ fn pending_step_recovery_rejects_dangling_successor_frame() {
     assert_eq!(state.borrow().executions, 1);
 }
 
+#[test]
+fn recovery_rejects_local_identity_and_history_drift_during_live_readbacks() {
+    for (filename, expected_error) in [
+        (
+            "cell-split-frozen-plan.json",
+            "frozen identity changed during owner recovery",
+        ),
+        (
+            "cell-split-owner-trust-pins.json",
+            "frozen identity changed during owner recovery",
+        ),
+        (
+            "cell-split-00-committed.json",
+            "local history changed during owner recovery",
+        ),
+    ] {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        {
+            let mut owner = CellSplitExecutionOwnerV1::open(
+                root.path(),
+                plan(),
+                trust(),
+                FixturePort::new(state.clone()),
+            )
+            .expect("initialize owner");
+            for _ in 0..4 {
+                owner.advance().expect("original effect");
+            }
+        }
+        let port = FixturePort::new(state.clone());
+        *port.tamper_during_live_readback.borrow_mut() = Some(root.path().join(filename));
+        assert!(matches!(
+            CellSplitExecutionOwnerV1::open_existing(root.path(), plan(), trust(), port),
+            Err(CellSplitExecutionErrorV1::Invalid(reason)) if reason == expected_error
+        ), "recovery accepted changed {filename}");
+        assert_eq!(state.borrow().executions, 4, "no replay on recovery");
+    }
+}
+
 #[cfg(unix)]
 #[test]
 fn replacing_lock_inode_fences_live_execution_and_verified_transcripts() {
