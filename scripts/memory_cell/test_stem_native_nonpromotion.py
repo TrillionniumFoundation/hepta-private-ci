@@ -209,6 +209,22 @@ class PairedNativeProofTests(unittest.TestCase):
             with self.subTest(field=field), self.assertRaises(ValueError):
                 self.check(args)
 
+    def test_invalid_or_unhashable_cell_fails_closed_as_value_error(self):
+        for invalid in ("unknown", [], ["general"], 0, None):
+            args = full_fixture()
+            row = next(r for r in args[1] if r["arm"] == "gated")
+            indexed = next(
+                r for r in args[2]
+                if (r["stage"], r["phase"], r["question_id"], r["arm"])
+                == (row["stage"], row["phase"], row["question_id"], row["arm"])
+            )
+            row["cell"] = invalid
+            indexed["cell"] = invalid
+            with self.subTest(cell=invalid), self.assertRaisesRegex(
+                ValueError, "Cell route"
+            ):
+                self.check(args)
+
     def test_false_citation_semantics_or_genuine_missing_evidence_rejected(self):
         for mode in ("self-certified-citation", "missing-phase", "fake-production"):
             args = full_fixture()

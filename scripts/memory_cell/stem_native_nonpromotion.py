@@ -137,6 +137,12 @@ def audit_exact_paired_choices(plan, raw, scored, report, train_fit,
     n_citations = 0
     for key in sorted(expected):
         source, evaluated = original[key], official[key]
+        cell = source.get("cell")
+        if type(cell) is not str or cell not in ("general", "temporal"):
+            raise ValueError("invalid matched Cell route in original policy record")
+        bound_head = training_journal.get((key[0], key[3], cell))
+        if bound_head is None:
+            raise ValueError("policy Head missing from pinned training checkpoint")
         if (
             source["status"] != evaluated["status"]
             or source["status"] != "succeeded"
@@ -146,7 +152,7 @@ def audit_exact_paired_choices(plan, raw, scored, report, train_fit,
             or source.get("cell") != evaluated.get("cell")
             or source.get("family") != evaluated.get("family")
             or source.get("head_sha256") !=
-                training_journal[(key[0], key[3], source["cell"])]["after_sha256"]
+                bound_head["after_sha256"]
             or source["receipt"] != evaluated["receipt"]
             or not source["receipt"].get("generator_identity")
             or not source["receipt"].get("generator_profile")
