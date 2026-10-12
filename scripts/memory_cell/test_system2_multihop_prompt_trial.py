@@ -237,7 +237,6 @@ class PromptReaderTests(unittest.TestCase):
 
     def test_prompt_scoring_rejects_duplicate_or_missing_arm(self):
         c=fixed_cases(1)[0]
-        selected=choose('joined_top3',c.question,c.documents)
         rows=[]
         for arm in SOURCE_ARMS:
             for variant in ALL_PROMPT_VARIANTS:
