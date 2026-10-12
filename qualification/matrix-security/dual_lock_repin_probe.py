@@ -69,8 +69,11 @@ def inspect_pair(async_log, bytes_log, manifest_bytes, lock_bytes):
                 reasons.append(f"unexpected locked {name} version")
             elif selected[0].get("source") != "registry+https://github.com/rust-lang/crates.io-index":
                 reasons.append(f"untrusted locked {name} source")
-            elif not isinstance(selected[0].get("checksum"), str) or len(selected[0]["checksum"]) != 64:
-                reasons.append(f"missing original {name} checksum")
+            elif (not isinstance(selected[0].get("checksum"), str)
+                  or len(selected[0]["checksum"]) != 64
+                  or any(char not in "0123456789abcdef"
+                         for char in selected[0]["checksum"])):
+                reasons.append(f"invalid original {name} checksum")
     except (KeyError, TypeError, ValueError, UnicodeError, tomllib.TOMLDecodeError):
         reasons.append("invalid Cargo.lock")
 
@@ -116,6 +119,23 @@ def scratch_unlock_two(lock_bytes):
     if not isinstance(lock_bytes, bytes) or not 0 < len(lock_bytes) <= MAX_LOCK_BYTES:
         raise ValueError("invalid lock file")
     text = lock_bytes.decode("utf-8")
+    # This utility is intentionally callable on its own: reject a corrupted
+    # or substituted Cargo registry record even when no CLI evidence planner
+    # was run first. A 64-character checksum is not necessarily SHA-256 hex.
+    source = tomllib.loads(text)
+    packages = source.get("package")
+    if type(source.get("version")) is not int or source["version"] != 4 or type(packages) is not list:
+        raise ValueError("invalid scratch Cargo lock format")
+    for name, old in STALE.items():
+        selected = [pkg for pkg in packages
+                    if type(pkg) is dict and pkg.get("name") == name]
+        if len(selected) != 1 or selected[0].get("version") != old:
+            raise ValueError(f"unexpected scratch {name} pin")
+        checksum = selected[0].get("checksum")
+        if (selected[0].get("source") != "registry+https://github.com/rust-lang/crates.io-index"
+                or not isinstance(checksum, str) or len(checksum) != 64
+                or any(char not in "0123456789abcdef" for char in checksum)):
+            raise ValueError(f"untrusted scratch {name} registry/checksum")
     marker = "\n[[package]]\n"
     blocks = text.split(marker)
     if len(blocks) < 2 or "version = 4" not in blocks[0]:
