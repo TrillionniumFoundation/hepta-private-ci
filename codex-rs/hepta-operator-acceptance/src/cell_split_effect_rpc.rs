@@ -428,7 +428,7 @@ fn read_until_deadline(
         }
         stream.set_read_timeout(Some(remaining))?;
         match stream.read(&mut buffer[offset..]) {
-            Ok(0) => return Err(io::ErrorKind::UnexpectedEof.into()),
+            Ok(0) => return Err(io::Error::from(io::ErrorKind::UnexpectedEof).into()),
             Ok(count) => offset += count,
             Err(error) if error.kind() == io::ErrorKind::Interrupted => {}
             Err(error) => return Err(error.into()),
@@ -457,7 +457,7 @@ fn write_until_deadline(
         }
         stream.set_write_timeout(Some(remaining))?;
         match stream.write(&buffer[offset..]) {
-            Ok(0) => return Err(io::ErrorKind::WriteZero.into()),
+            Ok(0) => return Err(io::Error::from(io::ErrorKind::WriteZero).into()),
             Ok(count) => offset += count,
             Err(error) if error.kind() == io::ErrorKind::Interrupted => {}
             Err(error) => return Err(error.into()),
