@@ -34,6 +34,12 @@ use crate::CellSplitSupervisorMinimumReadbackV1;
 #[cfg(unix)]
 use crate::CellSplitSupervisorMinimumSubjectV1;
 #[cfg(unix)]
+use crate::CellSplitSupervisorMonotonicFrontierPortV1;
+#[cfg(unix)]
+use crate::CellSplitSupervisorMonotonicFrontierV1;
+#[cfg(unix)]
+use crate::verify_cell_split_supervisor_monotonic_frontier_v1;
+#[cfg(unix)]
 use crate::verify_cell_split_supervisor_minimum_online_v1;
 use crate::CellSplitSignedTargetHostEvidenceV1;
 use crate::CellSplitTargetHostEventKindV1;
@@ -127,6 +133,9 @@ pub struct CellSplitObserverDeepReceiptV1 {
     /// A fresh challenge-bound read from a distinctly pinned minimum store.
     /// None in legacy unit fixtures; production deep verification requires it.
     pub live_minimum_readback_digest: Option<String>,
+    /// Fresh, independently signed monotonic frontier. None denotes an
+    /// offline/fixture verdict that cannot pass the production deep gate.
+    pub live_monotonic_frontier_digest: Option<String>,
     pub independently_signed_original_runtime_and_journal: bool,
     pub production_activation_authorized: bool,
 }
@@ -409,7 +418,10 @@ pub(crate) fn verify_cell_split_observer_join_with_port_v1<P: CellSplitExecution
 /// CNS, Supervisor, host, Observer and four execution-owner key.
 #[cfg(unix)]
 #[allow(clippy::too_many_arguments)]
-pub fn verify_cell_split_observer_join_deep_v1<M: CellSplitSupervisorMinimumOnlinePortV1>(
+pub fn verify_cell_split_observer_join_deep_v1<
+    M: CellSplitSupervisorMinimumOnlinePortV1,
+    H: CellSplitSupervisorMonotonicFrontierPortV1,
+>(
     join: &CellSplitSignedObserverJoinV1,
     transcript: &CellSplitExecutionTranscriptV1,
     owner_trust: &CellSplitOwnerTrustV1,
@@ -418,6 +430,8 @@ pub fn verify_cell_split_observer_join_deep_v1<M: CellSplitSupervisorMinimumOnli
     original_runtime_trust: &CellSplitObserverOriginalRuntimeTrustV1<'_>,
     trusted_minimum_store_key: &VerifyingKey,
     minimum_store: &mut M,
+    trusted_monotonic_frontier_key: &VerifyingKey,
+    monotonic_frontier: &mut H,
     live_owners: &mut CellSplitUnixEffectPortV1,
 ) -> Result<CellSplitObserverDeepReceiptV1, CellSplitObserverJoinErrorV1> {
     if !live_owners.uses_exact_owner_keys(owner_trust.owner_verifying_keys()) {
@@ -434,6 +448,8 @@ pub fn verify_cell_split_observer_join_deep_v1<M: CellSplitSupervisorMinimumOnli
         original_runtime_trust,
         trusted_minimum_store_key,
         minimum_store,
+        trusted_monotonic_frontier_key,
+        monotonic_frontier,
         live_owners,
     )
 }
@@ -445,6 +461,7 @@ pub fn verify_cell_split_observer_join_deep_v1<M: CellSplitSupervisorMinimumOnli
 pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
     P: CellSplitExecutionPortV1,
     M: CellSplitSupervisorMinimumOnlinePortV1,
+    H: CellSplitSupervisorMonotonicFrontierPortV1,
 >(
     join: &CellSplitSignedObserverJoinV1,
     transcript: &CellSplitExecutionTranscriptV1,
@@ -454,6 +471,8 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
     original_runtime_trust: &CellSplitObserverOriginalRuntimeTrustV1<'_>,
     trusted_minimum_store_key: &VerifyingKey,
     minimum_store: &mut M,
+    trusted_monotonic_frontier_key: &VerifyingKey,
+    monotonic_frontier: &mut H,
     live_owners: &mut P,
 ) -> Result<CellSplitObserverDeepReceiptV1, CellSplitObserverJoinErrorV1> {
     // Authenticate the historical originals before querying the separately
@@ -486,6 +505,24 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
     {
         return Err(CellSplitObserverJoinErrorV1::Invalid(
             "online minimum store signer is not independently trusted",
+        ));
+    }
+    if trusted_monotonic_frontier_key.is_weak()
+        || trusted_monotonic_frontier_key == trusted_minimum_store_key
+        || trusted_monotonic_frontier_key == cns_key
+        || trusted_monotonic_frontier_key == supervisor_key
+        || owner_trust.contains_owner_key(trusted_monotonic_frontier_key)
+        || evidence_policy
+            .host_keys
+            .values()
+            .any(|key| key == trusted_monotonic_frontier_key)
+        || evidence_policy
+            .observer_keys
+            .values()
+            .any(|key| key == trusted_monotonic_frontier_key)
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "monotonic frontier signer is not independent from the minimum and effect owners",
         ));
     }
     let journal: CellSplitSupervisorCommitV1 = serde_json::from_slice(
@@ -524,6 +561,26 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
     .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
         "current independent minimum checkpoint readback invalid",
     ))?;
+    // A signed local minimum can be replayed after restoring its *entire*
+    // directory. Consult a separate monotonic high-water source that is
+    // queried by authoritative domain, never by caller-supplied revision.
+    let watermark_nonce = rand::random::<[u8; 32]>()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    let watermark: CellSplitSupervisorMonotonicFrontierV1 = monotonic_frontier
+        .read_domain_frontier(&subject.journal_domain_id, &watermark_nonce)
+        .map_err(|error| CellSplitObserverJoinErrorV1::Owner(error.to_string()))?;
+    verify_cell_split_supervisor_monotonic_frontier_v1(
+        &subject,
+        &proof.original_store_record_digest,
+        &watermark_nonce,
+        &watermark,
+        trusted_monotonic_frontier_key,
+    )
+    .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
+        "current monotonic frontier rejects historical Supervisor checkpoint",
+    ))?;
     let mut receipt = verify_cell_split_observer_join_deep_with_port_v1(
         join,
         transcript,
@@ -558,9 +615,42 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
             "independent minimum frontier changed during four-owner readback",
         ));
     }
+    // Recheck the external monotonic high water after all four owners and
+    // the second minimum-store challenge. A restored local root must not
+    // receive a fresh positive verdict against a newer independent frontier.
+    let final_watermark_nonce = rand::random::<[u8; 32]>()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    let final_watermark = monotonic_frontier
+        .read_domain_frontier(&subject.journal_domain_id, &final_watermark_nonce)
+        .map_err(|error| CellSplitObserverJoinErrorV1::Owner(error.to_string()))?;
+    verify_cell_split_supervisor_monotonic_frontier_v1(
+        &subject,
+        &final_proof.original_store_record_digest,
+        &final_watermark_nonce,
+        &final_watermark,
+        trusted_monotonic_frontier_key,
+    )
+    .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
+        "final monotonic frontier rejects Supervisor checkpoint",
+    ))?;
+    if final_watermark.journal_revision != watermark.journal_revision
+        || final_watermark.minimum_checkpoint_digest != watermark.minimum_checkpoint_digest
+        || final_watermark.original_store_record_digest != watermark.original_store_record_digest
+        || final_watermark.journal_authority_epoch != watermark.journal_authority_epoch
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "monotonic frontier changed during four-owner readback",
+        ));
+    }
     receipt.live_minimum_readback_digest = Some(sha256(&canonical_json(&(
         proof,
         final_proof,
+    ))?));
+    receipt.live_monotonic_frontier_digest = Some(sha256(&canonical_json(&(
+        watermark,
+        final_watermark,
     ))?));
     Ok(receipt)
 }
@@ -606,6 +696,7 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_port_v1<P: CellSplitExec
         supervisor_minimum_checkpoint_digest: minimum_digest,
         supervisor_minimum_observer_witness_digest: minimum_witness_digest,
         live_minimum_readback_digest: None,
+        live_monotonic_frontier_digest: None,
         independently_signed_original_runtime_and_journal: true,
         production_activation_authorized: false,
     })
