@@ -12,6 +12,29 @@ from stem_pairwise_reader_comparison import (
 
 READER = "immutable-reader"
 PROFILE = "immutable-prompt"
+
+
+def reader_receipt(q, evidence, text):
+    """Authored deterministic fixture receipts, not pretrained executions."""
+    return dict(
+        generator_identity=READER,
+        generator_profile=PROFILE,
+        observable_query=asdict(q),
+        delivered_evidence=list(evidence),
+        canonical_request_digest=digest(
+            (READER, PROFILE, asdict(q), evidence)
+        ),
+        question_digest=digest(asdict(q)),
+        input_ids_digest=digest(
+            (asdict(q), tuple(
+                (item["label"], item["observed_at"], item["excerpt"])
+                for item in evidence
+            ))
+        ),
+        generated_ids_digest=digest(("emitted-fixture", text)),
+        actual_reader_execution=True,
+    )
+
 SIX_ARMS = ("frozen_rerank", "prototype", "linear", "gated",
             "lineage_lora_gated", "independent_lora_gated")
 
@@ -43,12 +66,7 @@ def fixture():
                         status="succeeded", selected=0,
                         pool_digest="sealed-original-" + q.identity,
                         answer="BASE",
-                        receipt=dict(
-                            generator_identity=READER,
-                            generator_profile=PROFILE,
-                            observable_query=asdict(q),
-                            delivered_evidence=[],
-                        ),
+                        receipt=reader_receipt(q, get_evidence(q, 0), "BASE"),
                     ))
                 for arm in ARMS:
                     changed = (
@@ -79,16 +97,7 @@ def answer(q, evidence, key):
     assert key.startswith("shadow-reader/48/")
     assert len(evidence) == 1
     raw = "GOOD" if evidence[0]["id"] == "window-1" else "BASE"
-    return raw, dict(
-        generator_identity=READER,
-        generator_profile=PROFILE,
-        observable_query=asdict(q),
-        delivered_evidence=list(evidence),
-        canonical_request_digest=digest(
-            (READER, PROFILE, asdict(q), evidence)
-        ),
-        actual_reader_execution=True,
-    )
+    return raw, reader_receipt(q, evidence, raw)
 
 
 def target_map(questions):
@@ -218,6 +227,63 @@ class FrozenReaderShadowControlTests(unittest.TestCase):
         self.assertIsNone(receipt["independent_semantic_citation_precision"])
         self.assertTrue(receipt["native_document_support_not_semantic_citation"])
         self.assertFalse(receipt["production_accepted"])
+
+
+    def test_same_actual_reader_request_cannot_fabricate_a_new_answer(self):
+        q, _, frozen, records = self.prepare()
+        original = records[1]
+        self.assertEqual(original["phase"], "test")
+        self.assertEqual(original["arm"], "pairwise_gated")
+        # The real changed-source row is a distinct request, not this control.
+        same = next(r for r in records if r["phase"] == "test"
+                    and r["question_id"] == "test-1"
+                    and r["arm"] == "pairwise_linear")
+        same["answer"] = "GOOD"
+        with self.assertRaisesRegex(ValueError, "identical Reader input"):
+            review_final_shadow_reader(records, frozen, target_map(q), score)
+
+    def test_original_reader_request_token_and_answer_seals_are_rechecked(self):
+        for side, key in (
+            ("original", "canonical_request_digest"),
+            ("original", "question_digest"),
+            ("original", "input_ids_digest"),
+            ("shadow", "canonical_request_digest"),
+            ("shadow", "generated_ids_digest"),
+        ):
+            q, _, frozen, records = self.prepare()
+            if side == "original":
+                row = next(r for r in frozen if r["stage"] == 48
+                           and r["phase"] == "test" and r["question_id"] == "test-0"
+                           and r["arm"] == "frozen_rerank")
+            else:
+                row = next(r for r in records if r["phase"] == "test"
+                           and r["question_id"] == "test-0"
+                           and r["arm"] == "pairwise_linear")
+            row["receipt"][key] = "1" * 64
+            with self.subTest(side=side, key=key), self.assertRaises(ValueError):
+                review_final_shadow_reader(records, frozen, target_map(q), score)
+
+    def test_source_flip_does_not_imply_a_changed_reader_input(self):
+        q, _, frozen, records = self.prepare()
+        flip = next(r for r in records if r["phase"] == "test"
+                    and r["question_id"] == "test-0"
+                    and r["arm"] == "pairwise_gated")
+        baseline = next(r for r in frozen if r["stage"] == 48
+                        and r["phase"] == "test" and r["question_id"] == "test-0"
+                        and r["arm"] == "frozen_rerank")
+        # Different source-window IDs can render the same model-visible bytes.
+        flip["receipt"]["input_ids_digest"] = baseline["receipt"]["input_ids_digest"]
+        with self.assertRaisesRegex(ValueError, "identical Reader input"):
+            review_final_shadow_reader(records, frozen, target_map(q), score)
+
+    def test_unchanged_selected_source_must_keep_exact_delivered_evidence(self):
+        q, _, frozen, records = self.prepare()
+        same = next(r for r in records if r["phase"] == "test"
+                    and r["question_id"] == "test-1"
+                    and r["arm"] == "pairwise_linear")
+        same["receipt"]["delivered_evidence"][0]["excerpt"] = "altered source"
+        with self.assertRaises(ValueError):
+            review_final_shadow_reader(records, frozen, target_map(q), score)
 
 
 if __name__ == "__main__":

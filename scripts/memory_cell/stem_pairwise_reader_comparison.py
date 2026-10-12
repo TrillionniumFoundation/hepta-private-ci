@@ -169,6 +169,41 @@ def run_final_shadow_reader(
     return results
 
 
+
+def _verified_reader_receipt(row):
+    """Authenticate one sealed Reader request; labels never enter this check."""
+    receipt = row.get("receipt")
+    if not isinstance(receipt, dict):
+        raise ValueError("missing original frozen Reader receipt")
+    query = receipt.get("observable_query")
+    evidence = receipt.get("delivered_evidence")
+    if (
+        not isinstance(query, dict)
+        or query.get("identity") != row.get("question_id")
+        or not isinstance(evidence, list)
+        or len(evidence) > 1
+        or any(not isinstance(item, dict) for item in evidence)
+        or not isinstance(receipt.get("generator_identity"), str)
+        or not receipt["generator_identity"]
+        or not isinstance(receipt.get("generator_profile"), str)
+        or not receipt["generator_profile"]
+        or receipt.get("question_digest") != digest(query)
+    ):
+        raise ValueError("original Reader question or model identity drift")
+    for key in ("canonical_request_digest", "input_ids_digest", "generated_ids_digest"):
+        value = receipt.get(key)
+        if not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{64}", value) is None:
+            raise ValueError("missing or malformed original Reader token/request seal")
+    canonical = digest((
+        receipt["generator_identity"],
+        receipt["generator_profile"],
+        query,
+        tuple(evidence),
+    ))
+    if receipt["canonical_request_digest"] != canonical:
+        raise ValueError("Reader canonical request does not bind actual evidence")
+    return receipt
+
 def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
     """Score only AFTER all raw Reader outcomes are sealed; no model calls."""
     if len(records) != 32 or not callable(diagnose):
@@ -195,17 +230,38 @@ def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
             or r["native_target_passed_to_generator"] is not False
         ):
             raise ValueError("Shadow Reader answer altered original source or label scope")
+        same_request = same_input = None
         if r["status"] == "succeeded":
-            receipt = r["receipt"]
-            orig = base.get("receipt")
-            if (
-                orig is not None and (
+            receipt = _verified_reader_receipt(r)
+            if base["status"] == "succeeded":
+                orig = _verified_reader_receipt(base)
+                if (
                     orig["generator_identity"] != receipt["generator_identity"]
                     or orig["generator_profile"] != receipt["generator_profile"]
-                    or orig.get("observable_query") != receipt.get("observable_query")
+                    or orig["observable_query"] != receipt["observable_query"]
+                    or r.get("frozen_selected") != base.get("selected")
+                    or type(r.get("changed_frozen_selected_source")) is not bool
+                    or r["changed_frozen_selected_source"] != (
+                        r.get("shadow_selected") != base.get("selected")
+                    )
+                ):
+                    raise ValueError("matched original and Shadow Reader profile/selection drift")
+                if (
+                    r["shadow_selected"] == base["selected"]
+                    and orig["delivered_evidence"] != receipt["delivered_evidence"]
+                ):
+                    raise ValueError("unchanged source selection changed Reader evidence")
+                same_request = (
+                    orig["canonical_request_digest"] == receipt["canonical_request_digest"]
                 )
-            ):
-                raise ValueError("matched original and Shadow Reader profile drift")
+                same_input = orig["input_ids_digest"] == receipt["input_ids_digest"]
+                if same_request and not same_input:
+                    raise ValueError("identical Reader request changed prompt tokens")
+                if same_input and (
+                    orig["generated_ids_digest"] != receipt["generated_ids_digest"]
+                    or base["answer"] != r["answer"]
+                ):
+                    raise ValueError("identical Reader input cannot create a learning gain")
         can_compare = base["status"] == r["status"] == "succeeded"
         original_f1 = new_f1 = None
         if can_compare:
@@ -231,6 +287,12 @@ def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
             shadow_reader_succeeded=r["status"] == "succeeded",
             matched_reader_f1_delta=delta,
             source_changed=r.get("changed_frozen_selected_source"),
+            identical_canonical_reader_request=same_request,
+            identical_reader_token_input=same_input,
+            changed_source_but_identical_reader_input=(
+                r.get("changed_frozen_selected_source") is True
+                and same_input is True
+            ),
             answer_bytes_changed=(
                 base["answer"] != r["answer"] if can_compare else None
             ),
@@ -257,6 +319,15 @@ def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
             shadow_successes=sum(r["shadow_reader_succeeded"] for r in rows),
             frozen_reader_failures=sum(not r["frozen_reader_succeeded"] for r in rows),
             source_changed=sum(r["source_changed"] is True for r in rows),
+            identical_request_pairs=sum(
+                r["identical_canonical_reader_request"] is True for r in rows
+            ),
+            identical_input_pairs=sum(
+                r["identical_reader_token_input"] is True for r in rows
+            ),
+            source_flips_without_changed_reader_input=sum(
+                r["changed_source_but_identical_reader_input"] for r in rows
+            ),
             scored_matched_answers=len(deltas),
             missing_failed_or_unscorable=missing,
             mean_paired_diagnostic_f1_delta=(

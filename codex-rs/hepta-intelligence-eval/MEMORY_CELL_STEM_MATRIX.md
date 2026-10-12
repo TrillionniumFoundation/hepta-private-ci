@@ -1563,3 +1563,23 @@ This is receipt consistency, **not** independently validated source
 sufficiency, correct answer semantics, citation entailment, or
 prospective family gain. Original successful historical outputs meet this
 invariant; current modified source must still pass its own exact-source CI.
+
+## Fixed-Reader Shadow controls: same-input gains are rejected (13 Oct)
+
+The 32-case post-Shadow Reader control is already executed in the native
+runner after the six-arm policy outputs are sealed; it is not a second policy
+arm and its diagnostic answer scores cannot be pooled with the 576 original
+policy attempts. The reviewer now binds BOTH originally generated and
+isolated-Shadow Reader receipts to the exact model/profile, observable
+question, original delivered evidence and canonical request hash. Recorded
+input and emitted-token digests must be genuine 64-character SHA-256 seals.
+
+If both paths feed identical Reader input tokens, they may not produce a
+different answer or generated-token seal and claim a learned Head gain.
+A changed source-window index with unchanged model-visible input is
+explicitly counted as a source flip without a changed Reader input, rather
+than as evidence of an improved Reader. An unchanged index cannot change
+the delivered evidence. Failed/unscored attempts remain in the original
+8-per-phase/arm denominator. This is **consistency validation only**;
+there are no new Reader calls, semantic citation verdicts, unseen cohorts,
+confidence claims, or production acceptance in this change.
