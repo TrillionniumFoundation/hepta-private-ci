@@ -34,9 +34,7 @@ def assess(cpuinfo, *, machine, runner_arch=None):
         set(re.findall(r"^\s*model name\s*:\s*(.+)$", cpuinfo, re.MULTILINE))
     )
     shared = set.intersection(*(set(cpu) for cpu in cpus)) if cpus else set()
-    all_accelerated = bool(cpus) and all(
-        set(cpu) & ACCELERATED for cpu in cpus
-    )
+    all_accelerated = bool(cpus) and all(set(cpu) & ACCELERATED for cpu in cpus)
     supported = bool(
         machine == "x86_64"
         and (runner_arch is None or runner_arch == "X64")
