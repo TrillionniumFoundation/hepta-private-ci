@@ -60,7 +60,9 @@ fn minimum_neuron_batch_tensor_bytes(requests: &[NeuronFeatureRequest]) -> Resul
                 .ok_or(Error::ArithmeticOverflow)?;
             let gated = input_width.checked_mul(8).ok_or(Error::ArithmeticOverflow)?;
             Ok::<_, Error>((
-                total.checked_add(outputs).ok_or(Error::ArithmeticOverflow)?,
+                total
+                    .checked_add(outputs)
+                    .ok_or(Error::ArithmeticOverflow)?,
                 peak.max(gated),
             ))
         })?;
