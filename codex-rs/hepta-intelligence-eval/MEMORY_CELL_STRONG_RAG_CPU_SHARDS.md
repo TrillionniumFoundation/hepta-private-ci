@@ -32,3 +32,33 @@ The final output includes every shard's raw JSONL, stage file, reader inventory,
 The 32 CPU jobs can be expensive and GitHub may not schedule them promptly. A passing test suite, source inventory, per-shard replay or even all 112 authored-task generations establishes neither an independent task population nor parametric memory superiority. Qwen weights remain research-only under the existing license and **are not serialized into any Actions artifact**. No production writer/reader, authorization, external observer, migration or rollback is enabled.
 
 **Acceptance gate:** exact-source completed 40/40 calibration + 72/72 evaluation + independently replayed, non-mutated answer/source provenance + qualified external real tasks. Until then: `candidate_accepted=false`, `statistical_superiority=false`, and `production_accepted=false`.
+
+## Qualified hosted CPU shards before any model staging (2026-10-12)
+
+The original CPU monolith's 180-minute timeouts were confirmed from downloaded
+raw journals, not inferred from queue state: only the first four of forty
+calibration answers completed, requiring 923.308, 1457.513, 2045.598 and
+2641.516 model seconds. The original reader-model/prompt contract is preserved.
+The separate four-run exact-output audits have since recorded 448 real
+responses and a NO-GO on incremental organizer accuracy/citation gains for
+the original authored population. These repeats do not create fresh tasks.
+
+Both sharded model phases now explicitly request `ubuntu-22.04`, matching
+the hosted BF16 scout's only positive image observation, and install the
+original pinned Python 3.12 interpreter before installing the CPU torch
+and model dependencies. On **each newly allocated matrix VM**, before
+downloading pretrained weights, the existing `strong_rag_host_gate.py`
+tests the actual Linux CPU records, architecture and accelerated BF16
+instruction support. The source commit and resulting eligibility receipt
+are uploaded in a separate per-shard host artifact even if the check fails.
+An unsupported host fails closed; it is not automatically relabeled or
+replaced with CUDA, FP32, quantization or a different reader.
+
+The full 8-case x 2-part matrices, disjoint 40 and 72 original answer
+censuses, calibration/test label separation, original weights and token
+budgets, immutable response journaling, cost accounting and independent
+replay retain their existing gates. Per-shard host receipts are diagnostic
+and do not substitute for SHA-sealed final answer provenance or an
+independent semantic evaluator. `ubuntu-22.04` is a runner **image label**,
+not a reservation of BF16-capable hardware: a later allocation can still
+fail the gate. No Qwen calls or production claims are made by this CI fix.

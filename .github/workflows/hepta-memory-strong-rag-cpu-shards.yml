@@ -6,6 +6,8 @@ on:
     paths:
       - "scripts/memory_cell/strong_rag_shards.py"
       - "scripts/memory_cell/test_strong_rag_shards.py"
+      - "scripts/memory_cell/test_strong_rag_shard_host_workflow.py"
+      - "scripts/memory_cell/strong_rag_host_gate.py"
       - "scripts/memory_cell/canonical_model_stage.py"
       - "scripts/memory_cell/test_canonical_model_stage.py"
       - ".github/workflows/hepta-memory-strong-rag-cpu-shards.yml"
@@ -34,6 +36,8 @@ jobs:
           set -euo pipefail
           python3 -m py_compile scripts/memory_cell/strong_rag_shards.py scripts/memory_cell/test_strong_rag_shards.py
           python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_shards.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_shard_host_workflow.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag_host_gate.py' -v
           python3 -m unittest discover -s scripts/memory_cell -p 'test_canonical_model_stage.py' -v
       - name: Restore and authenticate the original observed event experiment
         env:
@@ -109,7 +113,7 @@ jobs:
 
   calibration-shards:
     needs: prepare
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 360
     strategy:
       fail-fast: false
@@ -130,6 +134,15 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Verify actual allocated BF16 CPU before downloading Qwen weights
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/frozen-qwen-host
+          printf '%s\n' "${{ github.sha }}" > /tmp/frozen-qwen-host/tested-commit.txt
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/frozen-qwen-host/host-qualification.json
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: memory-strong-rag-calibration-public
@@ -161,6 +174,12 @@ jobs:
           path: /tmp/one-shard
           if-no-files-found: warn
 
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-calibration-host-${{ matrix.case }}-${{ matrix.part }}
+          path: /tmp/frozen-qwen-host
+          if-no-files-found: warn
   calibration-collect:
     needs: calibration-shards
     runs-on: ubuntu-latest
@@ -198,7 +217,7 @@ jobs:
 
   evaluation-shards:
     needs: calibration-collect
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     timeout-minutes: 360
     strategy:
       fail-fast: false
@@ -219,6 +238,15 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
+      - name: Verify actual allocated BF16 CPU before downloading Qwen weights
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/frozen-qwen-host
+          printf '%s\n' "${{ github.sha }}" > /tmp/frozen-qwen-host/tested-commit.txt
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/frozen-qwen-host/host-qualification.json
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
           name: memory-strong-rag-original-source
@@ -250,6 +278,12 @@ jobs:
           path: /tmp/one-shard
           if-no-files-found: warn
 
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-evaluation-host-${{ matrix.case }}-${{ matrix.part }}
+          path: /tmp/frozen-qwen-host
+          if-no-files-found: warn
   evaluation-collect:
     needs: evaluation-shards
     runs-on: ubuntu-latest
