@@ -146,6 +146,15 @@ where
         )?;
         let token = FinalUseAuthority::claim(authority, signed_grant, &binding)
             .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+        // Claim persistence may advance past an NDU read cutover/expiry.
+        // Consume the nonce but deny the model effect if the live frontier or
+        // the protected clock changed while authority was being claimed.
+        let still_current = read_verifier
+            .verify(signed_read)
+            .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+        if still_current != authenticated_read_receipt_digest {
+            return Err(NeuronRuntimeError::InvalidInput);
+        }
         let mut model = InferenceControlModelPort::new(&mut self.inference_control);
         FinalUseAuthority::with_verified_effect(authority, token, &binding, || {
             self.runtime.tick_with_ndu_snapshot(

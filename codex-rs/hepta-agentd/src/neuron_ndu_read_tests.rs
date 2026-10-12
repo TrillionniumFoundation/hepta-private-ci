@@ -4,6 +4,8 @@ use codex_hepta_types::Generation;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use std::sync::Mutex;
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
 
 #[derive(Debug)]
 struct ProtectedClock(u64);
@@ -115,5 +117,34 @@ fn read_expiration_and_unknown_owner_are_fail_closed() {
     assert_eq!(
         verifier.verify(&signed_read(&key, wrong)),
         Err(NduReadVerificationErrorV1::UntrustedOwner),
+    );
+}
+
+#[derive(Debug)]
+struct AdvancingClock(AtomicUsize);
+
+impl AuthorityClock for AdvancingClock {
+    fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
+        // The verifier constructor and first preflight sample see a live grant.
+        // The second time sample occurs after independent frontier I/O.
+        let reading = self.0.fetch_add(1, Ordering::SeqCst);
+        Ok(if reading <= 1 { 1000 } else { 1200 })
+    }
+}
+
+#[test]
+fn read_expiring_during_frontier_verification_is_rejected() {
+    let key = SigningKey::from_bytes(&[43; 32]);
+    let verifier = NduReadVerifierV1::new(
+        StableId::new("ndu-owner").unwrap(),
+        key.verifying_key().to_bytes(),
+        Arc::new(AdvancingClock(AtomicUsize::new(0))),
+        Arc::new(ControlFrontier(Mutex::new(snapshot()))),
+    )
+    .unwrap();
+    let original = signed_read(&key, snapshot());
+    assert_eq!(
+        verifier.verify(&original),
+        Err(NduReadVerificationErrorV1::Expired)
     );
 }
