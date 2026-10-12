@@ -145,6 +145,9 @@ def execute_matrix(
             env["HEPTA_CELL_SPLIT_EXPECTED_SCOPE"] = str(scope)
             env["HEPTA_CELL_SPLIT_EXPECTED_MODE"] = mode
             argv = commands[(scope, mode)]
+            # Freeze source identity for *each* workload: a command may modify
+            # tracked source after the initial matrix-level preflight.
+            verify_exact_source(repository, manifest["source_sha"])
             with prefix.with_suffix(".stdout.log").open("wb") as stdout:
                 with prefix.with_suffix(".stderr.log").open("wb") as stderr:
                     try:
@@ -165,6 +168,9 @@ def execute_matrix(
                 raise InvalidEvidence(
                     f"{scope}/{mode}: workload exited {result.returncode}"
                 )
+            # Reject a result even if it reports the expected SHA when the
+            # executed workload changed the checkout. Never start the next run.
+            verify_exact_source(repository, manifest["source_sha"])
             try:
                 observed = json.loads(result_path.read_text(encoding="utf-8"))
             except (OSError, ValueError) as error:
@@ -182,6 +188,9 @@ def execute_matrix(
     }
     # Validate complete comparable evidence, but never sign/activate it.
     comparison = analyze(packet)
+    # Last check before publishing a complete diagnostic packet, including
+    # concurrent tracked-file edits made during comparison/serialization.
+    verify_exact_source(repository, manifest["source_sha"])
     (output / "measured-matrix.json").write_text(
         json.dumps(packet, sort_keys=True, indent=2) + "\n", encoding="utf-8"
     )
