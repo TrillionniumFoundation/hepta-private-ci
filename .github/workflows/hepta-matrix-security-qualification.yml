@@ -675,6 +675,14 @@ jobs:
               --metadata "$RUNNER_TEMP/hepta-matrix-dual-metadata.json" \
               --hepta-sha "$HEPTA_MATRIX_SOURCE_SHA" \
               --output "$RUNNER_TEMP/hepta-matrix-dual-verification.json"
+            # Re-run the existing full Hepta graph/feature/manifest gate on the
+            # ACTUAL post-Cargo metadata. An earlier stale-lock failure may
+            # have prevented the first preflight from running at all.
+            python3 qualification/matrix-security/adapter_candidate_gate.py \
+              --metadata "$RUNNER_TEMP/hepta-matrix-dual-metadata.json" \
+              --source-manifest codex-rs/Cargo.toml \
+              --staged-manifest "$manifest" \
+              --output "$RUNNER_TEMP/hepta-matrix-dual-postflight.json"
           fi
           if [ "$status" -ne 0 ]; then
             echo "Joint disposable resolver remains BLOCKED; this does not waive the original failure."
@@ -697,6 +705,7 @@ jobs:
             ${{ runner.temp }}/hepta-matrix-dual-lock-plan.json
             ${{ runner.temp }}/hepta-matrix-dual-resolution.json
             ${{ runner.temp }}/hepta-matrix-dual-verification.json
+            ${{ runner.temp }}/hepta-matrix-dual-postflight.json
             ${{ runner.temp }}/hepta-matrix-dual-metadata.stderr
           if-no-files-found: warn
           retention-days: 14
