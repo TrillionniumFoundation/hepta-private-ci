@@ -24,6 +24,7 @@ COUNT_FIELDS = frozenset({
     "attempted",
     "completed",
     "communication_bytes",
+    "rss_peak_bytes",
     "native_backend_calls",
     "native_batch_requests",
     "fsync_count",
