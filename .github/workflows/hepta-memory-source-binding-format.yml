@@ -13,12 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 16
     permissions:
-      contents: write
+      contents: read
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: ${{ github.sha }}
-          persist-credentials: true
+          persist-credentials: false
       - name: Exact Python AST-preserving format and restricted-format branch
         run: |
           set -euo pipefail
@@ -47,10 +47,14 @@ jobs:
                   raise ValueError('formatter changed executable training code')
           PY
           git diff --check
-          git add scripts/memory_cell/source_binding_margin.py scripts/memory_cell/test_source_binding_margin.py scripts/memory_cell/test_source_binding_writer.py scripts/memory_cell/experience_memory.py scripts/memory_cell/experience_write_trial.py
-          git rm .github/workflows/hepta-memory-source-binding-format.yml
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'style(memory-cell): format source-binding candidate and remove temporary writer'
-          git push origin "HEAD:refs/heads/codex/memory-source-binding-format-${GITHUB_RUN_ID}"
-          echo "CANDIDATE_SHA=$(git rev-parse HEAD)"
+          git diff -- scripts/memory_cell/source_binding_margin.py scripts/memory_cell/test_source_binding_margin.py scripts/memory_cell/test_source_binding_writer.py scripts/memory_cell/experience_memory.py scripts/memory_cell/experience_write_trial.py > /tmp/source-binding-format.diff
+          echo 'BEGIN_EXACT_SOURCE_BINDING_FORMAT_DIFF'
+          cat /tmp/source-binding-format.diff
+          echo 'END_EXACT_SOURCE_BINDING_FORMAT_DIFF'
+          test -s /tmp/source-binding-format.diff
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-source-binding-exact-format-diff
+          path: /tmp/source-binding-format.diff
+          if-no-files-found: error
