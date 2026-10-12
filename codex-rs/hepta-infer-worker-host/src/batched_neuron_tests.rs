@@ -10,11 +10,37 @@ use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 use codex_hepta_types::Generation;
+use codex_hepta_types::PhaseMetricSinkErrorV1;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use std::collections::BTreeSet;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
+
+#[derive(Debug, Default)]
+struct RecordedSink(std::sync::Mutex<Vec<PhaseMetricEventV1>>);
+
+impl PhaseMetricSinkV1 for RecordedSink {
+    fn record(&self, event: PhaseMetricEventV1) -> Result<(), PhaseMetricSinkErrorV1> {
+        self.0
+            .lock()
+            .map_err(|_| PhaseMetricSinkErrorV1::Unavailable)?
+            .push(event);
+        Ok(())
+    }
+
+    fn healthy(&self) -> bool {
+        self.0.lock().is_ok()
+    }
+
+    fn flush(&self) -> Result<(), PhaseMetricSinkErrorV1> {
+        if self.healthy() {
+            Ok(())
+        } else {
+            Err(PhaseMetricSinkErrorV1::Unavailable)
+        }
+    }
+}
 
 struct Driver;
 
@@ -187,7 +213,8 @@ fn signed_batch_executes_driver_once_then_rejects_duplicate() {
     let signer = SigningKey::from_bytes(&[17; 32]);
     let (model, request, key) = fixture_request();
     let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
-    let mut execution = runner(&signer, dir.path(), model);
+    let metrics = std::sync::Arc::new(RecordedSink::default());
+    let mut execution = runner(&signer, dir.path(), model).with_metric_sink(metrics.clone());
     execution
         .enqueue(
             100,
@@ -211,6 +238,19 @@ fn signed_batch_executes_driver_once_then_rejects_duplicate() {
             completed_signed_dummy(&signer)
         ),
         Err(BatchWorkerErrorV1::Duplicate)
+    );
+    let samples = metrics.0.lock().unwrap();
+    assert_eq!(
+        samples
+            .iter()
+            .map(|sample| (sample.phase, sample.succeeded))
+            .collect::<Vec<_>>(),
+        vec![
+            (PhaseMetricKindV1::Admission, true),
+            (PhaseMetricKindV1::Microbatch, true),
+            (PhaseMetricKindV1::NeuronFeature, true),
+            (PhaseMetricKindV1::Admission, false),
+        ]
     );
 }
 
