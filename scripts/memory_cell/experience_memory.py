@@ -174,6 +174,7 @@ class ExperienceReader(ReferenceReader):
         revoked,
         loss_backend="full",
         curriculum="single_hop",
+        write_objective="source_nll",
     ):
         import torch
         from peft import get_peft_model_state_dict
@@ -183,6 +184,12 @@ class ExperienceReader(ReferenceReader):
 
         if loss_backend not in BACKENDS:
             raise ValueError("unregistered source loss backend")
+        if write_objective not in ("source_nll", "source_relation_margin"):
+            raise ValueError("unregistered source-only objective")
+        if write_objective == "source_relation_margin" and (
+            loss_backend != "supervised_positions" or curriculum != "single_hop"
+        ):
+            raise ValueError("source relation margin requires pinned single-hop sparse loss")
         if curriculum not in ("single_hop", "source_two_hop"):
             raise ValueError("unregistered source-only curriculum")
         if curriculum == "source_two_hop":
@@ -211,6 +218,14 @@ class ExperienceReader(ReferenceReader):
         from source_write_coverage import audit_coverage
 
         coverage = audit_coverage(examples, prepared, plan, curriculum=curriculum)
+        negatives = relation_review = pair_budget = None
+        if write_objective == "source_relation_margin":
+            from source_relation_margin import schedule_cost, source_negatives
+
+            negatives, relation_review = source_negatives(
+                documents, examples, prepared, self.tokenizer
+            )
+            pair_budget = schedule_cost(prepared, plan, negatives)
         params = [p for p in self.model.parameters() if p.requires_grad]
         before = {
             k: v.clone() for k, v in get_peft_model_state_dict(self.model).items()
@@ -218,13 +233,26 @@ class ExperienceReader(ReferenceReader):
         optimizer = torch.optim.AdamW(params, lr=0.0002)
         started, tokens, supervised, losses = time.perf_counter(), 0, 0, []
         projected = 0
+        all_forward_tokens = pair_updates = 0
         self.model.train()
         try:
             print(json.dumps(dict(event="source-write-plan", plan=plan)), flush=True)
             for index in plan["entries"]:
                 ids, labels = prepared[index]
                 optimizer.zero_grad(set_to_none=True)
-                if loss_backend == "full":
+                if write_objective == "source_relation_margin":
+                    from source_relation_margin import relation_loss
+
+                    negative = negatives[index]
+                    loss, relation_cost = relation_loss(
+                        self.model, (ids, labels), negative
+                    )
+                    all_forward_tokens += relation_cost["input_tokens"]
+                    pair_updates += int(relation_cost["pair_used"])
+                    projection_positions = sum(v != -100 for v in labels)
+                    if negative is not None:
+                        projection_positions += sum(v != -100 for v in negative[1])
+                elif loss_backend == "full":
                     # Keep the original model-owned loss as the default control.
                     x = torch.tensor([ids], dtype=torch.long)
                     loss = self.model(
@@ -270,6 +298,11 @@ class ExperienceReader(ReferenceReader):
                 or supervised != plan["planned_supervised_tokens"]
             ):
                 raise ValueError("actual source-write exposure differs from plan")
+            if write_objective == "source_relation_margin" and (
+                all_forward_tokens != pair_budget["all_model_forward_input_tokens"]
+                or pair_updates != pair_budget["actual_negative_forward_passes"]
+            ):
+                raise ValueError("relation writer did not charge every forward pass")
             delta = sum(
                 float((v - before[k]).square().sum())
                 for k, v in get_peft_model_state_dict(self.model).items()
@@ -282,7 +315,7 @@ class ExperienceReader(ReferenceReader):
             ):
                 raise ValueError("no finite write or frozen base changed")
             self.roots = set(allowed_roots)
-            return dict(
+            result = dict(
                 objective=PROFILE,
                 revision=revision,
                 examples=len(examples),
@@ -313,6 +346,16 @@ class ExperienceReader(ReferenceReader):
                 independent_review=False,
                 production_accepted=False,
             )
+            if write_objective == "source_relation_margin":
+                result.update(
+                    write_objective=write_objective,
+                    negative_review=relation_review,
+                    pair_compute_budget=pair_budget,
+                    all_actual_forward_input_tokens=all_forward_tokens,
+                    actual_negative_updates=pair_updates,
+                    test_targets_used=False,
+                )
+            return result
         except Exception:
             self.quarantined, self.scope = True, None
             raise

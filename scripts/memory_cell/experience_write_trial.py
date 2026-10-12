@@ -68,6 +68,7 @@ def write_memory(
     parity_receipt=None,
     parity_sha=None,
     curriculum="single_hop",
+    write_objective="source_nll",
 ):
     from pretrained import LoRAReader
     from source_completion_loss import BACKENDS
@@ -76,6 +77,12 @@ def write_memory(
         raise ValueError("unregistered source loss backend")
     if curriculum not in ("single_hop", "source_two_hop"):
         raise ValueError("unregistered source-only curriculum")
+    if write_objective not in ("source_nll", "source_relation_margin"):
+        raise ValueError("unregistered source-only write objective")
+    if write_objective == "source_relation_margin" and (
+        loss_backend != "supervised_positions" or curriculum != "single_hop"
+    ):
+        raise ValueError("pairwise source writing requires admitted sparse single-hop loss")
 
     commit = exact_source()
     documents = original_documents(sources, source_sha)
@@ -106,6 +113,7 @@ def write_memory(
             token_ceiling=TOKEN_CEILING,
             loss_backend=loss_backend,
             curriculum=curriculum,
+            write_objective=write_objective,
             source_loss_parity_sha256=parity_binding,
             evaluation_query_input=False,
             source_documents_digest=digest([asdict(d) for d in documents]),
@@ -126,6 +134,7 @@ def write_memory(
         revoked=set(),
         loss_backend=loss_backend,
         curriculum=curriculum,
+        write_objective=write_objective,
     )
     manifest = LoRAReader.save(reader, output / "adapter", training)
     reader.verify_frozen()
@@ -536,6 +545,11 @@ if __name__ == "__main__":
     p.add_argument(
         "--curriculum", choices=("single_hop", "source_two_hop"), default="single_hop"
     )
+    p.add_argument(
+        "--write-objective",
+        choices=("source_nll", "source_relation_margin"),
+        default="source_nll",
+    )
     p = sub.add_parser("read")
     for name in ("plan", "inputs", "model", "snapshot", "output"):
         p.add_argument(name, type=Path)
@@ -555,6 +569,7 @@ if __name__ == "__main__":
             parity_receipt=a.parity_receipt,
             parity_sha=a.parity_sha,
             curriculum=a.curriculum,
+            write_objective=a.write_objective,
         )
     else:
         read_memory(
