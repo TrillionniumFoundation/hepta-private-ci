@@ -85,6 +85,18 @@ class JinaSnapshotCensusTests(unittest.TestCase):
                          snapshot_dir=self.snap, store_root=self.root,
                          expected_snapshot_digest=self.census()["manifest_sha256"])
 
+    def test_research_evidence_is_create_once_and_never_mutates_cache(self):
+        result = self.census()
+        evidence_path = Path(self.temporary.name) / "evidence" / "census.json"
+        census.write_census_report(evidence_path, result, store_root=self.root)
+        self.assertEqual(json.loads(evidence_path.read_text())["manifest_sha256"],
+                         result["manifest_sha256"])
+        with self.assertRaises(FileExistsError):
+            census.write_census_report(evidence_path, result, store_root=self.root)
+        with self.assertRaisesRegex(ValueError, "cannot modify"):
+            census.write_census_report(self.snap / "research-report.json", result,
+                                       store_root=self.root)
+
     def test_task_adapter_not_interchangeable_and_missing_rejected(self):
         with self.assertRaisesRegex(ValueError, "incomplete"):
             census.attest_snapshot(
