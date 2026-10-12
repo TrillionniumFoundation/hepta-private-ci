@@ -15,6 +15,9 @@ use std::io::Read as _;
 use std::sync::Arc;
 
 use codex_hepta_contracts::{FinalUseAuthority, SignedFinalUseGrant};
+use codex_hepta_plasticity::{
+    TopologyCandidateKindV2, TopologyCandidateV2, TopologyOperationV2,
+};
 use codex_hepta_operator_acceptance::{
     CellSplitCnsLiveRouteV1, CellSplitCnsRouteBindingV1,
     CellSplitCnsRuntimeAttestationV1, CellSplitCnsRuntimeCommitV1,
@@ -202,6 +205,15 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
     }
 }
 
+/// A generic Update candidate can contain Add/Replace/Rewire operations.
+/// CellSplit must bind the *typed* Split mutation before invoking the live
+/// generation replacement, not infer a split from a successor generation.
+fn is_typed_cell_split_candidate_v1(candidate: &TopologyCandidateV2) -> bool {
+    candidate.kind == TopologyCandidateKindV2::Update
+        && candidate.changes.len() == 1
+        && candidate.changes[0].operation == TopologyOperationV2::Split
+}
+
 impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
     for CellSplitCnsKernelRuntimePortV1<W>
 {
@@ -269,7 +281,22 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         let (grant, request) = self.witness
             .take_admitted_successor(plan, binding, intent)
             .map_err(|e| e.to_string())?;
+        let selected = request.governed.proposal.candidates.iter()
+            .find(|candidate| candidate.candidate_id == request.candidate_id)
+            .ok_or("admitted topology omits selected CellSplit candidate")?;
+        if !is_typed_cell_split_candidate_v1(selected) {
+            return Err("CellSplit CNS requires exactly one typed Split operation".into());
+        }
         let expected = request.successor.snapshot();
+        // Match the actual predecessor/successor graph identities before
+        // consuming the one-shot final-use grant. The generic Update envelope
+        // alone is not proof that a CellSplit operation was selected.
+        let change = &selected.changes[0];
+        if change.predecessor_digest != Some(before.hierarchy_digest())
+            || change.candidate_digest != Some(expected.hierarchy_digest())
+        {
+            return Err("typed CellSplit graph transition differs from CNS host".into());
+        }
         if expected.generation().get() != plan.child_generation
             || expected.hierarchy_digest().to_string() != binding.successor_route_digest
             || expected.cns_id() != before.cns_id()
