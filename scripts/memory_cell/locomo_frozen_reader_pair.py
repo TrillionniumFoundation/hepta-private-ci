@@ -49,9 +49,7 @@ def source_plan(root):
     decision_rows = compute(population, documents)
     if verify_original_six(root, decision_rows) != 480:
         raise ValueError("published decisions were not reproduced")
-    decisions = {
-        (row["question_id"], row["arm"]): row for row in decision_rows
-    }
+    decisions = {(row["question_id"], row["arm"]): row for row in decision_rows}
     cases = population["splits"]["evaluation"]
     if len(cases) != PLANNED or len({c["question_id"] for c in cases}) != PLANNED:
         raise ValueError("original evaluation census drift")
@@ -64,9 +62,11 @@ def source_plan(root):
             raise ValueError("frozen lexical selections or order drift")
         for arm in ARMS:
             selected = decisions[(case["question_id"], arm)]
-            if (selected["source_census_sha256"] != case["source_census_sha256"]
-                    or selected["family_proxy_digest"] != case["family_proxy_digest"]
-                    or any(k not in documents for k in selected["selected"])):
+            if (
+                selected["source_census_sha256"] != case["source_census_sha256"]
+                or selected["family_proxy_digest"] != case["family_proxy_digest"]
+                or any(k not in documents for k in selected["selected"])
+            ):
                 raise ValueError("frozen source identities drift")
     return cases, documents, decisions
 
@@ -95,27 +95,35 @@ def bundle_for(case, arm, original, selected):
         raw = doc.content.encode("utf-8", "strict")
         spans.append(
             EvidenceSpan(
-                doc.identity, doc.root, doc.scope, doc.session, doc.observed_at,
-                0, len(raw), doc.content, digest(doc.content),
+                doc.identity,
+                doc.root,
+                doc.scope,
+                doc.session,
+                doc.observed_at,
+                0,
+                len(raw),
+                doc.content,
+                digest(doc.content),
             )
         )
     bundle = EvidenceBundle(
         digest(asdict(query)), case["source_census_sha256"], tuple(spans), arm
     )
     bundle.validate(
-        query, {key: original[key] for key in selected},
-        frontier=case["source_census_sha256"], revoked=set(),
+        query,
+        {key: original[key] for key in selected},
+        frontier=case["source_census_sha256"],
+        revoked=set(),
     )
     return query, bundle
 
 
 def unique_rows(rows, cases, decisions):
-    expected = [
-        (case["question_id"], arm) for case in cases for arm in ARMS
-    ]
-    if len(rows) != len(expected) or [
-        (r["question_id"], r["arm"]) for r in rows
-    ] != expected:
+    expected = [(case["question_id"], arm) for case in cases for arm in ARMS]
+    if (
+        len(rows) != len(expected)
+        or [(r["question_id"], r["arm"]) for r in rows] != expected
+    ):
         raise ValueError("missing, reordered or duplicate model execution")
     profiles = set()
     for row in rows:
@@ -144,11 +152,12 @@ def unique_rows(rows, cases, decisions):
             ):
                 raise ValueError("reader, decoder or budget drift")
             delivered = receipt["delivered_evidence"]
-            if len(delivered) != len(row["selected"]) or [
-                d["original_id"] for d in delivered
-            ] != row["selected"]:
+            if (
+                len(delivered) != len(row["selected"])
+                or [d["original_id"] for d in delivered] != row["selected"]
+            ):
                 raise ValueError("actual source presentation drift")
-        elif ("answer" in row or "receipt" in row):
+        elif "answer" in row or "receipt" in row:
             raise ValueError("failed run smuggled a successful response")
     if len(profiles) > 1:
         raise ValueError("different frozen reader profiles between arms")
@@ -177,9 +186,7 @@ def generate(public_root, model_root, output):
         or stage["production_accepted"] is not False
     ):
         raise ValueError("not the pinned research-only Qwen reference")
-    inventory = read(
-        model_root / "inventory.json", stage["inventory_sha256"]
-    )
+    inventory = read(model_root / "inventory.json", stage["inventory_sha256"])
     reader = ReferenceReader(
         model_root / "reader",
         expected_inventory=inventory["inventory_digest"],
@@ -194,7 +201,8 @@ def generate(public_root, model_root, output):
                 decision = decisions[(case["question_id"], arm)]
                 selected = decision["selected"]
                 row = dict(
-                    question_id=case["question_id"], arm=arm,
+                    question_id=case["question_id"],
+                    arm=arm,
                     family_proxy_digest=case["family_proxy_digest"],
                     source_census_sha256=case["source_census_sha256"],
                     selected=selected,
@@ -202,15 +210,18 @@ def generate(public_root, model_root, output):
                 try:
                     query, bundle = bundle_for(case, arm, original, selected)
                     answer, receipt = reader.answer(
-                        query, bundle,
+                        query,
+                        bundle,
                         {key: original[key] for key in selected},
                         frontier=case["source_census_sha256"],
-                        revoked=set(), token_limit=LIMIT,
+                        revoked=set(),
+                        token_limit=LIMIT,
                     )
                     row.update(status="succeeded", answer=answer, receipt=receipt)
                 except Exception as error:
                     row.update(
-                        status="failed", error_type=type(error).__name__,
+                        status="failed",
+                        error_type=type(error).__name__,
                         error_detail=str(error)[:384],
                     )
                 journal.write(canonical(row) + b"\n")
@@ -224,31 +235,47 @@ def generate(public_root, model_root, output):
     if not re.fullmatch(r"[0-9a-f]{40}", head):
         raise ValueError("exact generating commit required")
     manifest = dict(
-        schema=SCHEMA, generating_commit=head,
+        schema=SCHEMA,
+        generating_commit=head,
         original_source_sha256=ZIPS["public"][1],
         original_six_decisions_sha256=ZIPS["decisions"][1],
         model_stage_sha256=sha(stage_raw),
-        model_identity=reader.identity, model_profile=reader.profile,
-        planned_questions=PLANNED, planned_arms=list(ARMS),
-        planned_model_calls=PLANNED * len(ARMS), actual_model_calls=len(rows),
+        model_identity=reader.identity,
+        model_profile=reader.profile,
+        planned_questions=PLANNED,
+        planned_arms=list(ARMS),
+        planned_model_calls=PLANNED * len(ARMS),
+        actual_model_calls=len(rows),
         succeeded=sum(r["status"] == "succeeded" for r in rows),
         failed=sum(r["status"] == "failed" for r in rows),
-        input_token_ceiling=LIMIT, generated_token_ceiling=64,
+        input_token_ceiling=LIMIT,
+        generated_token_ceiling=64,
         labels_seen_during_generation=False,
-        weight_updates=0, original_answers_rewritten=False,
+        weight_updates=0,
+        original_answers_rewritten=False,
         raw_journal_sha256=sha(raw),
         independent_source_authentication=False,
-        semantic_citation_precision=None, production_accepted=False,
+        semantic_citation_precision=None,
+        production_accepted=False,
     )
     verify_immutable_generation_record(
-        manifest, raw, rows,
+        manifest,
+        raw,
+        rows,
         expected_commit=head,
         public_zip_sha256=ZIPS["public"][1],
         decisions_zip_sha256=ZIPS["decisions"][1],
     )
     write_once(output / "READY.json", canonical(manifest) + b"\n")
-    print(json.dumps({k: v for k, v in manifest.items()
-                      if k not in ("model_identity", "model_profile")}))
+    print(
+        json.dumps(
+            {
+                k: v
+                for k, v in manifest.items()
+                if k not in ("model_identity", "model_profile")
+            }
+        )
+    )
     return manifest
 
 
@@ -281,18 +308,26 @@ def summarize(rows, cases, decisions, targets):
     for arm in ARMS:
         subset = [r for r in rows if r["arm"] == arm]
         successes = [r for r in subset if r["status"] == "succeeded"]
-        valid = [r for r in successes if metric(r["answer"], targets[r["question_id"]])["eligible"]]
+        valid = [
+            r
+            for r in successes
+            if metric(r["answer"], targets[r["question_id"]])["eligible"]
+        ]
         f1s = [metric(r["answer"], targets[r["question_id"]])["f1"] for r in valid]
         cites = [CITE.findall(r["answer"]) for r in successes]
         undelivered = sum(
-            any(mark[1:-1] not in {
-                d["label"] for d in r["receipt"]["delivered_evidence"]
-            } for mark in marks)
+            any(
+                mark[1:-1]
+                not in {d["label"] for d in r["receipt"]["delivered_evidence"]}
+                for mark in marks
+            )
             for r, marks in zip(successes, cites, strict=True)
         )
         output[arm] = dict(
-            planned=len(cases), succeeded=len(successes),
-            failed=len(cases) - len(successes), diagnostic_scored=len(valid),
+            planned=len(cases),
+            succeeded=len(successes),
+            failed=len(cases) - len(successes),
+            diagnostic_scored=len(valid),
             diagnostic_unscored=len(successes) - len(valid),
             diagnostic_f1=sum(f1s) / len(f1s) if f1s else None,
             all_planned_f1_bounds=[
@@ -302,10 +337,15 @@ def summarize(rows, cases, decisions, targets):
             emitted_citation_markers=sum(map(len, cites)),
             answers_with_undelivered_marker=undelivered,
             actual_input_tokens=sum(r["receipt"]["input_tokens"] for r in successes),
-            actual_generated_tokens=sum(r["receipt"]["generated_tokens"] for r in successes),
+            actual_generated_tokens=sum(
+                r["receipt"]["generated_tokens"] for r in successes
+            ),
             observed_inference_seconds=sum(r["receipt"]["seconds"] for r in successes),
             actual_source_bytes=sum(
-                sum(len(d["excerpt"].encode("utf-8")) for d in r["receipt"]["delivered_evidence"])
+                sum(
+                    len(d["excerpt"].encode("utf-8"))
+                    for d in r["receipt"]["delivered_evidence"]
+                )
                 for r in successes
             ),
             independent_citation_entailment_precision=None,
@@ -318,7 +358,10 @@ def summarize(rows, cases, decisions, targets):
         if x["status"] != y["status"] or x["status"] == "failed":
             unknown += 1
             continue
-        a, b = metric(x["answer"], targets[q["question_id"]]), metric(y["answer"], targets[q["question_id"]])
+        a, b = (
+            metric(x["answer"], targets[q["question_id"]]),
+            metric(y["answer"], targets[q["question_id"]]),
+        )
         if not a["eligible"] or not b["eligible"]:
             unknown += 1
             continue
@@ -328,17 +371,24 @@ def summarize(rows, cases, decisions, targets):
         loss += d < 0
         tie += d == 0
     pairs = dict(
-        planned=len(cases), complete_scored=len(deltas), wins=win, losses=loss,
-        ties=tie, missing_or_unscored=unknown,
+        planned=len(cases),
+        complete_scored=len(deltas),
+        wins=win,
+        losses=loss,
+        ties=tie,
+        missing_or_unscored=unknown,
         observed_mean_f1_delta=sum(deltas) / len(deltas) if deltas else None,
         all_planned_delta_bounds=[
             (sum(deltas) - unknown) / len(cases),
             (sum(deltas) + unknown) / len(cases),
         ],
-        family_proxies=2, independent_family_significance_established=False,
+        family_proxies=2,
+        independent_family_significance_established=False,
     )
     return dict(
-        schema=SCHEMA + ".diagnostic.v1", arms=output, paired=pairs,
+        schema=SCHEMA + ".diagnostic.v1",
+        arms=output,
+        paired=pairs,
         known_exposed_public_development_data=True,
         source_id_support_not_semantic_sufficiency=True,
         same_frozen_reader_no_parameter_training=True,
@@ -369,7 +419,9 @@ def score(public_root, evaluation_root, read_root, output, *, expected_commit):
     # Source provenance and all 32 raw outcomes must be authenticated before
     # even opening the separately staged answer/label ZIP.
     verified = verify_immutable_generation_record(
-        manifest, raw, rows,
+        manifest,
+        raw,
+        rows,
         expected_commit=expected_commit,
         public_zip_sha256=ZIPS["public"][1],
         decisions_zip_sha256=ZIPS["decisions"][1],
@@ -383,8 +435,10 @@ def score(public_root, evaluation_root, read_root, output, *, expected_commit):
         if row["question_id"] not in by_question:
             raise ValueError("unknown original question")
         _, bundle = bundle_for(
-            by_question[row["question_id"]], row["arm"],
-            originals, row["selected"],
+            by_question[row["question_id"]],
+            row["arm"],
+            originals,
+            row["selected"],
         )
         receipt = row["receipt"]
         if (
@@ -425,7 +479,8 @@ def main():
     score_parser.add_argument("raw_answers", type=Path)
     score_parser.add_argument("output", type=Path)
     score_parser.add_argument(
-        "--expected-commit", required=True,
+        "--expected-commit",
+        required=True,
         help="Externally known exact Git generating commit; never infer from READY",
     )
     args = parser.parse_args()
@@ -433,7 +488,10 @@ def main():
         generate(args.public_zips, args.model, args.output)
     else:
         score(
-            args.public_zips, args.evaluation_zips, args.raw_answers, args.output,
+            args.public_zips,
+            args.evaluation_zips,
+            args.raw_answers,
+            args.output,
             expected_commit=args.expected_commit,
         )
 
