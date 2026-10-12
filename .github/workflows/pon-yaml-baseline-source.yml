@@ -1,0 +1,155 @@
+name: PoN YAML baseline source preparation
+on:
+  push:
+    branches: [ci/pon-yaml-baseline-source-20261012]
+permissions:
+  contents: read
+jobs:
+  prepare:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    outputs:
+      candidate: ${{ steps.freeze.outputs.candidate }}
+    env:
+      CARGO_HTTP_MULTIPLEXING: "false"
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+      - name: Prepare the exact continuation, with no advisory exceptions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git show -s --format=%P HEAD)" = 106400a5ffc7ef969dbe0812c1cda869323b59e1
+          git diff --exit-code
+          mkdir -p "$RUNNER_TEMP/pon-yaml-source"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/pon-yaml-source/preparation-source.txt"
+          git diff --binary HEAD^ HEAD -- scripts/check-module-bazel-lock.sh .github/scripts/test_run_bazel_lock_check.py > "$RUNNER_TEMP/pon-yaml-source/owner.patch"
+          git switch --detach 106400a5ffc7ef969dbe0812c1cda869323b59e1
+          git apply --check "$RUNNER_TEMP/pon-yaml-source/owner.patch"
+          git apply "$RUNNER_TEMP/pon-yaml-source/owner.patch"
+          python3 - <<'PY'
+          import ast, pathlib, subprocess
+          p = pathlib.Path('codex-rs/Cargo.toml')
+          original = p.read_text()
+          assert original.count('serde_yaml = "0.9"') == 1
+          p.write_text(original.replace('serde_yaml = "0.9"', 'serde_yaml = { package = "yaml_serde", version = "=0.10.7" }'))
+          for name in ['scripts/hepta_ci_exec.py', 'scripts/test_hepta_ci_exec_identity.py', '.github/scripts/test_run_bazel_lock_check.py']:
+              before = pathlib.Path(name).read_text()
+              subprocess.run(['uv', 'run', '--frozen', '--project', 'scripts', 'ruff', 'format', name], check=True)
+              assert ast.dump(ast.parse(before)) == ast.dump(ast.parse(pathlib.Path(name).read_text())), name
+          PY
+          uv run --frozen --project scripts ruff format --check scripts .github
+          python3 -m unittest discover -s .github/scripts -p 'test_run_bazel*.py' -v 2>&1 | tee "$RUNNER_TEMP/pon-yaml-source/wrappers.log"
+          cargo metadata --manifest-path codex-rs/Cargo.toml --format-version 1 > "$RUNNER_TEMP/pon-yaml-source/metadata.json" 2> "$RUNNER_TEMP/pon-yaml-source/metadata.stderr"
+          python3 - <<'PY'
+          import json, os, pathlib, subprocess, tomllib
+          previous = tomllib.loads(subprocess.check_output(['git', 'show', 'HEAD:codex-rs/Cargo.lock'], text=True))['package']
+          current = tomllib.loads(pathlib.Path('codex-rs/Cargo.lock').read_text())['package']
+          names = {p['name'] for p in current}
+          assert not names.intersection({'unsafe-libyaml', 'serde_yaml', 'serde_yml', 'libyml'}), names.intersection({'unsafe-libyaml', 'serde_yaml', 'serde_yml', 'libyml'})
+          assert [p['version'] for p in current if p['name'] == 'yaml_serde'] == ['0.10.7']
+          assert any(p['name'] == 'libyaml-rs' for p in current)
+          old = {(p['name'], p['version'], p.get('source')): p for p in previous}
+          new = {(p['name'], p['version'], p.get('source')): p for p in current}
+          removed = old.keys() - new.keys()
+          added = new.keys() - old.keys()
+          assert {p[0] for p in removed} == {'serde_yaml', 'unsafe-libyaml'}, removed
+          assert {p[0] for p in added} == {'yaml_serde', 'libyaml-rs'}, added
+          for key in old.keys() & new.keys():
+              if key[2] is not None:
+                  assert old[key] == new[key], key
+          pathlib.Path(os.environ['RUNNER_TEMP'], 'pon-yaml-source', 'graph-delta.json').write_text(json.dumps({'removed': sorted(removed), 'added': sorted(added)}, indent=2) + '\n')
+          PY
+          just bazel-lock-update 2>&1 | tee "$RUNNER_TEMP/pon-yaml-source/bazel-lock-update.log"
+          ./scripts/check-module-bazel-lock.sh 2>&1 | tee "$RUNNER_TEMP/pon-yaml-source/bazel-lock-check.log"
+          just fmt
+          git diff --check
+      - name: Run the unchanged complete dependency policy
+        uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246
+        with:
+          rust-version: 1.96.0
+          manifest-path: ./codex-rs/Cargo.toml
+          command-arguments: --hide-inclusion-graph
+      - name: Freeze the exact source without preparation tooling
+        id: freeze
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import subprocess
+          expected = {'codex-rs/Cargo.toml', 'codex-rs/Cargo.lock', 'MODULE.bazel.lock', 'scripts/hepta_ci_exec.py', 'scripts/test_hepta_ci_exec_identity.py', 'scripts/check-module-bazel-lock.sh', '.github/scripts/test_run_bazel_lock_check.py'}
+          actual = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
+          actual.update(subprocess.check_output(['git', 'ls-files', '--others', '--exclude-standard'], text=True).splitlines())
+          assert actual == expected, (actual - expected, expected - actual)
+          subprocess.run(['git', 'add', '--', *sorted(expected)], check=True)
+          PY
+          git -c user.name='PoN source preparation' -c user.email='ci-source@example.invalid' commit -m 'fix(pon): restore full-baseline formatting and replace unmaintained YAML dependency' -m 'Continue exact106400 and unchanged Chain715a/591d pair. Resolve yaml_serde0.10.7/libyaml-rs through real Cargo metadata; regenerate Bazel lock with its actual owner; preserve all other external locked packages and complete cargo-deny policy. Restore the two observed Ruff failures without AST changes. Preserve real Bazel lock-check failure status and diagnostics, with eight additive shell controls and all prior tests. Source-generation tooling is not in this tree. Full native parser consumers, all original two-repository baselines and independent five-track evidence remain mandatory; no readiness or model authority promotion.'
+          candidate="$(git rev-parse HEAD)"
+          tree="$(git rev-parse HEAD^{tree})"
+          test "$(git show -s --format=%P HEAD)" = 106400a5ffc7ef969dbe0812c1cda869323b59e1
+          git diff --exit-code
+          git diff --cached --exit-code
+          git diff --binary --full-index HEAD^ HEAD > "$RUNNER_TEMP/pon-yaml-source/candidate.patch"
+          git cat-file commit HEAD > "$RUNNER_TEMP/pon-yaml-source/commit.raw"
+          printf '%s\n' "$candidate" > "$RUNNER_TEMP/pon-yaml-source/commit.sha"
+          printf '%s\n' "$tree" > "$RUNNER_TEMP/pon-yaml-source/tree.sha"
+          echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
+          sha256sum "$RUNNER_TEMP/pon-yaml-source/"* > "$RUNNER_TEMP/pon-yaml-source/checksums.txt"
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        if: always()
+        with:
+          name: pon-yaml-source-candidate
+          path: ${{ runner.temp }}/pon-yaml-source
+          if-no-files-found: error
+          retention-days: 14
+  publish:
+    needs: prepare
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 106400a5ffc7ef969dbe0812c1cda869323b59e1
+          fetch-depth: 0
+      - uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
+        with:
+          name: pon-yaml-source-candidate
+          path: ${{ runner.temp }}/pon-yaml-publish
+      - name: Publish only the verified new source branch, without running candidate code
+        shell: bash
+        env:
+          EXPECTED_CANDIDATE: ${{ needs.prepare.outputs.candidate }}
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/pon-yaml-publish"
+          test "$(git rev-parse HEAD)" = 106400a5ffc7ef969dbe0812c1cda869323b59e1
+          test "$(cat "$evidence/commit.sha")" = "$EXPECTED_CANDIDATE"
+          git apply --check --index "$evidence/candidate.patch"
+          git apply --index "$evidence/candidate.patch"
+          test "$(git write-tree)" = "$(cat "$evidence/tree.sha")"
+          candidate="$(git hash-object -t commit -w --stdin < "$evidence/commit.raw")"
+          test "$candidate" = "$EXPECTED_CANDIDATE"
+          test "$(git show -s --format=%P "$candidate")" = 106400a5ffc7ef969dbe0812c1cda869323b59e1
+          test "$(git rev-parse "$candidate^{tree}")" = "$(git write-tree)"
+          python3 - <<'PY'
+          import subprocess
+          expected = {'codex-rs/Cargo.toml', 'codex-rs/Cargo.lock', 'MODULE.bazel.lock', 'scripts/hepta_ci_exec.py', 'scripts/test_hepta_ci_exec_identity.py', 'scripts/check-module-bazel-lock.sh', '.github/scripts/test_run_bazel_lock_check.py'}
+          assert set(subprocess.check_output(['git', 'diff', '--cached', '--name-only'], text=True).splitlines()) == expected
+          PY
+          test -z "$(git ls-remote --heads origin refs/heads/fix/pon-yaml-baseline-generated-20261012)"
+          git push origin "$candidate:refs/heads/fix/pon-yaml-baseline-generated-20261012"
