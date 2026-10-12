@@ -6,6 +6,7 @@ and privileged reference spans are inspected only after all policy answers.
 """
 
 import argparse
+import gc
 from dataclasses import asdict
 import json
 import os
@@ -49,6 +50,10 @@ from stem_head_fit_dynamics import compare_train_head_before_after
 from stem_native_pairwise_shadow import (
     native_pairwise_shadow,
     review_pairwise_shadow,
+)
+from stem_pairwise_reader_comparison import (
+    run_final_shadow_reader,
+    review_final_shadow_reader,
 )
 from stem_native_matched_objectives import (
     matched_objective_shadow,
@@ -200,6 +205,11 @@ def run(staged, ranker_dir, output):
             "no Reader rerun or posthoc threshold search"
         ),
         source_visibility_policy="strict-as-of-before-index-and-every-Encoder-v1",
+        pairwise_shadow_reader_diagnostic=(
+            "final 48; both pairwise shadow arms; test+transfer each 8; "
+            "32 isolated original-frozen-Reader requests after 576 policies; "
+            "labels excluded from generation; Reader generation/prompt unchanged"
+        ),
         no_evidence_reader_diagnostic=(
             "32 post-policy/post-oracle fixed-Reader requests; "
             "no evidence or annotation enters the prompt; "
@@ -985,6 +995,54 @@ def run(staged, ranker_dir, output):
         write(output / "matched-objective-train-fits.json", matched_objective_fits)
         for row in matched_objective_choices:
             append(output / "matched-objective-label-blind-choices.jsonl", row)
+        # SHADOW Reader A/B is an additional research diagnostic, not another
+        # original policy arm. Its 192 choices were sealed without labels.
+        # Run at final 48 TEST+TRANSFER only, BEFORE opening any held-out
+        # answer annotation. Charge all actual calls to an isolated Reader.
+        shadow_reader_load_started = time.perf_counter()
+        shadow_reader_generator = FrozenAnswerGenerator(
+            staged / "reader", expected_inventory=READER
+        )
+        shadow_reader_cold_seconds = time.perf_counter() - shadow_reader_load_started
+        if (
+            shadow_reader_generator.identity != generator.identity
+            or shadow_reader_generator.profile != generator.profile
+        ):
+            raise ValueError("Shadow source Reader changed fixed weights or prompt")
+        shadow_reader_session = ExactReaderCache(shadow_reader_generator)
+
+        def answer_pairwise_shadow(q, evidence, record_key):
+            return shadow_reader_session.answer(
+                q, evidence, record_key, revoked=set()
+            )
+
+        pairwise_shadow_reader_raw = run_final_shadow_reader(
+            qs, pairwise_shadow_choices, attempts,
+            lambda question, selected: selected_window(
+                question, pools[question.identity],
+                initial_features[question.identity], selected, set()
+            ),
+            answer_pairwise_shadow,
+            reader_identity=generator.identity,
+            reader_profile=generator.profile,
+        )
+        for item in pairwise_shadow_reader_raw:
+            append(output / "pairwise-shadow-reader-raw.jsonl", item)
+        pairwise_shadow_reader_usage = dict(
+            actual=shadow_reader_session.summary(),
+            separate_fixed_model_cold_load_seconds=shadow_reader_cold_seconds,
+            original_576_policy_reader_state_unchanged=(
+                reader_session.summary() == previous_reader_accounting
+            ),
+        )
+        if not pairwise_shadow_reader_usage[
+            "original_576_policy_reader_state_unchanged"
+        ]:
+            raise ValueError("Shadow Reader diagnostic modified original policy Reader")
+        if not shadow_reader_generator.quarantined:
+            shadow_reader_generator.verify_frozen()
+        del answer_pairwise_shadow, shadow_reader_session, shadow_reader_generator
+        gc.collect()
         census = validate_census(attempts, plan)
         scored = [
             score_attempt(
@@ -995,6 +1053,18 @@ def run(staged, ranker_dir, output):
             for item in attempts
         ]
         write(output / "scored-policy-attempts.json", scored)
+        pairwise_shadow_reader_review = review_final_shadow_reader(
+            pairwise_shadow_reader_raw, attempts,
+            {
+                q.identity: source_for[q.identity].targets[q.identity]
+                for phase in ("test", "transfer") for q in qs[phase]
+            },
+            diagnose,
+        )
+        write(
+            output / "pairwise-shadow-reader-review.json",
+            pairwise_shadow_reader_review,
+        )
         # Gold document support is read only AFTER the 192 shadow selections.
         pairwise_shadow_report = review_pairwise_shadow(
             qs, pairwise_shadow_fits, pairwise_shadow_choices,
@@ -1228,6 +1298,8 @@ def run(staged, ranker_dir, output):
             shadow_source_provenance=shadow_provenance,
             shadow_source_support_postpolicy=shadow_source_report,
             native_pairwise_shadow_source_only=pairwise_shadow_report,
+            pairwise_shadow_reader_comparison=pairwise_shadow_reader_review,
+            pairwise_shadow_reader_usage=pairwise_shadow_reader_usage,
             matched_objective_shadow_source_only=matched_objective_review,
             census=census,
             **summarize(scored),

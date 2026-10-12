@@ -1469,3 +1469,43 @@ These checks complement the original ordered candidate-window identity
 and actual pool-seal checks, preserving the complete frozen-vs-shadow
 posthoc denominator. They do not measure answer quality or grant
 independent semantic citation/prospective production authority.
+
+## Follow-up: real Reader answers to frozen pairwise-Shadow source choices
+
+The strictly-as-of, byte-pinned original native run at `6235ccfb3ffc...`
+(https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38266549880)
+completed **576/576 original six-arm requests without Reader failures**,
+but every original learned arm retained zero held-out correct-source gain
+relative to frozen. Its 192 label-blind pairwise Shadow decisions used a
+different positive/weak-negative ranking objective and did change source top-1:
+at checkpoint 48, **4/32** Shadow choices flipped per arm, with one additional
+published **document-level weak native support** per arm. The original
+Shadow's `observed_reader_calls` was zero: this is NOT proven answer benefit.
+
+The new `stem_pairwise_reader_comparison.py` fills precisely that gap, with a
+separate, **nonqualifying** Reader-capacity experiment: exactly 32 requests
+for the **final checkpoint 48**, both pairwise Shadow arms, and the predeclared
+**eight test plus eight transfer questions**. No phase or question is selected
+using native answer labels, Shadow source-correctness or prior answer quality.
+All **192 shadow choices and 576 original six-arm decisions** must already be
+sealed; the original Reader's request/call/cache receipts and Head artifacts
+cannot be modified by this diagnostic.
+
+Each Shadow source index is re-materialized only from the query's **same
+strict-as-of frozen candidate pool** using the original source identity
+and integrity-bound window. A fresh isolated Reader instance has exactly the
+same immutable weights, tokenizer prompt and generation budget as the
+original. Raw answers, failed/unavailable requests, request digests, delivered
+source excerpts and actual/cache-hit Reader calls are saved **before the
+new diagnostic reads gold target annotations**. Its CPU model cold-load and
+incremental calls are reported separately.
+
+After all 32 raw outcomes are stored, a separate read-only review computes
+answer-token-F1 differences versus each question's original frozen-Reader
+answer, with both the all-8-per-phase uncertainty bounds and the subset whose
+source actually changed. Any citation marker can be counted structurally,
+but independent semantic entailment precision remains **null**. This
+diagnostic changes neither the original six-arm training nor policy
+denominator; even a positive token-F1 difference does NOT certify semantic
+citation correctness, prospective family generalization or production
+suitability. `production_accepted=false`.

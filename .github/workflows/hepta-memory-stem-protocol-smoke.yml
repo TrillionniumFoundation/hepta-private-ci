@@ -18,6 +18,8 @@ on:
       - "scripts/memory_cell/stem_reader_paired_control.py"
       - "scripts/memory_cell/test_stem_reader_paired_control.py"
       - "scripts/memory_cell/stem_cell_trial.py"
+      - "scripts/memory_cell/stem_pairwise_reader_comparison.py"
+      - "scripts/memory_cell/test_stem_pairwise_reader_comparison.py"
       # Fast, frozen and label-blind 9-arm fixture: catch an obsolete six-arm
       # expectation before a 75-minute pretrained matrix is scheduled.
       - "scripts/memory_cell/locomo_frozen_retrieval.py"
@@ -76,6 +78,7 @@ jobs:
             scripts/memory_cell/stem_reader_zero_evidence.py \
             scripts/memory_cell/stem_reader_paired_control.py \
             scripts/memory_cell/stem_effective_n.py
+          python3 -m compileall -q scripts/memory_cell/stem_pairwise_reader_comparison.py scripts/memory_cell/test_stem_pairwise_reader_comparison.py
           python3 -m unittest -v             test_stem_cell_time_preflight             test_stem_cell_temporal             test_stem_cell_geometry             test_stem_cell_training_probe             test_stem_audit_candidate \
             test_stem_reader_zero_evidence \
             test_stem_reader_paired_control \
@@ -90,7 +93,8 @@ jobs:
             test_stem_score_replay \
             test_locomo_frozen_retrieval \
             test_locomo_budget_frontier \
-            test_locomo_frozen_reader_pair             2>&1 | tee /tmp/stem-protocol/tests.log
+            test_locomo_frozen_reader_pair \
+            test_stem_pairwise_reader_comparison             2>&1 | tee /tmp/stem-protocol/tests.log
       - name: Retain source, failure logs and manifest
         if: always()
         run: |
@@ -102,6 +106,7 @@ jobs:
           cp scripts/memory_cell/stem_cell_training_probe.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_audit_candidate.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_cell_trial.py /tmp/stem-protocol/source/
+          cp scripts/memory_cell/stem_pairwise_reader_comparison.py scripts/memory_cell/test_stem_pairwise_reader_comparison.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/stem_score_replay.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/test_stem_score_replay.py /tmp/stem-protocol/source/
           cp scripts/memory_cell/locomo_frozen_retrieval.py /tmp/stem-protocol/source/
