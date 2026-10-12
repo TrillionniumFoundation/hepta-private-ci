@@ -23,6 +23,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+use crate::stem_artifact_cas::VerifiedStemCasArtifactsV1;
+
 const MAX_MODELS: usize = 8;
 const MAX_ACTIVE_REQUESTS: usize = 256;
 const MAX_TOKENS: u32 = 1_000_000;
@@ -742,6 +744,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
 pub struct VerifiedStemFeatureDispatchV1<'a> {
     pub source: &'a StemFeatureRefV1,
     pub access: &'a StemAccessContextV1,
+    /// Actual read-and-verified CAS bytes for the selected four-role Stem.
+    /// Its private fields cannot be manufactured from unverified digests.
+    pub verified_artifacts: &'a VerifiedStemCasArtifactsV1,
     pub selected_head: StemHeadBindingV1,
     pub feature_vector_q24: &'a [i64],
     pub authorization: WorkerRequest,
@@ -884,10 +889,19 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         let VerifiedStemFeatureDispatchV1 {
             source,
             access,
+            verified_artifacts,
             selected_head,
             feature_vector_q24,
             authorization,
         } = proposed;
+        // Fail closed before claiming the final-use effect: a signed digest
+        // declaration without actual bytes in the protected host CAS is not
+        // sufficient to dispatch even an otherwise valid Head request.
+        if !verified_artifacts.matches_source(source)
+            || verified_artifacts.authority().grants_any()
+        {
+            return Err(Error::FeatureContract);
+        }
         let binding = self.expected_stem_final_use_binding_v1(
             now_ms,
             source,
