@@ -62,6 +62,19 @@ class WorkflowContextContractTests(unittest.TestCase):
         self.assertIn("name: Non-waivable dependency security gate", gate)
         self.assertIn("matrix-sdk-sqlite-*/**", self.source)
 
+    def test_integrated_secure_cargo_metadata_remains_locked_and_non_authorizing(self):
+        source = self.source
+        self.assertIn('sqlite_arm: [audit_integrated_secure_lock]', source)
+        self.assertIn('git worktree add --detach "$STAGE" "$SOURCE_SHA"', source)
+        self.assertIn('cargo +1.96.0 metadata --locked', source)
+        self.assertIn('versions[\'anymap2\'] or not versions[\'anymap3\']', source)
+        self.assertIn('versions[\'matrix-sdk-crypto\'] != [\'0.19.1\']', source)
+        self.assertIn('Integrated exact Cargo.lock metadata failed (not waived).', source)
+        self.assertIn('matrix_dependency_gate.py --root . --require-safe', source)
+        self.assertNotIn('continue-on-error: true', source)
+        self.assertNotIn('cargo deny --disable', source)
+        self.assertNotIn('cargo update --aggressive', source)
+
     def test_accepted_triggers_and_pinned_upstream_candidates(self):
         self.assertIn("  workflow_dispatch:", self.source)
         self.assertIn("  pull_request:", self.source)
