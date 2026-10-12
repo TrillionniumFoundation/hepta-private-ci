@@ -201,10 +201,22 @@ fn native_and_legacy_wal_fsync_emit_non_authorizing_phase_metrics() {
         .with_metrics_sink(sink.clone());
     assert!(owner.production_metrics_ready());
     owner.submit(100, request()).expect("legacy fsync");
+    owner
+        .reserve_native(
+            native::NativeRequest {
+                request_id: "native.1".to_string(),
+                principal_id: "principal.1".to_string(),
+                worker_generation: 2,
+                model: "model".to_string(),
+                payload_digest: "a".repeat(64),
+            },
+            1,
+        )
+        .expect("native fsync");
     assert!(owner.flush_production_metrics());
     {
         let events = sink.0.lock().unwrap();
-        assert_eq!(events.len(), 1);
+        assert_eq!(events.len(), 2);
         assert_eq!(events[0].phase, PhaseMetricKindV1::Wal);
         assert!(events[0].succeeded);
         assert!(!events[0].scope_digest.is_zero());
@@ -213,7 +225,48 @@ fn native_and_legacy_wal_fsync_emit_non_authorizing_phase_metrics() {
     drop(owner);
     let reopened = DurableInferenceControl::open(&path, 32).unwrap();
     assert_eq!(reopened.get("request.1").unwrap().revision, 1);
+    assert!(reopened.native_record("native.1").is_some());
     assert!(!reopened.production_metrics_ready());
+    drop(reopened);
+    fs::remove_file(path).unwrap();
+}
+
+#[derive(Debug)]
+struct RejectWalMetrics;
+
+impl PhaseMetricSinkV1 for RejectWalMetrics {
+    fn record(
+        &self,
+        _event: PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+    }
+
+    fn healthy(&self) -> bool {
+        false
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+    }
+}
+
+#[test]
+fn evidence_outage_is_not_an_authorization_failure_or_wal_retry() {
+    let path = path("wal-telemetry-failed");
+    let mut owner = DurableInferenceControl::open(&path, 32)
+        .unwrap()
+        .with_metrics_sink(std::sync::Arc::new(RejectWalMetrics));
+    assert!(!owner.production_metrics_ready());
+    assert_eq!(owner.submit(100, request()).unwrap().revision, 1);
+    assert!(!owner.production_metrics_ready());
+    assert!(!owner.flush_production_metrics());
+    let bytes = fs::read(&path).unwrap();
+    assert_eq!(owner.submit(100, request()).unwrap().revision, 1);
+    assert_eq!(fs::read(&path).unwrap(), bytes, "no duplicate WAL append");
+    drop(owner);
+    let reopened = DurableInferenceControl::open(&path, 32).unwrap();
+    assert_eq!(reopened.get("request.1").unwrap().revision, 1);
     drop(reopened);
     fs::remove_file(path).unwrap();
 }
