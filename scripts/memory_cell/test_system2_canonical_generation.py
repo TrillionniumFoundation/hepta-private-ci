@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import patch
 
 from system2_canonical_generation import canonical_successors
-from system2_canonical_trial import BUDGETS, PROFILES, evaluate, run, solve_one, tasks
+from system2_canonical_trial import BUDGETS, evaluate, run, solve_one, tasks
 from system2_resumable_search import SearchSession
 from system2_verified_search import digest, state_key, successors, verify
 
