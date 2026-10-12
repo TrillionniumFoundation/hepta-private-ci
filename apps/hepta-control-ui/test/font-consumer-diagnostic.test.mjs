@@ -104,3 +104,66 @@ for(const [name,options]of [
  ['out-of-bounds pointer',{ptr:65535}],['zero length',{len:0}],['fractional length',{len:1.5}],
  ['oversized length',{len:256*1024+1}],['shared memory',{shared:true}],
 ])test('snapshot rejects '+name,async()=>{await assert.rejects(readUsingMemory(options));});
+
+import { createHash as compositionHash } from 'node:crypto';
+import { readComposedMakepadFontSources } from './support/makepad-font-composition.mjs';
+const compositionSha = bytes => compositionHash('sha256').update(bytes).digest('hex');
+function compositionFixture() {
+ const fontPaths=['src/text/fonts.rs','src/shader/draw_text.rs','src/text/rasterizer.rs'];
+ const consumerPaths=['makepad-draw/src/shader/draw_text.rs','makepad-draw/src/text/font.rs','makepad-draw/src/text/loader.rs','makepad-platform/src/hepta_font_consumer.rs','makepad-platform/src/lib.rs','makepad-platform/src/script/res.rs'];
+ const sources=new Map(fontPaths.map(path=>[`makepad-draw/${path}`,Buffer.from(`fonts:${path}`)]));
+ const fontPatch=Buffer.from('pinned font patch'),consumerPatch=Buffer.from('pinned consumer patch');
+ const revision='337566c8b25d47f7e4fff6a202157b65bf183330';
+ const fontIdentity={upstream:revision,patchSha256:compositionSha(fontPatch),files:fontPaths.map(path=>({path,beforeSha256:compositionSha(`upstream:${path}`),afterSha256:compositionSha(sources.get(`makepad-draw/${path}`))}))};
+ const consumerIdentity={upstream:revision,patchSha256:compositionSha(consumerPatch),files:consumerPaths.map(path=>{
+  const beforeSha256=path.endsWith('/hepta_font_consumer.rs')?null:compositionSha(sources.get(path)??`upstream:${path}`);
+  sources.set(path,Buffer.from(`consumer:${path}`));
+  return {path,beforeSha256,afterSha256:compositionSha(sources.get(path))};
+ })};
+ return {revision,fontIdentity,fontPatch,consumerIdentity,consumerPatch,sources,readSource:async path=>{
+  assert.ok(sources.has(path),`Missing source: ${path}`);return sources.get(path);
+ }};
+}
+test('ordered font then consumer overlays retain all original probe sources',async()=>{
+ const result=await readComposedMakepadFontSources(compositionFixture());
+ assert.deepEqual([...result.keys()],['src/text/fonts.rs','src/shader/draw_text.rs','src/text/rasterizer.rs']);
+ assert.equal(result.get('src/shader/draw_text.rs'),'consumer:makepad-draw/src/shader/draw_text.rs');
+});
+for(const key of ['fontPatch','consumerPatch'])test(`composition rejects tampered ${key}`,async()=>{
+ const x=compositionFixture();x[key]=Buffer.from('tampered');await assert.rejects(readComposedMakepadFontSources(x),/Wrong overlay patch bytes/);
+});
+for(const key of ['fontIdentity','consumerIdentity'])test(`composition rejects wrong ${key} revision`,async()=>{
+ const x=compositionFixture();x[key].upstream='wrong';await assert.rejects(readComposedMakepadFontSources(x),/Wrong pinned Makepad revision/);
+});
+test('composition rejects consumer applied before the font overlay',async()=>{
+ const x=compositionFixture();x.consumerIdentity.files[0].beforeSha256=x.fontIdentity.files[1].beforeSha256;
+ await assert.rejects(readComposedMakepadFontSources(x),/Wrong ordered overlay preimage/);
+});
+test('composition rejects an unapplied consumer layer',async()=>{
+ const x=compositionFixture();x.sources.set('makepad-draw/src/shader/draw_text.rs',Buffer.from('fonts:src/shader/draw_text.rs'));
+ await assert.rejects(readComposedMakepadFontSources(x),/Wrong composed source/);
+});
+test('composition rejects an unapplied original font layer',async()=>{
+ const x=compositionFixture();x.sources.set('makepad-draw/src/text/fonts.rs',Buffer.from('upstream:src/text/fonts.rs'));
+ await assert.rejects(readComposedMakepadFontSources(x),/Wrong composed source/);
+});
+test('composition rejects a missing consumer component',async()=>{
+ const x=compositionFixture();x.sources.delete('makepad-platform/src/hepta_font_consumer.rs');
+ await assert.rejects(readComposedMakepadFontSources(x),/Missing source/);
+});
+test('composition rejects an existing-file preimage for the new recorder',async()=>{
+ const x=compositionFixture();x.consumerIdentity.files[3].beforeSha256='a'.repeat(64);
+ await assert.rejects(readComposedMakepadFontSources(x),/must be a new file/);
+});
+for(const mutation of ['missing','duplicate','reordered','foreign'])test(`composition rejects ${mutation} path inventory`,async()=>{
+ const x=compositionFixture(),files=x.consumerIdentity.files;
+ if(mutation==='missing')files.pop();
+ if(mutation==='duplicate')files[1]={...files[0]};
+ if(mutation==='reordered')[files[0],files[1]]=[files[1],files[0]];
+ if(mutation==='foreign')files[0].path='../foreign.rs';
+ await assert.rejects(readComposedMakepadFontSources(x));
+});
+for(const path of compositionFixture().sources.keys())test(`composition rejects changed final source ${path}`,async()=>{
+ const x=compositionFixture();x.sources.set(path,Buffer.from('changed final source'));
+ await assert.rejects(readComposedMakepadFontSources(x),/Wrong composed source/);
+});

@@ -3,17 +3,16 @@
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
-import { createHash } from 'node:crypto';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readComposedMakepadFontSources } from './support/makepad-font-composition.mjs';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const draw = process.env.HEPTA_MAKEPAD_DRAW_SOURCE
   ?? join(root, 'rust/target/robrix-build/makepad-draw');
 const rustc = process.env.HEPTA_RUSTC ?? 'rustc';
-const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 let temporary;
 let source;
 
@@ -35,17 +34,19 @@ before(async () => {
   const patchRoot = join(root, 'rust/robrix-ui/patches');
   const identity = JSON.parse(await readFile(join(patchRoot, 'makepad-wasm-fonts.json'), 'utf8'));
   const upstream = JSON.parse(await readFile(join(root, 'rust/robrix-ui/UPSTREAM.json'), 'utf8'));
-  assert.equal(identity.upstream, upstream.makepad.revision);
-  assert.equal(sha(await readFile(join(patchRoot, 'makepad-wasm-fonts.patch'))), identity.patchSha256);
-  assert.deepEqual(identity.files.map(file => file.path), [
-    'src/text/fonts.rs', 'src/shader/draw_text.rs', 'src/text/rasterizer.rs',
-  ]);
-  const sources = new Map();
-  for (const file of identity.files) {
-    const bytes = await readFile(join(draw, file.path));
-    assert.equal(sha(bytes), file.afterSha256, `Wrong patched source: ${file.path}`);
-    sources.set(file.path, bytes.toString('utf8'));
-  }
+  const consumer = JSON.parse(await readFile(join(patchRoot, 'makepad-font-consumer.json'), 'utf8'));
+  const sources = await readComposedMakepadFontSources({
+    revision: upstream.makepad.revision,
+    fontIdentity: identity,
+    fontPatch: await readFile(join(patchRoot, 'makepad-wasm-fonts.patch')),
+    consumerIdentity: consumer,
+    consumerPatch: await readFile(join(patchRoot, 'makepad-font-consumer.patch')),
+    readSource: path => {
+      const [component, ...relative] = path.split('/');
+      const directory = component === 'makepad-draw' ? draw : join(draw, '..', 'makepad-platform');
+      return readFile(join(directory, ...relative));
+    },
+  });
   const rasterizer = sources.get('src/text/rasterizer.rs');
   const text = sources.get('src/shader/draw_text.rs');
   const marker = '} else if cx\n';
