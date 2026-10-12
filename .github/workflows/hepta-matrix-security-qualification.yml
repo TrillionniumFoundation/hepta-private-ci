@@ -217,7 +217,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        sqlite_arm: [retain_legacy_sqlite_patch, use_upstream_sqlite]
+        # The combined #1562 source already has the reviewed 0.19.1 lock.
+        # Old 0.18->0.19 migration arms remain available as source tests on
+        # #1495; do not reintroduce the vulnerable 0.18 graph in this PR.
+        sqlite_arm: [audit_integrated_secure_lock]
     env:
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       # github and matrix are valid here; runner.temp is not available at job.env.
@@ -245,7 +248,7 @@ jobs:
         run: |
           set -euo pipefail
           set +e
-          timeout 480 cargo +1.96.0 metadata --manifest-path "$STAGE/codex-rs/Cargo.toml" --format-version=1 > "$RUNNER_TEMP/hepta-matrix-metadata.json" 2> "$RUNNER_TEMP/hepta-matrix-metadata-stderr.log"
+          timeout 480 cargo +1.96.0 metadata --locked --manifest-path "$STAGE/codex-rs/Cargo.toml" --format-version=1 > "$RUNNER_TEMP/hepta-matrix-metadata.json" 2> "$RUNNER_TEMP/hepta-matrix-metadata-stderr.log"
           result=$?
           set -e
           CARGO_RESOLUTION_STATUS="$result" python3 - <<'PY'
@@ -270,12 +273,26 @@ jobs:
                'hepta_e2ee_wal_recovery_verified':False}
           (root/'hepta-matrix-resolution-result.json').write_text(json.dumps(out,indent=2,sort_keys=True)+'\n')
           print(json.dumps(out,indent=2,sort_keys=True))
+          # A current integrated candidate must prove the real lock, not
+          # merely show that an old version could resolve in isolation.
+          if os.environ['RESOLVE_ARM']=='audit_integrated_secure_lock':
+              if (status != 0 or versions['matrix-sdk'] != ['0.19.1']
+                      or versions['matrix-sdk-crypto'] != ['0.19.1']
+                      or versions['matrix-sdk-sqlite'] != ['0.19.1']
+                      or versions['libsqlite3-sys'] != ['0.38.2']
+                      or versions['anymap2'] or not versions['anymap3']):
+                  raise SystemExit('integrated pinned Cargo graph is not the reviewed secure graph')
           PY
           if [ "$result" != 0 ]; then
             echo "Pinned candidate resolver failed (not waived): exit $result"
             tail -n 90 "$RUNNER_TEMP/hepta-matrix-metadata-stderr.log"
           fi
-          # Diagnostic only. This job never relaxes the separate hard gate.
+          if [ "$RESOLVE_ARM" = "audit_integrated_secure_lock" ] && [ "$result" != 0 ]; then
+            echo "Integrated exact Cargo.lock metadata failed (not waived)."
+            exit "$result"
+          fi
+          # Diagnostic evidence still cannot replace live cargo-deny, E2EE,
+          # SQLite WAL or the independent Matrix SDK compatibility job.
       - name: Upload immutable research diagnostics
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
