@@ -135,7 +135,7 @@ class DecodeBudgetTests(unittest.TestCase):
         self.assertTrue(result['copied_target_without_path'])
 
     def test_archive_sha_tampering_is_fatal(self):
-        p=self.require_archive()
+        self.require_archive()
         with tempfile.TemporaryDirectory() as t:
             copy_path=Path(t)/'changed.zip'
             raw=ARCHIVE.read_bytes()
