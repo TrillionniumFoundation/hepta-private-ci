@@ -17,9 +17,11 @@
    against its own live trust distribution; a link issued before the signed
    terminal Outcome's finalization is rejected. The cohort is reread before
    returning a non-authorizing NeuronTrialObservedTickLinkV1.
-5. AgentdNeuronOwner::read_observer_linked_tick_v1 checks the exact current
-   Journal/Witness before AND after this Ledger read. A changed tick checkpoint
-   or withdrawn source fails closed.
+5. AgentdNeuronOwner::read_observer_linked_tick_v1 first compares the
+   entire supplied observation with the most recent successful observation
+   retained privately by that same Agentd owner, then checks the exact current
+   Journal/Witness before AND after the Ledger read. An externally rehashed
+   observation, changed checkpoint or withdrawn source fails closed.
 
 Every returned digest is an integrity commitment; this code does not create
 an independent evidence issuer, sign any production assertion, disclose
@@ -41,8 +43,12 @@ observation content/option order to the Ledger Decision, correlate the
 real Supervisor selected Cell and CNS route, independently verify final-use
 and physical Artifact CAS, then run two genuinely elapsed future windows
 through ProductEvaluationRunnerV1 with complete NDU/cost/recovery evidence.
-Current tick revalidation is intentionally invalid after a later tick;
-it cannot be used to forge archived no-change outcomes.
+Current tick revalidation is intentionally invalid after any subsequent
+direct tick attempt, failed execution, or process restart. The owner retains
+only the most recent successfully witnessed observation in memory. A digest
+that is internally self-consistent but was not produced by this exact owner
+cannot be substituted. This short-lived cache is not a crash-durable
+historical observation log and cannot prove archived no-change outcomes.
 
 Run exact-SHA Cargo check/test/Rustfmt/Clippy for hepta-learning-ledger,
 hepta-agentd and the independent Neuron trial CI. No production

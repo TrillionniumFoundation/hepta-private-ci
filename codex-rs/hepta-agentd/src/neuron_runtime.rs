@@ -63,6 +63,9 @@ where
 {
     runtime: NeuronRuntime<W>,
     inference_control: P,
+    // Never accept a caller-rehashed tick as evidence that THIS owner executed
+    // it. The cache is process-local and intentionally NOT historical proof.
+    issued_tick: Option<AgentdNeuronTickObservationV1>,
 }
 
 impl<W, P> AgentdNeuronOwner<W, P>
@@ -74,6 +77,7 @@ where
         Self {
             runtime,
             inference_control,
+            issued_tick: None,
         }
     }
 
@@ -81,6 +85,9 @@ where
         &mut self,
         input: NeuronTickInputV1,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        // Also invalidate on failed/direct ticks and uncertain post-commit CAS.
+        // No earlier diagnostic may be reused after ANY attempted successor.
+        self.issued_tick = None;
         let mut model = InferenceControlModelPort::new(&mut self.inference_control);
         self.runtime.tick(&mut model, input)
     }
@@ -101,6 +108,9 @@ where
         // A failed post-commit acknowledgement cannot create a success report.
         let binding = self.read_local_checkpoint_binding_v1()?;
         let observation = from_actual_committed_tick(&input, input_digest, &output, &binding)?;
+        // Record only a successfully checked result from THIS exclusive owner,
+        // not an independently supplied digest or caller-constructed receipt.
+        self.issued_tick = Some(observation.clone());
         Ok((output, observation))
     }
 
@@ -111,9 +121,9 @@ where
         &self,
         prior: &AgentdNeuronTickObservationV1,
     ) -> Result<(), NeuronRuntimeError> {
+        require_owner_issued_tick(self.issued_tick.as_ref(), prior)?;
         let current = self.read_local_checkpoint_binding_v1()?;
-        if !prior.validate_integrity()
-            || prior.local_checkpoint_binding_digest != current.binding_digest
+        if prior.local_checkpoint_binding_digest != current.binding_digest
             || prior.checkpoint_after != current.anchor.checkpoint_digest
             || prior.logical_sequence != current.anchor.sequence
         {
@@ -185,6 +195,19 @@ where
     pub fn runtime(&self) -> &NeuronRuntime<W> {
         &self.runtime
     }
+}
+
+/// Self-consistent digests are insufficient: only the most recently observed
+/// success, retained inside the actual process-local Agentd owner, may be
+/// linked to an Observer. A restarted host has no retained tick by design.
+fn require_owner_issued_tick(
+    retained: Option<&AgentdNeuronTickObservationV1>,
+    presented: &AgentdNeuronTickObservationV1,
+) -> Result<(), NeuronRuntimeError> {
+    if retained != Some(presented) || !presented.validate_integrity() {
+        return Err(NeuronRuntimeError::ModelBindingMismatch);
+    }
+    Ok(())
 }
 
 #[cfg(test)]

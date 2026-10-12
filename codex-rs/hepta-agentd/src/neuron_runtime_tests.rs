@@ -85,3 +85,62 @@ fn agentd_observer_tick_join_requires_live_neuron_and_ledger_owners() {
     let _read =
         AgentdNeuronOwner::<StubWitness, StubInferenceControl>::read_observer_linked_tick_v1;
 }
+
+#[test]
+fn caller_rehashed_tick_cannot_impersonate_last_agentd_owned_observation() {
+    use codex_hepta_types::AuthorityPosture;
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::Generation;
+    use codex_hepta_types::StableId;
+
+    use crate::AgentdNeuronTickObservationV1;
+
+    fn digest(label: &str) -> Digest32 {
+        Digest32::of_bytes(label.as_bytes())
+    }
+
+    let mut observed = AgentdNeuronTickObservationV1 {
+        tick_id: StableId::new("owner-tick-1").unwrap(),
+        input_digest: digest("actual-input"),
+        input_feature_digest: digest("features"),
+        scope_digest: digest("scope"),
+        objective_digest: digest("objective"),
+        ndu_snapshot_digest: digest("ndu"),
+        generation: Generation::new(1).unwrap(),
+        logical_sequence: 1,
+        checkpoint_before: Digest32::ZERO,
+        checkpoint_after: digest("checkpoint"),
+        local_checkpoint_binding_digest: digest("acknowledged-local-state"),
+        model_runtime_digest: digest("loaded-model"),
+        observed_output_digest: digest("actual-result"),
+        execution_micros: 42,
+        queue_age_micros: 1,
+        observed_memory_bytes: 4096,
+        transient_allocation_bytes: 1024,
+        confidence_ppm: 800_000,
+        ood_ppm: 1_000,
+        abstain: false,
+        diagnostic_digest: Digest32::ZERO,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    observed.diagnostic_digest = observed.computed_digest();
+    assert!(observed.validate_integrity());
+    assert!(super::require_owner_issued_tick(None, &observed).is_err());
+    assert!(super::require_owner_issued_tick(Some(&observed), &observed).is_ok());
+
+    let mut forged = observed.clone();
+    forged.input_digest = digest("forged-input");
+    forged.diagnostic_digest = forged.computed_digest();
+    assert!(forged.validate_integrity());
+    assert!(super::require_owner_issued_tick(Some(&observed), &forged).is_err());
+
+    let mut forged = observed.clone();
+    forged.observed_output_digest = digest("forged-output");
+    forged.diagnostic_digest = forged.computed_digest();
+    assert!(forged.validate_integrity());
+    assert!(super::require_owner_issued_tick(Some(&observed), &forged).is_err());
+
+    let mut malformed = observed.clone();
+    malformed.diagnostic_digest = Digest32::ZERO;
+    assert!(super::require_owner_issued_tick(Some(&malformed), &malformed).is_err());
+}
