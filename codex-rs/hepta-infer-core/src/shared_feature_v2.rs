@@ -20,6 +20,7 @@ const Q24_ABSOLUTE_LIMIT: i64 = 8 * (1 << 24);
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct SharedFeatureIdentityV2 {
+    pub scope_id: StableId,
     pub principal_id: StableId,
     pub purpose_id: StableId,
     pub generation: Generation,
@@ -47,8 +48,8 @@ impl SharedFeatureIdentityV2 {
         {
             return Err(SharedFeatureErrorV2::InvalidIdentity);
         }
-        let mut bytes = b"hepta.infer.shared-feature-identity.v2".to_vec();
-        for id in [&self.principal_id, &self.purpose_id] {
+        let mut bytes = b"hepta.infer.shared-feature-identity.scope-bound.v2".to_vec();
+        for id in [&self.scope_id, &self.principal_id, &self.purpose_id] {
             let raw = id.as_str().as_bytes();
             bytes.extend_from_slice(&(raw.len() as u32).to_be_bytes());
             bytes.extend_from_slice(raw);
@@ -96,7 +97,7 @@ impl fmt::Display for SharedFeatureErrorV2 {
 impl StdError for SharedFeatureErrorV2 {}
 
 /// The identity + full bytes are checked even when a digest key matches.
-#[derive(Debug)]
+#[derive(Clone, Debug)]
 pub struct SharedFeatureCacheV2 {
     maximum_entries: usize,
     maximum_bytes: usize,
@@ -258,6 +259,7 @@ mod tests {
 
     fn identity(principal: &str, purpose: &str, epoch: u64) -> SharedFeatureIdentityV2 {
         SharedFeatureIdentityV2 {
+            scope_id: StableId::new("scope.a".to_string()).expect("scope"),
             principal_id: StableId::new(principal.to_string()).expect("principal"),
             purpose_id: StableId::new(purpose.to_string()).expect("purpose"),
             generation: Generation::new(5).expect("generation"),
@@ -299,6 +301,24 @@ mod tests {
                 .is_none()
         );
         assert!(cache.get(100, &id).expect("lookup").is_none());
+    }
+
+    #[test]
+    fn same_principal_in_different_scopes_never_aliases_one_snapshot() {
+        let mut cache = SharedFeatureCacheV2::new(3, 1024).expect("cache");
+        let original = identity("principal.a", "purpose.read", 2);
+        let stored = cache
+            .insert(10, original.clone(), 100, Arc::from([12_i64, 13]))
+            .expect("insert");
+        let mut other = original.clone();
+        other.scope_id = StableId::new("scope.b".to_string()).expect("scope");
+        assert_ne!(
+            original.digest().expect("digest"),
+            other.digest().expect("digest")
+        );
+        assert!(cache.get(20, &other).expect("different scope").is_none());
+        assert!(cache.get(20, &original).expect("same scope").is_some());
+        assert_eq!(stored.identity.scope_id, original.scope_id);
     }
 
     #[test]
