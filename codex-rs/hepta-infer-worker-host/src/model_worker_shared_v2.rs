@@ -215,12 +215,10 @@ fn validate_batch_partition_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Res
 /// The minimum memory needed for independent Q24 output buffers across the
 /// entire batch. Immutable input features are not re-materialized per Cell.
 /// This is a conservative admission floor, NOT measured backend RSS/scratch.
-fn minimum_batch_output_bytes_v2(
-    requests: &[SharedNeuronFeatureRequestV2],
-) -> Result<u64, Error> {
+fn minimum_batch_output_bytes_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<u64, Error> {
     requests.iter().try_fold(0_u64, |total, item| {
-        let width = u64::try_from(item.expected_output_width)
-            .map_err(|_| Error::ArithmeticOverflow)?;
+        let width =
+            u64::try_from(item.expected_output_width).map_err(|_| Error::ArithmeticOverflow)?;
         let bytes = width
             .checked_mul(2)
             .and_then(|elements| elements.checked_mul(8))
