@@ -64,3 +64,36 @@ own exact-source GitHub Actions run finishes. The source cohorts remain
 two published conversation-family proxies, not independently authenticated
 unseen sources; semantic citation entailment, p95 production cost, dollar/
 energy TCO and production acceptance remain unknown.
+
+## Frozen k4/k8 paired quality-versus-cost interpretation (no promotion)
+
+The evaluation is a **pre-existing 16-question / 32-condition paired
+experiment**, not sixteen independent source families. The results may be
+interpreted only once the frozen Reader has generated immutable raw outputs
+and a separate scorer has opened the original evaluation labels.
+
+`locomo_reader_value_gate.py` accepts only a **separately supplied,
+externally SHA-256-pinned, complete original score report**. It reconstructs
+the worst-case bounds over **all 16 planned questions**, cross-checks
+per-arm scored denominators, the paired intersection, success/failure cost
+counts, exact family-proxy matched rows, and actual prompt-token / source-byte
+deltas. In fully observed pairs, the measured quality delta must also equal
+the difference of the two complete, original arm means. A lower-priced
+answer cannot be invented by excluding a failed model call or calling
+delivered UTF-8 bytes "prompt tokens".
+
+The possible descriptive results are (1) incomplete paired evidence,
+(2) no positive all-planned QA delta lower bound, (3) an exploratory QA
+difference with more actual Reader input tokens, or (4) an exploratory
+QA difference without greater prompt tokens. **No case automatically
+selects k8 or k4 as a serving policy**, and neither two public conversation
+family proxies nor automatic token-F1 constitute an independent
+generalization or a semantically adjudicated citation.
+
+A new lightweight GitHub Actions workflow tests this gate with synthetic
+counterexamples, **without loading Qwen, opening benchmark answers, running
+retrieval, updating weights or triggering another expensive Reader job**.
+The actual historical Reader result can be evaluated only after its
+scored artifact exists and its SHA-256 is independently pinned. Missing
+actual results are neither projected as zero cost nor called success.
+`scale_out_permitted=false` and `production_accepted=false` throughout.
