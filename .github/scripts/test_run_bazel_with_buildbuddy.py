@@ -1,17 +1,208 @@
 #!/usr/bin/env python3
 
 import json
+import contextlib
+import io
 import os
 import subprocess
 import sys
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest import mock
 
 import run_bazel_with_buildbuddy
 
 
 class RunBazelWithBuildBuddyTest(unittest.TestCase):
+    def test_raw_target_patterns_still_reject_embedded_and_trailing_line_breaks(
+        self,
+    ) -> None:
+        for target in ["//bad\rtarget", "//bad\ntarget", "//bad:target\r"]:
+            with self.subTest(target=target):
+                with self.assertRaisesRegex(ValueError, "cannot contain line breaks"):
+                    with run_bazel_with_buildbuddy.windows_target_patterns(
+                        ["bazel", "build", "--", target], {"RUNNER_OS": "Windows"}
+                    ):
+                        self.fail("invalid target must not reach native Bazel")
+
+    def test_explicit_pattern_file_is_not_replaced_or_deleted_by_transport(
+        self,
+    ) -> None:
+        with TemporaryDirectory() as directory:
+            pattern_file = Path(directory) / "caller targets.txt"
+            pattern_file.write_text("//caller:original\n", encoding="utf-8")
+            args = [
+                "bazel",
+                "build",
+                f"--target_pattern_file={pattern_file}",
+                "--",
+                "//caller:extra",
+            ]
+            with run_bazel_with_buildbuddy.windows_target_patterns(
+                args, {"RUNNER_OS": "Windows"}
+            ) as (command, owned):
+                self.assertEqual(command, args)
+                self.assertIsNone(owned)
+            self.assertEqual(
+                pattern_file.read_text(encoding="utf-8"), "//caller:original\n"
+            )
+
+    def test_wrapper_argument_file_round_trip_preserves_all_option_bytes(self) -> None:
+        arguments = [
+            "build",
+            "",
+            '--define=quoted "value"',
+            r"C:\a b\c\\",
+            "//路径:target",
+        ]
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "arguments with spaces.nul"
+            path.write_bytes(
+                b"\0".join(value.encode("utf-8") for value in arguments) + b"\0"
+            )
+            self.assertEqual(
+                run_bazel_with_buildbuddy.invocation_args(
+                    ["--wrapper-args-file", str(path)]
+                ),
+                arguments,
+            )
+            for encoded in (b"build", b"", b"\xff\0"):
+                path.write_bytes(encoded)
+                with self.subTest(encoded=encoded), self.assertRaises(ValueError):
+                    run_bazel_with_buildbuddy.invocation_args(
+                        ["--wrapper-args-file", str(path)]
+                    )
+            with self.assertRaises(ValueError):
+                run_bazel_with_buildbuddy.invocation_args(
+                    ["--wrapper-args-file", str(path), "extra"]
+                )
+
+    def test_target_file_rejects_patterns_the_pinned_reader_would_change(self) -> None:
+        lossy = [
+            "",
+            " ",
+            "#comment",
+            "//pkg:target#suffix",
+            " //pkg:t",
+            "//pkg:t\t",
+            "\x1f//pkg:t",
+            "//pkg:t\0suffix",
+        ]
+        for target in lossy:
+            with (
+                self.subTest(target=target),
+                self.assertRaisesRegex(ValueError, "losslessly"),
+            ):
+                with run_bazel_with_buildbuddy.windows_target_patterns(
+                    ["bazel", "build", "--", target], {"RUNNER_OS": "Windows"}
+                ):
+                    self.fail("lossy pattern must not reach Bazel")
+        targets = [
+            "//路径 with spaces:target",
+            "-//excluded:target",
+            "//pkg:nonbreaking\u00a0",
+        ]
+        with run_bazel_with_buildbuddy.windows_target_patterns(
+            ["bazel", "build", "--", *targets], {"RUNNER_OS": "Windows"}
+        ) as (_, path):
+            internal = path.read_bytes().decode("latin-1")
+            java_trim = "".join(chr(code) for code in range(0x21))
+            parsed = [
+                line.split("#", 1)[0].strip(java_trim) for line in internal.split("\n")
+            ]
+            actual = [line.encode("latin-1").decode("utf-8") for line in parsed if line]
+            self.assertEqual(actual, targets)
+        self.assertFalse(path.exists())
+
+    def test_target_file_cleanup_covers_write_and_close_errors(self) -> None:
+        for phase in ("write", "close"):
+            with self.subTest(phase=phase), TemporaryDirectory() as directory:
+                output = run_bazel_with_buildbuddy.NamedTemporaryFile(
+                    mode="w", encoding="utf-8", dir=directory, delete=False
+                )
+                path = Path(output.name)
+                manager = mock.MagicMock()
+                manager.__enter__.return_value = output
+
+                def close_output(*unused):
+                    output.close()
+                    if phase == "close":
+                        raise OSError("fixture close failure")
+
+                manager.__exit__.side_effect = close_output
+                writer = (
+                    mock.patch.object(
+                        output,
+                        "writelines",
+                        side_effect=OSError("fixture write failure"),
+                    )
+                    if phase == "write"
+                    else contextlib.nullcontext()
+                )
+                with (
+                    writer,
+                    mock.patch.object(
+                        run_bazel_with_buildbuddy,
+                        "NamedTemporaryFile",
+                        return_value=manager,
+                    ),
+                ):
+                    with self.assertRaisesRegex(OSError, f"fixture {phase} failure"):
+                        with run_bazel_with_buildbuddy.windows_target_patterns(
+                            ["bazel", "build", "--", "//pkg:t"],
+                            {"RUNNER_OS": "Windows"},
+                        ):
+                            self.fail("preparation failure must not launch Bazel")
+                self.assertFalse(path.exists())
+
+    def test_target_file_cleanup_preserves_child_failure_and_reports_unlink_error(
+        self,
+    ) -> None:
+        diagnostics = io.StringIO()
+        path = None
+        try:
+            with (
+                contextlib.redirect_stderr(diagnostics),
+                mock.patch.object(
+                    Path, "unlink", side_effect=OSError("fixture unlink failure")
+                ),
+            ):
+                with self.assertRaises(SystemExit) as failure:
+                    with run_bazel_with_buildbuddy.windows_target_patterns(
+                        ["bazel", "test", "--", "//pkg:t"], {"RUNNER_OS": "Windows"}
+                    ) as (_, path):
+                        raise SystemExit(37)
+                self.assertEqual(failure.exception.code, 37)
+            self.assertIn("fixture unlink failure", diagnostics.getvalue())
+        finally:
+            if path is not None:
+                path.unlink()
+
+    def test_target_file_cleanup_failure_after_success_is_not_hidden(self) -> None:
+        path = None
+        try:
+            with mock.patch.object(
+                Path, "unlink", side_effect=OSError("fixture unlink failure")
+            ):
+                with self.assertRaisesRegex(OSError, "fixture unlink failure"):
+                    with run_bazel_with_buildbuddy.windows_target_patterns(
+                        ["bazel", "build", "--", "//pkg:t"], {"RUNNER_OS": "Windows"}
+                    ) as (_, path):
+                        raise SystemExit(0)
+        finally:
+            if path is not None:
+                path.unlink()
+
+    def test_target_file_cleanup_covers_child_launch_error(self) -> None:
+        path = None
+        with self.assertRaisesRegex(OSError, "fixture launch failure"):
+            with run_bazel_with_buildbuddy.windows_target_patterns(
+                ["bazel", "build", "--", "//pkg:t"], {"RUNNER_OS": "Windows"}
+            ) as (_, path):
+                raise OSError("fixture launch failure")
+        self.assertFalse(path.exists())
+
     def github_env(
         self,
         temp_dir: str,
