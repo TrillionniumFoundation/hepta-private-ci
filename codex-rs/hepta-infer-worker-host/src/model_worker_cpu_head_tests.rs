@@ -491,7 +491,6 @@ fn actual_q24_cpu_batch_accounts_for_all_members_output_buffers() {
     assert!(!worker.requires_external_recovery());
 }
 
-
 #[test]
 fn cpu_head_batch_preflight_covers_reported_numeric_peak_for_four_cells() {
     let (mut worker, heads) = local_worker();
