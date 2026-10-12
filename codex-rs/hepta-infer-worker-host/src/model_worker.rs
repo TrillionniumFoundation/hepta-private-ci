@@ -218,7 +218,15 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
+        let handle = match self.driver.load(&manifest) {
+            Ok(handle) => handle,
+            Err(error) => {
+                // A failed load does not prove the driver left no physical
+                // state behind. Only a fresh owner/generation may retry.
+                self.poisoned = true;
+                return Err(error);
+            }
+        };
         if let Err(error) = validate_identity(&handle.opaque_id, "model handle") {
             if self.driver.unload(handle).is_err() {
                 self.poisoned = true;

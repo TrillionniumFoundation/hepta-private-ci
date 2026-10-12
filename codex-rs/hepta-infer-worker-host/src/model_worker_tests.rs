@@ -8,6 +8,7 @@ struct Driver {
     fail_provider_dispatch: bool,
     fail_feature_dispatch: bool,
     missing_output_digest: bool,
+    fail_load_after_side_effect: bool,
     invalid_handle: bool,
     fail_unload: bool,
     loaded: usize,
@@ -16,6 +17,9 @@ struct Driver {
 impl ModelDriver for Driver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
+        if self.fail_load_after_side_effect {
+            return Err(Error::DriverFailure("load receipt unknown".to_string()));
+        }
         Ok(DriverModelHandle {
             opaque_id: if self.invalid_handle {
                 "invalid handle".to_string()
@@ -170,6 +174,38 @@ fn invalid_loaded_handle_is_cleaned_up_without_leaking_model_owner() {
     assert_eq!(worker.driver.loaded, 0);
     assert!(worker.models.is_empty());
     assert!(!worker.poisoned);
+}
+
+#[test]
+fn uncertain_model_load_fences_worker_before_retry_or_dispatch() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.load-unknown".into(),
+        3,
+        grant(),
+        Driver {
+            fail_load_after_side_effect: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::DriverFailure("load receipt unknown".to_string()))
+    );
+    // The fake backend changed its physical state but never supplied a
+    // validated handle: this generation must not load or run again.
+    assert_eq!(worker.driver.loaded, 1);
+    assert!(worker.models.is_empty());
+    assert!(worker.poisoned);
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::IndeterminateLifecycle)
+    );
 }
 
 #[test]
