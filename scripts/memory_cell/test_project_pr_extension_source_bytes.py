@@ -44,7 +44,7 @@ def synthetic():
         for k in range(number):
             data = f"// {repo} {k}\n".encode()
             if repo == "denoland/deno" and k == number - 1:
-                data = b"// caf\xe9\n"
+                data = "// café\n".encode("latin-1")
                 binary = trial.git_blob(data)
             content_sha = trial.git_blob(data)
             path = f"src/code_{k}.txt"
@@ -95,7 +95,7 @@ class ExternalImmutableBytesTests(unittest.TestCase):
             self.assertEqual(inventory["non_utf8_original_blobs"], 1)
             self.assertEqual(
                 (target / "blobs" / (binary + ".blob")).read_bytes(),
-                b"// caf\xe9\n",
+                "// café\n".encode("latin-1"),
             )
             result = trial.reopen(manifest, target, manifest_sha="e" * 64)
             self.assertEqual(result["verified_original_file_bindings"], 32)
@@ -104,7 +104,7 @@ class ExternalImmutableBytesTests(unittest.TestCase):
             self.assertFalse(result["production_accepted"])
 
     def test_latin1_bytes_cannot_be_silently_reencoded(self):
-        data = b"// caf\xe9\n"
+        data = "// café\n".encode("latin-1")
         key = trial.git_blob(data)
         object_value = dict(
             sha=key,
@@ -114,7 +114,8 @@ class ExternalImmutableBytesTests(unittest.TestCase):
         )
         self.assertEqual(trial.original_blob(object_value, key), data)
         bad = deepcopy(object_value)
-        bad["content"] = base64.b64encode(b"// caf\xef\xbf\xbd\n").decode()
+        repaired = data.decode("utf-8", errors="replace").encode("utf-8")
+        bad["content"] = base64.b64encode(repaired).decode()
         with self.assertRaises(ValueError):
             trial.original_blob(bad, key)
 
@@ -129,10 +130,10 @@ class ExternalImmutableBytesTests(unittest.TestCase):
                 fetch=lambda *key: objects[key],
             )
             path = target / "blobs" / (binary + ".blob")
-            path.write_bytes(b"// caf\xc3\xa9\n")
+            path.write_bytes("// café\n".encode("utf-8"))
             with self.assertRaises(ValueError):
                 trial.reopen(manifest, target, manifest_sha="e" * 64)
-            path.write_bytes(b"// caf\xe9\n")
+            path.write_bytes("// café\n".encode("latin-1"))
             (target / "blobs" / "extra.blob").write_bytes(b"forged")
             with self.assertRaises(ValueError):
                 trial.reopen(manifest, target, manifest_sha="e" * 64)
