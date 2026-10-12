@@ -135,6 +135,19 @@ fn safe_yaml_frontmatter_parser_rejects_nested_description_or_unknown_tag() {
 }
 
 #[test]
+fn safe_yaml_rejects_duplicate_skill_identity_and_alias_overrides() {
+    for source in [
+        "---\nname: first\nname: second\ndescription: basic\n---\n",
+        "---\nname: first\ndescription: safe\ndescription: unsafe\n---\n",
+        "---\nname: first\ndescription: &alias safe\ndescription: *alias\n---\n",
+        "---\nname: !executor malicious\ndescription: safe\n---\n",
+    ] {
+        let result = parse_skill_frontmatter_metadata(source, || "default".to_string());
+        assert!(result.is_err(), "untrusted frontmatter must not override identity");
+    }
+}
+
+#[test]
 fn safe_yaml_preserves_bounded_basic_skill_frontmatter() {
     let document =
         "---\nname: yaml-migration\ndescription: 'run safely: audited'\nmetadata:\n  short-description: 'basic # safe'\n---\n";
