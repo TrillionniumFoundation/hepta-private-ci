@@ -5,6 +5,47 @@ use anyhow::Result;
 use std::io;
 use std::os::windows::ffi::OsStrExt;
 use std::path::PathBuf;
+use std::path::Path;
+
+const MAX_RUNFILES_MANIFEST_BYTES: u64 = 32 * 1024 * 1024;
+
+/// Bazel on Windows commonly uses manifest-only runfiles. In that profile
+/// CARGO_BIN_EXE_* is an rlocation key, not an ordinary filesystem path.
+/// Look up the *exact declared* helper in the runfiles manifest; never
+/// substitute a PATH search or another arbitrary executable.
+fn resolve_helper_executable(candidate: PathBuf) -> Result<PathBuf> {
+    if candidate.is_file() {
+        return Ok(candidate);
+    }
+    if candidate.is_absolute() {
+        anyhow::bail!("configured absolute setup helper is absent: {}", candidate.display());
+    }
+    let runfiles_manifest = std::env::var_os("RUNFILES_MANIFEST_FILE")
+        .context("relative Bazel helper requires RUNFILES_MANIFEST_FILE")?;
+    let manifest_path = Path::new(&runfiles_manifest);
+    let metadata = std::fs::metadata(manifest_path)
+        .with_context(|| format!("read Bazel runfiles manifest {}", manifest_path.display()))?;
+    anyhow::ensure!(
+        metadata.is_file() && metadata.len() <= MAX_RUNFILES_MANIFEST_BYTES,
+        "runfiles manifest is missing, nonregular or exceeds its bound"
+    );
+    let contents = std::fs::read_to_string(manifest_path)?;
+    let runfile_key = candidate.to_string_lossy().replace('\\', "/");
+    for entry in contents.lines() {
+        if let Some((key, path)) = entry.split_once(' ')
+            && key == runfile_key
+        {
+            let resolved = PathBuf::from(path);
+            anyhow::ensure!(
+                resolved.is_absolute() && resolved.is_file(),
+                "declared helper runfile is not an existing absolute regular file: {}",
+                resolved.display()
+            );
+            return Ok(resolved);
+        }
+    }
+    anyhow::bail!("setup helper runfile not declared in manifest: {runfile_key}")
+}
 use windows_sys::Win32::Foundation::FreeLibrary;
 use windows_sys::Win32::System::LibraryLoader::FindResourceW;
 use windows_sys::Win32::System::LibraryLoader::LOAD_LIBRARY_AS_DATAFILE;
@@ -24,6 +65,7 @@ fn setup_helper_embeds_as_invoker_manifest() -> Result<()> {
         .map(PathBuf::from)
         .or_else(|| option_env!("CARGO_BIN_EXE_codex-windows-sandbox-setup").map(PathBuf::from))
         .context("locate the Windows sandbox setup executable")?;
+    let setup_executable = resolve_helper_executable(setup_executable)?;
     std::fs::metadata(&setup_executable)
         .with_context(|| format!("find setup helper {}", setup_executable.display()))?;
     let setup_path = setup_executable
