@@ -1207,3 +1207,39 @@ significance test, or promotion criterion. The paired read-only
 `stem_native_nonpromotion.py` gate independently rejects any
 manifest/census corruption and records separate retrieval/margin/
 abstention bottlenecks without dropping the full planned denominator.
+
+## 2026-10-12 complete strict-as-of matrix: operational success, learning rejection
+
+A new complete source- and artifact-pinned native run at GitHub Actions
+`38202116864` (`d0f69d7b94f65730fa1e093dee6989916f01898e`;
+source tree `87e3b17a0601c17712b9512fc01eadc123060391`) **succeeded
+in all 576 of 576 preregistered policy attempts**, with zero policy failures
+under the actual strict as-of source and Reader admission. The archive is
+`11726530850` and its externally validated transport SHA256 is
+`07b0f15ec150cc9817db6bfc9b4bae1e2c06a5296ca2ba3c4c7895da18b99e2f`.
+Its fixed Reader produced 48 actual successful calls, 543 exact cache hits,
+and no policy-generated structural citation markers. The exact-source fast
+protocol run `38202116910` also completed successfully (146 tests).
+
+At the last 48-question checkpoint, frozen and learned gated source
+accuracies both remain **3/8 on test and 6/8 on transfer**; diagnostic
+answer F1 and the actual original answer bytes are unchanged in the
+paired observed groups. Operational success, a decrease of supervised
+train loss, and more optimizer steps must not be promoted to independent
+Reader task superiority, correctly supported citations, or Cell scale-out.
+
+`stem_oct12_strict_nonpromotion.py` supplies an **independent, immutable
+read-only rejection receipt** using the complete external/internal artifact
+hash manifests and existing exact frozen-vs-learned pair,
+16-unique-question effective-N, and source/answer nonpromotion audits.
+It requires all 576 recorded decisions, 30 Head fit receipts, exact source
+and model/source lineage, nonpromotion, and the explicit zero citation
+denominator. It never executes new training, chooses hyperparameters,
+consults a reviewer, or changes any production configuration.
+
+An independent blinded sufficiency/semantic citation review, genuinely
+prospective source families, and verified per-arm p95/energy/dollar TCO
+are still missing. `semantic_citation_precision=null`,
+`production_accepted=false` and `scale_out_permitted=false` remain the
+scientifically supported gate values. Historic earlier staging executions
+with different Reader admission are not interchangeable with this run.
