@@ -539,8 +539,8 @@ async fn terminal_bound_lease_transitions_audit_compact_journal_atomically() {
     // still leave the lease row count and compact row count unchanged.
     for (index, transition) in ["release", "rollback", "expire"].into_iter().enumerate() {
         // A one-second lease can expire during SQLite setup on a loaded CI host.
-// Keep a real, bounded expiry window before deliberately testing corruption.
-let expiry_offset = if transition == "expire" { 8 } else { 3_600 };
+        // Keep a real, bounded expiry window before deliberately testing corruption.
+        let expiry_offset = if transition == "expire" { 8 } else { 3_600 };
         let (_temp, store, lease, executor, current_fence, checkpoint) =
             open_bound_executor(130 + index as u8, expiry_offset).await;
         let current = snapshot(current_fence);
