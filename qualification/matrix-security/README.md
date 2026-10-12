@@ -244,3 +244,35 @@ Hepta integration branch for API adaptation and SQLite links/WAL recovery;
 it cannot unblock the production Matrix hard gate by itself. A failed source
 checkout, resolver or compiler remains a failed candidate test, with no
 fallback to the 278-commit unreviewed upstream tip.
+
+## Dual stale-lock conflict evidence (2026-10-13)
+
+A real isolated GitHub Actions candidate run at Hepta commit
+`1bf3dedd4bcf15a2f3334a932e5710ef867a7656` identified **two**
+serial Cargo resolver conflicts when attempting the fixed upstream
+`matrix-sdk 0.19.1` Git revision `b3c07ea6ba6e8e46e30811c0500b04505c4be9f9`:
+
+- `async-trait`: locked `0.1.89`, upstream requires `^0.1.92`, retained by `tonic 0.14.3`;
+- `bytes`: locked `1.11.1`, upstream requires `^1.12.1`, retained by `axum 0.8.8`.
+
+The read-only `dual_lock_repin_probe.py` first requires BOTH exact Cargo errors,
+unchanged pinned upstream identity and full E2EE/SQLite features, and exactly the
+two observed old registry package entries in the **original** Cargo lock.
+If, and only if, all constraints match, the probe can output a
+`hepta-matrix-dual-unlocked.lock` scratch artifact with precisely those
+two stale entries omitted. A separate disposable detached worktree feeds
+that scratch state to **Cargo itself**, which must regenerate and resolve real
+versions/checksums. The real Hepta source, `Cargo.lock`, `deny.toml` and
+trust anchors are never updated by this experiment.
+
+An additional resolver attempt is recorded only as diagnostic evidence;
+it does not change the previously failed security or compilation gates.
+Even a successful disposable metadata run cannot assert upstream source
+review, absence of a vulnerable transitive graph, complete SQLite
+`libsqlite3-sys` links compatibility, E2EE or WAL recovery, production
+selection, or security advisory remediation.
+
+Seven local, source-only regression tests for exact error matching, source
+identity, lock integrity and non-overwrite behavior passed before committing
+the new probe. The real disposable resolver and all locked product CI checks
+require independent GitHub Actions receipts on the final SHA.
