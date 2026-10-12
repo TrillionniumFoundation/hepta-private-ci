@@ -29,7 +29,7 @@ jobs:
       - name: Install pinned Rust toolchain
         shell: bash
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
-      - name: Assert unchanged canonical Rust formatting
-        run: cargo +1.95.0 fmt --all -- --check
+      - name: Assert codex-core formatting without Windows workspace argument overflow
+        run: cargo +1.95.0 fmt -p codex-core -- --check
       - name: Compile codex-core including test targets on actual host OS
         run: cargo +1.95.0 check --locked -p codex-core --tests
