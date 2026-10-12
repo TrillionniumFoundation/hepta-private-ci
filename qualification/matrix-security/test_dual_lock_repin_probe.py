@@ -71,6 +71,29 @@ class DualLockTests(unittest.TestCase):
                        LOCK + LOCK.split(b'[[package]]')[1].join([b'\n[[package]]', b''])):
             self.assertFalse(inspect_pair(ASYNC, BYTES, MANIFEST, sample)["dual_conflict_exactly_verified"])
 
+    def test_full_width_nonhex_and_uppercase_checksums_are_not_trusted(self):
+        # The previous 64-character length check accepted arbitrary text as
+        # a canonical Cargo SHA-256, even in the standalone scratch entrypoint.
+        for bad in (b"z" * 64, b"A" * 64, b"0" * 63 + b"X"):
+            with self.subTest(checksum=bad[:4]):
+                corrupted = LOCK.replace(b"a" * 64, bad, 1)
+                result = inspect_pair(ASYNC, BYTES, MANIFEST, corrupted)
+                self.assertFalse(result["dual_conflict_exactly_verified"])
+                self.assertIn("invalid original async-trait checksum", result["rejection_reasons"])
+                with self.assertRaisesRegex(ValueError, "checksum"):
+                    scratch_unlock_two(corrupted)
+
+    def test_standalone_scratch_lock_rejects_substituted_registry_source(self):
+        corrupted = LOCK.replace(
+            b"registry+https://github.com/rust-lang/crates.io-index",
+            b"registry+https://attacker.invalid/index",
+            1,
+        )
+        self.assertFalse(inspect_pair(ASYNC, BYTES, MANIFEST, corrupted)
+                         ["dual_conflict_exactly_verified"])
+        with self.assertRaisesRegex(ValueError, "registry/checksum"):
+            scratch_unlock_two(corrupted)
+
     def test_scratch_lock_only_drops_two_entries_and_keeps_others(self):
         result = scratch_unlock_two(LOCK)
         self.assertNotIn(b'name = "async-trait"', result)
