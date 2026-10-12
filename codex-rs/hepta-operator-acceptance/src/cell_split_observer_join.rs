@@ -512,7 +512,35 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
         original_runtime_trust,
         live_owners,
     )?;
-    receipt.live_minimum_readback_digest = Some(sha256(&canonical_json(&proof)?));
+    // The minimum could be withdrawn or rolled back while four independent
+    // owners were read. Repeat the challenge after those reads, and compare
+    // the underlying durable store-record identity, not the changing nonce.
+    // This is still not a global atomic transaction across five owners.
+    let final_nonce = rand::random::<[u8; 32]>()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    let final_proof = minimum_store
+        .read_current(&subject, &final_nonce)
+        .map_err(|error| CellSplitObserverJoinErrorV1::Owner(error.to_string()))?;
+    verify_cell_split_supervisor_minimum_online_v1(
+        &subject,
+        &final_nonce,
+        &final_proof,
+        trusted_minimum_store_key,
+    )
+    .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
+        "final independent minimum checkpoint readback invalid",
+    ))?;
+    if final_proof.original_store_record_digest != proof.original_store_record_digest {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "independent minimum frontier changed during four-owner readback",
+        ));
+    }
+    receipt.live_minimum_readback_digest = Some(sha256(&canonical_json(&(
+        proof,
+        final_proof,
+    ))?));
     Ok(receipt)
 }
 
