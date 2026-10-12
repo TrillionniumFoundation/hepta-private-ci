@@ -101,6 +101,7 @@ jobs:
           set -euo pipefail
           mkdir -p "$RUNNER_TEMP/hepta-command-records"
           python3 -m unittest -v scripts.tests.test_hepta_ci_candidate
+          python3 -m unittest -v scripts.test_hepta_exact_pr_ci
           python3 scripts/hepta_ci_candidate.py --source "$SOURCE_SHA" --tested "$TESTED_SHA" --base "$BASE_SHA" --lane "$LANE" --github-output "$GITHUB_OUTPUT" | tee "$RUNNER_TEMP/hepta-command-records/candidate-tree.json"
       - name: Select affected architecture boundaries
         id: scope
