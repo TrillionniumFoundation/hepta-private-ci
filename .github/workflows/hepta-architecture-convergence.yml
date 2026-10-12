@@ -52,14 +52,18 @@ jobs:
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           current="$(gh api "repos/$REPO/pulls/$PR_NUMBER")"
           current_head="$(jq -er '.head.sha' <<<"$current")"
-          current_base="$(jq -er '.base.sha' <<<"$current")"
+          pr_base_snapshot="$(jq -er '.base.sha' <<<"$current")"
           current_ref="$(jq -er '.base.ref' <<<"$current")"
           [[ "$current_head" =~ ^[0-9a-f]{40}$ ]]
-          [[ "$current_base" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$pr_base_snapshot" =~ ^[0-9a-f]{40}$ ]]
           test "$current_head" = "$SOURCE_SHA"
           test "$current_ref" = "$EXPECTED_BASE_REF"
-          if [[ "$BASE_SHA" != "$current_base" ]]; then
-            echo "::notice::PR webhook base SHA is historical; using exact current GitHub base"
+          # The PR metadata's base.sha can itself lag its living target
+          # branch. Do not trust an old webhook OR an old PR snapshot.
+          current_base="$(gh api "repos/$REPO/branches/$current_ref" --jq '.commit.sha')"
+          [[ "$current_base" =~ ^[0-9a-f]{40}$ ]]
+          if [[ "$BASE_SHA" != "$current_base" || "$pr_base_snapshot" != "$current_base" ]]; then
+            echo "::notice::using current target branch SHA, not stale PR/webhook base snapshot"
           fi
           # The SAME parent is passed into history, merge-ref validation,
           # synthetic candidate construction, and both scoped test lanes.
