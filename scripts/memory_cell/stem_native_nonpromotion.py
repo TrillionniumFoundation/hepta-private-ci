@@ -134,11 +134,22 @@ def audit_exact_paired_choices(plan, raw, scored, report, train_fit,
         training_journal[key] = row
     if len(training_journal) != 36:
         raise ValueError("missing actual Head training checkpoint")
+    if (
+        not isinstance(plan.get("routes"), dict)
+        or set(plan["routes"]) != {
+            qid for phase in PHASES for qid in phases[phase]
+        } | set(plan["questions"]["train"])
+        or any(v not in ("general", "temporal") for v in plan["routes"].values())
+    ):
+        raise ValueError("registered exact Cell/question route census drift")
     n_citations = 0
     for key in sorted(expected):
         source, evaluated = original[key], official[key]
         cell = source.get("cell")
-        if type(cell) is not str or cell not in ("general", "temporal"):
+        if (
+            type(cell) is not str or cell not in ("general", "temporal")
+            or plan.get("routes", {}).get(key[2]) != cell
+        ):
             raise ValueError("invalid matched Cell route in original policy record")
         bound_head = training_journal.get((key[0], key[3], cell))
         if bound_head is None:

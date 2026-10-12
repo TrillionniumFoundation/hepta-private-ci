@@ -63,6 +63,10 @@ def full_fixture():
     plan["questions"].update(
         {phase: [f"{phase}-{i}" for i in range(8)] for phase in PHASES}
     )
+    plan["routes"] = {
+        qid: "general"
+        for qids in plan["questions"].values() for qid in qids
+    }
     raw = []
     for stage in STAGES:
         for phase in PHASES:
@@ -208,6 +212,19 @@ class PairedNativeProofTests(unittest.TestCase):
                 evaluated[field] = "different"
             with self.subTest(field=field), self.assertRaises(ValueError):
                 self.check(args)
+
+    def test_valid_but_wrong_cell_route_cannot_rebind_head(self):
+        args = full_fixture()
+        row = next(x for x in args[1] if x["arm"] == "gated")
+        matched = next(
+            x for x in args[2]
+            if (x["stage"], x["phase"], x["question_id"], x["arm"])
+            == (row["stage"], row["phase"], row["question_id"], row["arm"])
+        )
+        row["cell"] = "temporal"
+        matched["cell"] = "temporal"
+        with self.assertRaisesRegex(ValueError, "Cell route"):
+            self.check(args)
 
     def test_invalid_or_unhashable_cell_fails_closed_as_value_error(self):
         for invalid in ("unknown", [], ["general"], 0, None):
