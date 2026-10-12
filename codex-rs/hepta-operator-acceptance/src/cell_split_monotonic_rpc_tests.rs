@@ -3,10 +3,12 @@ use std::os::unix::net::UnixListener;
 use std::path::Path;
 use std::thread;
 
-use ed25519_dalek::{Signer as _, SigningKey};
+use ed25519_dalek::Signer as _;
+use ed25519_dalek::SigningKey;
 
 use super::*;
-use crate::cell_split_effect_rpc::{receive_frame, send_frame};
+use crate::cell_split_effect_rpc::receive_frame;
+use crate::cell_split_effect_rpc::send_frame;
 
 const DOMAIN: &str = "scope.journal.main";
 
