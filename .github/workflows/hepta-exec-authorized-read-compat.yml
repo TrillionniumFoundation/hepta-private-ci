@@ -1,0 +1,66 @@
+name: Hepta exec authorized-read capability conformance
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/exec-server/**"
+      - ".github/workflows/hepta-exec-authorized-read-compat.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-exec-authorized-read-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  capability:
+    name: Authorized read rejects unsupported fallback (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 65
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - name: Checkout exact SHA without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify tested HEAD
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+
+      - name: Compile and execute real authorized-read RPC integration
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-exec-server --test authorized_read_rpc -- --nocapture
+
+      - name: Verify Rust formatting
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-exec-server -- --check
+
+      - name: Ensure test checkout remained immutable
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
