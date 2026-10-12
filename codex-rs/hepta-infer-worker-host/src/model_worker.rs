@@ -316,6 +316,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+        // The Worker generation's memory grant covers every resident handle,
+        // not only the model selected by the generic inference invocation.
+        let other_model_resident_bytes = self.other_model_resident_bytes(model_id)?;
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if loaded.unload_indeterminate {
             return Err(Error::ModelUnloadIndeterminate);
@@ -376,7 +379,15 @@ impl<D: ModelDriver> InferenceWorker<D> {
             self.execution_indeterminate = true;
             return Err(Error::TokenLimit);
         }
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        // A transient observation cannot reduce the independently observed
+        // loaded-handle footprint; use the larger of the two resident claims.
+        // Overflow or aggregate grant exhaustion after dispatch quarantines
+        // this generation until an independent recovery owner reconciles it.
+        let selected_resident_bytes = observed
+            .observed_memory_bytes
+            .max(loaded.handle.observed_memory_bytes);
+        let claimed_peak = selected_resident_bytes.checked_add(other_model_resident_bytes);
+        if claimed_peak.is_none_or(|bytes| bytes > self.grant.maximum_memory_bytes) {
             self.execution_indeterminate = true;
             return Err(Error::ModelCapacity);
         }
