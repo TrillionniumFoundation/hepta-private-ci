@@ -173,6 +173,16 @@ def write_once(path, raw):
         os.fsync(stream.fileno())
 
 
+def frozen_qwen_cpu_threads(torch_module):
+    """Match the successful 112-call reference reader's CPU thread contract."""
+    from runtime_preflight import configure_torch
+
+    report = configure_torch(torch_module, bounded=False)
+    if report["effective_intra_op"] != 2:
+        raise ValueError("frozen Qwen reader requires two CPU intra-op threads")
+    return report
+
+
 def generate(public_root, model_root, output):
     from reader_reference import MODELS, ReferenceReader
     from event_memory_trial import read
@@ -187,6 +197,10 @@ def generate(public_root, model_root, output):
     ):
         raise ValueError("not the pinned research-only Qwen reference")
     inventory = read(model_root / "inventory.json", stage["inventory_sha256"])
+    # OMP/MKL environment values alone do not pin PyTorch intra-op threads.
+    import torch
+
+    frozen_qwen_cpu_threads(torch)
     reader = ReferenceReader(
         model_root / "reader",
         expected_inventory=inventory["inventory_digest"],

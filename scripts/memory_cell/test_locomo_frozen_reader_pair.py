@@ -7,6 +7,32 @@ from locomo_frozen_reader_pair import ARMS, LIMIT, metric, normalized, summarize
 
 
 class FrozenReaderPairTests(unittest.TestCase):
+    def test_pinned_cpu_threads_are_applied_before_loading_the_reader(self):
+        from locomo_frozen_reader_pair import frozen_qwen_cpu_threads
+
+        class CPU:
+            value = 12
+
+            def set_num_threads(self, n):
+                self.value = n
+
+            def get_num_threads(self):
+                return self.value
+
+            def get_num_interop_threads(self):
+                return 2
+
+        status = frozen_qwen_cpu_threads(CPU())
+        self.assertEqual(status["effective_intra_op"], 2)
+        self.assertFalse(status["requested"])
+
+        class Refuses(CPU):
+            def set_num_threads(self, n):
+                pass
+
+        with self.assertRaisesRegex(ValueError, "two CPU intra-op threads"):
+            frozen_qwen_cpu_threads(Refuses())
+
     def cases(self):
         cases = [
             dict(question_id="q1", family_proxy_digest="f1", source_census_sha256="s1"),

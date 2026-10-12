@@ -163,3 +163,14 @@ or failed host is not model evidence; only completed original model
 answers with separate scoring and complete source/host receipts can be
 reported. Neither published LoCoMo proxies nor this runner change
 qualify independent future sources or production.
+
+## Pinned Qwen host and two-thread correction (2026-10-13)
+
+Independent Qwen source run [#38224780900](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38224780900) successfully finished **40 calibration plus 72 evaluation** generations on an `ubuntu-22.04` runner whose actual CPU advertised accelerated BF16. The reference evaluator explicitly called `torch.set_num_threads(2)` before loading Qwen. The read-only [completed receipt #38267292873](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38267292873) verified original answers and replay.
+
+LoCoMo paired-reader [#38270591646](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38270591646) passed its source-code checks but **failed before model download** on a different Ubuntu 24.04 Intel host lacking visible BF16 acceleration. An earlier Ubuntu 24.04 AMD host also failed the same gate in run #38263341402. No LoCoMo Qwen response was produced by either failed run.
+
+The Qwen paired-reader job now uses `ubuntu-22.04`, the image used by the completed reference, and explicitly calls the existing `runtime_preflight.configure_torch(torch, bounded=False)` before model initialization. Two effective intra-op threads are required; misconfigured runtimes fail closed. The same hardware BF16 capability gate remains mandatory **on the actual host before weight download**. An OS image is not a guarantee of CPU instruction flags: a machine without native BF16 acceleration must still be rejected, not silently run slowly.
+
+Reader/model/tokens/prompt/decoder/retrieval/source and answer-label quarantine stay unchanged. The LoCoMo test population remains 16 published evaluation questions from two unverified conversation-family proxies, with **32 originally generated answers required** and a separate scoring job. Neither this hardware fix nor the earlier authored 112-call success constitutes independent semantic citation review, source-family generalization, parameter-memory learning benefit or production admission.
+

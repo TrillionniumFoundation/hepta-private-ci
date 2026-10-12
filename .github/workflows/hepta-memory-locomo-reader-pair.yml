@@ -45,7 +45,9 @@ jobs:
           fi
   reader:
     needs: checks
-    runs-on: ubuntu-24.04
+    # The complete 112-call Qwen reader used an eligible Ubuntu 22.04 runner.
+    # Always recheck hardware BF16 support; the OS does not guarantee the ISA.
+    runs-on: ubuntu-22.04
     timeout-minutes: 330
     env:
       PYTHONPATH: scripts/memory_cell
