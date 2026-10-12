@@ -872,7 +872,6 @@ fn observer_join_rejects_independently_signed_disconnected_operations() {
     }
 }
 
-
 /// Source fixture for an independent Observer's retained checkpoint witness.
 /// Production must read an authenticated monotonic store before signing.
 #[cfg(unix)]
