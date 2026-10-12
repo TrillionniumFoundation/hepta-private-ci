@@ -188,31 +188,21 @@ fn target_host_trust_file_requires_out_of_band_exact_sha256_pin() {
             .expect("private policy");
     }
     assert!(CellSplitTargetHostEvidenceTrustPolicyV1::from_json_file(&path).is_err());
-    assert!(
-        CellSplitTargetHostEvidenceTrustPolicyV1::from_json_file_pinned(
-            &path,
-            &"aa".repeat(32),
-        ).is_err()
-    );
-    assert!(
-        CellSplitTargetHostEvidenceTrustPolicyV1::from_json_file_pinned(
-            &path,
-            &digest.to_uppercase(),
-        ).is_err()
-    );
-    let pinned = CellSplitTargetHostEvidenceTrustPolicyV1::from_json_file_pinned(
-        &path, &digest,
-    ).expect("independent policy pin");
+    let load_pinned = |pin: &str| {
+        CellSplitTargetHostEvidenceTrustPolicyV1::from_json_file_pinned(&path, pin)
+    };
+    assert!(load_pinned(&"aa".repeat(32)).is_err());
+    assert!(load_pinned(&digest.to_uppercase()).is_err());
+    let pinned = load_pinned(&digest).expect("independent policy pin");
     assert_eq!(pinned.host_keys, trust.host_keys);
     assert_eq!(pinned.observer_keys, trust.observer_keys);
+
     let substituted = policy(&key(79), &key(83))
         .to_json_bytes()
         .expect("valid alternate policy");
     std::fs::write(&path, substituted).expect("out-of-band substitution");
     assert!(
-        CellSplitTargetHostEvidenceTrustPolicyV1::from_json_file_pinned(
-            &path, &digest,
-        ).is_err(),
+        load_pinned(&digest).is_err(),
         "a different valid trust root is not the externally pinned trust root",
     );
 }
