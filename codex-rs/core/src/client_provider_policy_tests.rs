@@ -126,7 +126,7 @@ async fn completed_is_hidden_until_exact_terminal_is_acknowledged() {
             redact_provider_errors: false,
             encoded_request_observer: None,
         },
-    )
+    );
 
     assert!(matches!(
         stream.next().await,
@@ -180,7 +180,7 @@ async fn terminal_failure_suppresses_completed_and_last_response() {
             redact_provider_errors: false,
             encoded_request_observer: None,
         },
-    )
+    );
 
     assert!(matches!(
         terminal_rx.await.expect("terminal should be proposed"),
@@ -219,7 +219,7 @@ async fn consumer_drop_records_partial_indeterminate_terminal() {
             redact_provider_errors: false,
             encoded_request_observer: None,
         },
-    )
+    );
 
     assert!(stream.next().await.is_some());
     drop(stream);
@@ -257,7 +257,7 @@ async fn unauthorized_stream_error_records_rejected_before_downstream_error() {
             redact_provider_errors: false,
             encoded_request_observer: None,
         },
-    )
+    );
 
     assert_eq!(
         terminal_rx.await.expect("401 should propose terminal"),
@@ -288,7 +288,7 @@ async fn eof_records_partial_indeterminate_terminal() {
             redact_provider_errors: false,
             encoded_request_observer: None,
         },
-    )
+    );
 
     assert!(stream.next().await.is_some());
     assert_eq!(
@@ -325,7 +325,7 @@ async fn terminal_acknowledgement_wait_is_not_consumer_timeout_driven() {
             redact_provider_errors: false,
             encoded_request_observer: None,
         },
-    )
+    );
 
     let _ = terminal_rx.await.expect("terminal should be proposed");
     assert!(
