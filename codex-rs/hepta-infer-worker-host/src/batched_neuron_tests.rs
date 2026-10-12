@@ -663,7 +663,7 @@ fn invalid_signed_grant_is_excluded_before_native_backend_batch_entry() {
     assert_eq!(poll.outcomes.len(), 3);
     assert!(poll.outcomes[0].result.is_ok());
     assert!(matches!(
-        poll.outcomes[1].result,
+        &poll.outcomes[1].result,
         Err(BatchWorkerErrorV1::Authority)
     ));
     assert!(poll.outcomes[2].result.is_ok());
@@ -699,7 +699,7 @@ fn external_control_fence_cutover_denies_queued_grant_without_driver_effect() {
     let result = execution.poll_and_execute(101).unwrap();
     assert_eq!(result.outcomes.len(), 1);
     assert!(matches!(
-        result.outcomes[0].result,
+        &result.outcomes[0].result,
         Err(BatchWorkerErrorV1::InvalidBinding)
     ));
     assert_eq!(backend_calls.load(std::sync::atomic::Ordering::Relaxed), 0);
