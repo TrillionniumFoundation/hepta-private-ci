@@ -121,6 +121,15 @@ class FrozenJinaV5:
         if model_factory is None:
             if allow_download:
                 raise ValueError("real Jina qualification must not download during execution")
+            # The HF libraries must be offline, and the protected host must
+            # additionally network-isolate model-provided Python code.
+            import os
+            if (os.environ.get("HF_HUB_OFFLINE") != "1"
+                    or os.environ.get("TRANSFORMERS_OFFLINE") != "1"):
+                raise ValueError(
+                    "real Jina qualification requires HF_HUB_OFFLINE=1 "
+                    "and TRANSFORMERS_OFFLINE=1 (host network isolation also required)"
+                )
             if not all((snapshot_dir, store_root, expected_snapshot_digest)):
                 raise ValueError(
                     "real Jina execution requires an independently precommitted "
