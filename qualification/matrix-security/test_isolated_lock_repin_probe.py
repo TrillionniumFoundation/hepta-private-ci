@@ -73,5 +73,32 @@ class IsolatedLockProbeTests(unittest.TestCase):
             self.assertEqual((dir / 'Cargo.lock').read_bytes(), LOCK)
             self.assertEqual((dir / 'Cargo.toml').read_bytes(), MANIFEST)
 
+
+    def test_cli_cannot_overwrite_cargo_lock_or_manifest_through_alias(self):
+        with tempfile.TemporaryDirectory() as directory:
+            stage = Path(directory)
+            manifest = stage / 'Cargo.toml'
+            lock = stage / 'Cargo.lock'
+            stderr = stage / 'stderr.log'
+            manifest.write_bytes(MANIFEST)
+            lock.write_bytes(LOCK)
+            stderr.write_text(FAILURE)
+            for original in (manifest, lock, stderr):
+                path = stage / 'alias'
+                if path.is_symlink():
+                    path.unlink()
+                path.symlink_to(original)
+                r = subprocess.run([
+                    sys.executable, str(Path(__file__).parent / 'isolated_lock_repin_probe.py'),
+                    '--stderr', str(stderr), '--manifest', str(manifest),
+                    '--lock', str(lock), '--output', str(path),
+                ], capture_output=True, text=True)
+                self.assertNotEqual(r.returncode, 0)
+                self.assertIn('must not overwrite', r.stderr)
+                self.assertEqual(manifest.read_bytes(), MANIFEST)
+                self.assertEqual(lock.read_bytes(), LOCK)
+                self.assertEqual(stderr.read_text(), FAILURE)
+
+
 if __name__ == '__main__':
     unittest.main()
