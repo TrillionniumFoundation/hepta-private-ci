@@ -19,7 +19,8 @@ from fbsde_acquisition_support import (LEGACY_KERNEL, SUPPORTED_KERNEL, KERNEL_P
 from fbsde_acquisition import (JointKernel, Objective, ViewPort, certainty_equivalent,
                                exhaustive_reference, history_key, solve, terminal)
 from fbsde_acquisition_data import (DATA_REV, DATA_PINS, INTENTS, PARTITIONS,
-                                    load_publisher, partition, text_view, hashed_reference)
+                                    load_publisher, partition, text_view, hashed_reference, cohort_spec)
+from fbsde_acquisition_guard import CANDIDATES, RULE, compile_guard, guarded_action, calibrate
 
 ARMS = ('initial_only', 'full_only', 'all_views', 'best_fixed', 'confidence',
         'myopic', 'ndu_bsde', 'compiled_same_model', 'risk_ndu')
@@ -28,7 +29,7 @@ THRESHOLDS = (.5, .65, .8, .95)
 SEED = 179424673
 
 
-def scored(records, labels, objective):
+def scored(records, labels, objective, intents=INTENTS):
     require(len(records) == len(labels) and len({r['id'] for r in records}) == len(labels),
             'complete terminal evaluation inventory')
     correct = accepted = 0; rewards = []; costs = []; reads = []; errors = Counter(); classes = Counter()
@@ -41,8 +42,8 @@ def scored(records, labels, objective):
             require(row['text'] == 'Insufficient evidence; abstain.', 'abstention decoding drift')
         else:
             require(answer.startswith('answer:'), 'unfinished decision')
-            label = int(answer.split(':')[1]); require(0 <= label < len(INTENTS), 'invalid label')
-            require(row['text'] == f'The request is classified as {INTENTS[label]}.', 'decoded answer drift')
+            label = int(answer.split(':')[1]); require(0 <= label < len(intents), 'invalid label')
+            require(row['text'] == f'The request is classified as {intents[label]}.', 'decoded answer drift')
             right = label == gold; correct += right; accepted += 1
             errors[gold] += not right
             reward = objective.correct if right else objective.wrong
@@ -62,7 +63,14 @@ def scored(records, labels, objective):
             'iid_independence_authenticated': False, 'confidence_intervals_claimed': False}
 
 
-def choose(arm, kernel, history, objective, fixed, threshold, tables):
+def choose(arm, kernel, history, objective, fixed, threshold, tables, guard=None):
+    if arm == "risk_selected":
+        require(guard is not None and guard["selected"] is not None, "calibration not sealed")
+        require(guard["binding"] == digest([kernel.identity, asdict(objective)]), "stale calibrated policy")
+        arm = guard["selected"]
+        if arm == "abstain": return "abstain", None
+    if arm in CANDIDATES[2:]:
+        return guarded_action(arm, kernel, history, objective, guard), None
     if arm in ('initial_only', 'full_only', 'all_views', 'best_fixed', 'full_symbol'):
         order = {'initial_only': (), 'full_only': (2,), 'all_views': (1, 2), 'best_fixed': fixed, 'full_symbol': (2,)}[arm]
         for view in order:
@@ -84,20 +92,21 @@ def choose(arm, kernel, history, objective, fixed, threshold, tables):
     return terminal(kernel, history, objective)[0], None
 
 
-def execute(row, arm, kernel, objective, provider, fixed, threshold, tables, head_identity):
+def execute(row, arm, kernel, objective, provider, fixed, threshold, tables, head_identity,
+            intents=INTENTS, guard=None):
     """The chooser has no row text, ID, hidden future symbol, or label argument."""
     started_cpu, started_wall = time.process_time_ns(), time.perf_counter_ns()
     port = ViewPort(provider, kernel.symbols); history = port.read(0); decisions = []
     for _ in range(3):
         begin = time.process_time_ns()
-        action, trace = choose(arm, kernel, history, objective, fixed, threshold, tables)
+        action, trace = choose(arm, kernel, history, objective, fixed, threshold, tables, guard)
         decisions.append({'history': history, 'action': action, 'bsde': trace,
                           'cpu_ns': time.process_time_ns()-begin})
         if action.startswith('read:'):
             history = port.read(int(action.split(':')[1]))
         else:
             text = ('Insufficient evidence; abstain.' if action == 'abstain' else
-                    f'The request is classified as {INTENTS[int(action.split(":")[1])]}.')
+                    f'The request is classified as {intents[int(action.split(":")[1])]}.')
             return {'id': row['id'], 'source_input_sha256': row['text_sha256'], 'arm': arm,
                     'action': action, 'text': text, 'head_sha256': head_identity,
                     'kernel_sha256': kernel.identity, 'objective_sha256': digest(asdict(objective)),
@@ -108,7 +117,10 @@ def execute(row, arm, kernel, objective, provider, fixed, threshold, tables, hea
 
 
 def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_dir=None,
-        kernel_profile=LEGACY_KERNEL):
+        kernel_profile=LEGACY_KERNEL, cohort="banking_v1"):
+    intents, partitions = cohort_spec(cohort)
+    guarded = cohort == "travel_guard_v1"
+    require(not guarded or kernel_profile == SUPPORTED_KERNEL, "guard requires supported kernel")
     import torch
     from torch import nn
     from four_gate_pretrained import MODEL, REVISION, load_pinned, file_hash
@@ -116,6 +128,7 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
     require(backend in ('hashing_reference_v1', 'mmbert'), 'explicit backend; no silent substitute')
     require(kernel_profile in KERNEL_PROFILES, 'explicit kernel profile')
     arms = ARMS + (('full_symbol',) if kernel_profile == SUPPORTED_KERNEL else ())
+    if guarded: arms += CANDIDATES[2:]+('risk_selected',)
     output = Path(output); output.mkdir(parents=True, exist_ok=False)
     torch.set_num_threads(2); torch.manual_seed(SEED)
     envelope_cpu = time.process_time_ns(); jobs = []
@@ -124,7 +137,9 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
     write_once(output/'plan.json', {'schema': 'hepta.fbsde.semantic-acquisition.plan.v1',
         'backend': backend, 'model': MODEL if backend == 'mmbert' else 'deterministic_sha256_lexical_384',
         'revision': REVISION if backend == 'mmbert' else None, 'publisher_revision': DATA_REV,
-        'publisher_pins': DATA_PINS, 'sources': sources, 'intents': INTENTS, 'partitions': PARTITIONS,
+        'publisher_pins': DATA_PINS, 'sources': sources, 'intents': intents, 'partitions': partitions,
+        'cohort': cohort, 'guard_rule': RULE if guarded else None,
+        'validation_role': 'policy_risk_calibration' if guarded else 'untouched_validation',
         'seed': SEED, 'steps': 96, 'lr': .003, 'kernel_alpha': .01,
         'normalization_fit_only': True, 'view_protocol': 'first_3_words,last_3_words,full_original',
         'objective': asdict(objective), 'risk_objective': asdict(risk), 'arms': arms,
@@ -134,7 +149,7 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
         'test_labels_not_used_for_selection': True, 'real_future_observations': False,
         'source_author_independence_unknown': True, 'production_promotion_permitted': False})
     begin = time.process_time_ns()
-    data = load_publisher(publisher_root or output/'publisher'); splits = partition(data)
+    data = load_publisher(publisher_root or output/'publisher'); splits = partition(data, cohort)
     # Text and gold remain separate at the policy interface, not separate OS trust domains.
     inputs = {s: [{k: v for k, v in r.items() if k != 'label'} for r in rows] for s, rows in splits.items()}
     labels = {s: {r['id']: r['label'] for r in rows} for s, rows in splits.items()}
@@ -216,20 +231,21 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
         return view
     begin = time.process_time_ns(); fixed_scores = []; threshold_scores = []
     for order in FIXED:
-        rows = [execute(r, 'best_fixed', kernel, objective, cached_provider(r), order, .8, None, head_id)
+        rows = [execute(r, 'best_fixed', kernel, objective, cached_provider(r), order, .8, None, head_id, intents)
                 for r in inputs['selection']]
-        fixed_scores.append((order, scored(rows, labels['selection'], objective)['mean_external_score_minus_cost']))
+        fixed_scores.append((order, scored(rows, labels['selection'], objective, intents)['mean_external_score_minus_cost']))
     fixed = max(fixed_scores, key=lambda x: x[1])[0]
     for threshold in THRESHOLDS:
-        rows = [execute(r, 'confidence', kernel, objective, cached_provider(r), fixed, threshold, None, head_id)
+        rows = [execute(r, 'confidence', kernel, objective, cached_provider(r), fixed, threshold, None, head_id, intents)
                 for r in inputs['selection']]
-        threshold_scores.append((threshold, scored(rows, labels['selection'], objective)['mean_external_score_minus_cost']))
+        threshold_scores.append((threshold, scored(rows, labels['selection'], objective, intents)['mean_external_score_minus_cost']))
     threshold = max(threshold_scores, key=lambda x: x[1])[0]
     jobs.append({'id': 'simple_controller_selection', 'phase': 'search', 'cpu_ns': time.process_time_ns()-begin})
     begin = time.process_time_ns(); table = {}; interfaces = []
     for symbol in range(8):
         solved = solve(kernel, ((0, symbol),), objective); table.update(solved['actions']); interfaces += solved['edges']
     tables = (digest([kernel.identity, asdict(objective)]), table)
+    guard = compile_guard(kernel, kernel_rows, table, objective) if guarded else None
     jobs.append({'id': 'compiled_dp_preparation', 'phase': 'search', 'cpu_ns': time.process_time_ns()-begin})
     write_once(output/'selection.json', {'fixed_scores': fixed_scores, 'selected_fixed': fixed,
         'threshold_scores': threshold_scores, 'threshold': threshold, 'head_sha256': head_id,
@@ -244,13 +260,15 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
         'candidate_head_file_sha256': file_hash(tensor_file), 'candidate_head_identity': head_id})
     write_once(output/'preparation-jobs.json', jobs)
     records = {a: [] for a in arms}; validation_records = {a: [] for a in arms}
-    # Freeze all model selection before validation/test. Validate is reported, never used to tune.
+    # Model coefficients are frozen. The optional new cohort uses this first
+    # evaluation split only for declared whole-policy risk selection before test.
     for split in ('validation', 'test'):
-        streams = {a: (output/f'{split}-{a}.jsonl').open('xb') for a in arms}
+        split_arms = tuple(a for a in arms if not (guarded and split == 'validation' and a == 'risk_selected'))
+        streams = {a: (output/f'{split}-{a}.jsonl').open('xb') for a in split_arms}
         attempts = AttemptJournal(output/f'{split}-view-attempts.jsonl')
         try:
             for ordinal, row in enumerate(inputs[split]):
-                order = list(arms); random.Random(SEED+ordinal).shuffle(order)
+                order = list(split_arms); random.Random(SEED+ordinal).shuffle(order)
                 for arm in order:
                     obj = risk if arm == 'risk_ndu' else objective
                     def provider(view):
@@ -258,7 +276,7 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
                             normalize, head, torch, head_id, attempts,
                             {'split': split, 'arm': arm, 'id': row['id'],
                              'source_input_sha256': row['text_sha256']})
-                    rec = execute(row, arm, kernel, obj, provider, fixed, threshold, tables, head_id)
+                    rec = execute(row, arm, kernel, obj, provider, fixed, threshold, tables, head_id, intents, guard)
                     streams[arm].write(canonical(rec)+b'\n'); streams[arm].flush()
                     (records if split == 'test' else validation_records)[arm].append(rec)
         except Exception as error:
@@ -273,10 +291,19 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
             attempts.close()
             for stream in streams.values():
                 stream.flush(); os.fsync(stream.fileno()); stream.close()
+        if guarded and split == 'validation':
+            begin = time.process_time_ns()
+            calibration = calibrate({a: validation_records[a] for a in CANDIDATES},
+                [(r['id'], r['text_sha256'], labels[split][r['id']]) for r in inputs[split]],
+                digest([kernel.identity, head_id, asdict(objective)]))
+            write_once(output/'risk-calibration.json', calibration)
+            guard['selected'] = calibration['selected']
+            jobs.append({'id': 'policy_risk_calibration', 'phase': 'evaluation',
+                         'cpu_ns': time.process_time_ns()-begin})
     require(head_id == digest({k: tensor_digest(v) for k, v in head.state_dict().items()}), 'selected head mutated')
     # All test predictions exist on disk BEFORE the outcome scorer uses labels.
     begin = time.process_time_ns()
-    metrics = {a: scored(records[a], labels['test'], objective) for a in arms}
+    metrics = {a: scored(records[a], labels['test'], objective, intents) for a in arms}
     jobs.append({'id': 'outcome_scoring', 'phase': 'evaluation', 'cpu_ns': time.process_time_ns()-begin})
     for a, b in zip(records['ndu_bsde'], records['compiled_same_model']):
         require(a['id'] == b['id'] and a['action'] == b['action'] and
@@ -297,7 +324,8 @@ def run(output, *, backend='hashing_reference_v1', publisher_root=None, model_di
         'native_deployment_evidence': False, 'future_window_evidence': False,
         'general_continuous_fbsde_claimed': False, 'production_promotion_permitted': False,
         'risk_objective_is_preregistered_not_redefined_by_predictions': True,
-        'validation_not_used_for_selection': True,
+        'validation_not_used_for_selection': not guarded,
+        'cohort': cohort, 'conditional_risk_selection': calibration if guarded else None,
         'interpretation': 'partial historical text views; no new user response or world truth is synthesized'}
     report['kernel_model_profile'] = kernel_profile
     if kernel_profile == SUPPORTED_KERNEL:
