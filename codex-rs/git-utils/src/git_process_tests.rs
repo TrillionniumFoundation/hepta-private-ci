@@ -122,7 +122,13 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     let output =
         wait_for_git_command_with_timeout_output(wrapper, process_tree, Duration::from_millis(100))
             .await;
-    assert_eq!(output, None);
+    match wrapper_lifetime {
+        GitWrapperLifetime::WaitForChild => assert_eq!(output, None),
+        GitWrapperLifetime::ExitBeforeTimeout => {
+            let completed = output.expect("completed wrapper must report its exit status");
+            assert!(completed.status.success(), "wrapper must exit successfully");
+        }
+    }
 
     std::fs::write(&release_child_file, "release").expect("release Git wrapper child");
     tokio::time::sleep(Duration::from_secs(3)).await;
