@@ -64,6 +64,20 @@ class MinimalGraphTests(unittest.TestCase):
         self.packages[2]["version"] = "0.18.0"
         self.assertFalse(self.report()["isolated_prerequisite_passed"])
 
+    def test_hidden_old_matrix_family_and_duplicate_anymap3_refused(self):
+        old = {
+            "id": "matrix-sdk-store-encryption-old",
+            "name": "matrix-sdk-store-encryption", "version": "0.18.0",
+            "manifest_path": str(self.sdk / "crates/matrix-sdk-store-encryption/Cargo.toml"),
+            "source": None,
+        }
+        self.packages.append(old)
+        self.assertFalse(self.report()["isolated_prerequisite_passed"])
+        self.packages.pop()
+        self.packages.append(dict(self.packages[-1], id="anymap3-unreviewed"))
+        self.assertFalse(self.report()["isolated_prerequisite_passed"])
+        self.packages.pop()
+
     def test_missing_e2ee_or_sqlite_refused(self):
         for feat in ("e2e-encryption", "sqlite"):
             with self.subTest(feature=feat):
