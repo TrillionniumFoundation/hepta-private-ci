@@ -16,6 +16,7 @@ use codex_hepta_infer_core::verify_neuron_feature_receipt_v1;
 use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronModelError;
 use codex_hepta_types::Generation;
+use std::time::Instant;
 
 use crate::model_worker::InferenceWorker;
 use crate::model_worker::ModelDriver;
@@ -34,6 +35,9 @@ pub struct WorkerNeuronControlPort<'a, D: ModelDriver + NeuronFeatureDriver> {
     neuron_generation: Generation,
     reservation: Option<WorkerRequest>,
     observed_now_ms: u64,
+    /// Monotonic instant from BEFORE the durable owner starts its read/fsync.
+    /// Prevents a port retained past its lease deadline from reusing claim time.
+    claim_started: Instant,
 }
 
 impl<'a, D: ModelDriver + NeuronFeatureDriver> WorkerNeuronControlPort<'a, D> {
@@ -43,12 +47,13 @@ impl<'a, D: ModelDriver + NeuronFeatureDriver> WorkerNeuronControlPort<'a, D> {
     ///
     /// Do NOT expose this constructor outside the crate: a caller-supplied
     /// WorkerRequest is not a substitute for a durable dispatch transition.
-    pub(crate) fn from_reserved_worker(
+    pub(crate) fn from_claimed_worker(
         worker: &'a mut InferenceWorker<D>,
         model_id: String,
         existing_reservation: WorkerRequest,
         neuron_generation: Generation,
         observed_now_ms: u64,
+        claim_started: Instant,
     ) -> Self {
         Self {
             worker,
@@ -56,7 +61,27 @@ impl<'a, D: ModelDriver + NeuronFeatureDriver> WorkerNeuronControlPort<'a, D> {
             neuron_generation,
             reservation: Some(existing_reservation),
             observed_now_ms,
+            claim_started,
         }
+    }
+
+    /// Only module-local fixtures can bypass a durable dispatch claim.
+    #[cfg(test)]
+    pub(crate) fn from_reserved_worker(
+        worker: &'a mut InferenceWorker<D>,
+        model_id: String,
+        existing_reservation: WorkerRequest,
+        neuron_generation: Generation,
+        observed_now_ms: u64,
+    ) -> Self {
+        Self::from_claimed_worker(
+            worker,
+            model_id,
+            existing_reservation,
+            neuron_generation,
+            observed_now_ms,
+            Instant::now(),
+        )
     }
 
     /// True only before the first attempted execution or rejection.
@@ -82,12 +107,23 @@ impl<D: ModelDriver + NeuronFeatureDriver> NeuronInferenceControlPort
         self.worker
             .consume_neuron_attempt(&authorization)
             .map_err(|_| NeuronModelError::Rejected)?;
+        // A Dispatching claim can be fsynced long before a caller actually
+        // invokes this port. Reusing the claim-time wall-clock would let an
+        // expired request or ResourceGrant execute after its real deadline.
+        // Account for elapsed monotonic time including the durable claim;
+        // the host remains responsible for authenticating observed_now_ms.
+        let elapsed_ms = u64::try_from(self.claim_started.elapsed().as_millis())
+            .map_err(|_| NeuronModelError::Rejected)?;
+        let execution_now_ms = self
+            .observed_now_ms
+            .checked_add(elapsed_ms)
+            .ok_or(NeuronModelError::Rejected)?;
         if self.model_id != request.model_id.as_str()
             || self.neuron_generation != request.generation
             || authorization.request_id != request.request_id.as_str()
             || authorization.reservation_id.is_empty()
             || authorization.cancelled
-            || self.observed_now_ms >= authorization.deadline_ms
+            || execution_now_ms >= authorization.deadline_ms
             || authorization.maximum_tokens == 0
             || authorization.maximum_tokens > authorization.reservation_maximum_tokens
             || authorization.reservation_model_digest != authorization.model_digest
@@ -118,7 +154,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> NeuronInferenceControlPort
         let receipt = self
             .worker
             .run_neuron_features_receipt_consumed(
-                self.observed_now_ms,
+                execution_now_ms,
                 &self.model_id,
                 feature,
                 self.neuron_generation,

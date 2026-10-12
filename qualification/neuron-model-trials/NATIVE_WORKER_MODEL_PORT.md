@@ -9,6 +9,16 @@ cancelled request, unknown terminal outcome, and backend error. The actual
 Worker now also retains bounded **request-ID and reservation-ID tombstones**,
 so recreating a ModelPort with an old pair cannot re-invoke the driver.
 
+A durable Dispatching claim also captures its **pre-fsync monotonic instant**.
+At actual ModelPort use, the port adds elapsed monotonic milliseconds to the
+host-authenticated claim timestamp and rechecks both the request deadline and
+Worker ResourceGrant. Storing the port until the lease expires therefore cannot
+reuse an earlier claim-time timestamp; the reservation is still tombstoned
+before any rejection. Overflow fails closed. The host must authenticate the
+absolute time supplied at claim; process elapsed time does **not** replace
+trusted wall-clock attestation. Unit regressions age a claimed port without
+sleeping and verify zero physical driver calls and no replay.
+
 Execution follows this exact native chain:
 
 authorized inference.control request + reserved Worker/ModelManifest
