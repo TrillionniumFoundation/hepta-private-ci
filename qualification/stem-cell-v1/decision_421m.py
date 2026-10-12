@@ -17,7 +17,9 @@ from pathlib import Path
 import random
 
 from model_runner import snapshot_digest
-from study import quantile, validate_dataset
+from study import (MAX_EVIDENCE_ROW_BYTES, parse_finite_evidence_float,
+                   quantile, reject_nonstandard_evidence_number,
+                   validate_dataset)
 
 SOURCES = {
     # Weight artifact identity lives on Hugging Face; the separate Laya
@@ -44,14 +46,21 @@ def no_duplicate_json_keys(pairs):
 
 
 def read_strict_jsonl(path):
-    """Reject duplicate keys and non-object rows in frozen case/prediction data."""
-    with Path(path).open(encoding="utf-8") as handle:
-        for number, line in enumerate(handle, 1):
-            if not line.strip():
+    """Byte-bound frozen Decision evidence, rejecting ambiguous JSON numbers/keys."""
+    with Path(path).open("rb") as handle:
+        number = 0
+        while raw := handle.readline(MAX_EVIDENCE_ROW_BYTES + 1):
+            number += 1
+            if len(raw) > MAX_EVIDENCE_ROW_BYTES:
+                raise ValueError(f"oversized Decision JSONL row at line {number}")
+            if not raw.strip():
                 raise ValueError(f"empty Decision JSONL row at line {number}")
             try:
-                record = json.loads(line, object_pairs_hook=no_duplicate_json_keys)
-            except (ValueError, TypeError) as exc:
+                record = json.loads(
+                    raw.decode("utf-8"), object_pairs_hook=no_duplicate_json_keys,
+                    parse_constant=reject_nonstandard_evidence_number,
+                    parse_float=parse_finite_evidence_float)
+            except (UnicodeError, ValueError, TypeError) as exc:
                 raise ValueError(f"invalid/duplicate Decision JSONL at line {number}") from exc
             if type(record) is not dict:
                 raise ValueError("Decision JSONL rows must be objects")
