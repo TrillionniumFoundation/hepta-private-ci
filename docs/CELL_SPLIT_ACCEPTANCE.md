@@ -329,6 +329,17 @@ read-only Observer receipt. A source-only test simulates a still-valid revision
 rejection before the live effect owners are queried; another moves the
 high-water during the four reads and must fail afterwards.
 
+A concrete read-only `CellSplitSupervisorMonotonicUnixPortV1` now connects
+this trait to a separately administered Unix socket using an externally
+pinned Ed25519 verification key. The transport sends **only domain and a
+fresh challenge**; no caller-selected epoch, revision or checkpoint hash is
+transmitted. It rejects symlinked endpoints, malformed or contradictory
+responses, wrong signer/domain/nonce and slow or incomplete frames with
+a bounded whole-frame deadline. The six associated socket regressions are
+wired to the exact-source architecture CI. This is client-side authentication
+of an *existing external service*, not a hosted monotonic service or
+deployment proof.
+
 The separate high-water port intentionally has **no local filesystem
 implementation or allow-all default**. It must be connected to a real
 independently managed, rollback-resistant service whose signer key is not
