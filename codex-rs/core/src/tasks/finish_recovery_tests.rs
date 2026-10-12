@@ -244,26 +244,27 @@ async fn recovery_publication_outcome_is_required_for_early_admission(case: Publ
     );
     assert!(session.has_pending_admission_fence());
     assert!(session.has_pending_task_terminalization());
-    let state = authority.state.lock().await;
-    assert_eq!(
-        (
-            authority.ready.load(Ordering::Acquire),
-            state.poisoned,
-            state.durable_state,
-            state.generation
-        ),
-        (
-            false,
-            !clean,
-            if clean {
-                DurableRecoveryState::InterruptedConfirmed
-            } else {
-                DurableRecoveryState::Unready
-            },
-            if clean || tombstone_fails { 1 } else { 3 }
-        )
-    );
-    drop(state);
+    {
+        let state = authority.state.lock().await;
+        assert_eq!(
+            (
+                authority.ready.load(Ordering::Acquire),
+                state.poisoned,
+                state.durable_state,
+                state.generation
+            ),
+            (
+                false,
+                !clean,
+                if clean {
+                    DurableRecoveryState::InterruptedConfirmed
+                } else {
+                    DurableRecoveryState::Unready
+                },
+                if clean || tombstone_fails { 1 } else { 3 }
+            )
+        );
+    }
     assert_eq!(
         session
             .recovery_candidate

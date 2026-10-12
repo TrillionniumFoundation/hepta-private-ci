@@ -361,10 +361,10 @@ fi
         # Git/bin/bash.exe prepends Git's tools to PATH before starting Bash.
         # Install the fault in that shell so its real rm cannot shadow it.
         driver.write_text(
-            'rm() {\n'
+            "rm() {\n"
             '  printf "%s\\n" "$@" > "$BAZEL_PROBE_RM_LOG"\n'
-            '  return 23\n'
-            '}\n'
+            "  return 23\n"
+            "}\n"
             'source "$@"\n',
             encoding="utf-8",
             newline="\n",
