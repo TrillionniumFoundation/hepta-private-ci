@@ -21,11 +21,17 @@ fn windows_git_child_lifetime_fixture() {
     if std::env::var_os("CODEX_GIT_PROCESS_TEST_CHILD").is_none() {
         return;
     }
-    let ready = std::env::var_os("CHILD_READY_FILE").expect("child ready path");
-    let release = std::env::var_os("RELEASE_CHILD_FILE").expect("child release path");
-    let survived = std::env::var_os("CHILD_SURVIVED_FILE").expect("child survived path");
+    let ready = std::path::PathBuf::from(
+        std::env::var_os("CHILD_READY_FILE").expect("child ready path"),
+    );
+    let release = std::path::PathBuf::from(
+        std::env::var_os("RELEASE_CHILD_FILE").expect("child release path"),
+    );
+    let survived = std::path::PathBuf::from(
+        std::env::var_os("CHILD_SURVIVED_FILE").expect("child survived path"),
+    );
     std::fs::write(ready, "ready").expect("mark child ready");
-    while !std::path::Path::new(&release).exists() {
+    while !release.exists() {
         std::thread::sleep(Duration::from_millis(25));
     }
     std::thread::sleep(Duration::from_secs(1));
