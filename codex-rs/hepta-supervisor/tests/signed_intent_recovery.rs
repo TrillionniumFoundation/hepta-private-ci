@@ -122,7 +122,7 @@ fn write_intent_raw(
 }
 
 #[test]
-fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorError> {
+fn unsigned_digest_abort_directive_cannot_clear_signed_production_recovery_fence() -> Result<(), SupervisorError> {
     let fleet = fleet()?;
     let starting =
         fleet
@@ -169,6 +169,12 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
     assert!(!first.snapshot(&fleet.agent_id).expect("snapshot").active);
     drop(first);
 
+    // The legacy digest-only operator directive is NOT a production
+    // recovery authorization. It proves bytes, not Principal, issuer,
+    // signatory, revocation frontier or release-state CAS. Publishing it
+    // must never auto-clear the genuine signed RecoveryRequired fence.
+    // Production recovery is performed by resolve_production_recovery()
+    // with a verified, independently signed ProductionRecoveryDecision.
     let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
@@ -177,12 +183,13 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
     let (recovered, report) =
         Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
     assert!(report.faults.is_empty());
-    assert!(!recovered.production_recovery_required(&fleet.agent_id)?);
-    assert!(!recovered.any_production_recovery_required());
+    assert!(recovered.production_recovery_required(&fleet.agent_id)?);
+    assert!(recovered.any_production_recovery_required());
+    assert!(!recovered.snapshot(&fleet.agent_id).expect("snapshot").active);
     let terminal = read_signed_intent(record.layout.run_root())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?
-        .expect("terminal intent");
-    assert_eq!(terminal.status, SignedIntentStatus::Aborted);
+        .expect("still fenced signed intent");
+    assert_eq!(terminal.status, SignedIntentStatus::RecoveryRequired);
     assert_eq!(terminal.target_release, "target-release");
     Ok(())
 }
