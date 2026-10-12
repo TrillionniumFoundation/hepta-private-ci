@@ -1476,3 +1476,52 @@ fn same_third_party_route_in_rollback_and_tombstone_still_fails() {
         "a fully signed tombstone on a third route cannot replace the original parent",
     );
 }
+
+#[test]
+fn signed_host_cannot_launder_extra_gpu_or_npu_sample_in_lifecycle_event() {
+    let mut payload = complete_recorder();
+    // Construct a report signed by BOTH trusted parties, with a valid hash
+    // chain, but with an extra fabricated NPU sample attached to ArtifactLoaded
+    // rather than a typed resource measurement operation.
+    let mut extra = payload
+        .events
+        .iter()
+        .find_map(|event| event.resource.clone())
+        .expect("existing real-format resource sample");
+    extra.hardware = CellSplitTargetHardwareV1::Npu;
+    extra.hardware_model = "different-unmeasured-hardware".to_string();
+    payload.events[0].resource = Some(extra);
+    let mut previous = ZERO_DIGEST.to_string();
+    for event in &mut payload.events {
+        event.previous_event_digest = previous;
+        event.event_digest = event_digest(event).expect("rehashed event");
+        previous = event.event_digest.clone();
+    }
+    payload.evidence_digest = evidence_digest(&payload).expect("rehashed payload");
+
+    let host = key(101);
+    let observer = key(103);
+    let payload_bytes = payload.canonical_bytes().expect("canonical payload");
+    let envelope = CellSplitSignedTargetHostEvidenceV1 {
+        schema: CELL_SPLIT_SIGNED_TARGET_HOST_EVIDENCE_SCHEMA_V1.to_string(),
+        schema_version: 1,
+        signature_algorithm: CELL_SPLIT_TARGET_HOST_EVIDENCE_SIGNATURE_ALGORITHM_V1.to_string(),
+        host_signature: sign_payload("host-signer".to_string(), &host, &payload_bytes),
+        observer_signatures: vec![sign_payload(
+            "observer-signer".to_string(),
+            &observer,
+            &payload_bytes,
+        )],
+        payload,
+    };
+    let error = verify_cell_split_target_host_evidence(
+        &envelope,
+        &policy(&host, &observer),
+    )
+    .expect_err("signed lifecycle data must not masquerade as hardware measurements");
+    assert!(
+        error
+            .to_string()
+            .contains("resource sample is not a ResourceMeasurement event")
+    );
+}
