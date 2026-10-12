@@ -1097,7 +1097,19 @@ mod tests {
             .tombstone_persisted(&state_path)
             .expect("tombstone");
         assert!(tombstone.tombstoned);
-        let mut tombstoned = DecisionCellOwnerV1::reopen_from_state_snapshot(
+        // Tombstone is terminal even across crash/reopen. The signed state
+        // owner must not load historical bytes into a serving DecisionCell.
+        assert_eq!(reopened.phase(), DecisionCellPhaseV1::Tombstoned);
+        assert!(matches!(
+            reopened.load_committed_artifact(
+                id("artifact.after-tombstone"),
+                File::open(artifact_root.join("policy.bin")).expect("policy"),
+                &registry,
+                "policy.bin",
+            ),
+            Err(DecisionCellOwnerErrorV1::Tombstoned)
+        ));
+        let reopened_tombstone = DecisionCellOwnerV1::reopen_from_state_snapshot(
             &state_path,
             id("decision.state.owner"),
             key,
@@ -1106,17 +1118,12 @@ mod tests {
             reopened.artifact.clone(),
             reopened.artifact_owner.clone(),
             reopened.initial_state.clone(),
-        )
-        .expect("reopen tombstone");
-        assert_eq!(tombstoned.phase(), DecisionCellPhaseV1::Tombstoned);
+        );
         assert!(matches!(
-            tombstoned.load_committed_artifact(
-                id("artifact.after-tombstone"),
-                File::open(artifact_root.join("policy.bin")).expect("policy"),
-                &registry,
-                "policy.bin",
-            ),
-            Err(DecisionCellOwnerErrorV1::Tombstoned)
+            reopened_tombstone,
+            Err(DecisionCellOwnerErrorV1::Artifact(
+                ProductionOwnerError::StateTombstoned(_)
+            ))
         ));
         fs::remove_dir_all(artifact_root).expect("cleanup");
     }
