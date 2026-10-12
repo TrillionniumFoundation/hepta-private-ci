@@ -51,6 +51,34 @@ impl CurrentScopeRoutePortV1 for SingleStaleScopeRoutesV1 {
 }
 
 #[derive(Debug)]
+struct CountingRouteGuardV1 {
+    active: std::sync::Arc<std::sync::atomic::AtomicUsize>,
+}
+
+impl Drop for CountingRouteGuardV1 {
+    fn drop(&mut self) {
+        self.active.fetch_sub(1, std::sync::atomic::Ordering::SeqCst);
+    }
+}
+
+#[derive(Debug)]
+struct CountingCurrentScopeRoutesV1 {
+    active: std::sync::Arc<std::sync::atomic::AtomicUsize>,
+}
+
+impl CurrentScopeRoutePortV1 for CountingCurrentScopeRoutesV1 {
+    fn enter_exact_route(
+        &self,
+        _key: &MicrobatchKeyV1,
+    ) -> Result<Box<dyn ScopedRouteEffectGuardV1>, BatchWorkerErrorV1> {
+        self.active.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        Ok(Box::new(CountingRouteGuardV1 {
+            active: std::sync::Arc::clone(&self.active),
+        }))
+    }
+}
+
+#[derive(Debug)]
 struct FixtureMetricSink {
     reject_records: bool,
 }
@@ -78,6 +106,7 @@ impl codex_hepta_types::PhaseMetricSinkV1 for FixtureMetricSink {
 
 struct Driver {
     batch_calls: std::sync::Arc<std::sync::atomic::AtomicUsize>,
+    route_guard_probe: Option<(std::sync::Arc<std::sync::atomic::AtomicUsize>, usize)>,
 }
 
 impl ModelDriver for Driver {
@@ -199,6 +228,24 @@ fn runner_with_counter(
     batch_size: usize,
     batch_calls: std::sync::Arc<std::sync::atomic::AtomicUsize>,
 ) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
+    runner_with_guard_probe(
+        signing_key,
+        directory,
+        model,
+        batch_size,
+        batch_calls,
+        None,
+    )
+}
+
+fn runner_with_guard_probe(
+    signing_key: &SigningKey,
+    directory: &std::path::Path,
+    model: ModelManifest,
+    batch_size: usize,
+    batch_calls: std::sync::Arc<std::sync::atomic::AtomicUsize>,
+    route_guard_probe: Option<(std::sync::Arc<std::sync::atomic::AtomicUsize>, usize)>,
+) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
     let head = FinalUseRevocations {
         authority_epoch: 9,
         revision: 1,
@@ -223,7 +270,17 @@ fn runner_with_counter(
         semantic_digest: digest(b"resource-grant").to_string(),
     };
     let mut worker =
-        InferenceWorker::new(100, "worker-one".into(), 3, grant, Driver { batch_calls }).unwrap();
+        InferenceWorker::new(
+            100,
+            "worker-one".into(),
+            3,
+            grant,
+            Driver {
+                batch_calls,
+                route_guard_probe,
+            },
+        )
+        .unwrap();
     worker.load_model(100, model).unwrap();
     AuthenticatedNeuronMicrobatchWorkerV1::new(
         worker,
@@ -404,6 +461,11 @@ impl crate::model_worker::NeuronPhysicalBatchDriver for Driver {
         requests: &[NeuronFeatureRequest],
     ) -> Result<crate::model_worker::PhysicalBatchRunObservationV1, Error> {
         // Conformance fixture only; physical forward evidence requires hardware.
+        if let Some((active, expected)) = &self.route_guard_probe {
+            if active.load(std::sync::atomic::Ordering::SeqCst) != *expected {
+                return Err(Error::FeatureContract);
+            }
+        }
         self.batch_calls
             .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
         let items = requests
