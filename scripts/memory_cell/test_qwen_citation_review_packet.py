@@ -9,8 +9,15 @@ from unittest.mock import patch
 import qwen_citation_review_packet as review
 
 ALL = (
-    "selected_k", "hybrid_k4", "hybrid_k6", "hybrid_k4_reversed",
-    "single_hop", "entity_time", "organized", "program_support", "empty",
+    "selected_k",
+    "hybrid_k4",
+    "hybrid_k6",
+    "hybrid_k4_reversed",
+    "single_hop",
+    "entity_time",
+    "organized",
+    "program_support",
+    "empty",
 )
 
 
@@ -18,28 +25,55 @@ def sample():
     cases, docs, rows = [], [], []
     for k in range(8):
         qid = f"scope{k}"
-        cases.append(dict(query=dict(identity=qid, scope=qid,
-            content=f"Which site {k}?", observed_at="2026-10-11T00:00:00Z")))
+        cases.append(
+            dict(
+                query=dict(
+                    identity=qid,
+                    scope=qid,
+                    content=f"Which site {k}?",
+                    observed_at="2026-10-11T00:00:00Z",
+                )
+            )
+        )
         source = f"event{k}"
         content = json.dumps(dict(id=source, value="site_1"))
         docs.append(dict(identity=source, scope=qid, root=f"root{k}", content=content))
         for arm in ALL:
             empty = arm == "empty"
-            rows.append(dict(
-                question_id=qid, arm=arm, status="succeeded",
-                answer="unknown" if empty else "site_1 [E1]",
-                selected=[] if empty else [source],
-                receipt=dict(delivered_evidence=[] if empty else [dict(
-                    original_id=source, label="E1", excerpt=content,
-                    source_digest=review.digest(content), root=f"root{k}",
-                    scope=qid, source_start=0, source_end=len(content.encode()),
-                )]),
-            ))
+            rows.append(
+                dict(
+                    question_id=qid,
+                    arm=arm,
+                    status="succeeded",
+                    answer="unknown" if empty else "site_1 [E1]",
+                    selected=[] if empty else [source],
+                    receipt=dict(
+                        delivered_evidence=[]
+                        if empty
+                        else [
+                            dict(
+                                original_id=source,
+                                label="E1",
+                                excerpt=content,
+                                source_digest=review.digest(content),
+                                root=f"root{k}",
+                                scope=qid,
+                                source_start=0,
+                                source_end=len(content.encode()),
+                            )
+                        ]
+                    ),
+                )
+            )
     for k in range(100):
-        docs.append(dict(identity=f"extra{k}", scope="extra", root="extra", content="x"))
-    original = {"plan/plan.json":json.dumps(dict(cases=cases)).encode(),
-        "plan/source-view.json":json.dumps(docs).encode()}
-    full = {"tested-commit.txt":review.SOURCE_PINS["A"]["commit"].encode()}
+        docs.append(
+            dict(identity=f"extra{k}", scope="extra", root="extra", content="x")
+        )
+    original = {
+        "plan/plan.json": json.dumps(dict(cases=cases)).encode(),
+        "plan/source-view.json": json.dumps(docs).encode(),
+    }
+    full = {"tested-commit.txt": review.SOURCE_PINS["A"]["commit"].encode()}
     original_receipt = dict(
         generating_commit=review.SOURCE_PINS["A"]["commit"],
         model_identity="f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
@@ -47,7 +81,7 @@ def sample():
         evaluation=dict(attempts=72, all_model_calls_succeeded=True),
         production_accepted=False,
     )
-    replay = {"shard-replay.json":json.dumps(original_receipt).encode()}
+    replay = {"shard-replay.json": json.dumps(original_receipt).encode()}
     full["evaluation/raw-answers.jsonl"] = (
         "\n".join(json.dumps(r) for r in rows) + "\n"
     ).encode()
@@ -59,9 +93,13 @@ class ReviewerPacketTests(unittest.TestCase):
         source, full, replay, _ = fixture
         with (
             patch.object(review, "open_sealed", side_effect=(source, full, replay)),
-            patch.object(review, "PLAN", review.sha256(source["plan/plan.json"]).hexdigest()),
+            patch.object(
+                review, "PLAN", review.sha256(source["plan/plan.json"]).hexdigest()
+            ),
         ):
-            return review.packet(Path("source.zip"), Path("full.zip"), Path("replay.zip"))
+            return review.packet(
+                Path("source.zip"), Path("full.zip"), Path("replay.zip")
+            )
 
     def test_complete_output_has_40_blinded_original_answers(self):
         result = self.generate(sample())
@@ -73,13 +111,18 @@ class ReviewerPacketTests(unittest.TestCase):
         for row in result["items"]:
             self.assertTrue(row["original_answer"])
             self.assertEqual(row["claim_judgement"], "unreviewed")
-            self.assertFalse({"arm", "kind", "expected", "support", "strict_task_success"} & row.keys())
+            self.assertFalse(
+                {"arm", "kind", "expected", "support", "strict_task_success"}
+                & row.keys()
+            )
 
     def test_byte_reproducible_review_order(self):
         first = self.generate(sample())
         self.assertEqual(first, self.generate(sample()))
-        self.assertEqual([r["review_id"] for r in first["items"]],
-                         sorted(r["review_id"] for r in first["items"]))
+        self.assertEqual(
+            [r["review_id"] for r in first["items"]],
+            sorted(r["review_id"] for r in first["items"]),
+        )
 
     def test_tampered_original_excerpt_rejected(self):
         files = list(sample())
@@ -114,7 +157,9 @@ class ReviewerPacketTests(unittest.TestCase):
             "\n".join(json.dumps(r) for r in files[3]) + "\n"
         ).encode()
         result = self.generate(files)
-        self.assertEqual(sum("E9" in r["unknown_citation_labels"] for r in result["items"]), 1)
+        self.assertEqual(
+            sum("E9" in r["unknown_citation_labels"] for r in result["items"]), 1
+        )
 
 
 if __name__ == "__main__":

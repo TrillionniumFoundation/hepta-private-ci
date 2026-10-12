@@ -16,21 +16,34 @@ def fixture(*, adapted=False):
     after = [1.0, 7.0]
     arm = "lineage_lora_gated" if adapted else "gated"
     geometry = inspect_selection(
-        encoder, after, ids, 1,
+        encoder,
+        after,
+        ids,
+        1,
         original_frozen_scores=before,
         encoder_adapted=adapted,
     )
     record = dict(
-        stage=16, phase="test", question_id="test-1", arm=arm,
-        cell="general", family="source-family-1", status="succeeded",
-        selected=1, pool_digest="sealed-pool",
+        stage=16,
+        phase="test",
+        question_id="test-1",
+        arm=arm,
+        cell="general",
+        family="source-family-1",
+        status="succeeded",
+        selected=1,
+        pool_digest="sealed-pool",
         feature_digest="c" * 64 if adapted else "b" * 64,
         selection_geometry=geometry,
     )
     vectors = dict(
         schema="hepta.stem-selection-score-vectors.v1",
-        stage=16, phase="test", question_id="test-1", arm=arm,
-        cell="general", source_family="source-family-1",
+        stage=16,
+        phase="test",
+        question_id="test-1",
+        arm=arm,
+        cell="general",
+        source_family="source-family-1",
         candidate_ids=list(ids),
         original_frozen_logits=before,
         post_adapter_encoder_logits=encoder,
@@ -41,7 +54,9 @@ def fixture(*, adapted=False):
         geometry_sha256=digest(geometry),
         original_feature_sha256="b" * 64,
         checkpoint_feature_sha256="c" * 64 if adapted else "b" * 64,
-        selected_index=1, encoder_adapted=adapted, null_logit=0.0,
+        selected_index=1,
+        encoder_adapted=adapted,
+        null_logit=0.0,
         answer_targets_read=False,
         source_excerpts_recorded=False,
         production_accepted=False,
@@ -74,10 +89,14 @@ class ScoreReplayTests(unittest.TestCase):
     def test_modified_logits_with_forged_original_hash_fail_math(self):
         p, v = fixture()
         v["checkpoint_head_logits"][0] = 1.5
-        v["raw_scores_sha256"] = digest((
-            tuple(v["candidate_ids"]), v["original_frozen_logits"],
-            v["post_adapter_encoder_logits"], v["checkpoint_head_logits"],
-        ))
+        v["raw_scores_sha256"] = digest(
+            (
+                tuple(v["candidate_ids"]),
+                v["original_frozen_logits"],
+                v["post_adapter_encoder_logits"],
+                v["checkpoint_head_logits"],
+            )
+        )
         p["selection_geometry"]["raw_scores_sha256"] = v["raw_scores_sha256"]
         v["geometry_sha256"] = digest(p["selection_geometry"])
         with self.assertRaises(AuditError):
@@ -107,7 +126,8 @@ class ScoreReplayTests(unittest.TestCase):
     def test_extra_duplicate_and_missing_score_receipts_fail(self):
         p, v = fixture()
         for rows, vectors in (
-            ([p], []), ([p], [v, deepcopy(v)]),
+            ([p], []),
+            ([p], [v, deepcopy(v)]),
             ([p, deepcopy(p)], [v]),
         ):
             with self.assertRaises(AuditError):

@@ -17,8 +17,12 @@ from native import digest
 from stem_audit_archive import require, parse_json
 
 ARMS = (
-    "frozen_rerank", "prototype", "linear", "gated",
-    "lineage_lora_gated", "independent_lora_gated",
+    "frozen_rerank",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated",
 )
 STAGES = (16, 32, 48)
 PHASES = ("select", "retention", "test", "transfer")
@@ -27,7 +31,8 @@ PHASES = ("select", "retention", "test", "transfer")
 def _best(scores, identifiers):
     return (
         min(range(len(identifiers)), key=lambda i: (-scores[i], identifiers[i]))
-        if identifiers else None
+        if identifiers
+        else None
     )
 
 
@@ -66,19 +71,17 @@ def _same(observed, expected):
 
 
 def replay_one(policy, raw):
-    identity = (
-        policy["stage"], policy["phase"], policy["question_id"], policy["arm"]
-    )
+    identity = (policy["stage"], policy["phase"], policy["question_id"], policy["arm"])
     require(
-        identity == (raw.get("stage"), raw.get("phase"),
-                     raw.get("question_id"), raw.get("arm"))
-        and identity[0] in STAGES and identity[1] in PHASES
+        identity
+        == (raw.get("stage"), raw.get("phase"), raw.get("question_id"), raw.get("arm"))
+        and identity[0] in STAGES
+        and identity[1] in PHASES
         and identity[3] in ARMS
         and policy["cell"] == raw.get("cell")
         and policy["family"] == raw.get("source_family")
         and policy.get("selection_geometry") is not None
-        and policy["selection_geometry"]["schema"]
-        == "hepta.stem-selection-geometry.v2"
+        and policy["selection_geometry"]["schema"] == "hepta.stem-selection-geometry.v2"
         and raw.get("schema") == "hepta.stem-selection-score-vectors.v1"
         and raw.get("answer_targets_read") is False
         and raw.get("source_excerpts_recorded") is False
@@ -97,10 +100,12 @@ def replay_one(policy, raw):
         and all(isinstance(x, str) and bool(x) for x in ids)
         and len(ids) == len(set(ids))
         and len(ids) <= 64
-        and all(isinstance(x, list) and len(x) == len(ids)
-                for x in (old, mid, after))
-        and all(type(v) in (float, int) and math.isfinite(v)
-                for vector in (old, mid, after) for v in vector)
+        and all(isinstance(x, list) and len(x) == len(ids) for x in (old, mid, after))
+        and all(
+            type(v) in (float, int) and math.isfinite(v)
+            for vector in (old, mid, after)
+            for v in vector
+        )
         and isinstance(raw.get("source_pool_sha256"), str)
         and raw["source_pool_sha256"] == policy.get("pool_digest")
         and isinstance(raw.get("candidate_ids_sha256"), str)
@@ -110,8 +115,11 @@ def replay_one(policy, raw):
         and raw.get("geometry_sha256") == digest(geom)
         and raw.get("raw_scores_sha256") == geom["raw_scores_sha256"]
         and raw["raw_scores_sha256"] == digest((tuple(ids), old, mid, after))
-        and (raw.get("selected_index") == geom["selected_index"]
-             == policy.get("selected")),
+        and (
+            raw.get("selected_index")
+            == geom["selected_index"]
+            == policy.get("selected")
+        ),
         "misbound/malformed numeric logit vectors or score/feature source pins",
     )
     adapted = identity[3] in ("lineage_lora_gated", "independent_lora_gated")
@@ -129,15 +137,13 @@ def replay_one(policy, raw):
     if not adapted:
         require(
             old == mid
-            and raw["original_feature_sha256"]
-            == raw["checkpoint_feature_sha256"],
+            and raw["original_feature_sha256"] == raw["checkpoint_feature_sha256"],
             "nonadapted arm substituted a second Encoder representation",
         )
     if identity[3] == "frozen_rerank":
         require(after == old, "frozen baseline cannot have trained score residual")
     require(
-        raw.get("encoder_adapted") is adapted
-        and geom["encoder_adapted"] is adapted,
+        raw.get("encoder_adapted") is adapted and geom["encoder_adapted"] is adapted,
         "adapter-backed logits masquerade as original frozen Encoder",
     )
     bo, bm, bh = (_best(v, ids) for v in (old, mid, after))
@@ -152,21 +158,23 @@ def replay_one(policy, raw):
         and (bo != bh) is geom["changed_selected_candidate"],
         "actual winner or three-way Encoder/Head attribution disagrees",
     )
-    encoder_delta = max((abs(x - y) for x, y in zip(old, mid, strict=True)),
-                        default=0.0)
-    head_delta = max((abs(x - y) for x, y in zip(mid, after, strict=True)),
-                     default=0.0)
-    total_delta = max((abs(x - y) for x, y in zip(old, after, strict=True)),
-                      default=0.0)
+    encoder_delta = max(
+        (abs(x - y) for x, y in zip(old, mid, strict=True)), default=0.0
+    )
+    head_delta = max((abs(x - y) for x, y in zip(mid, after, strict=True)), default=0.0)
+    total_delta = max(
+        (abs(x - y) for x, y in zip(old, after, strict=True)), default=0.0
+    )
     gap = _gap(old, ids)
     expected = dict(
-        frozen_top1_gap=gap, encoder_only_top1_gap=_gap(mid, ids),
+        frozen_top1_gap=gap,
+        encoder_only_top1_gap=_gap(mid, ids),
         learned_top1_gap=_gap(after, ids),
         encoder_only_max_abs_score_delta=encoder_delta,
         head_conditional_max_abs_score_delta=head_delta,
         max_abs_score_delta=total_delta,
         gap_exceeds_twice_max_residual=(
-            gap > 2*total_delta if gap is not None else None
+            gap > 2 * total_delta if gap is not None else None
         ),
         encoder_only_flip_scale_infimum=_min_flip_scale(old, mid, ids),
         head_conditional_flip_scale_infimum=_min_flip_scale(mid, after, ids),
@@ -176,8 +184,10 @@ def replay_one(policy, raw):
         if name == "gap_exceeds_twice_max_residual":
             require(geom.get(name) is v, "original rank stability bound changed")
         else:
-            require(_same(geom.get(name), v),
-                    "original derived geometry does not match source logits: " + name)
+            require(
+                _same(geom.get(name), v),
+                "original derived geometry does not match source logits: " + name,
+            )
     require(
         geom["candidate_count"] == len(ids)
         and geom["label_free"] is True
@@ -186,9 +196,13 @@ def replay_one(policy, raw):
         "invalid evidence-free source geometry",
     )
     return dict(
-        stage=identity[0], phase=identity[1], arm=identity[3],
-        cell=raw["cell"], question_id=identity[2],
-        candidate_count=len(ids), original_rank_equals_adapted=(bo == bm),
+        stage=identity[0],
+        phase=identity[1],
+        arm=identity[3],
+        cell=raw["cell"],
+        question_id=identity[2],
+        candidate_count=len(ids),
+        original_rank_equals_adapted=(bo == bm),
         source_rank_changed=(bo != bh),
         direction_can_flip=expected["joint_flip_scale_infimum"] is not None,
         scale_infimum=expected["joint_flip_scale_infimum"],
@@ -205,7 +219,9 @@ def replay_all(predictions, journal):
     observed, frozen_anchor = {}, {}
     for r in journal:
         key = (r["stage"], r["phase"], r["question_id"], r["arm"])
-        require(key in indexed and key not in observed, "extra/duplicate score-vector row")
+        require(
+            key in indexed and key not in observed, "extra/duplicate score-vector row"
+        )
         observed[key] = replay_one(indexed[key], r)
         # All six arms and all persistent checkpoints use the SAME frozen
         # original query, source scope, candidate set and pair-Encoder bytes.
@@ -217,7 +233,8 @@ def replay_all(predictions, journal):
             tuple(r["original_frozen_logits"]),
             r["original_feature_sha256"],
             r["source_pool_sha256"],
-            r["cell"], r["source_family"],
+            r["cell"],
+            r["source_family"],
         )
         if identity in frozen_anchor:
             require(
@@ -226,8 +243,7 @@ def replay_all(predictions, journal):
             )
         else:
             frozen_anchor[identity] = anchor
-    expected = {key for key, row in indexed.items()
-                if "selection_geometry" in row}
+    expected = {key for key, row in indexed.items() if "selection_geometry" in row}
     require(set(observed) == expected, "missing pre-Reader score vectors")
     group = defaultdict(list)
     for item in observed.values():
@@ -243,13 +259,18 @@ def replay_all(predictions, journal):
         by_stage_phase_arm={
             "/".join(map(str, key)): dict(
                 observed=len(values),
-                actual_source_rank_changes=sum(x["source_rank_changed"] for x in values),
-                unscalable_wrong_direction=sum(not x["direction_can_flip"]
-                                               for x in values),
+                actual_source_rank_changes=sum(
+                    x["source_rank_changed"] for x in values
+                ),
+                unscalable_wrong_direction=sum(
+                    not x["direction_can_flip"] for x in values
+                ),
                 direction_viable_needs_scale_above_one=sum(
-                    x["scale_infimum"] is not None
-                    and x["scale_infimum"] > 1 for x in values),
-            ) for key, values in sorted(group.items())
+                    x["scale_infimum"] is not None and x["scale_infimum"] > 1
+                    for x in values
+                ),
+            )
+            for key, values in sorted(group.items())
         },
         raw_source_excerpts_stored=False,
         target_or_semantic_gold_read=False,
@@ -260,8 +281,12 @@ def replay_all(predictions, journal):
 
 
 def _read_json(path, *, lines=False):
-    require(path.is_file() and not path.is_symlink()
-            and path.stat().st_size <= 64 * 1024 * 1024, "bounded regular file required")
+    require(
+        path.is_file()
+        and not path.is_symlink()
+        and path.stat().st_size <= 64 * 1024 * 1024,
+        "bounded regular file required",
+    )
     data = path.read_bytes()
     if lines:
         records = [parse_json(row) for row in data.splitlines()]
@@ -276,8 +301,9 @@ def main():
     parser.add_argument("--scores", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    result = replay_all(_read_json(args.policies, lines=True),
-                        _read_json(args.scores, lines=True))
+    result = replay_all(
+        _read_json(args.policies, lines=True), _read_json(args.scores, lines=True)
+    )
     with args.output.open("x", encoding="utf-8") as stream:
         json.dump(result, stream, indent=2, allow_nan=False, sort_keys=True)
         stream.write("\n")

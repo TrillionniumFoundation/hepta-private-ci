@@ -684,8 +684,11 @@ def run(staged, ranker_dir, output):
                                 output / "selection-score-journal.jsonl",
                                 dict(
                                     schema="hepta.stem-selection-score-vectors.v1",
-                                    stage=stage, phase=phase, arm=arm,
-                                    cell=cell, question_id=q.identity,
+                                    stage=stage,
+                                    phase=phase,
+                                    arm=arm,
+                                    cell=cell,
+                                    question_id=q.identity,
                                     source_family=item["family"],
                                     candidate_ids=list(f.candidate_ids),
                                     candidate_ids_sha256=digest(f.candidate_ids),
@@ -694,14 +697,19 @@ def run(staged, ranker_dir, output):
                                     checkpoint_feature_sha256=item["feature_digest"],
                                     original_frozen_logits=original.frozen_scores.tolist(),
                                     post_adapter_encoder_logits=f.frozen_scores.tolist(),
-                                    checkpoint_head_logits=values[:len(f.candidate_ids)],
+                                    checkpoint_head_logits=values[
+                                        : len(f.candidate_ids)
+                                    ],
                                     null_logit=values[len(f.candidate_ids)],
                                     selected_index=selected,
-                                    encoder_adapted=arm in (
+                                    encoder_adapted=arm
+                                    in (
                                         "lineage_lora_gated",
                                         "independent_lora_gated",
                                     ),
-                                    raw_scores_sha256=item["selection_geometry"]["raw_scores_sha256"],
+                                    raw_scores_sha256=item["selection_geometry"][
+                                        "raw_scores_sha256"
+                                    ],
                                     geometry_sha256=digest(item["selection_geometry"]),
                                     answer_targets_read=False,
                                     source_excerpts_recorded=False,

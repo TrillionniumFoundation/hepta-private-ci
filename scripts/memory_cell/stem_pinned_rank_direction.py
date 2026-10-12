@@ -20,23 +20,32 @@ SOURCE = "cb9e98365b5f46e00fb2693f548a7215b1ed1145"
 TREE = "022c9aa8abc095c91ef744644329aaed12564859"
 ZIP_SHA256 = "be3393f448993451c7860e8867e28a79f5fb7f95d5773f79ed55b30d12a84776"
 ARMS = (
-    "frozen_rerank", "prototype", "linear", "gated",
-    "lineage_lora_gated", "independent_lora_gated",
+    "frozen_rerank",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated",
 )
 STAGES = (16, 32, 48)
 PHASES = ("select", "retention", "test", "transfer")
 CELLS = ("general", "temporal")
 FIELDS = (
-    "observed_pre_reader_decisions", "competing_pools",
-    "changed_top1_count", "joint_direction_can_flip_count",
-    "joint_direction_cannot_flip_count", "joint_requires_scale_above_one_count",
+    "observed_pre_reader_decisions",
+    "competing_pools",
+    "changed_top1_count",
+    "joint_direction_can_flip_count",
+    "joint_direction_cannot_flip_count",
+    "joint_requires_scale_above_one_count",
 )
 
 
 def _scale(value):
     require(
         value is None
-        or type(value) in (int, float) and math.isfinite(value) and value >= 0,
+        or type(value) in (int, float)
+        and math.isfinite(value)
+        and value >= 0,
         "invalid actual joint residual flip threshold",
     )
     return value
@@ -61,13 +70,17 @@ def audit_rank_direction(plan, predictions, persisted_geometry):
     )
     expected = {
         (stage, phase, qid, arm)
-        for stage in STAGES for phase in PHASES
-        for qid in cohorts[phase] for arm in ARMS
+        for stage in STAGES
+        for phase in PHASES
+        for qid in cohorts[phase]
+        for arm in ARMS
     }
     indexed, grouped = {}, defaultdict(list)
     for row in predictions:
         key = row["stage"], row["phase"], row["question_id"], row["arm"]
-        require(key in expected and key not in indexed, "unregistered or duplicated policy")
+        require(
+            key in expected and key not in indexed, "unregistered or duplicated policy"
+        )
         require(
             row["status"] == "succeeded"
             and row["cell"] == plan["routes"][row["question_id"]]
@@ -81,7 +94,8 @@ def audit_rank_direction(plan, predictions, persisted_geometry):
             and type(g.get("candidate_count")) is int
             and 2 <= g["candidate_count"] <= 64
             and g.get("has_ranking_competition") is True
-            and g.get("forced_top1") is False and g.get("empty_pool") is False
+            and g.get("forced_top1") is False
+            and g.get("empty_pool") is False
             and g.get("label_free") is True
             and g.get("evidence_entailment_evaluated") is False
             and g.get("no_answer_policy_calibrated") is False
@@ -90,7 +104,8 @@ def audit_rank_direction(plan, predictions, persisted_geometry):
             and re.fullmatch(r"[a-f0-9]{64}", g["raw_scores_sha256"]) is not None
             and type(g.get("selected_index")) is int
             and row.get("selected") == g["selected_index"]
-            and bool(g.get("baseline_top_id")) and bool(g.get("learned_top_id"))
+            and bool(g.get("baseline_top_id"))
+            and bool(g.get("learned_top_id"))
             and bool(g.get("encoder_only_top_id")),
             "unbound or unlabelled saved actual rank geometry",
         )
@@ -115,17 +130,23 @@ def audit_rank_direction(plan, predictions, persisted_geometry):
         head = _scale(g.get("head_conditional_flip_scale_infimum"))
         if row["arm"] == "frozen_rerank":
             require(
-                joint is None and encoder is None and head is None
+                joint is None
+                and encoder is None
+                and head is None
                 and g["baseline_top_id"] == g["learned_top_id"],
                 "nonlearning frozen control acquired a residual flip",
             )
         if joint is None:
-            require(not g["changed_selected_candidate"],
-                    "observed changed selection lacks possible joint flip")
+            require(
+                not g["changed_selected_candidate"],
+                "observed changed selection lacks possible joint flip",
+            )
         else:
             require(
-                joint >= 0 and (
-                    joint <= 1 + 1e-9 if g["changed_selected_candidate"]
+                joint >= 0
+                and (
+                    joint <= 1 + 1e-9
+                    if g["changed_selected_candidate"]
                     else joint >= 1 - 1e-9
                 ),
                 "actual top-1 change disagrees with residual scaling infimum",
@@ -139,8 +160,10 @@ def audit_rank_direction(plan, predictions, persisted_geometry):
         )
         indexed[key] = row
         grouped[(row["stage"], row["phase"], row["arm"])].append(g)
-    require(set(indexed) == expected and len(indexed) == 576,
-            "incomplete original 576 policy-choice record set")
+    require(
+        set(indexed) == expected and len(indexed) == 576,
+        "incomplete original 576 policy-choice record set",
+    )
     require(
         isinstance(persisted_geometry, dict) and len(persisted_geometry) == 72,
         "incomplete original 72 score-geometry checkpoint groups",
@@ -163,7 +186,8 @@ def audit_rank_direction(plan, predictions, persisted_geometry):
             ),
             joint_requires_scale_above_one_count=sum(
                 x["joint_flip_scale_infimum"] is not None
-                and x["joint_flip_scale_infimum"] > 1 for x in rows
+                and x["joint_flip_scale_infimum"] > 1
+                for x in rows
             ),
         )
         require(
@@ -171,12 +195,14 @@ def audit_rank_direction(plan, predictions, persisted_geometry):
             "rank-direction totals differ from original model-run report",
         )
         requires = sorted(
-            x["joint_flip_scale_infimum"] for x in rows
+            x["joint_flip_scale_infimum"]
+            for x in rows
             if x["joint_flip_scale_infimum"] is not None
             and x["joint_flip_scale_infimum"] > 1
         )
         by_group[key] = dict(
-            planned=8, observed=len(rows),
+            planned=8,
+            observed=len(rows),
             natural_rank_flips=computed["changed_top1_count"],
             directional_flip_possible=computed["joint_direction_can_flip_count"],
             direction_cannot_flip=computed["joint_direction_cannot_flip_count"],
@@ -204,10 +230,13 @@ def audit_rank_direction(plan, predictions, persisted_geometry):
         rows = [by_group[f"48/{phase}/{arm}"] for phase in ("test", "transfer")]
         final_heldout[arm] = dict(
             independent_question_count=16,
-            native_source_family_count=len({
-                plan["question_families"][qid]
-                for phase in ("test", "transfer") for qid in cohorts[phase]
-            }),
+            native_source_family_count=len(
+                {
+                    plan["question_families"][qid]
+                    for phase in ("test", "transfer")
+                    for qid in cohorts[phase]
+                }
+            ),
             natural_rank_flips=sum(x["natural_rank_flips"] for x in rows),
             direction_cannot_flip=sum(x["direction_cannot_flip"] for x in rows),
             direction_correct_but_scale_above_one=sum(
@@ -218,8 +247,10 @@ def audit_rank_direction(plan, predictions, persisted_geometry):
         )
     return dict(
         schema="hepta.stem-strict-pinned-rank-direction.v1",
-        generator_source=SOURCE, generator_tree=TREE,
-        registered_unique_questions=80, policy_attempts=576,
+        generator_source=SOURCE,
+        generator_tree=TREE,
+        registered_unique_questions=80,
+        policy_attempts=576,
         model_or_reader_executions=0,
         repeated_test_checkpoint_observations_not_independent=True,
         by_stage_phase_arm=by_group,

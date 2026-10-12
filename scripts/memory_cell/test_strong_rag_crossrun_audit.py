@@ -25,7 +25,7 @@ def example_archive(path, *, corrupt=False, name="input.json", symlink=False):
         info = zipfile.ZipInfo(name)
         if symlink:
             info.create_system = 3
-            info.external_attr = (0o120777 << 16)
+            info.external_attr = 0o120777 << 16
         z.writestr(info, b'{"answer":"tampered"}' if corrupt else payload)
         z.writestr("SHA256SUMS", (expected + "  " + name + "\n").encode())
     return digest(path.read_bytes())
@@ -33,11 +33,16 @@ def example_archive(path, *, corrupt=False, name="input.json", symlink=False):
 
 def row(*, answer="site_11111111 [E1]", prompt="f" * 64):
     return {
-        "question_id": "example", "arm": "k1", "selected": ["event1"],
-        "candidate_digest": "same-pool", "answer": answer,
+        "question_id": "example",
+        "arm": "k1",
+        "selected": ["event1"],
+        "candidate_digest": "same-pool",
+        "answer": answer,
         "receipt": {
-            "reader_identity": "model", "reader_profile": "profile",
-            "input_ids_digest": prompt, "input_tokens": 100,
+            "reader_identity": "model",
+            "reader_profile": "profile",
+            "input_ids_digest": prompt,
+            "input_tokens": 100,
             "generated_ids_digest": digest(answer.encode()),
             "delivered_evidence": [{"original_id": "event1", "excerpt": "original"}],
         },
@@ -47,10 +52,14 @@ def row(*, answer="site_11111111 [E1]", prompt="f" * 64):
 def mock_run(a):
     return {
         "model_identity": "model",
-        "calibration": {"raw": {("example", "k1"): a},
-                        "scored": {("example", "k1"): {"strict_task_success": True}}},
-        "evaluation": {"raw": {("example", "k1"): a},
-                       "scored": {("example", "k1"): {"strict_task_success": True}}},
+        "calibration": {
+            "raw": {("example", "k1"): a},
+            "scored": {("example", "k1"): {"strict_task_success": True}},
+        },
+        "evaluation": {
+            "raw": {("example", "k1"): a},
+            "scored": {("example", "k1"): {"strict_task_success": True}},
+        },
     }
 
 
@@ -157,9 +166,7 @@ class CrossRunAuditTests(unittest.TestCase):
         )
         self.assertFalse(report["production_accepted"])
         changes = report["unstable_original_prompt_cases"]["evaluation"]
-        self.assertEqual(
-            sum(x["strict_task_outcome_changed"] for x in changes), 2
-        )
+        self.assertEqual(sum(x["strict_task_outcome_changed"] for x in changes), 2)
 
 
 if __name__ == "__main__":

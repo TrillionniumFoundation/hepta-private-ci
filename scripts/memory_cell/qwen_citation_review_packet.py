@@ -14,8 +14,15 @@ ORIGINAL = "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b"
 PLAN = "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897"
 ARMS = ("selected_k", "hybrid_k4", "single_hop", "entity_time", "organized")
 ALL_ARMS = (
-    "selected_k", "hybrid_k4", "hybrid_k6", "hybrid_k4_reversed",
-    "single_hop", "entity_time", "organized", "program_support", "empty",
+    "selected_k",
+    "hybrid_k4",
+    "hybrid_k6",
+    "hybrid_k4_reversed",
+    "single_hop",
+    "entity_time",
+    "organized",
+    "program_support",
+    "empty",
 )
 MARKER = re.compile(r"\[(E[1-9][0-9]*)\]")
 SCHEMA = "hepta.memory-strong-rag.blind-citation-review-request.v1"
@@ -33,7 +40,8 @@ def packet(original: Path, reader: Path, replay: Path) -> dict:
     independent = strict_json(review["shard-replay.json"])
     if (
         independent["generating_commit"] != pin["commit"]
-        or independent["model_identity"] != "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225"
+        or independent["model_identity"]
+        != "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225"
         or independent["calibration"]["attempts"] != 40
         or independent["evaluation"]["attempts"] != 72
         or not independent["calibration"]["all_model_calls_succeeded"]
@@ -83,37 +91,51 @@ def packet(original: Path, reader: Path, replay: Path) -> dict:
                 or entry["source_end"] != len(src["content"].encode())
             ):
                 raise ValueError("delivered source detached from original bytes")
-            delivered.append(dict(
-                label=entry["label"], original_source_id=key,
-                original_text=entry["excerpt"],
-                original_source_sha256=sha256(entry["excerpt"].encode()).hexdigest(),
-            ))
+            delivered.append(
+                dict(
+                    label=entry["label"],
+                    original_source_id=key,
+                    original_text=entry["excerpt"],
+                    original_source_sha256=sha256(
+                        entry["excerpt"].encode()
+                    ).hexdigest(),
+                )
+            )
         cited = sorted(set(MARKER.findall(row["answer"])))
         item_id = sha256(
             (pin["commit"] + "\0" + row["question_id"] + "\0" + row["arm"]).encode()
         ).hexdigest()[:24]
-        items.append(dict(
-            review_id=item_id,
-            question=q["content"],
-            question_time=q["observed_at"],
-            original_answer=row["answer"],
-            original_sources=delivered,
-            cited_labels=cited,
-            unknown_citation_labels=sorted(set(cited) - {s["label"] for s in delivered}),
-            claim_judgement="unreviewed",
-            full_citation_chain_judgement="unreviewed",
-        ))
+        items.append(
+            dict(
+                review_id=item_id,
+                question=q["content"],
+                question_time=q["observed_at"],
+                original_answer=row["answer"],
+                original_sources=delivered,
+                cited_labels=cited,
+                unknown_citation_labels=sorted(
+                    set(cited) - {s["label"] for s in delivered}
+                ),
+                claim_judgement="unreviewed",
+                full_citation_chain_judgement="unreviewed",
+            )
+        )
     if len(items) != 40 or len({v["review_id"] for v in items}) != 40:
         raise ValueError("review population incomplete")
     return dict(
-        schema=SCHEMA, origin_commit=pin["commit"],
-        original_zip_sha256=ORIGINAL, model_zip_sha256=pin["full_sha256"],
+        schema=SCHEMA,
+        origin_commit=pin["commit"],
+        original_zip_sha256=ORIGINAL,
+        model_zip_sha256=pin["full_sha256"],
         independent_mechanical_replay_zip_sha256=pin["replay_sha256"],
-        original_plan_sha256=PLAN, review_items=40,
-        condition_names_omitted=True, expected_answers_omitted=True,
+        original_plan_sha256=PLAN,
+        review_items=40,
+        condition_names_omitted=True,
+        expected_answers_omitted=True,
         independent_human_review_performed=False,
         independently_sourced_question_families=False,
-        candidate_accepted=False, production_accepted=False,
+        candidate_accepted=False,
+        production_accepted=False,
         instructions="Judge entailment and complete citation paths; never infer gold labels.",
         items=sorted(items, key=lambda v: v["review_id"]),
     )
@@ -126,8 +148,14 @@ def main():
     args = parser.parse_args()
     result = packet(args.original, args.reader, args.replay)
     with args.output.open("x", encoding="utf-8") as stream:
-        json.dump(result, stream, sort_keys=True, ensure_ascii=False,
-                  separators=(",", ":"), allow_nan=False)
+        json.dump(
+            result,
+            stream,
+            sort_keys=True,
+            ensure_ascii=False,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
         stream.write("\n")
         stream.flush()
         os.fsync(stream.fileno())

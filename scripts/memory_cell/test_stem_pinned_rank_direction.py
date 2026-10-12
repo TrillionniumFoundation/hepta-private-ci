@@ -5,22 +5,27 @@ import unittest
 
 from stem_audit_archive import AuditError
 from stem_pinned_rank_direction import (
-    ARMS, PHASES, STAGES, audit_rank_direction,
+    ARMS,
+    PHASES,
+    STAGES,
+    audit_rank_direction,
 )
 
 
 def registered():
     questions = {"train": [f"train-{i}" for i in range(48)]}
-    questions.update({
-        phase: [f"{phase}-{i}" for i in range(8)] for phase in PHASES
-    })
+    questions.update({phase: [f"{phase}-{i}" for i in range(8)] for phase in PHASES})
     qids = [qid for group in questions.values() for qid in group]
     plan = dict(
-        arms=list(ARMS), curriculum_attempted_examples=list(STAGES),
-        cells=["general", "temporal"], questions=questions,
-        question_families={q: "family-"+q for q in qids},
-        routes={q: ("general" if int(q.rsplit("-", 1)[1]) % 2 == 0
-                    else "temporal") for q in qids},
+        arms=list(ARMS),
+        curriculum_attempted_examples=list(STAGES),
+        cells=["general", "temporal"],
+        questions=questions,
+        question_families={q: "family-" + q for q in qids},
+        routes={
+            q: ("general" if int(q.rsplit("-", 1)[1]) % 2 == 0 else "temporal")
+            for q in qids
+        },
         source_visibility_policy="strict-as-of-before-index-and-every-Encoder-v1",
     )
     raw, summary = [], {}
@@ -31,17 +36,22 @@ def registered():
                 for i, qid in enumerate(questions[phase]):
                     changed = arm != "frozen_rerank" and i == 2
                     scale = (
-                        0.5 if changed else 2.0 if arm != "frozen_rerank"
-                        and i == 0 else None
+                        0.5
+                        if changed
+                        else 2.0
+                        if arm != "frozen_rerank" and i == 0
+                        else None
                     )
                     g = dict(
                         schema="hepta.stem-selection-geometry.v2",
-                        candidate_count=8, has_ranking_competition=True,
-                        forced_top1=False, empty_pool=False,
-                        encoder_adapted=arm in (
-                            "lineage_lora_gated", "independent_lora_gated"
-                        ),
-                        baseline_top_id="A", encoder_only_top_id="A",
+                        candidate_count=8,
+                        has_ranking_competition=True,
+                        forced_top1=False,
+                        empty_pool=False,
+                        encoder_adapted=arm
+                        in ("lineage_lora_gated", "independent_lora_gated"),
+                        baseline_top_id="A",
+                        encoder_only_top_id="A",
                         learned_top_id="B" if changed else "A",
                         selected_index=1 if changed else 0,
                         changed_selected_candidate=changed,
@@ -56,17 +66,26 @@ def registered():
                         gap_exceeds_twice_max_residual=False,
                         raw_scores_sha256="d" * 64,
                         evidence_entailment_evaluated=False,
-                        no_answer_policy_calibrated=False, label_free=True,
+                        no_answer_policy_calibrated=False,
+                        label_free=True,
                     )
                     gs.append(g)
-                    raw.append(dict(
-                        stage=stage, phase=phase, question_id=qid, arm=arm,
-                        cell=plan["routes"][qid], family=plan["question_families"][qid],
-                        status="succeeded", selected=g["selected_index"],
-                        selection_geometry=g,
-                    ))
+                    raw.append(
+                        dict(
+                            stage=stage,
+                            phase=phase,
+                            question_id=qid,
+                            arm=arm,
+                            cell=plan["routes"][qid],
+                            family=plan["question_families"][qid],
+                            status="succeeded",
+                            selected=g["selected_index"],
+                            selection_geometry=g,
+                        )
+                    )
                 summary[f"{stage}/{phase}/{arm}"] = dict(
-                    observed_pre_reader_decisions=8, competing_pools=8,
+                    observed_pre_reader_decisions=8,
+                    competing_pools=8,
                     changed_top1_count=sum(g["changed_selected_candidate"] for g in gs),
                     joint_direction_can_flip_count=sum(
                         g["joint_flip_scale_infimum"] is not None for g in gs
@@ -76,7 +95,8 @@ def registered():
                     ),
                     joint_requires_scale_above_one_count=sum(
                         g["joint_flip_scale_infimum"] is not None
-                        and g["joint_flip_scale_infimum"] > 1 for g in gs
+                        and g["joint_flip_scale_infimum"] > 1
+                        for g in gs
                     ),
                 )
     return plan, raw, summary
@@ -87,12 +107,16 @@ class PinnedRankDirectionTests(unittest.TestCase):
         report = audit_rank_direction(*registered())
         self.assertEqual(report["policy_attempts"], 576)
         self.assertEqual(len(report["by_stage_phase_arm"]), 72)
-        self.assertEqual(report["final_test_transfer"]["gated"]["natural_rank_flips"], 2)
+        self.assertEqual(
+            report["final_test_transfer"]["gated"]["natural_rank_flips"], 2
+        )
         self.assertEqual(
             report["final_test_transfer"]["gated"]["direction_cannot_flip"], 12
         )
         self.assertEqual(
-            report["final_test_transfer"]["gated"]["direction_correct_but_scale_above_one"],
+            report["final_test_transfer"]["gated"][
+                "direction_correct_but_scale_above_one"
+            ],
             2,
         )
         self.assertEqual(report["model_or_reader_executions"], 0)
@@ -128,8 +152,11 @@ class PinnedRankDirectionTests(unittest.TestCase):
         for which in ("fake-flip", "fake-boundary", "unscalable-flip", "wrong-encoder"):
             plan, rows, saved = registered()
             item = next(
-                row for row in rows if row["arm"] == "gated"
-                and row["phase"] == "test" and row["stage"] == 48
+                row
+                for row in rows
+                if row["arm"] == "gated"
+                and row["phase"] == "test"
+                and row["stage"] == 48
                 and row["question_id"] == "test-2"
             )
             g = item["selection_geometry"]

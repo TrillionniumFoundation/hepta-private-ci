@@ -185,9 +185,8 @@ def load_stage(files, stage, replay, commit, model_identity, arms, count):
     run = strict_json(files[f"{stage}/run.json"])
     if len(raw) != count or len(scored) != count or run["source_commit"] != commit:
         raise ValueError("incomplete original generation or changed emitting commit")
-    if (
-        report["source_commit"] != commit
-        or report["raw_answers_sha256"] != digest(raw_bytes)
+    if report["source_commit"] != commit or report["raw_answers_sha256"] != digest(
+        raw_bytes
     ):
         raise ValueError("run report detached from raw generation journal")
     if (
@@ -254,7 +253,8 @@ def load_stage(files, stage, replay, commit, model_identity, arms, count):
 def inspect(full_path: Path, replay_path: Path, pin: dict):
     files = open_sealed(full_path, pin["full_sha256"], manifest=True)
     independent = open_sealed(
-        replay_path, pin["replay_sha256"],
+        replay_path,
+        pin["replay_sha256"],
         manifest=pin["replay_file"] == "receipt.json",
     )
     if len(files) - 1 != pin["full_members"]:
@@ -266,7 +266,8 @@ def inspect(full_path: Path, replay_path: Path, pin: dict):
     inventory = strict_json(files["inventory.json"])
     model = inventory["inventory_digest"]
     if (
-        source != pin["commit"] or replay["generating_commit"] != source
+        source != pin["commit"]
+        or replay["generating_commit"] != source
         or replay["original_plan_sha256"] != PLAN_SHA
         or replay["original_collection_sha256"] != COLLECTION_SHA
         or replay["model_identity"] != model
@@ -326,8 +327,7 @@ def compare(a: dict, b: dict):
             ):
                 if val_a != val_b:
                     raise ValueError(
-                        "inter-run source/prompt mismatch: "
-                        f"{stage} {qid} {arm} {label}"
+                        f"inter-run source/prompt mismatch: {stage} {qid} {arm} {label}"
                     )
             if (
                 x["answer"] != y["answer"]
@@ -392,7 +392,8 @@ def generate(paths: dict, pins=None):
                         },
                         "strict_task_outcome_changed": len(
                             {row["strict_task_success"] for row in all_scored}
-                        ) > 1,
+                        )
+                        > 1,
                         "same_exact_original_prompt_in_all_runs": True,
                     }
                 )
@@ -430,12 +431,12 @@ def generate(paths: dict, pins=None):
                 "verified_manifest_entries": pins[label]["full_members"],
                 "independent_replay_manifest_entries": pins[label]["replay_members"],
                 "whole_workflow_success": pins[label]["whole_workflow_success"],
-                "original_calibration_journal_sha256": source[
-                    "calibration"
-                ]["raw_sha256"],
-                "original_evaluation_journal_sha256": source[
-                    "evaluation"
-                ]["raw_sha256"],
+                "original_calibration_journal_sha256": source["calibration"][
+                    "raw_sha256"
+                ],
+                "original_evaluation_journal_sha256": source["evaluation"][
+                    "raw_sha256"
+                ],
             }
             for label, source in sources.items()
         },
@@ -446,7 +447,8 @@ def generate(paths: dict, pins=None):
         "original_evaluation_generations_per_run": 72,
         "total_actual_model_generations": len(names) * (40 + 72),
         "identical_original_prompts_across_all_runs": {
-            "calibration": 40, "evaluation": 72
+            "calibration": 40,
+            "evaluation": 72,
         },
         "pairwise_output_differences": pairwise_differences,
         "distinct_inputs_with_output_variability": {
@@ -460,11 +462,12 @@ def generate(paths: dict, pins=None):
         "independent_semantic_citation_adjudication": False,
         "parametric_training_performed": False,
         "organization_extra_task_success_over_entity_time": {
-            label: source["evaluation"]["report"]["success_by_arm"][
-                "organized"
-            ]["strict_success"] - source["evaluation"]["report"][
-                "success_by_arm"
-            ]["entity_time"]["strict_success"]
+            label: source["evaluation"]["report"]["success_by_arm"]["organized"][
+                "strict_success"
+            ]
+            - source["evaluation"]["report"]["success_by_arm"]["entity_time"][
+                "strict_success"
+            ]
             for label, source in sources.items()
         },
         "production_accepted": False,
@@ -474,6 +477,7 @@ def generate(paths: dict, pins=None):
             "full-path filtering on exposed authored tasks"
         ),
     }
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
