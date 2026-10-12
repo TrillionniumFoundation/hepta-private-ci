@@ -48,6 +48,11 @@ pub struct CellSplitOwnedEffectV1 {
 pub trait CellSplitDurableEffectBackendV1 {
     type Error: std::fmt::Display;
 
+    /// Side-effect-free check of the independently owned *current*
+    /// NDU/Selector/final-use frontier. Called immediately before commit and
+    /// again before signing the acknowledgement. It MUST NOT claim or consume
+    /// a one-shot nonce. The original owner's commit_once must independently
+    /// enforce/consume final-use atomically with its physical mutation.
     fn authorize_execute(&mut self, intent: &CellSplitExecutionIntentV1)
     -> Result<(), Self::Error>;
     fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1) -> Result<(), Self::Error>;
