@@ -161,7 +161,10 @@ fn create_only_cas_has_real_bytes_and_fails_closed_when_final_use_denied() {
     assert!(!owner.object_path().exists());
 
     allowed.store(true, Ordering::Release);
-    assert_eq!(owner.current_sequence_for_intent(&request).expect("pre-commit"), 1);
+    assert_eq!(
+        owner.current_sequence_for_intent(&request).expect("pre-commit"),
+        1
+    );
     owner.commit_once(&request).expect("create-only effect");
     let receipt = owner
         .read_committed(&request)
@@ -169,7 +172,12 @@ fn create_only_cas_has_real_bytes_and_fails_closed_when_final_use_denied() {
         .expect("committed");
     assert!(owner.verify_current(&request, &receipt).expect("live CAS"));
     assert_eq!(receipt.owner_sequence, 2);
-    assert_eq!(owner.current_sequence_for_intent(&request).expect("committed frontier"), 2);
+    assert_eq!(
+        owner
+            .current_sequence_for_intent(&request)
+            .expect("committed frontier"),
+        2
+    );
     assert_eq!(
         fs::read(owner.object_path()).expect("object"),
         b"real child artifact bytes"
