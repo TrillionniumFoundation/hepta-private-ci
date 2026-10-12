@@ -1171,9 +1171,7 @@ struct SignedMonotonicFrontierFixture {
 }
 
 #[cfg(unix)]
-impl crate::CellSplitSupervisorMonotonicFrontierPortV1
-    for SignedMonotonicFrontierFixture
-{
+impl crate::CellSplitSupervisorMonotonicFrontierPortV1 for SignedMonotonicFrontierFixture {
     type Error = &'static str;
 
     fn read_domain_frontier(
