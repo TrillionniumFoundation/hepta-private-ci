@@ -136,6 +136,9 @@ pub struct BoundedMicrobatchSchedulerV1 {
     physical_lanes: BTreeMap<PhysicalBatchKeyV1, BTreeSet<MicrobatchKeyV1>>,
     physical_cursor: BTreeMap<PhysicalBatchKeyV1, MicrobatchKeyV1>,
     round_robin: VecDeque<MicrobatchKeyV1>,
+    // Includes stale slots left by a coalesced lane. Re-admitting that lane
+    // reuses its existing queue position rather than duplicating it.
+    round_robin_members: BTreeSet<MicrobatchKeyV1>,
     queued_ids: BTreeSet<StableId>,
     last_now_ms: Option<u64>,
 }
@@ -148,6 +151,7 @@ impl BoundedMicrobatchSchedulerV1 {
             physical_lanes: BTreeMap::new(),
             physical_cursor: BTreeMap::new(),
             round_robin: VecDeque::new(),
+            round_robin_members: BTreeSet::new(),
             queued_ids: BTreeSet::new(),
             last_now_ms: None,
         })
@@ -183,6 +187,7 @@ impl BoundedMicrobatchSchedulerV1 {
             .saturating_add(self.limits.max_batch_size);
         if self.round_robin.len() > limit {
             self.round_robin.retain(|key| self.lanes.contains_key(key));
+            self.round_robin_members = self.round_robin.iter().cloned().collect();
         }
     }
 
@@ -232,7 +237,9 @@ impl BoundedMicrobatchSchedulerV1 {
         let key = intent.key.clone();
         let id = intent.request_id.clone();
         if !self.lanes.contains_key(&key) {
-            self.round_robin.push_back(key.clone());
+            if self.round_robin_members.insert(key.clone()) {
+                self.round_robin.push_back(key.clone());
+            }
             self.physical_lanes
                 .entry(key.physical_key())
                 .or_default()
@@ -259,6 +266,7 @@ impl BoundedMicrobatchSchedulerV1 {
             let Some(key) = self.round_robin.pop_front() else {
                 break;
             };
+            self.round_robin_members.remove(&key);
             let Some(mut lane) = self.lanes.remove(&key) else {
                 // Coalescing may leave a retired round-robin slot. It must not
                 // consume the active-lane scan budget of the next poll.
@@ -302,7 +310,9 @@ impl BoundedMicrobatchSchedulerV1 {
                 });
                 break;
             }
-            self.round_robin.push_back(key.clone());
+            if self.round_robin_members.insert(key.clone()) {
+                self.round_robin.push_back(key.clone());
+            }
             self.lanes.insert(key, lane);
         }
         Ok(MicrobatchPollV1 {
@@ -446,6 +456,7 @@ impl BoundedMicrobatchSchedulerV1 {
             self.remove_physical_lane(key);
         }
         self.round_robin.retain(|key| self.lanes.contains_key(key));
+        self.round_robin_members = self.round_robin.iter().cloned().collect();
         dropped
     }
 }
