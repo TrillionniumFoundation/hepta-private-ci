@@ -227,6 +227,27 @@ fn minimum_batch_output_bytes_v2(requests: &[SharedNeuronFeatureRequestV2]) -> R
     })
 }
 
+/// Physical bytes retained by distinct immutable Arc input allocations in
+/// this cohort. Pointer-identical clones are counted once. Two allocations
+/// with identical content still occupy different memory.
+fn minimum_batch_input_bytes_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<u64, Error> {
+    let mut seen: Vec<&Arc<[i64]>> = Vec::new();
+    let mut bytes = 0_u64;
+    for request in requests {
+        let buffer = &request.snapshot.features_q24;
+        if seen.iter().any(|previous| Arc::ptr_eq(*previous, buffer)) {
+            continue;
+        }
+        seen.push(buffer);
+        let item_bytes = u64::try_from(buffer.len())
+            .map_err(|_| Error::ArithmeticOverflow)?
+            .checked_mul(8)
+            .ok_or(Error::ArithmeticOverflow)?;
+        bytes = bytes.checked_add(item_bytes).ok_or(Error::ArithmeticOverflow)?;
+    }
+    Ok(bytes)
+}
+
 impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
     /// Admits and executes an immutable-feature batch without ever expanding
     /// Arc<[i64]> into the old per-request Vec. Returns all rows or an error.
@@ -300,8 +321,10 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
                 total.checked_add(loaded.handle.observed_memory_bytes)
             })
             .ok_or(Error::ArithmeticOverflow)?;
+        let distinct_input_bytes = minimum_batch_input_bytes_v2(&requests)?;
         let minimum_bytes = resident_bytes
             .checked_add(minimum_batch_output_bytes_v2(&requests)?)
+            .and_then(|total| total.checked_add(distinct_input_bytes))
             .ok_or(Error::ArithmeticOverflow)?;
         if minimum_bytes > self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
@@ -498,8 +521,21 @@ mod tests {
         let b = req("cell.b", "request.b", Arc::clone(&shared));
         assert!(Arc::ptr_eq(&a.snapshot, &b.snapshot));
         // Two Q24 output vectors, width two, for each of two Cells.
-        assert_eq!(minimum_batch_output_bytes_v2(&[a, b]), Ok(64));
+        assert_eq!(minimum_batch_output_bytes_v2(&[a.clone(), b.clone()]), Ok(64));
         assert_eq!(minimum_batch_output_bytes_v2(&[]), Ok(0));
+        // The shared Arc allocation is counted once regardless of Cell count.
+        assert_eq!(minimum_batch_input_bytes_v2(&[a.clone(), b.clone()]), Ok(16));
+        // Identical bytes in a different Arc allocation still cost memory.
+        let mut independent = b;
+        let mut copied_snapshot = (*independent.snapshot).clone();
+        copied_snapshot.features_q24 = Arc::from(independent.snapshot.features_q24.as_ref());
+        independent.snapshot = Arc::new(copied_snapshot);
+        assert!(!Arc::ptr_eq(
+            &a.snapshot.features_q24,
+            &independent.snapshot.features_q24
+        ));
+        assert_eq!(minimum_batch_input_bytes_v2(&[a, independent]), Ok(32));
+        assert_eq!(minimum_batch_input_bytes_v2(&[]), Ok(0));
     }
 
     #[test]
