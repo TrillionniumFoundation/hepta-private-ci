@@ -189,6 +189,8 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
             errors.append(f"MATRIX_PRODUCT_ROOT_MISSING_OR_AMBIGUOUS:{owner}")
     if "codex-hepta-matrix-sdk" not in graph.get("codex-hepta-matrixd", ()):
         errors.append("MATRIX_PRODUCT_ADAPTER_DEPENDENCY_MISSING")
+    if "matrix-sdk" not in graph.get("codex-hepta-matrixd", ()):
+        errors.append("MATRIX_E2EE_CONFORMANCE_LOCK_EDGE_MISSING")
     if "matrix-sdk" not in graph.get("codex-hepta-matrix-sdk", ()):
         errors.append("MATRIX_PRODUCT_ADAPTER_SDK_EDGE_MISSING")
     if find_path(graph, "codex-hepta-matrix-sdk", "matrix-sdk-crypto") is None:
