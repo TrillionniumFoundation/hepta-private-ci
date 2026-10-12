@@ -306,6 +306,7 @@ def codex_rust_crate(
     manifest_path = manifest_relpath + "/Cargo.toml"
 
     binaries = dict(DEP_DATA.get(native.package_name())["binaries"])
+
     # Cargo manifests are the authority for binary roots, but the Bazel
     # @crates metadata can retain an older root after a source-layout change.
     # An explicit narrow override must name an existing registered binary
