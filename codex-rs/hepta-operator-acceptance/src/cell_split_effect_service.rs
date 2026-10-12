@@ -187,13 +187,16 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                     .backend
                     .read_committed(&request.intent)
                     .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
-                if last_effect != committed
-                    || (committed.as_ref().is_some_and(|effect| {
-                        self.backend
-                            .verify_current(&request.intent, effect)
-                            .unwrap_or(false)
-                            == false
-                    }))
+                if last_effect != committed {
+                    return Err(CellSplitEffectRpcErrorV1::Invalid(
+                        "effect changed after final frontier read",
+                    ));
+                }
+                if let Some(ref effect) = committed
+                    && !self
+                        .backend
+                        .verify_current(&request.intent, effect)
+                        .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?
                 {
                     return Err(CellSplitEffectRpcErrorV1::Invalid(
                         "effect changed after final frontier read",
