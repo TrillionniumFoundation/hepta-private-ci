@@ -48,7 +48,7 @@ class AuditTests(unittest.TestCase):
         self.assertIn('MATRIX_SQLITE_PATCH_RELEASE_MISMATCH',r['blocking_prerequisites'])
 
     def test_019_with_anymap3_and_version_aligned_patch_passes_static_only(self):
-        self.workspace['workspace']['dependencies']['matrix-sdk']['version']='0.19.1'
+        self.workspace['workspace']['dependencies']['matrix-sdk']['version']='=0.19.1'
         self.workspace['patch']['crates-io']['matrix-sdk-sqlite']['path']='third_party/matrix-sdk-sqlite-0.19.1'
         self.toolchain['toolchain']['channel']='1.96.0'
         for p in self.lock['package']:
@@ -88,6 +88,22 @@ class AuditTests(unittest.TestCase):
         # An exact manifest declaration MUST still match Cargo.lock.
         self.lock['package'][2]['version']='0.18.0'
         self.assertIn('MATRIX_SDK_WORKSPACE_LOCK_MISMATCH',
+                      self.result()['blocking_prerequisites'])
+
+    def test_caret_compatible_requirement_is_not_a_security_pin(self):
+        self.workspace['workspace']['dependencies']['matrix-sdk']['version']='0.19.1'
+        self.workspace['patch']['crates-io']['matrix-sdk-sqlite']['path']=(
+            'third_party/matrix-sdk-sqlite-0.19.1')
+        self.toolchain['toolchain']['channel']='1.96.0'
+        for item in self.lock['package']:
+            if item['name'].startswith('matrix-sdk'):
+                item['version']='0.19.1'
+            if item['name']=='matrix-sdk':
+                item['dependencies']=[x.replace('anymap2','anymap3')
+                                      for x in item['dependencies']]
+            if item['name']=='anymap2':
+                item['name']='anymap3'
+        self.assertIn('MATRIX_SDK_CARGO_REQUIREMENT_NOT_EXACT',
                       self.result()['blocking_prerequisites'])
 
     def test_cargo_ranges_and_double_equals_do_not_become_exact_pins(self):
