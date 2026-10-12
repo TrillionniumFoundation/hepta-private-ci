@@ -150,7 +150,21 @@ where
         admit_selected_plan(plan)?;
     }
     let (receipt, transcript) = match selected_action {
-        "advance" => (owner.advance().map_err(|error| error.to_string())?, None),
+        "advance" => {
+            // Preflight can perform slow original-owner RPC reads. Selection
+            // may be revoked after the earlier ingress/open checks. Refresh
+            // live Selector/NDU admission inside the coordinator after its
+            // preflight and before any durable prepared intent is written.
+            let plan = recheck_plan
+                .as_ref()
+                .ok_or_else(|| "missing frozen admission plan".to_string())?;
+            (
+                owner
+                    .advance_with_admission(|| admit_selected_plan(plan))
+                    .map_err(|error| error.to_string())?,
+                None,
+            )
+        }
         _ => (
             None,
             owner
