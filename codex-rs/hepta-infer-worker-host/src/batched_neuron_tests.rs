@@ -754,7 +754,7 @@ fn cutover_without_explicit_queue_invalidation_is_denied_before_model_effect() {
     let polled = worker.poll_and_execute(101).unwrap();
     assert_eq!(polled.poll.outcomes.len(), 1);
     assert!(matches!(
-        polled.poll.outcomes[0].result,
+        &polled.poll.outcomes[0].result,
         Err(BatchWorkerErrorV1::ScopeFenced)
     ));
     assert!(polled.metrics_flush_acknowledged);
