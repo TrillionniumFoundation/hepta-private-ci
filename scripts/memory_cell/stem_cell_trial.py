@@ -1089,16 +1089,24 @@ def run(staged, ranker_dir, output):
         # pool and native weak document-support annotations. A forged score,
         # altered raw answer, invalid citation receipt or future source fails
         # closed without changing any Head/Reader result.
+        # This post-policy audit is REGISTERED for the 32 evaluation
+        # questions, whereas the runtime pool also contains 48 TRAIN
+        # questions. Keep that strict source-role boundary intact.
+        postpolicy_questions = {
+            q.identity: q for phase in PHASES for q in qs[phase]
+        }
+        postpolicy_pools = {
+            qid: pools[qid] for qid in postpolicy_questions if qid in pools
+        }
         independent_policy_integrity = audit_policy_scoring(
             plan,
             attempts,
             scored,
-            pools,
-            {q.identity: q for phase in PHASES for q in qs[phase]},
+            postpolicy_pools,
+            postpolicy_questions,
             {
-                q.identity: source_for[q.identity].targets[q.identity]
-                for phase in PHASES
-                for q in qs[phase]
+                qid: source_for[qid].targets[qid]
+                for qid in postpolicy_questions
             },
         )
         write(

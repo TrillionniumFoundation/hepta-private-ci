@@ -227,6 +227,30 @@ class PolicyIntegrityTests(unittest.TestCase):
         out = audit_policy_scoring(a, b, c, d, e, f)
         self.assertEqual(out["census"]["source_unresolved"], 18)
 
+    def test_all_train_pool_keys_are_excluded_from_postpolicy_audit(self):
+        plan, raw, scored, heldout_pools, questions, targets = fixture()
+        full_runtime_pools = dict(heldout_pools)
+        # A native training batch has different role identity. Its presence
+        # must not relax or corrupt this strictly 32-question post-policy gate.
+        full_runtime_pools["registered-train-0"] = Pool("scope-train")
+        with self.assertRaisesRegex(
+            ValueError, "unregistered or incomplete 576-case post-policy audit"
+        ):
+            audit_policy_scoring(
+                plan, raw, scored, full_runtime_pools, questions, targets
+            )
+        reviewed_pools = {
+            qid: full_runtime_pools[qid]
+            for qid in questions
+            if qid in full_runtime_pools
+        }
+        receipt = audit_policy_scoring(
+            plan, raw, scored, reviewed_pools, questions, targets
+        )
+        self.assertIsInstance(receipt, dict)
+        self.assertEqual(set(reviewed_pools), set(questions))
+        self.assertNotIn("registered-train-0", reviewed_pools)
+
     def test_missing_duplicate_and_heldout_extra_rows_rejected(self):
         for corrupt in ("missing", "duplicate", "extra"):
             a, b, c, d, e, f = fixture()
