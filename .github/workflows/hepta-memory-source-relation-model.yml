@@ -188,7 +188,7 @@ jobs:
           TRANSFORMERS_OFFLINE: "1"
         run: |
           set -euo pipefail
-          /usr/bin/time -v -o /tmp/experience-result/write-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/experience_write_trial.py write /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --loss-backend supervised_positions --parity-receipt /tmp/experience-result/source-loss-parity.json --parity-sha "$(sha256sum /tmp/experience-result/source-loss-parity.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/experience-result/write.log --write-objective source_relation_margin
+          /usr/bin/time -v -o /tmp/experience-result/write-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/experience_write_trial.py write /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --loss-backend supervised_positions --parity-receipt /tmp/experience-result/source-loss-parity.json --parity-sha "$(sha256sum /tmp/experience-result/source-loss-parity.json | cut -d ' ' -f1)" --write-objective source_relation_margin 2>&1 | tee /tmp/experience-result/write.log
           sha256sum /tmp/experience-result/snapshot/READY.json > /tmp/experience-result/snapshot-pin.txt
       - name: Probe in-sample source facts before opening any evaluation task
         env:
