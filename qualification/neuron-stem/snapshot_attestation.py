@@ -43,6 +43,8 @@ def _hash_regular_file(path, expected_root):
     real = path.resolve(strict=True)
     if not real.is_relative_to(expected_root):
         raise ValueError("snapshot file escapes approved model cache root")
+    if path.is_symlink() and not real.is_relative_to(expected_root / "blobs"):
+        raise ValueError("model snapshot file symlink must reference this HF cache's blobs")
     flags = os.O_RDONLY | getattr(os, "O_CLOEXEC", 0)
     flags |= getattr(os, "O_NOFOLLOW", 0)
     fd = os.open(real, flags)
