@@ -5,13 +5,14 @@ Hepta data, independent source-family evidence, or production no-change.
 """
 from __future__ import annotations
 
+from collections import Counter, defaultdict
 from dataclasses import asdict
 import hashlib
 import json
 from pathlib import Path
 import unicodedata
 
-from development_study_data import StudyConfig, audit_rows, canonical, write_once
+from development_study_data import StudyConfig, audit_rows, canonical, phase, write_once
 from study import reject_duplicate_evidence_fields, reject_nonstandard_evidence_number
 
 DATA_REVISION = "828f8093932c8fe6ca7936c3d2e52903b1c523de"
@@ -19,6 +20,9 @@ DATA_GIT_BLOB = "7a7b26c5f2dfbbf213f3e67d2dd0727e1af545aa"
 DATA_BYTES = 2_495_390
 INTENTS = ("alarm", "calendar", "date", "reminder", "time", "timer", "todo_list", "weather")
 PARTITIONS = {"train": 100, "val": 20, "test": 30}
+STRICT_PARTITIONS = "publisher_strict_v1"
+GROUPED_PARTITIONS = "protected_content_groups_v2"
+PARTITION_POLICIES = (STRICT_PARTITIONS, GROUPED_PARTITIONS)
 QUESTION = "Which of the listed intentions does this utterance express?"
 
 
@@ -26,13 +30,53 @@ def text_key(text):
     return hashlib.sha256(" ".join(unicodedata.normalize("NFC", text).split()).encode()).hexdigest()
 
 
-def publisher_rows(data):
+def protect_content_groups(rows):
+    """Keep every row/label but move complete content groups only forward.
+
+    Assignment uses text identity and the original stage, never labels/scores.
+    Conflicting labels are retained and reported, not resolved by majority vote.
+    This is an explicit derived diagnostic, NOT the official publisher split.
+    """
+    order = ("base", "adapt", "extra", "calibration", "held_out")
+    groups = defaultdict(list)
+    for row in rows:
+        groups[text_key(row["state"])].append(row)
+    assigned, changes, conflicts = {}, [], []
+    for key, members in sorted(groups.items()):
+        target = max((phase(row) for row in members), key=order.index)
+        assigned[key] = target
+        if len({row["label"] for row in members}) > 1:
+            conflicts.append({"content_sha256": key, "sample_ids": sorted(row["sample_id"] for row in members),
+                              "labels_preserved": sorted({row["label"] for row in members})})
+        for row in members:
+            if phase(row) != target:
+                changes.append({"sample_id": row["sample_id"], "from_phase": phase(row),
+                                "to_phase": target, "content_sha256": key})
+    result = []
+    for original in rows:
+        row = dict(original)
+        target = assigned[text_key(row["state"])]
+        row["split"] = "train" if target in order[:3] else target
+        row["training_phase"] = target if target in order[:3] else None
+        result.append(row)
+    return result, {"policy": GROUPED_PARTITIONS, "retained_rows": len(result),
+                    "content_groups": len(groups), "moved_rows": sorted(changes, key=lambda row: row["sample_id"]),
+                    "conflicting_label_groups": conflicts,
+                    "phase_counts": dict(sorted(Counter(phase(row) for row in result).items())),
+                    "official_publisher_partitions_unchanged": False,
+                    "original_labels_unchanged": True, "dropped_rows": 0}
+
+
+def publisher_rows(data, *, partition_policy=STRICT_PARTITIONS):
     """Keep every selected source row; leakage rejects rather than filtering it.
 
     The fixed 40/30/30 subdivision only uses original training text order by
-    content hash. Official validation and test assignments remain untouched.
+    content hash. Strict mode leaves official validation/test assignments intact;
+    the explicit grouped mode records every derived phase change separately.
     Content IDs detect exact reuse; they do NOT identify independent speakers.
     """
+    if partition_policy not in PARTITION_POLICIES:
+        raise ValueError("unknown explicit partition policy")
     if type(data) is not dict or not set(PARTITIONS) <= set(data):
         raise ValueError("missing publisher partitions")
     rows, lineage = [], []
@@ -64,16 +108,22 @@ def publisher_rows(data):
                 lineage.append({"sample_id": sid, "publisher_partition": split,
                     "publisher_index": index, "source_revision": DATA_REVISION,
                     "source_text_sha256": hashlib.sha256(text.encode()).hexdigest()})
+    partition_report = {"policy": STRICT_PARTITIONS, "official_publisher_partitions_unchanged": True}
+    if partition_policy == GROUPED_PARTITIONS:
+        rows, partition_report = protect_content_groups(rows)
+    original_stage = {item["sample_id"]: item for item in lineage}
+    for row in rows:
+        original_stage[row["sample_id"]]["execution_phase"] = phase(row)
     config = StudyConfig(classes=len(INTENTS), time_basis="publisher_partition", seal_replay=True)
     rows = audit_rows(rows, config)
-    return rows, config, {"lineage": lineage, "intents": list(INTENTS),
+    return rows, config, {"partition_policy": partition_report, "lineage": lineage, "intents": list(INTENTS),
         "publication": "Larson et al., EMNLP 2019, An Evaluation Dataset for Intent Classification and Out-of-Scope Prediction",
         "license": "CC-BY-3.0", "source_revision": DATA_REVISION,
         "complete_clinc150_benchmark": False, "genuine_future_windows": False,
         "content_groups_are_independent_speakers": False, "production_authorized": False}
 
 
-def prepare_dataset(source, output):
+def prepare_dataset(source, output, *, partition_policy=STRICT_PARTITIONS):
     """Bind original public bytes before parsing or producing a study fold."""
     source, output = Path(source), Path(output)
     if source.is_symlink() or not source.is_file() or source.stat().st_size != DATA_BYTES:
@@ -85,7 +135,7 @@ def prepare_dataset(source, output):
         raise ValueError("publisher source Git blob mismatch")
     data = json.loads(raw, object_pairs_hook=reject_duplicate_evidence_fields,
                       parse_constant=reject_nonstandard_evidence_number)
-    rows, config, provenance = publisher_rows(data)
+    rows, config, provenance = publisher_rows(data, partition_policy=partition_policy)
     # The raw file is kept, including nonselected classes; nothing is relabelled.
     with (output / "dataset.jsonl").open("xb") as handle:
         for row in rows:

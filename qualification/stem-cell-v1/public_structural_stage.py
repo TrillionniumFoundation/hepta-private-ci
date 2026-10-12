@@ -13,7 +13,8 @@ import time
 from urllib.request import urlopen
 
 from development_study_data import write_once
-from public_structural_data import DATA_BYTES, DATA_GIT_BLOB, DATA_REVISION, prepare_dataset
+from public_structural_data import (DATA_BYTES, DATA_GIT_BLOB, DATA_REVISION,
+                                    PARTITION_POLICIES, STRICT_PARTITIONS, prepare_dataset)
 
 MODEL = "BAAI/bge-small-en-v1.5"
 REVISION = "5c38ec7c405ec4b44b94cc5a9bb96e735b38267a"
@@ -79,7 +80,9 @@ def model_pins(info):
     return pins
 
 
-def stage(output):
+def stage(output, *, partition_policy=STRICT_PARTITIONS):
+    if partition_policy not in PARTITION_POLICIES:
+        raise ValueError("unknown explicit partition policy")
     output = Path(output)
     source_root = Path(__file__).resolve().parents[2]
     if output.resolve().is_relative_to(source_root):
@@ -89,8 +92,17 @@ def stage(output):
     write_once(output / "PLAN.json", {"model": MODEL, "revision": REVISION,
         "weights_sha256": WEIGHTS_SHA256, "data_revision": DATA_REVISION,
         "data_git_blob": DATA_GIT_BLOB, "time_basis": "publisher_partition",
+        "partition_policy": partition_policy,
         "production_authorized": False})
     try:
+        # Validate real task data before spending resources downloading weights.
+        root = f"https://raw.githubusercontent.com/clinc/oos-eval/{DATA_REVISION}"
+        download_checked(f"{root}/data/data_full.json", output / "publisher.json",
+                         DATA_BYTES, "sha1", DATA_GIT_BLOB)
+        download_checked(f"{root}/LICENSE", output / "CLINC_LICENSE.txt", 19467,
+                         "sha1", "1a16e05564d2aaa880bbe9e506a0a0226d8742cc")
+        dataset_sha, config_sha = prepare_dataset(output / "publisher.json", output,
+                                                    partition_policy=partition_policy)
         from huggingface_hub import HfApi
         info = HfApi().model_info(MODEL, revision=REVISION, files_metadata=True, token=False)
         pins = model_pins(info)
@@ -107,15 +119,9 @@ def stage(output):
                 or config.get("max_position_embeddings") != 512
                 or "auto_map" in config or "auto_map" in tokenizer):
             raise ValueError("unexpected native BGE model/tokenizer architecture")
-        root = f"https://raw.githubusercontent.com/clinc/oos-eval/{DATA_REVISION}"
-        download_checked(f"{root}/data/data_full.json", output / "publisher.json",
-                         DATA_BYTES, "sha1", DATA_GIT_BLOB)
-        download_checked(f"{root}/LICENSE", output / "CLINC_LICENSE.txt", 19467,
-                         "sha1", "1a16e05564d2aaa880bbe9e506a0a0226d8742cc")
-        dataset_sha, config_sha = prepare_dataset(output / "publisher.json", output)
         from model_runner import snapshot_digest
         result = {"schema": "hepta.stem.public-stage.v1", "model": MODEL, "revision": REVISION,
-            "snapshot_sha256": snapshot_digest(snapshot), "model_files": observed,
+            "partition_policy": partition_policy, "snapshot_sha256": snapshot_digest(snapshot), "model_files": observed,
             "model_license": "MIT", "dataset_sha256": dataset_sha, "config_sha256": config_sha,
             "cpu_ns": time.process_time_ns() - start_cpu, "wall_ns": time.perf_counter_ns() - start_wall,
             "genuine_future_windows": False, "production_authorized": False}
@@ -131,5 +137,6 @@ def stage(output):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--partition-policy", choices=PARTITION_POLICIES, default=STRICT_PARTITIONS)
     args = parser.parse_args()
-    stage(args.output)
+    stage(args.output, partition_policy=args.partition_policy)
