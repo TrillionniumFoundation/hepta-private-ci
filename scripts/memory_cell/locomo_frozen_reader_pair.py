@@ -30,6 +30,10 @@ from locomo_ninearm_source_replay import (
     verify_original_six,
 )
 from native import Document, Question, digest
+from locomo_reader_paired_cost import (
+    audit_matched_costs,
+    verify_immutable_generation_record,
+)
 
 ARMS = ("lexical_k4", "lexical_k8")
 LIMIT = 2048
@@ -236,6 +240,12 @@ def generate(public_root, model_root, output):
         independent_source_authentication=False,
         semantic_citation_precision=None, production_accepted=False,
     )
+    verify_immutable_generation_record(
+        manifest, raw, rows,
+        expected_commit=head,
+        public_zip_sha256=ZIPS["public"][1],
+        decisions_zip_sha256=ZIPS["decisions"][1],
+    )
     write_once(output / "READY.json", canonical(manifest) + b"\n")
     print(json.dumps({k: v for k, v in manifest.items()
                       if k not in ("model_identity", "model_profile")}))
@@ -337,7 +347,7 @@ def summarize(rows, cases, decisions, targets):
     )
 
 
-def score(public_root, evaluation_root, read_root, output):
+def score(public_root, evaluation_root, read_root, output, *, expected_commit):
     cases, documents, decisions = source_plan(public_root)
     manifest = strict_json((read_root / "READY.json").read_bytes())
     raw = (read_root / "raw-answers.jsonl").read_bytes()
@@ -356,6 +366,15 @@ def score(public_root, evaluation_root, read_root, output):
     ):
         raise ValueError("not a complete immutable original model record")
     rows = [strict_json(line) for line in raw.splitlines()]
+    # Source provenance and all 32 raw outcomes must be authenticated before
+    # even opening the separately staged answer/label ZIP.
+    verified = verify_immutable_generation_record(
+        manifest, raw, rows,
+        expected_commit=expected_commit,
+        public_zip_sha256=ZIPS["public"][1],
+        decisions_zip_sha256=ZIPS["decisions"][1],
+    )
+    unique_rows(rows, cases, decisions)
     by_question = {case["question_id"]: case for case in cases}
     originals = {k: original_document(v) for k, v in documents.items()}
     for row in rows:
@@ -377,6 +396,10 @@ def score(public_root, evaluation_root, read_root, output):
     evaluation_raw = read_zip(evaluation_root, "evaluation")["targets.json"]
     targets = strict_json(evaluation_raw)
     report = summarize(rows, cases, decisions, targets)
+    report["actual_paired_prompt_and_generation_cost"] = audit_matched_costs(
+        cases, rows
+    )
+    report["immutable_original_generation_verified"] = verified
     report.update(
         generating_commit=manifest["generating_commit"],
         original_raw_answers_sha256=sha(raw),
@@ -401,11 +424,18 @@ def main():
     score_parser.add_argument("evaluation_zips", type=Path)
     score_parser.add_argument("raw_answers", type=Path)
     score_parser.add_argument("output", type=Path)
+    score_parser.add_argument(
+        "--expected-commit", required=True,
+        help="Externally known exact Git generating commit; never infer from READY",
+    )
     args = parser.parse_args()
     if args.mode == "generate":
         generate(args.public_zips, args.model, args.output)
     else:
-        score(args.public_zips, args.evaluation_zips, args.raw_answers, args.output)
+        score(
+            args.public_zips, args.evaluation_zips, args.raw_answers, args.output,
+            expected_commit=args.expected_commit,
+        )
 
 
 if __name__ == "__main__":

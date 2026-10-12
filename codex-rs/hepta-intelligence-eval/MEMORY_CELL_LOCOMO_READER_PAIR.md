@@ -36,3 +36,31 @@ Runner: scripts/memory_cell/locomo_frozen_reader_pair.py
 No runtime owner, default adapter, production route or approval gate changes.
 Production acceptance is false. A missing/queued or failed hosted run cannot
 be relabelled a completed evaluation.
+
+## Auditable per-question cost and immutable generation boundary
+
+A separate stdlib-only `locomo_reader_paired_cost.py` audit now validates
+the complete **16-question / 32-condition** raw Reader census, the source
+family proxy and the original lexical_k4 prefix of lexical_k8. It reports
+the *observed matched-success subset* separately from k4-only success,
+k8-only success, and both-failed questions. Extra actual rendered prompt
+tokens, delivered UTF-8 source bytes and real generation time are recorded
+per pair and per original evaluation-family proxy. A failed generation is
+not assigned zero inference cost; latency excludes model cold load, and
+UTF-8 bytes are not substituted for actual tokenizer counts.
+
+Before the separate scoring job opens any evaluation-answer artifact, it
+also validates the complete original raw JSONL against a byte-exact SHA-256
+and every parsed row, including duplicate JSON-property and nonfinite
+rejection. A required **externally supplied exact Git generating commit**
+must match the immutable READY receipt; original public-input and frozen
+decision ZIP SHA-256s, planned and actual logical attempt counts, success/
+failure totals, model inventory and profile, generation/token ceilings,
+and zero weight updates must be consistent. This validation executes with
+no target labels, no pretrained model and no automatic source rewriting.
+
+This is an audit protocol, not an observed paired Reader result until its
+own exact-source GitHub Actions run finishes. The source cohorts remain
+two published conversation-family proxies, not independently authenticated
+unseen sources; semantic citation entailment, p95 production cost, dollar/
+energy TCO and production acceptance remain unknown.
