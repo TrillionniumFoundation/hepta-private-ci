@@ -214,6 +214,27 @@ class BatchTests(unittest.TestCase):
         engine.run([req(3, "alpha")])
         self.assertEqual(len(backend.calls), 3)
 
+    def test_backend_identity_change_during_encode_rejects_cache_publication(self):
+        # A mutable backend may be hot-swapped after request preflight, yet
+        # return well-formed features from a different checkpoint. Reject the
+        # entire batch rather than caching those vectors under the old model.
+        class ChangingBackend(FakeBackend):
+            def encode_many(self, texts, mode):
+                values = super().encode_many(texts, mode)
+                self.encoder_digest = D("e")
+                return values
+
+        backend = ChangingBackend(width=8)
+        engine = SharedStemEngine(backend)
+        with self.assertRaisesRegex(ValueError, "backend identity changed"):
+            engine.run([req(1, "state A"), req(2, "state B")])
+        self.assertEqual(engine.cache.size_bytes, 0)
+        self.assertEqual(len(engine.cache._entries), 0)
+        # Even the old checkpoint's cached results must never be relabeled to
+        # the new backend tuple by merely submitting a new request.
+        with self.assertRaisesRegex(ValueError, "unselected or changed"):
+            engine.run([req(3, "state A")])
+
     def test_cache_hit_evicted_by_same_batch_miss_remains_valid(self):
         # One entry fits, but inserting a new miss necessarily evicts the
         # already-hit feature before the batch assembles its receipts. The
