@@ -111,6 +111,8 @@ jobs:
       - name: Require complete CI observer and recent-window regressions
         run: |
           set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-ci-owner.json" --minimum-tests 69 -- python3 -m unittest discover -s scripts -p 'test_hepta_ci_exec*.py' -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-ci-process-owner.json" --minimum-tests 12 -- python3 -m unittest discover -s scripts -p test_hepta_ci_exec_process.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-ci-execution.json" --minimum-tests 58 -- python3 ../chain/scripts/ci/test_ci_execution.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-ci-process-owner.json" --minimum-tests 7 -- python3 ../chain/scripts/ci/test_ci_observation_process.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-recent-window.json" --minimum-tests 13 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::error_boundary_tests -- --nocapture --test-threads=1
