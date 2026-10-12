@@ -22,19 +22,28 @@ use codex_hepta_types::StableId;
 use crate::neuron_ndu_read::NduReadVerifierV1;
 use crate::neuron_ndu_read::SignedNduSnapshotReadV1;
 
+/// One Control-owned, immutable observation of a single registered revision.
+/// Each field must come from the same original owner snapshot, not separate
+/// cache reads that could straddle an Objective or NDU frontier change.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct CellSplitCurrentControlSnapshotV1 {
+    pub scope_digest: Digest32,
+    pub objective_digest: Digest32,
+    pub ndu_snapshot_digest: Digest32,
+}
+
 /// Independently owned current Control/Selector admission. This port MUST
-/// inspect the live scope registry and Selector membership/frontier, not
-/// derive the scope digest from a caller-provided snapshot or treat the old
-/// opaque VerifiedSelection token as a fresh authorization.
+/// inspect the live Control registry and Selector membership/frontier; neither
+/// a caller-provided snapshot nor a previously signed Selection is sufficient.
 pub trait CellSplitScopeSelectionAdmissionV1 {
     type Error: std::fmt::Display;
 
-    fn current_scope_digest(&self, scope: &StableId) -> Result<Digest32, Self::Error>;
-
-    /// Read the current Objective revision from the independently owned
-    /// Control registry. A previously signed Selector decision is not valid
-    /// after this macro-control objective changes, even if Scope is unchanged.
-    fn current_objective_digest(&self, scope: &StableId) -> Result<Digest32, Self::Error>;
+    /// Return the Control Scope, Objective and selected NDU frontier from one
+    /// consistent authoritative read. Two independent reads are not atomic.
+    fn current_control_snapshot(
+        &self,
+        scope: &StableId,
+    ) -> Result<CellSplitCurrentControlSnapshotV1, Self::Error>;
 
     fn verify_current_selection(
         &self,
@@ -92,13 +101,13 @@ pub fn advance_scope_bound_selected_cell_split_v1<A: CellSplitScopeSelectionAdmi
                 &selected.candidate_artifact_digest.to_string(),
                 &signed_ndu_read.snapshot.snapshot_digest.to_string(),
             )?;
-            validate_scope_binding(
+            validate_current_control_binding(
                 plan,
                 selected_scope_id,
                 &signed_ndu_read.snapshot.scope_id,
+                selected.objective_digest,
                 admission,
             )?;
-            validate_objective_binding(selected_scope_id, selected.objective_digest, admission)?;
             // Independently refresh Selector membership, not merely the
             // signature originally verified when the token was constructed.
             admission
@@ -114,37 +123,32 @@ pub fn advance_scope_bound_selected_cell_split_v1<A: CellSplitScopeSelectionAdmi
     )
 }
 
-fn validate_scope_binding<A: CellSplitScopeSelectionAdmissionV1>(
+fn validate_current_control_binding<A: CellSplitScopeSelectionAdmissionV1>(
     plan: &CellSplitExecutionPlanV1,
     requested_scope: &StableId,
     ndu_read_scope: &StableId,
+    selected_objective_digest: Digest32,
     admission: &A,
 ) -> Result<(), String> {
     if requested_scope != ndu_read_scope {
         return Err("NDU snapshot scope differs from selected execution scope".into());
     }
-    let current = admission
-        .current_scope_digest(requested_scope)
-        .map_err(|e| format!("current Control scope unavailable: {e}"))?;
-    if current.to_string() != plan.scope_digest {
-        return Err("current Control scope differs from frozen CellSplit plan".into());
-    }
-    Ok(())
-}
-
-fn validate_objective_binding<A: CellSplitScopeSelectionAdmissionV1>(
-    scope: &StableId,
-    selected_objective_digest: Digest32,
-    admission: &A,
-) -> Result<(), String> {
     if selected_objective_digest.is_zero() {
         return Err("frozen Selector objective is missing".into());
     }
     let current = admission
-        .current_objective_digest(scope)
-        .map_err(|e| format!("current Control objective unavailable: {e}"))?;
-    if current.is_zero() || current != selected_objective_digest {
+        .current_control_snapshot(requested_scope)
+        .map_err(|e| format!("current Control snapshot unavailable: {e}"))?;
+    if current.scope_digest.is_zero() || current.scope_digest.to_string() != plan.scope_digest {
+        return Err("current Control scope differs from frozen CellSplit plan".into());
+    }
+    if current.objective_digest.is_zero() || current.objective_digest != selected_objective_digest {
         return Err("current Control objective differs from frozen Selector objective".into());
+    }
+    if current.ndu_snapshot_digest.is_zero()
+        || current.ndu_snapshot_digest.to_string() != plan.ndu_snapshot_digest
+    {
+        return Err("current Control NDU frontier differs from signed CellSplit snapshot".into());
     }
     Ok(())
 }
@@ -197,25 +201,25 @@ mod tests {
         expected_scope: StableId,
         current_digest: Digest32,
         current_objective: Digest32,
+        current_ndu_snapshot: Digest32,
         unavailable: bool,
     }
 
     impl CellSplitScopeSelectionAdmissionV1 for CurrentScope {
         type Error = &'static str;
 
-        fn current_scope_digest(&self, scope: &StableId) -> Result<Digest32, Self::Error> {
+        fn current_control_snapshot(
+            &self,
+            scope: &StableId,
+        ) -> Result<CellSplitCurrentControlSnapshotV1, Self::Error> {
             if self.unavailable || scope != &self.expected_scope {
-                Err("independent Control scope missing")
+                Err("independent Control snapshot missing")
             } else {
-                Ok(self.current_digest)
-            }
-        }
-
-        fn current_objective_digest(&self, scope: &StableId) -> Result<Digest32, Self::Error> {
-            if self.unavailable || scope != &self.expected_scope {
-                Err("independent Control objective missing")
-            } else {
-                Ok(self.current_objective)
+                Ok(CellSplitCurrentControlSnapshotV1 {
+                    scope_digest: self.current_digest,
+                    objective_digest: self.current_objective,
+                    ndu_snapshot_digest: self.current_ndu_snapshot,
+                })
             }
         }
 
@@ -237,12 +241,18 @@ mod tests {
             expected_scope: requested.clone(),
             current_digest: Digest32::from_array([0x11; 32]),
             current_objective: Digest32::from_array([0x66; 32]),
+            current_ndu_snapshot: Digest32::from_array([0x44; 32]),
             unavailable: false,
         };
         let frozen = plan();
-        assert!(validate_scope_binding(&frozen, &requested, &requested, &current).is_ok());
+        let objective = Digest32::from_array([0x66; 32]);
         assert!(
-            validate_scope_binding(&frozen, &requested, &other, &current).is_err(),
+            validate_current_control_binding(&frozen, &requested, &requested, objective, &current)
+                .is_ok()
+        );
+        assert!(
+            validate_current_control_binding(&frozen, &requested, &other, objective, &current)
+                .is_err(),
             "a signed NDU snapshot for another scope must not prepare an intent"
         );
         let changed = CurrentScope {
@@ -250,7 +260,8 @@ mod tests {
             ..current
         };
         assert!(
-            validate_scope_binding(&frozen, &requested, &requested, &changed).is_err(),
+            validate_current_control_binding(&frozen, &requested, &requested, objective, &changed)
+                .is_err(),
             "a previous Control scope digest is not a current binding"
         );
         let unavailable = CurrentScope {
@@ -258,36 +269,50 @@ mod tests {
             ..changed
         };
         assert!(
-            validate_scope_binding(&frozen, &requested, &requested, &unavailable).is_err(),
+            validate_current_control_binding(
+                &frozen, &requested, &requested, objective, &unavailable
+            )
+            .is_err(),
             "loss of live scope authority fails closed"
         );
     }
 
     #[test]
-    fn current_control_objective_fences_stale_ndu_selector_decisions() {
+    fn current_control_objective_and_ndu_frontier_fence_stale_selection() {
         let scope = StableId::new("scope-a").expect("scope");
+        let frozen = plan();
         let frozen_objective = Digest32::from_array([0x66; 32]);
         let current = CurrentScope {
             expected_scope: scope.clone(),
             current_digest: Digest32::from_array([0x11; 32]),
             current_objective: frozen_objective,
+            current_ndu_snapshot: Digest32::from_array([0x44; 32]),
             unavailable: false,
         };
-        assert!(validate_objective_binding(&scope, frozen_objective, &current).is_ok());
-        assert!(validate_objective_binding(&scope, Digest32::ZERO, &current).is_err());
+        let check = |owner: &CurrentScope, objective| {
+            validate_current_control_binding(&frozen, &scope, &scope, objective, owner)
+        };
+        assert!(check(&current, frozen_objective).is_ok());
+        assert!(check(&current, Digest32::ZERO).is_err());
 
-        // Scope and signed Selection can remain unchanged while the actual
-        // Objective owner has moved to a new revision. Reject before intent.
-        let changed = CurrentScope {
+        // Both fields must be read from the same current Control revision.
+        // Scope can remain unchanged while the Objective or NDU head changes.
+        let changed_objective = CurrentScope {
             current_objective: Digest32::from_array([0x77; 32]),
             ..current
         };
-        assert!(validate_objective_binding(&scope, frozen_objective, &changed).is_err());
+        assert!(check(&changed_objective, frozen_objective).is_err());
+        let changed_ndu = CurrentScope {
+            current_objective: frozen_objective,
+            current_ndu_snapshot: Digest32::from_array([0x88; 32]),
+            ..changed_objective
+        };
+        assert!(check(&changed_ndu, frozen_objective).is_err());
         let unavailable = CurrentScope {
             unavailable: true,
-            ..changed
+            ..changed_ndu
         };
-        assert!(validate_objective_binding(&scope, frozen_objective, &unavailable).is_err());
+        assert!(check(&unavailable, frozen_objective).is_err());
     }
 
     #[test]
