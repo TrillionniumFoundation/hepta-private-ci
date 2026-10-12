@@ -73,6 +73,7 @@ class Ports:
     encode: object  # (question_id) -> immutable Features
     answer: object  # (question_id, indices) -> original raw answer, frozen receipt
     score: object  # called ONLY after every attempted answer has been sealed
+    select: object = None  # Explicit matched-budget mode; absent on the original path.
 
 
 def state_seal(states):
@@ -187,6 +188,12 @@ def summarize_answers(records, plan):
 
 
 def execute(plan, prior_rows, original, ports, output):
+    if ports.select is not None:
+        from system2_matched_evidence import POLICY, verify_receipt
+        if not callable(ports.select) or plan.get("evidence_selection_policy") != POLICY:
+            raise ValueError("unregistered matched evidence selection")
+    elif plan.get("evidence_selection_policy") is not None:
+        raise ValueError("matched evidence plan has no selection implementation")
     output.mkdir(exist_ok=False)
     write(output/"plan.json", plan)
     states = {g["family"]: build_states(g, prior_rows, original, ports, output) for g in plan["groups"]}
@@ -210,7 +217,10 @@ def execute(plan, prior_rows, original, ports, output):
                 try:
                     if feature is None and arm != "no_evidence":
                         raise ValueError("feature unavailable: "+encoding_error)
-                    if arm in ("ranked3", "no_evidence"):
+                    if ports.select is not None:
+                        selected, detail = ports.select(qid, feature, arm, states[group["family"]].get(arm))
+                        row["evidence_selection"] = detail
+                    elif arm in ("ranked3", "no_evidence"):
                         selected = (sorted(range(len(feature.candidate_ids)), key=lambda i:
                             (-float(feature.frozen_scores[i]), feature.candidate_ids[i]))[:3] if arm == "ranked3" else [])
                     else:
@@ -226,6 +236,8 @@ def execute(plan, prior_rows, original, ports, output):
                     row.update(answer=answer, receipt=receipt)
                     if not isinstance(answer, str) or not answer.strip():
                         raise ValueError("empty Reader output")
+                    if ports.select is not None and detail is not None:
+                        verify_receipt(detail, receipt)
                     if time.perf_counter()-stamp > 30:
                         raise ValueError("observed per-arm wall budget exceeded; output retained")
                     row["status"] = "succeeded"
@@ -246,6 +258,9 @@ def execute(plan, prior_rows, original, ports, output):
         raise ValueError("scoring rewrote original answers")
     report = summarize_answers(records, plan) | dict(snapshot_seal=seal, answer_seal=answer_seal,
         source_commit=plan.get("source_commit"), exact_compute_matched=False)
+    if ports.select is not None:
+        from system2_matched_evidence import summarize as summarize_budget
+        report["matched_evidence"] = summarize_budget(records)
     write(output/"summary.json", report)
     if report["failed"]:
         raise RuntimeError("trial contains failed answers; full census retained")

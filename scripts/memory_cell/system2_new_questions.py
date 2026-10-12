@@ -1,9 +1,8 @@
-"""Native new-question trial on original train families, with a real fixed Reader.
+"""Native fixed-support Reader trial; explicit single or matched3 evidence mode.
 
-This is a phase-separated DEVELOPMENT cohort, not new independent sources or
-historical online learning. Benchmark targets are parsed by existing ingress;
-the model-facing Benchmark has no target mapping. Only fixed support targets
-are provided for fitting; evaluation scoring starts after the raw-answer seal.
+Known-source DEVELOPMENT only. Default single mode preserves the original path.
+Matched3 changes evidence selection, not fitting, question choice or Reader.
+Evaluation scoring starts only after every original answer is durable and sealed.
 """
 import argparse
 from dataclasses import asdict, replace
@@ -15,16 +14,16 @@ import time
 
 from system2_content_replay import ARCHIVE, audit_content
 from system2_frozen_cohort import Ports, execute, plan_cohort
-from system2_fewshot_cells import journal
+from system2_fewshot_cells import journal, predict
 from system2_linear_solver import write
 from system2_native_receipt import strict_json, verified_archive
 
 LOCOMO_SHA = "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
 
 
-def run(staged, ranker_dir, archive, output, *, source_commit):
-    if not re.fullmatch("[0-9a-f]{40}", source_commit or ""):
-        raise ValueError("exact generating source required")
+def run(staged, ranker_dir, archive, output, *, source_commit, evidence_mode="single"):
+    if not re.fullmatch("[0-9a-f]{40}", source_commit or "") or evidence_mode not in ("single", "matched3"):
+        raise ValueError("exact generating source and registered evidence mode required")
     output.mkdir(exist_ok=False)
     started = time.perf_counter()
     from bundle_reader import FrozenBundleReader
@@ -52,6 +51,10 @@ def run(staged, ranker_dir, archive, output, *, source_commit):
         encoded_representation=rows[0].features.encoder_identity,
         target_mapping_removed_from_model_facing_benchmark=True,
         executing_file_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest())
+    if evidence_mode == "matched3":
+        from system2_matched_evidence import POLICY
+        plan.update(evidence_selection_policy=POLICY, previously_evaluated_queries=True,
+                    new_independent_queries=0, same_fit_different_evidence_budget=True)
     if any(r.features.question_id in {q for g in plan["groups"] for q in g["query_ids"]+g["support_ids"]} for r in rows):
         raise ValueError("old fitting queries overlap new cohort")
     write(output/"registered-plan.json", plan)
@@ -100,17 +103,13 @@ def run(staged, ranker_dir, archive, output, *, source_commit):
         roots = frozenset(root for f in fs for root in f.roots)
         cut = TrainingCut(frozenset(group["support_ids"]), frozenset({group["family"]}), roots,
             original.forbidden_roots, digest((plan, "fixed-local-support", group["support_ids"])))
-        # Evaluation labels are not provided to the fitting-side adapter.
         support_labels = {q.identity: labels[q.identity] for q in qs}
         trained, disposition = train_rows(qs, support_labels, pools, features, cut)
         return trained, cut, disposition
 
-    def answer(qid, selected):
-        nonlocal reader
+    def bundle_parts(qid, selected):
         if not (trial_dir/"snapshot-freeze.json").is_file():
-            raise ValueError("Reader invoked before all Cell snapshots frozen")
-        if reader is None:
-            reader = FrozenBundleReader(staged/"reader", expected_inventory=READER)
+            raise ValueError("Reader input compiled before all Cell snapshots frozen")
         q = query_map[qid]
         originals = {d.identity:d for d in source.history(q)}
         frontier = digest([(k, digest(d.content)) for k,d in sorted(originals.items())])
@@ -123,10 +122,63 @@ def run(staged, ranker_dir, archive, output, *, source_commit):
                 d = originals[w.source_id]
                 spans.append(EvidenceSpan(d.identity, d.root, d.scope, d.session, d.observed_at,
                     w.start, w.end, w.text, digest(d.content)))
-        bundle = EvidenceBundle(digest(asdict(q)), frontier, tuple(spans), "system2-new-question-development", rounds=1)
+        mode = "system2-new-question-development" if evidence_mode == "single" else "system2-matched-evidence-development"
+        bundle = EvidenceBundle(digest(asdict(q)), frontier, tuple(spans), mode, rounds=1)
+        return q, bundle, originals, frontier
+
+    def get_reader():
+        nonlocal reader
+        if not (trial_dir/"snapshot-freeze.json").is_file():
+            raise ValueError("Reader invoked before all Cell snapshots frozen")
+        if reader is None:
+            reader = FrozenBundleReader(staged/"reader", expected_inventory=READER)
+        return reader
+
+    def select(qid, feature, arm, state):
+        if arm == "no_evidence":
+            return [], None
+        from bundle_reader import PromptBudgetError
+        from system2_matched_evidence import choose
+        frozen = [float(v) for v in feature.frozen_scores]
+        scores, model = list(frozen), None
+        if arm != "ranked3":
+            if state is None or state["status"] != "succeeded":
+                raise ValueError("unavailable frozen snapshot")
+            model = predict(feature, state["prior"], state["delta"], state["identity"], state["roots"],
+                bank={k:state[k] for k in ("positive", "negative")} if state["neighbor"] else None)
+            for i, value in zip(model["proposal"], model["candidate_scores"], strict=True):
+                scores[i] = value
+
+        def measure(selected):
+            stamp = time.perf_counter()
+            record = dict(query_id=qid, arm=arm, selected=selected, status="started")
+            journal(output/"prompt-probe-starts.jsonl", record)
+            try:
+                q, bundle, originals, frontier = bundle_parts(qid, selected)
+                _, receipt = get_reader().compile_input(q, bundle, originals,
+                    frontier=frontier, revoked=set(), token_limit=4096)
+                value = dict(input_tokens=receipt["input_tokens"], input_ids_digest=receipt["input_ids_digest"])
+                record.update(status="succeeded", **value)
+            except PromptBudgetError as exc:
+                value = dict(input_tokens=exc.actual, input_ids_digest=None)
+                record.update(status="over_limit", **value)
+            except Exception as exc:
+                record.update(status="failed", error_type=type(exc).__name__, error=str(exc)[:512])
+                raise
+            finally:
+                record["seconds"] = time.perf_counter()-stamp
+                journal(output/"prompt-probes.jsonl", record)
+            return value
+
+        selected, detail = choose(feature.candidate_ids, frozen, scores, measure)
+        detail["ranking_model_digest"] = None if model is None else model["model_digest"]
+        return selected, detail
+
+    def answer(qid, selected):
+        q, bundle, originals, frontier = bundle_parts(qid, selected)
         journal(output/"reader-inputs.jsonl", dict(query=asdict(q), bundle=asdict(bundle),
-            selected_originals=[asdict(originals[s.source_id]) for s in spans]))
-        return reader.answer(q, bundle, originals, frontier=frontier, revoked=set(), token_limit=4096)
+            selected_originals=[asdict(originals[s.source_id]) for s in bundle.selected]))
+        return get_reader().answer(q, bundle, originals, frontier=frontier, revoked=set(), token_limit=4096)
 
     def score(record):
         if not (trial_dir/"answer-seal.json").is_file():
@@ -140,14 +192,16 @@ def run(staged, ranker_dir, archive, output, *, source_commit):
             semantic_correctness_independently_verified=False)
 
     try:
-        report = execute(plan, rows, original, Ports(support, encode, answer, score), trial_dir)
+        ports = Ports(support, encode, answer, score, select if evidence_mode == "matched3" else None)
+        report = execute(plan, rows, original, ports, trial_dir)
         if reader is not None:
             reader.verify_frozen()
         ranker.verify_frozen()
         write(output/"run-summary.json", report | dict(encoded_questions=len(features),
             elapsed_seconds=time.perf_counter()-started, reader_model_loaded=reader is not None,
             old_question_ids_reused=0, new_independent_source_families=0,
-            natural_chronology_verified=False, real_reader_trial=True))
+            natural_chronology_verified=False, real_reader_trial=True,
+            evidence_mode=evidence_mode, same_48_queries_reused=evidence_mode == "matched3"))
     except Exception as exc:
         journal(output/"failures.jsonl", dict(error_type=type(exc).__name__, error=str(exc)[:1024],
             elapsed_seconds=time.perf_counter()-started, production_accepted=False))
@@ -159,6 +213,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ("staged", "ranker", "archive", "output"):
         parser.add_argument(name, type=Path)
+    parser.add_argument("--evidence-mode", choices=("single", "matched3"), default="single")
     args = parser.parse_args()
     run(args.staged, args.ranker, args.archive, args.output,
-        source_commit=os.environ.get("HEPTA_MEMORY_TESTED_COMMIT", ""))
+        source_commit=os.environ.get("HEPTA_MEMORY_TESTED_COMMIT", ""), evidence_mode=args.evidence_mode)
