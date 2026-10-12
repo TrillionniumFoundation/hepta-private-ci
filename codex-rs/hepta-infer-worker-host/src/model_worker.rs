@@ -507,12 +507,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         &mut self,
         now_ms: u64,
         model_id: &str,
-        request: NeuronFeatureRequest,
+        request: &NeuronFeatureRequest,
     ) -> Result<NeuronFeatureExecutionObservation, Error> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
         validate_request(now_ms, &request.authorization)?;
-        validate_neuron_feature_request(&request)?;
+        validate_neuron_feature_request(request)?;
         if self
             .active_requests
             .contains_key(&request.authorization.request_id)
@@ -530,7 +530,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::ModelMismatch);
         }
-        let payload_digest = canonical_neuron_feature_payload_digest(&request);
+        let payload_digest = canonical_neuron_feature_payload_digest(request);
         if request.authorization.payload_digest != payload_digest
             || request.authorization.lease_payload_digest != payload_digest
         {
@@ -538,13 +538,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         }
         if request.authorization.cancelled {
             return Ok(NeuronFeatureExecutionObservation {
-                request_id: request.authorization.request_id,
-                reservation_id: request.authorization.reservation_id,
+                request_id: request.authorization.request_id.clone(),
+                reservation_id: request.authorization.reservation_id.clone(),
                 worker_generation: self.generation,
                 manifest: loaded.manifest.clone(),
-                encoder_digest: request.encoder_digest,
-                head_digest: request.head_digest,
-                input_digest: request.input_digest,
+                encoder_digest: request.encoder_digest.clone(),
+                head_digest: request.head_digest.clone(),
+                input_digest: request.input_digest.clone(),
                 status: ExecutionStatus::Cancelled,
                 drive_q24: Vec::new(),
                 prediction_q24: Vec::new(),
@@ -564,7 +564,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             request.authorization.request_id.clone(),
             model_id.to_string(),
         );
-        let observed = self.driver.run_neuron_features(&loaded.handle, &request);
+        let observed = self.driver.run_neuron_features(&loaded.handle, request);
         self.active_requests
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
@@ -581,13 +581,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             ExecutionStatus::Failed
         };
         Ok(NeuronFeatureExecutionObservation {
-            request_id: request.authorization.request_id,
-            reservation_id: request.authorization.reservation_id,
+            request_id: request.authorization.request_id.clone(),
+            reservation_id: request.authorization.reservation_id.clone(),
             worker_generation: self.generation,
             manifest: loaded.manifest.clone(),
             encoder_digest: observed.encoder_digest,
             head_digest: observed.head_digest,
-            input_digest: request.input_digest,
+            input_digest: request.input_digest.clone(),
             status,
             drive_q24: observed.drive_q24,
             prediction_q24: observed.prediction_q24,
@@ -609,22 +609,23 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         model_id: &str,
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureReceiptV1, Error> {
-        let request_copy = request.clone();
-        let observed = self.run_neuron_features(now_ms, model_id, request)?;
+        // Borrow the original feature allocation during execution, then move it
+        // into the typed control request. Avoid a second 512-element Q24 copy.
+        let observed = self.run_neuron_features(now_ms, model_id, &request)?;
         let generation =
             Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
         let control_request = NeuronFeatureRequestV1 {
-            request_id: StableId::new(request_copy.authorization.request_id)
+            request_id: StableId::new(request.authorization.request_id)
                 .map_err(|_| Error::FeatureContract)?,
             generation,
             model_id: StableId::new(observed.manifest.model_id.clone())
                 .map_err(|_| Error::FeatureContract)?,
-            encoder_digest: parse_digest32(&request_copy.encoder_digest)?,
-            head_digest: parse_digest32(&request_copy.head_digest)?,
-            weights_digest: parse_digest32(&request_copy.weights_digest)?,
-            input_digest: parse_digest32(&request_copy.input_digest)?,
-            feature_vector_q24: request_copy.feature_vector_q24,
-            expected_output_width: request_copy.expected_output_width,
+            encoder_digest: parse_digest32(&request.encoder_digest)?,
+            head_digest: parse_digest32(&request.head_digest)?,
+            weights_digest: parse_digest32(&request.weights_digest)?,
+            input_digest: parse_digest32(&request.input_digest)?,
+            feature_vector_q24: request.feature_vector_q24,
+            expected_output_width: request.expected_output_width,
         };
         let runtime_tuple = NeuronModelRuntimeTupleV1 {
             model_id: control_request.model_id.clone(),

@@ -6,6 +6,7 @@ struct Driver {
     indeterminate: bool,
     corrupt_neuron_head: bool,
     loaded: usize,
+    feature_vector_ptr: Option<std::sync::Arc<std::sync::atomic::AtomicUsize>>,
 }
 
 impl ModelDriver for Driver {
@@ -52,6 +53,12 @@ impl NeuronFeatureDriver for Driver {
         _handle: &DriverModelHandle,
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
+        if let Some(probe) = &self.feature_vector_ptr {
+            probe.store(
+                request.feature_vector_q24.as_ptr() as usize,
+                std::sync::atomic::Ordering::SeqCst,
+            );
+        }
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
                 terminal_observed: false,
@@ -207,7 +214,7 @@ fn executes_authenticated_neuron_feature_tuple_from_loaded_manifest() {
         .load_model(100, expected_manifest.clone())
         .expect("load");
     let observed = worker
-        .run_neuron_features(100, "model.1", neuron_feature_request())
+        .run_neuron_features(100, "model.1", &neuron_feature_request())
         .expect("neuron features");
     assert_eq!(observed.status, ExecutionStatus::Succeeded);
     assert_eq!(observed.manifest, expected_manifest);
@@ -228,7 +235,7 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
     let mut changed = neuron_feature_request();
     changed.feature_vector_q24[0] += 1;
     assert_eq!(
-        worker.run_neuron_features(100, "model.1", changed),
+        worker.run_neuron_features(100, "model.1", &changed),
         Err(Error::PayloadMismatch)
     );
 
@@ -240,7 +247,7 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
         InferenceWorker::new(100, "worker.2".to_string(), 3, grant(), driver).expect("worker");
     worker.load_model(100, manifest()).expect("load");
     assert_eq!(
-        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        worker.run_neuron_features(100, "model.1", &neuron_feature_request()),
         Err(Error::FeatureOutputMismatch)
     );
 }
@@ -270,4 +277,26 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     );
     assert!(!receipt.receipt_digest.is_zero());
     assert!(!receipt.authority.grants_any());
+}
+
+#[test]
+fn typed_receipt_borrows_original_q24_allocation_for_driver_execution() {
+    let observed_ptr = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = Driver {
+        feature_vector_ptr: Some(std::sync::Arc::clone(&observed_ptr)),
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.4".to_string(), 3, grant(), driver).expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let request = neuron_feature_request();
+    let original_allocation = request.feature_vector_q24.as_ptr() as usize;
+    let receipt = worker
+        .run_neuron_features_receipt(100, "model.1", request)
+        .expect("typed feature receipt");
+    assert_eq!(
+        observed_ptr.load(std::sync::atomic::Ordering::SeqCst),
+        original_allocation
+    );
+    assert_eq!(receipt.status, codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded);
 }
