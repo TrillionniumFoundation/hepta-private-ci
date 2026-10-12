@@ -16,8 +16,9 @@ import re
 from safetensors.torch import load_file, save_file
 
 from system2_ablation import model_digest
+from system2_budget_audit import menu_report
 from system2_budget_control import (
-    ARMS, COUNTERS, LIMITS, UNIT_COST, collect_training, episode, fit, make_head,
+    ARMS, COUNTERS, LIMITS, UNIT_COST, collect_training, episode, fit, make_head, training_census,
 )
 from system2_native_receipt import index_rows
 from system2_search_budget import read_parent, task_groups, write
@@ -110,8 +111,15 @@ def run(archive, output, *, source_commit):
         probability_calibrated=False, general_ndu_qualified=False, production_accepted=False)
     write(output/"plan.json", plan)
     write(output/"parent-audit.json", audit)
-    x, y, rollouts = collect_training(training, children["value"])
-    write(output/"training-rollouts.json", rollouts)
+    rollouts = []
+    try:
+        x, y, _ = collect_training(training, children["value"], ledger=rollouts,
+            event_sink=lambda event: journal(output/"training-events.jsonl", event))
+    finally:
+        # Also runs on ordinary exceptions/interrupts; durable child events cover
+        # earlier progress if the process terminates before this final snapshot.
+        write(output/"training-rollouts.json", rollouts)
+        write(output/"training-census.json", training_census(rollouts, training))
     write(output/"training-examples.json", dict(features=x.tolist(), targets=y.tolist(),
         counterfactual_rollout_calls=sum(len(r["executions"]) for r in rollouts),
         generated_successors=sum(e["result"]["costs"]["generated_successors"]
@@ -175,6 +183,7 @@ def run(archive, output, *, source_commit):
         prediction_sha256=seal, frozen_models=frozen, evaluation_oracle_states=labeler.calls,
         candidate_disposition="independent_confirmation_required" if gain else "stop_no_controlled_budget_value_gain",
         reasoning_emergence_established=False)
+    write(output/"action-menu-audit.json", menu_report(records, groups))
     write(output/"scored.json", scored)
     write(output/"summary.json", summary)
     if hashlib.sha256((output/"predictions.jsonl").read_bytes()).hexdigest() != seal:
