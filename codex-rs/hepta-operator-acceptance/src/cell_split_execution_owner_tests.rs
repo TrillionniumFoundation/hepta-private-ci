@@ -30,6 +30,8 @@ struct FixturePort {
     observed: Rc<RefCell<Observed>>,
     drop_ack: bool,
     reject_signature: bool,
+    tamper_frozen_during_preflight: Option<std::path::PathBuf>,
+    revoke_previous_during_preflight: bool,
 }
 
 impl FixturePort {
@@ -38,6 +40,8 @@ impl FixturePort {
             observed,
             drop_ack: false,
             reject_signature: false,
+            tamper_frozen_during_preflight: None,
+            revoke_previous_during_preflight: false,
         }
     }
 
@@ -74,6 +78,12 @@ impl CellSplitExecutionPortV1 for FixturePort {
             .contains_key(&intent.idempotency_key)
         {
             return Err("effect already exists");
+        }
+        if let Some(path) = &self.tamper_frozen_during_preflight {
+            fs::write(path, b"{}").map_err(|_| "fixture could not alter frozen trust")?;
+        }
+        if self.revoke_previous_during_preflight {
+            self.observed.borrow_mut().commits.clear();
         }
         Ok(())
     }
@@ -614,6 +624,73 @@ fn post_open_frozen_plan_tampering_fences_first_effect() {
         Err(CellSplitExecutionErrorV1::Invalid(_))
     ));
     assert_eq!(state.borrow().executions, 0);
+}
+
+#[test]
+fn completed_history_must_be_verified_against_current_original_owners() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("open");
+
+    assert!(!owner.verified_complete().expect("incomplete history"));
+    assert_eq!(state.borrow().verifications, 0);
+    for _ in 0..4 {
+        owner.advance().expect("committed original effect");
+    }
+    assert!(owner.is_complete(), "historical cursor is complete");
+    let before = state.borrow().verifications;
+    assert!(owner.verified_complete().expect("four live originals"));
+    assert_eq!(state.borrow().verifications - before, 4);
+
+    state.borrow_mut().commits.clear();
+    assert!(owner.is_complete(), "historical cursor stays complete");
+    assert!(matches!(
+        owner.verified_complete(),
+        Err(CellSplitExecutionErrorV1::External(_))
+    ));
+    assert_eq!(state.borrow().executions, 4, "no effect replay");
+}
+
+#[test]
+fn trust_drift_during_preflight_never_persists_prepared_intent() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut port = FixturePort::new(state.clone());
+    port.tamper_frozen_during_preflight =
+        Some(root.path().join("cell-split-owner-trust-pins.json"));
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
+
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid("owner trust pins drift"))
+    ));
+    assert!(!root.path().join("cell-split-00-prepared.json").exists());
+    assert_eq!(state.borrow().executions, 0);
+}
+
+#[test]
+fn external_revocation_during_preflight_never_prepares_next_step() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut port = FixturePort::new(state.clone());
+    port.revoke_previous_during_preflight = true;
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
+
+    owner.advance().expect("first committed effect");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::External(_))
+    ));
+    assert!(!root.path().join("cell-split-01-prepared.json").exists());
+    assert_eq!(state.borrow().executions, 1);
 }
 
 #[test]
