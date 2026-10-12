@@ -273,7 +273,12 @@ impl RevalidatingCandidate {
         current: RegistrySnapshotReceipt,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
-        let registry = read_registry_snapshot(snapshot, current)?;
+        if self.unavailable {
+            return Err(PinnedCandidateLoadError::Unavailable);
+        }
+        let registry = read_registry_snapshot(snapshot, current).inspect_err(|_| {
+            self.unavailable = true;
+        })?;
         self.with_verified_registry(current, registry, consume)
     }
 }

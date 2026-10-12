@@ -46,6 +46,9 @@ fn damped_preference_update_emits_local_solver_receipts() {
         }],
     ));
     let predecessor = initial.state_digest;
+    let initial_residual_raw = must(FixedQ32::ONE.checked_sub(initial.values[0].value))
+        .raw()
+        .abs();
     let (terminal, termination, receipts) = must(solve_preference_target(
         initial,
         vec![AxisValue {
@@ -73,8 +76,7 @@ fn damped_preference_update_emits_local_solver_receipts() {
         receipts
             .iter()
             .map(|receipt| receipt.residual_raw)
-            .max()
-            .expect("maximum residual")
+            .fold(initial_residual_raw, i64::max)
     );
     assert!(receipts.iter().all(|receipt| receipt.validate().is_ok()));
 }
