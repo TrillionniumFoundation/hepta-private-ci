@@ -111,7 +111,7 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                 "effect service trust binding",
             ));
         }
-        if io_timeout.is_zero() || io_timeout > Duration::from_secs(30) {
+        if io_timeout < Duration::from_millis(1) || io_timeout > Duration::from_secs(30) {
             return Err(CellSplitEffectRpcErrorV1::Invalid(
                 "effect service transport timeout",
             ));
