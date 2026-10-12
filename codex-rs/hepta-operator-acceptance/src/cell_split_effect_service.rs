@@ -150,10 +150,6 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
             }
             CellSplitEffectRpcActionV1::ReadBack => {
                 let committed = self.read_verified(&request.intent)?;
-                let receipt = committed
-                    .as_ref()
-                    .map(|effect| self.sign_receipt(&request.intent, effect))
-                    .transpose()?;
                 let sequence = self
                     .backend
                     .current_sequence()
@@ -229,6 +225,10 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                         "effect changed after final frontier read",
                     ));
                 }
+                let receipt = committed
+                    .as_ref()
+                    .map(|effect| self.sign_receipt(&request.intent, effect))
+                    .transpose()?;
                 let mut readback = CellSplitEffectReadbackV1 {
                     schema: CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1.into(),
                     intent: request.intent.clone(),
