@@ -589,19 +589,28 @@ impl CellSplitDurableEffectBackendV1 for MutateAtFrontierRead {
         {
             self.inner.commit_once(&self.intent)?;
         }
+        // Execute samples the original predecessor frontier before commit.
+        let advance_read = match self.mode {
+            MutationAtFrontier::AdvanceDuringExecuteAcknowledgement => 4,
+            _ => 3,
+        };
         if matches!(
             self.mode,
             MutationAtFrontier::AdvanceDuringPositiveSignature
                 | MutationAtFrontier::AdvanceDuringExecuteAcknowledgement
-        ) && self.sequence_reads == 3
+        ) && self.sequence_reads == advance_read
         {
             self.inner.sequence_override = Some(8);
         }
+        let revoke_read = match self.mode {
+            MutationAtFrontier::RevokeDuringExecuteAcknowledgement => 4,
+            _ => 3,
+        };
         if matches!(
             self.mode,
             MutationAtFrontier::RevokeDuringFinalFrontier
                 | MutationAtFrontier::RevokeDuringExecuteAcknowledgement
-        ) && self.sequence_reads == 3
+        ) && self.sequence_reads == revoke_read
         {
             fs::remove_file(self.inner.live_path())?;
         }
@@ -764,7 +773,7 @@ fn execute_acknowledgement_fails_if_live_effect_disappears_after_frontier() {
             "effect changed before signed execute acknowledgement"
         ))
     ));
-    assert_eq!(service.backend().sequence_reads, 3);
+    assert_eq!(service.backend().sequence_reads, 4);
     assert_eq!(service.backend().inner.commits, 1);
     assert!(root.path().join("committed").exists());
     assert!(!root.path().join("live-owner-state").exists());
@@ -804,7 +813,7 @@ fn execute_acknowledgement_rejects_a_changing_durable_frontier() {
             "effect changed before signed execute acknowledgement"
         ))
     ));
-    assert_eq!(service.backend().sequence_reads, 3);
+    assert_eq!(service.backend().sequence_reads, 4);
     assert_eq!(service.backend().inner.commits, 1);
     assert!(root.path().join("committed").exists());
     assert!(root.path().join("live-owner-state").exists());
