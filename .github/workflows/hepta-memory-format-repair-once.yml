@@ -43,7 +43,7 @@ jobs:
               ["git", "diff", "--name-only", base, "HEAD", "--", "scripts/memory_cell"],
               text=True,
           ).splitlines()
-          paths = sorted(p for p in paths if p.endswith(".py") and Path(p).is_file())
+          paths = sorted(p for p in paths if p.endswith(".py") and Path(p).is_file() and not Path(p).is_symlink())
           if not paths or len(paths) > 400:
               raise ValueError("invalid bounded formatter source census")
           snapshot = {p: ast.dump(ast.parse(Path(p).read_text(encoding="utf-8")))
@@ -109,7 +109,7 @@ jobs:
               ["git", "diff", "--name-only", base, "HEAD", "--", "scripts/memory_cell"],
               text=True,
           ).splitlines()
-          paths = sorted(p for p in paths if p.endswith(".py") and Path(p).is_file())
+          paths = sorted(p for p in paths if p.endswith(".py") and Path(p).is_file() and not Path(p).is_symlink())
           if not paths or len(paths) > 400:
               raise ValueError("invalid bounded current source census")
           before = {p: ast.dump(ast.parse(Path(p).read_text(encoding="utf-8"))) for p in paths}
@@ -125,6 +125,7 @@ jobs:
           Path("/tmp/format-repair/revalidated-source-count.json").write_text(
               json.dumps({"changed": len(changed), "census": len(paths)}))
           PY
+            git diff --check
             just fmt --check --base "$BASE" 2>&1 | tee /tmp/format-repair/revalidated-format.log
             /tmp/memory-format-py/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/format-repair/revalidated-tests.log
             git add -u -- scripts/memory_cell
