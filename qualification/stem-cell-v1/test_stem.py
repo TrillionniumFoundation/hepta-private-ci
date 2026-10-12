@@ -161,12 +161,12 @@ class ScaleTraceTests(unittest.TestCase):
         self.jobs = generate(64, 0.1, 0.5, "mixed_family", DIGEST_A)
         self.events = []
         for i, j in enumerate(self.jobs):
-            cold = i < 3
+            cold = i != 3
             self.events.append(dict(kind="request", request_id=j["request_id"],
                                     generation=j["generation"], model_digest=j["model_digest"],
                                     scope=j["scope"], enqueued_us=9000 + j["submitted_at_us"],
-                                    start_us=9100 + j["submitted_at_us"],
-                                    end_us=9250 + j["submitted_at_us"] + i,
+                                    start_us=(9100 if cold else 9850) + j["submitted_at_us"],
+                                    end_us=(9700 if cold else 10000) + j["submitted_at_us"] + i,
                                     status="ok", path="cold_encoder" if cold else "cache_hit_head",
                                     batch_id="batch1" if cold else None,
                                     cpu_us=50, rss_bytes=1000000))
@@ -174,10 +174,10 @@ class ScaleTraceTests(unittest.TestCase):
         for row in self.events:
             if row["batch_id"] is None:
                 del row["batch_id"]
-        cold_members = self.events[:3]
+        cold_members = [row for row in self.events if row["path"] == "cold_encoder"]
         self.events.append(dict(
             kind="backend_batch", batch_id="batch1", backend="native_hepta",
-            batch_size=3, model_digest=DIGEST_A,
+            batch_size=len(cold_members), model_digest=DIGEST_A,
             scope=self.jobs[0]["scope"], generation=self.jobs[0]["generation"],
             member_request_ids=[row["request_id"] for row in cold_members],
             backend_started_us=max(row["start_us"] for row in cold_members),
@@ -199,6 +199,10 @@ class ScaleTraceTests(unittest.TestCase):
         self.assertFalse(result["native_worker_attested"])
         self.assertEqual(result["schema"], "hepta.stem-cell-scale-observation.v2")
         self.assertEqual(result["completed"], 7)
+        self.assertEqual(result["cache_hit_evidence"],
+                         "prior_same_scope_generation_model_input_cold_completion_unattested")
+        self.assertIsNone(result["independently_verified_cache_hit_fraction"])
+        self.assertAlmostEqual(result["cache_hit_fraction"], 1 / 7)
         self.assertGreater(result["cold_and_cached_latency"]["cold_encoder"]["p99_ms"],
                            result["cold_and_cached_latency"]["cold_encoder"]["execution_p99_ms"])
         self.assertAlmostEqual(result["wal_fsync_p99_ms"], 0.8)
@@ -279,6 +283,41 @@ class ScaleTraceTests(unittest.TestCase):
     def test_missing_request_rejected(self):
         with self.assertRaisesRegex(ValueError, "incomplete"):
             trace_report(self.jobs, self.events[1:])
+
+    def test_cache_hit_cannot_claim_unique_or_future_input(self):
+        # An exact input key and completed cold source are required even for
+        # this deliberately unsigned, self-reported trace diagnostic.
+        self.jobs[3]["input_key"] = "never-encoded"
+        with self.assertRaisesRegex(ValueError, "cache hit"):
+            trace_report(self.jobs, self.events)
+        self.jobs[3]["input_key"] = self.jobs[0]["input_key"]
+        self.events[3]["start_us"] = self.events[0]["end_us"] - 1
+        self.events[3]["end_us"] = self.events[3]["start_us"] + 20
+        with self.assertRaisesRegex(ValueError, "cache hit"):
+            trace_report(self.jobs, self.events)
+
+    def test_4096_cell_label_cannot_hide_seven_executed_intents(self):
+        for job in self.jobs:
+            job["scenario"]["logical_cells"] = 4096
+        with self.assertRaisesRegex(ValueError, "requested-count"):
+            trace_report(self.jobs, self.events)
+
+    def test_wal_fsync_boolean_and_nonfinite_recovery_rejected(self):
+        self.events[-2]["latency_us"] = True
+        with self.assertRaisesRegex(ValueError, "WAL"):
+            trace_report(self.jobs, self.events)
+        self.events[-2]["latency_us"] = 800
+        self.events[-1]["recovery_ms"] = float("nan")
+        with self.assertRaisesRegex(ValueError, "recovery"):
+            trace_report(self.jobs, self.events)
+        self.events[-1]["recovery_ms"] = 12
+        self.events[-1]["checksum_verified"] = 1
+        with self.assertRaisesRegex(ValueError, "recovery"):
+            trace_report(self.jobs, self.events)
+
+    def test_workload_cannot_claim_partial_cell_coverage(self):
+        with self.assertRaisesRegex(ValueError, "requested-count"):
+            trace_report(self.jobs[:-1], self.events)
 
 
 

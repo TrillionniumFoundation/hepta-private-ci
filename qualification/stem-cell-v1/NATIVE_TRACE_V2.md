@@ -73,6 +73,29 @@ host identity to verifiable observation receipts. The existing P0 security,
 P1 production lifecycle, P2 real Encoder and P4 independent NDU gates must
 still pass; a v2 diagnostic alone is not P3 acceptance.
 
+## Cache lineage, workload-size honesty and resource checks
+
+The analyzer refuses to count a self-declared `cache_hit_head` unless a
+successful cold-Encoder request for the **identical declared input key** has
+already completed within the same model, Scope and Generation, before the
+cache-hit request's start time. A pre-warmed cache from before the trace is
+not eligible for this v2 diagnostic without a separately signed owner
+witness and a new explicit protocol. Even a matching input key is only
+self-reported consistency, **not** independent proof of feature reuse.
+
+Every workload declares one registered (logical Cell size, active fraction,
+input repeat fraction, task similarity) scenario and contains exactly
+`ceil(logical_cells * active_fraction)` distinct Cell intents. A trace
+cannot label seven requests as a fully observed 4096-Cell stress run.
+WAL fsync counters must be nonnegative integers, and recovery time must
+be finite with an explicit boolean checksum-verified flag.
+
+The output includes `cache_hit_evidence` and
+`independently_verified_cache_hit_fraction=null` to separate an
+internally consistent cache claim from real signed native cache receipts.
+No value here authenticates real CPU/RSS, a native Worker, or 4096-Cell
+production throughput.
+
 ## Adversarial tests
 
 `test_stem.py::ScaleTraceTests` includes reject cases for:

@@ -49,12 +49,38 @@ def generate(size, active, repeat, similarity, model_digest, seed=7347):
 
 
 def trace_report(workload, events):
-    requests = {}
     if not workload:
         raise ValueError("empty workload")
+    scenario = workload[0].get("scenario") if type(workload[0]) is dict else None
+    fields = {"logical_cells", "active_fraction", "input_repeat_fraction", "task_similarity"}
+    if type(scenario) is not dict or set(scenario) != fields:
+        raise ValueError("invalid workload scenario")
+    size, active = scenario["logical_cells"], scenario["active_fraction"]
+    repeat, similarity = scenario["input_repeat_fraction"], scenario["task_similarity"]
+    if (type(size) is not int or size not in SIZES or
+            type(active) not in (int, float) or active not in FRACTIONS or
+            type(repeat) not in (int, float) or repeat not in REPEATS or
+            similarity not in SIMILARITIES):
+        raise ValueError("unregistered workload scenario")
+    # Never let seven observed calls masquerade as a 4096-Cell full-load
+    # benchmark. This remains source self-consistency, not target attestation.
+    if len(workload) != math.ceil(size * active):
+        raise ValueError("workload scenario requested-count mismatch")
+    requests, cells = {}, set()
     for job in workload:
+        if (type(job) is not dict or job.get("scenario") != scenario or
+                type(job.get("cell_id")) is not int or
+                not 0 <= job["cell_id"] < size or job["cell_id"] in cells or
+                type(job.get("request_id")) is not str or not job["request_id"] or
+                type(job.get("input_key")) is not str or
+                not 0 < len(job["input_key"]) <= 256 or
+                type(job.get("scope")) is not str or not job["scope"] or
+                type(job.get("generation")) is not int or job["generation"] < 1):
+            raise ValueError("inconsistent workload identity or scenario")
+        require_digest(job.get("model_digest"), "model_digest")
         if job["request_id"] in requests:
             raise ValueError("duplicate workload request")
+        cells.add(job["cell_id"])
         requests[job["request_id"]] = job
     requests_trace, backend_batches, wal, restarts = {}, {}, [], []
     for event in events:
@@ -108,12 +134,16 @@ def trace_report(workload, events):
                 raise ValueError("unbound native backend clock interval")
             backend_batches[bid] = event
         elif kind == "wal_fsync":
-            if event["latency_us"] < 0:
-                raise ValueError("negative fsync")
-            wal.append(event["latency_us"] / 1000)
+            duration = event.get("latency_us")
+            if type(duration) is not int or duration < 0:
+                raise ValueError("invalid WAL fsync counter")
+            wal.append(duration / 1000)
         elif kind == "restart":
-            if event["recovery_ms"] < 0:
-                raise ValueError("negative recovery")
+            recovery = event.get("recovery_ms")
+            if (type(recovery) not in (int, float) or
+                    not math.isfinite(recovery) or recovery < 0 or
+                    type(event.get("checksum_verified")) is not bool):
+                raise ValueError("invalid recovery observation")
             restarts.append(event)
         else:
             raise ValueError("unregistered trace kind")
@@ -145,6 +175,22 @@ def trace_report(workload, events):
         if any(not (m["start_us"] <= batch["backend_started_us"] <=
                     batch["backend_ended_us"] <= m["end_us"]) for m in members):
             raise ValueError("backend batch interval not covered by every member")
+    # A cache-hit claim without an already completed, exactly in-scope cold
+    # feature source can fabricate almost-free 4096-Cell inference. Warm caches
+    # from before this workload are deliberately unsupported without a
+    # separately authenticated owner receipt and a new protocol revision.
+    cold_sources = defaultdict(list)
+    for request in requests_trace.values():
+        if request["status"] == "ok" and request["path"] == "cold_encoder":
+            key = (request["scope"], request["generation"], request["model_digest"],
+                   requests[request["request_id"]]["input_key"])
+            cold_sources[key].append(request["end_us"])
+    for request in requests_trace.values():
+        if request["status"] == "ok" and request["path"] == "cache_hit_head":
+            key = (request["scope"], request["generation"], request["model_digest"],
+                   requests[request["request_id"]]["input_key"])
+            if not any(end <= request["start_us"] for end in cold_sources.get(key, ())):
+                raise ValueError("cache hit lacks a completed same-scope cold source")
     ok = [r for r in requests_trace.values() if r["status"] == "ok"]
     lat = {}
     for path in ("cold_encoder", "cache_hit_head"):
@@ -172,6 +218,8 @@ def trace_report(workload, events):
                 [(b["backend_ended_us"] - b["backend_started_us"]) / 1000
                  for b in backend_batches.values()], 0.99),
             "cache_hit_fraction": sum(r["path"] == "cache_hit_head" for r in ok) / len(ok) if ok else None,
+            "cache_hit_evidence": "prior_same_scope_generation_model_input_cold_completion_unattested",
+            "independently_verified_cache_hit_fraction": None,
             "request_attributed_cpu_seconds": sum(r["cpu_us"] for r in requests_trace.values()) / 1e6,
             "peak_rss_bytes": max(r["rss_bytes"] for r in requests_trace.values()),
             "wal_fsync_p99_ms": quantile(wal, 0.99),
