@@ -27,6 +27,7 @@ jobs:
       HEPTA_STRONG_READER_ARCHIVE: /tmp/strong-reference-05b.zip
       HEPTA_CARDINALITY_ARCHIVE: /tmp/historical-onehop-cardinality.zip
       HEPTA_LABEL_ARCHIVE: /tmp/historical-onehop-label.zip
+      HEPTA_NEW_135M_ARCHIVE: /tmp/new20-135m-verified.zip
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -40,7 +41,7 @@ jobs:
           /tmp/paired-reader-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/paired-reader-audit/install-torch.log 2>&1
           /tmp/paired-reader-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/paired-reader-audit/install-deps.log 2>&1
           /tmp/paired-reader-python/bin/pip freeze > /tmp/paired-reader-audit/environment.txt
-      - name: Download three independently SHA-pinned completed archives
+      - name: Download four independently SHA-pinned completed archives
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -51,6 +52,8 @@ jobs:
           printf '%s  %s\n' 9f4a4ed9429212b98befffca27a297780d61317eaed8be519b1cb6880037f121 "$HEPTA_CARDINALITY_ARCHIVE" | sha256sum -c -
           gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11760345185/zip > "$HEPTA_LABEL_ARCHIVE"
           printf '%s  %s\n' a278014bae564336fc4d63335154cadbf14febc73620d958f45648b17ca0622a "$HEPTA_LABEL_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11770341844/zip > "$HEPTA_NEW_135M_ARCHIVE"
+          printf '%s  %s\n' aaa8d1ee112ae8ad903834d0384f5de94cf19197d36e9ea4b6fce99d485715f0 "$HEPTA_NEW_135M_ARCHIVE" | sha256sum -c -
       - name: Inherited MemoryCell regressions, archive-tamper checks, static lint
         run: |
           set -euo pipefail
@@ -60,7 +63,7 @@ jobs:
       - name: Audit actual paired Reader answers without new model calls
         run: |
           set -euo pipefail
-          PYTHONPATH=scripts/memory_cell /tmp/paired-reader-python/bin/python scripts/memory_cell/system2_reader_paired_capacity_audit.py "$HEPTA_STRONG_READER_ARCHIVE" "$HEPTA_CARDINALITY_ARCHIVE" "$HEPTA_LABEL_ARCHIVE" /tmp/paired-reader-audit/paired-result.json | tee /tmp/paired-reader-audit/result.log
+          PYTHONPATH=scripts/memory_cell /tmp/paired-reader-python/bin/python scripts/memory_cell/system2_reader_paired_capacity_audit.py "$HEPTA_STRONG_READER_ARCHIVE" "$HEPTA_CARDINALITY_ARCHIVE" "$HEPTA_LABEL_ARCHIVE" "$HEPTA_NEW_135M_ARCHIVE" /tmp/paired-reader-audit/paired-result.json | tee /tmp/paired-reader-audit/result.log
       - name: Preserve exact source, auth, model identities and all results
         if: always()
         run: |
