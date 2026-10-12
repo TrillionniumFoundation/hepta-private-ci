@@ -596,6 +596,75 @@ jobs:
             tail -n 120 "$RUNNER_TEMP/hepta-matrix-adapter-check.stderr"
           fi
           exit "$status"
+      # Strictly diagnostic follow-up to a previously FAILED candidate resolver.
+      # Only the two observed old Cargo.lock entries can be unlocked, and only
+      # in this disposable detached worktree. No waiver, production mutation,
+      # or automatic release/acceptance is possible.
+      - name: Diagnose exact two-package stale-lock failure (detached only)
+        if: failure()
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${HEPTA_MATRIX_ADAPTER_STAGE:?not staged}"
+          : "${HEPTA_MATRIX_SOURCE_SHA:?source fence absent}"
+          test "$(git rev-parse HEAD)" = "$HEPTA_MATRIX_SOURCE_SHA"
+          case "$HEPTA_MATRIX_ADAPTER_STAGE" in
+            "$RUNNER_TEMP"/*) ;;
+            *) echo "not a disposable Matrix worktree" >&2; exit 1 ;;
+          esac
+          manifest="$HEPTA_MATRIX_ADAPTER_STAGE/codex-rs/Cargo.toml"
+          lock="$HEPTA_MATRIX_ADAPTER_STAGE/codex-rs/Cargo.lock"
+          python3 qualification/matrix-security/dual_lock_repin_probe.py \
+            --async-log "$RUNNER_TEMP/hepta-matrix-adapter-metadata.stderr" \
+            --bytes-log "$RUNNER_TEMP/hepta-matrix-adapter-repin.log" \
+            --manifest "$manifest" --lock "$lock" \
+            --report "$RUNNER_TEMP/hepta-matrix-dual-lock-plan.json" \
+            --scratch-lock "$RUNNER_TEMP/hepta-matrix-dual-unlocked.lock"
+          # Make Cargo itself calculate the new checksums and resolve the entire
+          # graph. Scratch lock bytes are NOT a production or verified lockfile.
+          cp "$RUNNER_TEMP/hepta-matrix-dual-unlocked.lock" "$lock"
+          set +e
+          timeout 600 cargo +1.96.0 metadata --manifest-path "$manifest" \
+            --format-version=1 \
+            > "$RUNNER_TEMP/hepta-matrix-dual-metadata.json" \
+            2> "$RUNNER_TEMP/hepta-matrix-dual-metadata.stderr"
+          status=$?
+          set -e
+          DUAL_RESOLVE_STATUS="$status" python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          root = Path(os.environ["RUNNER_TEMP"])
+          status = int(os.environ["DUAL_RESOLVE_STATUS"])
+          meta = json.loads((root / "hepta-matrix-dual-metadata.json").read_text()) if status == 0 else {}
+          pkgs = meta.get("packages", [])
+          versions = lambda name: sorted(x["version"] for x in pkgs if x["name"] == name)
+          result = {
+              "schema": "hepta.matrix-disposable-dual-resolution.v1",
+              "exact_source_sha": os.environ["HEPTA_MATRIX_SOURCE_SHA"],
+              "resolver_exit_code": status,
+              "resolver_completed": status == 0,
+              "anymap2": versions("anymap2"),
+              "anymap3": versions("anymap3"),
+              "matrix_sdk_crypto": versions("matrix-sdk-crypto"),
+              "async_trait": versions("async-trait"),
+              "bytes": versions("bytes"),
+              "modifies_original_checkout": False,
+              "original_lock_updated": False,
+              "cargo_deny_verified": False,
+              "e2ee_qualified": False,
+              "sqlite_wal_recovery_verified": False,
+              "production_authorized": False,
+          }
+          (root / "hepta-matrix-dual-resolution.json").write_text(
+              json.dumps(result, sort_keys=True, indent=2) + "\n"
+          )
+          print(json.dumps(result, sort_keys=True))
+          PY
+          if [ "$status" -ne 0 ]; then
+            echo "Joint disposable resolver remains BLOCKED; this does not waive the original failure."
+            tail -n 90 "$RUNNER_TEMP/hepta-matrix-dual-metadata.stderr"
+          fi
       - name: Preserve real compiler evidence without security promotion
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -610,6 +679,9 @@ jobs:
             ${{ runner.temp }}/hepta-matrix-adapter-check.stdout
             ${{ runner.temp }}/hepta-matrix-adapter-check.stderr
             ${{ runner.temp }}/hepta-matrix-adapter-compile.json
+            ${{ runner.temp }}/hepta-matrix-dual-lock-plan.json
+            ${{ runner.temp }}/hepta-matrix-dual-resolution.json
+            ${{ runner.temp }}/hepta-matrix-dual-metadata.stderr
           if-no-files-found: warn
           retention-days: 14
       - name: Discard disposable worktree; original source and locks must remain unchanged
