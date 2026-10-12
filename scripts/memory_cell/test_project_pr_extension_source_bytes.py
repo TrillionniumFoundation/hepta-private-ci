@@ -37,8 +37,7 @@ def synthetic():
             parents=parent_ids,
             files=[],
             commits=[
-                dict(sha=c, committed_at="2026-10-12T15:00:00Z")
-                for c in commit_ids
+                dict(sha=c, committed_at="2026-10-12T15:00:00Z") for c in commit_ids
             ],
         )
         entries = []
@@ -108,7 +107,9 @@ class ExternalImmutableBytesTests(unittest.TestCase):
         data = b"// caf\xe9\n"
         key = trial.git_blob(data)
         object_value = dict(
-            sha=key, size=len(data), encoding="base64",
+            sha=key,
+            size=len(data),
+            encoding="base64",
             content=base64.b64encode(data).decode(),
         )
         self.assertEqual(trial.original_blob(object_value, key), data)
@@ -122,7 +123,9 @@ class ExternalImmutableBytesTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             target = Path(directory) / "original"
             trial.acquire(
-                manifest, target, manifest_sha="e" * 64,
+                manifest,
+                target,
+                manifest_sha="e" * 64,
                 fetch=lambda *key: objects[key],
             )
             path = target / "blobs" / (binary + ".blob")
@@ -143,9 +146,11 @@ class ExternalImmutableBytesTests(unittest.TestCase):
             target = Path(directory) / "original"
             with self.assertRaises(ValueError):
                 trial.acquire(
-                manifest, target, manifest_sha="e" * 64,
-                fetch=lambda *key: objects[key],
-            )
+                    manifest,
+                    target,
+                    manifest_sha="e" * 64,
+                    fetch=lambda *key: objects[key],
+                )
             self.assertTrue((target / "INCOMPLETE.json").is_file())
             self.assertFalse((target / "READY.json").exists())
 
@@ -161,8 +166,10 @@ class ExternalImmutableBytesTests(unittest.TestCase):
             with tempfile.TemporaryDirectory() as directory:
                 with self.assertRaises(ValueError):
                     trial.acquire(
-                        manifest, Path(directory) / "original",
-                        manifest_sha="e" * 64, fetch=lambda *key: objects[key],
+                        manifest,
+                        Path(directory) / "original",
+                        manifest_sha="e" * 64,
+                        fetch=lambda *key: objects[key],
                     )
 
     def test_nonancestor_or_reordered_original_git_commit_rejected(self):
@@ -182,7 +189,9 @@ class ExternalImmutableBytesTests(unittest.TestCase):
                 output = Path(directory) / "original"
                 with self.subTest(violation=violation), self.assertRaises(ValueError):
                     trial.acquire(
-                        manifest, output, manifest_sha="e" * 64,
+                        manifest,
+                        output,
+                        manifest_sha="e" * 64,
                         fetch=lambda *key: objects[key],
                     )
                 self.assertFalse((output / "READY.json").exists())
@@ -192,7 +201,9 @@ class ExternalImmutableBytesTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "original"
             trial.acquire(
-                manifest, output, manifest_sha="e" * 64,
+                manifest,
+                output,
+                manifest_sha="e" * 64,
                 fetch=lambda *key: deepcopy(objects[key]),
             )
             from project_pr_extension_source_bytes import canonical, digest
@@ -202,7 +213,8 @@ class ExternalImmutableBytesTests(unittest.TestCase):
             inventory = trial.strict_json(inv.read_bytes())
             case = next(c for c in manifest["cases"] if len(c["commits"]) > 1)
             position = next(
-                i for i, row in enumerate(inventory["commits"])
+                i
+                for i, row in enumerate(inventory["commits"])
                 if row["sha"] == case["commits"][1]["sha"]
             )
             inventory["commits"][position]["parents"] = [oid("orphan")]
@@ -243,8 +255,11 @@ class ExternalImmutableBytesTests(unittest.TestCase):
             )
             with self.assertRaises(ValueError):
                 trial.acquire(
-                manifest, path, manifest_sha="e" * 64, fetch=lambda *key: objects[key]
-            )
+                    manifest,
+                    path,
+                    manifest_sha="e" * 64,
+                    fetch=lambda *key: objects[key],
+                )
 
     def test_wrong_manifest_sha_or_original_prior_refused(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -252,7 +267,7 @@ class ExternalImmutableBytesTests(unittest.TestCase):
             current = root / "extension.json"
             previous = root / "prior.json"
             current.write_text('{"not":"original"}')
-            previous.write_text('{}')
+            previous.write_text("{}")
             with self.assertRaises(ValueError):
                 trial.load_manifest(current, previous)
 

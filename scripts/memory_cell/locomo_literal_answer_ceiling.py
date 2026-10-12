@@ -13,7 +13,11 @@ import re
 import unicodedata
 
 from locomo_ninearm_source_replay import (
-    ZIPS, canonical, read_zip, sha, strict_json,
+    ZIPS,
+    canonical,
+    read_zip,
+    sha,
+    strict_json,
 )
 
 ARMS = ("lexical_k4", "lexical_k8")
@@ -21,7 +25,11 @@ PLANNED = 16
 
 
 def normalized_literal(text, *, byte_limit=8192):
-    if not isinstance(text, str) or not text.strip() or len(text.encode("utf-8")) > byte_limit:
+    if (
+        not isinstance(text, str)
+        or not text.strip()
+        or len(text.encode("utf-8")) > byte_limit
+    ):
         raise ValueError("missing or unbounded published literal answer")
     return " ".join(unicodedata.normalize("NFC", text).casefold().split())
 
@@ -32,15 +40,17 @@ def literal_occurs(answer, content):
         raise ValueError("unbounded source document for literal-only diagnostic")
     if not content.strip():
         return False
-    needle, haystack = normalized_literal(answer), normalized_literal(
-        content, byte_limit=1048576
+    needle, haystack = (
+        normalized_literal(answer),
+        normalized_literal(content, byte_limit=1048576),
     )
     return re.search(r"(?<!\w)" + re.escape(needle) + r"(?!\w)", haystack) is not None
 
 
 def sealed_candidates(cases, documents, decisions):
     if (
-        not isinstance(cases, list) or len(cases) != PLANNED
+        not isinstance(cases, list)
+        or len(cases) != PLANNED
         or len({q["question_id"] for q in cases}) != PLANNED
         or len({q["family_proxy_digest"] for q in cases}) != 2
         or not isinstance(documents, dict)
@@ -55,10 +65,12 @@ def sealed_candidates(cases, documents, decisions):
         qid, scope = case["question_id"], case["scope"]
         source_ids = case["source_ids"]
         if (
-            not isinstance(source_ids, list) or len(source_ids) < 8
+            not isinstance(source_ids, list)
+            or len(source_ids) < 8
             or len(source_ids) != len(set(source_ids))
-            or any(s not in documents or documents[s]["scope"] != scope
-                   for s in source_ids)
+            or any(
+                s not in documents or documents[s]["scope"] != scope for s in source_ids
+            )
         ):
             raise ValueError("invalid source census or cross-scope original")
         selected = []
@@ -66,29 +78,36 @@ def sealed_candidates(cases, documents, decisions):
             row = subset[(qid, arm)]
             source_keys = row["selected"]
             if (
-                row["arm"] != arm or row["question_id"] != qid
+                row["arm"] != arm
+                or row["question_id"] != qid
                 or row["family_proxy_digest"] != case["family_proxy_digest"]
                 or row["source_census_sha256"] != case["source_census_sha256"]
                 or not isinstance(source_keys, list)
-                or len(source_keys) != k or len(set(source_keys)) != k
+                or len(source_keys) != k
+                or len(set(source_keys)) != k
                 or not set(source_keys).issubset(source_ids)
-                or row["selected_source_bytes"] != sum(
+                or row["selected_source_bytes"]
+                != sum(
                     len(documents[s]["content"].encode("utf-8")) for s in source_keys
                 )
             ):
-                raise ValueError("reordered, mutated or unpinned original source selections")
+                raise ValueError(
+                    "reordered, mutated or unpinned original source selections"
+                )
             selected.append(source_keys)
         if selected[0] != selected[1][:4]:
             raise ValueError("k4 was not the original prefix of frozen k8")
-        plan.append(dict(
-            question_id=qid,
-            family_proxy_digest=case["family_proxy_digest"],
-            source_census_sha256=case["source_census_sha256"],
-            scope=scope,
-            source_ids=source_ids,
-            lexical_k4=selected[0],
-            lexical_k8=selected[1],
-        ))
+        plan.append(
+            dict(
+                question_id=qid,
+                family_proxy_digest=case["family_proxy_digest"],
+                source_census_sha256=case["source_census_sha256"],
+                scope=scope,
+                source_ids=source_ids,
+                lexical_k4=selected[0],
+                lexical_k8=selected[1],
+            )
+        )
     return dict(
         schema="hepta.locomo-literal-postreplay-prelabel-lock.v1",
         original_public_zip_sha256=ZIPS["public"][1],
@@ -108,7 +127,8 @@ def audit_locked_literal_capacity(lock, documents, targets):
         lock.get("schema") != "hepta.locomo-literal-postreplay-prelabel-lock.v1"
         or lock.get("label_bytes_read_before_seal") is not False
         or lock.get("original_frozen_ranking_or_source_bytes_changed") is not False
-        or len(cases) != PLANNED or len({x["question_id"] for x in cases}) != PLANNED
+        or len(cases) != PLANNED
+        or len({x["question_id"] for x in cases}) != PLANNED
         or lock.get("source_selection_sha256") != sha(canonical(cases))
         or not isinstance(targets, dict)
         or set(targets) != {q["question_id"] for q in cases}
@@ -122,24 +142,34 @@ def audit_locked_literal_capacity(lock, documents, targets):
             type(target.get("unanswerable")) is not bool
             or not isinstance(target.get("support"), list)
             or not isinstance(target.get("unresolved_support"), list)
-            or any(not isinstance(x, str) or not x
-                   for x in target["support"] + target["unresolved_support"])
+            or any(
+                not isinstance(x, str) or not x
+                for x in target["support"] + target["unresolved_support"]
+            )
         ):
             raise ValueError("unregistered published source support")
         support = target["support"]
         outside = not set(support).issubset(case["source_ids"])
         answerable = (
-            not target["unanswerable"] and bool(support)
-            and not target["unresolved_support"] and not outside
+            not target["unanswerable"]
+            and bool(support)
+            and not target["unresolved_support"]
+            and not outside
         )
         answer = target.get("answer")
         literal_available = (
-            answerable and isinstance(answer, str) and bool(answer.strip())
+            answerable
+            and isinstance(answer, str)
+            and bool(answer.strip())
             and len(answer.encode("utf-8")) <= 8192
         )
         source_literal_found = (
-            any(literal_occurs(answer, documents[s]["content"])
-                for s in case["source_ids"]) if literal_available else None
+            any(
+                literal_occurs(answer, documents[s]["content"])
+                for s in case["source_ids"]
+            )
+            if literal_available
+            else None
         )
         for arm in ARMS:
             selected = case[arm]
@@ -148,15 +178,21 @@ def audit_locked_literal_capacity(lock, documents, targets):
             )
             selected_literal = (
                 any(literal_occurs(answer, documents[s]["content"]) for s in selected)
-                if literal_available else None
+                if literal_available
+                else None
             )
             support_literal = (
-                any(literal_occurs(answer, documents[s]["content"])
-                    for s in selected if s in support)
-                if literal_available else None
+                any(
+                    literal_occurs(answer, documents[s]["content"])
+                    for s in selected
+                    if s in support
+                )
+                if literal_available
+                else None
             )
             row = dict(
-                question_id=case["question_id"], arm=arm,
+                question_id=case["question_id"],
+                arm=arm,
                 family_proxy_digest=case["family_proxy_digest"],
                 weak_document_support_evaluable=answerable,
                 weak_full_document_support_selected=contains_all_support,
@@ -219,6 +255,7 @@ def main():
     # Critical sequence: seal and persist all source-only choices before
     # opening a single native answer annotation.
     from locomo_frozen_reader_pair import source_plan, write_once
+
     cases, documents, decisions = source_plan(args.public_zips)
     sealed = sealed_candidates(cases, documents, decisions)
     args.output.mkdir(parents=True, exist_ok=False)
@@ -228,10 +265,13 @@ def main():
     result = audit_locked_literal_capacity(sealed, documents, targets)
     result["original_pinned_target_bytes_sha256"] = sha(target_bytes)
     write_once(args.output / "report.json", canonical(result) + b"\n")
-    print(json.dumps(
-        {key: result[key] for key in ("schema", "per_arm", "production_accepted")},
-        sort_keys=True, ensure_ascii=False,
-    ))
+    print(
+        json.dumps(
+            {key: result[key] for key in ("schema", "per_arm", "production_accepted")},
+            sort_keys=True,
+            ensure_ascii=False,
+        )
+    )
 
 
 if __name__ == "__main__":

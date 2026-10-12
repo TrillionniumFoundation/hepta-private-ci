@@ -50,7 +50,8 @@ def unique_shadow_question_bounds(plan, decisions, posthoc):
         or len({q for group in cohorts.values() for q in group}) != 80
         or len(decisions) != 192
         or not isinstance(posthoc, dict)
-        or posthoc.get("schema") not in (
+        or posthoc.get("schema")
+        not in (
             "hepta.stem-pairwise-native-source-only-shadow.v1",
             "hepta.stem-pairwise-native-source-only-shadow.v2",
         )
@@ -60,8 +61,10 @@ def unique_shadow_question_bounds(plan, decisions, posthoc):
         raise ValueError("unregistered or falsely promoted Shadow census")
     expected = {
         (stage, phase, qid, arm)
-        for stage in STAGES for phase in PHASES
-        for qid in cohorts[phase] for arm in ARMS
+        for stage in STAGES
+        for phase in PHASES
+        for qid in cohorts[phase]
+        for arm in ARMS
     }
     choices, families, by_group = {}, {}, defaultdict(list)
     for row in decisions:
@@ -70,7 +73,8 @@ def unique_shadow_question_bounds(plan, decisions, posthoc):
             raise ValueError("duplicate or unregistered Shadow decision")
         if (
             row["status"] not in ("succeeded", "failed")
-            or not isinstance(row.get("family"), str) or not row["family"]
+            or not isinstance(row.get("family"), str)
+            or not row["family"]
             or row.get("actual_reader_calls") != 0
         ):
             raise ValueError("Shadow model status, source family or Reader drift")
@@ -97,7 +101,9 @@ def unique_shadow_question_bounds(plan, decisions, posthoc):
                 source = group_receipts.get(label)
                 records = by_group[key]
                 if not isinstance(source, dict) or len(records) != 8:
-                    raise ValueError("missing checkpoint/phase/arm Shadow source census")
+                    raise ValueError(
+                        "missing checkpoint/phase/arm Shadow source census"
+                    )
                 changed = []
                 for row in records:
                     if row["status"] != "succeeded":
@@ -105,7 +111,8 @@ def unique_shadow_question_bounds(plan, decisions, posthoc):
                     new = row.get("selected")
                     frozen = row.get("original_frozen_selected")
                     if (
-                        type(new) is not int or type(frozen) is not int
+                        type(new) is not int
+                        or type(frozen) is not int
                         or not 0 <= new < row["candidate_count"]
                         or not 0 <= frozen < row["candidate_count"]
                     ):
@@ -113,22 +120,32 @@ def unique_shadow_question_bounds(plan, decisions, posthoc):
                     if new != frozen:
                         changed.append(row["question_id"])
                         review[(phase, row["question_id"])].append(
-                            dict(checkpoint=stage, arm=arm,
-                                 original_top1=frozen, shadow_top1=new)
+                            dict(
+                                checkpoint=stage,
+                                arm=arm,
+                                original_top1=frozen,
+                                shadow_top1=new,
+                            )
                         )
                 gains = source.get("native_weak_support_gains")
                 regressions = source.get("native_weak_support_regressions")
                 if (
                     source.get("attempted") != 8
                     or source.get("selection_changed") != len(changed)
-                    or type(gains) is not int or type(regressions) is not int
-                    or gains < 0 or regressions < 0
+                    or type(gains) is not int
+                    or type(regressions) is not int
+                    or gains < 0
+                    or regressions < 0
                     or gains + regressions > len(changed)
                 ):
-                    raise ValueError("weak native gains exceed original changed choices")
+                    raise ValueError(
+                        "weak native gains exceed original changed choices"
+                    )
                 changed = tuple(sorted(changed))
                 phase_groups[phase][key] = dict(
-                    changed=changed, gains=gains, regressions=regressions,
+                    changed=changed,
+                    gains=gains,
+                    regressions=regressions,
                 )
                 total_flips += len(changed)
                 total_gain_events += gains
@@ -169,22 +186,24 @@ def unique_shadow_question_bounds(plan, decisions, posthoc):
 
     def sum_bounds(phases, name):
         return [
-            sum(phase_summary[p][name][position] for p in phases)
-            for position in (0, 1)
+            sum(phase_summary[p][name][position] for p in phases) for position in (0, 1)
         ]
 
     worklist = []
     for phase, qid in sorted(review):
-        worklist.append(dict(
-            phase=phase,
-            question_id=qid,
-            source_family=families[qid],
-            actual_rank_changes=sorted(review[(phase, qid)],
-                                       key=lambda v: (v["checkpoint"], v["arm"])),
-            weak_source_gain_attributable_to_this_question=None,
-            answer_or_semantic_citation_reviewed=False,
-            externally_qualified_reviewer_present=False,
-        ))
+        worklist.append(
+            dict(
+                phase=phase,
+                question_id=qid,
+                source_family=families[qid],
+                actual_rank_changes=sorted(
+                    review[(phase, qid)], key=lambda v: (v["checkpoint"], v["arm"])
+                ),
+                weak_source_gain_attributable_to_this_question=None,
+                answer_or_semantic_citation_reviewed=False,
+                externally_qualified_reviewer_present=False,
+            )
+        )
     gain_total = sum_bounds(PHASES, "unique_weak_gain_question_bounds")
     heldout = sum_bounds(("test", "transfer"), "unique_weak_gain_question_bounds")
     return dict(

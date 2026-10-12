@@ -10,7 +10,10 @@ import torch
 from selector_evaluation import support_indices
 from selector_head import Supervision
 from stem_label_placebo import (
-    LABELS, label_placebo_shadow, placebo_labels, review_placebo,
+    LABELS,
+    label_placebo_shadow,
+    placebo_labels,
+    review_placebo,
 )
 from test_stem_native_pairwise_shadow import fixture, targets_and_frozen
 
@@ -24,7 +27,12 @@ class LabelPlaceboTests(unittest.TestCase):
         questions, rows, features, cut, routes = fixture()
         with tempfile.TemporaryDirectory() as directory:
             fits, decisions = label_placebo_shadow(
-                questions, rows, features, cut, routes, Path(directory),
+                questions,
+                rows,
+                features,
+                cut,
+                routes,
+                Path(directory),
             )
         return questions, fits, decisions, features
 
@@ -50,16 +58,20 @@ class LabelPlaceboTests(unittest.TestCase):
         for stage in (16, 32, 48):
             for kind in ("linear", "gated"):
                 for cell in ("general", "temporal"):
-                    pair = [x for x in fits if (
-                        x["stage"], x["kind"], x["cell"]
-                    ) == (stage, kind, cell)]
+                    pair = [
+                        x
+                        for x in fits
+                        if (x["stage"], x["kind"], x["cell"]) == (stage, kind, cell)
+                    ]
                     self.assertEqual({x["condition"] for x in pair}, set(LABELS))
                     self.assertEqual(len({x["initial_seed_sha256"] for x in pair}), 1)
                     self.assertEqual(
-                        len({x["training_question_ids_sha256"] for x in pair}), 1,
+                        len({x["training_question_ids_sha256"] for x in pair}),
+                        1,
                     )
                     self.assertNotEqual(
-                        pair[0]["supervision_sha256"], pair[1]["supervision_sha256"],
+                        pair[0]["supervision_sha256"],
+                        pair[1]["supervision_sha256"],
                     )
         self.assertEqual(len(questions["test"]), 8)
         self.assertTrue(all(x["original_reader_calls"] == 0 for x in decisions))
@@ -69,14 +81,19 @@ class LabelPlaceboTests(unittest.TestCase):
         questions, fits, decisions, features = self.execute()
         pools, targets, _ = targets_and_frozen(questions, features)
         result = review_placebo(
-            questions, fits, decisions, pools, targets,
+            questions,
+            fits,
+            decisions,
+            pools,
+            targets,
             support_indices=support_indices,
         )
         self.assertEqual(result["trained_heads"], 24)
         self.assertEqual(result["sealed_choices"], 384)
         self.assertEqual(len(result["by_stage_phase_kind"]), 24)
         self.assertEqual(
-            sum(x["attempted"] for x in result["by_stage_phase_kind"].values()), 192,
+            sum(x["attempted"] for x in result["by_stage_phase_kind"].values()),
+            192,
         )
         self.assertIsNone(result["independent_semantic_citation_precision"])
         self.assertFalse(result["production_accepted"])
@@ -94,12 +111,20 @@ class LabelPlaceboTests(unittest.TestCase):
             changed[0][field] = val
             with self.subTest(field=field), self.assertRaises(ValueError):
                 review_placebo(
-                    questions, fits, changed, pools, targets,
+                    questions,
+                    fits,
+                    changed,
+                    pools,
+                    targets,
                     support_indices=support_indices,
                 )
         with self.assertRaises(ValueError):
             review_placebo(
-                questions, fits, decisions[:-1], pools, targets,
+                questions,
+                fits,
+                decisions[:-1],
+                pools,
+                targets,
                 support_indices=support_indices,
             )
 
@@ -111,7 +136,11 @@ class LabelPlaceboTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaisesRegex(ValueError, "TRAIN|overlapping"):
                 label_placebo_shadow(
-                    questions, rows + (forged,), enc, cut, routes,
+                    questions,
+                    rows + (forged,),
+                    enc,
+                    cut,
+                    routes,
                     Path(directory),
                 )
 
@@ -124,7 +153,12 @@ class LabelPlaceboTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             with self.assertRaisesRegex(ValueError, "usable paired TRAIN"):
                 label_placebo_shadow(
-                    questions, ambiguous, enc, cut, routes, Path(directory),
+                    questions,
+                    ambiguous,
+                    enc,
+                    cut,
+                    routes,
+                    Path(directory),
                 )
 
 

@@ -12,7 +12,8 @@ from native import Target
 from selector_evaluation import support_indices
 from selector_head import Supervision, TrainingCut
 from stem_native_pairwise_shadow import (
-    native_pairwise_shadow, review_pairwise_shadow,
+    native_pairwise_shadow,
+    review_pairwise_shadow,
 )
 from test_stem_cell import features
 
@@ -22,23 +23,22 @@ PHASES = ("select", "retention", "test", "transfer")
 
 def fixture():
     questions = {"train": [Obj(identity=f"train-{i}") for i in range(48)]}
-    questions.update({
-        phase: [Obj(identity=f"{phase}-{i}") for i in range(8)]
-        for phase in PHASES
-    })
+    questions.update(
+        {phase: [Obj(identity=f"{phase}-{i}") for i in range(8)] for phase in PHASES}
+    )
     ordered = [q.identity for group in questions.values() for q in group]
-    routes = {qid: ("general" if i % 2 == 0 else "temporal")
-              for i, qid in enumerate(ordered)}
+    routes = {
+        qid: ("general" if i % 2 == 0 else "temporal") for i, qid in enumerate(ordered)
+    }
     encoded = {qid: features(qid) for qid in ordered}
     # Only a previously admitted TRAIN cut supplies weak native positives.
-    supervised = tuple(
-        Supervision(encoded[f"train-{i}"], (0,))
-        for i in range(8)
-    )
+    supervised = tuple(Supervision(encoded[f"train-{i}"], (0,)) for i in range(8))
     cut = TrainingCut(
         frozenset(q.identity for q in questions["train"]),
-        frozenset({"family"}), frozenset({"root"}),
-        frozenset({"held-out"}), "pinned-train-admission",
+        frozenset({"family"}),
+        frozenset({"root"}),
+        frozenset({"held-out"}),
+        "pinned-train-admission",
     )
     return questions, supervised, encoded, cut, routes
 
@@ -58,15 +58,20 @@ def targets_and_frozen(questions, encoded):
                 seal=lambda: "pool",
             )
             targets[qid] = Target(
-                "target", "fixture", ("doc-positive",), False,
+                "target",
+                "fixture",
+                ("doc-positive",),
+                False,
             )
             for stage in (16, 32, 48):
                 frozen[(stage, phase, qid)] = dict(
-                    status="succeeded", selected=1,
+                    status="succeeded",
+                    selected=1,
                     pool_digest=encoded[qid].pool_digest,
                     family=encoded[qid].family,
-                    cell=("general" if int(qid.split("-")[-1]) % 2 == 0
-                          else "temporal"),
+                    cell=(
+                        "general" if int(qid.split("-")[-1]) % 2 == 0 else "temporal"
+                    ),
                 )
     return pools, targets, frozen
 
@@ -80,7 +85,8 @@ class NativePairwiseShadowTests(unittest.TestCase):
         args = fixture()
         with tempfile.TemporaryDirectory() as d:
             fits, decisions = native_pairwise_shadow(
-                *args, Path(d),
+                *args,
+                Path(d),
             )
             artifacts = sorted(Path(d).glob("shadow-*.json"))
             self.assertEqual(len(artifacts), 12)
@@ -94,16 +100,26 @@ class NativePairwiseShadowTests(unittest.TestCase):
         self.assertTrue(all(f["status"] == "succeeded" for f in fits))
         self.assertTrue(all(f["artifact_reload_matched"] for f in fits))
         self.assertTrue(all(f["receipt"]["null_weights_unchanged"] for f in fits))
-        self.assertTrue(all(f["receipt"]["actual_heldout_task_gain_established"] is False
-                            for f in fits))
+        self.assertTrue(
+            all(
+                f["receipt"]["actual_heldout_task_gain_established"] is False
+                for f in fits
+            )
+        )
         self.assertEqual(sum(r["status"] == "failed" for r in choices), 0)
         self.assertEqual(sum(r["actual_reader_calls"] for r in choices), 0)
-        self.assertGreater(sum(r["selected"] != r["original_frozen_selected"]
-                               for r in choices), 0)
+        self.assertGreater(
+            sum(r["selected"] != r["original_frozen_selected"] for r in choices), 0
+        )
         # There are only 8 * 4 new subjects; three stages are repeats.
         pools, targets, base = targets_and_frozen(args[0], args[2])
         report = review_pairwise_shadow(
-            args[0], fits, choices, base, pools, targets,
+            args[0],
+            fits,
+            choices,
+            base,
+            pools,
+            targets,
             support_indices=support_indices,
         )
         self.assertEqual(report["total_label_blind_decisions"], 192)
@@ -118,7 +134,12 @@ class NativePairwiseShadowTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             with self.assertRaisesRegex(ValueError, "held-out"):
                 native_pairwise_shadow(
-                    questions, rows + (leak,), feat, cut, routes, Path(d),
+                    questions,
+                    rows + (leak,),
+                    feat,
+                    cut,
+                    routes,
+                    Path(d),
                 )
             self.assertFalse(tuple(Path(d).iterdir()))
 
@@ -135,7 +156,13 @@ class NativePairwiseShadowTests(unittest.TestCase):
             with tempfile.TemporaryDirectory() as d:
                 with self.subTest(mode=mode), self.assertRaises(ValueError):
                     native_pairwise_shadow(
-                        questions, rows, feat, cut, routes, Path(d), **opts,
+                        questions,
+                        rows,
+                        feat,
+                        cut,
+                        routes,
+                        Path(d),
+                        **opts,
                     )
 
     def test_duplicate_shadow_choice_missing_stage_or_tampered_fit_rejected(self):
@@ -151,7 +178,12 @@ class NativePairwiseShadowTests(unittest.TestCase):
                 f[0]["receipt"]["strictly_train_source_only"] = False
             with self.subTest(mode=mode), self.assertRaises(ValueError):
                 review_pairwise_shadow(
-                    args[0], f, rows, frozen, pools, targets,
+                    args[0],
+                    f,
+                    rows,
+                    frozen,
+                    pools,
+                    targets,
                     support_indices=support_indices,
                 )
 
@@ -160,7 +192,12 @@ class NativePairwiseShadowTests(unittest.TestCase):
         pools, targets, frozen = targets_and_frozen(args[0], args[2])
         targets["test-0"] = Target("", "fixture", (), True)
         result = review_pairwise_shadow(
-            args[0], fits, decisions, frozen, pools, targets,
+            args[0],
+            fits,
+            decisions,
+            frozen,
+            pools,
+            targets,
             support_indices=support_indices,
         )
         for stage in (16, 32, 48):
@@ -176,17 +213,26 @@ class NativePairwiseShadowTests(unittest.TestCase):
         frozen[(48, "test", "test-0")]["selected"] = 0
         with self.assertRaisesRegex(ValueError, "original frozen ranker"):
             review_pairwise_shadow(
-                args[0], fits, decisions, frozen, pools, targets,
+                args[0],
+                fits,
+                decisions,
+                frozen,
+                pools,
+                targets,
                 support_indices=support_indices,
             )
-
 
     def test_reader_failure_after_frozen_selection_keeps_source_scoring(self):
         args, fits, choices = self.run_fixture()
         pools, targets, frozen = targets_and_frozen(args[0], args[2])
         frozen[(48, "test", "test-0")]["status"] = "failed"
         outcome = review_pairwise_shadow(
-            args[0], fits, choices, frozen, pools, targets,
+            args[0],
+            fits,
+            choices,
+            frozen,
+            pools,
+            targets,
             support_indices=support_indices,
         )["by_checkpoint_phase_arm"]
         for arm in ("pairwise_linear", "pairwise_gated"):
@@ -196,7 +242,9 @@ class NativePairwiseShadowTests(unittest.TestCase):
             self.assertEqual(observed["source_selection_pairs_observed"], 8)
             self.assertEqual(observed["source_label_scored"], 8)
             self.assertEqual(observed["source_label_unresolved_or_failure"], 0)
-            self.assertTrue(observed["reader_failure_never_erases_pre_read_source_selection"])
+            self.assertTrue(
+                observed["reader_failure_never_erases_pre_read_source_selection"]
+            )
             self.assertTrue(observed["shadow_answers_never_generated"])
 
     def test_failed_before_selection_remains_unknown_not_source_gain(self):
@@ -206,7 +254,12 @@ class NativePairwiseShadowTests(unittest.TestCase):
             status="failed", cell="general", family="family"
         )
         report = review_pairwise_shadow(
-            args[0], fits, choices, frozen, pools, targets,
+            args[0],
+            fits,
+            choices,
+            frozen,
+            pools,
+            targets,
             support_indices=support_indices,
         )["by_checkpoint_phase_arm"]
         for arm in ("pairwise_linear", "pairwise_gated"):
@@ -231,11 +284,17 @@ class NativePairwiseShadowTests(unittest.TestCase):
                     Obj(source_id="doc-positive", identity=lambda: "forged"),
                     pool.windows[1],
                 )
-            with self.subTest(case=case), self.assertRaisesRegex(
-                ValueError, "source windows differ"
+            with (
+                self.subTest(case=case),
+                self.assertRaisesRegex(ValueError, "source windows differ"),
             ):
                 review_pairwise_shadow(
-                    args[0], fits, choices, frozen, pools, targets,
+                    args[0],
+                    fits,
+                    choices,
+                    frozen,
+                    pools,
+                    targets,
                     support_indices=support_indices,
                 )
 
@@ -251,7 +310,12 @@ class NativePairwiseShadowTests(unittest.TestCase):
             )
         pools.pop("test-0")
         report = review_pairwise_shadow(
-            args[0], fits, choices, frozen, pools, targets,
+            args[0],
+            fits,
+            choices,
+            frozen,
+            pools,
+            targets,
             support_indices=support_indices,
         )["by_checkpoint_phase_arm"]["48/test/pairwise_linear"]
         self.assertEqual(report["attempted"], 8)
@@ -268,7 +332,12 @@ class NativePairwiseShadowTests(unittest.TestCase):
         pools.pop("test-0")
         with self.assertRaisesRegex(ValueError, "sealed original candidate pool"):
             review_pairwise_shadow(
-                args[0], fits, choices, frozen, pools, targets,
+                args[0],
+                fits,
+                choices,
+                frozen,
+                pools,
+                targets,
                 support_indices=support_indices,
             )
 
@@ -276,14 +345,20 @@ class NativePairwiseShadowTests(unittest.TestCase):
         args, fits, choices = self.run_fixture()
         pools, targets, frozen = targets_and_frozen(args[0], args[2])
         candidate = next(
-            row for row in choices
+            row
+            for row in choices
             if (row["stage"], row["phase"], row["question_id"], row["arm"])
             == (48, "test", "test-0", "pairwise_linear")
         )
         candidate["head_sha256"] = "0" * 64
         with self.assertRaisesRegex(ValueError, "saved fitted checkpoint"):
             review_pairwise_shadow(
-                args[0], fits, choices, frozen, pools, targets,
+                args[0],
+                fits,
+                choices,
+                frozen,
+                pools,
+                targets,
                 support_indices=support_indices,
             )
 
@@ -291,10 +366,13 @@ class NativePairwiseShadowTests(unittest.TestCase):
         for case in ("family", "route", "leak", "reader"):
             args, fits, choices = self.run_fixture()
             pools, targets, frozen = targets_and_frozen(args[0], args[2])
-            item = next(row for row in choices
-                        if row["stage"] == 48
-                        and row["phase"] == "test"
-                        and row["question_id"] == "test-0")
+            item = next(
+                row
+                for row in choices
+                if row["stage"] == 48
+                and row["phase"] == "test"
+                and row["question_id"] == "test-0"
+            )
             if case == "family":
                 frozen[(48, "test", "test-0")]["family"] = "unbound-family"
             elif case == "route":
@@ -303,11 +381,19 @@ class NativePairwiseShadowTests(unittest.TestCase):
                 item["training_labels_or_test_gold_in_answer"] = True
             else:
                 item["actual_reader_calls"] = 1
-            with self.subTest(case=case), self.assertRaisesRegex(
-                ValueError, "source-family, Cell route or zero-Reader"
+            with (
+                self.subTest(case=case),
+                self.assertRaisesRegex(
+                    ValueError, "source-family, Cell route or zero-Reader"
+                ),
             ):
                 review_pairwise_shadow(
-                    args[0], fits, choices, frozen, pools, targets,
+                    args[0],
+                    fits,
+                    choices,
+                    frozen,
+                    pools,
+                    targets,
                     support_indices=support_indices,
                 )
 
@@ -325,7 +411,12 @@ class NativePairwiseShadowTests(unittest.TestCase):
                 base["selected"] = True
             with self.subTest(tamper=tamper), self.assertRaises(ValueError):
                 review_pairwise_shadow(
-                    args[0], fits, choices, frozen, pools, targets,
+                    args[0],
+                    fits,
+                    choices,
+                    frozen,
+                    pools,
+                    targets,
                     support_indices=support_indices,
                 )
 

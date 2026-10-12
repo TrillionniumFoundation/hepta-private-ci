@@ -21,8 +21,14 @@ from selector_answering import FrozenAnswerGenerator, GENERATION, SYSTEM
 from selector_evaluation import diagnose
 from stem_audit_archive import PinnedArchive, require
 from stem_reader_format_ablation import (
-    ARCHIVED_SOURCE, ARCHIVED_TREE, ARCHIVED_ZIP_SHA256, FORMAT_ID,
-    PHASES, fixed_frozen_cases, flat_user_message, evaluate_flat_answers,
+    ARCHIVED_SOURCE,
+    ARCHIVED_TREE,
+    ARCHIVED_ZIP_SHA256,
+    FORMAT_ID,
+    PHASES,
+    fixed_frozen_cases,
+    flat_user_message,
+    evaluate_flat_answers,
 )
 
 
@@ -68,9 +74,14 @@ def flat_generate(reader, case):
         or reader.profile != case["original_reader_profile"]
     ):
         raise ValueError("Reader weight/prompt identity changed from pinned execution")
-    profile = digest((
-        SYSTEM, GENERATION, reader.tokenizer.chat_template, FORMAT_ID,
-    ))
+    profile = digest(
+        (
+            SYSTEM,
+            GENERATION,
+            reader.tokenizer.chat_template,
+            FORMAT_ID,
+        )
+    )
     if profile == reader.profile:
         raise ValueError("new prompt layout not separately identified")
     started = time.perf_counter()
@@ -83,7 +94,7 @@ def flat_generate(reader, case):
             eos_token_id=reader.tokenizer.eos_token_id,
             pad_token_id=reader.tokenizer.eos_token_id,
         )
-        emitted = output[0, len(ids):].tolist()
+        emitted = output[0, len(ids) :].tolist()
         answer = reader.tokenizer.decode(
             emitted,
             skip_special_tokens=True,
@@ -102,7 +113,7 @@ def flat_generate(reader, case):
             evidence_count=1,
             input_tokens=len(ids),
             generated_tokens=len(emitted),
-            generation_seconds=time.perf_counter()-started,
+            generation_seconds=time.perf_counter() - started,
             generator_parameter_updates=0,
             decoded_max_new_tokens=GENERATION["max_new_tokens"],
             reached_token_ceiling=len(emitted) == GENERATION["max_new_tokens"],
@@ -140,25 +151,28 @@ def run(staged, archived_zip, output):
         ):
             raise ValueError("frozen original system prompt or generation budget drift")
         # Register cases and all source-byte hashes before any model call.
-        write(output / "preregistered-flat-control.json", dict(
-            schema="hepta.stem-flat-reader-experiment.preregistered.v1",
-            original_archive_sha256=ARCHIVED_ZIP_SHA256,
-            original_source=ARCHIVED_SOURCE,
-            original_tree=ARCHIVED_TREE,
-            registered_question_ids=[x["question_id"] for x in cases],
-            phase_order=list(PHASES),
-            sole_intervention="JSON-user-payload-to-flat-user-payload",
-            system_digest=digest(SYSTEM),
-            generation=GENERATION,
-            expected_reader_inventory=plan["reader_inventory"],
-            original_request_digests=[
-                x["original_canonical_request_sha256"] for x in cases
-            ],
-            evidence_bytes_changed=False,
-            gold_answers_read_before_generation=False,
-            model_training_permitted=False,
-            production_accepted=False,
-        ))
+        write(
+            output / "preregistered-flat-control.json",
+            dict(
+                schema="hepta.stem-flat-reader-experiment.preregistered.v1",
+                original_archive_sha256=ARCHIVED_ZIP_SHA256,
+                original_source=ARCHIVED_SOURCE,
+                original_tree=ARCHIVED_TREE,
+                registered_question_ids=[x["question_id"] for x in cases],
+                phase_order=list(PHASES),
+                sole_intervention="JSON-user-payload-to-flat-user-payload",
+                system_digest=digest(SYSTEM),
+                generation=GENERATION,
+                expected_reader_inventory=plan["reader_inventory"],
+                original_request_digests=[
+                    x["original_canonical_request_sha256"] for x in cases
+                ],
+                evidence_bytes_changed=False,
+                gold_answers_read_before_generation=False,
+                model_training_permitted=False,
+                production_accepted=False,
+            ),
+        )
         reader_load_started = time.perf_counter()
         reader = FrozenAnswerGenerator(
             staged / "reader", expected_inventory=plan["reader_inventory"]
@@ -209,7 +223,8 @@ def run(staged, archived_zip, output):
         datasets = {
             name: load(
                 staged / f"{name}.json",
-                name, info[name]["sha256"],
+                name,
+                info[name]["sha256"],
                 allow_unresolved_evidence=True,
                 session_conflicts="retain-versioned",
                 invalid_history="quarantine-question",
@@ -224,15 +239,15 @@ def run(staged, archived_zip, output):
             if qid in bench.targets
         }
         report = evaluate_flat_answers(
-            cases, raw,
+            cases,
+            raw,
             archive.json("comparison/scored-policy-attempts.json"),
-            targets, diagnose,
+            targets,
+            diagnose,
         )
         report.update(
             original_strict_reader_zip_sha256=ARCHIVED_ZIP_SHA256,
-            tested_control_source_commit=os.environ.get(
-                "HEPTA_MEMORY_TESTED_COMMIT"
-            ),
+            tested_control_source_commit=os.environ.get("HEPTA_MEMORY_TESTED_COMMIT"),
             raw_generation_file_sha256=raw_sha256,
             reader_reloaded_from_original_pinned_model=True,
             frozen_reader_verified_after_run=reader_frozen_after,
@@ -241,17 +256,12 @@ def run(staged, archived_zip, output):
                 x["status"] == "succeeded" for x in raw
             ),
             control_reader_attempts_excluding_preflight_unmeasured=True,
-            control_reader_failed_questions=sum(
-                x["status"] == "failed" for x in raw
-            ),
+            control_reader_failed_questions=sum(x["status"] == "failed" for x in raw),
             control_generation_seconds=sum(
-                x.get("receipt", {}).get("generation_seconds", 0.0)
-                for x in raw
+                x.get("receipt", {}).get("generation_seconds", 0.0) for x in raw
             ),
-            total_elapsed_seconds=time.perf_counter()-started,
-            process_peak_rss_kib=resource.getrusage(
-                resource.RUSAGE_SELF
-            ).ru_maxrss,
+            total_elapsed_seconds=time.perf_counter() - started,
+            process_peak_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
             production_accepted=False,
         )
         write(output / "flat-vs-json-evaluation.json", report)

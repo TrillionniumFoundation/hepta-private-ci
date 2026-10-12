@@ -7,7 +7,8 @@ import math
 import unittest
 
 from locomo_reader_paired_cost import (
-    audit_matched_costs, verify_immutable_generation_record,
+    audit_matched_costs,
+    verify_immutable_generation_record,
 )
 
 
@@ -17,27 +18,35 @@ def fixture():
         qid = f"evaluation-{i}"
         family = "family-A" if i < 8 else "family-B"
         case = dict(
-            question_id=qid, family_proxy_digest=family,
+            question_id=qid,
+            family_proxy_digest=family,
             source_census_sha256=f"immutable-source-{i}",
         )
         cases.append(case)
         for k, arm in ((4, "lexical_k4"), (8, "lexical_k8")):
             selected = [f"doc-{j}" for j in range(k)]
-            rows.append(dict(
-                question_id=qid, arm=arm, family_proxy_digest=family,
-                source_census_sha256=case["source_census_sha256"],
-                selected=selected, status="succeeded", answer="synthetic [E1]",
-                receipt=dict(
-                    reader_identity="1" * 64, reader_profile="2" * 64,
-                    input_tokens=300 if k == 4 else 440,
-                    generated_tokens=8 if k == 4 else 10,
-                    seconds=0.4 if k == 4 else 0.65,
-                    delivered_evidence=[
-                        dict(original_id=doc, excerpt="evidence body " + doc)
-                        for doc in selected
-                    ],
-                ),
-            ))
+            rows.append(
+                dict(
+                    question_id=qid,
+                    arm=arm,
+                    family_proxy_digest=family,
+                    source_census_sha256=case["source_census_sha256"],
+                    selected=selected,
+                    status="succeeded",
+                    answer="synthetic [E1]",
+                    receipt=dict(
+                        reader_identity="1" * 64,
+                        reader_profile="2" * 64,
+                        input_tokens=300 if k == 4 else 440,
+                        generated_tokens=8 if k == 4 else 10,
+                        seconds=0.4 if k == 4 else 0.65,
+                        delivered_evidence=[
+                            dict(original_id=doc, excerpt="evidence body " + doc)
+                            for doc in selected
+                        ],
+                    ),
+                )
+            )
     return cases, rows
 
 
@@ -74,7 +83,9 @@ def pinned_manifest(rows):
 
 def check_manifest(manifest, raw, rows):
     return verify_immutable_generation_record(
-        manifest, raw, rows,
+        manifest,
+        raw,
+        rows,
         expected_commit="a" * 40,
         public_zip_sha256="b" * 64,
         decisions_zip_sha256="c" * 64,
@@ -92,10 +103,18 @@ class ReaderCostTests(unittest.TestCase):
         self.assertAlmostEqual(
             result["matched_only_cost"]["mean_extra_generation_seconds"], 0.25
         )
-        self.assertEqual(result["per_family_proxy_matched_only"]["family-A"][
-            "complete_paired_question_count"], 8)
-        self.assertEqual(result["per_family_proxy_matched_only"]["family-B"][
-            "complete_paired_question_count"], 8)
+        self.assertEqual(
+            result["per_family_proxy_matched_only"]["family-A"][
+                "complete_paired_question_count"
+            ],
+            8,
+        )
+        self.assertEqual(
+            result["per_family_proxy_matched_only"]["family-B"][
+                "complete_paired_question_count"
+            ],
+            8,
+        )
         self.assertFalse(result["independent_source_family_significance"])
         self.assertFalse(result["production_accepted"])
 
@@ -124,8 +143,12 @@ class ReaderCostTests(unittest.TestCase):
         self.assertEqual(result["k8_success_k4_failure"], 1)
         self.assertEqual(result["both_reader_calls_failed"], 1)
         self.assertEqual(result["completed_paired_questions"], 14)
-        self.assertEqual(result["per_family_proxy_matched_only"]["family-A"][
-            "complete_paired_question_count"], 6)
+        self.assertEqual(
+            result["per_family_proxy_matched_only"]["family-A"][
+                "complete_paired_question_count"
+            ],
+            6,
+        )
 
     def test_detect_changed_prompt_reader_and_source_order(self):
         for key, changed in (
@@ -172,7 +195,6 @@ class ReaderCostTests(unittest.TestCase):
         self.assertTrue(result["generation_time_does_not_include_cold_load"])
         self.assertIsNone(result["independently_adjudicated_citation_precision"])
         self.assertFalse(result["reader_task_gain_measured_by_this_module"])
-
 
     def test_source_pins_commit_census_and_bytes_verified_before_scoring(self):
         _, rows = fixture()
@@ -223,7 +245,6 @@ class ReaderCostTests(unittest.TestCase):
         self.assertEqual(outcome["actual_completed_answers"], 31)
         self.assertEqual(outcome["actual_failed_or_rejected_requests"], 1)
         self.assertTrue(outcome["model_executions_not_equated_to_logical_attempts"])
-
 
 
 if __name__ == "__main__":

@@ -963,14 +963,16 @@ def run(staged, ranker_dir, output):
         }
         previous_reader_accounting = reader_session.summary()
         pairwise_shadow_fits, pairwise_shadow_choices = native_pairwise_shadow(
-            qs, rows, initial_features, cut, plan["routes"], output,
+            qs,
+            rows,
+            initial_features,
+            cut,
+            plan["routes"],
+            output,
         )
-        if (
-            reader_session.summary() != previous_reader_accounting
-            or any(
-                sha256(heads[key].export()) != before
-                for key, before in frozen_head_snapshots.items()
-            )
+        if reader_session.summary() != previous_reader_accounting or any(
+            sha256(heads[key].export()) != before
+            for key, before in frozen_head_snapshots.items()
         ):
             raise ValueError("pairwise shadow mutated original Reader or six Heads")
         write(output / "pairwise-shadow-train-fits.json", pairwise_shadow_fits)
@@ -979,17 +981,17 @@ def run(staged, ranker_dir, output):
         # Explicit control: identical initial Head bytes and admitted
         # contrastive questions; only the CE versus pairwise objective differs.
         # No Reader/Encoder calls and NO evaluation labels have been opened.
-        matched_objective_fits, matched_objective_choices = (
-            matched_objective_shadow(
-                qs, rows, initial_features, cut, plan["routes"], output,
-            )
+        matched_objective_fits, matched_objective_choices = matched_objective_shadow(
+            qs,
+            rows,
+            initial_features,
+            cut,
+            plan["routes"],
+            output,
         )
-        if (
-            reader_session.summary() != previous_reader_accounting
-            or any(
-                sha256(heads[key].export()) != before
-                for key, before in frozen_head_snapshots.items()
-            )
+        if reader_session.summary() != previous_reader_accounting or any(
+            sha256(heads[key].export()) != before
+            for key, before in frozen_head_snapshots.items()
         ):
             raise ValueError(
                 "matched Head objective control mutated original six policies or Reader"
@@ -1002,12 +1004,16 @@ def run(staged, ranker_dir, output):
         # Both controls see exactly the same frozen Encoder/candidate features.
         # Hold-out annotations and the original Reader remain untouched.
         placebo_fits, placebo_choices = label_placebo_shadow(
-            qs, rows, initial_features, cut, plan["routes"], output,
+            qs,
+            rows,
+            initial_features,
+            cut,
+            plan["routes"],
+            output,
         )
-        if (
-            reader_session.summary() != previous_reader_accounting
-            or any(sha256(heads[key].export()) != value
-                   for key, value in frozen_head_snapshots.items())
+        if reader_session.summary() != previous_reader_accounting or any(
+            sha256(heads[key].export()) != value
+            for key, value in frozen_head_snapshots.items()
         ):
             raise ValueError("placebo learning modified existing policies or Reader")
         write(output / "label-placebo-train-fits.json", placebo_fits)
@@ -1037,10 +1043,15 @@ def run(staged, ranker_dir, output):
             return _session.answer(q, evidence, record_key, revoked=set())
 
         pairwise_shadow_reader_raw = run_final_shadow_reader(
-            qs, pairwise_shadow_choices, attempts,
+            qs,
+            pairwise_shadow_choices,
+            attempts,
             lambda question, selected: selected_window(
-                question, pools[question.identity],
-                initial_features[question.identity], selected, set()
+                question,
+                pools[question.identity],
+                initial_features[question.identity],
+                selected,
+                set(),
             ),
             answer_pairwise_shadow,
             reader_identity=generator.identity,
@@ -1079,14 +1090,15 @@ def run(staged, ranker_dir, output):
         # altered raw answer, invalid citation receipt or future source fails
         # closed without changing any Head/Reader result.
         independent_policy_integrity = audit_policy_scoring(
-            plan, attempts, scored, pools,
-            {
-                q.identity: q
-                for phase in PHASES for q in qs[phase]
-            },
+            plan,
+            attempts,
+            scored,
+            pools,
+            {q.identity: q for phase in PHASES for q in qs[phase]},
             {
                 q.identity: source_for[q.identity].targets[q.identity]
-                for phase in PHASES for q in qs[phase]
+                for phase in PHASES
+                for q in qs[phase]
             },
         )
         write(
@@ -1094,10 +1106,12 @@ def run(staged, ranker_dir, output):
             independent_policy_integrity,
         )
         pairwise_shadow_reader_review = review_final_shadow_reader(
-            pairwise_shadow_reader_raw, attempts,
+            pairwise_shadow_reader_raw,
+            attempts,
             {
                 q.identity: source_for[q.identity].targets[q.identity]
-                for phase in ("test", "transfer") for q in qs[phase]
+                for phase in ("test", "transfer")
+                for q in qs[phase]
             },
             diagnose,
         )
@@ -1107,15 +1121,19 @@ def run(staged, ranker_dir, output):
         )
         # Gold document support is read only AFTER the 192 shadow selections.
         pairwise_shadow_report = review_pairwise_shadow(
-            qs, pairwise_shadow_fits, pairwise_shadow_choices,
+            qs,
+            pairwise_shadow_fits,
+            pairwise_shadow_choices,
             {
                 (a["stage"], a["phase"], a["question_id"]): a
-                for a in attempts if a["arm"] == "frozen_rerank"
+                for a in attempts
+                if a["arm"] == "frozen_rerank"
             },
             pools,
             {
                 q.identity: source_for[q.identity].targets[q.identity]
-                for phase in PHASES for q in qs[phase]
+                for phase in PHASES
+                for q in qs[phase]
             },
             support_indices=support_indices,
         )
@@ -1124,10 +1142,14 @@ def run(staged, ranker_dir, output):
             pairwise_shadow_report,
         )
         matched_objective_review = review_objectives(
-            qs, matched_objective_fits, matched_objective_choices, pools,
+            qs,
+            matched_objective_fits,
+            matched_objective_choices,
+            pools,
             {
                 q.identity: source_for[q.identity].targets[q.identity]
-                for phase in PHASES for q in qs[phase]
+                for phase in PHASES
+                for q in qs[phase]
             },
             support_indices=support_indices,
         )
@@ -1136,10 +1158,14 @@ def run(staged, ranker_dir, output):
             matched_objective_review,
         )
         placebo_review = review_placebo(
-            qs, placebo_fits, placebo_choices, pools,
+            qs,
+            placebo_fits,
+            placebo_choices,
+            pools,
             {
                 q.identity: source_for[q.identity].targets[q.identity]
-                for phase in PHASES for q in qs[phase]
+                for phase in PHASES
+                for q in qs[phase]
             },
             support_indices=support_indices,
         )

@@ -209,12 +209,14 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                             (b_receipt, original_evidence),
                             (l_receipt, learned_evidence),
                         ):
-                            expected_request = digest((
-                                receipt["generator_identity"],
-                                receipt["generator_profile"],
-                                receipt["observable_query"],
-                                evidence,
-                            ))
+                            expected_request = digest(
+                                (
+                                    receipt["generator_identity"],
+                                    receipt["generator_profile"],
+                                    receipt["observable_query"],
+                                    evidence,
+                                )
+                            )
                             if (
                                 receipt.get("canonical_request_digest")
                                 != expected_request
@@ -223,10 +225,14 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                                 or any(
                                     not isinstance(receipt.get(key), str)
                                     or len(receipt[key]) != 64
-                                    or any(ch not in "0123456789abcdef"
-                                           for ch in receipt[key])
-                                    for key in ("input_ids_digest",
-                                                "generated_ids_digest")
+                                    or any(
+                                        ch not in "0123456789abcdef"
+                                        for ch in receipt[key]
+                                    )
+                                    for key in (
+                                        "input_ids_digest",
+                                        "generated_ids_digest",
+                                    )
                                 )
                             ):
                                 raise ValueError(

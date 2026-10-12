@@ -21,14 +21,21 @@ ZIP_SHA256 = "694401ca61859bd11a24ae212c0edb4c3b493182581e07d373cc73f4fd0aeae1"
 ARTIFACT_ID = 11756269634
 STAGES = (16, 32, 48)
 PHASES = ("select", "retention", "test", "transfer")
-ARMS = ("frozen_rerank", "prototype", "linear", "gated",
-        "lineage_lora_gated", "independent_lora_gated")
+ARMS = (
+    "frozen_rerank",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated",
+)
 SHADOWS = ("pairwise_linear", "pairwise_gated")
 CELLS = ("general", "temporal")
 
 
-def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
-                                   report, model_payloads):
+def audit_native_pairwise_receipts(
+    plan, original, fits, choices, posthoc, report, model_payloads
+):
     """Match every archived counterfactual Head to original frozen question.
 
     The POSTPOLICY document-support gains are reported as claims from the
@@ -53,32 +60,41 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
     )
     expected_policy = {
         (stage, phase, q, arm)
-        for stage in STAGES for phase in PHASES
-        for q in cohorts[phase] for arm in ARMS
+        for stage in STAGES
+        for phase in PHASES
+        for q in cohorts[phase]
+        for arm in ARMS
     }
     policy, original_reader_failures = {}, 0
     for row in original:
         key = (row["stage"], row["phase"], row["question_id"], row["arm"])
-        require(key in expected_policy and key not in policy,
-                "unregistered or duplicated original policy")
-        require(row["status"] in ("succeeded", "failed"),
-                "unknown original policy status")
+        require(
+            key in expected_policy and key not in policy,
+            "unregistered or duplicated original policy",
+        )
+        require(
+            row["status"] in ("succeeded", "failed"), "unknown original policy status"
+        )
         policy[key] = row
         original_reader_failures += row["status"] == "failed"
-    require(len(policy) == len(original) == len(expected_policy) == 576,
-            "entire unmodified original six-arm denominator required")
+    require(
+        len(policy) == len(original) == len(expected_policy) == 576,
+        "entire unmodified original six-arm denominator required",
+    )
 
     expected_fit = {
-        (stage, arm, cell)
-        for stage in STAGES for arm in SHADOWS for cell in CELLS
+        (stage, arm, cell) for stage in STAGES for arm in SHADOWS for cell in CELLS
     }
     by_fit, fit_failures, previous = {}, 0, {}
     for item in fits:
         key = item["stage"], item["arm"], item["cell"]
-        require(key in expected_fit and key not in by_fit
-                and item["status"] in ("succeeded", "failed")
-                and item["role"] == "nonqualifying-native-pairwise-no-reader-shadow",
-                "missing or duplicated nonqualifying pairwise Head fit")
+        require(
+            key in expected_fit
+            and key not in by_fit
+            and item["status"] in ("succeeded", "failed")
+            and item["role"] == "nonqualifying-native-pairwise-no-reader-shadow",
+            "missing or duplicated nonqualifying pairwise Head fit",
+        )
         if item["status"] == "succeeded":
             receipt = item["receipt"]
             name = item["model_file_name"]
@@ -102,27 +118,34 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
             )
             chain = previous.get((item["arm"], item["cell"]))
             if chain is not None:
-                require(chain == item["initial_head_sha256"],
-                        "resumed pairwise Head does not follow prior checkpoint")
+                require(
+                    chain == item["initial_head_sha256"],
+                    "resumed pairwise Head does not follow prior checkpoint",
+                )
             previous[(item["arm"], item["cell"])] = item["final_head_sha256"]
         else:
             fit_failures += 1
         by_fit[key] = item
-    require(set(by_fit) == expected_fit and len(fits) == 12,
-            "missing original 12 actual pairwise Head fits")
+    require(
+        set(by_fit) == expected_fit and len(fits) == 12,
+        "missing original 12 actual pairwise Head fits",
+    )
 
     expected_choices = {
         (stage, phase, q, arm)
-        for stage in STAGES for phase in PHASES
-        for q in cohorts[phase] for arm in SHADOWS
+        for stage in STAGES
+        for phase in PHASES
+        for q in cohorts[phase]
+        for arm in SHADOWS
     }
     choice, grouped = {}, {}
     for row in choices:
         key = row["stage"], row["phase"], row["question_id"], row["arm"]
-        require(key in expected_choices and key not in choice,
-                "duplicate, missing or unregistered label-blind shadow")
-        base = policy[(row["stage"], row["phase"], row["question_id"],
-                       "frozen_rerank")]
+        require(
+            key in expected_choices and key not in choice,
+            "duplicate, missing or unregistered label-blind shadow",
+        )
+        base = policy[(row["stage"], row["phase"], row["question_id"], "frozen_rerank")]
         fit = by_fit[(row["stage"], row["arm"], row["cell"])]
         require(
             row["status"] in ("succeeded", "failed")
@@ -148,8 +171,10 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
             )
         choice[key] = row
         grouped.setdefault((row["stage"], row["phase"], row["arm"]), []).append(row)
-    require(len(choice) == len(choices) == len(expected_choices) == 192,
-            "incomplete exactly-192 source-only shadow denominator")
+    require(
+        len(choice) == len(choices) == len(expected_choices) == 192,
+        "incomplete exactly-192 source-only shadow denominator",
+    )
     # The immutable generating artifact predates the v2 enriched counters.
     # Verify its *actual* v1 contract instead of manufacturing absent v2
     # fields or changing the original report to claim a new execution.
@@ -171,11 +196,16 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
         # above for zero Reader calls and no benchmark labels; those properties
         # must not be reissued as a v2 reviewer certification.
         require(
-            set(posthoc) == {
-                "schema", "fits", "original_six_arm_policy_attempts_unmodified",
-                "total_label_blind_decisions", "observed_reader_calls",
+            set(posthoc)
+            == {
+                "schema",
+                "fits",
+                "original_six_arm_policy_attempts_unmodified",
+                "total_label_blind_decisions",
+                "observed_reader_calls",
                 "weak_negative_documents_not_independent_entailment",
-                "by_checkpoint_phase_arm", "production_accepted",
+                "by_checkpoint_phase_arm",
+                "production_accepted",
                 "independently_established_generalization",
             }
             and posthoc["fits"] == fits
@@ -185,7 +215,8 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
     else:
         require(
             posthoc["no_reader_calls_or_evaluation_labels_in_shadow_decision_verified"]
-            is True and posthoc["semantic_citation_precision"] is None,
+            is True
+            and posthoc["semantic_citation_precision"] is None,
             "modern postpolicy source-only certification drift",
         )
     by_source = posthoc["by_checkpoint_phase_arm"]
@@ -198,8 +229,9 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
                 row = by_source[key]
                 frozen_absent = shadow_failed = seen = flips = reader_failed = 0
                 for shadow in group:
-                    base = policy[(stage, phase, shadow["question_id"],
-                                   "frozen_rerank")]
+                    base = policy[
+                        (stage, phase, shadow["question_id"], "frozen_rerank")
+                    ]
                     if base.get("selected") is None:
                         frozen_absent += 1
                         continue
@@ -216,9 +248,12 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
                 require(
                     len(group) == row["attempted"] == 8
                     and row["selection_changed"] == flips
-                    and type(scored) is int and type(uncertain) is int
-                    and type(gains) is int and type(regressions) is int
-                    and 0 <= scored <= 8 and 0 <= uncertain <= 8
+                    and type(scored) is int
+                    and type(uncertain) is int
+                    and type(gains) is int
+                    and type(regressions) is int
+                    and 0 <= scored <= 8
+                    and 0 <= uncertain <= 8
                     and scored + uncertain == 8
                     and 0 <= gains <= scored
                     and 0 <= regressions <= scored
@@ -227,8 +262,11 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
                 )
                 if legacy:
                     require(
-                        set(row) == {
-                            "attempted", "selection_changed", "source_label_scored",
+                        set(row)
+                        == {
+                            "attempted",
+                            "selection_changed",
+                            "source_label_scored",
                             "source_label_unresolved_or_failure",
                             "native_weak_support_gains",
                             "native_weak_support_regressions",
@@ -249,7 +287,8 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
                         "modern source selection counters differ from original decisions",
                     )
                 results[key] = dict(
-                    original_questions=8, observed_source_pairs=seen,
+                    original_questions=8,
+                    observed_source_pairs=seen,
                     frozen_reader_failures_retained=reader_failed,
                     pairwise_source_rank_changes=flips,
                     weak_document_label_scored=scored,
@@ -258,13 +297,18 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
                     unresolved_or_failed_original_evidence=uncertain,
                 )
                 for k, v in (
-                    ("pairs", seen), ("rank_changes", flips),
-                    ("weak_label_gains", gains), ("weak_label_regressions", regressions),
-                    ("scored", scored), ("uncertain", uncertain),
+                    ("pairs", seen),
+                    ("rank_changes", flips),
+                    ("weak_label_gains", gains),
+                    ("weak_label_regressions", regressions),
+                    ("scored", scored),
+                    ("uncertain", uncertain),
                 ):
                     total[k] += v
-    require(set(results) == set(by_source) and len(results) == 24,
-            "missing or extra post-hoc shadow phase results")
+    require(
+        set(results) == set(by_source) and len(results) == 24,
+        "missing or extra post-hoc shadow phase results",
+    )
     # Reject a forged acceptance bit with this audit's own fail-closed
     # contract BEFORE invoking the generic nonpromotion audit. The generic
     # utility can raise ValueError for invalid data; the source-pinned
@@ -288,7 +332,8 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
     distinct = unique_shadow_question_bounds(plan, choices, posthoc)
     return dict(
         schema="hepta.stem-native-pairwise-pinned-disposition.v1",
-        source_commit=SOURCE, registered_stages=list(STAGES),
+        source_commit=SOURCE,
+        registered_stages=list(STAGES),
         shadow_training_fit_attempts=12,
         shadow_training_fit_failures=fit_failures,
         original_policy_attempts=576,
@@ -309,22 +354,29 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
         posthoc_label_selection_not_hyperparameter_search=True,
         independent_semantic_citation_precision=None,
         prospective_independent_family_benefit_qualified=False,
-        production_accepted=False, scale_out_permitted=False,
+        production_accepted=False,
+        scale_out_permitted=False,
     )
 
 
 def audit_pinned_archive(path):
     artifact = PinnedArchive(path, ZIP_SHA256)
     try:
-        require(artifact.read("tested-commit.txt").decode().strip() == SOURCE,
-                "native model-execution commit is not pinned")
-        require(artifact.read("tested-tree.txt").decode().strip() == TREE,
-                "native model-execution source-tree mismatch")
+        require(
+            artifact.read("tested-commit.txt").decode().strip() == SOURCE,
+            "native model-execution commit is not pinned",
+        )
+        require(
+            artifact.read("tested-tree.txt").decode().strip() == TREE,
+            "native model-execution source-tree mismatch",
+        )
         fits = artifact.json("comparison/pairwise-shadow-train-fits.json")
         saved = {
-            item["model_file_name"]:
-            artifact.read("comparison/" + item["model_file_name"])
-            for item in fits if item["status"] == "succeeded"
+            item["model_file_name"]: artifact.read(
+                "comparison/" + item["model_file_name"]
+            )
+            for item in fits
+            if item["status"] == "succeeded"
         }
         result = audit_native_pairwise_receipts(
             artifact.json("comparison/preregistered.json"),

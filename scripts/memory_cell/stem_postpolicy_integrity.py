@@ -16,13 +16,23 @@ from sessions import source_id
 from stem_cell_time import source_not_after_question
 
 
-ARMS = ("frozen_rerank", "prototype", "linear", "gated",
-        "lineage_lora_gated", "independent_lora_gated")
+ARMS = (
+    "frozen_rerank",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
+    "independent_lora_gated",
+)
 PHASES = ("select", "retention", "test", "transfer")
 STAGES = (16, 32, 48)
-ADDED = frozenset((
-    "source_choice_correct", "diagnostic_answer_f1", "citation_structure",
-))
+ADDED = frozenset(
+    (
+        "source_choice_correct",
+        "diagnostic_answer_f1",
+        "citation_structure",
+    )
+)
 
 
 def _diagnostic_f1(raw, target):
@@ -30,10 +40,10 @@ def _diagnostic_f1(raw, target):
     # This is deliberately not an answer correctness/semantic citation judge.
     if target.answer is None:
         return None
+
     def tokens(value):
-        return re.findall(
-            r"\w+", re.sub(r"\b(a|an|the)\b", " ", value.casefold())
-        )
+        return re.findall(r"\w+", re.sub(r"\b(a|an|the)\b", " ", value.casefold()))
+
     answer, reference = Counter(tokens(raw)), Counter(tokens(target.answer))
     overlap = sum((answer & reference).values())
     na, nb = sum(answer.values()), sum(reference.values())
@@ -63,13 +73,20 @@ def _expected_evidence(pool, selection):
     if selection is None:
         return []
     window = pool.windows[selection]
-    return [dict(
-        label="E1", id=window.identity(), original_id=window.source_id,
-        root=window.root, scope=window.scope, excerpt=window.text,
-        source_start=window.start, source_end=window.end,
-        observed_at=window.observed_at,
-        inspected_sha256=window.inspected_sha256,
-    )]
+    return [
+        dict(
+            label="E1",
+            id=window.identity(),
+            original_id=window.source_id,
+            root=window.root,
+            scope=window.scope,
+            excerpt=window.text,
+            source_start=window.start,
+            source_end=window.end,
+            observed_at=window.observed_at,
+            inspected_sha256=window.inspected_sha256,
+        )
+    ]
 
 
 def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
@@ -78,13 +95,13 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
     The scorer is independently verified against immutable raw records and
     original source-window identities; only post-policy annotations are read.
     """
-    expected_questions = {
-        q for phase in PHASES for q in plan["questions"][phase]
-    }
+    expected_questions = {q for phase in PHASES for q in plan["questions"][phase]}
     expected = {
         (stage, phase, qid, arm)
-        for stage in STAGES for phase in PHASES
-        for qid in plan["questions"][phase] for arm in ARMS
+        for stage in STAGES
+        for phase in PHASES
+        for qid in plan["questions"][phase]
+        for arm in ARMS
     }
     if (
         tuple(plan["arms"]) != ARMS
@@ -94,7 +111,8 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
         or set(questions) != expected_questions
         or set(targets) != expected_questions
         or not set(pools).issubset(expected_questions)
-        or len(raw) != 576 or len(scored) != 576
+        or len(raw) != 576
+        or len(scored) != 576
     ):
         raise ValueError("unregistered or incomplete 576-case post-policy audit")
     indexed, annotated = {}, {}
@@ -113,10 +131,7 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
     original_positions = {}
     original_executions = {}
     for offset, row in enumerate(raw):
-        record_key = (
-            f"{row['stage']}/{row['phase']}/"
-            f"{row['question_id']}/{row['arm']}"
-        )
+        record_key = f"{row['stage']}/{row['phase']}/{row['question_id']}/{row['arm']}"
         if record_key in original_positions:
             raise ValueError("ambiguous original Reader cache record key")
         original_positions[record_key] = offset
@@ -139,7 +154,9 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
             or {k: v for k, v in reviewed.items() if k not in ADDED} != original
             or original.get("family") != plan["question_families"][key[2]]
         ):
-            raise ValueError("raw policy answer, family or receipt rewritten by scoring")
+            raise ValueError(
+                "raw policy answer, family or receipt rewritten by scoring"
+            )
         qid = key[2]
         q, target, pool = questions[qid], targets[qid], pools.get(qid)
         if q.identity != qid or not isinstance(target.unanswerable, bool):
@@ -147,13 +164,17 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
         observed = "selected" in original
         if observed:
             chosen = original["selected"]
-            if pool is None or (
-                chosen is not None and (
-                    type(chosen) is not int
-                    or not 0 <= chosen < len(pool.windows)
+            if (
+                pool is None
+                or (
+                    chosen is not None
+                    and (type(chosen) is not int or not 0 <= chosen < len(pool.windows))
                 )
-            ) or (chosen is None and len(pool.windows) > 0):
-                raise ValueError("candidate selection outside original forced top-1 pool")
+                or (chosen is None and len(pool.windows) > 0)
+            ):
+                raise ValueError(
+                    "candidate selection outside original forced top-1 pool"
+                )
             if original.get("pool_digest") != pool.seal():
                 raise ValueError("selected candidate's pool seal changed")
         elif original["status"] == "succeeded":
@@ -163,30 +184,40 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
                 if window.scope != q.scope or not source_not_after_question(
                     window.observed_at, q.observed_at
                 ):
-                    raise ValueError("future or cross-scope source reached paired Encoder")
+                    raise ValueError(
+                        "future or cross-scope source reached paired Encoder"
+                    )
         predicted = _expected_source(target, pool, original)
         claimed_source = reviewed["source_choice_correct"]
-        if (
-            (predicted is None and claimed_source is not None)
-            or (
-                predicted is not None
-                and (type(claimed_source) is not int or claimed_source != predicted)
-            )
+        if (predicted is None and claimed_source is not None) or (
+            predicted is not None
+            and (type(claimed_source) is not int or claimed_source != predicted)
         ):
             raise ValueError("native source correctness detached from actual selection")
         if original["status"] == "succeeded":
-            if not isinstance(original.get("answer"), str) or not original["answer"].strip():
+            if (
+                not isinstance(original.get("answer"), str)
+                or not original["answer"].strip()
+            ):
                 raise ValueError("successful raw Reader answer missing")
             receipt = original.get("receipt")
-            if not isinstance(receipt, dict) or (
-                receipt.get("delivered_evidence") !=
-                _expected_evidence(pool, original["selected"])
-            ) or receipt.get("observable_query") != asdict(q):
+            if (
+                not isinstance(receipt, dict)
+                or (
+                    receipt.get("delivered_evidence")
+                    != _expected_evidence(pool, original["selected"])
+                )
+                or receipt.get("observable_query") != asdict(q)
+            ):
                 raise ValueError("Reader evidence or original question changed")
-            if receipt.get("canonical_request_digest") != digest((
-                receipt.get("generator_identity"), receipt.get("generator_profile"),
-                asdict(q), receipt["delivered_evidence"]
-            )):
+            if receipt.get("canonical_request_digest") != digest(
+                (
+                    receipt.get("generator_identity"),
+                    receipt.get("generator_profile"),
+                    asdict(q),
+                    receipt["delivered_evidence"],
+                )
+            ):
                 raise ValueError("original Reader request pin invalid")
             identity = (
                 receipt.get("generator_identity"),
@@ -203,11 +234,15 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
                 )
                 or type(receipt.get("actual_reader_execution")) is not bool
                 or not (
-                    (receipt.get("reused_from") is None
-                     and receipt["actual_reader_execution"] is True)
-                    or (isinstance(receipt.get("reused_from"), str)
+                    (
+                        receipt.get("reused_from") is None
+                        and receipt["actual_reader_execution"] is True
+                    )
+                    or (
+                        isinstance(receipt.get("reused_from"), str)
                         and bool(receipt["reused_from"])
-                        and receipt["actual_reader_execution"] is False)
+                        and receipt["actual_reader_execution"] is False
+                    )
                 )
             ):
                 raise ValueError("Reader prompt, model, token or reuse identity drift")
@@ -263,7 +298,8 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
             labels = {e["label"] for e in receipt["delivered_evidence"]}
             delivered = sum("E" + marker in labels for marker in marks)
             citation = dict(
-                markers=len(marks), delivered_markers=delivered,
+                markers=len(marks),
+                delivered_markers=delivered,
                 precision=None if not marks else delivered / len(marks),
                 semantic_precision=None,
             )
@@ -276,8 +312,10 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
             if reviewed["diagnostic_answer_f1"] != 0.0:
                 raise ValueError("failed Reader answer misclassified as scored")
             citation = dict(
-                markers=0, delivered_markers=0,
-                precision=None, semantic_precision=None,
+                markers=0,
+                delivered_markers=0,
+                precision=None,
+                semantic_precision=None,
             )
             census["reader_failed"] += 1
         else:
@@ -293,7 +331,8 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
         raise ValueError("incomplete original policy outcome census")
     return dict(
         schema="hepta.stem-independent-postpolicy-integrity.v1",
-        raw_policy_attempts=576, matched_scored_policy_attempts=576,
+        raw_policy_attempts=576,
+        matched_scored_policy_attempts=576,
         original_policy_records_sha256=digest(raw),
         original_scored_policy_records_sha256=digest(scored),
         census=dict(census),

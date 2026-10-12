@@ -29,8 +29,10 @@ def _registered(questions, choices, frozen_attempts):
         raise ValueError("incomplete preregistered native question census")
     expected = {
         (stage, phase, q.identity, arm)
-        for stage in STAGES for phase in PHASES
-        for q in questions[phase] for arm in ARMS
+        for stage in STAGES
+        for phase in PHASES
+        for q in questions[phase]
+        for arm in ARMS
     }
     decisions = {}
     for choice in choices:
@@ -68,8 +70,14 @@ def _registered(questions, choices, frozen_attempts):
 
 
 def run_final_shadow_reader(
-    questions, choices, frozen_attempts, evidence_for, answer,
-    *, reader_identity, reader_profile,
+    questions,
+    choices,
+    frozen_attempts,
+    evidence_for,
+    answer,
+    *,
+    reader_identity,
+    reader_profile,
 ):
     """Generate 32 raw final-checkpoint Shadow answers, before this review's gold.
 
@@ -79,9 +87,12 @@ def run_final_shadow_reader(
     """
     decisions, frozen = _registered(questions, choices, frozen_attempts)
     if (
-        not callable(evidence_for) or not callable(answer)
-        or not isinstance(reader_identity, str) or not reader_identity
-        or not isinstance(reader_profile, str) or not reader_profile
+        not callable(evidence_for)
+        or not callable(answer)
+        or not isinstance(reader_identity, str)
+        or not reader_identity
+        or not isinstance(reader_profile, str)
+        or not reader_profile
     ):
         raise ValueError("missing isolated fixed Reader callback or pin")
     results = []
@@ -94,15 +105,21 @@ def run_final_shadow_reader(
                     shadow.get("family") != baseline.get("family")
                     or shadow.get("cell") != baseline.get("cell")
                     or not shadow.get("pool_digest")
-                    or (baseline.get("pool_digest") is not None and
-                        baseline["pool_digest"] != shadow["pool_digest"])
+                    or (
+                        baseline.get("pool_digest") is not None
+                        and baseline["pool_digest"] != shadow["pool_digest"]
+                    )
                 ):
                     raise ValueError("Shadow and frozen source identity drift")
                 item = dict(
                     schema="hepta.stem-final-shadow-reader-control.v1",
-                    stage=48, phase=phase, question_id=q.identity, arm=arm,
+                    stage=48,
+                    phase=phase,
+                    question_id=q.identity,
+                    arm=arm,
                     source_family=baseline["family"],
-                    cell=baseline["cell"], source_pool_digest=shadow["pool_digest"],
+                    cell=baseline["cell"],
+                    source_pool_digest=shadow["pool_digest"],
                     frozen_selected=baseline.get("selected"),
                     shadow_selected=shadow.get("selected"),
                     shadow_fit_or_decision_status=shadow["status"],
@@ -127,7 +144,8 @@ def run_final_shadow_reader(
                     if (
                         type(choice) is not int
                         or not 0 <= choice < shadow["candidate_count"]
-                        or shadow.get("original_frozen_selected") != baseline.get("selected")
+                        or shadow.get("original_frozen_selected")
+                        != baseline.get("selected")
                     ):
                         raise ValueError("unbound Shadow and frozen selected windows")
                     evidence = evidence_for(q, choice)
@@ -142,12 +160,14 @@ def run_final_shadow_reader(
                         q, evidence, f"shadow-reader/48/{phase}/{q.identity}/{arm}"
                     )
                     if (
-                        not isinstance(raw, str) or not raw.strip()
+                        not isinstance(raw, str)
+                        or not raw.strip()
                         or receipt["generator_identity"] != reader_identity
                         or receipt["generator_profile"] != reader_profile
                         or receipt["observable_query"] != asdict(q)
                         or receipt["delivered_evidence"] != list(evidence)
-                        or receipt["canonical_request_digest"] != digest(
+                        or receipt["canonical_request_digest"]
+                        != digest(
                             (reader_identity, reader_profile, asdict(q), evidence)
                         )
                         or type(receipt["actual_reader_execution"]) is not bool
@@ -160,14 +180,14 @@ def run_final_shadow_reader(
                     )
                 except Exception as exc:
                     item.update(
-                        status="failed", error_type=type(exc).__name__,
+                        status="failed",
+                        error_type=type(exc).__name__,
                         error=str(exc)[:1024],
                     )
                 results.append(item)
     if len(results) != 32:
         raise ValueError("incomplete fixed 32-case Shadow Reader output census")
     return results
-
 
 
 def _verified_reader_receipt(row):
@@ -194,15 +214,18 @@ def _verified_reader_receipt(row):
         value = receipt.get(key)
         if not isinstance(value, str) or re.fullmatch(r"[0-9a-f]{64}", value) is None:
             raise ValueError("missing or malformed original Reader token/request seal")
-    canonical = digest((
-        receipt["generator_identity"],
-        receipt["generator_profile"],
-        query,
-        tuple(evidence),
-    ))
+    canonical = digest(
+        (
+            receipt["generator_identity"],
+            receipt["generator_profile"],
+            query,
+            tuple(evidence),
+        )
+    )
     if receipt["canonical_request_digest"] != canonical:
         raise ValueError("Reader canonical request does not bind actual evidence")
     return receipt
+
 
 def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
     """Score only AFTER all raw Reader outcomes are sealed; no model calls."""
@@ -211,15 +234,22 @@ def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
     expected = {(phase, arm) for phase in TEST_PHASES for arm in ARMS}
     groups, matched = defaultdict(list), set()
     frozen = {
-        (item["phase"], item["question_id"]): item for item in frozen_attempts
-        if item.get("stage") == 48 and item.get("arm") == "frozen_rerank"
+        (item["phase"], item["question_id"]): item
+        for item in frozen_attempts
+        if item.get("stage") == 48
+        and item.get("arm") == "frozen_rerank"
         and item.get("phase") in TEST_PHASES
     }
     if len(frozen) != 16 or set(targets) != {qid for _, qid in frozen}:
         raise ValueError("unbound original frozen Reader answers or targets")
     for r in records:
         key = (r["phase"], r["question_id"], r["arm"])
-        if key in matched or r["stage"] != 48 or r["phase"] not in TEST_PHASES or r["arm"] not in ARMS:
+        if (
+            key in matched
+            or r["stage"] != 48
+            or r["phase"] not in TEST_PHASES
+            or r["arm"] not in ARMS
+        ):
             raise ValueError("duplicate or out-of-register Shadow Reader row")
         matched.add(key)
         base = frozen.get((r["phase"], r["question_id"]))
@@ -229,7 +259,9 @@ def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
             or r["status"] not in ("succeeded", "failed", "unavailable")
             or r["native_target_passed_to_generator"] is not False
         ):
-            raise ValueError("Shadow Reader answer altered original source or label scope")
+            raise ValueError(
+                "Shadow Reader answer altered original source or label scope"
+            )
         same_request = same_input = None
         if r["status"] == "succeeded":
             receipt = _verified_reader_receipt(r)
@@ -241,18 +273,22 @@ def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
                     or orig["observable_query"] != receipt["observable_query"]
                     or r.get("frozen_selected") != base.get("selected")
                     or type(r.get("changed_frozen_selected_source")) is not bool
-                    or r["changed_frozen_selected_source"] != (
-                        r.get("shadow_selected") != base.get("selected")
-                    )
+                    or r["changed_frozen_selected_source"]
+                    != (r.get("shadow_selected") != base.get("selected"))
                 ):
-                    raise ValueError("matched original and Shadow Reader profile/selection drift")
+                    raise ValueError(
+                        "matched original and Shadow Reader profile/selection drift"
+                    )
                 if (
                     r["shadow_selected"] == base["selected"]
                     and orig["delivered_evidence"] != receipt["delivered_evidence"]
                 ):
-                    raise ValueError("unchanged source selection changed Reader evidence")
+                    raise ValueError(
+                        "unchanged source selection changed Reader evidence"
+                    )
                 same_request = (
-                    orig["canonical_request_digest"] == receipt["canonical_request_digest"]
+                    orig["canonical_request_digest"]
+                    == receipt["canonical_request_digest"]
                 )
                 same_input = orig["input_ids_digest"] == receipt["input_ids_digest"]
                 if same_request and not same_input:
@@ -261,7 +297,9 @@ def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
                     orig["generated_ids_digest"] != receipt["generated_ids_digest"]
                     or base["answer"] != r["answer"]
                 ):
-                    raise ValueError("identical Reader input cannot create a learning gain")
+                    raise ValueError(
+                        "identical Reader input cannot create a learning gain"
+                    )
         can_compare = base["status"] == r["status"] == "succeeded"
         original_f1 = new_f1 = None
         if can_compare:
@@ -270,19 +308,27 @@ def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
                 diagnose(r["answer"], targets[r["question_id"]]),
             )
             if any(
-                v is not None and (
-                    type(v) not in (int, float) or not math.isfinite(v)
+                v is not None
+                and (
+                    type(v) not in (int, float)
+                    or not math.isfinite(v)
                     or not 0 <= v <= 1
-                ) for v in (original_f1, new_f1)
+                )
+                for v in (original_f1, new_f1)
             ):
                 raise ValueError("invalid frozen-matched token-F1 diagnostic")
         delta = (
             new_f1 - original_f1
-            if original_f1 is not None and new_f1 is not None else None
+            if original_f1 is not None and new_f1 is not None
+            else None
         )
         result = dict(
-            stage=48, phase=r["phase"], question_id=r["question_id"], arm=r["arm"],
-            source_family=r["source_family"], status=r["status"],
+            stage=48,
+            phase=r["phase"],
+            question_id=r["question_id"],
+            arm=r["arm"],
+            source_family=r["source_family"],
+            status=r["status"],
             frozen_reader_succeeded=base["status"] == "succeeded",
             shadow_reader_succeeded=r["status"] == "succeeded",
             matched_reader_f1_delta=delta,
@@ -290,15 +336,15 @@ def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
             identical_canonical_reader_request=same_request,
             identical_reader_token_input=same_input,
             changed_source_but_identical_reader_input=(
-                r.get("changed_frozen_selected_source") is True
-                and same_input is True
+                r.get("changed_frozen_selected_source") is True and same_input is True
             ),
             answer_bytes_changed=(
                 base["answer"] != r["answer"] if can_compare else None
             ),
             structural_evidence_markers=(
                 len(re.findall(r"\[E\d+\]", r["answer"]))
-                if r["status"] == "succeeded" else None
+                if r["status"] == "succeeded"
+                else None
             ),
             semantic_citation_precision=None,
         )
@@ -307,11 +353,17 @@ def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
         raise ValueError("incomplete 8-per-cell/arm final Shadow Reader census")
     summary = {}
     for key, rows in sorted(groups.items()):
-        deltas = [r["matched_reader_f1_delta"] for r in rows
-                  if r["matched_reader_f1_delta"] is not None]
+        deltas = [
+            r["matched_reader_f1_delta"]
+            for r in rows
+            if r["matched_reader_f1_delta"] is not None
+        ]
         changed = [r for r in rows if r["source_changed"] is True]
-        changed_deltas = [r["matched_reader_f1_delta"] for r in changed
-                          if r["matched_reader_f1_delta"] is not None]
+        changed_deltas = [
+            r["matched_reader_f1_delta"]
+            for r in changed
+            if r["matched_reader_f1_delta"] is not None
+        ]
         changed_unscored = len(changed) - len(changed_deltas)
         missing = 8 - len(deltas)
         summary["/".join(key)] = dict(
@@ -331,11 +383,11 @@ def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
             scored_matched_answers=len(deltas),
             missing_failed_or_unscorable=missing,
             mean_paired_diagnostic_f1_delta=(
-                math.fsum(deltas)/len(deltas) if deltas else None
+                math.fsum(deltas) / len(deltas) if deltas else None
             ),
             original_8_planned_f1_delta_bounds=[
-                (math.fsum(deltas)-missing)/8,
-                (math.fsum(deltas)+missing)/8,
+                (math.fsum(deltas) - missing) / 8,
+                (math.fsum(deltas) + missing) / 8,
             ],
             changed_source_scored=len(changed_deltas),
             changed_source_reader_unscored=changed_unscored,
@@ -343,11 +395,14 @@ def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
                 [
                     (math.fsum(changed_deltas) - changed_unscored) / len(changed),
                     (math.fsum(changed_deltas) + changed_unscored) / len(changed),
-                ] if changed else None
+                ]
+                if changed
+                else None
             ),
             changed_source_conditional_mean_f1_delta=(
-                math.fsum(changed_deltas)/len(changed_deltas)
-                if changed_deltas else None
+                math.fsum(changed_deltas) / len(changed_deltas)
+                if changed_deltas
+                else None
             ),
             actual_original_reader_answer_differences=sum(
                 r["answer_bytes_changed"] is True for r in rows
@@ -357,7 +412,8 @@ def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
         )
     return dict(
         schema="hepta.stem-final-shadow-vs-frozen-reader.v1",
-        final_checkpoint=48, planned_reader_controls=len(records),
+        final_checkpoint=48,
+        planned_reader_controls=len(records),
         predeclared_test_and_transfer_only=True,
         postpolicy_answer_targets_only=True,
         same_fixed_reader_weights_prompt_generation=True,
@@ -366,7 +422,8 @@ def review_final_shadow_reader(records, frozen_attempts, targets, diagnose):
         independent_semantic_citation_precision=None,
         independent_prospective_generalization=False,
         per_phase_arm=summary,
-        results=[r for phase in TEST_PHASES for arm in ARMS
-                 for r in groups[(phase,arm)]],
+        results=[
+            r for phase in TEST_PHASES for arm in ARMS for r in groups[(phase, arm)]
+        ],
         production_accepted=False,
     )

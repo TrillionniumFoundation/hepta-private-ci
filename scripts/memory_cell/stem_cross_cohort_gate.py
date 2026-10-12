@@ -22,7 +22,10 @@ SCHEMAS = (
 )
 ARMS = tuple(f"{m}_k{k}" for m in ("lexical", "recent", "fusion") for k in (2, 4, 8))
 LEARNED = (
-    "prototype", "linear", "gated", "lineage_lora_gated",
+    "prototype",
+    "linear",
+    "gated",
+    "lineage_lora_gated",
     "independent_lora_gated",
 )
 RUNS = ("A", "B", "C", "D")
@@ -44,9 +47,7 @@ def strict_json(data):
     def nonfinite(text):
         raise ValueError("nonfinite source receipt JSON constant: " + text)
 
-    return json.loads(
-        data, object_pairs_hook=unique, parse_constant=nonfinite
-    )
+    return json.loads(data, object_pairs_hook=unique, parse_constant=nonfinite)
 
 
 def pinned_inputs(data_dir):
@@ -57,7 +58,8 @@ def pinned_inputs(data_dir):
         file = root / name
         require(
             file.parent.resolve() == root.resolve()
-            and file.is_file() and not file.is_symlink()
+            and file.is_file()
+            and not file.is_symlink()
             and 0 < file.stat().st_size < 65536,
             "regular, bounded, non-symlink pinned receipt required",
         )
@@ -109,7 +111,9 @@ def audit_receipts(locomo, stem, rag):
                 and sum(f["covered"] for f in families.values())
                 == row["full_annotated_support_covered"],
                 "LoCoMo missing/duplicate family or source coverage denominator: "
-                + phase + "/" + arm,
+                + phase
+                + "/"
+                + arm,
             )
     chosen = locomo["evaluation"]["lexical_k8"]
     short = locomo["evaluation"]["lexical_k4"]
@@ -159,9 +163,8 @@ def audit_receipts(locomo, stem, rag):
         and all(v == 1 for v in rag["chosen_k"].values())
         and rag["actual_archived_model_generations"] == 448
         and rag["original_generations_per_run"] == 112
-        and rag["unchanged_input_prompt_census"] == {
-            "calibration": 40, "evaluation": 72
-        }
+        and rag["unchanged_input_prompt_census"]
+        == {"calibration": 40, "evaluation": 72}
         and rag["independent_new_source_families"] == 0
         and rag["independent_semantic_citation_adjudication"] is False
         and rag["repeated_questions_are_independent"] is False
@@ -176,10 +179,8 @@ def audit_receipts(locomo, stem, rag):
         full = rag["per_arm"]["entity_time"][run]
         selected = rag["per_arm"]["selected_k"][run]
         require(
-            (org["correct"], org["complete_declared_citation_chains"])
-            == (8, 4)
-            and (full["correct"], full["complete_declared_citation_chains"])
-            == (8, 4)
+            (org["correct"], org["complete_declared_citation_chains"]) == (8, 4)
+            and (full["correct"], full["complete_declared_citation_chains"]) == (8, 4)
             and (selected["correct"], selected["complete_declared_citation_chains"])
             == (5, 3)
             and org["input_tokens"] == 5179

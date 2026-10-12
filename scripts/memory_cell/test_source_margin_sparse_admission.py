@@ -23,9 +23,7 @@ class SourceMarginSparseAdmissionTests(unittest.TestCase):
             output = Path(folder) / "snapshot"
             with (
                 patch.dict(sys.modules, {"pretrained": fake_pretrained}),
-                patch.dict(
-                    os.environ, {"HEPTA_MEMORY_TESTED_COMMIT": "a" * 40}
-                ),
+                patch.dict(os.environ, {"HEPTA_MEMORY_TESTED_COMMIT": "a" * 40}),
                 patch(
                     "experience_write_trial.original_documents",
                     return_value=(),
@@ -39,7 +37,8 @@ class SourceMarginSparseAdmissionTests(unittest.TestCase):
                 ),
             ):
                 with self.assertRaisesRegex(
-                    ValueError, "optimized source write requires an exact parity receipt"
+                    ValueError,
+                    "optimized source write requires an exact parity receipt",
                 ):
                     write_memory(
                         Path(folder) / "sources",

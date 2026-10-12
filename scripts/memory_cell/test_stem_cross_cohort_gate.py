@@ -6,7 +6,10 @@ import tempfile
 import unittest
 
 from stem_cross_cohort_gate import (
-    PINS, pinned_inputs, audit_receipts, strict_json,
+    PINS,
+    pinned_inputs,
+    audit_receipts,
+    strict_json,
 )
 
 ROOT = Path(__file__).parent / "data"
@@ -28,13 +31,24 @@ class CrossCohortGateTests(unittest.TestCase):
         self.assertEqual(
             result["locomo"]["incremental_k8_minus_k4_source_utf8_bytes"], 8449
         )
-        self.assertEqual(result["strict_native_stem"]["distinct_test_transfer_questions"], 16)
-        self.assertEqual(result["strict_native_stem"]["learned_arms_with_proven_test_transfer_gain"], 0)
-        self.assertEqual(result["authored_strong_rag"]["correct_tasks_for_organized_path"], 8)
-        self.assertEqual(result["authored_strong_rag"]["complete_declared_citation_chain_both"], 4)
+        self.assertEqual(
+            result["strict_native_stem"]["distinct_test_transfer_questions"], 16
+        )
+        self.assertEqual(
+            result["strict_native_stem"]["learned_arms_with_proven_test_transfer_gain"],
+            0,
+        )
+        self.assertEqual(
+            result["authored_strong_rag"]["correct_tasks_for_organized_path"], 8
+        )
+        self.assertEqual(
+            result["authored_strong_rag"]["complete_declared_citation_chain_both"], 4
+        )
         self.assertFalse(result["production_accepted"])
         self.assertTrue(result["do_not_pool_cross_benchmark_denominators"])
-        self.assertEqual({x["git_blob_sha1"] for x in receipts.values()}, set(PINS.values()))
+        self.assertEqual(
+            {x["git_blob_sha1"] for x in receipts.values()}, set(PINS.values())
+        )
 
     def test_single_byte_mutation_of_any_source_fails_before_metrics(self):
         for name in NAMES:

@@ -44,8 +44,15 @@ def placebo_labels(row):
         eligible,
         key=lambda i: (
             sha256(
-                digest((f.question_id, f.family, f.pool_digest, f.candidate_ids[i],
-                        "fixed-negative-label-placebo-v1")).encode()
+                digest(
+                    (
+                        f.question_id,
+                        f.family,
+                        f.pool_digest,
+                        f.candidate_ids[i],
+                        "fixed-negative-label-placebo-v1",
+                    )
+                ).encode()
             ).hexdigest(),
             f.candidate_ids[i],
         ),
@@ -114,10 +121,8 @@ def label_placebo_shadow(questions, training_rows, features, cut, routes, output
         ):
             raise ValueError("unadmitted, overlapping or reencoded TRAIN row")
         positives = tuple(row.positive_indices)
-        if (
-            len(set(positives)) != len(positives)
-            or any(type(i) is not int or not 0 <= i < len(f.candidate_ids)
-                   for i in positives)
+        if len(set(positives)) != len(positives) or any(
+            type(i) is not int or not 0 <= i < len(f.candidate_ids) for i in positives
         ):
             raise ValueError("invalid native TRAIN supervision")
         if 0 < len(positives) <= len(f.candidate_ids) // 2:
@@ -133,8 +138,11 @@ def label_placebo_shadow(questions, training_rows, features, cut, routes, output
             seeds[kind, cell] = seed_sha
             for condition in LABELS:
                 head = StemHead.restore(
-                    seed, expected_sha256=seed_sha, encoder_identity=encoder,
-                    allowed_roots=set(cut.allowed_roots), revoked=set(),
+                    seed,
+                    expected_sha256=seed_sha,
+                    encoder_identity=encoder,
+                    allowed_roots=set(cut.allowed_roots),
+                    revoked=set(),
                 )
                 if head.export() != seed:
                     raise ValueError("placebo and real initial Head bytes differ")
@@ -145,7 +153,8 @@ def label_placebo_shadow(questions, training_rows, features, cut, routes, output
         for kind in KINDS:
             for cell in CELLS:
                 rows = tuple(
-                    admitted[q] for q in train[:stage]
+                    admitted[q]
+                    for q in train[:stage]
                     if q in admitted and routes[q] == cell
                 )
                 ids_sha = digest(tuple(r.features.question_id for r in rows))
@@ -154,8 +163,12 @@ def label_placebo_shadow(questions, training_rows, features, cut, routes, output
                 for condition in LABELS:
                     head = heads[kind, cell, condition]
                     entry = dict(
-                        stage=stage, kind=kind, cell=cell, condition=condition,
-                        status="failed", initial_seed_sha256=seeds[kind, cell],
+                        stage=stage,
+                        kind=kind,
+                        cell=cell,
+                        condition=condition,
+                        status="failed",
+                        initial_seed_sha256=seeds[kind, cell],
                         prior_head_sha256=file_sha256(head.export()),
                         training_question_ids_sha256=ids_sha,
                         training_question_count=len(rows),
@@ -164,39 +177,52 @@ def label_placebo_shadow(questions, training_rows, features, cut, routes, output
                     )
                     try:
                         actual = (
-                            rows if condition == "weak_source"
+                            rows
+                            if condition == "weak_source"
                             else tuple(placebo_labels(row) for row in rows)
                         )
                         receipt = fit_pairwise_shadow(
-                            head, actual, cut, revoked=set(),
-                            steps=STEPS, lr=LR, margin=MARGIN,
+                            head,
+                            actual,
+                            cut,
+                            revoked=set(),
+                            steps=STEPS,
+                            lr=LR,
+                            margin=MARGIN,
                         )
                         if (
                             receipt["consumed_steps"] != STEPS
                             or receipt["null_weights_unchanged"] is not True
                             or receipt["observed_original_reader_calls"] != 0
                         ):
-                            raise ValueError("control and placebo training budgets drift")
+                            raise ValueError(
+                                "control and placebo training budgets drift"
+                            )
                         payload = head.export()
                         name = f"label-control-{kind}-{cell}-{condition}-{stage}.json"
                         with (output / name).open("xb") as handle:
                             handle.write(payload)
                         restored = StemHead.restore(
-                            payload, expected_sha256=file_sha256(payload),
+                            payload,
+                            expected_sha256=file_sha256(payload),
                             encoder_identity=encoder,
-                            allowed_roots=set(cut.allowed_roots), revoked=set(),
+                            allowed_roots=set(cut.allowed_roots),
+                            revoked=set(),
                         )
                         if restored.export() != payload:
                             raise ValueError("label control reload changed Head bytes")
                         heads[kind, cell, condition] = restored
                         entry.update(
-                            status="succeeded", model_file=name,
+                            status="succeeded",
+                            model_file=name,
                             model_bytes=len(payload),
                             post_head_sha256=file_sha256(payload),
-                            supervision_sha256=digest(tuple(
-                                (r.features.question_id, tuple(r.positive_indices))
-                                for r in actual
-                            )),
+                            supervision_sha256=digest(
+                                tuple(
+                                    (r.features.question_id, tuple(r.positive_indices))
+                                    for r in actual
+                                )
+                            ),
                             receipt=receipt,
                         )
                     except Exception as exc:
@@ -214,9 +240,14 @@ def label_placebo_shadow(questions, training_rows, features, cut, routes, output
                     for condition in LABELS:
                         head = heads[kind, cell, condition]
                         entry = dict(
-                            stage=stage, phase=phase, question_id=q.identity,
-                            family=f.family, cell=cell, kind=kind,
-                            condition=condition, status="failed",
+                            stage=stage,
+                            phase=phase,
+                            question_id=q.identity,
+                            family=f.family,
+                            cell=cell,
+                            kind=kind,
+                            condition=condition,
+                            status="failed",
                             initial_seed_sha256=seeds[kind, cell],
                             pool_sha256=f.pool_digest,
                             feature_sha256=f.seal(),
@@ -254,8 +285,10 @@ def review_placebo(questions, fits, choices, pools, targets, *, support_indices)
     for row in fits:
         key = row["stage"], row["kind"], row["cell"], row["condition"]
         if (
-            key in by_fit or row["stage"] not in STAGES
-            or row["kind"] not in KINDS or row["cell"] not in CELLS
+            key in by_fit
+            or row["stage"] not in STAGES
+            or row["kind"] not in KINDS
+            or row["cell"] not in CELLS
             or row["condition"] not in LABELS
         ):
             raise ValueError("duplicate or nonregistered placebo fit")
@@ -263,12 +296,17 @@ def review_placebo(questions, fits, choices, pools, targets, *, support_indices)
     index = {}
     for row in choices:
         key = (
-            row["stage"], row["phase"], row["question_id"],
-            row["kind"], row["condition"],
+            row["stage"],
+            row["phase"],
+            row["question_id"],
+            row["kind"],
+            row["condition"],
         )
         if (
-            key in index or row["stage"] not in STAGES
-            or row["phase"] not in PHASES or row["kind"] not in KINDS
+            key in index
+            or row["stage"] not in STAGES
+            or row["phase"] not in PHASES
+            or row["kind"] not in KINDS
             or row["condition"] not in LABELS
             or row["status"] not in ("succeeded", "failed")
             or row["original_reader_calls"] != 0
@@ -278,7 +316,8 @@ def review_placebo(questions, fits, choices, pools, targets, *, support_indices)
         fit = by_fit[row["stage"], row["kind"], row["cell"], row["condition"]]
         if (
             row["initial_seed_sha256"] != fit["initial_seed_sha256"]
-            or row["status"] == "succeeded" and (
+            or row["status"] == "succeeded"
+            and (
                 fit["status"] != "succeeded"
                 or row["head_sha256"] != fit["post_head_sha256"]
             )
@@ -287,8 +326,11 @@ def review_placebo(questions, fits, choices, pools, targets, *, support_indices)
         index[key] = row
     expected = {
         (stage, phase, q.identity, kind, condition)
-        for stage in STAGES for phase in PHASES
-        for q in questions[phase] for kind in KINDS for condition in LABELS
+        for stage in STAGES
+        for phase in PHASES
+        for q in questions[phase]
+        for kind in KINDS
+        for condition in LABELS
     }
     if set(index) != expected or len(by_fit) != 24:
         raise ValueError("label-control choices or fits missing from denominator")
@@ -306,18 +348,24 @@ def review_placebo(questions, fits, choices, pools, targets, *, support_indices)
                         or a["pool_sha256"] != b["pool_sha256"]
                         or a["feature_sha256"] != b["feature_sha256"]
                         or a["candidate_ids_sha256"] != b["candidate_ids_sha256"]
-                        or a["original_frozen_selected"] != b["original_frozen_selected"]
+                        or a["original_frozen_selected"]
+                        != b["original_frozen_selected"]
                         or a["cell"] != b["cell"]
                         or a["initial_seed_sha256"] != b["initial_seed_sha256"]
                     ):
-                        raise ValueError("placebo changed frozen Encoder or candidate pool")
+                        raise ValueError(
+                            "placebo changed frozen Encoder or candidate pool"
+                        )
                     pool = pools.get(q.identity)
                     if (
-                        pool is None or pool.seal() != a["pool_sha256"]
+                        pool is None
+                        or pool.seal() != a["pool_sha256"]
                         or any(
                             c["status"] == "succeeded"
-                            and (type(c["selected"]) is not int or
-                                 not 0 <= c["selected"] < c["candidate_count"])
+                            and (
+                                type(c["selected"]) is not int
+                                or not 0 <= c["selected"] < c["candidate_count"]
+                            )
                             for c in (a, b)
                         )
                     ):
@@ -328,7 +376,8 @@ def review_placebo(questions, fits, choices, pools, targets, *, support_indices)
                     changes += a["selected"] != b["selected"]
                     target = targets[q.identity]
                     if (
-                        target.unanswerable or target.unresolved_evidence
+                        target.unanswerable
+                        or target.unresolved_evidence
                         or not target.evidence
                     ):
                         missing += 1
@@ -337,13 +386,18 @@ def review_placebo(questions, fits, choices, pools, targets, *, support_indices)
                     aa, bb = a["selected"] in support, b["selected"] in support
                     wins += aa and not bb
                     losses += bb and not aa
-                    learned_vs_frozen += aa and a["original_frozen_selected"] not in support
-                    placebo_vs_frozen += bb and b["original_frozen_selected"] not in support
+                    learned_vs_frozen += (
+                        aa and a["original_frozen_selected"] not in support
+                    )
+                    placebo_vs_frozen += (
+                        bb and b["original_frozen_selected"] not in support
+                    )
                     scored += 1
                 if scored + missing != 8:
                     raise ValueError("placebo review changed original cohort size")
                 cohort[f"{stage}/{phase}/{kind}"] = dict(
-                    attempted=8, weak_source_scored=scored,
+                    attempted=8,
+                    weak_source_scored=scored,
                     failed_or_unresolved=missing,
                     label_placebo_selection_changes=changes,
                     real_label_over_placebo_weak_source_wins=wins,

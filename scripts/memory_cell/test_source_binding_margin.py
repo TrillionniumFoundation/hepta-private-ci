@@ -119,12 +119,22 @@ class SourceBindingTests(unittest.TestCase):
         docs = (
             event("aold", "service", "location", "mode_11112222", 1, scope="s"),
             event(
-                "zmiddle", "service", "location", "mode_33334444",
-                2, ("aold",), scope="s",
+                "zmiddle",
+                "service",
+                "location",
+                "mode_33334444",
+                2,
+                ("aold",),
+                scope="s",
             ),
             event(
-                "new", "service", "location", "mode_55556666",
-                3, ("zmiddle",), scope="s",
+                "new",
+                "service",
+                "location",
+                "mode_55556666",
+                3,
+                ("zmiddle",),
+                scope="s",
             ),
         )
         cases, _ = source_examples(
@@ -141,7 +151,9 @@ class SourceBindingTests(unittest.TestCase):
             revoked=set(),
         )
         self.assertEqual(unmatched, ())
-        self.assertEqual(chosen[0]["negative_category"], "same_entity_relation_superseded")
+        self.assertEqual(
+            chosen[0]["negative_category"], "same_entity_relation_superseded"
+        )
         self.assertEqual(chosen[0]["negative_value"], "mode_33334444")
         self.assertEqual(chosen[0]["negative_roots"], ("root_zmiddle",))
 
@@ -160,11 +172,13 @@ class SourceBindingTests(unittest.TestCase):
                 revoked=set(),
             )
         # Do not rescue the unresolved conflict by assuming latest-wins.
-        claims = [dict(
-            query=dict(identity="qold", scope="s"),
-            sources=["old"],
-            target="mode_11112222",
-        )]
+        claims = [
+            dict(
+                query=dict(identity="qold", scope="s"),
+                sources=["old"],
+                target="mode_11112222",
+            )
+        ]
         pairs, missing = source_hard_negatives(
             claims,
             docs,

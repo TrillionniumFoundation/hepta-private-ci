@@ -26,7 +26,10 @@ ARMS = ("lexical_k8", "neighbor_k8_bytebound")
 
 def canonical(obj):
     return json.dumps(
-        obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+        obj,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False,
         allow_nan=False,
     ).encode()
 
@@ -55,7 +58,9 @@ def score_terms(question, documents):
             if tf:
                 score += (
                     math.log1p((len(documents) - df[term] + 0.5) / (df[term] + 0.5))
-                    * tf * 2.2 / (tf + 1.2 * (0.25 + 0.75 * length / max(average, 1)))
+                    * tf
+                    * 2.2
+                    / (tf + 1.2 * (0.25 + 0.75 * length / max(average, 1)))
                 )
         result[d["identity"]] = score
     return result
@@ -72,7 +77,9 @@ def neighbor_rank(question, documents):
                 index = int(match[2]) + delta
                 sibling = match[1] + str(index)
                 if index > 0 and sibling in base:
-                    neighbors[sibling] = max(neighbors.get(sibling, 0.0), WEIGHT * value)
+                    neighbors[sibling] = max(
+                        neighbors.get(sibling, 0.0), WEIGHT * value
+                    )
     return sorted(base, key=lambda k: (-(base[k] + neighbors.get(k, 0.0)), k))
 
 
@@ -80,7 +87,8 @@ def pack(question, originals, baseline):
     """No excerpt truncation or token proxy: hard cap the ORIGINAL UTF-8 source bytes."""
     if (
         len(set(d["identity"] for d in originals)) != len(originals)
-        or len(baseline) != LIMIT or len(set(baseline)) != LIMIT
+        or len(baseline) != LIMIT
+        or len(set(baseline)) != LIMIT
         or not set(baseline) <= {d["identity"] for d in originals}
     ):
         raise ValueError("invalid exact lexical-k8 candidate control")
@@ -103,6 +111,7 @@ def pack(question, originals, baseline):
 def decisions(public, documents, frozen):
     """Compute both arms from source only, verifying every frozen old control."""
     from locomo_ninearm_source_replay import rank
+
     rows = []
     by_qid = {(r["question_id"], r["arm"]): r for r in frozen}
     for split in ("train", "selection", "evaluation"):
@@ -125,12 +134,18 @@ def decisions(public, documents, frozen):
                 (ARMS[0], baseline, original_bytes),
                 (ARMS[1], chosen, cost),
             ):
-                rows.append(dict(
-                    question_id=qid, family_proxy_digest=q["family_proxy_digest"],
-                    split=split, source_census_sha256=q["source_census_sha256"],
-                    arm=arm, selected=selected, selected_source_bytes=used,
-                    frozen_baseline_source_bytes=original_bytes,
-                ))
+                rows.append(
+                    dict(
+                        question_id=qid,
+                        family_proxy_digest=q["family_proxy_digest"],
+                        split=split,
+                        source_census_sha256=q["source_census_sha256"],
+                        arm=arm,
+                        selected=selected,
+                        selected_source_bytes=used,
+                        frozen_baseline_source_bytes=original_bytes,
+                    )
+                )
     if len(rows) != 160 or len({(r["question_id"], r["arm"]) for r in rows}) != 160:
         raise ValueError("incomplete original 80x2 cohort")
     return rows
@@ -143,13 +158,19 @@ def _write_once(path, data):
         file.write(data)
         file.flush()
         import os
+
         os.fsync(file.fileno())
 
 
 def load_and_verify(public_root, directory):
     from locomo_ninearm_source_replay import (
-        check_roles, compute, load_public, verify_original_six, strict_json,
+        check_roles,
+        compute,
+        load_public,
+        verify_original_six,
+        strict_json,
     )
+
     check_roles(public_root)
     pop, docs = load_public(public_root)
     frozen = compute(pop, docs)
@@ -172,8 +193,13 @@ def load_and_verify(public_root, directory):
 
 def retrieve(public_root, directory):
     from locomo_ninearm_source_replay import (
-        check_roles, compute, load_public, verify_original_six, strict_json,
+        check_roles,
+        compute,
+        load_public,
+        verify_original_six,
+        strict_json,
     )
+
     check_roles(public_root)
     pop, docs = load_public(public_root)
     frozen = compute(pop, docs)
@@ -186,13 +212,18 @@ def retrieve(public_root, directory):
         schema="hepta.locomo.neighbor-source-only.v1",
         source_commit=pop["generating_source_commit"],
         original_frozen_six_verified=n,
-        decision_sha256=sha(raw), planned_questions=80,
-        arms=list(ARMS), fixed_weight=WEIGHT, max_sources=LIMIT,
+        decision_sha256=sha(raw),
+        planned_questions=80,
+        arms=list(ARMS),
+        fixed_weight=WEIGHT,
+        max_sources=LIMIT,
         source_byte_budget="per-query original lexical_k8",
         target_labels_read_during_retrieval=False,
         exploratory_public_development_after_multiple_variants_inspected=True,
-        new_model_calls=0, independent_source_families=0,
-        semantic_citation_precision=None, production_accepted=False,
+        new_model_calls=0,
+        independent_source_families=0,
+        semantic_citation_precision=None,
+        production_accepted=False,
     )
     _write_once(directory / "receipt.json", canonical(receipt) + b"\n")
     return receipt
@@ -210,44 +241,67 @@ def scoring(pop, rows, split, labels):
             label = labels[q["question_id"]]
             evidence = label["support"]
             eligible = (
-                bool(evidence) and not label["unanswerable"]
+                bool(evidence)
+                and not label["unanswerable"]
                 and not label["unresolved_support"]
                 and set(evidence) <= set(q["source_ids"])
             )
             row = table[(q["question_id"], arm)]
-            outcomes.append(dict(
-                question_id=q["question_id"],
-                family_proxy_digest=q["family_proxy_digest"],
-                eligible=bool(eligible),
-                covered=bool(eligible and set(evidence) <= set(row["selected"])),
-                selected_source_bytes=row["selected_source_bytes"],
-                chosen_count=len(row["selected"]),
-            ))
+            outcomes.append(
+                dict(
+                    question_id=q["question_id"],
+                    family_proxy_digest=q["family_proxy_digest"],
+                    eligible=bool(eligible),
+                    covered=bool(eligible and set(evidence) <= set(row["selected"])),
+                    selected_source_bytes=row["selected_source_bytes"],
+                    chosen_count=len(row["selected"]),
+                )
+            )
         result[arm] = outcomes
     paired = []
     for b, c in zip(result[ARMS[0]], result[ARMS[1]], strict=True):
         if (b["question_id"], b["eligible"]) != (c["question_id"], c["eligible"]):
             raise ValueError("pair census drift")
-        paired.append(dict(
-            question_id=b["question_id"],
-            family_proxy_digest=b["family_proxy_digest"],
-            eligible=b["eligible"],
-            baseline_covered=b["covered"],
-            neighbor_covered=c["covered"],
-        ))
+        paired.append(
+            dict(
+                question_id=b["question_id"],
+                family_proxy_digest=b["family_proxy_digest"],
+                eligible=b["eligible"],
+                baseline_covered=b["covered"],
+                neighbor_covered=c["covered"],
+            )
+        )
     return dict(
         planned=len(questions),
         eligible=sum(x["eligible"] for x in paired),
         baseline_covered=sum(x["baseline_covered"] for x in paired),
         neighbor_covered=sum(x["neighbor_covered"] for x in paired),
-        wins=sum(x["eligible"] and x["neighbor_covered"] and not x["baseline_covered"] for x in paired),
-        losses=sum(x["eligible"] and x["baseline_covered"] and not x["neighbor_covered"] for x in paired),
+        wins=sum(
+            x["eligible"] and x["neighbor_covered"] and not x["baseline_covered"]
+            for x in paired
+        ),
+        losses=sum(
+            x["eligible"] and x["baseline_covered"] and not x["neighbor_covered"]
+            for x in paired
+        ),
         baseline_bytes=sum(x["selected_source_bytes"] for x in result[ARMS[0]]),
         neighbor_bytes=sum(x["selected_source_bytes"] for x in result[ARMS[1]]),
         by_family={
-            family: dict(eligible=sum(x["eligible"] for x in paired if x["family_proxy_digest"] == family),
-                         baseline_covered=sum(x["baseline_covered"] for x in paired if x["family_proxy_digest"] == family),
-                         neighbor_covered=sum(x["neighbor_covered"] for x in paired if x["family_proxy_digest"] == family))
+            family: dict(
+                eligible=sum(
+                    x["eligible"] for x in paired if x["family_proxy_digest"] == family
+                ),
+                baseline_covered=sum(
+                    x["baseline_covered"]
+                    for x in paired
+                    if x["family_proxy_digest"] == family
+                ),
+                neighbor_covered=sum(
+                    x["neighbor_covered"]
+                    for x in paired
+                    if x["family_proxy_digest"] == family
+                ),
+            )
             for family in sorted({x["family_proxy_digest"] for x in paired})
         },
         paired=paired,
@@ -260,6 +314,7 @@ def scoring(pop, rows, split, labels):
 
 def select(public_root, label_root, directory):
     from locomo_ninearm_source_replay import check_roles, read_zip, strict_json
+
     check_roles(public_root, label_root)
     pop, rows = load_and_verify(public_root, directory)
     targets = strict_json(read_zip(label_root, "selection")["targets.json"])
@@ -267,7 +322,9 @@ def select(public_root, label_root, directory):
     # Do not tune weights on these labels: the preselected hypothesis is fixed.
     policy = dict(
         schema="hepta.locomo.neighbor-selection.v1",
-        source_decision_sha256=sha((directory / "source-only-decisions.jsonl").read_bytes()),
+        source_decision_sha256=sha(
+            (directory / "source-only-decisions.jsonl").read_bytes()
+        ),
         selection=score,
         # This is exploratory; previous public-result inspection invalidates blind claims.
         research_candidate_only=score["neighbor_covered"] > score["baseline_covered"]
@@ -284,9 +341,12 @@ def check_evaluation_role(public_root, select_root, eval_root):
     """Allow only the exact evaluation-target ZIP, never prior policy artifacts."""
     from locomo_ninearm_source_replay import ZIPS
 
-    public_root, select_root, eval_root = map(Path, (public_root, select_root, eval_root))
+    public_root, select_root, eval_root = map(
+        Path, (public_root, select_root, eval_root)
+    )
     if (
-        not eval_root.is_dir() or eval_root.is_symlink()
+        not eval_root.is_dir()
+        or eval_root.is_symlink()
         or eval_root.resolve() in (public_root.resolve(), select_root.resolve())
         or {p.name for p in eval_root.iterdir()} != {ZIPS["evaluation"][0]}
         or any(p.is_symlink() for p in eval_root.iterdir())
@@ -296,20 +356,32 @@ def check_evaluation_role(public_root, select_root, eval_root):
 
 def evaluate(public_root, select_root, eval_root, directory):
     from locomo_ninearm_source_replay import check_roles, read_zip, strict_json
+
     check_roles(public_root, select_root)
     check_evaluation_role(public_root, select_root, eval_root)
     pop, rows = load_and_verify(public_root, directory)
     selraw = (directory / "selection-policy.json").read_bytes()
     policy = strict_json(selraw)
-    selection = scoring(pop, rows, "selection", strict_json(read_zip(select_root, "selection")["targets.json"]))
+    selection = scoring(
+        pop,
+        rows,
+        "selection",
+        strict_json(read_zip(select_root, "selection")["targets.json"]),
+    )
     if (
         policy["schema"] != "hepta.locomo.neighbor-selection.v1"
-        or policy["source_decision_sha256"] != sha((directory / "source-only-decisions.jsonl").read_bytes())
+        or policy["source_decision_sha256"]
+        != sha((directory / "source-only-decisions.jsonl").read_bytes())
         or policy["selection"] != selection
         or policy["weights_selected_from_test_labels"] is not False
     ):
         raise ValueError("original selection policy changed")
-    result = scoring(pop, rows, "evaluation", strict_json(read_zip(eval_root, "evaluation")["targets.json"]))
+    result = scoring(
+        pop,
+        rows,
+        "evaluation",
+        strict_json(read_zip(eval_root, "evaluation")["targets.json"]),
+    )
     output = dict(
         schema="hepta.locomo.neighbor-exploratory-evaluation.v1",
         decision_sha256=policy["source_decision_sha256"],

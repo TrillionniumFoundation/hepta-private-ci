@@ -15,8 +15,11 @@ import re
 from native import digest
 from stem_audit_archive import PinnedArchive, require
 from stem_reader_format_ablation import (
-    ARCHIVED_SOURCE, ARCHIVED_TREE, ARCHIVED_ZIP_SHA256,
-    fixed_frozen_cases, flat_user_message,
+    ARCHIVED_SOURCE,
+    ARCHIVED_TREE,
+    ARCHIVED_ZIP_SHA256,
+    fixed_frozen_cases,
+    flat_user_message,
 )
 
 FLAT_SOURCE = "9d23a30d1204837767131856cd8f20542f1ddc68"
@@ -34,26 +37,27 @@ def _static_system(archived_source):
         ast.literal_eval(node.value)
         for node in tree.body
         if isinstance(node, ast.Assign)
-        and any(isinstance(t, ast.Name) and t.id == "SYSTEM"
-                for t in node.targets)
+        and any(isinstance(t, ast.Name) and t.id == "SYSTEM" for t in node.targets)
     ]
-    require(len(found) == 1 and isinstance(found[0], str)
-            and "[E1]" in found[0], "archived system prompt identity unavailable")
+    require(
+        len(found) == 1 and isinstance(found[0], str) and "[E1]" in found[0],
+        "archived system prompt identity unavailable",
+    )
     return found[0]
 
 
 def longest_prompt_copy(answer, marker, user_message, system_message):
     """Longest original prompt substring surrounding, not merely containing [E1]."""
     require(
-        isinstance(answer, str) and len(answer) <= 16384
+        isinstance(answer, str)
+        and len(answer) <= 16384
         and 0 <= marker.start() < marker.end() <= len(answer),
         "bounded original Reader answer/marker required",
     )
     best = (0, None)
     for label, prompt in (("user", user_message), ("system", system_message)):
         for left in range(max(0, marker.start() - 128), marker.start() + 1):
-            for right in range(marker.end(),
-                               min(len(answer), marker.end() + 128) + 1):
+            for right in range(marker.end(), min(len(answer), marker.end() + 128) + 1):
                 length = right - left
                 if length > best[0] and answer[left:right] in prompt:
                     best = length, label
@@ -63,17 +67,22 @@ def longest_prompt_copy(answer, marker, user_message, system_message):
 def review_copied_markers(cases, records, system_message):
     """All 32 original questions and all new answers required before reviewing."""
     case_by_id = {case["question_id"]: case for case in cases}
-    require(len(cases) == len(case_by_id) == 32
-            and all(sum(c["phase"] == p for c in cases) == 8 for p in PHASES),
-            "noncanonical original Reader case denominator")
+    require(
+        len(cases) == len(case_by_id) == 32
+        and all(sum(c["phase"] == p for c in cases) == 8 for p in PHASES),
+        "noncanonical original Reader case denominator",
+    )
     raw = {}
     for row in records:
         qid = row["question_id"]
-        require(qid in case_by_id and qid not in raw
-                and row["phase"] == case_by_id[qid]["phase"]
-                and row["status"] == "succeeded"
-                and row["schema"] == "hepta.stem-flat-format-answer.v1",
-                "missing, failed, duplicated or substituted flat Reader answer")
+        require(
+            qid in case_by_id
+            and qid not in raw
+            and row["phase"] == case_by_id[qid]["phase"]
+            and row["status"] == "succeeded"
+            and row["schema"] == "hepta.stem-flat-format-answer.v1",
+            "missing, failed, duplicated or substituted flat Reader answer",
+        )
         raw[qid] = row
     require(set(raw) == set(case_by_id), "missing original Reader flat-format request")
     phase_counts = defaultdict(Counter)
@@ -83,7 +92,8 @@ def review_copied_markers(cases, records, system_message):
         row = raw[qid]
         receipt = row["receipt"]
         original_user = flat_user_message(
-            case["question"], case["delivered_evidence"],
+            case["question"],
+            case["delivered_evidence"],
         )
         require(
             row["case_original_digest"] == digest(case)
@@ -107,15 +117,20 @@ def review_copied_markers(cases, records, system_message):
         markers = []
         for marker in MARKER.finditer(row["answer"]):
             overlap, prompt = longest_prompt_copy(
-                row["answer"], marker, original_user, system_message,
+                row["answer"],
+                marker,
+                original_user,
+                system_message,
             )
-            markers.append(dict(
-                delivered_label=marker.group()[1:-1] == label,
-                exact_prompt_overlap_chars=overlap,
-                copied_from_prompt=overlap >= MIN_COPY_LENGTH,
-                copied_from=prompt if overlap >= MIN_COPY_LENGTH else None,
-                independently_semantically_adjudicated=False,
-            ))
+            markers.append(
+                dict(
+                    delivered_label=marker.group()[1:-1] == label,
+                    exact_prompt_overlap_chars=overlap,
+                    copied_from_prompt=overlap >= MIN_COPY_LENGTH,
+                    copied_from=prompt if overlap >= MIN_COPY_LENGTH else None,
+                    independently_semantically_adjudicated=False,
+                )
+            )
         phase = case["phase"]
         phase_counts[phase]["questions"] += 1
         phase_counts[phase]["structural_markers"] += len(markers)
@@ -131,23 +146,30 @@ def review_copied_markers(cases, records, system_message):
         phase_counts[phase]["system_copies"] += sum(
             x["copied_from"] == "system" for x in markers
         )
-        question_rows.append(dict(
-            question_identity_sha256=digest(qid),
-            phase=phase,
-            citation_markers=len(markers),
-            citation_markers_with_long_prompt_copy=sum(
-                x["copied_from_prompt"] for x in markers
-            ),
-            marker_classifications=markers,
-            answer_text_and_evidence_not_reexported=True,
-        ))
+        question_rows.append(
+            dict(
+                question_identity_sha256=digest(qid),
+                phase=phase,
+                citation_markers=len(markers),
+                citation_markers_with_long_prompt_copy=sum(
+                    x["copied_from_prompt"] for x in markers
+                ),
+                marker_classifications=markers,
+                answer_text_and_evidence_not_reexported=True,
+            )
+        )
     phases = {}
     for p in PHASES:
         require(phase_counts[p]["questions"] == 8, "retained phase census drift")
         phases[p] = {
-            k: phase_counts[p][k] for k in (
-                "questions", "structural_markers", "bound_to_delivered_label",
-                "long_prompt_copies", "user_copies", "system_copies",
+            k: phase_counts[p][k]
+            for k in (
+                "questions",
+                "structural_markers",
+                "bound_to_delivered_label",
+                "long_prompt_copies",
+                "user_copies",
+                "system_copies",
             )
         }
     total = lambda key: sum(phases[p][key] for p in PHASES)
@@ -195,20 +217,27 @@ def audit(strict_zip, flat_zip):
             )
             sys = _static_system(changed.read("source/selector_answering.py"))
             result = review_copied_markers(
-                cases, changed.jsonl("experiment/flat-answers.jsonl"), sys,
+                cases,
+                changed.jsonl("experiment/flat-answers.jsonl"),
+                sys,
             )
             previous = changed.json("experiment/flat-vs-json-evaluation.json")
-            require(previous["planned_questions"] == 32
-                    and previous["only_user_payload_format_changed"] is True
-                    and previous["frozen_reader_model_and_system_prompt_unchanged"] is True
-                    and previous["semantic_citation_precision"] is None
-                    and previous["production_accepted"] is False,
-                    "original scored flat-format report incompatible")
-            require(all(
-                previous["phases"][phase]["flat_structural_citation_markers"]
-                == result["phases"][phase]["structural_markers"]
-                for phase in PHASES
-            ), "published flat-format citation census was rewritten")
+            require(
+                previous["planned_questions"] == 32
+                and previous["only_user_payload_format_changed"] is True
+                and previous["frozen_reader_model_and_system_prompt_unchanged"] is True
+                and previous["semantic_citation_precision"] is None
+                and previous["production_accepted"] is False,
+                "original scored flat-format report incompatible",
+            )
+            require(
+                all(
+                    previous["phases"][phase]["flat_structural_citation_markers"]
+                    == result["phases"][phase]["structural_markers"]
+                    for phase in PHASES
+                ),
+                "published flat-format citation census was rewritten",
+            )
             result["archive_reconciliation"] = dict(
                 strict_zip_sha256=original.sha256,
                 strict_sha256sum_members=original.manifest_entries,
@@ -230,11 +259,23 @@ def main():
     args = parser.parse_args()
     result = audit(args.strict, args.flat)
     with args.output.open("x", encoding="utf-8") as stream:
-        json.dump(result, stream, indent=2, ensure_ascii=False, sort_keys=True,
-                  allow_nan=False)
+        json.dump(
+            result,
+            stream,
+            indent=2,
+            ensure_ascii=False,
+            sort_keys=True,
+            allow_nan=False,
+        )
         stream.write("\n")
-    print(json.dumps({k: v for k, v in result.items() if k != "rows"},
-                     ensure_ascii=False, sort_keys=True, allow_nan=False))
+    print(
+        json.dumps(
+            {k: v for k, v in result.items() if k != "rows"},
+            ensure_ascii=False,
+            sort_keys=True,
+            allow_nan=False,
+        )
+    )
 
 
 if __name__ == "__main__":
