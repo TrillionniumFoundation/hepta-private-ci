@@ -32,6 +32,52 @@ class StagingTests(unittest.TestCase):
         self.assertFalse(r['production_authorized'])
         self.assertFalse(r['cargo_graph_resolution_passed'])
 
+    def test_integrated_secure_lock_is_read_only_and_never_retrofits_018(self):
+        manifest = (
+            '[workspace.dependencies]\\n'
+            'matrix-sdk = { version = "=0.19.1", default-features = false, '
+            'features = ["e2e-encryption", "sqlite", "rustls-aws-lc-rs"] }\\n'
+            'libsqlite3-sys = { version = "=0.38.2", default-features = false }\\n'
+            '[patch.crates-io]\\n'
+            'matrix-sdk = { path = "third_party/matrix-sdk-0.19.1" }\\n'
+        )
+        for root in (self.source, self.stage):
+            (root/'codex-rs/Cargo.toml').write_text(manifest)
+            (root/'codex-rs/Cargo.lock').write_text('immutable-real-lock-fixture')
+        result=stage_manifest(self.source,self.stage,self.sha,
+                              sqlite_arm='audit_integrated_secure_lock')
+        self.assertEqual(result['sqlite_arm'],'audit_integrated_secure_lock')
+        self.assertEqual(result['affected_workspace_files'],[])
+        self.assertTrue(result['integrated_lock_read_only'])
+        self.assertFalse(result['cargo_graph_resolution_passed'])
+        self.assertFalse(result['cargo_deny_passed'])
+        self.assertFalse(result['production_authorized'])
+        self.assertEqual((self.source/'codex-rs/Cargo.toml').read_text(),manifest)
+        self.assertEqual((self.stage/'codex-rs/Cargo.toml').read_text(),manifest)
+        for legacy in ('retain_legacy_sqlite_patch','use_upstream_sqlite'):
+            with self.assertRaisesRegex(ValueError,'frozen baseline'):
+                stage_manifest(self.source,self.stage,self.sha,sqlite_arm=legacy)
+        # A mismatched lock or missing E2EE capability blocks the audit.
+        (self.stage/'codex-rs/Cargo.lock').write_text('substituted')
+        with self.assertRaisesRegex(ValueError,'Cargo.lock'):
+            stage_manifest(self.source,self.stage,self.sha,
+                           sqlite_arm='audit_integrated_secure_lock')
+        (self.stage/'codex-rs/Cargo.lock').write_text('immutable-real-lock-fixture')
+        for edit in (
+            manifest.replace('"e2e-encryption", ', ''),
+            manifest.replace('=0.19.1', '=0.18.0'),
+            manifest.replace('third_party/matrix-sdk-0.19.1',
+                             'third_party/matrix-sdk-0.18.0'),
+            manifest.replace('[patch.crates-io]\\n'
+                             'matrix-sdk = { path = "third_party/matrix-sdk-0.19.1" }\\n',
+                             '[patch.crates-io]\\n'),
+        ):
+            (self.stage/'codex-rs/Cargo.toml').write_text(edit)
+            (self.source/'codex-rs/Cargo.toml').write_text(edit)
+            with self.assertRaisesRegex(ValueError,'source/features/SQLite pins mismatch'):
+                stage_manifest(self.source,self.stage,self.sha,
+                               sqlite_arm='audit_integrated_secure_lock')
+
     def test_reject_source_tree_as_stage(self):
         with self.assertRaises(ValueError):
             stage_manifest(self.source,self.source,self.sha)
