@@ -744,6 +744,26 @@ fn batch_driver_error_releases_active_ids_and_allows_retry() {
 }
 
 #[test]
+fn indeterminate_model_load_fences_native_batch_before_backend_dispatch() {
+    let mut worker = batch_worker(BatchFault::None);
+    worker.driver.inner.fail_load_after_allocation = true;
+    let mut second = manifest();
+    second.model_id = "model.2".to_string();
+    assert_eq!(
+        worker.load_model(100, second),
+        Err(Error::ModelLoadIndeterminate)
+    );
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", two_batch_requests()),
+        Err(Error::ModelLoadIndeterminate)
+    );
+    assert_eq!(
+        worker.driver.backend_calls, 0,
+        "no batch invocation after an ambiguous load in the same generation"
+    );
+}
+
+#[test]
 fn batch_capacity_and_cancelled_requests_fail_closed() {
     let mut worker = batch_worker(BatchFault::None);
     assert_eq!(
