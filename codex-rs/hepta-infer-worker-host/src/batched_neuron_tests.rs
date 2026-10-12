@@ -17,6 +17,40 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 #[derive(Debug)]
+struct FixtureRouteGuardV1;
+
+#[derive(Debug)]
+struct FixtureCurrentScopeRoutesV1;
+
+impl CurrentScopeRoutePortV1 for FixtureCurrentScopeRoutesV1 {
+    fn enter_exact_route(
+        &self,
+        _key: &MicrobatchKeyV1,
+    ) -> Result<Box<dyn ScopedRouteEffectGuardV1>, BatchWorkerErrorV1> {
+        // Qualification mock only: production must use the actual CNS owner
+        // and atomically hold its route cutover fence until this drops.
+        Ok(Box::new(FixtureRouteGuardV1))
+    }
+}
+
+#[derive(Debug)]
+struct SingleStaleScopeRoutesV1 {
+    stale_scope: StableId,
+}
+
+impl CurrentScopeRoutePortV1 for SingleStaleScopeRoutesV1 {
+    fn enter_exact_route(
+        &self,
+        key: &MicrobatchKeyV1,
+    ) -> Result<Box<dyn ScopedRouteEffectGuardV1>, BatchWorkerErrorV1> {
+        if key.scope_id == self.stale_scope {
+            return Err(BatchWorkerErrorV1::StaleRoute);
+        }
+        Ok(Box::new(FixtureRouteGuardV1))
+    }
+}
+
+#[derive(Debug)]
 struct FixtureMetricSink {
     reject_records: bool,
 }
@@ -205,6 +239,7 @@ fn runner_with_counter(
     .with_metric_sink(std::sync::Arc::new(FixtureMetricSink {
         reject_records: false,
     }))
+    .with_current_scope_routes(std::sync::Arc::new(FixtureCurrentScopeRoutesV1))
 }
 
 fn signed(signing_key: &SigningKey, binding: FinalUseBinding) -> SignedFinalUseGrant {
