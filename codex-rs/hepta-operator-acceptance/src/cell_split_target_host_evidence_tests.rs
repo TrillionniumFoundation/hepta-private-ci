@@ -1157,6 +1157,56 @@ impl crate::CellSplitSupervisorMinimumOnlinePortV1 for RejectAllMinimumReads {
     }
 }
 
+/// Source-only stand-in for a *separately administered* monotonic frontier.
+/// Production must obtain this signature from an external rollback-resistant
+/// owner; the local minimum file cannot sign the high-water checkpoint.
+#[cfg(unix)]
+struct SignedMonotonicFrontierFixture {
+    signer: SigningKey,
+    subject: crate::CellSplitSupervisorMinimumSubjectV1,
+    store_record_digest: String,
+    revision_override: Option<u64>,
+    reads: usize,
+}
+
+#[cfg(unix)]
+impl crate::CellSplitSupervisorMonotonicFrontierPortV1
+    for SignedMonotonicFrontierFixture
+{
+    type Error = &'static str;
+
+    fn read_domain_frontier(
+        &mut self,
+        journal_domain_id: &str,
+        challenge_nonce: &str,
+    ) -> Result<crate::CellSplitSupervisorMonotonicFrontierV1, Self::Error> {
+        use ed25519_dalek::Signer as _;
+
+        if journal_domain_id != self.subject.journal_domain_id {
+            return Err("independent monotonic domain mismatch");
+        }
+        self.reads += 1;
+        let mut proof = crate::CellSplitSupervisorMonotonicFrontierV1 {
+            schema: crate::CELL_SPLIT_SUPERVISOR_MONOTONIC_FRONTIER_SCHEMA_V1.into(),
+            journal_domain_id: journal_domain_id.into(),
+            journal_authority_epoch: self.subject.journal_authority_epoch,
+            journal_revision: self.revision_override.unwrap_or(self.subject.journal_revision),
+            minimum_checkpoint_digest: self.subject.minimum_checkpoint_digest.clone(),
+            original_store_record_digest: self.store_record_digest.clone(),
+            challenge_nonce: challenge_nonce.into(),
+            signature_bytes: Vec::new(),
+        };
+        proof.signature_bytes = self.signer
+            .sign(
+                &crate::cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
+                    .expect("monotonic witness payload"),
+            )
+            .to_bytes()
+            .to_vec();
+        Ok(proof)
+    }
+}
+
 #[cfg(unix)]
 struct IndependentlyAdmittedJournalMinimum;
 
@@ -1222,7 +1272,17 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
         journal_revision: journal.committed_revision,
         original_checkpoint_bytes_digest:
             crate::durable::sha256(&journal.original_checkpoint_bytes),
-        minimum_checkpoint_digest: minimum_digest,
+        minimum_checkpoint_digest: minimum_digest.clone(),
+    };
+
+    let frontier_signer = key(94);
+    let frontier_key = frontier_signer.verifying_key();
+    let mut frontier = SignedMonotonicFrontierFixture {
+        signer: frontier_signer,
+        subject: subject.clone(),
+        store_record_digest: "dd".repeat(32),
+        revision_override: None,
+        reads: 0,
     };
 
     // A valid historical transcript paired with a forged join is not
@@ -1240,6 +1300,8 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
         &runtime_trust,
         &minimum_store_key,
         &mut forbidden_store,
+        &frontier_key,
+        &mut frontier,
         &mut unread_effects,
     );
     assert!(
@@ -1259,30 +1321,55 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
         verify_cell_split_observer_join_deep_with_minimum_port_v1(
             &join, &transcript, &owner_trust, &envelope,
             &policy(&host, &observer), &runtime_trust,
-            &minimum_store_key, &mut external, &mut current,
+            &minimum_store_key, &mut external,
+            &frontier_key, &mut frontier, &mut current,
         ).is_err(), "a signed old checkpoint does not replace a current store");
     assert_eq!(current.verification_count, 0);
 
     external
         .publish_once(&subject, &mut IndependentlyAdmittedJournalMinimum)
         .expect("durable independent minimum");
+    let original = crate::CellSplitSupervisorMinimumOnlinePortV1::read_current(
+        &mut external,
+        &subject,
+        &"aa".repeat(32),
+    ).expect("independent signed minimum record");
+    frontier.store_record_digest = original.original_store_record_digest;
     let mut current = CurrentEffectFixture::new(&transcript);
     let accepted = crate::cell_split_observer_join::
         verify_cell_split_observer_join_deep_with_minimum_port_v1(
             &join, &transcript, &owner_trust, &envelope,
             &policy(&host, &observer), &runtime_trust,
-            &minimum_store_key, &mut external, &mut current,
+            &minimum_store_key, &mut external,
+            &frontier_key, &mut frontier, &mut current,
         ).expect("current minimum and four original owner observations");
     assert!(accepted.live_minimum_readback_digest.is_some());
+    assert!(accepted.live_monotonic_frontier_digest.is_some());
+    assert_eq!(frontier.reads, 2);
     assert_eq!(current.verification_count, 4);
     assert!(!accepted.production_activation_authorized);
+
+    // A wholly restored but correctly signed local minimum must be rejected
+    // when its separate monotonic high-water mark has advanced in the domain.
+    frontier.revision_override = Some(subject.journal_revision + 1);
+    let mut stale = CurrentEffectFixture::new(&transcript);
+    assert!(crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join, &transcript, &owner_trust, &envelope,
+            &policy(&host, &observer), &runtime_trust,
+            &minimum_store_key, &mut external,
+            &frontier_key, &mut frontier, &mut stale,
+        ).is_err(), "older signed minimum cannot beat a newer high-water mark");
+    assert_eq!(stale.verification_count, 0);
+    frontier.revision_override = None;
 
     let mut denied = CurrentEffectFixture::new(&transcript);
     assert!(crate::cell_split_observer_join::
         verify_cell_split_observer_join_deep_with_minimum_port_v1(
             &join, &transcript, &owner_trust, &envelope,
             &policy(&host, &observer), &runtime_trust,
-            &observer.verifying_key(), &mut external, &mut denied,
+            &observer.verifying_key(), &mut external,
+            &frontier_key, &mut frontier, &mut denied,
         ).is_err(), "minimum signer cannot reuse the Observer key");
     assert_eq!(denied.verification_count, 0);
     let mut denied = CurrentEffectFixture::new(&transcript);
@@ -1291,7 +1378,8 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
         verify_cell_split_observer_join_deep_with_minimum_port_v1(
             &join, &transcript, &owner_trust, &envelope,
             &policy(&host, &observer), &runtime_trust,
-            &minimum_store_key, &mut external, &mut denied,
+            &minimum_store_key, &mut external,
+            &frontier_key, &mut frontier, &mut denied,
         ).is_err(), "fresh minimum cannot conceal revoked owner receipts");
     assert_eq!(denied.verification_count, 1);
 
@@ -1306,7 +1394,8 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
         verify_cell_split_observer_join_deep_with_minimum_port_v1(
             &join, &transcript, &owner_trust, &envelope,
             &policy(&host, &observer), &runtime_trust,
-            &minimum_store_key, &mut external, &mut interrupted,
+            &minimum_store_key, &mut external,
+            &frontier_key, &mut frontier, &mut interrupted,
         ).is_err());
     assert_eq!(interrupted.inner.verification_count, 4);
 }
