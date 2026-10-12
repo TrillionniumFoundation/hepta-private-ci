@@ -1,0 +1,65 @@
+name: Hepta Windows setup manifest runfiles qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs"
+      - ".github/workflows/hepta-windows-setup-manifest-qualification.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-windows-manifest-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-bazel-manifest:
+    name: Windows Bazel real setup helper resource (no skips)
+    runs-on: windows-latest
+    timeout-minutes: 65
+    steps:
+      - name: Checkout exact proposed source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact head and immutable source
+        shell: pwsh
+        run: |
+          if ((git rev-parse HEAD).Trim() -ne "${{ github.event.pull_request.head.sha || github.sha }}") {
+            throw "Windows Bazel helper tested a different source commit"
+          }
+          git diff --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Prepare native MSVC Bazel toolchain
+        id: prepare_bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-windows-helper-manifest
+
+      - name: Execute both real PE manifest assertion and manifest-only runfiles regression
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          ./.github/scripts/run-bazel-ci.sh --print-failed-action-summary --print-failed-test-logs --windows-msvc-host-platform --remote-download-toplevel -- test --platforms=//:windows_x86_64_msvc --test_output=all --test_verbose_timeout_warnings --build_metadata=COMMIT_SHA="${GITHUB_SHA}" -- //codex-rs/windows-sandbox-rs:windows-sandbox-rs-helper_manifest-test
+
+      - name: Preserve real failure diagnostics
+        if: always() && !cancelled()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: hepta-windows-manifest-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/bazel-execution-logs
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Verify source unchanged
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
