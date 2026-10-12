@@ -59,6 +59,7 @@ from stem_native_matched_objectives import (
     matched_objective_shadow,
     review_objectives,
 )
+from stem_label_placebo import label_placebo_shadow, review_placebo
 from selector_evaluation import support_indices
 from stem_cell_shadow_scale import (
     calibrate_shadow_scale,
@@ -995,6 +996,22 @@ def run(staged, ranker_dir, output):
         write(output / "matched-objective-train-fits.json", matched_objective_fits)
         for row in matched_objective_choices:
             append(output / "matched-objective-label-blind-choices.jsonl", row)
+        # A label-permutation placebo asks whether weak TRAIN support labels
+        # carry a signal beyond an identical randomly initialized Head and SGD.
+        # Both controls see exactly the same frozen Encoder/candidate features.
+        # Hold-out annotations and the original Reader remain untouched.
+        placebo_fits, placebo_choices = label_placebo_shadow(
+            qs, rows, initial_features, cut, plan["routes"], output,
+        )
+        if (
+            reader_session.summary() != previous_reader_accounting
+            or any(sha256(heads[key].export()) != value
+                   for key, value in frozen_head_snapshots.items())
+        ):
+            raise ValueError("placebo learning modified existing policies or Reader")
+        write(output / "label-placebo-train-fits.json", placebo_fits)
+        for item in placebo_choices:
+            append(output / "label-placebo-blind-choices.jsonl", item)
         # SHADOW Reader A/B is an additional research diagnostic, not another
         # original policy arm. Its 192 choices were sealed without labels.
         # Run at final 48 TEST+TRANSFER only, BEFORE opening any held-out
@@ -1095,6 +1112,15 @@ def run(staged, ranker_dir, output):
             output / "matched-objective-posthoc-weak-source.json",
             matched_objective_review,
         )
+        placebo_review = review_placebo(
+            qs, placebo_fits, placebo_choices, pools,
+            {
+                q.identity: source_for[q.identity].targets[q.identity]
+                for phase in PHASES for q in qs[phase]
+            },
+            support_indices=support_indices,
+        )
+        write(output / "label-placebo-posthoc-weak-source.json", placebo_review)
         # The shadow candidate choices were sealed before ANY native
         # post-hoc target annotations are used to judge support.
         shadow_source_report = summarize_shadow_heldout(

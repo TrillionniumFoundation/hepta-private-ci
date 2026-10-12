@@ -80,3 +80,27 @@ not demonstrate a better Reader answer: neither experimental objective
 performs additional Reader inference. The same held-out development labels
 cannot be used to select the best objective, loss margin, seed or scaling
 rule for the next supposedly independent benchmark.
+
+## Weak-label permutation placebo (research only)
+
+A dedicated control now fits two separate persistent Head copies per Cell and
+architecture: the original weak native-document positives, versus a fixed
+nonpositive-label placebo. Both copies start from byte-identical initial Head
+artifacts, consume the same admitted TRAIN questions and frozen cross-encoder
+Features, take the same 128 SGD updates per checkpoint, and do not change the
+null readout. Placebo labels are selected deterministically from windows *not
+marked positive* in TRAIN; they are **not independently reviewed false facts**.
+Rows without enough alternative candidates are excluded from **both** arms,
+never silently recast as unanswerable. Source-family ancestry, revoked roots,
+training budget, checkpoint digests and candidate identities remain bound.
+
+The 24 fits and 384 blind source-only decisions (3 checkpoints x 32 phase
+questions x 2 Head architectures x 2 label conditions) are sealed before
+heldout native support annotations enter the separate posthoc audit. The audit
+reports real-label-vs-placebo wins, losses and failures on the original eight
+question denominators, and source-only changes relative to frozen ranking.
+It does **not** call Reader, establish final-answer improvement, certify
+semantic entailment, construct a new independent family or modify the original
+576 policy generations. Even a positive weak-source point estimate is only a
+screening result; `production_accepted=false` and semantic citation precision
+remain undefined.
