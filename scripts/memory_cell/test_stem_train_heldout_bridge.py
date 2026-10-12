@@ -53,6 +53,10 @@ def fixture():
                             receipt=dict(
                                 generator_identity="pinned-reader",
                                 generator_profile="pinned-reader-prompt",
+                            delivered_evidence=[dict(
+                                original_id="source-"+qid,
+                                label="E1", excerpt="fixture source"
+                            )],
                                 observable_query=dict(
                                     identity=qid,
                                     content="Fixture question.",
@@ -310,6 +314,31 @@ class GeneralizationBridgeTests(unittest.TestCase):
                 self.assertRaisesRegex(ValueError, "Reader model/prompt/query"),
             ):
                 train_to_heldout_gap(plan, learning, scored, targets)
+
+    def test_identical_top1_requires_identical_delivered_evidence(self):
+        plan, learning, scored, targets = fixture()
+        learned = next(
+            row for row in scored
+            if row["stage"] == 48 and row["phase"] == "test"
+            and row["question_id"] == "test-0" and row["arm"] == "gated"
+        )
+        learned["receipt"]["delivered_evidence"][0]["excerpt"] = "different source"
+        with self.assertRaisesRegex(ValueError, "unchanged top-1"):
+            train_to_heldout_gap(plan, learning, scored, targets)
+
+    def test_changed_selection_allows_distinct_bound_reader_sources(self):
+        plan, learning, scored, targets = fixture()
+        learned = next(
+            row for row in scored
+            if row["stage"] == 48 and row["phase"] == "test"
+            and row["question_id"] == "test-0" and row["arm"] == "gated"
+        )
+        learned["selected"] = 1
+        learned["receipt"]["delivered_evidence"][0]["original_id"] = "other-source"
+        result = train_to_heldout_gap(plan, learning, scored, targets)
+        phase = result["by_checkpoint_cell_arm"]["48/gated/general"]["phases"]["test"]
+        self.assertEqual(phase["source_decision_changes"], 1)
+        self.assertFalse(result["production_accepted"])
 
     def test_head_sha_or_hidden_heldout_annotation_claim_is_rejected(self):
         for corruption in ("sha", "label"):

@@ -181,6 +181,23 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                             raise ValueError(
                                 "frozen-matched Reader model/prompt/query identity drift"
                             )
+                        original_evidence = b_receipt.get("delivered_evidence")
+                        learned_evidence = l_receipt.get("delivered_evidence")
+                        if (
+                            not isinstance(original_evidence, list)
+                            or not isinstance(learned_evidence, list)
+                            or len(original_evidence) > 1
+                            or len(learned_evidence) > 1
+                        ):
+                            raise ValueError("matched Reader source evidence receipt invalid")
+                        if (
+                            b_selection and l_selection
+                            and baseline["selected"] == learned["selected"]
+                            and original_evidence != learned_evidence
+                        ):
+                            raise ValueError(
+                                "unchanged top-1 cannot change actual delivered Reader evidence"
+                            )
                         orig_f1 = baseline.get("diagnostic_answer_f1")
                         new_f1 = learned.get("diagnostic_answer_f1")
                         if orig_f1 is not None and new_f1 is not None:
