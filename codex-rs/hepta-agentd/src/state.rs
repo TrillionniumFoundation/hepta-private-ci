@@ -580,7 +580,7 @@ impl AgentdState {
             && self
                 .plasticity_runtime
                 .get()
-                .is_some_and(|producer| producer.is_owner_channel_open()))
+                .is_some_and(crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1::is_owner_channel_open))
     }
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
         self.intelligence_product.get().is_some() && self.intelligence_invocation.get().is_some()
