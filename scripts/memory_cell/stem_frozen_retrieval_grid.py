@@ -66,6 +66,11 @@ def validate_unlabelled(plan, records):
             or re.fullmatch(r"[0-9a-f]{64}", row["original_as_of_index_sha256"]) is None
             or not isinstance(row["pool_sha256"], str)
             or re.fullmatch(r"[0-9a-f]{64}", row["pool_sha256"]) is None
+            or (
+                row.get("replayed_original_pool_sha256") is not True
+                if key[2] == label_key(BASELINE)
+                else row.get("replayed_original_pool_sha256") is not None
+            )
             or row.get("source_text_exported") is not False
             or row.get("read_targets_for_retrieval") is not False
         ):

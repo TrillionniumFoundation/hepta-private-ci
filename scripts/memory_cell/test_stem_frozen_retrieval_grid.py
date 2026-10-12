@@ -306,15 +306,28 @@ class FrozenGridTests(unittest.TestCase):
                 verify_train_selection(plan, forged)
 
     def test_weak_candidate_digest_and_replay_flag_must_be_canonical(self):
-        for mode in ("index-nonhex", "pool-nonhex", "replay-truthy-string"):
+        for mode in (
+            "index-nonhex",
+            "pool-nonhex",
+            "replay-truthy-string",
+            "baseline-truthy-string",
+            "nonbaseline-false",
+        ):
             plan, rows, _ = fixture()
             row = rows[0]
             if mode == "index-nonhex":
                 row["original_as_of_index_sha256"] = "g" * 64
             elif mode == "pool-nonhex":
                 row["pool_sha256"] = "!" * 64
-            else:
+            elif mode == "replay-truthy-string":
                 row["replayed_original_pool_sha256"] = "yes"
+            elif mode == "baseline-truthy-string":
+                baseline = next(
+                    r for r in rows if r["policy"] == label_key(BASELINE)
+                )
+                baseline["replayed_original_pool_sha256"] = "yes"
+            else:
+                row["replayed_original_pool_sha256"] = False
             with self.subTest(mode=mode), self.assertRaises(ValueError):
                 validate_unlabelled(plan, rows)
 
