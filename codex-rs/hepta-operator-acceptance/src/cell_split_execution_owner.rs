@@ -462,6 +462,19 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             Err(error) if error.kind() == ErrorKind::NotFound => false,
             Err(error) => return Err(error.into()),
         };
+        // An existing frozen plan or effect ledger must retain its original
+        // writer-lock inode. Recreating a missing lock would allow a second
+        // process to acquire a different inode while the old writer still
+        // holds its original OS lock. Fail before creating any replacement.
+        if !previously_opened
+            && (read_frame(&root.join("cell-split-frozen-plan.json"))?.is_some()
+                || read_frame(&root.join("cell-split-owner-trust-pins.json"))?.is_some()
+                || has_successor_frame(&root, 0)?)
+        {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "initialized split owner lost original writer lock",
+            ));
+        }
         let lock = if existing_only {
             lock_existing_sidecar(&root)?
         } else {
