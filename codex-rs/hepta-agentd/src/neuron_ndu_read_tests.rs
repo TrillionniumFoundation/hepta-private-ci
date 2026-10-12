@@ -120,7 +120,6 @@ fn read_expiration_and_unknown_owner_are_fail_closed() {
     );
 }
 
-
 #[derive(Debug)]
 struct AdvancingClock(AtomicUsize);
 

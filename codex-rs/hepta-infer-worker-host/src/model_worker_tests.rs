@@ -427,7 +427,6 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     assert!(!receipt.authority.grants_any());
 }
 
-
 #[test]
 fn typed_receipt_borrows_original_q24_allocation_for_driver_execution() {
     let observed_ptr = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
