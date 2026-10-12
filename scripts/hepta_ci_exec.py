@@ -28,7 +28,11 @@ def git(*args: str) -> str:
     # ambient repository/index selectors, replacements or fsmonitor hooks
     # attest a different checkout. The executed command's environment is not
     # rewritten here; this metadata reader is not a command sandbox.
-    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env = {
+        key: value
+        for key, value in os.environ.items()
+        if not key.startswith("GIT_")
+    }
     env.update(
         GIT_CONFIG_NOSYSTEM="1",
         GIT_CONFIG_GLOBAL=os.devnull,

@@ -156,7 +156,7 @@ bazel-lock-check:
 
 [windows]
 bazel-lock-check:
-    bazel mod deps --lockfile_mode=error; if ($LASTEXITCODE -ne 0) { Write-Error "MODULE.bazel.lock is out of date. Run 'just bazel-lock-update' and commit the updated lockfile."; exit 1 }
+    bazel mod deps --lockfile_mode=error; $code = $LASTEXITCODE; if ($code -ne 0) { [Console]::Error.WriteLine("Bazel could not verify MODULE.bazel.lock (exit $code); see its diagnostics above."); [Console]::Error.WriteLine("Only if Bazel reports lockfile drift, run 'just bazel-lock-update' and commit the updated lockfile."); exit $code }
 
 bazel-test:
     bazel test --test_tag_filters=-argument-comment-lint //... --keep_going
@@ -211,4 +211,4 @@ log *args:
 
 [windows]
 log *args:
-    $forwarded_args = @($args | Select-Object -Skip 1); if ($forwarded_args.Count -gt 0 -and $forwarded_args[0] -eq "--") { $forwarded_args = @($forwarded_args | Select-Object -Skip 1) }; cargo run -p codex-cli --bin logs_client -- @forwarded_args
+    $forwarded_args = @($args | Select-Object -Skip 1); if ($forwarded_args.Count -gt 0 -and $forwarded_args[0] -eq "--") { $forwarded_args = @($args | Select-Object -Skip 1) }; cargo run -p codex-cli --bin logs_client -- @forwarded_args
