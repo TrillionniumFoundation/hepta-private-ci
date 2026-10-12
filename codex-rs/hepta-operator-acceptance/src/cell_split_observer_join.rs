@@ -27,6 +27,14 @@ use crate::CellSplitExecutionPortV1;
 use crate::CellSplitUnixEffectPortV1;
 use crate::CellSplitExecutionTranscriptV1;
 use crate::CellSplitOwnerTrustV1;
+#[cfg(unix)]
+use crate::CellSplitSupervisorMinimumOnlinePortV1;
+#[cfg(unix)]
+use crate::CellSplitSupervisorMinimumReadbackV1;
+#[cfg(unix)]
+use crate::CellSplitSupervisorMinimumSubjectV1;
+#[cfg(unix)]
+use crate::verify_cell_split_supervisor_minimum_online_v1;
 use crate::CellSplitSignedTargetHostEvidenceV1;
 use crate::CellSplitTargetHostEventKindV1;
 use crate::CellSplitTargetHostEvidenceTrustPolicyV1;
@@ -116,6 +124,9 @@ pub struct CellSplitObserverDeepReceiptV1 {
     pub supervisor_minimum_checkpoint_digest: String,
     /// Auditable hash of the Observer's independently signed minimum proof.
     pub supervisor_minimum_observer_witness_digest: String,
+    /// A fresh challenge-bound read from a distinctly pinned minimum store.
+    /// None in legacy unit fixtures; production deep verification requires it.
+    pub live_minimum_readback_digest: Option<String>,
     pub independently_signed_original_runtime_and_journal: bool,
     pub production_activation_authorized: bool,
 }
@@ -376,18 +387,22 @@ pub(crate) fn verify_cell_split_observer_join_with_port_v1<P: CellSplitExecution
 }
 
 
-/// Strict production-facing read-only verifier: besides the four original
-/// outer signatures, check the independently pinned *inner* CNS and Supervisor
-/// signatures. The trusted runtime signer is never learned from host evidence.
+/// Strict production-facing deep verifier. Unlike the historical detached
+/// minimum signature, this requires a *fresh*, challenge-bound observation
+/// from an independent online monotonic checkpoint owner before four live
+/// effect RPC reads. The store key must be provisioned separately from every
+/// CNS, Supervisor, host, Observer and four execution-owner key.
 #[cfg(unix)]
 #[allow(clippy::too_many_arguments)]
-pub fn verify_cell_split_observer_join_deep_v1(
+pub fn verify_cell_split_observer_join_deep_v1<M: CellSplitSupervisorMinimumOnlinePortV1>(
     join: &CellSplitSignedObserverJoinV1,
     transcript: &CellSplitExecutionTranscriptV1,
     owner_trust: &CellSplitOwnerTrustV1,
     evidence: &CellSplitSignedTargetHostEvidenceV1,
     evidence_policy: &CellSplitTargetHostEvidenceTrustPolicyV1,
     original_runtime_trust: &CellSplitObserverOriginalRuntimeTrustV1<'_>,
+    trusted_minimum_store_key: &VerifyingKey,
+    minimum_store: &mut M,
     live_owners: &mut CellSplitUnixEffectPortV1,
 ) -> Result<CellSplitObserverDeepReceiptV1, CellSplitObserverJoinErrorV1> {
     if !live_owners.uses_exact_owner_keys(owner_trust.owner_verifying_keys()) {
@@ -395,7 +410,100 @@ pub fn verify_cell_split_observer_join_deep_v1(
             "live RPC trust pins differ from four original effect owners",
         ));
     }
-    verify_cell_split_observer_join_deep_with_port_v1(
+    verify_cell_split_observer_join_deep_with_minimum_port_v1(
+        join,
+        transcript,
+        owner_trust,
+        evidence,
+        evidence_policy,
+        original_runtime_trust,
+        trusted_minimum_store_key,
+        minimum_store,
+        live_owners,
+    )
+}
+
+/// Privately testable fresh-minimum gate. Its generic effect port cannot be
+/// called from production, which is restricted to pinned Unix owner sockets.
+#[cfg(unix)]
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn verify_cell_split_observer_join_deep_with_minimum_port_v1<
+    P: CellSplitExecutionPortV1,
+    M: CellSplitSupervisorMinimumOnlinePortV1,
+>(
+    join: &CellSplitSignedObserverJoinV1,
+    transcript: &CellSplitExecutionTranscriptV1,
+    owner_trust: &CellSplitOwnerTrustV1,
+    evidence: &CellSplitSignedTargetHostEvidenceV1,
+    evidence_policy: &CellSplitTargetHostEvidenceTrustPolicyV1,
+    original_runtime_trust: &CellSplitObserverOriginalRuntimeTrustV1<'_>,
+    trusted_minimum_store_key: &VerifyingKey,
+    minimum_store: &mut M,
+    live_owners: &mut P,
+) -> Result<CellSplitObserverDeepReceiptV1, CellSplitObserverJoinErrorV1> {
+    // Authenticate the historical originals before querying the separately
+    // administered source. A claimed digest or a forged transcript must not
+    // cause an independent effect or be treated as an online verification.
+    verify_original_runtime_receipts_v1(
+        transcript,
+        owner_trust,
+        evidence,
+        evidence_policy,
+        original_runtime_trust,
+    )?;
+    let cns_key = original_runtime_trust.cns_original_runtime_key;
+    let supervisor_key = original_runtime_trust.supervisor_original_journal_key;
+    if trusted_minimum_store_key.is_weak()
+        || trusted_minimum_store_key == cns_key
+        || trusted_minimum_store_key == supervisor_key
+        || owner_trust.contains_owner_key(trusted_minimum_store_key)
+        || evidence_policy.host_keys.values().any(|key| key == trusted_minimum_store_key)
+        || evidence_policy
+            .observer_keys
+            .values()
+            .any(|key| key == trusted_minimum_store_key)
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "online minimum store signer is not independently trusted",
+        ));
+    }
+    let journal: CellSplitSupervisorCommitV1 = serde_json::from_slice(
+        &transcript.receipts[3].owner_receipt_bytes,
+    )?;
+    let plan = &transcript.plan;
+    let subject = CellSplitSupervisorMinimumSubjectV1 {
+        split_id: plan.split_id.clone(),
+        target_host_id: evidence.payload.target_host_id.clone(),
+        target_host_nonce: evidence.payload.target_host_nonce.clone(),
+        plan_digest: plan.digest().map_err(|_| {
+            CellSplitObserverJoinErrorV1::Invalid("invalid frozen split")
+        })?,
+        host_evidence_digest: evidence.payload.evidence_digest.clone(),
+        journal_domain_id: journal.domain_id.clone(),
+        journal_idempotency_key: journal.idempotency_key.clone(),
+        journal_authority_epoch: journal.authority_epoch,
+        journal_revision: journal.committed_revision,
+        original_checkpoint_bytes_digest: sha256(&journal.original_checkpoint_bytes),
+        minimum_checkpoint_digest:
+            original_runtime_trust.supervisor_minimum_checkpoint_digest.to_owned(),
+    };
+    let nonce = rand::random::<[u8; 32]>()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    let proof: CellSplitSupervisorMinimumReadbackV1 = minimum_store
+        .read_current(&subject, &nonce)
+        .map_err(|error| CellSplitObserverJoinErrorV1::Owner(error.to_string()))?;
+    verify_cell_split_supervisor_minimum_online_v1(
+        &subject,
+        &nonce,
+        &proof,
+        trusted_minimum_store_key,
+    )
+    .map_err(|_| CellSplitObserverJoinErrorV1::Invalid(
+        "current independent minimum checkpoint readback invalid",
+    ))?;
+    let mut receipt = verify_cell_split_observer_join_deep_with_port_v1(
         join,
         transcript,
         owner_trust,
@@ -403,7 +511,9 @@ pub fn verify_cell_split_observer_join_deep_v1(
         evidence_policy,
         original_runtime_trust,
         live_owners,
-    )
+    )?;
+    receipt.live_minimum_readback_digest = Some(sha256(&canonical_json(&proof)?));
+    Ok(receipt)
 }
 
 /// Testable pure checker around injected read-only ports. Only the pinned
@@ -446,6 +556,7 @@ pub(crate) fn verify_cell_split_observer_join_deep_with_port_v1<P: CellSplitExec
         original_supervisor_journal_digest: originals.1,
         supervisor_minimum_checkpoint_digest: minimum_digest,
         supervisor_minimum_observer_witness_digest: minimum_witness_digest,
+        live_minimum_readback_digest: None,
         independently_signed_original_runtime_and_journal: true,
         production_activation_authorized: false,
     })
