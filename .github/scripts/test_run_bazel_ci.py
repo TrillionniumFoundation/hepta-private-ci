@@ -53,6 +53,22 @@ elif os.environ.get('BAZEL_PROBE_SERVER_CRASH_ONCE'):
         marker.write_text('synthetic Bazel JVM socket crash', encoding='utf-8')
         print("Server terminated abruptly (error code: 14, error message: 'Socket closed')")
         sys.exit(37)
+elif os.environ.get('BAZEL_PROBE_DOWNLOAD_504_AND_TEST_FAIL') == '1':
+    print('ERROR: dependency archive download failed')
+    print('Error in download_and_extract: GET returned 504 Gateway Time-out')
+    print('FAIL: //fake:target')
+    sys.exit(37)
+elif os.environ.get('BAZEL_PROBE_DOWNLOAD_504_ALWAYS') == '1':
+    print('ERROR: dependency archive download failed')
+    print('Error in download_and_extract: GET returned 504 Gateway Time-out')
+    sys.exit(37)
+elif os.environ.get('BAZEL_PROBE_DOWNLOAD_504_ONCE'):
+    marker = Path(os.environ['BAZEL_PROBE_DOWNLOAD_504_ONCE'])
+    if not marker.exists():
+        marker.write_text('simulated pinned archive transport 504', encoding='utf-8')
+        print('ERROR: dependency archive download failed')
+        print('Error in download_and_extract: GET returned 504 Gateway Time-out')
+        sys.exit(37)
 elif os.environ.get('BAZEL_PROBE_FAIL') == '1':
     print('ERROR: fake/BUILD.bazel:1:1: Linking //fake:target failed: (Exit 37)')
     print('error: linking with rust-lld failed: exit code: 37')
@@ -435,6 +451,36 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertEqual(
             len(calls), 1, "real test or linker errors are never server flakiness"
         )
+
+    def test_pinned_504_archive_download_gets_exactly_one_complete_retry(self) -> None:
+        self.env["RUNNER_OS"] = "Linux"
+        self.env["BAZEL_PROBE_DOWNLOAD_504_ONCE"] = str(
+            self.root / "repository-download-504.marker"
+        )
+        result, calls = self.run_wrapper(
+            "--", "test", "--", "//fake:target", "//fake:another-target"
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[0], calls[1], "CI may not shrink its target set on retry")
+        self.assertIn("GET returned 504 Gateway Time-out", result.stdout)
+        self.assertIn("retrying the identical complete Bazel target set once", result.stdout)
+
+    def test_repeated_dependency_gateway_failure_keeps_ci_red(self) -> None:
+        self.env["RUNNER_OS"] = "Linux"
+        self.env["BAZEL_PROBE_DOWNLOAD_504_ALWAYS"] = "1"
+        result, calls = self.run_wrapper("--", "build", "--", "//fake:target")
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 2, "persistent external 504 must remain blocking")
+        self.assertEqual(calls[0], calls[1])
+
+    def test_real_test_failure_cannot_be_disguised_with_504_transport(self) -> None:
+        self.env["RUNNER_OS"] = "Linux"
+        self.env["BAZEL_PROBE_DOWNLOAD_504_AND_TEST_FAIL"] = "1"
+        result, calls = self.run_wrapper("--", "test", "--", "//fake:target")
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        self.assertEqual(len(calls), 1, "real failed test overrides transient fetch retry")
+        self.assertNotIn("retrying the identical complete Bazel target set", result.stdout)
 
     def test_failure_preserves_status_linker_diagnostics_and_test_log_configuration(
         self,
