@@ -134,14 +134,13 @@ Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(json.dumps(row))
             output = Path(directory) / "matrix"
             # Injecting fixture counters is acceptable only within this
             # source-only unit test; they never authorize production.
-            import os
-
             data = {"measurement": observed(packet)}
             with (
-                patch("hepta_cell_split_matrix_capture.verify_exact_source"),
+                patch("hepta_cell_split_matrix_capture.verify_exact_source") as source_check,
                 patch.dict(os.environ, {"HEPTA_TEST_PACKET": json.dumps(data)}),
             ):
                 result = execute_matrix(packet, ROOT, output, 30)
+            self.assertEqual(source_check.call_count, 34)
             self.assertTrue(result["comparative_gate_passed"])
             self.assertFalse(result["production_evidence_verified"])
             self.assertFalse(result["production_activation_authorized"])
@@ -216,7 +215,6 @@ Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(
             self.assertTrue((output / "64-no_split.stdout.log").exists())
             self.assertFalse((output / "64-logical_split.stdout.log").exists())
             self.assertFalse((output / "measured-matrix.json").exists())
-
 
 
 if __name__ == "__main__":
