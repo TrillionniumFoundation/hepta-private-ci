@@ -120,6 +120,16 @@ Output deliberately reports:
 * Candidate-better/worse/equal event counts by holdout, future_1 and future_2.
   This is a **paired outcome proxy**, not an NDU causal gain; any unmatched
   abstention/slow-path cannot be relabeled as a wrong answer.
+* An optional, deterministic **source-group-level paired bootstrap interval**
+  for candidate-minus-production accuracy or MSE differences. The bootstrap
+  samples entire correlated source groups, never individual rows. With fewer
+  than eight distinct source groups it returns a point estimate but NULL
+  bounds and an explicit insufficient-groups reason. Resampling is bounded to
+  1,024 deterministic draws and 4,096 paired cases, reproducible from the
+  signed cohort/baseline SHA identities. These are purely **descriptive**
+  intervals, not a preregistered causal test, an independent-time attestation
+  or permission for NDU selection. Positive accuracy and negative MSE favor
+  the candidate; an apparent gain cannot override a missing production gate.
 * `ndu_net_gain_verified=false`, `selection_authorized=false`, and
   `production_promotion_authorized=false` regardless of candidate result.
 

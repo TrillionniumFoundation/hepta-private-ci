@@ -409,6 +409,29 @@ class ProductionBaselinePairTests(unittest.TestCase):
         self.baseline_path.symlink_to(original)
         self.blocked()
 
+    def test_source_group_uncertainty_is_descriptive_not_selection(self):
+        report = self.check()
+        for arm in ARMS[self.family]:
+            for window in ("holdout", "future_1", "future_2"):
+                row = report["production_baseline_paired_proxies"][arm][window]
+                confidence = row["paired_uncertainty"]
+                self.assertEqual(confidence["method"], "source_group_cluster_bootstrap_percentile_v1")
+                self.assertLess(confidence["independent_source_groups"], 8)
+                self.assertIsNone(confidence["lower"])
+                self.assertIsNone(confidence["upper"])
+                self.assertIs(confidence["significance_or_promotion_claim"], False)
+        self.assertFalse(report["ndu_net_gain_verified"])
+        self.assertFalse(report["production_promotion_authorized"])
+
+    def test_head_source_group_uncertainty_preserves_mse_direction(self):
+        self.build_fixture("heads")
+        report = self.check()
+        row = report["production_baseline_paired_proxies"]["swiglu"]["future_1"]
+        confidence = row["paired_uncertainty"]
+        self.assertEqual(confidence["statistic"], "candidate_minus_production_no_change_mse")
+        self.assertEqual(confidence["benefit_when"], "negative")
+        self.assertAlmostEqual(confidence["point_estimate"], row["paired_mean_mse_delta"])
+
     def test_baseline_window_proxies_do_not_grant_promotion(self):
         for item in self.production_body["observations"]:
             item["selected_option"] = "yes"

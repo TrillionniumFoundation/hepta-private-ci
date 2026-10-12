@@ -28,6 +28,7 @@ from hepta_neuron_real_cohort_preflight import (
     sha_bytes,
     verify,
 )
+from hepta_neuron_paired_uncertainty import paired_cluster_interval
 from hepta_neuron_model_trials import (
     ARMS,
     Q24,
@@ -289,7 +290,7 @@ def _selected_accuracy(bench, rows, family):
     return scores
 
 
-def _paired_deltas(rows, baseline, arm_receipts, family):
+def _paired_deltas(rows, baseline, arm_receipts, family, seed_context):
     out = {}
     for arm in ARMS[family]:
         trial = {v["id"]: v for v in arm_receipts[arm]["observations"]}
@@ -297,6 +298,7 @@ def _paired_deltas(rows, baseline, arm_receipts, family):
         for window in WINDOWS:
             eligible = [r for r in rows if r["split"] == window]
             improved, harmed, unchanged = 0, 0, 0
+            clustered_differences = []
             for r in eligible:
                 current = baseline[r["id"]]
                 candidate = trial[r["id"]]
@@ -307,6 +309,12 @@ def _paired_deltas(rows, baseline, arm_receipts, family):
                     before = sum((a - c) ** 2 for a, c in zip(x, gold))
                     after = sum((a - c) ** 2 for a, c in zip(y, gold))
                     new_win, harm = after < before, after > before
+                    clustered_differences.append(
+                        (
+                            r["source_group"],
+                            (after - before) / (len(gold) * Q24**2),
+                        )
+                    )
                 else:
                     # A model's answer is not the production policy. This is
                     # only a paired accuracy proxy on independently sealed labels.
@@ -327,6 +335,9 @@ def _paired_deltas(rows, baseline, arm_receipts, family):
                         (not old_right and new_right),
                         (old_right and not new_right),
                     )
+                    clustered_differences.append(
+                        (r["source_group"], int(new_right) - int(old_right))
+                    )
                 improved += int(new_win)
                 harmed += int(harm)
                 unchanged += int(not new_win and not harm)
@@ -346,27 +357,20 @@ def _paired_deltas(rows, baseline, arm_receipts, family):
             }
             if family == "heads":
                 out[arm][window]["paired_mean_mse_delta"] = statistics.mean(
-                    (
-                        sum(
-                            (a - b) ** 2
-                            for a, b in zip(
-                                trial[r["id"]]["drive_q24"]
-                                + trial[r["id"]]["prediction_q24"],
-                                r["target_q24"],
-                            )
-                        )
-                        - sum(
-                            (a - b) ** 2
-                            for a, b in zip(
-                                baseline[r["id"]]["drive_q24"]
-                                + baseline[r["id"]]["prediction_q24"],
-                                r["target_q24"],
-                            )
-                        )
-                    )
-                    / (len(r["target_q24"]) * Q24**2)
-                    for r in eligible
+                    value for _, value in clustered_differences
                 )
+            # Resample whole source groups, never correlated rows. Fewer than
+            # eight groups explicitly give null bounds instead of fake precision.
+            # This is still a diagnostic proxy, not an NDU or promotion gate.
+            out[arm][window]["paired_uncertainty"] = (
+                paired_cluster_interval(
+                    clustered_differences,
+                    seed_identity=f"{seed_context}:{arm}:{window}",
+                    unit="mse" if family == "heads" else "accuracy",
+                )
+                if clustered_differences
+                else None
+            )
     return out
 
 
@@ -414,7 +418,13 @@ def compare_to_production(
     )
     trial_receipts = {arm: read_pinned(path) for arm, path in arm_paths.items()}
     baseline_metrics = _selected_accuracy(owner_observed, sealed, manifest["family"])
-    paired = _paired_deltas(sealed, owner_observed, trial_receipts, manifest["family"])
+    paired = _paired_deltas(
+        sealed,
+        owner_observed,
+        trial_receipts,
+        manifest["family"],
+        f"{sha_file(cohort_path)}:{sha_file(baseline_path)}:{manifest['family']}",
+    )
     return {
         "schema": REPORT_SCHEMA,
         "status": "signed-claims-and-paired-diagnostic-only",
