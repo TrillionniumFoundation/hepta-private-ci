@@ -34,7 +34,7 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/stem-development-venv"
           "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install \
             --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install numpy==2.2.6
+          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install numpy==2.2.6 llvmlite==0.47.0
       - name: Execute actual arithmetic and existing repository entrypoints
         env:
           PYTHONDONTWRITEBYTECODE: "1"
@@ -46,14 +46,26 @@ jobs:
             git rev-parse HEAD^{tree}
             "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip freeze
             "$RUNNER_TEMP/stem-development-venv/bin/python" -m unittest -v \
-              test_shared_encoder_eviction development_tensor_checks development_repository_checks
+              test_shared_encoder_eviction development_tensor_checks development_repository_checks \
+              development_ablation_checks development_sharing_checks
           } 2>&1 | tee "$RUNNER_TEMP/stem-development-tests.txt"
+      - name: Execute synthetic learning and native fixed-policy controls
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-development-venv/bin/python" \
+            qualification/stem-cell-v1/development_experiment.py --synthetic \
+            --output "$RUNNER_TEMP/stem-development-study"
       - name: Preserve exact-source result including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: stem-development-${{ matrix.source }}-${{ github.run_id }}
-          path: ${{ runner.temp }}/stem-development-tests.txt
+          path: |
+            ${{ runner.temp }}/stem-development-tests.txt
+            ${{ runner.temp }}/stem-development-study
           if-no-files-found: warn
           retention-days: 14
       - name: Check source unchanged

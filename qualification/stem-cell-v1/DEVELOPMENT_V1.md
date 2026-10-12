@@ -97,3 +97,84 @@ NOT real mmBERT/Jina/model runs. The repository-entrypoint checks require the
 complete checkout and must be read from their exact CI source SHA; they were
 not executed in the partial local source reconstruction. No pretrained weight
 or future Hepta dataset was available locally. No production activation.
+
+## Second executable slice: controlled learning, generation and native skills
+
+Parent source: `a9bd346198a2dddb5e67ed1bfcf42c1402dcff3b`, which already
+preserves upstream Worker resource/quarantine fixes. The first-slice evidence
+above is retained, not relabeled as a new run. New files stay under this existing
+qualification owner; the existing CPU workflow is extended, not replaced.
+
+`development_sharing.compare_shared_encoding` composes the actual existing
+`SharedStemEngine` in three independently cold-cache arms: singleton/no-cache,
+batch/no-cache, batch/cache. Alternating arm order, whole-study scope/version
+preflight, actual backend calls and strict batch/solo numerical comparisons are
+recorded. Use the existing approved local HF backend for real weights; a mock
+still reports `simulated_encoder=true`. Model load, complete runtime RSS and
+end-to-end same-quality acceptance remain separate. The original
+`development_trial` still supplies independently trained per-Cell Heads.
+
+`development_ablation` trains private candidates with explicit parameter bytes,
+steps, processed examples, CPU and wall time. Structural arms are unchanged
+parent, inherited split, a larger Head within the split's local trainable budget,
+and more data. The latter intentionally consumes more actual examples, which is
+reported rather than called equal work. All see the observed route bit; a parent
+that ignores it is not a universal best unsplit architecture. The larger Head
+control can use it. Frozen shared-basis parameters and their costs remain visible.
+A split win here cannot establish optimal architecture, lifelong gain or promotion.
+The reusable recurrent classifier is trained with real gradients and evaluated
+at several fixed depths against a deliberately retained exact cheap comparator.
+
+The finite NDU allocation candidate extends the earlier one-step selector to a
+bounded public-information DAG. It computes conditional expectations, includes
+stop, charges every path's acquisition cost and supports complementary multi-step
+observations. The profile is ONLY conditional expected utility minus cost, not a
+neural/general FBSDE solution. Public-history provenance is externally required.
+Missing states, cycles, duplicate histories, invalid probabilities, depth >32 or
+>8192 state/budget pairs reject. Resource decimal budgets use exact rationals so
+0.3 minus 0.1 still affords 0.2. Utility arithmetic remains floating-point.
+
+`development_generation` adds an actual shared autoregressive GRU/readout, four
+lightweight modality scale/bias heads and next-token training. Teacher forcing
+is a training-only interface. Greedy generation receives no target payload;
+EOS is learned, completed rows stop computing, malformed/unterminated outputs
+stay failed and are never repaired from a target. The explicit byte codecs are
+UTF-8 text, grayscale PGM, monochrome Y4M video and PCM8 WAV audio. The synthetic
+study learns tiny conditional payloads. It is NOT a pretrained image/video/audio
+model, a natural-language reasoning system or broad multimodal quality evidence.
+
+`development_native` lowers a CLOSED affine/select decision IR into LLVM MCJIT
+and executes the emitted CPU function. It accepts no raw LLVM, binary code,
+arbitrary pointers, loops, syscalls or GUI effects. Result integers are proposals,
+not capabilities. Compiler/LLVM/target/CPU-feature identity, object digest/bytes,
+cold compilation, bounded process-local cache and hot wrapper costs are recorded.
+This is NOT a sandbox for arbitrary generated native programs. The existing
+Worker/Final-use owner must independently admit any later effectful integration.
+The matched comparison retains typed interpretation and JSON-roundtrip controls;
+the JSON control is NOT called MCP. Wasm, GPU and computer-use E2E are NOT RUN.
+No native speed advantage or compilation amortization is presumed.
+
+```sh
+PYTHONPATH=qualification/stem-cell-v1 python3 -m unittest -v \
+  development_ablation_checks development_sharing_checks
+PYTHONPATH=qualification/stem-cell-v1 python3 \
+  qualification/stem-cell-v1/development_experiment.py --synthetic \
+  --output /new/external-study-directory
+```
+
+The study preserves generated payloads, source digests, all actual native timing
+samples and failure records in an exclusively created external output directory.
+Metrics are descriptive synthetic diagnostics, not independent future-window
+NDU or measured pretrained Stem outcomes. Total local study time is recorded
+separately from overlapping phase spans; do not sum nested spans or treat them
+as energy, RSS, model acquisition, dataset preparation or lifetime cost.
+
+Local Python/Torch/LLVM mechanism validation executed 26 additional tests with
+zero failures/skips. The three sharing composition checks require the complete
+repository; their exact-head hosted verdict is separate and was not asserted
+locally. The first synthetic run also retained negative results: deeper recurrence
+was not always better, the exact cheap rule remained stronger, and tiny-policy
+native JIT was slower than typed interpretation. These outcomes are not discarded.
+Hosted source-head/prospective-merge, global Rust/Bazel/security, physical pretrained
+weights, independent future evidence and actual production owner recovery remain
+mandatory before broader acceptance. No main merge or production activation.
