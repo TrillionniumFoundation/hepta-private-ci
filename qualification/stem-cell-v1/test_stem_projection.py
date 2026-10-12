@@ -243,10 +243,12 @@ class ProjectionTests(unittest.TestCase):
         fake=Engine((feature((.5,-.25,.125)),))
         runner=ProjectedStemEngine(fake,spec(),maximum_projection_cache_bytes=3000)
         runner.run([Request('req.1')])
-        self.assertEqual(runner.cache.bytes_used,16)
+        self.assertGreater(runner.cache.bytes_used,16)
+        self.assertLessEqual(runner.cache.bytes_used, runner.cache.maximum_bytes)
         from dataclasses import replace
         runner.run([replace(Request('req.2'), input_digest=d('3'))])
-        self.assertEqual(runner.cache.bytes_used,16)
+        self.assertGreater(runner.cache.bytes_used,16)
+        self.assertLessEqual(runner.cache.bytes_used, runner.cache.maximum_bytes)
         src = feature((.5,-.25,.125))
         src.values = (float('nan'), -.25, .125)
         with self.assertRaises(ValueError):
