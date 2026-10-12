@@ -539,6 +539,7 @@ fn frontier_advance_between_verification_and_signature_rejects_stale_readback() 
 enum MutationAtFrontier {
     CommitBeforeNegativeSignature,
     AdvanceDuringPositiveSignature,
+    RevokeDuringFinalFrontier,
 }
 
 /// Inject a real effect appearing during an independently sampled frontier,
@@ -590,6 +591,11 @@ impl CellSplitDurableEffectBackendV1 for MutateAtFrontierRead {
             && self.sequence_reads == 3
         {
             self.inner.sequence_override = Some(8);
+        }
+        if matches!(self.mode, MutationAtFrontier::RevokeDuringFinalFrontier)
+            && self.sequence_reads == 3
+        {
+            fs::remove_file(self.inner.live_path())?;
         }
         self.inner.current_sequence()
     }
@@ -672,4 +678,45 @@ fn positive_readback_refuses_frontier_revision_after_live_verification() {
     ));
     assert_eq!(service.backend().sequence_reads, 3);
     assert_eq!(service.backend().inner.commits, 1);
+}
+
+#[test]
+fn last_frontier_read_cannot_launder_revoked_effect_into_signed_positive() {
+    let root = tempfile::tempdir().expect("private owner root");
+    let mut disk = DiskEffect::new(root.path().to_path_buf(), "cas-owner");
+    disk.commit_once(&intent()).expect("real original effect");
+    let backend = MutateAtFrontierRead {
+        inner: disk,
+        intent: intent(),
+        mode: MutationAtFrontier::RevokeDuringFinalFrontier,
+        sequence_reads: 0,
+    };
+    let mut service = CellSplitEffectServiceV1::new(
+        CellSplitExecutionStepV1::ArtifactCas,
+        "cas-owner".into(),
+        intent().plan_digest,
+        SigningKey::from_bytes(&[1; 32]),
+        backend,
+    )
+    .expect("pinned owner");
+    let (mut client, mut server) = UnixStream::pair().expect("socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::ReadBack,
+            intent: intent(),
+            challenge_nonce: Some("cc".repeat(32)),
+        },
+    )
+    .expect("request");
+    assert!(matches!(
+        service.serve_connection(&mut server),
+        Err(CellSplitEffectRpcErrorV1::Invalid(
+            "effect changed after final frontier read"
+        ))
+    ));
+    assert_eq!(service.backend().sequence_reads, 3);
+    assert!(!root.path().join("live-owner-state").exists());
+    assert!(root.path().join("committed").exists());
 }
