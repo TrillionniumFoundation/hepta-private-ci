@@ -10,7 +10,10 @@ separately reviewed product composer supplies ALL live adapters below.
 A CellSplitPlanV1 is immutable and binds split/scope/cell ids, the exact parent
 and successor generations, the two immutable artifact IDs and their content
 digests, migration, independently selected evaluation, and an exact Final-use
-binding. The artifact IDs are NOT Cell IDs or candidate IDs. The distinct
+binding. The artifact IDs are NOT Cell IDs or candidate IDs. The independently
+signed Artifact Owner's `storage_binding` is also frozen separately from the
+Split's logical scope digest; a CURRENT view from another storage namespace is
+rejected before any payload is consumed. The distinct
 `selected_candidate_id` is bound to the plan and its operation keys; a new
 child Cell ID must never be inferred to be the evaluator's candidate ID.
 `verify_current_child_artifact` consumes the real learning-artifacts
