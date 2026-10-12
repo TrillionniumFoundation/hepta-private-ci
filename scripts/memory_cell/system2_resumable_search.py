@@ -20,16 +20,20 @@ class SearchSession:
     """Single-task, single-policy cursor; not thread-safe or crash-recoverable."""
 
     def __init__(self, numbers, goal, arm, critic=None, *, popped_ceiling=8192,
-                 generation_profile="reference"):
+                 generation_profile="reference", terminal_prefilter=False):
         validate_task(numbers, goal)
         if (arm not in ARMS or type(popped_ceiling) is not int or not 1 <= popped_ceiling <= 8192
-                or generation_profile not in ("reference", "canonical_pair")):
+                or generation_profile not in ("reference", "canonical_pair")
+                or type(terminal_prefilter) is not bool):
             raise ValueError("unregistered policy or popped-state bound")
         neural = arm in ("value_search", "ndu_value", "shuffled_value")
         if neural and (critic is None or critic.training or any(p.requires_grad for p in critic.parameters())):
             raise ValueError("frozen evaluation-mode critic required")
         self.numbers, self.goal, self.arm = tuple(numbers), goal, arm
         self.generation_profile = generation_profile
+        self.terminal_prefilter = terminal_prefilter
+        self._exact_goal = Fraction(goal)
+        self.verification_skips = 0
         self.generation_counts = dict(pair_checks=0, pair_skips=0, symmetry_skips=0, emitted=0)
         self.critic = critic if neural else None
         self.model_seal = model_digest(self.critic) if neural else None
@@ -106,6 +110,13 @@ class SearchSession:
                     continue
                 self.seen.add(key)
                 if len(child) == 1:
+                    # Trusted successor values are exact Fractions. Rejecting a
+                    # value unequal to the goal cannot discard a valid proof;
+                    # every candidate success STILL goes through the separate
+                    # original postfix proof verifier.
+                    if self.terminal_prefilter and child[0][0] != self._exact_goal:
+                        self.verification_skips += 1
+                        continue
                     self.costs["verifier_calls"] += 1
                     if verify(self.numbers, self.goal, child[0][1]):
                         self.proof = child[0][1]
@@ -130,4 +141,6 @@ class SearchSession:
             paused=self.proof is None and (self.pending is not None or bool(self.queue)),
             certified_impossible=False, in_memory_only=True, frozen_model=self.model_seal,
             task_digest=digest(self.numbers), generation_profile=self.generation_profile,
-            generation_filter=dict(self.generation_counts))
+            generation_filter=dict(self.generation_counts),
+            terminal_prefilter=self.terminal_prefilter,
+            verification_skips=self.verification_skips)

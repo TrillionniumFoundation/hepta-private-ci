@@ -20,6 +20,9 @@ on:
       - "scripts/memory_cell/test_system2_canonical_cpu.py"
       - "codex-rs/hepta-ndu/research/SYSTEM2_CANONICAL_GENERATION.md"
       - "codex-rs/hepta-ndu/research/SYSTEM2_CANONICAL_CPU.md"
+      - "scripts/memory_cell/system2_terminal_prefilter_trial.py"
+      - "scripts/memory_cell/test_system2_terminal_prefilter.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_TERMINAL_PREFILTER.md"
       - "scripts/memory_cell/system2_frontier_value.py"
       - "scripts/memory_cell/system2_frontier_trial.py"
       - "scripts/memory_cell/test_system2_frontier_value.py"
@@ -96,7 +99,7 @@ jobs:
           set -euo pipefail
           /tmp/system2-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/budget-returns/regression.log 2>&1 || { tail -100 /tmp/budget-returns/regression.log; exit 1; }
           tail -5 /tmp/budget-returns/regression.log
-          /tmp/system2-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_budget_control.py scripts/memory_cell/system2_budget_trial.py scripts/memory_cell/test_system2_budget_control.py scripts/memory_cell/system2_resumable_search.py scripts/memory_cell/system2_resume_trial.py scripts/memory_cell/test_system2_resumable_search.py scripts/memory_cell/system2_budget_audit.py scripts/memory_cell/test_system2_budget_evidence.py scripts/memory_cell/system2_frontier_value.py scripts/memory_cell/system2_frontier_trial.py scripts/memory_cell/test_system2_frontier_value.py scripts/memory_cell/system2_canonical_generation.py scripts/memory_cell/system2_canonical_trial.py scripts/memory_cell/test_system2_canonical_generation.py scripts/memory_cell/system2_canonical_cpu.py scripts/memory_cell/test_system2_canonical_cpu.py | tee /tmp/budget-returns/lint.log
+          /tmp/system2-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_budget_control.py scripts/memory_cell/system2_budget_trial.py scripts/memory_cell/test_system2_budget_control.py scripts/memory_cell/system2_resumable_search.py scripts/memory_cell/system2_resume_trial.py scripts/memory_cell/test_system2_resumable_search.py scripts/memory_cell/system2_budget_audit.py scripts/memory_cell/test_system2_budget_evidence.py scripts/memory_cell/system2_frontier_value.py scripts/memory_cell/system2_frontier_trial.py scripts/memory_cell/test_system2_frontier_value.py scripts/memory_cell/system2_canonical_generation.py scripts/memory_cell/system2_canonical_trial.py scripts/memory_cell/test_system2_canonical_generation.py scripts/memory_cell/system2_canonical_cpu.py  scripts/memory_cell/test_system2_canonical_cpu.py scripts/memory_cell/system2_terminal_prefilter_trial.py scripts/memory_cell/test_system2_terminal_prefilter.py | tee /tmp/budget-returns/lint.log
       - name: Train from fixed-policy returns, freeze, evaluate different task multisets
         run: |
           set -euo pipefail
@@ -122,6 +125,11 @@ jobs:
           set -euo pipefail
           /usr/bin/time -v -o /tmp/budget-returns/canonical-cpu-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_canonical_cpu.py /tmp/budget-returns/canonical /tmp/budget-returns/canonical-cpu > /tmp/budget-returns/canonical-cpu.log 2>&1 || { tail -80 /tmp/budget-returns/canonical-cpu.log; exit 1; }
           tail -1 /tmp/budget-returns/canonical-cpu.log
+      - name: Qualify exact-target terminal verification cost on sealed source
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/budget-returns/terminal-resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_terminal_prefilter_trial.py /tmp/budget-returns/canonical /tmp/budget-returns/terminal-prefilter > /tmp/budget-returns/terminal.log 2>&1 || { tail -80 /tmp/budget-returns/terminal.log; exit 1; }
+          tail -1 /tmp/budget-returns/terminal.log
       - name: Retain exact source, original decisions, failure journals, and manifests
         if: always()
         run: |
@@ -140,6 +148,8 @@ jobs:
           cp codex-rs/hepta-ndu/research/SYSTEM2_CANONICAL_GENERATION.md /tmp/budget-returns/source/
           cp scripts/memory_cell/{system2_canonical_cpu.py,test_system2_canonical_cpu.py} /tmp/budget-returns/source/
           cp codex-rs/hepta-ndu/research/SYSTEM2_CANONICAL_CPU.md /tmp/budget-returns/source/
+          cp scripts/memory_cell/{system2_terminal_prefilter_trial.py,test_system2_terminal_prefilter.py} /tmp/budget-returns/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_TERMINAL_PREFILTER.md /tmp/budget-returns/source/
           cp codex-rs/hepta-ndu/research/SYSTEM2_BUDGET_RETURNS.md .github/workflows/hepta-system2-budget-returns.yml /tmp/budget-returns/source/
           (cd /tmp/budget-returns && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
