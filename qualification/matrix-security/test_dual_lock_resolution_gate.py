@@ -117,6 +117,19 @@ class DualResolutionTests(unittest.TestCase):
             with self.subTest(name=name), self.assertRaisesRegex(ValueError, "unresolved"):
                 self.inspect(new=items)
 
+    def test_newer_semver_compatible_transitives_allowed(self):
+        items = fixed()
+        next(p for p in items if p["name"] == "async-trait")["version"] = "0.1.93"
+        next(p for p in items if p["name"] == "bytes")["version"] = "1.13.0"
+        self.assertTrue(self.inspect(new=items)["cargo_lock_metadata_consistent"])
+
+    def test_incompatible_transitive_major_versions_refused(self):
+        for name, version in (("async-trait", "0.2.0"), ("bytes", "2.0.0")):
+            items = fixed()
+            next(p for p in items if p["name"] == name)["version"] = version
+            with self.subTest(name=name), self.assertRaisesRegex(ValueError, "unresolved"):
+                self.inspect(new=items)
+
     def test_nonhex_registry_checksum_refused(self):
         items = fixed()
         next(p for p in items if p["name"] == "bytes")["checksum"] = "?" * 64
