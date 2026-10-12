@@ -147,6 +147,9 @@ pub struct AckOnlyTestReceiptV1 {
     pub witness_synced: bool,
     pub ledger_record_count_unchanged: bool,
     pub qualification_only_no_product_authority: bool,
+    /// Claim was fsynced under an existing owner-pinned nonce directory
+    /// BEFORE the independent Witness was allowed to advance.
+    pub reserved_grant_nonce_receipt: Digest32,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -163,6 +166,8 @@ pub enum AckOnlyRecoveryError {
     UnsupportedOriginalEventKind,
     ActorControllerNotIndependent,
     Durable(DurableLedgerError),
+    NonceStoreUnavailable,
+    NonceAlreadyReservedOrIndeterminate,
 }
 
 impl fmt::Display for AckOnlyRecoveryError {
@@ -443,6 +448,7 @@ fn validate_actors(
 pub fn reconcile_one_existing_ack_qualification(
     ledger: &DurableLedger,
     witness: &mut LedgerWitnessStore,
+    nonce_journal: &mut crate::ack_only_nonce::AckOnlyGrantNonceJournalV1,
     proof: &AckOnlyRecoveryProofV1<'_>,
 ) -> Result<AckOnlyTestReceiptV1, AckOnlyRecoveryError> {
     let root = proof.root;
@@ -552,6 +558,11 @@ pub fn reconcile_one_existing_ack_qualification(
     {
         return Err(AckOnlyRecoveryError::ActorControllerNotIndependent);
     }
+    // Reserve the one-use RecoveryGrant on the independently owner-pinned
+    // journal BEFORE attempting the Witness write. If storage fails, never
+    // advance. Crash after reservation but before Witness ACK remains
+    // deliberately INDETERMINATE/HOLD, never silently reauthorized.
+    let nonce_receipt = nonce_journal.reserve(grant)?;
     let next = witness.advance(before, ledger_frontier)?;
     if next.anchor != grant.target_anchor {
         return Err(AckOnlyRecoveryError::MismatchedWitnessOrLedger);
@@ -566,6 +577,7 @@ pub fn reconcile_one_existing_ack_qualification(
         witness_synced: true,
         ledger_record_count_unchanged: true,
         qualification_only_no_product_authority: true,
+        reserved_grant_nonce_receipt: nonce_receipt,
     })
 }
 

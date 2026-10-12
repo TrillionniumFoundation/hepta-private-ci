@@ -8,6 +8,8 @@
 #![forbid(unsafe_code)]
 
 #[cfg(feature = "qualification-ack-only-recovery")]
+mod ack_only_nonce;
+#[cfg(feature = "qualification-ack-only-recovery")]
 mod ack_only_recovery;
 mod causal_v2;
 mod checkpoint;
@@ -30,6 +32,8 @@ mod signed_evidence;
 mod trust_distribution;
 mod witness;
 
+#[cfg(feature = "qualification-ack-only-recovery")]
+pub use ack_only_nonce::AckOnlyGrantNonceJournalV1;
 #[cfg(feature = "qualification-ack-only-recovery")]
 pub use ack_only_recovery::{
     AckOnlyCurrentRevocationCutV1, AckOnlyRecoveryError, AckOnlyRecoveryGrantV1,
