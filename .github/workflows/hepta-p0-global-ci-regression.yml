@@ -1,0 +1,56 @@
+name: Hepta P0 Global CI Regression Conformance
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/tests/test_hepta_ci_dependencies.py'
+      - 'scripts/hepta_ci_dependencies.py'
+      - 'codex-rs/core/src/client.rs'
+      - 'codex-rs/core/src/client_tests.rs'
+      - 'codex-rs/core/src/client_provider_policy_tests.rs'
+      - '.github/workflows/hepta-p0-global-ci-regression.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  git-fixture-dependency-scope:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Exact dependency scope regression unit tests
+        run: python3 -m unittest scripts.tests.test_hepta_ci_dependencies -v
+      - name: Repeat Git teardown regression to catch intermittent ENOTEMPTY
+        run: |
+          for repeat in 1 2 3 4 5; do
+            python3 -m unittest \
+              scripts.tests.test_hepta_ci_dependencies.GitGraphTests.test_workspace_alias_optional_target_and_build_dependencies \
+              scripts.tests.test_hepta_ci_dependencies.SelectionTests.test_git_fixture_cleanup_retries_only_enotempty -v
+          done
+
+  codex-core-response-map-regressions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    defaults:
+      run:
+        working-directory: codex-rs
+    env:
+      CARGO_INCREMENTAL: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust source toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Verify exact repository-wide Rust formatting
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Compile actual codex-core lib tests, including both former eight-argument callers
+        run: cargo +1.95.0 test --locked -p codex-core --lib --no-run
+      - name: Exercise provider lifecycle policy tests
+        run: cargo +1.95.0 test --locked -p codex-core --lib client_provider_policy_tests:: -- --nocapture
+      - name: Run Strict Clippy for the core tests
+        run: cargo +1.95.0 clippy --locked -p codex-core --tests -- -D warnings
