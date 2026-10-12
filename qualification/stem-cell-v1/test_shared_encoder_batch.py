@@ -1,5 +1,6 @@
 import unittest
 import importlib.util
+from dataclasses import replace
 from types import SimpleNamespace
 
 from shared_encoder_batch import (
@@ -109,6 +110,73 @@ class BatchTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 engine.run([req(1)])
             self.assertEqual(engine.cache.size_bytes, 0)
+
+    def test_backend_cannot_cache_forged_float32_or_wrong_feature_digest(self):
+        base = FrozenFeature.from_values([0.25, 0.5], 2, "mean")
+        forged = (
+            replace(base, feature_digest=D("f")),
+            replace(base, values=(0.25, float("nan"))),
+            replace(base, values=(0.250000001, 0.5)),
+            replace(base, values=[0.25, 0.5]),
+            replace(base, token_count=True),
+            replace(base, token_count=8193),
+        )
+
+        class InjectedBackend(FakeBackend):
+            def __init__(self, bad):
+                super().__init__(width=2)
+                self.bad = bad
+
+            def encode_many(self, texts, mode):
+                good = super().encode_many(texts, mode)
+                return [good[0], self.bad]
+
+        for corrupted in forged:
+            backend = InjectedBackend(corrupted)
+            engine = SharedStemEngine(backend, max_cache_bytes=64 * 1024)
+            with self.assertRaisesRegex(
+                    ValueError, "feature|encoded"):
+                engine.run([req(1, "safe input"), req(2, "bad input")])
+            self.assertEqual(engine.cache.size_bytes, 0)
+            self.assertEqual(len(engine.cache._entries), 0)
+            self.assertEqual(len(backend.calls), 1)
+            # After rejecting the whole backend response, a correct retry
+            # must re-execute both inputs rather than reuse any partial cache.
+            valid_backend = FakeBackend(width=2)
+            engine.backend = valid_backend
+            result = engine.run([req(3, "safe input"), req(4, "bad input")])
+            self.assertEqual(result.backend_batch_widths, (2,))
+            self.assertEqual(result.cache_hits, 0)
+            self.assertEqual(len(valid_backend.calls), 1)
+
+    def test_cache_put_validates_before_overwriting_a_good_feature(self):
+        from shared_encoder_batch import ScopedFeatureCache
+
+        cache = ScopedFeatureCache(64 * 1024)
+        key = req(1, "signed-view").cache_key()
+        good = FrozenFeature.from_values([0.25, -0.5], 2, "mean")
+        cache.put(key, good)
+        original_size = cache.size_bytes
+        for bogus in (
+                replace(good, feature_digest=D("b")),
+                replace(good, values=(0.25, float("inf"))),
+                replace(good, token_count=0),
+                replace(good, values=(0.2500000001, -0.5))):
+            with self.assertRaisesRegex(ValueError, "feature|encoded"):
+                cache.put(key, bogus)
+            self.assertIs(cache.get(key), good)
+            self.assertEqual(cache.size_bytes, original_size)
+
+    def test_feature_tokens_and_scalar_type_are_strictly_bounded(self):
+        for tokens in (True, -1, 0, 8193):
+            with self.assertRaisesRegex(ValueError, "shape"):
+                FrozenFeature.from_values([0.25], tokens, "mean")
+        with self.assertRaisesRegex(ValueError, "non-finite"):
+            FrozenFeature.from_values([True], 2, "mean")
+        with self.assertRaisesRegex(ValueError, "representation"):
+            FrozenFeature.from_values([0.25], 2, 1)
+        legitimate = FrozenFeature.from_values([0.25], 8192, "mean")
+        legitimate.verify_integrity()
 
     def test_boxed_python_float_cache_does_not_claim_raw_f32_budget(self):
         from shared_encoder_batch import ScopedFeatureCache
