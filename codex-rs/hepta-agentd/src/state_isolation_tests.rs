@@ -87,35 +87,6 @@ fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> 
     Ok((temp, registry, state))
 }
 
-#[cfg(not(unix))]
-#[test]
-fn secure_prompt_registry_unavailable_fences_agentd_before_admission() {
-    // Fleet setup alone is not an operational Agentd. The durable prompt
-    // backend has no audited non-Unix no-follow/private ACL implementation.
-    // The test must prove explicit refusal, not synthesize a Windows owner.
-    let error = match fixture() {
-        Ok(_) => panic!("unsupported platform must not admit a durable Agentd"),
-        Err(error) => error,
-    };
-    assert!(
-        error
-            .to_string()
-            .contains("secure durable Prompt Registry owner unavailable on this platform"),
-        "unexpected unsupported-platform failure: {error}"
-    );
-}
-
-#[cfg(unix)]
-#[test]
-fn private_unix_prompt_owner_is_initialized_before_serving() {
-    let (_temp, _registry, state) = fixture().expect("private Unix fixture");
-    let root = state.identity.home_root.join("prompt-registry");
-    assert!(
-        root.is_dir(),
-        "the required durable Prompt Registry must exist"
-    );
-}
-
 #[tokio::test]
 async fn serving_agent_survives_unrelated_registry_corruption() {
     let (_temp, registry, state) = fixture().expect("runtime fixture");

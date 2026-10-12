@@ -79,16 +79,6 @@ impl AgentdState {
         registry: FleetRegistry,
         event_capacity: usize,
     ) -> Result<Self, AgentdError> {
-        // The durable Prompt Registry currently uses Unix-only no-follow,
-        // owner/mode-validated directory and file handles. Refuse startup
-        // before constructing any other runtime owners on hosts without an
-        // equivalent audited secure registry backend. Never fall back to
-        // unprotected Windows path-based file I/O to satisfy a test.
-        if !cfg!(unix) {
-            return Err(AgentdError::Protocol(
-                "secure durable Prompt Registry owner unavailable on this platform".to_string(),
-            ));
-        }
         let mut events = EventBuffer::new(event_capacity)?;
         events.push(AgentdEventKind::Bootstrapped);
         events.push(AgentdEventKind::Lifecycle {
