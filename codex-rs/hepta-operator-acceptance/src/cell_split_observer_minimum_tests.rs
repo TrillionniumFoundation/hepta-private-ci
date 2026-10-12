@@ -87,8 +87,8 @@ fn independent_minimum_requires_durable_publication_and_live_challenge() {
             "the independent owner retains its writer lock",
         );
     }
-    let mut reopened = CellSplitSupervisorMinimumFileStoreV1::open(root.path(), key)
-        .expect("restart with original independent signer");
+    let mut reopened = CellSplitSupervisorMinimumFileStoreV1::open_existing(root.path(), key)
+        .expect("read-only restart with original independent signer");
     let fresh = reopened.read_current(&expected, &"cc".repeat(32))
         .expect("recovered minimum");
     verify_cell_split_supervisor_minimum_online_v1(
@@ -125,6 +125,35 @@ fn independently_persisted_minimum_tampering_fails_closed() {
     let other = root.path().join("hard-linked-minimum");
     fs::hard_link(&path, &other).expect("simulate untrusted alias");
     assert!(store.read_current(&expected, &"aa".repeat(32)).is_err());
+}
+
+#[test]
+fn read_only_recovery_rejects_missing_original_without_creating_a_lock() {
+    let root = private_root();
+    let signer = SigningKey::from_bytes(&[91; 32]);
+    assert!(CellSplitSupervisorMinimumFileStoreV1::open_existing(
+        root.path(), signer.clone(),
+    ).is_err());
+    assert!(!root.path().join(crate::durable::SIDECAR_LOCK_FILE).exists());
+    assert!(!root.path().join(STORE_FILE).exists());
+    {
+        let mut store = CellSplitSupervisorMinimumFileStoreV1::open(
+            root.path(), signer.clone(),
+        ).expect("isolated publisher");
+        assert!(CellSplitSupervisorMinimumFileStoreV1::open_existing(
+            root.path(), signer.clone(),
+        ).is_err(), "read-only query may not contend with a live writer");
+        let mut admitted = VerifiedOriginalMinimum {
+            allow: true,
+            checks: 0,
+        };
+        store.publish_once(&subject(), &mut admitted)
+            .expect("durable admitted original");
+    }
+    let mut recovered = CellSplitSupervisorMinimumFileStoreV1::open_existing(
+        root.path(), signer,
+    ).expect("read-only recovery");
+    assert!(recovered.read_current(&subject(), &"bb".repeat(32)).is_ok());
 }
 
 #[test]
