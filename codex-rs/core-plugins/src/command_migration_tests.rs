@@ -144,3 +144,20 @@ fn command_slug_collisions_are_skipped() {
         Vec::<CommandSource>::new()
     );
 }
+
+
+#[test]
+fn safe_yaml_command_migration_only_accepts_scalar_description() {
+    assert_eq!(
+        parse_command_description("description: 'a safe: command'"),
+        Some("a safe: command".to_string()),
+    );
+    assert_eq!(
+        parse_command_description("description:\n  - dangerous\n  - runtime"),
+        None,
+    );
+    assert_eq!(
+        parse_command_description("description: !unknown custom-typed-content"),
+        None,
+    );
+}
