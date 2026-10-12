@@ -947,6 +947,54 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
         ).expect("original CNS, original terminal journal and four current owners");
     assert_eq!(current.verification_count, 4);
     assert!(accepted.independently_signed_original_runtime_and_journal);
+    // Correct terminal checkpoint bytes plus an attacker-issued "minimum"
+    // are not independent anti-rollback evidence. The matching digest alone
+    // must not pass the original Observer's pinned signer boundary.
+    let forged_witness = signed_supervisor_minimum_witness(
+        &envelope,
+        &transcript,
+        &key(19),
+        &pinned_checkpoint_digest,
+    );
+    let forged_minimum = crate::CellSplitObserverOriginalRuntimeTrustV1 {
+        cns_original_runtime_key: &external_cns,
+        supervisor_original_journal_key: &external_supervisor,
+        supervisor_minimum_checkpoint_digest: &pinned_checkpoint_digest,
+        supervisor_minimum_observer_signature: &forged_witness,
+    };
+    let mut rejected = CurrentEffectFixture::new(&transcript);
+    assert!(crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_port_v1(
+            &join, &transcript, &owner_trust, &envelope,
+            &policy(&host, &observer), &forged_minimum, &mut rejected,
+        ).is_err());
+    assert_eq!(rejected.verification_count, 0);
+
+    // A genuinely signed minimum belongs to a specific host execution.
+    // Replaying it against a different host nonce cannot reauthorize the
+    // current four-owner transcript even if the journal digest is identical.
+    let mut unrelated_execution = envelope.clone();
+    unrelated_execution.payload.target_host_nonce.push_str("-other");
+    let replay_witness = signed_supervisor_minimum_witness(
+        &unrelated_execution,
+        &transcript,
+        &observer,
+        &pinned_checkpoint_digest,
+    );
+    let replayed_minimum = crate::CellSplitObserverOriginalRuntimeTrustV1 {
+        cns_original_runtime_key: &external_cns,
+        supervisor_original_journal_key: &external_supervisor,
+        supervisor_minimum_checkpoint_digest: &pinned_checkpoint_digest,
+        supervisor_minimum_observer_signature: &replay_witness,
+    };
+    let mut rejected = CurrentEffectFixture::new(&transcript);
+    assert!(crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_port_v1(
+            &join, &transcript, &owner_trust, &envelope,
+            &policy(&host, &observer), &replayed_minimum, &mut rejected,
+        ).is_err());
+    assert_eq!(rejected.verification_count, 0);
+
     let independently_stale = "aa".repeat(32);
     let stale_minimum = crate::CellSplitObserverOriginalRuntimeTrustV1 {
         cns_original_runtime_key: &external_cns,
