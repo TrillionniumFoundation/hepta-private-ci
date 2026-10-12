@@ -383,6 +383,10 @@ fn real_q24_children_commit_atomically_and_reopen_from_original_bytes() {
     {
         let mut batch = owner(root.path(), migration.clone(), auth.clone());
         assert!(batch.read_committed(&intent).expect("empty").is_none());
+        assert_eq!(
+            batch.current_sequence_for_intent(&intent).expect("pre-commit revision"),
+            migration.parent_anchor().sequence
+        );
         batch.commit_once(&intent).expect("real typed child CAS");
         let committed = batch
             .read_committed(&intent)
@@ -392,6 +396,11 @@ fn real_q24_children_commit_atomically_and_reopen_from_original_bytes() {
             batch
                 .verify_current(&intent, &committed)
                 .expect("live readback")
+        );
+        assert_eq!(committed.owner_sequence, migration.parent_anchor().sequence + 1);
+        assert_eq!(
+            batch.current_sequence_for_intent(&intent).expect("post-commit revision"),
+            committed.owner_sequence
         );
         for (index, child) in migration.children().iter().enumerate() {
             let path = batch.child_path(
@@ -412,6 +421,10 @@ fn real_q24_children_commit_atomically_and_reopen_from_original_bytes() {
         .unwrap()
         .expect("reopened marker");
     assert!(reopened.verify_current(&intent, &signed).unwrap());
+    assert_eq!(
+        reopened.current_sequence_for_intent(&intent).expect("recovered revision"),
+        signed.owner_sequence
+    );
     assert!(matches!(
         reopened.commit_once(&intent),
         Err(CellSplitChildStateCasErrorV1::Ambiguous)
