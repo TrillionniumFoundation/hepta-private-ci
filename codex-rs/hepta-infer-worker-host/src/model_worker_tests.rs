@@ -584,8 +584,8 @@ fn scoped_stem_worker_payload_cannot_replay_across_principals_or_scopes() {
         ),
         Err(Error::PayloadMismatch)
     );
-    let mut other_source = original.clone();
-    let mut other_access = access.clone();
+    let mut other_source = original;
+    let mut other_access = access;
     other_source.principal_id = StableId::new("principal.other").expect("principal");
     other_access.principal_id = other_source.principal_id.clone();
     assert_eq!(
