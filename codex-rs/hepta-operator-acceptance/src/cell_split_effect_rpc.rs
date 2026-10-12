@@ -16,6 +16,7 @@ use std::os::unix::net::UnixStream;
 use std::path::Component;
 use std::path::PathBuf;
 use std::time::Duration;
+use std::time::Instant;
 
 use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
@@ -177,8 +178,9 @@ impl CellSplitUnixEffectPortV1 {
             intent: intent.clone(),
             challenge_nonce,
         };
-        send_frame(&mut stream, &request)?;
-        let response: CellSplitEffectRpcResponseV1 = receive_frame(&mut stream)?;
+        send_frame_with_deadline(&mut stream, &request, self.timeout)?;
+        let response: CellSplitEffectRpcResponseV1 =
+            receive_frame_with_deadline(&mut stream, self.timeout)?;
         if response.schema != CELL_SPLIT_EFFECT_RPC_SCHEMA_V1 || response.action != action {
             return Err(CellSplitEffectRpcErrorV1::Invalid(
                 "RPC schema or action mismatch",
