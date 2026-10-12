@@ -353,6 +353,47 @@ fn neuron_feature_request() -> NeuronFeatureRequest {
 }
 
 #[test]
+fn streaming_neuron_feature_digest_preserves_exact_v1_wire_for_multiple_widths() {
+    for width in [1_usize, 2, 7, 64, 256, 512] {
+        let mut request = neuron_feature_request();
+        request.feature_vector_q24 = (0..width)
+            .map(|index| {
+                let value = i64::try_from(index % 9).expect("bounded feature index") << 20;
+                if index % 2 == 0 { value } else { -value }
+            })
+            .collect();
+        request.expected_output_width = 5;
+
+        // Deliberately reconstruct the old contiguous v1 byte stream
+        // independently: the new streaming path must be byte-for-byte
+        // compatible with already-issued signed payload digests.
+        let mut legacy = b"hepta.infer-worker.neuron-feature-request.v1".to_vec();
+        legacy.extend_from_slice(request.authorization.model_digest.as_bytes());
+        legacy.extend_from_slice(request.encoder_digest.as_bytes());
+        legacy.extend_from_slice(request.head_digest.as_bytes());
+        legacy.extend_from_slice(request.weights_digest.as_bytes());
+        legacy.extend_from_slice(request.input_digest.as_bytes());
+        legacy.extend_from_slice(&(width as u64).to_be_bytes());
+        for value in &request.feature_vector_q24 {
+            legacy.extend_from_slice(&value.to_be_bytes());
+        }
+        legacy.extend_from_slice(&(request.expected_output_width as u64).to_be_bytes());
+        assert_eq!(
+            canonical_neuron_feature_payload_digest(&request),
+            Digest32::of_bytes(&legacy).to_string(),
+            "digest compatibility for feature width {width}",
+        );
+
+        request.feature_vector_q24[0] += 1;
+        assert_ne!(
+            canonical_neuron_feature_payload_digest(&request),
+            Digest32::of_bytes(&legacy).to_string(),
+            "one changed Q24 sample must alter the signed payload digest",
+        );
+    }
+}
+
+#[test]
 fn executes_authenticated_neuron_feature_tuple_from_loaded_manifest() {
     let mut worker =
         InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
