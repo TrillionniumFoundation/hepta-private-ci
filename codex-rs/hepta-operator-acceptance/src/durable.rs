@@ -274,6 +274,37 @@ impl SidecarLock {
     }
 }
 
+/// A missing lock path does not mean an owner namespace is new. In particular,
+/// the previous writer may still hold a detached inode after an unlink. Before
+/// creating a replacement lock, reject recognizable immutable owner state.
+/// Call again after acquiring the new lock to fence races with path creation.
+/// Whole-root rollback still needs an independently retained witness.
+pub(crate) fn reject_recreated_sidecar_for_owner_history(
+    root: &Path,
+    original_lock_present: bool,
+    owned_filenames: &[&str],
+    owned_prefixes: &[&str],
+) -> Result<(), AcceptanceError> {
+    if original_lock_present {
+        return Ok(());
+    }
+    verify_secure_directory(root, "sidecar owner directory")?;
+    for entry in std::fs::read_dir(root)? {
+        let filename = entry?.file_name();
+        let name = filename
+            .to_str()
+            .ok_or_else(|| invalid("non-UTF8 entry in owner directory"))?;
+        if owned_filenames.contains(&name)
+            || owned_prefixes.iter().any(|prefix| name.starts_with(prefix))
+        {
+            return Err(invalid(
+                "initialized durable owner lost its original sidecar writer lock",
+            ));
+        }
+    }
+    Ok(())
+}
+
 pub(crate) fn lock_sidecar(root: &Path) -> Result<SidecarLock, AcceptanceError> {
     open_sidecar_lock(root, /*create*/ true)
 }
