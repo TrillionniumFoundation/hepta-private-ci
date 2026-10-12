@@ -325,6 +325,97 @@ impl PhaseMetricSinkV1 for CapturedMetrics {
     }
 }
 
+#[derive(Debug)]
+struct UnavailableMetricSink;
+
+impl PhaseMetricSinkV1 for UnavailableMetricSink {
+    fn record(
+        &self,
+        _event: PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+    }
+}
+
+#[test]
+fn failed_metrics_latch_readiness_without_replaying_an_authorized_request() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[27; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let mut execution = runner(&signer, dir.path(), model);
+    assert!(!execution.production_metrics_ready());
+    assert!(!execution.flush_production_metrics());
+    execution = execution.with_metric_sink(Arc::new(UnavailableMetricSink));
+    assert!(execution.production_metrics_ready());
+    execution
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    assert!(!execution.production_metrics_ready());
+    assert!(!execution.flush_production_metrics());
+    let observed = execution.poll_and_execute(101).unwrap();
+    assert_eq!(observed.outcomes.len(), 1);
+    assert!(matches!(
+        &observed.outcomes[0].result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    ));
+    assert_eq!(execution.pending(), 0);
+    assert!(!execution.production_metrics_ready());
+    assert!(execution.poll_and_execute(102).unwrap().outcomes.is_empty());
+}
+
+#[test]
+fn failed_native_batch_metrics_never_mark_production_ready_or_retry_driver() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[28; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let backend_calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let backend = NativeTestDriver {
+        invocations: backend_calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut worker = runner_with_driver(&signer, dir.path(), model, backend, 2)
+        .with_metric_sink(Arc::new(UnavailableMetricSink));
+    for (index, request) in [first, second].into_iter().enumerate() {
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        worker
+            .enqueue(
+                100,
+                "model".into(),
+                request,
+                key.clone(),
+                signed_member(
+                    &signer,
+                    binding,
+                    &format!("telemetry-lost-{index}"),
+                    u8::try_from(index).unwrap() + 81,
+                ),
+            )
+            .unwrap();
+    }
+    let results = worker.poll_and_execute(101).unwrap();
+    assert_eq!(results.outcomes.len(), 2);
+    assert!(results.outcomes.iter().all(|item| matches!(
+        &item.result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    )));
+    assert_eq!(backend_calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert!(!worker.production_metrics_ready());
+    assert!(!worker.flush_production_metrics());
+    assert!(worker.poll_and_execute(102).unwrap().outcomes.is_empty());
+    assert_eq!(backend_calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
+
 #[test]
 fn signed_worker_emits_admission_batch_and_terminal_metrics() {
     let dir = tempfile::tempdir().unwrap();
