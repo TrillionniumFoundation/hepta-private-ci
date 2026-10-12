@@ -911,6 +911,19 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
         ).expect("original CNS, original terminal journal and four current owners");
     assert_eq!(current.verification_count, 4);
     assert!(accepted.independently_signed_original_runtime_and_journal);
+    let independently_stale = "aa".repeat(32);
+    let stale_minimum = crate::CellSplitObserverOriginalRuntimeTrustV1 {
+        cns_original_runtime_key: &external_cns,
+        supervisor_original_journal_key: &external_supervisor,
+        supervisor_minimum_checkpoint_digest: &independently_stale,
+    };
+    let mut rejected = CurrentEffectFixture::new(&transcript);
+    assert!(crate::cell_split_observer_join::
+        verify_cell_split_observer_join_deep_with_port_v1(
+            &join, &transcript, &owner_trust, &envelope,
+            &policy(&host, &observer), &stale_minimum, &mut rejected,
+        ).is_err());
+    assert_eq!(rejected.verification_count, 0);
     assert_eq!(accepted.join.split_id, transcript.plan.split_id);
     assert!(!accepted.production_activation_authorized);
     assert!(!accepted.join.production_activation_authorized);
