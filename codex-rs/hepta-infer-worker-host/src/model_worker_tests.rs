@@ -1404,11 +1404,7 @@ fn native_backend_batch_preflight_respects_other_models_generation_budget() {
     // dispatch, even though the individual batch would fit that grant.
     worker.grant.maximum_memory_bytes = 4_095;
     assert_eq!(
-        worker.run_neuron_features_backend_batch(
-            100,
-            "model.1",
-            two_batch_requests(),
-        ),
+        worker.run_neuron_features_backend_batch(100, "model.1", two_batch_requests(),),
         Err(Error::ModelCapacity),
     );
     assert_eq!(worker.driver.backend_calls, 0);
