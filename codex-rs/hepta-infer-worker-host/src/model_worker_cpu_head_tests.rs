@@ -441,8 +441,9 @@ fn actual_q24_cpu_batch_accounts_for_all_members_output_buffers() {
     let (mut worker, heads) = local_worker();
     let weights = worker.driver.manifest.weights_digest.clone();
     let resident = worker.driver.tracked_weights_bytes;
-    // Enough for one 32-byte Head output, not for two simultaneous
-    // 32-byte outputs plus the contiguous batch feature buffer.
+    // The old path discovered known over-budget scratch only AFTER execution
+    // and poisoned the generation. The new preflight must reject it before
+    // a single backend call, preserving a clean retry under a larger grant.
     worker.grant.maximum_memory_bytes = resident + 32;
     assert_eq!(
         worker.run_neuron_features_backend_batch(
@@ -453,19 +454,52 @@ fn actual_q24_cpu_batch_accounts_for_all_members_output_buffers() {
                 cpu_request(2, heads[1].clone(), weights),
             ],
         ),
-        Err(Error::FeatureBatchMismatch),
+        Err(Error::ModelCapacity),
     );
-    assert!(worker.requires_external_recovery());
+    assert_eq!(worker.driver.backend_batch_invocations, 0);
+    assert!(!worker.requires_external_recovery());
+
+    worker.grant.maximum_memory_bytes = 1_000_000;
     let retry_weights = worker.driver.manifest.weights_digest.clone();
-    assert_eq!(
-        worker.run_neuron_features_backend_batch(
+    let accepted = worker
+        .run_neuron_features_backend_batch(
             100,
             "model.cpu-head",
             vec![
                 cpu_request(1, heads[0].clone(), retry_weights.clone()),
                 cpu_request(2, heads[1].clone(), retry_weights),
             ],
-        ),
-        Err(Error::ExecutionIndeterminate),
-    );
+        )
+        .expect("budgeted retry without previous physical dispatch");
+    assert_eq!(accepted.receipts.len(), 2);
+    assert_eq!(worker.driver.backend_batch_invocations, 1);
+    assert!(!worker.requires_external_recovery());
+}
+
+
+#[test]
+fn cpu_head_batch_preflight_covers_reported_numeric_peak_for_four_cells() {
+    let (mut worker, heads) = local_worker();
+    let weights = worker.driver.manifest.weights_digest.clone();
+    let mut requests = Vec::new();
+    for index in 0..4 {
+        requests.push(cpu_request(
+            index + 1,
+            heads[index % 2].clone(),
+            weights.clone(),
+        ));
+    }
+    let planned = worker
+        .driver
+        .preflight_neuron_backend_batch_bytes(
+            &worker.models.get("model.cpu-head").expect("loaded").handle,
+            &requests,
+        )
+        .expect("checked numeric memory plan");
+    let received = worker
+        .run_neuron_features_backend_batch(100, "model.cpu-head", requests)
+        .expect("one grouped CPU Head call");
+    assert!(received.observed_peak_memory_bytes <= planned);
+    assert_eq!(received.receipts.len(), 4);
+    assert!(!received.receipts.iter().any(|r| r.authority.grants_any()));
 }
