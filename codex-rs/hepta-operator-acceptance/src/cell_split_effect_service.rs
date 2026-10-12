@@ -24,6 +24,10 @@ use crate::cell_split_effect_rpc::CellSplitEffectRpcResponseV1;
 use crate::cell_split_effect_rpc::cell_split_effect_readback_signing_payload_v1;
 use crate::cell_split_effect_rpc::receive_frame_with_deadline;
 use crate::cell_split_effect_rpc::send_frame_with_deadline;
+#[cfg(test)]
+use crate::cell_split_effect_rpc::receive_frame;
+#[cfg(test)]
+use crate::cell_split_effect_rpc::send_frame;
 use crate::cell_split_execution_signing_payload_v1;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
