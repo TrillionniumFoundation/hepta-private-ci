@@ -20,15 +20,42 @@ SCORE_SPLITS = frozenset({"held_out", "future_1", "future_2", "ood"})
 EVAL_BINS = 15
 
 
+MAX_EVIDENCE_ROW_BYTES = 1024 * 1024
+
+
+def reject_duplicate_evidence_fields(pairs):
+    """Prevent two interpretations of a label, identity or signed receipt."""
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError(f"duplicate JSON evidence field: {key}")
+        result[key] = value
+    return result
+
+
+def reject_nonstandard_evidence_number(value):
+    raise ValueError(f"nonfinite/nonstandard JSON evidence number: {value}")
+
+
 def load_jsonl(path):
+    """Read bounded, unambiguous JSONL; never silently drop physical rows."""
     with Path(path).open(encoding="utf-8") as handle:
-        for line_no, line in enumerate(handle, 1):
+        line_no = 0
+        while line := handle.readline(MAX_EVIDENCE_ROW_BYTES + 1):
+            line_no += 1
+            if len(line) > MAX_EVIDENCE_ROW_BYTES:
+                raise ValueError(f"{path}:{line_no}: oversized evidence JSONL row")
             if not line.strip():
-                continue
+                raise ValueError(f"{path}:{line_no}: blank evidence JSONL row")
             try:
-                yield json.loads(line)
+                row = json.loads(
+                    line, object_pairs_hook=reject_duplicate_evidence_fields,
+                    parse_constant=reject_nonstandard_evidence_number)
+                if type(row) is not dict:
+                    raise ValueError("evidence row must be a JSON object")
+                yield row
             except (ValueError, TypeError) as exc:
-                raise ValueError(f"{path}:{line_no}: invalid JSON") from exc
+                raise ValueError(f"{path}:{line_no}: {exc}") from exc
 
 
 def require_digest(value, name):
