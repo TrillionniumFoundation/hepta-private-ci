@@ -126,7 +126,7 @@ impl CellSplitUnixEffectPortV1 {
     ) -> Result<Self, CellSplitEffectRpcErrorV1> {
         let mut paths = BTreeSet::new();
         let mut keys = BTreeSet::new();
-        if timeout.is_zero() || timeout > Duration::from_secs(30) {
+        if timeout < Duration::from_millis(1) || timeout > Duration::from_secs(30) {
             return Err(CellSplitEffectRpcErrorV1::Invalid("RPC timeout"));
         }
         for (path, key) in endpoints.iter().zip(verifying_keys.iter()) {
