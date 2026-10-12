@@ -89,3 +89,51 @@ removed afterward, and the original tracked repository is checked unchanged.
 A successful graph resolution still does **not** prove crypto safety, E2EE
 correctness, SQLx SQLite single-`links` compatibility or WAL crash recovery.
 Neither diagnostic job may clear the separate fail-closed security gate.
+
+## Smallest reviewable AnyMap source delta (2026-10-12)
+
+The previous immutable candidate `b3c07ea6ba6e8e46e30811c0500b04505c4be9f9`
+is **278 upstream commits ahead of** the signed `matrix-sdk-0.19.1`
+release commit `b18166c68bb958a21f0bca8b2d8320cb53583362`.
+Those 278 commits cannot be treated as a reviewed one-line dependency fix.
+
+Upstream's exact `anymap2 → anymap3` change is commit
+`9c5fdd2cf5be1b7b8b20541e56d7a109db968534`
+([upstream diff](https://github.com/matrix-org/matrix-rust-sdk/commit/9c5fdd2cf5be1b7b8b20541e56d7a109db968534)).
+That commit changes only `Cargo.lock`,
+`crates/matrix-sdk/Cargo.toml`, and
+`crates/matrix-sdk/src/event_handler/mod.rs`. Its source-only hunk set
+is much narrower than blindly upgrading to upstream's moving Git tip.
+
+`minimal_backport_probe.py` verifies exact release and change commit SHAs,
+checks that upstream changed *only those three files*, extracts only the
+two source hunks, then runs `git apply --check` against the **unaltered**
+published-release checkout. It does not cherry-pick, execute external
+code, change any Cargo dependency, or declare the patched tree trustworthy.
+The job fails if the patch cannot apply, and publishes the source patch SHA-256
+as research evidence; the independent hard security gate remains red.
+
+```sh
+python3 qualification/matrix-security/minimal_backport_probe.py \
+  --release /read-only/matrix-sdk-0.19.1 \
+  --migration /read-only/matrix-anymap3-9c5fdd2 \
+  --output /scratch/minimal-backport-evidence.json
+```
+
+This source experiment must be followed by real signed-source review,
+compatible **entire SDK family** resolution, Rust toolchain approval, SQLite
+`links` migration, E2EE and WAL crash recovery before `cargo-deny` and
+production authorization can become eligible. A source-only patch applying
+cleanly does **not** show it compiles or repairs the Matrix vulnerabilities.
+
+## Isolated SQLite dependency resolution: two non-promoting arms
+
+The `staged_resolution_probe.py` accepts only
+`retain_legacy_sqlite_patch` and `use_upstream_sqlite`. The former exposes
+whether the 0.18 local SQLite fork blocks the pinned 0.19.1 Git SDK; the latter
+removes **only** that exact fork line inside a separate detached Git worktree,
+allowing Cargo to expose the genuine `rusqlite/libsqlite3-sys` alignment
+problem. Each arm retains E2EE, `sqlite`, and the unchanged real
+`deny.toml` and source `Cargo.lock`; neither is a remediated production
+configuration. Reports include the arm, actual resolver exit code and
+dependency versions, and remain `production_authorized=false`.
