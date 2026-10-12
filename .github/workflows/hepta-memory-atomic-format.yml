@@ -1,4 +1,5 @@
 # Trigger isolated format candidate only; preserve the workflow and never force-push.
+# Revalidate exact-source Ruff formatting after stricter v5 heldout audit repair.
 name: MemoryCell one-shot exact-source formatting candidate
 on:
   push:
