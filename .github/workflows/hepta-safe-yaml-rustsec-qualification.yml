@@ -21,7 +21,14 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Bind qualification and lockfile to exact PR source SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
       - name: Install Matrix-qualified Rust toolchain
         run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt
       - name: Resolve actual changed workspace Cargo.lock without fabricated crate checksums
@@ -55,7 +62,14 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Bind qualification and lockfile to exact PR source SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
       - name: Install exact source toolchain
         run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt,clippy
       - name: Ensure committed lockfile and strict source formatting
