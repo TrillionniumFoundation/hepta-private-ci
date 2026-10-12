@@ -4,7 +4,7 @@ mod render;
 use render::rewrite_terms;
 use render::slugify_name;
 use render::yaml_string;
-use serde_yaml::Value as YamlValue;
+use serde_json::Value as YamlValue;
 use std::collections::BTreeMap;
 use std::fs;
 use std::io;
@@ -315,7 +315,7 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 
 fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
     let parsed: YamlValue = serde_yaml::from_str(raw_frontmatter).ok()?;
-    let mapping = parsed.as_mapping()?;
+    let mapping = parsed.as_object()?;
     mapping.iter().find_map(|(key, value)| {
         if key.as_str()?.trim() == "description" {
             yaml_scalar(value)
@@ -330,7 +330,7 @@ fn yaml_scalar(value: &YamlValue) -> Option<String> {
         YamlValue::String(value) => Some(value.trim().to_string()),
         YamlValue::Bool(value) => Some(value.to_string()),
         YamlValue::Number(value) => Some(value.to_string()),
-        YamlValue::Null | YamlValue::Sequence(_) | YamlValue::Mapping(_) | YamlValue::Tagged(_) => {
+        YamlValue::Null | YamlValue::Array(_) | YamlValue::Object(_) => {
             None
         }
     }
