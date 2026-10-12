@@ -70,10 +70,12 @@ pub(crate) async fn read(
         body_generation,
         query,
         limit,
-        ranker,
-        None,
-        None,
-        None,
+        CognitiveContextReadPorts {
+            ranker,
+            current_retrieval: None,
+            learning_sink: None,
+            request_id: None,
+        },
     )
     .await
 }
@@ -94,12 +96,23 @@ pub(crate) async fn read_with_retrieval_context(
         body_generation,
         query,
         limit,
-        ranker,
-        current_retrieval,
-        None,
-        None,
+        CognitiveContextReadPorts {
+            ranker,
+            current_retrieval,
+            learning_sink: None,
+            request_id: None,
+        },
     )
     .await
+}
+
+/// One immutable set of already-selected Agentd ports. Keeping these
+/// identities in one envelope avoids positional owner/learning-policy swaps.
+pub(crate) struct CognitiveContextReadPorts<'a> {
+    pub ranker: Option<&'a std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    pub current_retrieval: Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    pub learning_sink: Option<&'a std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
+    pub request_id: Option<u64>,
 }
 
 pub(crate) async fn read_with_retrieval_context_and_learning(
@@ -108,11 +121,14 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     body_generation: u64,
     query: &str,
     limit: u16,
-    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
-    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
-    learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
-    request_id: Option<u64>,
+    ports: CognitiveContextReadPorts<'_>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    let CognitiveContextReadPorts {
+        ranker,
+        current_retrieval,
+        learning_sink,
+        request_id,
+    } = ports;
     if query.is_empty() || query.len() > 2048 || !(1..=4).contains(&limit) {
         return Err(CognitiveStoreError::Invalid(
             "context requires a 1..2048 byte query and a 1..4 result limit".to_string(),
@@ -496,12 +512,23 @@ pub(crate) async fn revalidate(
         read_digest,
         omitted_records,
         items,
-        plan,
-        ranker,
-        1,
-        None,
+        CognitiveContextRevalidationPorts {
+            plan,
+            ranker,
+            body_generation: 1,
+            current_retrieval: None,
+        },
     )
     .await
+}
+
+/// Atomic view of the ports/fence for final-use revalidation. The owner
+/// must still re-check its lifecycle on both sides of this async operation.
+pub(crate) struct CognitiveContextRevalidationPorts<'a> {
+    pub plan: Option<&'a CognitiveContextPlan>,
+    pub ranker: Option<&'a std::sync::Arc<crate::PinnedCognitiveRanker>>,
+    pub body_generation: u64,
+    pub current_retrieval: Option<&'a std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
 }
 
 pub(crate) async fn revalidate_with_retrieval_context(
@@ -511,11 +538,14 @@ pub(crate) async fn revalidate_with_retrieval_context(
     read_digest: &str,
     omitted_records: u64,
     items: &[CognitiveContextItem],
-    plan: Option<&CognitiveContextPlan>,
-    ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
-    body_generation: u64,
-    current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+    ports: CognitiveContextRevalidationPorts<'_>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+    let CognitiveContextRevalidationPorts {
+        plan,
+        ranker,
+        body_generation,
+        current_retrieval,
+    } = ports;
     if items.len() > 4 {
         return Err(CognitiveStoreError::Invalid(
             "context revalidation accepts at most four items".to_string(),
