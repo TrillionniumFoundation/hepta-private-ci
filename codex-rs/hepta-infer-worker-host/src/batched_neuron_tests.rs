@@ -585,6 +585,65 @@ fn native_batch_dispatches_one_backend_call_with_two_signed_receipts_and_six_met
 }
 
 #[test]
+fn native_three_member_batch_preserves_distinct_signed_nonces_and_metrics() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[35; 32]);
+    let (model, first, key) = fixture_request();
+    let invocations = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let metrics = Arc::new(CapturedMetrics::default());
+    let driver = NativeTestDriver {
+        invocations: invocations.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut worker =
+        runner_with_driver(&signer, dir.path(), model, driver, 3).with_metric_sink(metrics.clone());
+    for index in 0_u8..3 {
+        let mut request = first.clone();
+        request.authorization.request_id = format!("batch-three-request-{index}");
+        request.authorization.reservation_id = format!("batch-three-reservation-{index}");
+        let binding =
+            neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let grant = signed_member(
+            &signer,
+            binding,
+            &format!("batch-three-grant-{index}"),
+            index + 71,
+        );
+        assert_eq!(grant.grant.nonce, [index + 71; 32]);
+        worker
+            .enqueue(100, "model".into(), request, key.clone(), grant)
+            .unwrap();
+    }
+    let completed = worker.poll_and_execute(101).unwrap();
+    assert_eq!(completed.outcomes.len(), 3);
+    assert_eq!(completed.pending, 0);
+    assert_eq!(invocations.load(std::sync::atomic::Ordering::SeqCst), 1);
+    let unique = completed
+        .outcomes
+        .iter()
+        .map(|item| item.request_id.clone())
+        .collect::<BTreeSet<_>>();
+    assert_eq!(unique.len(), 3);
+    assert!(completed.outcomes.iter().all(|item| matches!(
+        &item.result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    )));
+    let events = metrics.0.lock().unwrap();
+    assert_eq!(events.len(), 9);
+    for phase in [
+        PhaseMetricKindV1::Admission,
+        PhaseMetricKindV1::Microbatch,
+        PhaseMetricKindV1::NeuronFeature,
+    ] {
+        assert_eq!(
+            events.iter().filter(|event| event.phase == phase && event.succeeded).count(),
+            3
+        );
+    }
+}
+
+#[test]
 fn completed_request_history_does_not_consume_concurrent_queue_capacity() {
     let dir = tempfile::tempdir().unwrap();
     let signer = SigningKey::from_bytes(&[72; 32]);
