@@ -53,13 +53,13 @@ fn map_error(error: io::Error) -> AuthorityLeaseError {
 
 #[cfg(test)]
 mod tests {
+    use super::super::{
+        AuthorityLease, AuthorityLeaseBinding, AuthorityLeaseFrontier, AuthorityLeaseRegistry,
+        LEASE_SCHEMA_VERSION,
+    };
     use super::*;
     use crate::AuthorityClock;
     use crate::AuthorityTrustError;
-    use super::super::{
-        AuthorityLease, AuthorityLeaseBinding, AuthorityLeaseFrontier, AuthorityLeaseRegistry,
-        AuthorityLeaseError, LEASE_SCHEMA_VERSION,
-    };
     use std::sync::Arc;
 
     #[derive(Debug)]
