@@ -439,6 +439,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
             .ok_or(Error::ArithmeticOverflow)?;
         self.active_requests
             .insert(request.request_id.clone(), model_id.to_string());
+        // An ordinary model driver may have mutated device state before
+        // returning an error, panicking, or losing terminal observation.
+        // Quarantine before the physical invocation and clear it ONLY for a
+        // fully validated, explicitly terminal result. This matches the typed
+        // Neuron path's unknown-outcome fence.
+        self.quarantined = true;
         let observed = self.driver.run(&loaded.handle, &request);
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
@@ -466,6 +472,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
             }
             (ExecutionStatus::Failed, observed.output_digest, true)
         };
+        // No backend error, invalid output, resource overrun or uncertain
+        // terminal status may rehabilitate the Worker. A known Failed result
+        // with a valid terminal receipt is allowed to release the fence.
+        if terminal_observed {
+            self.quarantined = false;
+        }
         Ok(InferenceExecutionObservation {
             request_id: request.request_id,
             reservation_id: request.reservation_id,

@@ -10,6 +10,11 @@ struct Driver {
     unload_attempts: usize,
     fail_load: bool,
     fail_unload: bool,
+    fail_run: bool,
+    missing_run_output: bool,
+    malformed_run_output: bool,
+    run_consumed_tokens: Option<u32>,
+    run_memory_bytes: Option<u64>,
     invalid_handle: bool,
     shared_handle: bool,
     memory_bytes: Option<u64>,
@@ -39,21 +44,30 @@ impl ModelDriver for Driver {
         _handle: &DriverModelHandle,
         _request: &WorkerRequest,
     ) -> Result<DriverRunObservation, Error> {
+        if self.fail_run {
+            return Err(Error::DriverFailure("uncertain model execution".into()));
+        }
         if self.indeterminate {
             return Ok(DriverRunObservation {
                 terminal_observed: false,
                 succeeded: false,
                 output_digest: None,
-                consumed_tokens: 4,
-                observed_memory_bytes: 1_024,
+                consumed_tokens: self.run_consumed_tokens.unwrap_or(4),
+                observed_memory_bytes: self.run_memory_bytes.unwrap_or(1_024),
             });
         }
         Ok(DriverRunObservation {
             terminal_observed: true,
             succeeded: !self.fail_terminal,
-            output_digest: Some("9".repeat(64)),
-            consumed_tokens: 16,
-            observed_memory_bytes: 1_024,
+            output_digest: if self.missing_run_output {
+                None
+            } else if self.malformed_run_output {
+                Some("invalid-output".into())
+            } else {
+                Some("9".repeat(64))
+            },
+            consumed_tokens: self.run_consumed_tokens.unwrap_or(16),
+            observed_memory_bytes: self.run_memory_bytes.unwrap_or(1_024),
         })
     }
 
@@ -203,6 +217,111 @@ fn lost_driver_terminality_is_indeterminate() {
     assert_eq!(observed.status, ExecutionStatus::Indeterminate);
     assert!(!observed.terminal_observed);
     assert_eq!(observed.output_digest, None);
+    assert!(worker.is_quarantined());
+    let mut fresh = request();
+    fresh.request_id = "request.after-unknown".into();
+    assert_eq!(
+        worker.run(100, "model.1", fresh),
+        Err(Error::WorkerQuarantined)
+    );
+}
+
+#[test]
+fn generic_driver_error_quarantines_worker_across_new_reservations() {
+    let driver = Driver {
+        fail_run: true,
+        ..Driver::default()
+    };
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.driver-unknown".into(),
+        3,
+        grant(),
+        driver,
+    )
+    .unwrap();
+    worker.load_model(100, manifest()).unwrap();
+    assert!(matches!(
+        worker.run(100, "model.1", request()),
+        Err(Error::DriverFailure(_))
+    ));
+    assert!(worker.is_quarantined());
+    worker.driver.fail_run = false;
+    let mut fresh = request();
+    fresh.request_id = "request.fresh-after-driver-error".into();
+    assert_eq!(
+        worker.run(100, "model.1", fresh),
+        Err(Error::WorkerQuarantined)
+    );
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::WorkerQuarantined)
+    );
+}
+
+#[test]
+fn generic_post_driver_resource_overruns_quarantine_worker() {
+    for (worker_id, consumed, memory) in [
+        ("worker.token-overrun", Some(65), None),
+        ("worker.memory-overrun", None, Some(8_192)),
+    ] {
+        let driver = Driver {
+            run_consumed_tokens: consumed,
+            run_memory_bytes: memory,
+            ..Driver::default()
+        };
+        let mut worker =
+            InferenceWorker::new(100, worker_id.into(), 3, grant(), driver).unwrap();
+        worker.load_model(100, manifest()).unwrap();
+        assert!(worker.run(100, "model.1", request()).is_err());
+        assert!(worker.is_quarantined());
+        let mut fresh = request();
+        fresh.request_id = format!("request.fresh.{worker_id}");
+        assert_eq!(
+            worker.run(100, "model.1", fresh),
+            Err(Error::WorkerQuarantined)
+        );
+    }
+}
+
+#[test]
+fn generic_post_driver_corrupt_output_quarantines_worker() {
+    for (worker_id, missing, malformed) in [
+        ("worker.missing-output", true, false),
+        ("worker.invalid-output", false, true),
+    ] {
+        let driver = Driver {
+            missing_run_output: missing,
+            malformed_run_output: malformed,
+            ..Driver::default()
+        };
+        let mut worker =
+            InferenceWorker::new(100, worker_id.into(), 3, grant(), driver).unwrap();
+        worker.load_model(100, manifest()).unwrap();
+        assert!(worker.run(100, "model.1", request()).is_err());
+        assert!(worker.is_quarantined());
+    }
+}
+
+#[test]
+fn explicit_terminal_failure_does_not_poison_healthy_generic_driver() {
+    let driver = Driver {
+        fail_terminal: true,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.terminal-failed".into(), 3, grant(), driver).unwrap();
+    worker.load_model(100, manifest()).unwrap();
+    let observed = worker.run(100, "model.1", request()).unwrap();
+    assert_eq!(observed.status, ExecutionStatus::Failed);
+    assert!(observed.terminal_observed);
+    assert!(!worker.is_quarantined());
+    worker.driver.fail_terminal = false;
+    let mut fresh = request();
+    fresh.request_id = "request.terminal-followup".into();
+    let observed = worker.run(100, "model.1", fresh).unwrap();
+    assert_eq!(observed.status, ExecutionStatus::Succeeded);
+    assert!(!worker.is_quarantined());
 }
 
 fn neuron_feature_request() -> NeuronFeatureRequest {
