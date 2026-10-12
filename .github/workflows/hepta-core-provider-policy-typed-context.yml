@@ -30,9 +30,14 @@ jobs:
       - name: Pin Rust 1.95 and rustfmt
         shell: bash
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
-      - name: Check unchanged formatting contract
+      - name: Full-workspace Rust formatting (Linux)
+        if: matrix.os == 'ubuntu-24.04'
         shell: bash
         run: cargo +1.95.0 fmt --all -- --check
+      - name: Package Rust formatting (Windows avoids OS error 206)
+        if: matrix.os == 'windows-latest'
+        shell: bash
+        run: cargo +1.95.0 fmt --package codex-core -- --check
       - name: Compile and exercise all provider terminal policy tests
         shell: bash
         env:
