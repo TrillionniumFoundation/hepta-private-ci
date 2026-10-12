@@ -483,25 +483,24 @@ impl ScopedControlWalOwnerV1 {
     /// writes to an orphaned file while another owner opens the new path.
     /// This is local writer fencing, not a remote anti-rollback witness.
     fn verify_live_writer_path(&mut self) -> Result<(), ControlOwnerErrorV1> {
-        let valid = match (
-            fs::symlink_metadata(&self.path),
-            self.writer.metadata(),
-        ) {
+        let valid = match (fs::symlink_metadata(&self.path), self.writer.metadata()) {
             (Ok(current), Ok(opened)) => {
-                let mut same = current.is_file()
+                let same_size = current.is_file()
                     && opened.is_file()
                     && current.len() == self.bytes as u64
                     && opened.len() == self.bytes as u64;
                 #[cfg(unix)]
-                {
+                let same_file = {
                     use std::os::unix::fs::MetadataExt;
-                    same &= current.dev() == opened.dev()
+                    current.dev() == opened.dev()
                         && current.ino() == opened.ino()
                         && current.nlink() == 1
                         && opened.nlink() == 1
-                        && current.mode() & 0o077 == 0;
-                }
-                same
+                        && current.mode() & 0o077 == 0
+                };
+                #[cfg(not(unix))]
+                let same_file = true;
+                same_size && same_file
             }
             _ => false,
         };
