@@ -255,13 +255,19 @@ def main():
     if args.action == "generate":
         jobs = generate(args.logical_cells, args.active_fraction, args.input_repeat,
                         args.task_similarity, args.model_digest)
-        with Path(args.output).open("w", encoding="utf-8") as handle:
+        # Workload identities are immutable evidence: a rerun must never
+        # overwrite the previous frozen baseline or a real host trace.
+        with Path(args.output).open("x", encoding="utf-8") as handle:
             for row in jobs:
-                handle.write(json.dumps(row, sort_keys=True) + "\n")
+                handle.write(json.dumps(row, sort_keys=True, allow_nan=False) + "\n")
         print(f"generated {len(jobs)} input intents; no model executed")
     else:
         result = trace_report(list(load_jsonl(args.workload)), list(load_jsonl(args.trace)))
-        Path(args.output).write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        # Reject invalid/NaN output before creating any evidence file, and
+        # preserve exact prior bytes if a diagnostic is executed twice.
+        serialized = json.dumps(result, indent=2, sort_keys=True, allow_nan=False) + "\n"
+        with Path(args.output).open("x", encoding="utf-8") as handle:
+            handle.write(serialized)
         print("native trace diagnostic emitted; no production attestation")
 
 
