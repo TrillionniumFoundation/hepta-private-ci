@@ -557,7 +557,6 @@ fn telemetry_commit_error_preserves_result_and_fences_future_physical_batches() 
     ));
 }
 
-
 #[test]
 fn legacy_group_commit_failure_denies_remaining_intents_without_claiming_them() {
     let temp = tempfile::tempdir().unwrap();
