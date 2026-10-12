@@ -421,3 +421,56 @@ fn grouped_multi_head_worker_batch_preserves_receipts_and_single_path() {
     }
     worker.unload_model(100, "model.cpu-head").expect("clean unload");
 }
+
+
+#[test]
+fn actual_q24_cpu_head_fails_closed_when_scratch_exceeds_generation_budget() {
+    let (mut worker, heads) = local_worker();
+    let weights = worker.driver.manifest.weights_digest.clone();
+    let resident = worker.driver.tracked_weights_bytes;
+    // The fixture shrinks its grant to exercise the exact post-driver limit.
+    // This checks resource receipts, not system-level physical RSS.
+    worker.grant.maximum_memory_bytes = resident + 31;
+    assert_eq!(
+        worker.run_neuron_features(
+            100,
+            "model.cpu-head",
+            cpu_request(1, heads[0].clone(), weights),
+        ),
+        Err(Error::ModelCapacity),
+    );
+    assert!(worker.requires_external_recovery());
+}
+
+#[test]
+fn actual_q24_cpu_batch_accounts_for_all_members_output_buffers() {
+    let (mut worker, heads) = local_worker();
+    let weights = worker.driver.manifest.weights_digest.clone();
+    let resident = worker.driver.tracked_weights_bytes;
+    // Enough for one 32-byte Head output, not for two simultaneous
+    // 32-byte outputs plus the contiguous batch feature buffer.
+    worker.grant.maximum_memory_bytes = resident + 32;
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(
+            100,
+            "model.cpu-head",
+            vec![
+                cpu_request(1, heads[0].clone(), weights.clone()),
+                cpu_request(2, heads[1].clone(), weights),
+            ],
+        ),
+        Err(Error::FeatureBatchMismatch),
+    );
+    assert!(worker.requires_external_recovery());
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(
+            100,
+            "model.cpu-head",
+            vec![
+                cpu_request(1, heads[0].clone(), worker.driver.manifest.weights_digest.clone()),
+                cpu_request(2, heads[1].clone(), worker.driver.manifest.weights_digest.clone()),
+            ],
+        ),
+        Err(Error::ExecutionIndeterminate),
+    );
+}
