@@ -872,14 +872,9 @@ mod tests {
             maximum_memory_bytes: resident + 16,
             semantic_digest: "1".repeat(64),
         };
-        let mut bounded_worker = InferenceWorker::new(
-            1,
-            "worker.bounded".into(),
-            3,
-            bounded_grant,
-            bounded_driver,
-        )
-        .expect("bounded worker");
+        let mut bounded_worker =
+            InferenceWorker::new(1, "worker.bounded".into(), 3, bounded_grant, bounded_driver)
+                .expect("bounded worker");
         bounded_worker
             .load_model(1, selected.clone())
             .expect("bounded model load");
