@@ -17,6 +17,8 @@ import tomllib
 
 SCHEMA = "hepta.matrix-narrow-sdk-workspace-probe.v1"
 SOURCE_SCHEMA = "hepta.matrix-minimal-hepta-0.19-anymap3-stage.v1"
+PINNED_RELEASE_SHA = "b18166c68bb958a21f0bca8b2d8320cb53583362"
+PINNED_MIGRATION_SHA = "9c5fdd2cf5be1b7b8b20541e56d7a109db968534"
 MEMBER = "hepta-matrix-sdk"
 MAX_MANIFEST = 128 * 1024
 MAX_METADATA = 32 * 1024 * 1024
@@ -103,6 +105,10 @@ def stage_narrow_sdk(stage, source_report, source_sha):
     if (type(source_report) is not dict
             or source_report.get("schema") != SOURCE_SCHEMA
             or source_report.get("hepta_source_sha") != source_sha
+            or source_report.get("signed_upstream_release_sha") != PINNED_RELEASE_SHA
+            or source_report.get("upstream_anymap_change_sha") != PINNED_MIGRATION_SHA
+            or not isinstance(source_report.get("minimal_upstream_patch_sha256"), str)
+            or not HEX64.fullmatch(source_report["minimal_upstream_patch_sha256"])
             or source_report.get("production_authorized") is not False
             or source_report.get("cargo_resolution_verified") is not False):
         raise ValueError("unverified prior signed-release source staging")
@@ -112,6 +118,15 @@ def stage_narrow_sdk(stage, source_report, source_sha):
     before = candidate.read_bytes()
     if digest(before) != source_report.get("hepta_candidate_manifest_sha256"):
         raise ValueError("mutated source candidate before workspace narrowing")
+    candidate_root = Path(source_report.get("sdk_source_root", "")).resolve()
+    if (not candidate_root.is_dir() or candidate_root.is_relative_to(stage)
+            or candidate_root == stage
+            or not (candidate_root / "crates/matrix-sdk/Cargo.toml").is_file()):
+        raise ValueError("signed-release source directory missing or unsafe")
+    sdk_clause = _as_document(before)["workspace"]["dependencies"]["matrix-sdk"]
+    configured_sdk = (candidate.parent / sdk_clause["path"]).resolve()
+    if configured_sdk != candidate_root / "crates/matrix-sdk":
+        raise ValueError("Matrix SDK candidate path differs from pinned source report")
     new = rewrite_workspace(before)
     candidate.write_bytes(new)
     if _git(stage, "diff", "--name-only").splitlines() != ["codex-rs/Cargo.toml"]:
@@ -124,7 +139,7 @@ def stage_narrow_sdk(stage, source_report, source_sha):
         "only_direct_workspace_member": MEMBER,
         "sdk_e2ee_and_sqlite_required": True,
         "hepta_production_workspace_modified": False,
-        "original_cargo_lock_modified": False,
+        "production_cargo_lock_modified": False,
         "cargo_resolution_verified": False,
         "matrix_adapter_compilation_verified": False,
         "full_matrixd_compilation_verified": False,
