@@ -129,6 +129,7 @@ pub enum Error {
     /// Driver release failed: keep the handle accounted and block every use.
     /// Restart under a new generation only after independent reconciliation.
     ModelUnloadIndeterminate,
+    ModelLoadIndeterminate,
     ModelMismatch,
     PayloadMismatch,
     TokenLimit,
@@ -176,6 +177,10 @@ pub struct InferenceWorker<D: ModelDriver> {
     generation: u64,
     grant: ResourceGrant,
     driver: D,
+    // A driver may have allocated resources even when load returns Err or
+    // its subsequent rollback fails. Without an independently reconciled
+    // handle, this generation must reject every further operation.
+    load_indeterminate: bool,
     models: BTreeMap<String, LoadedModel>,
     active_requests: BTreeMap<String, String>,
 }
@@ -198,6 +203,7 @@ impl<D: ModelDriver> InferenceWorker<D> {
             generation,
             grant,
             driver,
+            load_indeterminate: false,
             models: BTreeMap::new(),
             active_requests: BTreeMap::new(),
         })
@@ -221,10 +227,38 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
-        validate_identity(&handle.opaque_id, "model handle")?;
-        if handle.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            self.driver.unload(handle)?;
+        // ResourceGrant covers the entire Worker generation, not just the
+        // newest handle. Sum conservative per-handle resident claims before
+        // dispatch; arithmetic overflow is a denied admission.
+        let resident = self.models.values().try_fold(0_u64, |sum, loaded| {
+            sum.checked_add(loaded.handle.observed_memory_bytes)
+                .ok_or(Error::ArithmeticOverflow)
+        })?;
+        let handle = match self.driver.load(&manifest) {
+            Ok(handle) => handle,
+            Err(error) => {
+                // A load error provides no terminal no-allocation receipt.
+                // The driver might have allocated before failing: seal this
+                // entire generation rather than silently retrying the load.
+                self.load_indeterminate = true;
+                return Err(error);
+            }
+        };
+        let invalid_handle = validate_identity(&handle.opaque_id, "model handle").err();
+        let total_resident = resident.checked_add(handle.observed_memory_bytes);
+        if invalid_handle.is_some()
+            || total_resident.is_none_or(|total| total > self.grant.maximum_memory_bytes)
+        {
+            // Roll back only once. If the driver cannot confirm cleanup, no
+            // later request/load/unload in this generation may reuse the
+            // possibly allocated model memory or a stale opaque handle.
+            if self.driver.unload(handle).is_err() {
+                self.load_indeterminate = true;
+                return Err(Error::ModelLoadIndeterminate);
+            }
+            if let Some(error) = invalid_handle {
+                return Err(error);
+            }
             return Err(Error::ModelCapacity);
         }
         let observation = ModelLoadObservation {
@@ -371,6 +405,9 @@ impl<D: ModelDriver> InferenceWorker<D> {
     }
 
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
+        if self.load_indeterminate {
+            return Err(Error::ModelLoadIndeterminate);
+        }
         validate_grant(now_ms, &self.grant)
     }
 }
