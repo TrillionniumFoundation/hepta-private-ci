@@ -260,16 +260,25 @@ impl BoundedMicrobatchSchedulerV1 {
         self.clock(now_ms)?;
         let mut expired = Vec::new();
         let mut selected = None;
-        let scans = self.round_robin.len().min(self.limits.max_lanes_per_poll);
+        // Coalescing can leave stale queue slots ahead of live lanes. Count
+        // only live lanes toward the scheduling budget, but bound total queue
+        // work to prevent an unbounded tombstone walk on the hot path.
+        let slot_budget = self.round_robin.len().min(
+            self.limits
+                .max_lanes_per_poll
+                .saturating_add(self.limits.max_batch_size),
+        );
+        let mut inspected_slots = 0;
         let mut scanned = 0;
-        for _ in 0..scans {
+        while inspected_slots < slot_budget && scanned < self.limits.max_lanes_per_poll {
+            inspected_slots += 1;
             let Some(key) = self.round_robin.pop_front() else {
                 break;
             };
             self.round_robin_members.remove(&key);
             let Some(mut lane) = self.lanes.remove(&key) else {
-                // Coalescing may leave a retired round-robin slot. It must not
-                // consume the active-lane scan budget of the next poll.
+                // A consumed lane is no longer a schedulable lane. Skipping
+                // it must not hide a ready request behind the stale slot.
                 continue;
             };
             scanned += 1;
