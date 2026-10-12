@@ -578,3 +578,49 @@ fn fsynced_neuron_token_overrun_is_indeterminate_and_not_replayable_after_crash(
     // Only a separate authenticated terminal/recovery owner can settle this
     // uncertain execution. No local retry or arbitrary success is issued.
 }
+
+#[test]
+fn model_generation_is_not_worker_process_generation_after_restart() {
+    let directory = tempfile::tempdir().unwrap();
+    let mut request = typed_request();
+    // Neuron/Cell generation is retained when its serving Worker restarts.
+    // The independently assigned Worker process remains generation 3 here.
+    request.generation = Generation::new(7).unwrap();
+    let mut owner = control(&directory, &request);
+    let calls = Arc::new(AtomicUsize::new(0));
+    let mut worker = worker_with_calls(Arc::clone(&calls));
+    assert_ne!(worker.worker_generation(), request.generation.get());
+    let source = read_neuron_durable_assignment_v1(&owner, &worker, &request, 100).unwrap();
+    assert_eq!(source.worker_generation, worker.worker_generation());
+    let mut forged = request.clone();
+    forged.generation = Generation::new(8).unwrap();
+    // The typed semantic digest is fsynced by inference.control; changing the
+    // Neuron generation under the same assigned reservation fails PRE-driver.
+    assert_eq!(
+        read_neuron_durable_assignment_v1(&owner, &worker, &forged, 100),
+        Err(NeuronDurableAssignmentErrorV1::Mismatch)
+    );
+    let (claim, mut port) =
+        claim_neuron_durable_dispatch_v1(&mut owner, &mut worker, &request, 100).unwrap();
+    assert_eq!(claim.state, RequestState::Dispatching);
+    assert_eq!(claim.revision, 4);
+    let receipt = port.execute_feature(&request).unwrap();
+    assert_eq!(receipt.status, codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded);
+    assert_eq!(
+        receipt.request_digest,
+        neuron_feature_request_digest_v1(&request).unwrap()
+    );
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    drop(port);
+    drop(owner);
+    let mut recovered =
+        DurableInferenceControl::open(directory.path().join("inference.journal"), 32).unwrap();
+    let mut restarted_worker = worker_with_calls(Arc::clone(&calls));
+    // Reopening the WAL and recreating a Worker cannot reissue that claim,
+    // irrespective of the independent model and process generation numbers.
+    assert!(matches!(
+        claim_neuron_durable_dispatch_v1(&mut recovered, &mut restarted_worker, &request, 100),
+        Err(NeuronDurableAssignmentErrorV1::NotAssigned)
+    ));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}

@@ -805,8 +805,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         model_id: &str,
         request: NeuronFeatureRequest,
     ) -> Result<NeuronFeatureReceiptV1, Error> {
+        let logical_generation =
+            Generation::new(self.generation).map_err(|_| Error::FeatureContract)?;
         self.consume_neuron_attempt(&request.authorization)?;
-        self.run_neuron_features_receipt_consumed(now_ms, model_id, request)
+        self.run_neuron_features_receipt_consumed(
+            now_ms,
+            model_id,
+            request,
+            logical_generation,
+        )
     }
 
     /// Used by WorkerNeuronControlPort after it records the attempt BEFORE
@@ -816,15 +823,17 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         now_ms: u64,
         model_id: &str,
         request: NeuronFeatureRequest,
+        logical_generation: Generation,
     ) -> Result<NeuronFeatureReceiptV1, Error> {
         let request_copy = request.clone();
         let observed = self.run_neuron_features_consumed(now_ms, model_id, request)?;
-        let generation =
-            Generation::new(observed.worker_generation).map_err(|_| Error::FeatureContract)?;
+        // The worker generation is already checked by durable Assignment.
+        // The typed request/receipt generation names the NEURON model, which
+        // is allowed to survive an independently restarted Worker process.
         let control_request = NeuronFeatureRequestV1 {
             request_id: StableId::new(request_copy.authorization.request_id)
                 .map_err(|_| Error::FeatureContract)?,
-            generation,
+            generation: logical_generation,
             model_id: StableId::new(observed.manifest.model_id.clone())
                 .map_err(|_| Error::FeatureContract)?,
             encoder_digest: parse_digest32(&request_copy.encoder_digest)?,

@@ -174,7 +174,6 @@ pub fn read_neuron_durable_assignment_v1<D: ModelDriver>(
         || record.request.semantic_digest != typed_request_digest.to_string()
         || assignment.worker_id != worker.worker_id()
         || assignment.worker_generation != worker.worker_generation()
-        || assignment.worker_generation != request.generation.get()
         || assignment.assignment_digest.is_empty()
         || reservation.authority_epoch == 0
         || reservation.maximum_tokens < record.request.maximum_tokens
@@ -313,6 +312,7 @@ pub fn claim_neuron_durable_dispatch_v1<'a, D: ModelDriver + NeuronFeatureDriver
             worker,
             request.model_id.to_string(),
             authorization,
+            request.generation,
             now_ms,
         ),
     ))

@@ -220,6 +220,7 @@ fn native_worker_single_use_port_executes_exact_neuron_model_port() {
         &mut worker,
         "model.1".to_owned(),
         reservation,
+        typed.generation,
         100,
     );
     assert!(control.reservation_unconsumed());
@@ -259,7 +260,7 @@ fn native_worker_port_rejects_wrong_model_generation_and_payload_before_driver()
             _ => reservation.lease_payload_digest = "f".repeat(64),
         }
         let mut port =
-            WorkerNeuronControlPort::from_reserved_worker(&mut worker, model_id, reservation, 100);
+            WorkerNeuronControlPort::from_reserved_worker(&mut worker, model_id, reservation, typed.generation, 100);
         assert_eq!(
             port.execute_feature(&request),
             Err(NeuronModelError::Rejected),
@@ -284,6 +285,7 @@ fn native_worker_port_maps_unobserved_terminal_and_driver_drift() {
         &mut worker,
         "model.1".to_owned(),
         preadmitted_reservation(&typed),
+        typed.generation,
         100,
     );
     let receipt = port.execute_feature(&typed).unwrap();
@@ -297,6 +299,7 @@ fn native_worker_port_maps_unobserved_terminal_and_driver_drift() {
         &mut worker,
         "model.1".to_owned(),
         preadmitted_reservation(&typed),
+        typed.generation,
         100,
     );
     assert_eq!(
@@ -322,6 +325,7 @@ fn post_driver_token_overrun_is_indeterminate_and_unrepeatable_across_ports() {
             &mut worker,
             "model.1".to_owned(),
             reservation.clone(),
+            typed.generation,
             100,
         );
         // The request is authorized for 64 tokens but the backend observed
@@ -338,6 +342,7 @@ fn post_driver_token_overrun_is_indeterminate_and_unrepeatable_across_ports() {
         &mut worker,
         "model.1".to_owned(),
         reservation,
+        typed.generation,
         100,
     );
     assert_eq!(
@@ -364,6 +369,7 @@ fn native_worker_port_rejects_cancelled_or_expired_worker_reservation() {
             &mut worker,
             "model.1".to_owned(),
             reservation,
+            typed.generation,
             now_ms,
         );
         assert_eq!(
@@ -548,6 +554,7 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
         &mut worker,
         "model.1".to_owned(),
         authorized,
+        control_request.generation,
         100,
     );
     let mut agentd = AgentdNeuronOwner::new(runtime, worker_port);
@@ -669,6 +676,7 @@ fn reconstructed_worker_ports_cannot_replay_request_or_reservation_ids() {
             &mut worker,
             "model.1".to_owned(),
             original.clone(),
+            typed.generation,
             100,
         );
         assert!(port.execute_feature(&typed).is_ok());
@@ -680,6 +688,7 @@ fn reconstructed_worker_ports_cannot_replay_request_or_reservation_ids() {
             &mut worker,
             "model.1".to_owned(),
             original,
+            typed.generation,
             100,
         );
         assert_eq!(
@@ -694,6 +703,7 @@ fn reconstructed_worker_ports_cannot_replay_request_or_reservation_ids() {
             &mut worker,
             "model.1".to_owned(),
             new_reservation,
+            typed.generation,
             100,
         );
         assert_eq!(
@@ -708,6 +718,7 @@ fn reconstructed_worker_ports_cannot_replay_request_or_reservation_ids() {
             &mut worker,
             "model.1".to_owned(),
             preadmitted_reservation(&fresh),
+            typed.generation,
             100,
         );
         assert_eq!(
@@ -723,6 +734,7 @@ fn reconstructed_worker_ports_cannot_replay_request_or_reservation_ids() {
             &mut worker,
             "model.1".to_owned(),
             distinct,
+            typed.generation,
             100,
         );
         // This particular pair has a previously denied request ID and so must
@@ -739,6 +751,7 @@ fn reconstructed_worker_ports_cannot_replay_request_or_reservation_ids() {
         &mut worker,
         "model.1".to_owned(),
         third,
+        typed.generation,
         100,
     );
     assert!(port.execute_feature(&fresh).is_ok());
@@ -756,6 +769,7 @@ fn early_rejection_and_unknown_terminal_consume_across_port_recreation() {
             &mut worker,
             "wrong.model".to_owned(),
             reservation.clone(),
+            typed.generation,
             100,
         );
         assert_eq!(
@@ -767,6 +781,7 @@ fn early_rejection_and_unknown_terminal_consume_across_port_recreation() {
         &mut worker,
         "model.1".to_owned(),
         reservation,
+        typed.generation,
         100,
     );
     assert_eq!(
@@ -782,6 +797,7 @@ fn early_rejection_and_unknown_terminal_consume_across_port_recreation() {
             &mut worker,
             "model.1".to_owned(),
             reservation.clone(),
+            typed.generation,
             100,
         );
         let observed = port.execute_feature(&typed).unwrap();
@@ -794,6 +810,7 @@ fn early_rejection_and_unknown_terminal_consume_across_port_recreation() {
         &mut worker,
         "model.1".to_owned(),
         reservation,
+        typed.generation,
         100,
     );
     assert_eq!(

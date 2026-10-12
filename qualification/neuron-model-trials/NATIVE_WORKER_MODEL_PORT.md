@@ -291,3 +291,29 @@ over-reservation limit fail without calling the physical driver, that the
 first rejected request cannot be replayed, and that a fresh valid token
 reservation still succeeds. This is a fixture driver test, not a production
 throughput or model-quality result.
+
+## Independent model and Worker lifecycle generations
+
+The typed `NeuronFeatureRequestV1.generation` identifies the frozen Neuron
+Cell/model generation and is committed by the fsynced inference.control
+`InferenceRequest.semantic_digest`; its `NeuronFeatureReceiptV1` must bind
+that same model generation. The `Assignment.worker_generation` independently
+identifies the current Worker process. These are different lifecycle domains:
+a supervised Worker restart does not force a deployed Cell to change model.
+
+The durable assignment read now checks `assignment.worker_generation` against
+the **actual** `InferenceWorker.worker_generation()`, while separately
+comparing the entire typed semantic request hash (including model generation)
+to its durable record. The crate-private `WorkerNeuronControlPort` pins that
+Neuron generation at claim time and rejects request drift before the driver;
+the Worker converts it to the typed receipt without substituting its process
+generation. The test-only direct Worker constructor also pins the declared
+Neuron generation explicitly. No public typed contract bytes are changed.
+
+A real WAL/Worker integration test uses Neuron model generation 7 and Worker
+process generation 3, then proves signed-reservation-style durable claim,
+actual fixture driver execution, and no dispatch replay after restarting the
+Worker and reopening the WAL. A changed model generation under the original
+fsynced request remains invalid before invoking the driver. These are fixture
+identities and **not** real production keys, CNS routing, or a physical Laya
+load; all authority and NDU promotion remain disabled.

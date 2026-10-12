@@ -14,6 +14,7 @@ use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
 use codex_hepta_infer_core::verify_neuron_feature_receipt_v1;
 use codex_hepta_neuron::NeuronInferenceControlPort;
+use codex_hepta_types::Generation;
 use codex_hepta_neuron::NeuronModelError;
 
 use crate::model_worker::InferenceWorker;
@@ -28,6 +29,9 @@ use crate::model_worker::canonical_neuron_feature_payload_digest;
 pub struct WorkerNeuronControlPort<'a, D: ModelDriver + NeuronFeatureDriver> {
     worker: &'a mut InferenceWorker<D>,
     model_id: String,
+    /// The Neuron model/Cell generation, independently committed by the
+    /// durable inference request. This is NOT the Worker process generation.
+    neuron_generation: Generation,
     reservation: Option<WorkerRequest>,
     observed_now_ms: u64,
 }
@@ -43,11 +47,13 @@ impl<'a, D: ModelDriver + NeuronFeatureDriver> WorkerNeuronControlPort<'a, D> {
         worker: &'a mut InferenceWorker<D>,
         model_id: String,
         existing_reservation: WorkerRequest,
+        neuron_generation: Generation,
         observed_now_ms: u64,
     ) -> Self {
         Self {
             worker,
             model_id,
+            neuron_generation,
             reservation: Some(existing_reservation),
             observed_now_ms,
         }
@@ -77,7 +83,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> NeuronInferenceControlPort
             .consume_neuron_attempt(&authorization)
             .map_err(|_| NeuronModelError::Rejected)?;
         if self.model_id != request.model_id.as_str()
-            || self.worker.worker_generation() != request.generation.get()
+            || self.neuron_generation != request.generation
             || authorization.request_id != request.request_id.as_str()
             || authorization.reservation_id.is_empty()
             || authorization.cancelled
@@ -111,7 +117,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> NeuronInferenceControlPort
         // Preserve unknown outcome instead of authorizing an unsafe retry.
         let receipt = self
             .worker
-            .run_neuron_features_receipt_consumed(self.observed_now_ms, &self.model_id, feature)
+            .run_neuron_features_receipt_consumed(
+                self.observed_now_ms,
+                &self.model_id,
+                feature,
+                self.neuron_generation,
+            )
             .map_err(|_| NeuronModelError::Indeterminate)?;
 
         verify_neuron_feature_receipt_v1(request, &receipt)
