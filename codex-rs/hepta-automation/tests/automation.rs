@@ -971,6 +971,22 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
     // Keep the schema rewind on one connection so each DDL statement sees
     // the preceding change, and publish the complete v1 fixture atomically.
     let mut rewind = pool.begin().await.expect("begin legacy schema rewind");
+    // Migration 0018 adds a timer lifecycle trigger referencing the
+    // automation_dispatch_outcomes table. Drop this newer schema in dependency
+    // order FIRST; SQLite reparses remaining triggers when rebuilding the
+    // automation_runs table to remove the v14 schedule_revision column.
+    // Otherwise Windows/SQLite correctly rejects the invalid v1 fixture.
+    for statement in [
+        "DROP TRIGGER IF EXISTS automation_timer_lifecycle_drain",
+        "DROP TRIGGER IF EXISTS automation_timer_lifecycle_transition",
+        "DROP TRIGGER IF EXISTS automation_timer_lifecycle_no_delete",
+        "DROP TABLE IF EXISTS automation_timer_lifecycle",
+    ] {
+        sqlx::query(statement)
+            .execute(&mut *rewind)
+            .await
+            .expect("remove post-v1 timer lifecycle schema");
+    }
     sqlx::query("DROP INDEX automation_dispatch_outcome_state_idx")
         .execute(&mut *rewind)
         .await
