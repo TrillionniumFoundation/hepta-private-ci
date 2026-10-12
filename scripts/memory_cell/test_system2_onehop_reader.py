@@ -95,7 +95,7 @@ class OneHopTests(unittest.TestCase):
         ids=[d.identity for d in chosen]
         self.assertTrue(evaluate_one(c,"single_fact",ids,f"{c.answer} [E1]")["grounded_answer_success"])
         for text in (c.answer, f"{c.answer} E1:",f"{c.answer} [E2]",
-                     f"{c.answer} [E1] TOK-ABCD123",f"TOK-0000000 [E1]"):
+                     f"{c.answer} [E1] TOK-ABCD123","TOK-0000000 [E1]"):
             self.assertFalse(evaluate_one(c,"single_fact",ids,text)["grounded_answer_success"])
 
     def test_unsupported_copy_not_accepted(self):
