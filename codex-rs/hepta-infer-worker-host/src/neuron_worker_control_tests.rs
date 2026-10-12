@@ -552,15 +552,15 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
         feature_vector_q24: actual_request.feature_vector_q24,
         expected_output_width: actual_request.expected_output_width,
     };
+    use crate::neuron_durable_assignment::NeuronDurableAssignmentErrorV1;
+    use crate::neuron_durable_assignment::claim_neuron_durable_dispatch_v1;
     use codex_hepta_infer_core::durable_control::Assignment;
     use codex_hepta_infer_core::durable_control::DurableInferenceControl;
     use codex_hepta_infer_core::durable_control::InferenceRequest;
     use codex_hepta_infer_core::durable_control::RequestState;
     use codex_hepta_infer_core::durable_control::Reservation;
     use codex_hepta_infer_core::neuron_feature_request_digest_v1;
-    use crate::neuron_durable_assignment::NeuronDurableAssignmentErrorV1;
-    use crate::neuron_durable_assignment::claim_neuron_durable_dispatch_v1;
-    
+
     // Bind the existing native Worker ModelPort to the ACTUAL fsynced
     // inference.control assignment. A directly manufactured WorkerPort would
     // not exercise the product's pre-execution single-use journal barrier.
@@ -622,8 +622,7 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
     let calls = Arc::new(AtomicUsize::new(0));
     let mut worker = worker(Arc::clone(&calls), false, false);
     let (claim, worker_port) =
-        claim_neuron_durable_dispatch_v1(&mut control, &mut worker, &control_request, 100)
-            .unwrap();
+        claim_neuron_durable_dispatch_v1(&mut control, &mut worker, &control_request, 100).unwrap();
     assert_eq!(claim.state, RequestState::Dispatching);
     assert_eq!(claim.revision, 4);
     assert!(!claim.idempotent);
@@ -707,7 +706,10 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
     drop(control);
     let mut reopened_control = DurableInferenceControl::open(&inference_journal_path, 32).unwrap();
     assert_eq!(
-        reopened_control.get(control_request.request_id.as_str()).unwrap().state,
+        reopened_control
+            .get(control_request.request_id.as_str())
+            .unwrap()
+            .state,
         RequestState::Dispatching
     );
     let mut new_worker = worker_with_observed_tokens(Arc::clone(&calls), false, false, 4);
