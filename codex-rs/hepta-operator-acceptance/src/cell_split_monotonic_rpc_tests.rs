@@ -532,3 +532,47 @@ fn signer_process_cannot_resign_regressed_or_rewritten_domain_highwater() {
         Err(CellSplitMonotonicRpcErrorV1::Invalid)
     ));
 }
+
+#[test]
+fn signer_process_refuses_source_sequence_and_epoch_regressions() {
+    let root = tempfile::tempdir().expect("source-only registry");
+    let file = write_test_registry(root.path());
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        DiskAuthoritativeRegistry::open(file.clone()),
+        signer(),
+        Duration::from_secs(2),
+    )
+    .expect("independent signer");
+    request_from_monotonic_service(&mut service, "aa").expect("initial highwater");
+
+    // A larger logical revision must not mask rollback of the original
+    // durable source sequence when a local registry was restored.
+    let original: CellSplitMonotonicDurableFrontierV1 =
+        serde_json::from_slice(&std::fs::read(&file).expect("record")).expect("frontier");
+    let mut changed = original.clone();
+    changed.journal_revision += 1;
+    changed.durable_source_sequence -= 1;
+    std::fs::write(
+        &file,
+        crate::durable::canonical_json(&changed).expect("canonical"),
+    )
+    .expect("write regressed sequence");
+    assert!(matches!(
+        request_from_monotonic_service(&mut service, "bb"),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+
+    // A lower epoch is not a successor even if revision and sequence rise.
+    changed.journal_authority_epoch -= 1;
+    changed.journal_revision += 1;
+    changed.durable_source_sequence = original.durable_source_sequence + 1;
+    std::fs::write(
+        &file,
+        crate::durable::canonical_json(&changed).expect("canonical"),
+    )
+    .expect("write regressed authority epoch");
+    assert!(matches!(
+        request_from_monotonic_service(&mut service, "cc"),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+}
