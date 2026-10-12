@@ -202,6 +202,15 @@ class PairwiseActualArtifactAuditTests(unittest.TestCase):
         with self.assertRaises(AuditError):
             audit_native_pairwise_receipts(*data)
 
+    def test_original_acceptance_flag_must_reject_before_generic_audit(self):
+        for flag in (True, None, 1, "false"):
+            data = deepcopy(fixture())
+            data[5]["production_accepted"] = flag
+            with self.subTest(flag=flag), self.assertRaisesRegex(
+                AuditError, "unqualified native run promoted itself"
+            ):
+                audit_native_pairwise_receipts(*data)
+
     def test_nongold_rank_flip_can_be_recorded_without_claiming_entailment(self):
         data = deepcopy(fixture())
         choice = next(x for x in data[3] if x["stage"] == 48 and x["phase"] == "test"

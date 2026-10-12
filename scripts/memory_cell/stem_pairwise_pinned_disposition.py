@@ -217,6 +217,16 @@ def audit_native_pairwise_receipts(plan, original, fits, choices, posthoc,
                     total[k] += v
     require(set(results) == set(by_source) and len(results) == 24,
             "missing or extra post-hoc shadow phase results")
+    # Reject a forged acceptance bit with this audit's own fail-closed
+    # contract BEFORE invoking the generic nonpromotion audit. The generic
+    # utility can raise ValueError for invalid data; the source-pinned
+    # artifact validator must retain an explicit AuditError boundary.
+    require(
+        isinstance(report, dict)
+        and report.get("logical_policy_attempts") == 576
+        and report.get("production_accepted") is False,
+        "unqualified native run promoted itself",
+    )
     nonpromotion = audit_nonpromotion(report)
     require(
         report["logical_policy_attempts"] == 576
