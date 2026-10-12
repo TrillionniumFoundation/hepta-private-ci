@@ -264,15 +264,15 @@ class PolicyIntegrityTests(unittest.TestCase):
             audit_policy_scoring(a, b, c, d, e, f)
 
     def test_cache_reuse_rejects_nonexistent_or_cross_question_origin(self):
-        for origin in (
-            "16/select/nonexistent/frozen_rerank",
-            "16/select/select-1/frozen_rerank",
+        for index, origin, reason in (
+            (1, "16/select/nonexistent/frozen_rerank", "earlier actual execution"),
+            (7, "16/select/select-0/frozen_rerank", "different model request"),
         ):
             a, b, _, d, e, f = fixture()
-            b[1]["receipt"]["actual_reader_execution"] = False
-            b[1]["receipt"]["reused_from"] = origin
+            b[index]["receipt"]["actual_reader_execution"] = False
+            b[index]["receipt"]["reused_from"] = origin
             with self.subTest(origin=origin), self.assertRaisesRegex(
-                ValueError, "Reader cache reuse"
+                ValueError, reason
             ):
                 audit_policy_scoring(a, b, score(b, f), d, e, f)
 

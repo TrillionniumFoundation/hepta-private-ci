@@ -229,10 +229,7 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
             if receipt["actual_reader_execution"] is False:
                 source = original_executions.get(receipt["reused_from"])
                 this_key = f"{key[0]}/{key[1]}/{key[2]}/{key[3]}"
-                if (
-                    source is None
-                    or source[0] >= original_positions[this_key]
-                ):
+                if source is None or source[0] >= original_positions[this_key]:
                     raise ValueError(
                         "Reader cache reuse lacks an earlier actual execution"
                     )
@@ -244,9 +241,12 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
                     or any(
                         from_receipt.get(field) != receipt.get(field)
                         for field in (
-                            "generator_identity", "generator_profile",
-                            "question_digest", "input_ids_digest",
-                            "generated_ids_digest", "delivered_evidence",
+                            "generator_identity",
+                            "generator_profile",
+                            "question_digest",
+                            "input_ids_digest",
+                            "generated_ids_digest",
+                            "delivered_evidence",
                         )
                     )
                 ):
