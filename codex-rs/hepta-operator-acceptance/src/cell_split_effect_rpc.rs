@@ -364,6 +364,111 @@ pub(crate) fn receive_frame<T: DeserializeOwned>(
     Ok(serde_json::from_slice(&body)?)
 }
 
+/// Bound the entire inbound frame, including both header and body.
+/// A slow peer cannot indefinitely extend a socket timeout by trickling bytes.
+pub(crate) fn receive_frame_with_deadline<T: DeserializeOwned>(
+    stream: &mut UnixStream,
+    timeout: Duration,
+) -> Result<T, CellSplitEffectRpcErrorV1> {
+    let deadline = frame_deadline(timeout)?;
+    let mut header = [0u8; 4];
+    read_until_deadline(stream, &mut header, deadline)?;
+    let len = u32::from_be_bytes(header) as usize;
+    if len == 0 || len > MAX_FRAME_BYTES {
+        return Err(CellSplitEffectRpcErrorV1::Invalid(
+            "inbound RPC frame too large",
+        ));
+    }
+    let mut body = vec![0u8; len];
+    read_until_deadline(stream, &mut body, deadline)?;
+    Ok(serde_json::from_slice(&body)?)
+}
+
+/// Write header and body against a single deadline, even if the peer drains
+/// the socket in arbitrarily small increments.
+pub(crate) fn send_frame_with_deadline<T: Serialize>(
+    stream: &mut UnixStream,
+    value: &T,
+    timeout: Duration,
+) -> Result<(), CellSplitEffectRpcErrorV1> {
+    let bytes = serde_json::to_vec(value)?;
+    if bytes.is_empty() || bytes.len() > MAX_FRAME_BYTES {
+        return Err(CellSplitEffectRpcErrorV1::Invalid(
+            "outbound RPC frame too large",
+        ));
+    }
+    let deadline = frame_deadline(timeout)?;
+    write_until_deadline(stream, &(bytes.len() as u32).to_be_bytes(), deadline)?;
+    write_until_deadline(stream, &bytes, deadline)
+}
+
+fn frame_deadline(timeout: Duration) -> Result<Instant, CellSplitEffectRpcErrorV1> {
+    if timeout.is_zero() || timeout > Duration::from_secs(30) {
+        return Err(CellSplitEffectRpcErrorV1::Invalid("RPC frame timeout"));
+    }
+    Instant::now()
+        .checked_add(timeout)
+        .ok_or(CellSplitEffectRpcErrorV1::Invalid("RPC deadline overflow"))
+}
+
+fn read_until_deadline(
+    stream: &mut UnixStream,
+    buffer: &mut [u8],
+    deadline: Instant,
+) -> Result<(), CellSplitEffectRpcErrorV1> {
+    let mut offset = 0;
+    while offset < buffer.len() {
+        let remaining = deadline.saturating_duration_since(Instant::now());
+        if remaining.is_zero() {
+            return Err(CellSplitEffectRpcErrorV1::Invalid(
+                "RPC frame deadline exceeded",
+            ));
+        }
+        stream.set_read_timeout(Some(remaining))?;
+        match stream.read(&mut buffer[offset..]) {
+            Ok(0) => return Err(io::ErrorKind::UnexpectedEof.into()),
+            Ok(count) => offset += count,
+            Err(error) if error.kind() == io::ErrorKind::Interrupted => {}
+            Err(error) => return Err(error.into()),
+        }
+    }
+    if Instant::now() >= deadline {
+        return Err(CellSplitEffectRpcErrorV1::Invalid(
+            "RPC frame deadline exceeded",
+        ));
+    }
+    Ok(())
+}
+
+fn write_until_deadline(
+    stream: &mut UnixStream,
+    buffer: &[u8],
+    deadline: Instant,
+) -> Result<(), CellSplitEffectRpcErrorV1> {
+    let mut offset = 0;
+    while offset < buffer.len() {
+        let remaining = deadline.saturating_duration_since(Instant::now());
+        if remaining.is_zero() {
+            return Err(CellSplitEffectRpcErrorV1::Invalid(
+                "RPC frame deadline exceeded",
+            ));
+        }
+        stream.set_write_timeout(Some(remaining))?;
+        match stream.write(&buffer[offset..]) {
+            Ok(0) => return Err(io::ErrorKind::WriteZero.into()),
+            Ok(count) => offset += count,
+            Err(error) if error.kind() == io::ErrorKind::Interrupted => {}
+            Err(error) => return Err(error.into()),
+        }
+    }
+    if Instant::now() >= deadline {
+        return Err(CellSplitEffectRpcErrorV1::Invalid(
+            "RPC frame deadline exceeded",
+        ));
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
