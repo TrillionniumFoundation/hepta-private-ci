@@ -207,6 +207,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
             self.poisoned = true;
             return Err(error);
         }
+        let resident_floor = loaded.handle.observed_memory_bytes;
         let mut result = Vec::with_capacity(requests.len());
         for (request, batch_item) in requests.iter().zip(observations) {
             if batch_item.request_id != request.authorization.request_id
@@ -267,7 +268,8 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
                 status,
                 drive_q24: observed.drive_q24,
                 prediction_q24: observed.prediction_q24,
-                observed_memory_bytes: observed.observed_memory_bytes,
+                // Keep resource receipts no lower than load-time residency.
+                observed_memory_bytes: observed.observed_memory_bytes.max(resident_floor),
                 transient_allocation_bytes: observed.transient_allocation_bytes,
                 queue_age_micros: observed.queue_age_micros,
                 latency_micros: observed.latency_micros,
