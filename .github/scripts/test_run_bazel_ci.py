@@ -28,7 +28,14 @@ if os.environ.get('BAZEL_PROBE_ARGV_LIMIT') and sum(len(arg.encode('utf-16-le'))
 
 patterns = next((arg for arg in raw_args if arg.startswith('--target_pattern_file=')), None)
 if patterns:
-    targets = Path(patterns.split('=', 1)[1]).read_text(encoding='utf-8').splitlines()
+    encoded = Path(patterns.split('=', 1)[1]).read_bytes().decode('latin-1')
+    lines = encoded.split('\\n')
+    targets = []
+    java_trim = ''.join(chr(code) for code in range(0x21))
+    for line in lines:
+        internal = line.split('#', 1)[0].strip(java_trim)
+        if internal:
+            targets.append(internal.encode('latin-1').decode('utf-8'))
     sys.argv[1:] = [arg for arg in raw_args if arg != patterns] + ['--', *targets]
 
 with Path(os.environ['BAZEL_PROBE_LOG']).open('a', encoding='utf-8') as output:
@@ -58,6 +65,396 @@ elif os.environ.get('BAZEL_PROBE_FAIL') == '1':
 
 
 class RunBazelCiIntegrationTest(unittest.TestCase):
+    def install_python_boundary_recorder(self) -> tuple[Path, Path]:
+        scripts = self.root / "recorded scripts"
+        scripts.mkdir(exist_ok=True)
+        shell = scripts / "run-bazel-ci.sh"
+        shell.write_bytes((SCRIPTS / "run-bazel-ci.sh").read_bytes())
+        boundary_log = self.root / "python-boundary.jsonl"
+        self.env["BAZEL_BOUNDARY_LOG"] = str(boundary_log)
+        entry = scripts / "run_bazel_with_buildbuddy.py"
+        entry.write_text(
+            "#!/usr/bin/env python3\n"
+            "import json, os, runpy, sys\n"
+            "from pathlib import Path\n"
+            "args = sys.argv[1:]\n"
+            "record = {'args': args}\n"
+            "if len(args) == 2 and args[0] == '--wrapper-args-file':\n"
+            "    record['payload'] = Path(args[1]).read_bytes().decode('utf-8')\n"
+            "with Path(os.environ['BAZEL_BOUNDARY_LOG']).open('a', encoding='utf-8') as output:\n"
+            "    output.write(json.dumps(record) + '\\n')\n"
+            "if sum(len(arg.encode('utf-16-le')) // 2 + 3 for arg in args) > 32767:\n"
+            "    raise SystemExit(126)\n"
+            "if os.environ.get('BAZEL_BOUNDARY_FAIL'):\n"
+            "    raise SystemExit(int(os.environ['BAZEL_BOUNDARY_FAIL']))\n"
+            f"runpy.run_path({str(SCRIPTS / 'run_bazel_with_buildbuddy.py')!r}, run_name='__main__')\n",
+            encoding="utf-8",
+        )
+        if os.name != "nt":
+            entry.chmod(0o755)
+        return shell, boundary_log
+
+    def test_wrapper_argument_file_is_removed_after_python_entry_failure(self) -> None:
+        shell, boundary_log = self.install_python_boundary_recorder()
+        self.env["BAZEL_BOUNDARY_FAIL"] = "37"
+        result = subprocess.run(
+            [self.bash, str(shell), "--", "build", "--", "//fake:target"],
+            env=self.env,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+        records = [
+            json.loads(line)
+            for line in boundary_log.read_text(encoding="utf-8").splitlines()
+        ]
+        self.assertEqual(len(records), 1)
+        self.assertEqual(records[0]["args"][0], "--wrapper-args-file")
+        self.assertEqual(len(records[0]["args"]), 2)
+        self.assertFalse(Path(records[0]["args"][1]).exists())
+        self.assertFalse(
+            self.log.exists(), "Python entry failure must not launch fake Bazel"
+        )
+
+    def workflow_script(self, step_name: str) -> str:
+        text = (SCRIPTS.parent / "workflows/bazel.yml").read_text(encoding="utf-8")
+        section = text.split(f"      - name: {step_name}\n", 1)[1].split(
+            "\n      - name:", 1
+        )[0]
+        code = section.split("        run: |\n", 1)[1]
+        # The source block is a Windows Git Bash job. Supply only its exact
+        # mapfile call on macOS Bash 3.2, without changing the extracted body.
+        portable_mapfile = """if ! type mapfile >/dev/null 2>&1; then
+  mapfile() {
+    if [[ $# -ne 2 || "$1" != "-t" || "$2" != "bazel_targets" ]]; then
+      return 2
+    fi
+    bazel_targets=()
+    local target
+    while IFS= read -r target || [[ -n "$target" ]]; do
+      bazel_targets+=("$target")
+    done
+    return 0
+  }
+fi
+"""
+        return (
+            portable_mapfile
+            + "\n".join(
+                line[10:] if line.startswith("          ") else line
+                for line in code.splitlines()
+            )
+            + "\n"
+        )
+
+    def test_all_windows_label_consumers_preserve_complete_crlf_rosters(self) -> None:
+        targets = [f"//pkg_{index}:unit-tests-bin" for index in range(12)] + [
+            "//路径:unit-tests-bin"
+        ]
+        roster = self.root / "query labels.txt"
+        roster.write_bytes(("\r\n".join(targets) + "\r\n").encode("utf-8"))
+        self.env.update(
+            BAZEL_PROBE_QUERY_FILE=str(roster),
+            GITHUB_SHA="fixture-sha",
+            BAZEL_TEST_SHARD="1",
+            BAZEL_TEST_SHARD_COUNT="1",
+        )
+        invocations = {
+            "clippy": self.workflow_script("bazel build --config=clippy lint targets"),
+            "shard": self.workflow_script("bazel test shard"),
+            "argument_lint": "./.github/scripts/run-argument-comment-lint-bazel.sh --config=argument-comment-lint\n",
+        }
+        for name, code in invocations.items():
+            with self.subTest(consumer=name):
+                if self.log.exists():
+                    self.log.unlink()
+                script = self.root / f"{name}.sh"
+                script.write_text(code, encoding="utf-8")
+                result = subprocess.run(
+                    [
+                        self.bash,
+                        "--noprofile",
+                        "--norc",
+                        "-e",
+                        "-o",
+                        "pipefail",
+                        str(script),
+                    ],
+                    cwd=SCRIPTS.parent.parent,
+                    env=self.env,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                )
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                calls = [
+                    json.loads(line)
+                    for line in self.log.read_text(encoding="utf-8").splitlines()
+                ]
+                self.assertEqual(len(calls), 2)
+                expected = (
+                    ["//codex-rs/...", "-//codex-rs/v8-poc:all", *targets]
+                    if name == "clippy"
+                    else sorted(targets)
+                    if name == "shard"
+                    else targets
+                )
+                self.assertEqual(calls[1][calls[1].index("--") + 1 :], expected)
+                # Every consumer must fail before build on a partial query.
+                self.log.unlink()
+                self.env["BAZEL_PROBE_QUERY_FAIL"] = "1"
+                failed = subprocess.run(
+                    [
+                        self.bash,
+                        "--noprofile",
+                        "--norc",
+                        "-e",
+                        "-o",
+                        "pipefail",
+                        str(script),
+                    ],
+                    cwd=SCRIPTS.parent.parent,
+                    env=self.env,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                )
+                del self.env["BAZEL_PROBE_QUERY_FAIL"]
+                self.assertNotEqual(failed.returncode, 0, failed.stdout + failed.stderr)
+                calls = [
+                    json.loads(line)
+                    for line in self.log.read_text(encoding="utf-8").splitlines()
+                ]
+                self.assertEqual(len(calls), 1, "partial query must never reach build")
+                # Empty successful discovery has consumer-specific policy:
+                # Clippy retains its fixed patterns; other consumers reject it.
+                self.log.unlink()
+                roster.write_bytes(b"")
+                empty = subprocess.run(
+                    [
+                        self.bash,
+                        "--noprofile",
+                        "--norc",
+                        "-e",
+                        "-o",
+                        "pipefail",
+                        str(script),
+                    ],
+                    cwd=SCRIPTS.parent.parent,
+                    env=self.env,
+                    check=False,
+                    capture_output=True,
+                    text=True,
+                    timeout=60,
+                )
+                empty_calls = [
+                    json.loads(line)
+                    for line in self.log.read_text(encoding="utf-8").splitlines()
+                ]
+                if name == "clippy":
+                    self.assertEqual(empty.returncode, 0, empty.stdout + empty.stderr)
+                    self.assertEqual(len(empty_calls), 2)
+                    self.assertEqual(
+                        empty_calls[1][empty_calls[1].index("--") + 1 :],
+                        ["//codex-rs/...", "-//codex-rs/v8-poc:all"],
+                    )
+                else:
+                    self.assertNotEqual(
+                        empty.returncode, 0, empty.stdout + empty.stderr
+                    )
+                    self.assertEqual(len(empty_calls), 1)
+                roster.write_bytes(("\r\n".join(targets) + "\r\n").encode("utf-8"))
+
+    def test_query_normalizes_only_explicit_windows_labels_and_keeps_failure(
+        self,
+    ) -> None:
+        roster = self.root / "query raw bytes"
+        original = b"//pkg:first\r\n//pkg:second\r\n"
+        roster.write_bytes(original)
+        self.env["BAZEL_PROBE_QUERY_FILE"] = str(roster)
+        cases = [
+            ("Windows", ["--output=label"], original.replace(b"\r\n", b"\n")),
+            ("Windows", ["--output", "label"], original.replace(b"\r\n", b"\n")),
+            ("Windows", ["--output=proto"], original),
+            ("Windows", ["--output=label", "--output=proto"], original),
+            ("Windows", [], original),
+            ("Linux", ["--output=label"], original),
+        ]
+        for runner_os, flags, expected in cases:
+            with self.subTest(runner_os=runner_os, flags=flags):
+                self.env["RUNNER_OS"] = runner_os
+                result = subprocess.run(
+                    [
+                        self.bash,
+                        str(SCRIPTS / "run-bazel-query-ci.sh"),
+                        *flags,
+                        "--",
+                        "//fake/...",
+                    ],
+                    env=self.env,
+                    check=False,
+                    capture_output=True,
+                    timeout=60,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertEqual(result.stdout, expected)
+        self.env.update(RUNNER_OS="Windows", BAZEL_PROBE_QUERY_FAIL="1")
+        result = subprocess.run(
+            [
+                self.bash,
+                str(SCRIPTS / "run-bazel-query-ci.sh"),
+                "--output=label",
+                "--",
+                "//fake/...",
+            ],
+            env=self.env,
+            check=False,
+            capture_output=True,
+            timeout=60,
+        )
+        self.assertEqual(result.returncode, 37, result.stderr)
+        self.assertEqual(result.stdout, b"")
+
+    def test_query_cleanup_failure_preserves_failure_status_and_withholds_roster(
+        self,
+    ) -> None:
+        tools = self.root / "fake cleanup tools"
+        tools.mkdir()
+        cleanup = tools / "rm"
+        cleanup.write_text(
+            '#!/bin/sh\nprintf "%s\\n" "$@" > "$BAZEL_PROBE_RM_LOG"\nexit 23\n',
+            encoding="utf-8",
+        )
+        if os.name != "nt":
+            cleanup.chmod(0o755)
+        cleanup_log = self.root / "cleanup-path.txt"
+        self.env.update(
+            PATH=str(tools) + os.pathsep + self.env["PATH"],
+            BAZEL_PROBE_RM_LOG=str(cleanup_log),
+        )
+        for query_failure, expected_status in ((False, 23), (True, 37)):
+            with self.subTest(query_failure=query_failure):
+                if query_failure:
+                    self.env["BAZEL_PROBE_QUERY_FAIL"] = "1"
+                else:
+                    self.env.pop("BAZEL_PROBE_QUERY_FAIL", None)
+                owned = None
+                try:
+                    result = subprocess.run(
+                        [
+                            self.bash,
+                            str(SCRIPTS / "run-bazel-query-ci.sh"),
+                            "--output=label",
+                            "--",
+                            "//fake/...",
+                        ],
+                        env=self.env,
+                        check=False,
+                        capture_output=True,
+                        text=True,
+                        timeout=60,
+                    )
+                    self.assertEqual(
+                        result.returncode,
+                        expected_status,
+                        result.stdout + result.stderr,
+                    )
+                    self.assertEqual(result.stdout, "")
+                    self.assertIn(
+                        "Failed to remove Bazel query label file", result.stderr
+                    )
+                    rm_args = cleanup_log.read_text(encoding="utf-8").splitlines()
+                    self.assertEqual(rm_args[0], "-f")
+                    self.assertEqual(len(rm_args), 2)
+                    owned = Path(rm_args[1])
+                    if os.name == "nt" and not owned.exists():
+                        converted = subprocess.run(
+                            [self.bash, "-c", 'cygpath -w "$1"', "fixture", rm_args[1]],
+                            env=self.env,
+                            check=True,
+                            capture_output=True,
+                            text=True,
+                            timeout=60,
+                        )
+                        owned = Path(converted.stdout.strip())
+                    self.assertTrue(
+                        owned.exists(),
+                        "fake cleanup failure must retain its owned file",
+                    )
+                finally:
+                    if owned is not None:
+                        owned.unlink()
+
+    def test_large_windows_build_records_both_native_transport_boundaries(
+        self,
+    ) -> None:
+        targets = [
+            f"//long_package_{index:04d}/native_component:clippy_target"
+            for index in range(900)
+        ]
+        targets.extend(["-//excluded:target", "//路径 with spaces:target"])
+        arguments = ["--", "build", "--config=clippy", "--", *targets]
+        invocation = self.root / "ci-arguments.nul"
+        invocation.write_bytes(
+            b"\0".join(arg.encode("utf-8") for arg in arguments) + b"\0"
+        )
+        shell, boundary_log = self.install_python_boundary_recorder()
+        driver = self.root / "driver.sh"
+        driver.write_text(
+            "if type mapfile >/dev/null 2>&1; then enable -n mapfile; fi\n"
+            "ci_args=()\n"
+            'while IFS= read -r -d "" ci_arg; do ci_args+=("$ci_arg"); done < "$1"\n'
+            'source "$2" "${ci_args[@]}"\n',
+            encoding="utf-8",
+        )
+        physical = self.root / "physical-arguments.jsonl"
+        self.env.update(
+            BAZEL_PROBE_TRANSPORT_LOG=str(physical),
+            BAZEL_PROBE_ARGV_LIMIT="32767",
+        )
+        result = subprocess.run(
+            [self.bash, str(driver), str(invocation), str(shell)],
+            env=self.env,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        calls = [
+            json.loads(line)
+            for line in self.log.read_text(encoding="utf-8").splitlines()
+        ]
+        self.assertEqual(calls[0][calls[0].index("--") + 1 :], targets)
+        self.assertIn("--config=clippy", calls[0])
+        entries = [
+            json.loads(line)
+            for line in boundary_log.read_text(encoding="utf-8").splitlines()
+        ]
+        self.assertEqual(len(entries), 1)
+        self.assertEqual(entries[0]["args"][0], "--wrapper-args-file")
+        self.assertEqual(len(entries[0]["args"]), 2)
+        self.assertTrue(entries[0]["payload"].endswith("\0"))
+        decoded = entries[0]["payload"][:-1].split("\0")
+        self.assertEqual(decoded[decoded.index("--") + 1 :], targets)
+        self.assertFalse(Path(entries[0]["args"][1]).exists())
+        native_args = json.loads(physical.read_text(encoding="utf-8").splitlines()[0])
+        self.assertLess(
+            sum(len(arg.encode("utf-16-le")) // 2 + 3 for arg in native_args), 32767
+        )
+        pattern_file = next(
+            arg.split("=", 1)[1]
+            for arg in native_args
+            if arg.startswith("--target_pattern_file=")
+        )
+        self.assertFalse(
+            Path(pattern_file).exists(), "retired Bazel must release its target file"
+        )
+
     def setUp(self) -> None:
         directory = TemporaryDirectory(prefix="bazel wrapper ")
         self.addCleanup(directory.cleanup)

@@ -28,7 +28,7 @@ impl Session {
         if !self.enabled(Feature::HeptaTurnRecovery) {
             let active = self.active_turn.lock().await;
             if self.shutdown_started()
-                || self.has_pending_task_terminalization()
+                || self.has_task_terminalization_admission_fence()
                 || active
                     .as_ref()
                     .is_some_and(|active_turn| active_turn.task_terminalization.is_some())
@@ -44,13 +44,13 @@ impl Session {
             return Ok(());
         }
 
-        if self.shutdown_started() || self.has_pending_task_terminalization() {
+        if self.shutdown_started() || self.has_task_terminalization_admission_fence() {
             return Err(CodexErr::InvalidRequest(
                 "turn is terminalizing and cannot accept inter-agent communication".to_string(),
             ));
         }
         let active = self.active_turn.lock().await;
-        if self.shutdown_started() || self.has_pending_task_terminalization() {
+        if self.shutdown_started() || self.has_task_terminalization_admission_fence() {
             return Err(CodexErr::InvalidRequest(
                 "turn is terminalizing and cannot accept inter-agent communication".to_string(),
             ));
@@ -146,14 +146,14 @@ impl Session {
             .into_iter()
             .map(|item| self.annotate_client_response_item(item))
             .collect::<Vec<_>>();
-        if self.shutdown_started() || self.has_pending_task_terminalization() {
+        if self.shutdown_started() || self.has_task_terminalization_admission_fence() {
             return Err(codex_protocol::error::CodexErr::InvalidRequest(
                 "turn is terminalizing or shutting down and cannot accept injected context"
                     .to_string(),
             ));
         }
         let mut active = self.active_turn.lock().await;
-        if self.shutdown_started() || self.has_pending_task_terminalization() {
+        if self.shutdown_started() || self.has_task_terminalization_admission_fence() {
             return Err(codex_protocol::error::CodexErr::InvalidRequest(
                 "turn is terminalizing or shutting down and cannot accept injected context"
                     .to_string(),
@@ -184,7 +184,7 @@ impl Session {
                 .await;
             return Ok(());
         }
-        if self.shutdown_started() || self.has_pending_task_terminalization() {
+        if self.shutdown_started() || self.has_task_terminalization_admission_fence() {
             return Err(CodexErr::InvalidRequest(
                 "turn is terminalizing or shutting down and cannot accept idle injected context"
                     .to_string(),
@@ -265,14 +265,17 @@ impl Session {
                 return;
             }
         };
-        if self.shutdown_started() || self.has_pending_task_terminalization() {
+        if self.shutdown_started() || self.has_task_terminalization_admission_fence() {
             tracing::error!(
                 "session is terminalizing or shutting down; idle context injection was not recorded"
             );
             return;
         }
         let active = self.active_turn.lock().await;
-        if self.shutdown_started() || self.has_pending_task_terminalization() || active.is_some() {
+        if self.shutdown_started()
+            || self.has_task_terminalization_admission_fence()
+            || active.is_some()
+        {
             tracing::error!(
                 "active turn or terminalization fence changed while preparing an idle context injection; items were not recorded"
             );

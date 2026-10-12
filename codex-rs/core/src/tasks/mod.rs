@@ -1,4 +1,7 @@
 mod compact;
+mod finish_admission;
+#[cfg(test)]
+mod finish_admission_tests;
 mod lifecycle;
 mod regular;
 mod review;
@@ -63,6 +66,7 @@ use codex_otel::TURN_TOKEN_USAGE_METRIC;
 use codex_otel::TURN_TOOL_CALL_METRIC;
 use codex_otel::TURN_UNIFIED_EXEC_RUNNING_PROCESSES_METRIC;
 use codex_protocol::models::ResponseItem;
+use codex_protocol::protocol::Event;
 use codex_protocol::protocol::EventMsg;
 use codex_protocol::protocol::MultiAgentVersion;
 use codex_protocol::protocol::TokenUsage;
@@ -79,6 +83,9 @@ use codex_protocol::error::CodexErr;
 use codex_protocol::error::CodexErrorDetails;
 use codex_protocol::error::Result as CodexResult;
 pub(crate) use compact::CompactTask;
+use finish_admission::FinishTerminalPublication;
+use finish_admission::RecoveryPreparation;
+use finish_admission::RecoveryPublication;
 pub(crate) use regular::RegularTask;
 pub(crate) use review::ReviewTask;
 pub(crate) use user_shell::UserShellCommandMode;
@@ -203,6 +210,8 @@ pub(crate) struct TaskFinishHandoff {
     task: Option<RunningTask>,
     turn_context: Arc<TurnContext>,
     task_result: Option<SessionTaskResult>,
+    prepared_terminal_event: Option<Event>,
+    terminal_publication: Option<FinishTerminalPublication>,
     turn_state: Arc<Mutex<TurnState>>,
     terminalization_identity: Arc<()>,
     completion: Arc<StartTransitionCompletion>,
@@ -1068,16 +1077,22 @@ impl Session {
             })
     }
 
-    /// Returns true while any task finish/abort/suspend owner still has
-    /// post-terminal work outstanding.  The marker is intentionally kept in
-    /// an independent registry after the active slot CAS so idle observers
-    /// cannot admit history mutation or a replacement in the clear→publish
-    /// window.
+    /// Tracks all outstanding terminal work, including post-release callbacks.
     pub(crate) fn has_pending_task_terminalization(&self) -> bool {
-        self.has_pending_task_terminalization_except(/*ignored_identity*/ None)
+        !self
+            .pending_task_terminalization_completions
+            .lock()
+            .unwrap_or_else(|error| {
+                panic!("task terminalization completion registry mutex poisoned: {error:?}")
+            })
+            .is_empty()
     }
 
-    pub(crate) fn has_pending_task_terminalization_except(
+    pub(crate) fn has_task_terminalization_admission_fence(&self) -> bool {
+        self.has_task_terminalization_admission_fence_except(/*ignored_identity*/ None)
+    }
+
+    pub(crate) fn has_task_terminalization_admission_fence_except(
         &self,
         ignored_identity: Option<&Arc<()>>,
     ) -> bool {
@@ -1087,15 +1102,14 @@ impl Session {
                 panic!("task terminalization completion registry mutex poisoned: {error:?}")
             })
             .iter()
-            .any(|(identity, _, _, _, _, _)| {
-                ignored_identity.is_none_or(|ignored| !Arc::ptr_eq(identity, ignored))
+            .any(|(identity, completion, _, _, _, _)| {
+                completion.blocks_admission()
+                    && ignored_identity.is_none_or(|ignored| !Arc::ptr_eq(identity, ignored))
             })
     }
 
-    /// Admission-facing fence for host starts.  Keep the legacy
-    /// `has_pending_start_transition` semantics for shutdown's dedicated
-    /// transition drain, while all normal starts also respect task
-    /// terminalizers that have already cleared the active slot.
+    /// Only a proved ordinary finish may release task admission before its
+    /// callbacks drain. Start-transition fencing retains its original lifetime.
     pub(crate) fn has_pending_admission_fence(&self) -> bool {
         self.has_pending_admission_fence_except(/*ignored_terminalization*/ None)
     }
@@ -1105,7 +1119,7 @@ impl Session {
         ignored_terminalization: Option<&Arc<()>>,
     ) -> bool {
         self.has_pending_start_transition()
-            || self.has_pending_task_terminalization_except(ignored_terminalization)
+            || self.has_task_terminalization_admission_fence_except(ignored_terminalization)
     }
 
     pub(crate) fn begin_shutdown(&self) {
@@ -1729,8 +1743,15 @@ impl Session {
         turn_id: &str,
         authority: Option<&Arc<TurnRecoveryAuthority>>,
         mut recovery_seed: Option<RecoverySeed>,
-    ) -> Option<RecoverySeed> {
-        let authority = authority?;
+    ) -> (Option<RecoverySeed>, RecoveryPreparation) {
+        let Some(authority) = authority else {
+            let outcome = if recovery_seed.is_none() {
+                RecoveryPreparation::NotRequired
+            } else {
+                RecoveryPreparation::Invalid
+            };
+            return (None, outcome);
+        };
         let seed_interval_is_valid = recovery_seed.as_ref().is_some_and(|seed| {
             seed.persistence_failure_generation == self.rollout_persistence_failure_generation()
         });
@@ -1741,19 +1762,21 @@ impl Session {
             Ok(generation) => generation,
             Err(err) => {
                 warn!("failed to revoke turn recovery before controlled detach: {err}");
-                if !self
+                let tombstoned = self
                     .persist_turn_recovery_failure_tombstone(turn_id, authority.as_ref())
-                    .await
-                {
+                    .await;
+                if !tombstoned {
                     warn!(
                         "failed to persist the recovery tombstone after a revoke failure; \
                          recovery provenance is fail-stop/unknown"
                     );
                 }
-                return None;
+                return (None, RecoveryPreparation::from_tombstone_result(tombstoned));
             }
         };
-        let seed = recovery_seed.as_mut()?;
+        let Some(seed) = recovery_seed.as_mut() else {
+            return (None, RecoveryPreparation::Revoked(confirmation_generation));
+        };
         if !seed_interval_is_valid
             || confirmation_generation != seed.generation.saturating_add(1)
             || self.rollout_persistence_failure_generation() != seed.persistence_failure_generation
@@ -1762,10 +1785,13 @@ impl Session {
             authority.ready.store(false, Ordering::Release);
             state.ready_persistence_failure_generation = None;
             state.poisoned = true;
-            return None;
+            return (None, RecoveryPreparation::Invalid);
         }
         seed.confirmation_generation = Some(confirmation_generation);
-        recovery_seed
+        (
+            recovery_seed,
+            RecoveryPreparation::SeedPrepared(confirmation_generation),
+        )
     }
 
     /// Publishes one live recovery candidate only after the task is quiescent
@@ -1780,12 +1806,12 @@ impl Session {
         recovery_seed: Option<RecoverySeed>,
         task_quiesced: bool,
         terminal_persistence_generation: Option<u64>,
-    ) -> bool {
+    ) -> RecoveryPublication {
         let Some(seed) = recovery_seed else {
-            return false;
+            return RecoveryPublication::NoSeed;
         };
         let Some(confirmation_generation) = seed.confirmation_generation else {
-            return false;
+            return RecoveryPublication::Invalid;
         };
         let persistence_proven = terminal_persistence_generation.is_some_and(|generation| {
             generation == seed.persistence_failure_generation
@@ -1793,9 +1819,13 @@ impl Session {
                     == seed.persistence_failure_generation
         });
         if !task_quiesced || !persistence_proven {
-            self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
-                .await;
-            return false;
+            return RecoveryPublication::from_tombstone_result(
+                self.persist_turn_recovery_failure_tombstone(
+                    &seed.turn_id,
+                    seed.authority.as_ref(),
+                )
+                .await,
+            );
         }
 
         // Keep the same lock order as provider-boundary publication: active
@@ -1803,15 +1833,23 @@ impl Session {
         let active_turn = self.active_turn.lock().await;
         if active_turn.is_some() || self.turn_epoch.load(Ordering::Acquire) != seed.attach_epoch {
             drop(active_turn);
-            self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
-                .await;
-            return false;
+            return RecoveryPublication::from_tombstone_result(
+                self.persist_turn_recovery_failure_tombstone(
+                    &seed.turn_id,
+                    seed.authority.as_ref(),
+                )
+                .await,
+            );
         }
         if self.shutdown_started() {
             drop(active_turn);
-            self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
-                .await;
-            return false;
+            return RecoveryPublication::from_tombstone_result(
+                self.persist_turn_recovery_failure_tombstone(
+                    &seed.turn_id,
+                    seed.authority.as_ref(),
+                )
+                .await,
+            );
         }
         if let Err(err) = self
             .confirm_interrupted_turn_recovery(
@@ -1826,15 +1864,23 @@ impl Session {
         {
             warn!("failed to confirm interrupted turn recovery: {err}");
             drop(active_turn);
-            self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
-                .await;
-            return false;
+            return RecoveryPublication::from_tombstone_result(
+                self.persist_turn_recovery_failure_tombstone(
+                    &seed.turn_id,
+                    seed.authority.as_ref(),
+                )
+                .await,
+            );
         }
         if self.shutdown_started() {
             drop(active_turn);
-            self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
-                .await;
-            return false;
+            return RecoveryPublication::from_tombstone_result(
+                self.persist_turn_recovery_failure_tombstone(
+                    &seed.turn_id,
+                    seed.authority.as_ref(),
+                )
+                .await,
+            );
         }
         let state = seed.authority.state.lock().await;
         let authority_invalid = state.poisoned
@@ -1849,16 +1895,24 @@ impl Session {
         if authority_invalid {
             drop(state);
             drop(active_turn);
-            self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
-                .await;
-            return false;
+            return RecoveryPublication::from_tombstone_result(
+                self.persist_turn_recovery_failure_tombstone(
+                    &seed.turn_id,
+                    seed.authority.as_ref(),
+                )
+                .await,
+            );
         }
         if self.shutdown_started() {
             drop(state);
             drop(active_turn);
-            self.persist_turn_recovery_failure_tombstone(&seed.turn_id, seed.authority.as_ref())
-                .await;
-            return false;
+            return RecoveryPublication::from_tombstone_result(
+                self.persist_turn_recovery_failure_tombstone(
+                    &seed.turn_id,
+                    seed.authority.as_ref(),
+                )
+                .await,
+            );
         }
         *self
             .recovery_candidate
@@ -1874,7 +1928,7 @@ impl Session {
             });
         drop(state);
         drop(active_turn);
-        true
+        RecoveryPublication::Confirmed(confirmation_generation)
     }
 
     /// Serializes the provider Ready boundary with active-turn steer
@@ -3119,6 +3173,8 @@ impl Session {
             task: Some(task),
             turn_context: task_context,
             task_result: Some(task_result),
+            prepared_terminal_event: None,
+            terminal_publication: None,
             turn_state,
             terminalization_identity,
             completion,
@@ -3191,7 +3247,7 @@ impl Session {
         let turn_context = Arc::clone(&handoff.turn_context);
         let turn_state = Arc::clone(&handoff.turn_state);
         handoff.phase = TaskFinishHandoffPhase::RecoveryRevoking;
-        let recovery_seed = self
+        let (recovery_seed, recovery_preparation) = self
             .prepare_recovery_seed_for_controlled_detach(
                 &turn_context.sub_id,
                 handoff.recovery_authority.as_ref(),
@@ -3203,7 +3259,9 @@ impl Session {
             .turn_metadata_state
             .cancel_git_enrichment_task();
         handoff.phase = TaskFinishHandoffPhase::RolloutFlushing;
-        if let Err(err) = self.flush_rollout().await {
+        let preterminal_flush = self.flush_rollout().await;
+        let preterminal_flush_succeeded = preterminal_flush.is_ok();
+        if let Err(err) = preterminal_flush {
             warn!("failed to flush rollout before completing turn: {err}");
             self.send_event(
                 turn_context.as_ref(),
@@ -3222,6 +3280,7 @@ impl Session {
             .task_result
             .take()
             .unwrap_or_else(|| panic!("claimed finish handoff has task result"));
+        let task_succeeded = task_result.is_ok();
         let (last_agent_message, abort_reason) = match task_result {
             Ok(last_agent_message) => (last_agent_message, None),
             Err(err) if matches!(err.details(), CodexErrorDetails::TurnAborted) => {
@@ -3456,9 +3515,43 @@ impl Session {
             })
         };
         handoff.phase = TaskFinishHandoffPhase::PersistencePublishing;
-        let terminal_persistence_generation = self
-            .send_terminal_event_and_flush(turn_context.as_ref(), event)
+        let terminal_persistence_generation = if task_succeeded
+            && idle_cause == ThreadIdleCause::Completed
+            && preterminal_flush_succeeded
+            && recovery_preparation.can_prove_ordinary_finish()
+            && self.live_thread().is_some()
+        {
+            let before = self.rollout_persistence_failure_generation();
+            // Retain the complete event before append or notification awaits.
+            // Cancellation leaves this exact delivery witness in the handoff.
+            handoff.prepared_terminal_event = Some(Event {
+                id: turn_context.sub_id.clone(),
+                msg: event,
+            });
+            self.prepare_terminal_event(
+                turn_context.as_ref(),
+                handoff
+                    .prepared_terminal_event
+                    .as_ref()
+                    .unwrap_or_else(|| panic!("terminal event was retained before preparation")),
+            )
             .await;
+            let after_append = self.rollout_persistence_failure_generation();
+            let flush_succeeded = match self.flush_rollout().await {
+                Ok(()) => true,
+                Err(err) => {
+                    warn!("failed to flush rollout after preparing terminal turn event: {err}");
+                    false
+                }
+            };
+            let after_flush = self.rollout_persistence_failure_generation();
+            (flush_succeeded && before == after_append && after_append == after_flush)
+                .then_some(after_flush)
+        } else {
+            // No new admission permission on errors, aborts or no-op storage.
+            self.send_terminal_event_and_flush(turn_context.as_ref(), event)
+                .await
+        };
         self.services
             .guardian_rejection_circuit_breaker
             .lock()
@@ -3483,14 +3576,39 @@ impl Session {
             return;
         }
         handoff.phase = TaskFinishHandoffPhase::RecoveryPublishing;
-        self.publish_recovery_seed_after_terminal(
-            handoff.recovery_seed.take(),
-            /*task_quiesced*/ true,
-            terminal_persistence_generation,
-        )
-        .await;
+        let recovery_publication = self
+            .publish_recovery_seed_after_terminal(
+                handoff.recovery_seed.take(),
+                /*task_quiesced*/ true,
+                terminal_persistence_generation,
+            )
+            .await;
         handoff.phase = TaskFinishHandoffPhase::PendingWorkStarting;
+        #[cfg(test)]
+        if let Some(gate) = self
+            .services
+            .session_extension_data
+            .get::<crate::session::session::TerminalPublicationGate>()
+        {
+            gate.entered.notify_one();
+            gate.release.notified().await;
+        }
         if let Some(completion) = cleared_completion.as_ref() {
+            let terminal_publication = self
+                .publish_ordinary_finish_terminal(
+                    handoff,
+                    task_epoch,
+                    &idle_cause,
+                    terminal_persistence_generation,
+                    recovery_preparation,
+                    recovery_publication,
+                )
+                .await;
+            handoff.terminal_publication = Some(terminal_publication);
+            if handoff.terminal_publication == Some(FinishTerminalPublication::StaleOwner) {
+                handoff.failed_closed = true;
+                return;
+            }
             self.emit_thread_idle_lifecycle_if_idle_for_terminalization(
                 idle_cause,
                 Some(&handoff.terminalization_identity),
@@ -3639,13 +3757,14 @@ impl Session {
         let task_epoch = task.attach_epoch;
 
         handoff.phase = TaskAbortHandoffPhase::RecoveryRevoking;
-        handoff.recovery_seed = self
+        let (recovery_seed, _recovery_preparation) = self
             .prepare_recovery_seed_for_controlled_detach(
                 &turn_context.sub_id,
                 handoff.recovery_authority.as_ref(),
                 handoff.recovery_seed.clone(),
             )
             .await;
+        handoff.recovery_seed = recovery_seed;
 
         handoff.phase = TaskAbortHandoffPhase::TaskAborting;
         let outcome = self

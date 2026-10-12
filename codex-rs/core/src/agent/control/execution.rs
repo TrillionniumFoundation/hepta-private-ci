@@ -39,7 +39,7 @@ impl AgentControl {
             if thread.session.shutdown_started() {
                 return Err(CodexErr::InternalAgentDied);
             }
-            if thread.session.has_pending_task_terminalization() {
+            if thread.session.has_task_terminalization_admission_fence() {
                 return Err(CodexErr::InvalidRequest(
                     "turn start is fenced while the session is terminalizing".to_string(),
                 ));
