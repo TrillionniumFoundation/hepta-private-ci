@@ -147,6 +147,23 @@ fn runner_with_batch_size(
     model: ModelManifest,
     batch_size: usize,
 ) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
+    let mut execution = runner_with_batch_size_unbound(signing_key, directory, model, batch_size);
+    let (_, _, key) = fixture_request();
+    assert!(
+        execution
+            .fence_scope(&key.scope_id, key.generation, key.route_fence, key.authority_epoch)
+            .unwrap()
+            .is_empty()
+    );
+    execution
+}
+
+fn runner_with_batch_size_unbound(
+    signing_key: &SigningKey,
+    directory: &std::path::Path,
+    model: ModelManifest,
+    batch_size: usize,
+) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
     let head = FinalUseRevocations {
         authority_epoch: 9,
         revision: 1,
@@ -298,7 +315,9 @@ fn revoked_scope_drops_queued_intent_without_driver_effect() {
             signed(&signer, binding),
         )
         .unwrap();
-    let removed = execution.fence_scope(&key.scope_id, key.generation, 3, key.authority_epoch);
+    let removed = execution
+        .fence_scope(&key.scope_id, key.generation, 3, key.authority_epoch)
+        .unwrap();
     assert_eq!(removed, vec![StableId::new("req-one").unwrap()]);
     let outcome = execution.poll_and_execute(101).unwrap();
     assert!(outcome.outcomes.is_empty());
@@ -443,5 +462,97 @@ fn terminal_replay_capacity_is_independent_of_active_microbatch_capacity() {
     assert_eq!(
         execution.enqueue(120, "model".to_string(), replay, key, signed(&signer, binding)),
         Err(BatchWorkerErrorV1::Duplicate)
+    );
+}
+
+#[test]
+fn a_signed_grant_cannot_bootstrap_an_unbound_scope() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[31; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let mut execution = runner_with_batch_size_unbound(&signer, dir.path(), model, 1);
+    assert_eq!(
+        execution.enqueue(100, "model".into(), request, key, signed(&signer, binding)),
+        Err(BatchWorkerErrorV1::InvalidBinding)
+    );
+    assert_eq!(execution.pending(), 0);
+    assert!(execution.poll_and_execute(101).unwrap().outcomes.is_empty());
+}
+
+#[test]
+fn stale_fence_cannot_admit_a_fresh_signed_request_after_cutover() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[32; 32]);
+    let (model, mut request, key) = fixture_request();
+    let mut execution = runner(&signer, dir.path(), model);
+    assert!(
+        execution
+            .fence_scope(&key.scope_id, key.generation, 3, key.authority_epoch)
+            .unwrap()
+            .is_empty()
+    );
+    assert_eq!(
+        execution.fence_scope(&key.scope_id, key.generation, 2, key.authority_epoch),
+        Err(BatchWorkerErrorV1::InvalidBinding)
+    );
+    // A new request ID plus a valid signature on the retired route must not
+    // resurrect the old generation/fence or consume its one-shot nonce.
+    request.authorization.request_id = "request-after-cutover".into();
+    request.authorization.reservation_id = "reservation-after-cutover".into();
+    let stale_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    assert_eq!(
+        execution.enqueue(
+            100,
+            "model".into(),
+            request.clone(),
+            key.clone(),
+            signed(&signer, stale_binding)
+        ),
+        Err(BatchWorkerErrorV1::InvalidBinding)
+    );
+    let mut current_key = key;
+    current_key.route_fence = 3;
+    let current_binding =
+        neuron_batch_final_use_binding_v1("worker-one", &current_key, &request).unwrap();
+    execution
+        .enqueue(
+            100,
+            "model".into(),
+            request,
+            current_key,
+            signed(&signer, current_binding),
+        )
+        .unwrap();
+    let completed = execution.poll_and_execute(101).unwrap();
+    assert_eq!(completed.outcomes.len(), 1);
+    assert!(matches!(
+        &completed.outcomes[0].result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    ));
+}
+
+#[test]
+fn future_generation_cutover_quarantines_current_worker_and_denies_regression() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[33; 32]);
+    let (model, request, key) = fixture_request();
+    let mut execution = runner(&signer, dir.path(), model);
+    let future = codex_hepta_types::Generation::new(key.generation.get() + 1).unwrap();
+    execution
+        .fence_scope(&key.scope_id, future, 1, key.authority_epoch)
+        .unwrap();
+    assert_eq!(
+        execution.fence_scope(&key.scope_id, key.generation, 99, key.authority_epoch),
+        Err(BatchWorkerErrorV1::InvalidBinding)
+    );
+    assert_eq!(
+        execution.fence_scope(&key.scope_id, future, 0, key.authority_epoch),
+        Err(BatchWorkerErrorV1::InvalidBinding)
+    );
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    assert_eq!(
+        execution.enqueue(100, "model".into(), request, key, signed(&signer, binding)),
+        Err(BatchWorkerErrorV1::InvalidBinding)
     );
 }

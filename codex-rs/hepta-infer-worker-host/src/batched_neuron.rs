@@ -38,6 +38,7 @@ use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 
 const MAX_TERMINAL_REQUEST_IDS: usize = 1_048_576;
+const MAX_BOUND_SCOPES: usize = 16_384;
 
 /// Fixed-size local replay fingerprint: never evict IDs while an owner lives.
 /// A new owner generation must reconcile durable control state before serving;
@@ -83,6 +84,15 @@ struct PendingV1 {
     binding: FinalUseBinding,
 }
 
+/// Last independently authenticated CNS route binding supplied by the
+/// operator. This is a bounded in-memory fence, not a durable authority.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+struct ScopeFenceV1 {
+    generation: codex_hepta_types::Generation,
+    route_fence: u64,
+    authority_epoch: u64,
+}
+
 /// One exclusive batch owner; no API exposes its underlying worker mutably.
 /// Recovered durable control state must independently resolve all orphaned
 /// requests before constructing this in-memory queue again.
@@ -91,6 +101,7 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     worker: InferenceWorker<D>,
     authority: FinalUseAuthority,
     pending: BTreeMap<StableId, PendingV1>,
+    scope_frontiers: BTreeMap<StableId, ScopeFenceV1>,
     retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
     failed_metrics: AtomicU64,
@@ -153,6 +164,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             worker,
             authority,
             pending: BTreeMap::new(),
+            scope_frontiers: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
             failed_metrics: AtomicU64::new(0),
@@ -187,6 +199,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
 
     pub fn pending(&self) -> usize {
         self.pending.len()
+    }
+
+    fn binding_current(&self, key: &MicrobatchKeyV1) -> bool {
+        self.scope_frontiers.get(&key.scope_id).is_some_and(|current| {
+            current.generation == key.generation
+                && current.route_fence == key.route_fence
+                && current.authority_epoch == key.authority_epoch
+        })
     }
 
     /// Telemetry is non-authorizing. Its sink exposes a separate health and
@@ -264,6 +284,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             || key.authority_epoch != self.worker.authority_epoch()
             || signed.grant.authority_epoch != key.authority_epoch
             || request.authorization.cancelled
+            || !self.binding_current(&key)
         {
             return Err(BatchWorkerErrorV1::InvalidBinding);
         }
@@ -337,6 +358,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                     Some(mut pending) => {
                         if pending.feature.digest() != intent.feature_digest
                             || pending.signed.grant.authority_epoch != batch.key.authority_epoch
+                            || !self.binding_current(&batch.key)
                         {
                             Err(BatchWorkerErrorV1::InvalidBinding)
                         } else {
@@ -393,14 +415,43 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         })
     }
 
-    /// Cutover drops all stale queued requests without ever invoking a driver.
+    /// Install the independently authenticated current CNS route cutover.
+    /// Only the trusted control owner may supply this binding. Unbound scopes
+    /// cannot enqueue any work, even with a correctly signed old Final-use
+    /// grant. Rollback is forbidden within a worker lifetime; on restart the
+    /// control owner must rehydrate the frontier before admitting requests.
+    ///
+    /// This local admission fence complements, but never replaces, the durable
+    /// signed Final-use nonce ledger and the authoritative CNS owner.
     pub fn fence_scope(
         &mut self,
         scope: &StableId,
         generation: codex_hepta_types::Generation,
         fence: u64,
         authority_epoch: u64,
-    ) -> Vec<StableId> {
+    ) -> Result<Vec<StableId>, BatchWorkerErrorV1> {
+        if fence == 0 || authority_epoch == 0 {
+            return Err(BatchWorkerErrorV1::InvalidBinding);
+        }
+        if let Some(current) = self.scope_frontiers.get(scope) {
+            if authority_epoch < current.authority_epoch
+                || (authority_epoch == current.authority_epoch
+                    && (generation < current.generation
+                        || (generation == current.generation && fence < current.route_fence)))
+            {
+                return Err(BatchWorkerErrorV1::InvalidBinding);
+            }
+        } else if self.scope_frontiers.len() >= MAX_BOUND_SCOPES {
+            return Err(BatchWorkerErrorV1::Capacity);
+        }
+        self.scope_frontiers.insert(
+            scope.clone(),
+            ScopeFenceV1 {
+                generation,
+                route_fence: fence,
+                authority_epoch,
+            },
+        );
         let removed =
             self.scheduler
                 .retain_scope_binding(scope, generation, fence, authority_epoch);
@@ -408,7 +459,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             self.pending.remove(id);
             self.retired.insert(terminal_request_fingerprint(id));
         }
-        removed
+        Ok(removed)
     }
 }
 
