@@ -5,7 +5,13 @@ from pathlib import Path
 import unittest
 from unittest.mock import patch
 
-from project_pr_commit_ancestry import assess, check_case, read_receipt, run, unique_pairs
+from project_pr_commit_ancestry import (
+    assess,
+    check_case,
+    read_receipt,
+    run,
+    unique_pairs,
+)
 from project_pr_source_materialize import canonical, digest
 
 CUT = "2026-10-12T08:00:00Z"
@@ -150,9 +156,15 @@ class RegisteredAncestryTests(unittest.TestCase):
             (output / "READY.json").write_bytes(canonical(ready) + b"\n")
             with (
                 patch("project_pr_commit_ancestry.read_pinned", return_value=manifest),
-                patch("project_pr_commit_ancestry.reopen_materialized", return_value={"original_ready_sha256": "8" * 64}),
+                patch(
+                    "project_pr_commit_ancestry.reopen_materialized",
+                    return_value={"original_ready_sha256": "8" * 64},
+                ),
             ):
-                self.assertEqual(run(root, root, output, sha=sha, offline=True), inventory["analysis"])
+                self.assertEqual(
+                    run(root, root, output, sha=sha, offline=True),
+                    inventory["analysis"],
+                )
                 inventory["independent_review_certified"] = True
                 receipt.write_bytes(canonical(inventory) + b"\n")
                 ready["inventory_sha256"] = digest(receipt.read_bytes())

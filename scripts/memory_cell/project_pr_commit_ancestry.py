@@ -62,10 +62,14 @@ def check_case(case, records):
             or committed > cutoff
             or committed != timestamp(declared["committed_at"])
         ):
-            raise ValueError("original commit chronology conflicts with frozen pre-cut data")
+            raise ValueError(
+                "original commit chronology conflicts with frozen pre-cut data"
+            )
     head = records[case["head_sha"]]
     if head["tree_sha"] != case["tree_sha"] or head["parents"] != case["parents"]:
-        raise ValueError("HEAD tree or declared parent identity differs from frozen source")
+        raise ValueError(
+            "HEAD tree or declared parent identity differs from frozen source"
+        )
     reachable = set()
     pending = [case["head_sha"]]
     registered = set(names)
@@ -207,7 +211,9 @@ def run(source, original, out, *, sha, offline=False):
             )
             or raw.get("analysis") != assess(manifest, raw["observed"])
         ):
-            raise ValueError("registered commit ancestry does not reproduce from sealed bytes")
+            raise ValueError(
+                "registered commit ancestry does not reproduce from sealed bytes"
+            )
         return raw["analysis"]
     if Path(out).exists():
         raise ValueError("ancestry output must not overwrite another run")
