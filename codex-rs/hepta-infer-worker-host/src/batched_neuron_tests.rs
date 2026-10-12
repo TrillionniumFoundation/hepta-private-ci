@@ -545,3 +545,150 @@ fn terminal_replay_capacity_is_independent_of_active_microbatch_capacity() {
         Err(BatchWorkerErrorV1::Duplicate)
     );
 }
+
+fn production_runner(
+    signing_key: &SigningKey,
+    directory: &std::path::Path,
+    model: ModelManifest,
+    metrics: Arc<dyn PhaseMetricSinkV1>,
+) -> Result<ProductionNeuronMicrobatchWorkerV1<Driver>, BatchWorkerErrorV1> {
+    let head = FinalUseRevocations {
+        authority_epoch: 9,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    let authority = FinalUseAuthority::open_state_dir(
+        directory,
+        "security-owner".into(),
+        signing_key.verifying_key().to_bytes(),
+        head,
+    )
+    .unwrap();
+    let grant = ResourceGrant {
+        grant_id: "resource".into(),
+        authority_epoch: 9,
+        generation: 3,
+        expires_at_ms: 10_000,
+        revoked: false,
+        maximum_models: 2,
+        maximum_active_requests: 4,
+        maximum_memory_bytes: 4096,
+        semantic_digest: digest(b"resource-grant").to_string(),
+    };
+    let mut worker = InferenceWorker::new(100, "worker-one".into(), 3, grant, Driver).unwrap();
+    worker.load_model(100, model).unwrap();
+    ProductionNeuronMicrobatchWorkerV1::new(
+        worker,
+        authority,
+        MicrobatchLimitsV1 {
+            max_pending: 10,
+            max_batch_size: 1,
+            max_lanes_per_poll: 4,
+            max_wait_ms: 5,
+        },
+        metrics,
+    )
+}
+
+#[test]
+fn production_microbatch_returns_effect_outcome_only_after_metrics_flush() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[33; 32]);
+    let (model, request, key) = fixture_request();
+    let sink = Arc::new(RecordedSink::default());
+    let mut worker = production_runner(&signer, dir.path(), model, sink.clone()).unwrap();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    worker
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    let result = worker.poll_and_execute(101).unwrap();
+    assert!(result.metrics_durable);
+    assert!(matches!(
+        &result.poll.outcomes[0].result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    ));
+    assert!(worker.production_metrics_ready());
+    assert_eq!(worker.pending(), 0);
+    assert_eq!(
+        sink.0.lock().unwrap().len(),
+        3,
+    );
+}
+
+#[test]
+fn unavailable_production_metric_sink_blocks_dispatch_but_allows_fence_cutover() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[35; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let mut worker = production_runner(
+        &signer,
+        dir.path(),
+        model,
+        Arc::new(UnavailableMetricSink),
+    )
+    .unwrap();
+    // The admission operation is harmless, but its lost observation latches
+    // production-not-ready before any physical model effect.
+    worker
+        .enqueue(100, "model".into(), request, key.clone(), signed(&signer, binding))
+        .unwrap();
+    assert!(!worker.production_metrics_ready());
+    assert!(matches!(
+        worker.poll_and_execute(101),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    ));
+    assert_eq!(worker.pending(), 1);
+    assert_eq!(
+        worker.fence_scope(&key.scope_id, key.generation, 3, key.authority_epoch),
+        vec![StableId::new("req-one").unwrap()]
+    );
+    assert_eq!(worker.pending(), 0);
+}
+
+#[derive(Debug)]
+struct FailingFlushSink;
+
+impl PhaseMetricSinkV1 for FailingFlushSink {
+    fn record(&self, _event: PhaseMetricEventV1) -> Result<(), PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), PhaseMetricSinkErrorV1> {
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    }
+}
+
+#[test]
+fn failed_flush_does_not_erase_completed_final_use_outcome_or_trigger_retry() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[37; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let mut worker = production_runner(
+        &signer,
+        dir.path(),
+        model,
+        Arc::new(FailingFlushSink),
+    )
+    .unwrap();
+    worker
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    let result = worker.poll_and_execute(101).unwrap();
+    assert!(!result.metrics_durable);
+    assert!(matches!(
+        &result.poll.outcomes[0].result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    ));
+    assert_eq!(worker.pending(), 0);
+    assert!(!worker.production_metrics_ready());
+    assert!(matches!(
+        worker.poll_and_execute(102),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    ));
+}
