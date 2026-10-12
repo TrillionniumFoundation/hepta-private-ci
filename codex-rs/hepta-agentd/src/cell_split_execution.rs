@@ -27,6 +27,9 @@ use crate::neuron_ndu_read::SignedNduSnapshotReadV1;
 /// cache reads that could straddle an Objective or NDU frontier change.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct CellSplitCurrentControlSnapshotV1 {
+    /// Monotonic original Control revision; identical values on different
+    /// revisions are not interchangeable (ABA/revocation/reselection).
+    pub control_revision: u64,
     pub scope_digest: Digest32,
     pub objective_digest: Digest32,
     pub ndu_snapshot_digest: Digest32,
@@ -101,7 +104,7 @@ pub fn advance_scope_bound_selected_cell_split_v1<A: CellSplitScopeSelectionAdmi
                 &selected.candidate_artifact_digest.to_string(),
                 &signed_ndu_read.snapshot.snapshot_digest.to_string(),
             )?;
-            validate_current_control_binding(
+            let before = validate_current_control_binding(
                 plan,
                 selected_scope_id,
                 &signed_ndu_read.snapshot.scope_id,
@@ -118,6 +121,18 @@ pub fn advance_scope_bound_selected_cell_split_v1<A: CellSplitScopeSelectionAdmi
             ndu_read_verifier
                 .verify(signed_ndu_read)
                 .map_err(|e| format!("current signed NDU read denied: {e}"))?;
+            // Selector and NDU verification can cross a Control revision.
+            // Read the same authoritative Scope/Objective/NDU snapshot again,
+            // rejecting ABA even if the three digests were restored verbatim.
+            // The original effect owner must still check final-use at commit.
+            let after = validate_current_control_binding(
+                plan,
+                selected_scope_id,
+                &signed_ndu_read.snapshot.scope_id,
+                selected.objective_digest,
+                admission,
+            )?;
+            ensure_control_frontier_unchanged(before, after)?;
             Ok(())
         },
     )
@@ -129,7 +144,7 @@ fn validate_current_control_binding<A: CellSplitScopeSelectionAdmissionV1>(
     ndu_read_scope: &StableId,
     selected_objective_digest: Digest32,
     admission: &A,
-) -> Result<(), String> {
+) -> Result<CellSplitCurrentControlSnapshotV1, String> {
     if requested_scope != ndu_read_scope {
         return Err("NDU snapshot scope differs from selected execution scope".into());
     }
@@ -139,6 +154,9 @@ fn validate_current_control_binding<A: CellSplitScopeSelectionAdmissionV1>(
     let current = admission
         .current_control_snapshot(requested_scope)
         .map_err(|e| format!("current Control snapshot unavailable: {e}"))?;
+    if current.control_revision == 0 {
+        return Err("current Control revision is missing".into());
+    }
     if current.scope_digest.is_zero() || current.scope_digest.to_string() != plan.scope_digest {
         return Err("current Control scope differs from frozen CellSplit plan".into());
     }
@@ -149,6 +167,16 @@ fn validate_current_control_binding<A: CellSplitScopeSelectionAdmissionV1>(
         || current.ndu_snapshot_digest.to_string() != plan.ndu_snapshot_digest
     {
         return Err("current Control NDU frontier differs from signed CellSplit snapshot".into());
+    }
+    Ok(current)
+}
+
+fn ensure_control_frontier_unchanged(
+    before: CellSplitCurrentControlSnapshotV1,
+    after: CellSplitCurrentControlSnapshotV1,
+) -> Result<(), String> {
+    if before != after {
+        return Err("current Control revision or binding changed during NDU/Selector admission".into());
     }
     Ok(())
 }
@@ -199,6 +227,7 @@ mod tests {
 
     struct CurrentScope {
         expected_scope: StableId,
+        current_revision: u64,
         current_digest: Digest32,
         current_objective: Digest32,
         current_ndu_snapshot: Digest32,
@@ -216,6 +245,7 @@ mod tests {
                 Err("independent Control snapshot missing")
             } else {
                 Ok(CellSplitCurrentControlSnapshotV1 {
+                    control_revision: self.current_revision,
                     scope_digest: self.current_digest,
                     objective_digest: self.current_objective,
                     ndu_snapshot_digest: self.current_ndu_snapshot,
@@ -239,6 +269,7 @@ mod tests {
         let other = StableId::new("scope-b").expect("other scope");
         let current = CurrentScope {
             expected_scope: requested.clone(),
+            current_revision: 11,
             current_digest: Digest32::from_array([0x11; 32]),
             current_objective: Digest32::from_array([0x66; 32]),
             current_ndu_snapshot: Digest32::from_array([0x44; 32]),
@@ -288,6 +319,7 @@ mod tests {
         let frozen_objective = Digest32::from_array([0x66; 32]);
         let current = CurrentScope {
             expected_scope: scope.clone(),
+            current_revision: 11,
             current_digest: Digest32::from_array([0x11; 32]),
             current_objective: frozen_objective,
             current_ndu_snapshot: Digest32::from_array([0x44; 32]),
@@ -317,6 +349,39 @@ mod tests {
             ..changed_ndu
         };
         assert!(check(&unavailable, frozen_objective).is_err());
+    }
+
+    #[test]
+    fn control_revision_aba_and_mid_admission_change_are_denied() {
+        let scope = StableId::new("scope-a").expect("scope");
+        let frozen = plan();
+        let objective = Digest32::from_array([0x66; 32]);
+        let original = CurrentScope {
+            expected_scope: scope.clone(),
+            current_revision: 11,
+            current_digest: Digest32::from_array([0x11; 32]),
+            current_objective: objective,
+            current_ndu_snapshot: Digest32::from_array([0x44; 32]),
+            unavailable: false,
+        };
+        let observe = |owner: &CurrentScope| {
+            validate_current_control_binding(&frozen, &scope, &scope, objective, owner)
+        };
+        let before = observe(&original).expect("original current Control");
+        assert!(ensure_control_frontier_unchanged(before, before).is_ok());
+
+        let advanced = CurrentScope {
+            current_revision: 12,
+            ..original
+        };
+        let after = observe(&advanced).expect("changed revision retains same digests");
+        assert!(ensure_control_frontier_unchanged(before, after).is_err());
+
+        let missing_revision = CurrentScope {
+            current_revision: 0,
+            ..advanced
+        };
+        assert!(observe(&missing_revision).is_err());
     }
 
     #[test]
