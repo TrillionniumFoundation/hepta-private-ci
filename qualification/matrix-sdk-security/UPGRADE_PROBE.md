@@ -39,3 +39,27 @@ re-run native Matrix/Matrixd tests (including encrypted room and Synapse),
 cross-platform Bazel, strict Clippy and cargo-deny on the exact final SHA.
 Until then, global CI is not accepted and PR #1494 remains Draft. The
 Matrix dependency issue is independent from real Neuron no-change/NDU proof.
+
+## Verified October 12, 2026 resolver failure and separated follow-up
+
+The actual probe run [#38215586235](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38215586235) **failed before compilation**: `matrix-sdk-store-encryption 0.19.1` needs `blake3 ^1.8.7` while `starlark 0.14.2` fixes `blake3 =1.8.2`. Cargo cannot produce the joint lock. This is a true workspace-wide solver conflict, not a Matrix unit-test failure.
+
+The updated workflow retains that strict workspace probe and separately
+resolves a **disposable, nonworkspace Matrix 0.19.1 dependency graph** using
+the upstream crate's Rust 1.96 compiler. That isolated run records the
+transitive crypto version and presence of `anymap2`, while comparing the SDK
+declared MSRV against the **unchanged production Rust 1.95.0** from
+`codex-rs/rust-toolchain.toml`. Isolation is diagnostic only; it is explicitly
+red whenever any of MSRV incompatibility, unmaintained `anymap2`, or
+unpatched crypto exists.
+
+Other known lock blocker: global cargo-deny also reported yanked
+`chacha20 0.10.0` through the existing `rand` graph; replacing an SDK does
+not by itself establish an accepted lock or transitive security compliance.
+No advisory exceptions, policy suppression, fake lockfiles, production key
+material or release authorization are added.
+
+Remediation must use a maintainer-reviewed compatible Starlark/BLAKE3 policy,
+a supported Matrix SDK without `anymap2`, a coordinated toolchain and
+Matrix-sqlite migration, then a **real** pinned Cargo.lock with native
+encrypted Matrix tests and full cross-platform blocking-ci.
