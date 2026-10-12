@@ -393,7 +393,12 @@ impl NeuronFeatureBatchDriver for GatedHeadCpuDriverV2 {
         requests: &[NeuronFeatureRequest],
     ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error> {
         self.verify_loaded(handle)?;
-        self.batch_calls = self
+        // The low-level driver is still bounded even when called without the
+        // Worker admission wrapper. Count only fully completed batches.
+        if requests.is_empty() || requests.len() > 32 {
+            return Err(Error::RequestCapacity);
+        }
+        let next_batch_calls = self
             .batch_calls
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
@@ -425,6 +430,7 @@ impl NeuronFeatureBatchDriver for GatedHeadCpuDriverV2 {
         for item in &mut observed {
             item.feature.latency_micros = batch_micros;
         }
+        self.batch_calls = next_batch_calls;
         Ok(observed)
     }
 }
@@ -436,7 +442,12 @@ impl NeuronSharedFeatureBatchDriverV2 for GatedHeadCpuDriverV2 {
         requests: &[SharedNeuronFeatureRequestV2],
     ) -> Result<Vec<NeuronFeatureBatchItemObservationV2>, Error> {
         self.verify_loaded(handle)?;
-        self.batch_calls = self
+        // The low-level driver is still bounded even when called without the
+        // Worker admission wrapper. Count only fully completed batches.
+        if requests.is_empty() || requests.len() > 32 {
+            return Err(Error::RequestCapacity);
+        }
+        let next_batch_calls = self
             .batch_calls
             .checked_add(1)
             .ok_or(Error::ArithmeticOverflow)?;
@@ -478,6 +489,7 @@ impl NeuronSharedFeatureBatchDriverV2 for GatedHeadCpuDriverV2 {
         for item in &mut observations {
             item.feature.latency_micros = elapsed;
         }
+        self.batch_calls = next_batch_calls;
         Ok(observations)
     }
 }
@@ -738,6 +750,120 @@ mod tests {
     }
 
     #[test]
+    fn failed_or_empty_legacy_batch_never_counts_as_completed_physical_work() {
+        let selected = manifest_for(&[head("cell.a")]);
+        let mut driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("driver");
+        let selected_head = driver.register_head(head("cell.a")).expect("head");
+        let handle = driver.load(&selected).expect("model");
+        let valid = feature("request.ok", selected_head, selected.weights_digest.clone());
+        let mut late_invalid = valid.clone();
+        late_invalid.authorization.request_id = "request.late-invalid".to_string();
+        late_invalid.head_digest = "f".repeat(64);
+        assert!(matches!(
+            driver.run_neuron_features_batch(&handle, &[]),
+            Err(Error::RequestCapacity)
+        ));
+        assert!(matches!(
+            driver.run_neuron_features_batch(&handle, &vec![valid.clone(); 33]),
+            Err(Error::RequestCapacity)
+        ));
+        // First Cell computes successfully, second Cell fails. This is not a
+        // completed physical batch and must not inflate performance evidence.
+        assert!(matches!(
+            driver.run_neuron_features_batch(&handle, &[valid.clone(), late_invalid]),
+            Err(Error::ModelNotLoaded)
+        ));
+        assert_eq!(driver.batch_calls(), 0);
+        assert_eq!(
+            driver
+                .run_neuron_features_batch(&handle, &[valid])
+                .expect("valid bounded physical batch")
+                .len(),
+            1
+        );
+        assert_eq!(driver.batch_calls(), 1);
+    }
+
+    #[test]
+    fn failed_shared_arc_batch_does_not_increment_successful_physical_count() {
+        use codex_hepta_infer_core::shared_feature_v2::SharedFeatureCacheV2;
+        use codex_hepta_infer_core::shared_feature_v2::SharedFeatureIdentityV2;
+        use codex_hepta_types::Generation;
+        use codex_hepta_types::StableId;
+        use std::sync::Arc;
+
+        let id = |x: &str| StableId::new(x.to_string()).expect("identity");
+        let encoder = Digest32::of_bytes(b"frozen encoder");
+        let mut candidate = head("cell.a");
+        candidate.encoder_digest = encoder.to_string();
+        let selected = manifest_for(&[candidate.clone()]);
+        let mut driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("driver");
+        let digest = driver.register_head(candidate).expect("head");
+        let handle = driver.load(&selected).expect("loaded");
+        let identity = SharedFeatureIdentityV2 {
+            scope_id: id("scope.a"),
+            principal_id: id("principal.a"),
+            purpose_id: id("purpose.decision"),
+            generation: Generation::new(1).expect("generation"),
+            authority_epoch: 1,
+            encoder_digest: encoder,
+            tokenizer_digest: Digest32::of_bytes(b"tokenizer"),
+            normalizer_digest: Digest32::of_bytes(b"normalizer"),
+            quantization_digest: Digest32::of_bytes(b"quantizer"),
+            input_digest: Digest32::of_bytes(b"state plus ordered options"),
+        };
+        let mut cache = SharedFeatureCacheV2::new(2, 256).expect("cache");
+        let snapshot = cache
+            .insert(1, identity, 1000, Arc::from([Q24 / 2, Q24 / 4]))
+            .expect("feature");
+        let valid = SharedNeuronFeatureRequestV2 {
+            authorization: WorkerRequest {
+                request_id: "request.a".into(),
+                reservation_id: "reservation.a".into(),
+                model_digest: selected.model_digest.clone(),
+                payload_digest: "1".repeat(64),
+                maximum_tokens: 16,
+                deadline_ms: 500,
+                lease_payload_digest: "1".repeat(64),
+                reservation_model_digest: selected.model_digest.clone(),
+                reservation_maximum_tokens: 16,
+                cancelled: false,
+            },
+            scope_id: id("scope.a"),
+            principal_id: id("principal.a"),
+            purpose_id: id("purpose.decision"),
+            cell_id: id("cell.a"),
+            snapshot,
+            head_digest: digest,
+            weights_digest: selected.weights_digest.clone(),
+            expected_output_width: 1,
+        };
+        let mut late_invalid = valid.clone();
+        late_invalid.cell_id = id("cell.b");
+        assert!(matches!(
+            driver.run_shared_neuron_features_batch_v2(&handle, &[]),
+            Err(Error::RequestCapacity)
+        ));
+        assert!(matches!(
+            driver.run_shared_neuron_features_batch_v2(&handle, &vec![valid.clone(); 33]),
+            Err(Error::RequestCapacity)
+        ));
+        assert!(matches!(
+            driver.run_shared_neuron_features_batch_v2(&handle, &[valid.clone(), late_invalid]),
+            Err(Error::FeatureOutputMismatch)
+        ));
+        assert_eq!(driver.batch_calls(), 0);
+        assert_eq!(
+            driver
+                .run_shared_neuron_features_batch_v2(&handle, &[valid])
+                .expect("complete physical reference batch")
+                .len(),
+            1
+        );
+        assert_eq!(driver.batch_calls(), 1);
+    }
+
+    #[test]
     fn rejects_excess_capacity_and_stale_head_before_returning_output() {
         let selected = manifest_for(&[head("cell.a")]);
         let mut driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("driver");
@@ -787,8 +913,8 @@ mod tests {
         selected.quantization_digest = Digest32::of_bytes(b"quantization").to_string();
 
         let mut driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("driver");
-        let h_first = driver.register_head(first).expect("head a");
-        let h_second = driver.register_head(second).expect("head b");
+        let h_first = driver.register_head(first.clone()).expect("head a");
+        let h_second = driver.register_head(second.clone()).expect("head b");
         let mut cache = SharedFeatureCacheV2::new(2, 512).expect("cache");
         let identity = SharedFeatureIdentityV2 {
             scope_id: id("scope.a"),
@@ -838,6 +964,45 @@ mod tests {
         let a = mk("cell.a", "request.a", h_first.clone());
         let b = mk("cell.b", "request.b", h_second.clone());
         assert!(std::sync::Arc::ptr_eq(&a.snapshot, &b.snapshot));
+
+        // Both reservations are individually valid but the two Cells'
+        // minimum output Vec allocations would exceed this grant. The Worker
+        // must reject the *whole* cohort before dispatching any CPU work.
+        let mut bounded_driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("bounded");
+        bounded_driver
+            .register_head(first.clone())
+            .expect("bounded head a");
+        bounded_driver
+            .register_head(second.clone())
+            .expect("bounded head b");
+        let resident = u64::try_from(bounded_driver.parameter_bytes()).expect("resident");
+        let bounded_grant = ResourceGrant {
+            grant_id: "grant.bounded".into(),
+            authority_epoch: 2,
+            generation: 3,
+            expires_at_ms: 2000,
+            revoked: false,
+            maximum_models: 1,
+            maximum_active_requests: 4,
+            maximum_memory_bytes: resident + 16,
+            semantic_digest: "1".repeat(64),
+        };
+        let mut bounded_worker =
+            InferenceWorker::new(1, "worker.bounded".into(), 3, bounded_grant, bounded_driver)
+                .expect("bounded worker");
+        bounded_worker
+            .load_model(1, selected.clone())
+            .expect("bounded model load");
+        assert_eq!(
+            bounded_worker.run_shared_neuron_features_batch_v2(
+                100,
+                "model.gated",
+                vec![a.clone(), b.clone()],
+            ),
+            Err(Error::ModelCapacity)
+        );
+        assert_eq!(bounded_worker.driver.batch_calls(), 0);
+
         let grant = ResourceGrant {
             grant_id: "grant.ref".into(),
             authority_epoch: 2,
@@ -867,6 +1032,34 @@ mod tests {
             Err(Error::FeatureContract)
         ));
         assert_eq!(worker.driver.batch_calls(), 0);
+        // A well-formed row from another principal or purpose must not
+        // enter the same *physical* backend invocation. Recompute its payload
+        // and lease digests so the denial cannot be attributed to stale bytes.
+        for change_principal in [true, false] {
+            let mut mixed = b.clone();
+            let mut isolated_snapshot = (*mixed.snapshot).clone();
+            if change_principal {
+                mixed.principal_id = id("principal.other");
+                isolated_snapshot.identity.principal_id = mixed.principal_id.clone();
+            } else {
+                mixed.purpose_id = id("purpose.other");
+                isolated_snapshot.identity.purpose_id = mixed.purpose_id.clone();
+            }
+            mixed.snapshot = std::sync::Arc::new(isolated_snapshot);
+            let mixed_digest = super::super::canonical_shared_neuron_payload_digest_v2(&mixed)
+                .expect("fresh mixed-partition payload");
+            mixed.authorization.payload_digest = mixed_digest.clone();
+            mixed.authorization.lease_payload_digest = mixed_digest;
+            assert_eq!(
+                worker.run_shared_neuron_features_batch_v2(
+                    100,
+                    "model.gated",
+                    vec![a.clone(), mixed],
+                ),
+                Err(Error::FeatureContract)
+            );
+            assert_eq!(worker.driver.batch_calls(), 0);
+        }
         let results = worker
             .run_shared_neuron_features_batch_v2(100, "model.gated", vec![a, b])
             .expect("batched references");
