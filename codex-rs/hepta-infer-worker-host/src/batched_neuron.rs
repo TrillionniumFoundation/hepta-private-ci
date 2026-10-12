@@ -78,6 +78,11 @@ pub struct BatchWorkerPollV1 {
     pub pending: usize,
 }
 
+/// Control-owned live route/generation/epoch reader, never a caller hint.
+pub trait MicrobatchScopeFrontierV1: std::fmt::Debug + Send + Sync {
+    fn current(&self, scope: &StableId) -> Result<MicrobatchKeyV1, BatchWorkerErrorV1>;
+}
+
 struct PendingV1 {
     model_id: String,
     request: NeuronFeatureRequest,
@@ -93,6 +98,7 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     scheduler: BoundedMicrobatchSchedulerV1,
     worker: InferenceWorker<D>,
     authority: FinalUseAuthority,
+    scope_frontier: Arc<dyn MicrobatchScopeFrontierV1>,
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
@@ -143,7 +149,6 @@ pub fn neuron_batch_final_use_binding_v1(
     })
 }
 
-
 fn with_all_final_use_effects<T, F: FnOnce() -> T>(
     authority: &FinalUseAuthority,
     mut claims: std::vec::IntoIter<(VerifiedUseToken, FinalUseBinding)>,
@@ -164,6 +169,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
     pub fn new(
         worker: InferenceWorker<D>,
         authority: FinalUseAuthority,
+        scope_frontier: Arc<dyn MicrobatchScopeFrontierV1>,
         limits: MicrobatchLimitsV1,
     ) -> Result<Self, BatchWorkerErrorV1> {
         let scheduler =
@@ -172,6 +178,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             scheduler,
             worker,
             authority,
+            scope_frontier,
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
@@ -287,6 +294,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         {
             return Err(BatchWorkerErrorV1::InvalidBinding);
         }
+        let current = self
+            .scope_frontier
+            .current(&key.scope_id)
+            .map_err(|_| BatchWorkerErrorV1::InvalidBinding)?;
+        if current != key {
+            return Err(BatchWorkerErrorV1::InvalidBinding);
+        }
         let binding = neuron_batch_final_use_binding_v1(self.worker.worker_id(), &key, &request)?;
         if signed.grant.binding != binding {
             return Err(BatchWorkerErrorV1::InvalidBinding);
@@ -348,64 +362,92 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         }
         let mut outcomes = Vec::new();
         if let Some(batch) = poll.batch {
-            if batch.requests.len() > 1 && self.worker.supports_physical_neuron_batch() {
-                outcomes = self.execute_native_batch(now_ms, batch);
-            } else {
+            if self.scope_frontier.current(&batch.key.scope_id).ok().as_ref()
+                != Some(&batch.key)
+            {
                 for intent in batch.requests {
-                let id = intent.request_id;
-                let started = Instant::now();
-                self.retired.insert(terminal_request_fingerprint(&id));
-                let outcome = match self.pending.remove(&id) {
-                    None => Err(BatchWorkerErrorV1::NoAdmission),
-                    Some(mut pending) => {
-                        if pending.feature.digest() != intent.feature_digest
-                            || pending.signed.grant.authority_epoch != batch.key.authority_epoch
-                        {
-                            Err(BatchWorkerErrorV1::InvalidBinding)
-                        } else {
-                            pending.request.feature_vector_q24 =
-                                pending.feature.as_slice().to_vec();
-                            let result = FinalUseAuthority::claim(
-                                &self.authority,
-                                &pending.signed,
-                                &pending.binding,
-                            )
-                            .map_err(|_| BatchWorkerErrorV1::Authority)
-                            .and_then(|token| {
-                                FinalUseAuthority::with_verified_effect(
+                        let id = intent.request_id;
+                        self.retired.insert(terminal_request_fingerprint(&id));
+                        self.pending.remove(&id);
+                        self.emit_metric(
+                            &batch.key.scope_id,
+                            &id,
+                            PhaseMetricKindV1::NeuronFeature,
+                            Duration::ZERO,
+                            false,
+                        );
+                        outcomes.push(BatchWorkerItemOutcomeV1 {
+                            request_id: id,
+                            result: Err(BatchWorkerErrorV1::InvalidBinding),
+                        });
+                    }
+                } else if batch.requests.len() > 1 && self.worker.supports_physical_neuron_batch() {
+                    outcomes = self.execute_native_batch(now_ms, batch);
+                } else {
+                    for intent in batch.requests {
+                    let id = intent.request_id;
+                    let started = Instant::now();
+                    self.retired.insert(terminal_request_fingerprint(&id));
+                    let outcome = match self.pending.remove(&id) {
+                        None => Err(BatchWorkerErrorV1::NoAdmission),
+                        Some(mut pending) => {
+                            if pending.feature.digest() != intent.feature_digest
+                                || pending.signed.grant.authority_epoch != batch.key.authority_epoch
+                            {
+                                Err(BatchWorkerErrorV1::InvalidBinding)
+                            } else {
+                                pending.request.feature_vector_q24 =
+                                    pending.feature.as_slice().to_vec();
+                                let result = FinalUseAuthority::claim(
                                     &self.authority,
-                                    token,
+                                    &pending.signed,
                                     &pending.binding,
-                                    || {
-                                        self.worker.run_neuron_features_receipt(
-                                            now_ms,
-                                            &pending.model_id,
-                                            pending.request,
-                                        )
-                                    },
                                 )
                                 .map_err(|_| BatchWorkerErrorV1::Authority)
-                                .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
-                            });
-                            result
+                                .and_then(|token| {
+                                    FinalUseAuthority::with_verified_effect(
+                                        &self.authority,
+                                        token,
+                                        &pending.binding,
+                                        || {
+                                            if self
+                                                .scope_frontier
+                                                .current(&batch.key.scope_id)
+                                                .ok()
+                                                .as_ref()
+                                                != Some(&batch.key)
+                                            {
+                                                return Err(crate::model_worker::Error::FeatureContract);
+                                            }
+                                            self.worker.run_neuron_features_receipt(
+                                                now_ms,
+                                                &pending.model_id,
+                                                pending.request,
+                                            )
+                                        },
+                                    )
+                                    .map_err(|_| BatchWorkerErrorV1::Authority)
+                                    .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
+                                });
+                                result
+                            }
                         }
-                    }
-                };
-                let succeeded = matches!(
-                    &outcome,
-                    Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
-                );
-                self.emit_metric(
-                    &batch.key.scope_id,
-                    &id,
-                    PhaseMetricKindV1::NeuronFeature,
-                    started.elapsed(),
-                    succeeded,
-                );
-                outcomes.push(BatchWorkerItemOutcomeV1 {
-                    request_id: id,
-                    result: outcome,
-                });
+                    };
+                    let succeeded = matches!(
+                        &outcome,
+                        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+                    );
+                    self.emit_metric(
+                        &batch.key.scope_id,
+                        &id,
+                        PhaseMetricKindV1::NeuronFeature,
+                        started.elapsed(),
+                        succeeded,
+                    );
+                    outcomes.push(BatchWorkerItemOutcomeV1 {
+                        request_id: id,
+                        result: outcome,
+                    });
                 }
             }
         }
@@ -416,7 +458,6 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             pending: self.pending.len(),
         })
     }
-
 
     /// Only called when the loaded driver explicitly advertises physical
     /// batching. Authentication remains per request, not per batch; rejected
@@ -476,6 +517,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                     requests.push(pending.request);
                 }
                 let mut physical = Some(|| {
+                    if self.scope_frontier.current(&batch.key.scope_id).ok().as_ref()
+                        != Some(&batch.key)
+                    {
+                        return Err(crate::model_worker::Error::FeatureContract);
+                    }
                     self.worker
                         .run_neuron_features_batch_receipts(now_ms, &model_id, requests)
                 });
@@ -503,6 +549,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                             token,
                             &pending.binding,
                             || {
+                                if self
+                                    .scope_frontier
+                                    .current(&batch.key.scope_id)
+                                    .ok()
+                                    .as_ref()
+                                    != Some(&batch.key)
+                                {
+                                    return Err(crate::model_worker::Error::FeatureContract);
+                                }
                                 self.worker.run_neuron_features_receipt(
                                     now_ms,
                                     &pending.model_id,

@@ -150,12 +150,53 @@ fn runner_with_batch_size(
     runner_with_batch_size_and_driver(signing_key, directory, model, batch_size, Driver)
 }
 
+#[derive(Debug)]
+struct TestScopeFrontier(std::sync::Mutex<MicrobatchKeyV1>);
+
+impl MicrobatchScopeFrontierV1 for TestScopeFrontier {
+    fn current(&self, scope: &StableId) -> Result<MicrobatchKeyV1, BatchWorkerErrorV1> {
+        let current = self
+            .0
+            .lock()
+            .map_err(|_| BatchWorkerErrorV1::InvalidBinding)?;
+        if &current.scope_id != scope {
+            return Err(BatchWorkerErrorV1::InvalidBinding);
+        }
+        Ok(current.clone())
+    }
+}
+
 fn runner_with_batch_size_and_driver<D: ModelDriver + NeuronFeatureDriver>(
     signing_key: &SigningKey,
     directory: &std::path::Path,
     model: ModelManifest,
     batch_size: usize,
     driver: D,
+) -> AuthenticatedNeuronMicrobatchWorkerV1<D> {
+    let key = MicrobatchKeyV1 {
+        scope_id: StableId::new("scope").unwrap(),
+        model_digest: Digest32::from_str(&model.model_digest).unwrap(),
+        generation: Generation::new(3).unwrap(),
+        route_fence: 2,
+        authority_epoch: 9,
+    };
+    runner_with_scope_frontier(
+        signing_key,
+        directory,
+        model,
+        batch_size,
+        driver,
+        std::sync::Arc::new(TestScopeFrontier(std::sync::Mutex::new(key))),
+    )
+}
+
+fn runner_with_scope_frontier<D: ModelDriver + NeuronFeatureDriver>(
+    signing_key: &SigningKey,
+    directory: &std::path::Path,
+    model: ModelManifest,
+    batch_size: usize,
+    driver: D,
+    scope_frontier: std::sync::Arc<dyn MicrobatchScopeFrontierV1>,
 ) -> AuthenticatedNeuronMicrobatchWorkerV1<D> {
     let head = FinalUseRevocations {
         authority_epoch: 9,
@@ -185,6 +226,7 @@ fn runner_with_batch_size_and_driver<D: ModelDriver + NeuronFeatureDriver>(
     AuthenticatedNeuronMicrobatchWorkerV1::new(
         worker,
         authority,
+        scope_frontier,
         MicrobatchLimitsV1 {
             max_pending: 10,
             max_batch_size: batch_size,
@@ -627,4 +669,40 @@ fn invalid_signed_grant_is_excluded_before_native_backend_batch_entry() {
     assert!(poll.outcomes[2].result.is_ok());
     assert_eq!(backend_calls.load(std::sync::atomic::Ordering::Relaxed), 1);
     assert_eq!(scalar_calls.load(std::sync::atomic::Ordering::Relaxed), 0);
+}
+
+#[test]
+fn external_control_fence_cutover_denies_queued_grant_without_driver_effect() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[46; 32]);
+    let (model, request, key) = fixture_request();
+    let scope_frontier = std::sync::Arc::new(TestScopeFrontier(std::sync::Mutex::new(key.clone())));
+    let backend_calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let scalar_calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = PhysicalBatchDriver {
+        backend_calls: backend_calls.clone(),
+        scalar_calls: scalar_calls.clone(),
+    };
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let mut execution = runner_with_scope_frontier(
+        &signer,
+        dir.path(),
+        model,
+        1,
+        driver,
+        scope_frontier.clone(),
+    );
+    execution
+        .enqueue(100, "model".into(), request, key.clone(), signed(&signer, binding))
+        .unwrap();
+    scope_frontier.0.lock().unwrap().route_fence += 1;
+    let result = execution.poll_and_execute(101).unwrap();
+    assert_eq!(result.outcomes.len(), 1);
+    assert!(matches!(
+        result.outcomes[0].result,
+        Err(BatchWorkerErrorV1::InvalidBinding)
+    ));
+    assert_eq!(backend_calls.load(std::sync::atomic::Ordering::Relaxed), 0);
+    assert_eq!(scalar_calls.load(std::sync::atomic::Ordering::Relaxed), 0);
+    assert_eq!(execution.pending(), 0);
 }
