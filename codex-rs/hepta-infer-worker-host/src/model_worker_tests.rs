@@ -1120,3 +1120,73 @@ fn batch_peak_includes_other_models_loaded_in_worker_generation() {
     assert!(worker.requires_external_recovery());
     assert_eq!(worker.driver.backend_calls, 1);
 }
+
+#[test]
+fn neuron_single_feature_respects_loaded_model_token_limit_without_driver_dispatch() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.token-single".to_string(), 3, grant(), Driver::default())
+            .expect("worker");
+    let mut pinned_manifest = manifest();
+    pinned_manifest.maximum_tokens = 32;
+    worker.load_model(100, pinned_manifest).expect("model");
+
+    // The lease and reservation themselves are consistent and unexpired.
+    // A wider request must still be refused by the selected model manifest.
+    let oversized = neuron_feature_request();
+    assert_eq!(oversized.authorization.maximum_tokens, 64);
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", oversized),
+        Err(Error::TokenLimit)
+    );
+    assert!(!worker.requires_external_recovery(), "preflight rejection never dispatched");
+
+    let mut bounded = neuron_feature_request();
+    bounded.authorization.maximum_tokens = 32;
+    let observed = worker
+        .run_neuron_features(100, "model.1", bounded)
+        .expect("within immutable model token limit");
+    assert_eq!(observed.status, ExecutionStatus::Succeeded);
+    worker.unload_model(100, "model.1").expect("releasable");
+}
+
+#[test]
+fn neuron_batch_and_single_share_manifest_token_ceiling_on_cancelled_inputs() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.token-batch".to_string(),
+        3,
+        grant(),
+        MockBatchDriver::default(),
+    )
+    .expect("worker");
+    let mut pinned_manifest = manifest();
+    pinned_manifest.maximum_tokens = 32;
+    worker.load_model(100, pinned_manifest).expect("model");
+
+    let mut cancelled = neuron_feature_request();
+    cancelled.authorization.cancelled = true;
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", cancelled),
+        Err(Error::TokenLimit),
+        "cancellation cannot silently bypass immutable model admission"
+    );
+
+    let oversized = two_batch_requests();
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", oversized),
+        Err(Error::TokenLimit)
+    );
+    assert_eq!(worker.driver.backend_calls, 0);
+    assert!(!worker.requires_external_recovery());
+
+    let mut bounded = two_batch_requests();
+    for request in &mut bounded {
+        request.authorization.maximum_tokens = 32;
+    }
+    let receipts = worker
+        .run_neuron_features_backend_batch(100, "model.1", bounded)
+        .expect("bounded batch");
+    assert_eq!(receipts.receipts.len(), 2);
+    assert_eq!(worker.driver.backend_calls, 1);
+    worker.unload_model(100, "model.1").expect("releasable");
+}
