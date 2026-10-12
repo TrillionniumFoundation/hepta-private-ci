@@ -809,6 +809,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             Generation::new(self.generation).map_err(|_| Error::FeatureContract)?;
         self.consume_neuron_attempt(&request.authorization)?;
         self.run_neuron_features_receipt_consumed(now_ms, model_id, request, logical_generation)
+            .map(|(receipt, _)| receipt)
     }
 
     /// Used by WorkerNeuronControlPort after it records the attempt BEFORE
@@ -819,7 +820,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         model_id: &str,
         request: NeuronFeatureRequest,
         logical_generation: Generation,
-    ) -> Result<NeuronFeatureReceiptV1, Error> {
+    ) -> Result<(NeuronFeatureReceiptV1, u32), Error> {
         let request_copy = request.clone();
         let observed = self.run_neuron_features_consumed(now_ms, model_id, request)?;
         // The worker generation is already checked by durable Assignment.
@@ -848,13 +849,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             runtime_digest: parse_digest32(&observed.manifest.runtime_digest)?,
             device_digest: parse_digest32(&observed.manifest.device_digest)?,
         };
+        // Preserve physical backend token usage in the Worker-owner diagnostic.
+        // The original typed NeuronFeatureReceiptV1 format is unchanged.
+        let consumed_tokens = observed.consumed_tokens;
         let status = match observed.status {
             ExecutionStatus::Succeeded => NeuronFeatureTerminalStatusV1::Succeeded,
             ExecutionStatus::Failed => NeuronFeatureTerminalStatusV1::Failed,
             ExecutionStatus::Cancelled => NeuronFeatureTerminalStatusV1::Cancelled,
             ExecutionStatus::Indeterminate => NeuronFeatureTerminalStatusV1::Indeterminate,
         };
-        build_neuron_feature_receipt_v1(
+        let receipt = build_neuron_feature_receipt_v1(
             &control_request,
             runtime_tuple,
             NeuronFeatureObservationV1 {
@@ -869,7 +873,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
                 status,
             },
         )
-        .map_err(|_| Error::FeatureContract)
+        .map_err(|_| Error::FeatureContract)?;
+        Ok((receipt, consumed_tokens))
     }
 }
 
