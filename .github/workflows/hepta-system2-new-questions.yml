@@ -1,0 +1,116 @@
+name: Hepta System2 fixed-support new-question Reader trial
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_frozen_cohort.py"
+      - "scripts/memory_cell/system2_new_questions.py"
+      - "scripts/memory_cell/test_system2_frozen_cohort.py"
+      - "scripts/memory_cell/test_system2_new_questions_wiring.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_NEW_QUESTIONS.md"
+      - ".github/workflows/hepta-system2-new-questions.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-new-questions-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  new-question-reader:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 75
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HEPTA_STEM_STRICT_ARCHIVE: /tmp/stem-regression.zip
+      HEPTA_SYSTEM2_ORIGINAL_ARCHIVE: /tmp/system2-original.zip
+      HEPTA_SYSTEM2_CONTENT_ARCHIVE: /tmp/system2-content.zip
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned CPU environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/new-question-evidence
+          python3 -m venv /tmp/system2-python
+          /tmp/system2-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/system2-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8
+          /tmp/system2-python/bin/pip freeze > /tmp/new-question-evidence/environment.txt
+      - name: Stage immutable historical regression and prior-feature archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11693693993/zip > "$HEPTA_STEM_STRICT_ARCHIVE"
+          printf '%s  %s\n' 1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8 "$HEPTA_STEM_STRICT_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11703482865/zip > "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE"
+          printf '%s  %s\n' 80037375c44927f71e15dea508abb6ac3a2d5ccd03cefe2a5c21beedad37247e "$HEPTA_SYSTEM2_ORIGINAL_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11706235289/zip > "$HEPTA_SYSTEM2_CONTENT_ARCHIVE"
+          printf '%s  %s\n' 2d7d1058c724f79298b8ccd28c319629b929a842f2107301c3e1c1adef09bcea "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" | sha256sum -c -
+      - name: Full MemoryCell regressions and static checks before native models
+        run: |
+          set -euo pipefail
+          /tmp/system2-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/new-question-evidence/regression.log
+          /tmp/system2-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_frozen_cohort.py scripts/memory_cell/system2_new_questions.py scripts/memory_cell/test_system2_frozen_cohort.py scripts/memory_cell/test_system2_new_questions_wiring.py 2>&1 | tee /tmp/new-question-evidence/lint.log
+      - name: Reuse pinned native data and models without changing architecture
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/staged.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/staged.zip | sha256sum -c -
+          /tmp/system2-python/bin/python - <<'PY'
+          import tarfile, zipfile
+          from pathlib import Path, PurePosixPath
+          from huggingface_hub import snapshot_download
+          from pretrained import file_inventory
+          from relevance_ranker import RANKER_ID, RANKER_REVISION, RANKER_TENSOR_SHA256
+          with zipfile.ZipFile('/tmp/staged.zip') as z:
+              if z.namelist() != ['memory-inputs.tar.gz']:
+                  raise ValueError('unexpected pinned staging layout')
+              z.extractall('/tmp')
+          with tarfile.open('/tmp/memory-inputs.tar.gz') as t:
+              members=t.getmembers()
+              if len(members)>10000 or sum(m.size for m in members)>2*1024**3:
+                  raise ValueError('staging size budget')
+              if len({m.name for m in members}) != len(members):
+                  raise ValueError('duplicate staged path')
+              for m in members:
+                  p=PurePosixPath(m.name)
+                  if p.is_absolute() or '..' in p.parts or not p.parts or p.parts[0]!='memory-inputs' or not (m.isfile() or m.isdir()):
+                      raise ValueError('unsafe staged path')
+              t.extractall('/tmp', filter='data')
+          snapshot_download(RANKER_ID, revision=RANKER_REVISION, local_dir='/tmp/system2-ranker',
+              allow_patterns=['config.json','model.safetensors','tokenizer.json','tokenizer_config.json','special_tokens_map.json','vocab.txt'], token=False)
+          if file_inventory(Path('/tmp/system2-ranker'))['model.safetensors']['sha256'] != RANKER_TENSOR_SHA256:
+              raise ValueError('paired Encoder drift')
+          PY
+      - name: Fixed support training then new-question Reader evaluation
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/new-question-evidence/resources.txt /tmp/system2-python/bin/python scripts/memory_cell/system2_new_questions.py /tmp/memory-inputs /tmp/system2-ranker "$HEPTA_SYSTEM2_CONTENT_ARCHIVE" /tmp/new-question-evidence/native 2>&1 | tee /tmp/new-question-evidence/execution.log
+      - name: Retain exact source, partial output and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/new-question-evidence/source
+          git rev-parse HEAD > /tmp/new-question-evidence/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/new-question-evidence/tested-tree.txt
+          cp scripts/memory_cell/system2_frozen_cohort.py scripts/memory_cell/system2_new_questions.py scripts/memory_cell/test_system2_frozen_cohort.py scripts/memory_cell/test_system2_new_questions_wiring.py .github/workflows/hepta-system2-new-questions.yml /tmp/new-question-evidence/source/
+          (cd /tmp/new-question-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-new-questions
+          path: /tmp/new-question-evidence
+          if-no-files-found: error
