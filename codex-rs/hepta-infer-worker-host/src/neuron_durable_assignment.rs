@@ -8,6 +8,7 @@
 
 use std::error::Error as StdError;
 use std::fmt;
+use std::time::Instant;
 use std::str::FromStr;
 
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
@@ -264,6 +265,9 @@ pub fn claim_neuron_durable_dispatch_v1<'a, D: ModelDriver + NeuronFeatureDriver
     request: &NeuronFeatureRequestV1,
     now_ms: u64,
 ) -> Result<(ControlReceipt, WorkerNeuronControlPort<'a, D>), NeuronDurableAssignmentErrorV1> {
+    // Capture the monotonic interval BEFORE the owner read and fsynced claim.
+    // The one-use port will include that elapsed time at actual driver use.
+    let claim_started = Instant::now();
     // This reads BOTH source owners before any durable or physical side effect.
     let matched = read_neuron_durable_assignment_v1(owner, worker, request, now_ms)?;
     let record = owner
@@ -308,12 +312,13 @@ pub fn claim_neuron_durable_dispatch_v1<'a, D: ModelDriver + NeuronFeatureDriver
     }
     Ok((
         claim,
-        WorkerNeuronControlPort::from_reserved_worker(
+        WorkerNeuronControlPort::from_claimed_worker(
             worker,
             request.model_id.to_string(),
             authorization,
             request.generation,
             now_ms,
+            claim_started,
         ),
     ))
 }

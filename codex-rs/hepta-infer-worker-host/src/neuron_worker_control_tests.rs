@@ -552,15 +552,15 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
         feature_vector_q24: actual_request.feature_vector_q24,
         expected_output_width: actual_request.expected_output_width,
     };
+    use crate::neuron_durable_assignment::NeuronDurableAssignmentErrorV1;
+    use crate::neuron_durable_assignment::claim_neuron_durable_dispatch_v1;
     use codex_hepta_infer_core::durable_control::Assignment;
     use codex_hepta_infer_core::durable_control::DurableInferenceControl;
     use codex_hepta_infer_core::durable_control::InferenceRequest;
     use codex_hepta_infer_core::durable_control::RequestState;
     use codex_hepta_infer_core::durable_control::Reservation;
     use codex_hepta_infer_core::neuron_feature_request_digest_v1;
-    use crate::neuron_durable_assignment::NeuronDurableAssignmentErrorV1;
-    use crate::neuron_durable_assignment::claim_neuron_durable_dispatch_v1;
-    
+
     // Bind the existing native Worker ModelPort to the ACTUAL fsynced
     // inference.control assignment. A directly manufactured WorkerPort would
     // not exercise the product's pre-execution single-use journal barrier.
@@ -622,8 +622,7 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
     let calls = Arc::new(AtomicUsize::new(0));
     let mut worker = worker(Arc::clone(&calls), false, false);
     let (claim, worker_port) =
-        claim_neuron_durable_dispatch_v1(&mut control, &mut worker, &control_request, 100)
-            .unwrap();
+        claim_neuron_durable_dispatch_v1(&mut control, &mut worker, &control_request, 100).unwrap();
     assert_eq!(claim.state, RequestState::Dispatching);
     assert_eq!(claim.revision, 4);
     assert!(!claim.idempotent);
@@ -707,7 +706,10 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
     drop(control);
     let mut reopened_control = DurableInferenceControl::open(&inference_journal_path, 32).unwrap();
     assert_eq!(
-        reopened_control.get(control_request.request_id.as_str()).unwrap().state,
+        reopened_control
+            .get(control_request.request_id.as_str())
+            .unwrap()
+            .state,
         RequestState::Dispatching
     );
     let mut new_worker = worker_with_observed_tokens(Arc::clone(&calls), false, false, 4);
@@ -906,4 +908,70 @@ fn early_rejection_and_unknown_terminal_consume_across_port_recreation() {
         Err(NeuronModelError::Rejected)
     );
     assert_eq!(calls.load(Ordering::SeqCst), 1);
+}
+
+#[test]
+fn retained_model_port_expires_with_monotonic_time_without_invoking_driver() {
+    let calls = Arc::new(AtomicUsize::new(0));
+    let mut worker = worker(Arc::clone(&calls), false, false);
+    let request = typed_request();
+    let reservation = preadmitted_reservation(&request);
+    {
+        let mut port = WorkerNeuronControlPort::from_reserved_worker(
+            &mut worker,
+            "model.1".to_owned(),
+            reservation.clone(),
+            request.generation,
+            100,
+        );
+        // Without a real wait, model the state of a durable claim whose
+        // request deadline elapsed while the caller kept the port idle.
+        port.claim_started =
+            std::time::Instant::now() - std::time::Duration::from_millis(9_001);
+        assert_eq!(
+            port.execute_feature(&request),
+            Err(NeuronModelError::Rejected)
+        );
+        assert!(!port.reservation_unconsumed());
+    }
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+    let mut recreated = WorkerNeuronControlPort::from_reserved_worker(
+        &mut worker,
+        "model.1".to_owned(),
+        reservation,
+        request.generation,
+        100,
+    );
+    assert_eq!(
+        recreated.execute_feature(&request),
+        Err(NeuronModelError::Rejected),
+        "elapsed deadline must not release a consumed reservation"
+    );
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+}
+
+#[test]
+fn retained_model_port_propagates_monotonic_elapsed_to_worker_grant_gate() {
+    let calls = Arc::new(AtomicUsize::new(0));
+    let mut worker = worker(Arc::clone(&calls), false, false);
+    let request = typed_request();
+    let mut reservation = preadmitted_reservation(&request);
+    // Keep the request deadline later than the Worker grant expiry to prove
+    // the execution-time Worker grant gate also receives the elapsed time.
+    reservation.deadline_ms = 15_000;
+    let mut port = WorkerNeuronControlPort::from_reserved_worker(
+        &mut worker,
+        "model.1".to_owned(),
+        reservation,
+        request.generation,
+        100,
+    );
+    port.claim_started =
+        std::time::Instant::now() - std::time::Duration::from_millis(10_100);
+    assert_eq!(
+        port.execute_feature(&request),
+        Err(NeuronModelError::Indeterminate),
+        "once the Worker is entered, grant errors are conservative unknown outcomes"
+    );
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
 }
