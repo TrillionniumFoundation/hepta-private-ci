@@ -541,6 +541,7 @@ enum MutationAtFrontier {
     AdvanceDuringPositiveSignature,
     RevokeDuringFinalFrontier,
     RevokeDuringExecuteAcknowledgement,
+    AdvanceDuringExecuteAcknowledgement,
 }
 
 /// Inject a real effect appearing during an independently sampled frontier,
@@ -588,7 +589,8 @@ impl CellSplitDurableEffectBackendV1 for MutateAtFrontierRead {
         {
             self.inner.commit_once(&self.intent)?;
         }
-        if matches!(self.mode, MutationAtFrontier::AdvanceDuringPositiveSignature)
+        if (matches!(self.mode, MutationAtFrontier::AdvanceDuringPositiveSignature)
+            || matches!(self.mode, MutationAtFrontier::AdvanceDuringExecuteAcknowledgement))
             && self.sequence_reads == 3
         {
             self.inner.sequence_override = Some(8);
@@ -762,4 +764,44 @@ fn execute_acknowledgement_fails_if_live_effect_disappears_after_frontier() {
     assert_eq!(service.backend().inner.commits, 1);
     assert!(root.path().join("committed").exists());
     assert!(!root.path().join("live-owner-state").exists());
+}
+
+#[test]
+fn execute_acknowledgement_rejects_a_changing_durable_frontier() {
+    let root = tempfile::tempdir().expect("private owner root");
+    let backend = MutateAtFrontierRead {
+        inner: DiskEffect::new(root.path().to_path_buf(), "cas-owner"),
+        intent: intent(),
+        mode: MutationAtFrontier::AdvanceDuringExecuteAcknowledgement,
+        sequence_reads: 0,
+    };
+    let mut service = CellSplitEffectServiceV1::new(
+        CellSplitExecutionStepV1::ArtifactCas,
+        "cas-owner".into(),
+        intent().plan_digest,
+        SigningKey::from_bytes(&[1; 32]),
+        backend,
+    )
+    .expect("signed effect owner");
+    let (mut client, mut server) = UnixStream::pair().expect("pair");
+    send_frame(
+        &mut client,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::Execute,
+            intent: intent(),
+            challenge_nonce: None,
+        },
+    )
+    .expect("request");
+    assert!(matches!(
+        service.serve_connection(&mut server),
+        Err(CellSplitEffectRpcErrorV1::Invalid(
+            "effect changed before signed execute acknowledgement"
+        ))
+    ));
+    assert_eq!(service.backend().sequence_reads, 3);
+    assert_eq!(service.backend().inner.commits, 1);
+    assert!(root.path().join("committed").exists());
+    assert!(root.path().join("live-owner-state").exists());
 }
