@@ -207,14 +207,11 @@ fn validate_item(
 /// backend call; validate each member before any capacity or backend mutation.
 fn validate_batch_partition_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Result<(), Error> {
     let first = requests.first().ok_or(Error::FeatureLimit)?;
-    if requests
-        .iter()
-        .any(|item| {
-            item.scope_id != first.scope_id
-                || item.principal_id != first.principal_id
-                || item.purpose_id != first.purpose_id
-        })
-    {
+    if requests.iter().any(|item| {
+        item.scope_id != first.scope_id
+            || item.principal_id != first.principal_id
+            || item.purpose_id != first.purpose_id
+    }) {
         return Err(Error::FeatureContract);
     }
     Ok(())
