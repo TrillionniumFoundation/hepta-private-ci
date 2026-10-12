@@ -881,7 +881,7 @@ async fn dropped_response_stream_traces_cancelled_partial_output() -> anyhow::Re
             redact_provider_errors: false,
             encoded_request_observer: None,
         },
-    )
+    );
 
     let observed = stream
         .next()
@@ -936,7 +936,7 @@ async fn response_stream_records_last_model_feedback_ids() {
             redact_provider_errors: false,
             encoded_request_observer: None,
         },
-    )
+    );
 
     while stream.next().await.is_some() {}
 
@@ -1074,7 +1074,7 @@ async fn ephemeral_unauthorized_and_stream_errors_are_redacted() -> anyhow::Resu
             redact_provider_errors: true,
             encoded_request_observer: None,
         },
-    )
+    );
     let error = stream
         .next()
         .await
@@ -1260,7 +1260,7 @@ async fn dropped_backpressured_response_stream_traces_cancelled_partial_output()
             redact_provider_errors: false,
             encoded_request_observer: None,
         },
-    )
+    );
 
     // Fill the mapper channel with non-terminal events, then yield one output
     // item. The mapper has observed that item and is blocked trying to send it
