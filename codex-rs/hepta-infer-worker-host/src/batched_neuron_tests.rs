@@ -384,7 +384,13 @@ fn worker_metrics_failures_latch_not_ready_without_retrying_authorized_effect() 
     assert!(execution.production_metrics_ready());
     // Admission succeeds even though non-authorizing telemetry fails.
     execution
-        .enqueue(100, "model".to_string(), request, key, signed(&signer, binding))
+        .enqueue(
+            100,
+            "model".to_string(),
+            request,
+            key,
+            signed(&signer, binding),
+        )
         .unwrap();
     assert!(!execution.production_metrics_ready());
     assert!(!execution.flush_production_metrics());
@@ -422,7 +428,13 @@ fn terminal_replay_capacity_is_independent_of_active_microbatch_capacity() {
             .to_bytes()
             .to_vec();
         execution
-            .enqueue(100 + u64::from(i), "model".to_string(), request, key.clone(), grant)
+            .enqueue(
+                100 + u64::from(i),
+                "model".to_string(),
+                request,
+                key.clone(),
+                grant,
+            )
             .unwrap();
         let completed = execution.poll_and_execute(101 + u64::from(i)).unwrap();
         assert_eq!(completed.outcomes.len(), 1);
@@ -441,7 +453,13 @@ fn terminal_replay_capacity_is_independent_of_active_microbatch_capacity() {
     replay.authorization.lease_payload_digest = payload;
     let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &replay).unwrap();
     assert_eq!(
-        execution.enqueue(120, "model".to_string(), replay, key, signed(&signer, binding)),
+        execution.enqueue(
+            120,
+            "model".to_string(),
+            replay,
+            key,
+            signed(&signer, binding)
+        ),
         Err(BatchWorkerErrorV1::Duplicate)
     );
 }
