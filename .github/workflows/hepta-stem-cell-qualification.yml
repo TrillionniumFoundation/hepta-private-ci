@@ -5,6 +5,8 @@ on:
   pull_request:
     paths:
       - "qualification/stem-cell-v1/**"
+      - "qualification/matrix-security/**"
+      - ".github/workflows/hepta-matrix-security-qualification.yml"
       - "codex-rs/hepta-infer-worker-host/src/model_worker*.rs"
       - "codex-rs/hepta-infer-worker-host/Cargo.toml"
       - "codex-rs/Cargo.lock"
@@ -46,6 +48,10 @@ jobs:
         run: |
           python3 -m compileall -q qualification/stem-cell-v1
           python3 -m unittest discover -v -s qualification/stem-cell-v1 -p 'test_*.py'
+          # Read-only Matrix SDK blocker and staged dependency-resolution
+          # contracts. Passing these tests cannot clear cargo-deny.
+          python3 -m compileall -q qualification/matrix-security
+          python3 -m unittest discover -v -s qualification/matrix-security -p 'test_*.py'
           # Exercise all BuildBuddy/Bazel wrapper transports with a fake
           # executable; no network or real model data is needed here.
           python3 -m unittest discover -v -s .github/scripts -p 'test_run_bazel_ci.py'
