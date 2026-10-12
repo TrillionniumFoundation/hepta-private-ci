@@ -21,6 +21,8 @@ on:
       - "qualification/neuron-stem/fbsde_tracking_tied.py"
       - "qualification/neuron-stem/test_fbsde_depth.py"
       - "qualification/neuron-stem/test_fbsde_tracking_feedback.py"
+      - "qualification/neuron-stem/fbsde_conditional*.py"
+      - "qualification/neuron-stem/test_fbsde_conditional_program.py"
       - "qualification/neuron-stem/fbsde_effect*.py"
       - "qualification/neuron-stem/test_fbsde_effect_family.py"
       - "qualification/neuron-stem/fbsde_study.py"
@@ -123,6 +125,14 @@ jobs:
           /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile effect_family_revision_v1 --output effect-study 2>&1 | tee effect-study.log
           /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_effect_artifact_checks.py -v effect-study 2>&1 | tee effect-artifact-checks.log
           git diff --exit-code
+      - name: Infer conditional programs without oracle predecessor states
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile conditional_program_induction_v1 --output conditional-study 2>&1 | tee conditional-study.log
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_conditional_artifact_checks.py -v conditional-study 2>&1 | tee conditional-artifact-tests.log
+          git diff --exit-code
       - name: Preserve original outputs and failures, never grant promotion
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -135,6 +145,9 @@ jobs:
             effect-study.log
             effect-artifact-checks.log
             effect-study/
+            conditional-study/
+            conditional-study.log
+            conditional-artifact-tests.log
             source.txt
             source.tar.gz
             environment.txt
