@@ -207,3 +207,24 @@ break. A successful metadata pass is only evidence of dependency resolution,
 
 The hard `matrix_dependency_gate.py --require-safe` remains mandatory and
 fails independently until the real source graph and runtime are remediated.
+
+
+## Next prerequisite: isolated upstream anymap3 candidate actually compiles
+
+The Matrix hard-gate workflow now has `minimal-backport-native-compile`,
+which runs **only after** the pinned-release source-profile job succeeds.
+It stages the exact minimal AnyMap3 patch in `$RUNNER_TEMP`, installs Rust
+1.96, resolves the staged dependency graph, **rejects any resolved
+`anymap2` or `matrix-sdk-crypto <0.19`**, and runs a genuine
+`cargo check --locked -p matrix-sdk --lib --no-default-features
+--features e2e-encryption,sqlite` against the disposable candidate.
+
+The job records the compiler exit status and source-patch evidence. It does
+**not** touch Hepta's real Cargo manifest, Cargo.lock or Bazel lock, and never
+sets a successful `cargo-deny_verified`, `e2ee_runtime_tested`,
+`sqlite_wal_recovery_tested` or `production_authorized` flag.
+A successful **upstream compilation** can justify moving to an independent
+Hepta integration branch for API adaptation and SQLite links/WAL recovery;
+it cannot unblock the production Matrix hard gate by itself. A failed source
+checkout, resolver or compiler remains a failed candidate test, with no
+fallback to the 278-commit unreviewed upstream tip.
