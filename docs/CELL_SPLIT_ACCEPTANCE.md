@@ -239,6 +239,34 @@ prove power-loss recovery on deployed machines. Its corresponding
 cross-language and native exact-HEAD CI qualification must still be obtained.
 
 
+### Independent Observer-signed Supervisor minimum (source gate)
+
+The deep Observer verifier now refuses a bare caller-supplied Supervisor
+checkpoint digest. Its original-runtime trust binding must also carry a
+separately pinned Observer's detached signature over a domain-separated
+minimum-checkpoint statement. That statement binds the frozen CellSplit plan,
+signed host evidence digest and nonce, exact Supervisor domain, idempotency
+key, authority epoch, journal revision, original checkpoint bytes and minimum
+checkpoint digest. The verifier accepts only a key already present in the
+independent host-evidence Observer trust policy, rejects signer reuse across
+the host, four effect owners and original runtime owners, and confirms the
+signature before conducting four fresh current-owner reads.
+
+The read-only deep receipt records both the accepted minimum checkpoint
+digest and the signed minimum-witness digest for later audit. Regression
+cases reject an attacker-signed minimum and replay of a legitimately signed
+minimum against a different host nonce, even where the original Supervisor
+checkpoint still has an otherwise valid signature.
+
+**This is NOT an independently monotonic witness store.** A signature from
+the Observer must be issued only after it has consulted its separate,
+authenticated, rollback-resistant minimum checkpoint service. A captured old
+minimum signature may still be replayed together with a completely rolled
+back host/owner history without a fresh authoritative store read. The
+production startup and final-use owner must verify live monotonic retention
+and retain its own authenticated checkpoint minimum. This source gate does
+not permit physical split, promotion, or a production completion claim.
+
 ### Retrospective rollback evidence is not a live successor route
 
 The signed target-host lifecycle also includes rollback, tombstone and
