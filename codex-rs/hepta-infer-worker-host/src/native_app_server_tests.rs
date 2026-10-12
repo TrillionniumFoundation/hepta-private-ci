@@ -66,6 +66,24 @@ fn output() -> NativeRunOutput {
     }
 }
 
+#[test]
+fn appended_reconciliation_reason_stays_within_durable_utf8_byte_limit() {
+    let note = format!("grace observed: {}", "界".repeat(1024));
+    let reason = append_stop_reason(
+        Some(format!("provider interruption: {}", "界".repeat(1024))),
+        note.clone(),
+    );
+
+    assert!(reason.len() <= MAX_STOP_REASON_BYTES);
+    assert!(reason.is_char_boundary(reason.len()));
+    assert!(reason.ends_with(truncate_utf8(&note, MAX_STOP_REASON_BYTES - 2)));
+
+    let observation_failure = "界".repeat(2048);
+    let bounded_failure = truncate_utf8(&observation_failure, MAX_STOP_REASON_BYTES);
+    assert_eq!(bounded_failure.len(), MAX_STOP_REASON_BYTES - 1);
+    assert!(bounded_failure.is_char_boundary(bounded_failure.len()));
+}
+
 fn terminal(thread: &str, turn: &str, status: TurnStatus) -> ServerNotification {
     ServerNotification::TurnCompleted(TurnCompletedNotification {
         thread_id: thread.to_string(),
@@ -400,21 +418,53 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
 #[test]
 fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
     let source = include_str!("native_app_server.rs");
-    let durable_dispatch = source
+    // This is a source-order regression guard, not runtime authorization proof.
+    let run_once = source
+        .split_once("    async fn run_once(")
+        .expect("native run implementation")
+        .1
+        .split_once("\n    async fn observe(")
+        .expect("end of native run implementation")
+        .0;
+    let durable_dispatch = run_once
         .find("control.dispatch_native_with_pre_effect_abort(")
         .expect("durable native dispatch");
-    let revalidation = source
+    let revalidation = run_once
         .find("owner.revalidate_cognitive_context(snapshot).await")
         .expect("final-use cognitive revalidation");
-    let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
-    let durable_stop = source
-        .find("control.abort_native_before_effect(")
-        .expect("durable pre-turn stop");
+    let turn_start = run_once
+        .find("send_authorized_turn_start(&mut client, entered_use, turn_params)")
+        .expect("entered-token turn/start invocation");
+    let durable_stop = revalidation
+        + run_once[revalidation..]
+            .find("control.abort_native_before_effect(pre_effect_abort, reason);")
+            .expect("durable stop after cognitive revalidation failure");
+    let authority_entry = run_once
+        .find("let entered_use = match verified_use.enter(&authority_binding)")
+        .expect("final-use authority entry");
+    let release_abort = run_once
+        .find("drop(pre_effect_abort);")
+        .expect("pre-effect proof consumed before send");
     assert!(durable_dispatch < revalidation);
     assert!(revalidation < turn_start);
     assert!(durable_stop < turn_start);
+    assert!(durable_stop < authority_entry);
+    assert!(authority_entry < release_abort);
+    assert!(release_abort < turn_start);
+
+    // Check the call site above, not the helper's position in this file. Also
+    // fail if the real request escapes the entered-token helper or is duplicated.
+    assert_eq!(source.matches("send_authorized_turn_start").count(), 2);
+    assert_eq!(source.matches("ClientRequest::TurnStart").count(), 1);
+    let send_helper = source
+        .split_once("async fn send_authorized_turn_start(")
+        .expect("authorized send helper")
+        .1
+        .split_once("\n}")
+        .expect("end of authorized send helper")
+        .0;
+    assert!(send_helper.contains("_entered: EnteredUseToken,"));
+    assert!(send_helper.contains(".request_typed_observed(ClientRequest::TurnStart {"));
 }
 
 #[cfg(unix)]
