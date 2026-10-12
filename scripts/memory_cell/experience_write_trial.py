@@ -68,6 +68,7 @@ def write_memory(
     parity_receipt=None,
     parity_sha=None,
     curriculum="single_hop",
+    binding_objective="completion_ce",
 ):
     from pretrained import LoRAReader
     from source_completion_loss import BACKENDS
@@ -76,6 +77,12 @@ def write_memory(
         raise ValueError("unregistered source loss backend")
     if curriculum not in ("single_hop", "source_two_hop"):
         raise ValueError("unregistered source-only curriculum")
+    if binding_objective not in ("completion_ce", "source_margin"):
+        raise ValueError("unregistered source-only binding objective")
+    if binding_objective == "source_margin" and (
+        loss_backend != "full" or curriculum != "single_hop"
+    ):
+        raise ValueError("unregistered source-binding/backend combination")
 
     commit = exact_source()
     documents = original_documents(sources, source_sha)
@@ -126,6 +133,7 @@ def write_memory(
         revoked=set(),
         loss_backend=loss_backend,
         curriculum=curriculum,
+        binding_objective=binding_objective,
     )
     manifest = LoRAReader.save(reader, output / "adapter", training)
     reader.verify_frozen()
@@ -536,6 +544,11 @@ if __name__ == "__main__":
     p.add_argument(
         "--curriculum", choices=("single_hop", "source_two_hop"), default="single_hop"
     )
+    p.add_argument(
+        "--binding-objective",
+        choices=("completion_ce", "source_margin"),
+        default="completion_ce",
+    )
     p = sub.add_parser("read")
     for name in ("plan", "inputs", "model", "snapshot", "output"):
         p.add_argument(name, type=Path)
@@ -555,6 +568,7 @@ if __name__ == "__main__":
             parity_receipt=a.parity_receipt,
             parity_sha=a.parity_sha,
             curriculum=a.curriculum,
+            binding_objective=a.binding_objective,
         )
     else:
         read_memory(

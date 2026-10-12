@@ -5,8 +5,6 @@ source facts before a downstream task is opened. This module neither fits the
 production reader nor treats a source-derived target as external human review.
 """
 
-import math
-
 import torch
 import torch.nn.functional as F
 

@@ -25,10 +25,7 @@ and held-out factual answers must eventually improve. Both model forwards and
 every decoder input token must be charged. Merely reducing the vocabulary
 projection count does not make the other forward free.
 
-The first isolated workflow runs bounded real Torch gradients and real
-random-weight Qwen2/PEFT compatibility checks. It does not modify the
-existing source writer, select a new default loss, train Qwen pretrained
-weights, generate held-out responses or issue a reviewer citation ruling.
+The research writer now has an explicit opt-in `--binding-objective source_margin` path. It preserves the default `completion_ce`, requires `--loss-backend full` and the single-hop source-only curriculum, freezes the base, and charges the positive AND negative full model forwards to the unchanged 65,536-token cap. It precommits the pair roster and separately reports unmatched original source questions. The first isolated workflow runs actual Torch gradients, a tiny real Qwen2/PEFT adapter update and the Qwen random-weight contract. It does not train the pinned pretrained Qwen3B, generate held-out responses or issue a reviewer citation ruling.
 Before integrating a training option, require (a) this exact-head CI success,
 (b) proper source-only negative schedule and total work accounting, (c)
 same-reader/same-evidence frozen comparisons, and (d) independently

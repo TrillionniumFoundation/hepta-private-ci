@@ -5,7 +5,9 @@ on:
       - "codex/memory-cell-evidence-20261008"
     paths:
       - "scripts/memory_cell/source_binding_margin.py"
-      - "scripts/memory_cell/test_source_binding_margin.py"
+      - "scripts/memory_cell/test_source_binding*.py"
+      - "scripts/memory_cell/experience_memory.py"
+      - "scripts/memory_cell/experience_write_trial.py"
       - ".github/workflows/hepta-memory-source-binding-margin.yml"
 permissions:
   contents: read
@@ -35,10 +37,10 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/memory-binding-proof
-          /tmp/memory-binding/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_binding_margin.py' -v 2>&1 | tee /tmp/memory-binding-proof/source-tests.log
+          /tmp/memory-binding/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_binding*.py' -v 2>&1 | tee /tmp/memory-binding-proof/source-tests.log
           /tmp/memory-binding/bin/python -m unittest discover -s scripts/memory_cell -p 'test_source_completion_qwen.py' -v 2>&1 | tee /tmp/memory-binding-proof/qwen-tests.log
           /tmp/memory-binding/bin/python -m compileall -q scripts/memory_cell/source_binding_margin.py scripts/memory_cell/test_source_binding_margin.py
-          /tmp/memory-binding/bin/ruff format --check scripts/memory_cell/source_binding_margin.py scripts/memory_cell/test_source_binding_margin.py
+          /tmp/memory-binding/bin/ruff format --check scripts/memory_cell/source_binding_margin.py scripts/memory_cell/test_source_binding_margin.py scripts/memory_cell/test_source_binding_writer.py scripts/memory_cell/experience_memory.py scripts/memory_cell/experience_write_trial.py
           /tmp/memory-binding/bin/pip freeze > /tmp/memory-binding-proof/environment.txt
           git rev-parse HEAD > /tmp/memory-binding-proof/source.txt
           sha256sum scripts/memory_cell/source_binding_margin.py scripts/memory_cell/test_source_binding_margin.py > /tmp/memory-binding-proof/inputs.sha256

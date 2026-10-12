@@ -1,6 +1,7 @@
 """Actual Torch loss gradients and source-fact pairing; NOT pretrained gains."""
 
 import copy
+import json
 import unittest
 
 import torch
@@ -34,7 +35,7 @@ def examples():
         dict(
             query=dict(identity="q" + x.identity, scope=x.scope),
             sources=[x.identity],
-            target=x.content and __import__("json").loads(x.content)["value"],
+            target=json.loads(x.content)["value"],
         )
         for x in sources()
     ]

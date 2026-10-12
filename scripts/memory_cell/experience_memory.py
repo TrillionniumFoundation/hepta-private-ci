@@ -174,6 +174,7 @@ class ExperienceReader(ReferenceReader):
         revoked,
         loss_backend="full",
         curriculum="single_hop",
+        binding_objective="completion_ce",
     ):
         import torch
         from peft import get_peft_model_state_dict
@@ -185,6 +186,12 @@ class ExperienceReader(ReferenceReader):
             raise ValueError("unregistered source loss backend")
         if curriculum not in ("single_hop", "source_two_hop"):
             raise ValueError("unregistered source-only curriculum")
+        if binding_objective not in ("completion_ce", "source_margin"):
+            raise ValueError("unregistered source-only learning objective")
+        if binding_objective == "source_margin" and (
+            curriculum != "single_hop" or loss_backend != "full"
+        ):
+            raise ValueError("source binding trial requires original full Qwen loss")
         if curriculum == "source_two_hop":
             from source_composition_curriculum import combine_source_examples
 
@@ -211,6 +218,44 @@ class ExperienceReader(ReferenceReader):
         from source_write_coverage import audit_coverage
 
         coverage = audit_coverage(examples, prepared, plan, curriculum=curriculum)
+        active_examples = examples
+        binding_pairs = None
+        binding_receipt = None
+        if binding_objective == "source_margin":
+            from source_binding_margin import source_hard_negatives
+
+            pairs, unmatched = source_hard_negatives(
+                examples,
+                documents,
+                self.tokenizer,
+                allowed_roots=allowed_roots,
+                revoked=revoked,
+            )
+            if not pairs:
+                raise ValueError("source binding cannot train without true hard negatives")
+            selected = sorted(pairs)
+            active_examples = tuple(examples[i] for i in selected)
+            binding_pairs = [pairs[i] for i in selected]
+            original_schedule_digest = digest(plan)
+            prepared, plan = prepare(
+                self.tokenizer,
+                active_examples,
+                maximum_steps=STEPS,
+                token_ceiling=TOKEN_CEILING // 2,
+            )
+            coverage = audit_coverage(
+                active_examples, prepared, plan, curriculum=curriculum
+            )
+            binding_receipt = dict(
+                source_only=True,
+                training_pairs=binding_pairs,
+                unmatched_source_question_ids=list(unmatched),
+                original_schedule_digest=original_schedule_digest,
+                forward_token_charge_factor=2,
+                known_task_answers_consumed=False,
+                independent_review=False,
+                production_accepted=False,
+            )
         params = [p for p in self.model.parameters() if p.requires_grad]
         before = {
             k: v.clone() for k, v in get_peft_model_state_dict(self.model).items()
@@ -224,7 +269,23 @@ class ExperienceReader(ReferenceReader):
             for index in plan["entries"]:
                 ids, labels = prepared[index]
                 optimizer.zero_grad(set_to_none=True)
-                if loss_backend == "full":
+                paired_charge = None
+                if binding_objective == "source_margin":
+                    from source_binding_margin import binding_margin_loss
+
+                    first_target = next(
+                        i for i, token in enumerate(labels) if token != -100
+                    )
+                    loss, paired_charge = binding_margin_loss(
+                        self.model,
+                        self.tokenizer,
+                        ids[:first_target],
+                        active_examples[index]["target"],
+                        binding_pairs[index]["negative_value"],
+                        backend="full",
+                    )
+                    projection_positions = paired_charge["actual_projection_positions"]
+                elif loss_backend == "full":
                     # Keep the original model-owned loss as the default control.
                     x = torch.tensor([ids], dtype=torch.long)
                     loss = self.model(
@@ -247,8 +308,12 @@ class ExperienceReader(ReferenceReader):
                 if any(not torch.isfinite(p).all() for p in params):
                     raise ValueError("nonfinite source-writing parameters")
                 projected += projection_positions
-                tokens += len(ids)
-                supervised += sum(i != -100 for i in labels)
+                if paired_charge is None:
+                    tokens += len(ids)
+                    supervised += sum(i != -100 for i in labels)
+                else:
+                    tokens += paired_charge["actual_input_tokens"]
+                    supervised += paired_charge["actual_supervised_tokens"]
                 losses.append(float(loss.detach()))
                 if len(losses) % 8 == 0 or len(losses) == plan["planned_steps"]:
                     print(
@@ -265,9 +330,11 @@ class ExperienceReader(ReferenceReader):
                         ),
                         flush=True,
                     )
+            factor = 2 if binding_objective == "source_margin" else 1
             if (
-                tokens != plan["planned_input_tokens"]
-                or supervised != plan["planned_supervised_tokens"]
+                tokens != factor * plan["planned_input_tokens"]
+                or supervised != factor * plan["planned_supervised_tokens"]
+                or tokens > TOKEN_CEILING
             ):
                 raise ValueError("actual source-write exposure differs from plan")
             delta = sum(
@@ -286,11 +353,15 @@ class ExperienceReader(ReferenceReader):
                 objective=PROFILE,
                 revision=revision,
                 examples=len(examples),
-                source_supervision=examples,
+                source_supervision=active_examples,
                 dispositions=dispositions,
                 curriculum=curriculum,
+                binding_objective=binding_objective,
+                binding_receipt=binding_receipt,
                 curriculum_receipt=curriculum_receipt,
-                training_digest=digest((examples, prepared)),
+                training_digest=digest((active_examples, prepared, binding_receipt))
+                if binding_receipt is not None
+                else digest((examples, prepared)),
                 write_schedule=plan,
                 write_curriculum_coverage=coverage,
                 schedule_sha256=digest(plan),
