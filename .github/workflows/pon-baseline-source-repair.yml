@@ -1,0 +1,129 @@
+name: PoN baseline source repair observation
+on:
+  push:
+    branches: [ci/pon-baseline-source-repair-20261012]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  observe:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      EXPECTED_SOURCE: 106400a5ffc7ef969dbe0812c1cda869323b59e1
+      OUT: ${{ runner.temp }}/pon-baseline-source
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 106400a5ffc7ef969dbe0812c1cda869323b59e1
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind unchanged source and original owners
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$OUT"
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          test "$(git rev-parse HEAD^{tree})" = a3be02b0321423cdd247aa88d2c6d6f3390a0fa9
+          test "$(git hash-object scripts/hepta_ci_exec.py)" = 7585881501a0d6231c17b11a9eebe243731844bd
+          test "$(git hash-object scripts/test_hepta_ci_exec_identity.py)" = aaf2f4d170dd9b8ff08b721a786f6605e817737c
+          git diff --exit-code
+          git diff --cached --exit-code
+          git rev-parse HEAD HEAD^{tree} > "$OUT/source.txt"
+          git show HEAD:scripts/hepta_ci_exec.py > "$OUT/original-owner.py"
+          git show HEAD:scripts/test_hepta_ci_exec_identity.py > "$OUT/original-tests.py"
+          cp scripts/uv.lock scripts/pyproject.toml "$OUT/"
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: '0.11.3'
+      - name: Generate the pinned formatter candidate and prove AST preservation
+        shell: bash
+        run: |
+          set -euo pipefail
+          uv run --frozen --project scripts ruff --version | tee "$OUT/formatter-version.txt"
+          set +e
+          uv run --frozen --project scripts ruff format --check scripts/hepta_ci_exec.py scripts/test_hepta_ci_exec_identity.py > "$OUT/format-before.log" 2>&1
+          before=$?
+          set -e
+          printf '%s\n' "$before" > "$OUT/format-before.exit"
+          uv run --frozen --project scripts ruff format scripts/hepta_ci_exec.py scripts/test_hepta_ci_exec_identity.py > "$OUT/format-write.log" 2>&1
+          uv run --frozen --project scripts ruff format --check scripts/hepta_ci_exec.py scripts/test_hepta_ci_exec_identity.py > "$OUT/format-after.log" 2>&1
+          python3 - <<'PY'
+          import ast, json, os, subprocess
+          from pathlib import Path
+          out = Path(os.environ['OUT'])
+          files = ['scripts/hepta_ci_exec.py', 'scripts/test_hepta_ci_exec_identity.py']
+          changed = subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines()
+          assert set(changed) <= set(files), changed
+          for name in files:
+              old = subprocess.check_output(['git', 'show', 'HEAD:' + name])
+              new = Path(name).read_bytes()
+              assert ast.dump(ast.parse(old), include_attributes=False) == ast.dump(ast.parse(new), include_attributes=False), name
+              dest = out / 'candidate' / name
+              dest.parent.mkdir(parents=True, exist_ok=True)
+              dest.write_bytes(new)
+          (out / 'ast-check.json').write_text(json.dumps({'source': os.environ['EXPECTED_SOURCE'], 'files': files, 'ast_equal': True, 'changed': changed}, indent=2))
+          PY
+          git diff --check
+          git diff --binary -- scripts/hepta_ci_exec.py scripts/test_hepta_ci_exec_identity.py > "$OUT/format.patch"
+          uv run --frozen --project scripts python - <<'PY'
+          import os, shutil
+          from pathlib import Path
+          shutil.copy2(shutil.which('ruff'), Path(os.environ['OUT']) / 'ruff')
+          PY
+      - name: Run the entire original command-owner and additive identity suite
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts -p 'test_hepta_ci_exec*.py' -v > "$OUT/owner-tests.log" 2>&1
+          tail -8 "$OUT/owner-tests.log"
+          git diff --check
+      - name: Read exact failed job identities and unmodified logs
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, os, urllib.request
+          from pathlib import Path
+          root = Path(os.environ['OUT'])
+          api = 'https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci'
+          def get(path):
+              req = urllib.request.Request(api + path, headers={'Authorization': 'Bearer ' + os.environ['GH_TOKEN'], 'Accept': 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28'})
+              with urllib.request.urlopen(req, timeout=60) as response:
+                  data = response.read(32 * 1024 * 1024 + 1)
+                  if len(data) > 32 * 1024 * 1024: raise ValueError('diagnostic size limit')
+                  return data
+          run = json.loads(get('/actions/runs/38233508500'))
+          assert run['head_sha'] == os.environ['EXPECTED_SOURCE'], run['head_sha']
+          (root / 'baseline-run.json').write_text(json.dumps(run, indent=2))
+          for job in (114785129922, 114785129835):
+              metadata = json.loads(get('/actions/jobs/' + str(job)))
+              assert metadata['run_id'] == 38233508500
+              (root / (str(job) + '.json')).write_text(json.dumps(metadata, indent=2))
+              (root / (str(job) + '.log')).write_bytes(get('/actions/jobs/' + str(job) + '/logs'))
+          PY
+      - name: Preserve observations including failures and exact candidate bytes
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p "$OUT"
+          git rev-parse HEAD HEAD^{tree} > "$OUT/source-after.txt"
+          git status --porcelain > "$OUT/worktree-after.txt"
+          python3 - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          out = Path(os.environ['OUT'])
+          hashes = {str(p.relative_to(out)): hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(out.rglob('*')) if p.is_file()}
+          (out / 'SHA256SUMS.json').write_text(json.dumps(hashes, indent=2, sort_keys=True))
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: pon-baseline-source-repair-${{ github.run_id }}
+          path: ${{ runner.temp }}/pon-baseline-source
+          if-no-files-found: error
+          retention-days: 14
