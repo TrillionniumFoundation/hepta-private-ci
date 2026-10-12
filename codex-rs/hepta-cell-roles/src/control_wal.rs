@@ -462,7 +462,7 @@ impl ScopedControlWalOwnerV1 {
         }
         let bytes = fs::read(&path).map_err(|_| ControlOwnerErrorV1::DurableIo)?;
         let (inner, head, sequence) = replay_wal(&bytes, &cell_id, scope_digest)?;
-        Ok(Self {
+        let mut owner = Self {
             cell_id,
             scope_digest,
             path,
@@ -472,7 +472,44 @@ impl ScopedControlWalOwnerV1 {
             sequence,
             bytes: bytes.len(),
             poisoned: false,
-        })
+        };
+        owner.verify_live_writer_path()?;
+        Ok(owner)
+    }
+
+    /// An advisory OS lock protects an inode, not a replaceable pathname.
+    /// Reject unlink/rename/replacement or out-of-band append before and
+    /// after committing an event, rather than continuing to acknowledge
+    /// writes to an orphaned file while another owner opens the new path.
+    /// This is local writer fencing, not a remote anti-rollback witness.
+    fn verify_live_writer_path(&mut self) -> Result<(), ControlOwnerErrorV1> {
+        let valid = match (
+            fs::symlink_metadata(&self.path),
+            self.writer.metadata(),
+        ) {
+            (Ok(current), Ok(opened)) => {
+                let mut same = current.is_file()
+                    && opened.is_file()
+                    && current.len() == self.bytes as u64
+                    && opened.len() == self.bytes as u64;
+                #[cfg(unix)]
+                {
+                    use std::os::unix::fs::MetadataExt;
+                    same &= current.dev() == opened.dev()
+                        && current.ino() == opened.ino()
+                        && current.nlink() == 1
+                        && opened.nlink() == 1
+                        && current.mode() & 0o077 == 0;
+                }
+                same
+            }
+            _ => false,
+        };
+        if !valid {
+            self.poisoned = true;
+            return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
+        }
+        Ok(())
     }
 
     fn apply_event(
@@ -482,6 +519,7 @@ impl ScopedControlWalOwnerV1 {
         if self.poisoned || self.sequence >= MAX_WAL_EVENTS {
             return Err(ControlOwnerErrorV1::InvalidDurableSnapshot);
         }
+        self.verify_live_writer_path()?;
         let undo = ControlWalUndoV1::capture(&event, &self.inner);
         let output = match event.apply(&mut self.inner, &self.cell_id, self.scope_digest) {
             Ok(output) => output,
@@ -532,6 +570,9 @@ impl ScopedControlWalOwnerV1 {
         self.bytes = len;
         self.head = head;
         self.sequence = next_sequence;
+        // Filesystem rename/unlink after the preflight makes the effect
+        // ambiguous. Do not hand an acknowledged receipt to the caller.
+        self.verify_live_writer_path()?;
         Ok(output)
     }
 
@@ -720,6 +761,66 @@ mod tests {
             Err(ControlOwnerErrorV1::InvalidDurableSnapshot)
         ));
         fs::remove_dir_all(directory).unwrap();
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn scope_wal_refuses_to_write_after_live_path_replacement() {
+        let directory = root();
+        let scope = digest("scope-live-path");
+        let mut owner =
+            ScopedControlWalOwnerV1::open(&directory, id("cell-one"), scope).expect("open");
+        owner
+            .activate_generation(Generation::new(3).unwrap(), digest("fence"))
+            .unwrap();
+        let previous_head = owner.head();
+        let previous_count = owner.committed_events();
+        let path = owner.path().to_path_buf();
+        let orphaned = path.with_extension("orphaned");
+        fs::rename(&path, &orphaned).expect("rename locked inode");
+        fs::copy(&orphaned, &path).expect("replace with original WAL bytes");
+
+        // flock remains held on the orphaned inode, but cannot authorize
+        // a second writer's replacement pathname.
+        assert!(matches!(
+            owner.set_now_ms(1),
+            Err(ControlOwnerErrorV1::InvalidDurableSnapshot)
+        ));
+        assert_eq!(owner.head(), previous_head);
+        assert_eq!(owner.committed_events(), previous_count);
+        assert!(matches!(
+            owner.set_now_ms(2),
+            Err(ControlOwnerErrorV1::InvalidDurableSnapshot)
+        ));
+        drop(owner);
+        fs::remove_dir_all(directory).expect("cleanup");
+    }
+
+    #[test]
+    fn scope_wal_refuses_out_of_band_tail_growth_while_writer_is_live() {
+        let directory = root();
+        let scope = digest("scope-external-append");
+        let mut owner =
+            ScopedControlWalOwnerV1::open(&directory, id("cell-one"), scope).expect("open");
+        let before = owner.committed_events();
+        let mut other = fs::OpenOptions::new()
+            .append(true)
+            .open(owner.path())
+            .expect("rogue append handle");
+        other.write_all(b"unexpected").expect("append");
+        other.sync_all().expect("sync");
+        assert!(matches!(
+            owner.set_now_ms(10),
+            Err(ControlOwnerErrorV1::InvalidDurableSnapshot)
+        ));
+        assert_eq!(owner.committed_events(), before);
+        drop(other);
+        drop(owner);
+        assert!(matches!(
+            ScopedControlWalOwnerV1::open(&directory, id("cell-one"), scope),
+            Err(ControlOwnerErrorV1::InvalidDurableSnapshot)
+        ));
+        fs::remove_dir_all(directory).expect("cleanup");
     }
 
     #[test]
