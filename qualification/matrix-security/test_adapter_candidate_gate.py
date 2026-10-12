@@ -112,6 +112,16 @@ class CandidatePreflightTests(unittest.TestCase):
         self.assertIn("ORIGINAL_MATRIX_SECURITY_BASELINE_CHANGED",
                       audit(fixture(), original, STAGED)["errors"])
 
+    def test_unreachable_anymap3_or_crypto_is_not_accepted_as_graph_presence(self):
+        data = fixture()
+        data["resolve"]["nodes"][2]["dependencies"] = ["base", "sqlite"]
+        self.assertIn("PINNED_SDK_NOT_LINKED_TO_ANYMAP3",
+                      audit(data, ORIGINAL, STAGED)["errors"])
+        data = fixture()
+        data["resolve"]["nodes"][3]["dependencies"] = []
+        self.assertIn("PINNED_SDK_NOT_LINKED_TO_MATRIX_SDK_CRYPTO",
+                      audit(data, ORIGINAL, STAGED)["errors"])
+
     def test_missing_resolver_or_package_roots_fail_closed(self):
         data = fixture()
         data.pop("resolve")
