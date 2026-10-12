@@ -853,6 +853,75 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
 }
 
 #[test]
+fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
+    use ed25519_dalek::Signer as _;
+
+    let host = key(3);
+    let observer = key(7);
+    let (envelope, mut transcript, owner_trust) =
+        bound_host_owner_fixture(&host, &observer);
+    let outer = &mut transcript.receipts[3];
+    let mut journal: crate::CellSplitSupervisorCommitV1 =
+        serde_json::from_slice(&outer.owner_receipt_bytes)
+            .expect("original Supervisor receipt");
+    let mut checkpoint: serde_json::Value =
+        serde_json::from_slice(&journal.original_checkpoint_bytes)
+            .expect("signed journal checkpoint");
+    checkpoint["phase"] = serde_json::json!("route_published");
+    journal.original_checkpoint_bytes =
+        canonical_json(&checkpoint).expect("nonterminal journal");
+    let mut payload = b"hepta.supervisor.cell-split.original-journal.v1\0".to_vec();
+    payload.extend_from_slice(&(journal.idempotency_key.len() as u64).to_be_bytes());
+    payload.extend_from_slice(journal.idempotency_key.as_bytes());
+    payload.extend_from_slice(&(journal.original_checkpoint_bytes.len() as u64).to_be_bytes());
+    payload.extend_from_slice(&journal.original_checkpoint_bytes);
+    journal.original_checkpoint_signature_bytes =
+        key(72).sign(&payload).to_bytes().to_vec();
+
+    // Update the complete independently valid outer Supervisor signature
+    // and the full coordinator transcript digest. A stale hash cannot be
+    // the reason this nonterminal original is refused.
+    outer.owner_receipt_bytes = canonical_json(&journal).expect("typed original");
+    outer.output_digest = crate::durable::sha256(&outer.owner_receipt_bytes);
+    outer.owner_signature_bytes = key(54)
+        .sign(&crate::cell_split_execution_signing_payload_v1(outer)
+            .expect("outer signing payload"))
+        .to_bytes()
+        .to_vec();
+    outer.receipt_digest = crate::cell_split_execution_receipt_digest_v1(outer)
+        .expect("outer verified receipt digest");
+    let mut frame = b"hepta.learning.cell-split.verified-transcript.v1\0".to_vec();
+    frame.extend_from_slice(&canonical_json(&transcript.plan).expect("plan"));
+    frame.extend_from_slice(&canonical_json(&transcript.receipts).expect("receipts"));
+    transcript.transcript_digest = crate::durable::sha256(&frame);
+    crate::verify_cell_split_execution_transcript_signatures_v1(&transcript, &owner_trust)
+        .expect("outer signature and predecessor chain remain valid");
+    let join = signed_observer_join_fixture(&envelope, &transcript, &host, &observer);
+    let cns = key(71).verifying_key();
+    let supervisor = key(72).verifying_key();
+    let runtime = crate::CellSplitObserverOriginalRuntimeTrustV1 {
+        cns_original_runtime_key: &cns,
+        supervisor_original_journal_key: &supervisor,
+    };
+    let mut current = CurrentEffectFixture::new(&transcript);
+    assert!(matches!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &runtime,
+            &mut current,
+        ),
+        Err(crate::CellSplitObserverJoinErrorV1::Invalid(
+            "signed original Supervisor checkpoint is not a terminal handoff"
+        ))
+    ));
+    assert_eq!(current.verification_count, 0);
+}
+
+#[test]
 fn independent_observer_join_requires_all_four_current_owners() {
     let host = key(3);
     let observer = key(7);
