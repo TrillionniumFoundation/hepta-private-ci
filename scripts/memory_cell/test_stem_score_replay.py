@@ -119,6 +119,19 @@ class ScoreReplayTests(unittest.TestCase):
         with self.assertRaises(AuditError):
             replay_one(policy, vectors)
 
+    def test_crossarm_frozen_source_feature_identity_must_be_the_same(self):
+        baseline, row = fixture()
+        learned, row2 = fixture(adapted=True)
+        learned["arm"] = row2["arm"]
+        # Both are explicitly the same original registered question and pool.
+        result = replay_all([baseline, learned], [row, row2])
+        self.assertEqual(result["unique_observed_questions"], 1)
+        self.assertTrue(result["frozen_input_crossarm_checkpoint_identity_verified"])
+        bad, bad_vectors = fixture(adapted=True)
+        bad_vectors["original_feature_sha256"] = "f" * 64
+        with self.assertRaisesRegex(AuditError, "drifted across arms"):
+            replay_all([baseline, bad], [row, bad_vectors])
+
     def test_frozen_control_cannot_hide_learned_logits_as_baseline(self):
         p, v = fixture()
         p["arm"] = v["arm"] = "frozen_rerank"

@@ -202,11 +202,30 @@ def replay_all(predictions, journal):
         key = (p["stage"], p["phase"], p["question_id"], p["arm"])
         require(key not in indexed, "duplicate original policy key")
         indexed[key] = p
-    observed = {}
+    observed, frozen_anchor = {}, {}
     for r in journal:
         key = (r["stage"], r["phase"], r["question_id"], r["arm"])
         require(key in indexed and key not in observed, "extra/duplicate score-vector row")
         observed[key] = replay_one(indexed[key], r)
+        # All six arms and all persistent checkpoints use the SAME frozen
+        # original query, source scope, candidate set and pair-Encoder bytes.
+        # An internally self-consistent forged arm must not silently become
+        # an independent frozen baseline for cross-arm comparisons.
+        identity = (r["phase"], r["question_id"])
+        anchor = (
+            tuple(r["candidate_ids"]),
+            tuple(r["original_frozen_logits"]),
+            r["original_feature_sha256"],
+            r["source_pool_sha256"],
+            r["cell"], r["source_family"],
+        )
+        if identity in frozen_anchor:
+            require(
+                frozen_anchor[identity] == anchor,
+                "original frozen source/feature candidates drifted across arms or checkpoints",
+            )
+        else:
+            frozen_anchor[identity] = anchor
     expected = {key for key, row in indexed.items()
                 if "selection_geometry" in row}
     require(set(observed) == expected, "missing pre-Reader score vectors")
@@ -218,6 +237,9 @@ def replay_all(predictions, journal):
         original_policy_rows=len(predictions),
         pre_reader_score_journal_rows=len(journal),
         audited_pre_reader_rows=len(observed),
+        unique_observed_questions=len(frozen_anchor),
+        frozen_input_crossarm_checkpoint_identity_verified=True,
+        checkpoint_repeats_not_independent_questions=True,
         by_stage_phase_arm={
             "/".join(map(str, key)): dict(
                 observed=len(values),
