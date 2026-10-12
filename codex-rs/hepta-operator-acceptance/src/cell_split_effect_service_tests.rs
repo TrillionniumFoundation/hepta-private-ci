@@ -1022,3 +1022,82 @@ fn trickled_owner_request_cannot_extend_total_frame_deadline() {
     assert_eq!(service.backend().commits, 0);
     assert!(!root.path().join("committed").exists());
 }
+
+
+#[test]
+fn new_execute_cannot_adopt_effect_created_after_negative_preflight() {
+    let root = tempfile::tempdir().expect("private owner root");
+    let operation = intent();
+    let mut service = CellSplitEffectServiceV1::new(
+        CellSplitExecutionStepV1::ArtifactCas,
+        "cas-owner".into(),
+        operation.plan_digest.clone(),
+        SigningKey::from_bytes(&[1; 32]),
+        DiskEffect::new(root.path().to_path_buf(), "cas-owner"),
+    )
+    .expect("pinned signing owner");
+
+    // The real coordinator's negative preflight is signed by the original
+    // owner, but cannot act as a permanent reservation against another writer.
+    let (mut client, mut server) = UnixStream::pair().expect("preflight socket");
+    send_frame(
+        &mut client,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::ReadBack,
+            intent: operation.clone(),
+            challenge_nonce: Some("aa".repeat(32)),
+        },
+    )
+    .expect("readback request");
+    service.serve_connection(&mut server).expect("negative owner readback");
+    let negative: CellSplitEffectRpcResponseV1 =
+        receive_frame(&mut client).expect("signed negative response");
+    assert!(negative.receipt.is_none());
+    assert!(negative.readback.is_some());
+
+    // A different writer commits exactly the same idempotency key between
+    // the negative preflight and Execute; this signing service did not do it.
+    let mut external = DiskEffect::new(root.path().to_path_buf(), "cas-owner");
+    external.commit_once(&operation).expect("racing external durable commit");
+    assert_eq!(external.commits, 1);
+    assert_eq!(service.backend().commits, 0);
+
+    let (mut client, mut server) = UnixStream::pair().expect("execute socket");
+    send_frame(
+        &mut client,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::Execute,
+            intent: operation.clone(),
+            challenge_nonce: None,
+        },
+    )
+    .expect("new execute request");
+    assert!(matches!(
+        service.serve_connection(&mut server),
+        Err(CellSplitEffectRpcErrorV1::Invalid(
+            "effect already committed before new execute intent"
+        ))
+    ));
+    assert_eq!(service.backend().commits, 0);
+
+    // Existing effects are recoverable only through nonce-bound ReadBack.
+    let (mut client, mut server) = UnixStream::pair().expect("recovery socket");
+    send_frame(
+        &mut client,
+        &CellSplitEffectRpcRequestV1 {
+            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+            action: CellSplitEffectRpcActionV1::ReadBack,
+            intent: operation,
+            challenge_nonce: Some("bb".repeat(32)),
+        },
+    )
+    .expect("read-only reconciliation");
+    service.serve_connection(&mut server).expect("original durable readback");
+    let recovery: CellSplitEffectRpcResponseV1 =
+        receive_frame(&mut client).expect("recovered owner response");
+    assert_eq!(recovery.receipt.expect("original effect").owner_sequence, 7);
+    assert!(recovery.readback.is_some());
+    assert_eq!(service.backend().commits, 0);
+}
