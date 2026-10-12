@@ -165,9 +165,13 @@ fn native_cpu_rejects_tampered_tensors_and_head_identity() {
     let payload = canonical_neuron_feature_payload_digest(&request2);
     request2.authorization.payload_digest = payload.clone();
     request2.authorization.lease_payload_digest = payload;
+    // The first invalid batch reached the driver, whose failure cannot
+    // prove no physical execution occurred. The generation is quarantined:
+    // a follow-up request must not re-enter the driver even if its identity
+    // would independently have been rejected as ModelMismatch.
     assert_eq!(
         worker.run_neuron_features_backend_batch(100, "model.cpu-head", vec![request, request2]),
-        Err(Error::ModelMismatch)
+        Err(Error::ExecutionIndeterminate)
     );
 }
 
@@ -198,9 +202,11 @@ fn gated_head_driver_refuses_generic_text_model_execution() {
         reservation_maximum_tokens: 64,
         cancelled: false,
     };
+    // DriverFailure is not a safe retry verdict after an attempted run.
+    // The Worker must fence the entire generation as indeterminate.
     assert!(matches!(
         worker.run(100, "model.cpu-head", request),
-        Err(Error::DriverFailure(_))
+        Err(Error::ExecutionIndeterminate)
     ));
 }
 
