@@ -117,3 +117,30 @@ fn preserves_overlong_descriptions_and_short_descriptions() {
         }
     );
 }
+
+
+#[test]
+fn safe_yaml_frontmatter_parser_rejects_nested_description_or_unknown_tag() {
+    let nested = parse_skill_frontmatter_metadata(
+        "---\nname: unsafe\ndescription:\n  - command\n  - executable\n---\n",
+        || "fallback".to_string(),
+    );
+    assert!(nested.is_err(), "descriptions must remain scalar strings");
+
+    let custom_tag = parse_skill_frontmatter_metadata(
+        "---\nname: unsafe\ndescription: !unreviewed tagged content\n---\n",
+        || "fallback".to_string(),
+    );
+    assert!(custom_tag.is_err(), "unknown YAML tags must not become trusted skill metadata");
+}
+
+#[test]
+fn safe_yaml_preserves_bounded_basic_skill_frontmatter() {
+    let document =
+        "---\nname: yaml-migration\ndescription: 'run safely: audited'\nmetadata:\n  short-description: 'basic # safe'\n---\n";
+    let parsed = parse_skill_frontmatter_metadata(document, || "fallback".to_string())
+        .expect("simple YAML metadata remains usable");
+    assert_eq!(parsed.name, "yaml-migration");
+    assert_eq!(parsed.description, "run safely: audited");
+    assert_eq!(parsed.short_description.as_deref(), Some("basic # safe"));
+}
