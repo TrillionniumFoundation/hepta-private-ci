@@ -69,7 +69,6 @@ class WorkflowContextContractTests(unittest.TestCase):
         self.assertIn("9c5fdd2cf5be1b7b8b20541e56d7a109db968534", self.source)
         self.assertIn("b3c07ea6ba6e8e46e30811c0500b04505c4be9f9", self.source)
 
-
     def test_async_trait_repin_is_isolated_read_only_diagnostic(self):
         # A stale Cargo.lock may be repinned only inside the detached stage;
         # a generated lock is never copied into production or used to waive
@@ -93,7 +92,6 @@ class WorkflowContextContractTests(unittest.TestCase):
         self.assertIn('timeout 180 cargo +1.96.0 update', diagnostic)
         self.assertIn('--manifest-path "$STAGE/codex-rs/Cargo.toml"', diagnostic)
         self.assertIn("production_authorized':False", diagnostic)
-
 
 
 if __name__ == "__main__":
