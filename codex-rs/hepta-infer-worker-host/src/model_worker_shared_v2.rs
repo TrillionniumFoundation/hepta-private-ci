@@ -243,7 +243,9 @@ fn minimum_batch_input_bytes_v2(requests: &[SharedNeuronFeatureRequestV2]) -> Re
             .map_err(|_| Error::ArithmeticOverflow)?
             .checked_mul(8)
             .ok_or(Error::ArithmeticOverflow)?;
-        bytes = bytes.checked_add(item_bytes).ok_or(Error::ArithmeticOverflow)?;
+        bytes = bytes
+            .checked_add(item_bytes)
+            .ok_or(Error::ArithmeticOverflow)?;
     }
     Ok(bytes)
 }
@@ -521,10 +523,16 @@ mod tests {
         let b = req("cell.b", "request.b", Arc::clone(&shared));
         assert!(Arc::ptr_eq(&a.snapshot, &b.snapshot));
         // Two Q24 output vectors, width two, for each of two Cells.
-        assert_eq!(minimum_batch_output_bytes_v2(&[a.clone(), b.clone()]), Ok(64));
+        assert_eq!(
+            minimum_batch_output_bytes_v2(&[a.clone(), b.clone()]),
+            Ok(64)
+        );
         assert_eq!(minimum_batch_output_bytes_v2(&[]), Ok(0));
         // The shared Arc allocation is counted once regardless of Cell count.
-        assert_eq!(minimum_batch_input_bytes_v2(&[a.clone(), b.clone()]), Ok(16));
+        assert_eq!(
+            minimum_batch_input_bytes_v2(&[a.clone(), b.clone()]),
+            Ok(16)
+        );
         // Identical bytes in a different Arc allocation still cost memory.
         let mut independent = b;
         let mut copied_snapshot = (*independent.snapshot).clone();

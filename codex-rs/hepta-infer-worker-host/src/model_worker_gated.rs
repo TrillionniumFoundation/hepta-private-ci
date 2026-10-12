@@ -892,8 +892,12 @@ mod tests {
         // Two equal-content but physically distinct Arc allocations cannot
         // exploit that grant to bypass memory admission before driver entry.
         let mut memory_driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("memory driver");
-        memory_driver.register_head(first.clone()).expect("memory head a");
-        memory_driver.register_head(second.clone()).expect("memory head b");
+        memory_driver
+            .register_head(first.clone())
+            .expect("memory head a");
+        memory_driver
+            .register_head(second.clone())
+            .expect("memory head b");
         let memory_grant = ResourceGrant {
             grant_id: "grant.shared-memory".into(),
             authority_epoch: 2,
