@@ -109,10 +109,12 @@ mod tests {
         )
         .expect("exact reopen without recreating authority");
         assert_eq!(reopened.frontier().expect("recovered frontier"), next);
-        assert_eq!(
-            reopened.read_lease("win-lease-one").expect("read exact lease"),
-            Some(sample()),
-        );
+        let recovered = reopened
+            .read_lease("win-lease-one")
+            .expect("read exact lease")
+            .expect("lease survived reopen");
+        assert_eq!(recovered.lease, sample());
+        assert_eq!(recovered.store_revision, next.store_revision);
         assert!(reopened.verifier().verify_use(
             "win-lease-one", 1, &sample().binding,
         ).is_ok());
