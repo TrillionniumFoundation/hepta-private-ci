@@ -832,27 +832,62 @@ fn batch_rejects_wrong_member_order_and_missing_or_forged_driver_evidence() {
                 .is_err()
         );
         assert_eq!(worker.driver.backend_calls, 1);
-        worker.unload_model(100, "model.1").expect("released");
+        assert!(worker.requires_external_recovery());
+        assert!(worker.active_requests.is_empty());
+        assert_eq!(
+            worker.unload_model(100, "model.1"),
+            Err(Error::ExecutionIndeterminate)
+        );
+        assert_eq!(
+            worker.run_neuron_features_backend_batch(100, "model.1", two_batch_requests()),
+            Err(Error::ExecutionIndeterminate)
+        );
+        assert_eq!(worker.driver.backend_calls, 1, "unverified batch is never replayed");
     }
 }
 
 #[test]
-fn batch_driver_error_releases_active_ids_and_allows_retry() {
+fn batch_driver_error_fences_generation_without_replaying_member_effects() {
     let mut worker = batch_worker(BatchFault::DriverError);
-    assert!(matches!(
+    assert_eq!(
         worker.run_neuron_features_backend_batch(100, "model.1", two_batch_requests()),
-        Err(Error::DriverFailure(_))
-    ));
+        Err(Error::ExecutionIndeterminate)
+    );
+    assert!(worker.active_requests.is_empty());
+    assert_eq!(worker.models["model.1"].active_requests, 0);
+    assert!(worker.requires_external_recovery());
     worker.driver.fault = BatchFault::None;
     assert_eq!(
-        worker
-            .run_neuron_features_backend_batch(100, "model.1", two_batch_requests())
-            .expect("retry")
-            .receipts
-            .len(),
-        2
+        worker.run_neuron_features_backend_batch(100, "model.1", two_batch_requests()),
+        Err(Error::ExecutionIndeterminate)
     );
-    worker.unload_model(100, "model.1").expect("released");
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ExecutionIndeterminate)
+    );
+    assert_eq!(worker.driver.backend_calls, 1);
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::ExecutionIndeterminate)
+    );
+}
+
+#[test]
+fn physically_batched_unknown_terminal_denies_all_receipts_and_replay() {
+    let mut worker = batch_worker(BatchFault::NoTerminal);
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", two_batch_requests()),
+        Err(Error::ExecutionIndeterminate)
+    );
+    assert!(worker.active_requests.is_empty());
+    assert!(worker.requires_external_recovery());
+    assert_eq!(worker.driver.backend_calls, 1);
+    worker.driver.fault = BatchFault::None;
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", two_batch_requests()),
+        Err(Error::ExecutionIndeterminate)
+    );
+    assert_eq!(worker.driver.backend_calls, 1);
 }
 
 #[test]
