@@ -8,12 +8,15 @@ def record():
         for phase in PHASES:
             for arm in ARMS:
                 metrics[f"{stage}/{phase}/{arm}"] = dict(
-                    attempted=8, succeeded=8, failed=0,
-                    source_accuracy=.25, diagnostic_f1=.125,
-                    emitted_citation_markers=0, delivered_citation_markers=0,
+                    attempted=8,
+                    succeeded=8,
+                    failed=0,
+                    source_accuracy=0.25,
+                    diagnostic_f1=0.125,
+                    emitted_citation_markers=0,
+                    delivered_citation_markers=0,
                 )
-    return dict(metrics=metrics, logical_policy_attempts=576,
-                production_accepted=False)
+    return dict(metrics=metrics, logical_policy_attempts=576, production_accepted=False)
 
 
 class GateTests(unittest.TestCase):
@@ -26,7 +29,7 @@ class GateTests(unittest.TestCase):
 
     def test_positive_aggregate_still_does_not_certify_production(self):
         data = record()
-        data["metrics"]["48/test/gated"]["source_accuracy"] = .5
+        data["metrics"]["48/test/gated"]["source_accuracy"] = 0.5
         out = audit_nonpromotion(data)
         self.assertTrue(out["any_aggregate_source_or_answer_gain"])
         self.assertFalse(out["scale_out_permitted"])
@@ -56,8 +59,10 @@ if __name__ == "__main__":
 
 def full_fixture():
     from copy import deepcopy
+
     plan = dict(
-        arms=list(ARMS), curriculum_attempted_examples=list(STAGES),
+        arms=list(ARMS),
+        curriculum_attempted_examples=list(STAGES),
         questions=dict(train=[f"train-{i}" for i in range(48)]),
     )
     plan["questions"].update(
@@ -68,66 +73,96 @@ def full_fixture():
         for phase in PHASES:
             for qid in plan["questions"][phase]:
                 for arm in ARMS:
-                    raw.append(dict(
-                        stage=stage, phase=phase, question_id=qid, arm=arm,
-                        status="succeeded", cell="general", family="family-" + qid,
-                        selected=0, answer="fixture",
-                        pool_digest="same-pool-" + qid,
-                        feature_digest="feature", head_sha256="h" * 64,
-                        encoder_identity="frozen-encoder",
-                        receipt=dict(
-                            observable_query=dict(identity=qid),
-                            generator_identity="pinned-reader",
-                            generator_profile="pinned-prompt",
-                            input_ids_digest="a" * 64,
-                            generated_ids_digest="b" * 64,
-                            delivered_evidence=[dict(label="E1")],
-                        ),
-                    ))
+                    raw.append(
+                        dict(
+                            stage=stage,
+                            phase=phase,
+                            question_id=qid,
+                            arm=arm,
+                            status="succeeded",
+                            cell="general",
+                            family="family-" + qid,
+                            selected=0,
+                            answer="fixture",
+                            pool_digest="same-pool-" + qid,
+                            feature_digest="feature",
+                            head_sha256="h" * 64,
+                            encoder_identity="frozen-encoder",
+                            receipt=dict(
+                                observable_query=dict(identity=qid),
+                                generator_identity="pinned-reader",
+                                generator_profile="pinned-prompt",
+                                input_ids_digest="a" * 64,
+                                generated_ids_digest="b" * 64,
+                                delivered_evidence=[dict(label="E1")],
+                            ),
+                        )
+                    )
     scored = deepcopy(raw)
     for row in scored:
         row.update(
-            source_choice_correct=0, diagnostic_answer_f1=0.25,
+            source_choice_correct=0,
+            diagnostic_answer_f1=0.25,
             citation_structure=dict(
-                markers=0, delivered_markers=0,
-                precision=None, semantic_precision=None,
+                markers=0,
+                delivered_markers=0,
+                precision=None,
+                semantic_precision=None,
             ),
         )
-    training = dict(checkpoints=[
-        dict(
-            checkpoint=stage, arm=arm, cell=cell,
-            heldout_annotations_consulted=False, production_accepted=False,
-            changed_train_top1_rows=0,
-            mean_weak_loss_delta=-0.25,
-            previous_head_sha256="a" * 64,
-            updated_head_sha256="h" * 64,
-        )
-        for stage in STAGES for arm in ARMS[1:]
-        for cell in ("general", "temporal")
-    ])
-    ceiling = dict(phases={
-        phase: dict(
-            attempted=8, native_source_resolved=6, native_unanswerable=2,
-            native_unresolved_support=0,
-            support_available_within_pool=4,
-            support_missing_from_pool=2,
-            frozen_correct_source_choices=3,
-            frozen_missed_available_support=1,
-        )
-        for phase in PHASES
-    })
+    training = dict(
+        checkpoints=[
+            dict(
+                checkpoint=stage,
+                arm=arm,
+                cell=cell,
+                heldout_annotations_consulted=False,
+                production_accepted=False,
+                changed_train_top1_rows=0,
+                mean_weak_loss_delta=-0.25,
+                previous_head_sha256="a" * 64,
+                updated_head_sha256="h" * 64,
+            )
+            for stage in STAGES
+            for arm in ARMS[1:]
+            for cell in ("general", "temporal")
+        ]
+    )
+    ceiling = dict(
+        phases={
+            phase: dict(
+                attempted=8,
+                native_source_resolved=6,
+                native_unanswerable=2,
+                native_unresolved_support=0,
+                support_available_within_pool=4,
+                support_missing_from_pool=2,
+                frozen_correct_source_choices=3,
+                frozen_missed_available_support=1,
+            )
+            for phase in PHASES
+        }
+    )
     effective = dict(
         independent_question_ids_per_arm=16,
         repeated_question_evaluations_per_arm=48,
         source_family_sampling_independence_certified=False,
     )
     report = dict(
-        production_accepted=False, semantic_citation_precision=None,
+        production_accepted=False,
+        semantic_citation_precision=None,
         learning=[
-            dict(stage=stage, arm=arm, cell=cell, status="succeeded",
-                 before_sha256="a" * 64, after_sha256="h" * 64,
-                 other_head_states_unchanged=True)
-            for stage in STAGES for arm in ARMS
+            dict(
+                stage=stage,
+                arm=arm,
+                cell=cell,
+                status="succeeded",
+                before_sha256="a" * 64,
+                after_sha256="h" * 64,
+                other_head_states_unchanged=True,
+            )
+            for stage in STAGES
+            for arm in ARMS
             for cell in ("general", "temporal")
         ],
     )
@@ -137,6 +172,7 @@ def full_fixture():
 class PairedNativeProofTests(unittest.TestCase):
     def check(self, args):
         from stem_native_nonpromotion import audit_exact_paired_choices
+
         return audit_exact_paired_choices(*args)
 
     def test_full_paired_success_does_not_promote(self):
@@ -155,14 +191,24 @@ class PairedNativeProofTests(unittest.TestCase):
         raw, scored = args[1], args[2]
         for records in (raw, scored):
             row = next(
-                x for x in records if x["stage"] == 48 and x["phase"] == "retention"
+                x
+                for x in records
+                if x["stage"] == 48
+                and x["phase"] == "retention"
                 and x["question_id"] == "retention-0"
                 and x["arm"] == "lineage_lora_gated"
             )
             row["selected"] = 1
         result = self.check(args)
-        self.assertEqual(result["learned_arms"]["lineage_lora_gated"]["changed_source_top1"], 1)
-        self.assertEqual(result["learned_arms"]["lineage_lora_gated"]["changed_original_answer_bytes"], 0)
+        self.assertEqual(
+            result["learned_arms"]["lineage_lora_gated"]["changed_source_top1"], 1
+        )
+        self.assertEqual(
+            result["learned_arms"]["lineage_lora_gated"][
+                "changed_original_answer_bytes"
+            ],
+            0,
+        )
         self.assertFalse(result["scale_out_permitted"])
 
     def test_scoring_laundered_source_or_answer_is_rejected(self):
@@ -175,8 +221,9 @@ class PairedNativeProofTests(unittest.TestCase):
                 row[modified] = 1
             else:
                 row[modified] = "tampered"
-            with self.subTest(modified=modified), self.assertRaisesRegex(
-                ValueError, "differs from exact"
+            with (
+                self.subTest(modified=modified),
+                self.assertRaisesRegex(ValueError, "differs from exact"),
             ):
                 self.check(args)
 
@@ -197,9 +244,12 @@ class PairedNativeProofTests(unittest.TestCase):
         for field in ("pool_digest", "family", "cell", "generator_profile"):
             args = full_fixture()
             row = next(r for r in args[1] if r["arm"] == "gated")
-            evaluated = next(r for r in args[2] if
-                             (r["stage"],r["phase"],r["question_id"],r["arm"]) ==
-                             (row["stage"],row["phase"],row["question_id"],row["arm"]))
+            evaluated = next(
+                r
+                for r in args[2]
+                if (r["stage"], r["phase"], r["question_id"], r["arm"])
+                == (row["stage"], row["phase"], row["question_id"], row["arm"])
+            )
             if field == "generator_profile":
                 row["receipt"][field] = "different"
                 evaluated["receipt"][field] = "different"
@@ -214,14 +264,16 @@ class PairedNativeProofTests(unittest.TestCase):
             args = full_fixture()
             row = next(r for r in args[1] if r["arm"] == "gated")
             indexed = next(
-                r for r in args[2]
+                r
+                for r in args[2]
                 if (r["stage"], r["phase"], r["question_id"], r["arm"])
                 == (row["stage"], row["phase"], row["question_id"], row["arm"])
             )
             row["cell"] = invalid
             indexed["cell"] = invalid
-            with self.subTest(cell=invalid), self.assertRaisesRegex(
-                ValueError, "Cell route"
+            with (
+                self.subTest(cell=invalid),
+                self.assertRaisesRegex(ValueError, "Cell route"),
             ):
                 self.check(args)
 
@@ -234,9 +286,7 @@ class PairedNativeProofTests(unittest.TestCase):
                 args[5]["phases"].pop("test")
             else:
                 args[3]["production_accepted"] = True
-            with self.subTest(mode=mode), self.assertRaises(
-                (ValueError, KeyError)
-            ):
+            with self.subTest(mode=mode), self.assertRaises((ValueError, KeyError)):
                 self.check(args)
 
     def test_repeated_48_question_measurements_not_independent(self):
@@ -267,8 +317,9 @@ class PairedNativeProofTests(unittest.TestCase):
             else:
                 phase["frozen_correct_source_choices"] = 4
                 phase["frozen_missed_available_support"] = 1
-            with self.subTest(mode=mode), self.assertRaisesRegex(
-                ValueError, "opportunity ceiling"
+            with (
+                self.subTest(mode=mode),
+                self.assertRaisesRegex(ValueError, "opportunity ceiling"),
             ):
                 self.check(args)
 
