@@ -436,3 +436,33 @@ fn contains_numbered_argument_placeholder(template: &str) -> bool {
 #[cfg(test)]
 #[path = "command_migration_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+mod safe_yaml_parser_migration_tests {
+    use super::*;
+
+    #[test]
+    fn command_frontmatter_accepts_one_scalar_description_only() {
+        assert_eq!(
+            parse_command_description("description: bounded helper\n"),
+            Some("bounded helper".to_string())
+        );
+        assert_eq!(
+            parse_command_description("description: [unsafe, shape]\n"),
+            None
+        );
+        assert_eq!(
+            parse_command_description("description:\n  nested: mapping\n"),
+            None
+        );
+        assert_eq!(
+            parse_command_description("description: original\ndescription: forged\n"),
+            None,
+            "duplicate command description cannot be resolved by taking the last field"
+        );
+        assert_eq!(
+            parse_command_description("description: [unterminated\n"),
+            None
+        );
+    }
+}
