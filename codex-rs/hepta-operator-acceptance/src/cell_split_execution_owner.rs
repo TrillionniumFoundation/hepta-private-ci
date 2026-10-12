@@ -467,6 +467,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         } else {
             lock_sidecar(&root)?
         };
+        lock.verify_current(&root)?;
         let plan_digest = plan.digest()?;
         if trust.plan_digest != plan_digest {
             return Err(CellSplitExecutionErrorV1::Invalid("trusted plan mismatch"));
@@ -661,6 +662,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         &mut self,
         collect_receipts: bool,
     ) -> Result<Vec<CellSplitExecutionReceiptV1>, CellSplitExecutionErrorV1> {
+        self._lock.verify_current(&self.root)?;
         verify_split_frame_namespace(&self.root)?;
         let frozen = read_frame(&self.root.join("cell-split-frozen-plan.json"))?.ok_or(
             CellSplitExecutionErrorV1::Invalid("frozen plan disappeared"),
@@ -766,6 +768,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 ));
             }
         }
+        self._lock.verify_current(&self.root)?;
         Ok(receipts)
     }
 
