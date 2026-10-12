@@ -1,6 +1,9 @@
 name: Hepta Windows setup manifest runfiles qualification
 
 on:
+  push:
+    branches:
+      - "fix/windows-helper-manifest-runfiles-20261012"
   pull_request:
     paths:
       - "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs"
