@@ -58,3 +58,39 @@ jobs:
         run: |
           git diff --check
           git diff --exit-code
+  pinned-upstream-source-probe:
+    name: Fixed upstream source manifest (candidate only, no execution)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Read-only checkout of exact upstream revision
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: b3c07ea6ba6e8e46e30811c0500b04505c4be9f9
+          persist-credentials: false
+          path: upstream
+      - name: Inspect fixed manifests without compiling upstream code
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/matrix-security/upstream_source_probe.py \
+            --root . --upstream upstream \
+            --expected-sha b3c07ea6ba6e8e46e30811c0500b04505c4be9f9 \
+            --output "$RUNNER_TEMP/hepta-matrix-upstream-probe.json"
+      - name: Preserve candidate compatibility report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-matrix-upstream-compat-${{ github.run_id }}
+          path: ${{ runner.temp }}/hepta-matrix-upstream-probe.json
+          if-no-files-found: error
+          retention-days: 14
+      - name: No tracked repo mutations
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
