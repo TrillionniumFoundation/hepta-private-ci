@@ -230,3 +230,38 @@ mistaken for a valid semantic identity.
 
 This closes an identity-binding gap but is not host-authenticated production
 selection, a signed physical model-load receipt or an NDU advancement.
+
+## Failed model-load / unload containment and aggregate resident budget
+
+The actual \`InferenceWorker\` now treats a successful \`ModelDriver::load\`
+as a resource admission candidate, **not** as authority to keep the handle.
+Every loaded model's driver-observed resident bytes contribute to the SAME
+\`ResourceGrant.maximum_memory_bytes\` total; checking only one handle's
+size would otherwise allow multiple Cells to exceed the reservation.
+This is a bounded O(MAX_MODELS <= 8) scan only on load, not per inference.
+
+- Unknown driver load errors permanently quarantine that Worker generation;
+  a failed load might have allocated resources before reporting failure.
+- Invalid/zero-memory/over-budget handles require a successful driver
+  unload before returning a recoverable rejection. Unknown cleanup leaves
+  the Worker quarantined.
+- Opaque handle reuse across different loaded Model IDs is rejected and
+  quarantines the Worker. The duplicate is NOT unloaded because its handle
+  may alias a live model and destroy the predecessor.
+- Unload no longer forgets the live handle before observing a successful
+  driver unload. An unknown result keeps the occupied handle in the Worker
+  and permanently fences new model loads, inference and unloads until the
+  Supervisor separately retires that generation.
+- Model/registration tests inject bad handles, oversized/zero memory,
+  aggregate memory overrun, ambiguous loads, failed cleanup, unload failure
+  and aliasing. No fixture result is a signed or physical GPU memory attestation.
+
+The observed resident byte counts come from the local \`ModelDriver\` and
+are not independently authenticated RSS, GPU allocations, shared Encoder
+buffer sizes or whole-process peaks. The Supervisor and actual runtime
+still own physical process retirement and quota reclamation; the Worker
+must not claim that dropping a Rust handle proves physical cleanup.
+Crash recovery, current signed resource grants, actual CAS load and CNS
+selection remain separate gates. This code never changes production
+selection, release, final-use permission, model rankings or NDU.
+
