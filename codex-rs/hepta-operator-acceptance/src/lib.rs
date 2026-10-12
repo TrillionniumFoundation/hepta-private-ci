@@ -7,6 +7,8 @@ mod cell_split_cns_cutover;
 #[cfg(unix)]
 mod cell_split_effect_rpc;
 #[cfg(unix)]
+mod cell_split_monotonic_rpc;
+#[cfg(unix)]
 mod cell_split_effect_service;
 #[cfg(unix)]
 mod cell_split_execution_cli;
@@ -165,6 +167,16 @@ pub use cell_split_observer_minimum::verify_cell_split_supervisor_monotonic_fron
 pub use cell_split_observer_minimum::cell_split_supervisor_minimum_readback_signing_payload_v1;
 #[cfg(unix)]
 pub use cell_split_observer_minimum::verify_cell_split_supervisor_minimum_online_v1;
+#[cfg(unix)]
+pub use cell_split_monotonic_rpc::CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1;
+#[cfg(unix)]
+pub use cell_split_monotonic_rpc::CellSplitMonotonicRpcErrorV1;
+#[cfg(unix)]
+pub use cell_split_monotonic_rpc::CellSplitMonotonicRpcRequestV1;
+#[cfg(unix)]
+pub use cell_split_monotonic_rpc::CellSplitMonotonicRpcResponseV1;
+#[cfg(unix)]
+pub use cell_split_monotonic_rpc::CellSplitSupervisorMonotonicUnixPortV1;
 #[cfg(unix)]
 pub use cell_split_observer_join::verify_cell_split_observer_join_deep_v1;
 pub use cell_split_observer_join::CellSplitSignedObserverJoinV1;
