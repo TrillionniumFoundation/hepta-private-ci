@@ -13,6 +13,8 @@ mod cell_split_execution_cli;
 mod cell_split_execution_owner;
 mod cell_split_observer_join;
 #[cfg(unix)]
+mod cell_split_observer_minimum;
+#[cfg(unix)]
 mod cell_split_supervisor_fence;
 mod cell_split_target_host;
 mod cell_split_target_host_evidence;
@@ -137,6 +139,20 @@ pub use cell_split_observer_join::CellSplitObserverJoinReceiptV1;
 pub use cell_split_observer_join::CellSplitObserverDeepReceiptV1;
 #[cfg(unix)]
 pub use cell_split_observer_join::CellSplitObserverOriginalRuntimeTrustV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMinimumErrorV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMinimumFileStoreV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMinimumOnlinePortV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMinimumReadbackV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMinimumSubjectV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::cell_split_supervisor_minimum_readback_signing_payload_v1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::verify_cell_split_supervisor_minimum_online_v1;
 #[cfg(unix)]
 pub use cell_split_observer_join::verify_cell_split_observer_join_deep_v1;
 pub use cell_split_observer_join::CellSplitSignedObserverJoinV1;
