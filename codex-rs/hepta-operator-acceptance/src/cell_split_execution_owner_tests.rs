@@ -1144,6 +1144,56 @@ fn recovery_rejects_local_identity_and_history_drift_during_live_readbacks() {
 
 #[cfg(unix)]
 #[test]
+fn original_writer_lock_must_not_be_recreated_around_frozen_or_committed_state() {
+    for completed in [0, 1] {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        let mut original = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("original writer");
+        for _ in 0..completed {
+            original.advance().expect("durable effect").expect("receipt");
+        }
+        let frozen = root.path().join("cell-split-frozen-plan.json");
+        let pins = root.path().join("cell-split-owner-trust-pins.json");
+        let frozen_bytes = fs::read(&frozen).expect("frozen plan");
+        let pins_bytes = fs::read(&pins).expect("frozen trust");
+        let lock = root.path().join(crate::durable::SIDECAR_LOCK_FILE);
+
+        // The old process still holds its original lock inode after unlink.
+        // Reopening must not silently mint a second writer lock inode.
+        fs::remove_file(&lock).expect("unlink original lock");
+        assert!(matches!(
+            CellSplitExecutionOwnerV1::open(
+                root.path(),
+                plan(),
+                trust(),
+                FixturePort::new(state.clone()),
+            ),
+            Err(CellSplitExecutionErrorV1::Invalid(
+                "initialized split owner lost original writer lock"
+            ))
+        ));
+        assert!(!lock.exists(), "denied reopen must not recreate the lock");
+        assert_eq!(fs::read(&frozen).expect("plan preserved"), frozen_bytes);
+        assert_eq!(fs::read(&pins).expect("pins preserved"), pins_bytes);
+        assert_eq!(state.borrow().executions, completed);
+
+        // The detached original lock no longer protects this namespace.
+        assert!(matches!(
+            original.advance(),
+            Err(CellSplitExecutionErrorV1::Durable(_))
+        ));
+        assert_eq!(state.borrow().executions, completed);
+    }
+}
+
+#[cfg(unix)]
+#[test]
 fn replacing_lock_inode_fences_live_execution_and_verified_transcripts() {
     for completed in [0, 4] {
         let root = private_tempdir();
