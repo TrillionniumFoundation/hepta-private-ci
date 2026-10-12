@@ -5,7 +5,7 @@
 ## Generating source and cryptographic record
 
 - Exact *generating* Git commit: [`6304b451268c73f3d1a605985226b102df841bbf`](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/6304b451268c73f3d1a605985226b102df841bbf). Later PR HEAD checks **must not** be substituted for the generating source.
-- Hosted run: [#38224780900](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38224780900). Its pinned **reader** and **experiment-format** jobs completed successfully; the separate `independent-replay` job was **queued at this observation**.
+- Hosted run: [#38224780900](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38224780900). The pinned **reader**, **experiment-format**, and separate **independent-replay** jobs have all completed successfully; the workflow now has overall `success` on attempt 2.
 - Real reader artifact `11743043427`, outer ZIP SHA-256 `7a99db30fb5b1202fcd43073d22589b84315046dd34044277cc46351f1cbece8`. Original event input artifact `11669174727`, outer ZIP SHA-256 `23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b`.
 - Original frozen eight-test plan SHA-256 `9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897`; generating model inventory identity `f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225`.
 - Both downloaded archives independently passed their full SHA256SUMS file-census checks: **43 model records + 35 frozen original input records**. Calibration raw journal SHA-256 `1b5c774d97656fbbbba9ae668df6e93ea4ca5c75f588bbd0a7424a0fa2be3fc3`; evaluation raw journal SHA-256 `536cae1bf9807bc9caf9ef42d0a4d541152bfbc5ab798146550fdc7d7901b5e9`.
@@ -52,7 +52,7 @@ A separate Python process executed the generating artifact's actual `strong_rag_
 - Rebuilt each unsigned native citation payload, including original excerpt bytes, request SHA, prompt digest, explicit root derivation, and exactly recomputed formal citation-chain audit.
 - Independently recalculated top-k calibration, leave-one-out stability, paired contrasts and 39 same-prompt comparisons. An altered scored outcome and an altered original evidence excerpt (even with modified inner manifest checksums) were both **rejected** by the verifier.
 
-This is strong **local source-compatible software replay evidence**; it is **not** the hosted independent GitHub `independent-replay` job, authenticated third-party adjudication, new prospective task population or independent statistical validation. That hosted job's final success/failure must be checked separately and an unexpected failure reconciled before claim promotion.
+This is strong **local source-compatible software replay evidence**, separate from the subsequently successful hosted independent GitHub `independent-replay` job. Neither replay is an authenticated third-party semantic judgment, a new prospective task population, or independent statistical validation.
 
 ## No-go and next experimental budget
 
@@ -95,11 +95,42 @@ These local supplemental files are separate conversation deliverables; the
 original repository-native verifier, replay job and pinned ZIP artifacts
 remain authoritative for the hosted research workflow.
 
-This **does not** attest that the independent hosted `independent-replay`
-job for #38224780900 has completed; that job was still queued at this
-recheck. It is neither human semantic entailment adjudication nor
+The extra local implementation was completed before the hosted independent
+`independent-replay` job's success was confirmed; the hosted job subsequently
+completed and its exact original artifact/receipt hashes were checked.
+Neither event establishes semantic citation entailment or production admission. It is neither human semantic entailment adjudication nor
 independently sampled prospective task validation. The prior four-run
 replication report documents 13/112 cross-host prompt-output differences;
 repeat executions of these eight authored questions cannot substantiate
 generalization, 99% semantic citation precision, parametric-memory gains,
 or production acceptance.
+
+## Hosted independent replay: final successful state and artifact
+
+The [exact-source Actions run #38224780900](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38224780900)
+finished **`completed/success`** (attempt 2). `reader`,
+`experiment-format`, and `independent-replay` jobs each concluded **success**.
+
+- Hosted `independent-replay` artifact ID `11748040166`, downloaded outer
+  ZIP SHA-256:
+  `2445895a7d51e3173837471aa462cebede29eb3ec89653af3bd17e73b6114071`.
+- Its nine safe ZIP entries contain `SHA256SUMS` and **eight manifest-pinned**
+  files. All eight member digests and the complete file census passed.
+- The hosted `receipt.json` binds exact generating commit
+  `6304b451268c73f3d1a605985226b102df841bbf`, original plan
+  `9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897`,
+  and Qwen model inventory
+  `f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225`.
+- The hosted receipt confirms 40 calibration and 72 nine-arm attempts,
+  their unchanged original answer journal SHA digests, frozen k=1, all
+  published paired contrasts, **39 identical-prompt matched pairs**
+  and the formal support-citation-chain summary.
+- Its explicit flags remain `independent_semantic_judge=false`,
+  `independent_source_families=0`, `longitudinal_observations=0`,
+  `statistical_superiority=false`, and `production_accepted=false`.
+
+This **closes the hosted execution/replay gate** for this exact historical
+development sample, **not** the independent-source, citation-precision,
+memory-learning or production-acceptance gates. The separate four-run
+cross-host audit finds 13 prompt-output instabilities across the same
+112 inputs; repeated runs must not be counted as new held-out questions.
