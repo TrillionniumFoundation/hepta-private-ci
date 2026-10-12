@@ -94,13 +94,16 @@ def hamiltonian(problem, initial):
     """Dense independent reference for the zero-noise Hamiltonian FBSDE special case.
 
     Unknowns are X[1:T], u[0:T-1], lambda[1:T]; lambda is a costate, NOT utility.
-    This comparison does not pretend a deterministic open-loop plan solves a
-    realized stochastic feedback problem. Noise is validated in a separate test.
+    Initial states may be a vector [n] or up to 256 columns [n,batch]. Matrix RHS
+    reuses ONE factorization; identity columns construct a reusable linear map.
+    This does not pretend open-loop plans solve realized stochastic feedback.
     """
     t,n,m = problem.validate()
-    if (initial.shape != (n,) or initial.dtype != torch.float64 or initial.requires_grad
+    if (not isinstance(initial, torch.Tensor) or initial.ndim not in (1,2)
+            or initial.shape[0] != n or (initial.ndim == 2 and not 1 <= initial.shape[1] <= 256)
+            or initial.dtype != torch.float64 or initial.requires_grad
             or initial.device.type != 'cpu' or not torch.isfinite(initial).all()):
-        raise ValueError('invalid initial state')
+        raise ValueError('invalid initial state or column batch')
     if torch.count_nonzero(problem.S):
         raise ValueError('dense boundary reference is zero-noise only')
     width = t*(2*n+m)
@@ -108,7 +111,8 @@ def hamiltonian(problem, initial):
         raise ValueError('dense reference dimension budget')
     started = time.perf_counter()
     matrix = torch.zeros(width,width,dtype=torch.float64)
-    rhs = torch.zeros(width,dtype=torch.float64)
+    tail = tuple(initial.shape[1:])
+    rhs = torch.zeros((width,)+tail,dtype=torch.float64)
     eye = torch.eye(n,dtype=torch.float64)
     xs = [None]+[slice(k*n,(k+1)*n) for k in range(t)]
     us = [slice(t*n+k*m,t*n+(k+1)*m) for k in range(t)]
@@ -131,8 +135,8 @@ def hamiltonian(problem, initial):
     residual = float((matrix@solution-rhs).abs().max())
     if not torch.isfinite(solution).all() or residual > 1e-8*(1+float(rhs.abs().max())):
         raise ValueError('Hamiltonian boundary residual failed')
-    states = torch.cat((initial[None],solution[:t*n].reshape(t,n)))
-    actions = solution[t*n:t*(n+m)].reshape(t,m)
+    states = torch.cat((initial[None],solution[:t*n].reshape((t,n)+tail)))
+    actions = solution[t*n:t*(n+m)].reshape((t,m)+tail)
     return states,actions,dict(seconds=time.perf_counter()-started,solves=1,
         largest_solve_dimension=width, boundary_residual=residual,
         backend='dense-zero-noise-hamiltonian')
