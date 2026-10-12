@@ -387,6 +387,16 @@ fn streaming_neuron_feature_digest_preserves_exact_v1_wire_for_multiple_widths()
             Digest32::of_bytes(&legacy).to_string(),
             "digest compatibility for feature width {width}",
         );
+        let mut detached = request.clone();
+        detached.feature_vector_q24.clear();
+        assert_eq!(
+            canonical_neuron_feature_payload_digest_with_slice(
+                &detached,
+                &request.feature_vector_q24,
+            ),
+            Digest32::of_bytes(&legacy).to_string(),
+            "immutable borrowed features preserve the signed v1 payload",
+        );
 
         request.feature_vector_q24[0] += 1;
         assert_ne!(
