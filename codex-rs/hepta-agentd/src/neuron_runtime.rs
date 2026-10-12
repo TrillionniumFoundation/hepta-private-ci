@@ -18,8 +18,6 @@ use codex_hepta_learning_ledger::NeuronTrialObservedCohortV1;
 use codex_hepta_learning_ledger::NeuronTrialObservedTickLinkV1;
 use codex_hepta_learning_ledger::NeuronTrialSourceError;
 use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::StableId;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::InferenceControlModelPort;
 use codex_hepta_neuron::NeuronInferenceControlPort;
@@ -28,6 +26,8 @@ use codex_hepta_neuron::NeuronRuntime;
 use codex_hepta_neuron::NeuronRuntimeError;
 use codex_hepta_neuron::NeuronRuntimeOutputV1;
 use codex_hepta_neuron::NeuronTickInputV1;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fs::File;
@@ -235,7 +235,9 @@ where
         let trail = std::mem::take(&mut self.issued_cohort);
         let latest = self.issued_tick.take();
         let result = (|| -> Result<NeuronTrialObservedCohortV1, NeuronTrialTickObserverErrorV1> {
-            let last = trail.last().ok_or(NeuronRuntimeError::ModelBindingMismatch)?;
+            let last = trail
+                .last()
+                .ok_or(NeuronRuntimeError::ModelBindingMismatch)?;
             require_owner_issued_tick(latest.as_ref(), last)?;
             // Revalidate the current Journal/Witness both before and after the
             // independent Ledger read, without exposing private input bytes.
@@ -348,9 +350,10 @@ fn retain_owner_observed_tick(
             return Err(NeuronRuntimeError::ModelBindingMismatch);
         }
     }
-    if history.iter().any(|row| {
-        row.tick_id == next.tick_id || row.diagnostic_digest == next.diagnostic_digest
-    }) {
+    if history
+        .iter()
+        .any(|row| row.tick_id == next.tick_id || row.diagnostic_digest == next.diagnostic_digest)
+    {
         return Err(NeuronRuntimeError::ModelBindingMismatch);
     }
     history.push(next.clone());

@@ -174,10 +174,7 @@ pub fn inspect_loaded_neuron_weight_file_v1<D: ModelDriver>(
     let observed = result?;
     let after = after?;
     restored?;
-    if !after.is_file()
-        || after.len() != before.len()
-        || after.modified()? != before_modified
-    {
+    if !after.is_file() || after.len() != before.len() || after.modified()? != before_modified {
         return Err(NeuronWeightFileDiagnosticErrorV1::ChangedDuringRead);
     }
     if observed != expected {
@@ -201,7 +198,6 @@ pub fn inspect_loaded_neuron_weight_file_v1<D: ModelDriver>(
     }
     Ok(diagnostic)
 }
-
 
 /// Separate physical-load contract: the Worker transfers OWNERSHIP of the same
 /// preopened file that it just fully hashed. There is deliberately no fallback
@@ -377,10 +373,7 @@ impl<D: NeuronPreopenedWeightModelDriver> InferenceWorker<D> {
         weights.seek(SeekFrom::Start(0))?;
         let measured = Digest32::of_reader(&mut weights, MAX_WEIGHT_FILE_BYTES)?;
         let after = weights.metadata()?;
-        if !after.is_file()
-            || after.len() != before.len()
-            || after.modified()? != before_modified
-        {
+        if !after.is_file() || after.len() != before.len() || after.modified()? != before_modified {
             return Err(NeuronWeightFileDiagnosticErrorV1::ChangedDuringRead);
         }
         if measured != expected {
@@ -477,7 +470,9 @@ mod tests {
             _: &DriverModelHandle,
             _: &WorkerRequest,
         ) -> Result<DriverRunObservation, Error> {
-            Err(Error::DriverFailure("never invoked in weight-file test".into()))
+            Err(Error::DriverFailure(
+                "never invoked in weight-file test".into(),
+            ))
         }
 
         fn unload(&mut self, _: DriverModelHandle) -> Result<(), Error> {
@@ -516,14 +511,8 @@ mod tests {
     #[test]
     fn actual_file_hash_binds_current_loaded_worker_and_restores_cursor() {
         let bytes = vec![0x35_u8; 200_000];
-        let mut worker = InferenceWorker::new(
-            100,
-            "worker.1".to_owned(),
-            3,
-            grant(),
-            Driver,
-        )
-        .unwrap();
+        let mut worker =
+            InferenceWorker::new(100, "worker.1".to_owned(), 3, grant(), Driver).unwrap();
         worker.load_model(100, manifest(&bytes)).unwrap();
         let mut file = tempfile::tempfile().unwrap();
         file.write_all(&bytes).unwrap();
@@ -560,16 +549,22 @@ mod tests {
         worker.load_model(100, manifest(&bytes)).unwrap();
         assert!(matches!(
             inspect_loaded_neuron_weight_file_v1(&worker, 100, "absent", &mut file),
-            Err(NeuronWeightFileDiagnosticErrorV1::Worker(Error::ModelNotLoaded))
+            Err(NeuronWeightFileDiagnosticErrorV1::Worker(
+                Error::ModelNotLoaded
+            ))
         ));
         assert!(matches!(
             inspect_loaded_neuron_weight_file_v1(&worker, 10_000, "model.1", &mut file),
-            Err(NeuronWeightFileDiagnosticErrorV1::Worker(Error::GrantExpired))
+            Err(NeuronWeightFileDiagnosticErrorV1::Worker(
+                Error::GrantExpired
+            ))
         ));
         worker.grant.revoked = true;
         assert!(matches!(
             inspect_loaded_neuron_weight_file_v1(&worker, 101, "model.1", &mut file),
-            Err(NeuronWeightFileDiagnosticErrorV1::Worker(Error::GrantRevoked))
+            Err(NeuronWeightFileDiagnosticErrorV1::Worker(
+                Error::GrantRevoked
+            ))
         ));
     }
 
@@ -605,7 +600,9 @@ mod tests {
 
     impl ModelDriver for FileDriver {
         fn load(&mut self, _: &ModelManifest) -> Result<DriverModelHandle, Error> {
-            Err(Error::DriverFailure("legacy pathless load not permitted".into()))
+            Err(Error::DriverFailure(
+                "legacy pathless load not permitted".into(),
+            ))
         }
 
         fn run(
@@ -631,7 +628,9 @@ mod tests {
                 .map_err(|error| Error::DriverFailure(error.to_string()))?;
             self.seen.lock().unwrap().push(actual);
             if self.fail_fd {
-                return Err(Error::DriverFailure("unknown physical loader outcome".into()));
+                return Err(Error::DriverFailure(
+                    "unknown physical loader outcome".into(),
+                ));
             }
             Ok(DriverModelHandle {
                 opaque_id: "file-loaded.1".into(),
@@ -688,11 +687,7 @@ mod tests {
         let mut corrupt = tempfile::tempfile().unwrap();
         corrupt.write_all(b"wrong-weight-file").unwrap();
         assert_eq!(
-            worker.load_model_from_preopened_weight_file_v1(
-                101,
-                manifest(&bytes),
-                corrupt,
-            ),
+            worker.load_model_from_preopened_weight_file_v1(101, manifest(&bytes), corrupt,),
             Err(NeuronWeightFileDiagnosticErrorV1::DigestMismatch)
         );
         assert!(seen.lock().unwrap().is_empty());
@@ -724,24 +719,20 @@ mod tests {
         let mut genuine = tempfile::tempfile().unwrap();
         genuine.write_all(&bytes).unwrap();
         assert!(matches!(
-            worker.load_model_from_preopened_weight_file_v1(
-                101,
-                manifest(&bytes),
-                genuine,
-            ),
-            Err(NeuronWeightFileDiagnosticErrorV1::Worker(Error::DriverFailure(_)))
+            worker.load_model_from_preopened_weight_file_v1(101, manifest(&bytes), genuine,),
+            Err(NeuronWeightFileDiagnosticErrorV1::Worker(
+                Error::DriverFailure(_)
+            ))
         ));
         assert_eq!(seen.lock().unwrap().len(), 1);
         assert!(worker.is_quarantined());
         let mut second = tempfile::tempfile().unwrap();
         second.write_all(&bytes).unwrap();
         assert_eq!(
-            worker.load_model_from_preopened_weight_file_v1(
-                102,
-                manifest(&bytes),
-                second,
-            ),
-            Err(NeuronWeightFileDiagnosticErrorV1::Worker(Error::WorkerQuarantined))
+            worker.load_model_from_preopened_weight_file_v1(102, manifest(&bytes), second,),
+            Err(NeuronWeightFileDiagnosticErrorV1::Worker(
+                Error::WorkerQuarantined
+            ))
         );
     }
 
@@ -757,7 +748,9 @@ mod tests {
             _: &DriverModelHandle,
             _: &WorkerRequest,
         ) -> Result<DriverRunObservation, Error> {
-            Err(Error::DriverFailure("quarantined model must not run".into()))
+            Err(Error::DriverFailure(
+                "quarantined model must not run".into(),
+            ))
         }
 
         fn unload(&mut self, _: DriverModelHandle) -> Result<(), Error> {
@@ -773,7 +766,8 @@ mod tests {
         ) -> Result<DriverModelHandle, Error> {
             // Deliberately change the SAME descriptor after the Worker has
             // verified its digest but before model load returns.
-            weights.seek(SeekFrom::Start(0))
+            weights
+                .seek(SeekFrom::Start(0))
                 .map_err(|error| Error::DriverFailure(error.to_string()))?;
             weights
                 .write_all(b"mutated-during-driver-load")
@@ -791,22 +785,12 @@ mod tests {
     #[test]
     fn postload_rehash_detects_file_mutation_and_quarantines_live_worker() {
         let bytes = vec![0x71_u8; 5_120];
-        let mut worker = InferenceWorker::new(
-            100,
-            "worker.1".into(),
-            3,
-            grant(),
-            MutatingFileDriver,
-        )
-        .unwrap();
+        let mut worker =
+            InferenceWorker::new(100, "worker.1".into(), 3, grant(), MutatingFileDriver).unwrap();
         let mut file = tempfile::tempfile().unwrap();
         file.write_all(&bytes).unwrap();
         file.flush().unwrap();
-        let result = worker.load_model_from_preopened_weight_file_v1(
-            101,
-            manifest(&bytes),
-            file,
-        );
+        let result = worker.load_model_from_preopened_weight_file_v1(101, manifest(&bytes), file);
         assert!(matches!(
             result,
             Err(NeuronWeightFileDiagnosticErrorV1::ChangedDuringRead)
@@ -823,11 +807,7 @@ mod tests {
         let mut second = tempfile::tempfile().unwrap();
         second.write_all(&bytes).unwrap();
         assert_eq!(
-            worker.load_model_from_preopened_weight_file_v1(
-                102,
-                manifest(&bytes),
-                second,
-            ),
+            worker.load_model_from_preopened_weight_file_v1(102, manifest(&bytes), second,),
             Err(NeuronWeightFileDiagnosticErrorV1::Worker(
                 Error::WorkerQuarantined
             ))
@@ -859,7 +839,9 @@ mod tests {
         assert_eq!(first.authority(), AuthorityPosture::DENY_ALL);
         assert_eq!(first.loaded_weights_digest(), Digest32::of_bytes(&bytes));
         assert_eq!(first.file_bytes(), bytes.len() as u64);
-        worker.revalidate_file_bound_model_load_v1(101, &first).unwrap();
+        worker
+            .revalidate_file_bound_model_load_v1(101, &first)
+            .unwrap();
 
         // An identical second physical load after a real unload MUST NOT
         // revive the old receipt if the driver reuses the opaque handle ID.
@@ -880,7 +862,9 @@ mod tests {
             worker.revalidate_file_bound_model_load_v1(103, &first),
             Err(NeuronWeightFileDiagnosticErrorV1::StaleLoad)
         );
-        worker.revalidate_file_bound_model_load_v1(103, &second).unwrap();
+        worker
+            .revalidate_file_bound_model_load_v1(103, &second)
+            .unwrap();
 
         // Neither a new checksum nor a cloned receipt can create a new
         // owner-issued load sequence.
@@ -896,7 +880,9 @@ mod tests {
         worker.grant.revoked = true;
         assert_eq!(
             worker.revalidate_file_bound_model_load_v1(104, &second),
-            Err(NeuronWeightFileDiagnosticErrorV1::Worker(Error::GrantRevoked))
+            Err(NeuronWeightFileDiagnosticErrorV1::Worker(
+                Error::GrantRevoked
+            ))
         );
     }
 
@@ -918,11 +904,7 @@ mod tests {
         let mut first_file = tempfile::tempfile().unwrap();
         first_file.write_all(&bytes).unwrap();
         let first = first_worker
-            .load_model_from_preopened_weight_file_v1(
-                101,
-                manifest(&bytes),
-                first_file,
-            )
+            .load_model_from_preopened_weight_file_v1(101, manifest(&bytes), first_file)
             .unwrap();
         assert!(first.validate_integrity());
         drop(first_worker);
@@ -944,11 +926,7 @@ mod tests {
         let mut next_file = tempfile::tempfile().unwrap();
         next_file.write_all(&bytes).unwrap();
         let current = restarted
-            .load_model_from_preopened_weight_file_v1(
-                101,
-                manifest(&bytes),
-                next_file,
-            )
+            .load_model_from_preopened_weight_file_v1(101, manifest(&bytes), next_file)
             .unwrap();
         assert_eq!(first.load_revision(), current.load_revision());
         assert_eq!(first.model_load(), current.model_load());

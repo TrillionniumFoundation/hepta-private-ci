@@ -321,7 +321,6 @@ pub fn claim_neuron_durable_dispatch_v1<'a, D: ModelDriver + NeuronFeatureDriver
     ))
 }
 
-
 /// A single-use, fsynced Neuron dispatch guarded by the *actual Worker's*
 /// file-bound model-load ordinal. This is intentionally stricter than the
 /// legacy assigned-Worker seam and does not construct a selection authority.

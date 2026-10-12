@@ -72,7 +72,6 @@ impl NeuronFeatureDriver for FixtureDriver {
     }
 }
 
-
 impl NeuronPreopenedWeightModelDriver for FixtureDriver {
     fn load_from_preopened_weight_file(
         &mut self,
@@ -648,7 +647,6 @@ fn model_generation_is_not_worker_process_generation_after_restart() {
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
 }
 
-
 fn load_test_file_bound_model(
     worker: &mut InferenceWorker<FixtureDriver>,
     bytes: &[u8],
@@ -697,13 +695,7 @@ fn file_bound_durable_claim_rejects_retired_load_and_executes_one_live_identity(
     let second = load_test_file_bound_model(&mut worker, &bytes);
     assert_ne!(first.load_revision(), second.load_revision());
     assert!(matches!(
-        claim_neuron_file_bound_durable_dispatch_v1(
-            &mut owner,
-            &mut worker,
-            &request,
-            &first,
-            100
-        ),
+        claim_neuron_file_bound_durable_dispatch_v1(&mut owner, &mut worker, &request, &first, 100),
         Err(NeuronFileBoundDispatchErrorV1::Load(
             NeuronWeightFileDiagnosticErrorV1::StaleLoad
         ))
@@ -725,15 +717,14 @@ fn file_bound_durable_claim_rejects_retired_load_and_executes_one_live_identity(
     ));
     assert_eq!(owner.get("tick.1").unwrap().state, RequestState::Assigned);
 
-    let (claim, mut port) =
-        claim_neuron_file_bound_durable_dispatch_v1(
-            &mut owner,
-            &mut worker,
-            &request,
-            &second,
-            100,
-        )
-        .unwrap();
+    let (claim, mut port) = claim_neuron_file_bound_durable_dispatch_v1(
+        &mut owner,
+        &mut worker,
+        &request,
+        &second,
+        100,
+    )
+    .unwrap();
     assert_eq!(claim.state, RequestState::Dispatching);
     assert_eq!(claim.revision, 4);
     let result = port.execute_feature(&request).unwrap();
@@ -758,12 +749,12 @@ fn file_bound_durable_claim_rejects_retired_load_and_executes_one_live_identity(
         ))
     ));
     drop(owner);
-    let reopened = DurableInferenceControl::open(
-        directory.path().join("inference.journal"),
-        32,
-    )
-    .unwrap();
-    assert_eq!(reopened.get("tick.1").unwrap().state, RequestState::Dispatching);
+    let reopened =
+        DurableInferenceControl::open(directory.path().join("inference.journal"), 32).unwrap();
+    assert_eq!(
+        reopened.get("tick.1").unwrap().state,
+        RequestState::Dispatching
+    );
 }
 
 #[test]
@@ -840,7 +831,9 @@ fn file_bound_dispatch_refuses_old_worker_instance_before_durable_claim() {
     )
     .unwrap();
     assert_eq!(committed.state, RequestState::Dispatching);
-    assert_eq!(port.execute_feature(&request).unwrap().status,
-        codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded);
+    assert_eq!(
+        port.execute_feature(&request).unwrap().status,
+        codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded
+    );
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
 }

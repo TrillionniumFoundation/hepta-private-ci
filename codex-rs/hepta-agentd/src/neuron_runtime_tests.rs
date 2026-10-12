@@ -127,19 +127,19 @@ fn caller_rehashed_tick_cannot_impersonate_last_agentd_owned_observation() {
     assert!(observed.validate_integrity());
     assert!(super::require_owner_issued_tick(None, &observed).is_err());
     assert!(super::require_owner_issued_tick(Some(&observed), &observed).is_ok());
-    assert!(super::require_single_owner_issued_tick(
-        &[observed.clone()],
-        Some(&observed),
-        &observed,
-    )
-    .is_ok());
+    assert!(
+        super::require_single_owner_issued_tick(&[observed.clone()], Some(&observed), &observed,)
+            .is_ok()
+    );
     // Prevent selecting one favorable Episode from several real issued ticks.
-    assert!(super::require_single_owner_issued_tick(
-        &[observed.clone(), observed.clone()],
-        Some(&observed),
-        &observed,
-    )
-    .is_err());
+    assert!(
+        super::require_single_owner_issued_tick(
+            &[observed.clone(), observed.clone()],
+            Some(&observed),
+            &observed,
+        )
+        .is_err()
+    );
     assert!(super::require_single_owner_issued_tick(&[], Some(&observed), &observed).is_err());
 
     let mut forged = observed.clone();
@@ -161,21 +161,17 @@ fn caller_rehashed_tick_cannot_impersonate_last_agentd_owned_observation() {
 
 #[test]
 fn owner_issued_cohort_requires_contiguous_distinct_ticks_and_exact_episode_mapping() {
+    use crate::AgentdNeuronTickObservationV1;
     use codex_hepta_learning_ledger::NeuronTrialCohortTickV1;
     use codex_hepta_types::AuthorityPosture;
     use codex_hepta_types::Digest32;
     use codex_hepta_types::Generation;
     use codex_hepta_types::StableId;
-    use crate::AgentdNeuronTickObservationV1;
 
     fn digest(label: &str) -> Digest32 {
         Digest32::of_bytes(label.as_bytes())
     }
-    fn observed(
-        sequence: u64,
-        before: Digest32,
-        after: Digest32,
-    ) -> AgentdNeuronTickObservationV1 {
+    fn observed(sequence: u64, before: Digest32, after: Digest32) -> AgentdNeuronTickObservationV1 {
         let mut observed = AgentdNeuronTickObservationV1 {
             tick_id: StableId::new(format!("owner-executed-tick-{sequence}")).unwrap(),
             input_digest: digest(&format!("raw-input-{sequence}")),
@@ -259,6 +255,7 @@ fn owner_issued_cohort_requires_contiguous_distinct_ticks_and_exact_episode_mapp
 
 #[test]
 fn owner_issued_cohort_producer_api_is_bounded_and_non_authorizing() {
-    let _read = AgentdNeuronOwner::<StubWitness, StubInferenceControl>::read_observer_linked_cohort_v1;
+    let _read =
+        AgentdNeuronOwner::<StubWitness, StubInferenceControl>::read_observer_linked_cohort_v1;
     assert_eq!(super::MAX_ISSUED_OBSERVED_TICKS, 256);
 }
