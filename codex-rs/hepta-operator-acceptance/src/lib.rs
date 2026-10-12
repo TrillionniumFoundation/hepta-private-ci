@@ -133,7 +133,9 @@ pub use cell_split_observer_join::CELL_SPLIT_OBSERVER_JOIN_SCHEMA_V1;
 pub use cell_split_observer_join::CellSplitObserverJoinErrorV1;
 pub use cell_split_observer_join::CellSplitObserverJoinPayloadV1;
 pub use cell_split_observer_join::CellSplitObserverJoinReceiptV1;
+#[cfg(unix)]
 pub use cell_split_observer_join::CellSplitObserverDeepReceiptV1;
+#[cfg(unix)]
 pub use cell_split_observer_join::CellSplitObserverOriginalRuntimeTrustV1;
 #[cfg(unix)]
 pub use cell_split_observer_join::verify_cell_split_observer_join_deep_v1;
