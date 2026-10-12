@@ -274,6 +274,13 @@ jobs:
           # Use the same working directory, pinned toolchain and Cargo config as just test.
           # This prepares dependencies only. No native test failure is retried.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-dependency-fetch.json" --timeout-seconds 600 -- bash -c 'cd codex-rs && exec cargo fetch --locked'
+      - name: Require real evaluation owner and pre-disclosure locked-file regressions
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-evaluation-complete.json" --minimum-tests 4 -- just test --locked -p codex-hepta-intelligence-eval --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-holdout-plan-preflight.json" --minimum-tests 4 -- just test --locked -p codex-hepta-intelligence-eval --test product_holdout_plan_preflight --no-capture
       - name: Require all original Fleet controls on the exact paired source
         env:
           CARGO_NET_OFFLINE: "true"
