@@ -66,6 +66,59 @@ jobs:
             /tmp/memory-family-verification/source-inventory.json
           cp /tmp/memory-family-staged-originals/readback.json \
             /tmp/memory-family-verification/offline-reopen.json
+          # Reopen the registered Latin-1 Git blob as raw bytes, not UTF-8 text.
+          # This is a source-only receipt. Never export the third-party blob.
+          python3 - <<'PYBINARY'
+          from pathlib import Path
+          import hashlib
+          import json
+          source_oid = 'a772b57bdd5aa26fbedd07cb057b9006239e784e'
+          source_head = '707fd96fabc462d710b129e54dbbbb71b51fcd5e'
+          source_path = 'tests/testdata/encoding/iso-8859-1.ts'
+          root = Path('/tmp/memory-family-staged-originals')
+          inv = json.loads((root / 'inventory.json').read_text())
+          ready = json.loads((root / 'READY.json').read_text())
+          rows = inv['originals']
+          matching = [r for r in rows if (
+              r['project'] == 'denoland/deno' and r['partition'] == 'evaluation'
+              and r['head_sha'] == source_head and r['path'] == source_path
+              and r['blob_sha'] == source_oid
+          )]
+          if len(rows) != 32 or len(matching) != 1 or ready['original_files_verified'] != 32:
+              raise ValueError('incomplete original-source READY and binary census')
+          path = root / 'blobs' / (source_oid + '.blob')
+          if path.is_symlink() or not path.is_file():
+              raise ValueError('missing regular original binary blob')
+          raw = path.read_bytes()
+          source_git_sha = hashlib.sha1(b'blob ' + str(len(raw)).encode() + b'\0' + raw).hexdigest()
+          source_sha256 = hashlib.sha256(raw).hexdigest()
+          if source_git_sha != source_oid or source_sha256 != matching[0]['byte_sha256']:
+              raise ValueError('original Latin-1 Git blob changed')
+          try:
+              raw.decode('utf-8', 'strict')
+          except UnicodeDecodeError:
+              pass
+          else:
+              raise ValueError('original Latin-1 source silently normalized to UTF-8')
+          proof = {
+              'schema': 'hepta.memorycell.source-extension.latin1-binary-proof.v1',
+              'source_manifest_sha256': inv['source_manifest_sha256'],
+              'original_files_verified': len(rows),
+              'source_project': 'denoland/deno',
+              'source_head': source_head,
+              'source_path': source_path,
+              'original_git_blob_sha1': source_git_sha,
+              'original_raw_sha256': source_sha256,
+              'original_raw_byte_count': len(raw),
+              'non_utf8_bytes_verified': True,
+              'model_calls': 0,
+              'human_semantic_adjudication': False,
+              'production_accepted': False,
+          }
+          Path('/tmp/memory-family-verification/latin1-original-proof.json').write_text(
+              json.dumps(proof, sort_keys=True, indent=2) + '\n'
+          )
+          PYBINARY
           # Do not redistribute third-party source bytes as CI artifacts.
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
       - name: Preserve original-source success and failure evidence only
