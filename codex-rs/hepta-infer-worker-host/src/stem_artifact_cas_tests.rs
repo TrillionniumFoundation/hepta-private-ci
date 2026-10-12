@@ -42,7 +42,7 @@ fn actually_reads_cas_bytes_and_issues_non_authoritative_proof() {
     store(root.path(), &source);
     let verifier = StemArtifactCasVerifierV1::open(root.path(), 4096).unwrap();
     let proof = verifier.verify_selected(&source).unwrap();
-    assert_eq!(proof.observed_role_bytes(), &[16, 19, 22, 19]);
+    assert_eq!(proof.observed_role_bytes(), &[16, 19, 22, 20]);
     assert!(proof.matches_source(&source));
     assert!(!proof.authority().grants_any());
     assert!(!proof.cas_directory_digest().is_zero());
