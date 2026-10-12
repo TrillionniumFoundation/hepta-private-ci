@@ -48,7 +48,7 @@ jobs:
             "$RUNNER_TEMP/stem-development-venv/bin/python" -m unittest -v \
               test_shared_encoder_eviction development_tensor_checks development_repository_checks \
               development_study_checks public_structural_checks \
-              selection_replay_checks serving_probe_checks
+              selection_replay_checks serving_probe_checks public_corpus_checks historical_feature_checks
           } 2>&1 | tee "$RUNNER_TEMP/stem-development-tests.txt"
       - name: Preserve exact-source result including failures
         if: always()
@@ -98,7 +98,7 @@ jobs:
         run: |
           set -euo pipefail
           "$RUNNER_TEMP/stem-public-venv/bin/python" qualification/stem-cell-v1/public_structural_stage.py \
-            --output "$RUNNER_TEMP/stem-public-inputs" \
+            --output "$RUNNER_TEMP/stem-public-inputs" --partition-policy protected_content_groups_v2 \
             2>&1 | tee "$RUNNER_TEMP/stem-public-evidence/staging.log"
       - name: Execute existing offline Encoder and five-arm learning
         env:
@@ -150,5 +150,67 @@ jobs:
         with:
           name: stem-public-execution-${{ github.run_id }}
           path: ${{ runner.temp }}/stem-public-evidence
+          if-no-files-found: error
+          retention-days: 30
+
+
+  historical-feature-learning:
+    name: Pinned historical mmBERT features and real publisher-data preflight
+    needs: tensor-mechanisms
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: qualification/stem-cell-v1
+    steps:
+      - name: Checkout exact candidate source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install the existing CPU tensor profile
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/stem-cached-evidence"
+          git rev-parse HEAD > "$RUNNER_TEMP/stem-cached-evidence/source-sha.txt"
+          python3 -m venv "$RUNNER_TEMP/stem-cached-venv"
+          "$RUNNER_TEMP/stem-cached-venv/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          "$RUNNER_TEMP/stem-cached-venv/bin/pip" install numpy==2.2.6 safetensors==0.7.0
+          "$RUNNER_TEMP/stem-cached-venv/bin/pip" freeze > "$RUNNER_TEMP/stem-cached-evidence/environment.txt"
+      - name: Acquire one existing artifact without downloading model weights
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/${{ github.repository }}/actions/artifacts/11757461425/zip" > "$RUNNER_TEMP/stem-cached-reference.zip"
+          sha256sum "$RUNNER_TEMP/stem-cached-reference.zip" > "$RUNNER_TEMP/stem-cached-evidence/archive-sha256.txt"
+      - name: Validate original bytes and train the five controls
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-cached-venv/bin/python" qualification/stem-cell-v1/historical_feature_study.py \
+            --archive "$RUNNER_TEMP/stem-cached-reference.zip" --source-root "$PWD" \
+            --expected-source-sha "$(git rev-parse HEAD)" --output "$RUNNER_TEMP/stem-cached-evidence/study" \
+            2>&1 | tee "$RUNNER_TEMP/stem-cached-evidence/learning.log"
+      - name: Independent numerical replay followed by held-out scoring
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-cached-venv/bin/python"
+          OUT="$RUNNER_TEMP/stem-cached-evidence"
+          "$PY" qualification/stem-cell-v1/development_study_replay.py \
+            --run "$OUT/study" --dataset "$OUT/study/dataset.jsonl" --output "$OUT/replay.json"
+          "$PY" qualification/stem-cell-v1/development_study_review.py \
+            --run "$OUT/study" --dataset "$OUT/study/dataset.jsonl" --output "$OUT/scores.json"
+          git diff --check
+          git diff --exit-code
+      - name: Retain results and failures, not fresh-inference claims
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-cached-learning-${{ github.run_id }}
+          path: ${{ runner.temp }}/stem-cached-evidence
           if-no-files-found: error
           retention-days: 30
