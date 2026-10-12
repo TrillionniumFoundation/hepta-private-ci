@@ -36,3 +36,35 @@ P0 is **BLOCKED** unless the final combined SHA passes Rust compile, test, fmt, 
 - The Matrix hard gate now explicitly evaluates candidate upstream source, compatibility, two SQLite resolver modes, dependency graph and an anymap3 backport. These are **diagnostic gates**, not proof of applied security remediation.
 - Blocking criteria remain unchanged: actual `cargo deny check --locked` with no ignores, no resolved `anymap2`, patched compatible crypto, real Matrix E2EE/SQLite and revocation/recovery tests, cross-platform Bazel and exact-SHA global CI.
 - Even after P0, L2/L3/L4 require audited actual Encoder snapshots, target-host measurements and independent future-window NDU outcomes. No Shadow result authorizes production routing.
+
+## 2026-10-13: full-workspace Matrix 0.19.1 resolver / toolchain incompatibility
+
+A pinned upstream Matrix SDK `0.19.1` + exact audited AnyMap3 candidate has
+compiled as an **isolated upstream E2EE/SQLite library**, but this cannot
+be projected onto Hepta's full workspace or passed as a cargo-deny fix.
+
+- Historical Hepta adapter diagnostic: [Matrix prerequisite run 38292341048](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38292341048), job `114955165546`. The real Cargo resolver rejected:
+  - `matrix-sdk-store-encryption 0.19.1 → blake3 ^1.8.7`;
+  - `codex-execpolicy → starlark 0.14.2 → blake3 =1.8.2`.
+  These overlapping-major but incompatible *exact* requirements did not resolve by merely unpinning `async-trait` and `bytes` in disposable locks.
+- Hepta's canonical `codex-rs/rust-toolchain.toml` remains **Rust 1.95.0**; upstream Matrix 0.19.1 declares **MSRV 1.96**. A product-wide compiler upgrade requires its own cross-platform evidence.
+- The new `qualification/matrix-security/narrow_matrix_sdk_workspace.py`
+  and `hepta-matrix-narrow-sdk-probe.yml` stage only a disposable, SHA-pinned
+  **real Hepta Matrix SDK adapter** dependency closure under Rust 1.96,
+  excluding unrelated CLI/Starlark members. Tests reject unknown upstream
+  source, forged Cargo metadata, old crypto, anymap2, missing AnyMap3 and
+  the old blake3 graph. **This is a diagnostic architectural feasibility
+  experiment, not production dependency pruning or an advisory waiver.**
+- The follow-up gate, if that isolated adapter compiles, is a typed,
+  separately compiled process/IPC boundary with authenticated principal,
+  generation, revocation, E2EE, outbox idempotency and WAL recovery.
+  Alternatively the full workspace needs separately reviewed source changes
+  proving all affected Starlark + Matrix dependencies compatible with a single
+  `blake3` resolution. Neither choice may turn off crypto or SQLite.
+- The original `Cargo.lock`, `MODULE.bazel.lock`, `deny.toml` and
+  production Matrix transport were **not** changed by the isolated experiment.
+  `RUSTSEC-2026-0318`, `RUSTSEC-2026-0319`, real full `cargo-deny`,
+  all-platform CI, P1 lifecycle, P2 actual weights, P3 host resources and
+  P4 independent longitudinal NDU remain noncompensable acceptance gates.
+
+**State remains Draft/Shadow, no production routing or promotion.**
