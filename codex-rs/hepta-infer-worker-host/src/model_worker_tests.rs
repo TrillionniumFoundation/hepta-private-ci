@@ -11,6 +11,8 @@ struct Driver {
     fail_load_after_allocation: bool,
     fail_run_after_execution: bool,
     fail_feature_after_execution: bool,
+    reported_run_memory_bytes: Option<u64>,
+    reported_feature_memory_bytes: Option<u64>,
     loaded: usize,
     run_calls: usize,
     feature_calls: usize,
@@ -49,7 +51,7 @@ impl ModelDriver for Driver {
                 succeeded: false,
                 output_digest: None,
                 consumed_tokens: 4,
-                observed_memory_bytes: 1_024,
+                observed_memory_bytes: self.reported_run_memory_bytes.unwrap_or(1_024),
             });
         }
         Ok(DriverRunObservation {
@@ -57,7 +59,7 @@ impl ModelDriver for Driver {
             succeeded: !self.fail_terminal,
             output_digest: Some("9".repeat(64)),
             consumed_tokens: 16,
-            observed_memory_bytes: 1_024,
+            observed_memory_bytes: self.reported_run_memory_bytes.unwrap_or(1_024),
         })
     }
 
@@ -92,7 +94,7 @@ impl NeuronFeatureDriver for Driver {
                 },
                 drive_q24: Vec::new(),
                 prediction_q24: Vec::new(),
-                observed_memory_bytes: 1_024,
+                observed_memory_bytes: self.reported_feature_memory_bytes.unwrap_or(1_024),
                 transient_allocation_bytes: 2_048,
                 queue_age_micros: 11,
                 latency_micros: 17,
@@ -109,7 +111,7 @@ impl NeuronFeatureDriver for Driver {
             },
             drive_q24: vec![1 << 24; request.expected_output_width],
             prediction_q24: vec![0; request.expected_output_width],
-            observed_memory_bytes: 1_024,
+            observed_memory_bytes: self.reported_feature_memory_bytes.unwrap_or(1_024),
             transient_allocation_bytes: 2_048,
             queue_age_micros: 11,
             latency_micros: 17,
@@ -577,6 +579,107 @@ fn multi_model_resident_memory_cannot_exceed_total_worker_grant() {
     assert_eq!(worker.load_model(100, second), Err(Error::ModelCapacity));
     assert_eq!(worker.models.len(), 1);
     assert_eq!(worker.driver.loaded, 1);
+}
+
+#[test]
+fn generic_run_enforces_generation_wide_resident_peak_after_driver_dispatch() {
+    let mut bounded = grant();
+    bounded.maximum_memory_bytes = 2_500;
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.generic-total-peak".to_string(),
+        3,
+        bounded,
+        Driver {
+            reported_run_memory_bytes: Some(1_800),
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("first model");
+    let mut other = manifest();
+    other.model_id = "model.2".to_string();
+    other.model_digest = "a".repeat(64);
+    worker.load_model(100, other).expect("second model");
+
+    // 1,800 selected-model bytes + 1,024 other resident > 2,500.
+    assert_eq!(worker.run(100, "model.1", request()), Err(Error::ModelCapacity));
+    assert!(worker.poisoned);
+    assert!(worker.active_requests.is_empty());
+    assert_eq!(worker.driver.run_calls, 1);
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(worker.driver.run_calls, 1);
+}
+
+#[test]
+fn single_neuron_feature_counts_other_model_plus_reported_resident_and_scratch() {
+    let mut bounded = grant();
+    bounded.maximum_memory_bytes = 5_500;
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.feature-total-peak".to_string(),
+        3,
+        bounded,
+        Driver {
+            reported_feature_memory_bytes: Some(3_072),
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("first model");
+    let mut other = manifest();
+    other.model_id = "model.2".to_string();
+    other.model_digest = "a".repeat(64);
+    worker.load_model(100, other).expect("second model");
+
+    // 1,024 other + 3,072 selected + 2,048 scratch = 6,144 > 5,500.
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ModelCapacity)
+    );
+    assert!(worker.poisoned);
+    assert!(worker.active_requests.is_empty());
+    assert_eq!(worker.driver.feature_calls, 1);
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::IndeterminateLifecycle)
+    );
+}
+
+#[test]
+fn batch_memory_guard_adds_other_model_residency_even_above_loaded_floor() {
+    let observed = DriverNeuronFeatureObservation {
+        terminal_observed: true,
+        succeeded: true,
+        encoder_digest: "a".repeat(64),
+        head_digest: "b".repeat(64),
+        drive_q24: vec![1 << 24],
+        prediction_q24: vec![0],
+        observed_memory_bytes: 3_072,
+        transient_allocation_bytes: 2_048,
+        queue_age_micros: 0,
+        latency_micros: 0,
+    };
+    // Two per-row scratch claims: 1,024 + 3,072 + 4,096 = 8,192.
+    assert_eq!(
+        validate_neuron_batch_memory_budget(1_024, 1_024, 8_191, [&observed, &observed]),
+        Err(Error::ModelCapacity)
+    );
+    assert_eq!(
+        validate_neuron_batch_memory_budget(1_024, 1_024, 8_192, [&observed, &observed]),
+        Ok(())
+    );
+    assert_eq!(
+        validate_neuron_memory_budget(1_024, 1_024, 6_143, &observed),
+        Err(Error::ModelCapacity)
+    );
+    assert_eq!(
+        validate_neuron_memory_budget(1_024, 1_024, 6_144, &observed),
+        Ok(())
+    );
 }
 
 #[test]

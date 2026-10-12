@@ -296,6 +296,8 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+        // The grant covers every resident model, not just the selected one.
+        let other_model_resident_bytes = self.other_model_resident_bytes(model_id)?;
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if request.model_digest != loaded.manifest.model_digest
             || request.reservation_model_digest != loaded.manifest.model_digest
@@ -352,7 +354,12 @@ impl<D: ModelDriver> InferenceWorker<D> {
             self.poisoned = true;
             return Err(Error::TokenLimit);
         }
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        // A later driver observation cannot lower the load-time resident floor.
+        let selected_resident_bytes = observed
+            .observed_memory_bytes
+            .max(loaded.handle.observed_memory_bytes);
+        let claimed_peak = selected_resident_bytes.checked_add(other_model_resident_bytes);
+        if claimed_peak.is_none_or(|bytes| bytes > self.grant.maximum_memory_bytes) {
             self.poisoned = true;
             return Err(Error::ModelCapacity);
         }
@@ -414,6 +421,17 @@ impl<D: ModelDriver> InferenceWorker<D> {
             worker_generation: self.generation,
             terminal_observed: true,
         })
+    }
+
+    fn other_model_resident_bytes(&self, excluded_model_id: &str) -> Result<u64, Error> {
+        self.models
+            .iter()
+            .filter(|(model_id, _)| model_id.as_str() != excluded_model_id)
+            .try_fold(0_u64, |total, (_, model)| {
+                total
+                    .checked_add(model.handle.observed_memory_bytes)
+                    .ok_or(Error::ArithmeticOverflow)
+            })
     }
 
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
@@ -566,12 +584,16 @@ pub trait NeuronFeatureDriver: ModelDriver {
 /// This is an observation guard, not a measured OS RSS or independent
 /// physical-resource authority.
 fn validate_neuron_memory_budget(
-    resident_bytes: u64,
+    other_model_resident_bytes: u64,
+    selected_loaded_bytes: u64,
     maximum_memory_bytes: u64,
     observed: &DriverNeuronFeatureObservation,
 ) -> Result<(), Error> {
-    let baseline = resident_bytes.max(observed.observed_memory_bytes);
-    match baseline.checked_add(observed.transient_allocation_bytes) {
+    let selected_peak = selected_loaded_bytes.max(observed.observed_memory_bytes);
+    let total_peak = other_model_resident_bytes
+        .checked_add(selected_peak)
+        .and_then(|bytes| bytes.checked_add(observed.transient_allocation_bytes));
+    match total_peak {
         Some(peak) if peak <= maximum_memory_bytes => Ok(()),
         _ => Err(Error::ModelCapacity),
     }
@@ -582,19 +604,23 @@ fn validate_neuron_memory_budget(
 /// grant. A driver with recycled scratch needs a separate batch-level peak
 /// receipt to claim less; these row receipts are not measured OS RSS.
 fn validate_neuron_batch_memory_budget<'a>(
-    resident_bytes: u64,
+    other_model_resident_bytes: u64,
+    selected_loaded_bytes: u64,
     maximum_memory_bytes: u64,
     observations: impl IntoIterator<Item = &'a DriverNeuronFeatureObservation>,
 ) -> Result<(), Error> {
-    let mut maximum_resident = resident_bytes;
+    let mut maximum_selected_resident = selected_loaded_bytes;
     let mut total_transient = 0_u64;
     for observed in observations {
-        maximum_resident = maximum_resident.max(observed.observed_memory_bytes);
+        maximum_selected_resident = maximum_selected_resident.max(observed.observed_memory_bytes);
         total_transient = total_transient
             .checked_add(observed.transient_allocation_bytes)
             .ok_or(Error::ModelCapacity)?;
     }
-    match maximum_resident.checked_add(total_transient) {
+    let total_peak = other_model_resident_bytes
+        .checked_add(maximum_selected_resident)
+        .and_then(|bytes| bytes.checked_add(total_transient));
+    match total_peak {
         Some(peak) if peak <= maximum_memory_bytes => Ok(()),
         _ => Err(Error::ModelCapacity),
     }
@@ -621,13 +647,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
-        let resident_bytes = self
-            .models
-            .values()
-            .try_fold(0_u64, |total, loaded| {
-                total.checked_add(loaded.handle.observed_memory_bytes)
-            })
-            .ok_or(Error::ArithmeticOverflow)?;
+        let other_model_resident_bytes = self.other_model_resident_bytes(model_id)?;
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
@@ -692,7 +712,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             self.poisoned = true;
         }
         if let Err(error) = validate_neuron_memory_budget(
-            resident_bytes,
+            other_model_resident_bytes,
+            loaded.handle.observed_memory_bytes,
             self.grant.maximum_memory_bytes,
             &observed,
         ) {

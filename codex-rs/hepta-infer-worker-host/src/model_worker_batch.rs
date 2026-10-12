@@ -162,6 +162,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
             return Err(Error::ModelCapacity);
         }
 
+        let other_model_resident_bytes = self.other_model_resident_bytes(model_id)?;
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         loaded.active_requests = loaded
             .active_requests
@@ -198,7 +199,8 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
         }
         // Individually safe rows can have an unsafe additive batch peak.
         if let Err(error) = super::validate_neuron_batch_memory_budget(
-            resident_bytes,
+            other_model_resident_bytes,
+            loaded.handle.observed_memory_bytes,
             self.grant.maximum_memory_bytes,
             observations.iter().map(|item| &item.feature),
         ) {
@@ -215,7 +217,8 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
             }
             let observed = batch_item.feature;
             if let Err(error) = super::validate_neuron_memory_budget(
-                resident_bytes,
+                other_model_resident_bytes,
+                loaded.handle.observed_memory_bytes,
                 self.grant.maximum_memory_bytes,
                 &observed,
             ) {

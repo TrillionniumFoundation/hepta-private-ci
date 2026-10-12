@@ -322,6 +322,7 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
             return Err(Error::ModelCapacity);
         }
 
+        let other_model_resident_bytes = self.other_model_resident_bytes(model_id)?;
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         loaded.active_requests = loaded
             .active_requests
@@ -354,7 +355,8 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
         }
         // Sum scratch conservatively; the shared immutable Arc is not copied.
         if let Err(error) = super::validate_neuron_batch_memory_budget(
-            resident_bytes,
+            other_model_resident_bytes,
+            loaded.handle.observed_memory_bytes,
             self.grant.maximum_memory_bytes,
             observed.iter().map(|item| &item.feature),
         ) {
@@ -371,7 +373,8 @@ impl<D: ModelDriver + NeuronSharedFeatureBatchDriverV2> InferenceWorker<D> {
             }
             let features = batch_result.feature;
             if let Err(error) = super::validate_neuron_memory_budget(
-                resident_bytes,
+                other_model_resident_bytes,
+                loaded.handle.observed_memory_bytes,
                 self.grant.maximum_memory_bytes,
                 &features,
             ) {
