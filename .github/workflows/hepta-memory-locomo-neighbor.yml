@@ -1,0 +1,88 @@
+name: MemoryCell LoCoMo source-neighborhood experiment
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/locomo_neighbor_retrieval.py"
+      - "scripts/memory_cell/test_locomo_neighbor_retrieval.py"
+      - ".github/workflows/hepta-memory-locomo-neighbor.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  source-only-replay:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/memory-cell-evidence-20261008'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Check exact source and the explicit new contracts
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_neighbor_retrieval.py' -v
+          python3 -m compileall -q scripts/memory_cell/locomo_neighbor_retrieval.py
+      - name: Enforce scoped Python formatting
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user uv==0.8.22
+          python3 -m uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/locomo_neighbor_retrieval.py \
+            scripts/memory_cell/test_locomo_neighbor_retrieval.py
+      - name: Restore only pinned source and frozen decisions
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/neighbor-experiment/public
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/neighbor-experiment/public/locomo-public-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/neighbor-experiment/public/locomo-frozen-decisions-38206328621.zip
+          printf '%s  %s\n' \
+            '51e18514c68f31220f4dcd072914f6e015aa9733b6c5b4a4d4e3b14dac25ec37' '/tmp/neighbor-experiment/public/locomo-public-38206328621.zip' \
+            '3fb1c3272314d31b42ece1c74aa0250e2ecb06c6060cb011071d4654fef6f097' '/tmp/neighbor-experiment/public/locomo-frozen-decisions-38206328621.zip' | sha256sum -c -
+      - name: Phase 1 - 80 source-only rankings before any gold label download
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/locomo_neighbor_retrieval.py retrieve \
+            /tmp/neighbor-experiment/public /tmp/neighbor-experiment/record \
+            2>&1 | tee /tmp/neighbor-experiment/retrieve.log
+      - name: Phase 2 - read only selection labels
+        run: |
+          set -euo pipefail
+          mkdir /tmp/neighbor-experiment/selection
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728632417/zip > /tmp/neighbor-experiment/selection/locomo-selection-targets-38206328621.zip
+          echo 'ba8e2282034c5bb51fe319e8909e11d028619f85dfbbce5a6fff78284f9f220c  /tmp/neighbor-experiment/selection/locomo-selection-targets-38206328621.zip' | sha256sum -c -
+          python3 scripts/memory_cell/locomo_neighbor_retrieval.py select \
+            /tmp/neighbor-experiment/public /tmp/neighbor-experiment/selection \
+            /tmp/neighbor-experiment/record 2>&1 | tee /tmp/neighbor-experiment/select.log
+      - name: Phase 3 - sealed policy then read held-out labels
+        run: |
+          set -euo pipefail
+          mkdir /tmp/neighbor-experiment/evaluation
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728856834/zip > /tmp/neighbor-experiment/evaluation/locomo-evaluation-targets-38206328621.zip
+          echo 'd09823324003ab431301e60fbbb280e216ca03b686e178d4f36fb6d492981978  /tmp/neighbor-experiment/evaluation/locomo-evaluation-targets-38206328621.zip' | sha256sum -c -
+          python3 scripts/memory_cell/locomo_neighbor_retrieval.py evaluate \
+            /tmp/neighbor-experiment/public /tmp/neighbor-experiment/selection \
+            /tmp/neighbor-experiment/evaluation /tmp/neighbor-experiment/record \
+            2>&1 | tee /tmp/neighbor-experiment/evaluate.log
+      - name: Preserve source, logs, original archives and any failure
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/neighbor-experiment/source
+          cp scripts/memory_cell/locomo_neighbor_retrieval.py \
+             scripts/memory_cell/test_locomo_neighbor_retrieval.py \
+             /tmp/neighbor-experiment/source/
+          git rev-parse HEAD > /tmp/neighbor-experiment/tested-commit.txt
+          (cd /tmp/neighbor-experiment && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: locomo-neighbor-exploratory-evidence
+          path: /tmp/neighbor-experiment
+          if-no-files-found: error
