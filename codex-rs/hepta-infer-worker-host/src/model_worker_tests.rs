@@ -516,6 +516,16 @@ fn batch_preflight_rejects_partial_payload_and_duplicate_without_dispatch() {
         worker.run_neuron_features_backend_batch(100, "model.1", duplicate),
         Err(Error::FeatureBatchMismatch)
     );
+    // Distinct request IDs cannot consume the same reservation twice.
+    // The reservation ID is outside the feature payload digest, so this
+    // regression exercises the explicit batch admission fence.
+    let mut duplicate_reservation = two_batch_requests();
+    duplicate_reservation[1].authorization.reservation_id =
+        duplicate_reservation[0].authorization.reservation_id.clone();
+    assert_eq!(
+        worker.run_neuron_features_backend_batch(100, "model.1", duplicate_reservation),
+        Err(Error::FeatureBatchMismatch)
+    );
     let mut mixed = two_batch_requests();
     mixed[1].encoder_digest = "f".repeat(64);
     assert_eq!(
