@@ -888,6 +888,66 @@ mod tests {
         );
         assert_eq!(bounded_worker.driver.batch_calls(), 0);
 
+        // The same two Cells can reuse one immutable Arc under a tight grant.
+        // Two equal-content but physically distinct Arc allocations cannot
+        // exploit that grant to bypass memory admission before driver entry.
+        let mut memory_driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("memory driver");
+        memory_driver.register_head(first.clone()).expect("memory head a");
+        memory_driver.register_head(second.clone()).expect("memory head b");
+        let memory_grant = ResourceGrant {
+            grant_id: "grant.shared-memory".into(),
+            authority_epoch: 2,
+            generation: 3,
+            expires_at_ms: 2000,
+            revoked: false,
+            maximum_models: 1,
+            maximum_active_requests: 4,
+            // Head tensors + two independent outputs + one shared 16-byte Arc.
+            maximum_memory_bytes: resident + 48,
+            semantic_digest: "1".repeat(64),
+        };
+        let mut memory_worker = InferenceWorker::new(
+            1,
+            "worker.shared-memory".into(),
+            3,
+            memory_grant,
+            memory_driver,
+        )
+        .expect("memory worker");
+        memory_worker
+            .load_model(1, selected.clone())
+            .expect("memory model load");
+        let mut duplicated = b.clone();
+        let mut duplicate_snapshot = (*duplicated.snapshot).clone();
+        duplicate_snapshot.features_q24 =
+            std::sync::Arc::from(duplicated.snapshot.features_q24.as_ref());
+        duplicated.snapshot = std::sync::Arc::new(duplicate_snapshot);
+        assert!(!std::sync::Arc::ptr_eq(
+            &a.snapshot.features_q24,
+            &duplicated.snapshot.features_q24
+        ));
+        assert_eq!(
+            memory_worker.run_shared_neuron_features_batch_v2(
+                100,
+                "model.gated",
+                vec![a.clone(), duplicated],
+            ),
+            Err(Error::ModelCapacity)
+        );
+        assert_eq!(memory_worker.driver.batch_calls(), 0);
+        assert_eq!(
+            memory_worker
+                .run_shared_neuron_features_batch_v2(
+                    100,
+                    "model.gated",
+                    vec![a.clone(), b.clone()],
+                )
+                .expect("shared Arc within budget")
+                .len(),
+            2
+        );
+        assert_eq!(memory_worker.driver.batch_calls(), 1);
+
         let grant = ResourceGrant {
             grant_id: "grant.ref".into(),
             authority_epoch: 2,
