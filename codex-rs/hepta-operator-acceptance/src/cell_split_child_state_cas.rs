@@ -470,8 +470,14 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitDurableEffectBackendV1
         if !self.verify_manifest(intent, &bytes)? {
             return Err(CellSplitChildStateCasErrorV1::Invalid);
         }
+        let committed_sequence = self
+            .migration
+            .parent_anchor()
+            .sequence
+            .checked_add(1)
+            .ok_or(CellSplitChildStateCasErrorV1::Invalid)?;
         Ok(Some(CellSplitOwnedEffectV1 {
-            owner_sequence: self.migration.parent_anchor().sequence.checked_add(1).ok_or(CellSplitChildStateCasErrorV1::Invalid)?,
+            owner_sequence: committed_sequence,
             owner_receipt_bytes: bytes,
         }))
     }
@@ -511,7 +517,9 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitDurableEffectBackendV1
         // must never advance the frontier or be adopted by a fresh Execute.
         match self.read_manifest(intent)? {
             Some(bytes) if self.verify_manifest(intent, &bytes)? => {
-                predecessor.checked_add(1).ok_or(CellSplitChildStateCasErrorV1::Invalid)
+                predecessor
+                    .checked_add(1)
+                    .ok_or(CellSplitChildStateCasErrorV1::Invalid)
             }
             Some(_) => Err(CellSplitChildStateCasErrorV1::Invalid),
             None => Ok(predecessor),
