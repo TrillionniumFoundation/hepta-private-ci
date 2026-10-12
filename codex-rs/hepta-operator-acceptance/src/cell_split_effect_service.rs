@@ -157,9 +157,6 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
         let action = request.action;
         let (receipt, readback) = match action {
             CellSplitEffectRpcActionV1::Execute => {
-                self.backend
-                    .authorize_execute(&request.intent)
-                    .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
                 // The coordinator dispatches Execute only once, following a
                 // nonce-bound negative preflight and a durable prepared intent.
                 // A previously committed effect is not evidence that *this*
@@ -196,6 +193,15 @@ impl<B: CellSplitDurableEffectBackendV1> CellSplitEffectServiceV1<B> {
                         "effect already committed before new execute intent",
                     ));
                 }
+                // The read-only original-owner frontier queries above may be
+                // slow; independently selected NDU/final-use authority can be
+                // revoked during them. Revalidate immediately before dispatch,
+                // not only before the reads or after a possibly committed
+                // effect. The durable backend must still enforce final-use
+                // atomically at its own mutation boundary.
+                self.backend
+                    .authorize_execute(&request.intent)
+                    .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
                 self.backend
                     .commit_once(&request.intent)
                     .map_err(|e| CellSplitEffectRpcErrorV1::Rejected(e.to_string()))?;
