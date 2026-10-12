@@ -556,3 +556,72 @@ fn telemetry_commit_error_preserves_result_and_fences_future_physical_batches() 
         Err(BatchWorkerErrorV1::TelemetryUnavailable)
     ));
 }
+
+#[test]
+fn legacy_group_commit_failure_denies_remaining_intents_without_claiming_them() {
+    let temp = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[45; 32]);
+    let (model, fixture, key) = fixture_request();
+    let mut owner = runner_with_batch_size(&signer, temp.path(), model, 2).with_metric_sink(
+        std::sync::Arc::new(FixtureMetricSink {
+            reject_records: true,
+        }),
+    );
+
+    for index in 0_u8..2 {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("metric-failure-{index}");
+        request.authorization.reservation_id = format!("metric-reservation-{index}");
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("metric-grant-{index}");
+        grant.grant.nonce = [index + 91; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        owner
+            .enqueue(100, "model".into(), request, key.clone(), grant)
+            .unwrap();
+    }
+
+    let completed = owner.poll_and_execute(101).unwrap();
+    assert_eq!(completed.outcomes.len(), 2);
+    assert!(completed.outcomes[0].result.is_ok());
+    assert!(matches!(
+        &completed.outcomes[1].result,
+        Err(BatchWorkerErrorV1::TelemetryUnavailable)
+    ));
+    assert_eq!(completed.pending, 0);
+    // The second grant did not enter the signed final-use effect.
+    assert_eq!(owner.authority.capacity().unwrap().used_nonces, 1);
+
+    // Replacing the observer cannot erase the generation's lost metric.
+    let mut owner = owner.with_metric_sink(std::sync::Arc::new(FixtureMetricSink {
+        reject_records: false,
+    }));
+    let mut new_request = fixture;
+    new_request.authorization.request_id = "post-metric-fault".to_owned();
+    new_request.authorization.reservation_id = "post-metric-reservation".to_owned();
+    let payload = canonical_neuron_feature_payload_digest(&new_request);
+    new_request.authorization.payload_digest = payload.clone();
+    new_request.authorization.lease_payload_digest = payload;
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &new_request).unwrap();
+    assert_eq!(
+        owner.enqueue(
+            102,
+            "model".to_owned(),
+            new_request,
+            key,
+            signed(&signer, binding),
+        ),
+        Err(BatchWorkerErrorV1::TelemetryUnavailable)
+    );
+    assert!(matches!(
+        owner.poll_and_execute(102),
+        Err(BatchWorkerErrorV1::TelemetryUnavailable)
+    ));
+}

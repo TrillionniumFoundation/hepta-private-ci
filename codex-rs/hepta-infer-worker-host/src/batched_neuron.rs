@@ -154,6 +154,21 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         self.pending.len()
     }
 
+    /// Record telemetry failure permanently within this owner generation.
+    /// An observer that briefly recovers cannot erase lost observations.
+    /// Legacy qualification may omit a sink, but a configured sink must stay
+    /// healthy, and the physical path additionally requires a sink to exist.
+    fn ensure_telemetry_live(&mut self) -> Result<(), BatchWorkerErrorV1> {
+        if self.metrics_poisoned {
+            return Err(BatchWorkerErrorV1::TelemetryUnavailable);
+        }
+        if self.metric_sink.as_ref().is_some_and(|sink| !sink.healthy()) {
+            self.metrics_poisoned = true;
+            return Err(BatchWorkerErrorV1::TelemetryUnavailable);
+        }
+        Ok(())
+    }
+
     /// Admission copies no feature vector; queued payloads share Arc<[i64]>.
     /// Final-use signature verification and durable nonce claim occur only at
     /// actual worker execution, immediately before the model driver is called.
@@ -165,6 +180,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         key: MicrobatchKeyV1,
         signed: SignedFinalUseGrant,
     ) -> Result<(), BatchWorkerErrorV1> {
+        self.ensure_telemetry_live()?;
         let id = StableId::new(request.authorization.request_id.clone())
             .map_err(|_| BatchWorkerErrorV1::InvalidRequest)?;
         if self.retired.contains(&id) || self.pending.contains_key(&id) {
@@ -221,6 +237,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         &mut self,
         now_ms: u64,
     ) -> Result<BatchWorkerPollV1, BatchWorkerErrorV1> {
+        self.ensure_telemetry_live()?;
         let poll = self
             .scheduler
             .poll(now_ms)
@@ -234,6 +251,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             for intent in batch.requests {
                 let id = intent.request_id;
                 self.retired.insert(id.clone());
+                if self.ensure_telemetry_live().is_err() {
+                    self.pending.remove(&id);
+                    outcomes.push(BatchWorkerItemOutcomeV1 {
+                        request_id: id,
+                        result: Err(BatchWorkerErrorV1::TelemetryUnavailable),
+                    });
+                    continue;
+                }
                 let outcome = match self.pending.remove(&id) {
                     None => Err(BatchWorkerErrorV1::NoAdmission),
                     Some(mut pending) => {
@@ -268,7 +293,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                 .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
                             });
                             if let Some(sink) = &self.metric_sink {
-                                let _ = sink.record(PhaseMetricEventV1 {
+                                let observation = PhaseMetricEventV1 {
                                     scope_digest: Digest32::of_bytes(
                                         batch.key.scope_id.as_str().as_bytes(),
                                     ),
@@ -277,7 +302,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                     latency_micros: u64::try_from(start.elapsed().as_micros())
                                         .unwrap_or(u64::MAX),
                                     succeeded: result.is_ok(),
-                                });
+                                };
+                                if sink.record(observation).is_err() {
+                                    self.metrics_poisoned = true;
+                                }
                             }
                             result
                         }

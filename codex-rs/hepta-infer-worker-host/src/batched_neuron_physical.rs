@@ -20,9 +20,10 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronPhysicalBatchDriver>
         // Physical serving requires a healthy evidence-owned metric sink.
         // Failed persistence cannot justify retrying a completed model call;
         // subsequent admissions are fenced instead.
-        if self.metrics_poisoned || self.metric_sink.as_ref().is_none_or(|sink| !sink.healthy()) {
+        if self.metric_sink.is_none() {
             return Err(BatchWorkerErrorV1::TelemetryUnavailable);
         }
+        self.ensure_telemetry_live()?;
         let poll = self
             .scheduler
             .poll_physical_compatible(now_ms)
