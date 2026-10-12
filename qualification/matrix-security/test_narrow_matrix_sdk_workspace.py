@@ -157,7 +157,7 @@ class NarrowWorkspaceTests(unittest.TestCase):
             (stage / ".git").write_text("gitdir: /nonexistent/original\n")
             (root / "sdk/crates/matrix-sdk").mkdir(parents=True)
             (root / "sdk/crates/matrix-sdk/Cargo.toml").write_text(
-                '[package]\\nname = "matrix-sdk"\\nversion = "0.19.1"\\n')
+                '[package]\nname = "matrix-sdk"\nversion = "0.19.1"\n')
             cargo = stage / "codex-rs/Cargo.toml"
             source = cargo_fixture()
             cargo.write_bytes(source)
@@ -193,7 +193,7 @@ class NarrowWorkspaceTests(unittest.TestCase):
             (stage / ".git").write_text("gitdir: /nonexistent/original\n")
             (root / "sdk/crates/matrix-sdk").mkdir(parents=True)
             (root / "sdk/crates/matrix-sdk/Cargo.toml").write_text(
-                '[package]\\nname = "matrix-sdk"\\nversion = "0.19.1"\\n')
+                '[package]\nname = "matrix-sdk"\nversion = "0.19.1"\n')
             cargo = stage / "codex-rs/Cargo.toml"
             source = cargo_fixture()
             cargo.write_bytes(source)
