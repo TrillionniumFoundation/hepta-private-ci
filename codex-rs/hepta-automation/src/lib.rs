@@ -150,4 +150,4 @@ pub use taskflow_step::TaskFlowStepState;
 pub use timer_lifecycle::TimerDrainStatus;
 pub use timer_lifecycle::TimerPhase;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 19;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 20;
