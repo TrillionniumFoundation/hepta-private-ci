@@ -600,7 +600,7 @@ fn verify_original_supervisor_checkpoint_v1(
     // The Supervisor's canonical_receipt_bytes_v1 uses serde_json::to_vec
     // over a fixed ordered struct. Do not use durable::canonical_json here:
     // it sorts JSON map keys and is a different representation.
-    if serde_json::to_vec(&checkpoint)? != bytes
+    if serde_json::to_vec(&checkpoint)?.as_slice() != bytes
         || checkpoint.schema_version != 1
         || checkpoint.phase != "retired"
         || checkpoint.revision != 10
