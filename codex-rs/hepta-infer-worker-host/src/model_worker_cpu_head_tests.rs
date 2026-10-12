@@ -462,13 +462,14 @@ fn actual_q24_cpu_batch_accounts_for_all_members_output_buffers() {
         Err(Error::FeatureBatchMismatch),
     );
     assert!(worker.requires_external_recovery());
+    let retry_weights = worker.driver.manifest.weights_digest.clone();
     assert_eq!(
         worker.run_neuron_features_backend_batch(
             100,
             "model.cpu-head",
             vec![
-                cpu_request(1, heads[0].clone(), worker.driver.manifest.weights_digest.clone()),
-                cpu_request(2, heads[1].clone(), worker.driver.manifest.weights_digest.clone()),
+                cpu_request(1, heads[0].clone(), retry_weights.clone()),
+                cpu_request(2, heads[1].clone(), retry_weights),
             ],
         ),
         Err(Error::ExecutionIndeterminate),
