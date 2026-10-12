@@ -122,6 +122,17 @@ class JinaSnapshotCensusTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "escapes"):
             self.census()
 
+    def test_snapshot_member_cannot_redirect_to_another_revision_or_file(self):
+        model_file = self.snap / "model.safetensors"
+        model_file.unlink()
+        other = self.root / "snapshots" / ("c" * 40)
+        other.mkdir()
+        artifact = other / "model.safetensors"
+        artifact.write_bytes(b"unapproved checkpoint from other revision")
+        model_file.symlink_to(artifact)
+        with self.assertRaisesRegex(ValueError, "HF cache's blobs"):
+            self.census()
+
     def test_snapshot_location_and_repository_identity_immutable(self):
         with self.assertRaisesRegex(ValueError, "exact pinned"):
             self.census(snapshot_dir=self.root)
