@@ -134,8 +134,10 @@ class JinaSnapshotCensusTests(unittest.TestCase):
             self.census()
         (self.snap / ".git/config").unlink()
         (self.snap / ".git").rmdir()
+        blob_dir = self.root / "blobs"
+        blob_dir.mkdir(parents=True, exist_ok=True)
         directory = self.snap / "external-directory"
-        directory.symlink_to(self.root / "blobs", target_is_directory=True)
+        directory.symlink_to(blob_dir, target_is_directory=True)
         with self.assertRaisesRegex(ValueError, "directory symlinks"):
             self.census()
 
