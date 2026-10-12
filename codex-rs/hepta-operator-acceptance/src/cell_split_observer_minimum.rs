@@ -392,6 +392,87 @@ fn digest_shape(value: &str) -> bool {
         && value.bytes().any(|b| b != b'0')
 }
 
+/// One independently authenticated high-water mark for the Supervisor
+/// journal's authority domain. It MUST originate from a separately managed
+/// monotonic service, not the local minimum file or a caller-supplied receipt.
+pub const CELL_SPLIT_SUPERVISOR_MONOTONIC_FRONTIER_SCHEMA_V1: &str =
+    "hepta.learning.cell-split.supervisor-monotonic-frontier.v1";
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CellSplitSupervisorMonotonicFrontierV1 {
+    pub schema: String,
+    pub journal_domain_id: String,
+    pub journal_authority_epoch: u64,
+    pub journal_revision: u64,
+    pub minimum_checkpoint_digest: String,
+    pub original_store_record_digest: String,
+    pub challenge_nonce: String,
+    pub signature_bytes: Vec<u8>,
+}
+
+pub fn cell_split_supervisor_monotonic_frontier_signing_payload_v1(
+    proof: &CellSplitSupervisorMonotonicFrontierV1,
+) -> Result<Vec<u8>, CellSplitSupervisorMinimumErrorV1> {
+    let mut unsigned = proof.clone();
+    unsigned.signature_bytes.clear();
+    let mut result = b"hepta.learning.cell-split.supervisor-monotonic-frontier.v1\0".to_vec();
+    result.extend_from_slice(&canonical_json(&unsigned)?);
+    Ok(result)
+}
+
+/// Unlike the per-split minimum read, this port queries the currently retained
+/// high-water mark by journal domain. The caller MUST NOT supply the expected
+/// revision or checkpoint digest to the source: otherwise a restored old
+/// record could sign a self-confirming answer. This trait has no allow-all
+/// implementation and the file-store fixture does not implement it.
+pub trait CellSplitSupervisorMonotonicFrontierPortV1 {
+    type Error: std::fmt::Display;
+
+    fn read_domain_frontier(
+        &mut self,
+        journal_domain_id: &str,
+        challenge_nonce: &str,
+    ) -> Result<CellSplitSupervisorMonotonicFrontierV1, Self::Error>;
+}
+
+/// Verify a fresh, separately signed high-water mark against an independently
+/// read minimum-store record. Equality is deliberately strict for this
+/// historical four-owner acceptance: a later committed journal revision means
+/// the older split can no longer be promoted as the *current* terminal state.
+pub fn verify_cell_split_supervisor_monotonic_frontier_v1(
+    subject: &CellSplitSupervisorMinimumSubjectV1,
+    original_store_record_digest: &str,
+    challenge_nonce: &str,
+    proof: &CellSplitSupervisorMonotonicFrontierV1,
+    pinned_monotonic_key: &VerifyingKey,
+) -> Result<(), CellSplitSupervisorMinimumErrorV1> {
+    subject.validate()?;
+    if pinned_monotonic_key.is_weak()
+        || proof.schema != CELL_SPLIT_SUPERVISOR_MONOTONIC_FRONTIER_SCHEMA_V1
+        || proof.journal_domain_id != subject.journal_domain_id
+        || proof.journal_authority_epoch != subject.journal_authority_epoch
+        || proof.journal_revision != subject.journal_revision
+        || proof.minimum_checkpoint_digest != subject.minimum_checkpoint_digest
+        || proof.original_store_record_digest != original_store_record_digest
+        || proof.challenge_nonce != challenge_nonce
+        || !digest_shape(&proof.minimum_checkpoint_digest)
+        || !digest_shape(&proof.original_store_record_digest)
+        || !digest_shape(challenge_nonce)
+        || proof.signature_bytes.len() != 64
+    {
+        return Err(CellSplitSupervisorMinimumErrorV1::Invalid);
+    }
+    let signature = Signature::from_slice(&proof.signature_bytes)
+        .map_err(|_| CellSplitSupervisorMinimumErrorV1::Invalid)?;
+    pinned_monotonic_key
+        .verify_strict(
+            &cell_split_supervisor_monotonic_frontier_signing_payload_v1(proof)?,
+            &signature,
+        )
+        .map_err(|_| CellSplitSupervisorMinimumErrorV1::Invalid)
+}
+
 #[cfg(test)]
 #[path = "cell_split_observer_minimum_tests.rs"]
 mod tests;
