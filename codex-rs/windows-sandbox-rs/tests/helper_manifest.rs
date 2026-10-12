@@ -4,8 +4,19 @@ use anyhow::Context;
 use anyhow::Result;
 use std::io;
 use std::os::windows::ffi::OsStrExt;
-use std::path::PathBuf;
 use std::path::Path;
+use std::path::PathBuf;
+
+use windows_sys::Win32::Foundation::FreeLibrary;
+use windows_sys::Win32::System::LibraryLoader::FindResourceW;
+use windows_sys::Win32::System::LibraryLoader::LOAD_LIBRARY_AS_DATAFILE;
+use windows_sys::Win32::System::LibraryLoader::LOAD_LIBRARY_AS_IMAGE_RESOURCE;
+use windows_sys::Win32::System::LibraryLoader::LoadLibraryExW;
+use windows_sys::Win32::System::LibraryLoader::LoadResource;
+use windows_sys::Win32::System::LibraryLoader::LockResource;
+use windows_sys::Win32::System::LibraryLoader::SizeofResource;
+use windows_sys::Win32::UI::WindowsAndMessaging::CREATEPROCESS_MANIFEST_RESOURCE_ID;
+use windows_sys::Win32::UI::WindowsAndMessaging::RT_MANIFEST;
 
 const MAX_RUNFILES_MANIFEST_BYTES: u64 = 32 * 1024 * 1024;
 
@@ -51,16 +62,6 @@ fn resolve_helper_executable(candidate: PathBuf) -> Result<PathBuf> {
     );
     Ok(resolved)
 }
-use windows_sys::Win32::Foundation::FreeLibrary;
-use windows_sys::Win32::System::LibraryLoader::FindResourceW;
-use windows_sys::Win32::System::LibraryLoader::LOAD_LIBRARY_AS_DATAFILE;
-use windows_sys::Win32::System::LibraryLoader::LOAD_LIBRARY_AS_IMAGE_RESOURCE;
-use windows_sys::Win32::System::LibraryLoader::LoadLibraryExW;
-use windows_sys::Win32::System::LibraryLoader::LoadResource;
-use windows_sys::Win32::System::LibraryLoader::LockResource;
-use windows_sys::Win32::System::LibraryLoader::SizeofResource;
-use windows_sys::Win32::UI::WindowsAndMessaging::CREATEPROCESS_MANIFEST_RESOURCE_ID;
-use windows_sys::Win32::UI::WindowsAndMessaging::RT_MANIFEST;
 
 /// The setup executable must expose an asInvoker manifest through the Windows resource API.
 #[test]
