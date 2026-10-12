@@ -884,9 +884,19 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
     );
     let external_cns = key(71).verifying_key();
     let external_supervisor = key(72).verifying_key();
+    let pinned_checkpoint_digest = {
+        let signed: crate::CellSplitSupervisorCommitV1 =
+            serde_json::from_slice(&transcript.receipts[3].owner_receipt_bytes)
+                .expect("Supervisor commit");
+        let checkpoint: serde_json::Value =
+            serde_json::from_slice(&signed.original_checkpoint_bytes)
+                .expect("checkpoint");
+        checkpoint["receiptDigest"].as_str().expect("checkpoint digest").to_owned()
+    };
     let trust = crate::CellSplitObserverOriginalRuntimeTrustV1 {
         cns_original_runtime_key: &external_cns,
         supervisor_original_journal_key: &external_supervisor,
+        supervisor_minimum_checkpoint_digest: &pinned_checkpoint_digest,
     };
     let mut current = CurrentEffectFixture::new(&transcript);
     let accepted = crate::cell_split_observer_join::
@@ -918,6 +928,7 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
     let wrong_cns = crate::CellSplitObserverOriginalRuntimeTrustV1 {
         cns_original_runtime_key: &incorrect_cns,
         supervisor_original_journal_key: &external_supervisor,
+        supervisor_minimum_checkpoint_digest: &pinned_checkpoint_digest,
     };
     let mut current = CurrentEffectFixture::new(&transcript);
     assert!(crate::cell_split_observer_join::
@@ -936,6 +947,7 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
     let wrong_supervisor = crate::CellSplitObserverOriginalRuntimeTrustV1 {
         cns_original_runtime_key: &external_cns,
         supervisor_original_journal_key: &incorrect_supervisor,
+        supervisor_minimum_checkpoint_digest: &pinned_checkpoint_digest,
     };
     assert!(crate::cell_split_observer_join::
         verify_cell_split_observer_join_deep_with_port_v1(
@@ -956,6 +968,7 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
     let conflated = crate::CellSplitObserverOriginalRuntimeTrustV1 {
         cns_original_runtime_key: &reused_host,
         supervisor_original_journal_key: &reused_owner,
+        supervisor_minimum_checkpoint_digest: &pinned_checkpoint_digest,
     };
     assert!(crate::cell_split_observer_join::
         verify_cell_split_observer_join_deep_with_port_v1(
@@ -1020,9 +1033,19 @@ fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
     let join = signed_observer_join_fixture(&envelope, &transcript, &host, &observer);
     let cns = key(71).verifying_key();
     let supervisor = key(72).verifying_key();
+    let pinned_checkpoint_digest = {
+        let signed: crate::CellSplitSupervisorCommitV1 =
+            serde_json::from_slice(&transcript.receipts[3].owner_receipt_bytes)
+                .expect("Supervisor commit");
+        let checkpoint: serde_json::Value =
+            serde_json::from_slice(&signed.original_checkpoint_bytes)
+                .expect("checkpoint");
+        checkpoint["receiptDigest"].as_str().expect("checkpoint digest").to_owned()
+    };
     let runtime = crate::CellSplitObserverOriginalRuntimeTrustV1 {
         cns_original_runtime_key: &cns,
         supervisor_original_journal_key: &supervisor,
+        supervisor_minimum_checkpoint_digest: &pinned_checkpoint_digest,
     };
     let mut current = CurrentEffectFixture::new(&transcript);
     assert!(matches!(
