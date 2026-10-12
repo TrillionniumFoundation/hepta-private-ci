@@ -52,6 +52,7 @@ fn terminal_request_fingerprint(id: &StableId) -> Digest32 {
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum BatchWorkerErrorV1 {
     InvalidRequest,
+    DeadlineExpired,
     InvalidBinding,
     Duplicate,
     NoAdmission,
@@ -138,6 +139,12 @@ pub fn neuron_batch_final_use_binding_v1(
         scope_sha256: *Digest32::of_bytes(&scope_bytes).as_array(),
         payload_sha256: *payload_digest.as_array(),
     })
+}
+
+/// Never reuse the initial poll timestamp for later driver effects in a batch.
+/// The caller's clock reading is advanced using monotonic elapsed time.
+fn elapsed_now_ms(initial_ms: u64, started: Instant) -> u64 {
+    initial_ms.saturating_add(u64::try_from(started.elapsed().as_millis()).unwrap_or(u64::MAX))
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1<D> {
@@ -339,10 +346,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                             || pending.signed.grant.authority_epoch != batch.key.authority_epoch
                         {
                             Err(BatchWorkerErrorV1::InvalidBinding)
+                        } else if elapsed_now_ms(now_ms, scheduled_at) >= intent.deadline_ms {
+                            // Expiry is terminal without consuming a final-use nonce.
+                            Err(BatchWorkerErrorV1::DeadlineExpired)
                         } else {
                             pending.request.feature_vector_q24 =
                                 pending.feature.as_slice().to_vec();
-                            let result = FinalUseAuthority::claim(
+                            FinalUseAuthority::claim(
                                 &self.authority,
                                 &pending.signed,
                                 &pending.binding,
@@ -354,17 +364,24 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                     token,
                                     &pending.binding,
                                     || {
-                                        self.worker.run_neuron_features_receipt(
-                                            now_ms,
-                                            &pending.model_id,
-                                            pending.request,
-                                        )
+                                        // Signature verification / durable nonce I/O can
+                                        // outlast the request. Recheck at physical entry.
+                                        let dispatch_ms = elapsed_now_ms(now_ms, scheduled_at);
+                                        if dispatch_ms >= intent.deadline_ms {
+                                            return Err(BatchWorkerErrorV1::DeadlineExpired);
+                                        }
+                                        self.worker
+                                            .run_neuron_features_receipt(
+                                                dispatch_ms,
+                                                &pending.model_id,
+                                                pending.request,
+                                            )
+                                            .map_err(|_| BatchWorkerErrorV1::Worker)
                                     },
                                 )
                                 .map_err(|_| BatchWorkerErrorV1::Authority)
-                                .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
-                            });
-                            result
+                                .and_then(|inner| inner)
+                            })
                         }
                     }
                 };
