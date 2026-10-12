@@ -11,6 +11,7 @@ qualification; it is not a license to patch Cargo.lock or promote production.
 """
 
 import argparse
+import difflib
 import hashlib
 import json
 from pathlib import Path
@@ -43,6 +44,76 @@ def stdout_checked(result, description):
     if result.returncode != 0:
         raise ValueError(f"{description} failed")
     return result.stdout.decode("utf-8", errors="strict").strip()
+
+
+def _source_change_blocks(source_diff):
+    """Extract only contiguous AnyMap substitutions from a PINNED Git diff.
+
+    Context lines are intentionally ignored in the transformed delta. Upstream
+    added unrelated manifest dependencies after the signed release; repeating
+    newer context would make an otherwise minimal backport fail to apply.
+    """
+    changes = {path: [] for path in SOURCE_FILES}
+    current_path = None
+    old_lines, new_lines = [], []
+
+    def flush():
+        if not old_lines and not new_lines:
+            return
+        if (current_path not in changes or not old_lines or not new_lines
+                or "anymap2" not in "".join(old_lines)
+                or "anymap3" not in "".join(new_lines)):
+            raise ValueError("unexpected non-AnyMap source mutation in upstream patch")
+        changes[current_path].append(("".join(old_lines), "".join(new_lines)))
+        old_lines.clear()
+        new_lines.clear()
+
+    for line in source_diff.decode("utf-8", errors="strict").splitlines(keepends=True):
+        if line.startswith("diff --git a/"):
+            flush()
+            names = line.rstrip("\n").split(" ")
+            if len(names) != 4 or not names[3].startswith("b/"):
+                raise ValueError("malformed pinned upstream Git diff")
+            current_path = names[3][2:]
+            if current_path not in changes or names[2] != "a/" + current_path:
+                raise ValueError("unexpected upstream diff source path")
+        elif line.startswith("@@") or line.startswith(" "):
+            flush()
+        elif line.startswith("--- ") or line.startswith("+++ "):
+            flush()
+        elif line.startswith("-"):
+            old_lines.append(line[1:])
+        elif line.startswith("+"):
+            new_lines.append(line[1:])
+        else:
+            flush()
+    flush()
+    if sum(map(len, changes.values())) != 3 or any(not block for block in changes.values()):
+        raise ValueError("upstream AnyMap source change count is not exactly three")
+    return changes
+
+
+def _release_specific_source_patch(release, source_diff):
+    changes = _source_change_blocks(source_diff)
+    translated = []
+    for path in SOURCE_FILES:
+        original = (release / path).read_text(encoding="utf-8")
+        altered = original
+        for old, new in changes[path]:
+            if altered.count(old) != 1:
+                raise ValueError("published release incompatible with exact upstream AnyMap change")
+            altered = altered.replace(old, new, 1)
+        if altered == original or "anymap2::" in altered:
+            raise ValueError("unresolved obsolete AnyMap implementation in translated release")
+        source_delta = "".join(difflib.unified_diff(
+            original.splitlines(keepends=True), altered.splitlines(keepends=True),
+            fromfile="a/" + path, tofile="b/" + path, n=3,
+        ))
+        translated.append("diff --git a/" + path + " b/" + path + "\n" + source_delta)
+    output = "".join(translated).encode("utf-8")
+    if not 0 < len(output) <= MAX_PATCH_BYTES:
+        raise ValueError("release-specific patch is unavailable or oversized")
+    return output
 
 
 def probe(release, migration, *, release_sha=RELEASE_SHA, migration_sha=MIGRATION_SHA):
@@ -83,17 +154,26 @@ def probe(release, migration, *, release_sha=RELEASE_SHA, migration_sha=MIGRATIO
         raise ValueError("upstream source patch is unavailable or oversized")
     if b"anymap3" not in patch.stdout or b"anymap2" not in patch.stdout:
         raise ValueError("upstream source patch does not change the advertised AnyMap dependency")
-    check = git(release, "apply", "--check", "-", input_bytes=patch.stdout)
+    raw_check = git(release, "apply", "--check", "-", input_bytes=patch.stdout)
+    # A context mismatch in upstream's later manifest is *not* permission to
+    # import hundreds of unrelated mainline commits. Translate ONLY the three
+    # exact upstream AnyMap substitutions onto the immutable release contents.
+    release_patch = _release_specific_source_patch(release, patch.stdout)
+    check = git(release, "apply", "--check", "-", input_bytes=release_patch)
     if git(release, "status", "--porcelain").stdout.strip():
         raise ValueError("read-only patch check modified the published release")
     return {
-        "schema": "hepta.matrix-sdk-minimal-anymap-backport.v1",
+        "schema": "hepta.matrix-sdk-minimal-anymap-backport.v2",
         "published_release_commit": release_sha,
         "upstream_anymap3_commit": migration_sha,
         "upstream_commit_changed_files": sorted(changed),
         "source_patch_files": list(SOURCE_FILES),
-        "source_patch_sha256": hashlib.sha256(patch.stdout).hexdigest(),
-        "source_patch_bytes": len(patch.stdout),
+        "upstream_source_patch_sha256": hashlib.sha256(patch.stdout).hexdigest(),
+        "upstream_raw_patch_applies_clean": raw_check.returncode == 0,
+        "upstream_raw_patch_exit_code": raw_check.returncode,
+        "source_patch_translation_count": 3,
+        "source_patch_sha256": hashlib.sha256(release_patch).hexdigest(),
+        "source_patch_bytes": len(release_patch),
         "source_patch_applies_clean": check.returncode == 0,
         "git_apply_check_exit_code": check.returncode,
         "git_apply_diagnostic": check.stderr.decode("utf-8", errors="replace")[-1800:],
