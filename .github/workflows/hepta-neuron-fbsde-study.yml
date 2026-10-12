@@ -193,9 +193,26 @@ jobs:
           /tmp/acquisition-venv/bin/python -m unittest fbsde_acquisition_tensor_checks fbsde_acquisition_support_tensor_checks fbsde_acquisition_guard_tensor_checks -v 2>&1 | tee acquisition-tests.log
           /tmp/acquisition-venv/bin/python qualification/neuron-stem/fbsde_study.py \
             --profile semantic_acquisition_v1 --backend "$ACQUISITION_BACKEND" --kernel-profile "$KERNEL_PROFILE" --cohort "$TASK_COHORT" \
-            --model-dir /tmp/acquisition-mmbert --output acquisition-study \
+            --model-dir /tmp/acquisition-mmbert --clock-diagnostics --output acquisition-study \
             2>&1 | tee acquisition-study.log
           git diff --exit-code
+      - name: Diagnose retained failed view in bounded fresh processes
+        if: failure()
+        shell: bash
+        env:
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          HF_HUB_DISABLE_TELEMETRY: "1"
+          TOKENIZERS_PARALLELISM: "false"
+        run: |
+          set -euo pipefail
+          if [[ -f acquisition-study/candidate-head.pt && -f acquisition-study/physical.json && -f acquisition-study/failure.json ]]; then
+            PYTHONPATH=qualification/neuron-stem /tmp/acquisition-venv/bin/python \
+              qualification/neuron-stem/fbsde_study.py --profile cpu_tail_replay_v1 \
+              --evidence-dir acquisition-study --model-dir /tmp/acquisition-mmbert \
+              --replay-count 64 --output cpu-tail-replay 2>&1 | tee cpu-tail-replay.log
+          else
+            echo "No completed preparation and failed view available for replay."
+          fi
       - name: Preserve all requests, failures and selected small Head; no pretrained weights
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -208,5 +225,7 @@ jobs:
             acquisition-tests.log
             acquisition-study.log
             acquisition-study/
+            cpu-tail-replay.log
+            cpu-tail-replay/
           if-no-files-found: error
           retention-days: 30
