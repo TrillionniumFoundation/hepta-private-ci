@@ -546,11 +546,60 @@ fn terminal_replay_capacity_is_independent_of_active_microbatch_capacity() {
     );
 }
 
+#[derive(Debug)]
+struct MutableScopeFrontier {
+    scope: StableId,
+    cut: std::sync::Mutex<LiveNeuronScopeBindingV1>,
+}
+
+impl MutableScopeFrontier {
+    fn new(key: &MicrobatchKeyV1) -> Self {
+        Self {
+            scope: key.scope_id.clone(),
+            cut: std::sync::Mutex::new(LiveNeuronScopeBindingV1 {
+                model_digest: key.model_digest,
+                generation: key.generation,
+                route_fence: key.route_fence,
+                authority_epoch: key.authority_epoch,
+            }),
+        }
+    }
+}
+
+impl LiveNeuronScopeFrontierV1 for MutableScopeFrontier {
+    fn latest(&self, scope: &StableId) -> Result<LiveNeuronScopeBindingV1, BatchWorkerErrorV1> {
+        if *scope != self.scope {
+            return Err(BatchWorkerErrorV1::ScopeFenced);
+        }
+        self.cut
+            .lock()
+            .map(|cut| cut.clone())
+            .map_err(|_| BatchWorkerErrorV1::ScopeFenced)
+    }
+}
+
 fn production_runner(
     signing_key: &SigningKey,
     directory: &std::path::Path,
     model: ModelManifest,
     metrics: Arc<dyn PhaseMetricSinkV1>,
+) -> Result<ProductionNeuronMicrobatchWorkerV1<Driver>, BatchWorkerErrorV1> {
+    let (_, _, key) = fixture_request();
+    production_runner_with_frontier(
+        signing_key,
+        directory,
+        model,
+        metrics,
+        Arc::new(MutableScopeFrontier::new(&key)),
+    )
+}
+
+fn production_runner_with_frontier(
+    signing_key: &SigningKey,
+    directory: &std::path::Path,
+    model: ModelManifest,
+    metrics: Arc<dyn PhaseMetricSinkV1>,
+    frontier: Arc<dyn LiveNeuronScopeFrontierV1>,
 ) -> Result<ProductionNeuronMicrobatchWorkerV1<Driver>, BatchWorkerErrorV1> {
     let head = FinalUseRevocations {
         authority_epoch: 9,
@@ -587,6 +636,7 @@ fn production_runner(
             max_wait_ms: 5,
         },
         metrics,
+        frontier,
     )
 }
 
@@ -678,4 +728,58 @@ fn failed_flush_does_not_erase_completed_final_use_outcome_or_trigger_retry() {
         worker.poll_and_execute(102),
         Err(BatchWorkerErrorV1::MetricsUnavailable)
     ));
+}
+
+
+#[test]
+fn cutover_without_explicit_queue_invalidation_is_denied_before_model_effect() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[39; 32]);
+    let (model, request, key) = fixture_request();
+    let frontier = Arc::new(MutableScopeFrontier::new(&key));
+    let mut worker = production_runner_with_frontier(
+        &signer,
+        dir.path(),
+        model,
+        Arc::new(RecordedSink::default()),
+        frontier.clone(),
+    )
+    .unwrap();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    worker
+        .enqueue(100, "model".into(), request, key.clone(), signed(&signer, binding))
+        .unwrap();
+
+    frontier.cut.lock().unwrap().route_fence += 1;
+    let polled = worker.poll_and_execute(101).unwrap();
+    assert_eq!(polled.poll.outcomes.len(), 1);
+    assert!(matches!(
+        polled.poll.outcomes[0].result,
+        Err(BatchWorkerErrorV1::ScopeFenced)
+    ));
+    assert!(polled.metrics_flush_acknowledged);
+    assert_eq!(worker.pending(), 0);
+}
+
+#[test]
+fn stale_scope_is_rejected_on_production_enqueue() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[41; 32]);
+    let (model, request, key) = fixture_request();
+    let frontier = Arc::new(MutableScopeFrontier::new(&key));
+    frontier.cut.lock().unwrap().route_fence += 1;
+    let mut worker = production_runner_with_frontier(
+        &signer,
+        dir.path(),
+        model,
+        Arc::new(RecordedSink::default()),
+        frontier,
+    )
+    .unwrap();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    assert_eq!(
+        worker.enqueue(100, "model".into(), request, key, signed(&signer, binding)),
+        Err(BatchWorkerErrorV1::ScopeFenced)
+    );
+    assert_eq!(worker.pending(), 0);
 }
