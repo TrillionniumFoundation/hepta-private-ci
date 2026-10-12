@@ -45,6 +45,18 @@ InferenceWorker, NeuronRuntime, on-disk sparse Journal and independent
 on-disk FileAnchorWitnessStore. It confirms the Q24 receipt is durably
 committed, a repeated reservation cannot create a successor, then destroys
 the owner objects and reopens BOTH files to recover the exact checkpoint.
+
+The end-to-end Neuron tick/recovery test now also opens the actual
+`DurableInferenceControl` WAL, fsyncs Submit/Reserve/Assign and its
+non-idempotent Dispatching claim *before* obtaining the Worker ModelPort,
+and then runs the actual Agentd tick. When the Neuron Journal has committed
+but its independent witness temporarily rejects acknowledgement, retrying
+the same tick only reconciles the witness; it does not spend a second Worker
+reservation. After dropping both owners, the test separately reopens the
+inference.control WAL and Neuron Journal/Witness and checks that a fresh Worker
+cannot reuse the old Dispatching identity. These are fixture-model tests on
+real durable owners, not real Laya inference or a signed deployment.
+
 Additional tests reject duplicate request IDs with fresh reservations, duplicate
 reservation IDs with fresh requests, a newly constructed port after success,
 preflight rejection and indeterminate outcomes. A direct Worker caller cannot

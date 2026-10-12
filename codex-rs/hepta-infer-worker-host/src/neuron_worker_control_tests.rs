@@ -552,16 +552,81 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
         feature_vector_q24: actual_request.feature_vector_q24,
         expected_output_width: actual_request.expected_output_width,
     };
-    let authorized = preadmitted_reservation(&control_request);
+    use codex_hepta_infer_core::durable_control::Assignment;
+    use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+    use codex_hepta_infer_core::durable_control::InferenceRequest;
+    use codex_hepta_infer_core::durable_control::RequestState;
+    use codex_hepta_infer_core::durable_control::Reservation;
+    use codex_hepta_infer_core::neuron_feature_request_digest_v1;
+    use crate::neuron_durable_assignment::NeuronDurableAssignmentErrorV1;
+    use crate::neuron_durable_assignment::claim_neuron_durable_dispatch_v1;
+    
+    // Bind the existing native Worker ModelPort to the ACTUAL fsynced
+    // inference.control assignment. A directly manufactured WorkerPort would
+    // not exercise the product's pre-execution single-use journal barrier.
+    let mut feature = NeuronFeatureRequest {
+        authorization: preadmitted_reservation(&control_request),
+        encoder_digest: control_request.encoder_digest.to_string(),
+        head_digest: control_request.head_digest.to_string(),
+        weights_digest: control_request.weights_digest.to_string(),
+        input_digest: control_request.input_digest.to_string(),
+        feature_vector_q24: control_request.feature_vector_q24.clone(),
+        expected_output_width: control_request.expected_output_width,
+    };
+    let payload_digest = canonical_neuron_feature_payload_digest(&feature);
+    feature.authorization.payload_digest = payload_digest.clone();
+    feature.authorization.lease_payload_digest = payload_digest.clone();
+    let inference_journal_path = temp.path().join("inference.control");
+    let mut control = DurableInferenceControl::open(&inference_journal_path, 32).unwrap();
+    control
+        .submit(
+            100,
+            InferenceRequest {
+                request_id: control_request.request_id.to_string(),
+                principal_id: "preapproved-agent".to_owned(),
+                model_digest: feature.authorization.model_digest.clone(),
+                payload_digest,
+                maximum_tokens: 64,
+                deadline_ms: 9_000,
+                semantic_digest: neuron_feature_request_digest_v1(&control_request)
+                    .unwrap()
+                    .to_string(),
+            },
+        )
+        .unwrap();
+    control
+        .reserve(
+            100,
+            control_request.request_id.as_str(),
+            1,
+            Reservation {
+                reservation_id: "reservation.1".to_owned(),
+                quota_units: 100,
+                maximum_tokens: 64,
+                authority_epoch: 4,
+                valid_until_ms: 8_000,
+            },
+        )
+        .unwrap();
+    control
+        .assign(
+            control_request.request_id.as_str(),
+            2,
+            Assignment {
+                worker_id: "worker.1".to_owned(),
+                worker_generation: 3,
+                assignment_digest: "f".repeat(64),
+            },
+        )
+        .unwrap();
     let calls = Arc::new(AtomicUsize::new(0));
     let mut worker = worker(Arc::clone(&calls), false, false);
-    let worker_port = WorkerNeuronControlPort::from_reserved_worker(
-        &mut worker,
-        "model.1".to_owned(),
-        authorized,
-        control_request.generation,
-        100,
-    );
+    let (claim, worker_port) =
+        claim_neuron_durable_dispatch_v1(&mut control, &mut worker, &control_request, 100)
+            .unwrap();
+    assert_eq!(claim.state, RequestState::Dispatching);
+    assert_eq!(claim.revision, 4);
+    assert!(!claim.idempotent);
     let mut agentd = AgentdNeuronOwner::new(runtime, worker_port);
     assert!(agentd.read_local_checkpoint_binding_v1().is_err());
     assert!(matches!(
@@ -635,9 +700,27 @@ fn native_worker_to_agentd_tick_commits_and_recovers_independent_durable_journal
         pinned.anchor
     );
 
-    // Simulate process-object death. Reopen the separately durable witness
-    // and journal, then verify the full generation-bound checkpoint recovery.
+    // Simulate process-object death. Reopen BOTH the pre-Worker dispatch WAL
+    // and the Neuron Journal/Witness. A replaced Worker has no in-memory
+    // tombstones, yet the fsynced Dispatching claim cannot be replayed.
     drop(agentd);
+    drop(control);
+    let mut reopened_control = DurableInferenceControl::open(&inference_journal_path, 32).unwrap();
+    assert_eq!(
+        reopened_control.get(control_request.request_id.as_str()).unwrap().state,
+        RequestState::Dispatching
+    );
+    let mut new_worker = worker_with_observed_tokens(Arc::clone(&calls), false, false, 4);
+    assert!(matches!(
+        claim_neuron_durable_dispatch_v1(
+            &mut reopened_control,
+            &mut new_worker,
+            &control_request,
+            100,
+        ),
+        Err(NeuronDurableAssignmentErrorV1::NotAssigned)
+    ));
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
     let recovered_witness = FileAnchorWitnessStore::open(
         OpenOptions::new()
             .read(true)
