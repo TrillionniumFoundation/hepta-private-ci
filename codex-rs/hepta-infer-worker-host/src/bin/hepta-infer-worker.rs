@@ -140,13 +140,18 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         }
     };
     signal_task.abort();
-    // A model outcome is never replayed on telemetry loss. Export only after
-    // the WAL latency evidence is durably grouped and synced.
-    if !control.flush_production_metrics() {
-        return Err("native inference metrics were not durably committed".into());
-    }
+    // The model may already have performed the external effect. Flush metrics
+    // before returning, but never suppress an observed terminal receipt merely
+    // because telemetry failed: doing so could invite an unsafe blind replay.
+    let metrics_committed = control.flush_production_metrics();
     let output = result?;
     println!("{}", serde_json::to_string(&output)?);
+    if !metrics_committed {
+        return Err(
+            "native metrics are not durable; terminal outcome was emitted: reconcile, never replay"
+                .into(),
+        );
+    }
     if !output.terminal_observed {
         return Err("model outcome is indeterminate; this request was not replayed".into());
     }
