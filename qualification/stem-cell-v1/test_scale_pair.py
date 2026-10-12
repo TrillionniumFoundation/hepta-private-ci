@@ -32,7 +32,7 @@ def manifest(arm):
 
 
 def data(arm, count=64, speed=200):
-    scenario = {"logical_cells": 64, "active_fraction": 1.0,
+    scenario = {"logical_cells": count, "active_fraction": 1.0,
                 "input_repeat_fraction": 0.0, "task_similarity": "same_family"}
     workload = []
     for i in range(count):
@@ -167,6 +167,15 @@ class PairTests(unittest.TestCase):
         args[1][0]["model_digest"] = D("d")
         with self.assertRaisesRegex(ValueError, "workload model"):
             self.evaluate(*args)
+
+    def test_256_1024_4096_logical_cells_use_bounded_group_bootstrap(self):
+        for logical_cells in (256, 1024, 4096):
+            with self.subTest(logical_cells=logical_cells):
+                result = self.evaluate(*self.setup(size=logical_cells))
+                self.assertEqual(result["scenario"]["logical_cells"], logical_cells)
+                self.assertEqual(result["paired_bootstrap"]["source_groups"], logical_cells)
+                self.assertGreater(result["paired_bootstrap"]["bootstrap_lcb_ms"], 0)
+                self.assertFalse(result["production_authorized"])
 
     def test_bootstrap_is_reproducible_with_held_out_seeds(self):
         a = self.evaluate(*self.setup())
