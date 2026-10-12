@@ -17,13 +17,14 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: true
+          fetch-depth: 3
       - uses: ./.github/actions/setup-ci
       - name: Apply only AST-identical Ruff changes
         env:
           EXPECTED_PARENT: 993a9d02ad7c87be7fb795ab98e679247a409ab6
         run: |
           set -euo pipefail
-          test "$(git rev-parse HEAD^)" = "$EXPECTED_PARENT"
+          test "$(git rev-parse HEAD~2)" = "$EXPECTED_PARENT"
           files=(
             scripts/memory_cell/stem_native_nonpromotion.py
             scripts/memory_cell/strong_rag_fourrun_audit.py
