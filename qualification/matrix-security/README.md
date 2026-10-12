@@ -56,3 +56,21 @@ static prerequisites eventually pass, the resulting report will continue to set
 `cargo_deny_verified=false`, `matrix_e2ee_verified=false`,
 `sqlite_wal_recovery_verified=false`, and `production_authorized=false`;
 independently signed runtime/CI evidence must establish those claims.
+
+## Pinned upstream compatibility candidate (separate from released 0.19.1)
+
+A read-only review of the **Git source** at commit
+`b3c07ea6ba6e8e46e30811c0500b04505c4be9f9` shows:
+
+- `matrix-sdk` source still advertises `0.19.1`, but now uses `anymap3` instead
+  of `anymap2`. This is a **pinned, not-yet-qualified Git tree**, not a claim
+  that crates.io `matrix-sdk 0.19.1` has changed. No source is executed.
+- `matrix-sdk-crypto` source is `0.19.1` and the upstream workspace requires
+  Rust `1.96`. The SQLite crate uses `rusqlite 0.40.2`, which itself depends on
+  `libsqlite3-sys 0.38.2`; Hepta still pins `0.37` via its SQLx 0.9 family.
+- The distinct `upstream_source_probe.py` checks exact Git SHA, no `anymap2`,
+  crypto version, MSRV and SQLite versions against local Hepta bindings. Its
+  status remains `migration_ready=false` even if all upstream manifests pass.
+- Do not patch Cargo.lock to point to this Git source without separate
+  source-review, reproducible dependency resolution, SQLite `links` alignment,
+  native compile, E2EE conformance and actual WAL recovery evidence.
