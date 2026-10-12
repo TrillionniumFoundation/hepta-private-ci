@@ -42,10 +42,43 @@ The inherited controlled organizer result (source `421feaad`, run 38066590605)
 is eight task successes versus four for its bounded hybrid control; the learned
 policy matches the organizer with identical selections. Those are authored
 controlled-program observations, not independent production histories. The
-source-written knowledge experiment must complete before any parameter benefit
-can be reported; an earlier writing timeout supplied no task-quality evidence.
-Its 330-minute CPU allowance is an execution bound, not permission to weaken
-algorithmic budgets, select new test cases, or call a pending run successful.
+source-written knowledge experiment has since **completed** at its
+original generating commit `2c6dae45782b1ba07ba9af237f01bdecc0c5640b`
+(artifact `11689893524`). Read-only original-answer replay in
+[run 38111836918](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38111836918)
+**passed** for the independent model-result job; the workflow's separate
+repository-format job failed, so the complete workflow was not green. The
+original experiment completed eight controlled tasks, seven matched arms,
+56 actual model generations, 88 source-only training examples, and 128
+optimizer updates. Mean training loss fell from 6.527866 (first eight
+updates) to 2.372350 (last eight), but loss reduction is not task gain.
+
+Measured paired outcomes were: bounded hybrid 4/8; deterministic organized
+evidence 8/8; learned policy 8/8 with identical choices to organized evidence;
+organized-plus-memory 8/8 with **zero wins or losses against identical
+evidence with its adapter disabled**; parameter-only 0/8 with zero task gains
+versus its empty-context control. Five parameter-only answers emitted citation
+labels without any sources delivered. The retrospective **rejects this
+parameter candidate**, with independent semantic citation precision `null`.
+An already 8/8 deterministic organizer has no remaining strict-task headroom
+on these exposed controlled cases. Source-only learning must instead be
+evaluated on new, pre-registered independent families with nonzero headroom;
+no additional updates on these same evaluation questions can establish it.
+
+A separate pinned BF16 Qwen2.5-3B/PEFT single-update source-loss parity job
+[run 38221406283](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38221406283)
+**passed** on generating commit `3714b9985900286faa2e27ca7e5b4dd86e733647`
+(artifact `11735991721`). On the same original 209 input positions and
+three supervised positions, original full projection and optimized projection
+reported equal loss, zero maximum gradient difference and zero maximum
+updated LoRA parameter difference, with the frozen base unchanged. This
+proves one-step equivalence for one real pretrained source example, not
+128-step convergence, end-to-end QA gains, statistically reliable speedup,
+semantic citation quality, or any production authority.
+
+Its 330-minute CPU allowance remains an execution bound, not permission
+to weaken the original budgets, select test cases after seeing scores, or
+call queued, cancelled, failed or incomplete follow-up runs successful.
 
 The independent human source review, semantic citation adjudication, natural
 language transfer, newly collected prospective windows, production cutover and
