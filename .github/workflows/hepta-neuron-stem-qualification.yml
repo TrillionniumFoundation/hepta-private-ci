@@ -6,6 +6,7 @@ on:
     paths:
       - "qualification/neuron-stem/**"
       - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/git-utils/src/git_process_tests.rs"
       - "codex-rs/cli/Cargo.toml"
       - "codex-rs/cli/src/codex.rs"
       - "codex-rs/cli/src/hepta.rs"
@@ -157,6 +158,37 @@ jobs:
           cargo +1.95.0 test --locked -p codex-hepta-prompt-registry --lib unsupported_platform_cannot_create_unprotected_registry_state
           cargo +1.95.0 test --locked -p codex-hepta-agentd --lib secure_prompt_registry_unavailable_fences_agentd_before_admission
       - name: Assert no checkout mutations
+        if: always()
+        shell: bash
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  windows-git-process-tree:
+    name: Windows Git process-tree timeout cleanup (no promotion)
+    runs-on: windows-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout exact candidate without stored credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Require exact candidate and clean inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+      - name: Install pinned Rust compiler
+        shell: bash
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - name: Run real Windows wrapper and child cleanup tests
+        shell: pwsh
+        run: |
+          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-git-utils --lib git_process::tests:: -- --test-threads=1 --nocapture
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Require unchanged repository checkout
         if: always()
         shell: bash
         run: |
