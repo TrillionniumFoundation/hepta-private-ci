@@ -6,7 +6,6 @@ source check. This does not authenticate historical PR discussion or reviews.
 """
 
 import argparse
-import base64
 import hashlib
 import json
 import os

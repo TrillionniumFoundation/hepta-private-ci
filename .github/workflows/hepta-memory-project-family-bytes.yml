@@ -1,0 +1,84 @@
+name: MemoryCell exact public project Git source bytes
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - "scripts/memory_cell/data/real-project-pr-independent-extension-20261012.json"
+      - "scripts/memory_cell/project_pr_family_bytes.py"
+      - "scripts/memory_cell/test_project_pr_family_bytes.py"
+      - ".github/workflows/hepta-memory-project-family-bytes.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-object-verification:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - name: Run focused immutable-object regression suite
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-family-verification
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p 'test_project_pr_family_*.py' -v \
+            2>&1 | tee /tmp/memory-family-verification/tests.log
+      - name: Strict syntax, Ruff and exact formatting
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          python3 -m compileall -q \
+            scripts/memory_cell/project_pr_family_extension.py \
+            scripts/memory_cell/project_pr_family_bytes.py
+          uv run --frozen --project scripts ruff check --select F401,F821,F841 \
+            scripts/memory_cell/project_pr_family_extension.py \
+            scripts/memory_cell/project_pr_family_bytes.py \
+            scripts/memory_cell/test_project_pr_family_extension.py \
+            scripts/memory_cell/test_project_pr_family_bytes.py \
+            2>&1 | tee /tmp/memory-family-verification/lint.log
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/project_pr_family_extension.py \
+            scripts/memory_cell/project_pr_family_bytes.py \
+            scripts/memory_cell/test_project_pr_family_extension.py \
+            scripts/memory_cell/test_project_pr_family_bytes.py \
+            2>&1 | tee /tmp/memory-family-verification/format.log
+      - name: Verify exact Git commit and 32 original file objects
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          manifest=scripts/memory_cell/data/real-project-pr-independent-extension-20261012.json
+          previous=scripts/memory_cell/data/real-project-pr-source-cut-20261012.json
+          sha256sum "$manifest" > /tmp/memory-family-verification/manifest.sha256
+          python3 scripts/memory_cell/project_pr_family_bytes.py \
+            "$manifest" "$previous" /tmp/memory-family-staged-originals \
+            --source-sha256 "$(sha256sum "$manifest" | cut -d ' ' -f1)" \
+            2>&1 | tee /tmp/memory-family-verification/original-git-proof.log
+          cp /tmp/memory-family-staged-originals/READY.json \
+            /tmp/memory-family-verification/source-ready.json
+          cp /tmp/memory-family-staged-originals/inventory.json \
+            /tmp/memory-family-verification/source-inventory.json
+          cp /tmp/memory-family-staged-originals/readback.json \
+            /tmp/memory-family-verification/offline-reopen.json
+          # Do not redistribute third-party source bytes as CI artifacts.
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Preserve original-source success and failure evidence only
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/memory-family-verification/tested-commit.txt
+          (cd /tmp/memory-family-verification && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | \
+            xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-public-project-original-git-hashes
+          path: /tmp/memory-family-verification
+          if-no-files-found: error
