@@ -147,6 +147,16 @@ fn runner_with_batch_size(
     model: ModelManifest,
     batch_size: usize,
 ) -> AuthenticatedNeuronMicrobatchWorkerV1<Driver> {
+    runner_with_batch_size_and_driver(signing_key, directory, model, batch_size, Driver)
+}
+
+fn runner_with_batch_size_and_driver<D: ModelDriver + NeuronFeatureDriver>(
+    signing_key: &SigningKey,
+    directory: &std::path::Path,
+    model: ModelManifest,
+    batch_size: usize,
+    driver: D,
+) -> AuthenticatedNeuronMicrobatchWorkerV1<D> {
     let head = FinalUseRevocations {
         authority_epoch: 9,
         revision: 1,
@@ -170,7 +180,7 @@ fn runner_with_batch_size(
         maximum_memory_bytes: 4096,
         semantic_digest: digest(b"resource-grant").to_string(),
     };
-    let mut worker = InferenceWorker::new(100, "worker-one".into(), 3, grant, Driver).unwrap();
+    let mut worker = InferenceWorker::new(100, "worker-one".into(), 3, grant, driver).unwrap();
     worker.load_model(100, model).unwrap();
     AuthenticatedNeuronMicrobatchWorkerV1::new(
         worker,
@@ -462,4 +472,159 @@ fn terminal_replay_capacity_is_independent_of_active_microbatch_capacity() {
         ),
         Err(BatchWorkerErrorV1::Duplicate)
     );
+}
+
+#[derive(Clone)]
+struct PhysicalBatchDriver {
+    backend_calls: std::sync::Arc<std::sync::atomic::AtomicUsize>,
+    scalar_calls: std::sync::Arc<std::sync::atomic::AtomicUsize>,
+}
+
+impl ModelDriver for PhysicalBatchDriver {
+    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+        let mut driver = Driver;
+        driver.load(manifest)
+    }
+
+    fn run(
+        &mut self,
+        _handle: &DriverModelHandle,
+        _request: &WorkerRequest,
+    ) -> Result<DriverRunObservation, Error> {
+        Err(Error::FeatureContract)
+    }
+
+    fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+        Ok(())
+    }
+}
+
+impl NeuronFeatureDriver for PhysicalBatchDriver {
+    fn run_neuron_features(
+        &mut self,
+        _handle: &DriverModelHandle,
+        _request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error> {
+        self.scalar_calls
+            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        Err(Error::FeatureContract)
+    }
+
+    fn supports_physical_neuron_batch(&self) -> bool {
+        true
+    }
+
+    fn run_neuron_features_batch(
+        &mut self,
+        _handle: &DriverModelHandle,
+        requests: &[NeuronFeatureRequest],
+    ) -> Result<Vec<DriverNeuronFeatureObservation>, Error> {
+        self.backend_calls
+            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        Ok(requests
+            .iter()
+            .map(|request| DriverNeuronFeatureObservation {
+                terminal_observed: true,
+                succeeded: true,
+                encoder_digest: request.encoder_digest.clone(),
+                head_digest: request.head_digest.clone(),
+                drive_q24: vec![1 << 24; request.expected_output_width],
+                prediction_q24: vec![0; request.expected_output_width],
+                observed_memory_bytes: 1024,
+                transient_allocation_bytes: 2048,
+                queue_age_micros: 8,
+                latency_micros: 13,
+            })
+            .collect())
+    }
+}
+
+#[test]
+fn three_authorized_neuron_items_enter_one_physical_batch_driver_invocation() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[44; 32]);
+    let (model, fixture, key) = fixture_request();
+    let backend_calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let scalar_calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = PhysicalBatchDriver {
+        backend_calls: backend_calls.clone(),
+        scalar_calls: scalar_calls.clone(),
+    };
+    let mut execution = runner_with_batch_size_and_driver(&signer, dir.path(), model, 3, driver);
+    for i in 0_u8..3 {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("batch-request-{i}");
+        request.authorization.reservation_id = format!("batch-reservation-{i}");
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("physical-batch-{i}");
+        grant.grant.nonce = [i + 1; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        execution
+            .enqueue(100, "model".into(), request, key.clone(), grant)
+            .unwrap();
+    }
+    let poll = execution.poll_and_execute(101).unwrap();
+    assert_eq!(poll.outcomes.len(), 3);
+    assert!(poll.outcomes.iter().all(|item| {
+        matches!(
+            &item.result,
+            Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+        )
+    }));
+    assert_eq!(backend_calls.load(std::sync::atomic::Ordering::Relaxed), 1);
+    assert_eq!(scalar_calls.load(std::sync::atomic::Ordering::Relaxed), 0);
+    assert_eq!(execution.pending(), 0);
+}
+
+#[test]
+fn invalid_signed_grant_is_excluded_before_native_backend_batch_entry() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[45; 32]);
+    let (model, fixture, key) = fixture_request();
+    let backend_calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let scalar_calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = PhysicalBatchDriver {
+        backend_calls: backend_calls.clone(),
+        scalar_calls: scalar_calls.clone(),
+    };
+    let mut execution = runner_with_batch_size_and_driver(&signer, dir.path(), model, 3, driver);
+    for i in 0_u8..3 {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("invalid-grant-{i}");
+        request.authorization.reservation_id = format!("invalid-reservation-{i}");
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("verified-grant-{i}");
+        grant.grant.nonce = [i + 1; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        if i == 1 {
+            grant.signature[0] ^= 1;
+        }
+        execution
+            .enqueue(100, "model".into(), request, key.clone(), grant)
+            .unwrap();
+    }
+    let poll = execution.poll_and_execute(101).unwrap();
+    assert_eq!(poll.outcomes.len(), 3);
+    assert!(poll.outcomes[0].result.is_ok());
+    assert!(matches!(
+        poll.outcomes[1].result,
+        Err(BatchWorkerErrorV1::Authority)
+    ));
+    assert!(poll.outcomes[2].result.is_ok());
+    assert_eq!(backend_calls.load(std::sync::atomic::Ordering::Relaxed), 1);
+    assert_eq!(scalar_calls.load(std::sync::atomic::Ordering::Relaxed), 0);
 }

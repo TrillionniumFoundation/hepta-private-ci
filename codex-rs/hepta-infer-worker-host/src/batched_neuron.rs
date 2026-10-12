@@ -427,6 +427,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         now_ms: u64,
         batch: MicrobatchPlanV1,
     ) -> Vec<BatchWorkerItemOutcomeV1> {
+        let started = Instant::now();
         let mut slots = Vec::with_capacity(batch.requests.len());
         let mut admitted = Vec::with_capacity(batch.requests.len());
         for intent in batch.requests {
@@ -527,7 +528,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                     &batch.key.scope_id,
                     &id,
                     PhaseMetricKindV1::NeuronFeature,
-                    Duration::ZERO,
+                    started.elapsed(),
                     matches!(
                         &result,
                         Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
