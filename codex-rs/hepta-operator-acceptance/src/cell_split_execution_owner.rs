@@ -771,6 +771,10 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 "unexpected successor frame; reopen required",
             ));
         }
+        // Retain the precise unresolved write-ahead intent: its bytes are as
+        // important as committed predecessor frames when another owner read
+        // takes time. Never validate a pending intent only before a remote RPC.
+        let mut pending_prepared = None;
         if self.pending {
             let step = CellSplitExecutionStepV1::at(self.cursor)
                 .ok_or(CellSplitExecutionErrorV1::Invalid("pending step index"))?;
@@ -781,6 +785,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             if prepared != canonical_json(&intent)? {
                 return Err(CellSplitExecutionErrorV1::Invalid("pending intent drift"));
             }
+            pending_prepared = Some(prepared);
             if read_frame(&frame_path(&self.root, self.cursor, "committed"))?.is_some()
                 || has_successor_frame(&self.root, self.cursor + 1)?
             {
@@ -807,6 +812,16 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             {
                 return Err(CellSplitExecutionErrorV1::Invalid(
                     "committed frame changed during live owner readback",
+                ));
+            }
+        }
+        if let Some(prepared) = pending_prepared {
+            if read_frame(&frame_path(&self.root, self.cursor, "prepared"))? != Some(prepared)
+                || read_frame(&frame_path(&self.root, self.cursor, "committed"))?.is_some()
+                || has_successor_frame(&self.root, self.cursor + 1)?
+            {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "pending frame changed during live owner readback",
                 ));
             }
         }
