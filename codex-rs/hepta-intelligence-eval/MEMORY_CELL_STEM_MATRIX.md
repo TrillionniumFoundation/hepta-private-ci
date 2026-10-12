@@ -1611,3 +1611,17 @@ have the same SHA-bound canonical Reader request, they must have exactly
 the same raw answer and token hashes. This detects answer rewriting or
 cache-laundering without making any new Reader call. These checks
 still cannot independently judge factual entailment.
+
+## Oct 13: canonical Reader cache reuse lineage is verified
+
+The post-policy integrity audit no longer accepts an arbitrary nonempty
+`reused_from` string as proof of a cache hit. It reopens the original
+append-order 576-answer journal and requires every claimed cache hit to name
+an **earlier successful, actual Reader execution** (not another reused result).
+The predecessor must share the exact canonical request, fixed model/prompt,
+question, input/output token hashes, delivered evidence and original answer.
+The audit counts verified actual-execution receipts and verified reused rows
+separately. Reordered, fabricated, transitive, future, cross-question or
+changed-answer reuse is rejected. This is retrospective internal provenance,
+**not** cryptographic host attestation or independent semantic review. Existing
+576 model answers, ranking heads, source labels and production gates are unchanged.

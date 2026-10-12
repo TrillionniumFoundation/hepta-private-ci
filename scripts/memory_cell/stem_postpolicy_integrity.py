@@ -107,6 +107,27 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
     if set(indexed) != expected or set(annotated) != expected:
         raise ValueError("missing or unexpected policy identifiers")
 
+    # Resolve cache references against the original append-order journal, not
+    # the sorted scoring loop. An arbitrary nonempty reused_from cannot prove
+    # that a real Reader execution preceded this purported cache hit.
+    original_positions = {}
+    original_executions = {}
+    for offset, row in enumerate(raw):
+        record_key = (
+            f"{row['stage']}/{row['phase']}/"
+            f"{row['question_id']}/{row['arm']}"
+        )
+        if record_key in original_positions:
+            raise ValueError("ambiguous original Reader cache record key")
+        original_positions[record_key] = offset
+        receipt = row.get("receipt")
+        if (
+            row.get("status") == "succeeded"
+            and isinstance(receipt, dict)
+            and receipt.get("actual_reader_execution") is True
+        ):
+            original_executions[record_key] = (offset, row)
+
     census = Counter()
     reader_pin = None
     canonical_output_pins = {}
@@ -205,6 +226,36 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
                     "identical frozen Reader request has inconsistent raw answer or tokens"
                 )
             canonical_output_pins[request_digest] = canonical_output
+            if receipt["actual_reader_execution"] is False:
+                source = original_executions.get(receipt["reused_from"])
+                this_key = f"{key[0]}/{key[1]}/{key[2]}/{key[3]}"
+                if (
+                    source is None
+                    or source[0] >= original_positions[this_key]
+                ):
+                    raise ValueError(
+                        "Reader cache reuse lacks an earlier actual execution"
+                    )
+                predecessor = source[1]
+                from_receipt = predecessor["receipt"]
+                if (
+                    from_receipt.get("canonical_request_digest") != request_digest
+                    or predecessor["answer"] != original["answer"]
+                    or any(
+                        from_receipt.get(field) != receipt.get(field)
+                        for field in (
+                            "generator_identity", "generator_profile",
+                            "question_digest", "input_ids_digest",
+                            "generated_ids_digest", "delivered_evidence",
+                        )
+                    )
+                ):
+                    raise ValueError(
+                        "Reader cache reuse refers to a different model request or answer"
+                    )
+                census["verified_reader_cache_reuses"] += 1
+            else:
+                census["verified_reader_execution_receipts"] += 1
             expected_f1 = _diagnostic_f1(original["answer"], target)
             if reviewed["diagnostic_answer_f1"] != expected_f1:
                 raise ValueError("diagnostic answer F1 did not match raw answer")
@@ -252,6 +303,7 @@ def audit_policy_scoring(plan, raw, scored, pools, questions, targets):
         identical_reader_requests_yield_identical_answer_and_token_ids=True,
         same_frozen_reader_model_and_prompt_across_successful_arms=True,
         exact_question_token_and_cache_reuse_receipts_validated=True,
+        cache_reuse_origins_checked_against_earlier_actual_executions=True,
         future_source_window_admission_rechecked=True,
         postpolicy_only_native_target_observation=True,
         weak_document_support_not_semantic_entailment=True,

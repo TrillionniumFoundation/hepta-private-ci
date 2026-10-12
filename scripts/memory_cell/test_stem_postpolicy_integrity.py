@@ -263,10 +263,52 @@ class PolicyIntegrityTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "inconsistent raw answer"):
             audit_policy_scoring(a, b, c, d, e, f)
 
+    def test_cache_reuse_rejects_nonexistent_or_cross_question_origin(self):
+        for origin in (
+            "16/select/nonexistent/frozen_rerank",
+            "16/select/select-1/frozen_rerank",
+        ):
+            a, b, _, d, e, f = fixture()
+            b[1]["receipt"]["actual_reader_execution"] = False
+            b[1]["receipt"]["reused_from"] = origin
+            with self.subTest(origin=origin), self.assertRaisesRegex(
+                ValueError, "Reader cache reuse"
+            ):
+                audit_policy_scoring(a, b, score(b, f), d, e, f)
+
+    def test_cache_reuse_rejects_forward_reference_to_a_future_execution(self):
+        a, b, _, d, e, f = fixture()
+        b[0]["receipt"]["actual_reader_execution"] = False
+        b[0]["receipt"]["reused_from"] = "16/select/select-0/prototype"
+        with self.assertRaisesRegex(ValueError, "earlier actual execution"):
+            audit_policy_scoring(a, b, score(b, f), d, e, f)
+
+    def test_cache_reuse_rejects_transitive_references_to_cached_rows(self):
+        a, b, _, d, e, f = fixture()
+        b[1]["receipt"]["actual_reader_execution"] = False
+        b[1]["receipt"]["reused_from"] = "16/select/select-0/frozen_rerank"
+        b[2]["receipt"]["actual_reader_execution"] = False
+        b[2]["receipt"]["reused_from"] = "16/select/select-0/prototype"
+        with self.assertRaisesRegex(ValueError, "earlier actual execution"):
+            audit_policy_scoring(a, b, score(b, f), d, e, f)
+
+    def test_valid_cache_reuse_counts_only_prior_original_execution(self):
+        a, b, _, d, e, f = fixture()
+        b[1]["receipt"]["actual_reader_execution"] = False
+        b[1]["receipt"]["reused_from"] = "16/select/select-0/frozen_rerank"
+        result = audit_policy_scoring(a, b, score(b, f), d, e, f)
+        self.assertEqual(result["census"]["verified_reader_cache_reuses"], 1)
+        self.assertEqual(
+            result["census"]["verified_reader_execution_receipts"], 575
+        )
+        self.assertTrue(
+            result["cache_reuse_origins_checked_against_earlier_actual_executions"]
+        )
+
     def test_original_cache_reuse_is_valid_if_receipt_and_answer_match(self):
         a, b, c, d, e, f = fixture()
         b[1]["receipt"]["actual_reader_execution"] = False
-        b[1]["receipt"]["reused_from"] = "16/select/q/frozen_rerank"
+        b[1]["receipt"]["reused_from"] = "16/select/select-0/frozen_rerank"
         c[1] = dict(b[1], **{
             k: c[1][k] for k in (
                 "source_choice_correct", "diagnostic_answer_f1",
