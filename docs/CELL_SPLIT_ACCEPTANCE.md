@@ -191,3 +191,27 @@ atomic four-owner snapshot, issue NDU/Selector final-use authorization,
 supply target-host measured CPU/RSS/p99/negative-transfer evidence or
 prove power-loss recovery on deployed machines. Its corresponding
 cross-language and native exact-HEAD CI qualification must still be obtained.
+
+
+### Retrospective rollback evidence is not a live successor route
+
+The signed target-host lifecycle also includes rollback, tombstone and
+no-resurrection checks. After a genuine route rollback the current CNS
+may correctly serve the parent, so a fresh read of the *current* child
+route will no longer verify the former successor cutover. Neither
+\`CellSplitObserverJoinReceiptV1\` nor the deep-origin verifier may turn
+that legitimate historical transition into a positive live-serving
+assertion. Production retrospective acceptance must distinguish:
+
+- Authentic immutable **historical** CAS/migration/CNS/Supervisor receipts,
+  bound to independently retained monotone checkpoints;
+- A freshly authenticated **current** parent route, writer generation and
+  retired child/tombstone proof following rollback;
+- An independent Observer-signed, ordered bridge between those histories,
+  with no resurrected authority and real power-loss fault receipts.
+
+The current source-side live-RPC join deliberately fails closed when the
+former child route is no longer current. A new historical-owner read port
+and independent anti-rollback witness are required before an end-to-end
+post-rollback target-host acceptance can be granted. Do NOT relax the
+current-owner check or substitute the locally reconstructed transcript.
