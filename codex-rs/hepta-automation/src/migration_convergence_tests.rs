@@ -3,6 +3,10 @@ use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
 
+#[allow(
+    clippy::disallowed_methods,
+    reason = "this single-connection in-memory migration fixture is not a durable owner or production SQLite pool"
+)]
 async fn historical_pool(displaced: bool) -> SqlitePool {
     let pool = SqlitePoolOptions::new()
         .max_connections(1)
