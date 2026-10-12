@@ -29,8 +29,15 @@ jobs:
         shell: bash
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
       - name: Verify complete Rust source formatting
+        if: runner.os != 'Windows'
         shell: bash
         run: cargo +1.95.0 fmt --all -- --check
+      # Full-workspace rustfmt exceeds Windows' command-line length limit.
+      # Ubuntu checks the workspace; Windows also checks the exercised crate.
+      - name: Verify native Git-utils source formatting
+        if: runner.os == 'Windows'
+        shell: bash
+        run: cargo +1.95.0 fmt -p codex-git-utils -- --check
       - name: Actual Windows and Unix Git wrapper child lifetime tests
         shell: bash
         run: cargo +1.95.0 test --locked -p codex-git-utils --lib 'git_process::tests::' -- --nocapture
