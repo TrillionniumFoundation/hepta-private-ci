@@ -2449,6 +2449,33 @@ fn now_unix_seconds() -> Result<u64, ProductionWriterError> {
         .map_err(|error| ProductionWriterError::Invalid(format!("system clock failed: {error}")))
 }
 
+// Test-only hard assertions retain their original fail-fast semantics without
+// disabling the workspace's disallowed panic-convenience method lint.
+#[cfg(test)]
+trait RequireFixture<T> {
+    fn require_fixture(self, reason: &'static str) -> T;
+}
+
+#[cfg(test)]
+impl<T, E: std::fmt::Debug> RequireFixture<T> for Result<T, E> {
+    fn require_fixture(self, reason: &'static str) -> T {
+        match self {
+            Ok(value) => value,
+            Err(error) => panic!("{reason}: {error:?}"),
+        }
+    }
+}
+
+#[cfg(test)]
+impl<T> RequireFixture<T> for Option<T> {
+    fn require_fixture(self, reason: &'static str) -> T {
+        match self {
+            Some(value) => value,
+            None => panic!("{reason}: missing expected fixture value"),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -2615,7 +2642,7 @@ mod tests {
         );
         let capability = live
             .cognitive_mutation_capability()
-            .expect("live-verified writer mints semantic capability");
+            .require_fixture("live-verified writer mints semantic capability");
         assert_eq!(capability.owner_agent_id(), &owner);
     }
 
@@ -2697,7 +2724,7 @@ mod tests {
         );
         let capability = writer
             .cognitive_mutation_capability()
-            .expect("live verifier must mint semantic mutation capability");
+            .require_fixture("live verifier must mint semantic mutation capability");
         let access = CognitiveAccess::agent_private(owner);
         let now = i64::try_from(now_unix_seconds().unwrap()).unwrap();
         let content = "Committed semantic mutation survives response loss.";
@@ -2727,8 +2754,8 @@ mod tests {
         let committed = capability
             .remember_with_kg(&access, &source, &draft, &facts)
             .await
-            .expect("initial semantic mutation");
-        committed.validate().expect("committed receipt");
+            .require_fixture("initial semantic mutation");
+        committed.validate().require_fixture("committed receipt");
         let occurrence_key = format!("cognitive-mutation:{}", committed.operation_digest.as_str());
         assert_eq!(
             writer.status(&occurrence_key).await.unwrap(),
@@ -2757,7 +2784,7 @@ mod tests {
         );
         let reopened_capability = reopened_writer
             .cognitive_mutation_capability()
-            .expect("reopened live writer capability");
+            .require_fixture("reopened live writer capability");
         let retry = reopened_capability
             .remember_with_kg(&access, &source, &draft, &facts)
             .await;
@@ -3146,7 +3173,7 @@ mod tests {
         let task = tokio::spawn(async move { dispatcher.dispatch(&writer, queued).await });
         let join_error = timeout(Duration::from_secs(5), task)
             .await
-            .expect("crash-after-send fixture must not hang")
+            .require_fixture("crash-after-send fixture must not hang")
             .unwrap_err();
         assert!(join_error.is_panic());
         assert_eq!(calls.load(Ordering::SeqCst), 1);
@@ -3206,7 +3233,7 @@ mod tests {
             )
         })
         .await
-        .expect("concurrent dispatch claim fixture must not hang");
+        .require_fixture("concurrent dispatch claim fixture must not hang");
         let first_ok = matches!(
             &first,
             Ok(receipt) if receipt.state == LocalOutcomeState::Indeterminate
@@ -3364,7 +3391,7 @@ mod takeover_regression_tests {
     use tokio::time::sleep;
 
     fn test_agent() -> AgentId {
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cfe").expect("agent")
+        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2cfe").require_fixture("agent")
     }
 
     struct TakeoverAllowVerifier;
@@ -3381,12 +3408,13 @@ mod takeover_regression_tests {
 
     async fn test_store(temp: &TempDir) -> CognitiveStore {
         let fleet_root = temp.path().join("fleet-takeover");
-        std::fs::create_dir_all(&fleet_root).expect("fleet root");
-        let fleet = HeptaFleetRoot::parse(fleet_root.canonicalize().expect("canonical fleet"))
-            .expect("fleet");
+        std::fs::create_dir_all(&fleet_root).require_fixture("fleet root");
+        let fleet =
+            HeptaFleetRoot::parse(fleet_root.canonicalize().require_fixture("canonical fleet"))
+                .require_fixture("fleet");
         CognitiveStore::open(&fleet.layout().agent(&test_agent()))
             .await
-            .expect("store")
+            .require_fixture("store")
     }
 
     fn authority_for(
@@ -3403,17 +3431,17 @@ mod takeover_regression_tests {
             authority_epoch,
             owner_epoch,
             expiry,
-            ProductionAuthorityToken::from_verified_bytes(token.to_vec()).expect("token"),
+            ProductionAuthorityToken::from_verified_bytes(token.to_vec()).require_fixture("token"),
         )
-        .expect("authority")
+        .require_fixture("authority")
     }
 
     #[tokio::test]
     async fn expired_active_writer_is_terminalized_and_successor_reconciles_unknown_effect() {
-        let temp = TempDir::new().expect("temp");
+        let temp = TempDir::new().require_fixture("temp");
         let store = test_store(&temp).await;
         let owner = store.owner_agent_id().clone();
-        let old_expiry = now_unix_seconds().expect("clock") + 2;
+        let old_expiry = now_unix_seconds().require_fixture("clock") + 2;
         let old_authority =
             authority_for(owner.clone(), b"grant-old", 9, 40, old_expiry, b"token-old");
         let old = ProductionDurableWriter::open(
@@ -3424,13 +3452,13 @@ mod takeover_regression_tests {
             1,
         )
         .await
-        .expect("old writer");
+        .require_fixture("old writer");
         old.admit("occurrence:takeover", "destination.write", "{\"value\":1}")
             .await
-            .expect("admission");
+            .require_fixture("admission");
         old.mark_indeterminate("occurrence:takeover", "ack-lost")
             .await
-            .expect("indeterminate");
+            .require_fixture("indeterminate");
         drop(old);
 
         sleep(Duration::from_millis(2_100)).await;
@@ -3440,7 +3468,7 @@ mod takeover_regression_tests {
             b"grant-new",
             9,
             41,
-            now_unix_seconds().expect("clock") + 3_600,
+            now_unix_seconds().require_fixture("clock") + 3_600,
             b"token-new",
         );
         let successor = ProductionDurableWriter::open(
@@ -3451,26 +3479,26 @@ mod takeover_regression_tests {
             2,
         )
         .await
-        .expect("successor writer");
+        .require_fixture("successor writer");
         assert_eq!(successor.generation(), 2);
         assert_eq!(
             successor
                 .status("occurrence:takeover")
                 .await
-                .expect("inherited status"),
+                .require_fixture("inherited status"),
             LocalOutcomeState::Indeterminate
         );
 
         let settled = successor
             .reconcile("occurrence:takeover", LocalReconcileOutcome::Committed)
             .await
-            .expect("successor reconciliation");
+            .require_fixture("successor reconciliation");
         assert_eq!(settled.state, LocalOutcomeState::Committed);
         assert_eq!(
             successor
                 .status("occurrence:takeover")
                 .await
-                .expect("terminal status"),
+                .require_fixture("terminal status"),
             LocalOutcomeState::Committed
         );
     }
@@ -3627,12 +3655,12 @@ mod final_use_dispatch_tests {
             1,
         )
         .await
-        .expect("writer");
+        .require_fixture("writer");
 
         let authority_dir = temp.path().join("final-use-authority");
-        std::fs::create_dir(&authority_dir).expect("authority dir");
+        std::fs::create_dir(&authority_dir).require_fixture("authority dir");
         std::fs::set_permissions(&authority_dir, std::fs::Permissions::from_mode(0o700))
-            .expect("authority permissions");
+            .require_fixture("authority permissions");
         let issuer = SigningKey::from_bytes(&[83; 32]);
         let final_use = FinalUseAuthority::open_state_dir(
             &authority_dir,
@@ -3644,7 +3672,7 @@ mod final_use_dispatch_tests {
                 revoked_grant_ids: BTreeSet::new(),
             },
         )
-        .expect("final-use authority");
+        .require_fixture("final-use authority");
         let target = Arc::new(CountingTarget::new("destination:cognitive-store"));
         let dispatcher =
             ProductionFinalUseOutboxDispatcher::attach(final_use.clone(), target.clone());
@@ -3662,11 +3690,11 @@ mod final_use_dispatch_tests {
                 payload_one,
             )
             .await
-            .expect("queued");
+            .require_fixture("queued");
         let binding = writer
             .final_use_binding(&queued, target.destination_id())
             .await
-            .expect("canonical final-use binding");
+            .require_fixture("canonical final-use binding");
         let signed = signed_final_use(
             &issuer,
             binding.clone(),
@@ -3676,7 +3704,7 @@ mod final_use_dispatch_tests {
         let dispatched = dispatcher
             .dispatch(&writer, &signed, &binding, queued)
             .await
-            .expect("authorized dispatch");
+            .require_fixture("authorized dispatch");
         assert_eq!(dispatched.state, LocalOutcomeState::Committed);
         assert_eq!(target.calls(), 1);
 
@@ -3693,11 +3721,11 @@ mod final_use_dispatch_tests {
                 payload_two,
             )
             .await
-            .expect("second queued");
+            .require_fixture("second queued");
         let mut bad_binding = writer
             .final_use_binding(&queued_bad, target.destination_id())
             .await
-            .expect("canonical bad-case binding");
+            .require_fixture("canonical bad-case binding");
         bad_binding.destination_id = "destination:substituted".to_string();
         let bad_signed = signed_final_use(
             &issuer,
@@ -3749,7 +3777,7 @@ mod final_use_dispatch_tests {
             1,
         )
         .await
-        .expect("writer");
+        .require_fixture("writer");
         let payload = "{\"fact\":\"claim-lease\"}";
         let queued = writer
             .prepare_operation(
@@ -3799,7 +3827,7 @@ mod final_use_dispatch_tests {
             1,
         )
         .await
-        .expect("old writer");
+        .require_fixture("old writer");
         let handoff_payload = "{\"fact\":\"handoff\"}";
         let queued = old
             .prepare_operation(
@@ -3813,18 +3841,18 @@ mod final_use_dispatch_tests {
                 handoff_payload,
             )
             .await
-            .expect("queued");
+            .require_fixture("queued");
         assert_eq!(queued.inherited_from_generation, None);
         let old_claim = old
             .claim_dispatch_lease(&queued, 1)
             .await
-            .expect("old generation claim");
+            .require_fixture("old generation claim");
         assert_eq!(old_claim.attempt, 1);
         let expiry = old.authority().lease_expires_at_unix_seconds;
         old.lease
             .expire_lease_at_unix_seconds(expiry)
             .await
-            .expect("explicit timeout terminalization");
+            .require_fixture("explicit timeout terminalization");
         drop(old);
         tokio::time::sleep(std::time::Duration::from_millis(60)).await;
 
@@ -3833,11 +3861,11 @@ mod final_use_dispatch_tests {
             Sha256Digest::for_bytes(b"production-grant-next"),
             31,
             42,
-            now_unix_seconds().expect("clock") + 7_200,
+            now_unix_seconds().require_fixture("clock") + 7_200,
             ProductionAuthorityToken::from_verified_bytes(b"production-token-next".to_vec())
-                .expect("token"),
+                .require_fixture("token"),
         )
-        .expect("next authority");
+        .require_fixture("next authority");
         let successor = ProductionDurableWriter::open(
             store,
             next_authority,
@@ -3846,20 +3874,20 @@ mod final_use_dispatch_tests {
             2,
         )
         .await
-        .expect("successor writer");
+        .require_fixture("successor writer");
         let inherited = successor
             .recover_inherited_queued("occurrence:queued-handoff")
             .await
-            .expect("recover inherited")
-            .expect("queued predecessor row");
+            .require_fixture("recover inherited")
+            .require_fixture("queued predecessor row");
         assert_eq!(inherited.inherited_from_generation, Some(1));
         assert_eq!(inherited.event_id, queued.event_id);
         assert_eq!(inherited.outbox_id, queued.outbox_id);
 
         let authority_dir = temp.path().join("final-use-handoff");
-        std::fs::create_dir(&authority_dir).expect("authority dir");
+        std::fs::create_dir(&authority_dir).require_fixture("authority dir");
         std::fs::set_permissions(&authority_dir, std::fs::Permissions::from_mode(0o700))
-            .expect("authority permissions");
+            .require_fixture("authority permissions");
         let issuer = SigningKey::from_bytes(&[84; 32]);
         let final_use = FinalUseAuthority::open_state_dir(
             &authority_dir,
@@ -3871,13 +3899,13 @@ mod final_use_dispatch_tests {
                 revoked_grant_ids: BTreeSet::new(),
             },
         )
-        .expect("final-use authority");
+        .require_fixture("final-use authority");
         let target = Arc::new(CountingTarget::new("destination:cognitive-store"));
         let dispatcher = ProductionFinalUseOutboxDispatcher::attach(final_use, target.clone());
         let binding = successor
             .final_use_binding(&inherited, target.destination_id())
             .await
-            .expect("canonical handoff binding");
+            .require_fixture("canonical handoff binding");
         let signed = signed_final_use(
             &issuer,
             binding.clone(),
@@ -3887,17 +3915,21 @@ mod final_use_dispatch_tests {
         let result = dispatcher
             .dispatch(&successor, &signed, &binding, inherited)
             .await
-            .expect("successor dispatch");
+            .require_fixture("successor dispatch");
         assert_eq!(result.state, LocalOutcomeState::Committed);
         assert_eq!(target.calls(), 1);
         assert_eq!(
             successor
                 .status("occurrence:queued-handoff")
                 .await
-                .expect("terminal status"),
+                .require_fixture("terminal status"),
             LocalOutcomeState::Committed
         );
-        let counts = successor.lease.snapshot_counts().await.expect("counts");
+        let counts = successor
+            .lease
+            .snapshot_counts()
+            .await
+            .require_fixture("counts");
         assert_eq!(
             counts.outbox_rows, 1,
             "handoff reuses one durable outbox identity"
@@ -3908,7 +3940,7 @@ mod final_use_dispatch_tests {
         )
         .fetch_one(&successor.store.pool)
         .await
-        .expect("claim attempt");
+        .require_fixture("claim attempt");
         assert_eq!(
             max_attempt, 2,
             "successor takeover must advance the durable dispatch attempt"
