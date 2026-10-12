@@ -6,6 +6,9 @@ struct Driver {
     indeterminate: bool,
     corrupt_neuron_head: bool,
     fail_unload: bool,
+    fail_load_after_allocation: bool,
+    invalid_handle: bool,
+    reported_memory_bytes: u64,
     unload_calls: usize,
     loaded: usize,
 }
@@ -13,9 +16,20 @@ struct Driver {
 impl ModelDriver for Driver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
+        if self.fail_load_after_allocation {
+            return Err(Error::DriverFailure("injected partial load".to_string()));
+        }
         Ok(DriverModelHandle {
-            opaque_id: format!("handle.{}", manifest.model_id),
-            observed_memory_bytes: 1_024,
+            opaque_id: if self.invalid_handle {
+                String::new()
+            } else {
+                format!("handle.{}", manifest.model_id)
+            },
+            observed_memory_bytes: if self.reported_memory_bytes == 0 {
+                1_024
+            } else {
+                self.reported_memory_bytes
+            },
         })
     }
 
@@ -229,6 +243,131 @@ fn uncertain_unload_remains_accounted_and_rejects_all_future_use() {
         worker.load_model(100, manifest()),
         Err(Error::ModelAlreadyLoaded),
         "unresolved model cannot be replaced with a fresh handle"
+    );
+}
+
+
+#[test]
+fn loading_two_models_cannot_double_spend_total_worker_memory() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.aggregate-memory".to_string(),
+        3,
+        grant(),
+        Driver {
+            reported_memory_bytes: 3_072,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("first 3 KiB model");
+    let mut second = manifest();
+    second.model_id = "model.2".to_string();
+    assert_eq!(
+        worker.load_model(100, second.clone()),
+        Err(Error::ModelCapacity)
+    );
+    assert_eq!(worker.models.len(), 1);
+    assert_eq!(worker.driver.loaded, 1);
+    assert_eq!(worker.driver.unload_calls, 1);
+    assert!(!worker.load_indeterminate, "successful cleanup permits retry");
+
+    worker.driver.reported_memory_bytes = 1_024;
+    assert!(
+        worker.load_model(100, second).is_ok(),
+        "3 KiB + 1 KiB meets the grant's exact global 4 KiB limit"
+    );
+    assert_eq!(worker.models.len(), 2);
+}
+
+#[test]
+fn invalid_load_handle_is_cleaned_up_once_before_retry() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.invalid-load-handle".to_string(),
+        3,
+        grant(),
+        Driver {
+            invalid_handle: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::InvalidIdentity("model handle"))
+    );
+    assert_eq!(worker.driver.unload_calls, 1);
+    assert_eq!(worker.driver.loaded, 0);
+    assert!(worker.models.is_empty());
+    assert!(!worker.load_indeterminate);
+
+    worker.driver.invalid_handle = false;
+    worker.load_model(100, manifest()).expect("retry after proven cleanup");
+}
+
+#[test]
+fn failed_load_rollback_seals_generation_without_losing_capacity_safety() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.load-rollback-failed".to_string(),
+        3,
+        grant(),
+        Driver {
+            invalid_handle: true,
+            fail_unload: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::ModelLoadIndeterminate)
+    );
+    assert!(worker.load_indeterminate);
+    assert_eq!(worker.driver.loaded, 1);
+    assert_eq!(worker.driver.unload_calls, 1);
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::ModelLoadIndeterminate)
+    );
+    assert_eq!(
+        worker.run(100, "model.1", request()),
+        Err(Error::ModelLoadIndeterminate)
+    );
+    assert_eq!(
+        worker.unload_model(100, "model.1"),
+        Err(Error::ModelLoadIndeterminate)
+    );
+    assert_eq!(worker.driver.unload_calls, 1);
+}
+
+#[test]
+fn load_driver_error_without_terminal_cleanup_proof_seals_generation() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.ambiguous-load".to_string(),
+        3,
+        grant(),
+        Driver {
+            fail_load_after_allocation: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::DriverFailure("injected partial load".to_string()))
+    );
+    assert_eq!(worker.driver.loaded, 1);
+    assert!(worker.load_indeterminate);
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::ModelLoadIndeterminate)
+    );
+    assert_eq!(
+        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        Err(Error::ModelLoadIndeterminate)
     );
 }
 
