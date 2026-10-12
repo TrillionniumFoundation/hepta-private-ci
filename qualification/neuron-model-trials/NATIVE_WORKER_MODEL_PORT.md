@@ -436,3 +436,33 @@ preopened-FD trait, reuses the same handle identity, proves the old ticket
 fails, and refuses a caller-rehashed load ordinal and a revoked grant. The
 strict Worker CI still executes all previous file rehash, full-Cargo and
 durable inference-control checks.
+
+## File-bound model ticket + fsynced single-use Neuron dispatch
+
+The product-oriented **opt-in strict pre-dispatch seam**
+\`claim_neuron_file_bound_durable_dispatch_v1\` joins two actual owner states
+*before* consuming a durable inference.control reservation:
+
+1. Require a private-field \`NeuronFileBoundModelLoadV1\` previously issued by
+   this exact Worker after streaming and rehashing its preopened weight file.
+2. Revalidate that ticket against the Worker's live grant, generation,
+   loaded model handle, identity, weights digest and **load revision**.
+3. Check that the typed Neuron feature request names that exact model and
+   those same weights, then call the existing
+   \`claim_neuron_durable_dispatch_v1\` to fsync a single-use Dispatching intent.
+4. Return the existing \`WorkerNeuronControlPort\` holding an exclusive mutable
+   reference to the same Worker, forbidding an unload/reload before execution.
+
+A stale ticket, reloaded same-ID model, different weights or expired grant
+**never appends** the Dispatching record. The previous lower-level claim API
+remains for compatibility/diagnostics; it does not guarantee a file-bound load.
+Neither entrypoint grants CNS route selection, physical loader attestation,
+CAS immutability, a signed Final-use token or NDU promotion.
+
+Native tests create real local File objects and exercise the specialized
+preopened model Driver, two physical loads of identical bytes, rejection of
+the old ordinal before WAL mutation, wrong-weight and expired-grant rejection,
+the one fsynced accepted dispatch, Worker ModelPort execution and WAL reopen.
+Only synthetic fixture inputs are used, never actual Laya weights or
+production evidence.
+

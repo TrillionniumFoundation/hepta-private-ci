@@ -23,6 +23,9 @@ use codex_hepta_types::Digest32;
 use crate::model_worker::Error as WorkerError;
 use crate::model_worker::InferenceWorker;
 use crate::model_worker::ModelDriver;
+use crate::model_worker::NeuronFileBoundModelLoadV1;
+use crate::model_worker::NeuronPreopenedWeightModelDriver;
+use crate::model_worker::NeuronWeightFileDiagnosticErrorV1;
 use crate::model_worker::NeuronFeatureDriver;
 use crate::model_worker::NeuronFeatureRequest;
 use crate::model_worker::WorkerRequest;
@@ -316,6 +319,64 @@ pub fn claim_neuron_durable_dispatch_v1<'a, D: ModelDriver + NeuronFeatureDriver
             now_ms,
         ),
     ))
+}
+
+
+/// A single-use, fsynced Neuron dispatch guarded by the *actual Worker's*
+/// file-bound model-load ordinal. This is intentionally stricter than the
+/// legacy assigned-Worker seam and does not construct a selection authority.
+#[derive(Debug, Eq, PartialEq)]
+pub enum NeuronFileBoundDispatchErrorV1 {
+    LoadIdentityMismatch,
+    Load(NeuronWeightFileDiagnosticErrorV1),
+    Durable(NeuronDurableAssignmentErrorV1),
+}
+
+impl fmt::Display for NeuronFileBoundDispatchErrorV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+
+impl StdError for NeuronFileBoundDispatchErrorV1 {}
+
+/// Authenticate the in-process *physical* load generation before consuming
+/// one inference.control reservation. A stale/foreign/superseded load ticket
+/// does not append Dispatching. After the fsynced claim succeeds the returned
+/// port retains an exclusive mutable borrow of the same Worker, so a different
+/// model cannot be loaded/unloaded through its owner before this invocation.
+///
+/// This method neither proves the external driver actually decoded the given
+/// bytes nor supplies a CNS-selected route, trusted CAS immutability, signed
+/// Final-use, host incarnation or independently measured inference outcome.
+/// Those are separate mandatory production-owner gates.
+pub fn claim_neuron_file_bound_durable_dispatch_v1<
+    'a,
+    D: NeuronPreopenedWeightModelDriver + NeuronFeatureDriver,
+>(
+    owner: &mut DurableInferenceControl,
+    worker: &'a mut InferenceWorker<D>,
+    request: &NeuronFeatureRequestV1,
+    file_load: &NeuronFileBoundModelLoadV1,
+    now_ms: u64,
+) -> Result<(ControlReceipt, WorkerNeuronControlPort<'a, D>), NeuronFileBoundDispatchErrorV1> {
+    // These identities are taken from the exact live Worker, not a caller-
+    // constructed ModelLoadObservation or a separate equal-hash file.
+    if !file_load.validate_integrity()
+        || file_load.model_load().model_id != request.model_id.as_str()
+        || file_load.model_load().worker_generation != worker.worker_generation()
+        || file_load.loaded_weights_digest() != request.weights_digest
+    {
+        return Err(NeuronFileBoundDispatchErrorV1::LoadIdentityMismatch);
+    }
+    worker
+        .revalidate_file_bound_model_load_v1(now_ms, file_load)
+        .map_err(NeuronFileBoundDispatchErrorV1::Load)?;
+
+    // Current Worker state and its file-backed load are still protected by
+    // the exclusive borrow. Only the original owner can fsync Dispatching.
+    claim_neuron_durable_dispatch_v1(owner, worker, request, now_ms)
+        .map_err(NeuronFileBoundDispatchErrorV1::Durable)
 }
 
 /// Verify that a previously read diagnostic still equals the current *real*

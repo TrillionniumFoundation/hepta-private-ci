@@ -1,5 +1,6 @@
 use super::*;
 
+use std::io::Write;
 use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;
 
@@ -17,6 +18,7 @@ use crate::model_worker::DriverModelHandle;
 use crate::model_worker::DriverNeuronFeatureObservation;
 use crate::model_worker::DriverRunObservation;
 use crate::model_worker::ModelManifest;
+use crate::model_worker::NeuronPreopenedWeightModelDriver;
 use crate::model_worker::NeuronFeatureDriver;
 use crate::model_worker::ResourceGrant;
 
@@ -67,6 +69,24 @@ impl NeuronFeatureDriver for FixtureDriver {
             queue_age_micros: 3,
             latency_micros: 10,
         })
+    }
+}
+
+
+impl NeuronPreopenedWeightModelDriver for FixtureDriver {
+    fn load_from_preopened_weight_file(
+        &mut self,
+        manifest: &ModelManifest,
+        mut weights: std::fs::File,
+    ) -> Result<DriverModelHandle, WorkerError> {
+        // The fixture driver really reads the SAME File moved by the Worker.
+        // It is not a physical Laya decoder or a production-attested loader.
+        let hash = Digest32::of_reader(&mut weights, 2 * 1024 * 1024 * 1024)
+            .map_err(|error| WorkerError::DriverFailure(error.to_string()))?;
+        if hash.to_string() != manifest.weights_digest {
+            return Err(WorkerError::ModelMismatch);
+        }
+        self.load(manifest)
     }
 }
 
@@ -626,4 +646,149 @@ fn model_generation_is_not_worker_process_generation_after_restart() {
         Err(NeuronDurableAssignmentErrorV1::NotAssigned)
     ));
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
+
+
+fn load_test_file_bound_model(
+    worker: &mut InferenceWorker<FixtureDriver>,
+    bytes: &[u8],
+) -> NeuronFileBoundModelLoadV1 {
+    let mut file = tempfile::tempfile().unwrap();
+    file.write_all(bytes).unwrap();
+    worker
+        .load_model_from_preopened_weight_file_v1(
+            100,
+            ModelManifest {
+                model_id: "model.1".to_owned(),
+                model_digest: "2".repeat(64),
+                weights_digest: Digest32::of_bytes(bytes).to_string(),
+                tokenizer_digest: "4".repeat(64),
+                preprocessor_digest: "5".repeat(64),
+                quantization_digest: "6".repeat(64),
+                runtime_digest: "7".repeat(64),
+                device_digest: "8".repeat(64),
+                maximum_tokens: 128,
+            },
+            file,
+        )
+        .unwrap()
+}
+
+#[test]
+fn file_bound_durable_claim_rejects_retired_load_and_executes_one_live_identity() {
+    let directory = tempfile::tempdir().unwrap();
+    let bytes = vec![0x5e_u8; 4_096];
+    let mut request = typed_request();
+    request.weights_digest = Digest32::of_bytes(&bytes);
+    let mut owner = control(&directory, &request);
+    let calls = Arc::new(AtomicUsize::new(0));
+    let mut worker = worker_with_calls(Arc::clone(&calls));
+    // Retire the existing legacy fixture load before taking a REAL preopened
+    // File through the strict digest/Driver path.
+    worker.unload_model(100, "model.1").unwrap();
+    let first = load_test_file_bound_model(&mut worker, &bytes);
+    assert!(first.validate_integrity());
+    assert!(first.load_revision() > 0);
+    assert_eq!(first.loaded_weights_digest(), request.weights_digest);
+
+    // Retiring and reloading the SAME weights with the SAME model and opaque
+    // handle must invalidate the first load ticket before any WAL mutation.
+    worker.unload_model(100, "model.1").unwrap();
+    let second = load_test_file_bound_model(&mut worker, &bytes);
+    assert_ne!(first.load_revision(), second.load_revision());
+    assert!(matches!(
+        claim_neuron_file_bound_durable_dispatch_v1(
+            &mut owner,
+            &mut worker,
+            &request,
+            &first,
+            100
+        ),
+        Err(NeuronFileBoundDispatchErrorV1::Load(
+            NeuronWeightFileDiagnosticErrorV1::StaleLoad
+        ))
+    ));
+    assert_eq!(owner.get("tick.1").unwrap().state, RequestState::Assigned);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+
+    let mut wrong_weights = request.clone();
+    wrong_weights.weights_digest = Digest32::of_bytes(b"wrong-cell-weights");
+    assert!(matches!(
+        claim_neuron_file_bound_durable_dispatch_v1(
+            &mut owner,
+            &mut worker,
+            &wrong_weights,
+            &second,
+            100
+        ),
+        Err(NeuronFileBoundDispatchErrorV1::LoadIdentityMismatch)
+    ));
+    assert_eq!(owner.get("tick.1").unwrap().state, RequestState::Assigned);
+
+    let (claim, mut port) =
+        claim_neuron_file_bound_durable_dispatch_v1(
+            &mut owner,
+            &mut worker,
+            &request,
+            &second,
+            100,
+        )
+        .unwrap();
+    assert_eq!(claim.state, RequestState::Dispatching);
+    assert_eq!(claim.revision, 4);
+    let result = port.execute_feature(&request).unwrap();
+    assert_eq!(
+        result.status,
+        codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded
+    );
+    drop(port);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    // Even the CURRENT file-load ticket cannot authorize a second use of a
+    // durable request whose physical dispatch was already claimed.
+    assert!(matches!(
+        claim_neuron_file_bound_durable_dispatch_v1(
+            &mut owner,
+            &mut worker,
+            &request,
+            &second,
+            100
+        ),
+        Err(NeuronFileBoundDispatchErrorV1::Durable(
+            NeuronDurableAssignmentErrorV1::NotAssigned
+        ))
+    ));
+    drop(owner);
+    let reopened = DurableInferenceControl::open(
+        directory.path().join("inference.journal"),
+        32,
+    )
+    .unwrap();
+    assert_eq!(reopened.get("tick.1").unwrap().state, RequestState::Dispatching);
+}
+
+#[test]
+fn file_bound_claim_checks_worker_resource_expiry_before_fsync() {
+    let directory = tempfile::tempdir().unwrap();
+    let bytes = vec![0x36_u8; 1_024];
+    let mut request = typed_request();
+    request.weights_digest = Digest32::of_bytes(&bytes);
+    let mut owner = control(&directory, &request);
+    let mut worker = worker();
+    worker.unload_model(100, "model.1").unwrap();
+    let ticket = load_test_file_bound_model(&mut worker, &bytes);
+    // At the worker's expiration the source is no longer current. The old
+    // reservation is NOT spent; a new independent owner may decide its fate.
+    assert!(matches!(
+        claim_neuron_file_bound_durable_dispatch_v1(
+            &mut owner,
+            &mut worker,
+            &request,
+            &ticket,
+            10_000,
+        ),
+        Err(NeuronFileBoundDispatchErrorV1::Load(
+            NeuronWeightFileDiagnosticErrorV1::Worker(WorkerError::GrantExpired)
+        ))
+    ));
+    assert_eq!(owner.get("tick.1").unwrap().state, RequestState::Assigned);
 }
