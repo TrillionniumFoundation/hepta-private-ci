@@ -1175,3 +1175,35 @@ was obtained. The read-only
 and Head receipt keys, prevents cancelling gains/regressions in
 aggregates, verifies strict same-query Reader/request provenance,
 and explicitly returns `scale_out_permitted=false`.
+
+## Actual held-out weak-source ceiling before any Head scale-out (12 Oct 2026)
+
+On the two successful strict-protocol 576-policy runs, the **16 unique
+test+transfer** questions (not 48 independent repeated checkpoint
+observations) have these published *document-level weak-source* counts:
+
+| Original phase | Unique questions | Answerable with native source label | Labelled source absent from fixed candidates | Labelled source present but frozen top-1 missed | Frozen top-1 picked labelled source | Native unanswerable under forced top-1 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Test | 8 | 6 | 2 | 1 | 3 | 2 |
+| Transfer | 8 | 7 | 0 | 1 | 6 | 1 |
+| **Total** | **16** | **13** | **2** | **2** | **9** | **3** |
+
+With the same frozen retrieval candidates and a policy that is *forced
+top-1 without null*, even an ideal source ranker could rescue at most
+**2 additional native-weak-source matches out of the 16 registered
+questions** (12.5 percentage points), moving the weakly supported
+selection count from 9 to at most 11. The other **2 missing native
+sources require retrieval changes**; **3 annotated unanswerable
+questions require a calibrated no-answer action** rather than more
+positive-source Head capacity. None of these bounds guarantees Reader
+answer correctness or independently reviewed evidence entailment.
+
+The complete current experiment observed **0 test/transfer ranking
+rescues**, and just 1 additional retention selection change with no
+original answer or support-score gain. These bounds are a
+post-policy diagnostic on already-exposed public evaluation tasks, not
+a preregistered new intervention, fresh independent family sample,
+significance test, or promotion criterion. The paired read-only
+`stem_native_nonpromotion.py` gate independently rejects any
+manifest/census corruption and records separate retrieval/margin/
+abstention bottlenecks without dropping the full planned denominator.

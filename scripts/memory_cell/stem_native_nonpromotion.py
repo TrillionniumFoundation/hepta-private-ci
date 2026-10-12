@@ -252,12 +252,62 @@ def audit_exact_paired_choices(plan, raw, scored, report, train_fit,
     if len(fits) != 30:
         raise ValueError("incomplete Head fit matrix")
 
+    # These are ceilings on weak annotated DOCUMENT membership, not actual
+    # achievable Reader/citation accuracy. A top1-only Head cannot repair a
+    # missing retrieved source or abstain on native-unanswerable questions.
+    phase_bottlenecks = {}
+    for phase in PHASES:
+        src = source_ceiling["phases"][phase]
+        if (
+            type(src["attempted"]) is not int or src["attempted"] != 8
+            or any(type(src[field]) is not int or src[field] < 0 for field in (
+                "native_source_resolved", "native_unanswerable",
+                "native_unresolved_support", "support_available_within_pool",
+                "support_missing_from_pool", "frozen_correct_source_choices",
+                "frozen_missed_available_support",
+            ))
+            or src["native_source_resolved"] + src["native_unanswerable"]
+               + src["native_unresolved_support"] != 8
+            or src["support_available_within_pool"] + src["support_missing_from_pool"]
+               > src["native_source_resolved"]
+            or src["frozen_correct_source_choices"] + src["frozen_missed_available_support"]
+               > src["support_available_within_pool"]
+        ):
+            raise ValueError("unbound or fabricated native retrieval opportunity ceiling")
+        phase_bottlenecks[phase] = dict(
+            planned_original_questions=8,
+            published_answerable_source_labels=src["native_source_resolved"],
+            published_native_unanswerable=src["native_unanswerable"],
+            published_source_label_unresolved=src["native_unresolved_support"],
+            weak_source_missing_from_fixed_candidate_pool=src["support_missing_from_pool"],
+            weak_source_present_in_fixed_candidate_pool=src["support_available_within_pool"],
+            frozen_picked_weak_native_support=src["frozen_correct_source_choices"],
+            maximum_additional_source_supported_choices_for_same_pool_top1_head=(
+                src["support_available_within_pool"] - src["frozen_correct_source_choices"]
+            ),
+            native_abstentions_impossible_under_forced_top1=src["native_unanswerable"],
+            independent_entailment_verified=False,
+            observed_or_preregistered_intervention_gain=False,
+        )
+    heldout = [phase_bottlenecks[p] for p in ("test", "transfer")]
+    rerank_bound = sum(x["maximum_additional_source_supported_choices_for_same_pool_top1_head"]
+                       for x in heldout)
     return dict(
         schema="hepta.stem-strict-exact-paired-nonpromotion.v1",
         full_policy_attempts=len(original),
         exact_original_scored_receipt_matches=len(official),
         full_policy_execution_failures=0,
         raw_emitted_citation_markers=n_citations,
+        source_ceiling_by_phase=phase_bottlenecks,
+        heldout_test_transfer_unique_questions=16,
+        heldout_potential_additional_weak_source_top1_choices_rerank_only=rerank_bound,
+        heldout_native_sources_absent_from_fixed_pool=sum(
+            x["weak_source_missing_from_fixed_candidate_pool"] for x in heldout
+        ),
+        heldout_native_unanswerable_forced_top1=sum(
+            x["native_abstentions_impossible_under_forced_top1"] for x in heldout
+        ),
+        these_are_upper_bounds_not_observed_task_gains=True,
         head_training_checkpoints=len(fits),
         head_checkpoints_with_top1_train_change=sum(
             x["changed_train_top1_rows"] > 0 for x in fits.values()

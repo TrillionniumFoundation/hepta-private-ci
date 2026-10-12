@@ -106,7 +106,14 @@ def full_fixture():
         for cell in ("general", "temporal")
     ])
     ceiling = dict(phases={
-        phase: dict(attempted=8, support_missing_from_pool=2)
+        phase: dict(
+            attempted=8, native_source_resolved=6, native_unanswerable=2,
+            native_unresolved_support=0,
+            support_available_within_pool=4,
+            support_missing_from_pool=2,
+            frozen_correct_source_choices=3,
+            frozen_missed_available_support=1,
+        )
         for phase in PHASES
     })
     effective = dict(
@@ -221,6 +228,33 @@ class PairedNativeProofTests(unittest.TestCase):
         args[6]["repeated_question_evaluations_per_arm"] = 16
         with self.assertRaisesRegex(ValueError, "training/heldout"):
             self.check(args)
+
+    def test_frozen_retrieval_and_forced_abstention_are_distinct_limits(self):
+        result = self.check(full_fixture())
+        self.assertEqual(
+            result["heldout_potential_additional_weak_source_top1_choices_rerank_only"],
+            2,
+        )
+        self.assertEqual(result["heldout_native_sources_absent_from_fixed_pool"], 4)
+        self.assertEqual(result["heldout_native_unanswerable_forced_top1"], 4)
+        self.assertTrue(result["these_are_upper_bounds_not_observed_task_gains"])
+        self.assertFalse(result["scale_out_permitted"])
+
+    def test_source_ceiling_cannot_fabricate_retrieval_or_head_opportunities(self):
+        for mode in ("label-count", "double-count", "over-claimed-rerank"):
+            args = full_fixture()
+            phase = args[5]["phases"]["test"]
+            if mode == "label-count":
+                phase["native_unanswerable"] = 1
+            elif mode == "double-count":
+                phase["support_missing_from_pool"] = 3
+            else:
+                phase["frozen_correct_source_choices"] = 4
+                phase["frozen_missed_available_support"] = 1
+            with self.subTest(mode=mode), self.assertRaisesRegex(
+                ValueError, "opportunity ceiling"
+            ):
+                self.check(args)
 
     def test_saved_head_hash_or_peer_mutation_is_not_laundered(self):
         for mutation in ("raw-head", "fit-head", "peer-mutation"):
