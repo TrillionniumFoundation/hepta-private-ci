@@ -24,16 +24,46 @@ import time
 
 
 def git(*args: str) -> str:
-    return subprocess.check_output(["git", *args], text=True).strip()
+    # Match the implementation-map owner's local metadata policy. Do not let
+    # ambient repository/index selectors, replacements or fsmonitor hooks
+    # attest a different checkout. The executed command's environment is not
+    # rewritten here; this metadata reader is not a command sandbox.
+    env = {
+        key: value for key, value in os.environ.items() if not key.startswith("GIT_")
+    }
+    env.update(
+        GIT_CONFIG_NOSYSTEM="1",
+        GIT_CONFIG_GLOBAL=os.devnull,
+        GIT_NO_REPLACE_OBJECTS="1",
+        GIT_NO_LAZY_FETCH="1",
+        GIT_TERMINAL_PROMPT="0",
+        GIT_OPTIONAL_LOCKS="0",
+    )
+    return subprocess.check_output(
+        ["git", "--literal-pathspecs", "-c", "core.fsmonitor=false", *args],
+        text=True,
+        env=env,
+    ).strip()
 
 
 def identity() -> dict:
+    # status/diff can hide changed tracked bytes behind either index flag.
+    # Reuse the existing full-checkout policy, but preserve the receipt schema:
+    # before-command flags reject; after-command flags fail without discarding
+    # the original command exit. Never clear the caller's flags or refresh its
+    # index. These snapshots do not attest concurrent or transient mutations.
+    hidden = any(
+        row and (row[0] == "S" or row[0].islower())
+        for row in git("ls-files", "-v", "-z").split("\0")
+    )
     metadata = git("cat-file", "-p", "HEAD").split("\n\n", 1)[0].splitlines()
     return {
         "commit": git("rev-parse", "HEAD"),
         "tree": git("rev-parse", "HEAD^{tree}"),
         "parents": [line[7:] for line in metadata if line.startswith("parent ")],
-        "dirty": bool(git("status", "--porcelain", "--untracked-files=normal")),
+        "dirty": bool(
+            hidden or git("status", "--porcelain", "--untracked-files=normal")
+        ),
     }
 
 
