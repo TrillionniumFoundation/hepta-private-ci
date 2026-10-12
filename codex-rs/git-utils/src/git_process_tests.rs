@@ -56,7 +56,7 @@ Start-Sleep -Seconds 60
 "#,
         )
         .expect("write actual PowerShell child script");
-        let child_script_arg = child_script.display().to_string().replace('\\'', "''");
+        let child_script_arg = child_script.display().to_string().replace('\'', "''");
         let spawn_child = format!(
             "$child = Start-Process -FilePath powershell.exe -ArgumentList @('-NoProfile', '-NonInteractive', '-File', '\"{child_script_arg}\"') -PassThru -NoNewWindow; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id)"
         );
