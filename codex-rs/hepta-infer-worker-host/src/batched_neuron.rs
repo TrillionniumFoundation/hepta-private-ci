@@ -53,6 +53,7 @@ fn terminal_request_fingerprint(id: &StableId) -> Digest32 {
 pub enum BatchWorkerErrorV1 {
     InvalidRequest,
     DeadlineExpired,
+    MetricsUnavailable,
     InvalidBinding,
     Duplicate,
     NoAdmission,
@@ -426,6 +427,92 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             self.retired.insert(terminal_request_fingerprint(id));
         }
         removed
+    }
+}
+
+/// Production-facing facade. It never exposes the ungated in-memory worker.
+///
+/// An admitted effect is never retried merely because telemetry failed after
+/// dispatch. Instead the completed outcomes are returned with an explicit
+/// durable-metrics status, and all subsequent admissions fail closed.
+pub struct ProductionNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureDriver> {
+    inner: AuthenticatedNeuronMicrobatchWorkerV1<D>,
+}
+
+#[derive(Debug)]
+pub struct ProductionBatchPollV1 {
+    pub poll: BatchWorkerPollV1,
+    /// True only after the configured Evidence sink acknowledged a flush.
+    pub metrics_durable: bool,
+}
+
+impl<D: ModelDriver + NeuronFeatureDriver> ProductionNeuronMicrobatchWorkerV1<D> {
+    /// The host must provide its independently initialized durable Evidence
+    /// sink. The unconfigured qualification constructor is not exposed here.
+    pub fn new(
+        worker: InferenceWorker<D>,
+        authority: FinalUseAuthority,
+        limits: MicrobatchLimitsV1,
+        metrics: Arc<dyn PhaseMetricSinkV1>,
+    ) -> Result<Self, BatchWorkerErrorV1> {
+        if !metrics.healthy() {
+            return Err(BatchWorkerErrorV1::MetricsUnavailable);
+        }
+        let inner = AuthenticatedNeuronMicrobatchWorkerV1::new(worker, authority, limits)?
+            .with_metric_sink(metrics);
+        Ok(Self { inner })
+    }
+
+    pub fn pending(&self) -> usize {
+        self.inner.pending()
+    }
+
+    pub fn production_metrics_ready(&self) -> bool {
+        self.inner.production_metrics_ready()
+    }
+
+    pub fn enqueue(
+        &mut self,
+        now_ms: u64,
+        model_id: String,
+        request: NeuronFeatureRequest,
+        key: MicrobatchKeyV1,
+        signed: SignedFinalUseGrant,
+    ) -> Result<(), BatchWorkerErrorV1> {
+        if !self.production_metrics_ready() {
+            return Err(BatchWorkerErrorV1::MetricsUnavailable);
+        }
+        self.inner.enqueue(now_ms, model_id, request, key, signed)
+    }
+
+    /// The flush happens after obtaining physical driver outcomes. A failed
+    /// flush is reported without discarding those outcomes or retrying an
+    /// indeterminate external effect.
+    pub fn poll_and_execute(
+        &mut self,
+        now_ms: u64,
+    ) -> Result<ProductionBatchPollV1, BatchWorkerErrorV1> {
+        if !self.production_metrics_ready() {
+            return Err(BatchWorkerErrorV1::MetricsUnavailable);
+        }
+        let poll = self.inner.poll_and_execute(now_ms)?;
+        let metrics_durable = self.inner.flush_production_metrics();
+        Ok(ProductionBatchPollV1 {
+            poll,
+            metrics_durable,
+        })
+    }
+
+    /// Emergency generation cutover remains available when telemetry fails.
+    pub fn fence_scope(
+        &mut self,
+        scope: &StableId,
+        generation: codex_hepta_types::Generation,
+        fence: u64,
+        authority_epoch: u64,
+    ) -> Vec<StableId> {
+        self.inner
+            .fence_scope(scope, generation, fence, authority_epoch)
     }
 }
 
