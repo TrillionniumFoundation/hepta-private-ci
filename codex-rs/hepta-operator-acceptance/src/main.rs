@@ -145,7 +145,6 @@ fn run_target_host_evidence(arguments: &[OsString]) -> Result<(), String> {
         .ok_or_else(|| USAGE.to_string())?;
     match command {
         "verify" | "ingest" if arguments.len() == 6 => {
-            let evidence = read_evidence_input(&arguments[3])?;
             let externally_pinned_policy_sha256 = arguments[5]
                 .to_str()
                 .ok_or_else(|| "target-host trust-policy pin must be UTF-8".to_string())?;
@@ -154,6 +153,7 @@ fn run_target_host_evidence(arguments: &[OsString]) -> Result<(), String> {
                 externally_pinned_policy_sha256,
             )
             .map_err(|error| error.to_string())?;
+            let evidence = read_evidence_input(&arguments[3])?;
             let receipt = CellSplitTargetHostEvidenceStoreV1::verify_bytes(&evidence, &policy)
                 .map_err(|error| error.to_string())?;
             println!(
@@ -163,7 +163,6 @@ fn run_target_host_evidence(arguments: &[OsString]) -> Result<(), String> {
             Ok(())
         }
         "store" if arguments.len() == 7 => {
-            let evidence = read_evidence_input(&arguments[3])?;
             let externally_pinned_policy_sha256 = arguments[5]
                 .to_str()
                 .ok_or_else(|| "target-host trust-policy pin must be UTF-8".to_string())?;
@@ -172,6 +171,7 @@ fn run_target_host_evidence(arguments: &[OsString]) -> Result<(), String> {
                 externally_pinned_policy_sha256,
             )
             .map_err(|error| error.to_string())?;
+            let evidence = read_evidence_input(&arguments[3])?;
             let envelope = serde_json::from_slice(&evidence)
                 .map_err(|error| format!("target-host evidence JSON decode failed: {error}"))?;
             let receipt = CellSplitTargetHostEvidenceStoreV1::persist(
