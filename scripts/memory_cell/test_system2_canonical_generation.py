@@ -98,5 +98,53 @@ class GenerationTests(unittest.TestCase):
             self.assertEqual(summary['failed'],8)
 
 
+    def test_fractional_negative_states_and_complete_reachability(self):
+        # Exact Fraction checks also cover values produced inside a search tree.
+        values = (Fraction(-2), Fraction(-1), Fraction(0), Fraction(1, 2),
+                  Fraction(1), Fraction(3, 2), Fraction(2))
+        examined = reference_generated = canonical_generated = 0
+        for size in (2, 3, 4):
+            for numbers in combinations_with_replacement(values, size):
+                terms = tuple((v, ('n' + str(i),)) for i, v in enumerate(numbers))
+                old = list(successors(terms))
+                stats = counts()
+                new = list(canonical_successors(terms, stats))
+                self.assertEqual({state_key(c) for c in old},
+                                 {state_key(c) for c in new})
+                self.assertEqual(stats['emitted'], len(new))
+                for child in new:
+                    leaves = sorted(token for _, proof in child for token in proof
+                                    if isinstance(token, str) and token.startswith('n'))
+                    self.assertEqual(leaves, ['n' + str(i) for i in range(size)])
+                examined += 1
+                reference_generated += len(old)
+                canonical_generated += len(new)
+        self.assertEqual(examined, 322)
+        self.assertLess(canonical_generated, reference_generated * 0.7)
+
+        # A full legal completion is preserved by induction on state size;
+        # check selected mixed-sign/noninteger trajectories directly as well.
+        def reaches(numbers, generator):
+            memo = {}
+            def walk(state):
+                if state in memo:
+                    return memo[state]
+                if len(state) == 1:
+                    return state[0] == 24
+                terms = tuple((v, ('n' + str(i),)) for i, v in enumerate(state))
+                children = (successors(terms) if generator == 'reference'
+                            else canonical_successors(terms, counts()))
+                result = any(walk(state_key(child)) for child in children)
+                memo[state] = result
+                return result
+            return walk(tuple(sorted(Fraction(v) for v in numbers)))
+        examples = ((1, 3, 4, 6), (1, 2, 3, 4), (2, 2, 2, 2), (0, 1, 2, 3),
+                    (Fraction(1, 2), Fraction(3, 2), 2, 3), (-2, -1, 0, 2))
+        for numbers in examples:
+            self.assertEqual(reaches(numbers, 'reference'),
+                             reaches(numbers, 'canonical_pair'))
+
+
+
 if __name__=='__main__':
     unittest.main()
