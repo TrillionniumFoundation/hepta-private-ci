@@ -97,6 +97,23 @@ class ScopedResearchWorkflowTests(unittest.TestCase):
         self.assertIn('test -z "$(find "$checkpoint" -type l -print -quit)"', reader)
         self.assertIn("SHA256SUMS", reader)
 
+    def test_reader_targets_observed_bf16_candidate_with_pinned_python(self):
+        reader = self.text.split("\n  reader:\n", 1)[1].split(
+            "\n  independent-replay:\n", 1
+        )[0]
+        self.assertIn("runs-on: ubuntu-22.04", reader)
+        self.assertIn(
+            "actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405",
+            reader,
+        )
+        self.assertIn('python-version: "3.12"', reader)
+        self.assertLess(
+            reader.index("actions/setup-python@"),
+            reader.index("Verify BF16 CPU hardware before model downloads"),
+        )
+        self.assertIn("strong_rag_host_gate.py", reader)
+        self.assertIn("host-qualification.json", reader)
+
     def test_bf16_eligibility_checked_on_actual_reader_runner(self):
         reader = self.text.split("\n  reader:\n", 1)[1].split(
             "\n  independent-replay:\n", 1

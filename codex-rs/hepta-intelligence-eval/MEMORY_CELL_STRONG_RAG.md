@@ -515,3 +515,37 @@ authorized BF16-capable/GPU runner if one becomes available rather than
 claiming that repeated failing queues establish new memory evidence.
 No prospective independence, semantic citation precision, parametric gain
 or production acceptance is established by this machine guard.
+
+## Empirically eligible hosted CPU candidate and exact-runner routing (2026-10-12)
+
+Separate *model-free* source-pinned GitHub Actions
+[BF16 host scout run 38224160872](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38224160872)
+probed actual standard GitHub-hosted Linux CPU VMs, without Qwen weights.
+The `ubuntu-22.04` receipt [artifact 11734949120](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38224160872/artifacts/11734949120),
+ZIP SHA-256 `2070d6c6deceb64a91bd23f4e5bf1feff7337f6d5ea9f5a5dc51325c80eb85c6`,
+identified Intel Xeon Platinum 8573C and **both `avx512_bf16` and
+`amx_bf16` flags**. The unchanged `strong_rag_host_gate.assess` reported
+`host_eligible=true` on that specific VM. The `ubuntu-26.04` receipt
+[11735029058](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38224160872/artifacts/11735029058),
+ZIP SHA-256 `4a6a71cbaa3da44454e2afe42165c16fafd4715850c3e6a325376a5befe6276c`,
+reported `host_eligible=false`; both were generated from source commit
+`d49b62aa9d811ea3c53a79a245d6f859e55e1d6c`. These receipts were
+checked for the exact source and per-image eligibility. Ubuntu 24.04's
+probe was still queued at the point of this routing decision.
+
+**Execution change:** The original full Qwen `reader` job now asks for
+`ubuntu-22.04` rather than unconstrained `ubuntu-latest`. It installs pinned
+`actions/setup-python` v6.2.0 requesting **Python 3.12** before any model
+or dependency staging, preserving the original Python/wheel environment.
+The immutable `github.sha`, Qwen revision and BF16/eager weights, retrieval
+and prompt bytes, two PyTorch threads, 180-second per-answer fail-closed
+viability threshold, 40+72 generation census and separate independent replay
+all remain unchanged. No self-hosted ROG/Pocket4/desktop hardware is used.
+
+An OS label is **not** a promise of identical CPU silicon on the next
+allocation; the unchanged BF16 host gate is executed again *inside the actual
+reader VM*. Eligibility also does not prove the response meets the original
+180-second limit. If that VM is insufficient, archive its rejection rather
+than switching model precision, bypassing a gate or fabricating answers.
+No model accuracy, independent future-family performance or production
+qualification follows from a model-free CPU scout.

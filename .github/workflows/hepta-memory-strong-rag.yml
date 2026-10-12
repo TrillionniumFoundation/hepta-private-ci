@@ -87,7 +87,9 @@ jobs:
           if-no-files-found: warn
   reader:
     needs: experiment-format
-    runs-on: ubuntu-latest
+    # 2026-10-12: actual host scouting observed BF16 on Ubuntu 22.04 only.
+    # The runtime CPU ISA and 180s feasibility gates still run on THIS VM.
+    runs-on: ubuntu-22.04
     # 40 calibration + 72 frozen evaluation generations on CPU, with a SHA-sealed checkpoint.
     timeout-minutes: 360
     env:
@@ -104,6 +106,10 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Retain original pinned Python 3.12 environment on Ubuntu 22.04
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: "3.12"
       - name: Verify BF16 CPU hardware before model downloads
         run: |
           set -euo pipefail
