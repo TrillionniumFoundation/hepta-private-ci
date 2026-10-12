@@ -1116,7 +1116,9 @@ mod authority_epoch_tests {
 mod original_checkpoint_integrity_tests {
     use super::*;
 
-    fn fixture() -> (crate::CellSplitExecutionPlanV1, CellSplitSupervisorCommitV1) {
+    type OriginalPair = (crate::CellSplitExecutionPlanV1, CellSplitSupervisorCommitV1);
+
+    fn fixture() -> Result<OriginalPair, CellSplitObserverJoinErrorV1> {
         let plan = crate::CellSplitExecutionPlanV1 {
             split_id: "split.observer".into(),
             scope_digest: "11".repeat(32),
@@ -1154,9 +1156,9 @@ mod original_checkpoint_integrity_tests {
             "receiptDigest": "00".repeat(32),
         });
         let mut checkpoint: OriginalSupervisorCheckpointV1 =
-            serde_json::from_value(json).expect("typed canonical handoff");
-        checkpoint.receipt_digest = checkpoint.content_digest_v1().expect("checkpoint hash");
-        let bytes = serde_json::to_vec(&checkpoint).expect("native order");
+            serde_json::from_value(json)?;
+        checkpoint.receipt_digest = checkpoint.content_digest_v1()?;
+        let bytes = serde_json::to_vec(&checkpoint)?;
         let journal = CellSplitSupervisorCommitV1 {
             idempotency_key: "aa".repeat(32),
             domain_id: "domain.observer".into(),
@@ -1168,12 +1170,12 @@ mod original_checkpoint_integrity_tests {
             original_checkpoint_bytes: bytes,
             original_checkpoint_signature_bytes: vec![0; 64],
         };
-        (plan, journal)
+        Ok((plan, journal))
     }
 
     #[test]
     fn original_supervisor_checkpoint_requires_actual_journal_schema_and_digest() {
-        let (plan, journal) = fixture();
+        let (plan, journal) = fixture().expect("valid original journal fixture");
         assert!(
             verify_original_supervisor_checkpoint_v1(
                 &journal.original_checkpoint_bytes,
