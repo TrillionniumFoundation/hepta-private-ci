@@ -206,14 +206,36 @@ impl CellSplitTargetHostEvidenceTrustPolicyV1 {
         })
     }
 
-    /// Decode a trust policy from a regular file using the same race and
-    /// symlink checks as the durable evidence store.
+    /// Legacy file-only policy loading cannot establish an independent trust
+    /// root. A secure file mode or a self-reported digest does not prove that
+    /// host/Observer verification keys were approved by deployment authority.
+    /// Never silently downgrade production evidence admission to this path.
     pub fn from_json_file(
-        path: impl AsRef<Path>,
+        _path: impl AsRef<Path>,
     ) -> Result<Self, CellSplitTargetHostEvidenceErrorV1> {
+        Err(invalid(
+            "target-host trust policy requires an external SHA-256 pin",
+        ))
+    }
+
+    /// Read a private policy with an independently supplied exact-byte pin.
+    /// The pin must come from the deployment authority, NOT the policy file,
+    /// evidence envelope or a digest calculated from either at the CLI.
+    pub fn from_json_file_pinned(
+        path: impl AsRef<Path>,
+        externally_pinned_sha256: &str,
+    ) -> Result<Self, CellSplitTargetHostEvidenceErrorV1> {
+        if !digest_shape(externally_pinned_sha256) {
+            return Err(invalid("invalid external target-host trust policy SHA-256 pin"));
+        }
         let bytes =
             crate::durable::secure_read(path.as_ref(), crate::durable::MAX_SMALL_FILE_BYTES)
                 .map_err(|error| durable_error(error.to_string()))?;
+        if sha256(&bytes) != externally_pinned_sha256 {
+            return Err(invalid(
+                "target-host trust policy differs from externally pinned bytes",
+            ));
+        }
         Self::from_json_bytes(&bytes)
     }
 
