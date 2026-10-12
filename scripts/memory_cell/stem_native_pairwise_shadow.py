@@ -92,7 +92,6 @@ def native_pairwise_shadow(
     }
     fits, decisions = [], []
     for stage in STAGES:
-        prefix = set(train[:stage])
         for arm, kind in SHADOWS:
             for cell in CELLS:
                 head = heads[(arm, cell)]
