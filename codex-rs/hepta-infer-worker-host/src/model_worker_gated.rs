@@ -800,8 +800,8 @@ mod tests {
         selected.quantization_digest = Digest32::of_bytes(b"quantization").to_string();
 
         let mut driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("driver");
-        let h_first = driver.register_head(first).expect("head a");
-        let h_second = driver.register_head(second).expect("head b");
+        let h_first = driver.register_head(first.clone()).expect("head a");
+        let h_second = driver.register_head(second.clone()).expect("head b");
         let mut cache = SharedFeatureCacheV2::new(2, 512).expect("cache");
         let identity = SharedFeatureIdentityV2 {
             principal_id: id("principal.a"),
@@ -849,6 +849,50 @@ mod tests {
         let a = mk("cell.a", "request.a", h_first.clone());
         let b = mk("cell.b", "request.b", h_second.clone());
         assert!(std::sync::Arc::ptr_eq(&a.snapshot, &b.snapshot));
+
+        // Both reservations are individually valid but the two Cells'
+        // minimum output Vec allocations would exceed this grant. The Worker
+        // must reject the *whole* cohort before dispatching any CPU work.
+        let mut bounded_driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("bounded");
+        bounded_driver
+            .register_head(first.clone())
+            .expect("bounded head a");
+        bounded_driver
+            .register_head(second.clone())
+            .expect("bounded head b");
+        let resident = u64::try_from(bounded_driver.parameter_bytes()).expect("resident");
+        let bounded_grant = ResourceGrant {
+            grant_id: "grant.bounded".into(),
+            authority_epoch: 2,
+            generation: 3,
+            expires_at_ms: 2000,
+            revoked: false,
+            maximum_models: 1,
+            maximum_active_requests: 4,
+            maximum_memory_bytes: resident + 16,
+            semantic_digest: "1".repeat(64),
+        };
+        let mut bounded_worker = InferenceWorker::new(
+            1,
+            "worker.bounded".into(),
+            3,
+            bounded_grant,
+            bounded_driver,
+        )
+        .expect("bounded worker");
+        bounded_worker
+            .load_model(1, selected.clone())
+            .expect("bounded model load");
+        assert_eq!(
+            bounded_worker.run_shared_neuron_features_batch_v2(
+                100,
+                "model.gated",
+                vec![a.clone(), b.clone()],
+            ),
+            Err(Error::ModelCapacity)
+        );
+        assert_eq!(bounded_worker.driver.batch_calls(), 0);
+
         let grant = ResourceGrant {
             grant_id: "grant.ref".into(),
             authority_epoch: 2,
