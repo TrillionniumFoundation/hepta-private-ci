@@ -337,6 +337,28 @@ fn owner(
         .expect("durable owner")
 }
 
+#[cfg(unix)]
+#[test]
+fn missing_original_migration_writer_lock_never_creates_second_writer() {
+    let root = private_root();
+    let (migration, anchor) = prepared();
+    let authority = ObservedAuthority::new(anchor);
+    let _original = owner(root.path(), migration.clone(), authority.clone());
+    let lock = root.path().join(crate::durable::SIDECAR_LOCK_FILE);
+    fs::remove_file(&lock).expect("unlink original writer lock");
+    assert!(matches!(
+        CellSplitChildStateCasOwnerV1::open(
+            root.path(),
+            execution_plan(),
+            migration,
+            authority,
+        ),
+        Err(CellSplitChildStateCasErrorV1::Durable(_))
+    ));
+    assert!(!lock.exists(), "must not mint a replacement writer lock");
+    assert!(root.path().join(FROZEN).exists());
+}
+
 #[test]
 fn missing_frozen_migration_manifest_never_reinitializes_an_existing_owner() {
     for committed in [false, true] {
