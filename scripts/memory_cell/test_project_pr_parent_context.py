@@ -56,7 +56,14 @@ class SourceFixtures:
                     continue
                 if file["status"] == "added" and index % 2 == 0:
                     continue
-                if file["status"] == "modified" and index % 3 == 0:
+                # A file marked added in the full PR can already exist
+                # unchanged in the HEAD's first parent. Create that distinct
+                # synthetic category rather than assuming PR status is a
+                # first-parent byte-diff classification.
+                if (
+                    (file["status"] == "modified" and index % 3 == 0)
+                    or (file["status"] == "added" and index % 2 == 1)
+                ):
                     prior_oid = oid
                 else:
                     raw = ("prior bytes " + file["path"]).encode()
@@ -162,6 +169,17 @@ class FirstParentContextTests(unittest.TestCase):
         }
         self.assertIn("added-at-first-parent-step", outcomes)
         self.assertIn("added-already-present-in-first-parent", outcomes)
+        exact = [
+            row for row in report["files"]
+            if row["comparison_status"] == "added-already-present-in-first-parent"
+        ]
+        self.assertTrue(exact)
+        self.assertTrue(all(
+            row["previous_git_blob_sha1"] == row["original_head_sha1"]
+            and row["previous_sha256"] == row["original_head_sha256"]
+            and row["before_blob_path"] is None
+            for row in exact
+        ))
 
     def test_merge_and_rename_are_never_fake_first_parent_patches(self):
         report, _ = self.fixture.inspect()
