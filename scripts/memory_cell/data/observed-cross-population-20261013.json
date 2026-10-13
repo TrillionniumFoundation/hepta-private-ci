@@ -1,0 +1,108 @@
+{
+  "controlled_authored_event": {
+    "arms": {
+      "empty": {
+        "correct_with_full_public_citation_path": 0,
+        "input_tokens": 1630,
+        "strict_correct": 0
+      },
+      "entity_time": {
+        "correct_with_full_public_citation_path": 4,
+        "input_tokens": 5752,
+        "strict_correct": 8
+      },
+      "hybrid_k4": {
+        "correct_with_full_public_citation_path": 1,
+        "input_tokens": 10806,
+        "strict_correct": 3
+      },
+      "hybrid_k4_reversed": {
+        "correct_with_full_public_citation_path": 1,
+        "input_tokens": 10806,
+        "strict_correct": 3
+      },
+      "hybrid_k6": {
+        "correct_with_full_public_citation_path": 0,
+        "input_tokens": 15463,
+        "strict_correct": 2
+      },
+      "organized": {
+        "correct_with_full_public_citation_path": 4,
+        "input_tokens": 5179,
+        "strict_correct": 8
+      },
+      "program_support": {
+        "correct_with_full_public_citation_path": 4,
+        "input_tokens": 5179,
+        "strict_correct": 8
+      },
+      "selected_k": {
+        "correct_with_full_public_citation_path": 3,
+        "input_tokens": 3961,
+        "strict_correct": 5
+      },
+      "single_hop": {
+        "correct_with_full_public_citation_path": 4,
+        "input_tokens": 4575,
+        "strict_correct": 4
+      }
+    },
+    "authenticated_future_source_families": 0,
+    "calibration_calls": 40,
+    "calibration_stable_under_leave_one_out": false,
+    "completed_independent_execution_replay": true,
+    "evaluation_calls": 72,
+    "independent_semantic_review": false,
+    "model_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+    "original_model_calls": 112,
+    "selected_k": 1,
+    "source_commit": "6304b451268c73f3d1a605985226b102df841bbf"
+  },
+  "observed_completed_model_calls": 144,
+  "pooled_accuracy": null,
+  "published_locomo": {
+    "arms": {
+      "lexical_k4": {
+        "mean_diagnostic_token_f1": 0.172082580982,
+        "metric": "diagnostic normalized token-F1; NOT strict exact match",
+        "prompt_tokens": 6254,
+        "successful_model_calls": 16
+      },
+      "lexical_k8": {
+        "mean_diagnostic_token_f1": 0.11148190095,
+        "metric": "diagnostic normalized token-F1; NOT strict exact match",
+        "prompt_tokens": 10473,
+        "successful_model_calls": 16
+      }
+    },
+    "independent_human_sufficiency_reviews": 0,
+    "model_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+    "original_model_calls": 32,
+    "published_benchmark_not_future_observation": true,
+    "published_development_questions": 16,
+    "source_commit": "96b5ec37b82f87d445740403e07e3705e9850955",
+    "source_family_proxies": 2
+  },
+  "qualification": {
+    "calibrated_k_stable": false,
+    "frozen_reader_evidence_transfer_proven": false,
+    "human_certified_sufficient_contexts": 0,
+    "independent_future_source_families": 0,
+    "parametric_memory_training_qualified": false,
+    "production_accepted": false,
+    "semantic_citation_precision": null
+  },
+  "reader_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "reason_no_pooled_accuracy": "incompatible strict-ID and diagnostic token-F1 metrics; authored tasks and only two published family proxies",
+  "registered_next_experiment": "Same frozen reader + publisher-support-only evidence on the LoCoMo 16, then blinded independent sufficient-span decisions and new disjoint source families; preserve top-4 and top-8 lexical baselines, refusals, citations, and all costs",
+  "schema": "hepta.memory-cell.cross-population-evidence.v1",
+  "source_zip_sha256": {
+    "event_model": "7a99db30fb5b1202fcd43073d22589b84315046dd34044277cc46351f1cbece8",
+    "event_replay": "2445895a7d51e3173837471aa462cebede29eb3ec89653af3bd17e73b6114071",
+    "locomo_model": "7160ede72114b04135e544fb687a804dc0c4852834cf1695440a75b85214bf48",
+    "locomo_public": "51e18514c68f31220f4dcd072914f6e015aa9733b6c5b4a4d4e3b14dac25ec37",
+    "locomo_retrieval": "3fb1c3272314d31b42ece1c74aa0250e2ecb06c6060cb011071d4654fef6f097",
+    "locomo_score": "5c36103c506367de2ba42ea242bc81b53ad9734f1417132ce2945d0473ed391e",
+    "locomo_targets": "d09823324003ab431301e60fbbb280e216ca03b686e178d4f36fb6d492981978"
+  }
+}

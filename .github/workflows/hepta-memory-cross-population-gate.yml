@@ -1,0 +1,65 @@
+name: MemoryCell cross-population frozen-reader admission receipt
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - scripts/memory_cell/reader_cross_population_gate.py
+      - scripts/memory_cell/test_reader_cross_population_gate.py
+      - .github/workflows/hepta-memory-cross-population-gate.yml
+      - codex-rs/hepta-intelligence-eval/MEMORY_CELL_CROSS_POPULATION_GATE_20261013.md
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-cross-population-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  verify-source-bound-research:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Validate no-model source and tamper tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_reader_cross_population_gate.py' -v
+          python3 -m py_compile scripts/memory_cell/reader_cross_population_gate.py scripts/memory_cell/test_reader_cross_population_gate.py
+      - name: Reacquire all exact-source original reader and scoring artifacts
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/cross-population-original /tmp/cross-population-result
+          cd /tmp/cross-population-original
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11743043427/zip > event_model.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11748040166/zip > event_replay.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > locomo_public.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > locomo_retrieval.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728856834/zip > locomo_targets.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11763718022/zip > locomo_model.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11766482516/zip > locomo_score.zip
+      - name: Independently reconcile actual 144 Qwen calls without pooling metrics
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/reader_cross_population_gate.py \
+            /tmp/cross-population-original/event_model.zip \
+            /tmp/cross-population-original/event_replay.zip \
+            /tmp/cross-population-original/locomo_public.zip \
+            /tmp/cross-population-original/locomo_retrieval.zip \
+            /tmp/cross-population-original/locomo_targets.zip \
+            /tmp/cross-population-original/locomo_model.zip \
+            /tmp/cross-population-original/locomo_score.zip \
+            --output /tmp/cross-population-result/reconciled.json
+          git rev-parse HEAD > /tmp/cross-population-result/auditor-source-commit.txt
+          (cd /tmp/cross-population-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-cross-population-model-free-receipt
+          path: /tmp/cross-population-result
+          if-no-files-found: warn
