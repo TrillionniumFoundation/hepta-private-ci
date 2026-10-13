@@ -103,3 +103,99 @@ fn ndu_final_use_binding_fences_snapshot_read_and_owner() {
         super::neuron_ndu_final_use_binding_v1(&owner, &tick, &wrong_scope, read_receipt).is_err()
     );
 }
+
+
+#[derive(Debug, Default)]
+struct RecordingPhaseSink {
+    events: std::sync::Mutex<Vec<codex_hepta_types::PhaseMetricEventV1>>,
+    fail: std::sync::atomic::AtomicBool,
+}
+
+impl codex_hepta_types::PhaseMetricSinkV1 for RecordingPhaseSink {
+    fn record(
+        &self,
+        event: codex_hepta_types::PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        if self.fail.load(std::sync::atomic::Ordering::Acquire) {
+            return Err(codex_hepta_types::PhaseMetricSinkErrorV1::Backpressure);
+        }
+        self.events.lock().expect("recording phase sink").push(event);
+        Ok(())
+    }
+
+    fn healthy(&self) -> bool {
+        !self.fail.load(std::sync::atomic::Ordering::Acquire)
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        if self.healthy() {
+            Ok(())
+        } else {
+            Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+        }
+    }
+}
+
+#[test]
+fn observed_neuron_feature_is_real_and_metric_loss_is_sticky() {
+    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::Ordering;
+    use std::time::Duration;
+
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::PhaseMetricEventV1;
+    use codex_hepta_types::PhaseMetricKindV1;
+
+    let sink = RecordingPhaseSink::default();
+    let failure_count = AtomicU64::new(0);
+    let scope = Digest32::of_bytes(b"scope");
+    let operation = Digest32::of_bytes(b"signed-neuron-tick");
+    super::observe_phase_v1(
+        Some(&sink),
+        &failure_count,
+        scope,
+        operation,
+        PhaseMetricKindV1::NeuronFeature,
+        Duration::from_micros(42),
+        true,
+    );
+    assert_eq!(
+        sink.events.lock().expect("retained metrics").as_slice(),
+        &[PhaseMetricEventV1 {
+            scope_digest: scope,
+            operation_digest: operation,
+            phase: PhaseMetricKindV1::NeuronFeature,
+            latency_micros: 42,
+            succeeded: true,
+        }],
+    );
+    assert_eq!(failure_count.load(Ordering::Acquire), 0);
+    sink.fail.store(true, Ordering::Release);
+    super::observe_phase_v1(
+        Some(&sink),
+        &failure_count,
+        scope,
+        operation,
+        PhaseMetricKindV1::NeuronFeature,
+        Duration::from_micros(43),
+        false,
+    );
+    assert_eq!(failure_count.load(Ordering::Acquire), 1);
+    sink.fail.store(false, Ordering::Release);
+    assert!(codex_hepta_types::PhaseMetricSinkV1::healthy(&sink));
+    assert_eq!(
+        failure_count.load(Ordering::Acquire),
+        1,
+        "recovery of telemetry health may not erase an already lost sample"
+    );
+    super::observe_phase_v1(
+        None,
+        &failure_count,
+        scope,
+        operation,
+        PhaseMetricKindV1::NeuronFeature,
+        Duration::from_micros(10),
+        false,
+    );
+    assert_eq!(failure_count.load(Ordering::Acquire), 1);
+}

@@ -390,6 +390,33 @@ advancement and exact-HEAD CI. A locally signed fixture, local fsync or
 advisory lock is NOT a substitute for external anti-rollback custody.
 Neither service nor client grants split authorization.
 
+### Independent custody signing gate for the Monotonic RPC server
+
+The read-only `CellSplitMonotonicRpcServiceV1` now requires a distinct,
+externally pinned custody verification key as well as its own RPC signer.
+Before it signs the current high-water response, it obtains three fresh,
+random-challenge-bound custody signatures from the separately retained
+`CellSplitMonotonicAuthoritativeRegistryV1::read_independent_custody`
+backend method. Each signed custody frontier must equal the actual
+committed Domain, authority epoch, revision, checkpoint digest,
+original store-record digest and durable source sequence. No default
+allow-all implementation exists. A missing, differently signed or newer
+custody record fails closed, including after restart when the server's
+process-memory high-water map is empty.
+
+Source-only disk-backed regressions exercise a valid two-key signed Unix
+exchange, an independently advanced custody floor after local Registry
+rollback, a substituted custody signer and a missing custody record.
+The fixture intentionally keeps both files under a disposable test root
+and is **not** a production custody implementation.
+
+Deployment still needs real independent and rollback-resistant storage,
+an out-of-process custody signer and original Registry ownership with
+fresh monotonic cross-read. This source gate cannot supply those guarantees
+or issue promotion/physical Cell Split authority. Rustfmt, Cargo, cross-
+platform Bazel/Clippy and cargo-deny on the final combined SHA remain
+mandatory.
+
 ### Monotonic frontier checkpoint-lineage fence (source gate)
 
 The read-only monotonic signer now refuses any revision/authority-epoch
@@ -417,6 +444,15 @@ This is **not durable anti-rollback**: client restarts erase the local
 ratchet. The separately administered monotonic backend, independent
 signatures, live minimum readback and protected external custody remain
 mandatory. No physical Cell Split or activation is authorized.
+
+The read-only Monotonic RPC service also denies an otherwise signed
+frontier if its independent registry/custody checks exceed the configured
+request wall-clock budget. Socket frame timeouts do not cover those external
+calls. Source failure injection introduces an intentionally slow custody
+read and requires refusal *before* any positive RPC frame is sent. This
+limit does not interrupt indefinitely blocked backend I/O; production
+workers must enforce separate deadlines/cancellation and supervisor health
+fences.
 
 ### Retrospective rollback evidence is not a live successor route
 

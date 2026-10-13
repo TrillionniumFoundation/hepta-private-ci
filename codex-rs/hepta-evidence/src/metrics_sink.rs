@@ -161,6 +161,9 @@ impl PhaseMetricSinkV1 for DurablePhaseMetricSinkV1 {
             PhaseMetricKindV1::Signature => MetricPhaseV1::Signature,
             PhaseMetricKindV1::Cns => MetricPhaseV1::Cns,
             PhaseMetricKindV1::NeuronFeature => MetricPhaseV1::NeuronFeature,
+            PhaseMetricKindV1::Wal => MetricPhaseV1::Wal,
+            PhaseMetricKindV1::NduRead => MetricPhaseV1::NduRead,
+            PhaseMetricKindV1::FinalUse => MetricPhaseV1::FinalUse,
         };
         let sample = MetricSampleV1 {
             scope_digest: event.scope_digest,

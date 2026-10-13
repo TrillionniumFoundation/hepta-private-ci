@@ -16,6 +16,7 @@ use std::os::unix::net::UnixStream;
 use std::path::Component;
 use std::path::PathBuf;
 use std::time::Duration;
+use std::time::Instant;
 
 use ed25519_dalek::Signature;
 use ed25519_dalek::Signer as _;
@@ -135,6 +136,10 @@ impl CellSplitSupervisorMonotonicUnixPortV1 {
         {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);
         }
+        // A single RPC budget covers both frame directions. An apparently
+        // responsive server must not reset the deadline after receiving a
+        // request or reserve another full interval for its signed response.
+        let started_at = Instant::now();
         let mut connection = UnixStream::connect(&self.socket_path)?;
         let request = CellSplitMonotonicRpcRequestV1 {
             schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.to_owned(),
@@ -142,9 +147,15 @@ impl CellSplitSupervisorMonotonicUnixPortV1 {
             journal_domain_id: journal_domain_id.to_owned(),
             challenge_nonce: challenge_nonce.to_owned(),
         };
-        send_frame_with_deadline(&mut connection, &request, self.timeout)?;
-        let response: CellSplitMonotonicRpcResponseV1 =
-            receive_frame_with_deadline(&mut connection, self.timeout)?;
+        send_frame_with_deadline(
+            &mut connection,
+            &request,
+            remaining_rpc_budget(started_at, self.timeout)?,
+        )?;
+        let response: CellSplitMonotonicRpcResponseV1 = receive_frame_with_deadline(
+            &mut connection,
+            remaining_rpc_budget(started_at, self.timeout)?,
+        )?;
         if response.schema != CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1 || response.method != READ_METHOD {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);
         }
@@ -186,9 +197,11 @@ impl CellSplitSupervisorMonotonicUnixPortV1 {
             self.retained_frontiers.get(journal_domain_id)
         {
             let ahead = proof.journal_authority_epoch > *epoch
-                || (proof.journal_authority_epoch == *epoch && proof.journal_revision > *revision);
+                || (proof.journal_authority_epoch == *epoch
+                    && proof.journal_revision > *revision);
             let behind = proof.journal_authority_epoch < *epoch
-                || (proof.journal_authority_epoch == *epoch && proof.journal_revision < *revision);
+                || (proof.journal_authority_epoch == *epoch
+                    && proof.journal_revision < *revision);
             if behind
                 || (ahead
                     && (proof.minimum_checkpoint_digest == *checkpoint
@@ -227,6 +240,18 @@ impl CellSplitSupervisorMonotonicFrontierPortV1 for CellSplitSupervisorMonotonic
     }
 }
 
+/// One wall-clock budget for both RPC frame directions and all independent
+/// custody reads. This is a transport fence, not a backend cancellation token.
+fn remaining_rpc_budget(
+    started_at: Instant,
+    total: Duration,
+) -> Result<Duration, CellSplitMonotonicRpcErrorV1> {
+    total
+        .checked_sub(started_at.elapsed())
+        .filter(|remaining| !remaining.is_zero())
+        .ok_or(CellSplitMonotonicRpcErrorV1::Invalid)
+}
+
 fn canonical_digest(value: &str) -> bool {
     value.len() == 64
         && value
@@ -250,6 +275,34 @@ pub struct CellSplitMonotonicDurableFrontierV1 {
     pub durable_source_sequence: u64,
 }
 
+/// The separately retained monotonic floor is independently signed under a
+/// new nonce, not copied from the candidate registry or signed with the RPC
+/// owner's key. The distinct custody key must be pinned by deployment.
+pub const CELL_SPLIT_MONOTONIC_CUSTODY_SCHEMA_V1: &str =
+    "hepta.learning.cell-split.monotonic-custody.v1";
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CellSplitMonotonicCustodyProofV1 {
+    pub schema: String,
+    pub current: CellSplitMonotonicDurableFrontierV1,
+    pub challenge_nonce: String,
+    pub signature_bytes: Vec<u8>,
+}
+
+pub fn cell_split_monotonic_custody_signing_payload_v1(
+    proof: &CellSplitMonotonicCustodyProofV1,
+) -> Result<Vec<u8>, CellSplitMonotonicRpcErrorV1> {
+    let mut unsigned = proof.clone();
+    unsigned.signature_bytes.clear();
+    let mut bytes = b"hepta.learning.cell-split.monotonic-custody.v1\0".to_vec();
+    bytes.extend_from_slice(
+        &crate::durable::canonical_json(&unsigned)
+            .map_err(|_| CellSplitMonotonicRpcErrorV1::Invalid)?,
+    );
+    Ok(bytes)
+}
+
 /// The external owner MUST read its own authoritative monotonic domain
 /// registry and independently verify the committed record on every query.
 /// This interface has no allow-all fallback and no mutation method. A local
@@ -266,6 +319,15 @@ pub trait CellSplitMonotonicAuthoritativeRegistryV1 {
         &mut self,
         committed: &CellSplitMonotonicDurableFrontierV1,
     ) -> Result<bool, Self::Error>;
+
+    /// Query distinct, independently signed rollback-resistant custody.
+    /// The source must not simply re-sign its own candidate registry.
+    /// No default implementation exists for this production gate.
+    fn read_independent_custody(
+        &mut self,
+        journal_domain_id: &str,
+        challenge_nonce: &str,
+    ) -> Result<CellSplitMonotonicCustodyProofV1, Self::Error>;
 }
 
 /// One read-only signing server. It cannot let a client supply a revision,
@@ -275,6 +337,7 @@ pub trait CellSplitMonotonicAuthoritativeRegistryV1 {
 pub struct CellSplitMonotonicRpcServiceV1<R: CellSplitMonotonicAuthoritativeRegistryV1> {
     source: R,
     signer: ed25519_dalek::SigningKey,
+    custody_verifier: VerifyingKey,
     timeout: Duration,
     // Process-lifetime monotonic ratchet is defense-in-depth only. Real
     // whole-process anti-rollback requires the external registry's own
@@ -286,9 +349,12 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
     pub fn new(
         source: R,
         signer: ed25519_dalek::SigningKey,
+        custody_verifier: VerifyingKey,
         timeout: Duration,
     ) -> Result<Self, CellSplitMonotonicRpcErrorV1> {
         if signer.verifying_key().is_weak()
+            || custody_verifier.is_weak()
+            || signer.verifying_key() == custody_verifier
             || timeout < Duration::from_millis(1)
             || timeout > Duration::from_secs(30)
         {
@@ -297,6 +363,7 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
         Ok(Self {
             source,
             signer,
+            custody_verifier,
             timeout,
             retained_frontiers: BTreeMap::new(),
         })
@@ -311,6 +378,7 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
         &mut self,
         stream: &mut UnixStream,
     ) -> Result<(), CellSplitMonotonicRpcErrorV1> {
+        let started_at = Instant::now();
         let request: CellSplitMonotonicRpcRequestV1 =
             receive_frame_with_deadline(stream, self.timeout)?;
         if request.schema != CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1
@@ -355,6 +423,12 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
         // even if an uncooperative registry process restores older otherwise
         // valid bytes after the previous signed request.
         self.verify_retained_frontier(&first)?;
+        // Read/write socket deadlines do not cover time spent querying the
+        // separate custody and durable registry. Do not acknowledge a signed
+        // high-water if that independent verification outlived the request
+        // budget. This denies stale positives; hung backend calls still
+        // require deployment-managed cancellation and worker limits.
+        let remaining = remaining_rpc_budget(started_at, self.timeout)?;
         self.retained_frontiers
             .insert(first.journal_domain_id.clone(), first);
         send_frame_with_deadline(
@@ -365,7 +439,7 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
                 proof: Some(proof),
                 error: None,
             },
-            self.timeout,
+            remaining,
         )?;
         Ok(())
     }
@@ -391,8 +465,41 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
         {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);
         }
+        // Three independently challenged custody readbacks per successful
+        // response prohibit self-confirming old registry files after an RPC
+        // process restart, provided the custody key/store really are separate.
+        self.require_independent_custody(&current)?;
         self.verify_retained_frontier(&current)?;
         Ok(current)
+    }
+
+    fn require_independent_custody(
+        &mut self,
+        current: &CellSplitMonotonicDurableFrontierV1,
+    ) -> Result<(), CellSplitMonotonicRpcErrorV1> {
+        let nonce = rand::random::<[u8; 32]>()
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>();
+        let proof = self
+            .source
+            .read_independent_custody(&current.journal_domain_id, &nonce)
+            .map_err(|error| CellSplitMonotonicRpcErrorV1::Denied(error.to_string()))?;
+        if proof.schema != CELL_SPLIT_MONOTONIC_CUSTODY_SCHEMA_V1
+            || proof.current != *current
+            || proof.challenge_nonce != nonce
+            || proof.signature_bytes.len() != 64
+        {
+            return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+        }
+        let signature = Signature::from_slice(&proof.signature_bytes)
+            .map_err(|_| CellSplitMonotonicRpcErrorV1::Invalid)?;
+        self.custody_verifier
+            .verify_strict(
+                &cell_split_monotonic_custody_signing_payload_v1(&proof)?,
+                &signature,
+            )
+            .map_err(|_| CellSplitMonotonicRpcErrorV1::Untrusted)
     }
 
     fn verify_retained_frontier(
@@ -403,14 +510,17 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
             Some(previous) => {
                 let moved_forward = observed.journal_authority_epoch
                     > previous.journal_authority_epoch
-                    || (observed.journal_authority_epoch == previous.journal_authority_epoch
+                    || (observed.journal_authority_epoch
+                        == previous.journal_authority_epoch
                         && observed.journal_revision > previous.journal_revision);
                 if observed.journal_authority_epoch < previous.journal_authority_epoch
-                    || (observed.journal_authority_epoch == previous.journal_authority_epoch
+                    || (observed.journal_authority_epoch
+                        == previous.journal_authority_epoch
                         && observed.journal_revision < previous.journal_revision)
                     || observed.durable_source_sequence < previous.durable_source_sequence
                     || (moved_forward
-                        && (observed.durable_source_sequence <= previous.durable_source_sequence
+                        && (observed.durable_source_sequence
+                            <= previous.durable_source_sequence
                             || observed.minimum_checkpoint_digest
                                 == previous.minimum_checkpoint_digest
                             || observed.original_store_record_digest

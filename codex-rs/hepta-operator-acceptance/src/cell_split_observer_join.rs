@@ -1117,6 +1117,7 @@ mod original_checkpoint_integrity_tests {
     use super::*;
 
     type OriginalPair = (crate::CellSplitExecutionPlanV1, CellSplitSupervisorCommitV1);
+    type TestResult = Result<(), CellSplitObserverJoinErrorV1>;
 
     fn fixture() -> Result<OriginalPair, CellSplitObserverJoinErrorV1> {
         let plan = crate::CellSplitExecutionPlanV1 {
@@ -1155,7 +1156,8 @@ mod original_checkpoint_integrity_tests {
             "previousReceiptDigest": "65".repeat(32),
             "receiptDigest": "00".repeat(32),
         });
-        let mut checkpoint: OriginalSupervisorCheckpointV1 = serde_json::from_value(json)?;
+        let mut checkpoint: OriginalSupervisorCheckpointV1 =
+            serde_json::from_value(json)?;
         checkpoint.receipt_digest = checkpoint.content_digest_v1()?;
         let bytes = serde_json::to_vec(&checkpoint)?;
         let journal = CellSplitSupervisorCommitV1 {
@@ -1173,8 +1175,8 @@ mod original_checkpoint_integrity_tests {
     }
 
     #[test]
-    fn original_supervisor_checkpoint_requires_actual_journal_schema_and_digest() {
-        let (plan, journal) = fixture().expect("valid original journal fixture");
+    fn original_supervisor_checkpoint_requires_actual_journal_schema_and_digest() -> TestResult {
+        let (plan, journal) = fixture()?;
         assert!(
             verify_original_supervisor_checkpoint_v1(
                 &journal.original_checkpoint_bytes,
@@ -1185,8 +1187,7 @@ mod original_checkpoint_integrity_tests {
         );
 
         let original: OriginalSupervisorCheckpointV1 =
-            serde_json::from_slice(&journal.original_checkpoint_bytes)
-                .expect("original typed checkpoint");
+            serde_json::from_slice(&journal.original_checkpoint_bytes)?;
         // Stable vector computed independently from the Supervisor's domain,
         // big-endian identity lengths, phase tag, and Q24-free digest fields.
         assert_eq!(
@@ -1233,49 +1234,48 @@ mod original_checkpoint_integrity_tests {
                 serde_json::json!(1),
             ),
         ] {
-            let mut altered = serde_json::to_value(&original).expect("json value");
+            let mut altered = serde_json::to_value(&original)?;
             altered[key] = value;
             let mut changed: OriginalSupervisorCheckpointV1 =
-                serde_json::from_value(altered).expect("well-formed field type");
+                serde_json::from_value(altered)?;
             // Except for the explicit hash-tamper case, repair the receipt
             // digest so the test exercises semantic validation independently
             // of the self-hash check.
             if name != "forged prior digest" {
-                changed.receipt_digest = changed
-                    .content_digest_v1()
-                    .expect("rehash well-formed tampering");
+                changed.receipt_digest = changed.content_digest_v1()?;
             }
-            let bytes = serde_json::to_vec(&changed).expect("typed encoding");
+            let bytes = serde_json::to_vec(&changed)?;
             assert!(
                 verify_original_supervisor_checkpoint_v1(&bytes, &journal, &plan).is_err(),
                 "{name}: a signed but altered checkpoint cannot qualify",
             );
         }
 
-        let sorted_json = canonical_json(&original).expect("sorted JSON object");
+        let sorted_json = canonical_json(&original)?;
         assert_ne!(sorted_json, journal.original_checkpoint_bytes);
         assert!(
             verify_original_supervisor_checkpoint_v1(&sorted_json, &journal, &plan,).is_err(),
             "native WriterHandoff serialisation cannot be replaced"
         );
 
-        let mut dropped = serde_json::to_value(&original).expect("value");
+        let mut dropped = serde_json::to_value(&original)?;
         dropped
             .as_object_mut()
-            .expect("checkpoint object")
+            .ok_or(CellSplitObserverJoinErrorV1::Invalid("checkpoint object"))?
             .remove("sourceWriter");
-        let bytes = serde_json::to_vec(&dropped).expect("incomplete JSON");
+        let bytes = serde_json::to_vec(&dropped)?;
         assert!(
             verify_original_supervisor_checkpoint_v1(&bytes, &journal, &plan,).is_err(),
             "all durable writer-handoff fields are mandatory"
         );
 
-        let mut extra = serde_json::to_value(&original).expect("value");
+        let mut extra = serde_json::to_value(&original)?;
         extra["pretendAuthorized"] = serde_json::json!(true);
-        let bytes = serde_json::to_vec(&extra).expect("extra JSON");
+        let bytes = serde_json::to_vec(&extra)?;
         assert!(
             verify_original_supervisor_checkpoint_v1(&bytes, &journal, &plan,).is_err(),
             "unrecognized checkpoint claims must be rejected"
         );
+        Ok(())
     }
 }

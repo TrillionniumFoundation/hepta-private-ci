@@ -15,6 +15,10 @@ fn signer() -> SigningKey {
     SigningKey::from_bytes(&[81; 32])
 }
 
+fn custody_signer() -> SigningKey {
+    SigningKey::from_bytes(&[93; 32])
+}
+
 fn make_proof(
     domain: &str,
     nonce: &str,
@@ -285,6 +289,7 @@ struct DiskAuthoritativeRegistry {
     file: PathBuf,
     reads: usize,
     revoke_on_read: Option<usize>,
+    custody_delay: Option<Duration>,
 }
 
 impl DiskAuthoritativeRegistry {
@@ -293,6 +298,7 @@ impl DiskAuthoritativeRegistry {
             file,
             reads: 0,
             revoke_on_read: None,
+            custody_delay: None,
         }
     }
 }
@@ -326,6 +332,41 @@ impl CellSplitMonotonicAuthoritativeRegistryV1 for DiskAuthoritativeRegistry {
         let bytes = std::fs::read(&self.file)?;
         Ok(crate::durable::canonical_json(committed).map_err(std::io::Error::other)? == bytes)
     }
+
+    fn read_independent_custody(
+        &mut self,
+        domain: &str,
+        nonce: &str,
+    ) -> Result<CellSplitMonotonicCustodyProofV1, Self::Error> {
+        // Test-only file fixture, NOT a production external trust root.
+        if let Some(delay) = self.custody_delay {
+            thread::sleep(delay);
+        }
+        let file = self.file.with_file_name("independently-retained-floor.json");
+        let bytes = std::fs::read(file)?;
+        let floor: CellSplitMonotonicDurableFrontierV1 =
+            serde_json::from_slice(&bytes).map_err(std::io::Error::other)?;
+        if floor.journal_domain_id != domain
+            || crate::durable::canonical_json(&floor)
+                .map_err(std::io::Error::other)? != bytes
+        {
+            return Err(std::io::Error::other("independent floor mismatch"));
+        }
+        let mut proof = CellSplitMonotonicCustodyProofV1 {
+            schema: CELL_SPLIT_MONOTONIC_CUSTODY_SCHEMA_V1.into(),
+            current: floor,
+            challenge_nonce: nonce.to_owned(),
+            signature_bytes: Vec::new(),
+        };
+        proof.signature_bytes = custody_signer()
+            .sign(
+                &cell_split_monotonic_custody_signing_payload_v1(&proof)
+                    .map_err(std::io::Error::other)?,
+            )
+            .to_bytes()
+            .to_vec();
+        Ok(proof)
+    }
 }
 
 fn write_test_registry(root: &Path) -> PathBuf {
@@ -343,6 +384,11 @@ fn write_test_registry(root: &Path) -> PathBuf {
         &crate::durable::canonical_json(&record).expect("canonical highwater"),
     )
     .expect("fsynced external fixture registry");
+    crate::durable::write_private_new(
+        &root.join("independently-retained-floor.json"),
+        &crate::durable::canonical_json(&record).expect("fixture custody floor"),
+    )
+    .expect("fsynced custody fixture");
     path
 }
 
@@ -355,7 +401,12 @@ fn independent_server_reads_real_durable_domain_and_signs_client_challenge() {
         let (mut peer, _) = listener.accept().expect("real Unix socket");
         let owner = DiskAuthoritativeRegistry::open(file);
         let mut service =
-            CellSplitMonotonicRpcServiceV1::new(owner, signer(), Duration::from_secs(3))
+            CellSplitMonotonicRpcServiceV1::new(
+                owner,
+                signer(),
+                custody_signer().verifying_key(),
+                Duration::from_secs(3),
+            )
                 .expect("separately pinned signer");
         service
             .serve_connection(&mut peer)
@@ -385,7 +436,12 @@ fn independent_server_fences_revoked_domain_before_signed_reply() {
     // authoritative record and may not sign the old current snapshot.
     backend.revoke_on_read = Some(2);
     let mut service =
-        CellSplitMonotonicRpcServiceV1::new(backend, signer(), Duration::from_secs(2))
+        CellSplitMonotonicRpcServiceV1::new(
+            backend,
+            signer(),
+            custody_signer().verifying_key(),
+            Duration::from_secs(2),
+        )
             .expect("independent owner");
     let (mut client, mut server) = std::os::unix::net::UnixStream::pair().expect("socket pair");
     send_frame(
@@ -410,10 +466,15 @@ fn independent_server_rejects_revoke_during_final_signed_read() {
     // The first two checks see committed state; the third check runs after
     // signing the reply but before it is sent and must suppress that reply.
     backend.revoke_on_read = Some(3);
-    let mut service =
-        CellSplitMonotonicRpcServiceV1::new(backend, signer(), Duration::from_secs(2))
-            .expect("independent owner");
-    let (mut client, mut server) = std::os::unix::net::UnixStream::pair().expect("socket pair");
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        backend,
+        signer(),
+        custody_signer().verifying_key(),
+        Duration::from_secs(2),
+    )
+    .expect("independent owner");
+    let (mut client, mut server) =
+        std::os::unix::net::UnixStream::pair().expect("socket pair");
     send_frame(
         &mut client,
         &CellSplitMonotonicRpcRequestV1 {
@@ -435,6 +496,7 @@ fn independent_server_rejects_caller_supplied_highwater_and_missing_domain() {
     let mut service = CellSplitMonotonicRpcServiceV1::new(
         DiskAuthoritativeRegistry::open(file.clone()),
         signer(),
+        custody_signer().verifying_key(),
         Duration::from_secs(2),
     )
     .expect("trusted signer");
@@ -466,6 +528,7 @@ fn independent_server_rejects_caller_supplied_highwater_and_missing_domain() {
     assert!(file.exists());
 }
 
+
 /// Single-process ratchet regression: even a freshly signed response from
 /// an otherwise valid-looking restored record must not move this signer
 /// backward. The external monotonic store remains mandatory across restarts.
@@ -489,7 +552,10 @@ fn read_through_signed_service(
     receive_frame(&mut client).map_err(Into::into)
 }
 
-fn replace_test_frontier(path: &Path, frontier: &CellSplitMonotonicDurableFrontierV1) {
+fn replace_test_frontier(
+    path: &Path,
+    frontier: &CellSplitMonotonicDurableFrontierV1,
+) {
     std::fs::write(
         path,
         crate::durable::canonical_json(frontier).expect("canonical registry"),
@@ -507,6 +573,7 @@ fn same_signer_denies_rolled_back_or_equivocated_frontier() {
     let mut service = CellSplitMonotonicRpcServiceV1::new(
         DiskAuthoritativeRegistry::open(file.clone()),
         signer(),
+        custody_signer().verifying_key(),
         Duration::from_secs(2),
     )
     .expect("pinned signer");
@@ -556,10 +623,12 @@ fn same_signer_allows_epoch_rollover_only_with_new_durable_source_sequence() {
     let root = tempfile::tempdir().expect("private registry");
     let file = write_test_registry(root.path());
     let original: CellSplitMonotonicDurableFrontierV1 =
-        serde_json::from_slice(&std::fs::read(&file).expect("original")).expect("typed original");
+        serde_json::from_slice(&std::fs::read(&file).expect("original"))
+            .expect("typed original");
     let mut service = CellSplitMonotonicRpcServiceV1::new(
         DiskAuthoritativeRegistry::open(file.clone()),
         signer(),
+        custody_signer().verifying_key(),
         Duration::from_secs(2),
     )
     .expect("pinned signer");
@@ -584,6 +653,7 @@ fn same_signer_allows_epoch_rollover_only_with_new_durable_source_sequence() {
     assert!(read_through_signed_service(&mut service, &"dd".repeat(32)).is_err());
 }
 
+
 #[test]
 fn client_rejects_old_still_signed_highwater_after_remote_restart() {
     let root = tempfile::tempdir().expect("Unix RPC fixture");
@@ -605,10 +675,8 @@ fn client_rejects_old_still_signed_highwater_after_remote_restart() {
                 proof.journal_revision = 9;
                 proof.signature_bytes.clear();
                 proof.signature_bytes = signer()
-                    .sign(
-                        &cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
-                            .expect("original signing grammar"),
-                    )
+                    .sign(&cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
+                        .expect("original signing grammar"))
                     .to_bytes()
                     .to_vec();
             }
@@ -630,8 +698,7 @@ fn client_rejects_old_still_signed_highwater_after_remote_restart() {
         Duration::from_secs(2),
     )
     .expect("pinned verifier");
-    let first = client
-        .read_domain_frontier(DOMAIN, &"11".repeat(32))
+    let first = client.read_domain_frontier(DOMAIN, &"11".repeat(32))
         .expect("signed initial high water");
     assert_eq!(first.journal_revision, 10);
     assert!(matches!(
@@ -661,10 +728,8 @@ fn client_accepts_advanced_signed_highwater_with_new_checkpoint_identity() {
                 proof.original_store_record_digest = "dd".repeat(32);
                 proof.signature_bytes.clear();
                 proof.signature_bytes = signer()
-                    .sign(
-                        &cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
-                            .expect("fresh higher frontier"),
-                    )
+                    .sign(&cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
+                        .expect("fresh higher frontier"))
                     .to_bytes()
                     .to_vec();
             }
@@ -687,18 +752,192 @@ fn client_accepts_advanced_signed_highwater_with_new_checkpoint_identity() {
     )
     .expect("pinned verifier");
     assert_eq!(
-        client
-            .read_domain_frontier(DOMAIN, &"11".repeat(32))
-            .expect("first observation")
-            .journal_revision,
+        client.read_domain_frontier(DOMAIN, &"11".repeat(32))
+            .expect("first observation").journal_revision,
         10,
     );
     assert_eq!(
-        client
-            .read_domain_frontier(DOMAIN, &"22".repeat(32))
-            .expect("new independent committed frontier")
-            .journal_revision,
+        client.read_domain_frontier(DOMAIN, &"22".repeat(32))
+            .expect("new independent committed frontier").journal_revision,
         11,
     );
     service.join().expect("service");
+}
+
+
+
+#[test]
+fn independently_retained_newer_floor_denies_rolled_back_registry_after_server_restart() {
+    let root = tempfile::tempdir().expect("private test root");
+    let file = write_test_registry(root.path());
+    // The Registry process restarts with its signed old revision 10 file,
+    // while an independent custody owner has already retained revision 11.
+    // Process-local ratchets are empty, so the separate signature must
+    // reject the stale record before the RPC server signs any response.
+    let floor_path = root.path().join("independently-retained-floor.json");
+    let mut newer: CellSplitMonotonicDurableFrontierV1 =
+        serde_json::from_slice(&std::fs::read(&floor_path).expect("original floor"))
+            .expect("floor record");
+    newer.journal_revision += 1;
+    newer.durable_source_sequence += 1;
+    newer.minimum_checkpoint_digest = "cc".repeat(32);
+    newer.original_store_record_digest = "dd".repeat(32);
+    std::fs::write(
+        &floor_path,
+        crate::durable::canonical_json(&newer).expect("new custody floor"),
+    )
+    .expect("independent custody advanced");
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        DiskAuthoritativeRegistry::open(file.clone()),
+        signer(),
+        custody_signer().verifying_key(),
+        Duration::from_secs(2),
+    )
+    .expect("new signing process with no retained memory");
+    let (mut client, mut server) =
+        std::os::unix::net::UnixStream::pair().expect("socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitMonotonicRpcRequestV1 {
+            schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.into(),
+            method: READ_METHOD.into(),
+            journal_domain_id: DOMAIN.into(),
+            challenge_nonce: "aa".repeat(32),
+        },
+    )
+    .expect("read-only frontier request");
+    assert!(matches!(
+        service.serve_connection(&mut server),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+    assert!(file.exists(), "the old signed Registry record is still present");
+}
+
+#[test]
+fn independently_pinned_custody_key_must_not_be_selected_by_rpc_signer() {
+    let root = tempfile::tempdir().expect("private test root");
+    let file = write_test_registry(root.path());
+    let untrusted = SigningKey::from_bytes(&[95_u8; 32]).verifying_key();
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        DiskAuthoritativeRegistry::open(file),
+        signer(),
+        untrusted,
+        Duration::from_secs(2),
+    )
+    .expect("distinct but incorrect custody trust root");
+    let (mut client, mut server) =
+        std::os::unix::net::UnixStream::pair().expect("socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitMonotonicRpcRequestV1 {
+            schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.into(),
+            method: READ_METHOD.into(),
+            journal_domain_id: DOMAIN.into(),
+            challenge_nonce: "bb".repeat(32),
+        },
+    )
+    .expect("read-only request");
+    assert!(matches!(
+        service.serve_connection(&mut server),
+        Err(CellSplitMonotonicRpcErrorV1::Untrusted)
+    ));
+    assert!(
+        CellSplitMonotonicRpcServiceV1::new(
+            DiskAuthoritativeRegistry::open(root.path().join("external-domain-highwater.json")),
+            signer(),
+            signer().verifying_key(),
+            Duration::from_secs(2),
+        )
+        .is_err(),
+        "RPC signer must never self-certify independent custody"
+    );
+}
+
+#[test]
+fn missing_independent_custody_denies_fresh_remote_monotonic_signature() {
+    let root = tempfile::tempdir().expect("private test root");
+    let file = write_test_registry(root.path());
+    std::fs::remove_file(root.path().join("independently-retained-floor.json"))
+        .expect("independent floor withdrawn");
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        DiskAuthoritativeRegistry::open(file),
+        signer(),
+        custody_signer().verifying_key(),
+        Duration::from_secs(2),
+    )
+    .expect("separate signatures");
+    let (mut client, mut server) =
+        std::os::unix::net::UnixStream::pair().expect("socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitMonotonicRpcRequestV1 {
+            schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.into(),
+            method: READ_METHOD.into(),
+            journal_domain_id: DOMAIN.into(),
+            challenge_nonce: "cc".repeat(32),
+        },
+    )
+    .expect("query");
+    assert!(matches!(
+        service.serve_connection(&mut server),
+        Err(CellSplitMonotonicRpcErrorV1::Denied(_))
+    ));
+}
+
+#[test]
+fn slow_independent_custody_cannot_sign_after_owner_request_budget_expires() {
+    let root = tempfile::tempdir().expect("private registry");
+    let file = write_test_registry(root.path());
+    let mut backend = DiskAuthoritativeRegistry::open(file.clone());
+    backend.custody_delay = Some(Duration::from_millis(15));
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        backend,
+        signer(),
+        custody_signer().verifying_key(),
+        Duration::from_millis(2),
+    )
+    .expect("small bounded owner budget");
+    let (mut client, mut server) =
+        std::os::unix::net::UnixStream::pair().expect("socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitMonotonicRpcRequestV1 {
+            schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.into(),
+            method: READ_METHOD.into(),
+            journal_domain_id: DOMAIN.into(),
+            challenge_nonce: "ab".repeat(32),
+        },
+    )
+    .expect("fully queued request");
+    assert!(matches!(
+        service.serve_connection(&mut server),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+    drop(server);
+    assert!(receive_frame::<CellSplitMonotonicRpcResponseV1>(&mut client).is_err());
+    assert!(file.exists(), "timeout must not mutate durable custody");
+}
+
+
+#[test]
+fn signed_monotonic_rpc_uses_one_end_to_end_timeout_budget() {
+    let started = Instant::now();
+    let total = Duration::from_secs(2);
+    let remaining = remaining_rpc_budget(started, total).expect("new request has time");
+    assert!(remaining > Duration::ZERO);
+    assert!(remaining <= total);
+
+    // Both sides must reject an exhausted budget. A new read/write phase
+    // cannot restart the entire configured RPC timeout after prior work.
+    let expired = Instant::now()
+        .checked_sub(Duration::from_secs(3))
+        .expect("monotonic clock has prior time");
+    assert!(matches!(
+        remaining_rpc_budget(expired, Duration::from_secs(1)),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+    assert!(matches!(
+        remaining_rpc_budget(started, Duration::ZERO),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
 }

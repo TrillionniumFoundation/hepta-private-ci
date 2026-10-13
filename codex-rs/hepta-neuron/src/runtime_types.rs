@@ -412,6 +412,7 @@ pub enum NeuronRuntimeError {
         anchor: JournalAnchor,
         error: WitnessStoreError,
     },
+    NduStaleAfterEffect,
     Arithmetic,
 }
 

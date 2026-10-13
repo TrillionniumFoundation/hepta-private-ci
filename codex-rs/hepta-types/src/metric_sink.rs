@@ -10,6 +10,11 @@ pub enum PhaseMetricKindV1 {
     Signature,
     Cns,
     NeuronFeature,
+    Wal,
+    /// Independently verified signed NDU read and live control frontier.
+    NduRead,
+    /// Independently issued one-time Final-use model-effect claim.
+    FinalUse,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
