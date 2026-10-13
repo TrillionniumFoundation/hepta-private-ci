@@ -100,6 +100,12 @@ def export_observed(plan, contract, directory, *, expected_seal_id, observer_pat
                     or growth.get("parent_parameters", 0) * 2 != inventory["parameters"]
                     or growth["peak_live_trainable_params"] != growth["parent_parameters"] + inventory["parameters"]):
                 raise ValueError("growth lineage or live tensor inventory changed")
+    if growing is not None:
+        from family_routing import POLICY_SCHEMA as FAMILY_SCHEMA, validate_family_record
+        if growing["schema"] == FAMILY_SCHEMA:
+            validate_family_record(growth, inventory, growing)
+        elif "routing_profile" in inventory or "transition_probe" in growth:
+            raise ValueError("legacy flat routing cannot be relabeled as family preservation")
     if set(execution["phase_flops"]) != set(PHASES):
         raise ValueError("all physical work phases required")
     for phase, value in execution["phase_flops"].items():
