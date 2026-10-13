@@ -34,6 +34,7 @@ struct FixturePort {
     tamper_during_live_readback: Rc<RefCell<Option<std::path::PathBuf>>>,
     revoke_previous_during_preflight: bool,
     revoke_selection_during_preflight: Option<Rc<RefCell<bool>>>,
+    revoke_selection_on_readback: Option<(Rc<RefCell<bool>>, usize)>,
 }
 
 impl FixturePort {
@@ -46,6 +47,7 @@ impl FixturePort {
             tamper_during_live_readback: Rc::new(RefCell::new(None)),
             revoke_previous_during_preflight: false,
             revoke_selection_during_preflight: None,
+            revoke_selection_on_readback: None,
         }
     }
 
@@ -128,7 +130,16 @@ impl CellSplitExecutionPortV1 for FixturePort {
         intent: &CellSplitExecutionIntentV1,
         receipt: &CellSplitExecutionReceiptV1,
     ) -> Result<(), Self::Error> {
-        self.observed.borrow_mut().verifications += 1;
+        let count = {
+            let mut observed = self.observed.borrow_mut();
+            observed.verifications += 1;
+            observed.verifications
+        };
+        if let Some((selected, at)) = &self.revoke_selection_on_readback
+            && count == *at
+        {
+            *selected.borrow_mut() = false;
+        }
         if let Some(path) = self.tamper_during_live_readback.borrow_mut().take() {
             fs::write(path, b"{}").map_err(|_| "fixture could not tamper local readback frame")?;
         }
@@ -690,6 +701,40 @@ fn current_selector_revocation_during_preflight_never_prepares_a_new_intent() {
     assert_eq!(owner.completed_steps(), 0);
     assert!(!root.path().join("cell-split-00-prepared.json").exists());
     assert_eq!(state.borrow().executions, 0, "no original owner effect");
+}
+
+#[test]
+fn selector_revoked_during_last_owner_readback_never_prepares_successor() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let selected = Rc::new(RefCell::new(true));
+    let mut port = FixturePort::new(state.clone());
+    // First effect verifies one original-owner receipt. Advancing the
+    // successor reads that receipt before and after remote preflight;
+    // revoke the Selector membership during the second live readback.
+    port.revoke_selection_on_readback = Some((selected.clone(), 3));
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
+    owner.advance().expect("first effect");
+
+    let mut admission_reads = 0;
+    let result = owner.advance_with_admission(|| {
+        admission_reads += 1;
+        if *selected.borrow() {
+            Ok(())
+        } else {
+            Err("Selector revoked during original-owner readback".to_string())
+        }
+    });
+    assert!(matches!(
+        result,
+        Err(CellSplitExecutionErrorV1::External(message))
+            if message.contains("Selector revoked")
+    ));
+    assert_eq!(admission_reads, 2, "Selector checked again after live readback");
+    assert_eq!(state.borrow().executions, 1, "no successor effect may execute");
+    assert_eq!(owner.completed_steps(), 1);
+    assert!(!root.path().join("cell-split-01-prepared.json").exists());
 }
 
 #[test]
@@ -1633,7 +1678,7 @@ fn post_effect_selection_revocation_keeps_all_stages_pending() {
             let mut admission_reads = 0;
             let rejected = owner.advance_with_admission(|| {
                 admission_reads += 1;
-                if admission_reads == 1 {
+                if admission_reads < 3 {
                     Ok(())
                 } else {
                     Err("selection withdrawn after external commit".into())
@@ -1644,7 +1689,10 @@ fn post_effect_selection_revocation_keeps_all_stages_pending() {
                 Err(CellSplitExecutionErrorV1::External(reason))
                     if reason == "selection withdrawn after external commit"
             ));
-            assert_eq!(admission_reads, 2, "recheck selection after signed effect");
+            assert_eq!(
+                admission_reads, 3,
+                "recheck selection after the signed original-owner effect"
+            );
             assert_eq!(owner.completed_steps(), completed_predecessors);
             assert_eq!(state.borrow().executions, completed_predecessors + 1);
             assert!(

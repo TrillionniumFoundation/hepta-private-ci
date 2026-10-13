@@ -63,9 +63,7 @@ class ExactPrCiTests(unittest.TestCase):
         all_runs = [run(name) for name in GATE.REQUIRED]
         result = GATE.evaluate(pr(), all_runs, REPO, 1468, HEAD)
         self.assertTrue(result["qualified"])
-        self.assertEqual(
-            set(result["required_pull_request_runs"]), set(GATE.REQUIRED)
-        )
+        self.assertEqual(set(result["required_pull_request_runs"]), set(GATE.REQUIRED))
 
     def test_missing_or_manual_source_lane_cannot_be_green(self):
         cases = [
@@ -117,7 +115,8 @@ class ExactPrCiTests(unittest.TestCase):
         for parents, status, qualified in cases:
             with self.subTest(parents=parents):
                 with mock.patch.object(
-                    GATE, "gh_json",
+                    GATE,
+                    "gh_json",
                     side_effect=[
                         {
                             "ref": "refs/pull/1468/merge",
@@ -129,9 +128,7 @@ class ExactPrCiTests(unittest.TestCase):
                         },
                     ],
                 ) as fetch:
-                    result = GATE.prospective_merge_identity(
-                        REPO, 1468, HEAD, BASE
-                    )
+                    result = GATE.prospective_merge_identity(REPO, 1468, HEAD, BASE)
                 self.assertEqual(result["status"], status)
                 self.assertEqual(result["qualified"], qualified)
                 self.assertEqual(fetch.call_count, 2)
@@ -143,19 +140,16 @@ class ExactPrCiTests(unittest.TestCase):
         ]:
             with self.subTest(response=response):
                 with mock.patch.object(GATE, "gh_json", return_value=response):
-                    result = GATE.prospective_merge_identity(
-                        REPO, 1468, HEAD, BASE
-                    )
+                    result = GATE.prospective_merge_identity(REPO, 1468, HEAD, BASE)
                 self.assertFalse(result["qualified"])
-                self.assertEqual(
-                    result["status"], "missing_or_unreadable_merge_ref"
-                )
+                self.assertEqual(result["status"], "missing_or_unreadable_merge_ref")
 
     def test_current_rejects_old_merge_ref_even_with_three_green_runs(self):
         jobs = [run(name) for name in GATE.REQUIRED]
         stale = "c" * 40
         with mock.patch.object(
-            GATE, "gh_json",
+            GATE,
+            "gh_json",
             side_effect=[
                 pr(),
                 {"workflow_runs": jobs},
@@ -190,9 +184,13 @@ class ExactPrCiTests(unittest.TestCase):
         # GitHub pull_requests[] metadata can point to the *current* PR
         # even when the workflow itself started before the base advanced.
         with mock.patch.object(
-            GATE, "gh_json",
+            GATE,
+            "gh_json",
             side_effect=[
-                pr(), {"workflow_runs": jobs}, merge_ref, current_merge,
+                pr(),
+                {"workflow_runs": jobs},
+                merge_ref,
+                current_merge,
             ],
         ):
             _, verdict = GATE.current(REPO, 1468, HEAD)
@@ -203,13 +201,15 @@ class ExactPrCiTests(unittest.TestCase):
             {"missing_exact_pull_request_run"},
         )
 
-        refreshed = [
-            dict(item, created_at="2026-10-11T03:00:05Z") for item in jobs
-        ]
+        refreshed = [dict(item, created_at="2026-10-11T03:00:05Z") for item in jobs]
         with mock.patch.object(
-            GATE, "gh_json",
+            GATE,
+            "gh_json",
             side_effect=[
-                pr(), {"workflow_runs": refreshed}, merge_ref, current_merge,
+                pr(),
+                {"workflow_runs": refreshed},
+                merge_ref,
+                current_merge,
             ],
         ):
             _, verdict = GATE.current(REPO, 1468, HEAD)
@@ -217,7 +217,8 @@ class ExactPrCiTests(unittest.TestCase):
 
     def test_missing_merge_timestamp_and_missing_run_start_are_denied(self):
         with mock.patch.object(
-            GATE, "gh_json",
+            GATE,
+            "gh_json",
             side_effect=[
                 {
                     "ref": "refs/pull/1468/merge",
@@ -229,28 +230,45 @@ class ExactPrCiTests(unittest.TestCase):
             record = GATE.prospective_merge_identity(REPO, 1468, HEAD, BASE)
         self.assertFalse(record["qualified"])
         self.assertEqual(
-            record["status"], "missing_or_unreadable_merge_ref",
+            record["status"],
+            "missing_or_unreadable_merge_ref",
         )
-        self.assertFalse(GATE.run_started_after_merge(
-            {}, "2026-10-11T03:00:01Z",
-        ))
-        self.assertFalse(GATE.run_started_after_merge(
-            {"created_at": "not-a-timestamp"}, "2026-10-11T03:00:01Z",
-        ))
-        self.assertFalse(GATE.run_started_after_merge(
-            {"created_at": "2026-10-11T02:00:01Z"},
-            "2026-10-11T03:00:01Z",
-        ))
+        self.assertFalse(
+            GATE.run_started_after_merge(
+                {},
+                "2026-10-11T03:00:01Z",
+            )
+        )
+        self.assertFalse(
+            GATE.run_started_after_merge(
+                {"created_at": "not-a-timestamp"},
+                "2026-10-11T03:00:01Z",
+            )
+        )
+        self.assertFalse(
+            GATE.run_started_after_merge(
+                {"created_at": "2026-10-11T02:00:01Z"},
+                "2026-10-11T03:00:01Z",
+            )
+        )
 
     def test_dispatch_only_invokes_existing_manual_workflows(self):
         with mock.patch.object(
             GATE, "current", side_effect=[(pr(), {"qualified": False}), (pr(), {})]
         ) as load:
             with mock.patch.object(GATE, "gh") as dispatch:
-                with mock.patch.object(sys, "argv", [
-                    "hepta_exact_pr_ci.py", "--pr", "1468", "--expected-sha", HEAD,
-                    "--dispatch-source",
-                ]):
+                with mock.patch.object(
+                    sys,
+                    "argv",
+                    [
+                        "hepta_exact_pr_ci.py",
+                        "--pr",
+                        "1468",
+                        "--expected-sha",
+                        HEAD,
+                        "--dispatch-source",
+                    ],
+                ):
                     with mock.patch("builtins.print"):
                         self.assertEqual(GATE.main(), 1)
         self.assertEqual(load.call_count, 2)
