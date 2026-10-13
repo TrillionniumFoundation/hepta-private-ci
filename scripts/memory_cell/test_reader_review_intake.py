@@ -342,12 +342,27 @@ class ReviewIntakeTests(unittest.TestCase):
         self.assertFalse(self.output.exists())
 
     def test_reviewer_visible_question_timestamp_cannot_drift(self):
+        # Keep the edited instant AFTER the synthetic 2026-01-01 sources.
+        # This isolates cross-condition question drift from the independent
+        # fail-closed future-source check.
         def change(rows):
             row = next(r for r in rows
                        if self.map[r["ticket"]]["item_id"] == "q1")
-            row["question_observed_at"] = "2025-01-01T01:00:00+00:00"
+            row["question_observed_at"] = "2026-01-02T01:00:00+00:00"
         self._rewrite_pinned_reviewer_view(change)
         with self.assertRaisesRegex(ValueError, "question changed across blinded conditions"):
+            self.run_intake()
+        self.assertFalse(self.output.exists())
+
+    def test_re_pinned_question_preceding_its_sources_fails_closed(self):
+        # Move every visible q1 question timestamp together, eliminating
+        # cross-condition drift; this must still fail on source-time order.
+        def change(rows):
+            for row in rows:
+                if self.map[row["ticket"]]["item_id"] == "q1":
+                    row["question_observed_at"] = "2025-12-31T23:00:00+00:00"
+        self._rewrite_pinned_reviewer_view(change)
+        with self.assertRaisesRegex(ValueError, "future reviewer-visible source time"):
             self.run_intake()
         self.assertFalse(self.output.exists())
 
