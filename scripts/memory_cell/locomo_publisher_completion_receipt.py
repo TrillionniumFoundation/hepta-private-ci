@@ -270,9 +270,14 @@ def audit(plan_zip, reader_zip, score_zip):
         "sum_original_reader_seconds": round(reader_seconds, 3),
         "answers_with_delivered_citation_label": cited,
         "refusal_shapes_by_mode": {
-            mode: {shape: refusal[mode, shape] for shape in (
-                "strict_refusal", "mixed_refusal_and_extra_text", "no_canonical_refusal"
-            )}
+            mode: {
+                shape: refusal[mode, shape]
+                for shape in (
+                    "strict_refusal",
+                    "mixed_refusal_and_extra_text",
+                    "no_canonical_refusal",
+                )
+            }
             for mode in ("publisher_support", "publisher_refusal_support")
         },
         "original_matched_f1": controls,

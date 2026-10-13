@@ -1,4 +1,5 @@
 """Score-only question binding tests, not pretrained or independent evidence."""
+
 from copy import deepcopy
 import math
 import unittest
@@ -10,8 +11,12 @@ from source_binding_specificity import question_binding
 def fixture(*, adapter="bound"):
     a, b = "value_a", "value_b"
     cases = [
-        dict(query=dict(identity="q1", scope="s"), scope="s", target=a, candidates=(a, b)),
-        dict(query=dict(identity="q2", scope="s"), scope="s", target=b, candidates=(a, b)),
+        dict(
+            query=dict(identity="q1", scope="s"), scope="s", target=a, candidates=(a, b)
+        ),
+        dict(
+            query=dict(identity="q2", scope="s"), scope="s", target=b, candidates=(a, b)
+        ),
     ]
     rows = []
     for q in ("q1", "q2"):
@@ -23,14 +28,23 @@ def fixture(*, adapter="bound"):
                         loss = 0.5 if (q, value) in (("q1", a), ("q2", b)) else 3.0
                     else:
                         loss = 0.2 if value == a else 4.0
-                rows.append(dict(
-                    question_id=q, arm=arm, candidate_digest=digest(value),
-                    scope="s", delivered_evidence=[], prompt_digest="prompt-" + q,
-                    reader_profile="frozen-qwen",
-                    actual_reader_question_id="paraphrase-" + q,
-                    status="succeeded", mean_nll=loss, input_tokens=8,
-                    supervised_tokens=2, seconds=0.1,
-                ))
+                rows.append(
+                    dict(
+                        question_id=q,
+                        arm=arm,
+                        candidate_digest=digest(value),
+                        scope="s",
+                        delivered_evidence=[],
+                        prompt_digest="prompt-" + q,
+                        reader_profile="frozen-qwen",
+                        actual_reader_question_id="paraphrase-" + q,
+                        status="succeeded",
+                        mean_nll=loss,
+                        input_tokens=8,
+                        supervised_tokens=2,
+                        seconds=0.1,
+                    )
+                )
     return rows, cases
 
 
@@ -101,12 +115,15 @@ class QuestionBindingTests(unittest.TestCase):
 
     def test_finite_nll_but_overflowing_adapter_delta_fails_closed(self):
         rows, cases = fixture()
+
         # Both individual nonnegative NLLs are finite. Each averaged
         # question/value margin is finite, but adapter-minus-base overflows.
         def set_loss(arm, qid, value, nll):
             for row in rows:
                 if (row["arm"], row["question_id"], row["candidate_digest"]) == (
-                    arm, qid, digest(value)
+                    arm,
+                    qid,
+                    digest(value),
                 ):
                     row["mean_nll"] = nll
                     return
@@ -114,8 +131,10 @@ class QuestionBindingTests(unittest.TestCase):
 
         base = 1e308
         for arm, reverse in (("base", True), ("memory", False)):
-            for qid, true, false in (("q1", "value_a", "value_b"),
-                                     ("q2", "value_b", "value_a")):
+            for qid, true, false in (
+                ("q1", "value_a", "value_b"),
+                ("q2", "value_b", "value_a"),
+            ):
                 set_loss(arm, qid, true, base if reverse else 0.0)
                 set_loss(arm, qid, false, 0.0 if reverse else base)
         with self.assertRaisesRegex(ValueError, "nonfinite adapter-minus-frozen"):
@@ -128,7 +147,8 @@ class QuestionBindingTests(unittest.TestCase):
         for row in rows:
             if row["arm"] == "memory":
                 is_correct = (row["question_id"], row["candidate_digest"]) in (
-                    ("q1", digest("value_a")), ("q2", digest("value_b"))
+                    ("q1", digest("value_a")),
+                    ("q2", digest("value_b")),
                 )
                 row["mean_nll"] = 0.0 if is_correct else 1e308
         outcome = question_binding(rows, cases)

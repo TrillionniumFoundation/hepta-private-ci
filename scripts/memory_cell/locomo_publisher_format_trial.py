@@ -94,7 +94,9 @@ class StrictFormatReader(ReferenceReader):
         self.original_profile = self.profile
         self.profile = digest((self.original_profile, FORMAT_PROFILE, STRICT_SYSTEM))
 
-    def compile_input(self, query, bundle, originals, *, frontier, revoked, token_limit):
+    def compile_input(
+        self, query, bundle, originals, *, frontier, revoked, token_limit
+    ):
         _, receipt = super().compile_input(
             query,
             bundle,
@@ -270,9 +272,7 @@ def paired_result(cases, admitted, rows, old_rows, targets):
             undelivered_citation_markers=bad,
         )
         cohorts["all"].append(sample)
-        cohorts["answerable" if sample["answerable"] else "unanswerable"].append(
-            sample
-        )
+        cohorts["answerable" if sample["answerable"] else "unanswerable"].append(sample)
     result = {}
     for name, samples in cohorts.items():
         complete = [x for x in samples if x["paired_f1_delta"] is not None]
@@ -289,7 +289,9 @@ def paired_result(cases, admitted, rows, old_rows, targets):
             all_planned_delta_bounds=[
                 (total - unknown) / len(samples),
                 (total + unknown) / len(samples),
-            ] if samples else None,
+            ]
+            if samples
+            else None,
             original_mixed_refusals=sum(
                 x["old_refusal_shape"] == "mixed_refusal_and_extra_text"
                 for x in samples
@@ -306,8 +308,7 @@ def paired_result(cases, admitted, rows, old_rows, targets):
             ),
             strict_citation_markers=sum(x["emitted_citation_markers"] for x in samples),
             paired_prompt_token_delta=sum(
-                x["new_prompt_tokens"] - x["original_prompt_tokens"]
-                for x in complete
+                x["new_prompt_tokens"] - x["original_prompt_tokens"] for x in complete
             ),
             missing_bounds_not_confidence_intervals=True,
         )
@@ -326,7 +327,9 @@ def paired_result(cases, admitted, rows, old_rows, targets):
     )
 
 
-def score(public_dir, target_dir, pinned_plan, new_run, old_reader_zip, output, *, commit):
+def score(
+    public_dir, target_dir, pinned_plan, new_run, old_reader_zip, output, *, commit
+):
     cases, documents, _ = source_plan(public_dir)
     plan_bytes = plan_zip_bytes(pinned_plan)
     admitted = validate_plan(strict_json(plan_bytes), cases, documents)
@@ -336,8 +339,7 @@ def score(public_dir, target_dir, pinned_plan, new_run, old_reader_zip, output, 
     prior_files = read_archive(old_reader_zip, EXPECTED["reader"], has_manifest=True)
     old_ready = strict_json(prior_files["run/READY.json"])
     old_rows = [
-        strict_json(line)
-        for line in prior_files["run/raw-answers.jsonl"].splitlines()
+        strict_json(line) for line in prior_files["run/raw-answers.jsonl"].splitlines()
     ]
     if (
         data.get("schema") != SCHEMA
@@ -358,9 +360,7 @@ def score(public_dir, target_dir, pinned_plan, new_run, old_reader_zip, output, 
         or len(rows) != 16
         or old_ready["generating_commit"] != RUN_SHA
         or old_ready["reader_identity"] != READER_SHA
-        or old_ready["raw_sha256"] != sha(
-            prior_files["run/raw-answers.jsonl"]
-        )
+        or old_ready["raw_sha256"] != sha(prior_files["run/raw-answers.jsonl"])
     ):
         raise ValueError("strict generation or historical baseline was altered")
     originals = {sid: original_document(d) for sid, d in documents.items()}
@@ -379,7 +379,9 @@ def score(public_dir, target_dir, pinned_plan, new_run, old_reader_zip, output, 
             continue
         if row["status"] != "succeeded":
             raise ValueError("unknown execution disposition")
-        _, bundle = bundle_for(case, "publisher_support", originals, selection["selected"])
+        _, bundle = bundle_for(
+            case, "publisher_support", originals, selection["selected"]
+        )
         receipt = row["receipt"]
         if (
             receipt["reader_identity"] != READER_SHA
