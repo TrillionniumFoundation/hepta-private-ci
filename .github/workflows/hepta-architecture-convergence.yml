@@ -63,12 +63,25 @@ jobs:
           actual_sha="$(jq -er '.object.sha' <<<"$ref_json")"
           commit_json="$(gh api "repos/$REPO/git/commits/$actual_sha")"
           mapfile -t parents < <(jq -r '.parents[].sha' <<<"$commit_json")
-          test "${#parents[@]}" -eq 2
-          test "${parents[0]}" = "$BASE_SHA"
-          test "${parents[1]}" = "$SOURCE_SHA"
+          # Record the precise mismatch before failing. An asynchronously
+          # advanced base branch must invalidate this frozen CI candidate;
+          # it is never permission to silently adopt GitHub's newer ref.
+          mkdir -p "$RUNNER_TEMP/hepta-command-records"
+          jq -cn --arg expected_base "$BASE_SHA" --arg expected_head "$SOURCE_SHA" --arg merge_sha "$actual_sha" \
+            --arg actual_base "${parents[0]:-}" --arg actual_head "${parents[1]:-}" \
+            '{schema:"hepta.ci.prospective-merge-ref.v1",expected_base:$expected_base,expected_head:$expected_head,merge_sha:$merge_sha,actual_base:$actual_base,actual_head:$actual_head}' \
+            > "$RUNNER_TEMP/hepta-command-records/prospective-merge-ref.json"
+          if [[ "${#parents[@]}" -ne 2 || "${parents[0]:-}" != "$BASE_SHA" || "${parents[1]:-}" != "$SOURCE_SHA" ]]; then
+            printf '::error title=Frozen prospective merge changed::expected base=%s head=%s; GitHub ref base=%s head=%s; fresh exact-PR CI required\n' \
+              "$BASE_SHA" "$SOURCE_SHA" "${parents[0]:-missing}" "${parents[1]:-missing}"
+            exit 1
+          fi
           actual_tree="$(jq -er '.tree.sha' <<<"$commit_json")"
           expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
-          test "$actual_tree" = "$expected_tree"
+          if [[ "$actual_tree" != "$expected_tree" ]]; then
+            printf '::error title=Prospective merge tree mismatch::actual=%s expected=%s\n' "$actual_tree" "$expected_tree"
+            exit 1
+          fi
           printf 'GITHUB_PROSPECTIVE_MERGE_SHA=%s\n' "$actual_sha" >> "$GITHUB_ENV"
           printf 'GITHUB_PROSPECTIVE_MERGE_TREE=%s\n' "$actual_tree" >> "$GITHUB_ENV"
       - name: Construct the canonical prospective merge
