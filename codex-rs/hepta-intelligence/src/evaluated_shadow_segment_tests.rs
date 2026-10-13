@@ -18,7 +18,10 @@ fn open(root: &std::path::Path, name: &str, create: bool) -> std::fs::File {
 }
 
 fn directory(root: &std::path::Path) -> std::fs::File {
-    std::fs::File::open(root).unwrap()
+    // A plain File::open(directory) is denied by Win32. Use the same real
+    // synchronizable directory handle as the durable Ledger owner tests,
+    // including FILE_FLAG_BACKUP_SEMANTICS on Windows.
+    durable_parent_directory(&root.join("owner"))
 }
 
 fn writer(
