@@ -1,0 +1,78 @@
+name: Hepta System2 sealed Qwen TAG-label source audit
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_reader_tag_label_audit.py"
+      - "scripts/memory_cell/test_system2_reader_tag_label_audit.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_READER_TAG_LABEL_AUDIT.md"
+      - ".github/workflows/hepta-system2-reader-tag-label-audit.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-tag-label-audit-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  sealed-tag-label-readout:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install exact pinned CPU research environment
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-tag-label-audit
+          python3 -m venv /tmp/system2-tag-audit-python
+          /tmp/system2-tag-audit-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/system2-tag-label-audit/install-torch.log 2>&1
+          /tmp/system2-tag-audit-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/system2-tag-label-audit/install-deps.log 2>&1
+          /tmp/system2-tag-audit-python/bin/pip freeze > /tmp/system2-tag-label-audit/environment.txt
+      - name: Full MemoryCell regression and strict scoped Ruff
+        run: |
+          set -euo pipefail
+          if ! /tmp/system2-tag-audit-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/system2-tag-label-audit/regression.log 2>&1; then
+            tail -120 /tmp/system2-tag-label-audit/regression.log
+            exit 1
+          fi
+          tail -5 /tmp/system2-tag-label-audit/regression.log
+          /tmp/system2-tag-audit-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_reader_tag_label_audit.py scripts/memory_cell/test_system2_reader_tag_label_audit.py | tee /tmp/system2-tag-label-audit/lint.log
+      - name: Download and authenticate completed 180-response neural source
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11787041990/zip > /tmp/tag-180-complete.zip
+          printf '%s  %s\n' 8da46b3965f8a6aa9919877c8165e6a2d06f3298921e645d91f7cddfcf9b8761 /tmp/tag-180-complete.zip | sha256sum -c -
+      - name: Recompute full paired answer/copy/refusal and measured CPU outcomes
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/system2-tag-label-audit/resources.txt /tmp/system2-tag-audit-python/bin/python scripts/memory_cell/system2_reader_tag_label_audit.py /tmp/tag-180-complete.zip /tmp/system2-tag-label-audit/tag-label-audit.json > /tmp/system2-tag-label-audit/readout.log 2>&1 || { tail -120 /tmp/system2-tag-label-audit/readout.log; exit 1; }
+          tail -1 /tmp/system2-tag-label-audit/readout.log
+      - name: Preserve actual generating head, source and evidence receipt
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/system2-tag-label-audit/source
+          git rev-parse HEAD > /tmp/system2-tag-label-audit/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/system2-tag-label-audit/tested-tree.txt
+          cp scripts/memory_cell/{system2_reader_tag_label_audit.py,test_system2_reader_tag_label_audit.py} /tmp/system2-tag-label-audit/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_READER_TAG_LABEL_AUDIT.md .github/workflows/hepta-system2-reader-tag-label-audit.yml /tmp/system2-tag-label-audit/source/
+          (cd /tmp/system2-tag-label-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-tag-label-audit
+          path: /tmp/system2-tag-label-audit
+          if-no-files-found: error
