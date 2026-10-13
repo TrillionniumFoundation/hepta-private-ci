@@ -112,10 +112,21 @@ pub enum CellSplitEffectRpcErrorV1 {
 /// performs real socket requests, but deployment must supply real servers,
 /// separate signing keys and state-backed readback. The coordinator also
 /// independently verifies every mutation receipt against its own trust pins.
+/// Locally retained, verified original-owner frontier for exactly one frozen
+/// intent. This is NOT a durable high-water store and cannot establish the
+/// state of a restarted coordinator by itself.
+#[derive(Clone, Debug)]
+struct SeenOwnerReadbackV1 {
+    intent: CellSplitExecutionIntentV1,
+    sequence: u64,
+    committed_receipt_digest: Option<String>,
+}
+
 pub struct CellSplitUnixEffectPortV1 {
     endpoints: [PathBuf; OWNER_COUNT],
     verifying_keys: [VerifyingKey; OWNER_COUNT],
     timeout: Duration,
+    seen_readbacks: [Option<SeenOwnerReadbackV1>; OWNER_COUNT],
 }
 
 impl CellSplitUnixEffectPortV1 {
@@ -147,6 +158,7 @@ impl CellSplitUnixEffectPortV1 {
             endpoints,
             verifying_keys,
             timeout,
+            seen_readbacks: std::array::from_fn(|_| None),
         })
     }
 
@@ -154,6 +166,52 @@ impl CellSplitUnixEffectPortV1 {
     /// socket verifier pins are identical to the coordinator's trust pins.
     pub(crate) fn uses_exact_owner_keys(&self, frozen: &[VerifyingKey; OWNER_COUNT]) -> bool {
         self.verifying_keys == *frozen
+    }
+
+    /// Do not permit a previously authenticated owner to roll its durable
+    /// readback frontier backward, rebind this port to another split, or lose
+    /// an original committed effect. It is an O(1), process-local defense in
+    /// depth; independent rollback-resistant custody is still mandatory after
+    /// restart and at production activation.
+    fn retain_authenticated_readback(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+        sequence: u64,
+        receipt: Option<&CellSplitExecutionReceiptV1>,
+    ) -> Result<(), CellSplitEffectRpcErrorV1> {
+        let slot = &mut self.seen_readbacks[intent.step.index()];
+        if let Some(previous) = slot.as_ref() {
+            if previous.intent != *intent {
+                return Err(CellSplitEffectRpcErrorV1::Invalid(
+                    "effect RPC port rebound to a different original intent",
+                ));
+            }
+            if sequence < previous.sequence {
+                return Err(CellSplitEffectRpcErrorV1::Invalid(
+                    "signed effect owner readback sequence regressed",
+                ));
+            }
+            if let Some(original) = previous.committed_receipt_digest.as_deref() {
+                if receipt.map(|effect| effect.receipt_digest.as_str()) != Some(original) {
+                    return Err(CellSplitEffectRpcErrorV1::Invalid(
+                        "original effect disappeared or changed after a signed readback",
+                    ));
+                }
+            } else if receipt.is_some() && sequence <= previous.sequence {
+                // A durable effect must advance the original owner's frontier.
+                // A fresh signature over the former negative read sequence is
+                // not proof that a physical mutation occurred.
+                return Err(CellSplitEffectRpcErrorV1::Invalid(
+                    "signed effect appeared without durable sequence advance",
+                ));
+            }
+        }
+        *slot = Some(SeenOwnerReadbackV1 {
+            intent: intent.clone(),
+            sequence,
+            committed_receipt_digest: receipt.map(|effect| effect.receipt_digest.clone()),
+        });
+        Ok(())
     }
 
     fn call(
@@ -225,7 +283,7 @@ impl CellSplitUnixEffectPortV1 {
     /// A lookup is a fresh, nonce-bound, separately signed read from the
     /// authority currently owning the durable artifact/state/route/generation.
     fn lookup(
-        &self,
+        &mut self,
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<Option<CellSplitExecutionReceiptV1>, CellSplitEffectRpcErrorV1> {
         let nonce = rand::random::<[u8; 32]>()
@@ -270,6 +328,13 @@ impl CellSplitUnixEffectPortV1 {
         if let Some(receipt) = response.receipt.as_ref() {
             self.verify_original_receipt(intent, receipt)?;
         }
+        // Mutate the local ratchet ONLY after both the fresh nonce-bound
+        // readback and the original effect signature have been authenticated.
+        self.retain_authenticated_readback(
+            intent,
+            readback.read_sequence,
+            response.receipt.as_ref(),
+        )?;
         Ok(response.receipt)
     }
 }
@@ -588,6 +653,109 @@ mod tests {
             Some(receipt)
         );
         thread.join().expect("owner done");
+    }
+
+    #[test]
+    fn fresh_signed_readbacks_cannot_rewind_or_erase_a_live_original_effect() {
+        for case in 0..2 {
+            let root = tempfile::tempdir().expect("private owner socket");
+            let cas_socket = root.path().join("cas.sock");
+            let listener = UnixListener::bind(&cas_socket).expect("real socket");
+            let signing_key = SigningKey::from_bytes(&[1_u8; 32]);
+            let schedule = if case == 0 {
+                // A valid positive observation must not be followed by an
+                // older positive revision or a newer but missing original.
+                [(9_u64, true), (8_u64, true), (10_u64, false)]
+            } else {
+                // A committed effect may appear only after a durable frontier
+                // advance, not at the old, signed negative revision.
+                [(9_u64, false), (9_u64, true), (10_u64, true)]
+            };
+            let server = thread::spawn(move || {
+                for (sequence, present) in schedule {
+                    let (mut socket, _) = listener.accept().expect("readback connection");
+                    let request: CellSplitEffectRpcRequestV1 =
+                        receive_frame(&mut socket).expect("readback request");
+                    assert_eq!(request.action, CellSplitEffectRpcActionV1::ReadBack);
+                    let receipt = present.then(|| committed(&request.intent, &signing_key));
+                    let mut readback = CellSplitEffectReadbackV1 {
+                        schema: CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1.into(),
+                        intent: request.intent.clone(),
+                        challenge_nonce: request.challenge_nonce.expect("fresh nonce"),
+                        committed_receipt_digest: receipt
+                            .as_ref()
+                            .map(|effect| effect.receipt_digest.clone()),
+                        state_digest: receipt
+                            .as_ref()
+                            .map(|effect| effect.output_digest.clone()),
+                        read_sequence: sequence,
+                        owner_signature_bytes: Vec::new(),
+                    };
+                    readback.owner_signature_bytes = signing_key
+                        .sign(
+                            &cell_split_effect_readback_signing_payload_v1(&readback)
+                                .expect("signed current-owner payload"),
+                        )
+                        .to_bytes()
+                        .to_vec();
+                    send_frame(
+                        &mut socket,
+                        &CellSplitEffectRpcResponseV1 {
+                            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+                            action: request.action,
+                            receipt,
+                            readback: Some(readback),
+                            error: None,
+                        },
+                    )
+                    .expect("authenticated owner reply");
+                }
+            });
+            let keys =
+                [1_u8, 2, 3, 4].map(|value| SigningKey::from_bytes(&[value; 32]).verifying_key());
+            let mut client = CellSplitUnixEffectPortV1::new(
+                [
+                    cas_socket,
+                    root.path().join("migration.sock"),
+                    root.path().join("cns.sock"),
+                    root.path().join("supervisor.sock"),
+                ],
+                keys,
+                Duration::from_secs(3),
+            )
+            .expect("pinned effect owners");
+            let intent = intent();
+            if case == 0 {
+                assert!(client.reconcile(&intent).expect("signed commit").is_some());
+                assert!(matches!(
+                    client.reconcile(&intent),
+                    Err(CellSplitEffectRpcErrorV1::Invalid(
+                        "signed effect owner readback sequence regressed"
+                    ))
+                ));
+                assert!(matches!(
+                    client.reconcile(&intent),
+                    Err(CellSplitEffectRpcErrorV1::Invalid(
+                        "original effect disappeared or changed after a signed readback"
+                    ))
+                ));
+            } else {
+                assert!(client.reconcile(&intent).expect("signed absence").is_none());
+                assert!(matches!(
+                    client.reconcile(&intent),
+                    Err(CellSplitEffectRpcErrorV1::Invalid(
+                        "signed effect appeared without durable sequence advance"
+                    ))
+                ));
+                assert!(
+                    client
+                        .reconcile(&intent)
+                        .expect("newer signed original effect")
+                        .is_some()
+                );
+            }
+            server.join().expect("scripted owner readback only");
+        }
     }
 
     #[test]
