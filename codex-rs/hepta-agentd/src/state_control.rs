@@ -275,10 +275,12 @@ impl AgentdState {
                     self.identity.spawn_generation,
                     &query,
                     limit,
-                    self.cognitive_ranker.get(),
-                    self.cognitive_retrieval_context.get(),
-                    self.cognitive_retrieval_learning.get(),
-                    Some(request_id),
+                    crate::cognitive_context::CognitiveContextReadPorts {
+                        ranker: self.cognitive_ranker.get(),
+                        current_retrieval: self.cognitive_retrieval_context.get(),
+                        learning_sink: self.cognitive_retrieval_learning.get(),
+                        request_id: Some(request_id),
+                    },
                 )
                 .await;
                 self.refresh_generation()?;
@@ -356,10 +358,12 @@ impl AgentdState {
                     &read_digest,
                     omitted_records,
                     &items,
-                    plan.as_ref(),
-                    self.cognitive_ranker.get(),
-                    self.identity.spawn_generation,
-                    self.cognitive_retrieval_context.get(),
+                    crate::cognitive_context::CognitiveContextRevalidationPorts {
+                        plan: plan.as_ref(),
+                        ranker: self.cognitive_ranker.get(),
+                        body_generation: self.identity.spawn_generation,
+                        current_retrieval: self.cognitive_retrieval_context.get(),
+                    },
                 )
                 .await;
                 self.refresh_generation()?;
@@ -666,7 +670,7 @@ impl AgentdState {
                         receipt,
                     ) => crate::AutomationEffectReconcileSnapshot {
                         state: crate::AutomationEffectReconcileState::Terminal,
-                        effect: Some(effect_snapshot(receipt)?),
+                        effect: Some(effect_snapshot(*receipt)?),
                     },
                     crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Indeterminate => {
                         crate::AutomationEffectReconcileSnapshot {

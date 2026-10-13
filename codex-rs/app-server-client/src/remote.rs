@@ -936,7 +936,7 @@ impl RemoteAppServerClient {
     {
         self.request_typed_observed_response(request)
             .await
-            .map(|observed| observed.into_response())
+            .map(RemoteAppServerObservedResponse::into_response)
     }
 
     pub async fn request_typed_observed_response<T>(
