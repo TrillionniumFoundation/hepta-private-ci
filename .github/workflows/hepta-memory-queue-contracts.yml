@@ -17,6 +17,13 @@ on:
       - .github/workflows/hepta-memory-stem-mechanics.yml
       - .github/workflows/hepta-memory-necessity.yml
       - .github/workflows/hepta-memory-owner-observation.yml
+      - .github/workflows/hepta-memory-adjudication-handoff.yml
+      - .github/workflows/hepta-memory-balanced-quality.yml
+      - .github/workflows/hepta-memory-event-organization.yml
+      - .github/workflows/hepta-memory-event-reader-view.yml
+      - .github/workflows/hepta-memory-reviewed-source-diagnostic.yml
+      - .github/workflows/hepta-memory-startup-validation.yml
+      - .github/workflows/hepta-memory-span-e2e.yml
       - scripts/memory_cell/test_memory_queue_concurrency.py
   workflow_dispatch:
 permissions:

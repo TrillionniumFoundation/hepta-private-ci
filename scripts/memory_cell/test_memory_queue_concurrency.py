@@ -17,6 +17,13 @@ FILES = (
     "hepta-memory-stem-mechanics.yml",
     "hepta-memory-necessity.yml",
     "hepta-memory-owner-observation.yml",
+    "hepta-memory-adjudication-handoff.yml",
+    "hepta-memory-balanced-quality.yml",
+    "hepta-memory-event-organization.yml",
+    "hepta-memory-event-reader-view.yml",
+    "hepta-memory-reviewed-source-diagnostic.yml",
+    "hepta-memory-startup-validation.yml",
+    "hepta-memory-span-e2e.yml",
 )
 ROOT = Path(__file__).resolve().parents[2] / ".github" / "workflows"
 SUFFIX = chr(36) + "{{ github.event.pull_request.number || github.ref }}"

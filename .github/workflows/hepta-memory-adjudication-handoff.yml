@@ -9,7 +9,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: memory-cell-adjudication-handoff-${{ github.event.pull_request.head.sha }}
+  group: memory-cell-adjudication-handoff-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 jobs:
   complete-transfer:
