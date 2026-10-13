@@ -18,11 +18,11 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 from hepta_cell_split_matrix_capture import (
+    MAX_HOST_RESULT_BYTES,
     MEASUREMENT_SCHEMA,
     SCHEMA,
-    MAX_HOST_RESULT_BYTES,
-    read_bounded_json,
     execute_matrix,
+    read_bounded_json,
     validate_manifest,
     validate_measurement,
 )
