@@ -111,14 +111,16 @@ where
     if config.schema != CONFIG_SCHEMA {
         return Err("unknown execution configuration schema".to_string());
     }
-    // No filesystem owner initialization and no prepared intent may precede
-    // this independent selection check. The operator pin alone does not
-    // establish the current NDU or Selector authorization.
-    admit_selected_plan(&config.plan)?;
-    // Opening and recovering the coordinator may require disk and original
-    // owner readbacks. Revalidate the independent selection after that work,
-    // immediately before a new durable intent may be prepared.
+    // A read-only transcript remains verifiable after selection withdrawal.
+    // Only a mutation must have *current* independent NDU/Selector admission.
     let recheck_plan = (selected_action == "advance").then(|| config.plan.clone());
+    revalidate_selected_plan_at_boundary(
+        selected_action,
+        recheck_plan.as_ref(),
+        &mut admit_selected_plan,
+    )?;
+    // Opening/recovery can perform slow original-owner readbacks. Admission
+    // must also be checked after the owner opens and before writing intent.
     if !(1..=30_000).contains(&config.timeout_millis) {
         return Err("RPC timeout must be between 1 and 30000 ms".to_string());
     }
@@ -183,6 +185,14 @@ where
     } else {
         transcript.is_some()
     };
+    // Effect completion/readback may outlive live Selector or NDU admission.
+    // Do not return a successful mutation under a withdrawn selection. The
+    // original effect remains durable and MUST NOT be replayed by this client.
+    revalidate_selected_plan_at_boundary(
+        selected_action,
+        recheck_plan.as_ref(),
+        &mut admit_selected_plan,
+    )?;
     Ok(CellSplitExecutionCliOutcomeV1 {
         schema: OUTCOME_SCHEMA,
         action: selected_action,
@@ -192,6 +202,23 @@ where
         transcript,
         production_activation_authorized: false,
     })
+}
+
+/// Independent live admission is required at each mutation boundary. This
+/// read-only check is not an effect grant and cannot authorize physical use.
+fn revalidate_selected_plan_at_boundary(
+    action: &str,
+    frozen_plan: Option<&CellSplitExecutionPlanV1>,
+    admit: &mut impl FnMut(&CellSplitExecutionPlanV1) -> Result<(), String>,
+) -> Result<(), String> {
+    match action {
+        "transcript" => Ok(()),
+        "advance" => {
+            let plan = frozen_plan.ok_or_else(|| "missing frozen mutation admission plan".to_string())?;
+            admit(plan)
+        }
+        _ => Err("unknown CellSplit execution action".to_string()),
+    }
 }
 
 fn canonical_hex(value: &str) -> bool {
@@ -276,6 +303,28 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn read_only_transcript_never_mints_mutation_admission() {
+        let mut calls = 0usize;
+        let mut denied = |_plan: &CellSplitExecutionPlanV1| {
+            calls += 1;
+            Err("selection revoked".to_owned())
+        };
+        assert!(revalidate_selected_plan_at_boundary(
+            "transcript",
+            None,
+            &mut denied,
+        ).is_ok());
+        assert_eq!(calls, 0);
+        assert!(revalidate_selected_plan_at_boundary(
+            "advance",
+            None,
+            &mut denied,
+        ).is_err());
+        assert_eq!(calls, 0);
+    }
+
 
     #[test]
     fn requires_external_config_pin_before_opening_any_owner() {
