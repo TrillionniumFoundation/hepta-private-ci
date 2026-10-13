@@ -203,6 +203,22 @@ jobs:
           PY="$RUNNER_TEMP/stem-real-venv/bin/python"
           SNAPSHOT="$RUNNER_TEMP/stem-bge-snapshot"
           EXPECTED=$("$PY" -c "from model_runner import snapshot_digest; import sys; print(snapshot_digest(sys.argv[1]))" "$SNAPSHOT")
+          "$PY" - <<'PYINVENTORY'
+          import json, os, pathlib, torch
+          from safetensors import safe_open
+          root = pathlib.Path(os.environ["RUNNER_TEMP"])
+          inventory = {}
+          with safe_open(str(root / "stem-bge-snapshot" / "model.safetensors"), framework="pt", device="cpu") as stored:
+              for key in stored.keys():
+                  value = stored.get_tensor(key)
+                  row = {"shape": list(value.shape), "dtype": str(value.dtype)}
+                  if key.endswith(".position_ids") and value.numel() <= 8192:
+                      row["equals_ordinal_positions"] = (value.dtype == torch.int64 and value.ndim == 2 and
+                          value.shape[0] == 1 and torch.equal(value, torch.arange(value.shape[1]).unsqueeze(0)))
+                  inventory[key] = row
+          (root / "stem-real-evidence" / "stored-tensor-inventory.json").write_text(json.dumps(inventory, sort_keys=True) + "\n")
+          print(json.dumps(inventory, sort_keys=True))
+          PYINVENTORY
           {
             git rev-parse HEAD
             git rev-parse HEAD^{tree}
