@@ -169,15 +169,62 @@ def validate_encoder_loading_info(info):
     }
 
 
+def _verified_bert_position_buffer(torch, model, key, expected):
+    """Compare, never discard, the stock BERT non-persistent position buffer.
+
+    Transformers 4.57.1 BertEmbeddings registers ordinal position_ids with
+    persistent=False. Older BERT safetensors can still serialize this buffer.
+    This is NOT an allowlist for missing weights or arbitrary buffer suffixes.
+    Only the concrete installed BertModel/BertEmbeddings implementation and
+    the exact registered int64 ordinal buffer can extend the inventory.
+    """
+    if (key != "embeddings.position_ids" or
+            type(model).__module__ != "transformers.models.bert.modeling_bert" or
+            type(model).__name__ != "BertModel"):
+        raise ValueError("unexpected safetensors key outside reviewed BERT buffer policy")
+    from transformers.models.bert.configuration_bert import BertConfig
+    from transformers.models.bert.modeling_bert import BertEmbeddings, BertModel
+
+    embeddings = getattr(model, "embeddings", None)
+    config = getattr(model, "config", None)
+    if (type(model) is not BertModel or type(embeddings) is not BertEmbeddings or
+            type(config) is not BertConfig or
+            getattr(config, "position_embedding_type", None) != "absolute" or
+            embeddings.position_embedding_type != "absolute"):
+        raise ValueError("nonstandard BERT position buffer implementation")
+    size = config.max_position_embeddings
+    if (type(size) is not int or not 1 <= size <= 8192 or
+            embeddings.position_embeddings.num_embeddings != size):
+        raise ValueError("invalid BERT position buffer capacity")
+    actual = embeddings._buffers.get("position_ids")
+    if ("position_ids" not in embeddings._non_persistent_buffers_set or
+            "position_ids" in embeddings._parameters or
+            actual is None or actual is not getattr(embeddings, "position_ids", None) or
+            dict(model.named_buffers()).get(key) is not actual):
+        raise ValueError("BERT position_ids is not the registered non-persistent buffer")
+    for tensor in (actual, expected):
+        if (not isinstance(tensor, torch.Tensor) or tensor.device.type == "meta" or
+                tensor.layout != torch.strided or tensor.dtype != torch.int64 or
+                tuple(tensor.shape) != (1, size) or tensor.requires_grad):
+            raise ValueError("invalid BERT ordinal position buffer shape or dtype")
+    ordinal = torch.arange(size, dtype=torch.int64).unsqueeze(0)
+    if (not torch.equal(expected.detach().cpu(), ordinal) or
+            not torch.equal(actual.detach().cpu(), ordinal)):
+        raise ValueError("stored or loaded BERT position buffer is not exact ordinal positions")
+    return actual
+
+
 def verify_loaded_safetensors(torch, model, root):
     """Exact, read-only tensor comparison against every pinned safetensors key.
 
     Transformers loading_info is advisory for some version/architecture
     combinations; a clean list by itself is NOT sufficient. Require that
-    the locally admitted, base-only safetensors inventory equals the actual
-    model.state_dict() inventory and every tensor value after the requested
-    model dtype conversion matches. Reject aliases/partial architecture
-    conversions until a separate audited canonical model artifact exists.
+    every model.state_dict() entry and every on-disk tensor to match. The
+    sole extra key accepted is the stock BERT non-persistent position_ids,
+    compared against BOTH the actual registered buffer and ordinal positions.
+    No checkpoint is rewritten and no key is skipped. Learned tensors retain
+    exact comparison after requested dtype conversion. Other aliases/partial
+    architecture conversions require a separately audited canonical artifact.
     """
     from safetensors import safe_open
 
@@ -190,14 +237,19 @@ def verify_loaded_safetensors(torch, model, root):
     if not isinstance(stored, Mapping) or not stored or len(stored) > 250_000:
         raise ValueError("unsupported pretrained model tensor inventory")
     seen = set()
+    verified_buffers = set()
     elements = 0
     for file in files:
         with safe_open(str(file), framework="pt", device="cpu") as handle:
             for key in handle.keys():
-                if key in seen or key not in stored:
+                if key in seen:
                     raise ValueError("duplicate or unexpected safetensors parameter key")
-                observed = stored[key]
                 expected = handle.get_tensor(key)
+                if key in stored:
+                    observed = stored[key]
+                else:
+                    observed = _verified_bert_position_buffer(torch, model, key, expected)
+                    verified_buffers.add(key)
                 if (not hasattr(observed, "shape") or
                         tuple(observed.shape) != tuple(expected.shape) or
                         observed.device.type == "meta"):
@@ -210,12 +262,16 @@ def verify_loaded_safetensors(torch, model, root):
                     raise ValueError("loaded pretrained tensor differs from pinned safetensors")
                 elements += int(expected.numel())
                 seen.add(key)
-    if seen != set(stored):
+    if seen - verified_buffers != set(stored):
         raise ValueError("incomplete safetensors inventory for loaded Encoder")
     return {
         "schema": "hepta.local-hf-exact-tensor-materialization.v1",
         "complete": True,
         "all_state_dict_tensors_compared": True,
+        "all_safetensors_tensors_compared": True,
+        "state_dict_tensor_count": len(stored),
+        "verified_nonpersistent_buffer_keys": sorted(verified_buffers),
+        "nonpersistent_buffer_policy": "stock-bert-ordinal-position-ids-v1",
         "tensor_count": len(seen),
         "tensor_elements": elements,
         "safetensors_shards": len(files),

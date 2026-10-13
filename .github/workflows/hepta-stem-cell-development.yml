@@ -34,7 +34,7 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/stem-development-venv"
           "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install \
             --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install numpy==2.2.6 llvmlite==0.47.0
+          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install numpy==2.2.6 llvmlite==0.47.0 safetensors==0.6.2
       - name: Execute actual arithmetic and existing repository entrypoints
         env:
           PYTHONDONTWRITEBYTECODE: "1"
@@ -51,7 +51,7 @@ jobs:
               development_learning_checks development_stopping_checks \
               development_quality_checks development_quality_runtime_checks development_anytime_checks \
               development_head_training_checks development_gated_training_checks \
-              development_learning_comparison_checks
+              development_learning_comparison_checks hf_tensor_materialization_checks
           } 2>&1 | tee "$RUNNER_TEMP/stem-development-tests.txt"
       - name: Execute synthetic learning and native fixed-policy controls
         env:
@@ -223,6 +223,7 @@ jobs:
             git rev-parse HEAD
             git rev-parse HEAD^{tree}
             "$PY" -m pip freeze
+            "$PY" -m unittest -v hf_tensor_materialization_checks hf_bert_materialization_checks
             for seed in 1414 2525 3636; do
               "$PY" qualification/stem-cell-v1/development_pretrained_study.py \
                 --snapshot "$SNAPSHOT" --snapshot-sha256 "$EXPECTED" --seed "$seed" \
