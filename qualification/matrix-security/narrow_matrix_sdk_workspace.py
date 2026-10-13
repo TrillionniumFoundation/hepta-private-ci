@@ -190,8 +190,9 @@ def verify_resolved_security_closure(data, *, candidate_root, stage_root):
             runtime_edge = False
             for kind in edge["dep_kinds"]:
                 if (type(kind) is not dict
-                        or kind.get("kind") not in (None, "build", "dev")
-                        or (kind.get("target") is not None
+                        or "kind" not in kind or "target" not in kind
+                        or kind["kind"] not in (None, "build", "dev")
+                        or (kind["target"] is not None
                             and type(kind["target"]) is not str)):
                     raise ValueError("unregistered Cargo dependency kind")
                 if kind["kind"] is None:
