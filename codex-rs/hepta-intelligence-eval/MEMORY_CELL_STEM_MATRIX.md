@@ -1932,3 +1932,39 @@ reader answers, Head learning protocol and production controls remain
 untouched. No hidden result is claimed before a successful real runner;
 the research workflow cannot issue production acceptance or establish
 independent citation entailment.
+
+## Oct 13 strict full-native shadow readout: separately pinned independent accounting
+
+The GitHub-hosted native matrix at
+`1081d37f8ef8b75a4e6718d8dfccb4e5dfe19bda` (tree
+`2e78823aa92d593c9dfb84a540712743efef7e48`, Actions run
+`38430452975`, artifact `11832820287`, external SHA-256
+`c32408fa3d1f8fdea66c208069e18b10ab44c4232d92604c7a5f4beb84c4902a`)
+**actually completed 576/576 original policy attempts**, after 1,734 Python
+regressions passed, with zero emitted native Reader citation markers.
+The same 32 registered unique select/retention/test/transfer questions
+appear at three checkpoints; they are **not** 96 independent observations.
+Successful execution does not itself establish learning quality.
+
+`stem_oct13_shadow_result_audit.py` is a new read-only, fixed-source
+accounting pass over that **particular** completed ZIP. Its GitHub workflow
+independently validates the outside SHA-256 pin, the complete internal
+SHA256SUMS manifest, generating commit/tree and all 576 original policy
+identities, then audits distinct controls that the original model run had
+already recorded: 192 real, label-blind pairwise Head choices; 384 choices
+under identical-initialization matched CE/pairwise objectives; 384 real
+label-placebo source choices; and 32 additional **same fixed Reader** paired
+answers on the final test/transfer cut. It reports whether a truly different
+source choice was made, weak native-document support wins/regressions against
+frozen/CE/placebo, and the observed original Reader answer-F1 changes and
+unscored/failed counts.
+
+The planned 8-question per-phase denominator remains intact. No archived
+answer is edited, no Reader inference or Head/Encoder optimizer is invoked,
+and no post-hoc objective selection is promoted. A label-placebo or
+budget-matched shadow advantage on *native document-level support* is not
+independently reviewed entailment; changed Reader token-F1 is not a semantic
+citation verdict. A zero citation denominator has **null** semantic precision,
+not a perfect score. Production gate remains closed until independently
+authenticated sufficient evidence, genuine unseen-family gains, measured
+per-arm p95/dollar/energy and authorized production cutover exist.
