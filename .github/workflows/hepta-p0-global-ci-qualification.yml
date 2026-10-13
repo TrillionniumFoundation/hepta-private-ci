@@ -1,0 +1,45 @@
+name: Hepta P0 Global CI Qualification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'codex-rs/core/src/client_provider_policy_tests.rs'
+      - '.github/scripts/test_run_bazel_ci.py'
+      - '.github/workflows/hepta-p0-global-ci-qualification.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  python-ruff-exact:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Install frozen uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.3"
+      - name: Show actual formatter diff, without mutating checkout
+        run: uv run --frozen --project scripts ruff format --diff .github/scripts/test_run_bazel_ci.py
+      - name: Require unchanged frozen Python formatting
+        run: uv run --frozen --project scripts ruff format --check .github/scripts/test_run_bazel_ci.py
+  windows-core-test-api:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Install exact Rust toolchain
+        shell: pwsh
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Preserve all provider terminal-policy tests and require Windows typecheck
+        shell: pwsh
+        run: cargo +1.95.0 check --locked -p codex-core --tests
