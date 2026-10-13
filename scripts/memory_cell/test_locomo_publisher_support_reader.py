@@ -134,12 +134,53 @@ class PrivilegedSupportTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             checked_disposition("publisher_support", {"status": "failed"})
 
-    def test_rejected_unanswerable_support_and_wrong_census(self):
+    def test_unanswerable_with_publisher_support_is_explicit_refusal_control(self):
         c,d,t=cases()
         t["q0"]["support"]=[c[0]["source_ids"][0]]
-        with self.assertRaises(ValueError):proposed(c,d,t)
+        p=payload(c,d,t)
+        admitted=validate_plan(p,c,d)
+        self.assertEqual(admitted[0]["mode"],"publisher_refusal_support")
+        self.assertEqual(admitted[0]["selected"],[c[0]["source_ids"][0]])
+        self.assertEqual(admitted[0]["support_count"],1)
+        self.assertNotIn('"answer"',str(p))
+        self.assertFalse(p["model_receives_answer_text"])
+        p["cases"][0]["mode"]="unanswerable_empty"
+        with self.assertRaises(ValueError):validate_plan(p,c,d)
         del c[-1]
         with self.assertRaises(ValueError):proposed(c,d,t)
+
+    def test_refusal_with_native_support_cannot_be_rewritten_as_unavailable(self):
+        c,d,t=cases()
+        t["q0"]["support"]=[c[0]["source_ids"][0]]
+        p=payload(c,d,t)
+        p["cases"][0]["mode"]="support_unavailable"
+        with self.assertRaises(ValueError):validate_plan(p,c,d)
+        with self.assertRaises(ValueError):
+            checked_disposition("publisher_refusal_support", {
+                "status":"unavailable","reason":"incomplete_publisher_support"
+            })
+        self.assertEqual(
+            checked_disposition("publisher_refusal_support", {
+                "status":"failed", "error_type":"RuntimeError"
+            }), "failed",
+        )
+
+
+    def test_native_supported_refusal_keeps_two_family_denominator(self):
+        c,d,t=cases()
+        for qid,index in (("q0",0),("q4",4),("q8",8)):
+            t[qid]["unanswerable"]=True
+            t[qid]["support"]=[c[index]["source_ids"][0]]
+            t[qid]["unresolved_support"]=[]
+        rows=proposed(c,d,t)
+        self.assertEqual(sum(x["mode"]=="publisher_refusal_support" for x in rows),3)
+        self.assertEqual(sum(x["mode"]=="support_unavailable" for x in rows),1)
+        self.assertTrue(all(
+            len(x["selected"])==1 for x in rows
+            if x["mode"]=="publisher_refusal_support"
+        ))
+        self.assertEqual(len({case["family_proxy_digest"] for case in c}),2)
+        self.assertEqual(len(validate_plan(payload(c,d,t),c,d)),16)
 
 
 if __name__=="__main__":

@@ -19,7 +19,8 @@ from locomo_sufficiency_worklist import pinned_zip, verify_inputs
 
 SCHEMA = "hepta.locomo.publisher-support-reader.v1"
 PLANNED = 16
-MODES = ("publisher_support", "unanswerable_empty", "support_unavailable")
+MODES = ("publisher_support", "publisher_refusal_support",
+         "unanswerable_empty", "support_unavailable")
 BASE_ARMS = ("lexical_k4", "lexical_k8")
 
 
@@ -39,17 +40,30 @@ def proposed(cases, documents, targets):
                 or len(set(support + unresolved)) != len(support + unresolved)
                 or not set(support + unresolved) <= set(case["source_ids"])):
             raise ValueError("bad publisher source membership or answerability")
-        if target["unanswerable"]:
-            if support or unresolved:
-                raise ValueError("unanswerable example has publisher support")
-            mode, selected = "unanswerable_empty", []
-        elif not support or unresolved or len(support) > 8:
-            # Missing/partial/too-large support must not become no-evidence truth.
+        if unresolved or len(support) > 8 or (
+            not support and not target["unanswerable"]
+        ):
+            # Unknown, incomplete or oversized support cannot become a
+            # fabricated gold no-evidence question.
             mode, selected = "support_unavailable", []
+        elif target["unanswerable"] and not support:
+            mode, selected = "unanswerable_empty", []
         else:
-            mode = "publisher_support"
-            selected = [sid for sid in case["source_ids"] if sid in set(support)]
-        if len(selected) != len(support) and mode == "publisher_support":
+            # Pinned publisher data contain genuine unanswerable questions
+            # WITH native support IDs. Do not discard those original
+            # sources or turn them into empty-prompt cases. Reader inputs
+            # still contain only the original question and source bytes,
+            # never the gold answerability label or the following mode.
+            mode = (
+                "publisher_refusal_support"
+                if target["unanswerable"] else "publisher_support"
+            )
+            selected = [
+                sid for sid in case["source_ids"] if sid in set(support)
+            ]
+        if len(selected) != len(support) and mode in (
+            "publisher_support", "publisher_refusal_support"
+        ):
             raise ValueError("lost original support identity")
         if any(documents[sid]["scope"] != case["scope"] for sid in selected):
             raise ValueError("publisher support crosses original source scope")
@@ -131,9 +145,16 @@ def validate_plan(payload, cases, documents):
                 or type(row["unresolved_count"]) is not int
                 or not 0 <= row["support_count"] <= len(case["source_ids"])
                 or not 0 <= row["unresolved_count"] <= len(case["source_ids"])
-                or (row["mode"] == "publisher_support" and
-                    (not selected or row["support_count"] != len(selected) or row["unresolved_count"]))
-                or (row["mode"] != "publisher_support" and selected)
+                or (row["mode"] in (
+                    "publisher_support", "publisher_refusal_support"
+                ) and (
+                    not selected
+                    or row["support_count"] != len(selected)
+                    or row["unresolved_count"]
+                ))
+                or (row["mode"] not in (
+                    "publisher_support", "publisher_refusal_support"
+                ) and selected)
                 or (row["mode"] == "unanswerable_empty" and
                     (row["support_count"] or row["unresolved_count"]))):
             raise ValueError("source-only selection or unknown/empty distinction drift")

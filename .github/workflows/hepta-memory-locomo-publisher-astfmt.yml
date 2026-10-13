@@ -4,6 +4,8 @@ on:
     branches: ["codex/memory-cell-evidence-20261008"]
     paths:
       - ".github/workflows/hepta-memory-locomo-publisher-astfmt.yml"
+      - "scripts/memory_cell/locomo_publisher_support_reader.py"
+      - "scripts/memory_cell/test_locomo_publisher_support_reader.py"
 permissions:
   contents: write
 concurrency:
