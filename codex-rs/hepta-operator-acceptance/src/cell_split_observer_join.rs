@@ -1117,6 +1117,7 @@ mod original_checkpoint_integrity_tests {
     use super::*;
 
     type OriginalPair = (crate::CellSplitExecutionPlanV1, CellSplitSupervisorCommitV1);
+    type OriginalTestResult = Result<(), CellSplitObserverJoinErrorV1>;
 
     fn fixture() -> Result<OriginalPair, CellSplitObserverJoinErrorV1> {
         let plan = crate::CellSplitExecutionPlanV1 {
@@ -1174,7 +1175,7 @@ mod original_checkpoint_integrity_tests {
     }
 
     #[test]
-    fn original_supervisor_checkpoint_requires_actual_journal_schema_and_digest() -> Result<(), CellSplitObserverJoinErrorV1> {
+    fn original_supervisor_checkpoint_requires_actual_journal_schema_and_digest() -> OriginalTestResult {
         let (plan, journal) = fixture()?;
         assert!(
             verify_original_supervisor_checkpoint_v1(
