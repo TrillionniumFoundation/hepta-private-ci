@@ -32,7 +32,12 @@ jobs:
       - name: Retrieve four exact original uploaded artifacts, without gold or models
         run: |
           set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/locomo-upload-audit"
+          # Runtime inputs are pinned to /tmp/locomo-upload-audit. Create
+          # their *actual parent*, not a similarly named RUNNER_TEMP folder.
+          mkdir -p "$(dirname "$HEPTA_LOCOMO_SOURCE_REVIEW_ZIP")"
+          test "$(dirname "$HEPTA_LOCOMO_SOURCE_REVIEW_ZIP")" = "$(dirname "$HEPTA_LOCOMO_ANSWER_REVIEW_ZIP")"
+          test "$(dirname "$HEPTA_LOCOMO_SOURCE_REVIEW_ZIP")" = "$(dirname "$HEPTA_LOCOMO_REVIEW_MANIFEST_ZIP")"
+          test "$(dirname "$HEPTA_LOCOMO_SOURCE_REVIEW_ZIP")" = "$(dirname "$HEPTA_LOCOMO_ORIGINAL_READER_ZIP")"
           gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779535979/zip > "$HEPTA_LOCOMO_SOURCE_REVIEW_ZIP"
           gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779431120/zip > "$HEPTA_LOCOMO_ANSWER_REVIEW_ZIP"
           gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779426223/zip > "$HEPTA_LOCOMO_REVIEW_MANIFEST_ZIP"

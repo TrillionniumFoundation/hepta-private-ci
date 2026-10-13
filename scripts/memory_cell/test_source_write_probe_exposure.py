@@ -62,6 +62,7 @@ class ProbeExposureTests(unittest.TestCase):
         return dict(
             revision=2,
             curriculum=curriculum,
+            loss_backend="full",
             roots=sorted({d.root for d in self.docs}),
             scopes=plan["scopes"],
             source_supervision=examples,
@@ -176,6 +177,7 @@ class ProbeIntegrationTests(unittest.TestCase):
         training = dict(
             revision=2,
             curriculum="single_hop",
+            loss_backend="full",
             roots=sorted({d.root for d in docs}),
             scopes=schedule["scopes"],
             source_supervision=examples,

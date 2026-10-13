@@ -19,10 +19,15 @@ class SourceMarginSparseAdmissionTests(unittest.TestCase):
     def test_sparse_margin_reaches_exact_source_pretrained_parity_guard(self):
         fake_pretrained = ModuleType("pretrained")
         fake_pretrained.LoRAReader = object
+        fake_losses = ModuleType("source_completion_loss")
+        fake_losses.BACKENDS = frozenset(("full", "supervised_positions"))
         with tempfile.TemporaryDirectory() as folder:
             output = Path(folder) / "snapshot"
             with (
-                patch.dict(sys.modules, {"pretrained": fake_pretrained}),
+                patch.dict(sys.modules, {
+                    "pretrained": fake_pretrained,
+                    "source_completion_loss": fake_losses,
+                }),
                 patch.dict(os.environ, {"HEPTA_MEMORY_TESTED_COMMIT": "a" * 40}),
                 patch(
                     "experience_write_trial.original_documents",
@@ -54,8 +59,13 @@ class SourceMarginSparseAdmissionTests(unittest.TestCase):
     def test_source_margin_other_curriculum_still_rejects_before_model(self):
         fake_pretrained = ModuleType("pretrained")
         fake_pretrained.LoRAReader = object
+        fake_losses = ModuleType("source_completion_loss")
+        fake_losses.BACKENDS = frozenset(("full", "supervised_positions"))
         with (
-            patch.dict(sys.modules, {"pretrained": fake_pretrained}),
+            patch.dict(sys.modules, {
+                    "pretrained": fake_pretrained,
+                    "source_completion_loss": fake_losses,
+                }),
             self.assertRaisesRegex(ValueError, "single-hop curriculum"),
         ):
             write_memory(
