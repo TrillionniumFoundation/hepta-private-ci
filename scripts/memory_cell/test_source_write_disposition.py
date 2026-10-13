@@ -13,7 +13,9 @@ class WriteDispositionTests(unittest.TestCase):
         raw, scored, cases = fixture()
         result = effects(raw, scored, cases)
         decisions = result["candidate_research_dispositions"]
-        self.assertEqual(decisions["schema"], "hepta.source-write.research-dispositions.v1")
+        self.assertEqual(
+            decisions["schema"], "hepta.source-write.research-dispositions.v1"
+        )
         policy = decisions["candidates"]["learned_policy"]
         self.assertEqual(policy["disposition"], "reject_no_increment_over_controls")
         self.assertEqual(policy["comparisons"]["hybrid"]["wins"], 2)
@@ -38,7 +40,9 @@ class WriteDispositionTests(unittest.TestCase):
         candidate = result["candidates"]["parameter_only"]
         self.assertEqual(candidate["citations_without_any_evidence"], 2)
         self.assertEqual(candidate["unsupported_citation_occurrences"], 2)
-        self.assertTrue(candidate["unsupported_citations_require_separate_semantic_review"])
+        self.assertTrue(
+            candidate["unsupported_citations_require_separate_semantic_review"]
+        )
         self.assertIsNone(result["formal_semantic_citation_precision"])
         self.assertFalse(candidate["use_as_selected_production_memory"])
 
