@@ -8,7 +8,6 @@ The 8x5 registered calibration matrix is sealed only after every shard exists.
 import argparse
 from collections import Counter
 import hashlib
-import io
 import json
 import math
 from pathlib import Path
@@ -203,7 +202,6 @@ def audit(root):
     total_inputs = total_outputs = 0
     read_seconds = 0.0
     tested = 0
-    types = Counter()
     arm_counts = Counter()
     successes = Counter()
     for case, part in ALL:
