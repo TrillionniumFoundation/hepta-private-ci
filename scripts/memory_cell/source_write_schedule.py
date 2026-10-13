@@ -84,7 +84,57 @@ def schedule(prepared, groups, *, maximum_steps, token_ceiling):
     )
 
 
-def prepare(tokenizer, examples, *, maximum_steps, token_ceiling):
+def interleave_source_kinds(examples, groups):
+    """Interleave source-only direct facts and two-hop relations per scope.
+
+    Only an explicit source-derived curriculum tag participates in scheduling.
+    Original example identities, targets, group membership and token bytes are
+    retained. This is a candidate training order, never a task-success claim.
+    """
+    from source_write_coverage import TWO_HOP
+
+    if not isinstance(examples, (list, tuple)) or not isinstance(groups, dict):
+        raise ValueError("bounded source-only interleave inputs required")
+    reordered = {}
+    seen = []
+    mixed = False
+    for scope in sorted(groups):
+        direct, relations = [], []
+        for index in groups[scope]:
+            if (
+                type(index) is not int
+                or not 0 <= index < len(examples)
+                or examples[index].get("query", {}).get("scope") != scope
+            ):
+                raise ValueError("source-only interleave scope/index drift")
+            kind = examples[index].get("curriculum")
+            if kind is None:
+                direct.append(index)
+            elif kind == TWO_HOP:
+                relations.append(index)
+            else:
+                raise ValueError("unregistered source-derived curriculum tag")
+        mixed |= bool(direct and relations)
+        ordered = []
+        for offset in range(max(len(direct), len(relations))):
+            if offset < len(direct):
+                ordered.append(direct[offset])
+            if offset < len(relations):
+                ordered.append(relations[offset])
+        reordered[scope] = ordered
+        seen.extend(ordered)
+    if (
+        not mixed
+        or sorted(seen) != list(range(len(examples)))
+        or len(set(seen)) != len(examples)
+    ):
+        raise ValueError("two source kinds must coexist without lost examples")
+    return reordered
+
+
+def prepare(
+    tokenizer, examples, *, maximum_steps, token_ceiling, strategy="original"
+):
     from experience_memory import render
     from grounded_protocol import completion_ids
 
@@ -95,12 +145,28 @@ def prepare(tokenizer, examples, *, maximum_steps, token_ceiling):
         ids, labels = completion_ids(tokenizer, prompt, example["target"], maximum=2112)
         groups.setdefault(query.scope, []).append(len(prepared))
         prepared.append((ids, labels))
-    return prepared, schedule(
-        prepared, groups, maximum_steps=maximum_steps, token_ceiling=token_ceiling
+    if strategy not in ("original", "direct_interleave"):
+        raise ValueError("unregistered source write schedule strategy")
+    ordered = (
+        groups if strategy == "original"
+        else interleave_source_kinds(examples, groups)
     )
+    plan = schedule(
+        prepared, ordered, maximum_steps=maximum_steps, token_ceiling=token_ceiling
+    )
+    if strategy != "original":
+        plan.update(
+            strategy=strategy,
+            original_groups_digest=digest(groups),
+            source_only_order_intervention=True,
+        )
+    return prepared, plan
 
 
-def preflight(sources, output, *, source_sha, curriculum="single_hop"):
+def preflight(
+    sources, output, *, source_sha, curriculum="single_hop",
+    schedule_strategy="original"
+):
     from huggingface_hub import HfApi, snapshot_download
     from transformers import AutoTokenizer
     from bundle_trial import write
@@ -129,6 +195,10 @@ def preflight(sources, output, *, source_sha, curriculum="single_hop"):
         curriculum_receipt = None
     else:
         raise ValueError("unregistered source-only curriculum")
+    if schedule_strategy != "original" and (
+        schedule_strategy != "direct_interleave" or curriculum != "source_two_hop"
+    ):
+        raise ValueError("interleave requires source-only two-hop curriculum")
     output.mkdir()
     repository, revision = MODELS["qwen-3b"]
     entries = catalogue(
@@ -161,7 +231,8 @@ def preflight(sources, output, *, source_sha, curriculum="single_hop"):
         output / "tokenizer", local_files_only=True, trust_remote_code=False
     )
     prepared, plan = prepare(
-        tokenizer, examples, maximum_steps=STEPS, token_ceiling=TOKEN_CEILING
+        tokenizer, examples, maximum_steps=STEPS, token_ceiling=TOKEN_CEILING,
+        strategy=schedule_strategy,
     )
     from source_write_coverage import audit_coverage
 
@@ -190,6 +261,8 @@ def preflight(sources, output, *, source_sha, curriculum="single_hop"):
         independent_future_cohort=False,
         production_accepted=False,
     )
+    if schedule_strategy != "original":
+        result["schedule_strategy"] = schedule_strategy
     write(output / "preflight.json", result)
     print(json.dumps(result, ensure_ascii=False, allow_nan=False))
     return result
@@ -205,10 +278,14 @@ if __name__ == "__main__":
         choices=("single_hop", "source_two_hop"),
         default="single_hop",
     )
+    parser.add_argument(
+        "--strategy", choices=("original", "direct_interleave"), default="original"
+    )
     args = parser.parse_args()
     preflight(
         args.sources,
         args.output,
         source_sha=args.source_sha,
         curriculum=args.curriculum,
+        schedule_strategy=args.strategy,
     )

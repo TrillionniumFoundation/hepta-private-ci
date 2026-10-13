@@ -59,6 +59,23 @@ def audit_coverage(examples, prepared, plan, *, curriculum):
         if kind == "invalid" or (curriculum == "single_hop" and kind != "direct"):
             raise ValueError("example curriculum differs from admitted writer")
         kinds.append(kind)
+    strategy = plan.get("strategy", "original")
+    if strategy == "direct_interleave":
+        from source_write_schedule import interleave_source_kinds
+
+        if (
+            curriculum != "source_two_hop"
+            or plan.get("source_only_order_intervention") is not True
+            or plan.get("original_groups_digest") != digest(groups)
+        ):
+            raise ValueError("unbound source-only interleave plan")
+        groups = interleave_source_kinds(examples, groups)
+    elif (
+        strategy != "original"
+        or "original_groups_digest" in plan
+        or "source_only_order_intervention" in plan
+    ):
+        raise ValueError("unregistered source write schedule strategy")
     if plan.get("prepared_digest") != digest(prepared) or plan.get(
         "groups_digest"
     ) != digest(groups):

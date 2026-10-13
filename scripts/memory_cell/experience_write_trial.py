@@ -69,6 +69,7 @@ def write_memory(
     parity_sha=None,
     curriculum="single_hop",
     binding_objective="completion_ce",
+    schedule_strategy="original",
 ):
     from pretrained import LoRAReader
     from source_completion_loss import BACKENDS
@@ -84,6 +85,12 @@ def write_memory(
     # projection proof below, and the dual-forward margin Qwen/PEFT regression.
     if binding_objective == "source_margin" and curriculum != "single_hop":
         raise ValueError("source margin requires source-only single-hop curriculum")
+    if schedule_strategy != "original" and (
+        schedule_strategy != "direct_interleave"
+        or curriculum != "source_two_hop"
+        or binding_objective != "completion_ce"
+    ):
+        raise ValueError("source interleave requires two-hop completion training")
 
     commit = exact_source()
     documents = original_documents(sources, source_sha)
@@ -114,6 +121,8 @@ def write_memory(
             token_ceiling=TOKEN_CEILING,
             loss_backend=loss_backend,
             curriculum=curriculum,
+            **({"schedule_strategy": schedule_strategy}
+               if schedule_strategy != "original" else {}),
             source_loss_parity_sha256=parity_binding,
             evaluation_query_input=False,
             source_documents_digest=digest([asdict(d) for d in documents]),
@@ -135,6 +144,7 @@ def write_memory(
         loss_backend=loss_backend,
         curriculum=curriculum,
         binding_objective=binding_objective,
+        schedule_strategy=schedule_strategy,
     )
     manifest = LoRAReader.save(reader, output / "adapter", training)
     reader.verify_frozen()
@@ -550,6 +560,11 @@ if __name__ == "__main__":
         choices=("completion_ce", "source_margin"),
         default="completion_ce",
     )
+    p.add_argument(
+        "--schedule-strategy",
+        choices=("original", "direct_interleave"),
+        default="original",
+    )
     p = sub.add_parser("read")
     for name in ("plan", "inputs", "model", "snapshot", "output"):
         p.add_argument(name, type=Path)
@@ -570,6 +585,7 @@ if __name__ == "__main__":
             parity_sha=a.parity_sha,
             curriculum=a.curriculum,
             binding_objective=a.binding_objective,
+            schedule_strategy=a.schedule_strategy,
         )
     else:
         read_memory(

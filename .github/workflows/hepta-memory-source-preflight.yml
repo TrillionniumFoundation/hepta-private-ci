@@ -6,6 +6,8 @@ on:
     paths:
       - "scripts/memory_cell/source_write_schedule.py"
       - "scripts/memory_cell/test_source_write_schedule.py"
+      - "scripts/memory_cell/test_source_schedule_interleave.py"
+      - "scripts/memory_cell/source_write_coverage.py"
       - "scripts/memory_cell/experience_memory.py"
       - ".github/workflows/hepta-memory-source-preflight.yml"
   workflow_dispatch:
@@ -84,14 +86,45 @@ jobs:
         run: |
           set -euo pipefail
           /tmp/preflight-python/bin/python scripts/memory_cell/source_write_schedule.py /tmp/write-preflight/sources.json /tmp/write-preflight/result --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 2>&1 | tee /tmp/write-preflight/preflight.log
+      - name: Pre-register and compare both source-only two-hop schedules
+        run: |
+          set -euo pipefail
+          /tmp/preflight-python/bin/python scripts/memory_cell/source_write_schedule.py /tmp/write-preflight/sources.json /tmp/write-preflight/twohop-original --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --curriculum source_two_hop 2>&1 | tee /tmp/write-preflight/twohop-original.log
+          /tmp/preflight-python/bin/python scripts/memory_cell/source_write_schedule.py /tmp/write-preflight/sources.json /tmp/write-preflight/twohop-interleave --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --curriculum source_two_hop --strategy direct_interleave 2>&1 | tee /tmp/write-preflight/twohop-interleave.log
+          /tmp/preflight-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          from native import digest
+          root = Path('/tmp/write-preflight')
+          old = json.loads((root / 'twohop-original/preflight.json').read_text())
+          new = json.loads((root / 'twohop-interleave/preflight.json').read_text())
+          for key in ('source_sha256', 'source_documents_digest', 'source_supervision_digest', 'source_example_ids', 'tokenizer_revision', 'tokenizer_files_digest', 'curriculum'):
+              assert old[key] == new[key], key
+          a, b = old['schedule'], new['schedule']
+          assert (a['maximum_steps'], a['token_ceiling']) == (b['maximum_steps'], b['token_ceiling']) == (128, 65536)
+          assert a['planned_input_tokens'] <= 65536 and b['planned_input_tokens'] <= 65536
+          assert b['strategy'] == 'direct_interleave' and b['source_only_order_intervention'] is True
+          assert b['original_groups_digest'] == a['groups_digest']
+          report = dict(schema='hepta.source-only.schedule-interleave-preflight.v1',
+              generating_commit=(root / 'tested-commit.txt').read_text().strip() if (root / 'tested-commit.txt').exists() else None,
+              original_schedule_sha256=digest(a), interleaved_schedule_sha256=digest(b),
+              original_coverage=old['curriculum_coverage']['by_kind'],
+              interleaved_coverage=new['curriculum_coverage']['by_kind'],
+              original_input_tokens=a['planned_input_tokens'],
+              interleaved_input_tokens=b['planned_input_tokens'],
+              identical_source_examples=True, task_quality_measured=False,
+              new_model_calls=0, independent_review=False, production_accepted=False)
+          (root / 'strategy-comparison.json').write_text(json.dumps(report, indent=2) + '\n')
+          print(json.dumps({k:v for k,v in report.items() if k not in ('original_coverage','interleaved_coverage')}))
+          PY
       - name: Preserve source and diagnostics, not tokenizer or model bytes
         if: always()
         run: |
           set -euo pipefail
           mkdir -p /tmp/write-preflight/source
-          cp scripts/memory_cell/source_write_schedule.py scripts/memory_cell/test_source_write_schedule.py scripts/memory_cell/experience_memory.py /tmp/write-preflight/source/
+          cp scripts/memory_cell/source_write_schedule.py scripts/memory_cell/source_write_coverage.py scripts/memory_cell/test_source_write_schedule.py scripts/memory_cell/test_source_schedule_interleave.py scripts/memory_cell/experience_memory.py /tmp/write-preflight/source/
           git rev-parse HEAD > /tmp/write-preflight/tested-commit.txt
-          rm -rf /tmp/write-preflight/result/tokenizer
+          rm -rf /tmp/write-preflight/result/tokenizer /tmp/write-preflight/twohop-original/tokenizer /tmp/write-preflight/twohop-interleave/tokenizer
           (cd /tmp/write-preflight && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()

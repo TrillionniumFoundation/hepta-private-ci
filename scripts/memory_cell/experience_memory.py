@@ -175,6 +175,7 @@ class ExperienceReader(ReferenceReader):
         loss_backend="full",
         curriculum="single_hop",
         binding_objective="completion_ce",
+        schedule_strategy="original",
     ):
         import torch
         from peft import get_peft_model_state_dict
@@ -190,6 +191,12 @@ class ExperienceReader(ReferenceReader):
             raise ValueError("unregistered source-only learning objective")
         if binding_objective == "source_margin" and curriculum != "single_hop":
             raise ValueError("source binding trial requires single-hop source training")
+        if schedule_strategy != "original" and (
+            schedule_strategy != "direct_interleave"
+            or curriculum != "source_two_hop"
+            or binding_objective != "completion_ce"
+        ):
+            raise ValueError("source interleave requires two-hop completion training")
         if curriculum == "source_two_hop":
             from source_composition_curriculum import combine_source_examples
 
@@ -211,7 +218,8 @@ class ExperienceReader(ReferenceReader):
             raise ValueError("writer must start with a fresh adapter")
         self.scopes = {d.scope for d in documents}
         prepared, plan = prepare(
-            self.tokenizer, examples, maximum_steps=STEPS, token_ceiling=TOKEN_CEILING
+            self.tokenizer, examples, maximum_steps=STEPS,
+            token_ceiling=TOKEN_CEILING, strategy=schedule_strategy,
         )
         from source_write_coverage import audit_coverage
 
@@ -364,6 +372,8 @@ class ExperienceReader(ReferenceReader):
                 else digest((examples, prepared)),
                 write_schedule=plan,
                 write_curriculum_coverage=coverage,
+                **({"schedule_strategy": schedule_strategy}
+                   if schedule_strategy != "original" else {}),
                 schedule_sha256=digest(plan),
                 roots=sorted(self.roots),
                 scopes=plan["scopes"],
