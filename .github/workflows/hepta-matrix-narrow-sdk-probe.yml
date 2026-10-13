@@ -163,16 +163,23 @@ jobs:
             --migration upstream-anymap-commit --candidate-dir "$SDK" \
             --source-sha "$HEPTA_SHA" \
             --output "$RUNNER_TEMP/hepta-narrow-source.json"
-          # Previous exact-head cargo metadata proved upstream 0.19.1
-          # requires libsqlite3-sys 0.38.2 while the legacy Hepta store
-          # requested 0.37. Align only this disposable native-link arm;
-          # production Cargo.toml/Cargo.lock and hard cargo-deny stay red.
+          # Real Cargo previously proved that SQLx 0.9 requires libsqlite3-sys
+          # <0.38; force-pinning 0.38.2 here is a known impossible links graph.
+          # Keep the Hepta 0.37 owner unchanged in this *detached* candidate.
+          # Authenticate the exact upstream SQLite manifest Git blob before
+          # trying rusqlite 0.39.0, which binds libsqlite3-sys 0.37.x.
+          # This experiment cannot establish E2EE/WAL runtime or cargo-deny.
           python3 qualification/matrix-security/narrow_matrix_sdk_workspace.py \
             --stage "$STAGE" \
             --source-report "$RUNNER_TEMP/hepta-narrow-source.json" \
             --source-sha "$HEPTA_SHA" \
-            --align-sqlite-native-links \
             --output "$RUNNER_TEMP/hepta-narrow-workspace.json"
+          python3 qualification/matrix-security/sqlite_abi_trial.py stage \
+            --sdk-root "$SDK" --hepta-stage "$STAGE" \
+            --source-report "$RUNNER_TEMP/hepta-narrow-source.json" \
+            --workspace-report "$RUNNER_TEMP/hepta-narrow-workspace.json" \
+            --hepta-sha "$HEPTA_SHA" \
+            --output "$RUNNER_TEMP/hepta-narrow-sqlite-abi.json"
           echo "NARROW_HEPTA_STAGE=$STAGE" >> "$GITHUB_ENV"
           echo "NARROW_SDK_SOURCE=$SDK" >> "$GITHUB_ENV"
       - name: Install candidate-only Rust 1.96
@@ -188,22 +195,15 @@ jobs:
               tail -n 100 "$RUNNER_TEMP/hepta-narrow-metadata.stderr"
               exit 1
             }
-          python3 - <<'PY'
-          import json
-          import os
-          from pathlib import Path
-          import sys
-          sys.path.insert(0, 'qualification/matrix-security')
-          from narrow_matrix_sdk_workspace import inspect_cargo_metadata
-          root = Path(os.environ['RUNNER_TEMP'])
-          result = inspect_cargo_metadata(
-              (root / 'hepta-narrow-metadata.json').read_bytes(),
-              candidate_root=os.environ['NARROW_SDK_SOURCE'],
-              stage_root=os.environ['NARROW_HEPTA_STAGE'])
-          (root / 'hepta-narrow-graph.json').write_text(
-              json.dumps(result, sort_keys=True, indent=2) + '\n')
-          print(json.dumps(result, sort_keys=True))
-          PY
+          # Audit the ACTUAL resolved runtime edges: pinned 0.19.1 Matrix
+          # crypto + E2EE + SQLite, exact 0.39/0.37 native links, safe AnyMap3,
+          # registered source roots, no CLI/Starlark and no replaced registry.
+          python3 qualification/matrix-security/sqlite_abi_trial.py audit \
+            --sdk-root "$NARROW_SDK_SOURCE" \
+            --hepta-stage "$NARROW_HEPTA_STAGE" \
+            --trial-report "$RUNNER_TEMP/hepta-narrow-sqlite-abi.json" \
+            --metadata "$RUNNER_TEMP/hepta-narrow-metadata.json" \
+            --output "$RUNNER_TEMP/hepta-narrow-graph.json"
       - name: Compile the actual Hepta Matrix SDK adapter / E2EE SQLite build
         shell: bash
         run: |
@@ -248,6 +248,7 @@ jobs:
           path: |
             ${{ runner.temp }}/hepta-narrow-source.json
             ${{ runner.temp }}/hepta-narrow-workspace.json
+            ${{ runner.temp }}/hepta-narrow-sqlite-abi.json
             ${{ runner.temp }}/hepta-narrow-graph.json
             ${{ runner.temp }}/hepta-narrow-compile.json
             ${{ runner.temp }}/hepta-narrow-metadata.stderr
