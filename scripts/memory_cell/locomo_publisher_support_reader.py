@@ -155,6 +155,11 @@ def validate_plan(payload, cases, documents):
                 or (row["mode"] not in (
                     "publisher_support", "publisher_refusal_support"
                 ) and selected)
+                or (
+                    row["mode"] == "support_unavailable"
+                    and 0 < row["support_count"] <= 8
+                    and row["unresolved_count"] == 0
+                )
                 or (row["mode"] == "unanswerable_empty" and
                     (row["support_count"] or row["unresolved_count"]))):
             raise ValueError("source-only selection or unknown/empty distinction drift")

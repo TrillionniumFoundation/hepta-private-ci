@@ -154,6 +154,9 @@ class PrivilegedSupportTests(unittest.TestCase):
         t["q0"]["support"]=[c[0]["source_ids"][0]]
         p=payload(c,d,t)
         p["cases"][0]["mode"]="support_unavailable"
+        p["cases"][0]["selected"]=[]
+        # A resolved 1..8 source set cannot be silently laundered as
+        # unavailable, even when the tamperer removes selected IDs.
         with self.assertRaises(ValueError):validate_plan(p,c,d)
         with self.assertRaises(ValueError):
             checked_disposition("publisher_refusal_support", {
