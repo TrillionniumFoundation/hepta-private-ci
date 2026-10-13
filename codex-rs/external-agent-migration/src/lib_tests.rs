@@ -337,6 +337,24 @@ command = "enabled-server"
 }
 
 #[test]
+fn subagent_yaml_scalar_contract_is_frozen_before_security_parser_migration() {
+    let scalar = parse_document_content(
+        "---\nname: 42\ndescription: true\n---\nReview carefully.\n",
+    );
+    let metadata = agent_metadata(&scalar).expect("YAML numeric and bool scalars are supported");
+    assert_eq!(metadata.name, "42");
+    assert_eq!(metadata.description, "true");
+
+    for value in ["[read, write]", "{nested: text}", "!secret value"] {
+        let source = format!(
+            "---\nname: reviewer\ndescription: {value}\n---\nReview carefully.\n"
+        );
+        let document = parse_document_content(&source);
+        assert!(agent_metadata(&document).is_none(), "{value}");
+    }
+}
+
+#[test]
 fn subagent_accepts_yaml_block_lists_by_ignoring_unsupported_fields() {
     let document = parse_document_content(
         "---\nname: cloud-incident\ndescription: Debug incidents\nskills:\n  - runbook-reader\ntools:\n  - Read\n  - Bash\ndisallowedTools:\n  - Write\n---\nInvestigate carefully.\n",
