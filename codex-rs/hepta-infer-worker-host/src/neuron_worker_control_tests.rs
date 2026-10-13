@@ -355,6 +355,10 @@ fn native_worker_port_maps_unobserved_terminal_and_driver_drift() {
     );
     let receipt = port.execute_feature(&typed).unwrap();
     assert_eq!(receipt.status, NeuronFeatureTerminalStatusV1::Indeterminate);
+    assert!(
+        port.take_cost_diagnostic().is_none(),
+        "unknown physical outcome cannot imply a numeric token cost"
+    );
     assert!(receipt.drive_q24.is_empty());
     assert!(receipt.prediction_q24.is_empty());
     assert!(!port.reservation_unconsumed());

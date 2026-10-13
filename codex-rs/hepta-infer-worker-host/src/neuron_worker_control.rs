@@ -103,6 +103,12 @@ impl WorkerNeuronTokenCostV1 {
             && self.worker_generation > 0
             && !self.request_digest.is_zero()
             && !self.feature_receipt_digest.is_zero()
+            // An unobserved physical terminal is UNKNOWN usage, not zero
+            // tokens. Cancelled pre-dispatch requests are not model runs.
+            && matches!(
+                self.terminal_status,
+                NeuronFeatureTerminalStatusV1::Succeeded | NeuronFeatureTerminalStatusV1::Failed
+            )
             && !self.diagnostic_digest.is_zero()
             && self.diagnostic_digest == self.computed_digest()
     }
@@ -230,6 +236,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> NeuronInferenceControlPort
 
         verify_neuron_feature_receipt_v1(request, &receipt)
             .map_err(|_| NeuronModelError::Indeterminate)?;
+
+        // Never publish zero or partial physical metering for an unknown
+        // outcome. The typed V1 Indeterminate/Cancelled receipt is preserved,
+        // but its missing cost MUST NOT be treated as free execution.
+        if !matches!(
+            receipt.status,
+            NeuronFeatureTerminalStatusV1::Succeeded | NeuronFeatureTerminalStatusV1::Failed
+        ) {
+            return Ok(receipt);
+        }
 
         let mut usage = WorkerNeuronTokenCostV1 {
             request_id: request.request_id.to_string(),

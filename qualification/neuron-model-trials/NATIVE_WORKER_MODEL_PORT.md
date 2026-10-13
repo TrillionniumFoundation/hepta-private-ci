@@ -503,7 +503,9 @@ status. The receipt is SELF-CONSISTENT, not a physical independent meter.
 WorkerNeuronControlPort::take_cost_diagnostic is single-use; a repeated
 or rejected call deletes the previous cost rather than double-crediting it.
 An unknown post-driver outcome with no validated typed receipt produces NO
-numeric cost claim. Overage still permanently quarantines the Worker.
+numeric cost claim. Even a structurally valid Indeterminate or Cancelled V1
+receipt never generates a token-cost diagnostic: unknown consumption cannot
+be scored as zero. Overage still permanently quarantines the Worker.
 
 This is additive; the frozen NeuronFeatureReceiptV1 wire bytes and Q24 math
 have not changed. Future NDU may evaluate the diagnostic only after an
