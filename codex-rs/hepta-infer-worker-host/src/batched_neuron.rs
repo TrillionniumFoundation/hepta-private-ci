@@ -61,6 +61,9 @@ pub enum BatchWorkerErrorV1 {
     Scheduler(SchedulerErrorV1),
     Authority,
     Worker,
+    /// A live Control scope fence advanced during an already-started model
+    /// effect. Its result must be reconciled, never published or blindly retried.
+    StaleAfterEffect,
     Capacity,
 }
 
@@ -448,19 +451,30 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                             .as_ref()
                                             != Some(&batch.key)
                                         {
-                                            return Err(
-                                                crate::model_worker::Error::FeatureContract,
-                                            );
+                                            return Err(BatchWorkerErrorV1::InvalidBinding);
                                         }
-                                        self.worker.run_neuron_features_receipt(
+                                        let receipt = self.worker.run_neuron_features_receipt(
                                             now_ms,
                                             &pending.model_id,
                                             pending.request,
-                                        )
+                                        ).map_err(|_| BatchWorkerErrorV1::Worker);
+                                        // A cutover may occur inside the synchronous backend.
+                                        // Consumed final-use nonces are never retried, and
+                                        // stale results must not become a successful receipt.
+                                        if self
+                                            .scope_frontier
+                                            .current(&batch.key.scope_id)
+                                            .ok()
+                                            .as_ref()
+                                            != Some(&batch.key)
+                                        {
+                                            return Err(BatchWorkerErrorV1::StaleAfterEffect);
+                                        }
+                                        receipt
                                     },
                                 )
                                 .map_err(|_| BatchWorkerErrorV1::Authority)
-                                .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
+                                .and_then(|inner| inner)
                             })
                     }
                 }
@@ -546,10 +560,25 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                         .as_ref()
                         != Some(&batch.key)
                     {
-                        return Err(crate::model_worker::Error::FeatureContract);
+                        return Err(BatchWorkerErrorV1::InvalidBinding);
                     }
-                    self.worker
+                    let receipts = self
+                        .worker
                         .run_neuron_features_batch_receipts(now_ms, &model_id, requests)
+                        .map_err(|_| BatchWorkerErrorV1::Worker);
+                    // One backend call may race CNS cutover. Neither a valid
+                    // signature nor a completed GPU batch authorizes old-route
+                    // results after the scope frontier has advanced.
+                    if self
+                        .scope_frontier
+                        .current(&batch.key.scope_id)
+                        .ok()
+                        .as_ref()
+                        != Some(&batch.key)
+                    {
+                        return Err(BatchWorkerErrorV1::StaleAfterEffect);
+                    }
+                    receipts
                 });
                 match with_all_final_use_effects(&self.authority, claims.into_iter(), &mut physical)
                 {
@@ -557,7 +586,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                         .into_iter()
                         .map(|result| result.map_err(|_| BatchWorkerErrorV1::Worker))
                         .collect(),
-                    Ok(_) => vec![Err(BatchWorkerErrorV1::Worker); admitted_count],
+                    Ok(Err(error)) => vec![Err(error); admitted_count],
+                    Ok(Ok(_)) => vec![Err(BatchWorkerErrorV1::Worker); admitted_count],
                     Err(_) => vec![Err(BatchWorkerErrorV1::Authority); admitted_count],
                 }
             } else {
@@ -579,17 +609,27 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                     .as_ref()
                                     != Some(&batch.key)
                                 {
-                                    return Err(crate::model_worker::Error::FeatureContract);
+                                    return Err(BatchWorkerErrorV1::InvalidBinding);
                                 }
-                                self.worker.run_neuron_features_receipt(
+                                let receipt = self.worker.run_neuron_features_receipt(
                                     now_ms,
                                     &pending.model_id,
                                     pending.request,
-                                )
+                                ).map_err(|_| BatchWorkerErrorV1::Worker);
+                                if self
+                                    .scope_frontier
+                                    .current(&batch.key.scope_id)
+                                    .ok()
+                                    .as_ref()
+                                    != Some(&batch.key)
+                                {
+                                    return Err(BatchWorkerErrorV1::StaleAfterEffect);
+                                }
+                                receipt
                             },
                         )
                         .map_err(|_| BatchWorkerErrorV1::Authority)
-                        .and_then(|result| result.map_err(|_| BatchWorkerErrorV1::Worker))
+                        .and_then(|result| result)
                     })
                     .collect()
             };

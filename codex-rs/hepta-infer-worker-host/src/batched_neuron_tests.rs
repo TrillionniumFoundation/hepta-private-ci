@@ -712,3 +712,127 @@ fn external_control_fence_cutover_denies_queued_grant_without_driver_effect() {
     assert_eq!(scalar_calls.load(std::sync::atomic::Ordering::Relaxed), 0);
     assert_eq!(execution.pending(), 0);
 }
+
+#[cfg(unix)]
+#[derive(Clone)]
+struct CutoverDuringBackendDriver {
+    frontier: std::sync::Arc<TestScopeFrontier>,
+    calls: std::sync::Arc<std::sync::atomic::AtomicUsize>,
+    physical: bool,
+}
+
+#[cfg(unix)]
+impl ModelDriver for CutoverDuringBackendDriver {
+    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+        let mut driver = Driver;
+        driver.load(manifest)
+    }
+
+    fn run(
+        &mut self,
+        _handle: &DriverModelHandle,
+        _request: &WorkerRequest,
+    ) -> Result<DriverRunObservation, Error> {
+        Err(Error::FeatureContract)
+    }
+
+    fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+        Ok(())
+    }
+}
+
+#[cfg(unix)]
+impl NeuronFeatureDriver for CutoverDuringBackendDriver {
+    fn run_neuron_features(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error> {
+        self.calls
+            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        let mut driver = Driver;
+        let receipt = driver.run_neuron_features(handle, request)?;
+        self.frontier.0.lock().unwrap().route_fence += 1;
+        Ok(receipt)
+    }
+
+    fn supports_physical_neuron_batch(&self) -> bool {
+        self.physical
+    }
+
+    fn run_neuron_features_batch(
+        &mut self,
+        handle: &DriverModelHandle,
+        requests: &[NeuronFeatureRequest],
+    ) -> Result<Vec<DriverNeuronFeatureObservation>, Error> {
+        self.calls
+            .fetch_add(1, std::sync::atomic::Ordering::Relaxed);
+        let mut driver = Driver;
+        let receipts = requests
+            .iter()
+            .map(|request| driver.run_neuron_features(handle, request))
+            .collect::<Result<Vec<_>, _>>()?;
+        self.frontier.0.lock().unwrap().route_fence += 1;
+        Ok(receipts)
+    }
+}
+
+/// The test driver advances the Control frontier *inside* a model invocation.
+/// The underlying computation may have run; its stale success cannot escape
+/// as a live receipt. Both paths consume terminal request identities.
+#[cfg(unix)]
+fn in_flight_scope_cutover_is_not_a_successful_result(batch_size: usize, physical: bool) {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[47; 32]);
+    let (model, fixture, key) = fixture_request();
+    let frontier = std::sync::Arc::new(TestScopeFrontier(std::sync::Mutex::new(key.clone())));
+    let calls = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = CutoverDuringBackendDriver {
+        frontier: frontier.clone(),
+        calls: calls.clone(),
+        physical,
+    };
+    let mut execution =
+        runner_with_scope_frontier(&signer, dir.path(), model, batch_size, driver, frontier);
+    for i in 0..batch_size {
+        let mut request = fixture.clone();
+        request.authorization.request_id = format!("inflight-cutover-{i}");
+        request.authorization.reservation_id = format!("inflight-reservation-{i}");
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("cutover-grant-{i}");
+        grant.grant.nonce = [u8::try_from(i + 1).unwrap(); 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        execution
+            .enqueue(100, "model".into(), request, key.clone(), grant)
+            .unwrap();
+    }
+    let finished = execution.poll_and_execute(101).unwrap();
+    assert_eq!(calls.load(std::sync::atomic::Ordering::Relaxed), 1);
+    assert_eq!(finished.outcomes.len(), batch_size);
+    assert!(finished.outcomes.iter().all(|outcome| {
+        matches!(
+            &outcome.result,
+            Err(BatchWorkerErrorV1::StaleAfterEffect)
+        )
+    }));
+    assert_eq!(execution.pending(), 0);
+}
+
+#[test]
+#[cfg(unix)]
+fn scalar_completion_after_scope_cutover_is_never_published() {
+    in_flight_scope_cutover_is_not_a_successful_result(1, false);
+}
+
+#[test]
+#[cfg(unix)]
+fn physical_batch_completion_after_scope_cutover_denies_all_old_route_results() {
+    in_flight_scope_cutover_is_not_a_successful_result(2, true);
+}
