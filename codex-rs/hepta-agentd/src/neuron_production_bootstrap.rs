@@ -91,6 +91,28 @@ fn validate_production_paths(
     Ok(())
 }
 
+/// Never treat a lost Evidence journal as an empty new installation when a
+/// durable effect-intent WAL already exists. It would erase the observed
+/// continuity required for recovery acceptance, even though metrics do not
+/// authorize business effects.
+#[cfg(unix)]
+fn require_existing_effect_metrics_v1(
+    effect_intent_path: &Path,
+    metrics_path: &Path,
+) -> Result<(), NeuronProductionBootstrapErrorV1> {
+    let prior_intent = match std::fs::symlink_metadata(effect_intent_path) {
+        Ok(metadata) => metadata.len() != 0,
+        Err(error) if error.kind() == io::ErrorKind::NotFound => false,
+        Err(error) => return Err(NeuronProductionBootstrapErrorV1::Io(error)),
+    };
+    if prior_intent
+        && !matches!(std::fs::symlink_metadata(metrics_path), Ok(metadata) if metadata.len() != 0)
+    {
+        return Err(NeuronProductionBootstrapErrorV1::NotReady);
+    }
+    Ok(())
+}
+
 /// Returns a Neuron owner only after independently recovering the exact
 /// scope/generation effect-intent WAL and durable Evidence telemetry sink.
 /// Callers must still independently initialize and verify both signed
@@ -113,6 +135,9 @@ where
     P: NeuronInferenceControlPort,
 {
     validate_production_paths(effect_intent_path, metrics_path)?;
+    // Check before either owner creates a new file; a recovered effect history
+    // cannot silently replace a deleted/zero-byte Evidence journal.
+    require_existing_effect_metrics_v1(effect_intent_path, metrics_path)?;
     let owner = AgentdNeuronOwner::new_authorized_durable_from_path(
         runtime,
         inference_control,

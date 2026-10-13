@@ -59,3 +59,27 @@ fn preprovisioned_evidence_sink_is_durable_and_replay_verified() {
     .expect("replay persisted group");
     assert!(reopened.healthy());
 }
+
+#[cfg(unix)]
+#[test]
+fn recovered_effect_wal_rejects_missing_or_zero_length_evidence() {
+    let root = tempfile::tempdir().expect("protected root");
+    let effect = root.path().join("effect.wal");
+    let metrics = root.path().join("effect.metrics");
+    require_existing_effect_metrics_v1(&effect, &metrics).expect("fresh deployment");
+    std::fs::write(&effect, b"existing-effect-intent-history")
+        .expect("simulate recovered nonempty intent");
+    assert!(matches!(
+        require_existing_effect_metrics_v1(&effect, &metrics),
+        Err(NeuronProductionBootstrapErrorV1::NotReady)
+    ));
+    assert!(!metrics.exists(), "readiness cannot create lost Evidence history");
+    std::fs::write(&metrics, b"").expect("empty telemetry");
+    assert!(matches!(
+        require_existing_effect_metrics_v1(&effect, &metrics),
+        Err(NeuronProductionBootstrapErrorV1::NotReady)
+    ));
+    std::fs::write(&metrics, b"nonempty evidence marker").expect("historical journal");
+    require_existing_effect_metrics_v1(&effect, &metrics)
+        .expect("presence gate only; real Evidence replay is checked separately");
+}

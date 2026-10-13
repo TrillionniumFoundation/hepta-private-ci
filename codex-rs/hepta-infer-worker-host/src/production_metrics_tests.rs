@@ -234,3 +234,48 @@ fn native_production_bootstrap_rejects_parent_traversal_without_creating_files()
     assert!(!dir.path().join("escaped-control.wal").exists());
     assert!(!dir.path().join("escaped-control.wal.metrics").exists());
 }
+
+#[cfg(unix)]
+#[test]
+fn recovered_business_wal_refuses_deleted_metrics_history() {
+    let dir = tempfile::tempdir().expect("protected root");
+    let journal = dir.path().join("control.wal");
+    let metrics = production_metrics_journal_path_v1(&journal).expect("metrics path");
+    {
+        let mut owner = open_metrics_bound_native_control_v1(&journal, 32).expect("first boot");
+        owner
+            .reserve_native(native_request("request.1"), 1)
+            .expect("durable business WAL");
+        assert!(owner.flush_production_metrics());
+    }
+    let prior_wal = std::fs::read(&journal).expect("WAL bytes");
+    std::fs::remove_file(&metrics).expect("simulate evidence loss");
+    assert!(open_metrics_bound_native_control_v1(&journal, 32).is_err());
+    assert!(!metrics.exists(), "a failed recovery must not invent new history");
+    assert_eq!(std::fs::read(&journal).expect("unchanged WAL"), prior_wal);
+    let repair = DurableInferenceControl::open(&journal, 32).expect("repair-only WAL");
+    assert!(repair.native_record("request.1").is_some());
+}
+
+#[cfg(unix)]
+#[test]
+fn recovered_business_wal_refuses_truncated_metrics_history() {
+    let dir = tempfile::tempdir().expect("protected root");
+    let journal = dir.path().join("control.wal");
+    let metrics = production_metrics_journal_path_v1(&journal).expect("metrics path");
+    {
+        let mut owner = open_metrics_bound_native_control_v1(&journal, 32).expect("first boot");
+        owner
+            .reserve_native(native_request("request.1"), 1)
+            .expect("durable business WAL");
+        assert!(owner.flush_production_metrics());
+    }
+    OpenOptions::new()
+        .write(true)
+        .open(&metrics)
+        .expect("existing journal")
+        .set_len(0)
+        .expect("simulate evidence truncation");
+    assert!(open_metrics_bound_native_control_v1(&journal, 32).is_err());
+    assert_eq!(std::fs::metadata(&metrics).expect("truncated journal").len(), 0);
+}

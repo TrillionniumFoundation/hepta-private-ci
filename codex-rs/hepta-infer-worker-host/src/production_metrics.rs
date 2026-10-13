@@ -88,6 +88,19 @@ fn open_native_control_with_directory_barrier_v1(
 ) -> Result<DurableInferenceControl, Box<dyn Error + Send + Sync>> {
     let metrics_path = production_metrics_journal_path_v1(journal)?;
     let control = DurableInferenceControl::open_production(journal, capacity)?;
+    // Once a business WAL contains durable history, a missing or empty
+    // telemetry journal is a recovery gap, not a fresh installation.
+    // Check before Evidence::open can create a replacement empty file.
+    if std::fs::metadata(journal)?.len() != 0 {
+        let prior_metrics = std::fs::symlink_metadata(&metrics_path)?;
+        if prior_metrics.len() == 0 {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "existing native WAL cannot recover against empty metrics history",
+            )
+            .into());
+        }
+    }
     let metrics = Arc::new(DurablePhaseMetricSinkV1::open(
         &metrics_path,
         /* capacity */ METRICS_QUEUE_CAPACITY,
