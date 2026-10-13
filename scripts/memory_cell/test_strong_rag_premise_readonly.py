@@ -20,13 +20,15 @@ class PremiseAuditTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         folder = os.environ.get("HEPTA_MEMORY_PREMISE_ARCHIVES")
-        cls.inputs = (Path(folder) if folder else Path(__file__).resolve().parent)
+        cls.inputs = Path(folder) if folder else Path(__file__).resolve().parent
         cls.model = cls.inputs / "memory-premise-actual-64-38385138211.zip"
         cls.original = cls.inputs / "event-inputs-20261010.zip"
 
     def require_archives(self):
         if not self.model.is_file() or not self.original.is_file():
-            self.skipTest("model/source pinned ZIPs not attached; fixture results do not replace inference")
+            self.skipTest(
+                "model/source pinned ZIPs not attached; fixture results do not replace inference"
+            )
 
     def mutate(self, changed, *, reseal=True, model=True):
         self.require_archives()
@@ -37,7 +39,8 @@ class PremiseAuditTests(unittest.TestCase):
         if reseal:
             contents["SHA256SUMS"] = "".join(
                 hashlib.sha256(payload).hexdigest() + "  ./" + name + "\n"
-                for name, payload in sorted(contents.items()) if name != "SHA256SUMS"
+                for name, payload in sorted(contents.items())
+                if name != "SHA256SUMS"
             ).encode()
         tempdir = tempfile.TemporaryDirectory()
         target = Path(tempdir.name) / "mutated.zip"
@@ -55,8 +58,16 @@ class PremiseAuditTests(unittest.TestCase):
         self.assertFalse(result["prompt_promotion_qualified"])
         self.assertFalse(result["production_accepted"])
         organized = result["conditions"]["organized"]
-        self.assertEqual((organized["original_correct"], organized["premise_chain_correct"]), (8, 3))
-        self.assertEqual((organized["original_complete_chain"], organized["premise_chain_complete_chain"]), (4, 2))
+        self.assertEqual(
+            (organized["original_correct"], organized["premise_chain_correct"]), (8, 3)
+        )
+        self.assertEqual(
+            (
+                organized["original_complete_chain"],
+                organized["premise_chain_complete_chain"],
+            ),
+            (4, 2),
+        )
         self.assertEqual(organized["premise_chain_truncated_identifier"], 5)
         self.assertEqual(result["conditions"]["hybrid"]["task_wins"], 1)
 
@@ -93,18 +104,26 @@ class PremiseAuditTests(unittest.TestCase):
         self.require_archives()
         with zipfile.ZipFile(self.model) as z:
             raw = z.read("evaluation/scored-answers.json")
-        changed = raw.replace(b'"strict_task_success": false', b'"strict_task_success": true', 1)
+        changed = raw.replace(
+            b'"strict_task_success": false', b'"strict_task_success": true', 1
+        )
         self.assertNotEqual(changed, raw)
         target = self.mutate({"evaluation/scored-answers.json": changed})
         with patch.object(audit, "MODEL_SHA", audit.hashbytes(target.read_bytes())):
-            with self.assertRaisesRegex(ValueError, "independent original answer replay"):
+            with self.assertRaisesRegex(
+                ValueError, "independent original answer replay"
+            ):
                 audit.replay(target, self.original)
 
     def test_resigned_prompt_receipt_mutation_is_rejected(self):
         self.require_archives()
         with zipfile.ZipFile(self.model) as z:
             raw = z.read("evaluation/raw-answers.jsonl")
-        changed = raw.replace(b'"input_ids_digest": "ed332f8c37d0d3fc656819404776d0aedf62f9d44ef94dbe7239b020cc3bd3b9"', b'"input_ids_digest": "' + b"0" * 64 + b'"', 1)
+        changed = raw.replace(
+            b'"input_ids_digest": "ed332f8c37d0d3fc656819404776d0aedf62f9d44ef94dbe7239b020cc3bd3b9"',
+            b'"input_ids_digest": "' + b"0" * 64 + b'"',
+            1,
+        )
         self.assertNotEqual(changed, raw)
         target = self.mutate({"evaluation/raw-answers.jsonl": changed})
         with patch.object(audit, "MODEL_SHA", audit.hashbytes(target.read_bytes())):
@@ -115,7 +134,9 @@ class PremiseAuditTests(unittest.TestCase):
         self.require_archives()
         with zipfile.ZipFile(self.model) as z:
             raw = z.read("evaluation/raw-answers.jsonl")
-        target = self.mutate({"evaluation/raw-answers.jsonl": b"\n".join(raw.splitlines()[:-1]) + b"\n"})
+        target = self.mutate(
+            {"evaluation/raw-answers.jsonl": b"\n".join(raw.splitlines()[:-1]) + b"\n"}
+        )
         with patch.object(audit, "MODEL_SHA", audit.hashbytes(target.read_bytes())):
             with self.assertRaisesRegex(ValueError, "64 original complete"):
                 audit.replay(target, self.original)
@@ -130,7 +151,10 @@ class PremiseAuditTests(unittest.TestCase):
 
     def test_worker_recipe_bound_has_no_arbitrary_code(self):
         with self.assertRaisesRegex(ValueError, "unregistered program worker"):
-            audit.procedure_outcome({"values":[1,2],"modes":{"mode_1234":"shell"},"target":[1,2]},"mode_1234")
+            audit.procedure_outcome(
+                {"values": [1, 2], "modes": {"mode_1234": "shell"}, "target": [1, 2]},
+                "mode_1234",
+            )
 
     def test_token_identifier_format_is_strict(self):
         self.assertIsNotNone(audit.IDENTIFIER.fullmatch("site_11111111 [E1]"))

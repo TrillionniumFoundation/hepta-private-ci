@@ -23,18 +23,29 @@ PLAN_SHA = "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897"
 READER_ID = "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225"
 CONDITIONS = ("hybrid", "organized", "program_support", "without_prerequisite")
 STYLES = ("original", "premise_chain")
-IDENTIFIER = re.compile(r"\s*((?:site|mode)_[0-9a-f]{8})(?:\s*\[E[1-9][0-9]*\])*\s*\.?\s*", re.ASCII)
+IDENTIFIER = re.compile(
+    r"\s*((?:site|mode)_[0-9a-f]{8})(?:\s*\[E[1-9][0-9]*\])*\s*\.?\s*", re.ASCII
+)
 LABEL = re.compile(r"\[E([1-9][0-9]*)\]", re.ASCII)
 CITATION_LIKE = re.compile(r"\[E[^\]\s]*\]")
 TRUNCATED = re.compile(r"^\s*(?:site_|mode_)(?:\s|\[E|$)")
 SCORER_FIELDS = {
-    "parsed_identifier", "strict_task_success", "required_delivered",
-    "required_source_count", "required_delivered_but_uncited", "required_undelivered",
-    "unbound_label_occurrences", "malformed_citation_markers",
-    "cited_not_program_declared", "required_premise_labels_covered",
-    "complete_citation_chain", "exact_formal_support_chain",
-    "formal_requirements_are_not_human_verified", "strict_success_and_complete_chain",
-    "procedure_verification", "postrun_failure_retained",
+    "parsed_identifier",
+    "strict_task_success",
+    "required_delivered",
+    "required_source_count",
+    "required_delivered_but_uncited",
+    "required_undelivered",
+    "unbound_label_occurrences",
+    "malformed_citation_markers",
+    "cited_not_program_declared",
+    "required_premise_labels_covered",
+    "complete_citation_chain",
+    "exact_formal_support_chain",
+    "formal_requirements_are_not_human_verified",
+    "strict_success_and_complete_chain",
+    "procedure_verification",
+    "postrun_failure_retained",
 }
 
 
@@ -43,7 +54,11 @@ def hashbytes(raw):
 
 
 def digest(value):
-    return hashbytes(json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode())
+    return hashbytes(
+        json.dumps(
+            value, sort_keys=True, ensure_ascii=False, separators=(",", ":")
+        ).encode()
+    )
 
 
 def strict_json(raw):
@@ -77,8 +92,12 @@ def opened(path, expected, *, max_size=16_000_000, max_members=200):
             name = item.filename
             parts = PurePosixPath(name)
             if (
-                not name or name in names or parts.is_absolute()
-                or ".." in parts.parts or "\\" in name or item.is_dir()
+                not name
+                or name in names
+                or parts.is_absolute()
+                or ".." in parts.parts
+                or "\\" in name
+                or item.is_dir()
                 or stat.S_ISLNK(item.external_attr >> 16)
                 or item.file_size > 8_000_000
             ):
@@ -116,28 +135,46 @@ def procedure_outcome(recipe, identifier):
     if method not in ("sort", "reverse", None):
         raise ValueError("unregistered program worker mode")
     sequence = recipe["values"]
-    observed = sorted(sequence) if method == "sort" else list(reversed(sequence)) if method == "reverse" else None
+    observed = (
+        sorted(sequence)
+        if method == "sort"
+        else list(reversed(sequence))
+        if method == "reverse"
+        else None
+    )
     return observed is not None and observed == recipe["target"], observed
 
 
 def check(raw, saved, case, truth, originals, identity):
     if {k: v for k, v in saved.items() if k not in SCORER_FIELDS} != raw:
         raise ValueError("scorer modified or dropped original model answer")
-    if raw["status"] != "succeeded" or raw["kind"] != truth["kind"] or raw["kind"] != case["kind"]:
+    if (
+        raw["status"] != "succeeded"
+        or raw["kind"] != truth["kind"]
+        or raw["kind"] != case["kind"]
+    ):
         raise ValueError("original model attempt incomplete or kind drift")
     condition, style = raw["condition"], raw["style"]
     selected = case["controls"][condition]["selected"]
-    if raw["selected"] != selected or raw["candidate_digest"] != case["candidate_digest"]:
+    if (
+        raw["selected"] != selected
+        or raw["candidate_digest"] != case["candidate_digest"]
+    ):
         raise ValueError("frozen selection differs from original plan")
     receipt = raw["receipt"]
     if (
-        receipt["reader_identity"] != identity or receipt["token_limit"] != 2048
-        or receipt["trainable_parameters"] != 0 or receipt["answer_postprocessed"] is not False
+        receipt["reader_identity"] != identity
+        or receipt["token_limit"] != 2048
+        or receipt["trainable_parameters"] != 0
+        or receipt["answer_postprocessed"] is not False
         or receipt["production_accepted"] is not False
         or receipt["independent_semantic_review"] is not False
-        or type(receipt["input_tokens"]) is not int or not 0 < receipt["input_tokens"] <= 2048
-        or type(receipt["generated_tokens"]) is not int or not 0 < receipt["generated_tokens"] <= 64
-        or not math.isfinite(receipt["seconds"]) or receipt["seconds"] < 0
+        or type(receipt["input_tokens"]) is not int
+        or not 0 < receipt["input_tokens"] <= 2048
+        or type(receipt["generated_tokens"]) is not int
+        or not 0 < receipt["generated_tokens"] <= 64
+        or not math.isfinite(receipt["seconds"])
+        or receipt["seconds"] < 0
         or receipt["query_digest"] != digest(case["query"])
     ):
         raise ValueError("reader, prompt, resource or training drift")
@@ -166,14 +203,16 @@ def check(raw, saved, case, truth, originals, identity):
     audit = raw["citation_audit"]
     req = audit["request"]
     if (
-        req["query_id"] != raw["question_id"] or req["scope"] != case["query"]["scope"]
+        req["query_id"] != raw["question_id"]
+        or req["scope"] != case["query"]["scope"]
         or req["question"] != case["query"]["content"]
         or req["question_time"] != case["query"]["observed_at"]
         or req["answer"] != raw["answer"]
         or req["prompt_digest"] != receipt["input_ids_digest"]
         or [s["label"] for s in req["sources"]] != list(labelmap)
         or [s["excerpt"] for s in req["sources"]] != [s["excerpt"] for s in supplied]
-        or audit["judgement"] is not None or audit["production_accepted"] is not False
+        or audit["judgement"] is not None
+        or audit["production_accepted"] is not False
     ):
         raise ValueError("original citation request changed")
     answer = raw["answer"]
@@ -195,7 +234,8 @@ def check(raw, saved, case, truth, originals, identity):
         ):
             raise ValueError("actual procedure output differs from original worker")
     scored_fields = {
-        "parsed_identifier": identifier, "strict_task_success": good,
+        "parsed_identifier": identifier,
+        "strict_task_success": good,
         "required_delivered": required <= set(selected),
         "required_source_count": len(required),
         "required_delivered_but_uncited": sorted((required & set(selected)) - cited),
@@ -205,17 +245,28 @@ def check(raw, saved, case, truth, originals, identity):
         "cited_not_program_declared": sorted(cited - required),
         "required_premise_labels_covered": required <= cited,
         "complete_citation_chain": required <= cited and not unbound and not malformed,
-        "exact_formal_support_chain": cited == required and not unbound and not malformed,
+        "exact_formal_support_chain": cited == required
+        and not unbound
+        and not malformed,
         "formal_requirements_are_not_human_verified": True,
     }
-    scored_fields["strict_success_and_complete_chain"] = good and scored_fields["complete_citation_chain"]
+    scored_fields["strict_success_and_complete_chain"] = (
+        good and scored_fields["complete_citation_chain"]
+    )
     for key, value in scored_fields.items():
         if saved[key] != value:
-            raise ValueError("saved claim fails independent original answer replay: " + key)
-    return {"correct": good, "complete": scored_fields["strict_success_and_complete_chain"],
-            "exact": good and scored_fields["exact_formal_support_chain"],
-            "input_tokens": receipt["input_tokens"], "output_tokens": receipt["generated_tokens"],
-            "truncated_identifier": bool(TRUNCATED.search(answer)), "answer_changed": answer}
+            raise ValueError(
+                "saved claim fails independent original answer replay: " + key
+            )
+    return {
+        "correct": good,
+        "complete": scored_fields["strict_success_and_complete_chain"],
+        "exact": good and scored_fields["exact_formal_support_chain"],
+        "input_tokens": receipt["input_tokens"],
+        "output_tokens": receipt["generated_tokens"],
+        "truncated_identifier": bool(TRUNCATED.search(answer)),
+        "answer_changed": answer,
+    }
 
 
 def replay(actual_zip, source_zip):
@@ -246,14 +297,29 @@ def replay(actual_zip, source_zip):
     cases = {case["query"]["identity"]: case for case in plan["cases"]}
     targets = {t["id"]: t for t in labels if t["phase"] == "test"}
     originals = {d["identity"]: d for d in docs}
-    if len(cases) != 8 or len(targets) != 8 or set(targets) != set(cases) or len(originals) != len(docs):
+    if (
+        len(cases) != 8
+        or len(targets) != 8
+        or set(targets) != set(cases)
+        or len(originals) != len(docs)
+    ):
         raise ValueError("original plan/question/source census drift")
     rawbytes = model["evaluation/raw-answers.jsonl"]
     raw = [strict_json(line) for line in rawbytes.splitlines()]
     scored = jsonfile(model, "evaluation/scored-answers.json")
-    expected = {(qid, condition, style) for qid in cases for condition in CONDITIONS for style in STYLES}
+    expected = {
+        (qid, condition, style)
+        for qid in cases
+        for condition in CONDITIONS
+        for style in STYLES
+    }
     keys = [(r["question_id"], r["condition"], r["style"]) for r in raw]
-    if len(raw) != len(scored) or len(raw) != 64 or set(keys) != expected or len(keys) != len(set(keys)):
+    if (
+        len(raw) != len(scored)
+        or len(raw) != 64
+        or set(keys) != expected
+        or len(keys) != len(set(keys))
+    ):
         raise ValueError("64 original complete paired generation census changed")
     by_pair = defaultdict(dict)
     for r, s in zip(raw, scored, strict=True):
@@ -274,7 +340,8 @@ def replay(actual_zip, source_zip):
             b, bx = row["premise_chain"]
             if (
                 a["selected"] != b["selected"]
-                or a["receipt"]["delivered_evidence"] != b["receipt"]["delivered_evidence"]
+                or a["receipt"]["delivered_evidence"]
+                != b["receipt"]["delivered_evidence"]
                 or a["receipt"]["derived_evidence"] != b["receipt"]["derived_evidence"]
                 or a["receipt"]["reader_identity"] != b["receipt"]["reader_identity"]
                 or a["receipt"]["input_ids_digest"] == b["receipt"]["input_ids_digest"]
@@ -294,29 +361,58 @@ def replay(actual_zip, source_zip):
             kinds[a["kind"] + "_losses"] += ax["correct"] and not bx["correct"]
         actual = {
             "question_pairs": len(paired),
-            **{k: count[k] for k in (
-                "original_correct", "premise_chain_correct", "original_complete_chain",
-                "premise_chain_complete_chain", "original_exact_chain", "premise_chain_exact_chain",
-                "original_truncated_identifier", "premise_chain_truncated_identifier", "task_wins",
-                "task_losses", "changed_outputs")},
+            **{
+                k: count[k]
+                for k in (
+                    "original_correct",
+                    "premise_chain_correct",
+                    "original_complete_chain",
+                    "premise_chain_complete_chain",
+                    "original_exact_chain",
+                    "premise_chain_exact_chain",
+                    "original_truncated_identifier",
+                    "premise_chain_truncated_identifier",
+                    "task_wins",
+                    "task_losses",
+                    "changed_outputs",
+                )
+            },
             "input_tokens": dict(input_totals),
             "generated_tokens": dict(output_totals),
             "by_task_kind": dict(sorted(kinds.items())),
         }
         source_report = report["by_condition"][condition]
-        if any((source_report[key] != actual[new]) for key, new in (
-            ("original_strict_correct", "original_correct"),
-            ("premise_prompt_strict_correct", "premise_chain_correct"),
-            ("original_strict_and_complete_formal_chain", "original_complete_chain"),
-            ("premise_prompt_strict_and_complete_formal_chain", "premise_chain_complete_chain"),
-            ("original_strict_and_exact_formal_chain", "original_exact_chain"),
-            ("premise_prompt_strict_and_exact_formal_chain", "premise_chain_exact_chain"),
-            ("task_wins", "task_wins"), ("task_losses", "task_losses"),
-            ("changed_raw_answers", "changed_outputs"),
-        )):
-            raise ValueError("archived paired result summary differs from independent reconstruction")
+        if any(
+            (source_report[key] != actual[new])
+            for key, new in (
+                ("original_strict_correct", "original_correct"),
+                ("premise_prompt_strict_correct", "premise_chain_correct"),
+                (
+                    "original_strict_and_complete_formal_chain",
+                    "original_complete_chain",
+                ),
+                (
+                    "premise_prompt_strict_and_complete_formal_chain",
+                    "premise_chain_complete_chain",
+                ),
+                ("original_strict_and_exact_formal_chain", "original_exact_chain"),
+                (
+                    "premise_prompt_strict_and_exact_formal_chain",
+                    "premise_chain_exact_chain",
+                ),
+                ("task_wins", "task_wins"),
+                ("task_losses", "task_losses"),
+                ("changed_raw_answers", "changed_outputs"),
+            )
+        ):
+            raise ValueError(
+                "archived paired result summary differs from independent reconstruction"
+            )
         output[condition] = actual
-    if report["planned_model_attempts"] != 64 or report["successful_model_generations"] != 64:
+    if (
+        report["planned_model_attempts"] != 64
+        or report["successful_model_generations"] != 64
+    ):
         raise ValueError("reported original model call census changed")
     return {
         "schema": SCHEMA,
@@ -348,9 +444,20 @@ def main():
     args = ap.parse_args()
     result = replay(args.model_zip, args.original_zip)
     with args.output.open("x", encoding="utf-8") as out:
-        json.dump(result, out, sort_keys=True, indent=2, ensure_ascii=False, allow_nan=False)
+        json.dump(
+            result, out, sort_keys=True, indent=2, ensure_ascii=False, allow_nan=False
+        )
         out.write("\n")
-    print(json.dumps({"verified_original_model_generations": result["actual_model_generations"], "disposition": "NO-GO"}))
+    print(
+        json.dumps(
+            {
+                "verified_original_model_generations": result[
+                    "actual_model_generations"
+                ],
+                "disposition": "NO-GO",
+            }
+        )
+    )
 
 
 if __name__ == "__main__":

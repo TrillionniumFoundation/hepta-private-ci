@@ -99,9 +99,13 @@ class ShardedCiTransportTests(unittest.TestCase):
             for name in (str(secret.resolve()), "../outside", "a\\b", "a//b", "a/./b"):
                 with self.subTest(name=name):
                     (stage / "SHA256SUMS").write_text(f"{digest}  ./{name}\n")
-                    with patch.object(sharded, "sha", side_effect=AssertionError(
-                        "a rejected path must not be hashed"
-                    )) as hashed:
+                    with patch.object(
+                        sharded,
+                        "sha",
+                        side_effect=AssertionError(
+                            "a rejected path must not be hashed"
+                        ),
+                    ) as hashed:
                         with self.assertRaises(ValueError):
                             sharded.check_tree(stage)
                     hashed.assert_not_called()
@@ -117,9 +121,11 @@ class ShardedCiTransportTests(unittest.TestCase):
             (stage / "alias").symlink_to(outside, target_is_directory=True)
             digest = hashlib.sha256((outside / "leak").read_bytes()).hexdigest()
             (stage / "SHA256SUMS").write_text(f"{digest}  ./alias/leak\n")
-            with patch.object(sharded, "sha", side_effect=AssertionError(
-                "symlink-escaped bytes must not be hashed"
-            )) as hashed:
+            with patch.object(
+                sharded,
+                "sha",
+                side_effect=AssertionError("symlink-escaped bytes must not be hashed"),
+            ) as hashed:
                 with self.assertRaisesRegex(ValueError, "unsafe"):
                     sharded.check_tree(stage)
             hashed.assert_not_called()
@@ -133,7 +139,6 @@ class ShardedCiTransportTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 sharded.extract_model_identity(zipfile, Path(tmp) / "model")
 
-
     def test_cli_dispatches_all_four_actions_with_exact_paths(self):
         # Exercise argparse rather than the model or immutable artifact.
         cases = (
@@ -145,7 +150,9 @@ class ShardedCiTransportTests(unittest.TestCase):
         for action, target, raw_paths in cases:
             result = {"tested_action": action, "model_calls": 0}
             with self.subTest(action=action):
-                with patch("sys.argv", ["strong_rag_sharded_ci.py", action, *raw_paths]):
+                with patch(
+                    "sys.argv", ["strong_rag_sharded_ci.py", action, *raw_paths]
+                ):
                     with patch.object(sharded, target, return_value=result) as invoked:
                         with redirect_stdout(io.StringIO()) as output:
                             sharded.main()
