@@ -349,6 +349,12 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             effect_intent
                 .prepare(tick_digest, input.checkpoint_digest)
                 .map_err(|_| NeuronRuntimeError::PendingReconciliation)?;
+            // Preparing the business-tick WAL is durable I/O that may outlast
+            // the current NDU read. Check again before entering the physical
+            // encoder/Head; denied admission retains the original Prepare.
+            if verify_live_ndu_read()? != admitted_read_receipt_digest {
+                return Err(NeuronRuntimeError::NduStaleAfterEffect);
+            }
             let outcome = self.tick_guarded(model, input, || {
                 // Independently revalidate Control/NDU *after* the physical
                 // model call but before durable checkpoint publication.
