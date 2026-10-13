@@ -330,7 +330,7 @@ jobs:
         if: always()
         run: |
           set -euo pipefail
-          python3 - <<'PY'
+          python3 - <<'PY' || exit 1
           import json
           import os
           from pathlib import Path
