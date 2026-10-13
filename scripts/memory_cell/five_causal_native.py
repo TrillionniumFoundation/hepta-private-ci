@@ -11,13 +11,11 @@ import argparse
 from collections import OrderedDict
 from contextlib import contextmanager
 from copy import deepcopy
-import json
 import os
 from pathlib import Path
 import sys
 import time
 
-# This is a repository entry point, not a dynamically downloaded module.
 REPOSITORY = Path(__file__).resolve().parents[2]
 if str(REPOSITORY) not in sys.path:
     sys.path.insert(0, str(REPOSITORY))
@@ -27,8 +25,8 @@ from safetensors.torch import load_file, save_file
 
 import five_causal_experiments as contract
 from experiments.shared_stem_cell.execution import (
-    Head, InputError, LocalEncoder, LocalTextGenerator, fit, measured, parameters,
-    tensor_digest, verify_snapshot,
+    Head, LocalEncoder, LocalTextGenerator, decode, fit, measured, parameters,
+    tensor_digest,
 )
 
 SYSTEM = (
@@ -64,9 +62,11 @@ def tokenizer_binding(snapshot):
 
 def reader_bindings(snapshot, template, maximum_tokens, maximum_new_tokens):
     return dict(reader=contract.digest(snapshot), tokenizer=tokenizer_binding(snapshot),
-                prompt=contract.digest({"system": SYSTEM, "chat_template": template}),
-                decoder=contract.digest({"do_sample": False, "num_beams": 1,
-                    "maximum_tokens": maximum_tokens, "maximum_new_tokens": maximum_new_tokens}))
+                prompt=contract.digest({"system": SYSTEM, "chat_template": template,
+                                        "tokenization": "direct-chat-template-ids-v1"}),
+                decoder=contract.digest({"do_sample": False, "num_beams": 1, "use_cache": True,
+                    "num_return_sequences": 1, "maximum_tokens": maximum_tokens,
+                    "maximum_new_tokens": maximum_new_tokens}))
 
 
 @contextmanager
@@ -79,6 +79,35 @@ def count_forwards(module):
         yield result
     finally:
         hook.remove()
+
+
+def generate_exact(backend, rendered, maximum_tokens, maximum_new_tokens):
+    """Compile ONCE. A rendered chat string is never tokenized a second time."""
+    ids = backend.tokenizer.apply_chat_template(
+        [{"role": "system", "content": SYSTEM}, {"role": "user", "content": rendered}],
+        tokenize=True, add_generation_prompt=True)
+    require(isinstance(ids, list) and ids and all(type(x) is int and x >= 0 for x in ids),
+            "invalid exact chat token sequence")
+    require(len(ids) <= maximum_tokens, "complete prompt exceeds input budget; no truncation")
+    require(not getattr(backend.loaded.config, "is_encoder_decoder", False), "causal-only profile")
+    require(len(ids) + maximum_new_tokens <= backend.loaded.config.max_position_embeddings,
+            "complete prompt plus decoding exceeds positional capacity")
+    x = torch.tensor([ids], dtype=torch.long)
+    with torch.no_grad():
+        output = backend.loaded.generate(
+            input_ids=x, attention_mask=torch.ones_like(x), do_sample=False, num_beams=1,
+            use_cache=True, num_return_sequences=1, return_dict_in_generate=False,
+            max_new_tokens=maximum_new_tokens, eos_token_id=backend.tokenizer.eos_token_id,
+            pad_token_id=backend.tokenizer.eos_token_id)
+    require(isinstance(output, torch.Tensor) and output.ndim == 2 and output.shape[0] == 1
+            and torch.equal(output[:, :len(ids)], x), "causal prefix changed")
+    emitted = output[0, len(ids):]
+    require(len(emitted) <= maximum_new_tokens, "decoder exceeded declared output cap")
+    answer = backend.tokenizer.decode(emitted, skip_special_tokens=True,
+                                      clean_up_tokenization_spaces=False)
+    require(isinstance(answer, str) and bool(answer.strip()), "Reader generated no answer")
+    return answer, {"input_tokens": len(ids), "generated_tokens": len(emitted),
+                    "input_token_sha256": tensor_digest(x), "output_token_sha256": tensor_digest(emitted)}
 
 
 class NativeSession:
@@ -138,10 +167,12 @@ class NativeSession:
         require(isinstance(spec, dict) and set(spec) == {"path", "sha256", "kind", "width", "classes", "rank"},
                 "head descriptor fields")
         require(width == spec["width"], "Encoder/Head width mismatch")
+        # Recheck current bytes even on a cached Head. A cached object is not a
+        # license to reuse revoked or modified material in a later invocation.
+        path = contract.source_file(self.root, spec["path"], spec["sha256"])
         key = contract.digest(spec)
         if key not in self.heads:
             require(len(self.heads) < MAX_HEADS, "resident Head capacity")
-            path = contract.source_file(self.root, spec["path"], spec["sha256"])
             model = Head(spec["width"], spec["classes"], spec["kind"], spec["rank"]).eval()
             model.load_state_dict(load_file(str(path), device="cpu"), strict=True)
             model.requires_grad_(False)
@@ -159,26 +190,15 @@ class NativeSession:
         key, backend = self.backend(m, arm)
         started = time.perf_counter()
         cache_hit = False
-        with measured() as timing, count_forwards(backend.loaded) as counter:
+        forward_owner = backend.loaded if m["kind"] == "reader" else backend.model
+        with measured() as timing, count_forwards(forward_owner) as counter:
             if m["kind"] == "reader":
                 new = m["maximum_new_tokens"]
                 require(type(new) is int and 1 <= new <= 256, "decoder bound")
                 expected = reader_bindings(m["snapshot"], backend.tokenizer.chat_template,
                                            m["maximum_tokens"], new)
                 require(all(m["bindings"][k] == v for k, v in expected.items()), "Reader prompt/decoder mismatch")
-                prompt = backend.tokenizer.apply_chat_template(
-                    [{"role": "system", "content": SYSTEM}, {"role": "user", "content": rendered}],
-                    tokenize=False, add_generation_prompt=True)
-                ids = backend.tokenizer(prompt, add_special_tokens=False)["input_ids"]
-                require(len(ids) + new <= backend.loaded.config.max_position_embeddings,
-                        "complete prompt plus decoding exceeds positional capacity")
-                # LocalTextGenerator tokenizes this rendered prompt itself. Its
-                # recorded token IDs, not this precheck, identify actual input.
-                result = backend.generate([prompt], new)["outputs"][0]
-                answer = result["text"]
-                detail = {"input_tokens_precheck": len(ids), "generated_tokens": result["generated_tokens"],
-                          "input_token_sha256": result["input_token_sha256"],
-                          "output_token_sha256": result["output_token_sha256"]}
+                answer, detail = generate_exact(backend, rendered, m["maximum_tokens"], new)
             else:
                 require(m["bindings"]["encoder"] == contract.digest(m["snapshot"]), "encoder binding drift")
                 require(m["bindings"]["preprocessor"] == contract.digest("five-native.public-json.mean-pool.v1"),
@@ -190,8 +210,10 @@ class NativeSession:
                     cache_hit = True
                 else:
                     # no_grad, not inference_mode: features are also usable by
-                    # the training path without inference-tensor autograd errors.
+                    # training without inference-tensor autograd errors.
                     value = backend.encode([rendered]).detach().clone()
+                    require(value.ndim == 2 and value.shape[0] == 1 and 1 <= value.shape[1] <= 8192
+                            and bool(torch.isfinite(value).all()), "invalid encoder feature")
                     charge = value.numel() * value.element_size()
                     if charge <= self.cache_bytes:
                         while self.cache and self.cache_size + charge > self.cache_bytes:
@@ -204,8 +226,7 @@ class NativeSession:
                     probabilities = head(value).softmax(-1)[0]
                 require(bool(torch.isfinite(probabilities).all()), "nonfinite decision")
                 require(len(packet["request"]["options"]) == len(probabilities), "option/readout shape mismatch")
-                choice = int(probabilities.argmax())
-                answer = packet["request"]["options"][choice]
+                answer = packet["request"]["options"][int(probabilities.argmax())]
                 detail = {"probabilities": probabilities.tolist(), "feature_sha256": tensor_digest(value),
                           "head_sha256": m["head"]["sha256"]}
         self.observations.append({"request_sha256": contract.digest(packet), "owner": contract.digest(key),
@@ -225,24 +246,27 @@ class NativeSession:
 
 
 def train_heads(plan, root, output):
-    """Actually encode approved train rows and fit independent immutable Heads.
+    """Encode train rows and fit independent immutable Heads, not Laya.
 
-    The API rejects evaluation rows. No held-out labels, review scores, guessed
-    families, selected-model write or online split occurs here. All train cost
-    is retained separately from future execution. This is not Laya fine-tuning.
+    The API rejects evaluation rows. All training cost is retained separately
+    from future execution. Fixed class meanings cannot silently change by row.
     """
     require(plan.get("schema") == "hepta.five-native.training.v1", "training schema")
     require(plan.get("data_kind") in ("approved_training", "historical_development"), "training data kind")
     rows = plan.get("rows")
     require(isinstance(rows, list) and 1 <= len(rows) <= 16384, "training row bound")
-    ids, scopes = set(), set()
+    ids, scopes, class_menus = set(), set(), {}
     for row in rows:
         require(isinstance(row, dict) and set(row) == {"id", "cell", "scope", "split", "request", "label"}, "train-only fields")
         require(row["split"] == "train", "evaluation row cannot enter optimizer")
         require(all(contract.text_id(row[k]) for k in ("id", "cell", "scope"))
                 and row["id"] not in ids, "training identity")
         public_text(row["request"])
-        require(type(row["label"]) is int and 0 <= row["label"] < len(row["request"]["options"]), "training label")
+        options = row["request"]["options"]
+        require(2 <= len(options) <= 256 and len(set(options)) == len(options), "fixed distinct class meanings")
+        require(row["cell"] not in class_menus or options == class_menus[row["cell"]], "class meanings/order changed within Cell")
+        class_menus[row["cell"]] = options
+        require(type(row["label"]) is int and 0 <= row["label"] < len(options), "training label")
         ids.add(row["id"]); scopes.add(row["scope"])
     require(len(scopes) == 1, "one approved training scope per job")
     require(type(plan.get("steps")) is int and 1 <= plan["steps"] <= 10000, "training budget")
@@ -257,11 +281,9 @@ def train_heads(plan, root, output):
         features = torch.cat([backend.encode([public_text(row["request"]) for row in rows[i:i+8]])
                               for i in range(0, len(rows), 8)]).detach().clone()
     receipts = []
-    for cell in sorted({row["cell"] for row in rows}):
+    for cell in sorted(class_menus):
         chosen = [i for i, row in enumerate(rows) if row["cell"] == cell]
-        classes = len(rows[chosen[0]]["request"]["options"])
-        require(all(len(rows[i]["request"]["options"]) == classes for i in chosen), "inconsistent Cell output width")
-        # Stable Cell seed; never Python's process-randomized hash().
+        classes = len(class_menus[cell])
         seed = int(contract.digest([plan["seed"], cell])[:8], 16)
         with torch.random.fork_rng():
             torch.manual_seed(seed)
@@ -276,8 +298,8 @@ def train_heads(plan, root, output):
             clone.load_state_dict(load_file(str(path)), strict=True)
             require(parameters(clone) == parameters(model), "checkpoint reload differs")
             files[name] = {"path": path.name, "sha256": contract.file_sha(path), **parameters(model)}
-        receipts.append({"cell": cell, "training_examples": len(chosen), "training": training,
-                         "models": files, "heldout_score": None, "independent_evaluation": False})
+        receipts.append({"cell": cell, "classes": class_menus[cell], "training_examples": len(chosen),
+                         "training": training, "models": files, "heldout_score": None, "independent_evaluation": False})
     backend.close()
     require(parameters(backend.loaded)["sha256"] == before, "frozen base mutated by Head optimizer")
     result = {"schema": "hepta.five-native.training-result.v1", "plan_sha256": contract.digest(plan),
@@ -318,14 +340,28 @@ def admit_stage(bundle, review, pin, experiment, reader_review, reader_pin):
     return rows
 
 
+def native_profiles(session, rows, experiment):
+    source_sha = contract.file_sha(Path(__file__))
+    for row in rows:
+        require(row["implementation_sha256"] == source_sha, "registered implementation is not this native adapter")
+        manifest = session.descriptor(row["checkpoint_sha256"])
+        expected_kind = "reader" if experiment == "reader" else "head"
+        require(manifest["kind"] == expected_kind, "wrong native stage backend")
+        expected_sharing = "replicated" if row["arm"] == "replicated_full" else "shared"
+        require(manifest["sharing"] == expected_sharing, "shared/replicated arm implementation mismatch")
+        require(manifest["bindings"] == row["bindings"], "registered native bundle binding differs")
+    return source_sha
+
+
 def run_registered(bundle, review, root, output, experiment, *, reader_review=None):
     rows = admit_stage(bundle, review, os.environ.get("HEPTA_FIVE_EXPERIMENT_REVIEW_SHA256"), experiment,
                        reader_review, os.environ.get("HEPTA_FIVE_READER_REVIEW_SHA256"))
     require(experiment in ("reader", "sharing"), "this adapter implements Reader/Head only; other native adapters remain required")
     contract.check_materials(bundle, root, experiment)
+    session = NativeSession(root)
+    source_sha = native_profiles(session, rows, experiment)
     output.mkdir(parents=True, exist_ok=False)
     contract.write_new(output / "frozen-bundle.json", bundle)
-    session = NativeSession(root)
     previous = "0" * 64
     rows.sort(key=lambda r: contract.digest({"seed": contract.PROTOCOL["bootstrap_seed"], "trial": r["trial_id"]}))
     try:
@@ -347,17 +383,15 @@ def run_registered(bundle, review, root, output, experiment, *, reader_review=No
                 if elapsed > row["timeout_seconds"]:
                     result["status"] = "timeout"
                 result["wall_seconds_including_process_start"] = elapsed
-                # Retain the actual late answer privately, but do not adjudicate
-                # it as successful. No hard preemption is claimed by this owner.
                 previous = contract.journal_append(stream, result, previous)
-        summary = session.close()
-        contract.write_new(output / "native-session.json", summary)
+        contract.write_new(output / "native-session.json", session.close())
     finally:
-        # Source corruption must not be converted to a successful receipt.
         contract.check_materials(bundle, root, experiment)
     receipt = {"schema": "hepta.five-native.execution.v1", "bundle_sha256": contract.digest(bundle),
-               "experiment": experiment, "planned": len(rows), "raw_sha256": contract.file_sha(output / "raw-journal.jsonl"),
+               "implementation_sha256": source_sha, "experiment": experiment, "planned": len(rows),
+               "raw_sha256": contract.file_sha(output / "raw-journal.jsonl"),
                "journal_tail_sha256": previous, "owner": "resident-python-research",
+               "replicated_baseline_semantics": "same_frozen_encoder_plus_supplied_head_not_full_Laya_finetuning",
                "deadline_policy": "measured-boundary-not-kernel-preemption", "production_authority": False,
                "model_efficacy_established": False}
     contract.write_new(output / "execution-receipt.json", receipt)
@@ -379,8 +413,7 @@ def main(argv=None):
         try:
             for line in sys.stdin.buffer:
                 require(0 < len(line) <= 2 * 1024 * 1024, "request size")
-                result = session.answer(json.loads(line))
-                print(contract.canonical(result).decode(), flush=True)
+                print(contract.canonical(session.answer(decode(line))).decode(), flush=True)
                 if args.mode == "answer":
                     break
         finally:
