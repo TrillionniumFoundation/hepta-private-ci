@@ -1,0 +1,84 @@
+name: Hepta source-session evidence ablation
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/source_time_evidence*.py"
+      - "scripts/memory_cell/test_source_time_evidence*.py"
+      - ".github/workflows/hepta-five-source-time-evidence.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: source-time-evidence-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  public-source-representation-study:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned offline model libraries and verify imports
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-source-time/source
+          python3 -m venv /tmp/hepta-source-time-env
+          /tmp/hepta-source-time-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/hepta-source-time/install-torch.log 2>&1
+          /tmp/hepta-source-time-env/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/hepta-source-time/install-worker.log 2>&1
+          /tmp/hepta-source-time-env/bin/pip check | tee /tmp/hepta-source-time/pip-check.log
+          /tmp/hepta-source-time-env/bin/pip freeze > /tmp/hepta-source-time/environment.txt
+          PYTHONPATH=scripts/memory_cell /tmp/hepta-source-time-env/bin/python -c 'import source_time_evidence_trial, five_reader_evidence_pairs, five_causal_native; print("SOURCE_TIME_IMPORTS_OK")'
+      - name: Require inherited and representation tests before pretrained execution
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-source-time-env/bin/python
+          failed=0
+          for pattern in test_full_cell_matrix.py test_five_causal_experiments.py test_five_causal_native.py 'test_five_group*.py' test_five_reader_response.py 'test_five_reader_adapter*.py' test_five_encoder_snapshot.py test_five_reader_evidence_pairs.py 'test_source_time_evidence*.py'; do
+            logfile=$(printf '%s' "$pattern" | tr '*' '_')
+            if "$P" -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/hepta-source-time/$logfile.log"; then
+              printf '%s\tpassed\n' "$pattern" >> /tmp/hepta-source-time/suites.tsv
+            else
+              failed=1
+              printf '%s\tfailed\n' "$pattern" >> /tmp/hepta-source-time/suites.tsv
+            fi
+          done
+          "$P" -m py_compile scripts/memory_cell/source_time_evidence.py scripts/memory_cell/source_time_evidence_trial.py scripts/memory_cell/test_source_time_evidence.py scripts/memory_cell/test_source_time_evidence_trial.py
+          test "$failed" -eq 0
+      - name: Retrieve only the original pinned archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/hepta-source-time-original.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/hepta-source-time-original.zip | sha256sum -c -
+      - name: Execute four fixed source-representation and learning controls
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/hepta-source-time/process-resources.txt /tmp/hepta-source-time-env/bin/python scripts/memory_cell/source_time_evidence_trial.py /tmp/hepta-source-time-original.zip --work /tmp/hepta-source-time-materials --output /tmp/hepta-source-time/study 2>&1 | tee /tmp/hepta-source-time/execution.log
+      - name: Preserve failures and exact source without original model material
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-source-time/source
+          git rev-parse HEAD > /tmp/hepta-source-time/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-source-time/source/tested-tree.txt
+          cp scripts/memory_cell/source_time_evidence*.py scripts/memory_cell/test_source_time_evidence*.py scripts/memory_cell/five_reader_evidence*.py scripts/memory_cell/five_reader_response*.py scripts/memory_cell/five_causal_native.py scripts/memory_cell/five_causal_experiments.py scripts/memory_cell/five_native_historical_smoke.py scripts/memory_cell/native.py scripts/memory_cell/sessions.py experiments/shared_stem_cell/execution.py .github/workflows/hepta-five-source-time-evidence.yml /tmp/hepta-source-time/source/
+          (cd /tmp/hepta-source-time && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-source-session-ablation-not-confirmation
+          path: /tmp/hepta-source-time
+          if-no-files-found: error
