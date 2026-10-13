@@ -5,6 +5,12 @@ on:
     paths:
       - "scripts/memory_cell/system2_*.py"
       - "scripts/memory_cell/test_system2*.py"
+      - "scripts/memory_cell/reader_review_*.py"
+      - "scripts/memory_cell/test_reader_review_*.py"
+      - "scripts/memory_cell/reader_originals_attestation.py"
+      - "scripts/memory_cell/test_reader_originals_attestation.py"
+      - "scripts/memory_cell/full_cell_matrix.py"
+      - "scripts/memory_cell/test_full_cell_matrix.py"
       - "codex-rs/hepta-ndu/research/**"
       - ".github/workflows/hepta-system2-fbsde-ablation.yml"
 permissions:
@@ -67,7 +73,7 @@ jobs:
           set -euo pipefail
           /tmp/system2-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_system2*.py' -v 2>&1 | tee /tmp/system2-research/mechanics.log
           /tmp/system2-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v 2>&1 | tee /tmp/system2-research/full-regression.log
-          /tmp/system2-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_*.py scripts/memory_cell/test_system2*.py codex-rs/hepta-ndu/research/finite_tree_bsde.py 2>&1 | tee /tmp/system2-research/lint.log
+          /tmp/system2-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_*.py scripts/memory_cell/test_system2*.py scripts/memory_cell/reader_review_*.py scripts/memory_cell/test_reader_review_*.py scripts/memory_cell/reader_originals_attestation.py scripts/memory_cell/test_reader_originals_attestation.py scripts/memory_cell/full_cell_matrix.py scripts/memory_cell/test_full_cell_matrix.py codex-rs/hepta-ndu/research/finite_tree_bsde.py 2>&1 | tee /tmp/system2-research/lint.log
       - name: Replay existing native features with real repository heads, no pretrained models
         env:
           HF_HUB_OFFLINE: "1"
