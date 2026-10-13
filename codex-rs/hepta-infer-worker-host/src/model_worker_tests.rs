@@ -834,9 +834,15 @@ fn typed_neuron_driver_panic_quarantines_even_when_host_catches_unwind() {
     let panicked = catch_unwind(AssertUnwindSafe(|| {
         let _ = worker.run_neuron_features(100, "model.1", initial);
     }));
-    assert!(panicked.is_err(), "fixture must simulate physical driver panic");
+    assert!(
+        panicked.is_err(),
+        "fixture must simulate physical driver panic"
+    );
     assert_eq!(worker.driver.neuron_calls, 1);
-    assert!(worker.is_quarantined(), "caught panic must not reopen the backend");
+    assert!(
+        worker.is_quarantined(),
+        "caught panic must not reopen the backend"
+    );
 
     // A separately issued, syntactically valid reservation must not reach
     // the same possibly-mutated model/device state after this panic.
