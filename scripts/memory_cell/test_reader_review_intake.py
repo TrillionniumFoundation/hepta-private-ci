@@ -274,6 +274,62 @@ class ReviewIntakeTests(unittest.TestCase):
         receipt.chmod(0o600)
         self.receipt_pin = hashlib.sha256(receipt.read_bytes()).hexdigest()
 
+    def _rewrite_pinned_reviewer_evidence(self, qid, condition, edit):
+        # A fully recomputed private handoff pin can still be internally wrong.
+        # Alter BOTH ticket view and operator provenance, then re-pin both.
+        questions = self.handoff / "review-questions.jsonl"
+        mappings = self.handoff / "operator-private-map.jsonl"
+        views = read_lines(questions)
+        links = read_lines(mappings)
+        link = next(r for r in links
+                    if r["item_id"] == qid and r["condition"] == condition)
+        view = next(r for r in views if r["ticket"] == link["ticket"])
+        edit(view["evidence"])
+        link["exact_provenance"]["delivered_source_sha256"] = [
+            e["source_fingerprint"] for e in view["evidence"]]
+        receipt_path = self.handoff / "handoff-receipt.json"
+        receipt = json.loads(receipt_path.read_text())
+        receipt["written_file_sha256"]["review-questions.jsonl"] = dump_lines(
+            questions, views)
+        receipt["written_file_sha256"]["operator-private-map.jsonl"] = dump_lines(
+            mappings, links)
+        receipt_path.write_text(json.dumps(
+            receipt, sort_keys=True, separators=(",", ":")) + "\n")
+        receipt_path.chmod(0o600)
+        self.receipt_pin = hashlib.sha256(receipt_path.read_bytes()).hexdigest()
+
+    def test_re_pinned_no_evidence_cannot_display_a_source(self):
+        views = read_lines(self.handoff / "review-questions.jsonl")
+        ordinary = next(r for r in views
+                        if self.map[r["ticket"]]["item_id"] == "q1"
+                        and self.map[r["ticket"]]["condition"] == "ordinary_retrieval")
+        source = copy.deepcopy(ordinary["evidence"][0])
+        self._rewrite_pinned_reviewer_evidence(
+            "q1", "no_evidence", lambda evidence: evidence.append(source))
+        with self.assertRaisesRegex(ValueError, "evidence intervention not strictly nested"):
+            self.run_intake()
+        self.assertFalse(self.output.exists())
+
+    def test_re_pinned_removed_condition_cannot_introduce_new_source(self):
+        novel = dict(label="E2", excerpt="Synthetic substituted premise.",
+                     observed_at="2026-01-01T00:00:00+00:00",
+                     source_fingerprint="f" * 64)
+        self._rewrite_pinned_reviewer_evidence(
+            "q1", "critical_premise_removed",
+            lambda evidence: evidence.append(novel))
+        with self.assertRaisesRegex(ValueError, "evidence intervention not strictly nested"):
+            self.run_intake()
+        self.assertFalse(self.output.exists())
+
+    def test_re_pinned_same_evidence_fingerprint_twice_is_invalid(self):
+        def duplicate(evidence):
+            evidence[1] = dict(evidence[0], label="E2")
+        self._rewrite_pinned_reviewer_evidence(
+            "q1", "human_sufficient", duplicate)
+        with self.assertRaisesRegex(ValueError, "duplicate reviewer-visible source fingerprint"):
+            self.run_intake()
+        self.assertFalse(self.output.exists())
+
     def test_reviewer_visible_question_cannot_change_across_blinded_conditions(self):
         def change(rows):
             row = next(r for r in rows

@@ -137,6 +137,7 @@ def verified_handoff(directory, *, receipt_pin):
     by_question = {}
     visible_questions = {}
     visible_sources = {}
+    visible_source_sets = {}
     for ticket in tickets:
         view, blank, link = work[ticket], blanks[ticket], maps[ticket]
         # Recheck reviewer-visible question fields across all four blinded
@@ -184,6 +185,11 @@ def verified_handoff(directory, *, receipt_pin):
                        for i, e in enumerate(evidence))
                 or proof["delivered_source_sha256"] != [e["source_fingerprint"] for e in evidence]):
             raise ValueError("handoff source labels/fingerprints are unbound")
+        fingerprints = [e["source_fingerprint"] for e in evidence]
+        if len(set(fingerprints)) != len(fingerprints):
+            raise ValueError("duplicate reviewer-visible source fingerprint")
+        visible_source_sets.setdefault(link["item_id"], {})[
+            link["condition"]] = set(fingerprints)
         question = (view["question"], view["question_observed_at"],
                     proof["question_sha256"])
         qid = link["item_id"]
@@ -225,6 +231,13 @@ def verified_handoff(directory, *, receipt_pin):
     if (len(by_question) != receipt["cohort_size"]
             or any(items != set(CONDITIONS) for items in by_question.values())):
         raise ValueError("handoff original question/condition census changed")
+    # Re-pin-safe structural validation: a reviewer must never be shown
+    # replacement evidence in a purported premise-removal intervention.
+    # This does not authenticate the original producer or authorize verdicts.
+    for arms in visible_source_sets.values():
+        if (arms["no_evidence"] or not arms["human_sufficient"]
+                or not arms["critical_premise_removed"] < arms["human_sufficient"]):
+            raise ValueError("reviewer-visible evidence intervention not strictly nested")
     return dict(views=work, maps=maps, receipt=receipt)
 
 
