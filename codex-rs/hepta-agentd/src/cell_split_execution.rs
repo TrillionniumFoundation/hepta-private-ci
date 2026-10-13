@@ -31,10 +31,12 @@ pub trait CellSplitScopeSelectionAdmissionV1 {
 
     fn current_scope_digest(&self, scope: &StableId) -> Result<Digest32, Self::Error>;
 
-    /// Resolve the *current* CNS route/fence binding for the exact selected
-    /// split and generation pair from an independent authoritative reader.
-    /// The caller's frozen plan is not evidence of a live CNS binding.
-    fn current_route_fence_digest(
+    /// Resolve the independently *selected successor route plan* commitment
+    /// for this exact split and generation pair from current Selector state.
+    /// This is NOT a serving CNS route: the successor is not cut over yet.
+    /// The live CNS owner must separately verify predecessor and successor
+    /// routes, writer fencing, and final-use at the actual cutover boundary.
+    fn current_selected_route_fence_digest(
         &self,
         scope: &StableId,
         split_id: &StableId,
@@ -104,7 +106,7 @@ pub fn advance_scope_bound_selected_cell_split_v1<A: CellSplitScopeSelectionAdmi
                 &signed_ndu_read.snapshot.scope_id,
                 admission,
             )?;
-            validate_current_route_binding(plan, selected_scope_id, selected_split_id, admission)?;
+            validate_selected_route_binding(plan, selected_scope_id, selected_split_id, admission)?;
             // Independently refresh Selector membership, not merely the
             // signature originally verified when the token was constructed.
             admission
@@ -138,22 +140,22 @@ fn validate_scope_binding<A: CellSplitScopeSelectionAdmissionV1>(
     Ok(())
 }
 
-fn validate_current_route_binding<A: CellSplitScopeSelectionAdmissionV1>(
+fn validate_selected_route_binding<A: CellSplitScopeSelectionAdmissionV1>(
     plan: &CellSplitExecutionPlanV1,
     scope: &StableId,
     split_id: &StableId,
     admission: &A,
 ) -> Result<(), String> {
     let current = admission
-        .current_route_fence_digest(
+        .current_selected_route_fence_digest(
             scope,
             split_id,
             plan.parent_generation,
             plan.child_generation,
         )
-        .map_err(|e| format!("current independent CNS route unavailable: {e}"))?;
+        .map_err(|e| format!("current independent selected route unavailable: {e}"))?;
     if current.is_zero() || current.to_string() != plan.route_fence_digest {
-        return Err("current CNS route fence differs from frozen CellSplit plan".into());
+        return Err("current selected route fence differs from frozen CellSplit plan".into());
     }
     Ok(())
 }
@@ -220,7 +222,7 @@ mod tests {
             }
         }
 
-        fn current_route_fence_digest(
+        fn current_selected_route_fence_digest(
             &self,
             scope: &StableId,
             split_id: &StableId,
@@ -284,7 +286,7 @@ mod tests {
     }
 
     #[test]
-    fn current_cns_route_fence_must_match_frozen_selected_generation() {
+    fn current_selected_route_fence_must_match_frozen_generation() {
         let scope = StableId::new("scope-a").expect("scope");
         let split_id = StableId::new("split-one").expect("split");
         let plan = plan();
@@ -294,31 +296,30 @@ mod tests {
             route_fence_digest: Digest32::from_array([0x55; 32]),
             unavailable: false,
         };
-        assert!(validate_current_route_binding(&plan, &scope, &split_id, &current).is_ok());
+        assert!(validate_selected_route_binding(&plan, &scope, &split_id, &current).is_ok());
 
+        let another_split = StableId::new("different-split").expect("other split");
+        assert!(
+            validate_selected_route_binding(&plan, &scope, &another_split, &current).is_err()
+        );
+        let another_generation = CellSplitExecutionPlanV1 {
+            child_generation: 9,
+            ..plan.clone()
+        };
+        assert!(
+            validate_selected_route_binding(&another_generation, &scope, &split_id, &current)
+                .is_err()
+        );
         let stale = CurrentScope {
             route_fence_digest: Digest32::from_array([0x66; 32]),
             ..current
         };
-        assert!(validate_current_route_binding(&plan, &scope, &split_id, &stale).is_err());
+        assert!(validate_selected_route_binding(&plan, &scope, &split_id, &stale).is_err());
         let missing = CurrentScope {
             unavailable: true,
             ..stale
         };
-        assert!(validate_current_route_binding(&plan, &scope, &split_id, &missing).is_err());
-
-        let another_split = StableId::new("different-split").expect("other split");
-        assert!(
-            validate_current_route_binding(&plan, &scope, &another_split, &missing).is_err()
-        );
-        let another_generation = CellSplitExecutionPlanV1 {
-            child_generation: 9,
-            ..plan
-        };
-        assert!(
-            validate_current_route_binding(&another_generation, &scope, &split_id, &missing)
-                .is_err()
-        );
+        assert!(validate_selected_route_binding(&plan, &scope, &split_id, &missing).is_err());
     }
 
     #[test]
