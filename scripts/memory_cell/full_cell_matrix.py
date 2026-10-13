@@ -79,7 +79,7 @@ def _arm(conditions: dict, name: str, cohort: list[str]) -> tuple[int, int] | No
     total = row.get("total")
     grounded = row.get("grounded_and_cited")
     refusal = row.get("exact_refusal")
-    if total != len(cohort) or any(
+    if type(total) is not int or total != len(cohort) or any(
         type(x) is not int or x < 0 or x > total for x in (grounded, refusal)
     ):
         return None
@@ -92,7 +92,10 @@ def evaluate_reader_gate(
     reviewer_roster: dict | None = None,
     trusted_roster_sha256: str | None = None,
 ) -> ReaderGate:
-    """Derive the four-arm admission decision from an external v2 receipt.
+    """Derive admission from a dual-signed external v2 or v3 receipt.
+
+    V2 retains the strict retrieval-gap rule. V3 separates Reader adequacy
+    from retrieval headroom, with unchanged dual-signature trust requirements.
 
     Receipt and manifest cannot attest to their own independence. An
     operator-provided OUT-OF-BAND review-manifest SHA is mandatory. The
@@ -102,18 +105,18 @@ def evaluate_reader_gate(
     keys in an independently operator-pinned reviewer roster are required.
     Absent external authorization and actual reviewed results, rows stay blocked.
     """
-    if not isinstance(payload, dict) or payload.get("schema") != "hepta.reader-gate.v2":
+    if not isinstance(payload, dict) or payload.get("schema") not in ("hepta.reader-gate.v2", "hepta.reader-gate.v3"):
         return _empty_gate("missing-or-unknown-reader-gate")
     cohort = payload.get("cohort")
     conditions = payload.get("conditions")
     binding = payload.get("model_binding")
     review = payload.get("independent_review")
     capabilities = payload.get("capabilities")
-    if not isinstance(cohort, list) or not cohort or len(cohort) > 10000 or len(set(cohort)) != len(cohort):
+    if not isinstance(cohort, list) or not cohort or len(cohort) > 10000:
         return _empty_gate("invalid-reader-cohort")
     if not isinstance(conditions, dict) or not isinstance(binding, dict) or not isinstance(review, dict):
         return _empty_gate("reader-gate-fields-missing")
-    if any(not isinstance(item, str) or not item for item in cohort):
+    if any(not isinstance(item, str) or not item for item in cohort) or len(set(cohort)) != len(cohort):
         return _empty_gate("invalid-reader-item-id")
     if any(not _valid_sha(binding.get(field)) for field in BOUND_FIELDS):
         return _empty_gate("reader-model-binding-incomplete")
@@ -189,7 +192,7 @@ def evaluate_reader_gate(
     # Domain-separated signatures bind the exact graded cohort, four-arm
     # answers, model and capabilities, never a reviewer ID alone. The roster
     # and review manifest must be pinned through TWO out-of-band owner inputs.
-    signed_message = (b"hepta.reader-gate.v2.ed25519\x00"
+    signed_message = ((payload["schema"] + ".ed25519\x00").encode("ascii")
                       + bytes.fromhex(trust_manifest["reviewed_gate_content_sha256"]))
     try:
         from cryptography.exceptions import InvalidSignature
@@ -210,7 +213,7 @@ def evaluate_reader_gate(
     total = len(cohort)
     passed = (
         human_grounded / total >= 0.75
-        and human_grounded > ordinary_grounded
+        and (payload["schema"] == "hepta.reader-gate.v3" or human_grounded > ordinary_grounded)
         and empty_refusal / total >= 0.90
         and removed_refusal / total >= 0.90
     )
