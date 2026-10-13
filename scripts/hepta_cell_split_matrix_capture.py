@@ -66,20 +66,53 @@ def validate_manifest(manifest: dict[str, Any]) -> dict[tuple[int, str], list[st
 
 
 def verify_exact_source(repository: Path, sha: str) -> None:
+    # The metadata reader must inspect this checkout, not a caller-selected
+    # GIT_DIR, worktree, index, replacement object or configured fsmonitor.
+    # Do not rewrite the environment passed to the actual workload command.
+    git_env = {
+        key: value for key, value in os.environ.items() if not key.startswith("GIT_")
+    }
+    git_env.update(
+        GIT_CONFIG_NOSYSTEM="1",
+        GIT_CONFIG_GLOBAL=os.devnull,
+        GIT_NO_REPLACE_OBJECTS="1",
+        GIT_NO_LAZY_FETCH="1",
+        GIT_TERMINAL_PROMPT="0",
+        GIT_OPTIONAL_LOCKS="0",
+    )
+    command = ["git", "--literal-pathspecs", "-c", "core.fsmonitor=false"]
     try:
         head = subprocess.check_output(
-            ["git", "rev-parse", "HEAD"], cwd=repository, text=True
-        ).strip()
-        changed = subprocess.check_output(
-            ["git", "status", "--porcelain", "--untracked-files=no"],
+            [*command, "rev-parse", "HEAD"],
             cwd=repository,
+            env=git_env,
             text=True,
         ).strip()
+        changed = subprocess.check_output(
+            [*command, "status", "--porcelain", "--untracked-files=no"],
+            cwd=repository,
+            env=git_env,
+            text=True,
+        ).strip()
+        # Git status can falsely report a clean checkout when a tracked file
+        # has assume-unchanged or skip-worktree set. Reject either index flag
+        # without clearing flags or modifying the user's index. NUL records
+        # handle filenames containing tabs, newlines and non-UTF-8 bytes.
+        tracked = subprocess.check_output(
+            [*command, "ls-files", "-v", "-z"],
+            cwd=repository,
+            env=git_env,
+        )
+        hidden = any(
+            record and (record[0] == ord("S") or ord("a") <= record[0] <= ord("z"))
+            for record in tracked.split(b"\x00")
+        )
     except (OSError, subprocess.CalledProcessError) as error:
         raise InvalidEvidence(f"source identity unavailable: {error}") from error
-    if head != sha or changed:
-        raise InvalidEvidence("source checkout is stale or tracked files are dirty")
-
+    if head != sha or changed or hidden:
+        raise InvalidEvidence(
+            "source checkout is stale, tracked files are dirty, or index flags hide inputs"
+        )
 
 def validate_measurement(
     observed: Any, manifest: dict[str, Any], scope: int, mode: str
