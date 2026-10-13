@@ -59,7 +59,6 @@ def read_bounded_json(path: Path, limit: int, label: str) -> Any:
         raise InvalidEvidence(f"{label}: invalid JSON: {error}") from error
 
 
-
 def validate_manifest(manifest: dict[str, Any]) -> dict[tuple[int, str], list[str]]:
     if manifest.get("schema") != SCHEMA:
         raise InvalidEvidence("invalid execution-matrix schema")
