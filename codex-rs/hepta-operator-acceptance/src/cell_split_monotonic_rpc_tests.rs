@@ -56,7 +56,7 @@ fn read_only_client_sends_only_domain_and_fresh_challenge() {
             let raw: serde_json::Value = receive_frame(&mut peer).expect("request");
             // If the client could include an expected revision/digest, an old
             // restored local checkpoint could ask a service to sign itself.
-            assert_eq!(raw.as_object().map(|fields| fields.len()), Some(4));
+            assert_eq!(raw.as_object().map(serde_json::Map::len), Some(4));
             assert!(raw.get("journalRevision").is_none());
             assert!(raw.get("minimumCheckpointDigest").is_none());
             assert!(raw.get("originalStoreRecordDigest").is_none());
@@ -395,6 +395,36 @@ fn independent_server_fences_revoked_domain_before_signed_reply() {
             method: READ_METHOD.into(),
             journal_domain_id: DOMAIN.into(),
             challenge_nonce: "cc".repeat(32),
+        },
+    )
+    .expect("read-only request");
+    assert!(service.serve_connection(&mut server).is_err());
+    assert!(!file.exists());
+}
+
+#[test]
+fn independent_server_rejects_revoke_during_final_signed_read() {
+    let root = tempfile::tempdir().expect("private registry");
+    let file = write_test_registry(root.path());
+    let mut backend = DiskAuthoritativeRegistry::open(file.clone());
+    // The first two checks see committed state; the third check runs after
+    // signing the reply but before it is sent and must suppress that reply.
+    backend.revoke_on_read = Some(3);
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        backend,
+        signer(),
+        Duration::from_secs(2),
+    )
+    .expect("independent owner");
+    let (mut client, mut server) =
+        std::os::unix::net::UnixStream::pair().expect("socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitMonotonicRpcRequestV1 {
+            schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.into(),
+            method: READ_METHOD.into(),
+            journal_domain_id: DOMAIN.into(),
+            challenge_nonce: "ce".repeat(32),
         },
     )
     .expect("read-only request");

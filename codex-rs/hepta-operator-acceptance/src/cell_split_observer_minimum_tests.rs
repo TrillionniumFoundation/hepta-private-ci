@@ -312,7 +312,7 @@ fn signer_replay_cannot_certify_a_different_checkpoint() {
         )
         .is_err()
     );
-    switched = proof.clone();
+    switched = proof;
     switched.original_store_record_digest = "dd".repeat(32);
     assert!(
         verify_cell_split_supervisor_minimum_online_v1(
