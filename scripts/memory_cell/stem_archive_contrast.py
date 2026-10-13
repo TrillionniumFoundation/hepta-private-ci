@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 
 from stem_audit_archive import PinnedArchive, require
+from stem_audit_reader_condition import frozen_condition
 
 ORIGINAL = (
     "e9c8f9c9cfc8df8887290db707598897cbc26ede",
@@ -237,6 +238,22 @@ def audit_two_zip_paths(original_path, legacy_path):
                 legacy.json("comparison/preregistered.json"),
                 legacy.jsonl("comparison/policy-predictions.jsonl"),
                 legacy.jsonl("comparison/encoding.jsonl"),
+            )
+            # These source/Reader conditional tallies use only the archived
+            # final-checkpoint frozen outputs and post-generation weak labels.
+            # Neither version's literal oracle is independently certified.
+            result["frozen_reader_conditional"] = dict(
+                original=frozen_condition(
+                    original.json("comparison/preregistered.json"),
+                    original.json("comparison/scored-policy-attempts.json"),
+                    original.jsonl("comparison/oracle-diagnostic.jsonl"),
+                ),
+                historically_complete=frozen_condition(
+                    legacy.json("comparison/preregistered.json"),
+                    legacy.json("comparison/scored-policy-attempts.json"),
+                    legacy.jsonl("comparison/oracle-diagnostic.jsonl"),
+                ),
+                current_source_production_qualified=False,
             )
             result["transport"] = dict(
                 original_zip_sha256=original.sha256,

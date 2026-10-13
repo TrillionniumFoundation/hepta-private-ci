@@ -5,6 +5,8 @@ on:
     paths:
       - "scripts/memory_cell/stem_archive_contrast.py"
       - "scripts/memory_cell/test_stem_archive_contrast.py"
+      - "scripts/memory_cell/stem_audit_reader_condition.py"
+      - "scripts/memory_cell/test_stem_audit_reader_condition.py"
       - ".github/workflows/hepta-memory-stem-historical-contrast.yml"
 permissions:
   contents: read
@@ -30,7 +32,7 @@ jobs:
           mkdir -p /tmp/stem-historical
           git rev-parse HEAD > /tmp/stem-historical/auditing-commit.txt
           git rev-parse HEAD^{tree} > /tmp/stem-historical/auditing-tree.txt
-          python3 -m unittest -v test_stem_archive_contrast 2>&1 | tee /tmp/stem-historical/tests.log
+          python3 -m unittest -v test_stem_archive_contrast test_stem_audit_reader_condition 2>&1 | tee /tmp/stem-historical/tests.log
       - name: Fetch both immutable historical results and check transport pins
         env:
           GH_TOKEN: ${{ github.token }}
@@ -56,6 +58,8 @@ jobs:
           mkdir -p /tmp/stem-historical/source
           cp scripts/memory_cell/stem_archive_contrast.py /tmp/stem-historical/source/
           cp scripts/memory_cell/test_stem_archive_contrast.py /tmp/stem-historical/source/
+          cp scripts/memory_cell/stem_audit_reader_condition.py /tmp/stem-historical/source/
+          cp scripts/memory_cell/test_stem_audit_reader_condition.py /tmp/stem-historical/source/
           cp scripts/memory_cell/stem_audit_archive.py /tmp/stem-historical/source/
           cp .github/workflows/hepta-memory-stem-historical-contrast.yml /tmp/stem-historical/source/
           (cd /tmp/stem-historical && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)

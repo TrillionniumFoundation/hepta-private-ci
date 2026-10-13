@@ -1659,3 +1659,45 @@ The result prioritizes a separately preregistered *same-Reader
 JSON-versus-flat formatting / sufficient-evidence diagnostic* over
 scaling the number of Cells, training steps or Head parameters.
 Reader-format controls must never be counted as a learned-memory gain.
+
+## Pinned frozen Reader conditional audit — source hits are not answer entailment
+
+Source-only paired-archive reconstruction (no new model calls) now splits the
+**32 unique final-checkpoint frozen Reader questions** into original benchmark
+**answerable versus annotated-unanswerable**, and, only for answerable items,
+into **native-document support selected** or not selected. Reader execution
+success, scored token-F1, unscored/failed answers and literal-span Oracle
+availability retain distinct denominators. `stem_audit_reader_condition.py`
+is added to the SHA256-pinned two-ZIP historical audit, with adversarial
+duplicate/unknown-oracle/nonfinite-label regressions.
+
+The originally failed-run SHA256
+`3e09533c535f6b847f9ec58d4f56055d3a2c6adb2eee68705873584a72aca909`
+and the earlier complete-but-unqualified-run SHA256
+`2f15aa0a6c4900b2cf19cc03051f2727c58c9c04c1d993eda6486e019d0d0014`
+have independently verified 95 and 89 internal member digests, respectively.
+The original frozen phase-level answerable questions had **2/6 selected
+support sources** on selection, **2/6** on retention, **3/6** on test,
+and **6/7** on transfer. On the six successful original Reader calls for
+transfer questions whose **native source document** was selected, mean
+diagnostic token-F1 was **0.03177**. This is *not* a semantic QA accuracy
+or a proof of inadequate Reader capacity: the delivered 384-byte window
+may itself omit necessary premises. Only **1/7 answerable transfer questions**
+had an available answer-literal reference-span Oracle; that Oracle was
+not independently judged sufficient or minimal.
+
+The same archive retained **7 annotated-unanswerable questions** across
+the 32, and an unanswerable case may have successful Reader execution
+but **null/unscored diagnostic F1**. That value must never be fabricated
+as either perfect accuracy or a zero-score answer. Nor may correct
+abstention be credited as selecting a supporting source document.
+These are seven-dataset-case category counts, not 7 of 32 independent
+model-family observations; checkpoint repetitions do not increase the
+question count.
+
+**Investment decision:** prioritize testing sufficient window coverage
+versus frozen Reader completion capacity *before* increasing LoRA/Head size.
+Frozen supporting-document selection and generating a valid cited answer
+must be measured separately. Original public datasets, literal-span
+Oracle output, weak source labels and test F1 cannot certify blinded
+semantic entailment, prospective transfer or production admission.
