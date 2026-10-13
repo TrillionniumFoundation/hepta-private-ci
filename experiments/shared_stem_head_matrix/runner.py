@@ -96,20 +96,27 @@ def run(tasks=tuple(f"task-{i:03d}" for i in range(16)), cells=32, active_cells=
             samples.append((utility, active_flops, latency, resident_memory))
         utility = statistics.fmean(row[0] for row in samples)
         flops = statistics.fmean(row[1] for row in samples)
-        report.append({"arm_id": arm, "cells": cells, "active_cells": active_cells, "utility": utility, "utility_per_active_flop": utility / flops if flops else None, "active_flops_g": flops, "latency_us": {f"p{p}": _quantile([row[2] for row in samples], p / 100) for p in (50, 95, 99)}, "resident_memory_mb": statistics.fmean(row[3] for row in samples), "incremental_parameters_m": profile["params_m"], "incremental_memory_mb": profile["memory_mb"], "negative_transfer_penalty": profile["penalty"], "optional_metric_coverage": {metric: 0 for metric in OPTIONAL_METRICS}, "old_task_retention": None, "calibration_ece": None, "calibration_brier": None, "ood_false_acceptance": None})
-    profile = {"schema": "hepta.head-matrix-profile.v1", "stem_digest": digest({"stem": "frozen-shared-stem"}), "cells": cells, "active_cells": active_cells, "training_budget": training_budget, "seed": seed, "arms": PROFILES}
+        report.append({"arm_id": arm, "cells": cells, "active_cells": active_cells, "utility": utility, "utility_per_active_flop": utility / flops if flops else None, "active_flops_g": flops, "latency_us": {f"p{p}": _quantile([row[2] for row in samples], p / 100) for p in (50, 95, 99)}, "resident_memory_mb": statistics.fmean(row[3] for row in samples), "incremental_parameters_m": profile["params_m"] if observations is None else None, "incremental_memory_mb": profile["memory_mb"] if observations is None else None, "negative_transfer_penalty": profile["penalty"] if observations is None else None, "optional_metric_coverage": {metric: 0 for metric in OPTIONAL_METRICS}, "old_task_retention": None, "calibration_ece": None, "calibration_brier": None, "ood_false_acceptance": None})
+    profile = {"schema": "hepta.head-matrix-profile.v1", "stem_digest": digest({"stem": "frozen-shared-stem"}) if observations is None else None, "cells": cells, "active_cells": active_cells, "training_budget": training_budget, "seed": seed, "arms": PROFILES}
     return {"schema": SCHEMA, "benchmark_mode": "external_observation" if observations is not None else "synthetic_estimate", "profile": profile, "profile_digest": digest(profile), "results": report, "production_accepted": False, "model_selection_authority": False}
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser()
     parser.add_argument("--observations", type=Path)
+    parser.add_argument("--execution-manifest", type=Path)
     parser.add_argument("--cells", type=int, default=32)
     parser.add_argument("--active-cells", type=int, default=1)
     parser.add_argument("--training-budget", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=20261013)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args(argv)
+    if args.execution_manifest is not None:
+        if args.observations is not None:
+            parser.error("real execution and imported observations are distinct modes")
+        from experiments.shared_stem_cell.execution import run as execute
+        execute(args.execution_manifest, args.output)
+        return 0
     report = run(cells=args.cells, active_cells=args.active_cells, training_budget=args.training_budget, seed=args.seed, observations=_load_external(args.observations) if args.observations else None)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("x", encoding="utf-8") as stream:

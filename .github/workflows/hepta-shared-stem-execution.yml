@@ -1,0 +1,92 @@
+name: Hepta shared Stem actual execution (research only)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/**"
+      - "experiments/shared_stem_head_matrix/**"
+      - ".github/workflows/hepta-shared-stem-execution.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shared-stem-execution-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mechanics-and-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Isolated runtime
+        run: |
+          python3 -m venv "$RUNNER_TEMP/hepta-execution-env"
+          "$RUNNER_TEMP/hepta-execution-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          "$RUNNER_TEMP/hepta-execution-env/bin/pip" install numpy==2.2.6 safetensors==0.7.0 psutil==7.1.0 playwright==1.57.0 ruff==0.14.0
+          "$RUNNER_TEMP/hepta-execution-env/bin/python" -m playwright install --with-deps chromium
+      - name: Actual tests and browser comparison
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-execution-env/bin/python"
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-execution-source.txt"
+          "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-execution-source.txt"
+          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{execution,controls,browser_loop,public_smoke,test_execution,test_browser}.py
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_execution experiments.shared_stem_cell.test_browser experiments.shared_stem_head_matrix.tests.test_runner 2>&1 | tee "$RUNNER_TEMP/hepta-execution-tests.txt"
+          "$PY" -m experiments.shared_stem_cell.browser_loop --output "$RUNNER_TEMP/hepta-browser-study" --tasks 24
+          git diff --exit-code
+      - name: Retain actual results and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-execution-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-execution-source.txt
+            ${{ runner.temp }}/hepta-execution-tests.txt
+            ${{ runner.temp }}/hepta-browser-study
+  public-pretrained-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Isolated pretrained runtime
+        run: |
+          python3 -m venv "$RUNNER_TEMP/hepta-pretrained-env"
+          "$RUNNER_TEMP/hepta-pretrained-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          "$RUNNER_TEMP/hepta-pretrained-env/bin/pip" install transformers==4.57.1 datasets==4.2.0 numpy==2.2.6 safetensors==0.7.0 psutil==7.1.0 sentencepiece==0.2.1
+      - name: Real public weights and public records, not future evidence
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          USE_TF: "0"
+          TOKENIZERS_PARALLELISM: "false"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-pretrained-env/bin/python"
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-pretrained-source.txt"
+          "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-pretrained-source.txt"
+          "$PY" -m experiments.shared_stem_cell.public_smoke --output "$RUNNER_TEMP/hepta-public-study" 2>&1 | tee "$RUNNER_TEMP/hepta-public-log.txt"
+          git diff --exit-code
+      - name: Retain manifests, predictions, counters and failures (no weight upload)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-public-pretrained-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-pretrained-source.txt
+            ${{ runner.temp }}/hepta-public-log.txt
+            ${{ runner.temp }}/hepta-public-study/acquisition.json
+            ${{ runner.temp }}/hepta-public-study/manifest.json
+            ${{ runner.temp }}/hepta-public-study/dataset.jsonl
+            ${{ runner.temp }}/hepta-public-study/execution
