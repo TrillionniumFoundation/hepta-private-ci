@@ -122,7 +122,7 @@ fn write_intent_raw(
 }
 
 #[test]
-fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorError> {
+fn unsigned_disk_recovery_directive_never_auto_terminalizes_signed_intent() -> Result<(), SupervisorError> {
     let fleet = fleet()?;
     let starting =
         fleet
@@ -153,30 +153,42 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_intent_raw(record.layout.run_root(), &intent)?;
 
-    let first = Supervisor::recover(
+    // Recovery keeps the Supervisor reachable for the separate operator
+    // ceremony but quarantines this generation. Older tests expected the
+    // process to error; that is no longer the security contract.
+    let (recovered, report) = Supervisor::recover(
         fleet.registry.clone(),
         NoProcessDriver,
         config(),
         Instant::now(),
-    );
-    assert!(matches!(
-        first,
-        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))
-            if agent_id == fleet.agent_id
-    ));
+    )?;
+    assert!(report.faults.is_empty());
+    assert!(recovered.production_recovery_required(&fleet.agent_id)?);
+    assert!(recovered.any_production_recovery_required());
+    let persisted = read_signed_intent(record.layout.run_root())
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        .expect("signed recovery-required intent");
+    assert_eq!(persisted.status, SignedIntentStatus::RecoveryRequired);
+    drop(recovered);
 
     let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
 
-    let (_recovered, report) =
+    // A JSON directive on disk is not an independently verified operator
+    // approval and MUST NOT silently demote the protected intent to Aborted.
+    // Only the explicit, signed/revocation-fenced production recovery owner
+    // may effect the terminal transition; an unsigned external file cannot.
+    let (recovered, report) =
         Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
     assert!(report.faults.is_empty());
-    let terminal = read_signed_intent(record.layout.run_root())
+    assert!(recovered.production_recovery_required(&fleet.agent_id)?);
+    assert!(recovered.any_production_recovery_required());
+    let persisted = read_signed_intent(record.layout.run_root())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?
-        .expect("terminal intent");
-    assert_eq!(terminal.status, SignedIntentStatus::Aborted);
-    assert_eq!(terminal.target_release, "target-release");
+        .expect("still fenced signed intent");
+    assert_eq!(persisted.status, SignedIntentStatus::RecoveryRequired);
+    assert_eq!(persisted.target_release, "target-release");
     Ok(())
 }
