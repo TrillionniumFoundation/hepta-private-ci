@@ -39,6 +39,11 @@ from stem_train_heldout_bridge import train_to_heldout_gap
 from stem_effective_n import effective_heldout_subjects
 from stem_native_null_ablation import observe_null_choice, review_null_counterfactual
 from stem_null_reader_splice import observed_zero_offset_reader_splice
+from stem_weak_window_reader import (
+    prepare_native_window_interventions,
+    generate_native_window_interventions,
+    review_native_window_interventions,
+)
 from stem_reader_zero_evidence import (
     generate_empty_evidence_controls,
     evaluate_empty_evidence_controls,
@@ -216,6 +221,12 @@ def run(staged, ranker_dir, output):
             "32 post-policy/post-oracle fixed-Reader requests; "
             "no evidence or annotation enters the prompt; "
             "diagnostic separate from the six learned policies"
+        ),
+        native_weak_window_reader_diagnostic=(
+            "POST-576-policy and post-32-no-evidence; test/transfer 16-case census; "
+            "only native-supported already-retrieved but frozen-missed top1 gets "
+            "the highest frozen-scored supported window; 1 unchanged pinned "
+            "Reader source/prompt, no gold answer text, no training or policy promotion"
         ),
         score_geometry_policy="frozen-native-logits-versus-head; forced-top1; label-free",
         pairwise_shadow_protocol=(
@@ -1363,6 +1374,37 @@ def run(staged, ranker_dir, output):
         )
         write(output / "null-reader-reused-answer-effect.json", null_reader_splice)
         no_evidence_reader_after = control_session.summary()
+        # POST-POLICY privileged native-source intervention. This deliberately
+        # cannot alter the six arms or the no-evidence 32-case Reader census.
+        # Native document support labels determine only which ALREADY
+        # retrieved window to give the SAME isolated pinned Reader.
+        weak_window_questions = {
+            phase: qs[phase] for phase in ("test", "transfer")
+        }
+        weak_window_targets = {
+            q.identity: source_for[q.identity].targets[q.identity]
+            for phase in ("test", "transfer") for q in qs[phase]
+        }
+        weak_window_plan = prepare_native_window_interventions(
+            weak_window_questions,
+            attempts,
+            pools,
+            initial_features,
+            weak_window_targets,
+            selected_window=selected_window,
+        )
+        def generate_weak_window(q, evidence, record_key):
+            return control_session.answer(q, evidence, record_key, revoked=set())
+        weak_window_rows = generate_native_window_interventions(
+            weak_window_plan, weak_window_questions, generate_weak_window,
+        )
+        for row in weak_window_rows:
+            append(output / "native-weak-window-reader.jsonl", row)
+        weak_window_review = review_native_window_interventions(
+            weak_window_rows, weak_window_targets, diagnose,
+        )
+        write(output / "native-weak-window-reader-report.json", weak_window_review)
+        weak_window_reader_after = control_session.summary()
         # The diagnostic is nonqualifying if its isolated Reader quarantined.
         if not control_generator.quarantined:
             control_generator.verify_frozen()
@@ -1403,6 +1445,27 @@ def run(staged, ranker_dir, output):
             effective_heldout_subjects=heldout_effective_n,
             zero_offset_null_counterfactual=null_choice_diagnostic,
             reused_zero_offset_null_reader_answers=null_reader_splice,
+            native_weak_window_reader_diagnostic=weak_window_review,
+            native_weak_window_reader_accounting=dict(
+                original_policy_matrix_unchanged=True,
+                no_evidence_baseline_calls=no_evidence_reader_after,
+                isolated_reader_after_postpolicy_weak_window=weak_window_reader_after,
+                incremental_actual_reader_attempts=(
+                    weak_window_reader_after["actual_attempts"]
+                    - no_evidence_reader_after["actual_attempts"]
+                ),
+                incremental_actual_reader_successes=(
+                    weak_window_reader_after["actual_successes"]
+                    - no_evidence_reader_after["actual_successes"]
+                ),
+                incremental_cache_hits=(
+                    weak_window_reader_after["cache_hits"]
+                    - no_evidence_reader_after["cache_hits"]
+                ),
+                same_pinned_generator_and_prompt=True,
+                postpolicy_native_labels_not_certified_entailment=True,
+                production_accepted=False,
+            ),
             no_evidence_reader_call_accounting=dict(
                 same_pinned_reader_identity=generator.identity,
                 same_pinned_reader_profile=generator.profile,

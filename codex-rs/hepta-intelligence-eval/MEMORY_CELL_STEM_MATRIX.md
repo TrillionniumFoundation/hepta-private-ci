@@ -1742,3 +1742,40 @@ current answer failure to Encoder or Head capacity. Do not merge historical
 single-window task metrics with future multi-window experiments as if only
 the Head changed. No independent semantic citations or prospective
 production qualification are established.
+
+## Privileged native-support-window Reader intervention (research-only)
+
+A successful strict-as-of native six-arm experiment still showed **zero**
+held-out top-1 and answer changes across learned arms. At stage 48, 13 of
+the 16 registered test/transfer questions had a resolvable native answer:
+2 source documents were absent from the frozen candidate pool, 2 were present
+but the frozen forced top-1 missed them, and 9 were already selected. These
+are **published document-source labels**, not independent entailment.
+
+`stem_weak_window_reader.py` adds a genuinely executed, non-production
+*post-policy* Reader diagnostic. It retains all 16 registered test/transfer
+question statuses; only a question whose frozen original Reader succeeded
+and whose native-labelled document was already in its **unaltered, strict-as-of
+candidate pool** while frozen top-1 missed it qualifies for another Reader
+request. Among labelled supporting windows it chooses the highest
+**original frozen Encoder score** with lexical candidate-ID tie-break;
+no learned Head, label-dependent production routing or threshold is changed.
+
+The intervention sends exactly **one** existing original window to the
+**same pinned frozen Reader weights and prompt** in an already isolated
+Reader instance, after all six-arm answers, privileged answer-literal
+diagnostics, and 32 no-evidence answers are finished. The benchmark **answer
+text is never sent to the Reader**. The original 576 policy decisions,
+gold-blind pools, Head checkpoints, and no-evidence baselines remain immutable.
+The diagnostic reports actual additional model calls, failures, per-question
+status, identical request/prompt/evidence receipts and pairwise token-F1 only
+after all new raw outputs are saved.
+
+A labelled document window may still lack sufficient evidence in its
+384-byte passage. Therefore even a better response here would measure
+a *privileged counterfactual opportunity*, **not** a learned retrieval or
+Head gain, a certified sufficient-evidence oracle, blinded human citation
+judgement, or production-ready solution. The two missed sources in the
+**retrieval** category have no in-pool substitution at all and remain
+separately accounted. This experimental budget is fixed by a deterministic
+rule before reading new model answers, not tuned on test scores.
