@@ -76,10 +76,8 @@ pub fn bootstrap_durable_neuron_effect_intent_v1(
     max_records: usize,
 ) -> Result<DurableNeuronEffectIntentV1, NeuronEffectBootstrapErrorV1> {
     use std::fs;
-    use std::fs::OpenOptions;
-    use std::os::unix::fs::MetadataExt;
-    use std::os::unix::fs::OpenOptionsExt;
-    use std::os::unix::fs::PermissionsExt;
+    use std::os::unix::fs::MetadataExt as _;
+    use std::os::unix::fs::PermissionsExt as _;
     use std::path::Component;
 
     if !path.is_absolute()
@@ -100,7 +98,7 @@ pub fn bootstrap_durable_neuron_effect_intent_v1(
     {
         return Err(NeuronEffectBootstrapErrorV1::UnsafeDirectory);
     }
-    match fs::symlink_metadata(path) {
+    let checked_inode = match fs::symlink_metadata(path) {
         Ok(metadata) => {
             if !metadata.is_file()
                 || metadata.permissions().mode() & 0o077 != 0
@@ -108,18 +106,50 @@ pub fn bootstrap_durable_neuron_effect_intent_v1(
             {
                 return Err(NeuronEffectBootstrapErrorV1::UnsafeFile);
             }
+            Some(metadata)
         }
-        Err(error) if error.kind() == io::ErrorKind::NotFound => {}
+        Err(error) if error.kind() == io::ErrorKind::NotFound => None,
         Err(error) => return Err(error.into()),
+    };
+    // The checked filename is not an authority by itself: a peer could
+    // replace it between the preflight metadata read and the actual open.
+    let file = open_checked_neuron_effect_file_v1(path, checked_inode.as_ref())?;
+    let mut owner = DurableNeuronEffectIntentV1::open(file, scope, generation, max_records)?;
+    owner.bind_owner_path(path)?;
+    // The file fsync inside open makes its header durable; the directory fsync
+    // makes the pathname recoverable after first creation. Failure blocks
+    // serving even though opening/replaying the file succeeded.
+    fs::File::open(parent)?.sync_all()?;
+    owner.verify_bound_owner_path()?;
+    Ok(owner)
+}
+
+/// Open the same inode observed before the filesystem race window.
+/// For first publication, create_new makes racing publication ambiguous
+/// rather than silently adopting a competitor's durable journal.
+#[cfg(unix)]
+fn open_checked_neuron_effect_file_v1(
+    path: &Path,
+    checked_inode: Option<&std::fs::Metadata>,
+) -> Result<std::fs::File, NeuronEffectBootstrapErrorV1> {
+    use std::fs;
+    use std::fs::OpenOptions;
+    use std::os::unix::fs::MetadataExt as _;
+    use std::os::unix::fs::OpenOptionsExt as _;
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let mut options = OpenOptions::new();
+    options.read(true).write(true).mode(0o600);
+    if checked_inode.is_none() {
+        options.create_new(true);
     }
-    let file = OpenOptions::new()
-        .read(true)
-        .write(true)
-        .create(true)
-        .mode(0o600)
-        .open(path)?;
-    // Reject an inode switch, hardlink or symlink at the exact opened path.
-    // Requiring an owner-only parent excludes untrusted directory renames.
+    let file = options.open(path).map_err(|error| {
+        if checked_inode.is_none() && error.kind() == io::ErrorKind::AlreadyExists {
+            NeuronEffectBootstrapErrorV1::UnsafeFile
+        } else {
+            NeuronEffectBootstrapErrorV1::Io(error.kind())
+        }
+    })?;
     let opened = file.metadata()?;
     let on_path = fs::symlink_metadata(path)?;
     if !opened.is_file()
@@ -130,17 +160,13 @@ pub fn bootstrap_durable_neuron_effect_intent_v1(
         || on_path.nlink() != 1
         || opened.permissions().mode() & 0o077 != 0
         || on_path.permissions().mode() & 0o077 != 0
+        || checked_inode.is_some_and(|previous| {
+            previous.dev() != opened.dev() || previous.ino() != opened.ino()
+        })
     {
         return Err(NeuronEffectBootstrapErrorV1::UnsafeFile);
     }
-    let mut owner = DurableNeuronEffectIntentV1::open(file, scope, generation, max_records)?;
-    owner.bind_owner_path(path)?;
-    // The file fsync inside open makes its header durable; the directory fsync
-    // makes the pathname recoverable after first creation. Failure blocks
-    // serving even though opening/replaying the file succeeded.
-    fs::File::open(parent)?.sync_all()?;
-    owner.verify_bound_owner_path()?;
-    Ok(owner)
+    Ok(file)
 }
 
 /// No audited owner-only directory and directory-entry durability contract

@@ -116,6 +116,44 @@ fn symlink_hardlink_and_group_writable_directory_deny() -> Result<(), Box<dyn st
     Ok(())
 }
 
+#[cfg(unix)]
+#[test]
+fn raced_neuron_journal_open_fails_closed() -> Result<(), Box<dyn std::error::Error>> {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("subject.intent");
+    let former = directory.path().join("former.intent");
+    std::fs::write(&path, b"original journal")?;
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))?;
+    let observed = std::fs::symlink_metadata(&path)?;
+
+    // Simulate the rename that occurs *after* the preflight metadata
+    // observation but *before* the open. The replacement also has 0600
+    // permissions and a valid regular-file type, yet is a different inode.
+    std::fs::rename(&path, &former)?;
+    std::fs::write(&path, b"replacement journal")?;
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))?;
+    assert!(matches!(
+        open_checked_neuron_effect_file_v1(&path, Some(&observed)),
+        Err(NeuronEffectBootstrapErrorV1::UnsafeFile)
+    ));
+    assert_eq!(std::fs::read(&path)?, b"replacement journal");
+    assert_eq!(std::fs::read(&former)?, b"original journal");
+
+    // When preflight observed absence, another writer's newly published
+    // file cannot be silently treated as the first owner of this generation.
+    let raced = directory.path().join("raced-create.intent");
+    std::fs::write(&raced, b"other writer journal")?;
+    std::fs::set_permissions(&raced, std::fs::Permissions::from_mode(0o600))?;
+    assert!(matches!(
+        open_checked_neuron_effect_file_v1(&raced, None),
+        Err(NeuronEffectBootstrapErrorV1::UnsafeFile)
+    ));
+    assert_eq!(std::fs::read(&raced)?, b"other writer journal");
+    Ok(())
+}
+
 #[test]
 fn relative_path_can_never_be_a_production_effect_journal() {
     #[cfg(unix)]
