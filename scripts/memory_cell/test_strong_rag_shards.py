@@ -151,6 +151,15 @@ class ShardedReaderContractTests(unittest.TestCase):
                     seconds=1.0,
                     production_accepted=False,
                 )
+                if phase == "evaluation":
+                    (folder / "single-hop-control.json").write_text(
+                        json.dumps({"registered": "public-hop"}) + "\n"
+                    )
+                    run["single_hop_control_sha256"] = hashlib.sha256(
+                        (folder / "single-hop-control.json").read_bytes()
+                    ).hexdigest()
+                else:
+                    run["single_hop_control_sha256"] = None
                 (folder / "run.json").write_text(json.dumps(run) + "\n")
                 files = (
                     "run.json",
@@ -159,6 +168,9 @@ class ShardedReaderContractTests(unittest.TestCase):
                     "stage.json",
                     "publisher.json",
                     "runtime-preflight.json",
+                )
+                files = files + (
+                    ("single-hop-control.json",) if phase == "evaluation" else ()
                 )
                 pins = {
                     n: hashlib.sha256((folder / n).read_bytes()).hexdigest()
@@ -313,6 +325,67 @@ class ShardedReaderContractTests(unittest.TestCase):
             ],
         )
 
+    def test_evaluation_single_hop_shard_requires_sealed_original_bytes(self):
+        s = self.shards
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cases = self._fixtures(root, "evaluation")
+            folder = root / s.name("evaluation", 0, 0)
+            original = folder / "single-hop-control.json"
+            original.write_text('{"registered":"tampered"}\n')
+            with self.assertRaises(ValueError):
+                s._merge_shards(
+                    "evaluation",
+                    root,
+                    cases,
+                    commit="c" * 40,
+                    plan_sha="b" * 64,
+                    policy_sha="d" * 64,
+                )
+
+    def test_self_consistent_mixed_single_hop_shard_rejects(self):
+        s = self.shards
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cases = self._fixtures(root, "evaluation")
+            folder = root / s.name("evaluation", 6, 1)
+            hop = folder / "single-hop-control.json"
+            hop.write_text('{"registered":"other-hop"}\n')
+            hop_sha = hashlib.sha256(hop.read_bytes()).hexdigest()
+            run_path = folder / "run.json"
+            run = json.loads(run_path.read_text())
+            run["single_hop_control_sha256"] = hop_sha
+            run_path.write_text(json.dumps(run) + "\n")
+            pins_path = folder / "sha-pins.json"
+            pins = json.loads(pins_path.read_text())
+            pins["single-hop-control.json"] = hop_sha
+            pins["run.json"] = hashlib.sha256(run_path.read_bytes()).hexdigest()
+            pins_path.write_text(json.dumps(pins) + "\n")
+            with self.assertRaisesRegex(ValueError, "mixed original single-hop"):
+                s._merge_shards(
+                    "evaluation",
+                    root,
+                    cases,
+                    commit="c" * 40,
+                    plan_sha="b" * 64,
+                    policy_sha="d" * 64,
+                )
+    def test_unsealed_extra_shard_file_rejects(self):
+        s = self.shards
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            cases = self._fixtures(root, "calibration")
+            (root / s.name("calibration", 0, 0) / "unexpected.txt").write_text(
+                "not part of source census"
+            )
+            with self.assertRaisesRegex(ValueError, "unsealed or extra"):
+                s._merge_shards(
+                    "calibration",
+                    root,
+                    cases,
+                    commit="c" * 40,
+                    prep_sha="a" * 64,
+                )
     def test_shard_indices_invalid_and_no_accidental_oracle_stage(self):
         s = self.shards
         for wrong in (

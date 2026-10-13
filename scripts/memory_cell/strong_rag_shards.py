@@ -248,6 +248,11 @@ def generate(
             policy_sha256=policy_digest,
             generated=len(rows),
             raw_answers_sha256=trial.file_sha(output / "raw-answers.jsonl"),
+            single_hop_control_sha256=(
+                trial.file_sha(output / "single-hop-control.json")
+                if single_hop is not None
+                else None
+            ),
             runtime_preflight_sha256=trial.file_sha(output / "runtime-preflight.json"),
             seconds=time.perf_counter() - start,
             model_weight_training=False,
@@ -255,17 +260,17 @@ def generate(
             production_accepted=False,
         ),
     )
-    _seal(
-        output,
-        [
-            "runtime-preflight.json",
-            "stage.json",
-            "inventory.json",
-            "publisher.json",
-            "raw-answers.jsonl",
-            "run.json",
-        ],
-    )
+    sealed = [
+        "runtime-preflight.json",
+        "stage.json",
+        "inventory.json",
+        "publisher.json",
+        "raw-answers.jsonl",
+        "run.json",
+    ]
+    if single_hop is not None:
+        sealed.append("single-hop-control.json")
+    _seal(output, sealed)
     if any(r["status"] != "succeeded" for r in rows):
         raise ValueError("failed model attempt retained, not accepted")
     return len(rows)
@@ -283,7 +288,7 @@ def _merge_shards(
     reader_identity=None,
 ):
     """Fail closed on all 16 immutable per-source shard journals and pins."""
-    result, records, model_pins = {}, [], None
+    result, records, model_pins, hop_pin = {}, [], None, None
     for idx, case in enumerate(cases):
         for part, scheduled in enumerate(groups(phase)):
             folder = shard_root / name(phase, idx, part)
@@ -296,8 +301,16 @@ def _merge_shards(
                 "raw-answers.jsonl",
                 "run.json",
             }
+            if phase == "evaluation":
+                expected_files.add("single-hop-control.json")
             if set(manifest) != expected_files:
                 raise ValueError("shard file census incomplete")
+            if (
+                folder.is_symlink()
+                or {entry.name for entry in folder.iterdir()}
+                != expected_files | {"sha-pins.json"}
+            ):
+                raise ValueError("unsealed or extra source-shard file")
             for filename, digest_pin in manifest.items():
                 if trial.file_sha(folder / filename) != digest_pin:
                     raise ValueError("source-shard artifact mutated")
@@ -321,6 +334,12 @@ def _merge_shards(
                 or stage.get("publisher_sha256") != manifest["publisher.json"]
                 or run["runtime_preflight_sha256"] != manifest["runtime-preflight.json"]
                 or run["raw_answers_sha256"] != manifest["raw-answers.jsonl"]
+                or run.get("single_hop_control_sha256")
+                != (
+                    manifest["single-hop-control.json"]
+                    if phase == "evaluation"
+                    else None
+                )
                 or run["calibration_plan_sha256"]
                 != (prep_sha if phase == "calibration" else None)
                 or run["test_plan_sha256"]
@@ -351,11 +370,22 @@ def _merge_shards(
                 model_pins = shard_model_pins
             elif shard_model_pins != model_pins:
                 raise ValueError("mixed frozen reader model files across shards")
+            if phase == "evaluation":
+                this_hop = manifest["single-hop-control.json"]
+                if hop_pin is None:
+                    hop_pin = this_hop
+                elif this_hop != hop_pin:
+                    raise ValueError("mixed original single-hop evidence across shards")
             result[name(phase, idx, part)] = dict(
                 raw_answers_sha256=manifest["raw-answers.jsonl"],
                 run_sha256=manifest["run.json"],
                 stage_sha256=manifest["stage.json"],
                 runtime_preflight_sha256=manifest["runtime-preflight.json"],
+                single_hop_control_sha256=(
+                    manifest["single-hop-control.json"]
+                    if phase == "evaluation"
+                    else None
+                ),
                 seconds=run["seconds"],
             )
             records.extend(rows)
@@ -533,6 +563,12 @@ def collect_evaluation(
     _first_metadata(shard_root, "evaluation", output)
     _write_journal(output / "raw-answers.jsonl", rows)
     trial.dump(output / "single-hop-control.json", hop)
+    expected_hop_sha = trial.file_sha(output / "single-hop-control.json")
+    if any(
+        receipt["single_hop_control_sha256"] != expected_hop_sha
+        for receipt in receipts.values()
+    ):
+        raise ValueError("evaluation shards disagree with frozen single-hop evidence")
     expected = [c["query"]["identity"] for c in active]
     labels = read(inputs / "labels.json", locked["labels_sha"])
     targets = [l for l in labels if l["id"] in set(expected)]
@@ -673,7 +709,7 @@ def verify_release(archive, original):
     original_plan, original_sources = preflight(
         original / "plan", original / "observations", trial.HISTORIC_PLAN_SHA
     )
-    active, _ = trial.freeze_single_hop(
+    active, expected_hop = trial.freeze_single_hop(
         original_plan["cases"], original / "observations", original_sources
     )
     original_eval, eval_provenance = _merge_shards(
@@ -685,6 +721,13 @@ def verify_release(archive, original):
         policy_sha=policy_sha,
         reader_identity=frozen["reader_identity"],
     )
+    published_hop = _read_local_record(archive / "evaluation/single-hop-control.json")
+    if published_hop != expected_hop or any(
+        row["single_hop_control_sha256"]
+        != trial.file_sha(archive / "evaluation/single-hop-control.json")
+        for row in eval_provenance.values()
+    ):
+        raise ValueError("single-hop evidence differs from original public sources")
     for phase, rows, receipts in (
         ("calibration", original_cal, cal_provenance),
         ("evaluation", original_eval, eval_provenance),
