@@ -1,0 +1,167 @@
+name: MemoryCell LoCoMo publisher-support privileged frozen Reader
+on:
+  push:
+    branches: [codex/memory-cell-evidence-20261008]
+    paths:
+      - scripts/memory_cell/locomo_publisher_support_reader.py
+      - scripts/memory_cell/test_locomo_publisher_support_reader.py
+      - .github/workflows/hepta-memory-locomo-publisher-support.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-locomo-privileged-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify protocol tests and unchanged frozen-reader tests
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_publisher_support_reader.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_frozen_reader_pair.py' -v
+          python3 -m pip install uv==0.8.22
+          if ! uv run --frozen --project scripts ruff format --check scripts/memory_cell/locomo_publisher_support_reader.py scripts/memory_cell/test_locomo_publisher_support_reader.py; then
+            uv run --frozen --project scripts ruff format --diff scripts/memory_cell/locomo_publisher_support_reader.py scripts/memory_cell/test_locomo_publisher_support_reader.py || true
+            exit 1
+          fi
+      - name: Stage frozen source ZIPs and PRIVILEGED publisher support labels
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/pub-source /tmp/pub-target /tmp/pub-plan
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/pub-source/locomo-public-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/pub-source/locomo-frozen-decisions-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728856834/zip > /tmp/pub-target/locomo-evaluation-targets-38206328621.zip
+          printf '%s  %s\n' \
+            51e18514c68f31220f4dcd072914f6e015aa9733b6c5b4a4d4e3b14dac25ec37 /tmp/pub-source/locomo-public-38206328621.zip \
+            3fb1c3272314d31b42ece1c74aa0250e2ecb06c6060cb011071d4654fef6f097 /tmp/pub-source/locomo-frozen-decisions-38206328621.zip \
+            d09823324003ab431301e60fbbb280e216ca03b686e178d4f36fb6d492981978 /tmp/pub-target/locomo-evaluation-targets-38206328621.zip | sha256sum -c -
+          python3 scripts/memory_cell/locomo_publisher_support_reader.py plan /tmp/pub-source /tmp/pub-target /tmp/pub-plan/ids
+          git rev-parse HEAD > /tmp/pub-plan/commit.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: locomo-publisher-ids
+          path: /tmp/pub-plan
+          if-no-files-found: warn
+  reader:
+    needs: preflight
+    runs-on: ubuntu-22.04
+    timeout-minutes: 330
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_XET: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Require real BF16 CPU support
+        run: |
+          mkdir -p /tmp/pub-result
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/pub-result/host.json
+      - name: Stage ONLY sources and IDs; never stage evaluation target ZIP
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/pub-source /tmp/pub-plan
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/pub-source/locomo-public-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/pub-source/locomo-frozen-decisions-38206328621.zip
+          gh run download "$GITHUB_RUN_ID" -n locomo-publisher-ids -D /tmp/pub-plan
+          test "$(cat /tmp/pub-plan/commit.txt)" = "$GITHUB_SHA"
+          test -s /tmp/pub-plan/ids/plan.json
+      - name: Reconstruct original pinned Qwen/PyTorch environment
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/pub-env.zip
+          python3 - <<'PY'
+          import hashlib,zipfile
+          from pathlib import Path
+          raw=Path('/tmp/pub-env.zip').read_bytes()
+          assert hashlib.sha256(raw).hexdigest()=='23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b'
+          with zipfile.ZipFile('/tmp/pub-env.zip') as archive:
+              Path('/tmp/pub-env.txt').write_bytes(archive.read('environment.txt'))
+          PY
+          python3 -m venv /tmp/pub-python
+          /tmp/pub-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/pub-python/bin/pip install -r /tmp/pub-env.txt
+          /tmp/pub-python/bin/pip freeze > /tmp/pub-result/environment.txt
+          diff -u /tmp/pub-env.txt /tmp/pub-result/environment.txt
+      - name: Stage exact research Qwen2.5-3B model
+        run: |
+          set -euo pipefail
+          /tmp/pub-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/pub-model
+          cp /tmp/pub-model/{publisher,inventory,stage}.json /tmp/pub-result/
+      - name: Actually generate with unchanged frozen Reader
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/pub-result/resource.log /tmp/pub-python/bin/python scripts/memory_cell/locomo_publisher_support_reader.py generate /tmp/pub-source /tmp/pub-model /tmp/pub-plan/ids /tmp/pub-result/run
+      - name: Save all answers, failures and exact code
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/pub-result/source
+          cp scripts/memory_cell/locomo_publisher_support_reader.py scripts/memory_cell/test_locomo_publisher_support_reader.py /tmp/pub-result/source/
+          git rev-parse HEAD > /tmp/pub-result/tested-commit.txt
+          (cd /tmp/pub-result && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: locomo-publisher-raw
+          path: /tmp/pub-result
+          if-no-files-found: warn
+  score:
+    needs: reader
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Fetch pinned original Qwen answers, publisher labels and fresh model journal
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/pub-source /tmp/pub-target /tmp/pub-plan /tmp/pub-raw /tmp/pub-score
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728164433/zip > /tmp/pub-source/locomo-public-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11729394703/zip > /tmp/pub-source/locomo-frozen-decisions-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11728856834/zip > /tmp/pub-target/locomo-evaluation-targets-38206328621.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11763718022/zip > /tmp/pub-original-qwen.zip
+          gh run download "$GITHUB_RUN_ID" -n locomo-publisher-ids -D /tmp/pub-plan
+          gh run download "$GITHUB_RUN_ID" -n locomo-publisher-raw -D /tmp/pub-raw
+          python3 scripts/memory_cell/locomo_publisher_support_reader.py score /tmp/pub-source /tmp/pub-target /tmp/pub-plan/ids /tmp/pub-raw/run /tmp/pub-original-qwen.zip /tmp/pub-score/result --expected-commit "$GITHUB_SHA"
+      - name: Archive score receipt and original scorer source
+        if: always()
+        run: |
+          cp scripts/memory_cell/locomo_publisher_support_reader.py /tmp/pub-score/
+          git rev-parse HEAD > /tmp/pub-score/score-commit.txt
+          (cd /tmp/pub-score && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: locomo-publisher-diagnostic
+          path: /tmp/pub-score
+          if-no-files-found: warn
