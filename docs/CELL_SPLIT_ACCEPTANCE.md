@@ -402,6 +402,22 @@ and allow only a fully changed tuple. This is process-lifetime defense in
 depth, not a replacement for independently operated monotonic custody
 across crashes or whole-directory rollback.
 
+### Unix client lifetime high-water ratchet (source defense in depth)
+
+The read-only `CellSplitSupervisorMonotonicUnixPortV1` also retains bounded
+per-domain signed epoch/revision and checkpoint/record digests for the
+lifetime of its process. An old-but-valid signed response received after
+the remote service restarts is rejected if it regresses a previously
+observed high-water; a later revision must change both committed digest
+identities. No entries are silently evicted when the bound is reached.
+Native Unix RPC tests exercise both a signed rollback and a genuinely
+advanced signed frontier.
+
+This is **not durable anti-rollback**: client restarts erase the local
+ratchet. The separately administered monotonic backend, independent
+signatures, live minimum readback and protected external custody remain
+mandatory. No physical Cell Split or activation is authorized.
+
 ### Retrospective rollback evidence is not a live successor route
 
 The signed target-host lifecycle also includes rollback, tombstone and
