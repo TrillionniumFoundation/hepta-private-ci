@@ -108,7 +108,7 @@ def trial(archive_bytes, lock_bytes):
     try:
         doc = tomllib.loads(raw.decode("utf-8"))
     except (UnicodeError, tomllib.TOMLDecodeError) as e:
-        raise ValueError("unparseable signed SQLx manifest") from e
+        raise ValueError("unparsable signed SQLx manifest") from e
     if (doc.get("package", {}).get("name") != PACKAGE or
             doc.get("package", {}).get("version") != VERSION):
         raise ValueError("wrong signed SQLx crate source")
