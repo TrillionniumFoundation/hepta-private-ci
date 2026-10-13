@@ -27,6 +27,7 @@ PROFILE = "hepta.controlled-event.citation-instruction-v1"
 CONDITIONS = ("hybrid", "organized", "program_support", "without_prerequisite")
 STYLES = ("original", "premise_chain")
 MARKERS = re.compile(r"\[E([1-9][0-9]*)\]")
+CITATION_LIKE = re.compile(r"\[E[^\]\s]*\]")
 PREMISE_APPENDIX = (
     " When a final fact depends on multiple distinct premises, cite each "
     "actually used premise's supplied evidence label. Do not cite an "
@@ -135,6 +136,11 @@ def score_one(row, truth):
         raise ValueError("actual delivery changed selected original sources")
     answer = row["answer"]
     cited_markers = ["E" + m for m in MARKERS.findall(answer)]
+    malformed_markers = [
+        candidate
+        for candidate in CITATION_LIKE.findall(answer)
+        if MARKERS.fullmatch(candidate) is None
+    ]
     bound = {label_map[m] for m in cited_markers if m in label_map}
     required = set(truth["support"])
     if not 1 <= len(required) <= 4 or len(required) != len(truth["support"]):
@@ -152,8 +158,15 @@ def score_one(row, truth):
         ),
         required_undelivered=sorted(required - set(row["selected"])),
         unbound_label_occurrences=unbound,
+        malformed_citation_markers=malformed_markers,
         cited_not_program_declared=sorted(bound - required),
-        complete_citation_chain=required <= bound and not unbound,
+        required_premise_labels_covered=required <= bound,
+        complete_citation_chain=(
+            required <= bound and not unbound and not malformed_markers
+        ),
+        exact_formal_support_chain=(
+            bound == required and not unbound and not malformed_markers
+        ),
         formal_requirements_are_not_human_verified=True,
     )
     if truth["kind"] == "procedure":
@@ -193,6 +206,7 @@ def summarize(scored, cases):
             wins
         ) = losses = 0
         original_chains = intervention_chains = 0
+        original_exact_chains = intervention_exact_chains = 0
         for qid in cases:
             a, b = (by_key[(qid, condition, style)] for style in STYLES)
             if (
@@ -214,6 +228,12 @@ def summarize(scored, cases):
             changed_success += b["strict_task_success"]
             original_chains += a["strict_success_and_complete_chain"]
             intervention_chains += b["strict_success_and_complete_chain"]
+            original_exact_chains += bool(
+                a["strict_task_success"] and a["exact_formal_support_chain"]
+            )
+            intervention_exact_chains += bool(
+                b["strict_task_success"] and b["exact_formal_support_chain"]
+            )
             changed_citations += a["answer"] != b["answer"]
             wins += b["strict_task_success"] and not a["strict_task_success"]
             losses += a["strict_task_success"] and not b["strict_task_success"]
@@ -226,6 +246,8 @@ def summarize(scored, cases):
             premise_prompt_strict_correct=changed_success,
             original_strict_and_complete_formal_chain=original_chains,
             premise_prompt_strict_and_complete_formal_chain=intervention_chains,
+            original_strict_and_exact_formal_chain=original_exact_chains,
+            premise_prompt_strict_and_exact_formal_chain=intervention_exact_chains,
             changed_raw_answers=changed_citations,
             task_wins=wins,
             task_losses=losses,
@@ -235,7 +257,7 @@ def summarize(scored, cases):
             ],
         )
     return dict(
-        schema="hepta.memory-cell.frozen-citation-prompt-paired-v1",
+        schema="hepta.memory-cell.frozen-citation-prompt-paired-v2",
         planned_model_attempts=len(scored),
         successful_model_generations=sum(r["status"] == "succeeded" for r in scored),
         failed_attempts=sum(r["status"] != "succeeded" for r in scored),
@@ -245,6 +267,8 @@ def summarize(scored, cases):
         generation_budget_unchanged=True,
         instructions_changed_not_training=True,
         authored_program_requirements_are_privileged=True,
+        required_coverage_separate_from_exact_citation_set=True,
+        malformed_citation_markers_disqualify_formal_chain=True,
         by_condition=summary,
         independent_semantic_citation_precision=None,
         independent_source_families=0,

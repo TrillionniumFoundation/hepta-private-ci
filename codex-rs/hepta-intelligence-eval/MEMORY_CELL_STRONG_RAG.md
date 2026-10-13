@@ -549,3 +549,37 @@ reader VM*. Eligibility also does not prove the response meets the original
 than switching model precision, bypassing a gate or fabricating answers.
 No model accuracy, independent future-family performance or production
 qualification follows from a model-free CPU scout.
+
+## Frozen Reader premise-citation follow-up — exact sources, qualified host
+
+The pinned 72-answer source-delivery audit `38379415800` finished successfully:
+all four original multi-step `program_support` questions had the two
+program-declared source IDs delivered, and four produced the correct requested
+identifier, but **none cited the complete declared two-source chain**.
+These are privileged program-authored requirements, **not** independently
+reviewed semantic entailment.
+
+`hepta-memory-citation-premises-trial.yml` compares 8 registered questions,
+4 unchanged source-selection conditions, and 2 prompt styles using **the same
+frozen Qwen2.5-3B BF16/eager Reader, its model weights, original evidence bytes,
+token ceiling, deterministic decoding and original source plan**. The changed
+style appends only a citation instruction; it never inserts missing citations
+into generated answers or places privileged required source IDs in the prompt.
+
+The BF16 CPU path now requests a 22.04-hosted runner (as observed in the
+model-free scout), pins **Python 3.12**, and applies the repository's original
+`strong_rag_host_gate.py` to the actual allocated VM **before any weight
+download or Reader generation**. The source-pinned receipt
+`host-qualification.json` and its failures remain in the always-uploaded
+artifact with SHA256SUMS. Neither Ubuntu 22.04 nor ISA eligibility guarantees
+timely inference, task success or independent evaluation. A rejected VM does
+not authorize changing weights, precision, source access or execution budget.
+
+The post-generation metric explicitly keeps **authored premise-label
+coverage**, **unbound or malformed source labels**, and **the exact
+authored-support citation set** separate. Citing extra delivered but unrelated
+sources may cover all required labels while failing exact formal citation
+quality. A label-formally complete response is still **not** a human-verified
+causal/support-entailment certificate. All original model answers are retained
+unaltered, with failures in the planned denominator, and
+`semantic_citation_precision=null`, `production_accepted=false`.

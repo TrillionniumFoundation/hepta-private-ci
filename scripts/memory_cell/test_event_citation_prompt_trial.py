@@ -154,6 +154,76 @@ class PromptTests(unittest.TestCase):
             self.assertEqual((part["task_wins"], part["task_losses"]), (0, 0))
         self.assertIsNone(result["independent_semantic_citation_precision"])
 
+    def test_irrelevant_delivered_citation_does_not_count_as_exact_chain(self):
+        receipt, truth = fixture()
+        receipt["delivered_evidence"].append(
+            dict(
+                label="E3",
+                original_id="d3",
+                excerpt="Irrelevant but delivered.",
+                observed_at="now",
+            )
+        )
+        trial = row(
+            "premise_chain",
+            "site_11223344 [E1] [E2] [E3]",
+            receipt=receipt,
+        )
+        trial["selected"].append("d3")
+        scored = score_one(trial, truth)
+        self.assertTrue(scored["strict_task_success"])
+        self.assertTrue(scored["required_premise_labels_covered"])
+        self.assertTrue(scored["complete_citation_chain"])
+        self.assertFalse(scored["exact_formal_support_chain"])
+        self.assertEqual(scored["cited_not_program_declared"], ["d3"])
+
+    def test_malformed_citation_does_not_pass_full_formal_chain(self):
+        receipt, truth = fixture()
+        for malformed in ("[E0]", "[E01]", "[E-1]"):
+            with self.subTest(marker=malformed):
+                scored = score_one(
+                    row(
+                        "premise_chain",
+                        "site_11223344 [E1] [E2] " + malformed,
+                        receipt=receipt,
+                    ),
+                    truth,
+                )
+                self.assertEqual(scored["malformed_citation_markers"], [malformed])
+                self.assertTrue(scored["required_premise_labels_covered"])
+                self.assertFalse(scored["complete_citation_chain"])
+                self.assertFalse(scored["exact_formal_support_chain"])
+
+    def test_summary_reports_coverage_and_exactness_independently(self):
+        receipt, truth = fixture()
+        receipt["delivered_evidence"].append(
+            dict(
+                label="E3",
+                original_id="d3",
+                excerpt="Irrelevant but delivered.",
+                observed_at="now",
+            )
+        )
+        original = row("original", "site_11223344 [E1] [E2] [E3]", receipt=receipt)
+        amended = row("premise_chain", "site_11223344 [E1] [E2]", receipt=receipt)
+        original["selected"].append("d3")
+        amended["selected"].append("d3")
+        amended["receipt"]["input_ids_digest"] = "intervention"
+        a, b = score_one(original, truth), score_one(amended, truth)
+        records = []
+        for condition in CONDITIONS:
+            for item in (a, b):
+                case = copy.deepcopy(item)
+                case["condition"] = condition
+                records.append(case)
+        report = summarize(records, {"q1": {"query": {"identity": "q1"}}})
+        for result in report["by_condition"].values():
+            self.assertEqual(result["original_strict_and_complete_formal_chain"], 1)
+            self.assertEqual(result["original_strict_and_exact_formal_chain"], 0)
+            self.assertEqual(result["premise_prompt_strict_and_exact_formal_chain"], 1)
+            self.assertEqual((result["task_wins"], result["task_losses"]), (0, 0))
+        self.assertIsNone(report["independent_semantic_citation_precision"])
+
     def test_incomplete_or_drifted_pairs_refuse_summary(self):
         receipt, truth = fixture()
         a = score_one(row("original", "site_11223344 [E2]", receipt=receipt), truth)
