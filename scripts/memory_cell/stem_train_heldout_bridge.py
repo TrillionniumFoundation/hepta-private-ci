@@ -492,30 +492,41 @@ def train_to_heldout_gap(plan, learning, scored, targets):
         # An explicitly unanswerable question does NOT create an unknown
         # document-support outcome that can expand the source-gain interval.
         answerable = [
-            row for row in arm_final
-            if row["native_source_label_category"] == "answerable-native-document-support"
+            row
+            for row in arm_final
+            if row["native_source_label_category"]
+            == "answerable-native-document-support"
         ]
         abstainable = [
-            row for row in arm_final
+            row
+            for row in arm_final
             if row["native_source_label_category"] == "native-unanswerable"
         ]
         unresolved = [
-            row for row in arm_final
+            row
+            for row in arm_final
             if row["native_source_label_category"] == "native-support-unresolved"
         ]
-        if len(answerable) + len(abstainable) + len(unresolved) != 16 or any(
-            row["weak_support_gain"] is not None for row in abstainable + unresolved
-        ) or any(
-            row["native_abstention_gain"] is not None for row in answerable + unresolved
+        if (
+            len(answerable) + len(abstainable) + len(unresolved) != 16
+            or any(
+                row["weak_support_gain"] is not None for row in abstainable + unresolved
+            )
+            or any(
+                row["native_abstention_gain"] is not None
+                for row in answerable + unresolved
+            )
         ):
             raise ValueError("native source/abstention cohorts were conflated")
         source = [
             row["weak_support_gain"]
-            for row in answerable if row["weak_support_gain"] is not None
+            for row in answerable
+            if row["weak_support_gain"] is not None
         ]
         abstentions = [
             row["native_abstention_gain"]
-            for row in abstainable if row["native_abstention_gain"] is not None
+            for row in abstainable
+            if row["native_abstention_gain"] is not None
         ]
         f1 = [
             row["diagnostic_answer_f1_delta"]
