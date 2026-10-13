@@ -6,6 +6,8 @@ on:
     paths:
       - "qualification/matrix-security/narrow_matrix_sdk_workspace.py"
       - "qualification/matrix-security/test_narrow_matrix_sdk_workspace.py"
+      - "codex-rs/hepta-matrix-store/**"
+      - "codex-rs/Cargo.lock"
       - ".github/workflows/hepta-matrix-narrow-sdk-probe.yml"
 
 permissions:
@@ -16,6 +18,48 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  matrix-durable-store:
+    name: Matrix durable SQLite/WAL owner regression (not SDK release)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind exact source and immutable Cargo lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git rev-parse HEAD HEAD^{tree}
+          python3 scripts/verify_cargo_lock.py
+      - name: Compile unmodified Matrix store on product Rust toolchain
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-matrix-store --all-targets
+      - name: Execute real SQLite WAL/FULL and durable recovery tests
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-matrix-store --test sqlite_profile_contract
+          cargo test --locked -p codex-hepta-matrix-store --test durable_core
+          cargo test --locked -p codex-hepta-matrix-store --test sync_observation_v1
+          cargo test --locked -p codex-hepta-matrix-store --test sync_mutation_v2
+      - name: Strict store lint
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked -p codex-hepta-matrix-store --all-targets --
+          -D clippy::correctness -D clippy::await_holding_lock
+          -D clippy::await_holding_invalid_type
+      - name: Repository rustfmt rules (no source mutation)
+        if: always()
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-matrix-store -- --config imports_granularity=Item --check
+      - name: Original checkout remains unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
   narrowed-sdk:
     name: Hepta Matrix SDK / secure isolated graph (NOT Matrixd acceptance)
     runs-on: ubuntu-24.04
