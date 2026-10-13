@@ -1,0 +1,73 @@
+name: MemoryCell uploaded two-stage LoCoMo reviewer handoff integrity
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - scripts/memory_cell/locomo_handoff_upload_audit.py
+      - scripts/memory_cell/test_locomo_handoff_upload_audit.py
+      - scripts/memory_cell/data/locomo-uploaded-review-handoff-20261013.json
+      - codex-rs/hepta-intelligence-eval/MEMORY_CELL_LOCOMO_UPLOADED_HANDOFF_AUDIT_20261013.md
+      - .github/workflows/hepta-memory-locomo-upload-integrity.yml
+permissions:
+  contents: read
+  actions: read
+jobs:
+  uploaded-handoff-verification:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_LOCOMO_SOURCE_REVIEW_ZIP: ${{ runner.temp }}/locomo-upload-audit/source.zip
+      HEPTA_LOCOMO_ANSWER_REVIEW_ZIP: ${{ runner.temp }}/locomo-upload-audit/answer.zip
+      HEPTA_LOCOMO_REVIEW_MANIFEST_ZIP: ${{ runner.temp }}/locomo-upload-audit/manifest.zip
+      HEPTA_LOCOMO_ORIGINAL_READER_ZIP: ${{ runner.temp }}/locomo-upload-audit/reader.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Retrieve four exact original uploaded artifacts, without gold or models
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/locomo-upload-audit"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779535979/zip > "$HEPTA_LOCOMO_SOURCE_REVIEW_ZIP"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779431120/zip > "$HEPTA_LOCOMO_ANSWER_REVIEW_ZIP"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779426223/zip > "$HEPTA_LOCOMO_REVIEW_MANIFEST_ZIP"
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11763718022/zip > "$HEPTA_LOCOMO_ORIGINAL_READER_ZIP"
+      - name: Verify actual uploads, tamper controls and exact observed receipt
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_handoff_upload_audit.py' -v \
+            2>&1 | tee "$RUNNER_TEMP/locomo-upload-audit/tests.log"
+          python3 scripts/memory_cell/locomo_handoff_upload_audit.py \
+            "$HEPTA_LOCOMO_SOURCE_REVIEW_ZIP" \
+            "$HEPTA_LOCOMO_ANSWER_REVIEW_ZIP" \
+            "$HEPTA_LOCOMO_REVIEW_MANIFEST_ZIP" \
+            "$HEPTA_LOCOMO_ORIGINAL_READER_ZIP" \
+            --output "$RUNNER_TEMP/locomo-upload-audit/receipt.json"
+          diff -u scripts/memory_cell/data/locomo-uploaded-review-handoff-20261013.json \
+            "$RUNNER_TEMP/locomo-upload-audit/receipt.json"
+          sha256sum "$HEPTA_LOCOMO_SOURCE_REVIEW_ZIP" "$HEPTA_LOCOMO_ANSWER_REVIEW_ZIP" \
+            "$HEPTA_LOCOMO_REVIEW_MANIFEST_ZIP" "$HEPTA_LOCOMO_ORIGINAL_READER_ZIP" \
+            > "$RUNNER_TEMP/locomo-upload-audit/transport-sha256sums.txt"
+          git rev-parse HEAD > "$RUNNER_TEMP/locomo-upload-audit/auditor-commit.txt"
+      - name: Keep bounded verification output, no questions or answer text
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/locomo-upload-receipt"
+          for file in tests.log receipt.json transport-sha256sums.txt auditor-commit.txt; do
+            if [ -f "$RUNNER_TEMP/locomo-upload-audit/$file" ]; then
+              cp "$RUNNER_TEMP/locomo-upload-audit/$file" "$RUNNER_TEMP/locomo-upload-receipt/$file"
+            fi
+          done
+          (cd "$RUNNER_TEMP/locomo-upload-receipt" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: locomo-original-upload-integrity-${{ github.sha }}
+          path: ${{ runner.temp }}/locomo-upload-receipt
+          if-no-files-found: warn
