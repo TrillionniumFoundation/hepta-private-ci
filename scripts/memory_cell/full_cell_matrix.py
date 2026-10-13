@@ -15,6 +15,7 @@ import re
 import sys
 
 from reader_review_ledger import audit_case_ledger
+from reader_originals_attestation import audit_originals
 
 
 STEMS = (
@@ -52,6 +53,7 @@ class ReaderGate:
     model_binding_digest: str | None
     trust_manifest_digest: str | None
     authorized_reviewer_roster_digest: str | None
+    original_source_manifest_digest: str | None
     capabilities: dict
 
 
@@ -67,7 +69,7 @@ def _digest_bytes(value: object) -> str:
 
 
 def _empty_gate(reason: str) -> ReaderGate:
-    return ReaderGate(False, reason, 0, 0, 0, 0, 0, None, None, None, {})
+    return ReaderGate(False, reason, 0, 0, 0, 0, 0, None, None, None, None, {})
 
 
 def _valid_sha(value: object) -> bool:
@@ -93,6 +95,8 @@ def evaluate_reader_gate(
     trusted_review_sha256: str | None = None,
     reviewer_roster: dict | None = None,
     trusted_roster_sha256: str | None = None,
+    original_sources: dict | None = None,
+    trusted_originals_sha256: str | None = None,
 ) -> ReaderGate:
     """Derive the four-arm admission decision from an external v2 receipt.
 
@@ -215,6 +219,19 @@ def evaluate_reader_gate(
     ledger_error = audit_case_ledger(cohort, conditions, payload["reviewed_items"])
     if ledger_error is not None:
         return _empty_gate(ledger_error)
+    # A signed case-ledger is not itself evidence the ORIGINAL answer/source
+    # bytes existed. Independently pin the original producer's complete
+    # question, token-ID, answer and UTF-8 byte-window package, then replay
+    # the per-case fingerprints and the model's literal bracket citations.
+    if not isinstance(original_sources, dict) or not _valid_sha(trusted_originals_sha256):
+        return _empty_gate("out-of-band-originals-required")
+    original_digest = _digest_bytes(original_sources)
+    if (original_digest != trusted_originals_sha256
+            or trust_manifest.get("originals_sha256") != original_digest):
+        return _empty_gate("original-evidence-pin-mismatch")
+    originals_error = audit_originals(cohort, binding, payload["reviewed_items"], original_sources)
+    if originals_error is not None:
+        return _empty_gate(originals_error)
     human_grounded, _ = rows["human_sufficient"]
     ordinary_grounded, _ = rows["ordinary_retrieval"]
     _, empty_refusal = rows["no_evidence"]
@@ -231,7 +248,8 @@ def evaluate_reader_gate(
     return ReaderGate(
         passed, reason, total, human_grounded, ordinary_grounded,
         empty_refusal, removed_refusal, model_digest, manifest_digest,
-        roster_digest, capabilities if isinstance(capabilities, dict) else {},
+        roster_digest, original_digest,
+        capabilities if isinstance(capabilities, dict) else {},
     )
 
 
@@ -305,10 +323,13 @@ def plan(output: Path, *, cells: int = 32, reader_gate: dict | None = None,
          trust_manifest: dict | None = None,
          trusted_review_sha256: str | None = None,
          reviewer_roster: dict | None = None,
-         trusted_roster_sha256: str | None = None) -> dict:
+         trusted_roster_sha256: str | None = None,
+         original_sources: dict | None = None,
+         trusted_originals_sha256: str | None = None) -> dict:
     gate = evaluate_reader_gate(
         reader_gate, trust_manifest, trusted_review_sha256=trusted_review_sha256,
         reviewer_roster=reviewer_roster, trusted_roster_sha256=trusted_roster_sha256,
+        original_sources=original_sources, trusted_originals_sha256=trusted_originals_sha256,
     )
     records = enumerate_matrix(cells)
     for record in records:
@@ -340,17 +361,20 @@ def plan(output: Path, *, cells: int = 32, reader_gate: dict | None = None,
 
 
 def main(argv: list[str]) -> int:
-    if len(argv) not in (2, 3, 4, 5):
-        print("usage: full_cell_matrix.py OUTPUT [READER_GATE_JSON TRUST_MANIFEST_JSON AUTHORIZED_ROSTER_JSON]", file=sys.stderr)
+    if len(argv) not in (2, 3, 4, 5, 6):
+        print("usage: full_cell_matrix.py OUTPUT [READER_GATE_JSON TRUST_MANIFEST_JSON AUTHORIZED_ROSTER_JSON ORIGINAL_SOURCE_MANIFEST_JSON]", file=sys.stderr)
         return 2
     gate = json.loads(Path(argv[2]).read_text(encoding="utf-8")) if len(argv) >= 3 else None
     trust = json.loads(Path(argv[3]).read_text(encoding="utf-8")) if len(argv) >= 4 else None
-    roster = json.loads(Path(argv[4]).read_text(encoding="utf-8")) if len(argv) == 5 else None
+    roster = json.loads(Path(argv[4]).read_text(encoding="utf-8")) if len(argv) >= 5 else None
+    originals = json.loads(Path(argv[5]).read_text(encoding="utf-8")) if len(argv) == 6 else None
     summary = plan(
         Path(argv[1]), reader_gate=gate, trust_manifest=trust,
         trusted_review_sha256=os.environ.get("HEPTA_READER_TRUST_SHA256") or None,
         reviewer_roster=roster,
         trusted_roster_sha256=os.environ.get("HEPTA_REVIEWER_ROSTER_SHA256") or None,
+        original_sources=originals,
+        trusted_originals_sha256=os.environ.get("HEPTA_READER_ORIGINALS_SHA256") or None,
     )
     print(json.dumps(summary, sort_keys=True))
     return 0

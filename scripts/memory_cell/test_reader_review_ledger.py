@@ -6,7 +6,7 @@ import unittest
 
 from full_cell_matrix import evaluate_reader_gate, plan
 from reader_review_ledger import audit_case_ledger
-from test_full_cell_matrix import fingerprint, gate_fixture
+from test_full_cell_matrix import fingerprint, gate_fixture, original_fixture
 
 
 class SignedReaderCaseLedgerTests(unittest.TestCase):
@@ -25,6 +25,8 @@ class SignedReaderCaseLedgerTests(unittest.TestCase):
         self.assertTrue(evaluate_reader_gate(
             self.gate, self.manifest, trusted_review_sha256=fingerprint(self.manifest),
             reviewer_roster=self.roster, trusted_roster_sha256=fingerprint(self.roster),
+            original_sources=original_fixture(self.gate),
+            trusted_originals_sha256=fingerprint(original_fixture(self.gate)),
         ).passed)
 
     def test_aggregate_only_self_review_is_rejected_even_with_old_signature(self):
@@ -125,6 +127,57 @@ class SignedReaderCaseLedgerTests(unittest.TestCase):
     def test_extra_arbitrary_fields_do_not_silently_change_review_grammar(self):
         self.gate["reviewed_items"][0]["reviewer_guess"] = True
         self.assertEqual(self.audit(), "invalid-case-review-row-schema")
+
+
+    def test_signed_case_ledger_cannot_bypass_missing_original_bytes(self):
+        self.assertEqual(evaluate_reader_gate(
+            self.gate, self.manifest, trusted_review_sha256=fingerprint(self.manifest),
+            reviewer_roster=self.roster, trusted_roster_sha256=fingerprint(self.roster),
+        ).reason, "out-of-band-originals-required")
+        with tempfile.TemporaryDirectory() as tmp:
+            summary = plan(Path(tmp), reader_gate=self.gate,
+                trust_manifest=self.manifest, trusted_review_sha256=fingerprint(self.manifest),
+                reviewer_roster=self.roster, trusted_roster_sha256=fingerprint(self.roster))
+        self.assertEqual((summary["blocked_reader_records"],
+                          summary["planned_neural_records"], summary["neural_calls"]),
+                         (768, 0, 0))
+
+    def test_original_owner_pin_mismatch_is_not_readable_neural_evidence(self):
+        originals = original_fixture(self.gate)
+        originals["items"][0]["input_ids"][0] += 1
+        self.assertEqual(evaluate_reader_gate(
+            self.gate, self.manifest, trusted_review_sha256=fingerprint(self.manifest),
+            reviewer_roster=self.roster, trusted_roster_sha256=fingerprint(self.roster),
+            original_sources=originals, trusted_originals_sha256=fingerprint(originals),
+        ).reason, "original-evidence-pin-mismatch")
+
+    def test_reapproved_source_pin_still_cannot_forge_actual_prompt_or_answer(self):
+        originals = original_fixture(self.gate)
+        originals["items"][0]["raw_answer"] = "changed after reviewer signed"
+        trust = copy.deepcopy(self.manifest)
+        trust["originals_sha256"] = fingerprint(originals)
+        gate = copy.deepcopy(self.gate)
+        gate["independent_review"]["trust_manifest_sha256"] = fingerprint(trust)
+        self.assertEqual(evaluate_reader_gate(
+            gate, trust, trusted_review_sha256=fingerprint(trust),
+            reviewer_roster=self.roster, trusted_roster_sha256=fingerprint(self.roster),
+            original_sources=originals, trusted_originals_sha256=fingerprint(originals),
+        ).reason, "original-question-prompt-answer-or-citation-drift")
+
+    def test_reapproved_source_pin_must_preserve_byte_scope_and_asof_cut(self):
+        originals = original_fixture(self.gate)
+        source = next(item["delivered_sources"][0] for item in originals["items"]
+                      if item["condition"] == "human_sufficient")
+        source["scope"] = "unauthorized"
+        trust = copy.deepcopy(self.manifest)
+        trust["originals_sha256"] = fingerprint(originals)
+        gate = copy.deepcopy(self.gate)
+        gate["independent_review"]["trust_manifest_sha256"] = fingerprint(trust)
+        self.assertEqual(evaluate_reader_gate(
+            gate, trust, trusted_review_sha256=fingerprint(trust),
+            reviewer_roster=self.roster, trusted_roster_sha256=fingerprint(self.roster),
+            original_sources=originals, trusted_originals_sha256=fingerprint(originals),
+        ).reason, "original-source-scope-time-or-identity-invalid")
 
 
 if __name__ == "__main__":

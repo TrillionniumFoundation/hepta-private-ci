@@ -9,12 +9,48 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 from full_cell_matrix import evaluate_reader_gate, enumerate_matrix, plan, resource_estimate
+from reader_originals_attestation import SCHEMA, canonical_sha, source_fingerprint
 
 
 def fingerprint(value):
     return hashlib.sha256(
         json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
     ).hexdigest()
+
+
+
+def original_case(qid, condition, grounded, refusal):
+    # Ephemeral deterministic TEST originals. They are not independent reviews
+    # and MUST NEVER be used to qualify a real Reader.
+    def source(name):
+        content = f"Original fixture {name} for {qid}."
+        return dict(identity=f"{qid}-{name}", root=f"root-{qid}-{name}",
+                    scope=qid, session=f"session-{qid}",
+                    observed_at="2026-01-01T00:00:00+00:00",
+                    content=content, start=0, end=len(content.encode("utf-8")))
+    choices = {
+        "no_evidence": [],
+        "ordinary_retrieval": [source("b")],
+        "human_sufficient": [source("a"), source("b")],
+        "critical_premise_removed": [source("b")],
+    }
+    answer = ("fixture grounded answer [E1]" if grounded else
+              "I do not have enough evidence." if refusal else
+              "fixture ungrounded answer")
+    return dict(item_id=qid, condition=condition,
+                question_record=dict(identity=qid, family="fixture", scope=qid,
+                    content="Which evidence supports the fact?",
+                    observed_at="2026-01-02T00:00:00+00:00"),
+                input_ids=[ord(c) for c in qid + condition],
+                raw_answer=answer, delivered_sources=choices[condition])
+
+
+def original_fixture(gate):
+    return dict(schema=SCHEMA, cohort=list(gate["cohort"]),
+                model_binding=copy.deepcopy(gate["model_binding"]),
+                items=[original_case(row["item_id"], row["condition"],
+                    row["grounded_and_cited"], row["exact_refusal"])
+                    for row in gate["reviewed_items"]])
 
 
 def gate_fixture():
@@ -52,21 +88,16 @@ def gate_fixture():
     ):
         summary = gate["conditions"][condition]
         for i, qid in enumerate(ids):
-            a, b = fingerprint((qid, "source-a")), fingerprint((qid, "source-b"))
-            delivered = {
-                "no_evidence": [],
-                "ordinary_retrieval": [b],
-                "human_sufficient": [a, b],
-                "critical_premise_removed": [b],
-            }[condition]
             grounded = i < summary["grounded_and_cited"]
             refusal = (summary["grounded_and_cited"] <= i
                        < summary["grounded_and_cited"] + summary["exact_refusal"])
+            original = original_case(qid, condition, grounded, refusal)
+            delivered = [source_fingerprint(x) for x in original["delivered_sources"]]
             rows.append(dict(
                 item_id=qid, condition=condition,
-                question_sha256=fingerprint((qid, "question")),
-                prompt_input_ids_sha256=fingerprint((qid, condition, "prompt")),
-                raw_answer_sha256=fingerprint((qid, condition, "answer")),
+                question_sha256=canonical_sha(original["question_record"]),
+                prompt_input_ids_sha256=canonical_sha(original["input_ids"]),
+                raw_answer_sha256=canonical_sha(original["raw_answer"]),
                 delivered_source_sha256=delivered,
                 cited_source_sha256=[delivered[0]] if grounded else [],
                 grounded_and_cited=grounded, exact_refusal=refusal,
@@ -98,6 +129,7 @@ def gate_fixture():
         ))
     trust["reviewed_gate_content_sha256"] = reviewed_digest
     trust["authorized_reviewer_roster_sha256"] = fingerprint(roster)
+    trust["originals_sha256"] = fingerprint(original_fixture(gate))
     gate["independent_review"]["trust_manifest_sha256"] = fingerprint(trust)
     return gate, trust, roster
 
@@ -134,6 +166,8 @@ class FullCellMatrixTests(unittest.TestCase):
         self.assertTrue(evaluate_reader_gate(
             gate, trust, trusted_review_sha256=fingerprint(trust),
             reviewer_roster=roster, trusted_roster_sha256=fingerprint(roster),
+            original_sources=original_fixture(gate),
+            trusted_originals_sha256=fingerprint(original_fixture(gate)),
         ).passed)
         self.assertFalse(evaluate_reader_gate(gate).passed)
         gate["conditions"]["ordinary_retrieval"]["item_ids"] = ["different"] * 20
@@ -279,6 +313,8 @@ class FullCellMatrixTests(unittest.TestCase):
                 Path(directory), cells=2, reader_gate=gate, trust_manifest=trust,
                 trusted_review_sha256=fingerprint(trust),
                 reviewer_roster=roster, trusted_roster_sha256=fingerprint(roster),
+                original_sources=original_fixture(gate),
+                trusted_originals_sha256=fingerprint(original_fixture(gate)),
             )
             self.assertEqual(summary["reader_gate"]["authorized_reviewer_roster_digest"],
                              fingerprint(roster))
