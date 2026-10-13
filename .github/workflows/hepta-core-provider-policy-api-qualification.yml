@@ -52,4 +52,5 @@ jobs:
       - name: Verify canonical Rust formatting
         run: cargo +1.95.0 fmt --all -- --check
       - name: Exercise real locked ledger and authenticated shadow tests on Windows
-        run: cargo +1.95.0 test --locked -p codex-hepta-intelligence --lib evaluated_shadow::tests:: -- --nocapture
+        run: |
+          cargo +1.95.0 test --locked -p codex-hepta-intelligence --lib 'evaluated_shadow::tests::' -- --nocapture
