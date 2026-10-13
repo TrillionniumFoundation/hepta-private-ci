@@ -651,6 +651,22 @@ pub fn revalidate_neuron_observed_cost_source_v1<D: ModelDriver>(
 /// Historical correlation is not an independent usage attestation, NDU input,
 /// signed terminal outcome, route selection or authorization to debit quota.
 const SETTLED_COST_DOMAIN: &[u8] = b"hepta.infer-worker.neuron-settled-cost.diagnostic.v1\0";
+const TERMINAL_OBSERVATION_DOMAIN: &[u8] = b"hepta.infer-worker.neuron-terminal-observation.v1\0";
+
+/// The strict Neuron terminal commitment, not a physical meter or signature.
+/// Its producer and post-restart checker must agree on the exact source,
+/// canonical output and separately supplied price.
+fn canonical_neuron_terminal_observation_digest_v1(
+    observed_source: Digest32,
+    output_digest: Digest32,
+    priced_usage_units: u64,
+) -> Digest32 {
+    let mut bytes = TERMINAL_OBSERVATION_DOMAIN.to_vec();
+    bytes.extend_from_slice(observed_source.as_array());
+    bytes.extend_from_slice(output_digest.as_array());
+    bytes.extend_from_slice(&priced_usage_units.to_be_bytes());
+    Digest32::of_bytes(&bytes)
+}
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronSettledCostDiagnosticV1 {
@@ -862,7 +878,18 @@ pub fn read_neuron_settled_cost_diagnostic_v1(
             .ok_or(NeuronSettledCostErrorV1::NotSettled)?,
     )
     .map_err(|_| NeuronSettledCostErrorV1::Mismatch)?;
-    if terminal_observation_digest.is_zero() {
+    // The generic durable owner permits a structurally valid but unrelated
+    // terminal observation ID. A historical Neuron receipt must rederive the
+    // exact known Worker source + output + WAL-owned priced usage identity.
+    // This also applies to records rebuilt after a real WAL restart.
+    if terminal_observation_digest.is_zero()
+        || terminal_observation_digest
+            != canonical_neuron_terminal_observation_digest_v1(
+                observed_cost_source.source_digest,
+                receipt.output_digest,
+                record.usage_units,
+            )
+    {
         return Err(NeuronSettledCostErrorV1::Mismatch);
     }
     let mut report = NeuronSettledCostDiagnosticV1 {
@@ -997,11 +1024,12 @@ pub fn settle_neuron_live_worker_terminal_v1<D: ModelDriver>(
     };
     // This digest binds this physical source, canonical output and external
     // price. It does not pretend the terminal Observer signed any bytes.
-    let mut bytes = b"hepta.infer-worker.neuron-terminal-observation.v1\0".to_vec();
-    bytes.extend_from_slice(observed.source_digest.as_array());
-    bytes.extend_from_slice(receipt.output_digest.as_array());
-    bytes.extend_from_slice(&priced_usage_units.to_be_bytes());
-    let observation_digest = Digest32::of_bytes(&bytes).to_string();
+    let observation_digest = canonical_neuron_terminal_observation_digest_v1(
+        observed.source_digest,
+        receipt.output_digest,
+        priced_usage_units,
+    )
+    .to_string();
 
     let terminal = owner
         .settle(

@@ -639,6 +639,12 @@ identity and cost.
 
 The priced_usage_units argument is **not** independently metered or signed.
 The generated observation digest is **not** an independent Observer signature.
+The historical reader now re-derives that exact terminal observation digest
+from the retained Worker source, typed output and WAL-owned separately priced
+usage units. A structurally valid *generic* Settle cannot inherit a Neuron
+terminal simply by matching request, output, tokens and price while using an
+unrelated observation digest; reopening the actual WAL also rejects it. This
+is a deterministic consistency check, NOT an independent signature or meter.
 The helper adds no route selection, token pricing, NDU approval, model
 promotion, trusted final-use, or authority to spend. If fsync or postcommit
 verification fails, the outcome must be reconciled from the owner WAL before

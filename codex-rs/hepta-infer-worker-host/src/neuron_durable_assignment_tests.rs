@@ -1043,11 +1043,16 @@ fn observed_token_cost_is_not_a_settled_wal_or_authoritative_resource_debit() {
         .request
         .payload_digest
         .clone();
+    let terminal_digest = canonical_neuron_terminal_observation_digest_v1(
+        report.source_digest,
+        receipt.output_digest,
+        0,
+    );
     let settlement = owner
         .settle(
             typed.request_id.as_str(),
             claim.revision,
-            "a".repeat(64),
+            terminal_digest.to_string(),
             TerminalObservation {
                 request_id: typed.request_id.to_string(),
                 reservation_id: "reservation.1".to_owned(),
@@ -1130,6 +1135,78 @@ fn observed_token_cost_is_not_a_settled_wal_or_authoritative_resource_debit() {
     assert_eq!(after_restart, historical);
     revalidate_neuron_settled_cost_diagnostic_v1(&reopened, &typed, &receipt, &report, &historical)
         .unwrap();
+}
+
+
+#[test]
+fn historical_neuron_cost_rejects_unrelated_terminal_digest_even_with_matching_output() {
+    let directory = tempfile::tempdir().unwrap();
+    let typed = typed_request();
+    let mut owner = control(&directory, &typed);
+    let mut worker = worker();
+    let (claim, mut port) =
+        claim_neuron_durable_dispatch_v1(&mut owner, &mut worker, &typed, 100).unwrap();
+    let receipt = port.execute_feature(&typed).unwrap();
+    let cost = port.take_cost_diagnostic().unwrap();
+    drop(port);
+    let observed =
+        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100).unwrap();
+    let original_payload = owner
+        .get(typed.request_id.as_str())
+        .unwrap()
+        .request
+        .payload_digest
+        .clone();
+    let expected = canonical_neuron_terminal_observation_digest_v1(
+        observed.source_digest,
+        receipt.output_digest,
+        3,
+    )
+    .to_string();
+    let wrong = "f".repeat(64);
+    assert_ne!(wrong, expected);
+    // Generic inference.control permits a nonzero terminal observation ID.
+    // Its otherwise compatible WAL is NOT this known Neuron source.
+    let settled = owner
+        .settle(
+            typed.request_id.as_str(),
+            claim.revision,
+            wrong.clone(),
+            TerminalObservation {
+                request_id: typed.request_id.to_string(),
+                reservation_id: observed.reservation_id.clone(),
+                worker_id: worker.worker_id().to_owned(),
+                worker_generation: worker.worker_generation(),
+                model_digest: "2".repeat(64),
+                payload_digest: original_payload,
+                terminal_observed: true,
+                terminal_status: Some(RequestState::Completed),
+                output_digest: Some(receipt.output_digest.to_string()),
+                consumed_tokens: cost.consumed_tokens(),
+                usage_units: 3,
+            },
+        )
+        .unwrap();
+    assert_eq!(settled.state, RequestState::Completed);
+    assert_eq!(
+        read_neuron_settled_cost_diagnostic_v1(&owner, &typed, &receipt, &observed),
+        Err(NeuronSettledCostErrorV1::Mismatch)
+    );
+    drop(owner);
+    let reopened =
+        DurableInferenceControl::open(directory.path().join("inference.journal"), 32).unwrap();
+    assert_eq!(
+        reopened
+            .get(typed.request_id.as_str())
+            .unwrap()
+            .terminal_observation_digest
+            .as_deref(),
+        Some(wrong.as_str())
+    );
+    assert_eq!(
+        read_neuron_settled_cost_diagnostic_v1(&reopened, &typed, &receipt, &observed),
+        Err(NeuronSettledCostErrorV1::Mismatch)
+    );
 }
 
 #[test]
