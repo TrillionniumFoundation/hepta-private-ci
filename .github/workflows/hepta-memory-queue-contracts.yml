@@ -1,0 +1,37 @@
+name: MemoryCell PR research queue contracts
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - .github/workflows/hepta-memory-queue-contracts.yml
+      - .github/workflows/hepta-memory-grounded-development.yml
+      - .github/workflows/hepta-memory-reader-reference.yml
+      - .github/workflows/hepta-memory-token-task.yml
+      - .github/workflows/hepta-memory-evidence-preference.yml
+      - .github/workflows/hepta-memory-selector-development.yml
+      - .github/workflows/hepta-memory-masked-span.yml
+      - .github/workflows/hepta-memory-relevance-development.yml
+      - .github/workflows/hepta-memory-bundle-diagnostic.yml
+      - .github/workflows/hepta-memory-composition-evidence.yml
+      - .github/workflows/hepta-memory-stem-mechanics.yml
+      - .github/workflows/hepta-memory-necessity.yml
+      - .github/workflows/hepta-memory-owner-observation.yml
+      - scripts/memory_cell/test_memory_queue_concurrency.py
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Check unique, non-cancelling experimental groups
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts/memory_cell -p test_memory_queue_concurrency.py -v
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"

@@ -10,7 +10,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: memory-composition-${{ github.event.pull_request.head.sha }}
+  group: memory-composition-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 jobs:
   publisher-data:

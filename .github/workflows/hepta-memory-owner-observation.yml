@@ -7,7 +7,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: memory-owner-observation-${{ github.event.pull_request.head.sha }}
+  group: memory-owner-observation-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 jobs:
   observe-owner:

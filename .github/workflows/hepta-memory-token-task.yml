@@ -11,7 +11,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: memory-token-task-${{ github.event.pull_request.head.sha }}
+  group: memory-token-task-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 jobs:
   factorial:

@@ -9,7 +9,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: memory-selector-${{ github.event.pull_request.head.sha }}
+  group: memory-selector-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 jobs:
   paired-selector:
