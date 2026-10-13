@@ -281,6 +281,42 @@ def _critic_features(probabilities, depth, horizon):
                         torch.full_like(top, depth / horizon)], -1)
 
 
+def _reader_labels(y, n, classes):
+    if (not isinstance(y, torch.Tensor) or y.dtype != torch.long or y.device.type != "cpu"
+            or y.shape != (n,) or bool(((y < 0) | (y >= classes)).any())):
+        raise InputError("exact bounded label vector required")
+
+
+def fit_recurrent_reader(train_x, train_y, *, classes, steps=40, depth=4, seed=17):
+    """Train the existing Reader once; shared by legacy and streamed studies."""
+    _features(train_x, 3)
+    if not 1 <= train_x.shape[1] <= 16 or not 1 <= train_x.shape[2] <= 8192:
+        raise InputError("bounded Reader observation shape")
+    integer(classes, 2, 256, "reader classes")
+    integer(depth, 2, 16, "reader horizon")
+    integer(steps, 1, 1000, "reader steps")
+    integer(seed, 0, 2**31 - 1, "reader seed")
+    _reader_labels(train_y, len(train_x), classes)
+    with torch.random.fork_rng(devices=[]):
+        torch.manual_seed(seed)
+        model = RecurrentReader(train_x.shape[2], classes)
+        optimizer = torch.optim.AdamW(model.parameters(), lr=0.01, weight_decay=0)
+        with measured() as training:
+            for step in range(integer(steps, 1, 1000, "recurrent steps")):
+                optimizer.zero_grad(set_to_none=True)
+                state = torch.zeros(len(train_x), train_x.shape[2])
+                losses = []
+                for t in range(depth):
+                    state, logits = model.step(train_x[:, t % train_x.shape[1]], state)
+                    losses.append(F.cross_entropy(logits, train_y))
+                torch.stack(losses).mean().backward()
+                nn.utils.clip_grad_norm_(model.parameters(), 1, error_if_nonfinite=True)
+                optimizer.step()
+        model.eval()
+    model.requires_grad_(False)
+    return model, {**training, "steps": steps, "training_transitions": steps*len(train_x)*depth}
+
+
 def recurrent_trial(train_x, train_y, calibration_x, calibration_y, test_x,
                     *, classes, steps=40, depth=4, step_cost=0.01, seed=17):
     """Four arms, genuine early halt; NDU is an explicitly LINEAR special case.
@@ -293,21 +329,9 @@ def recurrent_trial(train_x, train_y, calibration_x, calibration_y, test_x,
     integer(depth, 2, 16, "depth")
     if not math_finite_cost(step_cost) or any(v.shape[1:] != train_x.shape[1:] for v in (calibration_x, test_x)):
         raise InputError("cost or recurrent shape")
-    torch.manual_seed(seed)
-    model = RecurrentReader(train_x.shape[2], classes)
-    optimizer = torch.optim.AdamW(model.parameters(), lr=0.01, weight_decay=0)
-    with measured() as training:
-        for step in range(integer(steps, 1, 1000, "recurrent steps")):
-            optimizer.zero_grad(set_to_none=True)
-            state = torch.zeros(len(train_x), train_x.shape[2])
-            losses = []
-            for t in range(depth):
-                state, logits = model.step(train_x[:, t % train_x.shape[1]], state)
-                losses.append(F.cross_entropy(logits, train_y))
-            torch.stack(losses).mean().backward()
-            nn.utils.clip_grad_norm_(model.parameters(), 1, error_if_nonfinite=True)
-            optimizer.step()
-    model.eval()
+    _reader_labels(calibration_y, len(calibration_x), classes)
+    model, training = fit_recurrent_reader(train_x, train_y, classes=classes,
+                                           steps=steps, depth=depth, seed=seed)
     with torch.no_grad():
         state = torch.zeros(len(calibration_x), train_x.shape[2])
         probabilities = []
