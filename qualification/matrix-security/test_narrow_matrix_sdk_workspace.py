@@ -257,10 +257,7 @@ class NarrowWorkspaceTests(unittest.TestCase):
                                if e["pkg"] != repaired]
                 hepta = next(n for n in candidate["resolve"]["nodes"]
                              if n["id"] == "hepta-sdk-id")
-                hepta["deps"].append({
-                    "pkg": repaired,
-                    "dep_kinds": [{"kind": None, "target": None}],
-                })
+                hepta["deps"].append({"pkg": repaired})
                 with self.assertRaisesRegex(
                     ValueError, "required patched Matrix"
                 ):
@@ -279,10 +276,7 @@ class NarrowWorkspaceTests(unittest.TestCase):
             {"id": "legacy-sdk-base", "features": [], "deps": []})
         sdk = next(n for n in candidate["resolve"]["nodes"]
                    if n["id"] == "upstream-sdk")
-        sdk["deps"].append({
-            "pkg": "legacy-sdk-base",
-            "dep_kinds": [{"kind": None, "target": None}],
-        })
+        sdk["deps"].append({"pkg": "legacy-sdk-base"})
         with self.assertRaisesRegex(
             ValueError, "mixed patched and legacy"
         ):

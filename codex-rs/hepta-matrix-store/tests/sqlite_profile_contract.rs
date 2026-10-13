@@ -40,13 +40,15 @@ async fn matrix_evidence_pool_preserves_wal_full_fk_and_owner_after_restart() ->
     store.verify_durability_profile().await?;
     let room = MatrixRoomId::parse("!profile:example.test")?;
     let user = MatrixUserId::parse("@agent:example.test")?;
-    let record = store.bind_room(&RoomBindingDraft {
-        room_id: room.clone(),
-        agent_user_id: user.clone(),
-        expected_revision: None,
-        generation: 1,
-        changed_at_ms: 7,
-    }).await?;
+    let record = store
+        .bind_room(&RoomBindingDraft {
+            room_id: room.clone(),
+            agent_user_id: user.clone(),
+            expected_revision: None,
+            generation: 1,
+            changed_at_ms: 7,
+        })
+        .await?;
     assert_eq!(record.revision, 1);
 
     let db_path = store.path().to_path_buf();
