@@ -65,11 +65,15 @@ fn sync_native_journal_directory_v1(journal: &Path) -> io::Result<()> {
     std::fs::File::open(parent)?.sync_all()
 }
 
-/// Windows directory-entry crash guarantees require separate target-host
-/// verification; this path makes no claim of a POSIX directory fsync.
+/// No audited Windows ACL and directory-entry fsync/recovery contract is
+/// available for this owner. Startup must not claim durable production
+/// readiness solely on the basis of two successful file fsync calls.
 #[cfg(not(unix))]
 fn sync_native_journal_directory_v1(_journal: &Path) -> io::Result<()> {
-    Ok(())
+    Err(io::Error::new(
+        io::ErrorKind::Unsupported,
+        "native journal directory durability is unverified on this platform",
+    ))
 }
 
 fn open_native_control_with_directory_barrier_v1(

@@ -1,8 +1,12 @@
 use super::*;
+#[cfg(unix)]
 use codex_hepta_infer_core::durable_control::native::NativeRequest;
+#[cfg(unix)]
 use std::fs::OpenOptions;
+#[cfg(unix)]
 use std::io::Write;
 
+#[cfg(unix)]
 fn native_request(id: &str) -> NativeRequest {
     NativeRequest {
         request_id: id.to_string(),
@@ -14,6 +18,7 @@ fn native_request(id: &str) -> NativeRequest {
 }
 
 #[test]
+#[cfg(unix)]
 fn live_native_wal_emits_durable_metrics_and_both_journals_reopen() {
     let dir = tempfile::tempdir().expect("dir");
     let journal = dir.path().join("native-control.wal");
@@ -37,6 +42,7 @@ fn live_native_wal_emits_durable_metrics_and_both_journals_reopen() {
 }
 
 #[test]
+#[cfg(unix)]
 fn damaged_evidence_journal_denies_serving_without_mutating_control_wal() {
     let dir = tempfile::tempdir().expect("dir");
     let journal = dir.path().join("native-control.wal");
@@ -116,6 +122,7 @@ fn native_production_wal_rejects_hardlink_alias() {
 }
 
 #[test]
+#[cfg(unix)]
 fn native_production_bootstrap_requires_exclusive_wal_and_metrics_writers() {
     let dir = tempfile::tempdir().expect("private root");
     let journal = dir.path().join("control.wal");
@@ -196,4 +203,22 @@ fn native_startup_denies_directory_sync_failure_before_admitting_effects() {
         .expect("locks released after failed directory fsync");
     assert!(reopened.production_metrics_ready());
     assert_eq!(std::fs::metadata(&metrics).expect("metrics").len(), 0);
+}
+
+#[cfg(not(unix))]
+#[test]
+fn unsupported_platform_denies_native_startup_before_serving_or_claiming_durability() {
+    let dir = tempfile::tempdir().expect("temporary root");
+    let journal = dir.path().join("control.wal");
+    let metrics = production_metrics_journal_path_v1(&journal).expect("metrics path");
+    let opened = open_metrics_bound_native_control_v1(&journal, 32);
+    assert!(opened.is_err());
+    // No request or external effect can have been admitted by this bootstrap.
+    // Creation of empty journal files is not production readiness.
+    if journal.exists() {
+        assert_eq!(std::fs::metadata(&journal).expect("control").len(), 0);
+    }
+    if metrics.exists() {
+        assert_eq!(std::fs::metadata(&metrics).expect("metrics").len(), 0);
+    }
 }

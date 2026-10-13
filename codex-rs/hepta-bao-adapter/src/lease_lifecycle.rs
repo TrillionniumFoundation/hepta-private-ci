@@ -498,9 +498,9 @@ fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErro
 
 fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
     // This writer requires an atomic rename AND a durable parent directory.
-    // Windows has neither the Unix directory owner check nor a verified
-    // equivalent directory sync implementation here. Do not publish a
-    // success receipt (or even create a staging file) on that platform.
+    // The non-Unix path lacks an independently verified replacement for
+    // directory-entry sync and crash recovery. Never advertise a durable
+    // receipt (or create a staging file) without that guarantee.
     #[cfg(not(unix))]
     {
         let _ = (path, state);
