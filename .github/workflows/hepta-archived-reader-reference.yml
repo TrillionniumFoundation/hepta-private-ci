@@ -39,8 +39,24 @@ jobs:
           mkdir -p /tmp/archived-reference-evidence
           python3 -m venv /tmp/reference-env
           /tmp/reference-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          /tmp/reference-env/bin/pip install safetensors==0.7.0 regex==2024.11.6 Jinja2==3.1.6
+          /tmp/reference-env/bin/pip install packaging==25.0 numpy==1.26.4 safetensors==0.7.0 regex==2024.11.6 Jinja2==3.1.6
+          /tmp/reference-env/bin/pip check | tee /tmp/archived-reference-evidence/pip-check.txt
           /tmp/reference-env/bin/pip freeze > /tmp/archived-reference-evidence/environment.txt
+      - name: Require dependency and tensor roundtrip preflight before large downloads
+        run: |
+          set -euo pipefail
+          /tmp/reference-env/bin/python - <<'PY' | tee /tmp/archived-reference-evidence/import-preflight.log
+          import packaging, numpy, regex, jinja2, torch
+          from safetensors.torch import load, save
+          import five_archived_torch_reference
+          import five_archived_reference_trial
+          tensor = torch.arange(8, dtype=torch.float32)
+          if not torch.equal(load(save({'probe': tensor}))['probe'], tensor):
+              raise ValueError('safetensors roundtrip changed tensor')
+          if tensor.numpy().shape != (8,):
+              raise ValueError('NumPy bridge unavailable')
+          print('REFERENCE_IMPORT_AND_TENSOR_PREFLIGHT_PASSED_NOT_MODEL_EFFICACY')
+          PY
       - name: Retrieve unchanged externally pinned historical artifacts
         env:
           GH_TOKEN: ${{ github.token }}
