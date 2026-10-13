@@ -1,0 +1,31 @@
+name: Hepta Core Provider Policy Windows Contract
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/core/src/client_provider_policy_tests.rs'
+      - 'codex-rs/core/src/client.rs'
+      - '.github/workflows/hepta-core-provider-policy-windows.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  native-windows-provider-policy:
+    runs-on: windows-latest
+    timeout-minutes: 65
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install exact Rust 1.95 toolchain and rustfmt
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Keep all canonical Rustfmt gates enabled
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Compile and execute all provider-policy terminal acknowledgement tests
+        run: |
+          cargo +1.95.0 test --locked -p codex-core --lib 'client_provider_policy_tests::' -- --nocapture
