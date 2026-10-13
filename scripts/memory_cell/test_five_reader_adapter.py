@@ -90,6 +90,40 @@ class CompositionTests(unittest.TestCase):
         value = c.load(path); change(value)
         path.write_bytes(c.canonical(value))
 
+    def variant_copy(self, *, bind_new_tensors=True):
+        """A fixture-only alternative, not a forged real training receipt.
+
+        Safetensors CPU tensors may reference the loaded file. Never truncate
+        that inode while serializing tensors derived from it. Materialize owned
+        tensors, save a NEW file, verify all bytes/tensors, then replace the copy.
+        """
+        original = self.root/"candidate/adapter/adapter_model.safetensors"
+        original_file_sha = c.file_sha(original)
+        shutil.copytree(self.root/"candidate", self.root/"candidate2")
+        path = self.root/"candidate2/adapter/adapter_model.safetensors"
+        tensors = {k: v.detach().clone().contiguous() for k, v in load_file(str(path)).items()}
+        before = a.state_digest(tensors)
+        key = sorted(tensors)[0]
+        tensors[key].add_(.01)
+        expected = a.state_digest(tensors)
+        self.assertNotEqual(before, expected)
+        temporary = self.root/"candidate2/replacement.safetensors"
+        save_file(tensors, str(temporary))
+        restored = load_file(str(temporary))
+        self.assertEqual(a.state_digest(restored), expected)
+        self.assertEqual(set(restored), set(tensors))
+        self.assertTrue(all(torch.equal(restored[k], tensors[k]) for k in tensors))
+        temporary.replace(path)
+        self.assertEqual(a.state_digest(load_file(str(path))), expected)
+        self.assertEqual(c.file_sha(original), original_file_sha)
+        receipt_path = self.root/"candidate2/training-receipt.json"
+        receipt = c.load(receipt_path)
+        if bind_new_tensors:
+            receipt["adapter_tensor_sha256"] = expected
+        receipt["files"]["adapter/adapter_model.safetensors"] = c.file_sha(path)
+        receipt_path.write_bytes(c.canonical(receipt))
+        return a.compose(self.root, self.base, "candidate2/adapter", "candidate2/training-receipt.json")
+
     def test_base_binding_stays_byte_compatible(self):
         self.assertEqual(n.reader_bindings(self.base["snapshot"], FixtureTokenizer.chat_template, 64, 4)["reader"],
                          c.digest(self.base["snapshot"]))
@@ -150,19 +184,35 @@ class CompositionTests(unittest.TestCase):
             self.assertEqual(len(owner.models), 2)
 
     def test_distinct_adapter_compositions_never_alias(self):
-        shutil.copytree(self.root/"candidate", self.root/"candidate2")
-        path = self.root/"candidate2/adapter/adapter_model.safetensors"
-        tensors = load_file(str(path)); key = next(iter(tensors)); tensors[key] = tensors[key] + .01
-        save_file(tensors, str(path))
-        receipt_path = self.root/"candidate2/training-receipt.json"
-        receipt = c.load(receipt_path)
-        receipt["adapter_tensor_sha256"] = a.state_digest(tensors)
-        receipt["files"]["adapter/adapter_model.safetensors"] = c.file_sha(path)
-        receipt_path.write_bytes(c.canonical(receipt))
-        other = a.compose(self.root, self.base, "candidate2/adapter", "candidate2/training-receipt.json")
+        other = self.variant_copy()
+        self.assertNotEqual(other["bindings"]["reader"], self.composed["bindings"]["reader"])
         with patch.object(n, "LocalTextGenerator", FixtureReader):
             owner = self.session(); owner.answer(self.packet()); owner.answer(self.packet(other))
             self.assertEqual(len(owner.models), 2)
+            self.assertEqual(FixtureReader.loads, 2)
+            self.assertEqual({b.response_adapter_spec["adapter_tensor_sha256"] for b in owner.models.values()},
+                             {self.composed["response_adapter"]["adapter_tensor_sha256"],
+                              other["response_adapter"]["adapter_tensor_sha256"]})
+            for backend in owner.models.values():
+                a.verify_resident(backend)
+
+    def test_updated_file_hash_cannot_replace_stale_tensor_receipt(self):
+        other = self.variant_copy(bind_new_tensors=False)
+        backend = FixtureReader(self.root, self.base["snapshot"], 64)
+        with self.assertRaisesRegex(c.Invalid, "serialized adapter tensor mismatch"):
+            a.attach(backend, self.root, other["response_adapter"], self.base["snapshot"])
+        self.assertFalse(hasattr(backend.loaded, "peft_config"))
+
+    def test_reenabled_trainable_resident_is_not_silently_healed(self):
+        with patch.object(n, "LocalTextGenerator", FixtureReader):
+            owner = self.session(); packet = self.packet(); owner.answer(packet)
+            backend = next(iter(owner.models.values()))
+            with backend.loaded.disable_adapter():
+                with self.assertRaises(c.Invalid): owner.answer(packet)
+            self.assertTrue(any(p.requires_grad for p in backend.loaded.parameters()))
+            with self.assertRaises(c.Invalid): owner.answer(packet)
+            self.assertEqual(len(owner.observations), 1)
+            self.assertTrue(any(p.requires_grad for p in backend.loaded.parameters()))
 
     def test_scope_and_replica_are_not_shared_implicitly(self):
         for field, value in (("scope", "other"), ("generation", "next"), ("purpose", "other")):
@@ -207,7 +257,7 @@ class CompositionTests(unittest.TestCase):
         bad.unlink()
         config = self.root/"candidate/adapter/adapter_config.json"
         config.rename(config.with_suffix(".saved")); config.symlink_to(config.with_suffix(".saved"))
-        with self.assertRaises(c.Invalid): a.validate_material(self.root, self.composed["response_adapter"], self.base["snapshot"])
+        with self.assertRaises(c.Invalid): a._config(self.root/"candidate/adapter") if False else a.validate_material(self.root, self.composed["response_adapter"], self.base["snapshot"])
 
     def test_actual_wrong_base_is_rejected(self):
         backend = FixtureReader(self.root, self.base["snapshot"], 64)
@@ -229,7 +279,15 @@ class CompositionTests(unittest.TestCase):
         a.attach(backend, self.root, self.composed["response_adapter"], self.base["snapshot"])
         with backend.loaded.disable_adapter():
             with self.assertRaises(c.Invalid): a.verify_resident(backend)
-        a.verify_resident(backend)
+        # Pinned PEFT 0.17.1 re-enables active LoRA gradients on context exit.
+        # That is NOT a valid frozen resident. Keep rejecting it; recovery is
+        # a newly loaded candidate, not automatic alteration during verification.
+        self.assertTrue(any(p.requires_grad for p in backend.loaded.parameters()))
+        with self.assertRaises(c.Invalid): a.verify_resident(backend)
+        restored = FixtureReader(self.root, self.base["snapshot"], 64)
+        a.attach(restored, self.root, self.composed["response_adapter"], self.base["snapshot"])
+        a.verify_resident(restored)
+        self.assertTrue(all(not p.requires_grad for p in restored.loaded.parameters()))
 
     def test_invalid_effective_adapter_config_is_rejected(self):
         self.mutate_candidate("candidate/adapter/adapter_config.json", lambda r: r.update(lora_alpha=99))
