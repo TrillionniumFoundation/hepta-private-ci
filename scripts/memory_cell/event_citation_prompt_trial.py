@@ -237,9 +237,7 @@ def summarize(scored, cases):
     return dict(
         schema="hepta.memory-cell.frozen-citation-prompt-paired-v1",
         planned_model_attempts=len(scored),
-        successful_model_generations=sum(
-            r["status"] == "succeeded" for r in scored
-        ),
+        successful_model_generations=sum(r["status"] == "succeeded" for r in scored),
         failed_attempts=sum(r["status"] != "succeeded" for r in scored),
         question_count=len(cases),
         same_frozen_reader=True,
