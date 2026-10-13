@@ -96,6 +96,43 @@ python3 -m unittest discover -v -s qualification/neuron-dynamic-learning -p 'tes
 python3 qualification/neuron-dynamic-learning/scale_probe.py --full
 ```
 
+## External real-pretrained mmBERT evidence (not P0 acceptance)
+
+A separate research-only execution on
+[GitHub Actions run 38423706608](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38423706608)
+completed on `research/shared-stem-six-execution-20261013` source
+`d1511eaf9f2af927a8da03247531d9ac41c197ea`, not on this branch.
+Its retained public research artifact gives exact model revision
+`jhu-clsp/mmBERT-small@abc32620dd4f6ab06f5fbe905dc25f310618e09f`,
+a verified downloaded weight source digest, and CPU PyTorch 2.10.0
+inference over AG News. The archived raw
+`hepta-public-study/execution/report.json` SHA-256 is
+`d9858cf9f922791067d97510eb1bf41964cd856c47246d1ceaa7d4a09a0c706f`.
+
+Actual observed *research* counts:
+- 128 encoding requests through 16 actual Transformer forwards in eight-wide batches
+  (`simulated_encoder=false`).
+- Same bounded input scope: a 32-request, repeated-input batch-cache probe
+  reported **one** physical forward and 24 cache reuses. Equal-size
+  `batch_no_cache` required four forwards; singleton/no-cache required 32.
+- The report measures process timing and endpoint RSS but leaves
+  `peak_rss_bytes`, GPU memory, joules, FLOPs, production Worker transport,
+  target-host p99, and WAL recovery unmeasured/null.
+- AG News has only 64 train / 32 calibration / 32 test records in this
+  qualification sample; report explicitly marks
+  `independent_evaluation=false`, `temporal=false`,
+  `laya_comparison_completed=false`, and
+  `production_accepted=false`.
+
+**Evidence boundary:** This is independent *research branch* proof of actual
+pretrained model use and batch/cache mechanics, **not** the P0 frozen-weight
+execution of the present Rust Worker on the final combined SHA. This README
+does not import or auto-approve weights, count source-reported forward numbers
+as a hardware-independent attestation, or grant any CAS/final-use/NDU right.
+The exact latest stacked Rust/native/global CI, approved model loading,
+generation fence, separate no-change future outcomes and 64–4096 Cell host
+measurements remain mandatory. Keep `DENY_ALL`.
+
 ## Promotion gate
 
 Freeze and retain (1) actual no-change predictions, (2) identical-initialized
