@@ -105,7 +105,7 @@ def verify_exact_source(repository: Path, sha: str) -> None:
         )
         hidden = any(
             record and (record[0] == ord("S") or ord("a") <= record[0] <= ord("z"))
-            for record in tracked.split(b"\\x00")
+            for record in tracked.split(b"\x00")
         )
     except (OSError, subprocess.CalledProcessError) as error:
         raise InvalidEvidence(f"source identity unavailable: {error}") from error
