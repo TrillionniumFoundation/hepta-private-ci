@@ -174,11 +174,20 @@ def audit_metadata(meta, report, sdk_root, hepta_root):
     anymap = single("anymap3")
     if ffi.get("links") != "sqlite3" or not {"e2e-encryption", "sqlite"} <= set(features[sdk["id"]]):
         raise ValueError("SQLite link/E2EE features not validated")
+    # The trial must use genuine registry packages, not a local stand-in
+    # that happens to declare the target versions and links=sqlite3.
+    registry = "registry+https://github.com/rust-lang/crates.io-index"
+    for package in (rusqlite, ffi):
+        if (package.get("source") != registry
+                or not HEX64.fullmatch(package.get("checksum", ""))):
+            raise ValueError("native SQLite crate lacks verified registry identity")
     if (Path(root.get("manifest_path", "")).resolve() !=
             hepta_root / "codex-rs/hepta-matrix-sdk/Cargo.toml"
             or Path(sqlite.get("manifest_path", "")).resolve() != file
             or Path(sdk.get("manifest_path", "")).resolve() !=
-                sdk_root / "crates/matrix-sdk/Cargo.toml"):
+                sdk_root / "crates/matrix-sdk/Cargo.toml"
+            or Path(crypto.get("manifest_path", "")).resolve() !=
+                sdk_root / "crates/matrix-sdk-crypto/Cargo.toml"):
         raise ValueError("source path swapped")
     def direct(a, b):
         if b["id"] not in edges[a["id"]]:
