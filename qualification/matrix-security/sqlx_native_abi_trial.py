@@ -144,14 +144,19 @@ def trial(archive_bytes, lock_bytes):
     }
 
 
-def stage(archive, lock, output_dir, report_file):
+def stage(archive, lock, output_dir, report_file, scratch_root):
     archive, lock = Path(archive), Path(lock)
     output_dir, report_file = Path(output_dir), Path(report_file)
-    if (archive.is_symlink() or lock.is_symlink() or
+    scratch_root = Path(scratch_root)
+    if (archive.is_symlink() or lock.is_symlink() or scratch_root.is_symlink() or
             not archive.is_file() or not lock.is_file() or
-            output_dir.exists() or report_file.exists() or
+            not scratch_root.is_dir() or output_dir.exists() or report_file.exists() or
+            output_dir.resolve() == scratch_root.resolve() or
+            not output_dir.resolve().is_relative_to(scratch_root.resolve()) or
+            not report_file.resolve().is_relative_to(scratch_root.resolve()) or
+            scratch_root.resolve().is_relative_to(lock.resolve().parent.parent) or
             report_file.resolve().is_relative_to(output_dir.resolve())):
-        raise ValueError("trial paths must be existing trusted sources and new detached outputs")
+        raise ValueError("trial outputs must be new and confined to approved external scratch root")
     files, report = trial(archive.read_bytes(), lock.read_bytes())
     output_dir.mkdir(parents=True, exist_ok=False)
     for name, data in files.items():
@@ -170,8 +175,9 @@ def main(argv=None):
     p.add_argument("--lock", type=Path, required=True)
     p.add_argument("--output-dir", type=Path, required=True)
     p.add_argument("--report", type=Path, required=True)
+    p.add_argument("--scratch-root", type=Path, required=True)
     args = p.parse_args(argv)
-    source, report = stage(args.archive, args.lock, args.output_dir, args.report)
+    source, report = stage(args.archive, args.lock, args.output_dir, args.report, args.scratch_root)
     print(json.dumps({"local_patch_path": str(source), **report}, sort_keys=True))
     return 0
 
