@@ -108,11 +108,7 @@ class ProbeExposureTests(unittest.TestCase):
                     "full_projection_positions",
                     "actual_projection_positions",
                 ):
-                    for wrong in (
-                        None,
-                        True,
-                        training[field] + 1,
-                    ):
+                    for wrong in (None, True, training[field] + 1):
                         tampered = deepcopy(training)
                         if wrong is None:
                             tampered.pop(field)
