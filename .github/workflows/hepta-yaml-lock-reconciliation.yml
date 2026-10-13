@@ -1,0 +1,61 @@
+name: Hepta typed YAML lockfile reconciliation (research only)
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/*/Cargo.toml"
+      - "codex-rs/core-plugins/src/**"
+      - "codex-rs/external-agent-migration/src/**"
+      - "codex-rs/skills/src/**"
+      - "codex-rs/ext/skills/src/**"
+      - ".github/workflows/hepta-yaml-lock-reconciliation.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-typed-yaml-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  research-resolution:
+    name: Resolve candidate Cargo graph and prove YAML parser baseline
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - name: Checkout exact source HEAD without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Resolve graph locally without touching production lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          rustc --version --verbose
+          cargo --version
+          cargo metadata --manifest-path codex-rs/Cargo.toml --format-version 1 > /dev/null
+          if grep -q '^name = "unsafe-libyaml"$' codex-rs/Cargo.lock; then
+            echo "::error::unsafe-libyaml remains in the resolved candidate graph"
+            exit 1
+          fi
+          if grep -q '^name = "serde_yaml"$' codex-rs/Cargo.lock; then
+            echo "::error::deprecated serde_yaml remains in the resolved candidate graph"
+            exit 1
+          fi
+          grep -A 2 '^name = "serde-saphyr"$' codex-rs/Cargo.lock
+          echo HEPTA_LOCK_BEGIN
+          base64 codex-rs/Cargo.lock | sed 's/^/HEPTA_LOCK64_/'
+          echo HEPTA_LOCK_END
+      - name: Run candidate YAML scalar compatibility tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-core-plugins yaml_description_contract_is_frozen_before_security_parser_migration --lib
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-external-agent-migration subagent_yaml_scalar_contract_is_frozen_before_security_parser_migration --lib
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-skills --lib
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-skills-extension --lib
