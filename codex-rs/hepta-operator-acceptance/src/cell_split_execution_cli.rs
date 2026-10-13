@@ -189,7 +189,11 @@ where
     // diagnostic successful advance to Agentd. A failure does not undo a
     // committed effect: callers must reconcile the write-once owner journal,
     // never dispatch a replacement request from this error.
-    revalidate_post_effect_admission(selected_action, recheck_plan.as_ref(), &mut admit_selected_plan)?;
+    revalidate_post_effect_admission(
+        selected_action,
+        recheck_plan.as_ref(),
+        &mut admit_selected_plan,
+    )?;
     Ok(CellSplitExecutionCliOutcomeV1 {
         schema: OUTCOME_SCHEMA,
         action: selected_action,
@@ -213,7 +217,8 @@ fn revalidate_post_effect_admission(
     if action != "advance" {
         return Ok(());
     }
-    let plan = frozen_plan.ok_or_else(|| "missing frozen post-effect admission plan".to_string())?;
+    let plan = frozen_plan
+        .ok_or_else(|| "missing frozen post-effect admission plan".to_string())?;
     admit(plan)
 }
 
@@ -324,9 +329,11 @@ mod tests {
             assert_eq!(selected.split_id, "split-post-effect");
             Err("Selector withdrew the selected split after effect".to_string())
         };
-        assert!(revalidate_post_effect_admission("advance", Some(&plan), &mut admission)
-            .expect_err("post-effect Selector revocation must not be reported as success")
-            .contains("Selector withdrew"));
+        assert!(
+            revalidate_post_effect_admission("advance", Some(&plan), &mut admission)
+                .expect_err("post-effect Selector revocation must not be reported as success")
+                .contains("Selector withdrew")
+        );
         assert_eq!(observations, 1);
         // Transcript is read-only, so it must not require fresh mutation
         // admission or turn a historical fact into execution authority.
