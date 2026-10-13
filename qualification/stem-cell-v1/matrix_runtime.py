@@ -24,7 +24,7 @@ from paired_execution import PHASES
 SOURCE_FILES = ("next_round_matrix.py", "paired_execution.py", "head_surgery.py",
                 "hf_encoder_kernel.py", "matrix_materials.py", "matrix_bank.py",
                 "matrix_runtime.py", "matrix_export.py", "aten_work.py",
-                "host_counters.py", "execution_meter.py", "matrix_growth.py", "family_routing.py", "hf_complete_checkpoint.py", "transformer_work.py", "retention_training.py", "consolidation_training.py", "consolidation_record.py")
+                "host_counters.py", "execution_meter.py", "matrix_growth.py", "family_routing.py", "hf_complete_checkpoint.py", "transformer_work.py", "retention_training.py", "consolidation_training.py", "consolidation_record.py", "final_panels.py", "final_campaign.py", "work_record.py")
 
 
 def verify_source(source_sha):
@@ -290,7 +290,8 @@ def publish_prediction_bundle(root, bank, manifest, predictions, *, clock=time.t
     return committed
 
 
-def run_bound(plan, contract, config, workload_path, snapshot, output):
+def run_bound(plan, contract, config, workload_path, snapshot, output, *,
+              final_registry=None, final_protocol_id=None, attempt_id=None, clock=time.time_ns):
     profile = validate_config(plan, contract, config)
     if file_sha256(workload_path) != contract["workload_sha256"]:
         raise ValueError("workload bytes differ from the frozen contract")
@@ -299,9 +300,22 @@ def run_bound(plan, contract, config, workload_path, snapshot, output):
     if "retention_policy" in config:
         from retention_training import validate_retention_rows
         validate_retention_rows(workload["train"], config["retention_policy"])
+    protocol, attempt = None, None
+    if any(x is not None for x in (final_registry, final_protocol_id, attempt_id)):
+        if any(x is None for x in (final_registry, final_protocol_id, attempt_id)):
+            raise ValueError("complete final registry, protocol ID and attempt ID required")
+        from final_panels import validate_protocol, claim_attempt
+        protocol = strict_json(Path(final_registry) / "PROTOCOL.json")
+        validate_protocol(plan, contract, workload, protocol, final_protocol_id)
+        slot = next((s for s in protocol["slots"] if s["attempt_id"] == attempt_id), None)
+        if slot is None or slot["config"] != config:
+            raise ValueError("run configuration differs from its registered final slot")
     sources = verify_source(contract["source_sha"])
     root = Path(output)
     root.mkdir(exist_ok=False)  # A failed/partial run is never overwritten.
+    # Claim before any model work; a retry must use a different preregistered slot.
+    if protocol is not None:
+        attempt = claim_attempt(final_registry, protocol, attempt_id, started_at_ns=clock())
     meter = None
     try:
         if "measurement_policy" in config:
@@ -309,7 +323,7 @@ def run_bound(plan, contract, config, workload_path, snapshot, output):
             meter = WorkLedger(config["measurement_policy"], contract["flops_caps"])
         with meter.scope("setup", "encoder") if meter else contextlib.nullcontext():
             backend = LocalHFEncoder(snapshot, config, profile)
-        bank, manifest, predictions = execute(plan, contract, config, workload, backend, meter=meter)
+        bank, manifest, predictions = execute(plan, contract, config, workload, backend, meter=meter, clock=clock)
         if meter is not None and meter.stopped:
             write_json_exclusive(root / "partial_predictions.json", predictions)
             raise BudgetStop(meter.stopped)
@@ -318,12 +332,21 @@ def run_bound(plan, contract, config, workload_path, snapshot, output):
         if verify_source(contract["source_sha"]) != sources:
             raise ValueError("execution source changed")
         manifest["source_files_sha256"] = sources
-        manifest["predictions_complete_at_ns"] = time.time_ns()
+        manifest["predictions_complete_at_ns"] = clock()
+        if attempt is not None:
+            manifest["final_attempt"] = attempt
         return publish_prediction_bundle(root, bank, manifest, predictions,
-                                         budget_check=meter.check if meter else None)
+                                         budget_check=meter.check if meter else None, clock=clock)
     except Exception as exc:
-        failure = {"status": "failed", "error_type": type(exc).__name__,
+        failure = {"schema": "hepta.stem.bound-failure.v2", "status": "failed",
+                   "error_type": type(exc).__name__, "failed_at_ns": clock(),
+                   "plan_id": plan["plan_id"], "contract_id": contract["contract_id"],
+                   "source_sha": contract["source_sha"], "workload_sha256": contract["workload_sha256"],
+                   "arm_id": config["arm_id"], "config_id": config["config_id"],
+                   "source_files_sha256": sources,
                    "expected_task_ids": contract["task_ids"], "production_authorized": False}
+        if attempt is not None:
+            failure["final_attempt"] = attempt
         from matrix_growth import GrowthNotAdmitted
         if isinstance(exc, GrowthNotAdmitted):
             failure["growth_disposition"] = exc.report
@@ -343,9 +366,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for key in ("plan", "contract", "config", "workload", "snapshot", "output"):
         parser.add_argument("--" + key, required=True)
+    for key in ("final-registry", "final-protocol-id", "attempt-id"):
+        parser.add_argument("--" + key)
     args = parser.parse_args()
     seal = run_bound(strict_json(args.plan), strict_json(args.contract), strict_json(args.config),
-                     args.workload, args.snapshot, args.output)
+                     args.workload, args.snapshot, args.output, final_registry=args.final_registry,
+                     final_protocol_id=args.final_protocol_id, attempt_id=args.attempt_id)
     print(json.dumps({"seal_id": seal["seal_id"], "production_authorized": False}))
 
 
