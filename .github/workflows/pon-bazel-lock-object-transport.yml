@@ -1,0 +1,143 @@
+name: PoN exact native lock object transport
+on:
+  push:
+    branches: [ci/pon-bazel-lock-object-20261013]
+    paths: [.github/workflows/pon-bazel-lock-object-transport.yml]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  verify-and-publish-blob:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: 363b9b3d842e02003c4f418ab79f6b81785bb50c
+          persist-credentials: false
+      - name: Verify exact original source and download the native proposal
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = 363b9b3d842e02003c4f418ab79f6b81785bb50c
+          test "$(git rev-parse HEAD^{tree})" = 739e630b85eaadb1623bf7e148444544d1417d2a
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          mkdir -p "$RUNNER_TEMP/pon-lock-object"
+          curl --fail --silent --show-error --location --max-time 60 --max-filesize 1048576 \
+            --header "Authorization: Bearer $GH_TOKEN" \
+            --header 'Accept: application/vnd.github+json' \
+            https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11783813019/zip \
+            --output "$RUNNER_TEMP/pon-lock-object/proposal.zip"
+      - name: Check all bytes and only the reviewed YAML dependency delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYVERIFY'
+          import hashlib
+          import json
+          import os
+          import subprocess
+          import zipfile
+          from pathlib import Path
+
+          def strict_pairs(pairs):
+              result = {}
+              for key, value in pairs:
+                  if key in result:
+                      raise ValueError("duplicate JSON key")
+                  result[key] = value
+              return result
+
+          def decode(data):
+              return json.loads(data, object_pairs_hook=strict_pairs)
+
+          out = Path(os.environ["RUNNER_TEMP"]) / "pon-lock-object"
+          archive = (out / "proposal.zip").read_bytes()
+          assert hashlib.sha256(archive).hexdigest() == "0ac69b9070c1b6b6859851c0baa947059e93de928815ce78a02f0e32f6794410"
+          with zipfile.ZipFile(out / "proposal.zip") as bundle:
+              names = bundle.namelist()
+              assert len(names) == len(set(names)) == 6
+              assert set(names) == {"MODULE.bazel.lock", "original-MODULE.bazel.lock", "MODULE.bazel.lock.patch", "MODULE.bazel.lock.sha256", "source.txt", "generation.log"}
+              assert sum(item.file_size for item in bundle.infolist()) < 4000000
+              assert bundle.read("source.txt") == b"363b9b3d842e02003c4f418ab79f6b81785bb50c\n739e630b85eaadb1623bf7e148444544d1417d2a\n"
+              original = bundle.read("original-MODULE.bazel.lock")
+              generated = bundle.read("MODULE.bazel.lock")
+              assert original == subprocess.check_output(["git", "show", "HEAD:MODULE.bazel.lock"])
+              assert original == Path("MODULE.bazel.lock").read_bytes()
+              assert len(generated) == 1707790
+              assert hashlib.sha256(generated).hexdigest() == "d99ac01b4923a280a03a75a4ab3b6a54e9dd3fea25b32312174e60ccc5651553"
+              assert hashlib.sha1(b"blob " + str(len(generated)).encode() + b"\0" + generated).hexdigest() == "d9742cc4aa24cf9fd5379839f69e4b3b4b61e2a2"
+              old, new = decode(original), decode(generated)
+              extension = "@@rules_rs+//rs:extensions.bzl%crate"
+              removed = {"serde_yaml_0.9.34+deprecated", "unsafe-libyaml_0.2.11"}
+              added = {"annotate-snippets_0.12.5", "arraydeque_0.5.1", "encoding_rs_io_0.1.8", "granit-parser_1.3.0", "nohash-hasher_0.2.0", "serde-saphyr_1.3.0"}
+              assert set(old["facts"][extension]) - set(new["facts"][extension]) == removed
+              assert set(new["facts"][extension]) - set(old["facts"][extension]) == added
+              for key in removed:
+                  del old["facts"][extension][key]
+              for key in added:
+                  old["facts"][extension][key] = new["facts"][extension][key]
+              assert old == new, "unexpected registry, version, toolchain or existing-fact change"
+              Path("MODULE.bazel.lock").write_bytes(generated)
+              (out / "expected.lock").write_bytes(generated)
+              (out / "review-scope.txt").write_text("Same-source native Bazel output; only two retired YAML facts removed and six actual Cargo YAML facts added. No policy or version downgrade.\n")
+          print("verified exact native proposal bytes and restricted semantic delta")
+          PYVERIFY
+      - uses: ./.github/actions/setup-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+      - name: Run original strict lock check and preserve exact candidate tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          just bazel-lock-check 2>&1 | tee "$RUNNER_TEMP/pon-lock-object/lock-check.log"
+          cmp MODULE.bazel.lock "$RUNNER_TEMP/pon-lock-object/expected.lock"
+          test "$(git diff --name-only)" = MODULE.bazel.lock
+          git diff --cached --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+          git diff --check
+          git add -- MODULE.bazel.lock
+          test "$(git write-tree)" = ee9186bed3e3fe700b553630a3bea956a1ef1138
+          git diff --exit-code
+          git diff --cached --binary > "$RUNNER_TEMP/pon-lock-object/candidate.patch"
+      - name: Publish only the verified Git blob, without moving a branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYPUBLISH'
+          import base64
+          import json
+          import os
+          import urllib.request
+          from pathlib import Path
+          out = Path(os.environ["RUNNER_TEMP"]) / "pon-lock-object"
+          raw = Path("MODULE.bazel.lock").read_bytes()
+          assert raw == (out / "expected.lock").read_bytes()
+          body = json.dumps({"content": base64.b64encode(raw).decode("ascii"), "encoding": "base64"}).encode()
+          request = urllib.request.Request(
+              "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/git/blobs",
+              data=body,
+              headers={"Authorization": "Bearer " + os.environ["GH_TOKEN"], "Accept": "application/vnd.github+json", "Content-Type": "application/json", "X-GitHub-Api-Version": "2022-11-28"},
+              method="POST",
+          )
+          with urllib.request.urlopen(request, timeout=60) as response:
+              result = json.load(response)
+          assert result["sha"] == "d9742cc4aa24cf9fd5379839f69e4b3b4b61e2a2"
+          (out / "published-blob.json").write_text(json.dumps({"sha": result["sha"], "source": "363b9b3d842e02003c4f418ab79f6b81785bb50c", "candidate_tree": "ee9186bed3e3fe700b553630a3bea956a1ef1138", "scope": "blob transport and native lock check only; final source and actual-main-merge qualification still required"}, indent=2) + "\n")
+          print("Published verified blob " + result["sha"])
+          PYPUBLISH
+      - name: Retain transport outcome without granting product acceptance
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: pon-lock-object-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/pon-lock-object/
+          if-no-files-found: error
+          retention-days: 7
