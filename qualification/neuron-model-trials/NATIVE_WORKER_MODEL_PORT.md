@@ -492,3 +492,21 @@ driver-handle labels plus load ordinal, then reject its predecessor ticket.
 The dispatch test also checks the durable Assigned revision remains unchanged
 before a fresh, same-instance receipt can claim and execute exactly once.
 Fixture weights and drivers, not Laya production models, are used.
+
+## Additive per-execution typed Neuron token-cost diagnostic
+
+The Worker retains one optional WorkerNeuronTokenCostV1 directly from its
+real NeuronFeatureDriver observation after a verified NeuronFeatureReceiptV1.
+It binds the exact typed request digest, receipt digest, consumed reservation
+ID, worker instance ID and generation, observed token count and terminal
+status. The receipt is SELF-CONSISTENT, not a physical independent meter.
+WorkerNeuronControlPort::take_cost_diagnostic is single-use; a repeated
+or rejected call deletes the previous cost rather than double-crediting it.
+An unknown post-driver outcome with no validated typed receipt produces NO
+numeric cost claim. Overage still permanently quarantines the Worker.
+
+This is additive; the frozen NeuronFeatureReceiptV1 wire bytes and Q24 math
+have not changed. Future NDU may evaluate the diagnostic only after an
+independent, trusted metering Owner correlates it with resource grants,
+actual route/fence and Ledger outcomes. Current experiments provide NO
+signed total token/CPU cost evidence and no production promotion authority.

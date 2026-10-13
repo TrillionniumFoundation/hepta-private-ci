@@ -241,6 +241,66 @@ fn native_worker_single_use_port_executes_exact_neuron_model_port() {
         "a successful reservation cannot be reused"
     );
     assert_eq!(calls.load(Ordering::SeqCst), 1);
+    // The V1 inference response format remains unchanged, while the observed
+    // model token cost is separately available exactly once.
+    // This diagnostic never authorizes NDU/model selection or deployment.
+    let cost = control.take_cost_diagnostic();
+    assert!(cost.is_none(), "a second rejected attempt clears old cost");
+}
+
+#[test]
+fn token_usage_diagnostic_binds_exact_worker_receipt_and_is_single_use() {
+    let calls = Arc::new(AtomicUsize::new(0));
+    let mut worker = worker(Arc::clone(&calls), false, false);
+    let typed = typed_request();
+    let mut port = WorkerNeuronControlPort::from_reserved_worker(
+        &mut worker,
+        "model.1".to_owned(),
+        preadmitted_reservation(&typed),
+        typed.generation,
+        100,
+    );
+    assert!(port.cost_diagnostic().is_none());
+    let receipt = port.execute_feature(&typed).unwrap();
+    let mut cost = port.take_cost_diagnostic().expect("actual Worker observed cost");
+    assert!(cost.validate_integrity());
+    assert_eq!(cost.consumed_tokens(), 4);
+    assert_eq!(cost.terminal_status(), NeuronFeatureTerminalStatusV1::Succeeded);
+    assert_eq!(cost.receipt_digest(), receipt.receipt_digest);
+    assert!(port.take_cost_diagnostic().is_none());
+    cost.consumed_tokens += 1;
+    assert!(!cost.validate_integrity());
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+}
+
+#[test]
+fn token_usage_diagnostic_does_not_invent_cost_on_preflight_or_physical_error() {
+    let calls = Arc::new(AtomicUsize::new(0));
+    let mut worker = worker(Arc::clone(&calls), false, false);
+    let typed = typed_request();
+    let mut rejected = typed.clone();
+    rejected.model_id = StableId::new("wrong-model").unwrap();
+    let mut port = WorkerNeuronControlPort::from_reserved_worker(
+        &mut worker,
+        "model.1".to_owned(),
+        preadmitted_reservation(&typed),
+        typed.generation,
+        100,
+    );
+    assert_eq!(port.execute_feature(&rejected), Err(NeuronModelError::Rejected));
+    assert!(port.take_cost_diagnostic().is_none());
+    drop(port);
+
+    let mut worker = self::worker(Arc::clone(&calls), false, true);
+    let mut port = WorkerNeuronControlPort::from_reserved_worker(
+        &mut worker,
+        "model.1".to_owned(),
+        preadmitted_reservation(&typed),
+        typed.generation,
+        100,
+    );
+    assert_eq!(port.execute_feature(&typed), Err(NeuronModelError::Indeterminate));
+    assert!(port.take_cost_diagnostic().is_none());
 }
 
 #[test]

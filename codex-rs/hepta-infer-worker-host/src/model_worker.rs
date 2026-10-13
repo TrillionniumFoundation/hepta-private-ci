@@ -899,20 +899,32 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         let logical_generation =
             Generation::new(self.generation).map_err(|_| Error::FeatureContract)?;
         self.consume_neuron_attempt(&request.authorization)?;
-        self.run_neuron_features_receipt_consumed(now_ms, model_id, request, logical_generation)
+        self.run_neuron_features_receipt_with_cost_consumed(
+            now_ms,
+            model_id,
+            request,
+            logical_generation,
+        )
+        .map(|(receipt, _)| receipt)
     }
 
-    /// Used by WorkerNeuronControlPort after it records the attempt BEFORE
-    /// its own preflight. Never call without consuming in the same Worker.
-    pub(crate) fn run_neuron_features_receipt_consumed(
+    /// The actual per-invocation token count is retained beside the typed
+    /// Neuron feature receipt. Never reinterpret the original V1 wire bytes:
+    /// existing consumer/replay digests remain byte-for-byte unchanged.
+    ///
+    /// Only callers that already consumed an authenticated Worker reservation
+    /// may reach this boundary. Resource use after an unknown physical failure
+    /// must not be invented: those paths return an error and no cost receipt.
+    pub(crate) fn run_neuron_features_receipt_with_cost_consumed(
         &mut self,
         now_ms: u64,
         model_id: &str,
         request: NeuronFeatureRequest,
         logical_generation: Generation,
-    ) -> Result<NeuronFeatureReceiptV1, Error> {
+    ) -> Result<(NeuronFeatureReceiptV1, u32), Error> {
         let request_copy = request.clone();
         let observed = self.run_neuron_features_consumed(now_ms, model_id, request)?;
+        let consumed_tokens = observed.consumed_tokens;
         // The worker generation is already checked by durable Assignment.
         // The typed request/receipt generation names the NEURON model, which
         // is allowed to survive an independently restarted Worker process.
@@ -968,7 +980,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if receipt.is_err() {
             self.quarantined = true;
         }
-        receipt
+        receipt.map(|receipt| (receipt, consumed_tokens))
     }
 }
 
