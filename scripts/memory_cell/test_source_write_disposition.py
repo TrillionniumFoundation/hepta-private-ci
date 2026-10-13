@@ -49,9 +49,7 @@ class WriteDispositionTests(unittest.TestCase):
     def test_failures_cannot_hide_in_pairwise_optimization(self):
         raw, scored, cases = fixture()
         pos = next(i for i, r in enumerate(raw) if r["arm"] == "knowledge")
-        raw[pos] = {
-            k: v for k, v in raw[pos].items() if k not in ("answer", "receipt")
-        }
+        raw[pos] = {k: v for k, v in raw[pos].items() if k not in ("answer", "receipt")}
         raw[pos].update(status="failed", error_type="TimeoutError")
         scored[pos] = copy.deepcopy(raw[pos])
         finding = effects(raw, scored, cases)["candidate_research_dispositions"]
