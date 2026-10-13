@@ -128,7 +128,12 @@ def _rows(payload, *, max_rows):
 
 
 def _originals(artifacts):
-    a = {key: checked_zip(artifacts[key], EXPECTED_ZIPS[key]) for key in EXPECTED_ZIPS}
+    # Publisher QA labels are opened only after every immutable source,
+    # retrieval decision and original model receipt has been checked.
+    a = {
+        key: checked_zip(artifacts[key], EXPECTED_ZIPS[key])
+        for key in ("public", "decisions", "reader", "score")
+    }
     if sha(a["public"]["population.json"]) != POPULATION_SHA:
         raise ValueError("published population was replaced")
     if sha(a["public"]["histories.jsonl"]) != HISTORY_SHA:
@@ -219,7 +224,9 @@ def _originals(artifacts):
                 or evidence["source_digest"] != _native_digest(docs[expected]["content"])
             ):
                 raise ValueError("original UTF-8 delivered evidence differs")
-    targets = strict_json(a["targets"]["targets.json"])
+    targets = strict_json(
+        checked_zip(artifacts["targets"], EXPECTED_ZIPS["targets"])["targets.json"]
+    )
     if set(targets) != set(questions):
         raise ValueError("original evaluation targets missing or substituted")
     for qid, t in targets.items():
@@ -368,13 +375,33 @@ def audit(artifacts):
     return compute(questions, originals, targets, report)
 
 
+def stable_wire_numbers(value):
+    """Only serialization quantizes numeric output after exact original checks.
+
+    Saved CPython 3.11 / 3.12 aggregate sums can differ by one floating ULP.
+    The mathematical comparisons against the hosted metric occur *before*
+    this twelve-decimal display normalization. Booleans are never numbers.
+    """
+    if type(value) is float:
+        if not math.isfinite(value):
+            raise ValueError("nonfinite metric would enter exported report")
+        return round(value, 12)
+    if type(value) is dict:
+        return {key: stable_wire_numbers(part) for key, part in value.items()}
+    if type(value) is list:
+        return [stable_wire_numbers(part) for part in value]
+    return value
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     for name in EXPECTED_ZIPS:
         parser.add_argument(name, type=Path)
     parser.add_argument("--out", required=True, type=Path)
     args = parser.parse_args()
-    result = audit({name: getattr(args, name) for name in EXPECTED_ZIPS})
+    result = stable_wire_numbers(
+        audit({name: getattr(args, name) for name in EXPECTED_ZIPS})
+    )
     with args.out.open("x", encoding="utf-8") as f:
         json.dump(result, f, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False)
         f.write("\n")

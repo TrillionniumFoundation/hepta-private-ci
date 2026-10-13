@@ -91,6 +91,32 @@ class RefusalSensitivityTests(unittest.TestCase):
         self.assertNotIn("The Witcher 3", json.dumps(record))
         self.assertFalse(record["production_accepted"])
 
+    def test_target_zip_is_opened_after_unedited_source_and_reader_checks(self):
+        if not all(p.is_file() for p in FILES.values()):
+            self.skipTest("original hosted artifact ZIPs missing")
+        original = trial.checked_zip
+        calls = []
+
+        def traced(path, pin):
+            label = next(key for key, value in FILES.items() if value == path)
+            calls.append(label)
+            return original(path, pin)
+
+        with patch.object(trial, "checked_zip", side_effect=traced):
+            trial._originals(FILES)
+        self.assertEqual(calls[-1], "targets")
+        self.assertEqual(set(calls), set(FILES))
+
+    def test_stable_serialization_never_relabels_boolean_as_numeric(self):
+        value = dict(original=0.20413421589842135, qualified=False)
+        stable = trial.stable_wire_numbers(value)
+        self.assertEqual(stable["original"], 0.204134215898)
+        self.assertIs(stable["qualified"], False)
+        self.assertEqual(
+            trial.stable_wire_numbers(dict(v=[0.17208258098192508])),
+            dict(v=[0.172082580982]),
+        )
+
     def test_fake_score_or_mutated_generation_cannot_pass(self):
         if not all(p.is_file() for p in FILES.values()):
             self.skipTest("original hosted artifact ZIPs missing")

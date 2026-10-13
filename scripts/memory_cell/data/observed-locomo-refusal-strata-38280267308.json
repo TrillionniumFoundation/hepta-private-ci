@@ -4,15 +4,15 @@
       "cohorts": {
         "publisher_support_all_retrieved": {
           "answer_with_any_valid_label": 6,
-          "f1_sum": 1.6330737271873708,
-          "mean_f1": 0.20413421589842135,
+          "f1_sum": 1.633073727187,
+          "mean_f1": 0.204134215898,
           "planned": 8,
           "prompt_tokens": 3252
         },
         "publisher_support_missing": {
           "answer_with_any_valid_label": 3,
-          "f1_sum": 0.12024756852343059,
-          "mean_f1": 0.024049513704686117,
+          "f1_sum": 0.120247568523,
+          "mean_f1": 0.024049513705,
           "planned": 5,
           "prompt_tokens": 1899
         },
@@ -26,17 +26,17 @@
         "unanswerable": {
           "answer_with_any_valid_label": 0,
           "f1_sum": 1.0,
-          "mean_f1": 0.3333333333333333,
+          "mean_f1": 0.333333333333,
           "planned": 3,
           "prompt_tokens": 1103
         }
       },
-      "diagnostic_prefix_refusal_macro_f1": 0.2970825809819251,
-      "original_hosted_f1": 0.17208258098192508,
+      "diagnostic_prefix_refusal_macro_f1": 0.297082580982,
+      "original_hosted_f1": 0.172082580982,
       "original_official": {
         "answer_with_any_valid_label": 9,
-        "f1_sum": 2.7533212957108013,
-        "mean_f1": 0.17208258098192508,
+        "f1_sum": 2.753321295711,
+        "mean_f1": 0.172082580982,
         "planned": 16,
         "prompt_tokens": 6254
       },
@@ -48,15 +48,15 @@
       "cohorts": {
         "publisher_support_all_retrieved": {
           "answer_with_any_valid_label": 7,
-          "f1_sum": 1.681210415200563,
-          "mean_f1": 0.186801157244507,
+          "f1_sum": 1.681210415201,
+          "mean_f1": 0.186801157245,
           "planned": 9,
           "prompt_tokens": 5876
         },
         "publisher_support_missing": {
           "answer_with_any_valid_label": 3,
-          "f1_sum": 0.10250000000000001,
-          "mean_f1": 0.025625000000000002,
+          "f1_sum": 0.1025,
+          "mean_f1": 0.025625,
           "planned": 4,
           "prompt_tokens": 2753
         },
@@ -75,12 +75,12 @@
           "prompt_tokens": 1844
         }
       },
-      "diagnostic_prefix_refusal_macro_f1": 0.2989819009500352,
-      "original_hosted_f1": 0.11148190095003518,
+      "diagnostic_prefix_refusal_macro_f1": 0.29898190095,
+      "original_hosted_f1": 0.11148190095,
       "original_official": {
         "answer_with_any_valid_label": 10,
-        "f1_sum": 1.783710415200563,
-        "mean_f1": 0.11148190095003518,
+        "f1_sum": 1.783710415201,
+        "mean_f1": 0.11148190095,
         "planned": 16,
         "prompt_tokens": 10473
       },
@@ -89,7 +89,7 @@
       "refusal_strict_exact": 0
     }
   },
-  "exact_registered_k8_minus_k4_f1": -0.0606006800318899,
+  "exact_registered_k8_minus_k4_f1": -0.060600680032,
   "generating_commit": "96b5ec37b82f87d445740403e07e3705e9850955",
   "independent_future_families": 0,
   "official_scoring_preserved": true,
@@ -104,25 +104,25 @@
   "paired_support_cohorts": {
     "additional_support_retrieved_by_k8": {
       "extra_prompt_tokens": 266,
-      "mean_original_delta": 0.06896551724137931,
+      "mean_original_delta": 0.068965517241,
       "questions": 1,
-      "sum_original_delta": 0.06896551724137931
+      "sum_original_delta": 0.068965517241
     },
     "support_missing_both": {
       "extra_prompt_tokens": 1227,
-      "mean_original_delta": -0.004436892130857647,
+      "mean_original_delta": -0.004436892131,
       "questions": 4,
-      "sum_original_delta": -0.01774756852343059
+      "sum_original_delta": -0.017747568523
     },
     "support_retrieved_by_both": {
       "extra_prompt_tokens": 1985,
-      "mean_original_delta": -0.0026036036535234024,
+      "mean_original_delta": -0.002603603654,
       "questions": 8,
-      "sum_original_delta": -0.02082882922818722
+      "sum_original_delta": -0.020828829228
     },
     "unanswerable": {
       "extra_prompt_tokens": 741,
-      "mean_original_delta": -0.3333333333333333,
+      "mean_original_delta": -0.333333333333,
       "questions": 3,
       "sum_original_delta": -1.0
     }
@@ -135,6 +135,6 @@
   "schema": "hepta.memorycell.locomo-original-reader-refusal-strata.v1",
   "semantic_citation_precision": null,
   "sensitivity_has_no_human_semantic_validation": true,
-  "sensitivity_prefix_refusal_k8_minus_k4_f1": 0.0018993199681101025,
+  "sensitivity_prefix_refusal_k8_minus_k4_f1": 0.001899319968,
   "source_family_proxies": 2
 }
