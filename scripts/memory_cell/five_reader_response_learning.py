@@ -20,6 +20,7 @@ from five_causal_native import SYSTEM, public_text, count_forwards
 from experiments.shared_stem_cell.execution import tensor_digest, measured
 
 PROFILE = "hepta.five-reader.response-only-lora.v1"
+FORWARD_COUNTER = "causal-decoder-backbone-forward-pre-hook-v1"
 REFUSAL = "I do not have enough evidence."
 TRAINING = {"rank": 4, "alpha": 8, "dropout": 0.0, "targets": ["q_proj", "v_proj"],
             "epochs": 2, "learning_rate": 0.0002, "seed": 20261013,
@@ -32,6 +33,21 @@ def require(ok, reason):
 
 def state_digest(state):
     return c.digest({k: tensor_digest(v) for k, v in sorted(state.items())})
+
+
+def training_forward_owner(model):
+    """PEFT's tuner calls the causal LM's .forward directly during training.
+
+    That bypasses pre-hooks on the outer causal LM. Its decoder backbone is
+    still dispatched through Module.__call__, including the pinned Llama path.
+    Count that actual dispatch, not optimizer steps or LoRA sublayer calls.
+    """
+    require(callable(getattr(model, "get_base_model", None)), "PEFT base accessor required")
+    causal = model.get_base_model()
+    decoder = getattr(causal, "base_model", None)
+    require(isinstance(causal, torch.nn.Module) and isinstance(decoder, torch.nn.Module)
+            and decoder is not causal, "distinct causal decoder counter owner required")
+    return decoder
 
 
 def validate_examples(examples, forbidden_families=()):
@@ -126,6 +142,7 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
         "actual_epochs": epochs, "examples_sha256": before_examples,
         "training_families": sorted({r["family"] for r in examples}),
         "forbidden_families": sorted(forbidden_families), "examples": len(examples),
+        "training_forward_counter": FORWARD_COUNTER,
         "supervision_semantics": "caller_supplied_not_self_authenticated"})
     # Detached views reference the exact original base storage even after PEFT
     # renames module paths. Adapter tensors are excluded by construction.
@@ -148,7 +165,8 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
         steps = tokens = supervised_tokens = 0
         previous = "0" * 64
         losses = []
-        with measured() as training_cost, count_forwards(model.get_base_model()) as forwards:
+        forward_owner = training_forward_owner(model)
+        with measured() as training_cost, count_forwards(forward_owner) as forwards:
             with (output / "optimizer-journal.jsonl").open("xb") as stream:
                 for epoch in range(epochs):
                     order = list(range(len(batches)))
@@ -156,20 +174,32 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
                     for index in order:
                         batch, token_record = batches[index]
                         start = time.perf_counter()
+                        before_forwards = forwards["model_calls"]
                         previous = c.journal_append(stream, {"event": "optimizer_started", "epoch": epoch,
                             "index": index, "example_id": examples[index]["id"], **token_record}, previous)
                         optimizer.zero_grad(set_to_none=True)
-                        loss = model(**batch, use_cache=False).loss
-                        require(bool(torch.isfinite(loss)), "nonfinite response loss")
-                        loss.backward()
-                        torch.nn.utils.clip_grad_norm_([p for _, p in trainable], 1.0, error_if_nonfinite=True)
-                        optimizer.step()
+                        try:
+                            loss = model(**batch, use_cache=False).loss
+                            require(bool(torch.isfinite(loss)), "nonfinite response loss")
+                            loss.backward()
+                            torch.nn.utils.clip_grad_norm_([p for _, p in trainable], 1.0, error_if_nonfinite=True)
+                            optimizer.step()
+                        except Exception as error:
+                            previous = c.journal_append(stream, {"event": "optimizer_failed_or_unknown", "epoch": epoch,
+                                "index": index, "error_type": type(error).__name__,
+                                "observed_decoder_forwards": forwards["model_calls"] - before_forwards,
+                                "wall_seconds": time.perf_counter()-start, "retry_permitted": False}, previous)
+                            raise
                         steps += 1
                         tokens += batch["input_ids"].numel()
                         supervised_tokens += token_record["response_tokens"]
                         losses.append(float(loss.detach()))
                         previous = c.journal_append(stream, {"event": "optimizer_finished", "epoch": epoch,
-                            "index": index, "loss": losses[-1], "wall_seconds": time.perf_counter()-start}, previous)
+                            "index": index, "loss": losses[-1], "wall_seconds": time.perf_counter()-start,
+                            "observed_decoder_forwards": forwards["model_calls"] - before_forwards}, previous)
+        # This fixed profile has no activation checkpointing or extra forwards.
+        # Validate the measured counter; never replace it with the step count.
+        require(forwards["model_calls"] == steps, "decoder observations differ from fixed training execution")
         optimizer_bytes = sum(v.numel()*v.element_size() for s in optimizer.state.values()
                               for v in s.values() if isinstance(v, torch.Tensor))
         optimizer.zero_grad(set_to_none=True)
@@ -195,6 +225,7 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
         "trainable_parameters": sum(p.numel() for _, p in trainable),
         "trainable_parameter_bytes": sum(p.numel()*p.element_size() for _, p in trainable),
         "optimizer_tensor_bytes": optimizer_bytes, "training_forwards": forwards["model_calls"],
+        "training_forward_counter": FORWARD_COUNTER, "counter_owner_class": type(forward_owner).__name__,
         "training_cost": training_cost, "checkpoint_reload_equal": True,
         "files": {p.relative_to(output).as_posix(): c.file_sha(p) for p in (output / "adapter").rglob("*") if p.is_file()},
         "independent_semantic_sufficiency": False, "calibrated_stop_value": False,
