@@ -168,6 +168,26 @@ class MinimalGraphTests(unittest.TestCase):
                     )
                 ), outcome["rejections"])
 
+    def test_unhashable_flat_graph_and_duplicate_edges_fail_closed(self):
+        for case in ("unhashable", "duplicate", "unknown"):
+            with self.subTest(case=case):
+                data = self.metadata()
+                flat = data["resolve"]["nodes"][0]["dependencies"]
+                if case == "unhashable":
+                    flat.append({"fake": "matrix-sdk-crypto"})
+                elif case == "duplicate":
+                    flat.append(flat[0])
+                else:
+                    flat.append("rogue-new-crypto")
+                result = audit(data, self.sdk, self.hepta)
+                self.assertFalse(result["isolated_prerequisite_passed"])
+                self.assertTrue(any(
+                    code in result["rejections"] for code in (
+                        "DUPLICATE_OR_MALFORMED_FLAT_CARGO_EDGE",
+                        "DANGLING_FLAT_CARGO_EDGE",
+                    )
+                ), result["rejections"])
+
     def test_unknown_dev_kind_and_dangling_node_rejected(self):
         for mutation in ("unknown_kind", "unknown_target", "missing_node", "duplicate_node"):
             with self.subTest(mutation=mutation):
