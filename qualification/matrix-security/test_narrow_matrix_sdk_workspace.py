@@ -54,6 +54,19 @@ def metadata(*, candidate="/tmp/stem-candidate", stage="/tmp/hepta-stage"):
              "manifest_path": "/tmp/cargo/blake3/Cargo.toml"},
         ],
         "workspace_members": ["hepta-sdk-id"],
+        "resolve": {
+            "nodes": [
+                {"id": "hepta-sdk-id", "features": [],
+                 "deps": [{"pkg": "upstream-sdk"}]},
+                {"id": "upstream-sdk", "features": ["e2e-encryption", "sqlite"],
+                 "deps": [{"pkg": "upstream-crypto"}, {"pkg": "new-anymap"}]},
+                {"id": "upstream-crypto", "features": [],
+                 "deps": [{"pkg": "new-blake3"}]},
+                {"id": "new-anymap", "features": [], "deps": []},
+                {"id": "new-blake3", "features": [], "deps": []},
+            ],
+            "root": None,
+        },
     }
 
 
@@ -146,6 +159,101 @@ class NarrowWorkspaceTests(unittest.TestCase):
                     inspect_cargo_metadata(
                         enc(bad), candidate_root="/tmp/stem-candidate",
                         stage_root="/tmp/hepta-stage")
+
+    def test_real_cargo_resolve_edges_required_not_decoy_package_names(self):
+        source = metadata()
+        arms = []
+        no_resolve = json.loads(json.dumps(source))
+        no_resolve.pop("resolve")
+        arms.append(no_resolve)
+
+        invalid_resolve = json.loads(json.dumps(source))
+        invalid_resolve["resolve"] = {"nodes": None}
+        arms.append(invalid_resolve)
+
+        unrelated_crypto = json.loads(json.dumps(source))
+        next(node for node in unrelated_crypto["resolve"]["nodes"]
+             if node["id"] == "upstream-sdk")["deps"] = [{"pkg": "new-anymap"}]
+        arms.append(unrelated_crypto)
+
+        unrelated_anymap = json.loads(json.dumps(source))
+        next(node for node in unrelated_anymap["resolve"]["nodes"]
+             if node["id"] == "upstream-sdk")["deps"] = [{"pkg": "upstream-crypto"}]
+        arms.append(unrelated_anymap)
+
+        unrelated_blake = json.loads(json.dumps(source))
+        next(node for node in unrelated_blake["resolve"]["nodes"]
+             if node["id"] == "upstream-crypto")["deps"] = []
+        arms.append(unrelated_blake)
+
+        no_crypto_feature = json.loads(json.dumps(source))
+        next(node for node in no_crypto_feature["resolve"]["nodes"]
+             if node["id"] == "upstream-sdk")["features"] = ["sqlite"]
+        arms.append(no_crypto_feature)
+
+        no_sqlite_feature = json.loads(json.dumps(source))
+        next(node for node in no_sqlite_feature["resolve"]["nodes"]
+             if node["id"] == "upstream-sdk")["features"] = ["e2e-encryption"]
+        arms.append(no_sqlite_feature)
+
+        missing_node = json.loads(json.dumps(source))
+        missing_node["resolve"]["nodes"].pop()
+        arms.append(missing_node)
+
+        duplicate_node = json.loads(json.dumps(source))
+        duplicate_node["resolve"]["nodes"].append(
+            dict(duplicate_node["resolve"]["nodes"][0]))
+        arms.append(duplicate_node)
+
+        dangling_edge = json.loads(json.dumps(source))
+        dangling_edge["resolve"]["nodes"][0]["deps"].append(
+            {"pkg": "phantom-unregistered-crate"})
+        arms.append(dangling_edge)
+
+        malformed_edge = json.loads(json.dumps(source))
+        malformed_edge["resolve"]["nodes"][0]["deps"] = [{}]
+        arms.append(malformed_edge)
+
+        wrong_crypto_source = json.loads(json.dumps(source))
+        next(p for p in wrong_crypto_source["packages"]
+             if p["name"] == "matrix-sdk-crypto")["manifest_path"] = (
+                 "/unapproved/foreign-crypto/Cargo.toml")
+        arms.append(wrong_crypto_source)
+
+        sdk_path_substitution = json.loads(json.dumps(source))
+        next(p for p in sdk_path_substitution["packages"]
+             if p["name"] == "matrix-sdk")["manifest_path"] = (
+                 "/tmp/stem-candidate/unreviewed-sdk/Cargo.toml")
+        arms.append(sdk_path_substitution)
+
+        duplicate_pkgid = json.loads(json.dumps(source))
+        duplicate_pkgid["packages"].append(
+            dict(duplicate_pkgid["packages"][-1]))
+        arms.append(duplicate_pkgid)
+
+        for case in arms:
+            with self.subTest(case=hashlib.sha256(enc(case)).hexdigest()[:12]):
+                with self.assertRaises(ValueError):
+                    inspect_cargo_metadata(
+                        enc(case), candidate_root="/tmp/stem-candidate",
+                        stage_root="/tmp/hepta-stage")
+
+    def test_two_blake3_versions_cannot_pass_with_only_one_patched(self):
+        case = metadata()
+        case["packages"].append({
+            "name": "blake3", "id": "legacy-blake3",
+            "version": "1.8.2",
+            "manifest_path": "/tmp/cargo/legacy-blake3/Cargo.toml",
+        })
+        case["resolve"]["nodes"].append(
+            {"id": "legacy-blake3", "features": [], "deps": []})
+        next(node for node in case["resolve"]["nodes"]
+             if node["id"] == "upstream-crypto")["deps"].append(
+                 {"pkg": "legacy-blake3"})
+        with self.assertRaisesRegex(ValueError, "old blake3"):
+            inspect_cargo_metadata(
+                enc(case), candidate_root="/tmp/stem-candidate",
+                stage_root="/tmp/hepta-stage")
 
     def test_no_invalid_metadata_or_unbounded_source_passes(self):
         for raw in (
