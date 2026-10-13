@@ -101,7 +101,8 @@ jobs:
             --archive "$RUNNER_TEMP/sqlx-sqlite-0.9.0.crate" \
             --lock codex-rs/Cargo.lock \
             --output-dir "$RUNNER_TEMP/sqlx-sqlite-abi-rebind" \
-            --report "$RUNNER_TEMP/hepta-sqlx-abi-candidate.json"
+            --report "$RUNNER_TEMP/hepta-sqlx-abi-candidate.json" \
+            --scratch-root "$RUNNER_TEMP"
           echo "SCRATCH_SQLX=$RUNNER_TEMP/sqlx-sqlite-abi-rebind/sqlx-sqlite-0.9.0" >> "$GITHUB_ENV"
       - name: Install Rust 1.96 for disposable upstream SDK only
         run: rustup toolchain install 1.96.0 --profile minimal
