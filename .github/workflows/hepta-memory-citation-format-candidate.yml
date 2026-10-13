@@ -1,0 +1,53 @@
+name: MemoryCell isolated premise-citation formatter
+on:
+  push:
+    branches:
+      - "codex/memory-cell-evidence-20261008"
+    paths:
+      - ".github/workflows/hepta-memory-citation-format-candidate.yml"
+permissions:
+  contents: read
+jobs:
+  ast-identical-review-candidate:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.ref == 'refs/heads/codex/memory-cell-evidence-20261008'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - name: Produce AST-equal formatting only, never write to the PR branch
+        run: |
+          set -euo pipefail
+          python3 -m pip install --user uv==0.8.22
+          export PATH="$HOME/.local/bin:$PATH"
+          python3 - <<'PY'
+          from pathlib import Path
+          import ast, json
+          names = ['scripts/memory_cell/event_citation_prompt_trial.py', 'scripts/memory_cell/test_event_citation_prompt_trial.py']
+          Path('/tmp/premise-format-asts.json').write_text(json.dumps({n: ast.dump(ast.parse(Path(n).read_text())) for n in names}))
+          PY
+          uv run --frozen --project scripts ruff format \
+            scripts/memory_cell/event_citation_prompt_trial.py \
+            scripts/memory_cell/test_event_citation_prompt_trial.py
+          python3 - <<'PY'
+          from pathlib import Path
+          import ast, json, subprocess
+          original = json.loads(Path('/tmp/premise-format-asts.json').read_text())
+          for path, tree in original.items():
+              assert ast.dump(ast.parse(Path(path).read_text())) == tree, path
+          changed = set(subprocess.check_output(['git', 'diff', '--name-only'], text=True).splitlines())
+          assert changed <= set(original), changed
+          assert changed, 'empty formatting candidate'
+          PY
+          git diff --check
+          git add -- scripts/memory_cell/event_citation_prompt_trial.py scripts/memory_cell/test_event_citation_prompt_trial.py
+          git rm .github/workflows/hepta-memory-citation-format-candidate.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'style(memory-cell): AST-identical premise citation prompt formatting'
+          git push origin "HEAD:refs/heads/codex/memory-citation-format-$GITHUB_RUN_ID"
+          echo "REVIEW_CANDIDATE_SHA=$(git rev-parse HEAD)"
