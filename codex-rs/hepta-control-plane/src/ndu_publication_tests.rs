@@ -1,5 +1,6 @@
 use super::*;
-use codex_hepta_types::{Generation, StableId};
+use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 
 fn snapshot(fence: u64) -> NduSnapshotRefV1 {
     NduSnapshotRefV1 {
@@ -24,17 +25,29 @@ fn production_owner_replays_checkpoint_and_requires_single_writer() {
     {
         let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
             .expect("owner");
-        assert!(NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO).is_err());
-        let head = owner.compare_and_publish_checkpoint(
-            &original, Digest32::of_bytes(b"verified-read"),
-            Digest32::of_bytes(b"tick"), Digest32::ZERO, next,
-        ).expect("durable publication");
+        assert!(
+            NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+                .is_err()
+        );
+        let head = owner
+            .compare_and_publish_checkpoint(
+                &original,
+                Digest32::of_bytes(b"verified-read"),
+                Digest32::of_bytes(b"tick"),
+                Digest32::ZERO,
+                next,
+            )
+            .expect("durable publication");
         assert!(!head.is_zero());
         assert!(matches!(
             owner.compare_and_publish_checkpoint(
-                &original, Digest32::of_bytes(b"verified-read"),
-                Digest32::of_bytes(b"tick"), Digest32::ZERO, next,
-            ), Err(NduPublicationErrorV1::Stale)
+                &original,
+                Digest32::of_bytes(b"verified-read"),
+                Digest32::of_bytes(b"tick"),
+                Digest32::ZERO,
+                next,
+            ),
+            Err(NduPublicationErrorV1::Stale)
         ));
     }
     assert!(matches!(
@@ -56,13 +69,18 @@ fn cutover_and_checkpoint_cas_use_same_exclusive_owner() {
     {
         let owner = NduPublicationOwnerV1::open_production(&path, previous.clone(), Digest32::ZERO)
             .expect("owner");
-        owner.publish_cutover(&previous, snapshot(4), migrated).expect("cutover fsync");
+        owner
+            .publish_cutover(&previous, snapshot(4), migrated)
+            .expect("cutover fsync");
         assert!(matches!(
             owner.compare_and_publish_checkpoint(
-                &previous, Digest32::of_bytes(b"read"),
-                Digest32::of_bytes(b"old-tick"), Digest32::ZERO,
+                &previous,
+                Digest32::of_bytes(b"read"),
+                Digest32::of_bytes(b"old-tick"),
+                Digest32::ZERO,
                 Digest32::of_bytes(b"old-checkpoint"),
-            ), Err(NduPublicationErrorV1::Stale)
+            ),
+            Err(NduPublicationErrorV1::Stale)
         ));
         assert_eq!(owner.current().unwrap(), (snapshot(4), migrated));
     }
@@ -83,18 +101,24 @@ fn truncated_journal_is_rejected_without_mutating_history() {
     }
     let previous = std::fs::read(&path).expect("history");
     let mut file = OpenOptions::new().append(true).open(&path).expect("open");
-    file.write_all(b"torn-without-newline").expect("inject torn suffix");
+    file.write_all(b"torn-without-newline")
+        .expect("inject torn suffix");
     assert!(matches!(
         NduPublicationOwnerV1::open_production(&path, snapshot(3), Digest32::ZERO),
         Err(NduPublicationErrorV1::Corrupt)
     ));
-    assert!(std::fs::read(&path).expect("unchanged").starts_with(&previous));
+    assert!(
+        std::fs::read(&path)
+            .expect("unchanged")
+            .starts_with(&previous)
+    );
 }
 
 #[cfg(unix)]
 #[test]
 fn symlink_and_world_accessible_directory_cannot_own_frontier() {
-    use std::os::unix::fs::{PermissionsExt, symlink};
+    use std::os::unix::fs::PermissionsExt;
+    use std::os::unix::fs::symlink;
     let dir = tempfile::tempdir().expect("private directory");
     let path = dir.path().join("frontier.wal");
     {
@@ -113,8 +137,11 @@ fn symlink_and_world_accessible_directory_cannot_own_frontier() {
         .expect("permissions");
     assert!(matches!(
         NduPublicationOwnerV1::open_production(
-            &open_dir.join("frontier.wal"), snapshot(3), Digest32::ZERO,
-        ), Err(NduPublicationErrorV1::UnsafePath)
+            &open_dir.join("frontier.wal"),
+            snapshot(3),
+            Digest32::ZERO,
+        ),
+        Err(NduPublicationErrorV1::UnsafePath)
     ));
 }
 
@@ -123,7 +150,10 @@ fn symlink_and_world_accessible_directory_cannot_own_frontier() {
 fn unsupported_platform_denies_frontier_owner() {
     assert!(matches!(
         NduPublicationOwnerV1::open_production(
-            Path::new("control.wal"), snapshot(3), Digest32::ZERO,
-        ), Err(NduPublicationErrorV1::Unsupported)
+            Path::new("control.wal"),
+            snapshot(3),
+            Digest32::ZERO,
+        ),
+        Err(NduPublicationErrorV1::Unsupported)
     ));
 }

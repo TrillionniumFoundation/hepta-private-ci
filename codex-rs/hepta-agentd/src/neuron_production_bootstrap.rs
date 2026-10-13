@@ -81,9 +81,9 @@ fn validate_production_paths(
         || effect_intent_path.parent() != metrics_path.parent()
         || [effect_intent_path, metrics_path].iter().any(|path| {
             path.file_name().is_none()
-                || path.components().any(|component| {
-                    matches!(component, Component::CurDir | Component::ParentDir)
-                })
+                || path
+                    .components()
+                    .any(|component| matches!(component, Component::CurDir | Component::ParentDir))
         })
     {
         return Err(NeuronProductionBootstrapErrorV1::InvalidPaths);

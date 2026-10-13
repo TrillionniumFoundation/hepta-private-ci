@@ -262,7 +262,9 @@ fn post_prepare_ndu_revalidation_denies_fence_cutover_and_expiry() {
         expires_at_unix_ms: 1100,
         signature: [0; 64],
     };
-    read.signature = key.sign(&read.signing_bytes().expect("signing bytes")).to_bytes();
+    read.signature = key
+        .sign(&read.signing_bytes().expect("signing bytes"))
+        .to_bytes();
     let clock = Arc::new(ControlClock(AtomicU64::new(1_000)));
     let frontier = Arc::new(ControlFrontier(Mutex::new(snapshot.clone())));
     let verifier = NduReadVerifierV1::new(

@@ -18,16 +18,24 @@ fn adapter_uses_same_durable_control_owner_for_reads_and_checkpoint_publication(
     };
     let owner = Arc::new(
         NduPublicationOwnerV1::open_production(
-            &dir.path().join("ndu-control.wal"), snapshot.clone(), Digest32::ZERO,
-        ).expect("durable owner"),
+            &dir.path().join("ndu-control.wal"),
+            snapshot.clone(),
+            Digest32::ZERO,
+        )
+        .expect("durable owner"),
     );
     let adapter = ControlNduFrontierAdapterV1::new(owner.clone());
     assert_eq!(adapter.latest(&scope).unwrap(), snapshot);
     let next = Digest32::of_bytes(b"checkpoint");
-    let head = adapter.compare_and_publish_checkpoint(
-        &snapshot, Digest32::of_bytes(b"authenticated-read"),
-        Digest32::of_bytes(b"tick"), Digest32::ZERO, next,
-    ).expect("Control atomic CAS");
+    let head = adapter
+        .compare_and_publish_checkpoint(
+            &snapshot,
+            Digest32::of_bytes(b"authenticated-read"),
+            Digest32::of_bytes(b"tick"),
+            Digest32::ZERO,
+            next,
+        )
+        .expect("Control atomic CAS");
     assert!(!head.is_zero());
     assert_eq!(owner.current().unwrap().1, next);
     assert!(adapter.latest(&StableId::new("other").unwrap()).is_err());

@@ -15,7 +15,10 @@ fn production_neuron_journals_must_be_distinct_provisioned_siblings() {
         Err(NeuronProductionBootstrapErrorV1::InvalidPaths)
     ));
     assert!(matches!(
-        validate_production_paths(&effect, &root.path().join("nested").join("..").join("metrics")),
+        validate_production_paths(
+            &effect,
+            &root.path().join("nested").join("..").join("metrics")
+        ),
         Err(NeuronProductionBootstrapErrorV1::InvalidPaths)
     ));
 }
@@ -35,9 +38,7 @@ fn preprovisioned_evidence_sink_is_durable_and_replay_verified() {
     validate_production_paths(&effect, &metrics).expect("same protected parent");
     {
         let sink = DurablePhaseMetricSinkV1::open(
-            &metrics,
-            /* capacity */ 16,
-            /* group_size */ 2,
+            &metrics, /* capacity */ 16, /* group_size */ 2,
             /* flush_interval_ms */ 100,
         )
         .expect("open real Evidence journal");
@@ -53,10 +54,7 @@ fn preprovisioned_evidence_sink_is_durable_and_replay_verified() {
         assert!(sink.healthy());
     }
     let reopened = DurablePhaseMetricSinkV1::open(
-        &metrics,
-        /* capacity */ 16,
-        /* group_size */ 2,
-        /* flush_interval_ms */ 100,
+        &metrics, /* capacity */ 16, /* group_size */ 2, /* flush_interval_ms */ 100,
     )
     .expect("replay persisted group");
     assert!(reopened.healthy());
