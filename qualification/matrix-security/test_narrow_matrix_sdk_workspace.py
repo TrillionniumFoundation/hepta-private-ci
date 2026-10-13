@@ -65,6 +65,9 @@ class NarrowWorkspaceTests(unittest.TestCase):
     def test_only_workspace_membership_changes(self):
         original = cargo_fixture()
         edited = rewrite_workspace(original)
+        # The authoritative Cargo-parser boundary takes exact bytes; a
+        # decoded string must never be handed back to the bounded reader.
+        self.assertIsInstance(edited, bytes)
         self.assertEqual(edited.count(b'[workspace]'), 1)
         self.assertIn(b'members = ["hepta-matrix-sdk"]', edited)
         self.assertNotIn(b'component-099', edited.split(b'[workspace.package]')[0])
