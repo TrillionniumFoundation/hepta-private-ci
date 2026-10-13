@@ -71,3 +71,82 @@ jobs:
             ${{ runner.temp }}/stem-environment.txt
             ${{ runner.temp }}/stem-regression.log
           if-no-files-found: error
+
+  hf-profile-compatibility:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install exact stock HF compatibility profile
+        run: |
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Exercise real stock architecture offline, without pretrained claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/hf-source.txt"
+          python -m pip freeze > "$RUNNER_TEMP/hf-environment.txt"
+          python qualification/stem-cell-v1/hf_profile_checks.py -v 2>&1 | tee "$RUNNER_TEMP/hf-profile.log"
+      - name: Retain HF architecture observations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-hf-profile-compatibility
+          path: |
+            ${{ runner.temp }}/hf-source.txt
+            ${{ runner.temp }}/hf-environment.txt
+            ${{ runner.temp }}/hf-profile.log
+          if-no-files-found: error
+
+  public-encoder-canary:
+    needs: hf-profile-compatibility
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      DO_NOT_TRACK: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install exact CPU pretrained canary dependencies
+        run: |
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Pin public commit, acquire safe weights, execute Encoder
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/public-encoder-source.txt"
+          python -m pip freeze > "$RUNNER_TEMP/public-encoder-environment.txt"
+          python qualification/stem-cell-v1/public_encoder_probe.py \
+            --acquire-public --output "$RUNNER_TEMP/public-encoder" 2>&1 | tee "$RUNNER_TEMP/public-encoder.log"
+      - name: Retain observations, never upload model weights
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-public-encoder-canary
+          path: |
+            ${{ runner.temp }}/public-encoder-source.txt
+            ${{ runner.temp }}/public-encoder-environment.txt
+            ${{ runner.temp }}/public-encoder.log
+            ${{ runner.temp }}/public-encoder/source-lock.json
+            ${{ runner.temp }}/public-encoder/downloaded-material.json
+            ${{ runner.temp }}/public-encoder/probe.json
+            ${{ runner.temp }}/public-encoder/FAILED.json
+          if-no-files-found: error
