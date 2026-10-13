@@ -1413,7 +1413,12 @@ where
         // The one-shot retire effect is NEVER repeated: only the real owner
         // can re-observe its committed tombstone and finish the ledger.
         if split.retirement.disposition == codex_hepta_types::CellParentDispositionV1::Retire {
-            let _ = journal.retirement_pending(split)?;
+            // Without a committed write-ahead intent, a positive external
+            // observation cannot be promoted into our terminal history.
+            // Do not even query the effect owner on this unprepared path.
+            if !journal.retirement_pending(split)? {
+                return Ok(outcome(&journal, proposal));
+            }
             let observed = executor
                 .observe_retirement(split)
                 .map_err(|error| CellSplitAutomationErrorV1::Executor(error.to_string()))?;
@@ -2024,7 +2029,8 @@ mod tests {
             fn load(
                 &self,
                 split_id: &StableId,
-            ) -> Result<Option<CellSplitLifecycleJournalV1>, CellSplitAutomationErrorV1> {
+            ) -> Result<Option<CellSplitLifecycleJournalV1>, CellSplitAutomationErrorV1>
+            {
                 self.0.load(split_id)
             }
 
@@ -2062,11 +2068,58 @@ mod tests {
         let retained = owner.load(&split.split_id).unwrap().unwrap();
         assert_eq!(retained.current_state, CellSplitLifecycleStateV1::Retained);
         assert!(!retained.retirement_pending(&split).unwrap());
+        // Even an in-process caller cannot manufacture Retired without the
+        // plan-bound write-ahead marker.
+        let mut unprepared = retained.clone();
+        assert_eq!(
+            unprepared.retire(&split),
+            Err(CellSplitLifecycleErrorV1::InvalidTransition)
+        );
+
+        // A misleading positive external readback must not advance the
+        // journal in the absence of a durably prepared retirement intent.
+        struct UnpreparedObserver {
+            queried: bool,
+        }
+        impl CellSplitAutomationExecutorV1 for UnpreparedObserver {
+            type Error = &'static str;
+
+            fn evaluate(
+                &mut self,
+                _split: &CellSplitV1,
+            ) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
+                Err("evaluation must not run on retained state")
+            }
+
+            fn canary(
+                &mut self,
+                _split: &CellSplitV1,
+            ) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+                Err("canary must not repeat on retained state")
+            }
+
+            fn retire(&mut self, _split: &CellSplitV1) -> Result<Digest32, Self::Error> {
+                Err("retirement must not repeat on retained state")
+            }
+
+            fn observe_retirement(
+                &mut self,
+                split: &CellSplitV1,
+            ) -> Result<Option<Digest32>, Self::Error> {
+                self.queried = true;
+                Ok(Some(split.retirement.tombstone_digest))
+            }
+        }
+        let mut observer = UnpreparedObserver { queried: false };
+        let rejected = run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut observer)
+            .expect("unprepared retained state remains historical only");
+        assert_eq!(rejected.state, CellSplitLifecycleStateV1::Retained);
+        assert!(!observer.queried);
 
         // Restart/re-entry uses original-owner observation only and must not
         // issue the effect again, even when the write-ahead commit failed.
-        let reopened = run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut executor)
-            .unwrap();
+        let reopened =
+            run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut executor).unwrap();
         assert_eq!(reopened.state, CellSplitLifecycleStateV1::Retained);
         assert!(!executor.retired);
     }
