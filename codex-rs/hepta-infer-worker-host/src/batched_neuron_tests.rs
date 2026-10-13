@@ -825,11 +825,11 @@ fn in_flight_scope_cutover_is_not_a_successful_result(batch_size: usize, physica
 #[test]
 #[cfg(unix)]
 fn scalar_completion_after_scope_cutover_is_never_published() {
-    in_flight_scope_cutover_is_not_a_successful_result(/* batch_size */ 1, /* physical */ false);
+    in_flight_scope_cutover_is_not_a_successful_result(/*batch_size*/ 1, /*physical*/ false);
 }
 
 #[test]
 #[cfg(unix)]
 fn physical_batch_completion_after_scope_cutover_denies_all_old_route_results() {
-    in_flight_scope_cutover_is_not_a_successful_result(/* batch_size */ 2, /* physical */ true);
+    in_flight_scope_cutover_is_not_a_successful_result(/*batch_size*/ 2, /*physical*/ true);
 }
