@@ -470,7 +470,6 @@ fn independent_server_rejects_caller_supplied_highwater_and_missing_domain() {
     assert!(file.exists());
 }
 
-
 /// Single-process ratchet regression: even a freshly signed response from
 /// an otherwise valid-looking restored record must not move this signer
 /// backward. The external monotonic store remains mandatory across restarts.
@@ -494,10 +493,7 @@ fn read_through_signed_service(
     receive_frame(&mut client).map_err(Into::into)
 }
 
-fn replace_test_frontier(
-    path: &Path,
-    frontier: &CellSplitMonotonicDurableFrontierV1,
-) {
+fn replace_test_frontier(path: &Path, frontier: &CellSplitMonotonicDurableFrontierV1) {
     std::fs::write(
         path,
         crate::durable::canonical_json(frontier).expect("canonical registry"),
@@ -564,8 +560,7 @@ fn same_signer_allows_epoch_rollover_only_with_new_durable_source_sequence() {
     let root = tempfile::tempdir().expect("private registry");
     let file = write_test_registry(root.path());
     let original: CellSplitMonotonicDurableFrontierV1 =
-        serde_json::from_slice(&std::fs::read(&file).expect("original"))
-            .expect("typed original");
+        serde_json::from_slice(&std::fs::read(&file).expect("original")).expect("typed original");
     let mut service = CellSplitMonotonicRpcServiceV1::new(
         DiskAuthoritativeRegistry::open(file.clone()),
         signer(),
@@ -593,7 +588,6 @@ fn same_signer_allows_epoch_rollover_only_with_new_durable_source_sequence() {
     assert!(read_through_signed_service(&mut service, &"dd".repeat(32)).is_err());
 }
 
-
 #[test]
 fn client_rejects_old_still_signed_highwater_after_remote_restart() {
     let root = tempfile::tempdir().expect("Unix RPC fixture");
@@ -615,8 +609,10 @@ fn client_rejects_old_still_signed_highwater_after_remote_restart() {
                 proof.journal_revision = 9;
                 proof.signature_bytes.clear();
                 proof.signature_bytes = signer()
-                    .sign(&cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
-                        .expect("original signing grammar"))
+                    .sign(
+                        &cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
+                            .expect("original signing grammar"),
+                    )
                     .to_bytes()
                     .to_vec();
             }
@@ -638,7 +634,8 @@ fn client_rejects_old_still_signed_highwater_after_remote_restart() {
         Duration::from_secs(2),
     )
     .expect("pinned verifier");
-    let first = client.read_domain_frontier(DOMAIN, &"11".repeat(32))
+    let first = client
+        .read_domain_frontier(DOMAIN, &"11".repeat(32))
         .expect("signed initial high water");
     assert_eq!(first.journal_revision, 10);
     assert!(matches!(
@@ -668,8 +665,10 @@ fn client_accepts_advanced_signed_highwater_with_new_checkpoint_identity() {
                 proof.original_store_record_digest = "dd".repeat(32);
                 proof.signature_bytes.clear();
                 proof.signature_bytes = signer()
-                    .sign(&cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
-                        .expect("fresh higher frontier"))
+                    .sign(
+                        &cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
+                            .expect("fresh higher frontier"),
+                    )
                     .to_bytes()
                     .to_vec();
             }
@@ -692,13 +691,17 @@ fn client_accepts_advanced_signed_highwater_with_new_checkpoint_identity() {
     )
     .expect("pinned verifier");
     assert_eq!(
-        client.read_domain_frontier(DOMAIN, &"11".repeat(32))
-            .expect("first observation").journal_revision,
+        client
+            .read_domain_frontier(DOMAIN, &"11".repeat(32))
+            .expect("first observation")
+            .journal_revision,
         10,
     );
     assert_eq!(
-        client.read_domain_frontier(DOMAIN, &"22".repeat(32))
-            .expect("new independent committed frontier").journal_revision,
+        client
+            .read_domain_frontier(DOMAIN, &"22".repeat(32))
+            .expect("new independent committed frontier")
+            .journal_revision,
         11,
     );
     service.join().expect("service");

@@ -79,4 +79,50 @@ fn zero_observation_canary_cannot_qualify_retention() {
     legacy.observed_requests = 0;
     legacy.receipt_digest = legacy.digest();
     assert!(!legacy.passes());
+    assert_eq!(
+        legacy.verify_digest(),
+        Err(CellSplitLifecycleErrorV1::InvalidEvidence)
+    );
+}
+
+#[test]
+fn digest_consistent_but_invalid_canary_must_not_pass_retention() {
+    let original = CellSplitCanaryReceiptV1::new(
+        id("split.forged"),
+        codex_hepta_types::Generation::new(8).expect("generation"),
+        digest(1),
+        digest(2),
+        digest(3),
+        10,
+        0,
+        true,
+    )
+    .expect("valid baseline");
+
+    // An adversary can recompute an *unkeyed* SHA-256 receipt digest after
+    // deleting a mandatory dispatch, old-route fence or child-route anchor.
+    // The resulting digest remains self-consistent but proves no admission.
+    for missing in 0..3 {
+        let mut forged = original.clone();
+        match missing {
+            0 => forged.dispatch_receipt_digest = codex_hepta_types::Digest32::ZERO,
+            1 => forged.old_route_fence_digest = codex_hepta_types::Digest32::ZERO,
+            _ => forged.child_route_digest = codex_hepta_types::Digest32::ZERO,
+        }
+        forged.receipt_digest = forged.digest();
+        assert_eq!(
+            forged.verify_digest(),
+            Err(CellSplitLifecycleErrorV1::InvalidEvidence),
+        );
+        assert!(!forged.passes());
+    }
+
+    let mut impossible = original;
+    impossible.failed_requests = impossible.observed_requests + 1;
+    impossible.receipt_digest = impossible.digest();
+    assert_eq!(
+        impossible.verify_digest(),
+        Err(CellSplitLifecycleErrorV1::InvalidEvidence),
+    );
+    assert!(!impossible.passes());
 }

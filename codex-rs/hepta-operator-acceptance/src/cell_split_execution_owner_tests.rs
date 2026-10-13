@@ -203,6 +203,20 @@ fn plan() -> CellSplitExecutionPlanV1 {
 }
 
 #[test]
+fn frozen_split_plan_rejects_noncanonical_split_and_owner_ids() {
+    assert!(plan().digest().is_ok());
+    for invalid_id in ["../other", "parent/child", "line\nspoof", "nul\0id"] {
+        let mut invalid_split = plan();
+        invalid_split.split_id = invalid_id.into();
+        assert!(invalid_split.digest().is_err(), "invalid split ID: {invalid_id:?}");
+
+        let mut invalid_owner = plan();
+        invalid_owner.owner_ids[2] = invalid_id.into();
+        assert!(invalid_owner.digest().is_err(), "invalid owner ID: {invalid_id:?}");
+    }
+}
+
+#[test]
 fn cns_predecessor_bridge_rejects_wrong_signer_receipt_and_plan() {
     let frozen = plan();
     let digest = frozen.digest().expect("frozen plan");
@@ -731,8 +745,15 @@ fn selector_revoked_during_last_owner_readback_never_prepares_successor() {
         Err(CellSplitExecutionErrorV1::External(message))
             if message.contains("Selector revoked")
     ));
-    assert_eq!(admission_reads, 2, "Selector checked again after live readback");
-    assert_eq!(state.borrow().executions, 1, "no successor effect may execute");
+    assert_eq!(
+        admission_reads, 2,
+        "Selector checked again after live readback"
+    );
+    assert_eq!(
+        state.borrow().executions,
+        1,
+        "no successor effect may execute"
+    );
     assert_eq!(owner.completed_steps(), 1);
     assert!(!root.path().join("cell-split-01-prepared.json").exists());
 }
@@ -1673,7 +1694,10 @@ fn post_effect_selection_revocation_keeps_all_stages_pending() {
             )
             .expect("single writer owner");
             for _ in 0..completed_predecessors {
-                owner.advance().expect("predecessor effect").expect("receipt");
+                owner
+                    .advance()
+                    .expect("predecessor effect")
+                    .expect("receipt");
             }
             let mut admission_reads = 0;
             let rejected = owner.advance_with_admission(|| {
@@ -1697,14 +1721,18 @@ fn post_effect_selection_revocation_keeps_all_stages_pending() {
             assert_eq!(state.borrow().executions, completed_predecessors + 1);
             assert!(
                 root.path()
-                    .join(format!("cell-split-{completed_predecessors:02}-prepared.json"))
+                    .join(format!(
+                        "cell-split-{completed_predecessors:02}-prepared.json"
+                    ))
                     .exists(),
                 "original intent must remain durable for recovery"
             );
             assert!(
                 !root
                     .path()
-                    .join(format!("cell-split-{completed_predecessors:02}-committed.json"))
+                    .join(format!(
+                        "cell-split-{completed_predecessors:02}-committed.json"
+                    ))
                     .exists(),
                 "revoked selection must not be acknowledged in the local ledger"
             );
@@ -1796,7 +1824,10 @@ fn original_effect_withdrawn_during_final_admission_cannot_be_acknowledged() {
         }
         Ok(())
     });
-    assert!(matches!(result, Err(CellSplitExecutionErrorV1::External(_))));
+    assert!(matches!(
+        result,
+        Err(CellSplitExecutionErrorV1::External(_))
+    ));
     assert_eq!(admission_reads, 3);
     assert_eq!(owner.completed_steps(), 0);
     assert_eq!(state.borrow().executions, 1, "one real owner effect");
@@ -1819,9 +1850,8 @@ fn final_owner_readback_cannot_acknowledge_late_local_ledger_tamper() {
         let state = Rc::new(RefCell::new(Observed::default()));
         let port = FixturePort::new(state.clone());
         let tamper = port.tamper_during_live_readback.clone();
-        let mut owner =
-            CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
-                .expect("single writer");
+        let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+            .expect("single writer");
         let altered = root.path().join(filename);
         let mut admission_reads = 0;
         let result = owner.advance_with_admission(|| {

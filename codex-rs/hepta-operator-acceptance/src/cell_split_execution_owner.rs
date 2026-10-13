@@ -82,14 +82,13 @@ pub struct CellSplitExecutionPlanV1 {
 impl CellSplitExecutionPlanV1 {
     fn validate(&self) -> Result<(), CellSplitExecutionErrorV1> {
         let mut distinct_owners = BTreeSet::new();
-        if self.split_id.is_empty()
-            || self.split_id.len() > 256
+        if codex_hepta_types::StableId::new(self.split_id.clone()).is_err()
             || self.parent_generation == 0
             || self.parent_generation.checked_add(1) != Some(self.child_generation)
-            || self
-                .owner_ids
-                .iter()
-                .any(|id| id.is_empty() || id.len() > 256 || !distinct_owners.insert(id))
+            || self.owner_ids.iter().any(|id| {
+                codex_hepta_types::StableId::new(id.clone()).is_err()
+                    || !distinct_owners.insert(id)
+            })
         {
             return Err(CellSplitExecutionErrorV1::Invalid(
                 "identity or generations",
@@ -866,10 +865,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                     "committed prefix changed during final owner readback",
                 ));
             }
-            let raw = read_frame(&frame_path(&self.root, index, "committed"))?
-                .ok_or(CellSplitExecutionErrorV1::Invalid(
+            let raw = read_frame(&frame_path(&self.root, index, "committed"))?.ok_or(
+                CellSplitExecutionErrorV1::Invalid(
                     "committed prefix disappeared during final owner readback",
-                ))?;
+                ),
+            )?;
             let receipt = decode_committed_receipt(&raw)?;
             validate_receipt(&prior_intent, &receipt)?;
             self.trust.verify(&prior_intent, &receipt)?;

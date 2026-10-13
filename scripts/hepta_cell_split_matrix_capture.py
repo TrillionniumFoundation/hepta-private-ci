@@ -12,6 +12,7 @@ import argparse
 import json
 import os
 import re
+import stat
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -28,6 +29,34 @@ from hepta_cell_split_perf_gate import (
 
 SCHEMA = "hepta.cell-split.execution-matrix.v1"
 MEASUREMENT_SCHEMA = "hepta.cell-split.host-measurement.v1"
+MAX_MANIFEST_BYTES = 128 * 1024
+MAX_HOST_RESULT_BYTES = 256 * 1024
+
+
+def read_bounded_json(path: Path, limit: int, label: str) -> Any:
+    """Read an external JSON packet without unbounded memory or FIFO waits."""
+    flags = (
+        os.O_RDONLY
+        | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0)
+        | getattr(os, "O_NONBLOCK", 0)
+    )
+    try:
+        with os.fdopen(os.open(path, flags), "rb") as source:
+            metadata = os.fstat(source.fileno())
+            if not stat.S_ISREG(metadata.st_mode):
+                raise InvalidEvidence(f"{label}: regular file required")
+            if metadata.st_size > limit:
+                raise InvalidEvidence(f"{label}: exceeds {limit} byte limit")
+            raw = source.read(limit + 1)
+    except OSError as error:
+        raise InvalidEvidence(f"{label}: file unavailable: {error}") from error
+    if len(raw) > limit:
+        raise InvalidEvidence(f"{label}: exceeds {limit} byte limit")
+    try:
+        return json.loads(raw)
+    except (UnicodeDecodeError, ValueError) as error:
+        raise InvalidEvidence(f"{label}: invalid JSON: {error}") from error
 
 
 def validate_manifest(manifest: dict[str, Any]) -> dict[tuple[int, str], list[str]]:
@@ -175,12 +204,9 @@ def execute_matrix(
             # Reject a result even if it reports the expected SHA when the
             # executed workload changed the checkout. Never start the next run.
             verify_exact_source(repository, manifest["source_sha"])
-            try:
-                observed = json.loads(result_path.read_text(encoding="utf-8"))
-            except (OSError, ValueError) as error:
-                raise InvalidEvidence(
-                    f"{scope}/{mode}: result missing or invalid: {error}"
-                ) from error
+            observed = read_bounded_json(
+                result_path, MAX_HOST_RESULT_BYTES, f"{scope}/{mode} host result"
+            )
             measurements.append(validate_measurement(observed, manifest, scope, mode))
     packet = {
         "schema": "hepta.cell-split.performance.v1",
@@ -212,7 +238,9 @@ def main() -> int:
     parser.add_argument("--timeout-seconds", type=int, default=1800)
     args = parser.parse_args()
     try:
-        manifest = json.loads(args.manifest.read_text(encoding="utf-8"))
+        manifest = read_bounded_json(
+            args.manifest, MAX_MANIFEST_BYTES, "execution manifest"
+        )
         comparison = execute_matrix(
             manifest,
             args.repository.resolve(),
