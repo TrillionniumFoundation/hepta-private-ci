@@ -1,0 +1,72 @@
+name: V8 Windows MSVC sandbox ABI qualification
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/v8-poc/BUILD.bazel"
+      - "codex-rs/v8-poc/src/lib.rs"
+      - ".github/workflows/hepta-v8-windows-sandbox-abi.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: v8-msvc-sandbox-abi-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows-v8-poc:
+    name: Actual linked V8 sandbox ABI test on Windows MSVC
+    runs-on: windows-latest
+    timeout-minutes: 50
+    environment:
+      name: bazel
+      deployment: false
+
+    steps:
+      - name: Checkout exact candidate, without persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Bind tested source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+
+      - name: Prepare exact-platform Bazel on native Windows MSVC
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-pc-windows-msvc
+          cache-scope: bazel-test
+
+      - name: Execute V8 sandbox ABI check without cached test results
+        env:
+          BUILDBUDDY_API_KEY: ${{ secrets.BUILDBUDDY_API_KEY }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          tested_sha="$(git rev-parse HEAD)"
+          ./.github/scripts/run-bazel-ci.sh \
+            --print-failed-action-summary \
+            --print-failed-test-logs \
+            --windows-msvc-host-platform \
+            --remote-download-toplevel \
+            -- \
+            test \
+            --platforms=//:windows_x86_64_msvc \
+            --skip_incompatible_explicit_targets \
+            --nocache_test_results \
+            --test_output=errors \
+            "--build_metadata=TESTED_SHA=${tested_sha}" \
+            -- \
+            //codex-rs/v8-poc:v8-poc-unit-tests
+
+      - name: Preserve clean candidate tree
+        if: always() && !cancelled()
+        uses: ./.github/actions/check-clean-worktree
