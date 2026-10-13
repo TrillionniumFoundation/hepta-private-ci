@@ -170,12 +170,16 @@ def run(args):
         args.text_model, args.text_revision, task="retrieval",
         dimension=args.dimension, max_tokens=args.max_tokens,
         allow_pinned_remote_code=args.allow_pinned_remote_code,
-        allow_download=args.allow_model_download, device=args.device)
+        allow_download=args.allow_model_download, device=args.device,
+        snapshot_dir=args.text_snapshot, store_root=args.text_store_root,
+        expected_snapshot_digest=args.text_snapshot_digest)
     omni_stem = FrozenJinaV5(
         args.omni_model, args.omni_revision, task="retrieval",
         dimension=args.dimension, max_tokens=args.max_tokens,
         modality=args.modality, allow_pinned_remote_code=args.allow_pinned_remote_code,
-        allow_download=args.allow_model_download, device=args.device)
+        allow_download=args.allow_model_download, device=args.device,
+        snapshot_dir=args.omni_snapshot, store_root=args.omni_store_root,
+        expected_snapshot_digest=args.omni_snapshot_digest)
     process = psutil.Process()
     observations = []
     for row, path, media_digest in checked:
@@ -219,6 +223,17 @@ def run(args):
         "omni_model": args.omni_model, "omni_revision": args.omni_revision,
         "text_feature_manifest_digest": text_stem.manifest_digest,
         "omni_feature_manifest_digest": omni_stem.manifest_digest,
+        "text_snapshot_census_sha256": text_stem.snapshot_attestation["manifest_sha256"],
+        "omni_snapshot_census_sha256": omni_stem.snapshot_attestation["manifest_sha256"],
+        "both_snapshots_attested_twice": (
+            text_stem.snapshot_attestation["attested_twice_around_model_load"] and
+            omni_stem.snapshot_attestation["attested_twice_around_model_load"]
+        ),
+        "snapshot_attestation_ms": {
+            "text": text_stem.snapshot_attestation_ms,
+            "omni": omni_stem.snapshot_attestation_ms,
+        },
+        "model_code_and_adapter_bytes_hashed": True,
         "modality_loading": args.modality, "task_adapter": "retrieval",
         "retrieval_direction": args.direction,
         "text_embedding_intent": text_intent, "media_embedding_intent": media_intent,
@@ -239,8 +254,16 @@ def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--text-model", required=True)
     p.add_argument("--text-revision", required=True)
+    p.add_argument("--text-store-root", type=Path, required=True)
+    p.add_argument("--text-snapshot", type=Path, required=True)
+    p.add_argument("--text-snapshot-digest", required=True,
+                   help="separately approved text file-census digest")
     p.add_argument("--omni-model", required=True)
     p.add_argument("--omni-revision", required=True)
+    p.add_argument("--omni-store-root", type=Path, required=True)
+    p.add_argument("--omni-snapshot", type=Path, required=True)
+    p.add_argument("--omni-snapshot-digest", required=True,
+                   help="separately approved Omni file-census digest")
     p.add_argument("--dataset", required=True)
     p.add_argument("--media-root", required=True)
     p.add_argument("--output", required=True, type=Path)
