@@ -91,7 +91,10 @@ class PostrunReceiptTests(unittest.TestCase):
         self.assertEqual(result["original_generated_tokens"], 675)
         self.assertEqual(result["answers_with_delivered_citation_label"], 14)
         self.assertEqual(
-            sum(x["mixed_refusal_and_extra_text"] for x in result["refusal_shapes_by_mode"].values()),
+            sum(
+                x["mixed_refusal_and_extra_text"]
+                for x in result["refusal_shapes_by_mode"].values()
+            ),
             5,
         )
         self.assertEqual(result["matched_public_family_proxies"], 2)

@@ -19,6 +19,8 @@ import zipfile
 
 RUN_SHA = "2db775a9b423f5d53c2ec1cf69d4e67da02e35bd"
 READER_SHA = "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225"
+BASELINE_READER_COMMIT = "96b5ec37b82f87d445740403e07e3705e9850955"
+BASELINE_RAW_SHA = "b13f70b5b8ff0664d7a446b11b2a474702d61a50348534ca1b26cc295a0e9bb2"
 EXPECTED = {
     "plan": "66bc69310096b0226e90a8503df9d8d29645766066bbcf6acda7fd32241fb2b0",
     "reader": "14dc63bfb0e25b8b15f7b48ba8e1afd4cef4d13f8617d08d28a533baa7a202a0",
@@ -84,7 +86,9 @@ def read_archive(path, expected, *, has_manifest):
             if not match or match[2] in declared:
                 raise ValueError("malformed or duplicated SHA256SUMS entry")
             declared[match[2]] = match[1]
-        if set(declared) != set(files) or any(sha(files[n]) != h for n, h in declared.items()):
+        if set(declared) != set(files) or any(
+            sha(files[n]) != h for n, h in declared.items()
+        ):
             raise ValueError("archive member integrity failure")
     return files
 
@@ -133,8 +137,8 @@ def audit(plan_zip, reader_zip, score_zip):
         or plan["independent_source_review"] is not False
         or report["generating_commit"] != RUN_SHA
         or report["reader_identity"] != READER_SHA
-        or report["original_reader_commit"] != "96b5ec37b82f87d445740403e07e3705e9850955"
-        or report["original_32_answers_sha256"] != "b13f70b5b8ff0664d7a446b11b2a474702d61a50348534ca1b26cc295a0e9bb2"
+        or report["original_reader_commit"] != BASELINE_READER_COMMIT
+        or report["original_32_answers_sha256"] != BASELINE_RAW_SHA
         or report["privileged_16_answers_sha256"] != sha(original_raw)
         or report["privileged_source_selection"] is not True
         or report["publisher_support_not_independent_sufficiency"] is not True
@@ -217,7 +221,13 @@ def audit(plan_zip, reader_zip, score_zip):
             or not 0 <= all_rows["original_retrieval_reader_f1"] <= 1
             or len(all_rows["all_planned_delta_bounds"]) != 2
             or not all(
-                math.isclose(value, all_rows["privileged_support_reader_f1"] - all_rows["original_retrieval_reader_f1"], rel_tol=1e-9, abs_tol=1e-9)
+                math.isclose(
+                    value,
+                    all_rows["privileged_support_reader_f1"]
+                    - all_rows["original_retrieval_reader_f1"],
+                    rel_tol=1e-9,
+                    abs_tol=1e-9,
+                )
                 for value in all_rows["all_planned_delta_bounds"]
             )
         ):
@@ -242,7 +252,10 @@ def audit(plan_zip, reader_zip, score_zip):
         or seen_support["missing_or_unscored"] != 0
     ):
         raise ValueError("published support-visibility stratum drift")
-    if controls["lexical_k4"]["privileged_token_f1"] != controls["lexical_k8"]["privileged_token_f1"]:
+    if (
+        controls["lexical_k4"]["privileged_token_f1"]
+        != controls["lexical_k8"]["privileged_token_f1"]
+    ):
         raise ValueError("publisher score differs across original comparators")
     return {
         "schema": PROFILE,
@@ -280,7 +293,10 @@ def audit(plan_zip, reader_zip, score_zip):
         "independent_semantic_citation_judgement": False,
         "parameter_memory_gain_established": False,
         "production_accepted": False,
-        "research_disposition": "NO_GO: diagnose frozen reader/format and source sufficiency on new independently reviewed histories before training",
+        "research_disposition": (
+            "NO_GO: diagnose frozen reader/format and source sufficiency "
+            "on new independently reviewed histories before training"
+        ),
     }
 
 
@@ -293,7 +309,14 @@ def main():
     a = p.parse_args()
     result = audit(a.plan_zip, a.reader_zip, a.score_zip)
     with a.output.open("x", encoding="utf-8") as handle:
-        json.dump(result, handle, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False)
+        json.dump(
+            result,
+            handle,
+            ensure_ascii=False,
+            sort_keys=True,
+            indent=2,
+            allow_nan=False,
+        )
         handle.write("\n")
     print(json.dumps(result, ensure_ascii=False, sort_keys=True))
 
