@@ -1137,7 +1137,6 @@ fn observed_token_cost_is_not_a_settled_wal_or_authoritative_resource_debit() {
         .unwrap();
 }
 
-
 #[test]
 fn historical_neuron_cost_rejects_unrelated_terminal_digest_even_with_matching_output() {
     let directory = tempfile::tempdir().unwrap();
