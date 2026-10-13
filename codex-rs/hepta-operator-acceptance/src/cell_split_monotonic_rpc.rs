@@ -73,15 +73,31 @@ pub enum CellSplitMonotonicRpcErrorV1 {
     Io(#[from] io::Error),
 }
 
+/// A client-local observation of a remote high-water. Nonces and signatures
+/// change on every legitimate read and therefore are not part of equality.
+/// This is defense-in-depth during one client process lifetime, NOT durable
+/// anti-rollback across independent signer/client restarts.
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct ClientMonotonicHighwaterV1 {
+    authority_epoch: u64,
+    revision: u64,
+    minimum_checkpoint_digest: String,
+    original_store_record_digest: String,
+}
+
 /// Production-facing client for an independent, non-writable frontier source.
 ///
-/// This type stores only the externally pinned verifier key, the Unix service
-/// endpoint, and an IO deadline. It cannot mint a signature, enroll a key,
-/// modify a checkpoint or choose a frontier revision on behalf of the server.
+/// This type retains the externally pinned verifier, Unix endpoint, IO
+/// deadline and a bounded in-memory observation floor. It cannot mint a
+/// signature, enroll a key, modify a checkpoint, or choose a frontier revision
+/// on behalf of the independently administered server.
 pub struct CellSplitSupervisorMonotonicUnixPortV1 {
     socket_path: PathBuf,
     verifier: VerifyingKey,
     timeout: Duration,
+    // Bounded and non-evicting. External rollback-resistant custody remains
+    // mandatory; this in-memory map vanishes on process restart.
+    retained_frontiers: BTreeMap<String, ClientMonotonicHighwaterV1>,
 }
 
 impl CellSplitSupervisorMonotonicUnixPortV1 {
@@ -104,6 +120,7 @@ impl CellSplitSupervisorMonotonicUnixPortV1 {
             socket_path,
             verifier,
             timeout,
+            retained_frontiers: BTreeMap::new(),
         })
     }
 
@@ -173,7 +190,46 @@ impl CellSplitSupervisorMonotonicUnixPortV1 {
                 &signature,
             )
             .map_err(|_| CellSplitMonotonicRpcErrorV1::Untrusted)?;
+        // Only authenticated, nonce-bound evidence may advance our local
+        // process-lifetime floor; an old but correctly signed restart reply
+        // must not be accepted as a current monotonic frontier.
+        self.retain_verified_frontier(&proof)?;
         Ok(proof)
+    }
+
+    fn retain_verified_frontier(
+        &mut self,
+        proof: &CellSplitSupervisorMonotonicFrontierV1,
+    ) -> Result<(), CellSplitMonotonicRpcErrorV1> {
+        let observed = ClientMonotonicHighwaterV1 {
+            authority_epoch: proof.journal_authority_epoch,
+            revision: proof.journal_revision,
+            minimum_checkpoint_digest: proof.minimum_checkpoint_digest.clone(),
+            original_store_record_digest: proof.original_store_record_digest.clone(),
+        };
+        match self.retained_frontiers.get(&proof.journal_domain_id) {
+            Some(previous) => {
+                let moved_forward = observed.authority_epoch > previous.authority_epoch
+                    || (observed.authority_epoch == previous.authority_epoch
+                        && observed.revision > previous.revision);
+                if observed.authority_epoch < previous.authority_epoch
+                    || (observed.authority_epoch == previous.authority_epoch
+                        && observed.revision < previous.revision)
+                    || (!moved_forward && &observed != previous)
+                {
+                    return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+                }
+            }
+            None if self.retained_frontiers.len() >= MAX_RETAINED_DOMAINS => {
+                // Evicting a previous domain would re-enable a signed replay.
+                // Refuse the next domain instead of weakening the invariant.
+                return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+            }
+            None => {}
+        }
+        self.retained_frontiers
+            .insert(proof.journal_domain_id.clone(), observed);
+        Ok(())
     }
 }
 
