@@ -188,8 +188,11 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
     assert_eq!(decision.record_id, fixture.run.run_id);
     assert_eq!(decision.selected_candidate_id, id("action"));
     assert_eq!(decision.selected_propensity, ProbabilityQ32::ONE);
-    let original_bytes = fs::read(&path).unwrap();
+    // Release the exclusive cross-process journal lock before taking a
+    // byte-for-byte on-disk snapshot. Windows denies an independent open
+    // while the durable writer's locked file handle is still alive.
     drop(ledger);
+    let original_bytes = fs::read(&path).unwrap();
     let file = OpenOptions::new()
         .read(true)
         .write(true)
