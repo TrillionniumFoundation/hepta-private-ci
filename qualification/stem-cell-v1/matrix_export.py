@@ -37,22 +37,7 @@ def read_sealed(directory, expected_seal_id):
     return strict_json(root / "execution.json"), strict_json(root / "predictions.json"), seal
 
 
-def export_observed(plan, contract, directory, *, expected_seal_id, observer_path, expected_observer_sha256):
-    _sha(expected_observer_sha256, "independent observer receipt digest")
-    if file_sha256(observer_path) != expected_observer_sha256:
-        raise ValueError("observer bytes differ from retained reference")
-    observer = strict_json(observer_path)
-    execution, predictions, seal = read_sealed(directory, expected_seal_id)
-    if execution.get("schema") not in ("hepta.stem.bound-execution.v1", "hepta.stem.bound-execution.v2"):
-        raise ValueError("single-Head/legacy receipts cannot be relabeled as V2 Cell populations")
-    profile = validate_config(plan, contract, execution["config"])
-    for key in ("contract_id", "source_sha", "device_id", "workload_sha256"):
-        if execution[key] != contract[key]:
-            raise ValueError("sealed execution does not match frozen " + key)
-    if execution["plan_id"] != plan["plan_id"] or execution["arm_id"] != profile["arm_id"]:
-        raise ValueError("wrong plan or arm identity")
-    if execution["outcomes_loaded"] is not False or execution["production_authorized"] is not False:
-        raise ValueError("model execution cannot load outcomes or grant authority")
+def _validate_population(execution, profile, contract):
     growth = execution.get("growth_receipt")
     growing = execution["config"].get("growth_policy")
     if (growing is not None) != (execution["schema"] == "hepta.stem.bound-execution.v2"):
@@ -130,6 +115,35 @@ def export_observed(plan, contract, directory, *, expected_seal_id, observer_pat
             raise ValueError("replay/reference training work denominator mismatch")
     elif "retention_receipt" in execution or "retention" in execution["training"]:
         raise ValueError("legacy run cannot claim a retention protocol")
+    return growth, growing, retained
+
+
+def export_observed(plan, contract, directory, *, expected_seal_id, observer_path, expected_observer_sha256):
+    _sha(expected_observer_sha256, "independent observer receipt digest")
+    if file_sha256(observer_path) != expected_observer_sha256:
+        raise ValueError("observer bytes differ from retained reference")
+    observer = strict_json(observer_path)
+    execution, predictions, seal = read_sealed(directory, expected_seal_id)
+    if execution.get("schema") not in ("hepta.stem.bound-execution.v1", "hepta.stem.bound-execution.v2", "hepta.stem.bound-execution.v3"):
+        raise ValueError("single-Head/legacy receipts cannot be relabeled as V2 Cell populations")
+    profile = validate_config(plan, contract, execution["config"])
+    for key in ("contract_id", "source_sha", "device_id", "workload_sha256"):
+        if execution[key] != contract[key]:
+            raise ValueError("sealed execution does not match frozen " + key)
+    if execution["plan_id"] != plan["plan_id"] or execution["arm_id"] != profile["arm_id"]:
+        raise ValueError("wrong plan or arm identity")
+    if execution["outcomes_loaded"] is not False or execution["production_authorized"] is not False:
+        raise ValueError("model execution cannot load outcomes or grant authority")
+    compressed = execution["config"].get("consolidation_policy")
+    if compressed is not None:
+        from consolidation_record import precursor_projection
+        precursor = precursor_projection(execution, execution["config"], contract)
+        growth, growing, retained = _validate_population(precursor, profile, contract)
+    else:
+        if execution["schema"] == "hepta.stem.bound-execution.v3" or "consolidation_receipt" in execution:
+            raise ValueError("unbound compression cannot be relabeled")
+        growth, growing, retained = _validate_population(execution, profile, contract)
+    inventory = execution["inventory"]
     if set(execution["phase_flops"]) != set(PHASES):
         raise ValueError("all physical work phases required")
     for phase, value in execution["phase_flops"].items():
@@ -226,7 +240,7 @@ def export_observed(plan, contract, directory, *, expected_seal_id, observer_pat
             raise ValueError("measurement policy differs from frozen configuration")
         if execution["flop_profile"] != observation.get("profile"):
             raise ValueError("measurement profile changed")
-        checked_phases = ("train", "inference", "migration") if growing and growth["split_performed"] else ("train", "inference")
+        checked_phases = ("train", "inference", "migration") if compressed is not None or (growing and growth["split_performed"]) else ("train", "inference")
         for phase in checked_phases:
             if execution["phase_flops"][phase] != observation["phase_flops"][phase]:
                 raise ValueError("execution count differs from its measurement record")
@@ -241,9 +255,16 @@ def export_observed(plan, contract, directory, *, expected_seal_id, observer_pat
                     "context_tokens", "snapshot_sha256", "encoder_profile", "measurement_policy")}
         if retained is not None:
             protocol["retention_policy"] = retained
+        if compressed is not None:
+            protocol["consolidation_policy"] = compressed
         protocol.update(seed=plan["seed"], workload_sha256=contract["workload_sha256"])
         export.update(schema="hepta.stem.paired-run-export.v2", training_protocol_sha256=_digest(protocol))
         summary["growth_receipt"] = growth
+    if compressed is not None:
+        report = execution["consolidation_receipt"]
+        export.update(schema="hepta.stem.paired-run-export.v3", output_profile=execution["output_profile"],
+                      precursor_trainable_params=report["teacher_parameters"])
+        summary["consolidation_receipt"] = report
     return export, summary
 
 

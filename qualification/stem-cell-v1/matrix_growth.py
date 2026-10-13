@@ -246,4 +246,9 @@ def train_with_growth(bank, features, targets, config, contract, profile, source
     if retention is not None:
         result.update(retention=retention_report, retained_specialization={k: second[k] for k in
                       ("replay_examples_seen", "new_examples_seen", "reference_bank_rows")})
+    if "consolidation_policy" in config:
+        from consolidation_training import consolidate
+        bank, result["consolidation"] = consolidate(
+            bank, retention, config, contract, profile, report,
+            seed=seed + config["train_steps"], meter=meter)
     return bank, result
