@@ -69,6 +69,9 @@ def qualify(head_sha: str, runs: Any, jobs: Any) -> dict:
     if not isinstance(head_sha, str) or not SHA.fullmatch(head_sha):
         raise ValueError("expected exact lowercase 40-hex commit SHA")
     records = _records(runs, "workflow_runs")
+    if (type(runs.get("total_count")) is int
+            and runs["total_count"] > len(records)):
+        raise ValueError("GitHub workflow_runs pagination incomplete")
     if not isinstance(jobs, dict):
         raise ValueError("jobs must be a run-id -> GitHub jobs payload map")
     selected = _best_attempts(head_sha, records)
@@ -88,6 +91,9 @@ def qualify(head_sha: str, runs: Any, jobs: Any) -> dict:
             blockers.append(f"missing authoritative jobs for workflow {name} (run {run_id})")
             continue
         run_jobs = _records(packet, "jobs")
+        if (type(packet.get("total_count")) is int
+                and packet["total_count"] > len(run_jobs)):
+            blockers.append(f"GitHub jobs pagination incomplete for {name}")
         if not run_jobs:
             blockers.append(f"workflow {name} returned zero jobs")
         seen_jobs = set()
