@@ -202,9 +202,9 @@ class ReviewIntakeTests(unittest.TestCase):
         self.assertFalse(result["production_accepted"])
 
     def test_invalid_boolean_and_fake_signature_fields_rejected(self):
-        for patch in ({"grounded_and_cited": 1}, {"signature_hex": "a" * 128}):
+        for tamper in ({"grounded_and_cited": 1}, {"signature_hex": "a" * 128}):
             rows = copy.deepcopy(self.rows)
-            rows[0].update(patch)
+            rows[0].update(tamper)
             self.second_pin = dump_lines(self.second, rows)
             with self.assertRaises(ValueError):
                 self.run_intake()
