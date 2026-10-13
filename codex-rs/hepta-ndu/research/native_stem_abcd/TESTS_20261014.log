@@ -1,0 +1,35 @@
+test_actual_b_uses_same_population_residual (test_native.NativeStemTests.test_actual_b_uses_same_population_residual) ... ok
+test_actual_c_solve_without_oracle (test_native.NativeStemTests.test_actual_c_solve_without_oracle) ... /opt/pyvenv/lib/python3.13/site-packages/torch/jit/_script.py:1480: DeprecationWarning: `torch.jit.script` is deprecated. Please switch to `torch.compile` or `torch.export`.
+  warnings.warn(
+ok
+test_adjoint_chain_gradient_vs_jacobian (test_native.NativeStemTests.test_adjoint_chain_gradient_vs_jacobian) ... ok
+test_all_stem_weights_receive_population_gradients (test_native.NativeStemTests.test_all_stem_weights_receive_population_gradients) ... ok
+test_b_c_exact_same_initial_family (test_native.NativeStemTests.test_b_c_exact_same_initial_family) ... ok
+test_bounds_do_not_turn_training_residual_into_uniform_proof (test_native.NativeStemTests.test_bounds_do_not_turn_training_residual_into_uniform_proof) ... ok
+test_c_full_jacobian_vs_finite_difference (test_native.NativeStemTests.test_c_full_jacobian_vs_finite_difference) ... ok
+test_changed_world_is_not_identical_kernel (test_native.NativeStemTests.test_changed_world_is_not_identical_kernel) ... ok
+test_complete_forward_probability_mass (test_native.NativeStemTests.test_complete_forward_probability_mass) ... ok
+test_create_only_outputs (test_native.NativeStemTests.test_create_only_outputs) ... ok
+test_dimension_transfer_reuses_weights (test_native.NativeStemTests.test_dimension_transfer_reuses_weights) ... ok
+test_error_envelope_covers_entire_enumerated_domain (test_native.NativeStemTests.test_error_envelope_covers_entire_enumerated_domain) ... ok
+test_experience_updates_preferences (test_native.NativeStemTests.test_experience_updates_preferences) ... ok
+test_functional_weight_path (test_native.NativeStemTests.test_functional_weight_path) ... ok
+test_independent_decimal_matches_structured (test_native.NativeStemTests.test_independent_decimal_matches_structured) ... ok
+test_invalid_kernel_rejected (test_native.NativeStemTests.test_invalid_kernel_rejected) ... ok
+test_martingale_representation_nonidentity_covariance (test_native.NativeStemTests.test_martingale_representation_nonidentity_covariance) ... ok
+test_probability_clipping_is_explicit (test_native.NativeStemTests.test_probability_clipping_is_explicit) ... ok
+test_readonly_kernel (test_native.NativeStemTests.test_readonly_kernel) ... ok
+test_structured_monotonicity (test_native.NativeStemTests.test_structured_monotonicity) ... ok
+test_structured_sup_contraction (test_native.NativeStemTests.test_structured_sup_contraction) ... ok
+test_terminal_boundary_exact_and_horizon_zero (test_native.NativeStemTests.test_terminal_boundary_exact_and_horizon_zero) ... ok
+test_transfer_tasks_disjoint (test_native.NativeStemTests.test_transfer_tasks_disjoint) ... ok
+test_transformer_is_real_trainable_attention (test_native.NativeStemTests.test_transformer_is_real_trainable_attention) ... ok
+test_unknown_split_refused (test_native.NativeStemTests.test_unknown_split_refused) ... ok
+test_weight_roundtrip_changes_actual_computation (test_native.NativeStemTests.test_weight_roundtrip_changes_actual_computation) ... ok
+test_wrong_frozen_target_gradient_is_not_used (test_native.NativeStemTests.test_wrong_frozen_target_gradient_is_not_used) ... ok
+test_zero_risk_probability_matches_matrix_power (test_native.NativeStemTests.test_zero_risk_probability_matches_matrix_power) ... ok
+
+----------------------------------------------------------------------
+Ran 28 tests in 3.250s
+
+OK
