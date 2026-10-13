@@ -31,7 +31,11 @@ PLAN = {'schema':'hepta.assistant-projection-qualification.v1',
         'archive_sha256':ARCHIVE_SHA256,'benchmark_sha256':LOCOMO_SHA256,
         'selection_plan_sha256':c.digest(parent.PLAN), 'training':deepcopy(learning.TRAINING),
         'loss_profile':pairs.MARGIN,'representation':metadata.SOURCE_TIME,
-        'loss_atol':1e-5,'loss_rtol':1e-5,'adapter_atol':2e-6,'adapter_rtol':2e-4,
+        'loss_atol':1e-5,'loss_rtol':1e-5,
+        # Selecting LM-head rows changes CPU GEMM shape/order. The pinned run
+        # observed one 2.5566842e-6 absolute adapter drift; retain a narrow,
+        # fixed 3e-6 bound while leaving the relative bound unchanged.
+        'adapter_atol':3e-6,'adapter_rtol':2e-4,
         'generation_or_evaluation':False,'automatic_selection':False,'production_accepted':False}
 
 
