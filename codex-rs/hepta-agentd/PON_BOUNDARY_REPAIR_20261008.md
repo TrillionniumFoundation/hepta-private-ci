@@ -130,3 +130,89 @@ candidate bytes/manifest equal and the native CURRENT genuinely signed. A delaye
 CURRENT response crossing selection expiry must leave items unchanged and the cache
 closed. Test signers, source facts, intervals and chronological window claims are
 controlled fixtures, not independently observed future benefit.
+
+## Explicit process installation from complete evidence
+
+The opt-in ordinary Agentd entrypoint accepts the paired arguments
+`--cognitive-bootstrap-descriptor /absolute/descriptor.json` and
+`--cognitive-bootstrap-descriptor-digest <sha256>`. The host independently pins
+that digest, including its trust configuration and journal anchors. A descriptor
+submitted by the candidate is not a source of trusted keys. Missing one argument,
+an unsupported profile, or any configured verification failure stops startup.
+With neither argument supplied, no learned ranking model is installed.
+
+The new process schema is `hepta.agentd.cognitive-bootstrap.v2`, with the explicit
+`published_product_qualification_v1` profile and a four MiB descriptor limit. Its raw material
+types live in `cognitive_process_evaluation.rs`, `cognitive_process_evidence.rs`,
+`cognitive_process_materials.rs`, and `cognitive_process_product_wire.rs`; all objects reject unknown fields. Digests,
+keys and signatures use fixed-length hex strings, identifiers retain their native
+bounds, generations use positive integers, and fixed-point values use raw Q32
+integers. Descriptor identity and spawn generation must match the running Agentd.
+Trust descriptors, mutable material owners, and recovery journals must remain
+outside the Agentd home, run root and workspace. Immutable hash-pinned payload
+and snapshot copies can reside in its local cache. This path separation does
+not establish independent administrators or organizations.
+The bounded file opener rejects symbolic links and, on Unix, multiple hard links;
+it rechecks inode identity after opening. The host must still control directory
+and file write permissions. Path separation alone is not an operating-system
+security boundary against arbitrary writes by the same user.
+
+Startup recovers the original learning ledger and fenced final-holdout CAS store
+against separately retained nonempty anchors. The final CAS anchor must equal
+the pinned anchor; the writer fence and an already recorded product plan must
+match exactly before the original runner is called. A newer takeover fence or
+an unrecorded plan cannot make bootstrap consume a new holdout.
+
+The original `ProductEvaluationRunnerV1` recomputes estimator-derived metrics
+from retained raw temporal inputs. The descriptor pins the complete material
+manifest and the bounded 32 MiB released-input file by SHA-256. Input release
+requires the original owner's exact idempotent replay receipt. Signed longitudinal
+evidence is verified again at the installation clock. The original qualification
+sink then performs a real, immutable-file durable retry; execution, full decision,
+and publication digests must equal the independently pinned existing record.
+Only this original runner can recreate the sealed product qualification. The
+bootstrap does not deserialize a receipt or accept caller-supplied metric gates.
+The selection owner binds that qualification, exact candidate and predecessor
+bytes, dataset, signed evaluator attestation, and independent selector admission.
+The full V2 material manifest must project to the exact V1 registry manifest;
+its dataset provenance must match both the model and independently selected
+dataset. Model generation and Agentd launch generation are separately bound.
+Every new launch generation requires a newly authorized descriptor and digest.
+The experiment's explicit reinstallation does not establish automatic restart
+using unchanged registered release arguments.
+
+The process CURRENT descriptor supplies an existing artifact root, verifier
+trust, and a mandatory independently signed head floor. Its reader uses the
+original owner's CURRENT verification and recovery rules. The publisher keeps
+the single writer fence; a separate inode-pinned observation lock serializes
+reads with publish, Revoke, and recovery. Acquiring the observation lock waits
+at most 250 ms and fails closed on contention or uncertainty. This deadline
+does not bound the later filesystem work. Durable ACK reconciliation includes
+file and directory synchronization before a readable state can be accepted.
+No fitting or payload generation occurs under the observation lock.
+
+An external writer can revoke an artifact while the inference consumer remains
+alive. Every selection checks CURRENT before and after computing its result;
+a failed refresh closes the cached ranker. These observations do not establish
+one atomic cross-process boundary with every later effect. Artifact Revoke
+does not automatically distribute external dataset-withdrawal events or erase
+learned parameters. All participating readers and writers must use this source
+version; compatibility with older writers that lack the observation lock is
+not qualified. Trust rotation or a new model requires explicit reload with fresh
+complete material. The CLI does not infer installation authority from Chain
+confirmation alone.
+
+The live observation adapter currently supports Linux and macOS file identity,
+nonblocking no-follow opens, and locking. The process bootstrap rejects other
+platforms before opening or replaying any evidence owner.
+Other platforms return an explicit unsupported-platform error for this profile;
+the pre-existing Windows writer remains available and is not qualified by the
+Unix runs. Low-level artifact Host publication mutators are now crate-private:
+embedding publishers use the original `LearningArtifactOwnerService`, which
+owns the complete publication and observation-fence lifecycle.
+
+These interfaces are subject to the final exact-source local qualification.
+The bounded three-generation study, when run, records its actual tasks, costs,
+fitting, installation, no-update, and revocation results separately. Same-host
+role processes do not establish independent organizations, general model
+improvement, a multi-host learning deployment, or production readiness.

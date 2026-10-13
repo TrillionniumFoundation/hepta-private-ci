@@ -290,6 +290,44 @@ fn evaluated_load(
 }
 
 #[test]
+fn evaluated_selection_model_lineage_is_independent_of_launch_epoch() {
+    let (fixture, selection) = selected_fixture(EvidenceLifetime::Live);
+    let actual_launch_epoch = 19;
+    let ranker = PinnedCognitiveRanker::load_evaluated(
+        owner(),
+        actual_launch_epoch,
+        File::open(fixture.directory.path().join("snapshot")).unwrap(),
+        File::open(fixture.directory.path().join("payload")).unwrap(),
+        fixture.selected.clone(),
+        fixture.model_pin.clone(),
+        fixture.view.clone(),
+        &selection,
+    )
+    .unwrap();
+    assert_ne!(actual_launch_epoch, fixture.model_pin.generation.get());
+    let mut records = [item("one"), item("two")];
+    ranker
+        .rank(&owner(), actual_launch_epoch, "lemon", &mut records)
+        .unwrap();
+    assert_eq!(records, [item("two"), item("one")]);
+    let original = records.clone();
+    assert!(
+        ranker
+            .rank(
+                &owner(),
+                fixture.model_pin.generation.get(),
+                "lemon",
+                &mut records
+            )
+            .is_err()
+    );
+    assert_eq!(
+        records, original,
+        "model generation cannot replace the launch identity fence"
+    );
+}
+
+#[test]
 fn public_independent_selection_reaches_the_actual_ranker_without_receipt_casts() {
     let (fixture, selection) = selected_fixture(EvidenceLifetime::Live);
     let ranker = evaluated_load(&fixture, &selection).unwrap();

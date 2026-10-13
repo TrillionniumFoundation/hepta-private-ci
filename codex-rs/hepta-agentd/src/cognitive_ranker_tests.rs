@@ -225,6 +225,110 @@ fn fixture_with_lineage(
 #[path = "cognitive_ranker_selection_tests.rs"]
 mod evaluated_selection;
 
+#[path = "cognitive_three_generation_tests.rs"]
+mod three_generation_learning;
+
+#[test]
+fn current_revoked_during_read_rejects_before_permutation_is_visible() {
+    struct InterleavedCurrent {
+        normal: Arc<View>,
+        revoked: (PathBuf, RegistrySnapshotReceipt, Digest32),
+        calls: std::sync::atomic::AtomicU64,
+        restore: std::sync::atomic::AtomicBool,
+    }
+    impl CurrentCognitiveRegistry for InterleavedCurrent {
+        fn current(&self) -> Result<VerifiedCurrentRegistryViewV1, String> {
+            let call = self.calls.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+            if call < 2 || self.restore.load(std::sync::atomic::Ordering::SeqCst) {
+                return self.normal.current();
+            }
+            verified_fixture_current_view(
+                File::open(&self.revoked.0).map_err(|error| error.to_string())?,
+                self.revoked.1,
+                self.revoked.2,
+            )
+        }
+    }
+    let original = [item("one"), item("two")];
+    let mut fixture = fixture(&original, &[0, 10]);
+    let predecessor = fixture.registry.snapshot().head_digest;
+    fixture
+        .registry
+        .append(ArtifactEvent::Revoke(StateChange {
+            event_id: id("during-read-revoke"),
+            artifact_id: id("read-ranker"),
+            evaluator_id: id("independent-evaluator"),
+            reason_digest: hash("read-withdrawn"),
+        }))
+        .unwrap();
+    let revoked_path = fixture.directory.path().join("during-read-revoked");
+    let receipt = write_registry_snapshot(
+        CreateOnlyArtifactFile::create(&revoked_path).unwrap(),
+        &fixture.registry,
+        hash("fixture-host-binding"),
+    )
+    .unwrap();
+    let current = Arc::new(InterleavedCurrent {
+        normal: fixture.view.clone(),
+        revoked: (revoked_path, receipt, predecessor),
+        calls: std::sync::atomic::AtomicU64::new(0),
+        restore: std::sync::atomic::AtomicBool::new(false),
+    });
+    let ranker = PinnedCognitiveRanker::load(
+        owner(),
+        /*body_generation*/ 1,
+        File::open(fixture.directory.path().join("snapshot")).unwrap(),
+        File::open(fixture.directory.path().join("payload")).unwrap(),
+        fixture.selected.clone(),
+        fixture.model_pin.clone(),
+        current.clone(),
+    )
+    .unwrap();
+    let mut records = original.clone();
+    let error = ranker.rank(&owner(), 1, "lemon", &mut records).unwrap_err();
+    assert!(
+        error.contains("not eligible"),
+        "actual CURRENT lineage must refuse: {error}"
+    );
+    assert_eq!(records, original);
+    current
+        .restore
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    assert!(ranker.rank(&owner(), 1, "lemon", &mut records).is_err());
+    assert_eq!(records, original);
+}
+
+#[test]
+fn a_past_authenticated_current_cannot_load_at_the_consumer_wall_clock() {
+    struct PastCurrent(Arc<View>);
+    impl CurrentCognitiveRegistry for PastCurrent {
+        fn current(&self) -> Result<VerifiedCurrentRegistryViewV1, String> {
+            let (path, receipt, predecessor) = self.0.0.lock().unwrap().clone().unwrap();
+            let now = current_unix_micros()? / 1_000_000;
+            verified_fixture_current_view_with_window(
+                File::open(path).map_err(|error| error.to_string())?,
+                receipt,
+                predecessor,
+                ed25519_dalek::SigningKey::from_bytes(&[23_u8; 32]),
+                now - 10,
+                now - 1,
+            )
+        }
+    }
+    let original = [item("one"), item("two")];
+    let fixture = fixture(&original, &[0, 10]);
+    let result = PinnedCognitiveRanker::load(
+        owner(),
+        /*body_generation*/ 1,
+        File::open(fixture.directory.path().join("snapshot")).unwrap(),
+        File::open(fixture.directory.path().join("payload")).unwrap(),
+        fixture.selected.clone(),
+        fixture.model_pin.clone(),
+        Arc::new(PastCurrent(fixture.view.clone())),
+    );
+    assert!(matches!(result, Err(error) if error.contains("CURRENT validity ended")));
+}
+
 #[test]
 fn a_different_signed_current_owner_cannot_reopen_the_loaded_consumer() {
     let original = vec![item("one"), item("two")];

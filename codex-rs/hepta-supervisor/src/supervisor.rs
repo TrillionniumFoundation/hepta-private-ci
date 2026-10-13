@@ -62,6 +62,24 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(Self, TickReport), SupervisorError> {
         config.validate()?;
         let snapshot = registry.load()?;
+        // A previous Unknown disposition may have been renamed into place
+        // before its directory sync failed. Readable bytes alone cannot lift
+        // the fence. Reconcile the exact retained journal through the original
+        // atomic publisher before adopting any child from any Agent.
+        for (agent_id, record) in &snapshot.agents {
+            if let Some(intent) = read_intent(record.layout.run_root())
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+                && !intent.unknown_effects.is_empty()
+            {
+                if intent.agent_id != agent_id.to_string() {
+                    return Err(SupervisorError::Invalid(
+                        "signed supervisor intent agent binding mismatch".to_string(),
+                    ));
+                }
+                write_intent(record.layout.run_root(), &intent)
+                    .map_err(|_| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
+            }
+        }
         let slots = snapshot
             .agents
             .keys()
@@ -83,20 +101,42 @@ impl<D: ProcessDriver> Supervisor<D> {
                 // hide a recovery-required signed intent or restart/release
                 // fence and incorrectly make the daemon appear ready.
                 supervisor.restore_release_state(&agent_id, slot, &record)?;
-                let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
+                let mut process_faults = Vec::new();
+                if let Err(error) = supervisor.recover_slot(&agent_id, slot, &record, now) {
+                    process_faults.push(error);
+                }
+                // A primary cleanup fault must not skip discovery of the
+                // companion's independent durable identity and owned handle.
+                if let Err(error) =
+                    supervisor.recover_matrix_companion(&agent_id, slot, &record, now)
+                {
+                    process_faults.push(error);
+                }
                 supervisor.recover_restart_budget(&agent_id, slot, now)?;
                 supervisor.recover_release_transaction(&agent_id, slot, now)?;
-                let process_recovery = if process_fault.is_some() {
+                let process_recovery = if !process_faults.is_empty() {
                     crate::signed_intent_recovery::ProcessRecoveryStatus::Faulted
                 } else {
                     crate::signed_intent_recovery::ProcessRecoveryStatus::Complete
                 };
-                supervisor.recover_signed_intent(&agent_id, slot, &record, process_recovery)?;
-                Ok(process_fault)
+                match supervisor.recover_signed_intent(&agent_id, slot, &record, process_recovery) {
+                    Ok(()) => Ok(process_faults),
+                    // Termination failure retains the quarantined owner and its
+                    // exact handles for retries; durable-state failures still
+                    // stop startup below.
+                    Err(error @ SupervisorError::Driver { .. }) => {
+                        process_faults.push(error);
+                        Ok(process_faults)
+                    }
+                    Err(error) => Err(error),
+                }
             });
             match result {
-                Ok(Some(error)) => supervisor.record_fault(&agent_id, &error, &mut report),
-                Ok(None) => {}
+                Ok(errors) => {
+                    for error in errors {
+                        supervisor.record_fault(&agent_id, &error, &mut report);
+                    }
+                }
                 // Corrupt/unreadable durable restart, release or signed-intent
                 // state is not an ordinary process fault. Starting without
                 // those fences could widen mutation authority, so fail closed.
@@ -590,10 +630,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
             supervisor.preflight_upgrade_in_slot(agent_id, slot, &target)?;
             if slot.signed_intent.as_ref().is_some_and(|intent| {
-                !matches!(
+                !(matches!(
                     intent.status,
                     SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
-                )
+                ) || intent.status == SignedIntentStatus::Aborted && !intent.requires_recovery())
             }) {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
                     agent_id.clone(),
@@ -611,6 +651,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 expected_authority_epoch,
                 SignedIntentStatus::Prepared,
             )
+            .and_then(|intent| intent.inherit_unknown_effects(slot.signed_intent.as_ref()))
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             write_intent(record.layout.run_root(), &intent)
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
@@ -707,14 +748,14 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(slot
             .signed_intent
             .as_ref()
-            .is_some_and(|intent| intent.status.requires_recovery()))
+            .is_some_and(super::signed_intent::SignedSupervisorIntent::requires_recovery))
     }
 
     pub fn any_production_recovery_required(&self) -> bool {
         self.slots.values().any(|slot| {
             slot.signed_intent
                 .as_ref()
-                .is_some_and(|intent| intent.status.requires_recovery())
+                .is_some_and(super::signed_intent::SignedSupervisorIntent::requires_recovery)
         })
     }
 
@@ -766,9 +807,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                 production_authority: true,
                 external_effects: true,
                 operator_acceptance: true,
-                promotion: true,
+                promotion: status != crate::ProductionMutationStatus::Aborted,
             },
             intent_sha256: intent.intent_sha256,
+            unknown_effects: intent.unknown_effects,
             release_transaction_sha256: transaction
                 .as_ref()
                 .map(|value| value.transaction_sha256.clone()),
@@ -788,10 +830,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             let intent = read_intent(record.layout.run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
                 .ok_or_else(|| SupervisorError::SignedIntentRecoveryRequired(agent_id.clone()))?;
-            if !intent.status.requires_recovery() {
+            if !intent.requires_recovery() {
                 return Err(SupervisorError::Invalid(
                     "production recovery requires a quarantined signed intent".to_string(),
                 ));
+            }
+            if decision.outcome == ProductionRecoveryOutcome::AbandonUnknown {
+                return supervisor.resolve_unknown_recovery_in_slot(
+                    agent_id, slot, &record, &intent, decision, verifier,
+                    expected_authority_epoch, now_unix_seconds,
+                );
             }
             let transaction = read_release_transaction(record.layout.run_root())
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?
@@ -823,6 +871,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     H7H89ProductionTransition::Rollback,
                     ProductionRecoveryOutcome::RolledBack,
                 ) => intent.target_release.as_str(),
+                (_, ProductionRecoveryOutcome::AbandonUnknown) => {
+                    return Err(SupervisorError::Invalid("unknown outcome requires its v2 recovery path".to_string()));
+                }
                 (
                     H7H89ProductionTransition::Rollback,
                     ProductionRecoveryOutcome::Committed,
@@ -854,6 +905,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     H7H89ProductionTransition::Upgrade,
                     ProductionRecoveryOutcome::RolledBack,
                 ) => transaction.source_binding.as_ref(),
+                (_, ProductionRecoveryOutcome::AbandonUnknown) => {
+                    return Err(SupervisorError::Invalid("unknown outcome requires its v2 recovery path".to_string()));
+                }
                 (
                     H7H89ProductionTransition::Rollback,
                     ProductionRecoveryOutcome::Committed,
@@ -919,6 +973,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     H7H89ProductionTransition::Rollback,
                     ProductionRecoveryOutcome::RolledBack,
                 ) => ReleaseTransactionPhase::RolledBack,
+                (_, ProductionRecoveryOutcome::AbandonUnknown) => {
+                    return Err(SupervisorError::Invalid("unknown outcome requires its v2 recovery path".to_string()));
+                }
                 (
                     H7H89ProductionTransition::Rollback,
                     ProductionRecoveryOutcome::Committed,
@@ -941,6 +998,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                     H7H89ProductionTransition::Rollback,
                     ProductionRecoveryOutcome::RolledBack,
                 ) => SignedIntentStatus::RolledBack,
+                (_, ProductionRecoveryOutcome::AbandonUnknown) => {
+                    return Err(SupervisorError::Invalid("unknown outcome requires its v2 recovery path".to_string()));
+                }
                 (
                     H7H89ProductionTransition::Rollback,
                     ProductionRecoveryOutcome::Committed,
@@ -981,6 +1041,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                         H7H89ProductionTransition::Rollback,
                         ProductionRecoveryOutcome::RolledBack,
                     ) => crate::ProductionMutationStatus::RolledBack,
+                    (_, ProductionRecoveryOutcome::AbandonUnknown) => {
+                        return Err(SupervisorError::Invalid("unknown outcome requires its v2 recovery path".to_string()));
+                    }
                     (
                         H7H89ProductionTransition::Rollback,
                         ProductionRecoveryOutcome::Committed,

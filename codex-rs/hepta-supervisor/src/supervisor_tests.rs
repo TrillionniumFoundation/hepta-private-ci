@@ -173,6 +173,9 @@ struct FakeWorld {
     processes: BTreeMap<u64, FakeState>,
     reject_adoption: BTreeSet<AgentId>,
     reject_spawn_programs: BTreeSet<PathBuf>,
+    reject_kill: BTreeSet<AgentId>,
+    reject_stop: BTreeSet<AgentId>,
+    adoption_requests: usize,
 }
 
 struct FakeState {
@@ -366,7 +369,8 @@ impl ProcessDriver for FakeDriver {
     }
 
     fn adopt(&mut self, spec: &AdoptSpec) -> Result<Adoption<Self::Process>, ProcessDriverError> {
-        let world = self.world.lock().expect("fake world lock");
+        let mut world = self.world.lock().expect("fake world lock");
+        world.adoption_requests += 1;
         if world.reject_adoption.contains(&spec.agent_id) {
             return Ok(Adoption::Rejected);
         }
@@ -425,7 +429,8 @@ impl ProcessDriver for FakeDriver {
         &mut self,
         spec: &MatrixAdoptSpec,
     ) -> Result<Adoption<Self::Process>, ProcessDriverError> {
-        let world = self.world.lock().expect("fake world lock");
+        let mut world = self.world.lock().expect("fake world lock");
+        world.adoption_requests += 1;
         let Some((&id, _)) = world.processes.iter().find(|(_, state)| {
             state.agent_id == spec.agent_id
                 && state.role == FakeRole::Matrixd
@@ -473,24 +478,24 @@ impl ManagedProcess for FakeProcess {
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
-        self.world
-            .lock()
-            .expect("fake world lock")
-            .processes
-            .get_mut(&self.id)
-            .expect("fake process")
-            .stop_requests += 1;
+        let mut world = self.world.lock().expect("fake world lock");
+        let state = world.processes.get_mut(&self.id).expect("fake process");
+        state.stop_requests += 1;
+        let agent_id = state.agent_id.clone();
+        if world.reject_stop.contains(&agent_id) {
+            return Err(ProcessDriverError::new("injected stop failure"));
+        }
         Ok(())
     }
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
-        self.world
-            .lock()
-            .expect("fake world lock")
-            .processes
-            .get_mut(&self.id)
-            .expect("fake process")
-            .kill_requests += 1;
+        let mut world = self.world.lock().expect("fake world lock");
+        let state = world.processes.get_mut(&self.id).expect("fake process");
+        state.kill_requests += 1;
+        let agent_id = state.agent_id.clone();
+        if world.reject_kill.contains(&agent_id) {
+            return Err(ProcessDriverError::new("injected kill failure"));
+        }
         Ok(())
     }
 }
@@ -880,6 +885,14 @@ fn recovery_adopts_one_orphan_and_rejects_another() -> Result<(), SupervisorErro
     assert_eq!(report, TickReport::default());
     assert!(supervisor.snapshot(&fleet.first).unwrap().active);
     assert!(!supervisor.snapshot(&fleet.second).unwrap().active);
+    let rejected = fleet
+        .registry
+        .load()?
+        .agent(&fleet.second)
+        .cloned()
+        .unwrap();
+    assert!(crate::lease::read_lease(rejected.layout.run_root())?.is_some());
+    assert_eq!(control.counts(&fleet.second).2, 0);
     assert!(
         supervisor
             .snapshot(&fleet.first)
@@ -2319,3 +2332,6 @@ mod signed_intent_recovery_owner_tests;
 
 #[path = "signed_admission_owner_tests.rs"]
 mod signed_admission_owner_tests;
+
+#[path = "unknown_recovery_owner_tests.rs"]
+mod unknown_recovery_owner_tests;

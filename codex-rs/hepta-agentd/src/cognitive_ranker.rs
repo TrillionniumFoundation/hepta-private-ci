@@ -17,6 +17,7 @@ use codex_hepta_bellman_operator::TabularPayloadPinV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_intelligence_eval::VerifiedSelfEvolutionRollbackV1;
 use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
+use codex_hepta_learning_artifacts::LearningArtifactManifestV2;
 use codex_hepta_learning_artifacts::PinnedCandidateSpec;
 #[cfg(test)]
 use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
@@ -24,6 +25,7 @@ use codex_hepta_learning_artifacts::RevalidatingCandidate;
 use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
 use codex_hepta_learning_artifacts::load_pinned_candidate;
 use codex_hepta_learning_artifacts::read_registry_snapshot;
+use codex_hepta_learning_artifacts::validate_published_artifact_manifest_v2;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
@@ -53,6 +55,10 @@ impl RankerEvaluationAdmission {
 /// The artifact authority, not the model or a caller-supplied receipt,
 /// determines currentness. Implementations must return an opaque view issued
 /// only after signed CURRENT verification and exact snapshot binding.
+/// Production providers must also hold the original owner's observation fence
+/// through settled-ACK reconciliation and reject unsettled or unknown writes.
+/// A public host diagnostic view alone does not meet that contract. The ordinary
+/// process provider uses `ArtifactOwnerCurrentReaderV1` for this boundary.
 pub trait CurrentCognitiveRegistry: Send + Sync {
     fn current(&self) -> Result<VerifiedCurrentRegistryViewV1, String>;
 }
@@ -78,6 +84,25 @@ pub(crate) fn verified_fixture_current_view_with_signer(
     expected_predecessor_head_digest: Digest32,
     key: ed25519_dalek::SigningKey,
 ) -> Result<VerifiedCurrentRegistryViewV1, String> {
+    verified_fixture_current_view_with_window(
+        snapshot,
+        receipt,
+        expected_predecessor_head_digest,
+        key,
+        current_unix_micros()? / 1_000_000,
+        /*expires_at*/ 4_102_444_800,
+    )
+}
+
+#[cfg(test)]
+fn verified_fixture_current_view_with_window(
+    snapshot: File,
+    receipt: RegistrySnapshotReceipt,
+    expected_predecessor_head_digest: Digest32,
+    key: ed25519_dalek::SigningKey,
+    now: u64,
+    expires_at: u64,
+) -> Result<VerifiedCurrentRegistryViewV1, String> {
     use codex_hepta_learning_artifacts::ArtifactOwnerTrustV1;
     use codex_hepta_learning_artifacts::ArtifactOwnerVerifierV1;
     use codex_hepta_learning_artifacts::RegistryHeadRequirementV1;
@@ -98,7 +123,9 @@ pub(crate) fn verified_fixture_current_view_with_signer(
         minimum_authority_epoch: 1,
         maximum_authority_epoch: 10,
         valid_from: 1,
-        expires_at: 1_000,
+        // Keep owner trust identical when only the head's signed validity
+        // changes, so expiry tests cannot pass via trust-substitution refusal.
+        expires_at: 4_102_444_800,
         revoked_at: None,
     };
     let verifier = ArtifactOwnerVerifierV1::new(ArtifactOwnerTrustV1 {
@@ -125,8 +152,8 @@ pub(crate) fn verified_fixture_current_view_with_signer(
             authority_epoch: 1,
             signer_id,
             signing_key_digest: Digest32::of_bytes(&verifying_key),
-            issued_at: 20,
-            expires_at: 1_000,
+            issued_at: now,
+            expires_at,
         },
         signature: [0; 64],
     };
@@ -136,7 +163,7 @@ pub(crate) fn verified_fixture_current_view_with_signer(
         minimum_generation: generation,
         expected_predecessor_head_digest,
         minimum_authority_epoch: 1,
-        now: 20,
+        now,
     };
     verifier
         .verify_current_registry_view(snapshot, receipt, &signed, &requirement)
@@ -153,6 +180,7 @@ pub struct PinnedCognitiveRanker {
     current: Arc<dyn CurrentCognitiveRegistry>,
     current_owner_trust_digest: Digest32,
     admission: RankerEvaluationAdmission,
+    source_window: Option<(u64, u64)>,
     cache: Mutex<Option<RevalidatingCandidate>>,
 }
 
@@ -196,11 +224,59 @@ impl PinnedCognitiveRanker {
         model_pin: TabularPayloadPinV1,
         current: Arc<dyn CurrentCognitiveRegistry>,
     ) -> Result<Self, String> {
+        Self::load_source(
+            owner,
+            body_generation,
+            snapshot,
+            payload,
+            selected,
+            model_pin,
+            current,
+            None,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn load_source(
+        owner: AgentId,
+        body_generation: u64,
+        snapshot: File,
+        payload: File,
+        selected: PinnedCandidateSpec,
+        model_pin: TabularPayloadPinV1,
+        current: Arc<dyn CurrentCognitiveRegistry>,
+        source: Option<LearningArtifactManifestV2>,
+    ) -> Result<Self, String> {
+        let source_window = match source {
+            Some(source) => {
+                let validated = validate_published_artifact_manifest_v2(
+                    &selected.manifest,
+                    source,
+                    current_unix_micros()? / 1_000_000,
+                )
+                .map_err(|error| error.to_string())?;
+                if !validated
+                    .manifest
+                    .source_dataset_digests
+                    .contains(&model_pin.dataset_digest)
+                {
+                    return Err(
+                        "published ranker source does not include the model dataset".to_owned()
+                    );
+                }
+                Some((validated.manifest.created_at, validated.manifest.expires_at))
+            }
+            None => {
+                if selected.manifest.support_digest != model_pin.dataset_digest {
+                    return Err("legacy ranker dataset pin mismatch".to_owned());
+                }
+                None
+            }
+        };
         if selected.manifest.kind != codex_hepta_learning_artifacts::ArtifactKind::Policy
             || body_generation == 0
             || selected.manifest.content_digest != model_pin.payload_digest
             || selected.manifest.objective_digest != model_pin.objective_digest
-            || selected.manifest.support_digest != model_pin.dataset_digest
             || selected.manifest.generation != model_pin.generation
         {
             return Err("ranker owner/model pin binding mismatch".to_string());
@@ -216,7 +292,7 @@ impl PinnedCognitiveRanker {
         let current_owner_trust_digest = current_view.trust_digest();
         let mut candidate = RevalidatingCandidate::new(candidate);
         candidate
-            .with_current(current_view, |_| ())
+            .with_current(current_view, current_unix_micros()? / 1_000_000, |_| ())
             .map_err(|error| error.to_string())?;
         Ok(Self {
             owner,
@@ -226,13 +302,15 @@ impl PinnedCognitiveRanker {
             current,
             current_owner_trust_digest,
             admission: RankerEvaluationAdmission::HostPinned,
+            source_window,
             cache: Mutex::new(Some(candidate)),
         })
     }
 
-    /// Load a candidate only after independent longitudinal evaluation and a
-    /// separately authenticated selector have admitted the exact artifact.
-    /// The opaque selection token cannot be fabricated from registry metadata.
+    /// Compatibility profile for a V1 index that pins its dataset in support.
+    /// It requires the original signed evaluation and independent selector,
+    /// but does not establish canonical product qualification. Ordinary named
+    /// publication installation uses `load_evaluated_published` instead.
     #[allow(clippy::too_many_arguments)]
     pub fn load_evaluated(
         owner: AgentId,
@@ -243,6 +321,63 @@ impl PinnedCognitiveRanker {
         model_pin: TabularPayloadPinV1,
         current: Arc<dyn CurrentCognitiveRegistry>,
         selection: &VerifiedSelfEvolutionSelectionV1,
+    ) -> Result<Self, String> {
+        Self::load_evaluated_source(
+            owner,
+            body_generation,
+            snapshot,
+            payload,
+            selected,
+            model_pin,
+            current,
+            selection,
+            None,
+        )
+    }
+
+    /// Named-owner publication profile. The V1 index must commit to the full
+    /// validated V2 source, whose dataset set must bind the model and selection.
+    /// Selection must retain the canonical runner's sealed qualification and
+    /// evaluator byte binding. There is no fallback to the compatibility path.
+    #[allow(clippy::too_many_arguments)]
+    pub fn load_evaluated_published(
+        owner: AgentId,
+        body_generation: u64,
+        snapshot: File,
+        payload: File,
+        selected: PinnedCandidateSpec,
+        model_pin: TabularPayloadPinV1,
+        source_manifest: LearningArtifactManifestV2,
+        current: Arc<dyn CurrentCognitiveRegistry>,
+        selection: &VerifiedSelfEvolutionSelectionV1,
+    ) -> Result<Self, String> {
+        selection
+            .require_product_qualification()
+            .map_err(|error| error.to_string())?;
+        Self::load_evaluated_source(
+            owner,
+            body_generation,
+            snapshot,
+            payload,
+            selected,
+            model_pin,
+            current,
+            selection,
+            Some(source_manifest),
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn load_evaluated_source(
+        owner: AgentId,
+        body_generation: u64,
+        snapshot: File,
+        payload: File,
+        selected: PinnedCandidateSpec,
+        model_pin: TabularPayloadPinV1,
+        current: Arc<dyn CurrentCognitiveRegistry>,
+        selection: &VerifiedSelfEvolutionSelectionV1,
+        source: Option<LearningArtifactManifestV2>,
     ) -> Result<Self, String> {
         let receipt = selection.receipt();
         selection
@@ -264,19 +399,21 @@ impl PinnedCognitiveRanker {
                 "selected registry predecessor differs from independent evaluation".to_string(),
             );
         }
-        if body_generation != receipt.candidate_generation.get()
-            || selected.manifest.artifact_id != receipt.candidate_id
+        // Fleet launch epochs and learned-artifact lineage generations are
+        // independent counters. The launch is bound by require_identity;
+        // the model is bound by the exact selected/evaluated generation.
+        if selected.manifest.artifact_id != receipt.candidate_id
             || selected.manifest.predecessor_id.as_ref() != Some(&receipt.predecessor_id)
             || selected.manifest.generation != receipt.candidate_generation
             || selected.manifest.content_digest != receipt.candidate_artifact_digest
             || selected.manifest.objective_digest != receipt.objective_digest
-            || selected.manifest.support_digest != receipt.dataset_digest
+            || model_pin.dataset_digest != receipt.dataset_digest
         {
             return Err(
                 "selected ranker does not match independently admitted candidate".to_string(),
             );
         }
-        let mut value = Self::load(
+        let mut value = Self::load_source(
             owner,
             body_generation,
             snapshot,
@@ -284,6 +421,7 @@ impl PinnedCognitiveRanker {
             selected,
             model_pin,
             current,
+            source,
         )?;
         value.admission = RankerEvaluationAdmission::Selected(Box::new(selection.clone()));
         value.revalidate()?;
@@ -305,8 +443,7 @@ impl PinnedCognitiveRanker {
         rollback: &VerifiedSelfEvolutionRollbackV1,
     ) -> Result<Self, String> {
         let receipt = rollback.selection().receipt();
-        if body_generation != rollback.rollback_generation().get()
-            || selected.manifest.artifact_id != receipt.predecessor_id
+        if selected.manifest.artifact_id != receipt.predecessor_id
             || selected.manifest.generation != receipt.predecessor_generation
             || selected.manifest.content_digest != receipt.predecessor_artifact_digest
             || selected.manifest.objective_digest != receipt.objective_digest
@@ -345,21 +482,53 @@ impl PinnedCognitiveRanker {
             return Err("ranker unavailable; explicit reload required".to_string());
         };
         self.admission.validate_at(current_unix_micros()?)?;
+        self.validate_source_window(current_unix_micros()? / 1_000_000)?;
         // Keep the cache absent on witness errors, panics and failed refreshes.
         // The provider cannot inject a bare file/receipt: the artifact authority
         // must first issue an opaque verified CURRENT view.
         let current = self.current.current()?;
+        let current_validity = current.validity();
         if current.trust_digest() != self.current_owner_trust_digest {
             return Err(
                 "ranker CURRENT owner trust changed; independent reload required".to_string(),
             );
         }
         let result = candidate
-            .with_current(current, |_| consume())
+            .with_current(current, current_unix_micros()? / 1_000_000, |_| consume())
             .map_err(|error| error.to_string())??;
-        self.admission.validate_at(current_unix_micros()?)?;
+        // Reobserve the original owner before making a computed permutation
+        // visible. A publication or revocation while computing must extend the
+        // same frontier and leave this exact candidate eligible. The outer
+        // product FinalUse fence still owns serialization with actual effects.
+        let current_after = self.current.current()?;
+        let validity_after = current_after.validity();
+        if current_after.trust_digest() != self.current_owner_trust_digest {
+            return Err("ranker CURRENT owner trust changed during read".to_owned());
+        }
+        candidate
+            .with_current(current_after, current_unix_micros()? / 1_000_000, |_| ())
+            .map_err(|error| error.to_string())?;
+        let completed_at = current_unix_micros()?;
+        current_validity
+            .validate_at(completed_at / 1_000_000)
+            .map_err(|error| error.to_string())?;
+        validity_after
+            .validate_at(completed_at / 1_000_000)
+            .map_err(|error| error.to_string())?;
+        self.admission.validate_at(completed_at)?;
+        self.validate_source_window(completed_at / 1_000_000)?;
         *cache = Some(candidate);
         Ok(result)
+    }
+
+    fn validate_source_window(&self, now: u64) -> Result<(), String> {
+        if self
+            .source_window
+            .is_some_and(|(created_at, expires_at)| now < created_at || now > expires_at)
+        {
+            return Err("published ranker source validity ended".to_owned());
+        }
+        Ok(())
     }
 
     pub(crate) fn revalidate(&self) -> Result<(), String> {

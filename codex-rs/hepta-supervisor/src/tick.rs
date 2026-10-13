@@ -57,7 +57,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             && !slot
                 .signed_intent
                 .as_ref()
-                .is_some_and(|intent| intent.status.requires_recovery())
+                .is_some_and(super::signed_intent::SignedSupervisorIntent::requires_recovery)
             && slot
                 .restart_not_before
                 .is_none_or(|eligible| now >= eligible)
@@ -190,6 +190,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Ok(RuntimeTickOutcome::Exited { restart_fault });
         }
         if runtime.fenced {
+            if matches!(runtime.phase, RuntimePhase::Stopping { deadline } if now >= deadline) {
+                runtime
+                    .process
+                    .kill()
+                    .map_err(|error| driver_error(agent_id, error))?;
+                runtime.phase = RuntimePhase::Killing;
+                slot.event(runtime.generation, SupervisorEventKind::KillRequested);
+            }
             return Ok(RuntimeTickOutcome::Keep);
         }
         let ProcessState::Running { healthy, drained } = observation.state else {

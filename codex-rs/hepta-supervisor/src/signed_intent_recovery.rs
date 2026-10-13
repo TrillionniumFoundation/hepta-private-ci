@@ -46,7 +46,8 @@ impl<D: ProcessDriver> Supervisor<D> {
         if matches!(
             intent.status,
             SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
-        ) {
+        ) || (intent.status == SignedIntentStatus::Aborted && !intent.requires_recovery())
+        {
             return Ok(());
         }
 
@@ -134,7 +135,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         } else {
             read_recovery_directive(record.layout.run_root())
         };
-        let recovery = if intent.status.requires_recovery() {
+        let recovery = if intent.requires_recovery() {
             intent.clone()
         } else {
             intent
@@ -157,20 +158,29 @@ impl<D: ProcessDriver> Supervisor<D> {
                 AgentLifecycle::Failed,
             )?;
         }
-        self.kill_matrix_now(agent_id, slot)?;
+        let matrix_error = self.kill_matrix_now(agent_id, slot).err();
+        let mut main_error = None;
         if let Some(runtime) = slot.runtime.as_mut() {
             // Process adoption may already have fenced and successfully requested
             // termination. Hydrating the signed-intent fence is not a second kill.
             let already_requested =
                 runtime.fenced && matches!(runtime.phase, RuntimePhase::Killing);
             runtime.fenced = true;
+            runtime.healthy = false;
             if !already_requested {
-                runtime
-                    .process
-                    .kill()
-                    .map_err(|error| crate::runtime::driver_error(agent_id, error))?;
-                runtime.phase = RuntimePhase::Killing;
+                runtime.phase = RuntimePhase::Stopping {
+                    deadline: std::time::Instant::now(),
+                };
+                match runtime.process.kill() {
+                    Ok(()) => runtime.phase = RuntimePhase::Killing,
+                    Err(error) => main_error = Some(crate::runtime::driver_error(agent_id, error)),
+                }
             }
+        }
+        if let Some(error) = matrix_error.or(main_error) {
+            // Both handles remain fenced and retryable. Never consume a local
+            // abort directive after an unsuccessful termination request.
+            return Err(error);
         }
         // A missing in-memory handle after an adoption error is not proof of
         // process absence. Keep Unknown quarantined and retain the directive.

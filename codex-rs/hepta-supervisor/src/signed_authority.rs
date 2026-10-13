@@ -30,6 +30,10 @@ const SIGNING_DOMAIN: &[u8] = b"hepta-supervisor:production-authority:v1";
 pub const PRODUCTION_RECOVERY_SCHEMA_VERSION: u32 = 1;
 pub const PRODUCTION_RECOVERY_NAMESPACE: &str = "hepta:production:recovery:v1";
 const RECOVERY_SIGNING_DOMAIN: &[u8] = b"hepta-supervisor:production-recovery:v1";
+#[path = "unknown_recovery_authority.rs"]
+mod unknown_recovery;
+pub use unknown_recovery::UnknownRecoveryObservation;
+pub use unknown_recovery::absent_release_transaction_digest;
 
 /// Derives the numeric CAS epoch that external grant issuers bind to the
 /// daemon's UUID epoch.  A fresh supervisord process gets a fresh UUID, so a
@@ -64,6 +68,9 @@ impl H7H89ProductionTransition {
 pub enum ProductionRecoveryOutcome {
     Committed,
     RolledBack,
+    /// Abandon the grant while retaining its unknown effects. No success or
+    /// rollback is certified; a separate signature reauthorizes the source.
+    AbandonUnknown,
 }
 
 impl ProductionRecoveryOutcome {
@@ -71,6 +78,7 @@ impl ProductionRecoveryOutcome {
         match self {
             Self::Committed => "committed",
             Self::RolledBack => "rolled_back",
+            Self::AbandonUnknown => "abandon_unknown",
         }
     }
 }
@@ -92,6 +100,8 @@ pub struct ProductionRecoveryDecision {
     pub observed_agentd_sha256: Sha256Digest,
     pub observed_matrixd_sha256: Option<Sha256Digest>,
     pub outcome: ProductionRecoveryOutcome,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub unknown_observation: Option<UnknownRecoveryObservation>,
     pub expected_lifecycle_generation: u64,
     pub authority_epoch: u64,
     pub signer_id: String,
@@ -108,8 +118,8 @@ impl ProductionRecoveryDecision {
     }
 
     pub fn validate_shape(&self) -> Result<(), ProductionAuthorityError> {
-        if self.schema_version != PRODUCTION_RECOVERY_SCHEMA_VERSION
-            || self.namespace != PRODUCTION_RECOVERY_NAMESPACE
+        let unknown = self.outcome == ProductionRecoveryOutcome::AbandonUnknown;
+        if !unknown_recovery::valid_namespace(self, unknown)
             || self.expected_lifecycle_generation == 0
             || self.authority_epoch == 0
             || self.signer_epoch == 0
@@ -150,7 +160,11 @@ impl ProductionRecoveryDecision {
     fn signing_bytes(&self) -> Vec<u8> {
         let mut hasher = Sha256::new();
         for value in [
-            RECOVERY_SIGNING_DOMAIN,
+            if self.outcome == ProductionRecoveryOutcome::AbandonUnknown {
+                b"hepta-supervisor:production-recovery:abandon-unknown:v2".as_slice()
+            } else {
+                RECOVERY_SIGNING_DOMAIN
+            },
             self.namespace.as_bytes(),
             self.agent_id.as_bytes(),
             self.grant_sha256.as_str().as_bytes(),
@@ -170,6 +184,16 @@ impl ProductionRecoveryDecision {
                 frame(&mut hasher, digest.as_str().as_bytes());
             }
             None => frame(&mut hasher, &[0]),
+        }
+        if let Some(observed) = &self.unknown_observation {
+            frame(
+                &mut hasher,
+                &observed.release_state_generation.to_be_bytes(),
+            );
+            frame(
+                &mut hasher,
+                observed.admission_frontier_sha256.as_str().as_bytes(),
+            );
         }
         for value in [
             self.expected_lifecycle_generation,
@@ -365,6 +389,7 @@ impl H7H89ProductionGrantSigner {
             observed_agentd_sha256,
             observed_matrixd_sha256,
             outcome,
+            unknown_observation: None,
             expected_lifecycle_generation,
             authority_epoch,
             signer_id: self.signer_id.clone(),
@@ -696,6 +721,9 @@ impl H7H89ProductionGrant {
 /// Receipt returned after a verified operation has been admitted to the
 /// real supervisor.  `queued` means the process transition is in progress;
 /// it is not a claim that the child has become healthy.
+/// Authority flags describe the admission scope, never an observed effect
+/// outcome. An `aborted` Unknown disposition has `promotion=false`; its
+/// unresolved external effects remain in `ProductionMutationState` history.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ProductionMutationReceipt {
@@ -718,6 +746,8 @@ pub struct ProductionMutationState {
     pub receipt: ProductionMutationReceipt,
     pub intent_sha256: Sha256Digest,
     pub release_transaction_sha256: Option<Sha256Digest>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub unknown_effects: Vec<crate::signed_intent::UnknownEffectDisposition>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
