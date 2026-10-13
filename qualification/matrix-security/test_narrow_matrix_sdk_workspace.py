@@ -93,6 +93,18 @@ def enc(value):
 
 
 class NarrowWorkspaceTests(unittest.TestCase):
+    def test_matrix_native_links_trial_is_disposable_and_not_an_advisory_waiver(self):
+        workflow = (Path(__file__).resolve().parents[2] /
+                    ".github/workflows/hepta-matrix-narrow-sdk-probe.yml")
+        text = workflow.read_text(encoding="utf-8")
+        self.assertIn('git worktree add --detach "$STAGE" "$HEPTA_SHA"', text)
+        self.assertIn("--align-sqlite-native-links", text)
+        self.assertIn('git worktree remove --force "$NARROW_HEPTA_STAGE"', text)
+        self.assertIn("cargo +1.96.0 metadata", text)
+        self.assertIn("cargo +1.96.0 check --locked", text)
+        self.assertIn("'production_authorized': False", text)
+        self.assertNotIn("continue-on-error: true", text)
+
     def test_only_workspace_membership_changes(self):
         original = cargo_fixture()
         edited = rewrite_workspace(original)
