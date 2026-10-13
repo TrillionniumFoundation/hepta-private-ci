@@ -100,6 +100,38 @@ async fn open_matrix_durable_evidence_pool(path: &Path) -> Result<SqlitePool, sq
         .await
 }
 
+/// Verify the actual owner connection, not a separately opened SQLite handle.
+/// The old codex-state shim supplied these four settings. Refuse startup
+/// before schema migration if a driver or external SQLite configuration
+/// fails to honor any of them.
+async fn verify_matrix_durable_profile(pool: &SqlitePool) -> Result<(), MatrixDurableError> {
+    let mut connection = pool.acquire().await.map_err(unavailable)?;
+    let journal: String = sqlx::query_scalar("PRAGMA journal_mode")
+        .fetch_one(&mut *connection)
+        .await
+        .map_err(unavailable)?;
+    let synchronous: i64 = sqlx::query_scalar("PRAGMA synchronous")
+        .fetch_one(&mut *connection)
+        .await
+        .map_err(unavailable)?;
+    let foreign_keys: i64 = sqlx::query_scalar("PRAGMA foreign_keys")
+        .fetch_one(&mut *connection)
+        .await
+        .map_err(unavailable)?;
+    let busy_timeout: i64 = sqlx::query_scalar("PRAGMA busy_timeout")
+        .fetch_one(&mut *connection)
+        .await
+        .map_err(unavailable)?;
+    if !journal.eq_ignore_ascii_case("wal")
+        || synchronous != 2
+        || foreign_keys != 1
+        || busy_timeout != 5_000
+    {
+        return Err(MatrixDurableError::Unavailable);
+    }
+    Ok(())
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum MatrixDurableError {
     #[error("invalid Matrix durable-core request")]
@@ -148,6 +180,10 @@ impl MatrixDurableStore {
         let pool = open_matrix_durable_evidence_pool(&path)
             .await
             .map_err(unavailable)?;
+        if let Err(error) = verify_matrix_durable_profile(&pool).await {
+            pool.close().await;
+            return Err(error);
+        }
         if MIGRATOR.run(&pool).await.is_err() {
             pool.close().await;
             return Err(MatrixDurableError::Unavailable);
