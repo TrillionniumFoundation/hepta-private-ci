@@ -134,6 +134,12 @@ tokio-tungstenite = { workspace = true }
 wiremock = { workspace = true }
 zstd = { workspace = true }
 
+# Preserve the complete Windows restricted-token proxy regression in a
+# leaf integration harness, rather than creating protocol/proxy/sandbox
+# build-analysis cycles through the network-proxy library.
+[target.'cfg(windows)'.dev-dependencies]
+codex-network-proxy = { workspace = true }
+
 [build-dependencies]
 codex-utils-build-identity = { workspace = true }
 
