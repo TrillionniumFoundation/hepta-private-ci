@@ -85,6 +85,10 @@ static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 ///
 /// Never use a rebuildable state-DB recovery pool for the authoritative Matrix
 /// inbox/outbox. Its migration, owner and WAL checks remain unchanged.
+#[expect(
+    clippy::disallowed_methods,
+    reason = "Matrix durable owner has a separately audited WAL/FULL SQLite shim; depending on codex-state would pull unrelated CLI/Starlark into the SDK security boundary"
+)]
 async fn open_matrix_durable_evidence_pool(path: &Path) -> Result<SqlitePool, sqlx::Error> {
     let options = SqliteConnectOptions::new()
         .filename(path)
