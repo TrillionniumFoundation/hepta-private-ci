@@ -26,8 +26,7 @@ class PairedClusterUncertaintyTests(unittest.TestCase):
 
     def test_cluster_bootstrap_is_bounded_order_invariant_and_reproducible(self):
         pairs = [
-            (f"group-{i}", 1 if i < 5 else (-1 if i == 5 else 0))
-            for i in range(12)
+            (f"group-{i}", 1 if i < 5 else (-1 if i == 5 else 0)) for i in range(12)
         ]
         a = paired_cluster_interval(
             pairs, seed_identity="signed-cohort/typed/future_1", unit="accuracy"
