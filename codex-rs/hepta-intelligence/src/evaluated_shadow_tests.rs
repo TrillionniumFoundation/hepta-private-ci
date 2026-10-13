@@ -453,7 +453,11 @@ fn ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded()
             .unwrap()
             .set_len(/*size*/ 0)
             .unwrap();
-        let file = OpenOptions::new().read(true).write(true).open(&path).unwrap();
+        let file = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&path)
+            .unwrap();
         assert!(matches!(
             DurableLedger::recover(
                 file,
