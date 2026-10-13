@@ -20,6 +20,12 @@ VISION = "openai/clip-vit-base-patch32"
 READER = "Qwen/Qwen2.5-0.5B-Instruct"
 PUBLIC_COLUMNS = ("image", "question", "choices", "hint")
 SIZES = {"train": 64, "validation": 16, "test": 32}
+FRESH_SIZES = {"train": 64, "validation": 32, "test": 64}
+# Exact prior execution: reproduce its pre-label cohort and exclude ALL its media/text.
+FRESH_PINS = {"clip": "3d74acf9a28c67741b2f4f2ea7635f0aaf6f0268",
+              "dataset": "b9984af01798586705cee1fbdfa80a6dcbef04f1",
+              "reader": "7ae557604adf67be50417f59c2c2f167def9a775"}
+PRIOR_COHORT = "dca913c5da6170c4b01c498773635e4f6783f1a3079a79c782e51f2cf1862beb"
 SYSTEM = "Answer the multiple-choice question with exactly one letter A, B, C, or D. No image is provided."
 
 
@@ -52,11 +58,20 @@ def source_image(row):
     return image["bytes"]
 
 
-def choose(public, tokenizer, *, sizes=SIZES):
+def choose(public, tokenizer, *, sizes=SIZES, excluded=()):
     """No label mapping is accepted. All cohort decisions precede answer access."""
     if set(public) != set(SIZES) or set(sizes) != set(SIZES):
         raise e.InputError("original train/validation/test splits required")
     selected, seen_text, seen_pixels = {}, set(), set()
+    if not isinstance(excluded, tuple) or len(excluded) > 256:
+        raise e.InputError("bounded prior public cohort required")
+    for item in excluded:
+        if (not isinstance(item, dict) or not isinstance(item.get("text"), str)
+                or not isinstance(item.get("pixel_sha256"), str) or len(item["pixel_sha256"]) != 64
+                or any(c not in "0123456789abcdef" for c in item["pixel_sha256"])):
+            raise e.InputError("invalid prior public input identity")
+        seen_text.add(e.sha(item["text"].encode()))
+        seen_pixels.add(item["pixel_sha256"])
     for split in SIZES:
         wanted = e.integer(sizes[split], 1, 128, "cohort size")
         rows = public[split]
@@ -101,8 +116,8 @@ def write_bytes(path, raw):
         os.fsync(stream.fileno())
 
 
-def stage_cases(root, public, answers, tokenizer, *, sizes=SIZES):
-    selected = choose(public, tokenizer, sizes=sizes)
+def stage_cases(root, public, answers, tokenizer, *, sizes=SIZES, excluded=()):
+    selected = choose(public, tokenizer, sizes=sizes, excluded=excluded)
     seal = e.write_once(root / "cohort-before-labels.json", selected)
     rows = []
     for source_split, choices in selected.items():
@@ -186,7 +201,7 @@ def text_reader(generator, cases, output):
     return seal
 
 
-def main(root, *, allow_conversion=False):
+def main(root, *, allow_conversion=False, calibrated_fusion=False):
     import torch
     from huggingface_hub import HfApi
     from transformers import AutoTokenizer
@@ -195,9 +210,11 @@ def main(root, *, allow_conversion=False):
     root.mkdir(parents=True, exist_ok=False)
     torch.set_num_threads(2)
     api = HfApi()
-    pins = {"dataset": revision(api.dataset_info(DATASET).sha),
+    pins = dict(FRESH_PINS) if calibrated_fusion else {"dataset": revision(api.dataset_info(DATASET).sha),
             "clip": revision(api.model_info(VISION).sha), "reader": revision(api.model_info(READER).sha)}
-    e.write_once(root / "acquisition.json", {"pins": pins, "sizes": SIZES,
+    sizes = FRESH_SIZES if calibrated_fusion else SIZES
+    e.write_once(root / "acquisition.json", {"pins": pins, "sizes": sizes,
+        "calibrated_fusion": calibrated_fusion, "excluded_prior_cohort": PRIOR_COHORT if calibrated_fusion else None,
         "selection": "four choices; full question+hint+choices <=64 CLIP tokens; SHA order; pixel/text dedup",
         "public_release_not_future": True, "independent_evaluation": False, "production_accepted": False})
     try:
@@ -207,9 +224,17 @@ def main(root, *, allow_conversion=False):
         model["path"] = "vision/model"
         tokenizer = AutoTokenizer.from_pretrained(root / model["path"], local_files_only=True, trust_remote_code=False)
         public, labels = stage_dataset(root, pins["dataset"])
-        descriptor, cohort = stage_cases(root, public, labels, tokenizer)
+        excluded = ()
+        if calibrated_fusion:
+            previous = choose(public, tokenizer)
+            if e.sha(e.canonical(previous)) != PRIOR_COHORT:
+                raise e.InputError("prior pre-label cohort drift; cannot assert new holdout")
+            e.write_once(root / "excluded-prior-cohort.json", previous)
+            excluded = tuple(item for group in previous.values() for item in group)
+        descriptor, cohort = stage_cases(root, public, labels, tokenizer, sizes=sizes, excluded=excluded)
         config = {"schema": "hepta.shared-stem-media.v1", "classes": 4, "steps": 20,
-                  "seed": 20261013, "temporal": False, "dataset": descriptor, "models": {"clip": model}}
+                  "seed": 20261013, "temporal": False, "dataset": descriptor, "models": {"clip": model},
+                  "fusion_profile": "calibrated_checkpoints_v1" if calibrated_fusion else "legacy_fixed"}
         e.write_once(root / "manifest.json", config)
         result = media.run(root / "manifest.json", root / "media-execution")
         reader_root = root / "reader"
@@ -241,5 +266,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--allow-weights-only-conversion", action="store_true")
+    parser.add_argument("--calibrated-fusion", action="store_true",
+                        help="same pinned towers; new cohort excluding prior inputs; calibration-only checkpoint/mixing")
     args = parser.parse_args()
-    main(args.output, allow_conversion=args.allow_weights_only_conversion)
+    main(args.output, allow_conversion=args.allow_weights_only_conversion, calibrated_fusion=args.calibrated_fusion)

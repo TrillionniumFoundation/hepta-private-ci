@@ -260,6 +260,9 @@ def run(manifest_path, output, *, _tower_factory=LocalTowers):
     e.write_once(output / "plan.json", config)
     root = manifest_path.parent
     try:
+        profile = config.get("fusion_profile", "legacy_fixed")
+        if profile not in {"legacy_fixed", "calibrated_checkpoints_v1"}:
+            raise e.InputError("unknown fusion training profile")
         cases, labels = read_cases(root, config["dataset"], config["classes"], config.get("temporal", False))
         with e.measured() as load:
             towers = _tower_factory(root, config["models"])
@@ -268,14 +271,30 @@ def run(manifest_path, output, *, _tower_factory=LocalTowers):
         train = [i for i, case in enumerate(cases) if case.split == "train"]
         test = [i for i, case in enumerate(cases) if case.split in {"holdout", "retention"}]
         select = lambda ids: {k: tuple(t[ids] for t in v) for k, v in values.items()}
-        result = modality_trial(select(train), torch.tensor([labels[cases[i].case_id] for i in train]),
-            select(test), classes=config["classes"], steps=config.get("steps", 20), seed=config.get("seed", 17),
-            test_partitions=[cases[i].split for i in test])
+        fit_labels = torch.tensor([labels[cases[i].case_id] for i in train])
+        selection_seal = None
+        if profile == "calibrated_checkpoints_v1":
+            from experiments.shared_stem_cell.calibrated_fusion import fit_calibrated, execute_calibrated
+            calibration = [i for i, case in enumerate(cases) if case.split == "calibration"]
+            candidates, selection = fit_calibrated(select(train), fit_labels, select(calibration),
+                torch.tensor([labels[cases[i].case_id] for i in calibration]), classes=config["classes"],
+                steps=config.get("steps", 20), seed=config.get("seed", 17))
+            selection["binding"] = {"manifest_sha256": e.sha(manifest_raw),
+                "model_identities": towers.identities, "dataset": config["dataset"],
+                "train_ids": [cases[i].case_id for i in train],
+                "calibration_ids": [cases[i].case_id for i in calibration]}
+            selection_seal = e.write_once(output / "calibration-selection.json", selection)
+            sealed_selection = e.decode(e.bound_file(output / "calibration-selection.json", selection_seal))
+            result = execute_calibrated(candidates, sealed_selection, select(test), [cases[i].split for i in test])
+        else:
+            result = modality_trial(select(train), fit_labels, select(test), classes=config["classes"],
+                steps=config.get("steps", 20), seed=config.get("seed", 17),
+                test_partitions=[cases[i].split for i in test])
         towers.close()
         read_cases(root, config["dataset"], config["classes"], config.get("temporal", False))
         if manifest_path.read_bytes() != manifest_raw:
             raise e.InputError("media manifest changed during execution")
-        payload = {"frozen_predictions": result["frozen_predictions"],
+        payload = {"calibration_selection_sha256": selection_seal, "frozen_predictions": result["frozen_predictions"],
                    "modality_interventions": result["modality_interventions"],
                    "case_ids": [cases[i].case_id for i in test],
                    "input_digests": [cases[i].input_digest for i in test],
@@ -317,7 +336,7 @@ def run(manifest_path, output, *, _tower_factory=LocalTowers):
                 [cases[test[j]].group for j in positions], classes=config["classes"], control="as_observed")
         source_mapping = {arm: [None if j is None else cases[test[j]].case_id for j in detail["rows"]]
                           for arm, detail in interventions["source_rows"].items()}
-        report = {"prediction_sha256": seal, "scores": scores, "same_init_learning": learning, "connector_costs": result["costs"],
+        report = {"fusion_profile": profile, "calibration_selection_sha256": selection_seal, "prediction_sha256": seal, "scores": scores, "same_init_learning": learning, "connector_costs": result["costs"],
             "modality_intervention_scores": probe_scores, "intervention_source_case_ids": source_mapping,
             "intervention_costs": interventions["costs"], "intervention_scope": interventions["intervention_scope"],
             "model_identities": towers.identities,
