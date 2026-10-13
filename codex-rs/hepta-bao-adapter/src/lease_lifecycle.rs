@@ -7,6 +7,7 @@
 use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::Read;
+#[cfg(unix)]
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -496,22 +497,34 @@ fn validate_lease(lease: &SecretLeaseMetadataV1) -> Result<(), LeaseRegistryErro
 }
 
 fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErrorV1> {
-    let parent = path.parent().ok_or(LeaseRegistryErrorV1::Unavailable)?;
-    std::fs::create_dir_all(parent).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    let bytes = serde_json::to_vec(state).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    let file_name = path
-        .file_name()
-        .and_then(|value| value.to_str())
-        .ok_or(LeaseRegistryErrorV1::Unavailable)?;
-    let next = parent.join(format!("{file_name}.next"));
-    let mut file = File::create(&next).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    file.write_all(&bytes)
-        .and_then(|()| file.sync_all())
-        .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    std::fs::rename(&next, path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    File::open(parent)
-        .and_then(|directory| directory.sync_all())
-        .map_err(|_| LeaseRegistryErrorV1::Unavailable)
+    // This writer requires an atomic rename AND a durable parent directory.
+    // Windows has neither the Unix directory owner check nor a verified
+    // equivalent directory sync implementation here. Do not publish a
+    // success receipt (or even create a staging file) on that platform.
+    #[cfg(not(unix))]
+    {
+        let _ = (path, state);
+        Err(LeaseRegistryErrorV1::Unavailable)
+    }
+    #[cfg(unix)]
+    {
+        let parent = path.parent().ok_or(LeaseRegistryErrorV1::Unavailable)?;
+        std::fs::create_dir_all(parent).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+        let bytes = serde_json::to_vec(state).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+        let file_name = path
+            .file_name()
+            .and_then(|value| value.to_str())
+            .ok_or(LeaseRegistryErrorV1::Unavailable)?;
+        let next = parent.join(format!("{file_name}.next"));
+        let mut file = File::create(&next).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+        file.write_all(&bytes)
+            .and_then(|()| file.sync_all())
+            .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+        std::fs::rename(&next, path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+        File::open(parent)
+            .and_then(|directory| directory.sync_all())
+            .map_err(|_| LeaseRegistryErrorV1::Unavailable)
+    }
 }
 
 fn identifier(value: &str) -> bool {
@@ -522,6 +535,10 @@ fn identifier(value: &str) -> bool {
             .all(|b| b.is_ascii_alphanumeric() || b"_-.:/".contains(&b))
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "lease_lifecycle_tests.rs"]
 mod tests;
+
+#[cfg(all(test, not(unix)))]
+#[path = "lease_lifecycle_non_unix_tests.rs"]
+mod tests_non_unix;

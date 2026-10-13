@@ -685,6 +685,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
     }
 }
 
-#[cfg(test)]
+// Unix final-use credentials require a protected uid-owned state directory.
+// Unsupported platforms get their own fail-closed test rather than a forged
+// positive serving witness.
+#[cfg(all(test, unix))]
 #[path = "batched_neuron_tests.rs"]
 mod tests;
+
+#[cfg(all(test, not(unix)))]
+#[path = "batched_neuron_non_unix_tests.rs"]
+mod tests_non_unix;
