@@ -8,6 +8,10 @@ on:
       - "qualification/neuron-stem/test_fbsde_identification.py"
       - "qualification/neuron-stem/fbsde_transfer*.py"
       - "qualification/neuron-stem/fbsde_rule_lifecycle.py"
+      - "qualification/neuron-stem/fbsde_rule_checkpoint.py"
+      - "qualification/neuron-stem/fbsde_durable_rule.py"
+      - "qualification/neuron-stem/fbsde_checkpoint*.py"
+      - "qualification/neuron-stem/test_fbsde_durable_rule.py"
       - "qualification/neuron-stem/fbsde_lifecycle*.py"
       - "qualification/neuron-stem/test_fbsde_rule_lifecycle.py"
       - "qualification/neuron-stem/fbsde_conditional_program.py"
@@ -50,6 +54,15 @@ jobs:
           python3 qualification/neuron-stem/fbsde_study.py --profile revocable_rule_transfer_v1 --output lifecycle-study 2>&1 | tee lifecycle-study.log
           python3 qualification/neuron-stem/fbsde_lifecycle_artifact_checks.py -v lifecycle-study 2>&1 | tee lifecycle-artifact-tests.log
           git diff --exit-code
+      - name: Check abrupt-process checkpoint recovery without granting native authority
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          python3 -m unittest test_fbsde_durable_rule -v 2>&1 | tee checkpoint-tests.log
+          python3 qualification/neuron-stem/fbsde_study.py --profile durable_rule_checkpoint_v1 --output checkpoint-study 2>&1 | tee checkpoint-study.log
+          python3 qualification/neuron-stem/fbsde_checkpoint_artifact_checks.py -v checkpoint-study 2>&1 | tee checkpoint-artifact-tests.log
+          git diff --exit-code
       - name: Keep results and failures, not an acceptance decision
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -66,5 +79,9 @@ jobs:
             lifecycle-study.log
             lifecycle-artifact-tests.log
             lifecycle-study/
+            checkpoint-tests.log
+            checkpoint-study.log
+            checkpoint-artifact-tests.log
+            checkpoint-study/
           if-no-files-found: error
           retention-days: 30

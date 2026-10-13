@@ -11,7 +11,10 @@ import fbsde_tree
 
 
 def run(output, profile="exact_v1", **options):
-    require(profile in ("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1", "continuation_workspace_v1", "verified_tracking_v1", "input_tied_challenge_v1", "novelty_calibration_v1", "verified_feedback_learning_v1", "learned_depth_allocation_v1", "outcome_depth_routing_v1", "prepared_gate_execution_v1", "gain_weighted_routing_v1", "verified_role_program_v1", "effect_family_revision_v1", "conditional_program_induction_v1", "counterfactual_rule_transfer_v1", "budgeted_rule_identification_v1", "revocable_rule_transfer_v1"), "study profile")
+    require(profile in ("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1", "continuation_workspace_v1", "verified_tracking_v1", "input_tied_challenge_v1", "novelty_calibration_v1", "verified_feedback_learning_v1", "learned_depth_allocation_v1", "outcome_depth_routing_v1", "prepared_gate_execution_v1", "gain_weighted_routing_v1", "verified_role_program_v1", "effect_family_revision_v1", "conditional_program_induction_v1", "counterfactual_rule_transfer_v1", "budgeted_rule_identification_v1", "revocable_rule_transfer_v1", "durable_rule_checkpoint_v1"), "study profile")
+    if profile == "durable_rule_checkpoint_v1":
+        from fbsde_checkpoint_study import run as run_checkpoint
+        return run_checkpoint(output)
     if profile == "revocable_rule_transfer_v1":
         from fbsde_lifecycle_study import run as run_lifecycle
         return run_lifecycle(output)
@@ -108,7 +111,7 @@ if __name__=='__main__':
     parser.add_argument('--tracking-feature-profile', choices=('ordinal_sensitive_v1','local_participant_v2'), default='ordinal_sensitive_v1')
     parser.add_argument('--tracking-source', choices=('generated', 'bbh'), default='generated')
     parser.add_argument('--output',type=Path,required=True)
-    parser.add_argument("--profile", choices=("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1", "continuation_workspace_v1", "verified_tracking_v1", "input_tied_challenge_v1", "novelty_calibration_v1", "verified_feedback_learning_v1", "learned_depth_allocation_v1", "outcome_depth_routing_v1", "prepared_gate_execution_v1", "gain_weighted_routing_v1", "verified_role_program_v1", "effect_family_revision_v1", "conditional_program_induction_v1", "counterfactual_rule_transfer_v1", "budgeted_rule_identification_v1", "revocable_rule_transfer_v1"), default="exact_v1")
+    parser.add_argument("--profile", choices=("exact_v1", "coupled_nonlinear_v1", "learned_coupled_v1", "semantic_acquisition_v1", "cpu_tail_replay_v1", "riccati_solver_v1", "continuation_workspace_v1", "verified_tracking_v1", "input_tied_challenge_v1", "novelty_calibration_v1", "verified_feedback_learning_v1", "learned_depth_allocation_v1", "outcome_depth_routing_v1", "prepared_gate_execution_v1", "gain_weighted_routing_v1", "verified_role_program_v1", "effect_family_revision_v1", "conditional_program_induction_v1", "counterfactual_rule_transfer_v1", "budgeted_rule_identification_v1", "revocable_rule_transfer_v1", "durable_rule_checkpoint_v1"), default="exact_v1")
     parser.add_argument("--cohort", choices=("banking_v1", "travel_guard_v1"), default="banking_v1")
     parser.add_argument("--backend", choices=("hashing_reference_v1", "mmbert"), default="hashing_reference_v1")
     parser.add_argument("--kernel-profile", choices=("uniform_joint_v1", "joint_backoff_cv_v2"), default="uniform_joint_v1")
