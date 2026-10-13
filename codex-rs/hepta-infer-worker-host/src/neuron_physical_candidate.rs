@@ -110,31 +110,41 @@ where
     P: NeuronInferenceControlPort,
 {
     if !candidate.validate_integrity() || !file_bound_load.validate_integrity() {
-        return Err(NeuronCandidatePhysicalLoadErrorV1::Mismatch("candidate/load integrity"));
+        return Err(NeuronCandidatePhysicalLoadErrorV1::Mismatch(
+            "candidate/load integrity",
+        ));
     }
     let before = agentd.read_local_checkpoint_binding_v1()?;
     if !before.validate_integrity()
         || candidate.local_checkpoint_binding_digest() != before.binding_digest
     {
-        return Err(NeuronCandidatePhysicalLoadErrorV1::Mismatch("stale local candidate"));
+        return Err(NeuronCandidatePhysicalLoadErrorV1::Mismatch(
+            "stale local candidate",
+        ));
     }
     worker.revalidate_file_bound_model_load_v1(now_ms, file_bound_load)?;
     let load = file_bound_load.model_load();
     if load.model_id != before.config.model_id.as_str()
         || file_bound_load.loaded_weights_digest() != before.config.weights_digest
     {
-        return Err(NeuronCandidatePhysicalLoadErrorV1::Mismatch("physical weight/model mismatch"));
+        return Err(NeuronCandidatePhysicalLoadErrorV1::Mismatch(
+            "physical weight/model mismatch",
+        ));
     }
     let manifest = worker
         .inspected_neuron_manifest(now_ms, before.config.model_id.as_str())
         .map_err(NeuronWeightFileDiagnosticErrorV1::Worker)?;
     if !manifest_matches_local(&before.config, manifest) {
-        return Err(NeuronCandidatePhysicalLoadErrorV1::Mismatch("Worker model tuple mismatch"));
+        return Err(NeuronCandidatePhysicalLoadErrorV1::Mismatch(
+            "Worker model tuple mismatch",
+        ));
     }
     let after = agentd.read_local_checkpoint_binding_v1()?;
     worker.revalidate_file_bound_model_load_v1(now_ms, file_bound_load)?;
     if before != after {
-        return Err(NeuronCandidatePhysicalLoadErrorV1::Mismatch("checkpoint advanced during read"));
+        return Err(NeuronCandidatePhysicalLoadErrorV1::Mismatch(
+            "checkpoint advanced during read",
+        ));
     }
     let mut result = NeuronCandidatePhysicalLoadDiagnosticV1 {
         candidate_digest: candidate.candidate_digest(),
@@ -148,7 +158,9 @@ where
     };
     result.diagnostic_digest = result.computed_digest();
     if !result.validate_integrity() {
-        return Err(NeuronCandidatePhysicalLoadErrorV1::Mismatch("diagnostic invalid"));
+        return Err(NeuronCandidatePhysicalLoadErrorV1::Mismatch(
+            "diagnostic invalid",
+        ));
     }
     Ok(result)
 }
