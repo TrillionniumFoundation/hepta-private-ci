@@ -21,6 +21,10 @@ use tempfile::TempDir;
 type TestResult = Result<(), Box<dyn Error>>;
 
 #[tokio::test]
+#[expect(
+    clippy::disallowed_methods,
+    reason = "the test deliberately opens a separately read-only SQLite observer to check the on-disk WAL; authority is still held by MatrixDurableStore"
+)]
 async fn matrix_evidence_pool_preserves_wal_full_fk_and_owner_after_restart() -> TestResult {
     let temp = TempDir::new()?;
     let root = temp.path().join("fleet");
