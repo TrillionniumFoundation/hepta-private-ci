@@ -25,10 +25,22 @@ jobs:
       - name: Check exact proposed Python formatting
         run: |
           set -euo pipefail
+          mkdir -p /tmp/source-margin-validation
           python3 -m pip install uv==0.8.22
+          set +e
           uv run --frozen --project scripts ruff format --check \
             scripts/memory_cell/source_probe_exposure.py \
-            scripts/memory_cell/test_source_probe_exposure.py
+            scripts/memory_cell/test_source_probe_exposure.py > /tmp/source-margin-validation/format.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/source-margin-validation/format.log
+          if [ "$status" -ne 0 ]; then
+            uv run --frozen --project scripts ruff format --diff \
+              scripts/memory_cell/source_probe_exposure.py \
+              scripts/memory_cell/test_source_probe_exposure.py > /tmp/source-margin-validation/format.diff || true
+            cat /tmp/source-margin-validation/format.diff
+          fi
+          exit "$status"
       - name: Install unchanged registered model test environment
         env:
           GH_TOKEN: ${{ github.token }}
