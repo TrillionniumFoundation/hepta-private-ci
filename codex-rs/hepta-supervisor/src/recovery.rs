@@ -105,6 +105,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        if slot
+            .signed_intent
+            .as_ref()
+            .is_some_and(|intent| intent.status.requires_recovery())
+        {
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
+            ));
+        }
         let health_deadline = deadline(now, self.config.health_timeout)?;
         if slot.runtime.is_some() {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));

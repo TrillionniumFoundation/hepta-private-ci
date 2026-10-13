@@ -1034,7 +1034,8 @@ fn recovery_ignores_revoked_previous_release_and_adopts_current() -> Result<(), 
 }
 
 #[test]
-fn process_recovery_fault_does_not_hide_signed_recovery_required() -> Result<(), SupervisorError> {
+fn process_recovery_fault_does_not_hide_signed_recovery_or_consume_abort()
+-> Result<(), SupervisorError> {
     let fleet = TestFleet::new()?;
     let source = fleet.write_release_source()?;
     let release_id = ReleaseId::parse("recovery-signed-revoked-current")?;
@@ -1074,6 +1075,11 @@ fn process_recovery_fault_does_not_hide_signed_recovery_required() -> Result<(),
     .expect("queued signed intent");
     crate::signed_intent::write_intent(record.layout.run_root(), &intent)
         .expect("write queued intent");
+    crate::signed_intent::write_recovery_directive(
+        record.layout.run_root(),
+        &crate::SignedIntentRecoveryDirective::abort(intent.intent_sha256).expect("exact abort"),
+    )
+    .expect("write abort directive");
     fleet.registry.revoke_release(&fleet.first, &release_id)?;
 
     let (recovered, report) =
@@ -1087,6 +1093,13 @@ fn process_recovery_fault_does_not_hide_signed_recovery_required() -> Result<(),
     assert!(
         recovered.production_recovery_required(&fleet.first)?,
         "process recovery fault must not hide durable signed recovery"
+    );
+    assert_eq!(
+        crate::signed_intent::read_intent(record.layout.run_root())
+            .expect("read intent")
+            .expect("durable intent")
+            .status,
+        crate::SignedIntentStatus::RecoveryRequired,
     );
     assert_eq!(control.counts(&fleet.first).2, 1);
     Ok(())
@@ -2300,3 +2313,9 @@ fn finish_release_drain(
     control.set_exit(agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
 }
+
+#[path = "signed_intent_recovery_owner_tests.rs"]
+mod signed_intent_recovery_owner_tests;
+
+#[path = "signed_admission_owner_tests.rs"]
+mod signed_admission_owner_tests;

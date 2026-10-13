@@ -54,6 +54,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.runtime.is_none()
             && slot.release_change.is_none()
             && slot.restart_pending
+            && !slot
+                .signed_intent
+                .as_ref()
+                .is_some_and(|intent| intent.status.requires_recovery())
             && slot
                 .restart_not_before
                 .is_none_or(|eligible| now >= eligible)

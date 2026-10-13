@@ -50,7 +50,7 @@ The signed path runs inside `with_slot()`, which temporarily removes the agent s
 
 The supervisor deliberately does not infer success from `Running + target release`. An unresolved signed intent remains fail-closed because those observations do not independently prove that the exact grant caused the current state.
 
-The repository-controlled recovery ceremony currently supports one conservative terminal action: **abort the ambiguous grant after fencing its effects**. It does not support an operator command that simply marks the target successful.
+The local recovery CLI supports **abandoning an ambiguous grant after fencing its effects**. This digest-bound local directive is not an independently signed release-outcome decision. The existing production recovery owner separately verifies a `ProductionRecoveryDecision` against the current intent, release transaction, installed release binding, lifecycle generation, authority epoch, signer and validity window. Neither path can move the durable release state merely by declaring success.
 
 ### 3.1 Inspect
 
@@ -87,15 +87,17 @@ The tool publishes `supervisor-signed-intent-recovery.json`. The directive is di
 
 On recovery, supervisord:
 
-- refuses to infer target success;
-- fences/kills an adopted main child and Matrix companion if either is still present;
-- remains fail-closed while an ambiguous adopted process is still present;
-- only when no ambiguous process remains, persists the intent as terminal `Aborted` and clears pending automatic main restart state;
-- then permits normal supervisor recovery to continue.
+- first reconciles an exact durable terminal release transaction, so a late local abort cannot overwrite a proven outcome;
+- retains `RecoveryRequired` if process adoption failed: a missing in-memory handle does not prove process absence;
+- fences and requests termination of the adopted Matrix companion and main child before consuming an exact abort directive;
+- persists `Aborted` only after those requests succeed; publication failure returns an error and never acknowledges completion;
+- keeps the process-start and readiness fences for `Aborted`, and leaves the durable pending restart claim and attempt count intact.
 
-If startup still reports `signed_intent_recovery_required`, verify that the fenced child actually exited and start supervisord again. Do not delete the intent or lease by hand merely to make startup pass.
+`Aborted` abandons the grant. It is not an exit receipt, a successful release outcome or permission to resume the process. On restart it remains quarantined rather than being rewritten or retried. The directive remains retained and cannot apply to a different intent. A crash after rewriting `Prepared`/`Queued` to `RecoveryRequired` changes the intent digest, so an old abort directive requires a fresh inspection.
 
-`Aborted` means “this grant is terminal and must not be resumed or inferred successful.” It does **not** assert that the source release remained active. A subsequent desired release state must go through a fresh independently authorized transition.
+The existing signed production recovery ceremony may resolve either `RecoveryRequired` or `Aborted`, using its **current** intent digest. It requires an existing matching durable release transaction. A crash after `Prepared` but before any transaction was published therefore remains quarantined; local abort alone cannot restore readiness for that cut, and this change does not invent a transaction or a successful release outcome. It verifies the observed installed release and cannot change release state. If the signed terminal transaction was persisted before a crash but the intent was not, recovery closes that cut. For an `Aborted` intent, an ordinary terminal transaction without the signed recovery-decision witness cannot do so. Replaying the signed decision after resolution is rejected.
+
+A daemon can remain reachable for inspection while reporting `signed_intent_recovery_required`. Do not delete an intent, lease or restart claim to make readiness pass. Native tests cover digest tampering, stale and late directives, retained replay, process-adoption ambiguity, paired-child fencing, restart-budget preservation, wrong-key/expired signed decisions, signed resolution and its transaction-to-intent crash cut. Target-host fsync-failure, real process-exit and power-loss receipts remain required by the matrix below.
 
 ## 4. Crash-consistency qualification matrix
 

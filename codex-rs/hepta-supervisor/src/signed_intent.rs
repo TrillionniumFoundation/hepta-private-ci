@@ -41,7 +41,14 @@ pub enum SignedIntentStatus {
     /// Explicit operator terminalization after fencing the ambiguous effect.
     /// This does not assert that the source release remained active; it only
     /// records that the signed grant must not be resumed or inferred complete.
+    /// The local abort keeps process admission and daemon readiness fenced.
     Aborted,
+}
+
+impl SignedIntentStatus {
+    pub(crate) fn requires_recovery(self) -> bool {
+        matches!(self, Self::RecoveryRequired | Self::Aborted)
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
