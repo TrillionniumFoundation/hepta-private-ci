@@ -10,6 +10,7 @@
 
 #![forbid(unsafe_code)]
 
+mod cell_split_receipt_gate;
 mod destination_dedupe;
 mod dispatcher;
 mod durable_model;
@@ -21,6 +22,10 @@ mod model;
 mod outbox;
 mod sqlite;
 
+pub use cell_split_receipt_gate::CellSplitReceiptGate;
+pub use cell_split_receipt_gate::SplitGateError;
+pub use cell_split_receipt_gate::SplitStep;
+pub use cell_split_receipt_gate::VerifiedSplitReceipt;
 pub use destination_dedupe::DestinationApplyStart;
 pub use destination_dedupe::DestinationApplyTransaction;
 pub use destination_dedupe::DestinationDedupeStore;
