@@ -473,6 +473,76 @@ pub struct DriverNeuronFeatureObservation {
     pub latency_micros: u64,
 }
 
+/// Independently claimed Final-use token evidence coupled to an observed
+/// Worker terminal receipt. It carries zero signing or production authority.
+///
+/// These are content commitments, not an Ed25519 signature, genuine CAS load
+/// proof, independently authenticated principal or successful NDU result.
+/// A host MUST retain the actual signer/authority receipts separately.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct StemFinalUseEntryEvidenceV1 {
+    pub claimed_authority_epoch: u64,
+    pub claimed_revocation_revision: u64,
+    pub claimed_revocation_head_digest: Digest32,
+    pub verified_token_witness_digest: Digest32,
+    pub final_use_binding_digest: Digest32,
+    pub worker_receipt_digest: Digest32,
+    pub linked_evidence_digest: Digest32,
+}
+
+fn stem_final_use_entry_evidence_digest_v1(
+    evidence: &StemFinalUseEntryEvidenceV1,
+    stem_feature_ref_digest: Digest32,
+    scoped_input_digest: Digest32,
+) -> Digest32 {
+    let epoch_bytes = evidence.claimed_authority_epoch.to_be_bytes();
+    let revision_bytes = evidence.claimed_revocation_revision.to_be_bytes();
+    Digest32::of_parts(&[
+        b"hepta.infer-worker.stem-final-use-entry-evidence.v1",
+        &epoch_bytes,
+        &revision_bytes,
+        evidence.claimed_revocation_head_digest.as_array(),
+        evidence.verified_token_witness_digest.as_array(),
+        evidence.final_use_binding_digest.as_array(),
+        evidence.worker_receipt_digest.as_array(),
+        stem_feature_ref_digest.as_array(),
+        scoped_input_digest.as_array(),
+    ])
+}
+
+/// Verify a *content-level* join of the claimed Final-use token witness,
+/// signed binding identity and actual typed Worker receipt. This cannot
+/// independently verify a signature, a real installed source, or the policy
+/// that chose the trusted verifier. Any missing/tampered evidence fails closed.
+pub fn validate_stem_final_use_entry_evidence_v1(
+    bound: &BoundStemFeatureExecutionV1,
+) -> Result<(), Error> {
+    let evidence = bound
+        .final_use_entry_evidence
+        .as_ref()
+        .ok_or(Error::FinalUseDenied)?;
+    if bound.authority.grants_any()
+        || bound.worker_receipt.authority.grants_any()
+        || evidence.claimed_authority_epoch == 0
+        || evidence.claimed_revocation_revision == 0
+        || evidence.claimed_revocation_head_digest.is_zero()
+        || evidence.verified_token_witness_digest.is_zero()
+        || evidence.final_use_binding_digest.is_zero()
+        || evidence.worker_receipt_digest.is_zero()
+        || bound.final_use_binding_digest != Some(evidence.final_use_binding_digest)
+        || bound.worker_receipt.receipt_digest != evidence.worker_receipt_digest
+        || evidence.linked_evidence_digest
+            != stem_final_use_entry_evidence_digest_v1(
+                evidence,
+                bound.stem_feature_ref_digest,
+                bound.scoped_input_digest,
+            )
+    {
+        return Err(Error::FinalUseDenied);
+    }
+    Ok(())
+}
+
 /// Exact scoped Stem feature binding + terminal inference-control receipt.
 /// The ref digest and all input identity data remain caller/host supplied and
 /// are NOT an independent signature or external model-load attestation.
@@ -486,6 +556,7 @@ pub struct BoundStemFeatureExecutionV1 {
     /// Hash witness for the exact signed final-use binding. This is NOT a
     /// signed execution receipt or an NDU acceptance decision.
     pub final_use_binding_digest: Option<Digest32>,
+    pub final_use_entry_evidence: Option<StemFinalUseEntryEvidenceV1>,
     pub authority: codex_hepta_types::AuthorityPosture,
 }
 
@@ -730,6 +801,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             scoped_input_digest,
             worker_receipt: receipt,
             final_use_binding_digest: None,
+            final_use_entry_evidence: None,
             authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
         })
     }
@@ -899,6 +971,18 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if verified_use.claimed_authority_epoch() != self.grant.authority_epoch {
             return Err(Error::FinalUseDenied);
         }
+        let claimed_authority_epoch = verified_use.claimed_authority_epoch();
+        let claimed_revocation_revision = verified_use.claimed_revocation_revision();
+        let claimed_revocation_head_digest =
+            Digest32::from_array(verified_use.claimed_revocation_head_sha256());
+        let verified_token_witness_digest =
+            Digest32::from_array(verified_use.witness_sha256());
+        if claimed_revocation_revision == 0
+            || claimed_revocation_head_digest.is_zero()
+            || verified_token_witness_digest.is_zero()
+        {
+            return Err(Error::FinalUseDenied);
+        }
         let binding_digest =
             Digest32::of_bytes(&serde_json::to_vec(&binding).map_err(|_| Error::FinalUseDenied)?);
         let outcome = trusted_authority
@@ -915,6 +999,22 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             .map_err(|_| Error::FinalUseDenied)?;
         let mut receipt = outcome?;
         receipt.final_use_binding_digest = Some(binding_digest);
+        let mut evidence = StemFinalUseEntryEvidenceV1 {
+            claimed_authority_epoch,
+            claimed_revocation_revision,
+            claimed_revocation_head_digest,
+            verified_token_witness_digest,
+            final_use_binding_digest: binding_digest,
+            worker_receipt_digest: receipt.worker_receipt.receipt_digest,
+            linked_evidence_digest: Digest32::ZERO,
+        };
+        evidence.linked_evidence_digest = stem_final_use_entry_evidence_digest_v1(
+            &evidence,
+            receipt.stem_feature_ref_digest,
+            receipt.scoped_input_digest,
+        );
+        receipt.final_use_entry_evidence = Some(evidence);
+        validate_stem_final_use_entry_evidence_v1(&receipt)?;
         Ok(receipt)
     }
 }
