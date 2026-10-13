@@ -191,12 +191,139 @@ def audit_zip(path):
         archive.close()
 
 
+
+LATER_SOURCE = "aa2dd9875b811292566c09b282f74d4a0bf8e7eb"
+LATER_TREE = "8a156b8e7684d5fdea8521152b421d686238cb47"
+LATER_ZIP_SHA256 = "b4169dc496e5c6097fdfc41c082f123eb325c28e5d7b68485b1801ede1e0726c"
+STEM_SOURCE_BYTES = (
+    "source/stem_cell.py", "source/stem_cell_trial.py",
+    "source/stem_cell_adapter.py", "source/stem_cell_geometry.py",
+    "source/stem_head_fit_dynamics.py", "source/stem_cell_temporal.py",
+)
+
+
+def compare_repeatability(original, later):
+    """Behavior-level repeatability does NOT imply bitwise training identity."""
+    require(original.json("comparison/preregistered.json")["questions"] ==
+            later.json("comparison/preregistered.json")["questions"],
+            "the two native cohorts are not the same")
+    for name in STEM_SOURCE_BYTES:
+        require(original.read(name) == later.read(name),
+                "core Stem executable source changed: " + name)
+    rows = []
+    for archive in (original, later):
+        rows.append({
+            (r["stage"], r["phase"], r["question_id"], r["arm"]): r
+            for r in archive.jsonl("comparison/policy-predictions.jsonl")
+        })
+    require(len(rows[0]) == len(rows[1]) == 576
+            and set(rows[0]) == set(rows[1]), "incomplete repeated native census")
+    result = Counter()
+    for key, a in rows[0].items():
+        b = rows[1][key]
+        require(a["status"] == b["status"] == "succeeded"
+                and a["pool_digest"] == b["pool_digest"]
+                and a["family"] == b["family"],
+                "repeated native question or candidate pool drift")
+        for f in ("generator_identity", "generator_profile",
+                  "input_ids_digest", "generated_ids_digest",
+                  "canonical_request_digest", "delivered_evidence"):
+            require(a["receipt"][f] == b["receipt"][f],
+                    "repeated frozen Reader input/output changed: " + f)
+        result["compared_policy_attempts"] += 1
+        result["changed_top1"] += a["selected"] != b["selected"]
+        result["changed_raw_answers"] += a["answer"] != b["answer"]
+        result["changed_feature_digests"] += a["feature_digest"] != b["feature_digest"]
+        result["changed_head_sha256"] += a["head_sha256"] != b["head_sha256"]
+        result["changed_encoder_identity"] += a["encoder_identity"] != b["encoder_identity"]
+    head_paths = [name for name in original.files
+                  if name.startswith("comparison/head-") and name.endswith(".json")]
+    require(len(head_paths) == 36 and set(head_paths) <= later.files,
+            "missing persisted Head snapshot")
+
+    def flatten(values):
+        if isinstance(values, list):
+            for item in values:
+                yield from flatten(item)
+        else:
+            yield values
+
+    numeric = Counter()
+    max_abs_delta = 0.0
+    for path in sorted(head_paths):
+        a = original.json(path)["state"]
+        b = later.json(path)["state"]
+        require(set(a) == set(b), "Head state tensor keys changed")
+        for name in a:
+            before, after = list(flatten(a[name])), list(flatten(b[name]))
+            require(len(before) == len(after), "Head tensor shape changed")
+            for x, y in zip(before, after, strict=True):
+                require(type(x) in (int, float) and type(y) in (int, float),
+                        "non-numeric Head tensor scalar")
+                delta = abs(x - y)
+                require(delta < float("inf"), "nonfinite Head tensor difference")
+                numeric["compared_float_values"] += 1
+                numeric["changed_float_values"] += x != y
+                max_abs_delta = max(max_abs_delta, delta)
+    adapter_diff = sum(
+        original.read("comparison/adapter-" + route + "/adapter.safetensors")
+        != later.read("comparison/adapter-" + route + "/adapter.safetensors")
+        for route in ("lineage", "independent-general", "independent-temporal")
+    )
+    return dict(
+        schema="hepta.memory-cell.strict-oct13-repeatability.v1",
+        earlier_generating_commit=SOURCE,
+        later_generating_commit=LATER_SOURCE,
+        all_six_core_source_files_byte_identical=True,
+        repeated_original_reader_decisions=dict(result),
+        repeated_head_weights=dict(numeric),
+        maximum_absolute_float_head_difference=max_abs_delta,
+        changed_adapter_binary_files=adapter_diff,
+        repeated_answers_are_not_independent_test_subjects=True,
+        bitwise_training_reproducibility_established=(
+            numeric["changed_float_values"] == 0 and adapter_diff == 0
+        ),
+        unchanged_reader_outcomes_do_not_prove_learning=True,
+        semantic_citation_precision=None,
+        production_accepted=False,
+    )
+
+
+def audit_later_pair(original_path, later_path):
+    from stem_audit_archive import PinnedArchive
+    before = PinnedArchive(Path(original_path), ZIP_SHA256)
+    try:
+        after = PinnedArchive(Path(later_path), LATER_ZIP_SHA256)
+        try:
+            require(before.read("tested-commit.txt").decode().strip() == SOURCE
+                    and before.read("tested-tree.txt").decode().strip() == TREE,
+                    "earlier provenance pin changed")
+            require(after.read("tested-commit.txt").decode().strip() == LATER_SOURCE
+                    and after.read("tested-tree.txt").decode().strip() == LATER_TREE,
+                    "later provenance pin changed")
+            report = compare_repeatability(before, after)
+            report["earlier_zip_sha256"] = before.sha256
+            report["later_zip_sha256"] = after.sha256
+            report["earlier_manifest_members"] = before.manifest_entries
+            report["later_manifest_members"] = after.manifest_entries
+            return report
+        finally:
+            after.close()
+    finally:
+        before.close()
+
+
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--archive", required=True, type=Path)
     p.add_argument("--output", required=True, type=Path)
+    p.add_argument("--later", type=Path, default=None)
     args = p.parse_args()
     out = audit_zip(args.archive)
+    if args.later is not None:
+        out["source_unchanged_repeatability"] = audit_later_pair(
+            args.archive, args.later
+        )
     with args.output.open("x", encoding="utf-8") as stream:
         json.dump(out, stream, indent=2, ensure_ascii=False, allow_nan=False)
         stream.write("\n")

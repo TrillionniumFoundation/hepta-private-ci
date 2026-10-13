@@ -2,7 +2,7 @@
 from copy import deepcopy
 import unittest
 
-from stem_oct13_bottleneck_gate import assess, ARMS, STAGES, PHASES, SOURCE
+from stem_oct13_bottleneck_gate import assess, compare_repeatability, ARMS, STAGES, PHASES, SOURCE
 
 
 def fixture():
@@ -119,6 +119,81 @@ class SourceFirstGateTests(unittest.TestCase):
         self.assertEqual(out["original_citation_markers"],1)
         self.assertIsNone(out["semantic_citation_precision"])
         self.assertFalse(out["production_accepted"])
+
+
+class RepeatabilityTests(unittest.TestCase):
+    def mock_replays(self):
+        plan, all_rows, *_ = fixture()
+        fixed = []
+        for row in all_rows:
+            item = deepcopy(row)
+            item["feature_digest"] = "frozen-input-hash"
+            item["head_sha256"] = "head-hash"
+            item["encoder_identity"] = "encoder"
+            item["receipt"].update(
+                input_ids_digest="reader-input-token-hash",
+                generated_ids_digest="reader-output-token-hash",
+                canonical_request_digest="reader-request-hash",
+            )
+            fixed.append(item)
+        names = [f"comparison/head-{stage}-{arm}-{cell}.json"
+                 for stage in STAGES for arm in ARMS
+                 for cell in ("general", "temporal")]
+        class Mock:
+            def __init__(self, predictions):
+                self.predictions = predictions
+                self.files = set(names)
+            def json(self, name):
+                if name == "comparison/preregistered.json":
+                    return {"questions": plan["questions"]}
+                if name in self.files:
+                    return {"state": {"readout": [[1.0, 2.0]]}}
+                raise KeyError(name)
+            def jsonl(self, name):
+                assert name == "comparison/policy-predictions.jsonl"
+                return self.predictions
+            def read(self, name):
+                if name.startswith("source/"):
+                    return b"same-original-implementation"
+                if name.startswith("comparison/adapter-"):
+                    return b"same-adapter"
+                raise KeyError(name)
+        return Mock(deepcopy(fixed)), Mock(deepcopy(fixed))
+
+    def test_identical_repeat_is_not_an_independent_new_cohort(self):
+        before, after = self.mock_replays()
+        result = compare_repeatability(before, after)
+        self.assertEqual(result["repeated_original_reader_decisions"]["compared_policy_attempts"], 576)
+        self.assertEqual(result["repeated_original_reader_decisions"]["changed_raw_answers"], 0)
+        self.assertTrue(result["bitwise_training_reproducibility_established"])
+        self.assertTrue(result["repeated_answers_are_not_independent_test_subjects"])
+
+    def test_reader_or_core_source_drift_fails_closed(self):
+        for fault in ("reader", "core"):
+            original, repeated = self.mock_replays()
+            if fault == "reader":
+                repeated.predictions[0]["receipt"]["generated_ids_digest"] = "invented"
+            else:
+                def corrupt(name):
+                    if name == "source/stem_cell.py":
+                        return b"other-code"
+                    return original.read(name)
+                repeated.read = corrupt
+            with self.subTest(fault=fault), self.assertRaises(ValueError):
+                compare_repeatability(original, repeated)
+
+    def test_float_drift_is_disclosed_not_called_bitwise_reproducible(self):
+        old, new = self.mock_replays()
+        native = new.json
+        def adjusted(name):
+            if name.startswith("comparison/head-"):
+                return {"state": {"readout": [[1.000001, 2.0]]}}
+            return native(name)
+        new.json = adjusted
+        receipt = compare_repeatability(old, new)
+        self.assertGreater(receipt["repeated_head_weights"]["changed_float_values"], 0)
+        self.assertFalse(receipt["bitwise_training_reproducibility_established"])
+        self.assertEqual(receipt["repeated_original_reader_decisions"]["changed_top1"], 0)
 
 
 if __name__ == '__main__':unittest.main()

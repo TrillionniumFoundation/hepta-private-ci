@@ -33,13 +33,17 @@ jobs:
           git rev-parse HEAD^{tree} > /tmp/stem-oct13-bottleneck/auditor-tree.txt
           python3 -m compileall -q scripts/memory_cell/stem_oct13_bottleneck_gate.py scripts/memory_cell/test_stem_oct13_bottleneck_gate.py
           python3 -m unittest -v test_stem_oct13_bottleneck_gate 2>&1 | tee /tmp/stem-oct13-bottleneck/tests.log
-      - name: Verify external original ZIP and exact SHA256SUMS census
+      - name: Verify two strict ZIPs, exact SHA256SUMS and behavior versus weights
         run: |
           set -euo pipefail
           gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11785635178/zip > /tmp/stem-oct13-original.zip
-          printf '%s  %s\n' 4d909737769b2c4ee146ec571499276dd911542d5b20b29c9adb1f5a4477a1f9 /tmp/stem-oct13-original.zip | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11787116091/zip > /tmp/stem-oct13-later.zip
+          printf '%s  %s\n' \
+            4d909737769b2c4ee146ec571499276dd911542d5b20b29c9adb1f5a4477a1f9 /tmp/stem-oct13-original.zip \
+            b4169dc496e5c6097fdfc41c082f123eb325c28e5d7b68485b1801ede1e0726c /tmp/stem-oct13-later.zip | sha256sum -c -
           python3 scripts/memory_cell/stem_oct13_bottleneck_gate.py \
             --archive /tmp/stem-oct13-original.zip \
+            --later /tmp/stem-oct13-later.zip \
             --output /tmp/stem-oct13-bottleneck/strict-bottleneck.json \
             2>&1 | tee /tmp/stem-oct13-bottleneck/strict-bottleneck.log
       - name: Preserve exact audit source and complete failure receipts

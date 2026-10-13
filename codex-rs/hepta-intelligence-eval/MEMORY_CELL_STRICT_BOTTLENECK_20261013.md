@@ -81,3 +81,35 @@ sufficiency, improve retrieval where weak support is absent, and evaluate the
 frozen Reader with genuinely sufficient sources **before** allocating a larger
 Head or Cell budget. Keep `production_accepted=false` and
 `semantic_citation_precision=null`.
+
+
+## Two strict-source executions: behavior identical, learned floats nonidentical
+
+A second, independently hashed **successful** strict experiment used commit
+`aa2dd9875b811292566c09b282f74d4a0bf8e7eb`,
+tree `8a156b8e7684d5fdea8521152b421d686238cb47`,
+Actions run [38337888398](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38337888398),
+and ZIP artifact `11787116091` (SHA-256
+`b4169dc496e5c6097fdfc41c082f123eb325c28e5d7b68485b1801ede1e0726c`).
+Both independently pass **236/236** internal SHA256SUMS checks.
+The six core Stem executable sources are byte-identical across these runs;
+the intervening repository commits changed unrelated research files.
+
+Across **all 576 logical policy outputs**, top-1 selection,
+Reader supplied evidence, raw answer text, model/prompt identity, actual
+input/output token hashes and canonical request hashes are unchanged.
+That is **behavioral repeatability on the SAME question cohort**, not 576
+fresh independent subjects and not learned superiority.
+
+The persisted numerical state is **not bitwise repeatable**: of **341,064**
+Head tensor scalars inspected, **123,748** differ, with maximum absolute
+difference **7.62939453125e-6**. All **three** Adapter safetensors binaries
+also differ. The per-run feature digests differ in 576 rows and the
+persisted Head SHA-256 differs on 480 learned-arm rows. This minute
+floating-point variation leaves the measured source/Reader decisions unchanged,
+but **must not** be misrepresented as byte-identical model training.
+
+The source-pinned gate now reads both exact artifact ZIPs and checks original
+code bytes and model/Reader receipts. It explicitly distinguishes this
+limited behavioral repeatability from missing bitwise training reproducibility,
+independent task generalization, semantic citations, or production acceptance.
