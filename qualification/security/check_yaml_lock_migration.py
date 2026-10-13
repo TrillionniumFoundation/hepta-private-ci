@@ -74,13 +74,51 @@ def check(before: dict, after: dict, manifest: dict) -> dict:
         key for key in sorted(before_keys & after_keys)
         if baseline[key] != migrated[key]
     ]
-    # Cargo must relink direct workspace packages to the shim. Their lock
-    # dependency arrays necessarily change; no other retained package may
-    # move without a separately reviewed dependency-upgrade qualification.
-    unrelated = [key for key in changed if key[0] not in EXPECTED_DIRECT_USERS]
-    if unrelated:
-        raise ValueError(f"unrelated locked dependency records changed: {unrelated[:12]}")
-    changed_direct = {key[0] for key in changed}
+    # Cargo's resolver may select a *different already locked variant* of
+    # transitive dependencies (e.g. windows-sys 0.59 -> already present 0.61).
+    # Accept ONLY such version rebinding, never a new package/version, a new
+    # dependency name, source/checksum change or a disappeared old version.
+    # Record every such change for explicit human review.
+    rebindings = []
+    for key in changed:
+        if key[0] in EXPECTED_DIRECT_USERS:
+            continue
+        old, new = baseline[key], migrated[key]
+        old_rest = {k: v for k, v in old.items() if k != "dependencies"}
+        new_rest = {k: v for k, v in new.items() if k != "dependencies"}
+        if old_rest != new_rest:
+            raise ValueError(f"unrelated immutable locked package metadata changed: {key}")
+        old_deps = old.get("dependencies", [])
+        new_deps = new.get("dependencies", [])
+        if Counter(s.split(" ", 1)[0] for s in old_deps) != Counter(
+            s.split(" ", 1)[0] for s in new_deps
+        ):
+            raise ValueError(f"unrelated locked dependency names/edges changed: {key}")
+        before_by_name = {}
+        after_by_name = {}
+        for value in old_deps:
+            before_by_name.setdefault(value.split(" ", 1)[0], []).append(value)
+        for value in new_deps:
+            after_by_name.setdefault(value.split(" ", 1)[0], []).append(value)
+        for name in sorted(before_by_name):
+            originals, replacements = sorted(before_by_name[name]), sorted(after_by_name[name])
+            for old_dep, new_dep in zip(originals, replacements):
+                if old_dep == new_dep:
+                    continue
+                if " " not in old_dep or " " not in new_dep:
+                    raise ValueError(f"unqualified dependency identity changed: {key}")
+                old_name, old_version = old_dep.split(" ", 1)
+                new_name, new_version = new_dep.split(" ", 1)
+                if old_name != new_name or not any(
+                    entry[0] == new_name and entry[1] == new_version
+                    for entry in before_keys & after_keys
+                ):
+                    raise ValueError(f"dependency rebind introduced an unreviewed version: {key}")
+                rebindings.append({
+                    "owner": key[0], "owner_version": key[1],
+                    "dependency": name, "before": old_dep, "after": new_dep,
+                })
+    changed_direct = {key[0] for key in changed if key[0] in EXPECTED_DIRECT_USERS}
     if not changed_direct.issubset(EXPECTED_DIRECT_USERS):
         raise ValueError("unexpected first-party dependency change")
     for name in EXPECTED_DIRECT_USERS:
@@ -100,6 +138,7 @@ def check(before: dict, after: dict, manifest: dict) -> dict:
         "new_dependencies": sorted([list(key) for key in added]),
         "removed_dependencies": sorted([list(key) for key in removed]),
         "changed_direct_users": sorted(changed_direct),
+        "preexisting_version_rebindings_for_review": rebindings,
         "other_dependency_records_changed": [],
         "advisory_ignore_added": False,
         "matrix_security_gate_passed": False,
