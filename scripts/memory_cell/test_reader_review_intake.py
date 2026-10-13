@@ -328,6 +328,53 @@ class ReviewIntakeTests(unittest.TestCase):
                     self.run_intake()
                 self.assertFalse(self.output.exists())
 
+    def test_re_pinned_future_source_time_is_rejected_before_review(self):
+        # A hash-pinned handoff is not allowed to display future observations.
+        # The attacker updates both the question JSONL pin and receipt pin.
+        def change(rows):
+            row = next(r for r in rows if r["evidence"])
+            row["evidence"][0]["observed_at"] = "2099-01-01T00:00:00+00:00"
+        self._rewrite_pinned_reviewer_view(change)
+        with self.assertRaisesRegex(ValueError, "future reviewer-visible source time"):
+            self.run_intake()
+        self.assertFalse(self.output.exists())
+
+    def test_re_pinned_source_time_must_include_a_time_zone(self):
+        def change(rows):
+            row = next(r for r in rows if r["evidence"])
+            row["evidence"][0]["observed_at"] = "2026-01-01T00:00:00"
+        self._rewrite_pinned_reviewer_view(change)
+        with self.assertRaisesRegex(ValueError, "invalid reviewer-visible source time"):
+            self.run_intake()
+        self.assertFalse(self.output.exists())
+
+    def test_re_pinned_question_time_must_be_offset_aware_for_every_condition(self):
+        # Alter all four views so the old across-condition equality still holds.
+        def change(rows):
+            for row in rows:
+                row["question_observed_at"] = "2026-01-02T00:00:00"
+        self._rewrite_pinned_reviewer_view(change)
+        with self.assertRaisesRegex(ValueError, "invalid reviewer-visible question time"):
+            self.run_intake()
+        self.assertFalse(self.output.exists())
+
+    def test_review_time_checks_compare_offsets_as_real_instants(self):
+        # This is a NEW SYNTHETIC original, not a tampered review view:
+        # 01:00+02:00 is 23:00Z, before the original 00:00Z question.
+        _, _, _, originals = example()
+        for item in originals["items"]:
+            for source in item["delivered_sources"]:
+                source["observed_at"] = "2026-01-02T01:00:00+02:00"
+        valid = self.root / "offset-time-original-handoff"
+        prepare_handoff(originals, source_file_sha256="a" * 64,
+                        output=valid, salt=b"\x07" * 32)
+        self.handoff = valid
+        self.receipt_pin = hashlib.sha256(
+            (valid / "handoff-receipt.json").read_bytes()).hexdigest()
+        result = self.run_intake()
+        self.assertEqual(result["agreed"], 8)
+        self.assertFalse(result["review_approval_produced"])
+
     def test_output_overwrite_prevented_with_no_silent_alteration(self):
         self.run_intake()
         raw = (self.output / "reconciliation-receipt.json").read_bytes()

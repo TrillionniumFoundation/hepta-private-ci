@@ -15,7 +15,7 @@ import re
 import stat
 
 from reader_originals_attestation import (load_strict_json_file, canonical_sha,
-                                          has_answer_beyond_evidence_labels)
+                                          has_answer_beyond_evidence_labels, _datetime)
 from reader_review_handoff import _write_private, _write_private_lines
 from reader_review_ledger import CONDITIONS
 
@@ -148,6 +148,10 @@ def verified_handoff(directory, *, receipt_pin):
                 or not view["question_observed_at"].strip()
                 or len(view["question_observed_at"].encode("utf-8")) > 128):
             raise ValueError("invalid reviewer-visible question or observation time")
+        try:
+            question_time = _datetime(view["question_observed_at"])
+        except (ValueError, TypeError, OverflowError) as error:
+            raise ValueError("invalid reviewer-visible question time") from error
         if (any(blank[key] is not None for key in VERDICT_KEYS)
                 or blank["reviewer_notes"] is not None
                 or view["candidate_is_approved"] is not False
@@ -193,6 +197,12 @@ def verified_handoff(directory, *, receipt_pin):
                     or not entry["observed_at"].strip()
                     or len(entry["observed_at"].encode("utf-8")) > 128):
                 raise ValueError("invalid reviewer-visible source excerpt or time")
+            try:
+                source_time = _datetime(entry["observed_at"])
+            except (ValueError, TypeError, OverflowError) as error:
+                raise ValueError("invalid reviewer-visible source time") from error
+            if source_time > question_time:
+                raise ValueError("future reviewer-visible source time")
             visible = (entry["excerpt"], entry["observed_at"])
             fp = entry["source_fingerprint"]
             if fp in visible_sources and visible_sources[fp] != visible:
