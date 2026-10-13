@@ -156,15 +156,36 @@ where
             return Err(NeuronRuntimeError::InvalidInput);
         }
         let mut model = InferenceControlModelPort::new(&mut self.inference_control);
-        FinalUseAuthority::with_verified_effect(authority, token, &binding, || {
-            self.runtime.tick_with_ndu_snapshot(
+        let outcome = FinalUseAuthority::with_verified_effect(authority, token, &binding, || {
+            self.runtime.tick_with_ndu_snapshot_guarded(
                 &mut model,
                 input,
                 snapshot,
                 authenticated_read_receipt_digest,
+                || {
+                    let observed = read_verifier
+                        .verify(signed_read)
+                        .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+                    if observed == authenticated_read_receipt_digest {
+                        Ok(())
+                    } else {
+                        Err(NeuronRuntimeError::InvalidInput)
+                    }
+                },
             )
         })
-        .map_err(|_| NeuronRuntimeError::InvalidInput)?
+        .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+        let output = outcome?;
+        // Never return a successful serving result if the NDU cutover
+        // advanced during checkpoint persistence. The effect has already
+        // happened: denial must NOT trigger an automatic retry.
+        let observed = read_verifier
+            .verify(signed_read)
+            .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+        if observed != authenticated_read_receipt_digest {
+            return Err(NeuronRuntimeError::InvalidInput);
+        }
+        Ok(output)
     }
 
     /// Read-only diagnostics. Mutable runtime/worker access is intentionally
