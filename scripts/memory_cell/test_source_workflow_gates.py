@@ -95,7 +95,9 @@ class WorkflowGateTests(unittest.TestCase):
         gate_at = next(
             i
             for i, step in enumerate(steps)
-            if step.get("name", "").startswith("Enforce full regression and every optional diagnostic")
+            if step.get("name", "").startswith(
+                "Enforce full regression and every optional diagnostic"
+            )
         )
         self.assertLess(model_at, artifact_at)
         self.assertLess(artifact_at, gate_at)
