@@ -90,6 +90,63 @@ class ConversionTests(unittest.TestCase):
         with self.assertRaises(e.InputError):
             e.verify_materialized(torch.nn.Linear(2, 2), {}, self.root, {"files": {}})
 
+    def test_clip_nonpersistent_publisher_position_ids_are_exactly_verified(self):
+        class TinyClip(torch.nn.Module):
+            def __init__(self):
+                super().__init__()
+                self.config = SimpleNamespace(model_type="clip")
+                self.weight = torch.nn.Parameter(torch.tensor([1.0, -2.0]))
+                self.text_model = torch.nn.Module()
+                self.text_model.embeddings = torch.nn.Module()
+                self.text_model.embeddings.register_buffer(
+                    "position_ids", torch.arange(7, dtype=torch.int64)[None, :],
+                    persistent=False)
+                self.vision_model = torch.nn.Module()
+                self.vision_model.embeddings = torch.nn.Module()
+                self.vision_model.embeddings.register_buffer(
+                    "position_ids", torch.arange(5, dtype=torch.int64)[None, :],
+                    persistent=False)
+
+        model = TinyClip()
+        original = {
+            "weight": model.weight.detach().contiguous(),
+            "text_model.embeddings.position_ids":
+                model.text_model.embeddings.position_ids,
+            "vision_model.embeddings.position_ids":
+                model.vision_model.embeddings.position_ids,
+        }
+        path = self.root / "clip.safetensors"
+        info = {k: [] for k in ("missing_keys", "unexpected_keys",
+                                "mismatched_keys", "error_msgs")}
+        manifest = {"files": {"clip.safetensors": "digest checked by verify_snapshot"}}
+        save_file(original, str(path))
+        result = e.verify_materialized(model, info, self.root, manifest)
+        self.assertEqual(result["verified_tensor_keys"], 3)
+        self.assertEqual(result["state_keys"], 1)
+        self.assertEqual(set(model.state_dict()), {"weight"})
+
+        altered = dict(original)
+        altered["vision_model.embeddings.position_ids"] = torch.tensor([[0, 1, 3, 3, 4]])
+        save_file(altered, str(path))
+        with self.assertRaisesRegex(e.InputError, "CLIP position"):
+            e.verify_materialized(model, info, self.root, manifest)
+        save_file(original, str(path))
+
+        model.config.model_type = "other"
+        with self.assertRaisesRegex(e.InputError, "inventory"):
+            e.verify_materialized(model, info, self.root, manifest)
+        model.config.model_type = "clip"
+
+        extra = dict(original)
+        extra["other.embeddings.position_ids"] = torch.arange(2, dtype=torch.int64)[None, :]
+        save_file(extra, str(path))
+        with self.assertRaisesRegex(e.InputError, "inventory"):
+            e.verify_materialized(model, info, self.root, manifest)
+
+        save_file({k: v for k, v in original.items() if k != "weight"}, str(path))
+        with self.assertRaisesRegex(e.InputError, "unverified loaded tensor"):
+            e.verify_materialized(model, info, self.root, manifest)
+
     def test_materialized_transposed_storage_not_a_tied_alias(self):
         class Model(torch.nn.Module):
             def __init__(self):

@@ -192,6 +192,22 @@ def verify_materialized(loaded, info, root, manifest):
     if not isinstance(info, dict) or any(k not in info or info[k] for k in fields):
         raise InputError("incomplete model load")
     state = loaded.state_dict()
+    # Stock CLIP's position_ids may be present in publisher checkpoints but
+    # registered as non-persistent buffers by newer Transformers runtimes.
+    # Reconcile ONLY those two known generated buffers, and verify their full
+    # original integer contents against both the loaded buffer and arange.
+    # Unknown/dropped parameters remain hard failures; this is not a blanket
+    # load-info waiver or a suppression of checkpoint inventory validation.
+    clip_position_buffers = {}
+    if getattr(getattr(loaded, "config", None), "model_type", None) == "clip":
+        exact_keys = frozenset({
+            "text_model.embeddings.position_ids",
+            "vision_model.embeddings.position_ids",
+        })
+        clip_position_buffers = {
+            key: value for key, value in loaded.named_buffers()
+            if key in exact_keys and key not in state
+        }
     covered, aliases = set(), set()
     def alias(value):
         return (value.data_ptr(), tuple(value.shape), tuple(value.stride()), str(value.dtype))
@@ -201,12 +217,25 @@ def verify_materialized(loaded, info, root, manifest):
         with safe_open(str(root / name), framework="pt", device="cpu") as saved:
             for key in saved.keys():
                 tensor = saved.get_tensor(key)
-                if key in covered or key not in state or tensor.shape != state[key].shape:
+                if key in covered:
                     raise InputError("snapshot tensor inventory mismatch")
-                if not bool(torch.isfinite(tensor).all()) or not torch.equal(tensor.to(state[key].dtype), state[key]):
-                    raise InputError("snapshot tensor materialization mismatch")
+                if key in state:
+                    if tensor.shape != state[key].shape:
+                        raise InputError("snapshot tensor inventory mismatch")
+                    if not bool(torch.isfinite(tensor).all()) or not torch.equal(tensor.to(state[key].dtype), state[key]):
+                        raise InputError("snapshot tensor materialization mismatch")
+                    aliases.add(alias(state[key]))
+                elif key in clip_position_buffers:
+                    buffer = clip_position_buffers[key]
+                    if (tensor.ndim != 2 or tensor.shape[0] != 1
+                            or buffer.shape != tensor.shape
+                            or buffer.dtype != torch.int64 or tensor.dtype != torch.int64
+                            or not torch.equal(tensor, buffer)
+                            or not torch.equal(tensor, torch.arange(tensor.shape[1], dtype=torch.int64).unsqueeze(0))):
+                        raise InputError("CLIP position buffer materialization mismatch")
+                else:
+                    raise InputError("snapshot tensor inventory mismatch")
                 covered.add(key)
-                aliases.add(alias(state[key]))
     if any(k not in covered and alias(v) not in aliases for k, v in state.items()):
         raise InputError("unverified loaded tensor")
     return {"verified_tensor_keys": len(covered), "state_keys": len(state),

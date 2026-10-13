@@ -30,7 +30,8 @@ jobs:
         run: |
           python3 -m venv "$RUNNER_TEMP/hepta-execution-env"
           "$RUNNER_TEMP/hepta-execution-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/hepta-execution-env/bin/pip" install numpy==2.2.6 safetensors==0.7.0 psutil==7.1.0 playwright==1.57.0 ruff==0.14.0 pillow==12.3.0
+          "$RUNNER_TEMP/hepta-execution-env/bin/pip" install numpy==2.2.6 safetensors==0.7.0 packaging==25.0 psutil==7.1.0 playwright==1.57.0 ruff==0.14.0 pillow==12.3.0
+          "$RUNNER_TEMP/hepta-execution-env/bin/python" -c 'import importlib.metadata as m, safetensors.torch; assert m.version("packaging") == "25.0"'
           "$RUNNER_TEMP/hepta-execution-env/bin/python" -m playwright install --with-deps chromium
       - name: Actual tests and browser comparison
         env:
@@ -70,7 +71,8 @@ jobs:
         run: |
           python3 -m venv "$RUNNER_TEMP/hepta-pretrained-env"
           "$RUNNER_TEMP/hepta-pretrained-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/hepta-pretrained-env/bin/pip" install transformers==4.57.1 datasets==4.2.0 numpy==2.2.6 safetensors==0.7.0 psutil==7.1.0 sentencepiece==0.2.1 pillow==12.3.0
+          "$RUNNER_TEMP/hepta-pretrained-env/bin/pip" install transformers==4.57.1 datasets==4.2.0 numpy==2.2.6 safetensors==0.7.0 packaging==25.0 psutil==7.1.0 sentencepiece==0.2.1 pillow==12.3.0
+          "$RUNNER_TEMP/hepta-pretrained-env/bin/python" -c 'import importlib.metadata as m, safetensors.torch; assert m.version("packaging") == "25.0"'
       - name: Real public weights and public records, not future evidence
         env:
           PYTHONDONTWRITEBYTECODE: "1"
@@ -116,7 +118,8 @@ jobs:
         run: |
           python3 -m venv "$RUNNER_TEMP/hepta-media-env"
           "$RUNNER_TEMP/hepta-media-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/hepta-media-env/bin/pip" install transformers==4.57.1 datasets==4.2.0 numpy==2.2.6 safetensors==0.7.0 psutil==7.1.0 sentencepiece==0.2.1 pillow==12.3.0
+          "$RUNNER_TEMP/hepta-media-env/bin/pip" install transformers==4.57.1 datasets==4.2.0 numpy==2.2.6 safetensors==0.7.0 packaging==25.0 psutil==7.1.0 sentencepiece==0.2.1 pillow==12.3.0
+          "$RUNNER_TEMP/hepta-media-env/bin/python" -c 'import importlib.metadata as m, safetensors.torch; assert m.version("packaging") == "25.0"'
       - name: Actual public ScienceQA, CLIP connectors and text-only Qwen control
         env:
           PYTHONDONTWRITEBYTECODE: "1"
