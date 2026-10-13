@@ -1,0 +1,49 @@
+name: Hepta global P0 provider stream and formatting conformance
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'codex-rs/core/src/client_provider_policy_tests.rs'
+      - '.github/scripts/test_run_bazel_ci.py'
+      - '.github/workflows/hepta-neuron-global-p0-conformance.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  canonical-python-format:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: '0.11.3'
+      - name: Validate actual canonical repository Python format
+        run: uv run --frozen --project scripts ruff format --check scripts .github
+      - name: Exercise Bazel CLI argument and cache compatibility regression
+        run: python3 -m unittest discover -s .github/scripts -p 'test_run_bazel_ci.py' -v
+
+  core-provider-typed-context:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install exact Rust toolchain
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Enforce canonical Rust formatting
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Compile and run real async provider terminal ownership regression tests
+        run: cargo +1.95.0 test --locked -p codex-core --lib client_provider_policy_tests -- --nocapture
