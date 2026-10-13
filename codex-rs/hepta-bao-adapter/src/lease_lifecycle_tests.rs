@@ -24,6 +24,53 @@ fn active_lease() -> SecretLeaseMetadataV1 {
 }
 
 #[test]
+fn repeated_durable_replacements_and_clean_reopen_preserve_exact_lease_identity() {
+    let (directory, mut registry) = registry();
+    let actual = directory.path().join("lease-registry.json");
+    let staging = directory.path().join("lease-registry.json.next");
+
+    registry.prepare_issue("op:issue:1".into(), [3; 32]).unwrap();
+    assert!(actual.is_file());
+    assert!(!staging.exists(), "temporary bytes must be closed and renamed");
+
+    registry.mark_unknown("op:issue:1").unwrap();
+    registry
+        .reconcile(
+            "op:issue:1",
+            ProviderLeaseObservationV1::IssueApplied {
+                lease: active_lease(),
+            },
+        )
+        .unwrap();
+    registry
+        .prepare_renew("op:renew:1".into(), "lease:db:1".into(), [4; 32])
+        .unwrap();
+    registry.mark_unknown("op:renew:1").unwrap();
+    registry
+        .reconcile(
+            "op:renew:1",
+            ProviderLeaseObservationV1::RenewApplied {
+                lease_id: "lease:db:1".into(),
+                observed_at_unix_ms: 20_000,
+                expires_at_unix_ms: 120_000,
+                renewable: true,
+                provider_metadata_sha256: [5; 32],
+            },
+        )
+        .unwrap();
+    assert!(!staging.exists(), "the final applied ledger must have no stale staging file");
+
+    let saved = std::fs::read(&actual).unwrap();
+    drop(registry);
+    let registry = DurableLeaseRegistryV1::open(&actual).unwrap();
+    let lease = registry.lease("lease:db:1").unwrap();
+    assert_eq!(lease.generation, 2);
+    assert_eq!(lease.expires_at_unix_ms, 120_000);
+    assert_eq!(lease.state, SecretLeaseStateV1::Active);
+    assert_eq!(std::fs::read(actual).unwrap(), saved);
+}
+
+#[test]
 fn issue_unknown_reconciles_without_duplicate_issue() {
     let (directory, mut registry) = registry();
     let prepared = registry

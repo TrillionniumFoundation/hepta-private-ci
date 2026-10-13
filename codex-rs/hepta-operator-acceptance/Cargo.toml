@@ -5,6 +5,17 @@ name = "codex-hepta-operator-acceptance"
 version.workspace = true
 publish = false
 
+# cargo-shear's static source parser misses winapi-util behind the nested
+# #[cfg(windows)] mod durable::windows (#[path = "durable_windows.rs"]).
+# This is NOT an unused dependency: FileSnapshot::capture must call
+# winapi_util::file::information on the same already-open OS handle to
+# reject reparse points and hard links. Removing it weakens the native
+# Windows acceptance boundary or makes the Windows build fail.
+# This exception affects only unused-dependency static analysis in this
+# single package. cargo-deny and RustSec advisories remain unwaived.
+[package.metadata.cargo-shear]
+ignored = ["winapi-util"]
+
 [lib]
 name = "codex_hepta_operator_acceptance"
 path = "src/lib.rs"

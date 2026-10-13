@@ -1,11 +1,15 @@
 #!/usr/bin/env python3
 """Offline conformance tests: no downloaded weights and no synthetic perf claims."""
 import copy
+import json
+from pathlib import Path
+import tempfile
 import unittest
 
 from qualified_eval import (audit_dataset, brier_and_ece, evaluate, matrix,
                             ood_results, percentile, resource_results,
-                            scale_summary, validate_predictions)
+                            scale_summary, validate_predictions,
+                            read_jsonl, strict_json_loads)
 from hf_trial import FrozenStem
 
 
@@ -44,6 +48,27 @@ def predictions(data, model, probability=.75):
 class DatasetTests(unittest.TestCase):
     def test_audit(self):
         self.assertEqual(audit_dataset(cases())["cases"], 5)
+
+    def test_ambiguous_json_evidence_fails_closed(self):
+        with self.assertRaisesRegex(ValueError, "duplicate JSON evidence field"):
+            strict_json_loads('{"case_id":"safe","case_id":"forged"}')
+        with self.assertRaisesRegex(ValueError, "non-standard JSON number"):
+            strict_json_loads('{"probabilities":[NaN,1]}')
+        with self.assertRaisesRegex(ValueError, "non-standard JSON number"):
+            strict_json_loads('{"probabilities":[Infinity,1]}')
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "cases.jsonl"
+            path.write_text('{"case_id":"first"}\n{"case_id":"second"}\n')
+            self.assertEqual(len(read_jsonl(path)), 2)
+            path.write_text('{"case_id":"first"}\n\n')
+            with self.assertRaisesRegex(ValueError, "blank evidence row"):
+                read_jsonl(path)
+            path.write_text('{"case_id":"first","case_id":"second"}\n')
+            with self.assertRaisesRegex(ValueError, "duplicate JSON evidence field"):
+                read_jsonl(path)
+            path.write_text('[1,2]\n')
+            with self.assertRaisesRegex(ValueError, "row is not an object"):
+                read_jsonl(path)
 
     def test_duplicate_episode_group_leaks(self):
         rows = cases()
