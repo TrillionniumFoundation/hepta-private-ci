@@ -29,6 +29,9 @@ PAIRS = {
     "policy_vs_organized": ("organized", "policy"),
     "knowledge_vs_same_evidence": ("organized", "knowledge"),
     "parameter_only_vs_empty": ("empty", "parameter_only"),
+    "policy_vs_hybrid": ("hybrid", "policy"),
+    "knowledge_vs_hybrid": ("hybrid", "knowledge"),
+    "parameter_only_vs_organized": ("organized", "parameter_only"),
 }
 SCORING_FIELDS = {"parsed_identifier", "strict_task_success", "procedure_verification"}
 
@@ -249,9 +252,15 @@ def effects(raw, scored, cases):
                 ),
                 significance_established=False,
             )
+    from source_write_disposition import research_dispositions
+
+    structure = citation_structure(grouped)
     return dict(
         schema="hepta.source-write.effects.v1",
-        structural_citations=citation_structure(grouped),
+        structural_citations=structure,
+        candidate_research_dispositions=research_dispositions(
+            result, structure, len(cases)
+        ),
         actual_tasks=len(cases),
         original_answer_executions=len(raw),
         contrasts=result,
