@@ -77,6 +77,13 @@ jobs:
           set -euo pipefail
           just test --locked -p codex-hepta-infer-core --lib
           just test --locked -p codex-hepta-infer-worker-host --lib -E 'test(model_worker::)'
+      - name: Cross-language identity survives serde_json preserve_order feature unification
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          # Bazel unifies serde_json/preserve_order in some reverse-consumer
+          # graphs; the Stem cache key must still match sorted-key Python JSON.
+          just test --locked -p codex-hepta-infer-worker-host --lib --features serde_json/preserve_order -E 'test(model_worker::stem_shadow::tests::rust_joint_question_options_state_digest_matches_python_golden)'
       - name: Native safety lint on changed owners
         run: cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets -- -D clippy::correctness
       - name: Strict native format

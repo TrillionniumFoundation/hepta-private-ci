@@ -49,6 +49,16 @@ class StemContracts(unittest.TestCase):
         self.assertIn("选择什么？", a)
         self.assertIn('"options":["A","B"]', a)
         self.assertIn("情境", a)
+        self.assertEqual(
+            digest(a.encode("utf-8")),
+            "4ef9abd544c12919d1eb3a2e85cee9b90ae5a99f712c633deb755c541b3a2f62",
+        )
+        reversed_options = request("cell.a")["input"]
+        reversed_options["options"] = ["B", "A"]
+        self.assertNotEqual(
+            digest(joint_text(reversed_options).encode("utf-8")),
+            digest(a.encode("utf-8")),
+        )
         with self.assertRaises(StemQualificationError):
             joint_text({"question": "q", "state": "s", "options": []})
 

@@ -141,19 +141,22 @@ fn checked_regular_file(path: &PathBuf, expected_sha256: &str) -> Result<(), Err
     Ok(())
 }
 
+/// Canonical Python-compatible joint input has *alphabetical* key order.
+///
+/// Avoid serde_json::Value here: Bazel's feature-unified serde_json may enable
+/// preserve_order, changing a map's serialized bytes across targets and OSes.
+/// A typed struct serializes fields in declaration order with either feature.
+#[derive(Serialize)]
+struct CanonicalJointInput<'a> {
+    options: &'a [String],
+    question: &'a str,
+    state: &'a str,
+}
+
 fn input_hash(input: &ShadowStemInput) -> Result<String, Error> {
-    // Python canonical_bytes sorts options/question/state. Serializing through
-    // serde_json::Value is NOT canonical when workspace dependencies enable
-    // preserve_order (observed on the real Windows Bazel build). Serialize a
-    // typed object with explicit lexicographic field order instead, independent
-    // of serde_json map features. Never adjust the known Python golden to hide
-    // a cross-language request identity mismatch.
-    #[derive(Serialize)]
-    struct CanonicalJointInput<'a> {
-        options: &'a [String],
-        question: &'a str,
-        state: &'a str,
-    }
+    // Match Python canonical_bytes: sorted keys, compact JSON, UTF-8. This
+    // exact identity is a scope-fenced feature-cache key, not an authority.
+    // A future input-schema change must version the digest and both goldens.
     let canonical = CanonicalJointInput {
         options: &input.options,
         question: &input.question,
