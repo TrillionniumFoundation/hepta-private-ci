@@ -57,7 +57,10 @@ pub fn open_metrics_bound_native_control_v1(
 #[cfg(unix)]
 fn sync_native_journal_directory_v1(journal: &Path) -> io::Result<()> {
     let parent = journal.parent().ok_or_else(|| {
-        io::Error::new(io::ErrorKind::InvalidInput, "missing native journal directory")
+        io::Error::new(
+            io::ErrorKind::InvalidInput,
+            "missing native journal directory",
+        )
     })?;
     std::fs::File::open(parent)?.sync_all()
 }

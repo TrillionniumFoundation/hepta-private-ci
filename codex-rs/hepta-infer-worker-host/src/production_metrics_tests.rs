@@ -56,7 +56,10 @@ fn damaged_evidence_journal_denies_serving_without_mutating_control_wal() {
         .write_all(b"torn-group-without-newline")
         .expect("damage metrics");
     assert!(open_metrics_bound_native_control_v1(&journal, 32).is_err());
-    assert_eq!(std::fs::read(&journal).expect("control after denial"), control_bytes);
+    assert_eq!(
+        std::fs::read(&journal).expect("control after denial"),
+        control_bytes
+    );
     let read_only_control = DurableInferenceControl::open(&journal, 32).expect("WAL integrity");
     assert!(read_only_control.native_record("request.1").is_some());
 }
@@ -108,8 +111,7 @@ fn native_production_wal_rejects_hardlink_alias() {
         let control = open_metrics_bound_native_control_v1(&journal, 32).expect("initial writer");
         assert!(control.production_metrics_ready());
     }
-    std::fs::hard_link(&journal, dir.path().join("second-name.wal"))
-        .expect("make hardlink");
+    std::fs::hard_link(&journal, dir.path().join("second-name.wal")).expect("make hardlink");
     assert!(open_metrics_bound_native_control_v1(&journal, 32).is_err());
 }
 
@@ -141,8 +143,8 @@ fn native_production_bootstrap_denies_hardlinked_metrics_without_touching_wal() 
     let journal = dir.path().join("control.wal");
     let metrics = production_metrics_journal_path_v1(&journal).expect("metrics path");
     {
-        let mut owner = open_metrics_bound_native_control_v1(&journal, 32)
-            .expect("initial production owner");
+        let mut owner =
+            open_metrics_bound_native_control_v1(&journal, 32).expect("initial production owner");
         owner
             .reserve_native(native_request("request.1"), 1)
             .expect("durable native WAL");
@@ -154,7 +156,10 @@ fn native_production_bootstrap_denies_hardlinked_metrics_without_touching_wal() 
     std::fs::hard_link(&metrics, &alias).expect("hardlink metrics inode");
     assert!(open_metrics_bound_native_control_v1(&journal, 32).is_err());
     assert_eq!(std::fs::read(&journal).expect("WAL unchanged"), wal_before);
-    assert_eq!(std::fs::read(&metrics).expect("metrics unchanged"), metrics_before);
+    assert_eq!(
+        std::fs::read(&metrics).expect("metrics unchanged"),
+        metrics_before
+    );
     std::fs::remove_file(&alias).expect("unlink alias");
     let reopened = open_metrics_bound_native_control_v1(&journal, 32)
         .expect("recovery once metrics alias removed");
@@ -172,7 +177,10 @@ fn native_startup_denies_directory_sync_failure_before_admitting_effects() {
     let error = open_native_control_with_directory_barrier_v1(&journal, 32, |path| {
         barrier_called = true;
         assert_eq!(path, journal.as_path());
-        assert!(path.exists(), "control WAL must be created before directory fsync");
+        assert!(
+            path.exists(),
+            "control WAL must be created before directory fsync"
+        );
         assert!(
             metrics.exists(),
             "Evidence journal must be created before directory fsync"

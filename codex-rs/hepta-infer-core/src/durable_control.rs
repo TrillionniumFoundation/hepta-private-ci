@@ -225,7 +225,9 @@ impl DurableInferenceControl {
 
     fn check_production_path(path: &Path) -> Result<(), Error> {
         if !path.is_absolute() || path.file_name().is_none() {
-            return Err(Error::InvalidIdentity("production WAL path must be absolute"));
+            return Err(Error::InvalidIdentity(
+                "production WAL path must be absolute",
+            ));
         }
         let directory = path
             .parent()
@@ -253,7 +255,9 @@ impl DurableInferenceControl {
                     use std::os::unix::fs::MetadataExt;
                     use std::os::unix::fs::PermissionsExt;
                     if metadata.permissions().mode() & 0o077 != 0 || metadata.nlink() != 1 {
-                        return Err(Error::InvalidIdentity("production WAL file must be private"));
+                        return Err(Error::InvalidIdentity(
+                            "production WAL file must be private",
+                        ));
                     }
                 }
             }

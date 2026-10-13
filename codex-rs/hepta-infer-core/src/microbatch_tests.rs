@@ -171,7 +171,8 @@ fn scheduling_ticket_rollover_preserves_admission_and_fairness() {
     let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
     q.enqueue(1, intent("first", "scope-A", 1, 1, 100)).unwrap();
     q.next_order = u128::MAX;
-    q.enqueue(1, intent("second", "scope-B", 1, 1, 100)).unwrap();
+    q.enqueue(1, intent("second", "scope-B", 1, 1, 100))
+        .unwrap();
     assert_eq!(q.round_robin.len(), 2);
     let first = q.poll(11).unwrap().batch.unwrap();
     assert_eq!(first.requests[0].request_id, id("first"));

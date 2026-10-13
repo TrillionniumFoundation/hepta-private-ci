@@ -693,7 +693,13 @@ fn external_control_fence_cutover_denies_queued_grant_without_driver_effect() {
         scope_frontier.clone(),
     );
     execution
-        .enqueue(100, "model".into(), request, key.clone(), signed(&signer, binding))
+        .enqueue(
+            100,
+            "model".into(),
+            request,
+            key.clone(),
+            signed(&signer, binding),
+        )
         .unwrap();
     scope_frontier.0.lock().unwrap().route_fence += 1;
     let result = execution.poll_and_execute(101).unwrap();

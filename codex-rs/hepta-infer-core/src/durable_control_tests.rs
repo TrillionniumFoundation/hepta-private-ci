@@ -261,9 +261,15 @@ fn evidence_outage_is_not_an_authorization_failure_or_wal_retry() {
     assert_eq!(owner.submit(100, request()).unwrap().revision, 1);
     assert!(!owner.production_metrics_ready());
     assert!(!owner.flush_production_metrics());
-    let bytes = fs::read(&path).unwrap();
+    // The WAL is still held under an exclusive writer lock. Reopening it
+    // with fs::read is forbidden by Windows share-mode semantics.
+    let committed_length = owner.file.metadata().unwrap().len();
     assert_eq!(owner.submit(100, request()).unwrap().revision, 1);
-    assert_eq!(fs::read(&path).unwrap(), bytes, "no duplicate WAL append");
+    assert_eq!(
+        owner.file.metadata().unwrap().len(),
+        committed_length,
+        "idempotent submit must not append another WAL event"
+    );
     drop(owner);
     let reopened = DurableInferenceControl::open(&path, 32).unwrap();
     assert_eq!(reopened.get("request.1").unwrap().revision, 1);

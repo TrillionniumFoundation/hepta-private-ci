@@ -8,10 +8,10 @@
 #![forbid(unsafe_code)]
 
 pub mod batched_neuron;
-/// Fail-closed native Worker startup with Evidence-owned WAL metrics.
-pub mod production_metrics;
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
+/// Fail-closed native Worker startup with Evidence-owned WAL metrics.
+pub mod production_metrics;
 
 pub mod final_use_authorizer;
 pub mod native_app_server;

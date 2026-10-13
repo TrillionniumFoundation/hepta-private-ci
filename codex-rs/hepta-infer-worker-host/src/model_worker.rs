@@ -650,7 +650,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             validate_neuron_feature_request(request)?;
             if request.authorization.cancelled
                 || !batch_ids.insert(request.authorization.request_id.clone())
-                || self.active_requests.contains_key(&request.authorization.request_id)
+                || self
+                    .active_requests
+                    .contains_key(&request.authorization.request_id)
             {
                 return Err(Error::FeatureContract);
             }
@@ -679,9 +681,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         }
         // Exactly one backend call. On an unknown failure, never replay any
         // already-claimed request: the batch result is terminal/indeterminate.
-        let observed = self.driver.run_neuron_features_batch(&loaded.handle, &requests);
+        let observed = self
+            .driver
+            .run_neuron_features_batch(&loaded.handle, &requests);
         for request in &requests {
-            self.active_requests.remove(&request.authorization.request_id);
+            self.active_requests
+                .remove(&request.authorization.request_id);
         }
         loaded.active_requests -= requests.len();
         let observed = observed?;
