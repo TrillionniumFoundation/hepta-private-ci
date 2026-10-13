@@ -1,24 +1,24 @@
 """Plan and gate the complete shared-Stem/Cell/System2 research matrix.
 
-This module deliberately separates resource accounting from neural efficacy.  It
-never manufactures task scores.  A reader-gate receipt from an independent
-diagnostic is required before a neural matrix can be admitted.
+The planner records parameter budgets and measurement requirements. It never
+turns parameter counts into FLOPs, latency, energy, or task scores. Neural rows
+are admitted only with an externally trusted, model-bound Reader gate.
 """
-from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 import hashlib
 import itertools
 import json
 from pathlib import Path
+import re
 import sys
 
 
 STEMS = (
-    ("small_stem", 150_000_000, "shared"),
-    ("shared_421m", 421_000_000, "shared"),
-    ("shared_421m_plus_head", 421_000_000, "shared"),
-    ("replicated_421m", 421_000_000, "replicated"),
+    ("small_stem", 150_000_000, "shared", True),
+    ("shared_421m", 421_000_000, "shared", False),
+    ("shared_421m_plus_head", 421_000_000, "shared", True),
+    ("replicated_421m", 421_000_000, "replicated", True),
 )
 HEADS = (
     ("linear", 1_000_000),
@@ -30,28 +30,25 @@ MODALITIES = ("text", "image", "audio", "video")
 INFERENCE = ("no_recurrent", "recurrent", "system2", "system2_ndu")
 STRUCTURES = ("no_split", "offline_split", "split_merge")
 METRICS = (
-    "task_score",
-    "evidence_precision",
-    "unsupported_claim_rate",
-    "ece",
-    "brier",
-    "p95_latency_ms",
-    "active_flops",
-    "peak_memory_bytes",
-    "energy_joules",
+    "task_score", "evidence_precision", "unsupported_claim_rate", "ece", "brier",
+    "p95_latency_ms", "active_flops", "peak_memory_bytes", "energy_joules",
     "incremental_cell_params",
 )
+BOUND_FIELDS = ("weights_sha256", "tokenizer_sha256", "prompt_sha256", "dataset_sha256")
 
 
 @dataclass(frozen=True)
 class ReaderGate:
     passed: bool
     reason: str
-    independent_adjudication: bool
+    cohort_size: int
     human_sufficient_grounded: int
     ordinary_retrieval_grounded: int
     no_evidence_exact_refusal: int
     premise_removed_exact_refusal: int
+    model_binding_digest: str | None
+    trust_manifest_digest: str | None
+    capabilities: dict
 
 
 def _digest(value: object) -> str:
@@ -59,53 +56,91 @@ def _digest(value: object) -> str:
     return hashlib.sha256(raw.encode()).hexdigest()
 
 
-def _count(condition: dict, *names: str) -> int:
-    for name in names:
-        value = condition.get(name)
-        if type(value) is int and value >= 0:
-            return value
-    return 0
+def _digest_bytes(value: object) -> str:
+    return hashlib.sha256(
+        json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+    ).hexdigest()
 
 
-def evaluate_reader_gate(payload: dict | None) -> ReaderGate:
-    """Apply the predeclared four-arm reader admission rule.
+def _empty_gate(reason: str) -> ReaderGate:
+    return ReaderGate(False, reason, 0, 0, 0, 0, 0, None, None, {})
 
-    The receipt is intentionally stricter than a model-generated status field:
-    it must say that independent adjudication happened and must provide counts
-    for sufficient evidence, ordinary retrieval, and both negative controls.
+
+def _valid_sha(value: object) -> bool:
+    return isinstance(value, str) and re.fullmatch(r"[0-9a-f]{64}", value) is not None
+
+
+def _arm(conditions: dict, name: str, cohort: list[str]) -> tuple[int, int] | None:
+    row = conditions.get(name)
+    if not isinstance(row, dict) or row.get("item_ids") != cohort:
+        return None
+    total = row.get("total")
+    grounded = row.get("grounded_and_cited")
+    refusal = row.get("exact_refusal")
+    if total != len(cohort) or any(
+        type(x) is not int or x < 0 or x > total for x in (grounded, refusal)
+    ):
+        return None
+    return grounded, refusal
+
+
+def evaluate_reader_gate(payload: dict | None, trust_manifest: dict | None = None) -> ReaderGate:
+    """Derive the four-arm admission decision from an external v2 receipt.
+
+    A boolean inside the receipt is not accepted as proof of independence. The
+    caller must provide the separate trust manifest whose canonical digest is
+    bound by the receipt.
     """
-    if not isinstance(payload, dict) or payload.get("schema") != "hepta.reader-gate.v1":
-        return ReaderGate(False, "missing-or-unknown-reader-gate", False, 0, 0, 0, 0)
+    if not isinstance(payload, dict) or payload.get("schema") != "hepta.reader-gate.v2":
+        return _empty_gate("missing-or-unknown-reader-gate")
+    cohort = payload.get("cohort")
     conditions = payload.get("conditions")
-    if not isinstance(conditions, dict):
-        return ReaderGate(False, "reader-gate-conditions-missing", False, 0, 0, 0, 0)
-    human = conditions.get("human_sufficient", {})
-    ordinary = conditions.get("ordinary_retrieval", {})
-    empty = conditions.get("no_evidence", {})
-    removed = conditions.get("critical_premise_removed", {})
-    human_grounded = _count(human, "grounded", "grounded_and_cited")
-    ordinary_grounded = _count(ordinary, "grounded", "grounded_and_cited")
-    empty_refusal = _count(empty, "exact_refusal", "exact_refusals")
-    removed_refusal = _count(removed, "exact_refusal", "exact_refusals")
-    independent = payload.get("independent_adjudication") is True
-    declared = payload.get("reader_adequacy_established") is True
+    binding = payload.get("model_binding")
+    review = payload.get("independent_review")
+    capabilities = payload.get("capabilities")
+    if not isinstance(cohort, list) or not cohort or len(cohort) > 10000 or len(set(cohort)) != len(cohort):
+        return _empty_gate("invalid-reader-cohort")
+    if not isinstance(conditions, dict) or not isinstance(binding, dict) or not isinstance(review, dict):
+        return _empty_gate("reader-gate-fields-missing")
+    if any(not isinstance(item, str) or not item for item in cohort):
+        return _empty_gate("invalid-reader-item-id")
+    if any(not _valid_sha(binding.get(field)) for field in BOUND_FIELDS):
+        return _empty_gate("reader-model-binding-incomplete")
+    if not isinstance(binding.get("revision"), str) or not binding["revision"]:
+        return _empty_gate("reader-revision-missing")
+    if type(binding.get("decode_budget")) is not int or not 1 <= binding["decode_budget"] <= 65536:
+        return _empty_gate("reader-decode-budget-invalid")
+    rows = {name: _arm(conditions, name, cohort) for name in (
+        "no_evidence", "ordinary_retrieval", "human_sufficient", "critical_premise_removed")}
+    if any(value is None for value in rows.values()):
+        return _empty_gate("reader-arm-denominator-or-cohort-mismatch")
+    if not _valid_sha(review.get("trust_manifest_sha256")) or not isinstance(trust_manifest, dict):
+        return _empty_gate("external-trust-manifest-required")
+    manifest_digest = _digest_bytes(trust_manifest)
+    if manifest_digest != review["trust_manifest_sha256"] or trust_manifest.get("schema") != "hepta.reader.trust.v1":
+        return _empty_gate("trust-manifest-digest-or-schema-mismatch")
+    reviewers = trust_manifest.get("independent_reviewers")
+    if not isinstance(reviewers, list) or not reviewers or any(
+        not isinstance(item, dict) or item.get("revoked") is not False for item in reviewers
+    ):
+        return _empty_gate("no-current-independent-reviewer-in-trust-manifest")
+    human_grounded, _ = rows["human_sufficient"]
+    ordinary_grounded, _ = rows["ordinary_retrieval"]
+    _, empty_refusal = rows["no_evidence"]
+    _, removed_refusal = rows["critical_premise_removed"]
+    total = len(cohort)
     passed = (
-        independent
-        and declared
-        and human_grounded >= 15
+        human_grounded / total >= 0.75
         and human_grounded > ordinary_grounded
-        and empty_refusal >= 18
-        and removed_refusal >= 18
+        and empty_refusal / total >= 0.90
+        and removed_refusal / total >= 0.90
     )
-    reason = "passed" if passed else "reader-adequacy-gate-not-met"
+    reason = "passed" if passed else "reader-adequacy-rate-gate-not-met"
+    model_digest = _digest(binding)
     return ReaderGate(
-        passed,
-        reason,
-        independent,
-        human_grounded,
-        ordinary_grounded,
-        empty_refusal,
-        removed_refusal,
+        passed, reason, total, human_grounded, ordinary_grounded,
+        empty_refusal, removed_refusal, model_digest, manifest_digest,
+        capabilities if isinstance(capabilities, dict) else {},
     )
 
 
@@ -115,30 +150,33 @@ def resource_estimate(stem: str, head: str, modality: str, inference: str,
     head_params = next(row[1] for row in HEADS if row[0] == head)
     modality_params = {"text": 500_000, "image": 8_000_000,
                        "audio": 6_000_000, "video": 12_000_000}[modality]
-    stem_params, sharing = stem_row[1], stem_row[2]
-    shared_params = stem_params + modality_params
+    stem_params, sharing, cell_trainable = stem_row[1], stem_row[2], stem_row[3]
+    per_cell = head_params if cell_trainable else 0
     if sharing == "replicated":
-        unique_params = stem_params * cells + head_params * cells + modality_params
-        active_flops = stem_params * cells
+        unique_params = stem_params * cells + modality_params + per_cell * cells
+        incremental = stem_params + per_cell
     else:
-        unique_params = shared_params + head_params * cells
-        active_flops = stem_params + head_params * cells
-    if inference == "recurrent":
-        active_flops = int(active_flops * 1.25)
-    elif inference == "system2":
-        active_flops = int(active_flops * 1.8)
-    elif inference == "system2_ndu":
-        active_flops = int(active_flops * 2.1)
-    if structure == "offline_split":
-        unique_params = int(unique_params * 1.05)
-    elif structure == "split_merge":
-        unique_params = int(unique_params * 1.1)
+        unique_params = stem_params + modality_params + per_cell * cells
+        incremental = per_cell
     return {
-        "unique_params": unique_params,
-        "weight_bytes_bf16": unique_params * 2,
-        "active_flops": active_flops,
-        "peak_memory_bytes_lower_bound": unique_params * 2,
-        "incremental_cell_params": head_params + (modality_params if cells == 1 else 0),
+        "parameter_budget": {
+            "unique_parameters": unique_params,
+            "shared_stem_parameters": stem_params if sharing == "shared" else 0,
+            "replicated_stem_parameters": stem_params * cells if sharing == "replicated" else 0,
+            "modality_adapter_parameters": modality_params,
+            "cell_head_parameters": per_cell,
+            "incremental_cell_parameters": incremental,
+        },
+        "weight_bytes_bf16_nominal": unique_params * 2,
+        "active_flops": None,
+        "peak_memory_bytes": None,
+        "energy_joules": None,
+        "measurement_requirements": [
+            "tokens_or_frames_and_batch_size",
+            "actual_route_count_and_active_cells",
+            "profiler_or_graph_op_count",
+            "peak_allocator_memory_and_device_power",
+        ],
     }
 
 
@@ -146,17 +184,18 @@ def enumerate_matrix(cells: int = 32) -> list[dict]:
     if type(cells) is not int or not 1 <= cells <= 4096:
         raise ValueError("cells must be in [1, 4096]")
     records = []
-    axes = (STEMS, HEADS, MODALITIES, INFERENCE, STRUCTURES)
-    for stem_row, head_row, modality, inference, structure in itertools.product(*axes):
+    for stem_row, head_row, modality, inference, structure in itertools.product(
+        STEMS, HEADS, MODALITIES, INFERENCE, STRUCTURES
+    ):
         stem, head = stem_row[0], head_row[0]
         config = dict(stem=stem, head=head, modality=modality,
-                      inference=inference, structure=structure, cells=cells)
-        resource = resource_estimate(stem, head, modality, inference, structure, cells)
+                      inference=inference, structure=structure, cells=cells,
+                      stem_training_policy="frozen" if not stem_row[3] else "cell_delta")
         records.append({
-            "schema": "hepta.full-cell-matrix.record.v1",
+            "schema": "hepta.full-cell-matrix.record.v2",
             "config_id": _digest(config)[:16],
             "config": config,
-            "resource_estimate": resource,
+            "resource_estimate": resource_estimate(stem, head, modality, inference, structure, cells),
             "metrics": {name: None for name in METRICS},
             "status": "planned",
             "efficacy_claim": False,
@@ -164,27 +203,38 @@ def enumerate_matrix(cells: int = 32) -> list[dict]:
     return records
 
 
-def plan(output: Path, *, cells: int = 32, reader_gate: dict | None = None) -> dict:
-    gate = evaluate_reader_gate(reader_gate)
+def _capability_allows(gate: ReaderGate, record: dict) -> bool:
+    capabilities = gate.capabilities
+    modalities = capabilities.get("modalities", [])
+    inference = capabilities.get("inference", [])
+    return record["config"]["modality"] in modalities and record["config"]["inference"] in inference
+
+
+def plan(output: Path, *, cells: int = 32, reader_gate: dict | None = None,
+         trust_manifest: dict | None = None) -> dict:
+    gate = evaluate_reader_gate(reader_gate, trust_manifest)
     records = enumerate_matrix(cells)
     for record in records:
         record["reader_gate"] = asdict(gate)
-        record["status"] = "ready_for_neural_execution" if gate.passed else "blocked_reader_gate"
+        if not gate.passed:
+            record["status"] = "blocked_reader_gate"
+        elif not _capability_allows(gate, record):
+            record["status"] = "blocked_capability_binding"
+        else:
+            record["status"] = "planned_neural_execution"
     output.mkdir(parents=True, exist_ok=True)
     with (output / "matrix-plan.jsonl").open("w", encoding="utf-8") as stream:
         for record in records:
             stream.write(json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n")
     summary = {
-        "schema": "hepta.full-cell-matrix.summary.v1",
-        "planned_records": len(records),
-        "recorded_records": len(records),
+        "schema": "hepta.full-cell-matrix.summary.v2",
+        "planned_records": len(records), "recorded_records": len(records),
         "reader_gate": asdict(gate),
-        "blocked_records": sum(r["status"] == "blocked_reader_gate" for r in records),
-        "ready_records": sum(r["status"] == "ready_for_neural_execution" for r in records),
-        "metrics_are_unpopulated": True,
-        "neural_calls": 0,
-        "production_accepted": False,
-        "native_reasoning_superiority": False,
+        "blocked_reader_records": sum(r["status"] == "blocked_reader_gate" for r in records),
+        "blocked_capability_records": sum(r["status"] == "blocked_capability_binding" for r in records),
+        "planned_neural_records": sum(r["status"] == "planned_neural_execution" for r in records),
+        "metrics_are_unpopulated": True, "neural_calls": 0,
+        "production_accepted": False, "native_reasoning_superiority": False,
     }
     (output / "run-summary.json").write_text(
         json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
@@ -193,14 +243,12 @@ def plan(output: Path, *, cells: int = 32, reader_gate: dict | None = None) -> d
 
 
 def main(argv: list[str]) -> int:
-    if len(argv) not in (2, 3):
-        print("usage: full_cell_matrix.py OUTPUT [READER_GATE_JSON]", file=sys.stderr)
+    if len(argv) not in (2, 3, 4):
+        print("usage: full_cell_matrix.py OUTPUT [READER_GATE_JSON TRUST_MANIFEST_JSON]", file=sys.stderr)
         return 2
-    output = Path(argv[1])
-    gate = None
-    if len(argv) == 3:
-        gate = json.loads(Path(argv[2]).read_text(encoding="utf-8"))
-    summary = plan(output, reader_gate=gate)
+    gate = json.loads(Path(argv[2]).read_text(encoding="utf-8")) if len(argv) >= 3 else None
+    trust = json.loads(Path(argv[3]).read_text(encoding="utf-8")) if len(argv) == 4 else None
+    summary = plan(Path(argv[1]), reader_gate=gate, trust_manifest=trust)
     print(json.dumps(summary, sort_keys=True))
     return 0
 
