@@ -571,8 +571,8 @@ def run(manifest_path: Path, output: Path):
     root = manifest_path.parent
     started_wall, started_cpu = time.perf_counter_ns(), time.process_time_ns()
     try:
-        if type(config.get("temporal", False)) is not bool:
-            raise InputError("temporal must be a Boolean declaration")
+        if any(type(config.get(flag, False)) is not bool for flag in ("temporal", "measure_head_batch")):
+            raise InputError("temporal and measure_head_batch must be Boolean declarations")
         cases, labels = dataset(root / config["dataset"]["path"], config["dataset"]["sha256"],
             config["classes"], config["cells"], config.get("temporal", False))
         train_labels = {c.case_id: labels[c.case_id] for c in cases if c.split == "train"}
@@ -615,6 +615,10 @@ def run(manifest_path: Path, output: Path):
                             "maximum_tokens": config.get("maximum_tokens", 512)}))})
                 rows.extend(predictions)
                 training[kind] = costs
+            head_batch = {}
+            if config.get("measure_head_batch", False):
+                from experiments.shared_stem_cell.head_batch import compare_exported_heads
+                head_batch = compare_exported_heads(output / "heads", training, x, cases)
             controls = {}
             if config.get("run_controls", False):
                 from experiments.shared_stem_cell.controls import split_trial, recurrent_trial
@@ -644,6 +648,7 @@ def run(manifest_path: Path, output: Path):
             seal = write_once(output / "predictions.json", {"predictions": rows})
             controls_seal = write_once(output / "controls.json", controls)
             generation_seal = write_once(output / "generation.json", generation)
+            head_batch_seal = write_once(output / "head-batch.json", head_batch)
         scores = evaluate_sealed(output / "predictions.json", seal, labels, cases,
             expected_arms=("linear", "gated", "low_rank", "sparse_expert"))
         from experiments.shared_stem_cell.control_evaluation import evaluate_controls
@@ -655,6 +660,7 @@ def run(manifest_path: Path, output: Path):
             "source_sha256": sha(Path(__file__).read_bytes()), "encoding": encoding,
             "training": training, "whole_execution": whole, "scores": scores,
             "model_load": model_load, "sharing": sharing,
+            "head_batch_sha256": head_batch_seal, "head_batch_executed": bool(head_batch),
             "controls_sha256": controls_seal, "generation_sha256": generation_seal,
             "multimodal_towers_executed": False, "controls_executed": bool(controls),
             "runtime": {"python": platform.python_version(), "torch": torch.__version__},
