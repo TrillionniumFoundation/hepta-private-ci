@@ -818,6 +818,13 @@ fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
     AgentdError::Protocol("agentd control state mutex is poisoned".to_string())
 }
 
-#[cfg(test)]
+// Stateful Agentd serving tests require the real Unix owner-private
+// prompt registry. Non-Unix builds must instead prove that the unsupported
+// owner cannot silently start with an unauthenticated directory.
+#[cfg(all(test, unix))]
 #[path = "state_isolation_tests.rs"]
 mod isolation_tests;
+
+#[cfg(all(test, not(unix)))]
+#[path = "state_non_unix_tests.rs"]
+mod non_unix_tests;
