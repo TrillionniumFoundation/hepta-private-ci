@@ -86,3 +86,50 @@ adjudicated sufficient-evidence set, and the SAME frozen Reader tested against
 label-blind strong RAG and simple full-path organization with full citation-chain
 and lifecycle costs. Training the same eight authored or 16 exposed LoCoMo
 questions longer cannot cure the missing validation evidence.
+
+## Exact original-Reader delivery versus citation-chain attribution
+
+A separate fail-closed, read-only audit now binds the original **72
+unchanged Qwen generated answers**, their actual ordered source payloads,
+native `[E1]` marker mappings and the formally reported program-declared
+source requirements, without any new model inference or ground-truth
+input to a prompt. Its originating event-model archive is pinned to
+SHA-256 `7a99db30fb5b1202fcd43073d22589b84315046dd34044277cc46351f1cbece8`
+and original generating commit `6304b451268c73f3d1a605985226b102df841bbf`.
+All 43 internal archive members and the saved raw-answer digest must
+verify before emitting any classification.
+
+The actual original `program_support` intervention produced **8/8
+strictly correct final answers**. Among the four composition/procedure
+cases, **all 4/4 actual Reader requests included both original
+program-declared necessary sources**, but **0/4 answers cited both**.
+Each answer cites the second/result source while omitting the first/
+prerequisite source. Conversely, the two new-fact and two correction
+answers cite their single declared support source, hence **4/8 complete
+source-chain citations** despite **8/8 correct answer strings**.
+For the **same cases and same program-declared source sets**, no required
+source was missing from the Reader's delivered evidence. The immediate
+observed weakness is missing output citations of available prerequisites,
+*not a failure to deliver those prerequisites*.
+
+For all nine original arms the `event_citation_delivery_gap.py` audit
+explicitly separates required-undelivered and required-delivered-but-
+uncited sources, checks the actual original citation tokens against
+their bound original source IDs, and refuses any modification to the
+original answer, Reader training state or publication-level report.
+The eight synthetic fail-closed regressions reject missing/duplicate
+cases, forged formal citation IDs, changed original answers, wrong
+delivered source ordering, and unsupported semantic/production
+qualification. Hosted replay now also retains the auditor source,
+full 72-record classification and SHA-256 artifact manifest.
+
+These "necessary" edges are **program-authored privileged annotations**,
+not independent human-certified causal minimality or semantic
+entailment. This audit does not upgrade the previously observed
+NO-GO decision. The appropriate subsequent new-model contrast, if
+independent source-family review can be supplied, is a **label-blind
+full-path citation instruction** with exactly the same original evidence
+and frozen Reader, reporting task accuracy, complete *delivered* source
+coverage and actual generated citation fidelity independently. Neither
+more retrieval top-k nor additional LoRA steps alone addresses these
+four observed Reader-citation omissions.

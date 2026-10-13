@@ -6,6 +6,8 @@ on:
     paths:
       - "scripts/memory_cell/reader_three_cohort_gate.py"
       - "scripts/memory_cell/test_reader_three_cohort_gate.py"
+      - "scripts/memory_cell/event_citation_delivery_gap.py"
+      - "scripts/memory_cell/test_event_citation_delivery_gap.py"
       - ".github/workflows/hepta-memory-reader-three-cohort-gate.yml"
       - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_READER_THREE_COHORT_20261013.md"
 permissions:
@@ -31,6 +33,8 @@ jobs:
           set -euo pipefail
           python3 -m py_compile scripts/memory_cell/reader_three_cohort_gate.py scripts/memory_cell/test_reader_three_cohort_gate.py
           python3 -m unittest discover -s scripts/memory_cell -p 'test_reader_three_cohort_gate.py' -v
+          python3 -m py_compile scripts/memory_cell/event_citation_delivery_gap.py scripts/memory_cell/test_event_citation_delivery_gap.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_event_citation_delivery_gap.py' -v
       - name: Restore ten immutable, original model and scorer archives
         run: |
           set -euo pipefail
@@ -61,6 +65,15 @@ jobs:
             /tmp/three-cohort-originals/publisher_score.zip \
             --output /tmp/three-cohort-receipt/reconciled.json \
             2>&1 | tee /tmp/three-cohort-receipt/audit.log
+          # Reuse the exact original 72-call Qwen archive just restored above.
+          # The new read-only classifier never alters Reader outputs or scores.
+          python3 scripts/memory_cell/event_citation_delivery_gap.py \
+            --original-model-zip /tmp/three-cohort-originals/event_model.zip \
+            --output /tmp/three-cohort-receipt/event-citation-delivery-gap.json \
+            2>&1 | tee /tmp/three-cohort-receipt/event-citation-gap.log
+          mkdir -p /tmp/three-cohort-receipt/auditor-source
+          cp scripts/memory_cell/event_citation_delivery_gap.py scripts/memory_cell/test_event_citation_delivery_gap.py /tmp/three-cohort-receipt/auditor-source/
+          cp .github/workflows/hepta-memory-reader-three-cohort-gate.yml /tmp/three-cohort-receipt/auditor-source/
           git rev-parse HEAD > /tmp/three-cohort-receipt/auditor-source-commit.txt
           sha256sum /tmp/three-cohort-originals/*.zip > /tmp/three-cohort-receipt/archive-sha256.txt
           (cd /tmp/three-cohort-receipt && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
