@@ -732,7 +732,11 @@ fn selector_revoked_during_last_owner_readback_denies_prepared_successor() {
             if message.contains("Selector revoked")
     ));
     assert_eq!(admissions, 2, "rechecked after the slow owner readback");
-    assert_eq!(state.borrow().executions, 1, "no second original-owner effect");
+    assert_eq!(
+        state.borrow().executions,
+        1,
+        "no second original-owner effect"
+    );
     assert_eq!(owner.completed_steps(), 1);
     assert!(!root.path().join("cell-split-01-prepared.json").exists());
 }
