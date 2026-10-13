@@ -20,10 +20,10 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       PYTHONPATH: scripts/memory_cell
-      HEPTA_LOCOMO_SOURCE_REVIEW_ZIP: ${{ runner.temp }}/locomo-upload-audit/source.zip
-      HEPTA_LOCOMO_ANSWER_REVIEW_ZIP: ${{ runner.temp }}/locomo-upload-audit/answer.zip
-      HEPTA_LOCOMO_REVIEW_MANIFEST_ZIP: ${{ runner.temp }}/locomo-upload-audit/manifest.zip
-      HEPTA_LOCOMO_ORIGINAL_READER_ZIP: ${{ runner.temp }}/locomo-upload-audit/reader.zip
+      HEPTA_LOCOMO_SOURCE_REVIEW_ZIP: /tmp/locomo-upload-audit/source.zip
+      HEPTA_LOCOMO_ANSWER_REVIEW_ZIP: /tmp/locomo-upload-audit/answer.zip
+      HEPTA_LOCOMO_REVIEW_MANIFEST_ZIP: /tmp/locomo-upload-audit/manifest.zip
+      HEPTA_LOCOMO_ORIGINAL_READER_ZIP: /tmp/locomo-upload-audit/reader.zip
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
