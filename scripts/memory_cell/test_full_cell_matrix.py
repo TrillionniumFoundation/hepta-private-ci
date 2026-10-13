@@ -5,6 +5,9 @@ from pathlib import Path
 import tempfile
 import unittest
 
+from cryptography.hazmat.primitives import serialization
+from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+
 from full_cell_matrix import evaluate_reader_gate, enumerate_matrix, plan, resource_estimate
 
 
@@ -17,7 +20,7 @@ def fingerprint(value):
 def gate_fixture():
     trust = {
         "schema": "hepta.reader.trust.v1",
-        "independent_reviewers": [{"id": "reviewer-a", "revoked": False}],
+        "independent_reviewers": [],
     }
     ids = [f"q-{i}" for i in range(20)]
     binding = {
@@ -45,9 +48,28 @@ def gate_fixture():
             "schema", "cohort", "model_binding", "conditions", "capabilities"
         )
     }
-    trust["reviewed_gate_content_sha256"] = fingerprint(reviewed)
+    reviewed_digest = fingerprint(reviewed)
+    roster = {"schema": "hepta.reader.authorized-reviewers.v1", "reviewers": []}
+    signed = b"hepta.reader-gate.v2.ed25519\x00" + bytes.fromhex(reviewed_digest)
+    for identifier in ("reviewer-a", "reviewer-b"):
+        # Ephemeral keys exist only in the test process. Never publish a
+        # private key, or call fixture signatures real human review.
+        key = Ed25519PrivateKey.generate()
+        public = key.public_key().public_bytes(
+            encoding=serialization.Encoding.Raw,
+            format=serialization.PublicFormat.Raw,
+        ).hex()
+        roster["reviewers"].append(dict(
+            id=identifier, public_key_hex=public, authorized=True,
+            independent_of_model_owner=True, independent_of_dataset_owner=True,
+        ))
+        trust["independent_reviewers"].append(dict(
+            id=identifier, revoked=False, signature_hex=key.sign(signed).hex(),
+        ))
+    trust["reviewed_gate_content_sha256"] = reviewed_digest
+    trust["authorized_reviewer_roster_sha256"] = fingerprint(roster)
     gate["independent_review"]["trust_manifest_sha256"] = fingerprint(trust)
-    return gate, trust
+    return gate, trust, roster
 
 
 class FullCellMatrixTests(unittest.TestCase):
@@ -74,17 +96,21 @@ class FullCellMatrixTests(unittest.TestCase):
         )
 
     def test_reader_gate_requires_external_model_bound_trust_and_same_cohort(self):
-        gate, trust = gate_fixture()
+        gate, trust, roster = gate_fixture()
         self.assertFalse(evaluate_reader_gate(gate, trust).passed)
-        self.assertTrue(evaluate_reader_gate(
+        self.assertEqual(evaluate_reader_gate(
             gate, trust, trusted_review_sha256=fingerprint(trust)
+        ).reason, "out-of-band-reviewer-roster-required")
+        self.assertTrue(evaluate_reader_gate(
+            gate, trust, trusted_review_sha256=fingerprint(trust),
+            reviewer_roster=roster, trusted_roster_sha256=fingerprint(roster),
         ).passed)
         self.assertFalse(evaluate_reader_gate(gate).passed)
         gate["conditions"]["ordinary_retrieval"]["item_ids"] = ["different"] * 20
         self.assertFalse(evaluate_reader_gate(gate, trust).passed)
 
     def test_self_attested_manifest_alone_never_enables_model_experiments(self):
-        gate, trust = gate_fixture()
+        gate, trust, roster = gate_fixture()
         self.assertEqual(evaluate_reader_gate(gate, trust).reason,
                          "out-of-band-trust-pin-required")
         self.assertEqual(evaluate_reader_gate(
@@ -97,7 +123,7 @@ class FullCellMatrixTests(unittest.TestCase):
             self.assertEqual(summary["planned_neural_records"], 0)
 
     def test_edited_scores_are_not_the_same_independent_review(self):
-        gate, trust = gate_fixture()
+        gate, trust, roster = gate_fixture()
         approved = fingerprint(trust)
         forged = copy.deepcopy(gate)
         forged["conditions"]["human_sufficient"]["grounded_and_cited"] = 20
@@ -115,7 +141,7 @@ class FullCellMatrixTests(unittest.TestCase):
         ).reason, "out-of-band-trust-pin-mismatch")
 
     def test_forged_capability_and_duplicate_reviewer_are_rejected(self):
-        gate, trust = gate_fixture()
+        gate, trust, roster = gate_fixture()
         bad = copy.deepcopy(gate)
         bad["capabilities"]["modalities"] = ["text", "text"]
         self.assertEqual(evaluate_reader_gate(
@@ -128,6 +154,80 @@ class FullCellMatrixTests(unittest.TestCase):
         self.assertEqual(evaluate_reader_gate(
             gated, double, trusted_review_sha256=fingerprint(double)
         ).reason, "no-current-independent-reviewer-in-trust-manifest")
+
+
+    def test_manifest_sha_and_self_named_reviewer_do_not_prove_independence(self):
+        gate, trust, roster = gate_fixture()
+        self.assertEqual(evaluate_reader_gate(
+            gate, trust, trusted_review_sha256=fingerprint(trust)
+        ).reason, "out-of-band-reviewer-roster-required")
+        self.assertEqual(evaluate_reader_gate(
+            gate, trust, trusted_review_sha256=fingerprint(trust),
+            reviewer_roster=roster, trusted_roster_sha256="0" * 64,
+        ).reason, "reviewer-roster-pin-mismatch")
+        fake = copy.deepcopy(roster)
+        fake["reviewers"][0]["id"] = "self-claimed-reviewer"
+        self.assertEqual(evaluate_reader_gate(
+            gate, trust, trusted_review_sha256=fingerprint(trust),
+            reviewer_roster=fake, trusted_roster_sha256=fingerprint(fake),
+        ).reason, "reviewer-roster-pin-mismatch")
+
+    def test_valid_manifest_with_forged_signature_fails_closed(self):
+        gate, trust, roster = gate_fixture()
+        trust["independent_reviewers"][0]["signature_hex"] = "00" * 64
+        gate["independent_review"]["trust_manifest_sha256"] = fingerprint(trust)
+        self.assertEqual(evaluate_reader_gate(
+            gate, trust, trusted_review_sha256=fingerprint(trust),
+            reviewer_roster=roster, trusted_roster_sha256=fingerprint(roster),
+        ).reason, "reviewer-signature-verification-failed")
+
+    def test_one_signer_or_unapproved_signer_cannot_unlock_full_matrix(self):
+        gate, trust, roster = gate_fixture()
+        one = copy.deepcopy(trust)
+        one["independent_reviewers"] = one["independent_reviewers"][:1]
+        gated = copy.deepcopy(gate)
+        gated["independent_review"]["trust_manifest_sha256"] = fingerprint(one)
+        self.assertEqual(evaluate_reader_gate(
+            gated, one, trusted_review_sha256=fingerprint(one),
+            reviewer_roster=roster, trusted_roster_sha256=fingerprint(roster),
+        ).reason, "no-current-independent-reviewer-in-trust-manifest")
+        unknown = copy.deepcopy(trust)
+        unknown["independent_reviewers"][0]["id"] = "attacker"
+        gated["independent_review"]["trust_manifest_sha256"] = fingerprint(unknown)
+        self.assertEqual(evaluate_reader_gate(
+            gated, unknown, trusted_review_sha256=fingerprint(unknown),
+            reviewer_roster=roster, trusted_roster_sha256=fingerprint(roster),
+        ).reason, "missing-or-unauthorized-reviewer-signature")
+
+    def test_relabelled_or_duplicate_roster_key_fails_closed(self):
+        gate, trust, roster = gate_fixture()
+        duplicate = copy.deepcopy(roster)
+        duplicate["reviewers"][1]["public_key_hex"] = duplicate["reviewers"][0]["public_key_hex"]
+        changed = copy.deepcopy(trust)
+        changed["authorized_reviewer_roster_sha256"] = fingerprint(duplicate)
+        gated = copy.deepcopy(gate)
+        gated["independent_review"]["trust_manifest_sha256"] = fingerprint(changed)
+        self.assertEqual(evaluate_reader_gate(
+            gated, changed, trusted_review_sha256=fingerprint(changed),
+            reviewer_roster=duplicate, trusted_roster_sha256=fingerprint(duplicate),
+        ).reason, "duplicated-authorized-reviewer-key")
+        revoked = copy.deepcopy(roster)
+        revoked["reviewers"][0]["authorized"] = False
+        changed["authorized_reviewer_roster_sha256"] = fingerprint(revoked)
+        gated["independent_review"]["trust_manifest_sha256"] = fingerprint(changed)
+        self.assertEqual(evaluate_reader_gate(
+            gated, changed, trusted_review_sha256=fingerprint(changed),
+            reviewer_roster=revoked, trusted_roster_sha256=fingerprint(revoked),
+        ).reason, "invalid-authorized-reviewer-roster")
+
+    def test_signatures_are_bound_to_cohort_model_and_original_scores(self):
+        gate, trust, roster = gate_fixture()
+        wrong = copy.deepcopy(gate)
+        wrong["model_binding"]["revision"] = "model-r2"
+        self.assertEqual(evaluate_reader_gate(
+            wrong, trust, trusted_review_sha256=fingerprint(trust),
+            reviewer_roster=roster, trusted_roster_sha256=fingerprint(roster),
+        ).reason, "review-not-bound-to-observed-reader-results")
 
     def test_unqualified_plan_blocks_every_record_and_leaves_scores_empty(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -142,12 +242,15 @@ class FullCellMatrixTests(unittest.TestCase):
             self.assertTrue(all(value is None for row in rows for value in row["metrics"].values()))
 
     def test_passed_reader_gate_only_admits_bound_capability(self):
-        gate, trust = gate_fixture()
+        gate, trust, roster = gate_fixture()
         with tempfile.TemporaryDirectory() as directory:
             summary = plan(
                 Path(directory), cells=2, reader_gate=gate, trust_manifest=trust,
                 trusted_review_sha256=fingerprint(trust),
+                reviewer_roster=roster, trusted_roster_sha256=fingerprint(roster),
             )
+            self.assertEqual(summary["reader_gate"]["authorized_reviewer_roster_digest"],
+                             fingerprint(roster))
             self.assertEqual(summary["planned_neural_records"], 48)
             self.assertEqual(summary["blocked_capability_records"], 720)
 
