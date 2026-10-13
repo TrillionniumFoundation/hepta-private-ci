@@ -83,7 +83,9 @@ class PairedCitationReader(EventPresentationReader):
             else digest((self.original_profile, PROFILE, PREMISE_APPENDIX))
         )
 
-    def compile_input(self, query, bundle, originals, *, frontier, revoked, token_limit):
+    def compile_input(
+        self, query, bundle, originals, *, frontier, revoked, token_limit
+    ):
         ids, receipt = event_prompt(
             self.tokenizer,
             query,
@@ -97,9 +99,13 @@ class PairedCitationReader(EventPresentationReader):
             return ids, receipt
         if self.style != "premise_chain":
             raise ValueError("unregistered prompt style")
-        changed = premise_prompt(self.tokenizer, query, receipt, token_limit=token_limit)
+        changed = premise_prompt(
+            self.tokenizer, query, receipt, token_limit=token_limit
+        )
         if digest(changed) == digest(ids):
-            raise ValueError("citation intervention failed to change actual model input")
+            raise ValueError(
+                "citation intervention failed to change actual model input"
+            )
         return changed, receipt | dict(
             input_ids_digest=digest(changed),
             input_tokens=len(changed),
@@ -140,7 +146,9 @@ def score_one(row, truth):
         strict_task_success=correct,
         required_delivered=required <= set(row["selected"]),
         required_source_count=len(required),
-        required_delivered_but_uncited=sorted((required & set(row["selected"])) - bound),
+        required_delivered_but_uncited=sorted(
+            (required & set(row["selected"])) - bound
+        ),
         required_undelivered=sorted(required - set(row["selected"])),
         unbound_label_occurrences=[m for m in cited_markers if m not in label_map],
         cited_not_program_declared=sorted(bound - required),
@@ -164,14 +172,25 @@ def score_one(row, truth):
 
 
 def summarize(scored, cases):
-    expected = {(qid, condition, style) for qid in cases for condition in CONDITIONS for style in STYLES}
+    expected = {
+        (qid, condition, style)
+        for qid in cases
+        for condition in CONDITIONS
+        for style in STYLES
+    }
     keys = [(r["question_id"], r["condition"], r["style"]) for r in scored]
-    if len(scored) != len(expected) or len(set(keys)) != len(keys) or set(keys) != expected:
+    if (
+        len(scored) != len(expected)
+        or len(set(keys)) != len(keys)
+        or set(keys) != expected
+    ):
         raise ValueError("incomplete, duplicated or renamed pair census")
     by_key = dict(zip(keys, scored, strict=True))
     summary = {}
     for condition in CONDITIONS:
-        baseline_success = changed_success = changed_citations = completed = missing = wins = losses = 0
+        baseline_success = changed_success = changed_citations = completed = missing = (
+            wins
+        ) = losses = 0
         original_chains = intervention_chains = 0
         for qid in cases:
             a, b = (by_key[(qid, condition, style)] for style in STYLES)
@@ -300,8 +319,12 @@ def run(plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha):
                     )
                     try:
                         answer, receipt = reader.answer(
-                            query, bundle, originals,
-                            frontier=case["frontier"], revoked=set(), token_limit=LIMIT
+                            query,
+                            bundle,
+                            originals,
+                            frontier=case["frontier"],
+                            revoked=set(),
+                            token_limit=LIMIT,
                         )
                         citation_request = capture_native(
                             query,
@@ -327,7 +350,9 @@ def run(plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha):
                             error_type=type(error).__name__,
                             error=str(error)[:1024],
                         )
-                    journal.write(json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n")
+                    journal.write(
+                        json.dumps(row, ensure_ascii=False, allow_nan=False) + "\n"
+                    )
                     journal.flush()
                     os.fsync(journal.fileno())
                     raw_rows.append(row)
@@ -338,9 +363,7 @@ def run(plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha):
     cases = {case["query"]["identity"]: case for case in plan["cases"]}
     if len(labels) != len(label_rows) or set(cases) - set(labels):
         raise ValueError("original task annotation census changed")
-    scored = [
-        score_one(row, labels[row["question_id"]]) for row in raw_rows
-    ]
+    scored = [score_one(row, labels[row["question_id"]]) for row in raw_rows]
     write(output / "scored-answers.json", scored)
     report = summarize(scored, cases)
     report["generating_source"] = generating_source
@@ -350,7 +373,9 @@ def run(plan_dir, inputs, model_dir, output, *, plan_sha, stage_sha):
     report["new_pretrained_training"] = False
     write(output / "report.json", report)
     if any(row["status"] == "failed" for row in scored):
-        raise ValueError("complete source-citation experiment contains failed model calls")
+        raise ValueError(
+            "complete source-citation experiment contains failed model calls"
+        )
     return report
 
 
@@ -363,8 +388,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(
         json.dumps(
-            run(args.plan, args.inputs, args.model, args.output,
-                plan_sha=args.plan_sha, stage_sha=args.stage_sha),
-            ensure_ascii=False, allow_nan=False,
+            run(
+                args.plan,
+                args.inputs,
+                args.model,
+                args.output,
+                plan_sha=args.plan_sha,
+                stage_sha=args.stage_sha,
+            ),
+            ensure_ascii=False,
+            allow_nan=False,
         )
     )

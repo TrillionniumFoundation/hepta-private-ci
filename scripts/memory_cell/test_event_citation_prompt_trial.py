@@ -6,7 +6,12 @@ import json
 import unittest
 
 from event_citation_prompt_trial import (
-    CONDITIONS, STYLES, PREMISE_APPENDIX, premise_prompt, score_one, summarize,
+    CONDITIONS,
+    STYLES,
+    PREMISE_APPENDIX,
+    premise_prompt,
+    score_one,
+    summarize,
 )
 
 
@@ -23,7 +28,14 @@ class FakeTokenizer:
     def apply_chat_template(self, messages, *, tokenize, add_generation_prompt):
         self.messages = messages
         assert tokenize and add_generation_prompt
-        return list(range(1, 1 + len(messages[0]["content"].split()) + len(messages[1]["content"].split())))
+        return list(
+            range(
+                1,
+                1
+                + len(messages[0]["content"].split())
+                + len(messages[1]["content"].split()),
+            )
+        )
 
 
 def fixture():
@@ -31,8 +43,18 @@ def fixture():
         reader_identity="pinned",
         input_ids_digest="original",
         delivered_evidence=[
-            dict(label="E1", original_id="d1", excerpt="The input is updated.", observed_at="now"),
-            dict(label="E2", original_id="d2", excerpt="The output is site_11223344.", observed_at="now"),
+            dict(
+                label="E1",
+                original_id="d1",
+                excerpt="The input is updated.",
+                observed_at="now",
+            ),
+            dict(
+                label="E2",
+                original_id="d2",
+                excerpt="The output is site_11223344.",
+                observed_at="now",
+            ),
         ],
         derived_evidence=[dict(label="E1", text="schema relation")],
     )
@@ -43,9 +65,15 @@ def fixture():
 def row(style, answer, *, receipt=None, status="succeeded"):
     default, _ = fixture()
     return dict(
-        question_id="q1", kind="composition", condition="organized",
-        style=style, selected=["d1", "d2"], candidate_digest="pool",
-        status=status, answer=answer, receipt=copy.deepcopy(receipt or default),
+        question_id="q1",
+        kind="composition",
+        condition="organized",
+        style=style,
+        selected=["d1", "d2"],
+        candidate_digest="pool",
+        status=status,
+        answer=answer,
+        receipt=copy.deepcopy(receipt or default),
     )
 
 
@@ -58,7 +86,9 @@ class PromptTests(unittest.TestCase):
         user = json.loads(tokenizer.messages[1]["content"])
         self.assertEqual(user["question"], FakeQuestion.content)
         self.assertEqual(user["evidence"][0]["text"], "The input is updated.")
-        self.assertEqual(user["controlled_schema_expansions"], receipt["derived_evidence"])
+        self.assertEqual(
+            user["controlled_schema_expansions"], receipt["derived_evidence"]
+        )
         self.assertNotIn("support", user)
         self.assertNotIn("expected", user)
         self.assertNotIn(truth["expected"], tokenizer.messages[0]["content"])
@@ -66,8 +96,12 @@ class PromptTests(unittest.TestCase):
 
     def test_all_labelled_premises_are_required_for_complete_chain(self):
         receipt, truth = fixture()
-        partial = score_one(row("original", "site_11223344 [E2]", receipt=receipt), truth)
-        complete = score_one(row("premise_chain", "site_11223344 [E1] [E2]", receipt=receipt), truth)
+        partial = score_one(
+            row("original", "site_11223344 [E2]", receipt=receipt), truth
+        )
+        complete = score_one(
+            row("premise_chain", "site_11223344 [E1] [E2]", receipt=receipt), truth
+        )
         self.assertTrue(partial["strict_task_success"])
         self.assertFalse(partial["complete_citation_chain"])
         self.assertEqual(partial["required_delivered_but_uncited"], ["d1"])
@@ -76,7 +110,9 @@ class PromptTests(unittest.TestCase):
 
     def test_hallucinated_citation_is_not_delivered_or_semantically_certified(self):
         receipt, truth = fixture()
-        scored = score_one(row("original", "site_11223344 [E2] [E7]", receipt=receipt), truth)
+        scored = score_one(
+            row("original", "site_11223344 [E2] [E7]", receipt=receipt), truth
+        )
         self.assertEqual(scored["unbound_label_occurrences"], ["E7"])
         self.assertFalse(scored["complete_citation_chain"])
         self.assertTrue(scored["formal_requirements_are_not_human_verified"])
@@ -141,9 +177,15 @@ class PromptTests(unittest.TestCase):
                 sample["condition"] = condition
                 records.append(sample)
         report = summarize(records, {"q1": {}})
-        self.assertTrue(all(x["missing_pairs"] == 1 for x in report["by_condition"].values()))
-        self.assertTrue(all(x["all_planned_task_effect_bounds"] == [-1, 1]
-                            for x in report["by_condition"].values()))
+        self.assertTrue(
+            all(x["missing_pairs"] == 1 for x in report["by_condition"].values())
+        )
+        self.assertTrue(
+            all(
+                x["all_planned_task_effect_bounds"] == [-1, 1]
+                for x in report["by_condition"].values()
+            )
+        )
 
 
 if __name__ == "__main__":
