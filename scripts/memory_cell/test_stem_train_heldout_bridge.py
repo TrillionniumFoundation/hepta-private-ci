@@ -304,7 +304,9 @@ class GeneralizationBridgeTests(unittest.TestCase):
         self.assertTrue(
             final["legacy_mixed_noncomparable_denominator_not_an_unknown_count"]
         )
-        self.assertTrue(result["final_question_bounds_stratified_by_native_answerability"])
+        self.assertTrue(
+            result["final_question_bounds_stratified_by_native_answerability"]
+        )
 
     def test_missing_answerable_and_abstention_scores_bound_separately(self):
         plan, learning, scored, targets = fixture()
@@ -315,16 +317,18 @@ class GeneralizationBridgeTests(unittest.TestCase):
         for row in scored:
             if row["stage"] == 48 and row["question_id"] in ("test-0", "test-1"):
                 row["source_choice_correct"] = None
-        final = train_to_heldout_gap(
-            plan, learning, scored, targets
-        )["final_checkpoint_unique_question_units"]["gated"]
+        final = train_to_heldout_gap(plan, learning, scored, targets)[
+            "final_checkpoint_unique_question_units"
+        ]["gated"]
         self.assertEqual(final["native_answerable_support_questions"], 14)
         self.assertEqual(final["observed_source_support_pairs"], 13)
         self.assertEqual(final["unscored_answerable_support_pairs"], 1)
         self.assertEqual(final["native_source_all_planned_net_gain_bounds"], [-1, 1])
         self.assertEqual(final["observed_native_abstention_pairs"], 0)
         self.assertEqual(final["unscored_native_abstention_pairs"], 1)
-        self.assertEqual(final["native_abstention_all_planned_net_gain_bounds"], [-1, 1])
+        self.assertEqual(
+            final["native_abstention_all_planned_net_gain_bounds"], [-1, 1]
+        )
         self.assertEqual(final["unique_test_transfer_questions"], 16)
 
     def test_every_question_native_unanswerable_has_zero_source_interval(self):
@@ -332,17 +336,15 @@ class GeneralizationBridgeTests(unittest.TestCase):
         for phase in ("test", "transfer"):
             for qid in plan["questions"][phase]:
                 targets[qid] = Target(None, "native-abs", (), True)
-        final = train_to_heldout_gap(
-            plan, learning, scored, targets
-        )["final_checkpoint_unique_question_units"]["gated"]
+        final = train_to_heldout_gap(plan, learning, scored, targets)[
+            "final_checkpoint_unique_question_units"
+        ]["gated"]
         self.assertEqual(final["native_answerable_support_questions"], 0)
         self.assertEqual(final["native_unanswerable_questions"], 16)
         self.assertEqual(final["observed_source_support_pairs"], 0)
         self.assertEqual(final["native_source_all_planned_net_gain_bounds"], [0, 0])
         self.assertEqual(final["native_abstention_all_planned_net_gain_bounds"], [0, 0])
-        self.assertTrue(
-            final["source_and_abstention_never_combined_as_learning_gain"]
-        )
+        self.assertTrue(final["source_and_abstention_never_combined_as_learning_gain"])
 
     def test_missing_or_duplicate_policy_or_head_fails_closed(self):
         for corruption in ("missing-policy", "duplicate-policy", "missing-head"):
