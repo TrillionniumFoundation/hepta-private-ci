@@ -18,8 +18,18 @@ fn test_request() -> ShadowStemCellRequest {
 
 #[test]
 fn rust_joint_question_options_state_digest_matches_python_golden() {
+    let input = test_request().input;
+    let canonical = CanonicalJointInput {
+        options: &input.options,
+        question: &input.question,
+        state: &input.state,
+    };
     assert_eq!(
-        input_hash(&test_request().input).expect("canonical JSON"),
+        serde_json::to_string(&canonical).expect("fixed-order JSON"),
+        r#"{"options":["A","B"],"question":"选择什么？","state":"情境"}"#
+    );
+    assert_eq!(
+        input_hash(&input).expect("canonical JSON"),
         "4ef9abd544c12919d1eb3a2e85cee9b90ae5a99f712c633deb755c541b3a2f62"
     );
     let mut different = test_request();
