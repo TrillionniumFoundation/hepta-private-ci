@@ -709,10 +709,10 @@ fn selector_revoked_during_last_owner_readback_never_prepares_successor() {
     let state = Rc::new(RefCell::new(Observed::default()));
     let selected = Rc::new(RefCell::new(true));
     let mut port = FixturePort::new(state.clone());
-    // First effect verifies one original-owner receipt. Advancing the
-    // successor reads that receipt before and after remote preflight;
-    // revoke the Selector membership during the second live readback.
-    port.revoke_selection_on_readback = Some((selected.clone(), 3));
+    // The first effect's original receipt is now checked again after
+    // admission. During successor preflight, revoke at its *second*
+    // predecessor readback rather than during the first independent check.
+    port.revoke_selection_on_readback = Some((selected.clone(), 4));
     let mut owner =
         CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
     owner.advance().expect("first effect");
@@ -1741,4 +1741,67 @@ fn post_effect_selection_revocation_keeps_all_stages_pending() {
             "recovery must not execute a second effect"
         );
     }
+}
+
+#[test]
+fn tamper_during_post_effect_admission_cannot_seal_a_success_frame() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("single writer");
+    let frozen = root.path().join("cell-split-frozen-plan.json");
+    let mut admission_reads = 0;
+    let result = owner.advance_with_admission(|| {
+        admission_reads += 1;
+        if admission_reads == 3 {
+            fs::write(&frozen, b"{}").expect("adversarial plan replacement");
+        }
+        Ok(())
+    });
+    assert!(matches!(
+        result,
+        Err(CellSplitExecutionErrorV1::Invalid("frozen plan drift"))
+    ));
+    assert_eq!(admission_reads, 3);
+    assert_eq!(owner.completed_steps(), 0);
+    assert_eq!(state.borrow().executions, 1, "external commit was real");
+    assert!(root.path().join("cell-split-00-prepared.json").exists());
+    assert!(!root.path().join("cell-split-00-committed.json").exists());
+    assert!(owner.advance().is_err(), "corrupted ledger stays denied");
+    assert_eq!(state.borrow().executions, 1, "never duplicate effect");
+}
+
+#[test]
+fn original_effect_withdrawn_during_final_admission_cannot_be_acknowledged() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("single writer");
+    let mut admission_reads = 0;
+    let original = state.clone();
+    let result = owner.advance_with_admission(|| {
+        admission_reads += 1;
+        if admission_reads == 3 {
+            original.borrow_mut().commits.clear();
+        }
+        Ok(())
+    });
+    assert!(matches!(result, Err(CellSplitExecutionErrorV1::External(_))));
+    assert_eq!(admission_reads, 3);
+    assert_eq!(owner.completed_steps(), 0);
+    assert_eq!(state.borrow().executions, 1, "one real owner effect");
+    assert!(root.path().join("cell-split-00-prepared.json").exists());
+    assert!(!root.path().join("cell-split-00-committed.json").exists());
+    assert!(owner.advance().is_err(), "lost effect remains ambiguous");
+    assert_eq!(state.borrow().executions, 1);
 }

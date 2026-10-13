@@ -924,6 +924,15 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // prepared intent pending on rejection: recovery may only read back
         // this exact effect, never execute it a second time.
         revalidate().map_err(CellSplitExecutionErrorV1::External)?;
+        // Admission itself may block while an adversary replaces local ledger
+        // frames or the original effect owner withdraws its commit. Recheck
+        // both sides after that external read, before the coordinator seals
+        // an irreversible success frame. A failure stays reconcile-only.
+        // These are bounded read-only checks, NOT an atomic cross-owner grant.
+        self.verify_committed_prefix()?;
+        self.port
+            .verify_committed(&intent, &receipt)
+            .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
         write_private_new(
             &frame_path(&self.root, self.cursor, "committed"),
             &canonical_json(&receipt)?,
