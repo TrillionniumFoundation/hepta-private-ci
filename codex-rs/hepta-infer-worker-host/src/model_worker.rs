@@ -5,6 +5,9 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::str::FromStr;
 
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_infer_core::BoundStemNeuronRequestV1;
 use codex_hepta_infer_core::NeuronFeatureObservationV1;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
@@ -142,6 +145,7 @@ pub enum Error {
     FeatureLimit,
     FeatureOutputMismatch,
     FeatureContract,
+    FinalUseDenied,
 }
 
 impl fmt::Display for Error {
@@ -479,6 +483,9 @@ pub struct BoundStemFeatureExecutionV1 {
     /// actually incorporated into the Worker payload and receipt.
     pub scoped_input_digest: Digest32,
     pub worker_receipt: NeuronFeatureReceiptV1,
+    /// Hash witness for the exact signed final-use binding. This is NOT a
+    /// signed execution receipt or an NDU acceptance decision.
+    pub final_use_binding_digest: Option<Digest32>,
     pub authority: codex_hepta_types::AuthorityPosture,
 }
 
@@ -513,7 +520,7 @@ pub trait NeuronFeatureDriver: ModelDriver {
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
-    pub fn run_neuron_features(
+    pub(crate) fn run_neuron_features(
         &mut self,
         now_ms: u64,
         model_id: &str,
@@ -652,7 +659,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     /// An externally authenticated Stem artifact load, principal/Scope
     /// identity, current generation and final-use authority are REQUIRED
     /// outside this boundary. `StemAccessContextV1` alone is not proof.
-    pub fn run_bound_stem_feature_receipt_v1(
+    pub(crate) fn run_bound_stem_feature_receipt_v1(
         &mut self,
         now_ms: u64,
         source: &StemFeatureRefV1,
@@ -722,15 +729,200 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             stem_feature_ref_digest: bound.feature_ref_digest,
             scoped_input_digest,
             worker_receipt: receipt,
+            final_use_binding_digest: None,
             authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
         })
+    }
+}
+
+/// A complete caller-bound proposal consumed at a signed final-use effect
+/// boundary. The caller cannot manufacture `VerifiedUseToken` merely by
+/// populating this structure. Every field is revalidated against current
+/// loaded Head/ResourceGrant state immediately before effect entry.
+pub struct VerifiedStemFeatureDispatchV1<'a> {
+    pub source: &'a StemFeatureRefV1,
+    pub access: &'a StemAccessContextV1,
+    pub selected_head: StemHeadBindingV1,
+    pub feature_vector_q24: &'a [i64],
+    pub authorization: WorkerRequest,
+}
+
+/// Canonical exact source/request payload digest used by the existing Worker
+/// path. A final-use issuer must sign the resulting expected binding, not
+/// replace a missing or mismatched lease payload.
+fn stem_final_use_request_digest_v1(
+    authorization: &WorkerRequest,
+    grant: &ResourceGrant,
+    ref_digest: Digest32,
+) -> Digest32 {
+    let mut raw = b"hepta.infer-worker.stem-final-use-request.v1".to_vec();
+    for field in [
+        &authorization.request_id,
+        &authorization.reservation_id,
+        &authorization.model_digest,
+        &authorization.payload_digest,
+        &authorization.lease_payload_digest,
+        &authorization.reservation_model_digest,
+        &grant.grant_id,
+        &grant.semantic_digest,
+    ] {
+        raw.extend_from_slice(&(field.len() as u32).to_be_bytes());
+        raw.extend_from_slice(field.as_bytes());
+    }
+    for field in [
+        authorization.maximum_tokens,
+        authorization.reservation_maximum_tokens,
+    ] {
+        raw.extend_from_slice(&field.to_be_bytes());
+    }
+    for field in [
+        authorization.deadline_ms,
+        grant.authority_epoch,
+        grant.generation,
+        grant.expires_at_ms,
+    ] {
+        raw.extend_from_slice(&field.to_be_bytes());
+    }
+    raw.push(u8::from(authorization.cancelled));
+    raw.extend_from_slice(ref_digest.as_array());
+    Digest32::of_bytes(&raw)
+}
+
+impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
+    /// Create a proposal for an **independent** FinalUseAuthority issuer.
+    ///
+    /// This checks the current runtime grant and loaded Head and binds the
+    /// full scoped Stem feature, request identity, reservation, lease bytes,
+    /// deadline and exact Worker payload. A proposal grants no authority.
+    /// Before effect the worker recomputes all fields from current state.
+    pub fn expected_stem_final_use_binding_v1(
+        &self,
+        now_ms: u64,
+        source: &StemFeatureRefV1,
+        access: &StemAccessContextV1,
+        selected_head: StemHeadBindingV1,
+        feature_vector_q24: &[i64],
+        authorization: &WorkerRequest,
+    ) -> Result<FinalUseBinding, Error> {
+        self.validate_current_grant(now_ms)?;
+        if access.now_ms != now_ms
+            || source.authority_epoch != self.grant.authority_epoch
+            || access.authority_epoch != self.grant.authority_epoch
+            || source.stem_generation.get() != self.generation
+            || access.stem_generation.get() != self.generation
+        {
+            return Err(Error::InvalidGrant);
+        }
+        let bound = bind_stem_feature_request_v1(source, access, selected_head, feature_vector_q24)
+            .map_err(|_| Error::FeatureContract)?;
+        if bound.authority.grants_any()
+            || authorization.request_id != bound.request.request_id.to_string()
+        {
+            return Err(Error::FeatureContract);
+        }
+        let head_id = bound.request.model_id.to_string();
+        let loaded = self.models.get(&head_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.manifest.weights_digest != bound.request.weights_digest.to_string()
+            || authorization.model_digest != loaded.manifest.model_digest
+            || authorization.reservation_model_digest != loaded.manifest.model_digest
+        {
+            return Err(Error::ModelMismatch);
+        }
+        if authorization.maximum_tokens > loaded.manifest.maximum_tokens
+            || authorization.maximum_tokens > authorization.reservation_maximum_tokens
+        {
+            return Err(Error::TokenLimit);
+        }
+        let request = NeuronFeatureRequest {
+            authorization: authorization.clone(),
+            encoder_digest: bound.request.encoder_digest.to_string(),
+            head_digest: bound.request.head_digest.to_string(),
+            weights_digest: bound.request.weights_digest.to_string(),
+            input_digest: scoped_stem_worker_input_digest_v1(&bound).to_string(),
+            feature_vector_q24: bound.request.feature_vector_q24,
+            expected_output_width: bound.request.expected_output_width,
+        };
+        validate_request(now_ms, &request.authorization)?;
+        validate_neuron_feature_request(&request)?;
+        if authorization.cancelled {
+            return Err(Error::FinalUseDenied);
+        }
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        if authorization.payload_digest != payload || authorization.lease_payload_digest != payload
+        {
+            return Err(Error::PayloadMismatch);
+        }
+        Ok(FinalUseBinding {
+            subject_id: source.principal_id.to_string(),
+            destination_id: format!("neuron.head:{head_id}"),
+            request_sha256: stem_final_use_request_digest_v1(
+                authorization,
+                &self.grant,
+                bound.feature_ref_digest,
+            )
+            .into_array(),
+            scope_sha256: bound.feature_ref_digest.into_array(),
+            payload_sha256: parse_digest32(&payload)?.into_array(),
+        })
+    }
+
+    /// Single-use independently verified entry point for the shared Stem.
+    ///
+    /// The `trusted_authority` MUST come from a protected host/pinned
+    /// issuer composition; passing an attacker-created authority is not
+    /// authentication. `with_verified_effect` verifies token ownership
+    /// (same authority instance), the exact binding, current revocation and
+    /// expiry, and holds an active effect fence across the Worker call.
+    /// No signing key or grant issuance exists in this Worker.
+    pub fn run_verified_stem_feature_receipt_v1(
+        &mut self,
+        trusted_authority: &FinalUseAuthority,
+        verified_use: VerifiedUseToken,
+        now_ms: u64,
+        proposed: VerifiedStemFeatureDispatchV1<'_>,
+    ) -> Result<BoundStemFeatureExecutionV1, Error> {
+        let VerifiedStemFeatureDispatchV1 {
+            source,
+            access,
+            selected_head,
+            feature_vector_q24,
+            authorization,
+        } = proposed;
+        let binding = self.expected_stem_final_use_binding_v1(
+            now_ms,
+            source,
+            access,
+            selected_head.clone(),
+            feature_vector_q24,
+            &authorization,
+        )?;
+        if verified_use.claimed_authority_epoch() != self.grant.authority_epoch {
+            return Err(Error::FinalUseDenied);
+        }
+        let binding_digest =
+            Digest32::of_bytes(&serde_json::to_vec(&binding).map_err(|_| Error::FinalUseDenied)?);
+        let outcome = trusted_authority
+            .with_verified_effect(verified_use, &binding, || {
+                self.run_bound_stem_feature_receipt_v1(
+                    now_ms,
+                    source,
+                    access,
+                    selected_head,
+                    feature_vector_q24,
+                    authorization,
+                )
+            })
+            .map_err(|_| Error::FinalUseDenied)?;
+        let mut receipt = outcome?;
+        receipt.final_use_binding_digest = Some(binding_digest);
+        Ok(receipt)
     }
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     /// Execute the worker path and project the observed result into the
     /// inference-control-owned typed receipt.
-    pub fn run_neuron_features_receipt(
+    pub(crate) fn run_neuron_features_receipt(
         &mut self,
         now_ms: u64,
         model_id: &str,

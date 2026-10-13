@@ -1147,6 +1147,9 @@ async fn send_authorized_turn_start(
         .await
 }
 
+/// All fields frozen with the durable dispatch before any irreversible send.
+/// Bundling the identity prevents a caller from accidentally omitting a
+/// single provenance/revocation field when the protocol evolves.
 struct PersistedNativeDispatchBinding<'a> {
     request_id: &'a str,
     payload_digest: Digest32,

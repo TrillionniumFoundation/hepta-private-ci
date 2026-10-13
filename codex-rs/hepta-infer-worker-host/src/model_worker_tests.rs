@@ -709,3 +709,226 @@ fn neuron_driver_total_reported_peak_cannot_bypass_memory_resource_grant() {
         Err(Error::ModelCapacity)
     );
 }
+
+#[cfg(unix)]
+fn signed_stem_final_use_fixture(
+    binding: codex_hepta_contracts::FinalUseBinding,
+) -> (
+    codex_hepta_contracts::FinalUseAuthority,
+    codex_hepta_contracts::SignedFinalUseGrant,
+    tempfile::TempDir,
+) {
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+    use std::os::unix::fs::PermissionsExt;
+    use std::time::SystemTime;
+    use std::time::UNIX_EPOCH;
+
+    // Qualification-only issuer! Production MUST use protected host trust,
+    // independent approval, protected clock and external CAS frontier.
+    let issuer = SigningKey::from_bytes(&[47; 32]);
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("test clock")
+        .as_millis() as u64;
+    let grant = codex_hepta_contracts::FinalUseGrant {
+        schema_version: 1,
+        signer_id: "stem-final-use-test-owner".into(),
+        authority_epoch: 2,
+        grant_id: "stem-final-use-test-grant".into(),
+        nonce: [77; 32],
+        binding,
+        not_before_unix_ms: now.saturating_sub(1_000),
+        expires_at_unix_ms: now + 30_000,
+    };
+    let signature = issuer
+        .sign(&grant.signing_bytes().expect("valid test final-use grant"))
+        .to_bytes()
+        .to_vec();
+    let directory = tempfile::tempdir().expect("test final-use home");
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("protected test authority directory");
+    let authority = codex_hepta_contracts::FinalUseAuthority::open_state_dir(
+        directory.path(),
+        grant.signer_id.clone(),
+        issuer.verifying_key().to_bytes(),
+        codex_hepta_contracts::FinalUseRevocations {
+            authority_epoch: 2,
+            revision: 1,
+            revoked_grant_ids: std::collections::BTreeSet::new(),
+        },
+    )
+    .expect("test authority with exact issuer key");
+    (
+        authority,
+        codex_hepta_contracts::SignedFinalUseGrant { grant, signature },
+        directory,
+    )
+}
+
+#[cfg(unix)]
+#[test]
+fn signed_final_use_enters_the_native_worker_and_remains_nonpromoting() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.verified".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker
+        .load_model(100, manifest())
+        .expect("load real Head fixture");
+    let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
+    let expected = worker
+        .expected_stem_final_use_binding_v1(
+            100,
+            &source,
+            &access,
+            head.clone(),
+            &features,
+            &authorization,
+        )
+        .expect("a complete unsigned proposal");
+    assert_eq!(expected.subject_id, "principal.1");
+    assert_eq!(expected.destination_id, "neuron.head:model.1");
+    assert_ne!(expected.request_sha256, [0; 32]);
+    assert_ne!(expected.scope_sha256, [0; 32]);
+    assert_ne!(expected.payload_sha256, [0; 32]);
+    let (authority, signed, _directory) = signed_stem_final_use_fixture(expected.clone());
+    let token = authority
+        .claim(&signed, &expected)
+        .expect("cryptographically verified one-use test token");
+    let observed = worker
+        .run_verified_stem_feature_receipt_v1(
+            &authority,
+            token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                selected_head: head,
+                feature_vector_q24: &features,
+                authorization,
+            },
+        )
+        .expect("signed and scoped native driver path");
+    assert_eq!(
+        observed.worker_receipt.status,
+        codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded,
+    );
+    assert!(observed.final_use_binding_digest.is_some());
+    assert!(!observed.worker_receipt.receipt_digest.is_zero());
+    assert!(!observed.authority.grants_any());
+    assert!(!observed.worker_receipt.authority.grants_any());
+    // Issuer keeps the nonce in a durable single-use journal.
+    assert_eq!(
+        authority.claim(&signed, &expected).unwrap_err(),
+        codex_hepta_contracts::FinalUseError::AlreadyClaimed,
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn final_use_different_signed_request_or_authority_is_rejected() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.signed-replay".into(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let binding = worker
+        .expected_stem_final_use_binding_v1(100, &source, &access, head.clone(), &features, &auth)
+        .expect("frozen request proposal");
+    let (authority, signed, _directory) = signed_stem_final_use_fixture(binding.clone());
+    let token = authority
+        .claim(&signed, &binding)
+        .expect("trusted test claim");
+    let mut amended_auth = auth.clone();
+    amended_auth.maximum_tokens -= 1;
+    // The Worker payload remains the same but the request/Reservation tuple
+    // changed. The independent signature must still reject this mutation.
+    assert_eq!(
+        worker.run_verified_stem_feature_receipt_v1(
+            &authority,
+            token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                selected_head: head.clone(),
+                feature_vector_q24: &features,
+                authorization: amended_auth,
+            },
+        ),
+        Err(Error::FinalUseDenied),
+    );
+
+    // Distinct verifier instance—even when pinned to the same issuer key
+    // and presented with the exact same grant—cannot impersonate the host
+    // authority that produced the non-cloneable token. Arc ownership matters.
+    let (other_authority, other_signed, _other_directory) =
+        signed_stem_final_use_fixture(binding.clone());
+    let foreign_token = other_authority
+        .claim(&other_signed, &binding)
+        .expect("valid token issued by other verifier instance");
+    assert_eq!(
+        worker.run_verified_stem_feature_receipt_v1(
+            &authority,
+            foreign_token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                selected_head: head,
+                feature_vector_q24: &features,
+                authorization: auth,
+            },
+        ),
+        Err(Error::FinalUseDenied),
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn final_use_revocation_after_claim_fences_worker_effect_entry() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.revoked".into(), 3, grant(), Driver::default())
+            .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let binding = worker
+        .expected_stem_final_use_binding_v1(100, &source, &access, head.clone(), &features, &auth)
+        .expect("frozen binding");
+    let (authority, signed, _directory) = signed_stem_final_use_fixture(binding.clone());
+    let token = authority
+        .claim(&signed, &binding)
+        .expect("valid signed claim");
+    authority
+        .update_revocations(codex_hepta_contracts::FinalUseRevocations {
+            authority_epoch: 2,
+            revision: 2,
+            revoked_grant_ids: std::collections::BTreeSet::from([signed.grant.grant_id]),
+        })
+        .expect("trusted revocation update");
+    assert_eq!(
+        worker.run_verified_stem_feature_receipt_v1(
+            &authority,
+            token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                selected_head: head,
+                feature_vector_q24: &features,
+                authorization: auth,
+            },
+        ),
+        Err(Error::FinalUseDenied),
+    );
+}
