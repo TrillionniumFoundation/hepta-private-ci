@@ -7,6 +7,7 @@ No artificial negative labels are generated for absent or failed evidence.
 from datetime import datetime
 import hashlib
 import json
+from pathlib import Path
 import re
 
 from reader_review_ledger import CONDITIONS
@@ -22,6 +23,7 @@ MAX_CASE_BYTES = 8 * 1024 * 1024
 MAX_TOTAL_BYTES = 64 * 1024 * 1024
 MAX_ANSWER_BYTES = 16 * 1024
 MAX_PROMPT_IDS = 8192
+MAX_ATTESTATION_FILE_BYTES = 96 * 1024 * 1024
 CITE = re.compile(r"\[E([0-9]+)\]", re.I)
 
 
@@ -29,6 +31,60 @@ def canonical_sha(value):
     return hashlib.sha256(json.dumps(
         value, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
         allow_nan=False).encode("utf-8")).hexdigest()
+
+
+def load_strict_json_file(path, *, expected_file_sha256=None,
+                          require_pin=False, max_bytes=MAX_ATTESTATION_FILE_BYTES):
+    """Read one bounded ORIGINAL JSON file, rejecting duplicate keys and byte drift.
+
+    A hash of parsed JSON is NOT an external file-byte pin: different input
+    bytes (including ignored duplicate keys) can parse to the same object.
+    Mandatory raw-byte pins must be operator supplied, never embedded in the
+    JSON being read. This parser does NOT authenticate owners or reviewers.
+    """
+    if (type(max_bytes) is not int or
+            not 1 <= max_bytes <= MAX_ATTESTATION_FILE_BYTES):
+        raise ValueError("invalid original JSON file budget")
+    if (require_pin and (type(expected_file_sha256) is not str or
+            re.fullmatch(r"[0-9a-f]{64}", expected_file_sha256) is None)):
+        raise ValueError("out-of-band-original-file-pin-required")
+    if (expected_file_sha256 is not None and
+            (type(expected_file_sha256) is not str or
+             re.fullmatch(r"[0-9a-f]{64}", expected_file_sha256) is None)):
+        raise ValueError("invalid raw-file SHA256 pin")
+    file = Path(path)
+    if file.is_symlink() or any(parent.is_symlink() for parent in file.parents):
+        raise ValueError("symlink in reviewed JSON file path")
+    if not file.is_file():
+        raise ValueError("reviewed JSON must be a regular file")
+    with file.open("rb") as stream:
+        raw = stream.read(max_bytes + 1)
+    if not raw or len(raw) > max_bytes:
+        raise ValueError("reviewed JSON file byte limit")
+    if (expected_file_sha256 is not None and
+            hashlib.sha256(raw).hexdigest() != expected_file_sha256):
+        raise ValueError("original JSON raw-file SHA256 mismatch")
+
+    def unique_pairs(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result:
+                raise ValueError("duplicate JSON key in reviewed input")
+            result[key] = value
+        return result
+
+    def nonfinite(_):
+        raise ValueError("nonfinite JSON constant in reviewed input")
+
+    try:
+        result = json.loads(raw.decode("utf-8", "strict"),
+                            object_pairs_hook=unique_pairs,
+                            parse_constant=nonfinite)
+    except (UnicodeError, ValueError) as error:
+        raise ValueError("malformed or ambiguous reviewed JSON") from error
+    if type(result) is not dict:
+        raise ValueError("reviewed JSON root must be an object")
+    return result
 
 
 def source_fingerprint(source):

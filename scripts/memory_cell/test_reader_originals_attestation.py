@@ -1,9 +1,14 @@
 """Original byte / prompt / answer binding, NOT an independent human review."""
 import copy
+import hashlib
+import json
+from pathlib import Path
+import tempfile
 import unittest
 
 from reader_originals_attestation import (
-    SCHEMA, audit_originals, canonical_sha, source_fingerprint,
+    SCHEMA, audit_originals, canonical_sha, load_strict_json_file,
+    source_fingerprint,
 )
 
 
@@ -105,6 +110,16 @@ class OriginalAttestationTests(unittest.TestCase):
         self.originals["items"][2]["delivered_sources"][0]["scope"]="different-scope"
         self.assertEqual(self.audit(), "original-source-scope-time-or-identity-invalid")
 
+    def test_valid_unicode_original_with_aligned_partial_utf8_window(self):
+        source = self.originals["items"][2]["delivered_sources"][0]
+        source["content"] = "前缀🙂目标知识"
+        source["start"] = len("前缀".encode("utf-8"))
+        source["end"] = len(source["content"].encode("utf-8"))
+        new_fingerprint = source_fingerprint(source)
+        self.reviewed[2]["delivered_source_sha256"][0] = new_fingerprint
+        self.reviewed[2]["cited_source_sha256"][0] = new_fingerprint
+        self.assertIsNone(self.audit())
+
     def test_changed_utf8_offset_is_rejected(self):
         self.originals["items"][2]["delivered_sources"][0]["end"] += 2
         self.assertEqual(self.audit(), "original-case-bytes-malformed")
@@ -141,6 +156,101 @@ class OriginalAttestationTests(unittest.TestCase):
     def test_wrong_answer_hash_reviewer_cannot_change_source_artifact(self):
         self.reviewed[2]["raw_answer_sha256"]="f"*64
         self.assertEqual(self.audit(), "original-question-prompt-answer-or-citation-drift")
+
+
+class OriginalFilePinTests(unittest.TestCase):
+    """No artificial reviewer approval, model use or source ingress in these tests."""
+
+    def source_bytes(self, root, raw):
+        path = Path(root) / "originals.json"
+        path.write_bytes(raw)
+        return path, hashlib.sha256(raw).hexdigest()
+
+    def test_unicode_raw_bytes_and_canonical_object_are_distinct_pins(self):
+        payload = dict(观察="可信来源 🎯", nested={"答案": "设备"})
+        raw = json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
+        with tempfile.TemporaryDirectory() as root:
+            path, sha = self.source_bytes(root, raw)
+            decoded = load_strict_json_file(
+                path, expected_file_sha256=sha, require_pin=True
+            )
+            self.assertEqual(decoded, payload)
+            self.assertEqual(canonical_sha(decoded), canonical_sha(payload))
+            # Unicode escapes produce the same object but DIFFERENT file bytes.
+            escaped = json.dumps(payload, ensure_ascii=True,
+                                 sort_keys=True).encode("utf-8")
+            path.write_bytes(escaped)
+            self.assertEqual(json.loads(escaped), payload)
+            with self.assertRaisesRegex(ValueError, "raw-file SHA256 mismatch"):
+                load_strict_json_file(
+                    path, expected_file_sha256=sha, require_pin=True
+                )
+
+    def test_originals_file_pin_cannot_be_self_supplied(self):
+        with tempfile.TemporaryDirectory() as root:
+            path, sha = self.source_bytes(root, b'{"items":[]}')
+            with self.assertRaisesRegex(ValueError, "out-of-band-original-file-pin-required"):
+                load_strict_json_file(path, require_pin=True)
+            with self.assertRaisesRegex(ValueError, "out-of-band-original-file-pin-required"):
+                load_strict_json_file(path, expected_file_sha256="not-sha", require_pin=True)
+            self.assertEqual(
+                load_strict_json_file(path, expected_file_sha256=sha, require_pin=True),
+                {"items": []},
+            )
+
+    def test_duplicate_keys_fail_even_when_whole_file_hash_is_recalculated(self):
+        raw = b'{"cohort":[],"cohort":["redefined"]}'
+        with tempfile.TemporaryDirectory() as root:
+            path, sha = self.source_bytes(root, raw)
+            with self.assertRaisesRegex(ValueError, "ambiguous"):
+                load_strict_json_file(path, expected_file_sha256=sha, require_pin=True)
+
+    def test_nested_duplicate_keys_are_rejected(self):
+        raw = b'{"items":[{"raw_answer":"no","raw_answer":"yes"}]}'
+        with tempfile.TemporaryDirectory() as root:
+            path, sha = self.source_bytes(root, raw)
+            with self.assertRaisesRegex(ValueError, "ambiguous"):
+                load_strict_json_file(path, expected_file_sha256=sha, require_pin=True)
+
+    def test_nonfinite_numbers_and_invalid_utf8_fail(self):
+        for raw in (b'{"metric":NaN}', b'{"metric":Infinity}',
+                    b'{"content":"\xff"}', b''):
+            with self.subTest(raw=raw), tempfile.TemporaryDirectory() as root:
+                path, sha = self.source_bytes(root, raw)
+                with self.assertRaises(ValueError):
+                    load_strict_json_file(path, expected_file_sha256=sha, require_pin=True)
+
+    def test_json_array_or_scalar_cannot_be_reviewed_manifest(self):
+        for raw in (b'[]', b'"signed"', b'123', b'null'):
+            with self.subTest(raw=raw), tempfile.TemporaryDirectory() as root:
+                path, sha = self.source_bytes(root, raw)
+                with self.assertRaisesRegex(ValueError, "root must be an object"):
+                    load_strict_json_file(path, expected_file_sha256=sha, require_pin=True)
+
+    def test_bounded_read_rejects_oversize_without_unbounded_allocation(self):
+        raw = b'{"payload":"' + b"a" * 100 + b'"}'
+        with tempfile.TemporaryDirectory() as root:
+            path, sha = self.source_bytes(root, raw)
+            with self.assertRaisesRegex(ValueError, "byte limit"):
+                load_strict_json_file(path, expected_file_sha256=sha,
+                                      require_pin=True, max_bytes=32)
+            with self.assertRaisesRegex(ValueError, "file budget"):
+                load_strict_json_file(path, expected_file_sha256=sha,
+                                      require_pin=True, max_bytes=0)
+
+    def test_symlink_source_and_ancestor_fail_closed(self):
+        with tempfile.TemporaryDirectory() as root:
+            path, sha = self.source_bytes(root, b'{"valid":true}')
+            link = Path(root) / "insecure.json"
+            link.symlink_to(path)
+            with self.assertRaisesRegex(ValueError, "symlink"):
+                load_strict_json_file(link, expected_file_sha256=sha, require_pin=True)
+            alias = Path(root) / "insecure_parent"
+            alias.symlink_to(Path(root), target_is_directory=True)
+            with self.assertRaisesRegex(ValueError, "symlink"):
+                load_strict_json_file(
+                    alias / path.name, expected_file_sha256=sha, require_pin=True
+                )
 
 
 if __name__ == "__main__":

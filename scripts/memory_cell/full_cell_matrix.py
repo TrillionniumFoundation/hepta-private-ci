@@ -15,7 +15,7 @@ import re
 import sys
 
 from reader_review_ledger import audit_case_ledger
-from reader_originals_attestation import audit_originals
+from reader_originals_attestation import audit_originals, load_strict_json_file
 
 
 STEMS = (
@@ -64,7 +64,8 @@ def _digest(value: object) -> str:
 
 def _digest_bytes(value: object) -> str:
     return hashlib.sha256(
-        json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+        json.dumps(value, sort_keys=True, separators=(",", ":"), ensure_ascii=False,
+                   allow_nan=False).encode("utf-8")
     ).hexdigest()
 
 
@@ -364,10 +365,14 @@ def main(argv: list[str]) -> int:
     if len(argv) not in (2, 3, 4, 5, 6):
         print("usage: full_cell_matrix.py OUTPUT [READER_GATE_JSON TRUST_MANIFEST_JSON AUTHORIZED_ROSTER_JSON ORIGINAL_SOURCE_MANIFEST_JSON]", file=sys.stderr)
         return 2
-    gate = json.loads(Path(argv[2]).read_text(encoding="utf-8")) if len(argv) >= 3 else None
-    trust = json.loads(Path(argv[3]).read_text(encoding="utf-8")) if len(argv) >= 4 else None
-    roster = json.loads(Path(argv[4]).read_text(encoding="utf-8")) if len(argv) >= 5 else None
-    originals = json.loads(Path(argv[5]).read_text(encoding="utf-8")) if len(argv) == 6 else None
+    gate = load_strict_json_file(Path(argv[2])) if len(argv) >= 3 else None
+    trust = load_strict_json_file(Path(argv[3])) if len(argv) >= 4 else None
+    roster = load_strict_json_file(Path(argv[4])) if len(argv) >= 5 else None
+    originals = load_strict_json_file(
+        Path(argv[5]),
+        expected_file_sha256=os.environ.get("HEPTA_READER_ORIGINALS_FILE_SHA256") or None,
+        require_pin=True,
+    ) if len(argv) == 6 else None
     summary = plan(
         Path(argv[1]), reader_gate=gate, trust_manifest=trust,
         trusted_review_sha256=os.environ.get("HEPTA_READER_TRUST_SHA256") or None,

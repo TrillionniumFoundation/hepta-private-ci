@@ -1,14 +1,17 @@
 import copy
 import hashlib
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
-from full_cell_matrix import evaluate_reader_gate, enumerate_matrix, plan, resource_estimate
+from full_cell_matrix import (_digest_bytes, evaluate_reader_gate, enumerate_matrix,
+                              main, plan, resource_estimate)
 from reader_originals_attestation import SCHEMA, canonical_sha, source_fingerprint
 
 
@@ -320,6 +323,54 @@ class FullCellMatrixTests(unittest.TestCase):
                              fingerprint(roster))
             self.assertEqual(summary["planned_neural_records"], 48)
             self.assertEqual(summary["blocked_capability_records"], 720)
+
+
+    def test_unicode_originals_use_one_specified_canonical_digest(self):
+        # JSON's default ASCII escaping MUST NOT differ from the source
+        # attestation's UTF-8 canonical serialization for natural transcripts.
+        for value in (
+            {"source": "设备 🎯", "answer": "[E1]"},
+            {"query": "日本語", "evidence": ["中文", "😀"]},
+        ):
+            self.assertEqual(_digest_bytes(value), canonical_sha(value))
+
+    def test_cli_never_admits_originals_without_separate_raw_file_pin(self):
+        # Synthetic key fixtures test only structural enforcement, not real
+        # independent reviews, valid authority or real production decisions.
+        gate, trust, roster = gate_fixture()
+        originals = original_fixture(gate)
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            files = []
+            for name, value in (
+                ("gate.json", gate), ("trust.json", trust),
+                ("roster.json", roster), ("originals.json", originals),
+            ):
+                path = root / name
+                path.write_text(json.dumps(value, ensure_ascii=False),
+                                encoding="utf-8")
+                files.append(str(path))
+            env = {
+                "HEPTA_READER_TRUST_SHA256": fingerprint(trust),
+                "HEPTA_REVIEWER_ROSTER_SHA256": fingerprint(roster),
+                "HEPTA_READER_ORIGINALS_SHA256": canonical_sha(originals),
+            }
+            with patch.dict(os.environ, env, clear=True):
+                with self.assertRaisesRegex(
+                    ValueError, "out-of-band-original-file-pin-required"
+                ):
+                    main(["full_cell_matrix.py", str(root / "not-started"), *files])
+            self.assertFalse((root / "not-started").exists())
+
+    def test_cli_rejects_duplicate_json_fields_before_any_gate_decision(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            gate = root / "gate.json"
+            gate.write_text('{"schema":"hepta.reader-gate.v2","schema":"other"}')
+            with self.assertRaisesRegex(ValueError, "ambiguous"):
+                main(["full_cell_matrix.py", str(root / "not-started"),
+                      str(gate)])
+            self.assertFalse((root / "not-started").exists())
 
 
 if __name__ == "__main__":

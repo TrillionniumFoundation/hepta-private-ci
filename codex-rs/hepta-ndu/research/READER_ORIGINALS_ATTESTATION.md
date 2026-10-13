@@ -52,6 +52,40 @@ revalidates the raw-source concordance only after verifying the two signatures,
 case ledger and previous thresholds. It never uses gold answers as model input
 or credits model predictions as human judgments.
 
+## Additional original JSON FILE pin and unambiguous parsing
+
+The original-source attestation now distinguishes TWO different SHA256 values:
+
+1. **Exact original-file bytes**, independently operator pinned as
+   `HEPTA_READER_ORIGINALS_FILE_SHA256`. Compute this with `sha256sum` on the
+   actual UTF-8 JSON file obtained from the authenticated producer. This hash
+   covers whitespace, literal Unicode encoding, key ordering and ALL raw input
+   bytes. It must not be taken from inside the file or from an untrusted review.
+2. **Canonical parsed ORIGINALS object**, previously pinned as
+   `HEPTA_READER_ORIGINALS_SHA256` and repeated in the signed trust manifest's
+   `originals_sha256`. Canonicalization is sorted-key, compact JSON,
+   `ensure_ascii=False`, UTF-8, with nonfinite values forbidden. For example,
+   `reader_originals_attestation.canonical_sha(parsed_object)` produces this
+   digest. The file pin and canonical pin are intentionally distinct.
+
+A CLI invocation with an original source file but NO separate original-file
+pin fails *before admission*, without creating a neural result. JSON inputs
+are bounded and decoded as strict UTF-8; nested or top-level duplicate keys,
+NaN/Infinity, non-object roots, symlinks and unknown oversized files fail.
+This disallows the old ambiguity in which different raw JSON files could
+parse to the same object under the canonical trust digest. Non-ASCII source
+bytes and escaped Unicode strings with identical parsed content do NOT share
+an identical **file** SHA, while a canonical object SHA remains stable.
+The programmatic `evaluate_reader_gate` API still expects externally
+authenticated dict objects; use the pinned CLI for provenance of real files.
+
+A successful parser, four separate operator pins, two valid authorized Ed25519
+signatures and complete per-case original evidence only establish mechanical
+concordance. They do not establish authentic producer identity, genuine
+reviewer independence, correctness or grounded semantics. The CI still
+supplies NO real keys, no external originals and no human verdicts; all
+768 experiment rows remain blocked.
+
 ## Security and science boundaries
 
 Verification of an externally pinned source package is a necessary provenance
