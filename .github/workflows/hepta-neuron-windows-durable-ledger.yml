@@ -1,0 +1,36 @@
+name: Hepta Neuron Windows Durable Ledger Conformance
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs'
+      - 'codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs'
+      - '.github/workflows/hepta-neuron-windows-durable-ledger.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  windows-durable-learning:
+    runs-on: windows-latest
+    timeout-minutes: 50
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust and fmt
+        shell: bash
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Verify source formatting
+        shell: bash
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Real signed Decision Ledger segmented WAL rotation and recovery
+        shell: bash
+        run: cargo +1.95.0 test --locked -p codex-hepta-intelligence --lib 'evaluated_shadow::tests::' -- --nocapture
+      - name: Real Agentd retrieval-learning Ledger and witness persistence
+        shell: bash
+        run: cargo +1.95.0 test --locked -p codex-hepta-agentd --lib 'cognitive_retrieval_learning::tests::' -- --nocapture
