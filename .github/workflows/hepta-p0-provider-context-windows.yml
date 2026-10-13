@@ -1,0 +1,31 @@
+name: Hepta P0 Windows Provider Mapper Contract
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'codex-rs/core/src/client_provider_policy_tests.rs'
+      - 'codex-rs/core/src/client.rs'
+      - '.github/workflows/hepta-p0-provider-context-windows.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  windows-provider-policy-contract:
+    runs-on: windows-latest
+    timeout-minutes: 70
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install exact release-Bazel Rust compiler and rustfmt
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Verify exact Rust formatting
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Compile the real Windows core test library and execute all six provider-policy tests
+        run: |
+          cargo +1.95.0 test --locked -p codex-core --lib 'client_provider_policy_tests::' -- --nocapture
