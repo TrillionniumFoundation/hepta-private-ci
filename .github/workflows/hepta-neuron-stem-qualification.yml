@@ -14,7 +14,13 @@ on:
       - "codex-rs/cli/src/main.rs"
       - "codex-rs/hepta-agentd/src/state.rs"
       - "codex-rs/hepta-agentd/src/state_isolation_tests.rs"
-      - "codex-rs/hepta-prompt-registry/src/durable.rs"
+      - "codex-rs/hepta-prompt-registry/**"
+      - "codex-rs/hepta-contracts/src/authority_lease*.rs"
+      - "codex-rs/hepta-contracts/src/final_use_store*.rs"
+      - "codex-rs/utils/path-utils/**"
+      - "codex-rs/hepta-agentd/src/prompt_runtime.rs"
+      - "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs"
+      - "codex-rs/Cargo.lock"
       - ".github/workflows/hepta-neuron-stem-qualification.yml"
 
 permissions:
@@ -151,13 +157,16 @@ jobs:
           set -euo pipefail
           cargo +1.95.0 test --locked -p codex-hepta-prompt-registry --lib
           cargo +1.95.0 test --locked -p codex-hepta-agentd --lib private_unix_prompt_owner_is_initialized_before_serving
-      - name: Prove Windows unsupported owner cannot create state or admit Agentd
+      - name: Prove genuine Windows private owner ACL, no-reparse, hardlink and recovery
         if: runner.os == 'Windows'
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.95.0 test --locked -p codex-hepta-prompt-registry --lib unsupported_platform_cannot_create_unprotected_registry_state
-          cargo +1.95.0 test --locked -p codex-hepta-agentd --lib secure_prompt_registry_unavailable_fences_agentd_before_admission
+          cargo +1.95.0 test --locked -p codex-utils-path --lib private_state_windows -- --test-threads=1
+          cargo +1.95.0 test --locked -p codex-hepta-prompt-registry --lib windows::tests:: -- --test-threads=1
+          cargo +1.95.0 test --locked -p codex-hepta-contracts --lib windows::tests:: -- --test-threads=1
+          cargo +1.95.0 test --locked -p codex-hepta-agentd --lib windows_prompt_runtime_ -- --test-threads=1
+          cargo +1.95.0 test --locked -p codex-hepta-agentd --lib serving_agent_survives_unrelated_registry_corruption -- --test-threads=1
       - name: Assert no checkout mutations
         if: always()
         shell: bash
