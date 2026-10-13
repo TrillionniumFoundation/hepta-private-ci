@@ -69,7 +69,7 @@ def rewrite_workspace(raw):
     if m is None:
         raise ValueError("unexpected original Cargo members block")
     replacement = '[workspace]\nmembers = ["hepta-matrix-sdk"]\n'
-    edited = replacement + source[m.end():]
+    edited = (replacement + source[m.end():]).encode("utf-8")
     after = _as_document(edited)
     if after["workspace"]["members"] != [MEMBER]:
         raise ValueError("workspace edit not applied exactly")
