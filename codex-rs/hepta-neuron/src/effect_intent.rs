@@ -122,7 +122,7 @@ impl DurableNeuronEffectIntentV1 {
             let maximum = HEADER_BYTES as u64 + max_records as u64 * RECORD_BYTES as u64;
             if length < HEADER_BYTES as u64
                 || length > maximum
-                || (length - HEADER_BYTES as u64) % RECORD_BYTES as u64 != 0
+                || !(length - HEADER_BYTES as u64).is_multiple_of(RECORD_BYTES as u64)
             {
                 return Err(NeuronEffectIntentErrorV1::Corrupt);
             }
