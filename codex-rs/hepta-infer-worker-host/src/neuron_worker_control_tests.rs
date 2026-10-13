@@ -262,10 +262,15 @@ fn token_usage_diagnostic_binds_exact_worker_receipt_and_is_single_use() {
     );
     assert!(port.cost_diagnostic().is_none());
     let receipt = port.execute_feature(&typed).unwrap();
-    let mut cost = port.take_cost_diagnostic().expect("actual Worker observed cost");
+    let mut cost = port
+        .take_cost_diagnostic()
+        .expect("actual Worker observed cost");
     assert!(cost.validate_integrity());
     assert_eq!(cost.consumed_tokens(), 4);
-    assert_eq!(cost.terminal_status(), NeuronFeatureTerminalStatusV1::Succeeded);
+    assert_eq!(
+        cost.terminal_status(),
+        NeuronFeatureTerminalStatusV1::Succeeded
+    );
     assert_eq!(cost.receipt_digest(), receipt.receipt_digest);
     assert!(port.take_cost_diagnostic().is_none());
     cost.consumed_tokens += 1;
@@ -287,7 +292,10 @@ fn token_usage_diagnostic_does_not_invent_cost_on_preflight_or_physical_error() 
         typed.generation,
         100,
     );
-    assert_eq!(port.execute_feature(&rejected), Err(NeuronModelError::Rejected));
+    assert_eq!(
+        port.execute_feature(&rejected),
+        Err(NeuronModelError::Rejected)
+    );
     assert!(port.take_cost_diagnostic().is_none());
     drop(port);
 
@@ -299,7 +307,10 @@ fn token_usage_diagnostic_does_not_invent_cost_on_preflight_or_physical_error() 
         typed.generation,
         100,
     );
-    assert_eq!(port.execute_feature(&typed), Err(NeuronModelError::Indeterminate));
+    assert_eq!(
+        port.execute_feature(&typed),
+        Err(NeuronModelError::Indeterminate)
+    );
     assert!(port.take_cost_diagnostic().is_none());
 }
 

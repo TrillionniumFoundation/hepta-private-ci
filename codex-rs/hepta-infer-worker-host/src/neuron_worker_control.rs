@@ -25,8 +25,8 @@ use crate::model_worker::InferenceWorker;
 use crate::model_worker::ModelDriver;
 use crate::model_worker::NeuronFeatureDriver;
 use crate::model_worker::NeuronFeatureRequest;
-use crate::model_worker::WorkerRequest;
 use crate::model_worker::WorkerInstanceIdentity;
+use crate::model_worker::WorkerRequest;
 use crate::model_worker::canonical_neuron_feature_payload_digest;
 
 const COST_DOMAIN: &[u8] = b"hepta.inference.worker.neuron-token-cost.v1\0";
@@ -84,10 +84,7 @@ impl WorkerNeuronTokenCostV1 {
 
     /// Bind to the exact in-process Worker which observed these tokens.
     /// Worker ID + generation are insufficient across process restarts.
-    pub(crate) fn matches_live_worker<D: ModelDriver>(
-        &self,
-        worker: &InferenceWorker<D>,
-    ) -> bool {
+    pub(crate) fn matches_live_worker<D: ModelDriver>(&self, worker: &InferenceWorker<D>) -> bool {
         self.worker_id == worker.worker_id()
             && self.worker_generation == worker.worker_generation()
             && self.model_load_revision > 0

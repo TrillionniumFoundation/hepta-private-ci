@@ -717,10 +717,17 @@ fn terminal_output_and_exact_idempotent_retry_survive_owner_reopen() {
         .unwrap();
     assert_eq!(committed.state, RequestState::Completed);
     let written = fs::metadata(&journal).unwrap().len();
-    assert!(owner
-        .settle("request.1", committed.revision, "6".repeat(64), original.clone())
-        .unwrap()
-        .idempotent);
+    assert!(
+        owner
+            .settle(
+                "request.1",
+                committed.revision,
+                "6".repeat(64),
+                original.clone()
+            )
+            .unwrap()
+            .idempotent
+    );
 
     let mut forged = original.clone();
     forged.output_digest = Some("7".repeat(64));
@@ -760,10 +767,17 @@ fn terminal_output_and_exact_idempotent_retry_survive_owner_reopen() {
             .as_deref(),
         Some("5".repeat(64).as_str())
     );
-    assert!(reopened
-        .settle("request.1", committed.revision, "6".repeat(64), original.clone())
-        .unwrap()
-        .idempotent);
+    assert!(
+        reopened
+            .settle(
+                "request.1",
+                committed.revision,
+                "6".repeat(64),
+                original.clone()
+            )
+            .unwrap()
+            .idempotent
+    );
     let mut forged = original;
     forged.output_digest = Some("8".repeat(64));
     assert_eq!(

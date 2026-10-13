@@ -863,12 +863,13 @@ fn observed_token_cost_binds_fsynced_dispatch_and_exact_worker_incarnation() {
         claim_neuron_durable_dispatch_v1(&mut owner, &mut worker, &typed, 100).unwrap();
     assert_eq!(claim.state, RequestState::Dispatching);
     let receipt = port.execute_feature(&typed).unwrap();
-    let cost = port.take_cost_diagnostic().expect("physically observed cost");
+    let cost = port
+        .take_cost_diagnostic()
+        .expect("physically observed cost");
     assert!(port.take_cost_diagnostic().is_none());
     drop(port);
     let observed =
-        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100)
-            .unwrap();
+        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100).unwrap();
     assert!(observed.validate_integrity());
     assert_eq!(observed.observed_tokens, 4);
     assert_eq!(observed.control_revision, claim.revision);
@@ -884,7 +885,10 @@ fn observed_token_cost_binds_fsynced_dispatch_and_exact_worker_incarnation() {
     // Its distinct in-memory incarnation must NEVER validate old metering.
     let restarted_worker = worker();
     assert_eq!(worker.worker_id(), restarted_worker.worker_id());
-    assert_eq!(worker.worker_generation(), restarted_worker.worker_generation());
+    assert_eq!(
+        worker.worker_generation(),
+        restarted_worker.worker_generation()
+    );
     assert_eq!(
         read_neuron_observed_cost_source_v1(
             &owner,
@@ -912,14 +916,7 @@ fn observed_token_cost_binds_fsynced_dispatch_and_exact_worker_incarnation() {
     let mut altered_receipt = receipt.clone();
     altered_receipt.receipt_digest = Digest32::of_bytes(b"forged-receipt");
     assert_eq!(
-        read_neuron_observed_cost_source_v1(
-            &owner,
-            &worker,
-            &typed,
-            &altered_receipt,
-            &cost,
-            100,
-        ),
+        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &altered_receipt, &cost, 100,),
         Err(NeuronObservedCostSourceErrorV1::Binding)
     );
 
@@ -931,35 +928,39 @@ fn observed_token_cost_binds_fsynced_dispatch_and_exact_worker_incarnation() {
     assert!(fabricated.validate_integrity());
     assert_eq!(
         revalidate_neuron_observed_cost_source_v1(
-            &owner, &worker, &typed, &receipt, &cost, &fabricated, 100,
+            &owner,
+            &worker,
+            &typed,
+            &receipt,
+            &cost,
+            &fabricated,
+            100,
         ),
         Err(NeuronObservedCostSourceErrorV1::Stale)
     );
 
     // Cancellation after a dispatched physical call makes the previous
     // read-side cost diagnostic unavailable for further scoring.
-    let cancelled = owner.cancel(typed.request_id.as_str(), claim.revision).unwrap();
+    let cancelled = owner
+        .cancel(typed.request_id.as_str(), claim.revision)
+        .unwrap();
     assert_eq!(cancelled.state, RequestState::Cancelling);
     assert_eq!(
-        read_neuron_observed_cost_source_v1(
-            &owner, &worker, &typed, &receipt, &cost, 100,
-        ),
+        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100,),
         Err(NeuronObservedCostSourceErrorV1::Stale)
     );
 
     // Reopen the real durable control WAL. A terminal settlement (including
     // failed/unknown outcomes) is not a second fresh cost observation.
     drop(owner);
-    let reopened = DurableInferenceControl::open(
-        directory.path().join("inference.journal"),
-        32,
-    )
-    .unwrap();
-    assert_eq!(reopened.get(typed.request_id.as_str()).unwrap().state, RequestState::Cancelling);
+    let reopened =
+        DurableInferenceControl::open(directory.path().join("inference.journal"), 32).unwrap();
     assert_eq!(
-        read_neuron_observed_cost_source_v1(
-            &reopened, &worker, &typed, &receipt, &cost, 100,
-        ),
+        reopened.get(typed.request_id.as_str()).unwrap().state,
+        RequestState::Cancelling
+    );
+    assert_eq!(
+        read_neuron_observed_cost_source_v1(&reopened, &worker, &typed, &receipt, &cost, 100,),
         Err(NeuronObservedCostSourceErrorV1::Stale)
     );
 }
@@ -977,20 +978,27 @@ fn observed_token_cost_rejects_identical_model_reload_inside_same_worker() {
     drop(port);
 
     let observed =
-        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100)
-            .unwrap();
-    let original_revision = worker.current_neuron_model_load_revision("model.1").unwrap();
+        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100).unwrap();
+    let original_revision = worker
+        .current_neuron_model_load_revision("model.1")
+        .unwrap();
     assert_eq!(observed.model_load_revision, original_revision);
     assert_eq!(cost.model_load_revision(), original_revision);
 
     // Identical model, Worker ID, process generation and driver handle are NOT
     // sufficient. Only the actual monotonically increasing load ordinal
     // distinguishes the reloaded physical model from the prior invocation.
-    let manifest = worker.inspected_neuron_manifest(100, "model.1").unwrap().clone();
+    let manifest = worker
+        .inspected_neuron_manifest(100, "model.1")
+        .unwrap()
+        .clone();
     worker.unload_model(100, "model.1").unwrap();
     worker.load_model(100, manifest).unwrap();
     assert!(
-        worker.current_neuron_model_load_revision("model.1").unwrap() > original_revision
+        worker
+            .current_neuron_model_load_revision("model.1")
+            .unwrap()
+            > original_revision
     );
     assert!(
         observed.validate_integrity(),
@@ -1020,12 +1028,14 @@ fn observed_token_cost_is_not_a_settled_wal_or_authoritative_resource_debit() {
     let cost = port.take_cost_diagnostic().unwrap();
     drop(port);
     let report =
-        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100)
-            .unwrap();
+        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100).unwrap();
     assert_eq!(report.observed_tokens, 4);
     let current = owner.get(typed.request_id.as_str()).unwrap();
     assert_eq!(current.state, RequestState::Dispatching);
-    assert_eq!(current.usage_units, 0, "read-only observation cannot settle a debit");
+    assert_eq!(
+        current.usage_units, 0,
+        "read-only observation cannot settle a debit"
+    );
     assert_eq!(current.consumed_tokens, 0);
     let durable_payload = owner
         .get(typed.request_id.as_str())
@@ -1057,47 +1067,35 @@ fn observed_token_cost_is_not_a_settled_wal_or_authoritative_resource_debit() {
         .unwrap();
     assert_eq!(settlement.state, RequestState::Completed);
     assert_eq!(
-        read_neuron_observed_cost_source_v1(
-            &owner, &worker, &typed, &receipt, &cost, 100,
-        ),
+        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100,),
         Err(NeuronObservedCostSourceErrorV1::Stale)
     );
 
     // Historical settlement is a separate, current-WAL comparison. The
     // pre-settlement physical receipt is not itself a payment/debit.
-    let historical = read_neuron_settled_cost_diagnostic_v1(
-        &owner,
-        &typed,
-        &receipt,
-        &report,
-    )
-    .unwrap();
+    let historical =
+        read_neuron_settled_cost_diagnostic_v1(&owner, &typed, &receipt, &report).unwrap();
     assert!(historical.validate_integrity());
-    assert_eq!(historical.terminal_status, NeuronFeatureTerminalStatusV1::Succeeded);
+    assert_eq!(
+        historical.terminal_status,
+        NeuronFeatureTerminalStatusV1::Succeeded
+    );
     assert_eq!(historical.settled_tokens, 4);
     assert_eq!(historical.settled_usage_units, 0);
-    assert_eq!(historical.dispatch_revision + 1, historical.settlement_revision);
+    assert_eq!(
+        historical.dispatch_revision + 1,
+        historical.settlement_revision
+    );
     assert_eq!(historical.authority, AuthorityPosture::DENY_ALL);
-    revalidate_neuron_settled_cost_diagnostic_v1(
-        &owner,
-        &typed,
-        &receipt,
-        &report,
-        &historical,
-    )
-    .unwrap();
+    revalidate_neuron_settled_cost_diagnostic_v1(&owner, &typed, &receipt, &report, &historical)
+        .unwrap();
 
     let mut claimed_more_tokens = report.clone();
     claimed_more_tokens.observed_tokens += 1;
     claimed_more_tokens.source_digest = claimed_more_tokens.computed_digest();
     assert!(claimed_more_tokens.validate_integrity());
     assert_eq!(
-        read_neuron_settled_cost_diagnostic_v1(
-            &owner,
-            &typed,
-            &receipt,
-            &claimed_more_tokens,
-        ),
+        read_neuron_settled_cost_diagnostic_v1(&owner, &typed, &receipt, &claimed_more_tokens,),
         Err(NeuronSettledCostErrorV1::Mismatch)
     );
 
@@ -1118,41 +1116,21 @@ fn observed_token_cost_is_not_a_settled_wal_or_authoritative_resource_debit() {
     let mut wrong_receipt = receipt.clone();
     wrong_receipt.receipt_digest = Digest32::of_bytes(b"forged-output");
     assert_eq!(
-        read_neuron_settled_cost_diagnostic_v1(
-            &owner,
-            &typed,
-            &wrong_receipt,
-            &report,
-        ),
+        read_neuron_settled_cost_diagnostic_v1(&owner, &typed, &wrong_receipt, &report,),
         Err(NeuronSettledCostErrorV1::Mismatch)
     );
 
     // Actual WAL reopening is mandatory: this does not silently fall back to
     // a cached in-process accounting claim or a live Worker instance token.
     drop(owner);
-    let reopened = DurableInferenceControl::open(
-        directory.path().join("inference.journal"),
-        32,
-    )
-    .unwrap();
-    let after_restart = read_neuron_settled_cost_diagnostic_v1(
-        &reopened,
-        &typed,
-        &receipt,
-        &report,
-    )
-    .unwrap();
+    let reopened =
+        DurableInferenceControl::open(directory.path().join("inference.journal"), 32).unwrap();
+    let after_restart =
+        read_neuron_settled_cost_diagnostic_v1(&reopened, &typed, &receipt, &report).unwrap();
     assert_eq!(after_restart, historical);
-    revalidate_neuron_settled_cost_diagnostic_v1(
-        &reopened,
-        &typed,
-        &receipt,
-        &report,
-        &historical,
-    )
-    .unwrap();
+    revalidate_neuron_settled_cost_diagnostic_v1(&reopened, &typed, &receipt, &report, &historical)
+        .unwrap();
 }
-
 
 #[test]
 fn settled_neuron_cost_refuses_generic_wal_with_unrelated_feature_payload() {
@@ -1227,27 +1205,15 @@ fn settled_neuron_cost_refuses_generic_wal_with_unrelated_feature_payload() {
         .unwrap();
     assert_eq!(completed.state, RequestState::Completed);
     assert_eq!(
-        read_neuron_settled_cost_diagnostic_v1(
-            &unrelated,
-            &typed,
-            &receipt,
-            &observed,
-        ),
+        read_neuron_settled_cost_diagnostic_v1(&unrelated, &typed, &receipt, &observed,),
         Err(NeuronSettledCostErrorV1::Mismatch)
     );
     drop(unrelated);
-    let recovered = DurableInferenceControl::open(
-        unrelated_directory.path().join("inference.journal"),
-        32,
-    )
-    .unwrap();
+    let recovered =
+        DurableInferenceControl::open(unrelated_directory.path().join("inference.journal"), 32)
+            .unwrap();
     assert_eq!(
-        read_neuron_settled_cost_diagnostic_v1(
-            &recovered,
-            &typed,
-            &receipt,
-            &observed,
-        ),
+        read_neuron_settled_cost_diagnostic_v1(&recovered, &typed, &receipt, &observed,),
         Err(NeuronSettledCostErrorV1::Mismatch)
     );
 }
@@ -1264,8 +1230,7 @@ fn historical_neuron_cost_refuses_different_fsynced_output_after_reopen() {
     let cost = port.take_cost_diagnostic().unwrap();
     drop(port);
     let observed =
-        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100)
-            .unwrap();
+        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100).unwrap();
     let original_payload = owner
         .get(typed.request_id.as_str())
         .unwrap()
@@ -1312,23 +1277,27 @@ fn historical_neuron_cost_refuses_different_fsynced_output_after_reopen() {
     // identity is not an idempotent acknowledgement.
     let mut replay = unrelated.clone();
     replay.output_digest = Some(receipt.output_digest.to_string());
-    assert!(owner
-        .settle(
-            typed.request_id.as_str(),
-            terminal.revision,
-            "d".repeat(64),
-            replay,
-        )
-        .is_err());
-    assert!(owner
-        .settle(
-            typed.request_id.as_str(),
-            terminal.revision,
-            "d".repeat(64),
-            unrelated,
-        )
-        .unwrap()
-        .idempotent);
+    assert!(
+        owner
+            .settle(
+                typed.request_id.as_str(),
+                terminal.revision,
+                "d".repeat(64),
+                replay,
+            )
+            .is_err()
+    );
+    assert!(
+        owner
+            .settle(
+                typed.request_id.as_str(),
+                terminal.revision,
+                "d".repeat(64),
+                unrelated,
+            )
+            .unwrap()
+            .idempotent
+    );
 
     drop(owner);
     let reopened =
@@ -1338,5 +1307,8 @@ fn historical_neuron_cost_refuses_different_fsynced_output_after_reopen() {
         Err(NeuronSettledCostErrorV1::Mismatch),
     );
     let record = reopened.get(typed.request_id.as_str()).unwrap();
-    assert_eq!(record.terminal_output_digest.as_deref(), Some(other_output.as_str()));
+    assert_eq!(
+        record.terminal_output_digest.as_deref(),
+        Some(other_output.as_str())
+    );
 }

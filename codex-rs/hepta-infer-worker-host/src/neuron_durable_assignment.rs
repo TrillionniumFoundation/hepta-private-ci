@@ -13,13 +13,13 @@ use std::str::FromStr;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
-use codex_hepta_infer_core::verify_neuron_feature_receipt_v1;
 use codex_hepta_infer_core::durable_control::Assignment;
 use codex_hepta_infer_core::durable_control::ControlReceipt;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::Error as ControlError;
 use codex_hepta_infer_core::durable_control::RequestState;
 use codex_hepta_infer_core::neuron_feature_request_digest_v1;
+use codex_hepta_infer_core::verify_neuron_feature_receipt_v1;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
@@ -408,7 +408,6 @@ pub fn revalidate_neuron_durable_assignment_v1<D: ModelDriver>(
     Ok(())
 }
 
-
 /// A known-terminal physical token observation correlated to a live Worker
 /// instance and the fsynced inference.control Dispatching record.
 /// Diagnostic only: not a signed meter, price, NDU value or final-use grant.
@@ -437,7 +436,12 @@ impl NeuronObservedCostSourceV1 {
     #[must_use]
     pub fn computed_digest(&self) -> Digest32 {
         let mut bytes = COST_SOURCE_DOMAIN.to_vec();
-        for id in [&self.request_id, &self.reservation_id, &self.worker_id, &self.model_id] {
+        for id in [
+            &self.request_id,
+            &self.reservation_id,
+            &self.worker_id,
+            &self.model_id,
+        ] {
             let raw = id.as_bytes();
             bytes.extend_from_slice(&(raw.len() as u64).to_be_bytes());
             bytes.extend_from_slice(raw);
@@ -536,9 +540,13 @@ pub fn read_neuron_observed_cost_source_v1<D: ModelDriver>(
     {
         return Err(NeuronObservedCostSourceErrorV1::Stale);
     }
-    let reservation = record.reservation.as_ref()
+    let reservation = record
+        .reservation
+        .as_ref()
         .ok_or(NeuronObservedCostSourceErrorV1::Binding)?;
-    let assignment = record.assignment.as_ref()
+    let assignment = record
+        .assignment
+        .as_ref()
         .ok_or(NeuronObservedCostSourceErrorV1::Binding)?;
     if record.request.semantic_digest != request_digest.to_string()
         || record.request.request_id != request.request_id.as_str()
@@ -629,9 +637,8 @@ pub fn revalidate_neuron_observed_cost_source_v1<D: ModelDriver>(
     if !previous.validate_integrity() {
         return Err(NeuronObservedCostSourceErrorV1::Stale);
     }
-    let current = read_neuron_observed_cost_source_v1(
-        owner, worker, request, receipt, cost, now_ms,
-    )?;
+    let current =
+        read_neuron_observed_cost_source_v1(owner, worker, request, receipt, cost, now_ms)?;
     if current != *previous {
         return Err(NeuronObservedCostSourceErrorV1::Stale);
     }
@@ -763,8 +770,8 @@ pub fn read_neuron_settled_cost_diagnostic_v1(
     receipt: &NeuronFeatureReceiptV1,
     observed_cost_source: &NeuronObservedCostSourceV1,
 ) -> Result<NeuronSettledCostDiagnosticV1, NeuronSettledCostErrorV1> {
-    let request_digest =
-        neuron_feature_request_digest_v1(request).map_err(|_| NeuronSettledCostErrorV1::Mismatch)?;
+    let request_digest = neuron_feature_request_digest_v1(request)
+        .map_err(|_| NeuronSettledCostErrorV1::Mismatch)?;
     verify_neuron_feature_receipt_v1(request, receipt)
         .map_err(|_| NeuronSettledCostErrorV1::Mismatch)?;
     if !observed_cost_source.validate_integrity()
@@ -779,8 +786,7 @@ pub fn read_neuron_settled_cost_diagnostic_v1(
     let expected_state = match receipt.status {
         NeuronFeatureTerminalStatusV1::Succeeded => RequestState::Completed,
         NeuronFeatureTerminalStatusV1::Failed => RequestState::Failed,
-        NeuronFeatureTerminalStatusV1::Cancelled
-        | NeuronFeatureTerminalStatusV1::Indeterminate => {
+        NeuronFeatureTerminalStatusV1::Cancelled | NeuronFeatureTerminalStatusV1::Indeterminate => {
             return Err(NeuronSettledCostErrorV1::Mismatch);
         }
     };
@@ -793,8 +799,7 @@ pub fn read_neuron_settled_cost_diagnostic_v1(
     // The same native durable owner replays the FULL Settle event and now
     // retains its output field. A generic matching token-count WAL cannot
     // inherit a different typed Neuron model result after restart.
-    if record.terminal_output_digest.as_deref()
-        != Some(receipt.output_digest.to_string().as_str())
+    if record.terminal_output_digest.as_deref() != Some(receipt.output_digest.to_string().as_str())
     {
         return Err(NeuronSettledCostErrorV1::Mismatch);
     }
@@ -806,10 +811,7 @@ pub fn read_neuron_settled_cost_diagnostic_v1(
         .assignment
         .as_ref()
         .ok_or(NeuronSettledCostErrorV1::Mismatch)?;
-    if observed_cost_source
-        .control_revision
-        .checked_add(1)
-        != Some(record.revision)
+    if observed_cost_source.control_revision.checked_add(1) != Some(record.revision)
         || record.request.request_id != request.request_id.as_str()
         || record.request.semantic_digest != request_digest.to_string()
         || record.request.model_digest != receipt.runtime_tuple.model_manifest_digest.to_string()
@@ -900,12 +902,8 @@ pub fn revalidate_neuron_settled_cost_diagnostic_v1(
     if !previous.validate_integrity() {
         return Err(NeuronSettledCostErrorV1::Stale);
     }
-    let current = read_neuron_settled_cost_diagnostic_v1(
-        owner,
-        request,
-        receipt,
-        observed_cost_source,
-    )?;
+    let current =
+        read_neuron_settled_cost_diagnostic_v1(owner, request, receipt, observed_cost_source)?;
     if current != *previous {
         return Err(NeuronSettledCostErrorV1::Stale);
     }
