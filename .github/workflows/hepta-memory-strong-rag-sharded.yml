@@ -1,0 +1,342 @@
+name: MemoryCell disjoint 40+72 actual Qwen frozen-reader evidence
+on:
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - ".github/workflows/hepta-memory-strong-rag-sharded.yml"
+      - "scripts/memory_cell/strong_rag_sharded_ci.py"
+      - "scripts/memory_cell/test_strong_rag_sharded_ci.py"
+      - "scripts/memory_cell/strong_rag_shards.py"
+      - "scripts/memory_cell/test_strong_rag_shards.py"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-strong-rag-shards-${{ github.sha }}
+  cancel-in-progress: false
+env:
+  PYTHONPATH: scripts/memory_cell
+  HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
+  FIXED_PLAN_SHA: "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897"
+  HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+  HF_HUB_DISABLE_XET: "1"
+  TOKENIZERS_PARALLELISM: "false"
+  OMP_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Verify exact sharded-source format, integrity contracts and tests
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check scripts/memory_cell/strong_rag*.py scripts/memory_cell/test_strong_rag*.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag*.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_historical_event_citation_chain.py' -v
+          git rev-parse HEAD
+
+  prepare:
+    needs: preflight
+    runs-on: ubuntu-22.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Independently download and verify original immutable event sources
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/pinned-original.zip
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py original /tmp/pinned-original.zip /tmp/rag-original
+      - name: Publish pinned model identity only; no historical answers
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11696974258/zip > /tmp/model-metadata-only.zip
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py identity /tmp/model-metadata-only.zip /tmp/rag-canonical
+      - name: Seal eight calibration-only scopes and externally pinned environment
+        run: |
+          set -euo pipefail
+          cp /tmp/rag-original/environment.txt /tmp/rag-environment.txt
+          python3 -m venv /tmp/rag-python
+          /tmp/rag-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/rag-python/bin/pip install -r /tmp/rag-environment.txt
+          /tmp/rag-python/bin/pip freeze > /tmp/rag-installed.txt
+          diff -u /tmp/rag-environment.txt /tmp/rag-installed.txt
+          /tmp/rag-python/bin/python scripts/memory_cell/event_memory_trial.py encoder /tmp/rag-encoder
+          mkdir -p /tmp/rag-prep
+          /tmp/rag-python/bin/python scripts/memory_cell/strong_rag_trial.py prepare /tmp/rag-original/observations /tmp/rag-original/plan /tmp/rag-encoder /tmp/rag-prep/prep --plan-sha "$FIXED_PLAN_SHA"
+          cp -a /tmp/rag-canonical /tmp/rag-prep/canonical-model
+          cp /tmp/rag-environment.txt /tmp/rag-prep/environment.txt
+          printf '%s\n' "$HEPTA_MEMORY_TESTED_COMMIT" > /tmp/rag-prep/tested-commit.txt
+          (cd /tmp/rag-prep && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rag-sharded-prep
+          path: /tmp/rag-prep
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rag-sharded-original
+          path: /tmp/rag-original
+          if-no-files-found: error
+
+  calibration-shard:
+    needs: prepare
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        case: [0, 1, 2, 3, 4, 5, 6, 7]
+        part: [0, 1]
+    runs-on: ubuntu-22.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: rag-sharded-prep
+          path: /tmp/rag-prep
+      - name: Validate only calibration-scoped bytes; stage frozen BF16 Qwen
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/rag-prep
+          test "$(cat /tmp/rag-prep/tested-commit.txt)" = "$HEPTA_MEMORY_TESTED_COMMIT"
+          cp /tmp/rag-prep/environment.txt /tmp/rag-environment.txt
+          cp -a /tmp/rag-prep/canonical-model /tmp/rag-canonical
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/rag-host-receipt.json
+          python3 -m venv /tmp/rag-python
+          /tmp/rag-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/rag-python/bin/pip install -r /tmp/rag-environment.txt
+          /tmp/rag-python/bin/pip freeze > /tmp/rag-installed.txt
+          diff -u /tmp/rag-environment.txt /tmp/rag-installed.txt
+          /tmp/rag-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/rag-model
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py align /tmp/rag-model /tmp/rag-canonical /tmp/rag-stage-observation.json
+          cat /tmp/rag-stage-observation.json
+      - name: Generate only preregistered calibration sources; retain unaltered answers
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/rag-cal-shards
+          /tmp/rag-python/bin/python scripts/memory_cell/strong_rag_shards.py calibration-shard /tmp/rag-prep/prep /tmp/absent-test-plan /tmp/absent-test-labels /tmp/rag-model /tmp/absent-policy /tmp/rag-cal-shards/memory-calibration-${{ matrix.case }}-${{ matrix.part }} --case ${{ matrix.case }} --part ${{ matrix.part }} --prep-sha "$(sha256sum /tmp/rag-prep/prep/calibration-plan.json | cut -d ' ' -f1)" --stage-sha "$(sha256sum /tmp/rag-model/stage.json | cut -d ' ' -f1)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-calibration-${{ matrix.case }}-${{ matrix.part }}
+          path: /tmp/rag-cal-shards/memory-calibration-${{ matrix.case }}-${{ matrix.part }}
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-strong-rag-shard-stage-calibration-${{ matrix.case }}-${{ matrix.part }}
+          path: /tmp/rag-stage-observation.json
+          if-no-files-found: warn
+
+  calibration-collect:
+    needs: calibration-shard
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: rag-sharded-prep
+          path: /tmp/rag-prep
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-calibration-*
+          path: /tmp/rag-cal-shards
+      - name: Reassemble 40 original answers before any calibration-only scoring
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/rag-prep
+          mkdir -p /tmp/rag-cal-joined/shards
+          cp -a /tmp/rag-prep/prep /tmp/rag-cal-joined/prep
+          cp -a /tmp/rag-prep/canonical-model /tmp/rag-cal-joined/canonical-model
+          cp /tmp/rag-prep/environment.txt /tmp/rag-cal-joined/environment.txt
+          cp -a /tmp/rag-cal-shards /tmp/rag-cal-joined/shards/calibration
+          python3 scripts/memory_cell/strong_rag_shards.py calibration-collect /tmp/rag-cal-joined/prep /tmp/unopened-plan /tmp/unopened-test-labels /tmp/unfrozen-policy /tmp/rag-cal-joined/shards/calibration /tmp/rag-cal-joined/calibration --prep-sha "$(sha256sum /tmp/rag-cal-joined/prep/calibration-plan.json | cut -d ' ' -f1)"
+          printf '%s\n' "$HEPTA_MEMORY_TESTED_COMMIT" > /tmp/rag-cal-joined/tested-commit.txt
+          (cd /tmp/rag-cal-joined && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rag-sharded-calibration-joined
+          path: /tmp/rag-cal-joined
+          if-no-files-found: error
+
+  evaluation-shard:
+    needs: calibration-collect
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        case: [0, 1, 2, 3, 4, 5, 6, 7]
+        part: [0, 1]
+    runs-on: ubuntu-22.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: rag-sharded-calibration-joined
+          path: /tmp/rag-cal-joined
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: rag-sharded-original
+          path: /tmp/rag-original
+      - name: Verify frozen policy and model identity before looking at final test plan
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/rag-cal-joined
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/rag-original
+          test "$(cat /tmp/rag-cal-joined/tested-commit.txt)" = "$HEPTA_MEMORY_TESTED_COMMIT"
+          cp /tmp/rag-cal-joined/environment.txt /tmp/rag-environment.txt
+          cp -a /tmp/rag-cal-joined/canonical-model /tmp/rag-canonical
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/rag-host-receipt.json
+          python3 -m venv /tmp/rag-python
+          /tmp/rag-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/rag-python/bin/pip install -r /tmp/rag-environment.txt
+          /tmp/rag-python/bin/pip freeze > /tmp/rag-installed.txt
+          diff -u /tmp/rag-environment.txt /tmp/rag-installed.txt
+          /tmp/rag-python/bin/python scripts/memory_cell/reader_reference.py stage qwen-3b /tmp/rag-model
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py align /tmp/rag-model /tmp/rag-canonical /tmp/rag-stage-observation.json
+          cat /tmp/rag-stage-observation.json
+      - name: Execute each original nine-arm read after k was sealed
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/rag-eval-shards
+          /tmp/rag-python/bin/python scripts/memory_cell/strong_rag_shards.py evaluation-shard /tmp/rag-cal-joined/prep /tmp/rag-original/plan /tmp/rag-original/observations /tmp/rag-model /tmp/rag-cal-joined/calibration /tmp/rag-eval-shards/memory-evaluation-${{ matrix.case }}-${{ matrix.part }} --case ${{ matrix.case }} --part ${{ matrix.part }} --plan-sha "$FIXED_PLAN_SHA" --stage-sha "$(sha256sum /tmp/rag-model/stage.json | cut -d ' ' -f1)" --policy-sha "$(sha256sum /tmp/rag-cal-joined/calibration/frozen-policy.json | cut -d ' ' -f1)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-evaluation-${{ matrix.case }}-${{ matrix.part }}
+          path: /tmp/rag-eval-shards/memory-evaluation-${{ matrix.case }}-${{ matrix.part }}
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-strong-rag-shard-stage-evaluation-${{ matrix.case }}-${{ matrix.part }}
+          path: /tmp/rag-stage-observation.json
+          if-no-files-found: warn
+
+  evaluation-collect:
+    needs: evaluation-shard
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: rag-sharded-calibration-joined
+          path: /tmp/rag-cal-joined
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: rag-sharded-original
+          path: /tmp/rag-original
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-evaluation-*
+          path: /tmp/rag-eval-shards
+      - name: Seal complete 72 original nine-arm outputs, without imputing failures
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/rag-cal-joined
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/rag-original
+          cp -a /tmp/rag-cal-joined /tmp/rag-release
+          rm /tmp/rag-release/SHA256SUMS
+          mkdir -p /tmp/rag-release/shards
+          cp -a /tmp/rag-eval-shards /tmp/rag-release/shards/evaluation
+          cp /tmp/rag-release/calibration/{stage.json,inventory.json,publisher.json} /tmp/rag-release/
+          python3 scripts/memory_cell/strong_rag_shards.py evaluation-collect /tmp/rag-original/plan /tmp/rag-original/observations /tmp/rag-release/prep /tmp/rag-release/calibration /tmp/rag-release/shards/evaluation /tmp/rag-release/evaluation --plan-sha "$FIXED_PLAN_SHA" --policy-sha "$(sha256sum /tmp/rag-release/calibration/frozen-policy.json | cut -d ' ' -f1)"
+          (cd /tmp/rag-release && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rag-sharded-40x72-release
+          path: /tmp/rag-release
+          if-no-files-found: error
+
+  independent-replay:
+    needs: evaluation-collect
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: rag-sharded-40x72-release
+          path: /tmp/rag-release
+      - name: Independently download and verify original immutable event sources
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11669174727/zip > /tmp/pinned-original.zip
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py original /tmp/pinned-original.zip /tmp/rag-original
+      - name: Independently reproduce source/score and all 32 shard receipts
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/rag-release
+          python3 scripts/memory_cell/strong_rag_shards.py verify-release /tmp/rag-release /tmp/rag-original > /tmp/rag-shard-audit.json
+          python3 scripts/memory_cell/strong_rag_receipt.py /tmp/rag-release /tmp/rag-original --generating-commit "$HEPTA_MEMORY_TESTED_COMMIT" --output /tmp/rag-reader-audit.json
+          mkdir -p /tmp/rag-independent
+          cp /tmp/rag-shard-audit.json /tmp/rag-reader-audit.json /tmp/rag-independent/
+          printf '%s\n' "$HEPTA_MEMORY_TESTED_COMMIT" > /tmp/rag-independent/auditor-commit.txt
+          (cd /tmp/rag-independent && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: rag-sharded-independent-replay
+          path: /tmp/rag-independent
+          if-no-files-found: warn
