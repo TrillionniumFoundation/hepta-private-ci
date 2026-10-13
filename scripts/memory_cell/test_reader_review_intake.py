@@ -162,6 +162,42 @@ class ReviewIntakeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exact-refusal verdict"):
             self.run_intake()
 
+    def test_positive_grounded_claim_requires_explicit_source_support(self):
+        # A positive claim with unknown citation adequacy is NOT review-complete.
+        for verdict in (None, False):
+            with self.subTest(cited_support=verdict):
+                rows = copy.deepcopy(self.rows)
+                row = next(row for row in rows
+                           if self.map[row["ticket"]]["condition"] == "human_sufficient")
+                row["cited_semantically_supported"] = verdict
+                self.second_pin = dump_lines(self.second, rows)
+                with self.assertRaisesRegex(ValueError, "affirmative cited-source support"):
+                    self.run_intake()
+                self.assertFalse(self.output.exists())
+
+    def test_positive_grounded_claim_requires_explicit_non_refusal(self):
+        rows = copy.deepcopy(self.rows)
+        row = next(row for row in rows
+                   if self.map[row["ticket"]]["condition"] == "human_sufficient")
+        row["exact_refusal"] = None
+        self.second_pin = dump_lines(self.second, rows)
+        with self.assertRaisesRegex(ValueError, "explicit non-refusal review"):
+            self.run_intake()
+        self.assertFalse(self.output.exists())
+
+    def test_unfinished_negative_claim_remains_incomplete_not_approved(self):
+        # Unknown source support on a NON-positive answer is a legitimate
+        # unfinished review. It must not be converted into agreement.
+        rows = copy.deepcopy(self.rows)
+        row = next(row for row in rows
+                   if self.map[row["ticket"]]["condition"] == "ordinary_retrieval")
+        row["cited_semantically_supported"] = None
+        self.second_pin = dump_lines(self.second, rows)
+        result = self.run_intake()
+        self.assertEqual((result["incomplete"], result["agreed"]), (1, 7))
+        self.assertFalse(result["review_approval_produced"])
+        self.assertFalse(result["production_accepted"])
+
     def test_invalid_boolean_and_fake_signature_fields_rejected(self):
         for patch in ({"grounded_and_cited": 1}, {"signature_hex": "a" * 128}):
             rows = copy.deepcopy(self.rows)

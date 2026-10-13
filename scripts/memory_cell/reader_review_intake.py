@@ -201,8 +201,15 @@ def _reviewed_forms(path, pin, tickets, views):
         if note is not None and (type(note) is not str or len(note.encode("utf-8")) > 4096):
             raise ValueError("reviewer note exceeds private text budget")
         if answer["grounded_and_cited"] is True:
-            if not views[ticket]["cited_labels"] or answer["cited_semantically_supported"] is False:
+            if not views[ticket]["cited_labels"]:
                 raise ValueError("claimed grounded answer lacks cited support")
+            # A positive grounded answer is not complete when source support
+            # or the non-refusal verdict has not actually been judged. The
+            # signed gate remains separate and cannot be made by this intake.
+            if answer["cited_semantically_supported"] is not True:
+                raise ValueError("grounded answer requires affirmative cited-source support")
+            if answer["exact_refusal"] is not False:
+                raise ValueError("grounded answer requires explicit non-refusal review")
         if answer["cited_semantically_supported"] is True and not views[ticket]["cited_labels"]:
             raise ValueError("cited support claimed without citations")
         if ((answer["grounded_and_cited"] is True
