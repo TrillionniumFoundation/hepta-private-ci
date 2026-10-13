@@ -29,6 +29,10 @@ def cargo_graph(sdk, hepta):
     pkgs = [{"name": n, "id": ident, "version": version, "manifest_path": path}
             for n, ident, version, path in specs]
     next(p for p in pkgs if p["name"] == "libsqlite3-sys")["links"] = "sqlite3"
+    for package in pkgs:
+        if package["name"] in ("rusqlite", "libsqlite3-sys"):
+            package["source"] = "registry+https://github.com/rust-lang/crates.io-index"
+            package["checksum"] = "a" * 64
     def deps(*names):
         return [{"pkg": n, "dep_kinds": [{"kind": None, "target": None}]} for n in names]
     nodes = [
@@ -142,6 +146,19 @@ class SqliteAbiTrialTests(unittest.TestCase):
             sample = cargo_graph(self.sdk, self.hepta)
             next(p for p in sample["packages"] if p["name"] == name)[key] = bad
             with self.subTest(name=name, key=key), self.assertRaises(ValueError):
+                trial.audit_metadata(sample, receipt, self.sdk, self.hepta)
+
+    def test_foreign_sqlite_or_crypto_sources_rejected(self):
+        receipt = self.stage()
+        for pkgname, field, value in [
+            ("rusqlite", "source", "path+file:///tmp/impersonator"),
+            ("rusqlite", "checksum", "not-a-checksum"),
+            ("libsqlite3-sys", "checksum", "a" * 63),
+            ("matrix-sdk-crypto", "manifest_path", "/tmp/fake/crypto/Cargo.toml"),
+        ]:
+            sample = cargo_graph(self.sdk, self.hepta)
+            next(p for p in sample["packages"] if p["name"] == pkgname)[field] = value
+            with self.subTest(pkg=pkgname, field=field), self.assertRaises(ValueError):
                 trial.audit_metadata(sample, receipt, self.sdk, self.hepta)
 
     def test_dev_only_edges_or_disabled_e2ee_never_pass(self):
