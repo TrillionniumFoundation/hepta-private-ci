@@ -883,7 +883,7 @@ fn observed_token_cost_binds_fsynced_dispatch_and_exact_worker_incarnation() {
 
     // A new Worker may reuse every printable worker ID and generation.
     // Its distinct in-memory incarnation must NEVER validate old metering.
-    let restarted_worker = worker();
+    let restarted_worker = worker_with_calls(Arc::new(AtomicUsize::new(0)));
     assert_eq!(worker.worker_id(), restarted_worker.worker_id());
     assert_eq!(
         worker.worker_generation(),
