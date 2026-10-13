@@ -214,7 +214,8 @@ fn revalidate_selected_plan_at_boundary(
     match action {
         "transcript" => Ok(()),
         "advance" => {
-            let plan = frozen_plan.ok_or_else(|| "missing frozen mutation admission plan".to_string())?;
+            let plan =
+                frozen_plan.ok_or_else(|| "missing frozen mutation admission plan".to_string())?;
             admit(plan)
         }
         _ => Err("unknown CellSplit execution action".to_string()),
@@ -324,7 +325,6 @@ mod tests {
         ).is_err());
         assert_eq!(calls, 0);
     }
-
 
     #[test]
     fn requires_external_config_pin_before_opening_any_owner() {
