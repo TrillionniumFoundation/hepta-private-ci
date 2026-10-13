@@ -30,7 +30,7 @@ def _sha(value, name, length=64):
 
 def freeze_contract(plan, *, source_sha, workload_sha256, task_ids, device_id,
                     observer_id, train_cutoff_ns, eval_start_ns, eval_end_ns,
-                    flops_caps, tolerance_ppm=10_000):
+                    flops_caps, tolerance_ppm=10_000, max_peak_trainable_params=None):
     """Freeze caps and pairing BEFORE execution; no model-dependent defaults."""
     validate_plan(plan)
     _sha(source_sha, "source SHA", 40)
@@ -58,6 +58,10 @@ def freeze_contract(plan, *, source_sha, workload_sha256, task_ids, device_id,
                 train_cutoff_ns=train_cutoff_ns, eval_start_ns=eval_start_ns,
                 eval_end_ns=eval_end_ns, flops_caps=dict(flops_caps),
                 tolerance_ppm=tolerance_ppm)
+    if max_peak_trainable_params is not None:
+        _integer(max_peak_trainable_params, "common live trainable parameter cap", 1)
+        body.update(schema="hepta.stem.execution-contract.v2",
+                    max_peak_trainable_params=max_peak_trainable_params)
     return {**body, "contract_id": _digest(body)}
 
 
@@ -67,6 +71,8 @@ def validate_contract(plan, contract):
     try:
         names = ("source_sha", "workload_sha256", "task_ids", "device_id", "observer_id",
                  "train_cutoff_ns", "eval_start_ns", "eval_end_ns", "flops_caps", "tolerance_ppm")
+        if contract.get("schema") == "hepta.stem.execution-contract.v2":
+            names += ("max_peak_trainable_params",)
         expected = freeze_contract(plan, **{k: contract[k] for k in names})
         if _digest(contract) != _digest(expected):
             raise ValueError("execution contract changed")
@@ -102,10 +108,13 @@ def audit_pair(plan, contract, contrast_id, baseline, candidate):
     request_fields = {"task_id", "status", "latency_ns", "energy_joules",
                       "peak_memory_bytes", "outcome", "observed_at_ns", "observer_id"}
     for role, receipt in (("baseline", baseline), ("candidate", candidate)):
-        if not isinstance(receipt, dict) or set(receipt) != receipt_fields:
+        allowed_fields = receipt_fields | ({"training_protocol_sha256"} if isinstance(receipt, dict) and receipt.get("schema") == "hepta.stem.paired-run-export.v2" else set())
+        if not isinstance(receipt, dict) or set(receipt) != allowed_fields:
             raise ValueError("incomplete or unknown run receipt fields")
-        if receipt["schema"] != "hepta.stem.paired-run-export.v1":
+        if receipt["schema"] not in ("hepta.stem.paired-run-export.v1", "hepta.stem.paired-run-export.v2"):
             raise ValueError("unsupported run export schema")
+        if receipt["schema"] == "hepta.stem.paired-run-export.v2":
+            _sha(receipt["training_protocol_sha256"], "training protocol digest")
         if receipt["arm_id"] != contrast[role]:
             raise ValueError("wrong arm or reversed comparison")
         for key in ("contract_id", "source_sha", "device_id", "workload_sha256"):
@@ -175,11 +184,23 @@ def audit_pair(plan, contract, contrast_id, baseline, candidate):
                           "energy_joules": sum(energy) if len(energy) == count else None,
                           "peak_memory_bytes": max(memory) if len(memory) == count else None,
                           "mean_outcome": sum(outcomes) / count if len(outcomes) == count else None})
+    # V2 fixes final capacity but permits unequal transient storage under ONE
+    # preregistered ceiling. Requiring identical transients would reward dummy
+    # allocation in no-split controls. V1 retains its original stricter semantics.
+    if "max_peak_trainable_params" in contract:
+        if any(r["schema"] != "hepta.stem.paired-run-export.v2" for r in (baseline, candidate)):
+            blockers.append("missing_bound_training_protocol")
+        elif baseline["training_protocol_sha256"] != candidate["training_protocol_sha256"]:
+            blockers.append("unmatched_training_protocol")
+        for role, receipt in (("baseline", baseline), ("candidate", candidate)):
+            if receipt["peak_trainable_params"] > contract["max_peak_trainable_params"]:
+                blockers.append(f"{role}:peak_trainable_budget_exceeded")
     if contrast["match_total_head_budget"]:
         # Gate/critic capacity may be traded against Head capacity under the
         # same total trainable ceiling. Equal actual Head counts as well would
         # prohibit that fair trade and accidentally require dummy parameters.
-        for field in ("trainable_params", "peak_trainable_params"):
+        matched = ("trainable_params",) if "max_peak_trainable_params" in contract else ("trainable_params", "peak_trainable_params")
+        for field in matched:
             if baseline[field] != candidate[field]:
                 blockers.append(f"unmatched_actual_{field}")
     if baseline["flop_profile"] != candidate["flop_profile"]:

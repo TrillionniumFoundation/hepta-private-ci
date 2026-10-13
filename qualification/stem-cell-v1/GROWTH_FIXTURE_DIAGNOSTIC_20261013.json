@@ -1,0 +1,121 @@
+{
+  "schema": "hepta.stem.growth-fixture-diagnostic.v1",
+  "python": "3.13.5",
+  "torch": "2.10.0+cpu",
+  "feature_dimension": 4,
+  "classes": 2,
+  "training_rows": 2,
+  "eval_rows": 2,
+  "clock": "injected test timestamps, not real future windows",
+  "counts": "declared eager ATen formula work, not hardware instructions",
+  "source": "FixtureEncoder synthetic vectors with real PyTorch training",
+  "pretrained_model_executed": false,
+  "independent_gain_established": false,
+  "production_authorized": false,
+  "runs": [
+    {
+      "arm_id": "shared_421m_sparse_fixed16_no_ndu",
+      "actual_final_parameters": 896,
+      "peak_live_trainable_params": 896,
+      "transition_model_weight_bytes": 3584,
+      "split_performed": false,
+      "optimizer_reset_count": 1,
+      "steps": 6,
+      "examples_seen": 12,
+      "training_residual": 0.7572262287139893,
+      "training_probe_max_logit_delta": null,
+      "phase_formula_flops": {
+        "train": 40606,
+        "search": 0,
+        "evaluation": null,
+        "inference": 1245,
+        "migration": 0
+      },
+      "unknown_operators": {},
+      "statuses": [
+        "completed",
+        "completed"
+      ],
+      "trained_bank_sha256": "63dd84d31d2c9ec8e1632c86e4b09d72d28010ff6000c102646e6d1bd096d233",
+      "execution_kind": "mechanism_fixture"
+    },
+    {
+      "arm_id": "shared_421m_sparse_direct32_no_ndu",
+      "actual_final_parameters": 896,
+      "peak_live_trainable_params": 896,
+      "transition_model_weight_bytes": 3584,
+      "split_performed": false,
+      "optimizer_reset_count": 1,
+      "steps": 6,
+      "examples_seen": 12,
+      "training_residual": 0.5699949860572815,
+      "training_probe_max_logit_delta": null,
+      "phase_formula_flops": {
+        "train": 39022,
+        "search": 0,
+        "evaluation": null,
+        "inference": 1245,
+        "migration": 0
+      },
+      "unknown_operators": {},
+      "statuses": [
+        "completed",
+        "completed"
+      ],
+      "trained_bank_sha256": "c811e73948719ebae14ecf4b4ae93fd900110942f18738f9a8678a4d6d8f601d",
+      "execution_kind": "mechanism_fixture"
+    },
+    {
+      "arm_id": "shared_421m_sparse_split_no_ndu",
+      "actual_final_parameters": 896,
+      "peak_live_trainable_params": 1344,
+      "transition_model_weight_bytes": 5376,
+      "split_performed": true,
+      "optimizer_reset_count": 1,
+      "steps": 6,
+      "examples_seen": 12,
+      "training_residual": 0.918250322341919,
+      "training_probe_max_logit_delta": 0.3348206877708435,
+      "phase_formula_flops": {
+        "train": 33550,
+        "search": 0,
+        "evaluation": null,
+        "inference": 1245,
+        "migration": 3364
+      },
+      "unknown_operators": {},
+      "statuses": [
+        "completed",
+        "completed"
+      ],
+      "trained_bank_sha256": "52a29b6a58d2043da32ce6d1b9e04253f597251c2088eeb584addeefdbaef4c3",
+      "execution_kind": "mechanism_fixture"
+    },
+    {
+      "arm_id": "shared_421m_sparse_split_64m_no_ndu",
+      "actual_final_parameters": 1792,
+      "peak_live_trainable_params": 2688,
+      "transition_model_weight_bytes": 10752,
+      "split_performed": true,
+      "optimizer_reset_count": 1,
+      "steps": 6,
+      "examples_seen": 12,
+      "training_residual": 0.7572262287139893,
+      "training_probe_max_logit_delta": 0.25992172956466675,
+      "phase_formula_flops": {
+        "train": 49182,
+        "search": 0,
+        "evaluation": null,
+        "inference": 1677,
+        "migration": 5732
+      },
+      "unknown_operators": {},
+      "statuses": [
+        "completed",
+        "completed"
+      ],
+      "trained_bank_sha256": "5ce64a85857bb96badc3bd7b1544c0199eb84622dde853810ad41fcdea6cd5e4",
+      "execution_kind": "mechanism_fixture"
+    }
+  ]
+}
