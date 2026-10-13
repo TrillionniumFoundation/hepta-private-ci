@@ -23,6 +23,7 @@ from hepta_cell_split_matrix_capture import (
     execute_matrix,
     validate_manifest,
     validate_measurement,
+    verify_exact_source,
 )
 from hepta_cell_split_perf_gate import InvalidEvidence, MODES, SCOPES
 
@@ -255,6 +256,84 @@ Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(
             self.assertTrue((output / "64-no_split.stdout.log").exists())
             self.assertFalse((output / "64-logical_split.stdout.log").exists())
             self.assertFalse((output / "measured-matrix.json").exists())
+
+    @staticmethod
+    def _frozen_source_checkout(path: Path, content: str = "frozen") -> str:
+        path.mkdir()
+        (path / "tracked.txt").write_text(content, encoding="utf-8")
+        for argv in (
+            ["git", "init", "-q"],
+            ["git", "add", "tracked.txt"],
+            [
+                "git",
+                "-c", "user.name=Hepta Test",
+                "-c", "user.email=hepta-test@example.invalid",
+                "-c", "commit.gpgsign=false",
+                "commit", "-qm", "freeze",
+            ],
+        ):
+            subprocess.run(argv, cwd=path, check=True, capture_output=True)
+        return subprocess.check_output(
+            ["git", "rev-parse", "HEAD"], cwd=path, text=True
+        ).strip()
+
+    @unittest.skipUnless(shutil.which("git"), "git is required")
+    def test_source_pin_rejects_hidden_tracked_file_changes(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for flag in ("--assume-unchanged", "--skip-worktree"):
+                with self.subTest(flag=flag):
+                    checkout = Path(directory) / flag.removeprefix("--")
+                    sha = self._frozen_source_checkout(checkout)
+                    verify_exact_source(checkout, sha)
+                    subprocess.run(
+                        ["git", "update-index", flag, "tracked.txt"],
+                        cwd=checkout,
+                        check=True,
+                        capture_output=True,
+                    )
+                    (checkout / "tracked.txt").write_text(
+                        "changed but hidden", encoding="utf-8"
+                    )
+                    # Unhardened git status falsely treats the edited source
+                    # as clean under both flags.
+                    self.assertFalse(
+                        subprocess.check_output(
+                            ["git", "status", "--porcelain", "--untracked-files=no"],
+                            cwd=checkout,
+                        ).strip()
+                    )
+                    with self.assertRaisesRegex(
+                        InvalidEvidence, "index flags hide inputs"
+                    ):
+                        verify_exact_source(checkout, sha)
+
+    @unittest.skipUnless(shutil.which("git"), "git is required")
+    def test_source_pin_ignores_foreign_git_metadata_environment(self):
+        with tempfile.TemporaryDirectory() as directory:
+            actual = Path(directory) / "actual"
+            foreign = Path(directory) / "foreign"
+            actual_sha = self._frozen_source_checkout(actual, "actual bytes")
+            foreign_sha = self._frozen_source_checkout(foreign, "foreign bytes")
+            self.assertNotEqual(actual_sha, foreign_sha)
+            with patch.dict(
+                os.environ,
+                {
+                    "GIT_DIR": str(foreign / ".git"),
+                    "GIT_WORK_TREE": str(foreign),
+                    "GIT_INDEX_FILE": str(foreign / ".git" / "index"),
+                },
+            ):
+                # Establish the exploit precondition: plain Git interrogates
+                # the clean foreign repository instead of the supplied root.
+                self.assertEqual(
+                    subprocess.check_output(
+                        ["git", "rev-parse", "HEAD"], cwd=actual, text=True
+                    ).strip(),
+                    foreign_sha,
+                )
+                verify_exact_source(actual, actual_sha)
+                with self.assertRaisesRegex(InvalidEvidence, "source checkout"):
+                    verify_exact_source(actual, foreign_sha)
 
 
 if __name__ == "__main__":
