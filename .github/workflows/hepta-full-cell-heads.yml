@@ -7,6 +7,11 @@ on:
       - "scripts/memory_cell/full_cell_heads_probe.py"
       - "scripts/memory_cell/test_full_cell_heads_probe.py"
       - ".github/workflows/hepta-full-cell-heads.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/full_cell_heads_probe.py"
+      - "scripts/memory_cell/test_full_cell_heads_probe.py"
+      - ".github/workflows/hepta-full-cell-heads.yml"
 
 permissions:
   contents: read
