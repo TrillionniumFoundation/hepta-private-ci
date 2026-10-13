@@ -960,10 +960,9 @@ pub fn settle_neuron_live_worker_terminal_v1<D: ModelDriver>(
 ) -> Result<(ControlReceipt, NeuronSettledCostDiagnosticV1), NeuronLiveTerminalSettlementErrorV1> {
     // The source check is tied to the real in-memory Worker incarnation and
     // the current fsynced Dispatching record, not supplied JSON receipts.
-    let observed = read_neuron_observed_cost_source_v1(
-        owner, worker, request, receipt, cost, now_ms,
-    )
-    .map_err(NeuronLiveTerminalSettlementErrorV1::Source)?;
+    let observed =
+        read_neuron_observed_cost_source_v1(owner, worker, request, receipt, cost, now_ms)
+            .map_err(NeuronLiveTerminalSettlementErrorV1::Source)?;
     let record = owner
         .get(request.request_id.as_str())
         .ok_or(NeuronLiveTerminalSettlementErrorV1::Missing)?;

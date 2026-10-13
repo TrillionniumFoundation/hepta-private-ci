@@ -1342,10 +1342,9 @@ fn known_worker_terminal_settles_once_with_separately_priced_units_and_reopens()
         claim.revision
     );
 
-    let (committed, historical) = settle_neuron_live_worker_terminal_v1(
-        &mut owner, &worker, &typed, &receipt, &cost, 100, 7,
-    )
-    .unwrap();
+    let (committed, historical) =
+        settle_neuron_live_worker_terminal_v1(&mut owner, &worker, &typed, &receipt, &cost, 100, 7)
+            .unwrap();
     assert_eq!(committed.state, RequestState::Completed);
     assert!(!committed.idempotent);
     assert_eq!(historical.settled_tokens, cost.consumed_tokens());
@@ -1363,9 +1362,7 @@ fn known_worker_terminal_settles_once_with_separately_priced_units_and_reopens()
     // Even with identical source/price, no second fsynced settlement is
     // permitted through the already-completed live Worker request.
     assert!(matches!(
-        settle_neuron_live_worker_terminal_v1(
-            &mut owner, &worker, &typed, &receipt, &cost, 100, 7,
-        ),
+        settle_neuron_live_worker_terminal_v1(&mut owner, &worker, &typed, &receipt, &cost, 100, 7,),
         Err(NeuronLiveTerminalSettlementErrorV1::Source(
             NeuronObservedCostSourceErrorV1::Stale
         ))
@@ -1380,7 +1377,16 @@ fn known_worker_terminal_settles_once_with_separately_priced_units_and_reopens()
         reopened.get(typed.request_id.as_str()).unwrap().state,
         RequestState::Completed
     );
-    assert_eq!(reopened.get(typed.request_id.as_str()).unwrap().usage_units, 7);
-    assert_eq!(reopened.get(typed.request_id.as_str()).unwrap().consumed_tokens, 4);
+    assert_eq!(
+        reopened.get(typed.request_id.as_str()).unwrap().usage_units,
+        7
+    );
+    assert_eq!(
+        reopened
+            .get(typed.request_id.as_str())
+            .unwrap()
+            .consumed_tokens,
+        4
+    );
     assert_eq!(historical.settlement_revision, committed.revision);
 }
