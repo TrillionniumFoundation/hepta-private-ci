@@ -43,7 +43,7 @@ def export_observed(plan, contract, directory, *, expected_seal_id, observer_pat
         raise ValueError("observer bytes differ from retained reference")
     observer = strict_json(observer_path)
     execution, predictions, seal = read_sealed(directory, expected_seal_id)
-    if execution.get("schema") != "hepta.stem.bound-execution.v1":
+    if execution.get("schema") not in ("hepta.stem.bound-execution.v1", "hepta.stem.bound-execution.v2"):
         raise ValueError("single-Head/legacy receipts cannot be relabeled as V2 Cell populations")
     profile = validate_config(plan, contract, execution["config"])
     for key in ("contract_id", "source_sha", "device_id", "workload_sha256"):
@@ -53,6 +53,35 @@ def export_observed(plan, contract, directory, *, expected_seal_id, observer_pat
         raise ValueError("wrong plan or arm identity")
     if execution["outcomes_loaded"] is not False or execution["production_authorized"] is not False:
         raise ValueError("model execution cannot load outcomes or grant authority")
+    growth = execution.get("growth_receipt")
+    growing = execution["config"].get("growth_policy")
+    if (growing is not None) != (execution["schema"] == "hepta.stem.bound-execution.v2"):
+        raise ValueError("growth execution must preserve its explicit schema")
+    if growing is not None:
+        from matrix_growth import GROWTH_ARMS
+        if (not isinstance(growth, dict) or growth.get("policy_id") != _digest(growing)
+                or growth.get("split_performed") is not (profile["arm_id"] in GROWTH_ARMS)
+                or execution.get("peak_trainable_params") != growth.get("peak_live_trainable_params")
+                or execution["training"].get("growth") != growth
+                or growth.get("decision_step") != growing["decision_step"]
+                or growth.get("optimizer_reset_count") != 1):
+            raise ValueError("incomplete or inconsistent actual growth evidence")
+        _integer(growth["decision_step"], "growth decision step", 1)
+        _integer(growth["optimizer_reset_count"], "optimizer reset count", 1)
+        _integer(growth.get("source_group_count"), "growth source group count", 1)
+        residual = growth.get("training_residual")
+        if type(residual) not in (int, float) or not math.isfinite(residual) or residual < 0:
+            raise ValueError("invalid recorded training residual")
+        if growth["split_performed"] and (residual <= growing["loss_threshold"]
+                or growth["source_group_count"] < growing["minimum_source_groups"]):
+            raise ValueError("claimed split did not satisfy its frozen criterion")
+        if execution["training"].get("steps") != execution["config"]["train_steps"]:
+            raise ValueError("training step count differs from frozen schedule")
+        _integer(execution["peak_trainable_params"], "live transition parameters", 1)
+        if execution["peak_trainable_params"] > contract["max_peak_trainable_params"]:
+            raise ValueError("growth exceeded the common lifecycle budget")
+    elif growth is not None:
+        raise ValueError("legacy execution cannot claim a growth transition")
     inventory = execution["inventory"]
     if inventory["cells"] != profile["logical_cells"] or inventory["active_cells_cap"] != profile["active_cells_per_round_cap"]:
         raise ValueError("actual population geometry differs from plan")
@@ -62,6 +91,15 @@ def export_observed(plan, contract, directory, *, expected_seal_id, observer_pat
         raise ValueError("incomplete actual bank parameter accounting")
     if inventory["parameters"] > profile["total_head_budget_params"]:
         raise ValueError("total trainable parameters exceed the bound")
+    if growing is not None:
+        if execution["peak_trainable_params"] < inventory["parameters"]:
+            raise ValueError("transition peak below current parameters")
+        if growth["split_performed"]:
+            if (growth.get("final_parameters") != inventory["parameters"]
+                    or growth.get("parent_for_child") != [i % 16 for i in range(32)]
+                    or growth.get("parent_parameters", 0) * 2 != inventory["parameters"]
+                    or growth["peak_live_trainable_params"] != growth["parent_parameters"] + inventory["parameters"]):
+                raise ValueError("growth lineage or live tensor inventory changed")
     if set(execution["phase_flops"]) != set(PHASES):
         raise ValueError("all physical work phases required")
     for phase, value in execution["phase_flops"].items():
@@ -129,7 +167,7 @@ def export_observed(plan, contract, directory, *, expected_seal_id, observer_pat
     export = dict(schema="hepta.stem.paired-run-export.v1", contract_id=contract["contract_id"],
                   arm_id=execution["arm_id"], source_sha=contract["source_sha"], device_id=contract["device_id"],
                   workload_sha256=contract["workload_sha256"], head_params=inventory["head_params"],
-                  trainable_params=inventory["trainable_parameters"], peak_trainable_params=inventory["parameters"],
+                  trainable_params=inventory["trainable_parameters"], peak_trainable_params=execution.get("peak_trainable_params", inventory["parameters"]),
                   unique_weight_bytes=execution["unique_weight_bytes"], phase_flops=execution["phase_flops"],
                   flop_profile=execution["flop_profile"], flop_components=execution["flop_components"],
                   execution_kind=execution["execution_kind"], weight_receipt_sha256=_digest(execution["encoder_receipt"]),
@@ -156,12 +194,22 @@ def export_observed(plan, contract, directory, *, expected_seal_id, observer_pat
             raise ValueError("measurement policy differs from frozen configuration")
         if execution["flop_profile"] != observation.get("profile"):
             raise ValueError("measurement profile changed")
-        for phase in ("train", "inference"):
+        checked_phases = ("train", "inference", "migration") if growing and growth["split_performed"] else ("train", "inference")
+        for phase in checked_phases:
             if execution["phase_flops"][phase] != observation["phase_flops"][phase]:
                 raise ValueError("execution count differs from its measurement record")
         # Do not substitute a whole-process high-water mark or package energy
         # into the stricter per-request metrics consumed by paired_execution.
         summary["execution_work_observation"] = observation
+    if growing is not None:
+        # Preserve matching data/training/optimizer-reset references through the
+        # normalized export. An arm label alone is not a controlled comparison.
+        cfg = execution["config"]
+        protocol = {k: cfg.get(k) for k in ("growth_policy", "train_steps", "batch_size", "width_units",
+                    "context_tokens", "snapshot_sha256", "encoder_profile", "measurement_policy")}
+        protocol.update(seed=plan["seed"], workload_sha256=contract["workload_sha256"])
+        export.update(schema="hepta.stem.paired-run-export.v2", training_protocol_sha256=_digest(protocol))
+        summary["growth_receipt"] = growth
     return export, summary
 
 

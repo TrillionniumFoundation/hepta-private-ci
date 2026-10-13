@@ -1,6 +1,6 @@
 """Run admitted local HF weights through actual V2 Cell populations.
 
-This CPU FP32 executor supports five explicitly named, non-split/non-NDU arms.
+This CPU FP32 executor supports fixed arms and an explicit offline growth profile.
 It seals predictions before the separate observer join. No automatic download,
 random-weight fallback, final-label loading, native installation or promotion.
 """
@@ -24,7 +24,7 @@ from paired_execution import PHASES
 SOURCE_FILES = ("next_round_matrix.py", "paired_execution.py", "head_surgery.py",
                 "hf_encoder_kernel.py", "matrix_materials.py", "matrix_bank.py",
                 "matrix_runtime.py", "matrix_export.py", "aten_work.py",
-                "host_counters.py", "execution_meter.py", "hf_complete_checkpoint.py", "transformer_work.py")
+                "host_counters.py", "execution_meter.py", "matrix_growth.py", "hf_complete_checkpoint.py", "transformer_work.py")
 
 
 def verify_source(source_sha):
@@ -143,13 +143,24 @@ def execute(plan, contract, config, workload, backend, *, clock=time.time_ns, me
         # Weight loading cannot perturb Head initialization/minibatch seed.
         with torch.random.fork_rng(devices=[]):
             torch.random.default_generator.manual_seed(plan["seed"])
-            bank = CellBank(backend.dimension, classes, profile, config["width_units"])
+            if "growth_policy" in config:
+                from matrix_growth import initial_bank
+                bank = initial_bank(backend.dimension, classes, profile, config,
+                                    parameter_cap=contract["max_peak_trainable_params"])
+            else:
+                bank = CellBank(backend.dimension, classes, profile, config["width_units"])
         targets = torch.tensor([r["label"] for r in train], dtype=torch.long)
         before = state_digest(bank)
     started = time.perf_counter_ns()
-    with scope("train", "bank"):
-        training = train_bank(bank, features, targets, config, plan["seed"])
+    if "growth_policy" in config:
+        from matrix_growth import train_with_growth
+        bank, training = train_with_growth(bank, features, targets, config, contract, profile,
+                                          [r["source_group"] for r in train], seed=plan["seed"], meter=meter)
         trained_digest = state_digest(bank)
+    else:
+        with scope("train", "bank"):
+            training = train_bank(bank, features, targets, config, plan["seed"])
+            trained_digest = state_digest(bank)
     training_ns = time.perf_counter_ns() - started
     started = time.perf_counter_ns()
     # Warmup is counted online; only its latency sample is excluded.
@@ -205,12 +216,19 @@ def execute(plan, contract, config, workload, backend, *, clock=time.time_ns, me
                     durations_ns=dict(feature_materialization=feature_ns, training=training_ns, warmup=warmup_ns),
                     actual_compute_caps_verified=False, latency_scope="sequential_encoder_plus_bank_including_failed_requests",
                     outcomes_loaded=False, independent_success_established=False, production_authorized=False)
+    if "growth" in training:
+        manifest["schema"] = "hepta.stem.bound-execution.v2"
+        manifest["growth_receipt"] = training["growth"]
+        manifest["peak_trainable_params"] = training["growth"]["peak_live_trainable_params"]
+        manifest["phase_flops"]["migration"] = None if training["growth"]["split_performed"] else 0
     if meter is not None:
         observation = meter.report()
         manifest["work_observation"] = observation
         manifest["flop_profile"] = observation["profile"]
         for phase in ("train", "inference"):
             manifest["phase_flops"][phase] = observation["phase_flops"][phase]
+        if "growth" in training and training["growth"]["split_performed"]:
+            manifest["phase_flops"]["migration"] = observation["phase_flops"]["migration"]
         manifest["latency_scope"] += "_instrumented"
         manifest["feature_cache_payload_bytes"] = features.numel() * features.element_size()
         manifest["accounting_gaps"] = ["independent_observer_evaluation", "publication_after_measurement",
@@ -285,6 +303,9 @@ def run_bound(plan, contract, config, workload_path, snapshot, output):
     except Exception as exc:
         failure = {"status": "failed", "error_type": type(exc).__name__,
                    "expected_task_ids": contract["task_ids"], "production_authorized": False}
+        from matrix_growth import GrowthNotAdmitted
+        if isinstance(exc, GrowthNotAdmitted):
+            failure["growth_disposition"] = exc.report
         if meter is not None:
             failure["work_observation"] = meter.report()
         write_json_exclusive(root / "FAILED.json", failure)
