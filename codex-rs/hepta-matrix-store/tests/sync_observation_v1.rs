@@ -10,10 +10,13 @@ use codex_hepta_matrix_protocol::MatrixSyncMutationV2;
 use codex_hepta_matrix_protocol::MatrixSyncResultV2;
 use codex_hepta_paths::HeptaAgentLayout;
 use codex_hepta_paths::HeptaFleetRoot;
-use codex_state::SqliteConfig;
-use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
+use sqlx::ConnectOptions;
 use sqlx::SqlitePool;
+use sqlx::sqlite::SqliteConnectOptions;
+use sqlx::sqlite::SqliteJournalMode;
+use sqlx::sqlite::SqlitePoolOptions;
+use sqlx::sqlite::SqliteSynchronous;
 use tempfile::TempDir;
 
 use codex_hepta_matrix_store::MatrixDurableConfig;
@@ -39,6 +42,10 @@ struct Fixture {
 }
 
 impl Fixture {
+    #[expect(
+        clippy::disallowed_methods,
+        reason = "read-only qualification fixture observes an initialized Matrix WAL database; creation is prohibited on this second connection"
+    )]
     async fn new() -> TestResult<Self> {
         let temp = TempDir::new()?;
         let root = temp.path().join("fleet");
@@ -62,12 +69,21 @@ impl Fixture {
         // This precondition is fixture setup, not a path-based recovery guard.
         let path = store.path();
         assert!(fs::symlink_metadata(path)?.file_type().is_file());
-        let parent = path
-            .parent()
-            .ok_or_else(|| std::io::Error::other("fixture parent missing"))?;
-        let parent = AbsolutePathBuf::try_from(parent.to_path_buf())?;
-        let pool = SqliteConfig::new_for_testing(parent)
-            .open_durable_evidence_pool(path)
+        // A second observed SQLx connection uses the same non-rebuildable
+        // WAL/FULL/foreign-key/busy-timeout profile as the durable owner.
+        // Its create_if_missing(false) also prevents a corrupt/missing fixture
+        // from silently materializing an empty replacement database.
+        let options = SqliteConnectOptions::new()
+            .filename(path)
+            .create_if_missing(false)
+            .journal_mode(SqliteJournalMode::Wal)
+            .synchronous(SqliteSynchronous::Full)
+            .foreign_keys(true)
+            .busy_timeout(Duration::from_secs(5))
+            .disable_statement_logging();
+        let pool = SqlitePoolOptions::new()
+            .max_connections(5)
+            .connect_with(options)
             .await?;
         Ok(Self {
             _temp: temp,
