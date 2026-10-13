@@ -1,0 +1,206 @@
+{
+  "schema": "hepta.native-rule-use.research-delivery.v1",
+  "parent": "626e769b24b97256a372195b96c93a1999961bb5",
+  "pr": 1550,
+  "draft_required": true,
+  "production_qualified": false,
+  "four_gate_changed": false,
+  "qualification": "opt-in native owner composition; no runtime installation or promotion",
+  "final_native_scenarios": {
+    "passed": 15,
+    "total": 15,
+    "wall_ns": 6638369239,
+    "parent_cpu_ns": 158747070,
+    "native_children_user_cpu_s": 3.549211,
+    "native_children_system_cpu_s": 0.098325
+  },
+  "validation": {
+    "python_model_free": 622,
+    "native_artifacts": 102,
+    "native_contracts": 175,
+    "native_infer_core": 33,
+    "native_rule_agentd_targeted": 3,
+    "native_infer_history_measurement": 1,
+    "raw_artifact_and_mutation_checks": 7,
+    "closed_world_tests": 4,
+    "caller_proof": "PASS_HEPTA_CALLER_CLOSED_SET",
+    "workflow_bash_blocks": 3,
+    "native_nextest_existing_skipped": 2,
+    "native_nextest_skip_scope": "existing child worker invoked by kill matrix; existing infer history measurement run separately",
+    "rust_fix": "scoped actual root just fix passed; existing warnings remain",
+    "bazel_lock": "actual just bazel-lock-update passed; MODULE.bazel.lock unchanged"
+  },
+  "preserved_failures": [
+    "initial native study9/11: unsupported combined Register/Revoke refused and fixture newline parse; source later corrected without relaxing native invariant",
+    "loaded-host14-case run12/14:20-second init transport timeouts while parallel links exhausted resources; original budgets retained",
+    "pre-final full Agentd211run188passed23failed6ignored: actual AF_UNIX bind EPERM; full final package not claimed green",
+    "default full Agentd build ENOSPC; parallel dev-small linker killed by kernel; serial retry built and ran actual package",
+    "first raw auditor wrong operation-versus-state reference; final actual state transformation corrected",
+    "interleaved compile missing newly added getters; final frozen-source builds passed",
+    "initial closed caller inventories rejected new guarded callsites; explicit inventories corrected without weakening matchers"
+  ],
+  "remaining": [
+    "native named artifact owner has no durable Revoke/Quarantine publication transaction; read-only native signed revoked-view tests are distinct",
+    "independently operated issuers/evaluators, real future Hepta observations, model efficacy and production runtime admission unqualified",
+    "full final-head and merge CI must run independently; source results do not certify hosted CI",
+    "SQLite/native process-file durability is not power-loss or hardware execution attestation",
+    "native work and local SQLite finish are fail-closed across unknown results, not distributed exactly-once"
+  ],
+  "source_sha256": {
+    ".github/workflows/hepta-native-rule-use-research.yml": "eadf6115d1e638d920b09ed5149064bbac2929271eaf3d79a60939bfb712978e",
+    "CALLERS.toml": "11414e0110211bc0da4231e53b532e1bffbedfd02d1541027f0e00204c337411",
+    "codex-rs/hepta-agentd/Cargo.toml": "7dec8f35f42423fe301a1ea809f575af1b69d7843cb67feace917171e1b91ff1",
+    "codex-rs/hepta-agentd/src/lib.rs": "34eeb560598c22bb98ec80cf4760dfd7b77232b485c0ac46dc5028cffd5cfc9b",
+    "codex-rs/hepta-agentd/src/rule_artifact.rs": "8df47b46703b70c190e1c181ddb4df0aa29207e25c564c56dd3b14b737b3b41a",
+    "codex-rs/hepta-agentd/src/rule_artifact_tests.rs": "a53260feb2c193315c7ade72300622fca3c30d2eb0109df14de4d93b3f18b5bb",
+    "codex-rs/hepta-contracts/src/final_use.rs": "072343bbd3f1a82c8dd7cb4301315a4d4243f59f114196b7e0671b1490c5f203",
+    "codex-rs/hepta-contracts/src/final_use_tests.rs": "b5c50aa6a229eae56f8e7f7154e042eee5853b41ab2b3a0c533aa4250378469f",
+    "codex-rs/hepta-learning-artifacts/src/lib.rs": "2184a124b3ccdd46eac1e4a5b010b689d7da8e263cbd31e8efe23f49f280338d",
+    "codex-rs/hepta-learning-artifacts/src/owner_host.rs": "ef36e3ef11ab762d5fbaae206855c84bcd55c192b9f79f125817f436f3344fec",
+    "codex-rs/hepta-learning-artifacts/src/owner_service.rs": "64337d4313f506540bcfbe1b3f5bea7ed0bbf6a70d0909f64cbb25e8ec02b8ed",
+    "codex-rs/hepta-learning-artifacts/src/pinned.rs": "a44656b460e75e0782cbde4a82221e72e0700e50db2fe10444d93b1b1106c840",
+    "codex-rs/hepta-learning-artifacts/src/selected_current.rs": "569dd38bbef798c723fe57af6affee6be5c816ca4b739b8156aed3c18ac0fbd5",
+    "codex-rs/hepta-learning-artifacts/src/selection.rs": "a68aad9f4f84fcd329de5c9ec341e93885e6671bae2e747589045262c7f4742f",
+    "codex-rs/hepta-learning-artifacts/src/selection_current_tests.rs": "e36563134f7bbf4fd915b3bb4f8ed3ac664f808083b54560bc697263c0abcaca",
+    "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json": "9224ea80286dca3e33afd9909f229a7f8bb975cd99d37782e26d085b18c5c9f1",
+    "qualification/neuron-stem/FBSDE_NATIVE_RULE_USE_V1.md": "28838a3acbfbb327c5d7642aff6d36405140367ae0266a41ec6e823fc92196de",
+    "qualification/neuron-stem/fbsde_native_rule.py": "896cb904a88b22c676f6fc0ce0f1201d82955cac73b3fabd22ce3a3ec2ed6627",
+    "qualification/neuron-stem/fbsde_native_rule_artifact_checks.py": "779c26ac3da93246b522e6ca17450b6e8aa25d9bf59d8912405edaf4f403f61e",
+    "qualification/neuron-stem/fbsde_native_rule_study.py": "d59bebde49f43b4275ce0ab844b1dd6160f7b12502774846780487ac1bea1ccf",
+    "qualification/neuron-stem/native-rule-use/README.md": "c2f54d27eeb7e8937da605fd8554fbf53a9f7bdeb29e1166785168a0f08a0cd7",
+    "qualification/neuron-stem/native-rule-use/build_shadow.py": "70d382e6511f07f45defa0f7396be6158710ced7e067e90083da3ff00754aa12",
+    "qualification/neuron-stem/native-rule-use/fixture.rs": "84350f02711904a7a43a3b11e2ffa2285984e6ddfa1c0ec530b486ec85204977",
+    "qualification/neuron-stem/native-rule-use/main.rs": "72bebc24453d0601e69cf938d78d09f06c7bc7ac8075cecda35825a4388a3c97",
+    "qualification/neuron-stem/native-rule-use/revision.rs": "f4ac49ea433c5d13e0f206043693ae5918a6f2e19f9f23e9188fb973fd2c3846",
+    "qualification/neuron-stem/test_fbsde_native_rule.py": "6ebffdf633b76afa7022be329282f6ec08ee03960b814b175c0e854611823a61"
+  },
+  "cases": [
+    {
+      "name": "successful",
+      "contract": true,
+      "returned_count": 6,
+      "refused_count": 0,
+      "native_exit_code": 0
+    },
+    {
+      "name": "concurrent_finish",
+      "contract": true,
+      "returned_count": 1,
+      "refused_count": 1,
+      "native_exit_code": 0
+    },
+    {
+      "name": "finaluse_revoked_after_claim",
+      "contract": true,
+      "returned_count": 0,
+      "refused_count": 1,
+      "native_exit_code": 0
+    },
+    {
+      "name": "finaluse_revoked_restart",
+      "contract": true,
+      "returned_count": 0,
+      "refused_count": 1,
+      "native_exit_code": 0
+    },
+    {
+      "name": "rule_revoked",
+      "contract": true,
+      "returned_count": 0,
+      "refused_count": 1,
+      "native_exit_code": 0
+    },
+    {
+      "name": "signed_current_corrupt",
+      "contract": true,
+      "returned_count": 0,
+      "refused_count": 1,
+      "native_exit_code": 0
+    },
+    {
+      "name": "selection_expired",
+      "contract": true,
+      "returned_count": 0,
+      "refused_count": 1,
+      "native_exit_code": 0
+    },
+    {
+      "name": "late_inference",
+      "contract": true,
+      "returned_count": 0,
+      "refused_count": 1,
+      "native_exit_code": 0
+    },
+    {
+      "name": "driver_unknown",
+      "contract": true,
+      "returned_count": 0,
+      "refused_count": 1,
+      "native_exit_code": 0
+    },
+    {
+      "name": "driver_panic",
+      "contract": true,
+      "returned_count": 0,
+      "refused_count": 1,
+      "native_exit_code": 101
+    },
+    {
+      "name": "local_finish_unknown",
+      "contract": true,
+      "returned_count": 0,
+      "refused_count": 1,
+      "native_exit_code": 0
+    },
+    {
+      "name": "native_restart",
+      "contract": true,
+      "returned_count": 0,
+      "refused_count": 1,
+      "native_exit_code": 0
+    },
+    {
+      "name": "rule_restart",
+      "contract": true,
+      "returned_count": 0,
+      "refused_count": 1,
+      "native_exit_code": 0
+    },
+    {
+      "name": "recovery_new_selection",
+      "contract": true,
+      "returned_count": 2,
+      "refused_count": 1,
+      "native_exit_code": 0
+    },
+    {
+      "name": "unverified_source",
+      "contract": true,
+      "returned_count": 0,
+      "refused_count": 1,
+      "native_exit_code": 0
+    }
+  ],
+  "recovery_new_selection": {
+    "paid_observation_calls": 3,
+    "lifetime_recovery_limit": 5,
+    "generation": 2,
+    "rule_revision": 1,
+    "native_restart_after_new_selection": true,
+    "restart_renews_selection": false,
+    "old_sequence_replay": "AlreadyClaimed",
+    "expired_original_selection_restart": "SelectionContext"
+  },
+  "evidence_scope": {
+    "native_execution": "native-study-complete raw SQLite/native journals and driver traces; successful pre-final-format helper source hashes retained",
+    "final_format": "just fmt changed only harness main.rs/revision.rs formatting; exact final source rebuilt, no suite rerun per AGENTS",
+    "full_agentd": "pre-final package failure evidence, not final-head full-suite pass",
+    "source_hashes": "all changed files except this self-referential delivery report"
+  },
+  "native_binary_provenance": {
+    "actual_15_case_executable_sha256": "6e328278ffc5fb83d856be14dae914b6fb4578be1cd79f837f5e9f87a19f73c1",
+    "final_formatted_executable_sha256": "8c78f6e88d40483c9bc1cf5863708d3092c6e8df97efad1eb0066fd54036aeb2",
+    "final_source_inputs": 144,
+    "formatting_only_difference": "main.rs/revision.rs use-import ordering/group expansion; function/type bodies unchanged"
+  }
+}
