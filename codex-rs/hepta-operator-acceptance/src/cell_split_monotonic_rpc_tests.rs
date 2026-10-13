@@ -289,6 +289,7 @@ struct DiskAuthoritativeRegistry {
     file: PathBuf,
     reads: usize,
     revoke_on_read: Option<usize>,
+    custody_delay: Option<Duration>,
 }
 
 impl DiskAuthoritativeRegistry {
@@ -297,6 +298,7 @@ impl DiskAuthoritativeRegistry {
             file,
             reads: 0,
             revoke_on_read: None,
+            custody_delay: None,
         }
     }
 }
@@ -337,6 +339,9 @@ impl CellSplitMonotonicAuthoritativeRegistryV1 for DiskAuthoritativeRegistry {
         nonce: &str,
     ) -> Result<CellSplitMonotonicCustodyProofV1, Self::Error> {
         // Test-only file fixture, NOT a production external trust root.
+        if let Some(delay) = self.custody_delay {
+            thread::sleep(delay);
+        }
         let file = self.file.with_file_name("independently-retained-floor.json");
         let bytes = std::fs::read(file)?;
         let floor: CellSplitMonotonicDurableFrontierV1 =
@@ -877,4 +882,39 @@ fn missing_independent_custody_denies_fresh_remote_monotonic_signature() {
         service.serve_connection(&mut server),
         Err(CellSplitMonotonicRpcErrorV1::Denied(_))
     ));
+}
+
+
+#[test]
+fn slow_independent_custody_cannot_sign_after_owner_request_budget_expires() {
+    let root = tempfile::tempdir().expect("private registry");
+    let file = write_test_registry(root.path());
+    let mut backend = DiskAuthoritativeRegistry::open(file.clone());
+    backend.custody_delay = Some(Duration::from_millis(15));
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        backend,
+        signer(),
+        custody_signer().verifying_key(),
+        Duration::from_millis(2),
+    )
+    .expect("small bounded owner budget");
+    let (mut client, mut server) =
+        std::os::unix::net::UnixStream::pair().expect("socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitMonotonicRpcRequestV1 {
+            schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.into(),
+            method: READ_METHOD.into(),
+            journal_domain_id: DOMAIN.into(),
+            challenge_nonce: "ab".repeat(32),
+        },
+    )
+    .expect("fully queued request");
+    assert!(matches!(
+        service.serve_connection(&mut server),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+    drop(server);
+    assert!(receive_frame::<CellSplitMonotonicRpcResponseV1>(&mut client).is_err());
+    assert!(file.exists(), "timeout must not mutate durable custody");
 }

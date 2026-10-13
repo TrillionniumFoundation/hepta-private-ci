@@ -16,6 +16,7 @@ use std::os::unix::net::UnixStream;
 use std::path::Component;
 use std::path::PathBuf;
 use std::time::Duration;
+use std::time::Instant;
 
 use ed25519_dalek::Signature;
 use ed25519_dalek::Signer as _;
@@ -355,6 +356,7 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
         &mut self,
         stream: &mut UnixStream,
     ) -> Result<(), CellSplitMonotonicRpcErrorV1> {
+        let started_at = Instant::now();
         let request: CellSplitMonotonicRpcRequestV1 =
             receive_frame_with_deadline(stream, self.timeout)?;
         if request.schema != CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1
@@ -399,6 +401,14 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
         // even if an uncooperative registry process restores older otherwise
         // valid bytes after the previous signed request.
         self.verify_retained_frontier(&first)?;
+        // Read/write socket deadlines do not cover time spent querying the
+        // separate custody and durable registry. Do not acknowledge a signed
+        // high-water if that independent verification outlived the request
+        // budget. This denies stale positives; hung backend calls still
+        // require deployment-managed cancellation and worker limits.
+        if started_at.elapsed() >= self.timeout {
+            return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+        }
         self.retained_frontiers
             .insert(first.journal_domain_id.clone(), first);
         send_frame_with_deadline(

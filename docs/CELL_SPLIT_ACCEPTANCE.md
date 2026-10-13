@@ -445,6 +445,15 @@ ratchet. The separately administered monotonic backend, independent
 signatures, live minimum readback and protected external custody remain
 mandatory. No physical Cell Split or activation is authorized.
 
+The read-only Monotonic RPC service also denies an otherwise signed
+frontier if its independent registry/custody checks exceed the configured
+request wall-clock budget. Socket frame timeouts do not cover those external
+calls. Source failure injection introduces an intentionally slow custody
+read and requires refusal *before* any positive RPC frame is sent. This
+limit does not interrupt indefinitely blocked backend I/O; production
+workers must enforce separate deadlines/cancellation and supervisor health
+fences.
+
 ### Retrospective rollback evidence is not a live successor route
 
 The signed target-host lifecycle also includes rollback, tombstone and
