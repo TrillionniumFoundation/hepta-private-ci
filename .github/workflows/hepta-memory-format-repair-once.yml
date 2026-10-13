@@ -167,3 +167,5 @@ jobs:
           path: /tmp/format-repair
           if-no-files-found: error
 # Source-only/LoCoMo/Stem AST-preserving one-shot repair requested 2026-10-13.
+# Recheck current 8a6ae1fb source: CI 38371025013 diagnosed 11 Ruff formatting files.
+# Do not change Python AST, skip pinned regressions, or push non-fast-forward.
