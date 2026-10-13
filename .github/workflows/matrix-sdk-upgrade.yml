@@ -8,6 +8,13 @@ on:
       - "codex-rs/Cargo.*"
       - "codex-rs/rust-toolchain.toml"
       - "qualification/matrix-sdk-019/**"
+      # Changes to the reviewed safe-YAML metadata/lock prerequisites must
+      # also rerun real Matrix encrypted-store, cargo-deny and Synapse checks.
+      - "codex-rs/core-plugins/src/command_migration*"
+      - "codex-rs/external-agent-migration/src/subagents*"
+      - "codex-rs/skills/src/parser.rs"
+      - "MODULE.bazel.lock"
+      - ".github/workflows/hepta-safe-yaml-rustsec-qualification.yml"
       - ".github/workflows/matrix-sdk-upgrade.yml"
   workflow_dispatch:
 permissions:
