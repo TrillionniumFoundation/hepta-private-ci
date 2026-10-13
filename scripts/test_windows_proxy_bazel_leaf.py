@@ -5,6 +5,7 @@ This is a structural preflight, not a substitute for real Cargo/Bazel builds.
 The Windows restricted-token ingress regression must remain executable from a
 leaf crate, never a dev dependency of the protocol-facing proxy library.
 """
+
 from pathlib import Path
 import tomllib
 
@@ -18,7 +19,9 @@ def manifest(relative):
 
 
 def one_package(lock, name):
-    matches = [p for p in lock["package"] if p["name"] == name and p["version"] == "0.0.0"]
+    matches = [
+        p for p in lock["package"] if p["name"] == name and p["version"] == "0.0.0"
+    ]
     if len(matches) != 1:
         raise AssertionError(f"missing unique locked workspace package {name}")
     return matches[0]
@@ -34,21 +37,26 @@ def main():
     for target in proxy.get("target", {}).values():
         for kind in ("dependencies", "dev-dependencies", "build-dependencies"):
             if any("windows-sandbox" in key for key in target.get(kind, {})):
-                raise AssertionError("proxy cannot import Windows sandbox via any Cargo target")
+                raise AssertionError(
+                    "proxy cannot import Windows sandbox via any Cargo target"
+                )
     if "codex-protocol" not in sandbox["dependencies"]:
         raise AssertionError("Windows sandbox must retain real protocol boundary")
     leaf = cli.get("target", {}).get("cfg(windows)", {}).get("dev-dependencies", {})
     if "codex-network-proxy" not in leaf:
         raise AssertionError("CLI Windows leaf must exercise real network-proxy")
     win_deps = cli.get("target", {}).get('cfg(target_os = "windows")', {}).get(
-        "dependencies", {})
-    if not any(name.replace("_", "-") == "codex-windows-sandbox" or
-               (isinstance(spec, dict) and spec.get("package") == "codex-windows-sandbox")
-               for name, spec in win_deps.items()):
+        "dependencies", {}
+    )
+    if not any(
+        name.replace("_", "-") == "codex-windows-sandbox"
+        or (isinstance(spec, dict) and spec.get("package") == "codex-windows-sandbox")
+        for name, spec in win_deps.items()
+    ):
         raise AssertionError("CLI must retain real Windows sandbox dependency")
     test = CRATES / "cli/tests/windows_stable_ingress.rs"
-    if (not test.is_file() or
-            (CRATES / "network-proxy/tests/windows_stable_ingress.rs").exists()):
+    original_test = CRATES / "network-proxy/tests/windows_stable_ingress.rs"
+    if not test.is_file() or original_test.exists():
         raise AssertionError("Windows proxy test must have exactly one leaf owner")
     body = test.read_text(encoding="utf-8")
     for required in (
@@ -60,7 +68,9 @@ def main():
         "codex_windows_sandbox::",
     ):
         if required not in body:
-            raise AssertionError("Windows proxy regression lost required coverage: " + required)
+            raise AssertionError(
+                "Windows proxy regression lost required coverage: " + required
+            )
     lock = tomllib.loads((CRATES / "Cargo.lock").read_text(encoding="utf-8"))
     proxy_locked = one_package(lock, "codex-network-proxy")
     cli_locked = one_package(lock, "codex-cli")
@@ -70,7 +80,10 @@ def main():
         raise AssertionError("locked CLI test must own real proxy dependency")
     if "codex-windows-sandbox" not in cli_locked["dependencies"]:
         raise AssertionError("locked CLI must keep real Windows sandbox dependency")
-    print("PASS: full restricted-token Windows ingress moved to CLI; library DAG cycle absent")
+    print(
+        "PASS: full restricted-token Windows ingress moved to CLI; "
+        "library DAG cycle absent"
+    )
 
 
 if __name__ == "__main__":
