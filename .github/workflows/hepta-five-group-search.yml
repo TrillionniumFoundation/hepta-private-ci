@@ -1,0 +1,66 @@
+name: Hepta Group search and allocation source tests
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/five_group_search.py"
+      - "scripts/memory_cell/test_five_group_search.py"
+      - ".github/workflows/hepta-five-group-search.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/five_group_search.py"
+      - "scripts/memory_cell/test_five_group_search.py"
+      - ".github/workflows/hepta-five-group-search.yml"
+permissions:
+  contents: read
+concurrency:
+  group: five-group-source-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  group-and-inherited-source-tests:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install isolated pinned source-test dependencies
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-five-group/source
+          python3 -m venv /tmp/hepta-five-group-python
+          /tmp/hepta-five-group-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/hepta-five-group-python/bin/pip install numpy==2.2.6 safetensors==0.7.0 cryptography==46.0.4
+          /tmp/hepta-five-group-python/bin/pip freeze > /tmp/hepta-five-group/environment.txt
+      - name: Preserve all inherited focused gates and test the new Group implementation
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-five-group-python/bin/python
+          "$P" -m unittest discover -s scripts/memory_cell -p test_full_cell_matrix.py -v 2>&1 | tee /tmp/hepta-five-group/matrix.log
+          "$P" -m unittest discover -s scripts/memory_cell -p test_five_causal_experiments.py -v 2>&1 | tee /tmp/hepta-five-group/contracts.log
+          "$P" -m unittest discover -s scripts/memory_cell -p test_five_causal_native.py -v 2>&1 | tee /tmp/hepta-five-group/native.log
+          "$P" -m unittest discover -s scripts/memory_cell -p test_five_group_search.py -v 2>&1 | tee /tmp/hepta-five-group/group.log
+          "$P" -m py_compile scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group_search.py
+      - name: Record source and failure artifacts without model weights
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-five-group/source
+          git rev-parse HEAD > /tmp/hepta-five-group/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-five-group/tested-tree.txt
+          cp scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group_search.py .github/workflows/hepta-five-group-search.yml /tmp/hepta-five-group/source/
+          (cd /tmp/hepta-five-group && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-group-source-tests-not-capability-evidence
+          path: /tmp/hepta-five-group
+          if-no-files-found: error
