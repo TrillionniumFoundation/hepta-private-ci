@@ -4,6 +4,7 @@ Reuse ORIGINAL source-only K-way likelihoods. A question-independent identifier
 prior cancels in the symmetric swapped-value comparison. Candidate values are
 still taken from sources, not learned entirely in parameters.
 """
+
 import math
 
 from native import digest
@@ -18,11 +19,15 @@ def question_binding(rows, cases):
         q, values = case["query"], case["candidates"]
         qid, scope, target = q["identity"], q["scope"], case["target"]
         if (
-            not isinstance(qid, str) or not qid or qid in seen
-            or not isinstance(scope, str) or not scope
+            not isinstance(qid, str)
+            or not qid
+            or qid in seen
+            or not isinstance(scope, str)
+            or not scope
             or scope != case["scope"]
             or not isinstance(values, (tuple, list))
-            or not 2 <= len(values) <= 16 or len(set(values)) != len(values)
+            or not 2 <= len(values) <= 16
+            or len(set(values)) != len(values)
             or target not in values
             or any(not isinstance(v, str) or not v for v in values)
         ):
@@ -30,14 +35,14 @@ def question_binding(rows, cases):
         seen.add(qid)
         groups.setdefault(scope, []).append(case)
         expected.update(
-            (qid, arm, digest(v))
-            for arm in ("base", "memory") for v in values
+            (qid, arm, digest(v)) for arm in ("base", "memory") for v in values
         )
-    keys = [
-        (row["question_id"], row["arm"], row["candidate_digest"])
-        for row in rows
-    ]
-    if len(keys) != len(expected) or len(set(keys)) != len(keys) or set(keys) != expected:
+    keys = [(row["question_id"], row["arm"], row["candidate_digest"]) for row in rows]
+    if (
+        len(keys) != len(expected)
+        or len(set(keys)) != len(keys)
+        or set(keys) != expected
+    ):
         raise ValueError("missing/duplicate original candidate model call")
     indexed = dict(zip(keys, rows, strict=True))
     reader_profiles, prompt_ids = set(), {}
@@ -65,7 +70,8 @@ def question_binding(rows, cases):
                 if row["status"] == "succeeded":
                     if any(
                         type(row.get(k)) not in (int, float)
-                        or not math.isfinite(row[k]) or row[k] < 0
+                        or not math.isfinite(row[k])
+                        or row[k] < 0
                         for k in ("mean_nll", "seconds")
                     ):
                         raise ValueError("invalid measured likelihood")
@@ -86,11 +92,13 @@ def question_binding(rows, cases):
     for scope, scoped in sorted(groups.items()):
         ordered = sorted(scoped, key=lambda c: c["query"]["identity"])
         if len(ordered) % 2:
-            unpaired.append(dict(
-                scope_digest=digest(scope),
-                question_digest=digest(ordered[-1]["query"]["identity"]),
-                disposition="unpaired_original_question_no_swap",
-            ))
+            unpaired.append(
+                dict(
+                    scope_digest=digest(scope),
+                    question_digest=digest(ordered[-1]["query"]["identity"]),
+                    disposition="unpaired_original_question_no_swap",
+                )
+            )
         for i in range(0, len(ordered) - 1, 2):
             first, second = ordered[i], ordered[i + 1]
             if set(first["candidates"]) != set(second["candidates"]):
@@ -109,7 +117,8 @@ def question_binding(rows, cases):
                 observed = [
                     indexed[q, arm, digest(v)]
                     for arm in ("base", "memory")
-                    for q in (q1, q2) for v in (a, b)
+                    for q in (q1, q2)
+                    for v in (a, b)
                 ]
                 if any(x["status"] == "failed" for x in observed):
                     missing += 1
@@ -120,6 +129,7 @@ def question_binding(rows, cases):
                 else:
                     margins, dual = {}, {}
                     for arm in ("base", "memory"):
+
                         def loss(q, v):
                             return indexed[q, arm, digest(v)]["mean_nll"]
 
@@ -154,9 +164,7 @@ def question_binding(rows, cases):
         planned_pairs=len(pairs),
         unpaired_source_questions=len(unpaired),
         unpaired_source_question_digests=unpaired,
-        all_planned_questions_accounted=(
-            2 * len(pairs) + len(unpaired) == len(cases)
-        ),
+        all_planned_questions_accounted=(2 * len(pairs) + len(unpaired) == len(cases)),
         complete_pairs=completed,
         failed_pairs=missing,
         unequal_length_pairs=unequal,
