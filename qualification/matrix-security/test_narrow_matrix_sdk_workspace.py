@@ -39,7 +39,7 @@ tokio = "1"
 
 
 def metadata(*, candidate="/tmp/stem-candidate", stage="/tmp/hepta-stage"):
-    return {
+    result = {
         "packages": [
             {"name": "codex-hepta-matrix-sdk", "id": "hepta-sdk-id",
              "version": "0.0.0",
@@ -68,6 +68,10 @@ def metadata(*, candidate="/tmp/stem-candidate", stage="/tmp/hepta-stage"):
             "root": None,
         },
     }
+    for node in result["resolve"]["nodes"]:
+        for edge in node["deps"]:
+            edge["dep_kinds"] = [{"kind": None, "target": None}]
+    return result
 
 
 def enc(value):
@@ -280,6 +284,36 @@ class NarrowWorkspaceTests(unittest.TestCase):
                 enc(candidate), candidate_root="/tmp/stem-candidate",
                 stage_root="/tmp/hepta-stage")
 
+    def test_dev_only_or_build_only_dependency_cannot_count_as_security_fix(self):
+        for affected_pkg, parent in (
+            ("new-anymap", "upstream-sdk"),
+            ("upstream-crypto", "upstream-sdk"),
+            ("new-blake3", "upstream-crypto"),
+        ):
+            for kind in ("dev", "build"):
+                with self.subTest(crate=affected_pkg, dependency_kind=kind):
+                    case = metadata()
+                    edges = next(n for n in case["resolve"]["nodes"]
+                                 if n["id"] == parent)["deps"]
+                    next(edge for edge in edges if edge["pkg"] == affected_pkg)[
+                        "dep_kinds"] = [{"kind": kind, "target": None}]
+                    with self.assertRaisesRegex(
+                        ValueError, "required patched Matrix"
+                    ):
+                        inspect_cargo_metadata(
+                            enc(case), candidate_root="/tmp/stem-candidate",
+                            stage_root="/tmp/hepta-stage")
+
+    def test_malformed_dependency_kind_data_fails_closed(self):
+        for wrong in (None, [], [{}], [{"kind": "magical"}], [42]):
+            case = metadata()
+            case["resolve"]["nodes"][0]["deps"][0]["dep_kinds"] = wrong
+            with self.subTest(value=str(wrong)):
+                with self.assertRaises(ValueError):
+                    inspect_cargo_metadata(
+                        enc(case), candidate_root="/tmp/stem-candidate",
+                        stage_root="/tmp/hepta-stage")
+
     def test_two_blake3_versions_cannot_pass_with_only_one_patched(self):
         case = metadata()
         case["packages"].append({
@@ -291,7 +325,8 @@ class NarrowWorkspaceTests(unittest.TestCase):
             {"id": "legacy-blake3", "features": [], "deps": []})
         next(node for node in case["resolve"]["nodes"]
              if node["id"] == "upstream-crypto")["deps"].append(
-                 {"pkg": "legacy-blake3"})
+                 {"pkg": "legacy-blake3",
+                  "dep_kinds": [{"kind": None, "target": None}]})
         with self.assertRaisesRegex(ValueError, "old blake3"):
             inspect_cargo_metadata(
                 enc(case), candidate_root="/tmp/stem-candidate",
