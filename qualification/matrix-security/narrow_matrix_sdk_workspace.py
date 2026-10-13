@@ -203,6 +203,7 @@ def inspect_cargo_metadata(payload, *, candidate_root, stage_root):
                 for p in crypto)
             or "anymap2" in names or "anymap3" not in names
             or "starlark" in names or "codex-cli" in names
+            or "codex-state" in names or "codex-execpolicy" in names
             or "codex-hepta-matrixd" in names
             or not any(p.get("name") == "blake3" and
                        tuple(int(x) for x in p["version"].split(".")[:3]) >= (1, 8, 7)
@@ -216,6 +217,7 @@ def inspect_cargo_metadata(payload, *, candidate_root, stage_root):
         "anymap2": False,
         "anymap3": True,
         "cli_starlark_absent": True,
+        "codex_state_execpolicy_absent": True,
         "blake3_min_1_8_7": True,
         "matrix_adapter_compilation_verified": False,
         "full_matrixd_compilation_verified": False,
