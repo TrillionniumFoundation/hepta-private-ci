@@ -20,26 +20,36 @@ class ReviewReturnTests(unittest.TestCase):
         suff, answer = work.make_worklists(*records())
         files = {
             "sufficiency-only.json": dict(
-                schema=work.SCHEMA, model_answers_in_this_worklist=False,
-                reviewer_verdicts_recorded=0, review_cases=suff,
+                schema=work.SCHEMA,
+                model_answers_in_this_worklist=False,
+                reviewer_verdicts_recorded=0,
+                review_cases=suff,
             ),
             "answer-and-citation.json": dict(
-                schema=work.SCHEMA, original_reader_answers_unchanged=True,
-                reviewer_verdicts_recorded=0, review_cases=answer,
+                schema=work.SCHEMA,
+                original_reader_answers_unchanged=True,
+                reviewer_verdicts_recorded=0,
+                review_cases=answer,
             ),
         }
-        shas = {name: work.write_once(self.packet / name, data)
-                for name, data in files.items()}
+        shas = {
+            name: work.write_once(self.packet / name, data)
+            for name, data in files.items()
+        }
         shas["manifest.json"] = work.write_once(
-            self.packet / "manifest.json", dict(
+            self.packet / "manifest.json",
+            dict(
                 schema=work.SCHEMA,
                 sufficiency_worklist_sha256=shas["sufficiency-only.json"],
                 answer_citation_worklist_sha256=shas["answer-and-citation.json"],
-                original_public_question_count=16, original_model_answers=32,
+                original_public_question_count=16,
+                original_model_answers=32,
                 original_published_source_family_proxies=2,
-                source_sufficiency_decisions=0, answer_citation_review_decisions=0,
-                independent_human_semantic_judgement=False, production_accepted=False,
-            )
+                source_sufficiency_decisions=0,
+                answer_citation_review_decisions=0,
+                independent_human_semantic_judgement=False,
+                production_accepted=False,
+            ),
         )
         (self.packet / "SHA256SUMS").write_text(
             "".join(f"{shas[name]}  ./{name}\n" for name in sorted(shas))
@@ -55,7 +65,8 @@ class ReviewReturnTests(unittest.TestCase):
 
     def check(self):
         return audit.reconcile(
-            self.packet, self.returns / "source-return.json",
+            self.packet,
+            self.returns / "source-return.json",
             self.returns / "answer-return.json",
         )
 
@@ -75,20 +86,26 @@ class ReviewReturnTests(unittest.TestCase):
         original = audit.originals(self.packet)[0][0]
         text = original["evidence"][0]["original_text"]
         src["rows"][0].update(
-            sufficient=True, answer_from_sources="A source-only diagnostic answer",
+            sufficient=True,
+            answer_from_sources="A source-only diagnostic answer",
             spans=[dict(label="E1", start=0, end=len(text.encode()), text=text)],
-            reviewer_id="reviewer-claimed-1", reviewed_at="2026-10-13T09:00:00+08:00",
+            reviewer_id="reviewer-claimed-1",
+            reviewed_at="2026-10-13T09:00:00+08:00",
         )
         self.write("source-return.json", src)
         answer["source_return_sha256"] = audit.digest_bytes(
             (self.returns / "source-return.json").read_bytes()
         )
         row = answer["rows"][0]
-        row.update(supported=True, chain_complete=True,
-                   reviewer_id="reviewer-claimed-2",
-                   reviewed_at="2026-10-13T09:01:00+08:00")
-        row["citations"][0].update(entailed=True, claim_start=0,
-                                    claim_end=row["citations"][0]["marker_start"])
+        row.update(
+            supported=True,
+            chain_complete=True,
+            reviewer_id="reviewer-claimed-2",
+            reviewed_at="2026-10-13T09:01:00+08:00",
+        )
+        row["citations"][0].update(
+            entailed=True, claim_start=0, claim_end=row["citations"][0]["marker_start"]
+        )
         self.write("answer-return.json", answer)
         outcome = self.check()
         self.assertEqual(outcome["arms"]["lexical_k4"]["sufficient"], 1)
@@ -119,16 +136,24 @@ class ReviewReturnTests(unittest.TestCase):
                     self.check()
                 self.returns.joinpath("answer-return.json").unlink()
                 answer = dict(
-                    schema=audit.SCHEMA, phase="answer-after-source",
+                    schema=audit.SCHEMA,
+                    phase="answer-after-source",
                     authority_authenticated=False,
-                    worklist_sha256=audit.originals(self.packet)[2]["answer-and-citation.json"],
+                    worklist_sha256=audit.originals(self.packet)[2][
+                        "answer-and-citation.json"
+                    ],
                     source_return_sha256=audit.digest_bytes(
                         (self.returns / "source-return.json").read_bytes()
                     ),
                     rows=[
-                        dict(review_id=r["review_id"], supported=None,
-                             chain_complete=None, citations=audit.occurrences(r["unedited_reader_answer"]),
-                             reviewer_id=None, reviewed_at=None)
+                        dict(
+                            review_id=r["review_id"],
+                            supported=None,
+                            chain_complete=None,
+                            citations=audit.occurrences(r["unedited_reader_answer"]),
+                            reviewer_id=None,
+                            reviewed_at=None,
+                        )
                         for r in audit.originals(self.packet)[1]
                     ],
                 )
@@ -157,8 +182,11 @@ class ReviewReturnTests(unittest.TestCase):
 
     def test_false_complete_chain_with_unjudged_citation_reject(self):
         ans = self.read("answer-return.json")
-        ans["rows"][0].update(chain_complete=True, reviewer_id="reviewer-declared",
-                              reviewed_at="2026-10-13T00:00:00Z")
+        ans["rows"][0].update(
+            chain_complete=True,
+            reviewer_id="reviewer-declared",
+            reviewed_at="2026-10-13T00:00:00Z",
+        )
         self.write("answer-return.json", ans)
         with self.assertRaises(ValueError):
             self.check()

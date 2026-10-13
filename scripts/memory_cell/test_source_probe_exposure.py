@@ -94,9 +94,7 @@ class SourceExposureReplayTests(unittest.TestCase):
         self.assertEqual(sparse_schedule, full_schedule)
         self.assertEqual(sparse["input_tokens"], self.receipt["input_tokens"])
         self.assertEqual(sparse["supervised_tokens"], self.receipt["supervised_tokens"])
-        self.assertLess(
-            sparse["actual_projection_positions"], sparse["input_tokens"]
-        )
+        self.assertLess(sparse["actual_projection_positions"], sparse["input_tokens"])
 
     def test_sparse_margin_rejects_wrong_projection_or_input_exposure(self):
         sparse = deepcopy(self.receipt)

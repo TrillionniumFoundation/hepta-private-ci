@@ -77,10 +77,7 @@ def verified_visits(documents, tokenizer, training):
     if objective == "source_margin":
         from source_binding_margin import source_hard_negatives
 
-        if (
-            training["curriculum"] != "single_hop"
-            or ceiling != TOKEN_CEILING // 2
-        ):
+        if training["curriculum"] != "single_hop" or ceiling != TOKEN_CEILING // 2:
             raise ValueError("unsupported source-margin writer profile")
         pairs, unmatched = source_hard_negatives(
             original_examples,
