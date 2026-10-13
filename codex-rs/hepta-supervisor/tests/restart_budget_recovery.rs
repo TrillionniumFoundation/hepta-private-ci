@@ -256,7 +256,7 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             .iter()
             .any(|event| matches!(
                 &event.kind,
-                SupervisorEventKind::AutomaticRestartQueued { attempt: 2 }
+                SupervisorEventKind::RestartQueued
             ))
     );
     assert_eq!(
@@ -286,9 +286,16 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             .iter()
             .any(|event| matches!(
                 &event.kind,
-                SupervisorEventKind::AutomaticRestartQueued { attempt: 3 }
+                SupervisorEventKind::RestartQueued
             ))
     );
+    // A recovered third attempt must retain its 1,000 ms durable backoff,
+    // and must not spawn at 999 ms. This is stricter than counting events.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(999)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&agent_id), 3);
     now += Duration::from_secs(1);
     assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(control.spawn_count(&agent_id), 4);
