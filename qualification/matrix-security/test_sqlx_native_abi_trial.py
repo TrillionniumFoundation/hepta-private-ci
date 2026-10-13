@@ -86,7 +86,7 @@ class SqlxNativeAbiTrialTests(unittest.TestCase):
             self.assertIn(CANDIDATE, (path / "Cargo.toml").read_text())
             self.assertTrue(receipt.is_file())
             self.assertFalse(observed["hepta_cargo_lock_changed"])
-            with self.assertRaisesRegex(ValueError, "detached outputs"):
+            with self.assertRaisesRegex(ValueError, "trial outputs must be new and confined"):
                 stage(archive_file, lock, dest, scratch / "second.json", scratch)
 
     def test_archive_checksum_or_source_substitution_fails_closed(self):
