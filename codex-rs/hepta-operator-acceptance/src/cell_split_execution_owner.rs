@@ -997,6 +997,15 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // runs. Recheck only local write-once bytes now: another remote call
         // would merely create a new unprotected acknowledgement window.
         self.verify_local_acknowledgement_boundary(&intent)?;
+        // The final live owner readback above is not instantaneous: independent
+        // NDU/Selector admission can be withdrawn while it is in flight.
+        // Refresh admission once more after that readback, before acknowledging
+        // the prepared effect. This is a bounded coordinator fence, not an
+        // atomic substitute for original-owner Final-use at mutation time.
+        revalidate().map_err(CellSplitExecutionErrorV1::External)?;
+        // An external admission callback may itself run slowly or modify the
+        // local ledger. Preserve the write-once boundary after its return.
+        self.verify_local_acknowledgement_boundary(&intent)?;
         write_private_new(
             &frame_path(&self.root, self.cursor, "committed"),
             &canonical_json(&receipt)?,

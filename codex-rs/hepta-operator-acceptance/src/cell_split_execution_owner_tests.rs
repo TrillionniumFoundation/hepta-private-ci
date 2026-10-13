@@ -1890,3 +1890,96 @@ fn final_owner_readback_cannot_acknowledge_late_local_ledger_tamper() {
         assert_eq!(state.borrow().executions, 1, "no duplicate external effect");
     }
 }
+
+#[test]
+fn selector_revoked_during_final_original_owner_readback_never_acknowledges_any_stage() {
+    for completed_predecessors in 0..4 {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        let selected = Rc::new(RefCell::new(true));
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("single writer owner");
+        for _ in 0..completed_predecessors {
+            owner
+                .advance()
+                .expect("predecessor effect")
+                .expect("signed predecessor receipt");
+        }
+        let prior_readbacks = state.borrow().verifications;
+        // A fresh stage rereads each committed predecessor four times and
+        // verifies the new original effect twice. Revoke only during its last
+        // signed original-owner readback, after the third admission check.
+        owner.port.revoke_selection_on_readback = Some((
+            selected.clone(),
+            prior_readbacks + completed_predecessors * 4 + 2,
+        ));
+        let mut admission_reads = 0;
+        let rejected = owner.advance_with_admission(|| {
+            admission_reads += 1;
+            if *selected.borrow() {
+                Ok(())
+            } else {
+                Err("independent selection withdrawn during final owner readback".into())
+            }
+        });
+        assert!(matches!(
+            rejected,
+            Err(CellSplitExecutionErrorV1::External(reason))
+                if reason == "independent selection withdrawn during final owner readback"
+        ));
+        assert_eq!(admission_reads, 4, "admission must follow the last readback");
+        assert!(!*selected.borrow(), "original readback revoked selection");
+        assert_eq!(owner.completed_steps(), completed_predecessors);
+        assert_eq!(state.borrow().executions, completed_predecessors + 1);
+        assert!(
+            root.path()
+                .join(format!("cell-split-{completed_predecessors:02}-prepared.json"))
+                .exists()
+        );
+        assert!(
+            !root
+                .path()
+                .join(format!("cell-split-{completed_predecessors:02}-committed.json"))
+                .exists(),
+            "a real effect is not yet an authorized coordinator acknowledgement"
+        );
+
+        drop(owner);
+        let mut recovered = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("recover original pending intent");
+        assert!(matches!(
+            recovered.advance_with_admission(|| Err("selection remains withdrawn".into())),
+            Err(CellSplitExecutionErrorV1::External(reason))
+                if reason == "selection remains withdrawn"
+        ));
+        assert_eq!(state.borrow().executions, completed_predecessors + 1);
+        *selected.borrow_mut() = true;
+        let signed_readback = recovered
+            .advance_with_admission(|| {
+                if *selected.borrow() {
+                    Ok(())
+                } else {
+                    Err("selection remains withdrawn".into())
+                }
+            })
+            .expect("reconcile same original effect")
+            .expect("signed original owner receipt");
+        assert_eq!(signed_readback.intent.step.index(), completed_predecessors);
+        assert_eq!(recovered.completed_steps(), completed_predecessors + 1);
+        assert_eq!(
+            state.borrow().executions,
+            completed_predecessors + 1,
+            "recovery must not re-execute an already committed external effect"
+        );
+    }
+}
