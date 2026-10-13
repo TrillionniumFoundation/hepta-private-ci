@@ -117,3 +117,29 @@ fn preserves_overlong_descriptions_and_short_descriptions() {
         }
     );
 }
+
+#[test]
+fn yaml_migration_preserves_anchors_and_tagged_values() {
+    let parsed = parse_skill_frontmatter_metadata(
+        "---\nname: reusable\ndescription: &shared Reusable safe description\nmetadata:\n  short-description: *shared\n---\n",
+        || "fallback".to_string(),
+    )
+    .expect("YAML anchors and aliases must remain supported");
+    assert_eq!(
+        parsed,
+        ParsedSkillFrontmatter {
+            name: "reusable".to_string(),
+            description: "Reusable safe description".to_string(),
+            short_description: Some("Reusable safe description".to_string()),
+        }
+    );
+
+    // Core Plugins and agent migration consume YAML Value trees with tags;
+    // dropping tag identity when swapping parsers would change user policy.
+    let value: serde_yaml::Value =
+        serde_yaml::from_str("selection: !Policy {enabled: true}\n").expect("tagged YAML value");
+    assert!(matches!(
+        &value["selection"],
+        serde_yaml::Value::Tagged(tagged) if tagged.value["enabled"].as_bool() == Some(true)
+    ));
+}
