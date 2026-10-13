@@ -7,6 +7,10 @@ on:
 permissions:
   contents: read
   actions: read
+concurrency:
+  group: hepta-memory-factorial-receipt-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
 jobs:
   audit:
     if: github.event.pull_request.number == 1452 && github.event.pull_request.head.repo.full_name == github.repository

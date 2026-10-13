@@ -24,6 +24,9 @@ on:
       - .github/workflows/hepta-memory-reviewed-source-diagnostic.yml
       - .github/workflows/hepta-memory-startup-validation.yml
       - .github/workflows/hepta-memory-span-e2e.yml
+      - .github/workflows/hepta-memory-factorial-receipt.yml
+      - .github/workflows/hepta-memory-reader-reference-receipt.yml
+      - .github/workflows/hepta-memory-preference-receipt.yml
       - scripts/memory_cell/test_memory_queue_concurrency.py
   workflow_dispatch:
 permissions:
