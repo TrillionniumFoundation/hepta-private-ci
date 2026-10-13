@@ -19,24 +19,46 @@ def sample(*, same_root=False, scores=(8.0, 3.0)):
         sid = "s" + str(i)
         root = "root0" if same_root else "root" + str(i)
         sha = digest(txt)
-        inspected.append(dict(
-            id=sid, root=root, scope="scope", observed_at="2023-01-01",
-            excerpt=txt, inspected_sha256=sha,
-        ))
-        windows.append(Window(
-            sid, root, "scope", "2023-01-01",
-            0, len(txt.encode()), txt, sha,
-        ))
+        inspected.append(
+            dict(
+                id=sid,
+                root=root,
+                scope="scope",
+                observed_at="2023-01-01",
+                excerpt=txt,
+                inspected_sha256=sha,
+            )
+        )
+        windows.append(
+            Window(
+                sid,
+                root,
+                "scope",
+                "2023-01-01",
+                0,
+                len(txt.encode()),
+                txt,
+                sha,
+            )
+        )
     pool = WindowPool(
-        query_digest=digest(asdict(q)), profile="query_windows",
-        windows=tuple(windows), inspected=tuple(inspected),
-        scanned_bytes=32, enumerated_windows=2, budget=WindowBudget(),
+        query_digest=digest(asdict(q)),
+        profile="query_windows",
+        windows=tuple(windows),
+        inspected=tuple(inspected),
+        scanned_bytes=32,
+        enumerated_windows=2,
+        budget=WindowBudget(),
     )
     feature = Features(
-        "q", "family", "frozen-encoder", pool.seal(),
+        "q",
+        "family",
+        "frozen-encoder",
+        pool.seal(),
         tuple(w.identity() for w in windows),
         frozenset(x["root"] for x in inspected),
-        torch.zeros(2, 4), torch.tensor(scores),
+        torch.zeros(2, 4),
+        torch.tensor(scores),
     )
     first = list(selected_window(q, pool, feature, 0, set()))
     sessions = {"s0": "session-0", "s1": "session-1"}
@@ -51,16 +73,29 @@ def capacity_records():
             targets[q] = "correct"
             original.append(dict(phase=phase, question_id=q))
             base = dict(
-                phase=phase, question_id=q,
+                phase=phase,
+                question_id=q,
                 reader_identity="same-reader",
                 reader_profile="same-prompt",
                 reader_prompt_budget=dict(max_new_tokens=96, input_ceiling=1024),
                 original_E1="pinned-first-window",
             )
-            repeated.append(dict(base, status="succeeded", answer="wrong",
-                                 delivered_sources=[{"id": "a"}]))
-            extended.append(dict(base, status="succeeded", answer="correct",
-                                 delivered_sources=[{"id": "a"}, {"id": "b"}]))
+            repeated.append(
+                dict(
+                    base,
+                    status="succeeded",
+                    answer="wrong",
+                    delivered_sources=[{"id": "a"}],
+                )
+            )
+            extended.append(
+                dict(
+                    base,
+                    status="succeeded",
+                    answer="correct",
+                    delivered_sources=[{"id": "a"}, {"id": "b"}],
+                )
+            )
     return original, repeated, extended, targets
 
 
@@ -90,7 +125,12 @@ class TwoWindowTests(unittest.TestCase):
         q, pool, f, first, sessions = sample()
         sessions["s1"] = sessions["s0"]
         original, two, plan = prepare_second_window(
-            q, pool, f, 0, first, sessions,
+            q,
+            pool,
+            f,
+            0,
+            first,
+            sessions,
         )
         self.assertEqual(original, tuple(first))
         self.assertEqual(two, ())
@@ -118,28 +158,36 @@ class TwoWindowTests(unittest.TestCase):
         two[0] = dict(two[0], status="failed")
         out = compare_capacity_rows(original, one, two, diagnose=score, targets=target)
         self.assertEqual(out["by_phase"]["test"]["reader_comparable_scored_pairs"], 7)
-        self.assertEqual(out["by_phase"]["test"]["all_planned_f1_delta_bounds"],
-                         [0.75, 1])
+        self.assertEqual(
+            out["by_phase"]["test"]["all_planned_f1_delta_bounds"], [0.75, 1]
+        )
         two[0] = dict(two[0], status="unavailable")
         out = compare_capacity_rows(original, one, two, diagnose=score, targets=target)
         self.assertEqual(out["by_phase"]["test"]["second_window_unavailable"], 1)
 
     def test_changing_reader_prompt_or_existing_e1_is_not_causal_pair(self):
-        for key, value in (("reader_profile", "wrong"),
-                           ("original_E1", "altered"),
-                           ("reader_prompt_budget", dict(max_new_tokens=200))):
+        for key, value in (
+            ("reader_profile", "wrong"),
+            ("original_E1", "altered"),
+            ("reader_prompt_budget", dict(max_new_tokens=200)),
+        ):
             original, one, two, target = capacity_records()
             two[0] = dict(two[0], **{key: value})
             with self.subTest(field=key), self.assertRaises(ValueError):
-                compare_capacity_rows(original, one, two, diagnose=score, targets=target)
+                compare_capacity_rows(
+                    original, one, two, diagnose=score, targets=target
+                )
 
     def test_missing_duplicate_and_corrupt_score_fail_closed(self):
         original, one, two, target = capacity_records()
         with self.assertRaises(ValueError):
-            compare_capacity_rows(original, one[:-1], two, diagnose=score, targets=target)
+            compare_capacity_rows(
+                original, one[:-1], two, diagnose=score, targets=target
+            )
         with self.assertRaises(ValueError):
-            compare_capacity_rows(original, one, two[:-1]+[two[0]],
-                                  diagnose=score, targets=target)
+            compare_capacity_rows(
+                original, one, two[:-1] + [two[0]], diagnose=score, targets=target
+            )
         q, pool, f, first, sessions = sample(scores=(float("nan"), 3.0))
         with self.assertRaisesRegex(ValueError, "logits"):
             prepare_second_window(q, pool, f, 0, first, sessions)
