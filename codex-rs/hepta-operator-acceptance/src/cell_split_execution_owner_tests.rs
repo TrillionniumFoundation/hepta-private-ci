@@ -1819,13 +1819,9 @@ fn final_owner_readback_cannot_acknowledge_late_local_ledger_tamper() {
         let state = Rc::new(RefCell::new(Observed::default()));
         let port = FixturePort::new(state.clone());
         let tamper = port.tamper_during_live_readback.clone();
-        let mut owner = CellSplitExecutionOwnerV1::open(
-            root.path(),
-            plan(),
-            trust(),
-            port,
-        )
-        .expect("single writer");
+        let mut owner =
+            CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+                .expect("single writer");
         let altered = root.path().join(filename);
         let mut admission_reads = 0;
         let result = owner.advance_with_admission(|| {
@@ -1849,9 +1845,9 @@ fn final_owner_readback_cannot_acknowledge_late_local_ledger_tamper() {
         assert_eq!(admission_reads, 3, "final owner readback was reached");
         assert_eq!(owner.completed_steps(), 0);
         assert_eq!(state.borrow().executions, 1, "original effect is real");
-        assert!(
-            !root.path().join("cell-split-00-committed.json").exists()
-                || filename == "cell-split-00-committed.json",
+        assert_eq!(
+            root.path().join("cell-split-00-committed.json").exists(),
+            filename == "cell-split-00-committed.json",
             "the coordinator must not write its success frame"
         );
         assert!(owner.advance().is_err(), "corrupted intent stays denied");
