@@ -67,7 +67,7 @@ def validate_rows(rows, training_labels, *, classes):
 
 def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, seed=19,
                         parameter_budget=16384, head_batch_size=1,
-                        head_kind="linear", head_hidden_size=8):
+                        head_kind="linear", head_hidden_size=8, encoder_batch_size=32):
     """Actual shared forwards and per-Cell SGD; no heldout gold enters this API."""
     cells = validate_rows(rows, training_labels, classes=classes)
     if (not isinstance(engine, SharedStemEngine) or type(steps) is not int or not 1 <= steps <= 1000
@@ -75,7 +75,8 @@ def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, see
             or type(parameter_budget) is not int or not 1 <= parameter_budget <= 262144
             or type(head_batch_size) is not int or not 1 <= head_batch_size <= 32
             or type(head_kind) is not str or head_kind not in ("linear", "swiglu")
-            or type(head_hidden_size) is not int or not 1 <= head_hidden_size <= 256):
+            or type(head_hidden_size) is not int or not 1 <= head_hidden_size <= 256
+            or type(encoder_batch_size) is not int or not 1 <= encoder_batch_size <= 32):
         raise ValueError("invalid trial envelope")
     # Preflight against the selected backend before any work, including later batches.
     for row in rows:
@@ -86,8 +87,9 @@ def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, see
     clock, encode_clock = PhaseClock(), PhaseClock()
     features, observations = [], []
     count = 0
-    for offset in range(0, len(rows), 32):
-        obs, batch = engine.run(tuple(r.request for r in rows[offset:offset+32]), return_features=True)
+    for offset in range(0, len(rows), encoder_batch_size):
+        obs, batch = engine.run(tuple(r.request for r in rows[offset:offset+encoder_batch_size]),
+                                return_features=True)
         count += sum(len(f.values) for f in batch)
         if count > 4_194_304:
             raise ValueError("feature retention budget exceeded")
@@ -170,6 +172,10 @@ def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, see
                                 "frozen_logits": frozen, "trained_logits": trained})
     return {"predictions": predictions, "cells": receipts, "encoding": encoding, "total": clock.finish(),
             "encoder_calls": sum(o.backend_calls for o in observations),
+            "encoder_batch_size": encoder_batch_size,
+            "encoded_input_rows": sum(sum(o.backend_batch_widths) for o in observations),
+            "cache_hits": sum(o.cache_hits for o in observations),
+            "peak_cache_estimated_bytes": max(o.cache_bytes for o in observations),
             "encoder_batch_widths": [w for o in observations for w in o.backend_batch_widths],
             "head_batch_size": head_batch_size, "grouped_training": grouped_training,
             "head_kind": head_kind, "head_hidden_size": head_hidden_size if head_kind == "swiglu" else None,
@@ -222,7 +228,9 @@ def run_local(args):
             or type(getattr(args, 'head_kind', 'linear')) is not str
             or getattr(args, 'head_kind', 'linear') not in ('linear', 'swiglu')
             or type(getattr(args, 'head_hidden_size', 8)) is not int
-            or not 1 <= getattr(args, 'head_hidden_size', 8) <= 256):
+            or not 1 <= getattr(args, 'head_hidden_size', 8) <= 256
+            or type(getattr(args, 'encoder_batch_size', 32)) is not int
+            or not 1 <= getattr(args, 'encoder_batch_size', 32) <= 32):
         raise ValueError("invalid pre-load resource envelope")
     r = rows[0].request
     if r.encoder_digest != args.snapshot_sha256:
@@ -241,7 +249,8 @@ def run_local(args):
                                  steps=args.steps, parameter_budget=args.parameter_budget,
                                  head_batch_size=getattr(args, 'head_batch_size', 1),
                                  head_kind=getattr(args, 'head_kind', 'linear'),
-                                 head_hidden_size=getattr(args, 'head_hidden_size', 8))
+                                 head_hidden_size=getattr(args, 'head_hidden_size', 8),
+                                 encoder_batch_size=getattr(args, 'encoder_batch_size', 32))
     # Persistent source changes must be detected before publishing predictions.
     read_pinned_json(args.rows, args.rows_sha256)
     read_pinned_json(args.labels, args.labels_sha256)
@@ -269,6 +278,7 @@ if __name__ == '__main__':
     parser.add_argument('--parameter-budget', type=int, default=16384)
     parser.add_argument('--max-tokens', type=int, default=512)
     parser.add_argument('--head-batch-size', type=int, default=1)
+    parser.add_argument('--encoder-batch-size', type=int, default=32)
     parser.add_argument('--head-kind', choices=('linear', 'swiglu'), default='linear')
     parser.add_argument('--head-hidden-size', type=int, default=8)
     run_local(parser.parse_args())
