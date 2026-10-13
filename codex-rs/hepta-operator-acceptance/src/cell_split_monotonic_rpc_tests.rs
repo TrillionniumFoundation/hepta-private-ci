@@ -410,14 +410,10 @@ fn independent_server_rejects_revoke_during_final_signed_read() {
     // The first two checks see committed state; the third check runs after
     // signing the reply but before it is sent and must suppress that reply.
     backend.revoke_on_read = Some(3);
-    let mut service = CellSplitMonotonicRpcServiceV1::new(
-        backend,
-        signer(),
-        Duration::from_secs(2),
-    )
-    .expect("independent owner");
-    let (mut client, mut server) =
-        std::os::unix::net::UnixStream::pair().expect("socket pair");
+    let mut service =
+        CellSplitMonotonicRpcServiceV1::new(backend, signer(), Duration::from_secs(2))
+            .expect("independent owner");
+    let (mut client, mut server) = std::os::unix::net::UnixStream::pair().expect("socket pair");
     send_frame(
         &mut client,
         &CellSplitMonotonicRpcRequestV1 {
