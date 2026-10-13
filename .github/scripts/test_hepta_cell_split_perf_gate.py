@@ -147,6 +147,18 @@ class CellSplitPerformanceGateTests(unittest.TestCase):
         with self.assertRaisesRegex(InvalidEvidence, "inconsistent terminal request"):
             analyze(packet)
 
+    def test_backend_batch_density_cannot_exceed_scheduler_capacity(self):
+        packet = synthetic_matrix()
+        candidate = next(
+            row
+            for row in packet["runs"]
+            if row["scopes"] == 4096 and row["mode"] == "optimized_logical_split"
+        )
+        candidate["native_backend_calls"] = 1
+        candidate["native_batch_requests"] = candidate["completed"]
+        with self.assertRaisesRegex(InvalidEvidence, "exceeds scheduler capacity"):
+            analyze(packet)
+
     def test_u64_counters_reject_float_bool_negative_and_overflow(self):
         for invalid in (1.0, True, -1, 1 << 64):
             with self.subTest(invalid=invalid):

@@ -32,6 +32,10 @@ COUNT_FIELDS = frozenset(
     }
 )
 MAX_U64 = (1 << 64) - 1
+# Must track codex-hepta-infer-core::MAX_MICROBATCH_SIZE. This is a
+# structural upper bound on physically executed requests per backend call,
+# not a performance or production qualification threshold.
+MAX_NATIVE_BATCH_SIZE = 256
 
 FIELDS = (
     "attempted",
@@ -107,6 +111,8 @@ def validate_run_numbers(entry: dict[str, Any], scope: int, mode: str) -> dict[s
         raise InvalidEvidence(f"{key}: impossible native batch accounting")
     if vals["native_batch_requests"] and not vals["native_backend_calls"]:
         raise InvalidEvidence(f"{key}: native batch requests without a backend call")
+    if vals["native_batch_requests"] > vals["native_backend_calls"] * MAX_NATIVE_BATCH_SIZE:
+        raise InvalidEvidence(f"{key}: native batch accounting exceeds scheduler capacity")
     if vals["negative_transfer_rate"] > 1:
         raise InvalidEvidence(f"{key}: negative-transfer rate is not a fraction")
     vals["throughput_rps"] = vals["completed"] / vals["elapsed_seconds"]
