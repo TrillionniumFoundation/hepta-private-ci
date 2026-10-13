@@ -643,7 +643,9 @@ fn ndu_guard_refuses_stale_pending_witness_reconciliation_without_model_replay()
     ));
     assert_eq!(model.calls, 1);
     assert_eq!(
-        checked(witness.current()).expect("reconciled anchor").checkpoint_digest,
+        checked(witness.current())
+            .expect("reconciled anchor")
+            .checkpoint_digest,
         accepted.tick.checkpoint_after
     );
 }
@@ -664,9 +666,15 @@ fn unknown_model_effect_is_latched_until_independent_reconciliation() {
     let mut model = FakeModel::new();
     model.corrupt_head = true;
     let first = runtime.tick(&mut model, input(1, Digest32::ZERO));
-    assert!(matches!(first, Err(NeuronRuntimeError::ModelBindingMismatch)));
+    assert!(matches!(
+        first,
+        Err(NeuronRuntimeError::ModelBindingMismatch)
+    ));
     let retry = runtime.tick(&mut model, input(1, Digest32::ZERO));
-    assert!(matches!(retry, Err(NeuronRuntimeError::PendingReconciliation)));
+    assert!(matches!(
+        retry,
+        Err(NeuronRuntimeError::PendingReconciliation)
+    ));
     assert_eq!(model.calls, 1);
     assert!(checked(runtime.journal.current()).is_none());
 }

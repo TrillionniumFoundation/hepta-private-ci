@@ -1094,18 +1094,16 @@ async fn v2_fixture_migrates_forward_preserving_memory_and_revoking_legacy_proje
     // The v2 fixture must upgrade through the actual v15 shared-experience
     // ledger migration. ORDER BY outside group_concat does not define
     // aggregation order; assert the ordered migration rows directly.
-    let versions = sqlx::query_scalar::<_, i64>(
-        "SELECT version FROM _sqlx_migrations ORDER BY version",
-    )
-    .fetch_all(&migrated.pool)
-    .await
-    .expect("migration ledger");
+    let versions =
+        sqlx::query_scalar::<_, i64>("SELECT version FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&migrated.pool)
+            .await
+            .expect("migration ledger");
     assert_eq!(versions, (1_i64..=15).collect::<Vec<_>>());
-    let shared_events = sqlx::query_scalar::<_, i64>(
-        "SELECT COUNT(*) FROM shared_experience_use_events",
-    )
-    .fetch_one(&migrated.pool)
-    .await
-    .expect("v15 shared-experience ledger is present");
+    let shared_events =
+        sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM shared_experience_use_events")
+            .fetch_one(&migrated.pool)
+            .await
+            .expect("v15 shared-experience ledger is present");
     assert_eq!(shared_events, 0, "migration must not invent owner grants");
 }

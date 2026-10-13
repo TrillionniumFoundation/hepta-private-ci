@@ -362,7 +362,10 @@ fn parse_group(
         if columns.len() != 5
             || !digest_hex(columns[0])
             || !digest_hex(columns[1])
-            || !matches!(columns[2], "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9")
+            || !matches!(
+                columns[2],
+                "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9"
+            )
             || columns[3].parse::<u64>().is_err()
             || !matches!(columns[4], "0" | "1")
         {

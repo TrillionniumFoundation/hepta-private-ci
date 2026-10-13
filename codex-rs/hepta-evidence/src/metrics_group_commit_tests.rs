@@ -80,8 +80,12 @@ fn independently_signed_ndu_and_final_use_metrics_survive_replay() {
     let path = dir.path().join("neuron-metrics");
     {
         let mut writer = MetricsGroupCommitV1::open(&path).expect("open");
-        writer.stage(sample(MetricPhaseV1::NduRead)).expect("NDU read");
-        writer.stage(sample(MetricPhaseV1::FinalUse)).expect("Final-use");
+        writer
+            .stage(sample(MetricPhaseV1::NduRead))
+            .expect("NDU read");
+        writer
+            .stage(sample(MetricPhaseV1::FinalUse))
+            .expect("Final-use");
         let group = writer.flush().expect("flush").expect("group");
         assert_eq!(group.rows, 2);
     }

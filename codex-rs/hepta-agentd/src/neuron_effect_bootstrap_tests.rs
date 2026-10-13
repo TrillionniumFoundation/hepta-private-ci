@@ -31,16 +31,15 @@ fn secure_bootstrap_fsyncs_and_replays_duplicate_tick() -> Result<(), Box<dyn st
         owner.prepare(tick, Digest32::ZERO)?;
         owner.resolve(tick, Digest32::of_bytes(b"checkpoint"))?;
     }
-    let owner = bootstrap_durable_neuron_effect_intent_v1(
-        &path,
-        test_scope(),
-        test_generation(),
-        8,
-    )?;
+    let owner =
+        bootstrap_durable_neuron_effect_intent_v1(&path, test_scope(), test_generation(), 8)?;
     assert_eq!(owner.status().attempted_ticks, 1);
     assert_eq!(owner.status().durable_records, 2);
     assert_eq!(owner.status().unresolved_tick, None);
-    assert_eq!(owner.can_prepare(tick), Err(NeuronEffectIntentErrorV1::DuplicateTick));
+    assert_eq!(
+        owner.can_prepare(tick),
+        Err(NeuronEffectIntentErrorV1::DuplicateTick)
+    );
     Ok(())
 }
 
@@ -55,12 +54,8 @@ fn unresolved_crash_intent_stays_quarantined() -> Result<(), Box<dyn std::error:
             bootstrap_durable_neuron_effect_intent_v1(&path, test_scope(), test_generation(), 8)?;
         owner.prepare(tick, Digest32::ZERO)?;
     }
-    let mut recovered = bootstrap_durable_neuron_effect_intent_v1(
-        &path,
-        test_scope(),
-        test_generation(),
-        8,
-    )?;
+    let mut recovered =
+        bootstrap_durable_neuron_effect_intent_v1(&path, test_scope(), test_generation(), 8)?;
     assert_eq!(recovered.status().unresolved_tick, Some(tick));
     assert_eq!(
         recovered.can_prepare(Digest32::of_bytes(b"fresh-authorized-tick")),
@@ -81,8 +76,12 @@ fn symlink_hardlink_and_group_writable_directory_deny() -> Result<(), Box<dyn st
 
     let directory = tempfile::tempdir()?;
     let protected_path = directory.path().join("protected.intent");
-    let owner =
-        bootstrap_durable_neuron_effect_intent_v1(&protected_path, test_scope(), test_generation(), 8)?;
+    let owner = bootstrap_durable_neuron_effect_intent_v1(
+        &protected_path,
+        test_scope(),
+        test_generation(),
+        8,
+    )?;
     drop(owner);
 
     let link = directory.path().join("alias.intent");

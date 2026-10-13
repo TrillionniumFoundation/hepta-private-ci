@@ -15,9 +15,9 @@ use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::DurableNeuronEffectIntentV1;
+use codex_hepta_neuron::InferenceControlModelPort;
 use codex_hepta_neuron::JournalScope;
 use codex_hepta_neuron::NeuronEffectIntentStatusV1;
-use codex_hepta_neuron::InferenceControlModelPort;
 use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronRuntime;
 use codex_hepta_neuron::NeuronRuntimeError;
@@ -25,10 +25,10 @@ use codex_hepta_neuron::NeuronRuntimeOutputV1;
 use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::NduSnapshotRefV1;
-use codex_hepta_types::StableId;
 use codex_hepta_types::PhaseMetricEventV1;
 use codex_hepta_types::PhaseMetricKindV1;
 use codex_hepta_types::PhaseMetricSinkV1;
+use codex_hepta_types::StableId;
 use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -233,7 +233,9 @@ where
     /// Read-only reconciliation diagnostics; unresolved work must be
     /// independently inspected, never automatically replayed.
     pub fn effect_intent_status(&self) -> Option<NeuronEffectIntentStatusV1> {
-        self.effect_intent.as_ref().map(DurableNeuronEffectIntentV1::status)
+        self.effect_intent
+            .as_ref()
+            .map(DurableNeuronEffectIntentV1::status)
     }
 
     /// The old unsigned entry is not a serving path.

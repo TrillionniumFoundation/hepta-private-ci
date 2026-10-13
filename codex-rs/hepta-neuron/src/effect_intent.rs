@@ -111,7 +111,8 @@ impl DurableNeuronEffectIntentV1 {
         {
             return Err(NeuronEffectIntentErrorV1::UnsafeFile);
         }
-        file.try_lock().map_err(|_| NeuronEffectIntentErrorV1::Busy)?;
+        file.try_lock()
+            .map_err(|_| NeuronEffectIntentErrorV1::Busy)?;
         let expected_header = header_bytes(scope, generation);
         let length = file.metadata()?.len();
         if length == 0 {
@@ -132,7 +133,8 @@ impl DurableNeuronEffectIntentV1 {
         if actual_header != expected_header {
             return Err(NeuronEffectIntentErrorV1::Corrupt);
         }
-        let records = ((file.metadata()?.len() - HEADER_BYTES as u64) / RECORD_BYTES as u64) as usize;
+        let records =
+            ((file.metadata()?.len() - HEADER_BYTES as u64) / RECORD_BYTES as u64) as usize;
         let mut attempted = BTreeSet::new();
         let mut pending = None;
         let mut head = Digest32::ZERO;
@@ -160,7 +162,8 @@ impl DurableNeuronEffectIntentV1 {
                 }
                 b'R' if pending.is_some_and(|(id, previous)| {
                     id == tick && !checkpoint.is_zero() && checkpoint != previous
-                }) => {
+                }) =>
+                {
                     pending = None;
                 }
                 _ => return Err(NeuronEffectIntentErrorV1::Corrupt),
@@ -231,7 +234,11 @@ impl DurableNeuronEffectIntentV1 {
             return Err(NeuronEffectIntentErrorV1::DuplicateTick);
         }
         // Reserve the matching durable resolution record before any effect.
-        if self.records.checked_add(2).is_none_or(|count| count > self.limit) {
+        if self
+            .records
+            .checked_add(2)
+            .is_none_or(|count| count > self.limit)
+        {
             return Err(NeuronEffectIntentErrorV1::Capacity);
         }
         Ok(())
@@ -266,7 +273,8 @@ impl DurableNeuronEffectIntentV1 {
             return Err(NeuronEffectIntentErrorV1::PendingReconciliation);
         }
         if !self.pending.is_some_and(|(pending, previous)| {
-            pending == tick_digest && !committed_checkpoint.is_zero()
+            pending == tick_digest
+                && !committed_checkpoint.is_zero()
                 && committed_checkpoint != previous
         }) {
             return Err(NeuronEffectIntentErrorV1::Mismatch);
@@ -319,12 +327,7 @@ fn header_bytes(scope: JournalScope, generation: Generation) -> [u8; HEADER_BYTE
     bytes
 }
 
-fn record_digest(
-    previous: Digest32,
-    kind: u8,
-    tick: Digest32,
-    checkpoint: Digest32,
-) -> Digest32 {
+fn record_digest(previous: Digest32, kind: u8, tick: Digest32, checkpoint: Digest32) -> Digest32 {
     let mut bytes = Vec::with_capacity(RECORD_DOMAIN.len() + 97);
     bytes.extend_from_slice(RECORD_DOMAIN);
     bytes.extend_from_slice(previous.as_array());
