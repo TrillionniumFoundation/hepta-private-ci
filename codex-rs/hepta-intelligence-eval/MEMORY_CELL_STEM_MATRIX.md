@@ -1839,3 +1839,26 @@ production p95 latency** without dedicated isolation and measured external
 environment. The cohort is exposed development data, not prospectively
 collected independent evidence. Semantic citation precision remains **null**,
 and `production_accepted=false`; no automatic Cell scaling or rollout.
+
+## Correct final-checkpoint source-gain bounds by native answerability
+
+The 16 unique TEST/TRANSFER questions are not 16 document-source
+selection targets: an original native `unanswerable` question has no
+positive source to retrieve, and an unresolved source label cannot be
+silently scored as a negative. `stem_train_heldout_bridge.py` v6
+separates **answerable native-source**, **native unanswerable** and
+**unresolved native support** across the same 16 unique questions per
+learned arm. It computes conservative source-selection gain bounds from
+**only unscored answerable cases**, and computes separate native-abstention
+gain bounds from only unscored unanswerable cases. Unresolved labels
+remain in the original overall census but cannot be treated as potential
+known document-source gain.
+
+The older mixed field `native_answerability_unknown_or_not_comparable`
+is temporarily retained for artifact-reader compatibility and explicitly
+marked *deprecated/mixed*: it also includes **known unanswerable** cases
+and must never be presented as a count of unknown labels. Independent
+Reader answer token-F1 bounds continue to use all 16 preregistered
+questions and keep failures in their denominator. No model selection,
+test-set tuning, semantic citation admission or production gate changes.
+This corrects only post-policy interpretation, not frozen/learned scores.

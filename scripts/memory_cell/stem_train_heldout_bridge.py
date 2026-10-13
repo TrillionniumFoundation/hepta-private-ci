@@ -488,27 +488,69 @@ def train_to_heldout_gap(plan, learning, scored, targets):
             != unique_native_questions
         ):
             raise ValueError("final checkpoint missing frozen-matched question")
+        # Source choice and correct abstention are distinct observable tasks.
+        # An explicitly unanswerable question does NOT create an unknown
+        # document-support outcome that can expand the source-gain interval.
+        answerable = [
+            row for row in arm_final
+            if row["native_source_label_category"] == "answerable-native-document-support"
+        ]
+        abstainable = [
+            row for row in arm_final
+            if row["native_source_label_category"] == "native-unanswerable"
+        ]
+        unresolved = [
+            row for row in arm_final
+            if row["native_source_label_category"] == "native-support-unresolved"
+        ]
+        if len(answerable) + len(abstainable) + len(unresolved) != 16 or any(
+            row["weak_support_gain"] is not None for row in abstainable + unresolved
+        ) or any(
+            row["native_abstention_gain"] is not None for row in answerable + unresolved
+        ):
+            raise ValueError("native source/abstention cohorts were conflated")
         source = [
             row["weak_support_gain"]
-            for row in arm_final
-            if row["weak_support_gain"] is not None
+            for row in answerable if row["weak_support_gain"] is not None
+        ]
+        abstentions = [
+            row["native_abstention_gain"]
+            for row in abstainable if row["native_abstention_gain"] is not None
         ]
         f1 = [
             row["diagnostic_answer_f1_delta"]
             for row in arm_final
             if row["diagnostic_answer_f1_delta"] is not None
         ]
-        missing_source = 16 - len(source)
+        missing_answerable = len(answerable) - len(source)
+        missing_abstention = len(abstainable) - len(abstentions)
         missing_f1 = 16 - len(f1)
+        source_sum = sum(source)
+        abstention_sum = sum(abstentions)
         stage_question_units[arm] = dict(
             unique_test_transfer_questions=16,
             training_checkpoint_repeats_per_question=len(STAGES),
+            native_answerable_support_questions=len(answerable),
+            native_unanswerable_questions=len(abstainable),
+            native_support_unresolved_questions=len(unresolved),
             observed_source_support_pairs=len(source),
-            native_answerability_unknown_or_not_comparable=missing_source,
-            native_source_net_gain=sum(source),
+            unscored_answerable_support_pairs=missing_answerable,
+            observed_native_abstention_pairs=len(abstentions),
+            unscored_native_abstention_pairs=missing_abstention,
+            # Backward-compatible but deprecated mixed denominator: this
+            # includes KNOWN unanswerable and unresolved cases, not just unknown.
+            native_answerability_unknown_or_not_comparable=16 - len(source),
+            legacy_mixed_noncomparable_denominator_not_an_unknown_count=True,
+            native_source_net_gain=source_sum,
             native_source_all_planned_net_gain_bounds=[
-                sum(source) - missing_source,
-                sum(source) + missing_source,
+                source_sum - missing_answerable,
+                source_sum + missing_answerable,
+            ],
+            native_source_bounds_apply_only_to_answerable_questions=True,
+            native_abstention_net_gain=abstention_sum,
+            native_abstention_all_planned_net_gain_bounds=[
+                abstention_sum - missing_abstention,
+                abstention_sum + missing_abstention,
             ],
             observed_reader_answer_pairs=len(f1),
             unanswered_or_unscored_reader_pairs=missing_f1,
@@ -516,16 +558,18 @@ def train_to_heldout_gap(plan, learning, scored, targets):
                 (math.fsum(f1) - missing_f1) / 16,
                 (math.fsum(f1) + missing_f1) / 16,
             ],
+            source_and_abstention_never_combined_as_learning_gain=True,
             confidence_interval_not_claimed=True,
             independent_source_family_sampling_not_established=True,
         )
     return dict(
-        schema="hepta.stem-train-heldout-diagnostic-gap.v5",
+        schema="hepta.stem-train-heldout-diagnostic-gap.v6",
         planned_source_policy_rows=len(scored),
         planned_stages=STAGES,
         learned_arms=ARMS[1:],
         posthoc_source_annotations_only=True,
         native_document_support_vs_abstention_separate=True,
+        final_question_bounds_stratified_by_native_answerability=True,
         actual_training_predictions_unmodified=True,
         metrics_not_for_hyperparameter_search=True,
         matched_reader_weights_prompt_and_question_required=True,
