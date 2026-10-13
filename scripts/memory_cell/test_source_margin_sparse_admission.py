@@ -24,10 +24,13 @@ class SourceMarginSparseAdmissionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder:
             output = Path(folder) / "snapshot"
             with (
-                patch.dict(sys.modules, {
-                    "pretrained": fake_pretrained,
-                    "source_completion_loss": fake_losses,
-                }),
+                patch.dict(
+                    sys.modules,
+                    {
+                        "pretrained": fake_pretrained,
+                        "source_completion_loss": fake_losses,
+                    },
+                ),
                 patch.dict(os.environ, {"HEPTA_MEMORY_TESTED_COMMIT": "a" * 40}),
                 patch(
                     "experience_write_trial.original_documents",
@@ -62,10 +65,13 @@ class SourceMarginSparseAdmissionTests(unittest.TestCase):
         fake_losses = ModuleType("source_completion_loss")
         fake_losses.BACKENDS = frozenset(("full", "supervised_positions"))
         with (
-            patch.dict(sys.modules, {
+            patch.dict(
+                sys.modules,
+                {
                     "pretrained": fake_pretrained,
                     "source_completion_loss": fake_losses,
-                }),
+                },
+            ),
             self.assertRaisesRegex(ValueError, "single-hop curriculum"),
         ):
             write_memory(

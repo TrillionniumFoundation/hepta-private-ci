@@ -23,23 +23,31 @@ ENV_KEYS = {
 
 def zip_copy(source: Path, target: Path, changes):
     """Rewrite a research ZIP for an adversarial fixture, not a real artifact."""
-    with zipfile.ZipFile(source) as old, zipfile.ZipFile(
-        target, "w", compression=zipfile.ZIP_DEFLATED
-    ) as new:
+    with (
+        zipfile.ZipFile(source) as old,
+        zipfile.ZipFile(target, "w", compression=zipfile.ZIP_DEFLATED) as new,
+    ):
         for name in old.namelist():
             new.writestr(name, changes.get(name, old.read(name)))
     return sha256(target.read_bytes()).hexdigest()
 
 
 def encoded(obj):
-    return (json.dumps(obj, sort_keys=True, ensure_ascii=False, indent=2) + "\n").encode()
+    return (
+        json.dumps(obj, sort_keys=True, ensure_ascii=False, indent=2) + "\n"
+    ).encode()
 
 
 class OriginalUploadedHandoffTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.paths = {role: Path(os.environ.get(env, "")) for role, env in ENV_KEYS.items()}
-        if not all(os.environ.get(env) and cls.paths[role].is_file() for role, env in ENV_KEYS.items()):
+        cls.paths = {
+            role: Path(os.environ.get(env, "")) for role, env in ENV_KEYS.items()
+        }
+        if not all(
+            os.environ.get(env) and cls.paths[role].is_file()
+            for role, env in ENV_KEYS.items()
+        ):
             raise unittest.SkipTest("original four source ZIPs not provided")
         cls.orig = {}
         for role, path in cls.paths.items():
@@ -64,28 +72,42 @@ class OriginalUploadedHandoffTests(unittest.TestCase):
     def modify(self, *, first=None, second=None, model=None, update_manifest=True):
         """Re-pin adversarial changes so inner and outer hash checks alone can pass."""
         altered = {
-            "source": encoded(first) if first is not None else self.orig["source"]["sufficiency-only.json"],
-            "answer": encoded(second) if second is not None else self.orig["answer"]["answer-and-citation.json"],
+            "source": encoded(first)
+            if first is not None
+            else self.orig["source"]["sufficiency-only.json"],
+            "answer": encoded(second)
+            if second is not None
+            else self.orig["answer"]["answer-and-citation.json"],
         }
         for role, payload in altered.items():
-            if (role == "source" and first is None) or (role == "answer" and second is None):
+            if (role == "source" and first is None) or (
+                role == "answer" and second is None
+            ):
                 continue
             path = Path(self.dir.name) / f"changed-{role}.zip"
-            member = "sufficiency-only.json" if role == "source" else "answer-and-citation.json"
+            member = (
+                "sufficiency-only.json"
+                if role == "source"
+                else "answer-and-citation.json"
+            )
             self.pins[role] = zip_copy(self.paths[role], path, {member: payload})
             self.paths_now[role] = path
         if update_manifest and (first is not None or second is not None):
             meta = deepcopy(self.meta)
             meta["sufficiency_worklist_sha256"] = sha256(altered["source"]).hexdigest()
-            meta["answer_citation_worklist_sha256"] = sha256(altered["answer"]).hexdigest()
+            meta["answer_citation_worklist_sha256"] = sha256(
+                altered["answer"]
+            ).hexdigest()
             meta_raw = encoded(meta)
             sums = "".join(
                 f"{sha256(value).hexdigest()}  ./{name}\n"
-                for name, value in sorted({
-                    "sufficiency-only.json": altered["source"],
-                    "answer-and-citation.json": altered["answer"],
-                    "manifest.json": meta_raw,
-                }.items())
+                for name, value in sorted(
+                    {
+                        "sufficiency-only.json": altered["source"],
+                        "answer-and-citation.json": altered["answer"],
+                        "manifest.json": meta_raw,
+                    }.items()
+                )
             ).encode()
             path = Path(self.dir.name) / "changed-manifest.zip"
             changes = {
@@ -100,11 +122,13 @@ class OriginalUploadedHandoffTests(unittest.TestCase):
             original["run/raw-answers.jsonl"] = model_raw
             sums = "".join(
                 f"{sha256(value).hexdigest()}  ./{name}\n"
-                for name, value in sorted(original.items()) if name != "SHA256SUMS"
+                for name, value in sorted(original.items())
+                if name != "SHA256SUMS"
             ).encode()
             path = Path(self.dir.name) / "changed-reader.zip"
             self.pins["reader"] = zip_copy(
-                self.paths["reader"], path,
+                self.paths["reader"],
+                path,
                 {"run/raw-answers.jsonl": model_raw, "SHA256SUMS": sums},
             )
             self.paths_now["reader"] = path
@@ -133,10 +157,15 @@ class OriginalUploadedHandoffTests(unittest.TestCase):
             self.run_check()
 
     def test_reblessed_original_reader_answer_change_rejected(self):
-        original = [json.loads(line) for line in self.orig["reader"]["run/raw-answers.jsonl"].splitlines()]
+        original = [
+            json.loads(line)
+            for line in self.orig["reader"]["run/raw-answers.jsonl"].splitlines()
+        ]
         original[0]["answer"] = "fabricated model answer"
         self.modify(model=original)
-        with self.assertRaisesRegex(ValueError, "human review worklist falsely promoted"):
+        with self.assertRaisesRegex(
+            ValueError, "human review worklist falsely promoted"
+        ):
             self.run_check()
 
     def test_reblessed_stage_two_answer_change_rejected(self):
@@ -165,7 +194,9 @@ class OriginalUploadedHandoffTests(unittest.TestCase):
         altered = deepcopy(self.src)
         altered["review_cases"][0]["sufficient_to_answer"] = True
         self.modify(first=altered)
-        with self.assertRaisesRegex(ValueError, "stage-one reviewer verdict fabricated"):
+        with self.assertRaisesRegex(
+            ValueError, "stage-one reviewer verdict fabricated"
+        ):
             self.run_check()
 
     def test_fabricated_second_stage_semantics_rejected(self):
@@ -179,13 +210,20 @@ class OriginalUploadedHandoffTests(unittest.TestCase):
         altered = deepcopy(self.ans)
         altered["review_cases"][0]["cited_labels"] = ["E98765"]
         self.modify(second=altered)
-        with self.assertRaisesRegex(ValueError, "model citation markers were rewritten"):
+        with self.assertRaisesRegex(
+            ValueError, "model citation markers were rewritten"
+        ):
             self.run_check()
 
     def test_truncated_original_reader_rejected(self):
-        original = [json.loads(line) for line in self.orig["reader"]["run/raw-answers.jsonl"].splitlines()]
+        original = [
+            json.loads(line)
+            for line in self.orig["reader"]["run/raw-answers.jsonl"].splitlines()
+        ]
         self.modify(model=original[:-1])
-        with self.assertRaisesRegex(ValueError, "human review worklist falsely promoted"):
+        with self.assertRaisesRegex(
+            ValueError, "human review worklist falsely promoted"
+        ):
             self.run_check()
 
 
