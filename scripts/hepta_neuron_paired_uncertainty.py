@@ -5,6 +5,7 @@ This is evaluator-only descriptive statistics, never NDU or a promotion gate.
 Groups, not individual episodes, are the bootstrap resampling units. When
 there are too few independently sourced groups, bounds are deliberately null.
 """
+
 from __future__ import annotations
 
 import hashlib

@@ -415,7 +415,9 @@ class ProductionBaselinePairTests(unittest.TestCase):
             for window in ("holdout", "future_1", "future_2"):
                 row = report["production_baseline_paired_proxies"][arm][window]
                 confidence = row["paired_uncertainty"]
-                self.assertEqual(confidence["method"], "source_group_cluster_bootstrap_percentile_v1")
+                self.assertEqual(
+                    confidence["method"], "source_group_cluster_bootstrap_percentile_v1"
+                )
                 self.assertLess(confidence["independent_source_groups"], 8)
                 self.assertIsNone(confidence["lower"])
                 self.assertIsNone(confidence["upper"])
@@ -428,9 +430,13 @@ class ProductionBaselinePairTests(unittest.TestCase):
         report = self.check()
         row = report["production_baseline_paired_proxies"]["swiglu"]["future_1"]
         confidence = row["paired_uncertainty"]
-        self.assertEqual(confidence["statistic"], "candidate_minus_production_no_change_mse")
+        self.assertEqual(
+            confidence["statistic"], "candidate_minus_production_no_change_mse"
+        )
         self.assertEqual(confidence["benefit_when"], "negative")
-        self.assertAlmostEqual(confidence["point_estimate"], row["paired_mean_mse_delta"])
+        self.assertAlmostEqual(
+            confidence["point_estimate"], row["paired_mean_mse_delta"]
+        )
 
     def test_baseline_window_proxies_do_not_grant_promotion(self):
         for item in self.production_body["observations"]:
