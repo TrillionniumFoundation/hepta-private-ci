@@ -519,3 +519,41 @@ Parameters, sample hashes and unmodified heldout logits are compared. Prediction
 are sealed before scoring; writer independence, future efficacy and full Stem
 selection remain unestablished. Different Cell counts change per-Cell training
 data and aggregate updates, so this is not a causal split-benefit experiment.
+
+
+## Training-only routing and inheritance-matched split controls
+
+`split_trial(..., matched_inheritance=True)` retains every original comparator and
+adds `inherited_unsplit`: the same trained linear parent plus an initially-zero
+nonlinear residual within the split parameter cap. Both parent and residual can
+train, without expert dispatch. Split and this capacity control start at the same
+parent function and use identical continuation minibatch streams; their actual
+parameter gap remains visible. The fresh wider MLP still receives the full
+scratch-training step budget. Shared parent training is charged once per inherited
+path and never added to the scratch path. Equal steps/examples are NOT equal FLOPs,
+wall time or independent efficacy. All supplied labels/shapes/routes are checked
+before the first fit; the trial preserves the caller's global Torch RNG.
+
+The existing actual-model runner uses the matched inheritance control and accepts
+`split_routing: "train_two_means"`. `TrainingPartition` fits two centroids on TRAIN
+features only, takes no labels, freezes its centroids, and exposes empty-child and
+resource diagnostics. Every arm sees the same appended route. Default routing
+remains the caller-observed Cell bit; public mmBERT smoke explicitly opts into
+training-only routing. No extra Encoder call or production topology change occurs.
+The post-seal evaluator requires the new arm when its comparison profile is
+present and validates per-arm work, sampling hashes and parameter-cap consistency.
+
+```sh
+python -m unittest -v experiments.shared_stem_cell.test_split_learning
+python -m experiments.shared_stem_cell.split_study --output /new/digits-split
+```
+
+The bundled-digit study uses the original 64 pixel/16 features (NO Encoder),
+content-only train/extra-train/calibration/holdout partitioning and three fixed
+seeds. Predictions and all calibration-only recommendations are sealed before
+holdout labels are accessed for scoring. The simple accuracy/size recommendation
+is descriptive, NOT statistical acceptance, future utility or an NDU optimizer.
+Raw scores, parameter gaps, route work, optimizer-phase timings and whole-trial
+spans are retained. Seeds share the same holdout, not independent task sets.
+Writer-disjoint/future evidence, pretrained Stem comparisons, production split
+migration and resource-adjusted longitudinal gain remain separate acceptance work.

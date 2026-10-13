@@ -585,6 +585,8 @@ def run(manifest_path: Path, output: Path):
             config["classes"], config["cells"], config.get("temporal", False))
         if config.get("head_training_backend", "scalar") not in {"scalar", "grouped"}:
             raise InputError("unknown Head fitting backend before model load")
+        if config.get("split_routing", "observed_cell") not in {"observed_cell", "train_two_means"}:
+            raise InputError("unknown split routing before model load")
         train_labels = {c.case_id: labels[c.case_id] for c in cases if c.split == "train"}
         # Scope partitions are explicit and checked before loading any weights.
         if len({case.scope for case in cases}) != 1:
@@ -636,10 +638,20 @@ def run(manifest_path: Path, output: Path):
                 ids = {split: [i for i, c in enumerate(cases) if c.split == split]
                        for split in ("train", "calibration", "holdout", "extra_train")}
                 target = lambda split: torch.tensor([labels[cases[i].case_id] for i in ids[split]], dtype=torch.long)
-                routed = torch.cat([x, torch.tensor([[c.cell % 2] for c in cases], dtype=torch.float32)], 1)
+                routing = {"kind": "observed_cell_mod2", "learned": False}
+                if config.get("split_routing", "observed_cell") == "train_two_means":
+                    from experiments.shared_stem_cell.split_learning import TrainingPartition
+                    partition, routing = TrainingPartition.fit(x[ids["train"]])
+                    with measured() as route_cost:
+                        routed = partition.append_route(x)
+                    routing.update(kind="training_only_two_means", application_cost=route_cost)
+                else:
+                    routed = torch.cat([x, torch.tensor([[c.cell % 2] for c in cases], dtype=torch.float32)], 1)
                 extra = (routed[ids["extra_train"]], target("extra_train")) if ids["extra_train"] else None
                 controls["split"] = split_trial(routed[ids["train"]], target("train"), routed[ids["holdout"]],
-                    classes=config["classes"], steps=config.get("steps", 40), seed=config.get("seed", 17), extra=extra)
+                    classes=config["classes"], steps=config.get("steps", 40), seed=config.get("seed", 17), extra=extra,
+                    matched_inheritance=True)
+                controls["split"]["routing"] = routing
                 controls["system2"] = recurrent_trial(x[ids["train"]].unsqueeze(1), target("train"),
                     x[ids["calibration"]].unsqueeze(1), target("calibration"), x[ids["holdout"]].unsqueeze(1),
                     classes=config["classes"], steps=config.get("steps", 40), seed=config.get("seed", 17))

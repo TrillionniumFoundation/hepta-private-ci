@@ -46,47 +46,89 @@ class RoutedSplit(nn.Module):
         return result
 
 
-def split_trial(train_x, train_y, test_x, *, classes, steps=40, seed=17, extra=None):
-    """No test targets; compare inherited parent, continuation, split and width."""
-    _features(train_x)
-    _features(test_x)
-    if train_x.shape[1] != test_x.shape[1]:
-        raise InputError("train/test feature dimension")
-    torch.manual_seed(seed)
-    initial = Head(train_x.shape[1], classes, "linear", min(8, train_x.shape[1]))
-    parent, shared_cost = fit(initial, train_x, train_y, steps=steps, seed=seed)
-    inherited = RoutedSplit(parent)
-    with torch.no_grad():
-        if not torch.allclose(parent(test_x), inherited(test_x), rtol=1e-6, atol=1e-6):
-            raise InputError("split failed floating-point function preservation")
-    total_budget = parameters(inherited)["parameters"]
-    # Wide unsplit MLP receives precisely the same features, including route.
-    width = (total_budget - classes) // (train_x.shape[1] + classes + 1)
-    if width < 1:
-        raise InputError("no admissible equal-budget wide comparator")
-    torch.manual_seed(seed)
-    wider = nn.Sequential(nn.Linear(train_x.shape[1], width), nn.Tanh(), nn.Linear(width, classes))
-    controls = {"parent_no_change": parent}
-    costs = {"parent_no_change": {"steps": 0, **parameters(parent)}}
-    for name, model in (("parent_continued", parent), ("inherited_split", inherited)):
-        controls[name], costs[name] = fit(model, train_x, train_y, steps=steps, seed=seed)
-    # This arm did not inherit parent training; charge the same total step budget.
-    controls["larger_unsplit"], costs["larger_unsplit"] = fit(
-        wider, train_x, train_y, steps=2 * steps, seed=seed)
-    missing = []
+def split_trial(train_x, train_y, test_x, *, classes, steps=40, seed=17, extra=None,
+                matched_inheritance=False):
+    """No test targets; preserve legacy profile unless inheritance match is requested."""
+    from experiments.shared_stem_cell.split_learning import InheritedUnsplit
+    integer(classes, 2, 256, "split classes")
+    integer(steps, 1, 1000, "split steps")
+    integer(seed, 0, 2**31 - 1, "split seed")
+    if type(matched_inheritance) is not bool:
+        raise InputError("explicit inheritance comparison flag required")
+    if not isinstance(train_y, torch.Tensor) or (extra is not None and
+            (type(extra) is not tuple or len(extra) != 2 or not isinstance(extra[1], torch.Tensor))):
+        raise InputError("training and extra labels must be supplied")
+    # Reject every supplied shape/label/route BEFORE any fit or RNG mutation.
+    values = [(train_x, train_y), (test_x, None)]
     if extra is not None:
-        extra_x, extra_y = extra
-        _features(extra_x)
-        if extra_x.shape[1] != train_x.shape[1] or len(extra_y) != len(extra_x):
-            raise InputError("extra-data shape")
-        controls["more_data"], costs["more_data"] = fit(
-            parent, torch.cat([train_x, extra_x]), torch.cat([train_y, extra_y]),
-            steps=steps, seed=seed)
-    else:
-        missing.append("more_data: distinct earlier training material not supplied")
-    with torch.no_grad():
-        predictions = {name: model(test_x).softmax(-1).tolist() for name, model in controls.items()}
+        if type(extra) is not tuple or len(extra) != 2:
+            raise InputError("extra-data pair required")
+        values.append(extra)
+    for x, y in values:
+        _features(x)
+        if (x.shape[1] != train_x.shape[1] or not 2 <= x.shape[1] <= 8192
+                or not bool(((x[:, -1] == 0) | (x[:, -1] == 1)).all())):
+            raise InputError("same bounded features and binary observed route required")
+        if y is not None and (not isinstance(y, torch.Tensor) or y.device.type != "cpu"
+                or y.dtype != torch.long or y.shape != (len(x),)
+                or bool(((y < 0) | (y >= classes)).any())):
+            raise InputError("valid split training labels required")
+    with torch.random.fork_rng(devices=[]):
+        torch.manual_seed(seed)
+        initial = Head(train_x.shape[1], classes, "linear", min(8, train_x.shape[1]))
+        parent, shared_cost = fit(initial, train_x, train_y, steps=steps, seed=seed)
+        inherited = RoutedSplit(parent)
+        with torch.no_grad():
+            if not torch.allclose(parent(train_x), inherited(train_x), rtol=1e-6, atol=1e-6):
+                raise InputError("split failed floating-point function preservation")
+        total_budget = parameters(inherited)["parameters"]
+        width = (total_budget - classes) // (train_x.shape[1] + classes + 1)
+        if width < 1:
+            raise InputError("no admissible equal-budget wide comparator")
+        torch.manual_seed(seed)
+        wider = nn.Sequential(nn.Linear(train_x.shape[1], width), nn.Tanh(), nn.Linear(width, classes))
+        models = {"parent_no_change": parent}
+        costs = {"parent_no_change": {"steps": 0, "examples_processed": 0, **parameters(parent)}}
+        for name, model in (("parent_continued", parent), ("inherited_split", inherited)):
+            models[name], costs[name] = fit(model, train_x, train_y, steps=steps, seed=seed)
+        # Scratch MLP has no inherited training; give it the full two-stage budget.
+        models["larger_unsplit"], costs["larger_unsplit"] = fit(
+            wider, train_x, train_y, steps=2 * steps, seed=seed)
+        if matched_inheritance:
+            torch.manual_seed(seed)
+            unsplit = InheritedUnsplit(parent, total_budget)
+            with torch.no_grad():
+                if not torch.equal(parent(train_x), unsplit(train_x)):
+                    raise InputError("unsplit capacity control failed initial function preservation")
+            models["inherited_unsplit"], costs["inherited_unsplit"] = fit(
+                unsplit, train_x, train_y, steps=steps, seed=seed)
+        missing = []
+        if extra is not None:
+            models["more_data"], costs["more_data"] = fit(parent,
+                torch.cat([train_x, extra[0]]), torch.cat([train_y, extra[1]]), steps=steps, seed=seed)
+        else:
+            missing.append("more_data: distinct earlier training material not supplied")
+        predictions, inference = {}, {}
+        with torch.no_grad():
+            for name, model in models.items():
+                with measured() as cost:
+                    probabilities = model(test_x).softmax(-1)
+                    if not bool(torch.isfinite(probabilities).all()):
+                        raise InputError("nonfinite split probabilities")
+                predictions[name] = probabilities.tolist()
+                inference[name] = {**cost, "rows": len(test_x), "forward_calls": 1}
+        # Amortized per-arm path cost: charge shared parent once, NOT to scratch MLP.
+        work = {name: {"optimizer_steps": cost["steps"] + (0 if name == "larger_unsplit" else steps),
+                      "examples_processed": cost["examples_processed"] +
+                          (0 if name == "larger_unsplit" else shared_cost["examples_processed"]),
+                      "parent_training_included": name != "larger_unsplit"}
+                for name, cost in costs.items()}
     return {"predictions": predictions, "costs": costs, "common_parent_training": shared_cost,
+            "inference_costs": inference, "per_arm_training_work": work,
+            "executed_training_work": {"optimizer_steps": shared_cost["steps"] + sum(v["steps"] for v in costs.values()),
+                "examples_processed": shared_cost["examples_processed"] + sum(v["examples_processed"] for v in costs.values())},
+            "comparison_profile": "inheritance_matched_v1" if matched_inheritance else "legacy_v1",
+            "parameter_gaps": {name: total_budget - cost["parameters"] for name, cost in costs.items()},
             "split_parameter_budget": total_budget,
             "larger_unsplit_parameter_gap": total_budget - parameters(wider)["parameters"],
             "route_feature_shared_by_all_arms": True, "missing": missing,

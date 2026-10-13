@@ -79,10 +79,44 @@ def evaluate_controls(path: Path, expected, labels, cases, *, classes):
                                        ("system2", SYSTEM2_ARMS, "fixed_recurrence")):
         value = controls[name]
         arms = set(value["predictions"])
+        if name == "split":
+            profile = value.get("comparison_profile", "legacy_v1")
+            if profile not in {"legacy_v1", "inheritance_matched_v1"}:
+                raise InputError("unknown split comparison profile")
+            if profile == "inheritance_matched_v1":
+                required = required | {"inherited_unsplit"}
         if not required <= arms or arms - required - ({"more_data"} if name == "split" else set()):
             raise InputError("control arm set drift")
         if set(value["costs"]) != arms:
             raise InputError("control costs missing")
+        if name == "split" and value.get("comparison_profile") == "inheritance_matched_v1":
+            common = value["common_parent_training"]
+            budget = value["split_parameter_budget"]
+            if any(type(common.get(key)) is not int or common[key] < 0 for key in ("steps", "examples_processed")):
+                raise InputError("invalid common parent work")
+            if (type(budget) is not int or budget <= 0 or set(value["per_arm_training_work"]) != arms
+                    or set(value["parameter_gaps"]) != arms):
+                raise InputError("split work/parameter coverage drift")
+            for arm, cost in value["costs"].items():
+                if any(type(cost.get(key)) is not int or cost[key] < 0 for key in
+                       ("steps", "examples_processed", "parameters")):
+                    raise InputError("invalid split work count")
+                if cost["parameters"] > budget or value["parameter_gaps"][arm] != budget - cost["parameters"]:
+                    raise InputError("split parameter budget drift")
+                parent = arm != "larger_unsplit"
+                expected_work = {"optimizer_steps": cost["steps"] + (common["steps"] if parent else 0),
+                    "examples_processed": cost["examples_processed"] + (common["examples_processed"] if parent else 0),
+                    "parent_training_included": parent}
+                if value["per_arm_training_work"][arm] != expected_work:
+                    raise InputError("shared parent work must be charged exactly once")
+            aggregate = {"optimizer_steps": common["steps"] + sum(c["steps"] for c in value["costs"].values()),
+                         "examples_processed": common["examples_processed"] + sum(c["examples_processed"] for c in value["costs"].values())}
+            if value["executed_training_work"] != aggregate:
+                raise InputError("actual experiment work must not sum inherited path costs")
+            hashes = [value["costs"][arm]["minibatch_sha256"] for arm in
+                      ("parent_continued", "inherited_split", "inherited_unsplit")]
+            if len(set(hashes)) != 1:
+                raise InputError("matched inheritance controls changed minibatch streams")
         result[name] = summarize(value["predictions"], targets, groups,
                                  classes=classes, control=reference)
         if name == "system2":
