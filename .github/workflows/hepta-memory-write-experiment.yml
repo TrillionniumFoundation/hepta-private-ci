@@ -15,6 +15,8 @@ on:
       - "scripts/memory_cell/source_recall_probe.py"
       - "scripts/memory_cell/source_recall_likelihood.py"
       - "scripts/memory_cell/source_confusion_probe.py"
+      - "scripts/memory_cell/source_candidate_kway.py"
+      - "scripts/memory_cell/test_source_candidate_kway.py"
       - "scripts/memory_cell/source_decode_factorial.py"
       - "scripts/memory_cell/test_source_decode_factorial.py"
       - "scripts/memory_cell/test_source_confusion_probe.py"
@@ -89,6 +91,8 @@ jobs:
           python3 -m pip install uv==0.8.22 PyYAML==6.0.3
           uv run --frozen --project scripts ruff format --check \
             scripts/memory_cell/source_completion_loss.py \
+            scripts/memory_cell/source_candidate_kway.py \
+            scripts/memory_cell/test_source_candidate_kway.py \
             scripts/memory_cell/source_decode_factorial.py \
             scripts/memory_cell/test_source_decode_factorial.py \
             scripts/memory_cell/source_write_effects.py \
@@ -97,6 +101,7 @@ jobs:
           python3 -m compileall -q scripts/memory_cell
           python3 -m unittest discover -s scripts/memory_cell -p 'test_source_write_execution_gate.py' -v
           python3 -m unittest discover -s scripts/memory_cell -p 'test_source_workflow_gates.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_candidate_kway.py' -v
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
   write-and-read:
     needs: source-contracts
@@ -192,6 +197,13 @@ jobs:
           set -euo pipefail
           /usr/bin/time -v -o /tmp/experience-result/write-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/experience_write_trial.py write /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --loss-backend supervised_positions --parity-receipt /tmp/experience-result/source-loss-parity.json --parity-sha "$(sha256sum /tmp/experience-result/source-loss-parity.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/experience-result/write.log
           sha256sum /tmp/experience-result/snapshot/READY.json > /tmp/experience-result/snapshot-pin.txt
+      - name: Diagnose closed-set source-value association with a FULL original lexicon
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/experience-result/kway-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/source_candidate_kway.py /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot /tmp/experience-result/source-kway --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" --maximum-questions 2 2>&1 | tee /tmp/experience-result/kway.log
       - name: Probe in-sample source facts before opening any evaluation task
         env:
           HF_HUB_OFFLINE: "1"
@@ -251,7 +263,7 @@ jobs:
           set -euo pipefail
           mkdir -p /tmp/experience-result/source
           cp scripts/memory_cell/experience_*.py scripts/memory_cell/test_experience_*.py scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write*.py scripts/memory_cell/source_recall_probe.py scripts/memory_cell/test_source_recall_probe.py scripts/memory_cell/source_recall_likelihood.py scripts/memory_cell/test_source_recall_likelihood.py scripts/memory_cell/source_confusion_probe.py scripts/memory_cell/test_source_confusion_probe.py scripts/memory_cell/source_loss_admission.py scripts/memory_cell/test_source_loss_admission.py scripts/memory_cell/source_pretrained_projection_receipt.py /tmp/experience-result/source/
-          cp scripts/memory_cell/source_decode_factorial.py scripts/memory_cell/test_source_decode_factorial.py /tmp/experience-result/source/
+          cp scripts/memory_cell/source_decode_factorial.py scripts/memory_cell/test_source_decode_factorial.py scripts/memory_cell/source_candidate_kway.py scripts/memory_cell/test_source_candidate_kway.py /tmp/experience-result/source/
           git rev-parse HEAD > /tmp/experience-result/tested-commit.txt
           # Base and research-derived model weights are not redistributed.
           find /tmp/experience-result -name '*.safetensors' -delete
