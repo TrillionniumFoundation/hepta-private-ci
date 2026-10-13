@@ -33,7 +33,9 @@ class RefusalSensitivityTests(unittest.TestCase):
             trial.refusal_shape(answer),
             "canonical_prefix_plus_unreviewed_content",
         )
-        self.assertEqual(trial.refusal_shape("I know the answer."), "not_canonical_refusal")
+        self.assertEqual(
+            trial.refusal_shape("I know the answer."), "not_canonical_refusal"
+        )
         self.assertEqual(trial.refusal_shape(trial.REFUSAL), "strict_exact")
 
     def test_stable_original_token_f1_grammar(self):
@@ -66,14 +68,34 @@ class RefusalSensitivityTests(unittest.TestCase):
         record = trial.audit(FILES)
         self.assertEqual(record["original_model_runs"], 32)
         self.assertEqual(record["source_family_proxies"], 2)
-        self.assertAlmostEqual(record["by_arm"]["lexical_k4"]["original_official"]["mean_f1"], 0.17208258098192508)
-        self.assertAlmostEqual(record["by_arm"]["lexical_k8"]["original_official"]["mean_f1"], 0.11148190095003518)
-        self.assertAlmostEqual(record["exact_registered_k8_minus_k4_f1"], -0.060600680031889904)
+        self.assertAlmostEqual(
+            record["by_arm"]["lexical_k4"]["original_official"]["mean_f1"],
+            0.17208258098192508,
+        )
+        self.assertAlmostEqual(
+            record["by_arm"]["lexical_k8"]["original_official"]["mean_f1"],
+            0.11148190095003518,
+        )
+        self.assertAlmostEqual(
+            record["exact_registered_k8_minus_k4_f1"], -0.060600680031889904
+        )
         self.assertEqual(record["by_arm"]["lexical_k4"]["refusal_strict_exact"], 1)
-        self.assertEqual(record["by_arm"]["lexical_k4"]["refusal_prefix_with_extra_unreviewed_content"], 2)
+        self.assertEqual(
+            record["by_arm"]["lexical_k4"][
+                "refusal_prefix_with_extra_unreviewed_content"
+            ],
+            2,
+        )
         self.assertEqual(record["by_arm"]["lexical_k8"]["refusal_strict_exact"], 0)
-        self.assertEqual(record["by_arm"]["lexical_k8"]["refusal_prefix_with_extra_unreviewed_content"], 3)
-        self.assertAlmostEqual(record["sensitivity_prefix_refusal_k8_minus_k4_f1"], 0.0018993199681101025)
+        self.assertEqual(
+            record["by_arm"]["lexical_k8"][
+                "refusal_prefix_with_extra_unreviewed_content"
+            ],
+            3,
+        )
+        self.assertAlmostEqual(
+            record["sensitivity_prefix_refusal_k8_minus_k4_f1"], 0.0018993199681101025
+        )
         self.assertFalse(record["retrieval_policy_promotion_qualified"])
         self.assertIsNone(record["semantic_citation_precision"])
 
@@ -84,10 +106,22 @@ class RefusalSensitivityTests(unittest.TestCase):
         a, b = record["by_arm"]["lexical_k4"], record["by_arm"]["lexical_k8"]
         self.assertEqual(a["cohorts"]["publisher_support_all_retrieved"]["planned"], 8)
         self.assertEqual(b["cohorts"]["publisher_support_all_retrieved"]["planned"], 9)
-        self.assertEqual(record["paired_support_cohorts"]["additional_support_retrieved_by_k8"]["questions"], 1)
-        self.assertEqual(record["paired_support_cohorts"]["unanswerable"]["questions"], 3)
-        self.assertEqual(record["paired_support_cohorts"]["support_retrieved_by_both"]["questions"], 8)
-        self.assertEqual(record["paired_support_cohorts"]["support_missing_both"]["questions"], 4)
+        self.assertEqual(
+            record["paired_support_cohorts"]["additional_support_retrieved_by_k8"][
+                "questions"
+            ],
+            1,
+        )
+        self.assertEqual(
+            record["paired_support_cohorts"]["unanswerable"]["questions"], 3
+        )
+        self.assertEqual(
+            record["paired_support_cohorts"]["support_retrieved_by_both"]["questions"],
+            8,
+        )
+        self.assertEqual(
+            record["paired_support_cohorts"]["support_missing_both"]["questions"], 4
+        )
         self.assertNotIn("The Witcher 3", json.dumps(record))
         self.assertFalse(record["production_accepted"])
 
@@ -127,7 +161,9 @@ class RefusalSensitivityTests(unittest.TestCase):
             trial.compute(questions, rows, targets, fake)
         changed = deepcopy(rows)
         changed[0]["answer"] += " unrelated appended assertion"
-        with self.assertRaisesRegex(ValueError, "hosted original reference|original preregistered"):
+        with self.assertRaisesRegex(
+            ValueError, "hosted original reference|original preregistered"
+        ):
             trial.compute(questions, changed, targets, hosted)
 
 

@@ -59,7 +59,7 @@ def strict_json(raw):
 def checked_zip(path, pin):
     """Reject changed/unsafe archives; original public/target ZIPs lack manifests."""
     path = Path(path)
-    if (path.is_symlink() or not path.is_file() or path.stat().st_size > 16_777_216):
+    if path.is_symlink() or not path.is_file() or path.stat().st_size > 16_777_216:
         raise ValueError("missing/oversized/symlinked original archive")
     payload = path.read_bytes()
     if sha(payload) != pin:
@@ -67,14 +67,21 @@ def checked_zip(path, pin):
     files = {}
     with zipfile.ZipFile(path) as archive:
         members = archive.infolist()
-        if not 1 <= len(members) <= 100 or sum(m.file_size for m in members) > 32_000_000:
+        if (
+            not 1 <= len(members) <= 100
+            or sum(m.file_size for m in members) > 32_000_000
+        ):
             raise ValueError("unbounded original ZIP members")
         for m in members:
             p = PurePosixPath(m.filename)
             if (
-                p.is_absolute() or ".." in p.parts or "." in p.parts
-                or "\\" in m.filename or p.as_posix() != m.filename
-                or m.filename in files or m.is_dir()
+                p.is_absolute()
+                or ".." in p.parts
+                or "." in p.parts
+                or "\\" in m.filename
+                or p.as_posix() != m.filename
+                or m.filename in files
+                or m.is_dir()
                 or stat.S_ISLNK(m.external_attr >> 16)
             ):
                 raise ValueError("unsafe original ZIP path")
@@ -86,7 +93,9 @@ def checked_zip(path, pin):
             if m is None or m[2] in declared:
                 raise ValueError("invalid original SHA256SUMS")
             declared[m[2]] = m[1]
-        if set(declared) != set(files) or any(sha(files[k]) != value for k, value in declared.items()):
+        if set(declared) != set(files) or any(
+            sha(files[k]) != value for k, value in declared.items()
+        ):
             raise ValueError("original ZIP member manifest mismatch")
     return files
 
@@ -106,7 +115,11 @@ def answer_f1(answer, target):
         raise ValueError("answerable query missing published answer")
     first, second = normalize(answer).split(), normalize(gold).split()
     common = sum((Counter(first) & Counter(second)).values())
-    return 2 * common / (len(first) + len(second)) if first and second else float(first == second)
+    return (
+        2 * common / (len(first) + len(second))
+        if first and second
+        else float(first == second)
+    )
 
 
 def refusal_shape(answer):
@@ -216,12 +229,15 @@ def _originals(artifacts):
             or len(receipt["delivered_evidence"]) != len(r["selected"])
         ):
             raise ValueError("reader identity/budget/delivered census drift")
-        for expected, evidence in zip(r["selected"], receipt["delivered_evidence"], strict=True):
+        for expected, evidence in zip(
+            r["selected"], receipt["delivered_evidence"], strict=True
+        ):
             if (
                 expected not in docs
                 or evidence["original_id"] != expected
                 or evidence["excerpt"] != docs[expected]["content"]
-                or evidence["source_digest"] != _native_digest(docs[expected]["content"])
+                or evidence["source_digest"]
+                != _native_digest(docs[expected]["content"])
             ):
                 raise ValueError("original UTF-8 delivered evidence differs")
     targets = strict_json(
@@ -230,7 +246,9 @@ def _originals(artifacts):
     if set(targets) != set(questions):
         raise ValueError("original evaluation targets missing or substituted")
     for qid, t in targets.items():
-        if type(t.get("unanswerable")) is not bool or not isinstance(t.get("support"), list):
+        if type(t.get("unanswerable")) is not bool or not isinstance(
+            t.get("support"), list
+        ):
             raise ValueError("unregistered original target")
         if not set(t["support"]).issubset(questions[qid]["source_ids"]):
             raise ValueError("publisher support outside original question history")
@@ -238,7 +256,11 @@ def _originals(artifacts):
 
 
 def _native_digest(value):
-    return sha(json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":")).encode())
+    return sha(
+        json.dumps(
+            value, sort_keys=True, ensure_ascii=False, separators=(",", ":")
+        ).encode()
+    )
 
 
 def _rollup(rows):
@@ -270,17 +292,23 @@ def compute(questions, originals, targets, hosted_score):
         cited = MARKER.findall(row["answer"])
         if any(mark[1:-1] not in labels for mark in cited):
             raise ValueError("unoriginal citation label in real answer")
-        byarm[row["arm"]].append(dict(
-            question_id=row["question_id"],
-            family_proxy_digest=questions[row["question_id"]]["family_proxy_digest"],
-            f1=answer_f1(row["answer"], t),
-            unanswerable=t["unanswerable"],
-            group=group,
-            publisher_support_count=len(refs),
-            prompt_tokens=row["receipt"]["input_tokens"],
-            valid_label_count=len(cited),
-            refusal_shape=refusal_shape(row["answer"]) if t["unanswerable"] else None,
-        ))
+        byarm[row["arm"]].append(
+            dict(
+                question_id=row["question_id"],
+                family_proxy_digest=questions[row["question_id"]][
+                    "family_proxy_digest"
+                ],
+                f1=answer_f1(row["answer"], t),
+                unanswerable=t["unanswerable"],
+                group=group,
+                publisher_support_count=len(refs),
+                prompt_tokens=row["receipt"]["input_tokens"],
+                valid_label_count=len(cited),
+                refusal_shape=refusal_shape(row["answer"])
+                if t["unanswerable"]
+                else None,
+            )
+        )
     if set(byarm) != set(ARMS) or any(len(v) != 16 for v in byarm.values()):
         raise ValueError("original 16-by-2 answered population differs")
     arm_reports = {}
@@ -291,30 +319,43 @@ def compute(questions, originals, targets, hosted_score):
         if (
             not math.isclose(total["mean_f1"], official["diagnostic_f1"], abs_tol=1e-12)
             or total["prompt_tokens"] != official["actual_input_tokens"]
-            or official["succeeded"] != 16 or official["failed"] != 0
+            or official["succeeded"] != 16
+            or official["failed"] != 0
         ):
             raise ValueError("rescore differs from hosted original reference score")
-        groups = {name: _rollup([r for r in records if r["group"] == name]) for name in (
-            "publisher_support_all_retrieved",
-            "publisher_support_partially_retrieved",
-            "publisher_support_missing",
-            "unanswerable",
-        )}
+        groups = {
+            name: _rollup([r for r in records if r["group"] == name])
+            for name in (
+                "publisher_support_all_retrieved",
+                "publisher_support_partially_retrieved",
+                "publisher_support_missing",
+                "unanswerable",
+            )
+        }
         unans = [r for r in records if r["unanswerable"]]
         arm_reports[arm] = dict(
             original_official=_rollup(records),
             original_hosted_f1=official["diagnostic_f1"],
             cohorts=groups,
-            refusal_strict_exact=sum(r["refusal_shape"] == "strict_exact" for r in unans),
-            refusal_prefix_with_extra_unreviewed_content=sum(
-                r["refusal_shape"] == "canonical_prefix_plus_unreviewed_content" for r in unans
+            refusal_strict_exact=sum(
+                r["refusal_shape"] == "strict_exact" for r in unans
             ),
-            refusal_not_canonical=sum(r["refusal_shape"] == "not_canonical_refusal" for r in unans),
+            refusal_prefix_with_extra_unreviewed_content=sum(
+                r["refusal_shape"] == "canonical_prefix_plus_unreviewed_content"
+                for r in unans
+            ),
+            refusal_not_canonical=sum(
+                r["refusal_shape"] == "not_canonical_refusal" for r in unans
+            ),
             diagnostic_prefix_refusal_macro_f1=(
                 sum(r["f1"] for r in records if not r["unanswerable"])
-                + sum(r["refusal_shape"] in (
-                    "strict_exact", "canonical_prefix_plus_unreviewed_content") for r in unans)
-            ) / 16,
+                + sum(
+                    r["refusal_shape"]
+                    in ("strict_exact", "canonical_prefix_plus_unreviewed_content")
+                    for r in unans
+                )
+            )
+            / 16,
         )
     first = {r["question_id"]: r for r in byarm["lexical_k4"]}
     second = {r["question_id"]: r for r in byarm["lexical_k8"]}
@@ -325,28 +366,57 @@ def compute(questions, originals, targets, hosted_score):
         a, b = first[qid], second[qid]
         if a["unanswerable"] != b["unanswerable"]:
             raise ValueError("paired target changed")
-        cohort = "unanswerable" if a["unanswerable"] else (
-            "support_retrieved_by_both" if a["group"] == "publisher_support_all_retrieved"
-            else "additional_support_retrieved_by_k8" if b["group"] == "publisher_support_all_retrieved"
-            else "support_missing_both"
+        cohort = (
+            "unanswerable"
+            if a["unanswerable"]
+            else (
+                "support_retrieved_by_both"
+                if a["group"] == "publisher_support_all_retrieved"
+                else "additional_support_retrieved_by_k8"
+                if b["group"] == "publisher_support_all_retrieved"
+                else "support_missing_both"
+            )
         )
-        groups[cohort].append(dict(qid=qid, delta=b["f1"]-a["f1"], tokens=b["prompt_tokens"]-a["prompt_tokens"]))
+        groups[cohort].append(
+            dict(
+                qid=qid,
+                delta=b["f1"] - a["f1"],
+                tokens=b["prompt_tokens"] - a["prompt_tokens"],
+            )
+        )
     paired = {}
-    for name in ("unanswerable", "support_retrieved_by_both", "additional_support_retrieved_by_k8", "support_missing_both"):
+    for name in (
+        "unanswerable",
+        "support_retrieved_by_both",
+        "additional_support_retrieved_by_k8",
+        "support_missing_both",
+    ):
         items = groups[name]
         paired[name] = dict(
             questions=len(items),
-            mean_original_delta=sum(x["delta"] for x in items) / len(items) if items else None,
+            mean_original_delta=sum(x["delta"] for x in items) / len(items)
+            if items
+            else None,
             sum_original_delta=sum(x["delta"] for x in items),
             extra_prompt_tokens=sum(x["tokens"] for x in items),
         )
-    orig_delta = (arm_reports["lexical_k8"]["original_official"]["f1_sum"]
-                  - arm_reports["lexical_k4"]["original_official"]["f1_sum"]) / 16
-    prefix_delta = (arm_reports["lexical_k8"]["diagnostic_prefix_refusal_macro_f1"]
-                    - arm_reports["lexical_k4"]["diagnostic_prefix_refusal_macro_f1"])
-    if not math.isclose(orig_delta, hosted_score["paired"]["observed_mean_f1_delta"],abs_tol=1e-12):
+    orig_delta = (
+        arm_reports["lexical_k8"]["original_official"]["f1_sum"]
+        - arm_reports["lexical_k4"]["original_official"]["f1_sum"]
+    ) / 16
+    prefix_delta = (
+        arm_reports["lexical_k8"]["diagnostic_prefix_refusal_macro_f1"]
+        - arm_reports["lexical_k4"]["diagnostic_prefix_refusal_macro_f1"]
+    )
+    if not math.isclose(
+        orig_delta, hosted_score["paired"]["observed_mean_f1_delta"], abs_tol=1e-12
+    ):
         raise ValueError("the original preregistered paired effect changed")
-    if not math.isclose(orig_delta, sum(r["sum_original_delta"] for r in paired.values())/16, abs_tol=1e-12):
+    if not math.isclose(
+        orig_delta,
+        sum(r["sum_original_delta"] for r in paired.values()) / 16,
+        abs_tol=1e-12,
+    ):
         raise ValueError("missing paired effect components")
     return dict(
         schema=PROFILE,
@@ -403,13 +473,22 @@ def main():
         audit({name: getattr(args, name) for name in EXPECTED_ZIPS})
     )
     with args.out.open("x", encoding="utf-8") as f:
-        json.dump(result, f, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False)
+        json.dump(
+            result, f, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False
+        )
         f.write("\n")
-    print(json.dumps({
-        "original_qa_f1_delta": result["exact_registered_k8_minus_k4_f1"],
-        "posthoc_prefix_refusal_delta": result["sensitivity_prefix_refusal_k8_minus_k4_f1"],
-        "production_accepted": False,
-    }, allow_nan=False))
+    print(
+        json.dumps(
+            {
+                "original_qa_f1_delta": result["exact_registered_k8_minus_k4_f1"],
+                "posthoc_prefix_refusal_delta": result[
+                    "sensitivity_prefix_refusal_k8_minus_k4_f1"
+                ],
+                "production_accepted": False,
+            },
+            allow_nan=False,
+        )
+    )
 
 
 if __name__ == "__main__":

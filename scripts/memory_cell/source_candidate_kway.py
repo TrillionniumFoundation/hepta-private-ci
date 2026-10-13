@@ -117,11 +117,7 @@ def summarize(rows, cases):
                 if r["status"] == "succeeded":
                     for number in ("mean_nll", "seconds"):
                         x = r[number]
-                        if (
-                            type(x) not in (float, int)
-                            or not math.isfinite(x)
-                            or x < 0
-                        ):
+                        if type(x) not in (float, int) or not math.isfinite(x) or x < 0:
                             raise ValueError("invalid actual model observation")
                     if (
                         type(r["input_tokens"]) is not int
@@ -295,9 +291,7 @@ def probe(
             row["input_tokens"] for row in rows if row["status"] == "succeeded"
         ),
         candidate_supervised_tokens=sum(
-            row["supervised_tokens"]
-            for row in rows
-            if row["status"] == "succeeded"
+            row["supervised_tokens"] for row in rows if row["status"] == "succeeded"
         ),
         measured_candidate_seconds=sum(
             row["seconds"] for row in rows if row["status"] == "succeeded"

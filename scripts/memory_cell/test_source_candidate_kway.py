@@ -58,9 +58,7 @@ class KwayTests(unittest.TestCase):
         cases, excluded = roster(examples(), maximum_questions=2)
         self.assertEqual(len(cases), 2)
         self.assertEqual(excluded, ())
-        self.assertTrue(
-            all(c["candidates"] == ("id_a", "id_b", "id_c") for c in cases)
-        )
+        self.assertTrue(all(c["candidates"] == ("id_a", "id_b", "id_c") for c in cases))
         inverted, _ = roster(list(reversed(examples())), maximum_questions=2)
         self.assertEqual(cases, inverted)
 

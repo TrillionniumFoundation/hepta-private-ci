@@ -17,9 +17,7 @@ import zipfile
 
 SOURCE_COMMIT = "6304b451268c73f3d1a605985226b102df841bbf"
 ORIGINAL_COMMIT = "c9dd3aeff958fbdc4356a98718e96dec47f9b820"
-ORIGINAL_PLAN_SHA = (
-    "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897"
-)
+ORIGINAL_PLAN_SHA = "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897"
 ARCHIVES = {
     "original": "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b",
     "reader": "7a99db30fb5b1202fcd43073d22589b84315046dd34044277cc46351f1cbece8",
@@ -38,8 +36,12 @@ ARMS = (
 )
 KS = (1, 2, 3, 4, 6)
 SCORE_FIELDS = frozenset(
-    ("parsed_identifier", "strict_task_success", "required_sources_covered",
-     "procedure_verification")
+    (
+        "parsed_identifier",
+        "strict_task_success",
+        "required_sources_covered",
+        "procedure_verification",
+    )
 )
 IDENTIFIER = re.compile(
     r"\s*((?:site|mode)_[0-9a-f]{8})(?:\s*\[E[1-9][0-9]*\])*\s*\.?\s*"
@@ -72,9 +74,7 @@ def strict_json(raw):
     def invalid(value):
         raise ValueError("nonfinite JSON literal: " + value)
 
-    return json.loads(
-        raw, object_pairs_hook=unique, parse_constant=invalid
-    )
+    return json.loads(raw, object_pairs_hook=unique, parse_constant=invalid)
 
 
 def archive(path, expected):
@@ -185,9 +185,7 @@ def verify_row(row, scored, case, arm, k, truth, documents, hop):
     if row != {key: value for key, value in scored.items() if key not in SCORE_FIELDS}:
         raise ValueError("scorer rewrote raw evidence, answer or model receipt")
     qid = case["query"]["identity"]
-    if (row["question_id"], row["arm"], row["kind"]) != (
-        qid, arm, truth["kind"]
-    ):
+    if (row["question_id"], row["arm"], row["kind"]) != (qid, arm, truth["kind"]):
         raise ValueError("question, arm or task kind changed")
     selected = chosen_sources(case, arm, k, hop)
     if row["selected"] != selected or len(selected) != len(set(selected)):
@@ -237,7 +235,8 @@ def verify_row(row, scored, case, arm, k, truth, documents, hop):
             or source["source_digest"] != native_digest(doc["content"])
             or source["source_start"] != 0
             or source["source_end"] != len(doc["content"].encode("utf-8"))
-            or claim != {
+            or claim
+            != {
                 "label": source["label"],
                 "id": source["id"],
                 "root": native_root_digest(source["root"]),
@@ -270,11 +269,17 @@ def verify_row(row, scored, case, arm, k, truth, documents, hop):
             "recipe": truth["procedure"],
             "supplied": parsed or "invalid_response",
         }
-        expected_stdout = json.dumps(
-            {"succeeded": success, "supplied": parsed or "invalid_response",
-             "actual_output": actual},
-            sort_keys=True,
-        ) + "\n"
+        expected_stdout = (
+            json.dumps(
+                {
+                    "succeeded": success,
+                    "supplied": parsed or "invalid_response",
+                    "actual_output": actual,
+                },
+                sort_keys=True,
+            )
+            + "\n"
+        )
         if (
             recorded["request"] != expected_request
             or recorded["stdout"] != expected_stdout
@@ -339,7 +344,6 @@ def paired(results, left, right):
     return {"wins": wins, "losses": losses, "ties": ties}
 
 
-
 def leave_one_out(rows, qids):
     """Re-select top-k on seven original calibration answers each fold."""
     grouped = defaultdict(dict)
@@ -363,16 +367,20 @@ def leave_one_out(rows, qids):
         first = heldout[f"k{winner}"]["task_success"]
         fixed = heldout["k4"]["task_success"]
         disposition = (
-            "selected_wins" if first and not fixed else
-            "selected_loses" if fixed and not first else "tie"
+            "selected_wins"
+            if first and not fixed
+            else "selected_loses"
+            if fixed and not first
+            else "tie"
         )
-        folds.append({
-            "omitted_calibration_question": omit,
-            "chosen_k_without_that_question": winner,
-            "heldout_comparison": disposition,
-        })
+        folds.append(
+            {
+                "omitted_calibration_question": omit,
+                "chosen_k_without_that_question": winner,
+                "heldout_comparison": disposition,
+            }
+        )
     return folds
-
 
 
 def verify_repeats(rows):
@@ -390,9 +398,7 @@ def verify_repeats(rows):
             ):
                 raise ValueError("same source produced changed prompt or budget")
             answer_drift += first["answer"] != second["answer"]
-            token_drift += (
-                first["generated_digest"] != second["generated_digest"]
-            )
+            token_drift += first["generated_digest"] != second["generated_digest"]
     return {
         "matched_prompt_pairs": observed,
         "answer_disagreements": answer_drift,
@@ -428,8 +434,7 @@ def independent_disposition(original, reader, replay):
     run = json_file(r, "evaluation/run.json")
     if (
         run["model"]["repository"] != "Qwen/Qwen2.5-3B-Instruct"
-        or run["model"]["revision"]
-        != "82f42baa094a9600e39ccd80d34058aeeb3abbc1"
+        or run["model"]["revision"] != "82f42baa094a9600e39ccd80d34058aeeb3abbc1"
         or receipt["formal_citation_chain"] != ev["formal_citation_chain"]
         or receipt["paired_contrasts"] != ev["paired_contrasts"]
         or receipt["same_prompt_consistency"] != ev["same_prompt_consistency"]
@@ -477,11 +482,7 @@ def independent_disposition(original, reader, replay):
         n = len(cases) * len(arms)
         if len(original_rows) != n or len(scored_rows) != n:
             raise ValueError("missing 40/72 original generation census")
-        expected = [
-            (case["query"]["identity"], arm)
-            for case in cases
-            for arm in arms
-        ]
+        expected = [(case["query"]["identity"], arm) for case in cases for arm in arms]
         actual = [(row["question_id"], row["arm"]) for row in original_rows]
         if actual != expected or actual != [
             (row["question_id"], row["arm"]) for row in scored_rows
@@ -493,8 +494,14 @@ def independent_disposition(original, reader, replay):
         ):
             case = next(c for c in cases if c["query"]["identity"] == qid)
             state = verify_row(
-                raw, scored, case, arm, frozen["selected_k"],
-                truth[qid], source_map, hops,
+                raw,
+                scored,
+                case,
+                arm,
+                frozen["selected_k"],
+                truth[qid],
+                source_map,
+                hops,
             )
             totals.append({"question_id": qid, "arm": arm, **state})
         summary = summarize(totals, arms)
@@ -508,8 +515,10 @@ def independent_disposition(original, reader, replay):
                 or s["input_tokens"] != archived["input_tokens"]
                 or s["output_tokens"] != archived["output_tokens"]
                 or not math.isclose(
-                    s["reader_seconds"], archived["inference_seconds"],
-                    rel_tol=1e-10, abs_tol=1e-8,
+                    s["reader_seconds"],
+                    archived["inference_seconds"],
+                    rel_tol=1e-10,
+                    abs_tol=1e-8,
                 )
             ):
                 raise ValueError("archived task effect or cost differs from raw")
@@ -518,20 +527,18 @@ def independent_disposition(original, reader, replay):
                 KS,
                 key=lambda k: (
                     -summary[f"k{k}"]["strict_task_success"],
-                    summary[f"k{k}"]["input_tokens"], k,
+                    summary[f"k{k}"]["input_tokens"],
+                    k,
                 ),
             )
             if winner != frozen["selected_k"] or winner != cal["frozen_k"]:
                 raise ValueError("frozen top-k cannot be reproduced")
             folds = leave_one_out(totals, cal_ids)
             recorded = cal["calibration_sensitivity"]
-            if (
-                folds != recorded["folds"]
-                or Counter(f["chosen_k_without_that_question"] for f in folds)
-                != Counter({
-                    int(k): v for k, v in recorded["chosen_k_counts"].items()
-                    if v > 0
-                })
+            if folds != recorded["folds"] or Counter(
+                f["chosen_k_without_that_question"] for f in folds
+            ) != Counter(
+                {int(k): v for k, v in recorded["chosen_k_counts"].items() if v > 0}
             ):
                 raise ValueError("leave-one-out calibration attribution changed")
         else:
@@ -607,7 +614,9 @@ def independent_disposition(original, reader, replay):
         "generating_commit": SOURCE_COMMIT,
         "artifacts_sha256": dict(ARCHIVES),
         "artifact_manifest_file_counts": {
-            "original": no, "reader": nr, "replay": np,
+            "original": no,
+            "reader": nr,
+            "replay": np,
         },
         "model": "Qwen2.5-3B-Instruct / pinned revision / research-only",
         "model_training_executed": False,
@@ -622,16 +631,14 @@ def independent_disposition(original, reader, replay):
                 - eval_arms["hybrid_k4"]["strict_task_success"]
             ),
             "calibrated_rag_correct_without_full_support": (
-                selected["strict_task_success"]
-                - selected["correct_and_source_covered"]
+                selected["strict_task_success"] - selected["correct_and_source_covered"]
             ),
             "full_path_minus_single_hop_task_wins": (
                 simple["strict_task_success"]
                 - eval_arms["single_hop"]["strict_task_success"]
             ),
             "organized_minus_full_path_task_wins": (
-                organized["strict_task_success"]
-                - simple["strict_task_success"]
+                organized["strict_task_success"] - simple["strict_task_success"]
             ),
             "organized_input_token_saving_vs_full_path": (
                 simple["input_tokens"] - organized["input_tokens"]
@@ -673,9 +680,12 @@ def main():
         stream.write("\n")
     print(
         json.dumps(
-            {"source": SOURCE_COMMIT, "verified_calls": 112,
-             "selected_k": report["selected_k"],
-             "production_accepted": report["production_accepted"]},
+            {
+                "source": SOURCE_COMMIT,
+                "verified_calls": 112,
+                "selected_k": report["selected_k"],
+                "production_accepted": report["production_accepted"],
+            },
             ensure_ascii=False,
         )
     )

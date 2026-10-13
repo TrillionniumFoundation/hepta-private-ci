@@ -44,14 +44,18 @@ class CrossPopulationGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             path, digest = fixture_zip(
-                root, {"result.json": "{}", "SHA256SUMS": "0" * 64
-                       + "  result.json\n"},
+                root,
+                {"result.json": "{}", "SHA256SUMS": "0" * 64 + "  result.json\n"},
             )
             with self.assertRaisesRegex(ValueError, "modified inner"):
                 gate.pinned_zip(path, digest)
             path, digest = fixture_zip(
-                root, {"result.json": "{}", "additional.json": "{}",
-                       "SHA256SUMS": gate.sha(b"{}") + "  result.json\n"},
+                root,
+                {
+                    "result.json": "{}",
+                    "additional.json": "{}",
+                    "SHA256SUMS": gate.sha(b"{}") + "  result.json\n",
+                },
             )
             with self.assertRaisesRegex(ValueError, "incomplete artifact"):
                 gate.pinned_zip(path, digest)
@@ -67,8 +71,12 @@ class CrossPopulationGateTests(unittest.TestCase):
                 gate.pinned_zip(path, digest)
 
     def test_duplicate_and_nonfinite_json_are_rejected(self):
-        for payload in (b'{"answer":1,"answer":2}', b'{"value":NaN}',
-                        b'{"value":Infinity}', b'{"value":1e309}'):
+        for payload in (
+            b'{"answer":1,"answer":2}',
+            b'{"value":NaN}',
+            b'{"value":Infinity}',
+            b'{"value":1e309}',
+        ):
             with self.assertRaises(ValueError):
                 gate.strict_json(payload)
 
@@ -79,37 +87,44 @@ class CrossPopulationGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             valid = [row(q, a) for q in ("q1", "q2") for a in ("k4", "k8")]
-            for subset in (valid[:-1], valid + valid[:1],
-                           [dict(valid[0], status="failed")] + valid[1:]):
+            for subset in (
+                valid[:-1],
+                valid + valid[:1],
+                [dict(valid[0], status="failed")] + valid[1:],
+            ):
                 path, digest = fixture_zip(
-                    root, {"raw.jsonl": "\n".join(json.dumps(r) for r in subset)},
+                    root,
+                    {"raw.jsonl": "\n".join(json.dumps(r) for r in subset)},
                 )
                 with gate.pinned_zip(path, digest) as archive:
                     with self.assertRaises(ValueError):
                         gate.journal(archive, "raw.jsonl", 4, ("k4", "k8"))
 
     def test_mixed_model_inventories_fail_before_promotion(self):
-        left = {"model_identity": gate.READER_INVENTORY,
-                "original_model_calls": 112}
+        left = {"model_identity": gate.READER_INVENTORY, "original_model_calls": 112}
         right = {"model_identity": "another-model", "original_model_calls": 32}
-        with patch.object(gate, "pinned_zip", return_value=BytesIO()), \
-             patch.object(gate, "event_summary", return_value=left), \
-             patch.object(gate, "locomo_summary", return_value=right):
+        with (
+            patch.object(gate, "pinned_zip", return_value=BytesIO()),
+            patch.object(gate, "event_summary", return_value=left),
+            patch.object(gate, "locomo_summary", return_value=right),
+        ):
             with self.assertRaisesRegex(ValueError, "different model"):
                 gate.reconcile(dict.fromkeys(gate.PINS, "synthetic"))
 
     def test_even_equal_model_cannot_pool_incompatible_metrics(self):
-        left = {"model_identity": gate.READER_INVENTORY,
-                "original_model_calls": 112}
-        right = {"model_identity": gate.READER_INVENTORY,
-                 "original_model_calls": 32}
-        with patch.object(gate, "pinned_zip", return_value=BytesIO()), \
-             patch.object(gate, "event_summary", return_value=left), \
-             patch.object(gate, "locomo_summary", return_value=right):
+        left = {"model_identity": gate.READER_INVENTORY, "original_model_calls": 112}
+        right = {"model_identity": gate.READER_INVENTORY, "original_model_calls": 32}
+        with (
+            patch.object(gate, "pinned_zip", return_value=BytesIO()),
+            patch.object(gate, "event_summary", return_value=left),
+            patch.object(gate, "locomo_summary", return_value=right),
+        ):
             result = gate.reconcile(dict.fromkeys(gate.PINS, "synthetic"))
         self.assertEqual(result["observed_completed_model_calls"], 144)
         self.assertIsNone(result["pooled_accuracy"])
-        self.assertFalse(result["qualification"]["parametric_memory_training_qualified"])
+        self.assertFalse(
+            result["qualification"]["parametric_memory_training_qualified"]
+        )
         self.assertFalse(result["qualification"]["production_accepted"])
 
     def test_original_archives_reconcile_when_explicitly_supplied(self):
@@ -128,8 +143,12 @@ class CrossPopulationGateTests(unittest.TestCase):
             self.skipTest("original externally pinned artifacts not mounted")
         r = gate.reconcile({k: root / name for k, name in files.items()})
         self.assertEqual(r["observed_completed_model_calls"], 144)
-        self.assertEqual(r["controlled_authored_event"]["arms"]["organized"]
-                         ["correct_with_full_public_citation_path"], 4)
+        self.assertEqual(
+            r["controlled_authored_event"]["arms"]["organized"][
+                "correct_with_full_public_citation_path"
+            ],
+            4,
+        )
 
 
 if __name__ == "__main__":

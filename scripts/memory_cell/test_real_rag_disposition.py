@@ -23,9 +23,9 @@ class RealRagDispositionTests(unittest.TestCase):
             r["source_commit"],
             "6304b451268c73f3d1a605985226b102df841bbf",
         )
-        self.assertEqual(set(r["artifact_sha256"]), {
-            "original", "reader", "independent_replay"
-        })
+        self.assertEqual(
+            set(r["artifact_sha256"]), {"original", "reader", "independent_replay"}
+        )
         self.assertEqual(sum(r["verified_manifest_members"].values()), 86)
 
     def test_exact_model_and_real_call_census(self):
@@ -45,9 +45,10 @@ class RealRagDispositionTests(unittest.TestCase):
         e = self.receipt["evaluation"]
         self.assertEqual(e["by_arm"]["entity_time"]["strict_correct"], 8)
         self.assertEqual(e["by_arm"]["organized"]["strict_correct"], 8)
-        self.assertEqual(e["paired_task_outcomes"]["organized_vs_full_path"], {
-            "wins": 0, "losses": 0, "ties": 8
-        })
+        self.assertEqual(
+            e["paired_task_outcomes"]["organized_vs_full_path"],
+            {"wins": 0, "losses": 0, "ties": 8},
+        )
         self.assertEqual(e["organized_saved_input_tokens_vs_entity_time"], 573)
 
     def test_citations_not_inferred_from_answer_accuracy(self):

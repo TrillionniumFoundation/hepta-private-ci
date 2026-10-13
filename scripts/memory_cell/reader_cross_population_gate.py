@@ -28,18 +28,37 @@ PINS = {
 EVENT_SOURCE = "6304b451268c73f3d1a605985226b102df841bbf"
 LOCOMO_SOURCE = "96b5ec37b82f87d445740403e07e3705e9850955"
 EVENT_ARMS = (
-    "selected_k", "hybrid_k4", "hybrid_k6", "hybrid_k4_reversed",
-    "single_hop", "entity_time", "organized", "program_support", "empty",
+    "selected_k",
+    "hybrid_k4",
+    "hybrid_k6",
+    "hybrid_k4_reversed",
+    "single_hop",
+    "entity_time",
+    "organized",
+    "program_support",
+    "empty",
 )
 EVENT_COUNTS = {
-    "selected_k": 5, "hybrid_k4": 3, "hybrid_k6": 2,
-    "hybrid_k4_reversed": 3, "single_hop": 4, "entity_time": 8,
-    "organized": 8, "program_support": 8, "empty": 0,
+    "selected_k": 5,
+    "hybrid_k4": 3,
+    "hybrid_k6": 2,
+    "hybrid_k4_reversed": 3,
+    "single_hop": 4,
+    "entity_time": 8,
+    "organized": 8,
+    "program_support": 8,
+    "empty": 0,
 }
 EVENT_CITED = {
-    "selected_k": 3, "hybrid_k4": 1, "hybrid_k6": 0,
-    "hybrid_k4_reversed": 1, "single_hop": 4, "entity_time": 4,
-    "organized": 4, "program_support": 4, "empty": 0,
+    "selected_k": 3,
+    "hybrid_k4": 1,
+    "hybrid_k6": 0,
+    "hybrid_k4_reversed": 1,
+    "single_hop": 4,
+    "entity_time": 4,
+    "organized": 4,
+    "program_support": 4,
+    "empty": 0,
 }
 READER_INVENTORY = "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225"
 MAX_ZIP = 16 * 1024 * 1024
@@ -92,8 +111,11 @@ def pinned_zip(path, external_sha):
         for member in infos:
             part = PurePosixPath(member.filename)
             if (
-                part.is_absolute() or ".." in part.parts or "\\" in member.filename
-                or member.is_dir() or stat.S_ISLNK(member.external_attr >> 16)
+                part.is_absolute()
+                or ".." in part.parts
+                or "\\" in member.filename
+                or member.is_dir()
+                or stat.S_ISLNK(member.external_attr >> 16)
             ):
                 raise ValueError("unsafe artifact member")
         if "SHA256SUMS" in names:
@@ -139,8 +161,9 @@ def journal(archive, path, n, arms):
 
 
 def event_summary(model, replay):
-    cal = journal(model, "calibration/raw-answers.jsonl", 40,
-                  ("k1", "k2", "k3", "k4", "k6"))
+    cal = journal(
+        model, "calibration/raw-answers.jsonl", 40, ("k1", "k2", "k3", "k4", "k6")
+    )
     ev = journal(model, "evaluation/raw-answers.jsonl", 72, EVENT_ARMS)
     cal_scored = json_at(model, "calibration/scored-answers.json")
     ev_scored = json_at(model, "evaluation/scored-answers.json")
@@ -164,19 +187,20 @@ def event_summary(model, replay):
         or report["total_attempts"] != 72
         or report["test_task_count"] != 8
         or cal_report["planned_attempts"] != 40
-        or not (check["calibration"]["all_model_calls_succeeded"]
-                and check["evaluation"]["all_model_calls_succeeded"])
+        or not (
+            check["calibration"]["all_model_calls_succeeded"]
+            and check["evaluation"]["all_model_calls_succeeded"]
+        )
         or check["generating_commit"] != EVENT_SOURCE
         or check["model_identity"] != READER_INVENTORY
         or check["production_accepted"] is not False
         or report["production_accepted"] is not False
     ):
         raise ValueError("event source, frozen policy or replay lineage drift")
-    if (
-        check["calibration"]["original_raw_sha256"]
-        != sha(model.read("calibration/raw-answers.jsonl"))
-        or check["evaluation"]["original_raw_sha256"]
-        != sha(model.read("evaluation/raw-answers.jsonl"))
+    if check["calibration"]["original_raw_sha256"] != sha(
+        model.read("calibration/raw-answers.jsonl")
+    ) or check["evaluation"]["original_raw_sha256"] != sha(
+        model.read("evaluation/raw-answers.jsonl")
     ):
         raise ValueError("unmatched independent raw-answer replay")
     counts = {}
@@ -187,16 +211,19 @@ def event_summary(model, replay):
         chain = cited["correct_with_public_event_chain_connected"]
         stats = report["success_by_arm"][arm]
         if (
-            len(rows) != 8 or n_correct != EVENT_COUNTS[arm]
+            len(rows) != 8
+            or n_correct != EVENT_COUNTS[arm]
             or stats["strict_success"] != n_correct
-            or stats["succeeded"] != 8 or stats["failed"] != 0
+            or stats["succeeded"] != 8
+            or stats["failed"] != 0
             or chain != EVENT_CITED[arm]
             or cited["strict_task_success"] != n_correct
             or check["evaluation"]["strict_success"][arm] != n_correct
         ):
             raise ValueError("changed reported event accuracy or citation chain")
         counts[arm] = {
-            "strict_correct": n_correct, "correct_with_full_public_citation_path": chain,
+            "strict_correct": n_correct,
+            "correct_with_full_public_citation_path": chain,
             "input_tokens": stats["input_tokens"],
         }
     if (
@@ -207,11 +234,15 @@ def event_summary(model, replay):
     ):
         raise ValueError("unqualified calibration was reclassified")
     return {
-        "source_commit": EVENT_SOURCE, "model_identity": check["model_identity"],
-        "original_model_calls": 112, "calibration_calls": len(cal),
-        "evaluation_calls": len(ev), "selected_k": policy["selected_k"],
+        "source_commit": EVENT_SOURCE,
+        "model_identity": check["model_identity"],
+        "original_model_calls": 112,
+        "calibration_calls": len(cal),
+        "evaluation_calls": len(ev),
+        "selected_k": policy["selected_k"],
         "calibration_stable_under_leave_one_out": False,
-        "arms": counts, "completed_independent_execution_replay": True,
+        "arms": counts,
+        "completed_independent_execution_replay": True,
         "independent_semantic_review": False,
         "authenticated_future_source_families": 0,
     }
@@ -223,20 +254,21 @@ def locomo_summary(public, retrieval, targets, model, scoring):
     source = json_at(public, "population.json")
     frozen = json_at(retrieval, "receipt.json")
     original_targets = json_at(targets, "targets.json")
-    rows = journal(model, "run/raw-answers.jsonl", 32,
-                   ("lexical_k4", "lexical_k8"))
+    rows = journal(model, "run/raw-answers.jsonl", 32, ("lexical_k4", "lexical_k8"))
     if (
         ready["generating_commit"] != LOCOMO_SOURCE
         or scored["generating_commit"] != LOCOMO_SOURCE
         or ready["model_identity"] != READER_INVENTORY
         or scored["reference_model_inventory_identity"] != READER_INVENTORY
-        or ready["actual_model_calls"] != 32 or ready["succeeded"] != 32
+        or ready["actual_model_calls"] != 32
+        or ready["succeeded"] != 32
         or ready["labels_seen_during_generation"] is not False
         or ready["weight_updates"] != 0
         or ready["original_answers_rewritten"] is not False
         or ready["production_accepted"] is not False
         or scored["production_accepted"] is not False
-        or scored["original_raw_answers_sha256"] != sha(model.read("run/raw-answers.jsonl"))
+        or scored["original_raw_answers_sha256"]
+        != sha(model.read("run/raw-answers.jsonl"))
         or ready["raw_journal_sha256"] != scored["original_raw_answers_sha256"]
         or ready["original_source_sha256"] != PINS["locomo_public"]
         or ready["original_six_decisions_sha256"] != PINS["locomo_retrieval"]
@@ -254,8 +286,10 @@ def locomo_summary(public, retrieval, targets, model, scoring):
         tokens = sum(r["receipt"]["input_tokens"] for r in members)
         generated = sum(r["receipt"]["generated_tokens"] for r in members)
         if (
-            len(members) != 16 or stats["planned"] != 16
-            or stats["succeeded"] != 16 or stats["failed"] != 0
+            len(members) != 16
+            or stats["planned"] != 16
+            or stats["succeeded"] != 16
+            or stats["failed"] != 0
             or stats["actual_input_tokens"] != tokens
             or stats["actual_generated_tokens"] != generated
             or not math.isfinite(stats["diagnostic_f1"])
@@ -264,17 +298,22 @@ def locomo_summary(public, retrieval, targets, model, scoring):
             raise ValueError("LoCoMo measured cost or score denominator drift")
         result[arm] = {
             "mean_diagnostic_token_f1": round(stats["diagnostic_f1"], 12),
-            "prompt_tokens": tokens, "successful_model_calls": 16,
+            "prompt_tokens": tokens,
+            "successful_model_calls": 16,
             "metric": "diagnostic normalized token-F1; NOT strict exact match",
         }
-    if result["lexical_k8"]["mean_diagnostic_token_f1"] >= result[
-        "lexical_k4"]["mean_diagnostic_token_f1"
-    ]:
+    if (
+        result["lexical_k8"]["mean_diagnostic_token_f1"]
+        >= result["lexical_k4"]["mean_diagnostic_token_f1"]
+    ):
         raise ValueError("the pinned observed top-k disposition differs")
     return {
-        "source_commit": LOCOMO_SOURCE, "model_identity": READER_INVENTORY,
-        "original_model_calls": 32, "source_family_proxies": 2,
-        "published_development_questions": 16, "arms": result,
+        "source_commit": LOCOMO_SOURCE,
+        "model_identity": READER_INVENTORY,
+        "original_model_calls": 32,
+        "source_family_proxies": 2,
+        "published_development_questions": 16,
+        "arms": result,
         "independent_human_sufficiency_reviews": 0,
         "published_benchmark_not_future_observation": True,
     }
@@ -287,8 +326,10 @@ def reconcile(inputs):
     try:
         e = event_summary(archives["event_model"], archives["event_replay"])
         l = locomo_summary(
-            archives["locomo_public"], archives["locomo_retrieval"],
-            archives["locomo_targets"], archives["locomo_model"],
+            archives["locomo_public"],
+            archives["locomo_retrieval"],
+            archives["locomo_targets"],
+            archives["locomo_model"],
             archives["locomo_score"],
         )
     finally:
@@ -297,11 +338,13 @@ def reconcile(inputs):
     if e["model_identity"] != l["model_identity"]:
         raise ValueError("different model inventory across research populations")
     return {
-        "schema": SCHEMA, "source_zip_sha256": dict(PINS),
+        "schema": SCHEMA,
+        "source_zip_sha256": dict(PINS),
         "reader_identity": e["model_identity"],
         "observed_completed_model_calls": e["original_model_calls"]
         + l["original_model_calls"],
-        "controlled_authored_event": e, "published_locomo": l,
+        "controlled_authored_event": e,
+        "published_locomo": l,
         "pooled_accuracy": None,
         "reason_no_pooled_accuracy": (
             "incompatible strict-ID and diagnostic token-F1 metrics; "
@@ -333,11 +376,24 @@ def main():
     args = parser.parse_args()
     result = reconcile({key: getattr(args, key) for key in PINS})
     with args.output.open("x", encoding="utf-8") as stream:
-        json.dump(result, stream, ensure_ascii=False, sort_keys=True, indent=2,
-                  allow_nan=False)
+        json.dump(
+            result,
+            stream,
+            ensure_ascii=False,
+            sort_keys=True,
+            indent=2,
+            allow_nan=False,
+        )
         stream.write("\n")
-    print(json.dumps({"schema": SCHEMA, "calls": result["observed_completed_model_calls"],
-                      "parametric_training_qualified": False}))
+    print(
+        json.dumps(
+            {
+                "schema": SCHEMA,
+                "calls": result["observed_completed_model_calls"],
+                "parametric_training_qualified": False,
+            }
+        )
+    )
 
 
 if __name__ == "__main__":

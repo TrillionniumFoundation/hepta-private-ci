@@ -32,10 +32,7 @@ REASONS = (
 
 
 def _baseline_pairs(questions, frozen_attempts):
-    expected = {
-        (phase, q.identity): q
-        for phase in PHASES for q in questions[phase]
-    }
+    expected = {(phase, q.identity): q for phase in PHASES for q in questions[phase]}
     if (
         set(questions) != set(PHASES)
         or any(len(questions[p]) != 8 for p in PHASES)
@@ -66,7 +63,12 @@ def _baseline_pairs(questions, frozen_attempts):
 
 
 def prepare_native_window_interventions(
-    questions, frozen_attempts, pools, frozen_features, targets, *,
+    questions,
+    frozen_attempts,
+    pools,
+    frozen_features,
+    targets,
+    *,
     selected_window,
 ):
     """Choose a fixed retrospective diagnostic from *native source IDs only*.
@@ -85,7 +87,8 @@ def prepare_native_window_interventions(
         pool, feature = pools.get(qid), frozen_features.get(qid)
         base = dict(
             schema="hepta.stem-labelled-window-reader-diagnostic.v1",
-            phase=phase, question_id=qid,
+            phase=phase,
+            question_id=qid,
             original_question_sha256=digest(asdict(q)),
             original_policy_status=row["status"],
             native_document_support_is_not_passage_entailment=True,
@@ -119,11 +122,10 @@ def prepare_native_window_interventions(
                 or any(not math.isfinite(float(v)) for v in scores)
             ):
                 raise ValueError("original candidate pool and frozen logits mismatch")
-            candidates = {
-                source_id(value) for value in target.evidence
-            }
+            candidates = {source_id(value) for value in target.evidence}
             support = [
-                i for i, window in enumerate(pool.windows)
+                i
+                for i, window in enumerate(pool.windows)
                 if source_id(window.source_id) in candidates
             ]
             chosen = row.get("selected")
@@ -133,10 +135,13 @@ def prepare_native_window_interventions(
                 raise ValueError("baseline top1 not bound to original pool")
             expected_frozen = (
                 min(range(len(names)), key=lambda i: (-float(scores[i]), names[i]))
-                if names else None
+                if names
+                else None
             )
             if chosen is not None and chosen != expected_frozen:
-                raise ValueError("baseline frozen score rank differs from recorded top1")
+                raise ValueError(
+                    "baseline frozen score rank differs from recorded top1"
+                )
             if row["status"] == "succeeded" and chosen != expected_frozen:
                 raise ValueError("successful original forced-top1 selector missing")
             base.update(
@@ -153,9 +158,7 @@ def prepare_native_window_interventions(
                 reason = "frozen_reader_failed"
             else:
                 reason = "eligible_native_support_top1_miss"
-                rank = min(
-                    support, key=lambda i: (-float(scores[i]), names[i])
-                )
+                rank = min(support, key=lambda i: (-float(scores[i]), names[i]))
                 evidence = selected_window(q, pool, feature, rank, set())
                 if (
                     not isinstance(evidence, (tuple, list))
@@ -168,7 +171,12 @@ def prepare_native_window_interventions(
                 ):
                     raise ValueError("unbound native weak-support Reader source")
                 reader = row.get("receipt")
-                if not isinstance(reader, dict) or not reader.get("generator_identity") or not reader.get("generator_profile") or reader.get("observable_query") != asdict(q):
+                if (
+                    not isinstance(reader, dict)
+                    or not reader.get("generator_identity")
+                    or not reader.get("generator_profile")
+                    or reader.get("observable_query") != asdict(q)
+                ):
                     raise ValueError("original Reader identity or query not available")
                 base.update(
                     diagnostic_selection_index=rank,
@@ -201,16 +209,23 @@ def generate_native_window_interventions(prepared, questions, generate):
         if key not in by_id or key in seen or row["disposition"] not in REASONS:
             raise ValueError("invalid or duplicate Reader diagnostic disposition")
         seen.add(key)
-        item = {k: v for k, v in row.items() if k not in
-                ("diagnostic_evidence", "original_answer")}
+        item = {
+            k: v
+            for k, v in row.items()
+            if k not in ("diagnostic_evidence", "original_answer")
+        }
         if row["disposition"] == "eligible_native_support_top1_miss":
             # Preserve the EXACT attempted request even if Reader raises before
             # it can return a receipt. No post-hoc evidence substitution.
             item["intended_reader_evidence"] = list(row["diagnostic_evidence"])
-            item["intended_canonical_request_digest"] = digest((
-                row["original_reader_identity"], row["original_reader_profile"],
-                asdict(by_id[key]), row["diagnostic_evidence"],
-            ))
+            item["intended_canonical_request_digest"] = digest(
+                (
+                    row["original_reader_identity"],
+                    row["original_reader_profile"],
+                    asdict(by_id[key]),
+                    row["diagnostic_evidence"],
+                )
+            )
         item["status"] = "not_applicable"
         if row["disposition"] == "eligible_native_support_top1_miss":
             try:
@@ -219,23 +234,33 @@ def generate_native_window_interventions(prepared, questions, generate):
                     q, evidence, f"native-weak-window/{row['phase']}/{q.identity}"
                 )
                 if (
-                    not isinstance(raw, str) or not raw.strip()
+                    not isinstance(raw, str)
+                    or not raw.strip()
                     or not isinstance(receipt, dict)
-                    or receipt.get("generator_identity") != row["original_reader_identity"]
-                    or receipt.get("generator_profile") != row["original_reader_profile"]
+                    or receipt.get("generator_identity")
+                    != row["original_reader_identity"]
+                    or receipt.get("generator_profile")
+                    != row["original_reader_profile"]
                     or receipt.get("observable_query") != asdict(q)
                     or receipt.get("delivered_evidence") != list(evidence)
                     or receipt.get("actual_reader_execution") is not True
-                    or receipt.get("canonical_request_digest") != digest((
-                        row["original_reader_identity"], row["original_reader_profile"],
-                        asdict(q), evidence,
-                    ))
+                    or receipt.get("canonical_request_digest")
+                    != digest(
+                        (
+                            row["original_reader_identity"],
+                            row["original_reader_profile"],
+                            asdict(q),
+                            evidence,
+                        )
+                    )
                 ):
                     raise ValueError("Reader model/prompt/source request detached")
                 markers = re.findall(r"\[E[1-9][0-9]*\]", raw)
                 delivered_labels = {e["label"] for e in evidence}
                 item.update(
-                    status="succeeded", answer=raw, receipt=receipt,
+                    status="succeeded",
+                    answer=raw,
+                    receipt=receipt,
                     original_answer=row["original_answer"],
                     emitted_citation_markers=len(markers),
                     markers_with_original_delivered_label=sum(
@@ -245,7 +270,8 @@ def generate_native_window_interventions(prepared, questions, generate):
                 )
             except Exception as exc:
                 item.update(
-                    status="failed", error_type=type(exc).__name__,
+                    status="failed",
+                    error_type=type(exc).__name__,
                     error=str(exc)[:1024],
                 )
         output.append(item)
@@ -261,8 +287,11 @@ def review_native_window_interventions(records, targets, diagnose):
     seen, cases = set(), []
     for row in records:
         key = row["phase"], row["question_id"]
-        if (row["phase"] not in PHASES or key in seen
-                or row["question_id"] not in targets):
+        if (
+            row["phase"] not in PHASES
+            or key in seen
+            or row["question_id"] not in targets
+        ):
             raise ValueError("duplicated or unregistered diagnostic review")
         seen.add(key)
         planned = row["disposition"] == "eligible_native_support_top1_miss"
@@ -271,9 +300,12 @@ def review_native_window_interventions(records, targets, diagnose):
         ):
             raise ValueError("lost or fabricated eligible Reader attempt")
         scored = dict(
-            phase=row["phase"], question_id=row["question_id"],
-            disposition=row["disposition"], status=row["status"],
-            paired_f1_delta=None, semantic_citation_precision=None,
+            phase=row["phase"],
+            question_id=row["question_id"],
+            disposition=row["disposition"],
+            status=row["status"],
+            paired_f1_delta=None,
+            semantic_citation_precision=None,
             emitted_citation_markers=row.get("emitted_citation_markers"),
             markers_with_original_delivered_label=row.get(
                 "markers_with_original_delivered_label"
@@ -283,8 +315,12 @@ def review_native_window_interventions(records, targets, diagnose):
             original = diagnose(row["original_answer"], targets[row["question_id"]])
             after = diagnose(row["answer"], targets[row["question_id"]])
             if original is not None and after is not None:
-                if any(type(x) not in (int, float) or not math.isfinite(x)
-                       or not 0 <= x <= 1 for x in (original, after)):
+                if any(
+                    type(x) not in (int, float)
+                    or not math.isfinite(x)
+                    or not 0 <= x <= 1
+                    for x in (original, after)
+                ):
                     raise ValueError("invalid Reader diagnostic token-F1")
                 scored["paired_f1_delta"] = after - original
         cases.append(scored)
@@ -292,10 +328,12 @@ def review_native_window_interventions(records, targets, diagnose):
         raise ValueError("incomplete 16-question Reader intervention")
     counts = Counter(row["disposition"] for row in cases)
     eligible = counts["eligible_native_support_top1_miss"]
-    executed = [r for r in cases
-                if r["disposition"] == "eligible_native_support_top1_miss"]
-    observed = [r["paired_f1_delta"] for r in executed
-                if r["paired_f1_delta"] is not None]
+    executed = [
+        r for r in cases if r["disposition"] == "eligible_native_support_top1_miss"
+    ]
+    observed = [
+        r["paired_f1_delta"] for r in executed if r["paired_f1_delta"] is not None
+    ]
     unknown = eligible - len(observed)
     sum_delta = math.fsum(observed)
     by_phase = {}
@@ -305,7 +343,8 @@ def review_native_window_interventions(records, targets, diagnose):
             c for c in subset if c["disposition"] == "eligible_native_support_top1_miss"
         ]
         values = [
-            c["paired_f1_delta"] for c in eligible_phase
+            c["paired_f1_delta"]
+            for c in eligible_phase
             if c["paired_f1_delta"] is not None
         ]
         missing = len(eligible_phase) - len(values)
@@ -317,9 +356,12 @@ def review_native_window_interventions(records, targets, diagnose):
             failed_or_unscored=missing,
             mean_paired_f1_delta=(total / len(values) if values else None),
             all_eligible_delta_bounds=(
-                [(total - missing) / len(eligible_phase),
-                 (total + missing) / len(eligible_phase)]
-                if eligible_phase else None
+                [
+                    (total - missing) / len(eligible_phase),
+                    (total + missing) / len(eligible_phase),
+                ]
+                if eligible_phase
+                else None
             ),
             independence_not_established=True,
         )
@@ -338,8 +380,7 @@ def review_native_window_interventions(records, targets, diagnose):
             row["emitted_citation_markers"] or 0 for row in executed
         ),
         markers_bound_to_one_original_delivered_window=sum(
-            row["markers_with_original_delivered_label"] or 0
-            for row in executed
+            row["markers_with_original_delivered_label"] or 0 for row in executed
         ),
         structural_marker_binding_is_not_semantic_entailment=True,
         failed_requests_retain_intended_evidence_and_request_digest=True,
@@ -348,7 +389,8 @@ def review_native_window_interventions(records, targets, diagnose):
         ),
         all_eligible_score_bounds=(
             [(sum_delta - unknown) / eligible, (sum_delta + unknown) / eligible]
-            if eligible else None
+            if eligible
+            else None
         ),
         cases=cases,
         gold_source_labels_used_only_after_original_policy=True,

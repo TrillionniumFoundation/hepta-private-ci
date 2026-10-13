@@ -1378,12 +1378,11 @@ def run(staged, ranker_dir, output):
         # cannot alter the six arms or the no-evidence 32-case Reader census.
         # Native document support labels determine only which ALREADY
         # retrieved window to give the SAME isolated pinned Reader.
-        weak_window_questions = {
-            phase: qs[phase] for phase in ("test", "transfer")
-        }
+        weak_window_questions = {phase: qs[phase] for phase in ("test", "transfer")}
         weak_window_targets = {
             q.identity: source_for[q.identity].targets[q.identity]
-            for phase in ("test", "transfer") for q in qs[phase]
+            for phase in ("test", "transfer")
+            for q in qs[phase]
         }
         weak_window_plan = prepare_native_window_interventions(
             weak_window_questions,
@@ -1393,15 +1392,21 @@ def run(staged, ranker_dir, output):
             weak_window_targets,
             selected_window=selected_window,
         )
+
         def generate_weak_window(q, evidence, record_key):
             return control_session.answer(q, evidence, record_key, revoked=set())
+
         weak_window_rows = generate_native_window_interventions(
-            weak_window_plan, weak_window_questions, generate_weak_window,
+            weak_window_plan,
+            weak_window_questions,
+            generate_weak_window,
         )
         for row in weak_window_rows:
             append(output / "native-weak-window-reader.jsonl", row)
         weak_window_review = review_native_window_interventions(
-            weak_window_rows, weak_window_targets, diagnose,
+            weak_window_rows,
+            weak_window_targets,
+            diagnose,
         )
         write(output / "native-weak-window-reader-report.json", weak_window_review)
         weak_window_reader_after = control_session.summary()

@@ -53,7 +53,9 @@ class NeighborFormatFastForwardTests(unittest.TestCase):
         for name in (SOURCE, TEST):
             (self.formatter / name).write_text("value = 1\n", encoding="utf-8")
         self.patch = self.root / "format.patch"
-        self.patch.write_text(git(self.formatter, "diff", "--binary", "--", SOURCE, TEST) + "\n")
+        self.patch.write_text(
+            git(self.formatter, "diff", "--binary", "--", SOURCE, TEST) + "\n"
+        )
         self.assertTrue(self.patch.stat().st_size > 0)
 
     def reconcile(self):
@@ -84,7 +86,9 @@ class NeighborFormatFastForwardTests(unittest.TestCase):
         git(self.author, "push", "-q", "origin", BRANCH)
         self.reconcile()
         git(self.author, "pull", "-q", "--ff-only")
-        self.assertEqual((self.author / "stem.txt").read_text(), "concurrent Stem work\n")
+        self.assertEqual(
+            (self.author / "stem.txt").read_text(), "concurrent Stem work\n"
+        )
         self.assertEqual((self.author / SOURCE).read_text(), "value = 1\n")
         self.assertEqual((self.author / TEST).read_text(), "value = 1\n")
 
@@ -108,12 +112,13 @@ class NeighborFormatFastForwardTests(unittest.TestCase):
             self.skipTest("workflow file is only present in the repository checkout")
         source = workflow.read_text(encoding="utf-8")
         for needed in (
-            "git diff --binary --", "git apply --check",
+            "git diff --binary --",
+            "git apply --check",
             'original_blob="$(git rev-parse "$EXPECTED_HEAD:$path")"',
             'current_blob="$(git rev-parse "$current:$path")"',
             "if ast.dump(ast.parse(before)) != ast.dump(ast.parse(after)):",
             'git push origin "HEAD:refs/heads/$TARGET_BRANCH"',
-            'for attempt in 1 2 3 4 5; do',
+            "for attempt in 1 2 3 4 5; do",
         ):
             self.assertIn(needed, source)
         self.assertNotIn("git push --force", source)

@@ -16,48 +16,81 @@ import archived_rag_disposition as audit
 
 def fixture():
     content = json.dumps(
-        {"schema": "hepta.controlled-event.v1", "id": "evt",
-         "entity": "service_one", "attribute": "location",
-         "revision": 1, "supersedes": [], "value": "site_deadbeef"},
+        {
+            "schema": "hepta.controlled-event.v1",
+            "id": "evt",
+            "entity": "service_one",
+            "attribute": "location",
+            "revision": 1,
+            "supersedes": [],
+            "value": "site_deadbeef",
+        },
         sort_keys=True,
     )
     document = {
-        "identity": "evt", "root": "root_1", "scope": "q",
-        "observed_at": "2026-01-01T00:00:00Z", "content": content,
+        "identity": "evt",
+        "root": "root_1",
+        "scope": "q",
+        "observed_at": "2026-01-01T00:00:00Z",
+        "content": content,
     }
     question = {
-        "identity": "q", "scope": "q", "family": "family",
-        "content": "What site?", "observed_at": "2026-01-01T00:00:00Z",
+        "identity": "q",
+        "scope": "q",
+        "family": "family",
+        "content": "What site?",
+        "observed_at": "2026-01-01T00:00:00Z",
     }
     candidates = ["evt", "other"]
     case = {
-        "query": question, "candidate_ids": candidates,
+        "query": question,
+        "candidate_ids": candidates,
         "candidate_digest": audit.native_digest(candidates),
         "controls": {"organized": {"selected": ["evt"]}},
     }
     delivered = {
-        "label": "E1", "id": "x" * 64, "original_id": "evt",
-        "root": "root_1", "scope": "q", "source_start": 0,
-        "source_end": len(content.encode()), "excerpt": content,
+        "label": "E1",
+        "id": "x" * 64,
+        "original_id": "evt",
+        "root": "root_1",
+        "scope": "q",
+        "source_start": 0,
+        "source_end": len(content.encode()),
+        "excerpt": content,
         "source_digest": audit.native_digest(content),
     }
     request = {
-        "query_id": "q", "scope": "q", "question": question["content"],
+        "query_id": "q",
+        "scope": "q",
+        "question": question["content"],
         "question_time": question["observed_at"],
-        "answer": "site_deadbeef [E1]", "prompt_digest": "a" * 64,
-        "sources": [{
-            "label": "E1", "id": "x" * 64,
-            "root": audit.native_root_digest("root_1"), "excerpt": content,
-        }],
+        "answer": "site_deadbeef [E1]",
+        "prompt_digest": "a" * 64,
+        "sources": [
+            {
+                "label": "E1",
+                "id": "x" * 64,
+                "root": audit.native_root_digest("root_1"),
+                "excerpt": content,
+            }
+        ],
     }
     row = {
-        "question_id": "q", "kind": "new_fact", "arm": "organized",
-        "selected": ["evt"], "candidate_digest": case["candidate_digest"],
-        "status": "succeeded", "answer": "site_deadbeef [E1]",
+        "question_id": "q",
+        "kind": "new_fact",
+        "arm": "organized",
+        "selected": ["evt"],
+        "candidate_digest": case["candidate_digest"],
+        "status": "succeeded",
+        "answer": "site_deadbeef [E1]",
         "receipt": {
-            "token_limit": 2048, "input_tokens": 100, "generated_tokens": 6,
-            "trainable_parameters": 0, "answer_postprocessed": False,
-            "production_accepted": False, "seconds": 0.3,
+            "token_limit": 2048,
+            "input_tokens": 100,
+            "generated_tokens": 6,
+            "trainable_parameters": 0,
+            "answer_postprocessed": False,
+            "production_accepted": False,
+            "seconds": 0.3,
             "input_ids_digest": "a" * 64,
             "generated_ids_digest": "b" * 64,
             "delivered_evidence": [delivered],
@@ -65,11 +98,15 @@ def fixture():
         "citation_audit": {"request": request, "judgement": None},
     }
     scored = dict(
-        row, parsed_identifier="site_deadbeef", strict_task_success=True,
+        row,
+        parsed_identifier="site_deadbeef",
+        strict_task_success=True,
         required_sources_covered=True,
     )
     truth = {
-        "id": "q", "kind": "new_fact", "expected": "site_deadbeef",
+        "id": "q",
+        "kind": "new_fact",
+        "expected": "site_deadbeef",
         "support": ["evt"],
     }
     return row, scored, case, truth, {"evt": document}
@@ -85,9 +122,11 @@ class VerifiedRagEvidenceTests(unittest.TestCase):
 
     def test_program_outcome_requires_actual_recipe_execution(self):
         truth = {
-            "kind": "procedure", "procedure": {
+            "kind": "procedure",
+            "procedure": {
                 "modes": {"mode_11111111": "sort", "mode_22222222": "reverse"},
-                "values": [3, 1, 2], "target": [1, 2, 3],
+                "values": [3, 1, 2],
+                "target": [1, 2, 3],
             },
         }
         self.assertTrue(audit.task_success("mode_11111111", truth))
@@ -96,9 +135,7 @@ class VerifiedRagEvidenceTests(unittest.TestCase):
 
     def test_actual_delivered_source_and_citation_binding(self):
         row, scored, case, truth, docs = fixture()
-        result = audit.verify_row(
-            row, scored, case, "organized", 1, truth, docs, {}
-        )
+        result = audit.verify_row(row, scored, case, "organized", 1, truth, docs, {})
         self.assertTrue(result["task_success"])
         self.assertTrue(result["correct_and_full_source_cited"])
 
@@ -133,9 +170,7 @@ class VerifiedRagEvidenceTests(unittest.TestCase):
 
     def test_selection_has_no_oracle_parameter(self):
         row, scored, case, truth, docs = fixture()
-        self.assertEqual(
-            audit.chosen_sources(case, "selected_k", 1, {}), ["evt"]
-        )
+        self.assertEqual(audit.chosen_sources(case, "selected_k", 1, {}), ["evt"])
         self.assertEqual(
             audit.chosen_sources(case, "hybrid_k4_reversed", 1, {}),
             ["other", "evt"],
@@ -188,29 +223,32 @@ class VerifiedRagEvidenceTests(unittest.TestCase):
         for qid, outcome in (("q1", (True, False)), ("q2", (False, True))):
             for k in audit.KS:
                 correct = outcome[0] if k == 1 else outcome[1]
-                records.append({
-                    "question_id": qid,
-                    "arm": f"k{k}",
-                    "task_success": correct,
-                    "correct_and_source_covered": correct,
-                    "correct_and_full_source_cited": correct,
-                    "input_tokens": k * 100,
-                    "output_tokens": 1,
-                    "reader_seconds": 1.0,
-                })
+                records.append(
+                    {
+                        "question_id": qid,
+                        "arm": f"k{k}",
+                        "task_success": correct,
+                        "correct_and_source_covered": correct,
+                        "correct_and_full_source_cited": correct,
+                        "input_tokens": k * 100,
+                        "output_tokens": 1,
+                        "reader_seconds": 1.0,
+                    }
+                )
         folds = audit.leave_one_out(records, ["q1", "q2"])
         self.assertEqual(len(folds), 2)
-        self.assertEqual(
-            [x["chosen_k_without_that_question"] for x in folds], [2, 1]
-        )
+        self.assertEqual([x["chosen_k_without_that_question"] for x in folds], [2, 1])
         self.assertEqual(folds[0]["heldout_comparison"], "tie")
         self.assertEqual(folds[1]["heldout_comparison"], "selected_loses")
 
     def test_deterministic_repeatability_detects_real_output_drift(self):
         record = {
-            "question_id": "q", "selected": ["event1"],
-            "prompt_digest": "d" * 64, "input_tokens": 100,
-            "answer": "site_deadbeef [E1]", "generated_digest": "c" * 64,
+            "question_id": "q",
+            "selected": ["event1"],
+            "prompt_digest": "d" * 64,
+            "input_tokens": 100,
+            "answer": "site_deadbeef [E1]",
+            "generated_digest": "c" * 64,
         }
         a = audit.verify_repeats([record, dict(record)])
         self.assertEqual(a["matched_prompt_pairs"], 1)
