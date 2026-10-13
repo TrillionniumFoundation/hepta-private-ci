@@ -164,9 +164,9 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 fn parse_frontmatter(
     raw_frontmatter: &str,
 ) -> (BTreeMap<String, FrontmatterValue>, Option<String>) {
-    let parsed: YamlValue = match serde_yaml::from_str_with_options(
+    let parsed: YamlValue = match serde_saphyr::from_str_with_options(
         raw_frontmatter,
-        serde_yaml::options! { reject_unsupported_tags: true },
+        serde_saphyr::options! { reject_unsupported_tags: true },
     ) {
         Ok(parsed) => parsed,
         Err(err) => return (BTreeMap::new(), Some(err.to_string())),
