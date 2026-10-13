@@ -427,9 +427,23 @@ where
         if observed != authenticated_read_receipt_digest {
             return Err(NeuronRuntimeError::NduStaleAfterEffect);
         }
-        // Resolve only after the checkpoint, witness, and post-effect live NDU
-        // frontier are independently verified. A sync failure cannot erase the
-        // unresolved Prepare; never retry the model on this failure.
+        // A read-then-write check has a cutover race. Publish the completed
+        // checkpoint ONLY through a Control owner which serializes this CAS
+        // against CNS route cutover in one durable owner lane. Read-only
+        // frontier adapters refuse publication by default. If publication
+        // fails, the previously committed Neuron intent stays unresolved and
+        // the physical effect must never be replayed.
+        read_verifier
+            .compare_and_publish_checkpoint(
+                signed_read,
+                input_digest,
+                previous_checkpoint,
+                output.tick.checkpoint_after,
+            )
+            .map_err(|_| NeuronRuntimeError::NduStaleAfterEffect)?;
+        // Resolve only after checkpoint, witness, and Control publication
+        // have been durably acknowledged. A sync failure preserves the
+        // unresolved Prepare and cannot retry the model effect.
         let resolved_started = Instant::now();
         let resolved = effect_intent.resolve(input_digest, output.tick.checkpoint_after);
         observe_phase_v1(

@@ -148,3 +148,113 @@ fn read_expiring_during_frontier_verification_is_rejected() {
         Err(NduReadVerificationErrorV1::Expired)
     );
 }
+
+#[test]
+fn read_only_frontier_cannot_publish_even_after_a_valid_signed_read() {
+    let key = SigningKey::from_bytes(&[44; 32]);
+    let verifier = NduReadVerifierV1::new(
+        StableId::new("ndu-owner").unwrap(),
+        key.verifying_key().to_bytes(),
+        Arc::new(ProtectedClock(1000)),
+        Arc::new(ControlFrontier(Mutex::new(snapshot()))),
+    )
+    .unwrap();
+    let read = signed_read(&key, snapshot());
+    assert!(verifier.verify(&read).is_ok());
+    assert_eq!(
+        verifier.compare_and_publish_checkpoint(
+            &read,
+            Digest32::of_bytes(b"tick"),
+            Digest32::ZERO,
+            Digest32::of_bytes(b"committed-checkpoint"),
+        ),
+        Err(NduReadVerificationErrorV1::CheckpointPublicationUnavailable)
+    );
+}
+
+#[derive(Debug)]
+struct PublishingFrontier {
+    state: Mutex<(NduSnapshotRefV1, Digest32, usize)>,
+}
+
+impl NduReadFrontierPortV1 for PublishingFrontier {
+    fn latest(&self, scope: &StableId) -> Result<NduSnapshotRefV1, NduReadVerificationErrorV1> {
+        let record = self
+            .state
+            .lock()
+            .map_err(|_| NduReadVerificationErrorV1::FrontierUnavailable)?;
+        if &record.0.scope_id != scope {
+            return Err(NduReadVerificationErrorV1::StaleFrontier);
+        }
+        Ok(record.0.clone())
+    }
+
+    fn compare_and_publish_checkpoint(
+        &self,
+        expected: &NduSnapshotRefV1,
+        verified_read_digest: Digest32,
+        tick_digest: Digest32,
+        previous_checkpoint: Digest32,
+        next_checkpoint: Digest32,
+    ) -> Result<Digest32, NduReadVerificationErrorV1> {
+        let mut record = self
+            .state
+            .lock()
+            .map_err(|_| NduReadVerificationErrorV1::FrontierUnavailable)?;
+        if record.0 != *expected
+            || record.1 != previous_checkpoint
+            || verified_read_digest.is_zero()
+            || tick_digest.is_zero()
+            || next_checkpoint.is_zero()
+        {
+            return Err(NduReadVerificationErrorV1::StaleFrontier);
+        }
+        record.1 = next_checkpoint;
+        record.2 += 1;
+        let mut bytes = b"test.control.atomic-checkpoint-publication.v1".to_vec();
+        bytes.extend_from_slice(&record.2.to_be_bytes());
+        bytes.extend_from_slice(verified_read_digest.as_array());
+        bytes.extend_from_slice(tick_digest.as_array());
+        bytes.extend_from_slice(next_checkpoint.as_array());
+        Ok(Digest32::of_bytes(&bytes))
+    }
+}
+
+#[test]
+fn atomic_checkpoint_publication_rejects_cutover_and_duplicate_predecessor() {
+    let key = SigningKey::from_bytes(&[45; 32]);
+    let frontier = Arc::new(PublishingFrontier {
+        state: Mutex::new((snapshot(), Digest32::ZERO, 0)),
+    });
+    let verifier = NduReadVerifierV1::new(
+        StableId::new("ndu-owner").unwrap(),
+        key.verifying_key().to_bytes(),
+        Arc::new(ProtectedClock(1000)),
+        frontier.clone(),
+    )
+    .unwrap();
+    let read = signed_read(&key, snapshot());
+    let tick = Digest32::of_bytes(b"tick-one");
+    let next = Digest32::of_bytes(b"checkpoint-one");
+    let first = verifier
+        .compare_and_publish_checkpoint(&read, tick, Digest32::ZERO, next)
+        .expect("matching Control snapshot");
+    assert!(!first.is_zero());
+    assert_eq!(
+        verifier.compare_and_publish_checkpoint(&read, tick, Digest32::ZERO, next),
+        Err(NduReadVerificationErrorV1::StaleFrontier)
+    );
+    let mut newer = snapshot();
+    newer.route_fence += 1;
+    frontier.state.lock().unwrap().0 = newer;
+    assert_eq!(
+        verifier.compare_and_publish_checkpoint(
+            &read,
+            Digest32::of_bytes(b"tick-two"),
+            next,
+            Digest32::of_bytes(b"checkpoint-two"),
+        ),
+        Err(NduReadVerificationErrorV1::StaleFrontier)
+    );
+    assert_eq!(frontier.state.lock().unwrap().2, 1);
+}
