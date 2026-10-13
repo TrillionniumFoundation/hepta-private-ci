@@ -625,3 +625,22 @@ previously serialized WAL facts, not a new WAL format or a physical output
 attestation; the trusted source/observer and current selection are still
 external. Tests exercise exact retry, forged matching-observation-ID retry,
 mismatched output and recovery from the real file on disk.
+
+## Real Worker known-terminal settlement on the existing durable owner
+
+The settle_neuron_live_worker_terminal_v1 function consumes the already
+observed, single-use Worker terminal and revalidates its receipt, cost and
+current in-process Worker against the actual fsynced Dispatching
+inference.control record before committing the Settle event. The helper then
+rereads the actual WAL and checks exact output, token and separately supplied
+resource-unit totals. Over-budget pricing leaves the WAL at Dispatching;
+successful settlement cannot be repeated; reopened WAL preserves the terminal
+identity and cost.
+
+The priced_usage_units argument is **not** independently metered or signed.
+The generated observation digest is **not** an independent Observer signature.
+The helper adds no route selection, token pricing, NDU approval, model
+promotion, trusted final-use, or authority to spend. If fsync or postcommit
+verification fails, the outcome must be reconciled from the owner WAL before
+any new use. Tests use actual file-backed inference.control and a fixture
+Worker driver; this remains a diagnostic boundary, not real Laya inference.

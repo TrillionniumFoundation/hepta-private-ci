@@ -1312,3 +1312,75 @@ fn historical_neuron_cost_refuses_different_fsynced_output_after_reopen() {
         Some(other_output.as_str())
     );
 }
+
+#[test]
+fn known_worker_terminal_settles_once_with_separately_priced_units_and_reopens() {
+    let directory = tempfile::tempdir().unwrap();
+    let typed = typed_request();
+    let mut owner = control(&directory, &typed);
+    let mut worker = worker();
+    let (claim, mut port) =
+        claim_neuron_durable_dispatch_v1(&mut owner, &mut worker, &typed, 100).unwrap();
+    let receipt = port.execute_feature(&typed).unwrap();
+    let cost = port.take_cost_diagnostic().unwrap();
+    drop(port);
+
+    // Pricing is an externally supplied number; this function never
+    // converts consumed_tokens into usage units by itself.
+    assert!(matches!(
+        settle_neuron_live_worker_terminal_v1(
+            &mut owner, &worker, &typed, &receipt, &cost, 100, 101,
+        ),
+        Err(NeuronLiveTerminalSettlementErrorV1::PriceExceedsReservation)
+    ));
+    assert_eq!(
+        owner.get(typed.request_id.as_str()).unwrap().state,
+        RequestState::Dispatching
+    );
+    assert_eq!(
+        owner.get(typed.request_id.as_str()).unwrap().revision,
+        claim.revision
+    );
+
+    let (committed, historical) = settle_neuron_live_worker_terminal_v1(
+        &mut owner, &worker, &typed, &receipt, &cost, 100, 7,
+    )
+    .unwrap();
+    assert_eq!(committed.state, RequestState::Completed);
+    assert!(!committed.idempotent);
+    assert_eq!(historical.settled_tokens, cost.consumed_tokens());
+    assert_eq!(historical.settled_usage_units, 7);
+    assert_eq!(historical.authority, AuthorityPosture::DENY_ALL);
+    assert!(historical.validate_integrity());
+    assert_eq!(
+        owner
+            .get(typed.request_id.as_str())
+            .unwrap()
+            .terminal_output_digest
+            .as_deref(),
+        Some(receipt.output_digest.to_string().as_str())
+    );
+    // Even with identical source/price, no second fsynced settlement is
+    // permitted through the already-completed live Worker request.
+    assert!(matches!(
+        settle_neuron_live_worker_terminal_v1(
+            &mut owner, &worker, &typed, &receipt, &cost, 100, 7,
+        ),
+        Err(NeuronLiveTerminalSettlementErrorV1::Source(
+            NeuronObservedCostSourceErrorV1::Stale
+        ))
+    ));
+    drop(owner);
+
+    // On physical restart the historical terminal and independently priced
+    // cost come from the reopened durable control WAL, not the old Worker.
+    let reopened =
+        DurableInferenceControl::open(directory.path().join("inference.journal"), 32).unwrap();
+    assert_eq!(
+        reopened.get(typed.request_id.as_str()).unwrap().state,
+        RequestState::Completed
+    );
+    assert_eq!(reopened.get(typed.request_id.as_str()).unwrap().usage_units, 7);
+    assert_eq!(reopened.get(typed.request_id.as_str()).unwrap().consumed_tokens, 4);
+    assert_eq!(historical.settlement_revision, committed.revision);
+}

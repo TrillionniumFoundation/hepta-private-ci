@@ -18,6 +18,7 @@ use codex_hepta_infer_core::durable_control::ControlReceipt;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::Error as ControlError;
 use codex_hepta_infer_core::durable_control::RequestState;
+use codex_hepta_infer_core::durable_control::TerminalObservation;
 use codex_hepta_infer_core::neuron_feature_request_digest_v1;
 use codex_hepta_infer_core::verify_neuron_feature_receipt_v1;
 use codex_hepta_types::AuthorityPosture;
@@ -908,6 +909,126 @@ pub fn revalidate_neuron_settled_cost_diagnostic_v1(
         return Err(NeuronSettledCostErrorV1::Stale);
     }
     Ok(())
+}
+
+/// A deliberately non-authorizing, same-owner known-terminal WAL commit.
+///
+/// A physical Worker invocation and its single-use token-cost receipt must
+/// already exist. Read the ACTUAL Worker + fsynced Dispatching owner together,
+/// reject altered typed outputs and non-current loaded models, and persist the
+/// corresponding terminal observation in the SAME durable inference.control
+/// journal. This does not create a second settlement database.
+///
+/// The caller's priced_usage_units is a separately priced host input, NOT
+/// an independently authenticated meter. The generated observation digest is
+/// an integrity identifier, NOT an Observer signature or production final-use
+/// grant. Actual charging authority and retained evidence remain external.
+#[derive(Debug)]
+pub enum NeuronLiveTerminalSettlementErrorV1 {
+    Source(NeuronObservedCostSourceErrorV1),
+    Missing,
+    PriceExceedsReservation,
+    Control(ControlError),
+    PostCommit(NeuronSettledCostErrorV1),
+}
+
+impl fmt::Display for NeuronLiveTerminalSettlementErrorV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+
+impl StdError for NeuronLiveTerminalSettlementErrorV1 {}
+
+/// Settle a KNOWN Worker terminal once, then read back the exact fsynced
+/// output, token count and host-priced resource units. An unknown or cancelled
+/// terminal is not convertible into a zero-cost successful result.
+///
+/// The caller MUST obtain independent approval for the selected route,
+/// resource pricing, final use and the actual production worker/driver.
+/// Failure after a WAL append is indeterminate until owner recovery; no
+/// retry of the physical ModelPort or old reservation is allowed.
+#[allow(clippy::too_many_arguments)]
+pub fn settle_neuron_live_worker_terminal_v1<D: ModelDriver>(
+    owner: &mut DurableInferenceControl,
+    worker: &InferenceWorker<D>,
+    request: &NeuronFeatureRequestV1,
+    receipt: &NeuronFeatureReceiptV1,
+    cost: &WorkerNeuronTokenCostV1,
+    now_ms: u64,
+    priced_usage_units: u64,
+) -> Result<(ControlReceipt, NeuronSettledCostDiagnosticV1), NeuronLiveTerminalSettlementErrorV1> {
+    // The source check is tied to the real in-memory Worker incarnation and
+    // the current fsynced Dispatching record, not supplied JSON receipts.
+    let observed = read_neuron_observed_cost_source_v1(
+        owner, worker, request, receipt, cost, now_ms,
+    )
+    .map_err(NeuronLiveTerminalSettlementErrorV1::Source)?;
+    let record = owner
+        .get(request.request_id.as_str())
+        .ok_or(NeuronLiveTerminalSettlementErrorV1::Missing)?;
+    let reservation = record
+        .reservation
+        .as_ref()
+        .ok_or(NeuronLiveTerminalSettlementErrorV1::Missing)?;
+    if priced_usage_units > reservation.quota_units {
+        return Err(NeuronLiveTerminalSettlementErrorV1::PriceExceedsReservation);
+    }
+    let terminal_state = match receipt.status {
+        NeuronFeatureTerminalStatusV1::Succeeded => RequestState::Completed,
+        NeuronFeatureTerminalStatusV1::Failed => RequestState::Failed,
+        NeuronFeatureTerminalStatusV1::Cancelled | NeuronFeatureTerminalStatusV1::Indeterminate => {
+            return Err(NeuronLiveTerminalSettlementErrorV1::Source(
+                NeuronObservedCostSourceErrorV1::Binding,
+            ));
+        }
+    };
+    let observation = TerminalObservation {
+        request_id: observed.request_id.clone(),
+        reservation_id: observed.reservation_id.clone(),
+        worker_id: observed.worker_id.clone(),
+        worker_generation: observed.worker_generation,
+        model_digest: record.request.model_digest.clone(),
+        payload_digest: record.request.payload_digest.clone(),
+        terminal_observed: true,
+        terminal_status: Some(terminal_state),
+        output_digest: Some(receipt.output_digest.to_string()),
+        consumed_tokens: observed.observed_tokens,
+        usage_units: priced_usage_units,
+    };
+    // This digest binds this physical source, canonical output and external
+    // price. It does not pretend the terminal Observer signed any bytes.
+    let mut bytes = b"hepta.infer-worker.neuron-terminal-observation.v1\0".to_vec();
+    bytes.extend_from_slice(observed.source_digest.as_array());
+    bytes.extend_from_slice(receipt.output_digest.as_array());
+    bytes.extend_from_slice(&priced_usage_units.to_be_bytes());
+    let observation_digest = Digest32::of_bytes(&bytes).to_string();
+
+    let terminal = owner
+        .settle(
+            request.request_id.as_str(),
+            observed.control_revision,
+            observation_digest,
+            observation,
+        )
+        .map_err(NeuronLiveTerminalSettlementErrorV1::Control)?;
+    if terminal.idempotent || terminal.state != terminal_state {
+        return Err(NeuronLiveTerminalSettlementErrorV1::PostCommit(
+            NeuronSettledCostErrorV1::Mismatch,
+        ));
+    }
+    let historical = read_neuron_settled_cost_diagnostic_v1(owner, request, receipt, &observed)
+        .map_err(NeuronLiveTerminalSettlementErrorV1::PostCommit)?;
+    if !historical.validate_integrity()
+        || historical.settlement_revision != terminal.revision
+        || historical.settled_usage_units != priced_usage_units
+        || historical.settled_tokens != cost.consumed_tokens()
+    {
+        return Err(NeuronLiveTerminalSettlementErrorV1::PostCommit(
+            NeuronSettledCostErrorV1::Mismatch,
+        ));
+    }
+    Ok((terminal, historical))
 }
 
 #[cfg(test)]
