@@ -42,6 +42,10 @@ struct Fixture {
 }
 
 impl Fixture {
+    #[expect(
+        clippy::disallowed_methods,
+        reason = "read-only qualification fixture observes an initialized Matrix WAL database; creation is prohibited on this second connection"
+    )]
     async fn new() -> TestResult<Self> {
         let temp = TempDir::new()?;
         let root = temp.path().join("fleet");
