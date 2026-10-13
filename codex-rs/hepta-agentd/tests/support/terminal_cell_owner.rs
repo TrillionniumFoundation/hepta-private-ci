@@ -195,7 +195,24 @@ impl Fixture {
     }
 
     pub(super) fn directory(&self) -> File {
-        File::open(&self.root).unwrap()
+        // Production Cell WAL commits must sync a real containing directory.
+        // Windows needs an explicit directory handle; never replace fsync
+        // with a path-only check or skip the persistence assertion.
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+                .open(&self.root)
+                .expect("actual Cell owner WAL parent directory")
+        }
+        #[cfg(not(windows))]
+        {
+            File::open(&self.root).expect("actual Cell owner WAL parent directory")
+        }
     }
 
     pub(super) fn writer(&self) -> LedgerWriter {
