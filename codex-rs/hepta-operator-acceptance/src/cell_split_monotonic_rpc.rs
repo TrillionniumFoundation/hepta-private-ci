@@ -87,9 +87,10 @@ struct ClientMonotonicHighwaterV1 {
 
 /// Production-facing client for an independent, non-writable frontier source.
 ///
-/// This type stores only the externally pinned verifier key, the Unix service
-/// endpoint, and an IO deadline. It cannot mint a signature, enroll a key,
-/// modify a checkpoint or choose a frontier revision on behalf of the server.
+/// This type retains the externally pinned verifier, Unix endpoint, IO
+/// deadline and a bounded in-memory observation floor. It cannot mint a
+/// signature, enroll a key, modify a checkpoint, or choose a frontier revision
+/// on behalf of the independently administered server.
 pub struct CellSplitSupervisorMonotonicUnixPortV1 {
     socket_path: PathBuf,
     verifier: VerifyingKey,
