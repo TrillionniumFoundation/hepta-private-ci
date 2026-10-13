@@ -20,6 +20,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from hepta_cell_split_matrix_capture import (
     MEASUREMENT_SCHEMA,
     SCHEMA,
+    MAX_HOST_RESULT_BYTES,
+    read_bounded_json,
     execute_matrix,
     validate_manifest,
     validate_measurement,
@@ -122,6 +124,48 @@ class CellSplitMatrixCaptureTests(unittest.TestCase):
                 row[field] = invalid
                 with self.assertRaisesRegex(InvalidEvidence, "exact unsigned 64-bit"):
                     validate_measurement(row, packet, 64, "no_split")
+
+    def test_external_result_reader_is_bounded_and_requires_regular_files(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            valid = root / "valid.json"
+            valid.write_text('{"ok":true}', encoding="utf-8")
+            self.assertEqual(
+                read_bounded_json(valid, MAX_HOST_RESULT_BYTES, "host result"),
+                {"ok": True},
+            )
+            oversized = root / "oversized.json"
+            oversized.write_bytes(b" " * (MAX_HOST_RESULT_BYTES + 1))
+            with self.assertRaisesRegex(InvalidEvidence, "exceeds"):
+                read_bounded_json(oversized, MAX_HOST_RESULT_BYTES, "host result")
+            with self.assertRaises(InvalidEvidence):
+                read_bounded_json(root, MAX_HOST_RESULT_BYTES, "host result")
+
+    def test_oversized_first_result_aborts_before_other_fifteen_runs(self):
+        packet = manifest()
+        fixture_script = """
+import os
+from pathlib import Path
+Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_bytes(
+    b" " * (int(os.environ["HEPTA_TEST_RESULT_LIMIT"]) + 1)
+)
+"""
+        for run in packet["runs"]:
+            run["argv"] = [sys.executable, "-c", fixture_script]
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory) / "matrix"
+            with (
+                patch("hepta_cell_split_matrix_capture.verify_exact_source"),
+                patch.dict(
+                    os.environ,
+                    {"HEPTA_TEST_RESULT_LIMIT": str(MAX_HOST_RESULT_BYTES)},
+                ),
+                self.assertRaisesRegex(InvalidEvidence, "exceeds"),
+            ):
+                execute_matrix(packet, ROOT, output, 30)
+            self.assertTrue((output / "64-no_split.stdout.log").exists())
+            self.assertFalse((output / "64-logical_split.stdout.log").exists())
+            self.assertFalse((output / "measured-matrix.json").exists())
 
     def test_first_malformed_host_row_aborts_before_other_fifteen_runs(self):
         packet = manifest()
