@@ -40,9 +40,11 @@ def main():
     leaf = cli.get("target", {}).get("cfg(windows)", {}).get("dev-dependencies", {})
     if "codex-network-proxy" not in leaf:
         raise AssertionError("CLI Windows leaf must exercise real network-proxy")
-    if not any("windows-sandbox" in name for name in
-               cli.get("target", {}).get('cfg(target_os = "windows")', {})
-               .get("dependencies", {})):
+    win_deps = cli.get("target", {}).get('cfg(target_os = "windows")', {}).get(
+        "dependencies", {})
+    if not any(name.replace("_", "-") == "codex-windows-sandbox" or
+               (isinstance(spec, dict) and spec.get("package") == "codex-windows-sandbox")
+               for name, spec in win_deps.items()):
         raise AssertionError("CLI must retain real Windows sandbox dependency")
     test = CRATES / "cli/tests/windows_stable_ingress.rs"
     if (not test.is_file() or
