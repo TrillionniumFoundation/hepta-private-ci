@@ -201,5 +201,18 @@ class BlindedReviewHandoffTests(unittest.TestCase):
                                  (out / "handoff-receipt.json").read_text().splitlines()))
 
 
+    def test_handoff_rejects_symlinked_output_parent_before_writing(self):
+        with tempfile.TemporaryDirectory() as root:
+            original_parent = Path(root) / "real-parent"
+            original_parent.mkdir()
+            alias_parent = Path(root) / "linked-parent"
+            alias_parent.symlink_to(original_parent, target_is_directory=True)
+            with self.assertRaisesRegex(ValueError, "symlink in private handoff"):
+                prepare_handoff(self.originals, source_file_sha256=self.file_sha,
+                                output=alias_parent / "handoff",
+                                salt=b"\x05" * 32)
+            self.assertFalse((original_parent / "handoff").exists())
+
+
 if __name__ == "__main__":
     unittest.main()

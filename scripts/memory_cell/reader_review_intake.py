@@ -15,7 +15,8 @@ import re
 import stat
 
 from reader_originals_attestation import (load_strict_json_file, canonical_sha,
-                                          has_answer_beyond_evidence_labels, _datetime)
+                                          has_answer_beyond_evidence_labels,
+                                          NONCANONICAL_CITE, _datetime)
 from reader_review_handoff import _write_private, _write_private_lines
 from reader_review_ledger import CONDITIONS
 
@@ -214,6 +215,8 @@ def verified_handoff(directory, *, receipt_pin):
             if fp in visible_sources and visible_sources[fp] != visible:
                 raise ValueError("same source fingerprint displays inconsistent evidence")
             visible_sources[fp] = visible
+        if NONCANONICAL_CITE.search(view["raw_reader_answer"]):
+            raise ValueError("noncanonical reviewer-visible source citation label")
         citation_labels = ["E" + x for x in LABEL_RE.findall(view["raw_reader_answer"])]
         if citation_labels != view["cited_labels"]:
             raise ValueError("handoff cited labels differ from original answer")
@@ -289,6 +292,12 @@ def reconcile_handoff(handoff, reviewer_one, reviewer_two, output, *,
     tickets = set(packet["views"])
     first = _reviewed_forms(reviewer_one, first_pin, tickets, packet["views"])
     second = _reviewed_forms(reviewer_two, second_pin, tickets, packet["views"])
+    # Two distinct paths can alias the SAME inode through hard links. Reject
+    # the alias even when its separately supplied SHA and claimed IDs differ.
+    # Two independently materialized but byte-identical files remain permitted,
+    # and neither case authenticates the human reviewers.
+    if Path(reviewer_one).samefile(reviewer_two):
+        raise ValueError("two reviewer submissions reference one filesystem inode")
     comparisons = []
     counts = dict(agreed=0, disputed=0, incomplete=0)
     for ticket in sorted(tickets):

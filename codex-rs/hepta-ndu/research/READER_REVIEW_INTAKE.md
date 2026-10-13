@@ -43,3 +43,8 @@ This stage **does not export a signed gate JSON** and never supplies `reviewer_s
 The GitHub workflow executes only **hermetic synthetic tests**, plus the existing original-source, ledger, signature and `768/768` blocked checks. It never opens real private review forms or publishes the operator map in an Action artifact.
 
 **Limits:** Best-effort `fsync` and exclusive `0600` file creation are not protection against privileged operators, a compromised filesystem or TOCTOU attackers. The input pins must arrive through independent trusted channels; file hashes do not authenticate their sender. No Reader, NDU, FBSDE or cross-modal reasoning gain is claimed.
+
+
+## Additional alias and canonical-citation checks
+
+The private handoff producer now refuses output paths with symlinked ancestors before writing original evidence bytes. The returned-form intake rejects two different reviewer-file paths that are hard links to one filesystem inode; two genuinely distinct files with byte-identical contents remain permissible but are still **unauthenticated**, not independent reviewer proof. Repinning a forged private handoff cannot turn `[E01]` into a valid canonical `[E1]` citation. These are strictly mechanical file/source-format checks, not signature verification, original-source authenticity, human judgment or authorization. No real private materials are consumed by CI and all 768 prospective neural positions remain blocked.

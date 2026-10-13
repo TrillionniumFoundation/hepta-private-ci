@@ -176,6 +176,8 @@ def prepare_handoff(originals, *, source_file_sha256, output, salt=None):
     operator_map.sort(key=lambda r: r["ticket"])
     verdict_forms.sort(key=lambda r: r["ticket"])
     dest = Path(output)
+    if dest.is_symlink() or any(parent.is_symlink() for parent in dest.parents):
+        raise ValueError("symlink in private handoff output path")
     dest.mkdir(mode=0o700, parents=False, exist_ok=False)
     file_hashes = {
         "review-questions.jsonl": _write_private_lines(

@@ -8,6 +8,7 @@ import unittest
 
 from reader_review_handoff import prepare_handoff
 from reader_review_intake import reconcile_handoff
+from reader_originals_attestation import canonical_sha
 from test_reader_originals_attestation import example
 
 
@@ -437,6 +438,47 @@ class ReviewIntakeTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             self.run_intake()
         self.assertEqual((self.output / "reconciliation-receipt.json").read_bytes(), raw)
+
+
+    def test_hardlinked_review_form_paths_are_not_two_independent_files(self):
+        # Distinct file *names* and operator-claimed identities do not prove
+        # independently delivered files when both paths share one inode.
+        self.second.unlink()
+        self.second.hardlink_to(self.first)
+        self.second_pin = self.first_pin
+        with self.assertRaisesRegex(ValueError, "one filesystem inode"):
+            self.run_intake()
+        self.assertFalse(self.output.exists())
+
+    def test_fully_repinned_padded_citation_cannot_alias_e1(self):
+        # Tamper BOTH the reviewer-visible view and private operator map,
+        # including the internal receipt hashes. The original signed-source
+        # protocol already rejects [E01]; offline intake must reject it too.
+        questions = self.handoff / "review-questions.jsonl"
+        maps = self.handoff / "operator-private-map.jsonl"
+        views, links = read_lines(questions), read_lines(maps)
+        link = next(row for row in links if row["item_id"] == "q1"
+                    and row["condition"] == "human_sufficient")
+        view = next(row for row in views if row["ticket"] == link["ticket"])
+        view["raw_reader_answer"] = "synthetic answer [E01]"
+        view["cited_labels"] = ["E01"]
+        link["exact_provenance"]["raw_answer_sha256"] = canonical_sha(
+            view["raw_reader_answer"])
+        link["exact_provenance"]["cited_source_sha256"] = [
+            view["evidence"][0]["source_fingerprint"]]
+        receipt_file = self.handoff / "handoff-receipt.json"
+        receipt = json.loads(receipt_file.read_text())
+        receipt["written_file_sha256"]["review-questions.jsonl"] = dump_lines(
+            questions, views)
+        receipt["written_file_sha256"]["operator-private-map.jsonl"] = dump_lines(
+            maps, links)
+        receipt_file.write_text(json.dumps(
+            receipt, sort_keys=True, separators=(",", ":")) + "\n")
+        receipt_file.chmod(0o600)
+        self.receipt_pin = hashlib.sha256(receipt_file.read_bytes()).hexdigest()
+        with self.assertRaisesRegex(ValueError, "noncanonical reviewer-visible"):
+            self.run_intake()
+        self.assertFalse(self.output.exists())
 
 
 if __name__ == "__main__":
