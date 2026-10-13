@@ -118,14 +118,14 @@ class SelectionTests(unittest.TestCase):
 class ShardedExecutionTests(unittest.TestCase):
     def test_all_reverse_consumers_are_covered_exactly_once(self):
         source = {
-            "packages": ["agentd", "codec", "executor", "infer", "ledger", "worker", "wire"],
+            "packages": ["agentd", "codec", "executor", "infer", "ledger", "wire", "worker"],
             "full_workspace": False,
             "changed_packages": ["infer"],
             "reasons": [],
         }
         shards = [ci.shard_execution_plan(source, index=i, count=4) for i in range(4)]
         self.assertEqual(source["packages"], [
-            "agentd", "codec", "executor", "infer", "ledger", "worker", "wire"
+            "agentd", "codec", "executor", "infer", "ledger", "wire", "worker"
         ])
         self.assertEqual(
             sorted(name for plan in shards for name in plan["packages"]),
