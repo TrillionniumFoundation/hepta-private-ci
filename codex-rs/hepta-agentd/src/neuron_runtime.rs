@@ -11,6 +11,8 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_neuron::AnchorWitnessStore;
+use codex_hepta_neuron::DurableNeuronEffectIntentV1;
+use codex_hepta_neuron::NeuronEffectIntentStatusV1;
 use codex_hepta_neuron::InferenceControlModelPort;
 use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronRuntime;
@@ -31,6 +33,7 @@ where
     final_use: Option<FinalUseAuthority>,
     neuron_owner_id: Option<StableId>,
     ndu_read_verifier: Option<NduReadVerifierV1>,
+    effect_intent: Option<DurableNeuronEffectIntentV1>,
 }
 
 /// The kernel-authority issuer signs this exact complete binding after
@@ -80,11 +83,13 @@ where
             final_use: None,
             neuron_owner_id: None,
             ndu_read_verifier: None,
+            effect_intent: None,
         }
     }
 
-    /// Production composition requires independently configured pinned issuer
-    /// trust, durable nonce state and a protected revocation frontier.
+    /// Retained for source compatibility only: lacking the independent durable
+    /// business-tick effect journal, tick_bound fails closed. New serving
+    /// compositions must use new_authorized_durable instead.
     pub fn new_authorized(
         runtime: NeuronRuntime<W>,
         inference_control: P,
@@ -98,7 +103,36 @@ where
             final_use: Some(final_use),
             neuron_owner_id: Some(neuron_owner_id),
             ndu_read_verifier: Some(ndu_read_verifier),
+            effect_intent: None,
         }
+    }
+
+    /// The verified NDU read and independent final-use nonce are joined to a
+    /// distinct durable tick-intent fence. The caller must obtain this journal
+    /// from the Control-owned scope/generation bootstrap, using owner-only
+    /// storage whose parent directory entry is durably synchronized.
+    pub fn new_authorized_durable(
+        runtime: NeuronRuntime<W>,
+        inference_control: P,
+        neuron_owner_id: StableId,
+        final_use: FinalUseAuthority,
+        ndu_read_verifier: NduReadVerifierV1,
+        effect_intent: DurableNeuronEffectIntentV1,
+    ) -> Self {
+        Self {
+            runtime,
+            inference_control,
+            final_use: Some(final_use),
+            neuron_owner_id: Some(neuron_owner_id),
+            ndu_read_verifier: Some(ndu_read_verifier),
+            effect_intent: Some(effect_intent),
+        }
+    }
+
+    /// Read-only reconciliation diagnostics; unresolved work must be
+    /// independently inspected, never automatically replayed.
+    pub fn effect_intent_status(&self) -> Option<NeuronEffectIntentStatusV1> {
+        self.effect_intent.as_ref().map(DurableNeuronEffectIntentV1::status)
     }
 
     /// The old unsigned entry is not a serving path.
@@ -127,6 +161,21 @@ where
             .verify(signed_read)
             .map_err(|_| NeuronRuntimeError::InvalidInput)?;
         let snapshot = &signed_read.snapshot;
+        let input_digest = input.semantic_digest()?;
+        let effect_intent = self
+            .effect_intent
+            .as_ref()
+            .ok_or(NeuronRuntimeError::PendingReconciliation)?;
+        if !effect_intent.matches_tick_scope(
+            &input.subject_id,
+            input.objective_digest,
+            snapshot.generation,
+        ) {
+            return Err(NeuronRuntimeError::InvalidInput);
+        }
+        effect_intent
+            .can_prepare(input_digest)
+            .map_err(|_| NeuronRuntimeError::PendingReconciliation)?;
         let authority = self
             .final_use
             .as_ref()
@@ -155,8 +204,20 @@ where
         if still_current != authenticated_read_receipt_digest {
             return Err(NeuronRuntimeError::InvalidInput);
         }
+        let previous_checkpoint = input.checkpoint_digest;
+        let effect_intent = self
+            .effect_intent
+            .as_mut()
+            .ok_or(NeuronRuntimeError::PendingReconciliation)?;
         let mut model = InferenceControlModelPort::new(&mut self.inference_control);
         let outcome = FinalUseAuthority::with_verified_effect(authority, token, &binding, || {
+            // Sync business-tick Prepare while holding the independently
+            // verified effect fence, before the physical encoder/Head call.
+            // Even a driver error or process crash now leaves an unresolved
+            // durable intent. A freshly signed nonce cannot replay that tick.
+            effect_intent
+                .prepare(input_digest, previous_checkpoint)
+                .map_err(|_| NeuronRuntimeError::PendingReconciliation)?;
             self.runtime.tick_with_ndu_snapshot_guarded(
                 &mut model,
                 input,
@@ -165,26 +226,32 @@ where
                 || {
                     let observed = read_verifier
                         .verify(signed_read)
-                        .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+                        .map_err(|_| NeuronRuntimeError::NduStaleAfterEffect)?;
                     if observed == authenticated_read_receipt_digest {
                         Ok(())
                     } else {
-                        Err(NeuronRuntimeError::InvalidInput)
+                        Err(NeuronRuntimeError::NduStaleAfterEffect)
                     }
                 },
             )
         })
         .map_err(|_| NeuronRuntimeError::InvalidInput)?;
         let output = outcome?;
-        // Never return a successful serving result if the NDU cutover
-        // advanced during checkpoint persistence. The effect has already
-        // happened: denial must NOT trigger an automatic retry.
+        // Never publish a successful serving result if CNS/NDU advanced
+        // during checkpoint persistence. In this case the durable Prepare
+        // deliberately remains unresolved for independent reconciliation.
         let observed = read_verifier
             .verify(signed_read)
-            .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+            .map_err(|_| NeuronRuntimeError::NduStaleAfterEffect)?;
         if observed != authenticated_read_receipt_digest {
-            return Err(NeuronRuntimeError::InvalidInput);
+            return Err(NeuronRuntimeError::NduStaleAfterEffect);
         }
+        // Resolve only after the checkpoint, witness, and post-effect live NDU
+        // frontier are independently verified. A sync failure cannot erase the
+        // unresolved Prepare; never retry the model on this failure.
+        effect_intent
+            .resolve(input_digest, output.tick.checkpoint_after)
+            .map_err(|_| NeuronRuntimeError::PendingReconciliation)?;
         Ok(output)
     }
 

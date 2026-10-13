@@ -1,12 +1,21 @@
 use super::*;
+#[cfg(unix)]
 use std::fs::OpenOptions;
+#[cfg(unix)]
+use std::io::Write;
+#[cfg(unix)]
 use std::sync::atomic::AtomicU64;
+#[cfg(unix)]
 use std::sync::atomic::Ordering;
+#[cfg(unix)]
 use std::time::SystemTime;
+#[cfg(unix)]
 use std::time::UNIX_EPOCH;
 
+#[cfg(unix)]
 static NEXT_TEST_FILE: AtomicU64 = AtomicU64::new(0);
 
+#[cfg(unix)]
 fn test_scope() -> JournalScope {
     JournalScope {
         scope_digest: Digest32::of_bytes(b"scope"),
@@ -43,6 +52,39 @@ fn reopen(path: &std::path::Path) -> File {
         .write(true)
         .open(path)
         .expect("reopen")
+}
+
+#[cfg(unix)]
+#[test]
+fn tick_scope_binding_cannot_cross_objective_subject_or_generation() {
+    let subject = StableId::new("subject").unwrap();
+    let (path, file) = fixture_file();
+    let objective = Digest32::of_bytes(b"objective");
+    let scope = JournalScope {
+        scope_digest: crate::runtime_types::subject_scope_digest(&subject).unwrap(),
+        objective_digest: objective,
+    };
+    let owner = DurableNeuronEffectIntentV1::open(
+        file,
+        scope,
+        Generation::new(2).unwrap(),
+        8,
+    )
+    .unwrap();
+    assert!(owner.matches_tick_scope(&subject, objective, Generation::new(2).unwrap()));
+    assert!(!owner.matches_tick_scope(
+        &StableId::new("another").unwrap(),
+        objective,
+        Generation::new(2).unwrap()
+    ));
+    assert!(!owner.matches_tick_scope(
+        &subject,
+        Digest32::of_bytes(b"other-objective"),
+        Generation::new(2).unwrap()
+    ));
+    assert!(!owner.matches_tick_scope(&subject, objective, Generation::new(3).unwrap()));
+    drop(owner);
+    std::fs::remove_file(path).unwrap();
 }
 
 #[cfg(unix)]

@@ -19,6 +19,7 @@ use std::io::Write;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
+use codex_hepta_types::StableId;
 
 use crate::JournalScope;
 
@@ -74,6 +75,8 @@ pub struct DurableNeuronEffectIntentV1 {
     limit: usize,
     records: usize,
     head: Digest32,
+    scope: JournalScope,
+    generation: Generation,
     attempted: BTreeSet<Digest32>,
     pending: Option<(Digest32, Digest32)>,
     poisoned: bool,
@@ -165,6 +168,8 @@ impl DurableNeuronEffectIntentV1 {
             limit: max_records,
             records,
             head,
+            scope,
+            generation,
             attempted,
             pending,
             poisoned: false,
@@ -189,6 +194,21 @@ impl DurableNeuronEffectIntentV1 {
             unresolved_tick: self.pending.map(|(tick, _)| tick),
             poisoned: self.poisoned,
         }
+    }
+
+    /// A signed NDU read does not change the owning Neuron scope/generation.
+    /// Bind the intent journal to the same source subject and objective as
+    /// the sparse runtime, not merely a caller-provided file handle.
+    pub fn matches_tick_scope(
+        &self,
+        subject: &StableId,
+        objective: Digest32,
+        generation: Generation,
+    ) -> bool {
+        self.generation == generation
+            && self.scope.objective_digest == objective
+            && crate::runtime_types::subject_scope_digest(subject).ok()
+                == Some(self.scope.scope_digest)
     }
 
     pub fn can_prepare(&self, tick_digest: Digest32) -> Result<(), NeuronEffectIntentErrorV1> {
