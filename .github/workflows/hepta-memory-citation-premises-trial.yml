@@ -34,7 +34,9 @@ jobs:
       - name: Keep repository formatting strict
         run: |
           set -euo pipefail
-          python3 -m pip install --user uv==0.8.22
+          # scripts/pyproject.toml uses the seven-day exclude-newer syntax;
+          # use an exact, compatible uv rather than muting the fmt gate.
+          python3 -m pip install --user uv==0.12.13
           export PATH="$HOME/.local/bin:$PATH"
           uv run --frozen --project scripts ruff format --check scripts/memory_cell/event_citation_prompt_trial.py scripts/memory_cell/test_event_citation_prompt_trial.py
   actual-frozen-reader:
