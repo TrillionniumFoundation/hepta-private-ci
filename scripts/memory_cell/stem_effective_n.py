@@ -259,8 +259,7 @@ def effective_heldout_subjects(plan, paired_bridge):
                 abstention_regressions=sum(x == -1 for x in abstain),
                 abstention_all_planned_bounds=_bounds(abstain, n),
                 abstention_native_unanswerable_only_bounds=(
-                    _bounds(abstain, by_type[KINDS[1]])
-                    if by_type[KINDS[1]] else None
+                    _bounds(abstain, by_type[KINDS[1]]) if by_type[KINDS[1]] else None
                 ),
                 unscored_native_unanswerable_questions=by_type[KINDS[1]] - len(abstain),
                 mixed_all_subject_bounds_do_not_certify_source_or_abstention=True,
@@ -311,10 +310,16 @@ def effective_heldout_subjects(plan, paired_bridge):
         abstention_n = primary["native_unanswerable_questions"]
         source_scored = primary["source_support_scored_pairs"]
         abstention_scored = primary["abstention_scored_pairs"]
-        source_sum = sum(x["weak_support_gain"] for x in stage48
-                         if x["weak_support_gain"] is not None)
-        abstention_sum = sum(x["native_abstention_gain"] for x in stage48
-                            if x["native_abstention_gain"] is not None)
+        source_sum = sum(
+            x["weak_support_gain"]
+            for x in stage48
+            if x["weak_support_gain"] is not None
+        )
+        abstention_sum = sum(
+            x["native_abstention_gain"]
+            for x in stage48
+            if x["native_abstention_gain"] is not None
+        )
         source_missing = answerable_n - source_scored
         abstention_missing = abstention_n - abstention_scored
         integer_counters = (
@@ -346,12 +351,16 @@ def effective_heldout_subjects(plan, paired_bridge):
             or claimed.get("native_source_all_planned_net_gain_bounds")
             != [source_sum - source_missing, source_sum + source_missing]
             or claimed.get("native_abstention_all_planned_net_gain_bounds")
-            != [abstention_sum - abstention_missing,
-                abstention_sum + abstention_missing]
+            != [
+                abstention_sum - abstention_missing,
+                abstention_sum + abstention_missing,
+            ]
             or claimed.get("source_and_abstention_never_combined_as_learning_gain")
             is not True
         ):
-            raise ValueError("stratified native final question receipt differs from panel")
+            raise ValueError(
+                "stratified native final question receipt differs from panel"
+            )
         report[arm] = dict(
             primary_checkpoint=48,
             primary=primary,
