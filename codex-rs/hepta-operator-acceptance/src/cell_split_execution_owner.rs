@@ -721,6 +721,31 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         if pinned != frozen_owner_trust_pins(&self.plan, &self.trust)? {
             return Err(CellSplitExecutionErrorV1::Invalid("owner trust pins drift"));
         }
+        // Snapshot an uncertain prepared intent BEFORE querying committed
+        // predecessors. Their original owner readback can mutate local files;
+        // checking the pending intent only after the RPC would authenticate the
+        // attacker-replaced bytes as the new baseline.
+        let pending_frame = if self.pending {
+            let step = CellSplitExecutionStepV1::at(self.cursor)
+                .ok_or(CellSplitExecutionErrorV1::Invalid("pending step index"))?;
+            let intent = make_intent(&self.plan, &self.plan_digest, step, &self.previous_receipt_digest);
+            let prepared = read_frame(&frame_path(&self.root, self.cursor, "prepared"))?.ok_or(
+                CellSplitExecutionErrorV1::Invalid("pending intent disappeared"),
+            )?;
+            if prepared != canonical_json(&intent)? {
+                return Err(CellSplitExecutionErrorV1::Invalid("pending intent drift"));
+            }
+            if read_frame(&frame_path(&self.root, self.cursor, "committed"))?.is_some()
+                || has_successor_frame(&self.root, self.cursor + 1)?
+            {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "pending cursor changed; reopen required",
+                ));
+            }
+            Some(prepared)
+        } else {
+            None
+        };
         let mut predecessor = self.plan_digest.clone();
         // Retain the original bounded on-disk frames during the live owner
         // readbacks. A callback may take time; rechecking only the remote
@@ -773,21 +798,16 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 "unexpected successor frame; reopen required",
             ));
         }
-        if self.pending {
-            let step = CellSplitExecutionStepV1::at(self.cursor)
-                .ok_or(CellSplitExecutionErrorV1::Invalid("pending step index"))?;
-            let intent = make_intent(&self.plan, &self.plan_digest, step, &predecessor);
-            let prepared = read_frame(&frame_path(&self.root, self.cursor, "prepared"))?.ok_or(
-                CellSplitExecutionErrorV1::Invalid("pending intent disappeared"),
-            )?;
-            if prepared != canonical_json(&intent)? {
-                return Err(CellSplitExecutionErrorV1::Invalid("pending intent drift"));
-            }
-            if read_frame(&frame_path(&self.root, self.cursor, "committed"))?.is_some()
+        // The original committed-owner readback must not silently replace an
+        // uncertain prepared intent. No remote effect is retried on mismatch.
+        if let Some(ref prepared) = pending_frame {
+            if read_frame(&frame_path(&self.root, self.cursor, "prepared"))?
+                != Some(prepared.clone())
+                || read_frame(&frame_path(&self.root, self.cursor, "committed"))?.is_some()
                 || has_successor_frame(&self.root, self.cursor + 1)?
             {
                 return Err(CellSplitExecutionErrorV1::Invalid(
-                    "pending cursor changed; reopen required",
+                    "pending intent changed during live owner readback",
                 ));
             }
         }
@@ -809,6 +829,20 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             {
                 return Err(CellSplitExecutionErrorV1::Invalid(
                     "committed frame changed during live owner readback",
+                ));
+            }
+        }
+        // A hostile writer may also race with the preceding local snapshots.
+        // The original committed-owner readback must not silently replace an
+        // uncertain prepared intent. No remote effect is retried on mismatch.
+        if let Some(ref prepared) = pending_frame {
+            if read_frame(&frame_path(&self.root, self.cursor, "prepared"))?
+                != Some(prepared.clone())
+                || read_frame(&frame_path(&self.root, self.cursor, "committed"))?.is_some()
+                || has_successor_frame(&self.root, self.cursor + 1)?
+            {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "pending intent changed during live owner readback",
                 ));
             }
         }

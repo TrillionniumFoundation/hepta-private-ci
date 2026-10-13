@@ -114,7 +114,8 @@ fn rejected_future_capacity_does_not_advance_clock() {
     );
     // Drain at a normally increasing timestamp after rejected admission.
     assert!(q.poll(15).unwrap().batch.is_some());
-    q.enqueue(16, intent("later", "two", 1, 1, 100)).unwrap();
+    q.enqueue(16, intent("later", "two", 1, 1, 100))
+        .unwrap();
 }
 
 #[test]
@@ -295,7 +296,8 @@ fn stale_coalesced_slots_do_not_defer_a_ready_scope_behind_a_cold_scope() {
     // The first live scope is not ready; the second is deadline-due.
     q.enqueue(12, intent("not-due", "scope-e", 1, 1, 500))
         .unwrap();
-    q.enqueue(12, intent("due", "scope-f", 1, 1, 20)).unwrap();
+    q.enqueue(12, intent("due", "scope-f", 1, 1, 20))
+        .unwrap();
     let next = q.poll(13).unwrap();
     assert_eq!(next.scanned_lanes, 2);
     let batch = next.batch.expect("ready scope behind stale slots");
