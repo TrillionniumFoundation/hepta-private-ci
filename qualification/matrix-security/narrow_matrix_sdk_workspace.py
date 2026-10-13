@@ -153,6 +153,86 @@ def stage_narrow_sdk(stage, source_report, source_sha):
     }
 
 
+
+def verify_resolved_security_closure(data, *, candidate_root, stage_root):
+    """Check *actual reachable* Cargo resolve edges, not just package names.
+
+    A synthetic package list can carry unrelated decoy anymap3/new-blake3
+    entries while the admitted SDK still resolves unsafe graph edges.
+    Reject missing/incomplete resolve data, dangling edges, duplicate IDs,
+    source substitution, missing enabled features and unreachable remedies.
+    This is diagnostic-only: no fake metadata JSON can attest the runtime.
+    """
+    packages = data["packages"]
+    ids = [p["id"] for p in packages]
+    if len(ids) != len(set(ids)):
+        raise ValueError("duplicate Cargo package identities")
+    package_by_id = {p["id"]: p for p in packages}
+    resolve = data.get("resolve")
+    if type(resolve) is not dict or type(resolve.get("nodes")) is not list:
+        raise ValueError("Cargo metadata lacks actual resolve nodes")
+    nodes = {}
+    for node in resolve["nodes"]:
+        if (type(node) is not dict or type(node.get("id")) is not str
+                or node["id"] not in package_by_id
+                or type(node.get("deps")) is not list
+                or type(node.get("features")) is not list
+                or any(type(feature) is not str for feature in node["features"])
+                or node["id"] in nodes):
+            raise ValueError("invalid or duplicate Cargo resolve node")
+        deps = set()
+        for edge in node["deps"]:
+            if (type(edge) is not dict or type(edge.get("pkg")) is not str
+                    or edge["pkg"] not in package_by_id):
+                raise ValueError("dangling or malformed Cargo dependency edge")
+            deps.add(edge["pkg"])
+        nodes[node["id"]] = (deps, set(node["features"]))
+    if set(nodes) != set(package_by_id) or not set(data["workspace_members"]) <= set(nodes):
+        raise ValueError("Cargo package and resolve coverage mismatch")
+    selected = [p for p in packages if p["name"] == "codex-hepta-matrix-sdk"]
+    if len(selected) != 1:
+        raise ValueError("missing unique selected Hepta SDK")
+    selected_id = selected[0]["id"]
+    visited = set()
+    stack = [selected_id]
+    while stack:
+        current = stack.pop()
+        if current in visited:
+            continue
+        visited.add(current)
+        stack.extend(nodes[current][0] - visited)
+    reachable = [package_by_id[p] for p in visited]
+    def reach_named(name):
+        return [p for p in reachable if p["name"] == name]
+    sdk, crypto = reach_named("matrix-sdk"), reach_named("matrix-sdk-crypto")
+    if (len(sdk) != 1 or sdk[0]["version"] != "0.19.1"
+            or not {"e2e-encryption", "sqlite"} <= nodes[sdk[0]["id"]][1]
+            or not crypto or any(p["version"] != "0.19.1" for p in crypto)
+            or not reach_named("anymap3")
+            or not reach_named("blake3")
+            or any(p["name"] == "anymap2" for p in reachable)):
+        raise ValueError("required patched Matrix/E2EE/SQLite graph is not reachable")
+    for p in reach_named("blake3"):
+        try:
+            version = tuple(int(v) for v in p["version"].split(".")[:3])
+        except ValueError as error:
+            raise ValueError("malformed resolved blake3 version") from error
+        if len(version) != 3 or version < (1, 8, 7):
+            raise ValueError("an old blake3 is still reachable")
+    expected = {
+        selected_id: Path(stage_root).resolve() / "codex-rs/hepta-matrix-sdk/Cargo.toml",
+        sdk[0]["id"]: Path(candidate_root).resolve() / "crates/matrix-sdk/Cargo.toml",
+    }
+    for p in crypto:
+        expected[p["id"]] = (
+            Path(candidate_root).resolve() / "crates/matrix-sdk-crypto/Cargo.toml"
+        )
+    for pkgid, path in expected.items():
+        if Path(package_by_id[pkgid]["manifest_path"]).resolve() != path:
+            raise ValueError("selected Matrix source path is not pinned")
+    return len(visited)
+
+
 def inspect_cargo_metadata(payload, *, candidate_root, stage_root):
     """Refuse old crypto, old anymap, CLI/Starlark or foreign SDK resolution."""
     if type(payload) is not bytes or not 0 < len(payload) <= MAX_METADATA:
@@ -209,9 +289,13 @@ def inspect_cargo_metadata(payload, *, candidate_root, stage_root):
                        tuple(int(x) for x in p["version"].split(".")[:3]) >= (1, 8, 7)
                        for p in packages)):
         raise ValueError("narrowed graph is vulnerable, inconsistent, or still coupled to CLI")
+    reachable_count = verify_resolved_security_closure(
+        data, candidate_root=candidate_root, stage_root=stage_root)
     return {
         "schema": "hepta.matrix-narrow-sdk-graph-verification.v1",
         "package_count": len(packages),
+        "resolved_reachable_package_count": reachable_count,
+        "actual_resolve_closure_checked": True,
         "sdk_version": sdk[0]["version"],
         "crypto_versions": sorted({p["version"] for p in crypto}),
         "anymap2": False,
