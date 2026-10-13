@@ -204,6 +204,8 @@ jobs:
           /usr/bin/time -v -o /tmp/experience-result/write-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/experience_write_trial.py write /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --loss-backend supervised_positions --parity-receipt /tmp/experience-result/source-loss-parity.json --parity-sha "$(sha256sum /tmp/experience-result/source-loss-parity.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/experience-result/write.log
           sha256sum /tmp/experience-result/snapshot/READY.json > /tmp/experience-result/snapshot-pin.txt
       - name: Diagnose closed-set source-value association with a FULL original lexicon
+        id: kway
+        continue-on-error: true
         env:
           HF_HUB_OFFLINE: "1"
           TRANSFORMERS_OFFLINE: "1"
@@ -211,6 +213,8 @@ jobs:
           set -euo pipefail
           /usr/bin/time -v -o /tmp/experience-result/kway-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/source_candidate_kway.py /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot /tmp/experience-result/source-kway --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" --maximum-questions 2 2>&1 | tee /tmp/experience-result/kway.log
       - name: Probe in-sample source facts before opening any evaluation task
+        id: recall
+        continue-on-error: true
         env:
           HF_HUB_OFFLINE: "1"
           TRANSFORMERS_OFFLINE: "1"
@@ -218,6 +222,8 @@ jobs:
           set -euo pipefail
           /tmp/experience-python/bin/python scripts/memory_cell/source_recall_probe.py /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot /tmp/experience-result/source-recall --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" 2>&1 | tee /tmp/experience-result/source-recall.log
       - name: Attribute source-only recall to decoder search versus adapter
+        id: decode
+        continue-on-error: true
         env:
           HF_HUB_OFFLINE: "1"
           TRANSFORMERS_OFFLINE: "1"
@@ -225,6 +231,8 @@ jobs:
           set -euo pipefail
           /usr/bin/time -v -o /tmp/experience-result/decode-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/source_decode_factorial.py /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot /tmp/experience-result/decode-factorial --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" --question-mode paraphrase --maximum 8 2>&1 | tee /tmp/experience-result/decode.log
       - name: Source-only teacher-forced likelihood, two wordings and no evidence
+        id: likelihood
+        continue-on-error: true
         env:
           HF_HUB_OFFLINE: "1"
           TRANSFORMERS_OFFLINE: "1"
@@ -232,6 +240,8 @@ jobs:
           set -euo pipefail
           /usr/bin/time -v -o /tmp/experience-result/likelihood-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/source_recall_likelihood.py /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot /tmp/experience-result/source-likelihood --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" --maximum 8 2>&1 | tee /tmp/experience-result/likelihood.log
       - name: Distinguish source association from generic value memorization
+        id: confusion
+        continue-on-error: true
         env:
           HF_HUB_OFFLINE: "1"
           TRANSFORMERS_OFFLINE: "1"
@@ -263,6 +273,37 @@ jobs:
         run: |
           set -euo pipefail
           /tmp/experience-python/bin/python scripts/memory_cell/source_write_effects.py /tmp/experience-input/plan /tmp/experience-input/observations /tmp/experience-result --plan-sha "$PLAN_SHA" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" 2>&1 | tee /tmp/experience-result/effects.log
+      - name: Persist optional diagnostic outcomes before preserving original evidence
+        if: always()
+        env:
+          HEPTA_DIAG_KWAY: ${{ steps.kway.outcome }}
+          HEPTA_DIAG_RECALL: ${{ steps.recall.outcome }}
+          HEPTA_DIAG_DECODE: ${{ steps.decode.outcome }}
+          HEPTA_DIAG_LIKELIHOOD: ${{ steps.likelihood.outcome }}
+          HEPTA_DIAG_CONFUSION: ${{ steps.confusion.outcome }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/experience-result
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import re
+
+          source_sha = os.environ.get('GITHUB_SHA', '')
+          if not re.fullmatch(r'[0-9a-f]{40}', source_sha):
+              raise SystemExit('missing exact runner commit identity')
+          names = ('KWAY', 'RECALL', 'DECODE', 'LIKELIHOOD', 'CONFUSION')
+          allowed = ('success', 'failure', 'cancelled', 'skipped', '')
+          outcomes = {name.lower(): os.environ.get('HEPTA_DIAG_' + name, '') for name in names}
+          if any(value not in allowed for value in outcomes.values()):
+              raise SystemExit('unexpected GitHub diagnostic step outcome')
+          document = dict(schema='hepta.source-write.diagnostic-outcomes.v1', generating_commit=source_sha, outcomes={name: (value or 'not_run') for name, value in outcomes.items()})
+          with (Path('/tmp/experience-result') / 'diagnostic-outcomes.json').open('x', encoding='utf-8') as target:
+              json.dump(document, target, sort_keys=True, allow_nan=False, indent=2)
+              target.write('\n')
+          print(json.dumps(document, sort_keys=True))
+          PY
       - name: Preserve original responses, exact source, costs and failed runs
         if: always()
         run: |
@@ -281,16 +322,42 @@ jobs:
           path: /tmp/experience-result
           if-no-files-found: error
 
-      - name: Enforce original full-regression exit code after artifact preservation
+      - name: Enforce full regression and every optional diagnostic after artifact preservation
         if: always()
         run: |
           set -euo pipefail
-          receipt=/tmp/experience-result/full-regression-exit-code.txt
-          if [ ! -f "$receipt" ]; then
-            echo '::error::Original full suite did not execute to completion.'
-            exit 1
-          fi
-          if [ "$(cat "$receipt")" != 0 ]; then
-            echo '::error::Full inherited regression gate failed; source-only research data cannot qualify the branch.'
-            exit 1
-          fi
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path('/tmp/experience-result')
+          failures = []
+          full = root / 'full-regression-exit-code.txt'
+          if full.is_symlink() or not full.is_file() or full.read_text().strip() != '0':
+              failures.append('the original complete Python regression suite was not green')
+          path = root / 'diagnostic-outcomes.json'
+          if path.is_symlink() or not path.is_file() or path.stat().st_size > 4096:
+              failures.append('missing/invalid mandatory diagnostic outcome receipt')
+          else:
+              def no_dupes(pairs):
+                  item = {}
+                  for key, value in pairs:
+                      if key in item:
+                          raise ValueError('duplicate diagnostic outcome field')
+                      item[key] = value
+                  return item
+              try:
+                  document = json.loads(path.read_text(), object_pairs_hook=no_dupes)
+                  expected = ('kway', 'recall', 'decode', 'likelihood', 'confusion')
+                  if document.get('schema') != 'hepta.source-write.diagnostic-outcomes.v1' or document.get('generating_commit') != os.environ.get('GITHUB_SHA') or set(document.get('outcomes', {})) != set(expected):
+                      raise ValueError('diagnostic receipt source/census mismatch')
+                  failures += [f'{name}: {document["outcomes"][name]}' for name in expected if document['outcomes'][name] != 'success']
+              except (ValueError, TypeError, KeyError) as error:
+                  failures.append(f'invalid diagnostic outcome receipt: {error}')
+          for failure in failures:
+              print(f'::error::{failure}', flush=True)
+          if failures:
+              raise SystemExit(1)
+          print('original full regressions and all five diagnostics passed; this is not model-quality qualification')
+          PY
