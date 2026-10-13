@@ -1,13 +1,7 @@
 """Pure regression tests; model outputs may only come from exact pinned ZIPs."""
 
-from copy import deepcopy
-import os
 from pathlib import Path
-import sys
-import tempfile
-import types
 import unittest
-from unittest.mock import patch
 
 from reader_three_cohort_gate import join_verified, audit
 
@@ -28,8 +22,14 @@ def fixture():
             "original_model_calls": 112,
             "calibration_stable_under_leave_one_out": False,
             "arms": {
-                "entity_time": {"strict_correct": 8, "correct_with_full_public_citation_path": 4},
-                "organized": {"strict_correct": 8, "correct_with_full_public_citation_path": 4},
+                "entity_time": {
+                    "strict_correct": 8,
+                    "correct_with_full_public_citation_path": 4,
+                },
+                "organized": {
+                    "strict_correct": 8,
+                    "correct_with_full_public_citation_path": 4,
+                },
             },
         },
         "published_locomo": {
@@ -37,8 +37,16 @@ def fixture():
             "source_family_proxies": 2,
             "published_development_questions": 16,
             "arms": {
-                "lexical_k4": {"mean_diagnostic_token_f1": 0.172082580982, "prompt_tokens": 6254, "successful_model_calls": 16},
-                "lexical_k8": {"mean_diagnostic_token_f1": 0.111481900950, "prompt_tokens": 10473, "successful_model_calls": 16},
+                "lexical_k4": {
+                    "mean_diagnostic_token_f1": 0.172082580982,
+                    "prompt_tokens": 6254,
+                    "successful_model_calls": 16,
+                },
+                "lexical_k8": {
+                    "mean_diagnostic_token_f1": 0.111481900950,
+                    "prompt_tokens": 10473,
+                    "successful_model_calls": 16,
+                },
             },
         },
         "qualification": {
@@ -58,8 +66,22 @@ def fixture():
         "matched_public_family_proxies": 2,
         "exact_zip_sha256": {"plan": "b"*64, "reader": "c"*64, "score": "d"*64},
         "original_matched_f1": {
-            "lexical_k4": {"baseline_token_f1": 0.17208258098192508, "privileged_token_f1": 0.2643761961930344, "descriptive_delta": 0.09229361521110932, "paired_wins": 8, "paired_losses": 5, "paired_ties": 3},
-            "lexical_k8": {"baseline_token_f1": 0.11148190095003518, "privileged_token_f1": 0.2643761961930344, "descriptive_delta": 0.15289429524299925, "paired_wins": 10, "paired_losses": 3, "paired_ties": 3},
+            "lexical_k4": {
+                "baseline_token_f1": 0.17208258098192508,
+                "privileged_token_f1": 0.2643761961930344,
+                "descriptive_delta": 0.09229361521110932,
+                "paired_wins": 8,
+                "paired_losses": 5,
+                "paired_ties": 3,
+            },
+            "lexical_k8": {
+                "baseline_token_f1": 0.11148190095003518,
+                "privileged_token_f1": 0.2643761961930344,
+                "descriptive_delta": 0.15289429524299925,
+                "paired_wins": 10,
+                "paired_losses": 3,
+                "paired_ties": 3,
+            },
         },
         "publisher_privileged_support_visible_effect": {
             "k4_missing_publisher_support": {"questions": 5},
@@ -85,7 +107,12 @@ class NoFalsePromotionTests(unittest.TestCase):
         self.assertFalse(result["production_accepted"])
         self.assertFalse(result["parameter_memory_gain_established"])
         self.assertTrue(result["publisher_support_is_annotation_privileged_not_online"])
-        self.assertAlmostEqual(result["comparable_published_locomo_f1"]["lexical_k4"]["descriptive_privileged_delta"], .09229361521110932)
+        self.assertAlmostEqual(
+            result["comparable_published_locomo_f1"]["lexical_k4"][
+                "descriptive_privileged_delta"
+            ],
+            0.09229361521110932,
+        )
 
     def test_reader_identity_mismatch_is_not_cross_reader_gain(self):
         cross, pub = fixture()
@@ -134,7 +161,10 @@ class NoFalsePromotionTests(unittest.TestCase):
                 join_verified(cross, pub)
 
     def test_citation_and_graph_claim_reassignment_reject(self):
-        for arm, field in (("organized", "strict_correct"), ("organized", "correct_with_full_public_citation_path")):
+        for arm, field in (
+            ("organized", "strict_correct"),
+            ("organized", "correct_with_full_public_citation_path"),
+        ):
             cross, pub = fixture()
             cross["controlled_authored_event"]["arms"][arm][field] = 7
             with self.subTest(field=field), self.assertRaises(ValueError):

@@ -99,10 +99,13 @@ def join_verified(cross: dict, publisher: dict) -> dict:
                 for field in ("paired_wins", "paired_losses", "paired_ties")
             )
             or sum(
-                other[field] for field in ("paired_wins", "paired_losses", "paired_ties")
+                other[field]
+                for field in ("paired_wins", "paired_losses", "paired_ties")
             ) != 16
         ):
-            raise ValueError("privileged intervention detached from original LoCoMo reader")
+            raise ValueError(
+                "privileged intervention detached from original LoCoMo reader"
+            )
         matched[name] = dict(
             original_mean_token_f1=baseline,
             privileged_mean_token_f1=privileged,
@@ -204,7 +207,14 @@ def main() -> None:
         {name: getattr(args, name) for name in (*CROSS_NAMES, *PUBLISHER_NAMES)}
     )
     with args.output.open("x", encoding="utf-8") as handle:
-        json.dump(answer, handle, ensure_ascii=False, sort_keys=True, indent=2, allow_nan=False)
+        json.dump(
+            answer,
+            handle,
+            ensure_ascii=False,
+            sort_keys=True,
+            indent=2,
+            allow_nan=False,
+        )
         handle.write("\n")
     print(
         json.dumps(
