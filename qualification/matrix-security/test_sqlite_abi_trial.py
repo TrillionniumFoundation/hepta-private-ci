@@ -161,6 +161,20 @@ class SqliteAbiTrialTests(unittest.TestCase):
             with self.subTest(pkg=pkgname, field=field), self.assertRaises(ValueError):
                 trial.audit_metadata(sample, receipt, self.sdk, self.hepta)
 
+    def test_actual_registry_origin_and_checksum_failures_are_distinguished(self):
+        receipt = self.stage()
+        forged = cargo_graph(self.sdk, self.hepta)
+        next(p for p in forged["packages"]
+             if p["name"] == "rusqlite")["source"] = "path+file:///tmp/substitute"
+        with self.assertRaisesRegex(ValueError, "rusqlite.*non-canonical registry source"):
+            trial.audit_metadata(forged, receipt, self.sdk, self.hepta)
+
+        missing = cargo_graph(self.sdk, self.hepta)
+        next(p for p in missing["packages"]
+             if p["name"] == "libsqlite3-sys")["checksum"] = None
+        with self.assertRaisesRegex(ValueError, "libsqlite3-sys.*missing.*checksum"):
+            trial.audit_metadata(missing, receipt, self.sdk, self.hepta)
+
     def test_dev_only_edges_or_disabled_e2ee_never_pass(self):
         receipt = self.stage()
         for src, dst in [("sdk","sqlite"), ("sqlite","rusqlite"),
