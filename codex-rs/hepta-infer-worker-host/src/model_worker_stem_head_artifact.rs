@@ -275,7 +275,7 @@ impl SelectedStemHeadBankReaderV1 {
     /// currently eligible at the same owner-controlled dispatch boundary.
     /// A signature on either bank alone is insufficient.
     #[allow(clippy::too_many_arguments)]
-    pub fn run_selected_cpu_head(
+    pub(crate) fn run_selected_cpu_head(
         &mut self,
         projection: &mut SelectedStemProjectionReaderV1,
         worker: &mut InferenceWorker<CpuGatedHeadDriver>,
