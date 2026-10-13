@@ -18,7 +18,24 @@ fn open(root: &std::path::Path, name: &str, create: bool) -> std::fs::File {
 }
 
 fn directory(root: &std::path::Path) -> std::fs::File {
-    std::fs::File::open(root).unwrap()
+    // Windows cannot use File::open on a directory. The underlying durable
+    // Ledger genuinely fsyncs this opened handle before acknowledging writes;
+    // do not replace it with a no-op or an unbound path-only assertion.
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(root)
+            .expect("open real segmented Ledger parent directory")
+    }
+    #[cfg(not(windows))]
+    {
+        std::fs::File::open(root).expect("open real segmented Ledger parent directory")
+    }
 }
 
 fn writer(

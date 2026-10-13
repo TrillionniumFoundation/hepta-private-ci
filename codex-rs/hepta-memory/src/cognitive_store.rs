@@ -1566,6 +1566,31 @@ fn resolve_active_database_path(root: &Path) -> Result<PathBuf, CognitiveStoreEr
     Ok(path)
 }
 
+/// Sync the *actual* containing directory before treating an active-model
+/// database generation pointer rename as durable. This is a production write
+/// barrier, not an advisory existence check. Never ignore sync failures.
+fn sync_cognitive_directory(root: &Path) -> Result<(), CognitiveStoreError> {
+    #[cfg(windows)]
+    let directory = {
+        use std::os::windows::fs::OpenOptionsExt;
+
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+            .open(root)
+            .map_err(unavailable)?
+    };
+    #[cfg(not(windows))]
+    let directory = File::open(root).map_err(unavailable)?;
+    if !directory.metadata().map_err(unavailable)?.is_dir() {
+        return Err(CognitiveStoreError::Invalid(
+            "cognitive generation durability requires a real directory handle".to_string(),
+        ));
+    }
+    directory.sync_all().map_err(unavailable)
+}
+
 pub(crate) fn publish_active_database(
     root: &Path,
     database: &Path,
@@ -1618,9 +1643,11 @@ pub(crate) fn publish_active_database(
         file.write_all(b"\n").map_err(unavailable)?;
         file.sync_all().map_err(unavailable)?;
         fs::rename(&temporary, &pointer).map_err(unavailable)?;
-        File::open(root)
-            .and_then(|directory| directory.sync_all())
-            .map_err(unavailable)?;
+        // Publishing the generation pointer is not durable until the actual
+        // containing directory is synced. In particular, plain File::open on
+        // a Windows directory fails with AccessDenied rather than acquiring
+        // an fsync-capable handle; never silently skip that persistence fence.
+        sync_cognitive_directory(root)?;
         Ok(())
     })();
     if result.is_err() {
