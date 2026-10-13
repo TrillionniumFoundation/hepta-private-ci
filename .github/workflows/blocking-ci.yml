@@ -153,6 +153,50 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
+      - name: Reclaim unused hosted SDK capacity for exact-source impact tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          record="$RUNNER_TEMP/hepta-scoped-disk.txt"
+          {
+            printf 'source_sha=%s\n' "${{ github.event.pull_request.head.sha || github.sha }}"
+            printf '%s\n' 'before_clean'
+            df -B1 "$GITHUB_WORKSPACE"
+          } > "$record"
+          # This job builds Rust on Linux, not Android, .NET, GHC or PowerShell.
+          # Never delete caches, V8 artifacts, Cargo outputs, or any source.
+          for sdk in /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/.ghcup /usr/local/share/powershell; do
+            if [[ ! -e "$sdk" && ! -L "$sdk" ]]; then
+              continue
+            fi
+            if [[ -L "$sdk" || ! -d "$sdk" ]]; then
+              echo "unexpected preinstalled SDK path type: $sdk" >&2
+              exit 1
+            fi
+            sudo du -sh -- "$sdk" >> "$record"
+            sudo rm -rf --one-file-system -- "$sdk"
+          done
+          sudo apt-get clean
+          {
+            printf '%s\n' 'after_clean'
+            df -B1 "$GITHUB_WORKSPACE"
+          } >> "$record"
+          python3 - <<'PY' | tee -a "$record"
+          import os
+          import shutil
+          from pathlib import Path
+
+          workspace = Path(os.environ["GITHUB_WORKSPACE"]).resolve(strict=True)
+          free = shutil.disk_usage(workspace).free
+          print(f"source={os.environ.get('GITHUB_SHA', '')}")
+          print(f"workspace={workspace}")
+          print(f"free_bytes={free}")
+          # Fail before launching a costly incomplete workspace build if the
+          # hosted image still lacks a basic native-build resource floor.
+          if free < 12 * 1024**3:
+              raise SystemExit("insufficient runner disk for native impact qualification")
+          PY
+
       - name: Test affected owners and reverse consumers, not a hand-written package list
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
@@ -172,6 +216,7 @@ jobs:
           path: |
             ${{ runner.temp }}/cargo-impact.json
             ${{ runner.temp }}/impact-test.json*
+            ${{ runner.temp }}/hepta-scoped-disk.txt
           if-no-files-found: error
           retention-days: 14
 
