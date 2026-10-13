@@ -884,7 +884,6 @@ fn missing_independent_custody_denies_fresh_remote_monotonic_signature() {
     ));
 }
 
-
 #[test]
 fn slow_independent_custody_cannot_sign_after_owner_request_budget_expires() {
     let root = tempfile::tempdir().expect("private registry");
