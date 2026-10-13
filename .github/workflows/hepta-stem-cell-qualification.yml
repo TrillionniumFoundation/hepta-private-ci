@@ -158,9 +158,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host --package codex-hepta-fleet -- --config imports_granularity=Item
-          git diff --binary -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src > "$RUNNER_TEMP/stem-rustfmt.patch"
-          git restore --worktree -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-worker-host --package codex-hepta-fleet --package codex-hepta-matrixd -- --config imports_granularity=Item
+          git diff --binary -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src codex-rs/hepta-matrixd/src > "$RUNNER_TEMP/stem-rustfmt.patch"
+          git restore --worktree -- codex-rs/hepta-infer-worker-host/src codex-rs/hepta-fleet/src codex-rs/hepta-matrixd/src
           git diff --check
           git diff --exit-code
       - name: Upload proposed formatting only
