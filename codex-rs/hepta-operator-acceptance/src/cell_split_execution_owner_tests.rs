@@ -752,6 +752,64 @@ fn selector_revoked_during_last_owner_readback_never_prepares_successor() {
 }
 
 #[test]
+fn late_admission_plan_tamper_cannot_prepare_first_effect() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("open");
+    let frozen = root.path().join("cell-split-frozen-plan.json");
+    let mut checks = 0_usize;
+
+    let outcome = owner.advance_with_admission(|| {
+        checks += 1;
+        if checks == 2 {
+            fs::write(&frozen, b"{}").expect("tamper plan during final admission");
+        }
+        Ok(())
+    });
+    assert!(matches!(
+        outcome,
+        Err(CellSplitExecutionErrorV1::Invalid("frozen plan drift"))
+    ));
+    assert_eq!(checks, 2, "the final admission boundary was reached");
+    assert_eq!(state.borrow().executions, 0, "no original effect was dispatched");
+    assert!(!root.path().join("cell-split-00-prepared.json").exists());
+}
+
+#[test]
+fn late_admission_committed_prefix_tamper_cannot_prepare_successor() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("open");
+    owner.advance().expect("first original effect");
+    let committed = root.path().join("cell-split-00-committed.json");
+    let mut checks = 0_usize;
+
+    let outcome = owner.advance_with_admission(|| {
+        checks += 1;
+        if checks == 2 {
+            fs::write(&committed, b"{}").expect("tamper prefix during final admission");
+        }
+        Ok(())
+    });
+    assert!(matches!(outcome, Err(CellSplitExecutionErrorV1::Codec(_))));
+    assert_eq!(checks, 2, "the final admission boundary was reached");
+    assert_eq!(state.borrow().executions, 1, "no successor effect was dispatched");
+    assert!(!root.path().join("cell-split-01-prepared.json").exists());
+}
+
+#[test]
 fn trust_drift_during_preflight_never_persists_prepared_intent() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
