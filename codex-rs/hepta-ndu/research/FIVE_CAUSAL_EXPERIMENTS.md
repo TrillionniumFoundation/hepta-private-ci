@@ -1,6 +1,7 @@
 # Five causal experiments: execution and evidence contract
 
-Date: 2026-10-13. Source base: `2b2dc655e5feb5224b9c3fe659e53c0768fdea7b`.
+Date: 2026-10-13. Initial source base: `2b2dc655e5feb5224b9c3fe659e53c0768fdea7b`.
+Reconciled concurrent dual-signature base: `d811dfb9c6499d7bbeb81c2772f0efab7974a644`.
 Research branch: `research/five-causal-experiments-20261013`.
 Related work: PR #1546 (existing System2/Reader research), PR #1682 (parallel
 Stem/Head controls). No main merge, existing model replacement or production
@@ -27,8 +28,9 @@ The local runtime has no mounted model/cohort/review bundle, no GPU, no direct
 connection to the existing project cloud, and GitHub/Hugging Face DNS calls
 failed. The GitHub connector remains available for source reads and publication.
 
-**Completed local tests:** 52 new protocol/control/transport/readout tests and
-9 inherited matrix tests, all passed. Fixture subprocess calls are not neural
+**Completed local tests:** the initial revision passed 52 new tests and 9 old
+matrix tests. The reconciled revision passed 54 new tests and all 14 tests
+from the concurrent dual-signature matrix revision. Fixture subprocess calls are not neural
 calls. There are zero new natural-task scores, training gains or resource gains.
 
 ## Five groups, not a 768-way expansion
@@ -58,7 +60,12 @@ but does **not** demand inferior ordinary retrieval. Ordinary retrieval that is
 already as good as sufficient evidence is not evidence of a broken Reader.
 The opportunity for improving retrieval is reported separately. Changing a
 receipt's version breaks the existing review digest; v2 bytes cannot be silently
-reinterpreted as v3. Out-of-band trust pins and capability restrictions remain.
+reinterpreted as v3. Out-of-band trust pins and capability restrictions remain. The concurrent
+`d811dfb9` dual-Ed25519-signature and independently pinned reviewer-roster
+requirements are retained in full for both versions. V3 signature messages
+use ASCII `hepta.reader-gate.v3.ed25519`, NUL, then the 32-byte reviewed-content
+digest; historical V2 signature bytes are unchanged. All signer keys in tests
+are ephemeral fixture-only keys, never real reviewers or published private keys.
 
 Malformed unhashable cohort entries now fail closed rather than throwing during
 `set(cohort)`; boolean denominators are not accepted as integer observations.
@@ -157,7 +164,7 @@ and full model/code inventory attestation remain required.
 E1 executes without a prior Reader qualification. Subsequent stages require a
 separately pinned `reader_admission` review binding this exact bundle, original
 Reader raw-output hash, judgments and actual versioned gate/trust bytes. The
-existing gate evaluator runs; a `qualified=true`-style assertion alone does not
+existing dual-signature gate evaluator runs; a `qualified=true`-style assertion alone does not
 open later stages. Cohort and model/menu identity must match the admitted stage.
 
 The post-run `outcome_adjudication` review binds exact raw journal, bundle and
@@ -203,6 +210,8 @@ HEPTA_FIVE_EXPERIMENT_REVIEW_SHA256=<independent-adjudication-pin> \
 ```
 
 Later `run` stages additionally use `--reader-review` and the external
-`HEPTA_FIVE_READER_REVIEW_SHA256`. A missing bundle/review/model produces an
+`HEPTA_FIVE_READER_REVIEW_SHA256`, plus the independent
+`HEPTA_REVIEWER_ROSTER_SHA256`; include the public `reviewer_roster` in the
+reviewed Reader admission record. A missing bundle/review/model produces an
 explicit blocker and exit code 2, never a green real experiment. The focused CI
 runs tests and exports the plan only; it does not fabricate native evidence.

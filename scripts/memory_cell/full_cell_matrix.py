@@ -49,6 +49,7 @@ class ReaderGate:
     premise_removed_exact_refusal: int
     model_binding_digest: str | None
     trust_manifest_digest: str | None
+    authorized_reviewer_roster_digest: str | None
     capabilities: dict
 
 
@@ -64,7 +65,7 @@ def _digest_bytes(value: object) -> str:
 
 
 def _empty_gate(reason: str) -> ReaderGate:
-    return ReaderGate(False, reason, 0, 0, 0, 0, 0, None, None, {})
+    return ReaderGate(False, reason, 0, 0, 0, 0, 0, None, None, None, {})
 
 
 def _valid_sha(value: object) -> bool:
@@ -88,17 +89,21 @@ def _arm(conditions: dict, name: str, cohort: list[str]) -> tuple[int, int] | No
 def evaluate_reader_gate(
     payload: dict | None, trust_manifest: dict | None = None, *,
     trusted_review_sha256: str | None = None,
+    reviewer_roster: dict | None = None,
+    trusted_roster_sha256: str | None = None,
 ) -> ReaderGate:
-    """Derive admission from an externally reviewed v2 or v3 receipt.
+    """Derive admission from a dual-signed external v2 or v3 receipt.
 
-    V2 retains its historical strict retrieval-gap requirement. V3 measures
-    Reader adequacy without requiring ordinary retrieval to be worse; a
-    retrieval improvement opportunity is a separate experimental question.
+    V2 retains the strict retrieval-gap rule. V3 separates Reader adequacy
+    from retrieval headroom, with unchanged dual-signature trust requirements.
 
     Receipt and manifest cannot attest to their own independence. An
     operator-provided OUT-OF-BAND review-manifest SHA is mandatory. The
     preapproved manifest must also bind every reviewed cohort, arm count,
-    model identity and claimed capability; otherwise every row stays blocked.
+    model identity and claimed capability. Reviewer ID strings are NOT proof
+    of human identity: at least two Ed25519 signatures from separate public
+    keys in an independently operator-pinned reviewer roster are required.
+    Absent external authorization and actual reviewed results, rows stay blocked.
     """
     if not isinstance(payload, dict) or payload.get("schema") not in ("hepta.reader-gate.v2", "hepta.reader-gate.v3"):
         return _empty_gate("missing-or-unknown-reader-gate")
@@ -150,12 +155,57 @@ def evaluate_reader_gate(
     if trust_manifest.get("reviewed_gate_content_sha256") != _digest_bytes(reviewed_content):
         return _empty_gate("review-not-bound-to-observed-reader-results")
     reviewers = trust_manifest.get("independent_reviewers")
-    if (not isinstance(reviewers, list) or not reviewers
+    if (not isinstance(reviewers, list) or len(reviewers) < 2
             or any(not isinstance(item, dict) or type(item.get("id")) is not str
                    or not item["id"] or item.get("revoked") is not False
                    for item in reviewers)
             or len({item["id"] for item in reviewers}) != len(reviewers)):
         return _empty_gate("no-current-independent-reviewer-in-trust-manifest")
+    if not isinstance(reviewer_roster, dict) or not _valid_sha(trusted_roster_sha256):
+        return _empty_gate("out-of-band-reviewer-roster-required")
+    roster_digest = _digest_bytes(reviewer_roster)
+    if (roster_digest != trusted_roster_sha256
+            or trust_manifest.get("authorized_reviewer_roster_sha256") != roster_digest):
+        return _empty_gate("reviewer-roster-pin-mismatch")
+    if reviewer_roster.get("schema") != "hepta.reader.authorized-reviewers.v1":
+        return _empty_gate("invalid-authorized-reviewer-roster")
+    roster = reviewer_roster.get("reviewers")
+    if (not isinstance(roster, list) or len(roster) < 2
+            or any(not isinstance(item, dict)
+                   or type(item.get("id")) is not str or not item["id"]
+                   or type(item.get("public_key_hex")) is not str
+                   or re.fullmatch(r"[0-9a-f]{64}", item["public_key_hex"]) is None
+                   or item.get("authorized") is not True
+                   or item.get("independent_of_model_owner") is not True
+                   or item.get("independent_of_dataset_owner") is not True
+                   for item in roster)):
+        return _empty_gate("invalid-authorized-reviewer-roster")
+    roster_keys = {entry["id"]: entry["public_key_hex"] for entry in roster}
+    if (len(roster_keys) != len(roster)
+            or len(set(roster_keys.values())) != len(roster)):
+        return _empty_gate("duplicated-authorized-reviewer-key")
+    if (any(type(entry.get("signature_hex")) is not str
+            or re.fullmatch(r"[0-9a-f]{128}", entry["signature_hex"]) is None
+            or entry["id"] not in roster_keys for entry in reviewers)
+            or len({roster_keys[entry["id"]] for entry in reviewers}) < 2):
+        return _empty_gate("missing-or-unauthorized-reviewer-signature")
+    # Domain-separated signatures bind the exact graded cohort, four-arm
+    # answers, model and capabilities, never a reviewer ID alone. The roster
+    # and review manifest must be pinned through TWO out-of-band owner inputs.
+    signed_message = ((payload["schema"] + ".ed25519\x00").encode("ascii")
+                      + bytes.fromhex(trust_manifest["reviewed_gate_content_sha256"]))
+    try:
+        from cryptography.exceptions import InvalidSignature
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PublicKey
+    except ImportError:
+        return _empty_gate("signature-verifier-unavailable")
+    try:
+        for entry in reviewers:
+            Ed25519PublicKey.from_public_bytes(
+                bytes.fromhex(roster_keys[entry["id"]])
+            ).verify(bytes.fromhex(entry["signature_hex"]), signed_message)
+    except (InvalidSignature, ValueError, TypeError):
+        return _empty_gate("reviewer-signature-verification-failed")
     human_grounded, _ = rows["human_sufficient"]
     ordinary_grounded, _ = rows["ordinary_retrieval"]
     _, empty_refusal = rows["no_evidence"]
@@ -172,7 +222,7 @@ def evaluate_reader_gate(
     return ReaderGate(
         passed, reason, total, human_grounded, ordinary_grounded,
         empty_refusal, removed_refusal, model_digest, manifest_digest,
-        capabilities if isinstance(capabilities, dict) else {},
+        roster_digest, capabilities if isinstance(capabilities, dict) else {},
     )
 
 
@@ -244,9 +294,12 @@ def _capability_allows(gate: ReaderGate, record: dict) -> bool:
 
 def plan(output: Path, *, cells: int = 32, reader_gate: dict | None = None,
          trust_manifest: dict | None = None,
-         trusted_review_sha256: str | None = None) -> dict:
+         trusted_review_sha256: str | None = None,
+         reviewer_roster: dict | None = None,
+         trusted_roster_sha256: str | None = None) -> dict:
     gate = evaluate_reader_gate(
-        reader_gate, trust_manifest, trusted_review_sha256=trusted_review_sha256
+        reader_gate, trust_manifest, trusted_review_sha256=trusted_review_sha256,
+        reviewer_roster=reviewer_roster, trusted_roster_sha256=trusted_roster_sha256,
     )
     records = enumerate_matrix(cells)
     for record in records:
@@ -278,14 +331,17 @@ def plan(output: Path, *, cells: int = 32, reader_gate: dict | None = None,
 
 
 def main(argv: list[str]) -> int:
-    if len(argv) not in (2, 3, 4):
-        print("usage: full_cell_matrix.py OUTPUT [READER_GATE_JSON TRUST_MANIFEST_JSON]", file=sys.stderr)
+    if len(argv) not in (2, 3, 4, 5):
+        print("usage: full_cell_matrix.py OUTPUT [READER_GATE_JSON TRUST_MANIFEST_JSON AUTHORIZED_ROSTER_JSON]", file=sys.stderr)
         return 2
     gate = json.loads(Path(argv[2]).read_text(encoding="utf-8")) if len(argv) >= 3 else None
-    trust = json.loads(Path(argv[3]).read_text(encoding="utf-8")) if len(argv) == 4 else None
+    trust = json.loads(Path(argv[3]).read_text(encoding="utf-8")) if len(argv) >= 4 else None
+    roster = json.loads(Path(argv[4]).read_text(encoding="utf-8")) if len(argv) == 5 else None
     summary = plan(
         Path(argv[1]), reader_gate=gate, trust_manifest=trust,
         trusted_review_sha256=os.environ.get("HEPTA_READER_TRUST_SHA256") or None,
+        reviewer_roster=roster,
+        trusted_roster_sha256=os.environ.get("HEPTA_REVIEWER_ROSTER_SHA256") or None,
     )
     print(json.dumps(summary, sort_keys=True))
     return 0

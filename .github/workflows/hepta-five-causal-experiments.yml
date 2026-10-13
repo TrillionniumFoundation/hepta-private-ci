@@ -28,6 +28,12 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Install pinned dual-review verifier
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-five-causal
+          python3 -m pip install cryptography==46.0.4 > /tmp/hepta-five-causal/install-cryptography.log 2>&1
+          python3 -m pip freeze > /tmp/hepta-five-causal/runtime-environment.txt
       - name: Run old matrix and new five-experiment contract tests
         run: |
           set -euo pipefail

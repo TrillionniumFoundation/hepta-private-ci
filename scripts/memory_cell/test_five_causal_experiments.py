@@ -97,37 +97,61 @@ def write_journal(b, path, *, experiment="sharing", failed=None, omit=None, inco
 
 class ReaderGateVersionTests(unittest.TestCase):
     def resigned(self, schema, ordinary=18, refusal=19):
-        gate, trust = gate_fixture()
+        # Fresh fixture keys only; no real reviewer identity or private-key file.
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
+        gate, trust, roster = gate_fixture()
         gate["schema"] = schema
         gate["conditions"]["ordinary_retrieval"]["grounded_and_cited"] = ordinary
         gate["conditions"]["no_evidence"]["exact_refusal"] = refusal
-        trust["reviewed_gate_content_sha256"] = fingerprint({k:gate[k] for k in ("schema","cohort","model_binding","conditions","capabilities")})
+        reviewed = fingerprint({k:gate[k] for k in ("schema","cohort","model_binding","conditions","capabilities")})
+        message = (schema + ".ed25519\x00").encode("ascii") + bytes.fromhex(reviewed)
+        for entry, signer in zip(roster["reviewers"], trust["independent_reviewers"]):
+            key = Ed25519PrivateKey.generate()
+            entry["public_key_hex"] = key.public_key().public_bytes(
+                serialization.Encoding.Raw, serialization.PublicFormat.Raw).hex()
+            signer["signature_hex"] = key.sign(message).hex()
+        trust["reviewed_gate_content_sha256"] = reviewed
+        trust["authorized_reviewer_roster_sha256"] = fingerprint(roster)
         gate["independent_review"]["trust_manifest_sha256"] = fingerprint(trust)
-        return gate, trust
+        return gate, trust, roster
+
+    def decision(self, gate, trust, roster):
+        return evaluate_reader_gate(gate, trust, trusted_review_sha256=fingerprint(trust),
+                                    reviewer_roster=roster, trusted_roster_sha256=fingerprint(roster))
 
     def test_v2_semantics_preserved_when_retrieval_is_equal(self):
-        gate, trust = self.resigned("hepta.reader-gate.v2")
-        self.assertFalse(evaluate_reader_gate(gate, trust, trusted_review_sha256=fingerprint(trust)).passed)
+        self.assertFalse(self.decision(*self.resigned("hepta.reader-gate.v2")).passed)
 
     def test_v3_accepts_adequate_reader_with_equal_retrieval(self):
-        gate, trust = self.resigned("hepta.reader-gate.v3")
-        self.assertTrue(evaluate_reader_gate(gate, trust, trusted_review_sha256=fingerprint(trust)).passed)
+        self.assertTrue(self.decision(*self.resigned("hepta.reader-gate.v3")).passed)
 
     def test_v3_still_requires_negative_control(self):
-        gate, trust = self.resigned("hepta.reader-gate.v3", refusal=17)
-        self.assertFalse(evaluate_reader_gate(gate, trust, trusted_review_sha256=fingerprint(trust)).passed)
+        self.assertFalse(self.decision(*self.resigned("hepta.reader-gate.v3", refusal=17)).passed)
 
     def test_v3_still_requires_external_trust_pin(self):
-        gate, trust = self.resigned("hepta.reader-gate.v3")
-        self.assertFalse(evaluate_reader_gate(gate, trust).passed)
+        gate, trust, roster = self.resigned("hepta.reader-gate.v3")
+        self.assertFalse(evaluate_reader_gate(gate, trust, reviewer_roster=roster,
+                         trusted_roster_sha256=fingerprint(roster)).passed)
 
     def test_changing_version_invalidates_review(self):
-        gate, trust = gate_fixture(); gate["schema"] = "hepta.reader-gate.v3"
-        self.assertFalse(evaluate_reader_gate(gate, trust, trusted_review_sha256=fingerprint(trust)).passed)
+        gate, trust, roster = gate_fixture(); gate["schema"] = "hepta.reader-gate.v3"
+        self.assertFalse(self.decision(gate, trust, roster).passed)
 
     def test_unhashable_cohort_fails_closed(self):
-        gate, trust = gate_fixture(); gate["cohort"][0] = []
-        self.assertFalse(evaluate_reader_gate(gate, trust, trusted_review_sha256=fingerprint(trust)).passed)
+        gate, trust, roster = gate_fixture(); gate["cohort"][0] = []
+        self.assertFalse(self.decision(gate, trust, roster).passed)
+
+    def test_v3_does_not_bypass_the_new_dual_signature_roster(self):
+        gate, trust, roster = self.resigned("hepta.reader-gate.v3")
+        self.assertEqual(evaluate_reader_gate(gate, trust, trusted_review_sha256=fingerprint(trust)).reason,
+                         "out-of-band-reviewer-roster-required")
+
+    def test_v3_rejects_a_forged_signature_even_with_pinned_manifest(self):
+        gate, trust, roster = self.resigned("hepta.reader-gate.v3")
+        trust["independent_reviewers"][0]["signature_hex"] = "00" * 64
+        gate["independent_review"]["trust_manifest_sha256"] = fingerprint(trust)
+        self.assertEqual(self.decision(gate, trust, roster).reason, "reviewer-signature-verification-failed")
 
 
 class FiveProtocolTests(unittest.TestCase):

@@ -379,7 +379,11 @@ def execute(b: dict, review: dict, pin: str, root: Path, output: Path,
         receipt = reader_review.get("gate_receipt")
         trust = reader_review.get("gate_trust_manifest")
         require(isinstance(receipt, dict) and digest(receipt) == reader_review["gate_receipt_sha256"], "Reader gate bytes missing/mismatched")
-        decision = evaluate_reader_gate(receipt, trust, trusted_review_sha256=reader_review.get("gate_trust_sha256"))
+        decision = evaluate_reader_gate(
+            receipt, trust, trusted_review_sha256=reader_review.get("gate_trust_sha256"),
+            reviewer_roster=reader_review.get("reviewer_roster"),
+            trusted_roster_sha256=os.environ.get("HEPTA_REVIEWER_ROSTER_SHA256"),
+        )
         require(decision.passed, "Reader adequacy gate denied: " + decision.reason)
         stage = [r for r in b["trials"] if r["experiment"] == experiment]
         require(stage and set(receipt["cohort"]) == {r["task_id"] for r in stage}, "Reader qualification cohort does not cover this stage")
