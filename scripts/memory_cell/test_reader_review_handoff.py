@@ -226,12 +226,12 @@ class BlindedReviewHandoffTests(unittest.TestCase):
             decoy.mkdir()
             real_open, swapped = os.open, []
 
-            def swap_path(name, flags, **kwargs):
+            def swap_path(name, flags, *args, **kwargs):
                 if name == "review-questions.jsonl" and "dir_fd" in kwargs and not swapped:
                     dest.rename(relocated)
                     dest.symlink_to(decoy, target_is_directory=True)
                     swapped.append(True)
-                return real_open(name, flags, **kwargs)
+                return real_open(name, flags, *args, **kwargs)
 
             with patch("reader_review_handoff.os.open", side_effect=swap_path):
                 result = prepare_handoff(self.originals,
@@ -253,13 +253,13 @@ class BlindedReviewHandoffTests(unittest.TestCase):
             decoy.mkdir()
             real_open, swapped = os.open, []
 
-            def swap_before_open(name, flags, **kwargs):
+            def swap_before_open(name, flags, *args, **kwargs):
                 if (name == dest.name and "dir_fd" in kwargs
                         and flags & os.O_DIRECTORY and not swapped):
                     dest.rename(relocated)
                     dest.symlink_to(decoy, target_is_directory=True)
                     swapped.append(True)
-                return real_open(name, flags, **kwargs)
+                return real_open(name, flags, *args, **kwargs)
 
             with patch("reader_review_handoff.os.open", side_effect=swap_before_open):
                 with self.assertRaisesRegex(ValueError, "symlink"):

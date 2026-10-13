@@ -546,13 +546,13 @@ class ReviewIntakeTests(unittest.TestCase):
         decoy.mkdir()
         real_open, swapped = os.open, []
 
-        def swap_at_first_write(name, flags, **kwargs):
+        def swap_at_first_write(name, flags, *args, **kwargs):
             if (name == "operator-private-comparison.jsonl"
                     and "dir_fd" in kwargs and not swapped):
                 self.output.rename(relocated)
                 self.output.symlink_to(decoy, target_is_directory=True)
                 swapped.append(True)
-            return real_open(name, flags, **kwargs)
+            return real_open(name, flags, *args, **kwargs)
 
         with patch("reader_review_handoff.os.open", side_effect=swap_at_first_write):
             result = self.run_intake()
@@ -571,13 +571,13 @@ class ReviewIntakeTests(unittest.TestCase):
         decoy.mkdir()
         real_open, swapped = os.open, []
 
-        def swap_at_fd_open(name, flags, **kwargs):
+        def swap_at_fd_open(name, flags, *args, **kwargs):
             if (name == self.output.name and "dir_fd" in kwargs
                     and flags & os.O_DIRECTORY and not swapped):
                 self.output.rename(relocated)
                 self.output.symlink_to(decoy, target_is_directory=True)
                 swapped.append(True)
-            return real_open(name, flags, **kwargs)
+            return real_open(name, flags, *args, **kwargs)
 
         with patch("reader_review_handoff.os.open", side_effect=swap_at_fd_open):
             with self.assertRaisesRegex(ValueError, "symlink"):
