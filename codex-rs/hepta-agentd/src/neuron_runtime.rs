@@ -22,6 +22,14 @@ use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::NduSnapshotRefV1;
 use codex_hepta_types::StableId;
+use codex_hepta_types::PhaseMetricEventV1;
+use codex_hepta_types::PhaseMetricKindV1;
+use codex_hepta_types::PhaseMetricSinkV1;
+use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
+use std::time::Duration;
+use std::time::Instant;
 
 pub struct AgentdNeuronOwner<W, P>
 where
@@ -34,6 +42,8 @@ where
     neuron_owner_id: Option<StableId>,
     ndu_read_verifier: Option<NduReadVerifierV1>,
     effect_intent: Option<DurableNeuronEffectIntentV1>,
+    metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
+    failed_metrics: AtomicU64,
 }
 
 /// The kernel-authority issuer signs this exact complete binding after
@@ -66,6 +76,8 @@ where
             neuron_owner_id: None,
             ndu_read_verifier: None,
             effect_intent: None,
+            metric_sink: None,
+            failed_metrics: AtomicU64::new(0),
         }
     }
 
@@ -85,6 +97,8 @@ where
             neuron_owner_id: Some(neuron_owner_id),
             ndu_read_verifier: Some(ndu_read_verifier),
             effect_intent: None,
+            metric_sink: None,
+            failed_metrics: AtomicU64::new(0),
         }
     }
 
@@ -106,6 +120,8 @@ where
             neuron_owner_id: Some(neuron_owner_id),
             ndu_read_verifier: Some(ndu_read_verifier),
             effect_intent: Some(effect_intent),
+            metric_sink: None,
+            failed_metrics: AtomicU64::new(0),
         }
     }
 
@@ -137,6 +153,32 @@ where
         ))
     }
 
+    /// Attach the non-authorizing Evidence-owned durable phase metric sink.
+    /// The existing signed Neuron entry remains the only model-effect path.
+    /// A missing or unhealthy sink never grants production readiness.
+    pub fn with_metric_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
+        self.metric_sink = Some(sink);
+        self
+    }
+
+    pub fn production_metrics_ready(&self) -> bool {
+        self.metric_sink.as_ref().is_some_and(|sink| sink.healthy())
+            && self.failed_metrics.load(Ordering::Acquire) == 0
+    }
+
+    /// Explicit qualification barrier after the effect, not another model
+    /// invocation or a way to clear the sticky telemetry failure latch.
+    pub fn flush_production_metrics(&self) -> bool {
+        let Some(sink) = &self.metric_sink else {
+            return false;
+        };
+        if sink.flush().is_err() {
+            self.failed_metrics.fetch_add(1, Ordering::Release);
+            return false;
+        }
+        self.production_metrics_ready()
+    }
+
     pub fn effect_intent_status(&self) -> Option<NeuronEffectIntentStatusV1> {
         self.effect_intent
             .as_ref()
@@ -156,6 +198,36 @@ where
     /// The token is revalidated at physical effect entry; revocation during
     /// a synchronous invocation is fenced by with_verified_effect.
     pub fn tick_bound(
+        &mut self,
+        input: NeuronTickInputV1,
+        signed_read: &SignedNduSnapshotReadV1,
+        signed_grant: &SignedFinalUseGrant,
+    ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        // Avoid rematerializing the semantic digest or reading the clock when
+        // no Evidence sink is configured. This metric is the real wall-clock
+        // duration of the signed tick, never a simulated NDU/WAL phase.
+        let started = self.metric_sink.as_ref().map(|_| Instant::now());
+        let scope_digest = started
+            .map(|_| Digest32::of_bytes(input.subject_id.as_str().as_bytes()));
+        let operation_digest = started.and_then(|_| input.semantic_digest().ok());
+        let result = self.tick_bound_inner(input, signed_read, signed_grant);
+        if let (Some(started), Some(scope_digest), Some(operation_digest)) =
+            (started, scope_digest, operation_digest)
+        {
+            observe_phase_v1(
+                self.metric_sink.as_deref(),
+                &self.failed_metrics,
+                scope_digest,
+                operation_digest,
+                PhaseMetricKindV1::NeuronFeature,
+                started.elapsed(),
+                result.is_ok(),
+            );
+        }
+        result
+    }
+
+    fn tick_bound_inner(
         &mut self,
         input: NeuronTickInputV1,
         signed_read: &SignedNduSnapshotReadV1,
@@ -218,6 +290,33 @@ where
     /// not exposed: it would bypass the exact signed owner entry.
     pub fn runtime(&self) -> &NeuronRuntime<W> {
         &self.runtime
+    }
+}
+
+/// Real elapsed-time observation only. Metrics cannot mint an authority,
+/// overwrite committed state or replay an ambiguous signed Neuron effect.
+fn observe_phase_v1(
+    sink: Option<&dyn PhaseMetricSinkV1>,
+    failed_metrics: &AtomicU64,
+    scope_digest: Digest32,
+    operation_digest: Digest32,
+    phase: PhaseMetricKindV1,
+    elapsed: Duration,
+    succeeded: bool,
+) {
+    if let Some(sink) = sink {
+        if sink
+            .record(PhaseMetricEventV1 {
+                scope_digest,
+                operation_digest,
+                phase,
+                latency_micros: u64::try_from(elapsed.as_micros()).unwrap_or(u64::MAX),
+                succeeded,
+            })
+            .is_err()
+        {
+            failed_metrics.fetch_add(1, Ordering::Release);
+        }
     }
 }
 
