@@ -7,8 +7,6 @@ receipt is therefore evidence of a bounded measurement, not evidence of
 production readiness or of an emergent capability.
 """
 
-from __future__ import annotations
-
 import argparse
 import hashlib
 import json
@@ -65,6 +63,22 @@ REQUIRED_CONTEXT = (
     "training_budget",
 )
 REQUIRED_ARTIFACT_DIGESTS = ("model_digest", "preprocessor_digest", "head_digest")
+BASELINE_METRICS = (
+    "task_utility",
+    "active_flops",
+    "latency_ms",
+    "peak_rss_bytes",
+    "gpu_peak_bytes",
+    "retention_score",
+    "old_task_regression",
+)
+BASELINE_REQUIRED_FIELDS = (
+    "baseline_status",
+    "baseline_id",
+    "baseline_model_digest",
+    "baseline_preprocessor_digest",
+    "baseline_head_digest",
+)
 
 
 class ExperimentError(ValueError):
@@ -146,6 +160,24 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         raise ExperimentError("evaluation.paired_by is required")
     if evaluation.get("context_fields") != list(REQUIRED_CONTEXT):
         raise ExperimentError("evaluation.context_fields must preserve the canonical context order")
+    for field in ("same_stem_digest_required", "same_seed_required", "artifact_digest_stability_required"):
+        if evaluation.get(field) is not True:
+            raise ExperimentError(f"evaluation.{field} must be true")
+    baseline = evaluation.get("baseline")
+    if not isinstance(baseline, dict):
+        raise ExperimentError("evaluation.baseline is required")
+    if kind == "multimodal_differentiation":
+        if baseline.get("enabled") is not True or baseline.get("kind") != "single_modality":
+            raise ExperimentError("multimodal evaluation requires an independent single-modality baseline")
+        if baseline.get("paired_by") != evaluation["paired_by"]:
+            raise ExperimentError("baseline.paired_by must match evaluation.paired_by")
+        if baseline.get("required_metrics") != list(BASELINE_METRICS):
+            raise ExperimentError("baseline.required_metrics must preserve the canonical metric order")
+    else:
+        if baseline.get("enabled") is not False:
+            raise ExperimentError("NDU evaluation does not use an independent modality baseline")
+        if evaluation.get("control_arm") != "no_system2":
+            raise ExperimentError("NDU evaluation must use no_system2 as its fixed control arm")
     min_rows = evaluation.get("min_rows_per_arm")
     if isinstance(min_rows, bool) or not isinstance(min_rows, int) or min_rows < 1:
         raise ExperimentError("evaluation.min_rows_per_arm must be a positive integer")
@@ -193,7 +225,8 @@ def _load_jsonl(path: Path) -> tuple[list[dict[str, Any]], str]:
 
 
 def validate_observation(row: dict[str, Any], config: dict[str, Any]) -> dict[str, Any]:
-    for key in ("run_id", "arm_id", "example_id", "split", "status"):
+    paired_by = config["evaluation"]["paired_by"]
+    for key in ("run_id", "arm_id", "split", "status", paired_by):
         if not isinstance(row.get(key), str) or not row[key]:
             raise ExperimentError(f"observation.{key} is required")
     arm_ids = {arm["id"] for arm in config["arms"]}
@@ -210,9 +243,21 @@ def validate_observation(row: dict[str, Any], config: dict[str, Any]) -> dict[st
             _require_digest(row.get(field), f"observation.{field}")
     for field in REQUIRED_ARTIFACT_DIGESTS:
         _require_digest(row.get(field), f"observation.{field}")
-    paired_by = config["evaluation"]["paired_by"]
-    if paired_by != "example_id" and row.get(paired_by) in (None, ""):
-        raise ExperimentError(f"observation.{paired_by} is required by config")
+    if config["kind"] == "multimodal_differentiation":
+        for field in BASELINE_REQUIRED_FIELDS:
+            value = row.get(field)
+            if field == "baseline_status":
+                if value not in STATUSES:
+                    raise ExperimentError("observation.baseline_status must be a known status")
+            elif field == "baseline_id":
+                if not isinstance(value, str) or not value:
+                    raise ExperimentError("observation.baseline_id is required")
+            else:
+                _require_digest(value, f"observation.{field}")
+        if row["baseline_status"] == "completed":
+            for metric in BASELINE_METRICS:
+                minimum = -math.inf if metric == "task_utility" else 0.0
+                _finite_number(row.get(f"baseline_{metric}"), f"observation.baseline_{metric}", minimum=minimum)
     kind = config["kind"]
     if kind == "multimodal_differentiation":
         arm = next(arm for arm in config["arms"] if arm["id"] == row["arm_id"])
@@ -260,6 +305,10 @@ def summarize_arm(rows: list[dict[str, Any]], arm_id: str, split: str) -> dict[s
         metric: [float(row[metric]) for row in completed if metric in row]
         for metric in OPTIONAL_METRICS
     }
+    metric_presence = {
+        metric: sum(metric in row for row in selected)
+        for metric in REQUIRED_METRICS
+    }
     success_rows = [row for row in selected if "task_success" in row]
     success_count = sum(row.get("task_success") is True for row in success_rows)
     result: dict[str, Any] = {
@@ -267,6 +316,15 @@ def summarize_arm(rows: list[dict[str, Any]], arm_id: str, split: str) -> dict[s
         "split": split,
         "rows": len(selected),
         "completed_rows": len(completed),
+        "survivorship": {
+            "denominator_rows": len(selected),
+            "completed_rows": len(completed),
+            "failed_rows": sum(row["status"] == "failed" for row in selected),
+            "abstained_rows": sum(row["status"] == "abstained" for row in selected),
+            "unavailable_rows": sum(row["status"] == "unavailable" for row in selected),
+            "metric_presence": metric_presence,
+            "utility_per_active_flop_uses_completed_rows_only": True,
+        },
         "status_counts": {status: sum(row["status"] == status for row in selected) for status in sorted(STATUSES)},
         "task_utility_mean": _mean(utility),
         "utility_per_active_flop": (sum(utility) / sum(flops)) if sum(flops) > 0 else None,
@@ -288,6 +346,78 @@ def summarize_arm(rows: list[dict[str, Any]], arm_id: str, split: str) -> dict[s
     return result
 
 
+def _paired_delta(left_rows: list[dict[str, Any]], right_rows: list[dict[str, Any]], paired_by: str, *, right_prefix: str = "") -> dict[str, Any]:
+    left = {row[paired_by]: row for row in left_rows}
+    right = {row[paired_by]: row for row in right_rows}
+    common = sorted(set(left) & set(right))
+    complete = [
+        (left[key], right[key])
+        for key in common
+        if left[key]["status"] == "completed" and right[key]["status"] == "completed"
+    ]
+    missing_or_incomplete = [key for key in common if key not in {left_row[paired_by] for left_row, _ in complete}]
+
+    def delta(metric: str) -> float | None:
+        values = [float(left_row[metric]) - float(right_row[f"{right_prefix}{metric}"]) for left_row, right_row in complete]
+        return _mean(values)
+
+    return {
+        "paired_by": paired_by,
+        "paired_rows": len(common),
+        "completed_pairs": len(complete),
+        "unpaired_left": sorted(set(left) - set(right)),
+        "unpaired_right": sorted(set(right) - set(left)),
+        "incomplete_pairs": sorted(missing_or_incomplete),
+        "external_task": {
+            "task_utility_delta_mean": delta("task_utility"),
+            "retention_score_delta_mean": delta("retention_score"),
+        },
+        "resource": {
+            "active_flops_delta_mean": delta("active_flops"),
+            "latency_ms_delta_mean": delta("latency_ms"),
+            "peak_rss_bytes_delta_mean": delta("peak_rss_bytes"),
+            "gpu_peak_bytes_delta_mean": delta("gpu_peak_bytes"),
+        },
+        "old_task": {
+            "old_task_regression_delta_mean": delta("old_task_regression"),
+        },
+    }
+
+
+def _baseline_result(rows: list[dict[str, Any]], arm_ids: list[str], split: str, paired_by: str) -> dict[str, Any]:
+    comparisons: dict[str, Any] = {}
+    identity_drift: dict[str, list[str]] = {}
+    artifact_drift: dict[str, dict[str, list[str]]] = {}
+    for arm_id in arm_ids:
+        selected = [row for row in rows if row["arm_id"] == arm_id and row["split"] == split]
+        baseline_ids = sorted({row["baseline_id"] for row in selected})
+        if len(baseline_ids) > 1:
+            identity_drift[arm_id] = baseline_ids
+        for field in ("baseline_model_digest", "baseline_preprocessor_digest", "baseline_head_digest"):
+            values = sorted({row[field] for row in selected})
+            if len(values) > 1:
+                artifact_drift.setdefault(arm_id, {})[field] = values
+        baseline_rows = [
+            {
+                **row,
+                "status": row["baseline_status"],
+                **{metric: row[f"baseline_{metric}"] for metric in BASELINE_METRICS if f"baseline_{metric}" in row},
+            }
+            for row in selected
+        ]
+        comparisons[arm_id] = {
+            "baseline_ids": baseline_ids,
+            "baseline_status_counts": {status: sum(row["baseline_status"] == status for row in selected) for status in sorted(STATUSES)},
+            "delta": _paired_delta(selected, baseline_rows, paired_by, right_prefix=""),
+        }
+    return {
+        "kind": "single_modality",
+        "comparisons": comparisons,
+        "baseline_identity_drift": identity_drift,
+        "baseline_artifact_digest_drift": artifact_drift,
+    }
+
+
 def make_receipt(config: dict[str, Any], rows: list[dict[str, Any]], observation_digest: str) -> dict[str, Any]:
     validate_config(config)
     if not rows:
@@ -306,13 +436,23 @@ def make_receipt(config: dict[str, Any], rows: list[dict[str, Any]], observation
         }
         for arm_id in (arm["id"] for arm in config["arms"])
     }
+    artifact_digest_drift = {
+        arm_id: {
+            field: values
+            for field, values in arm_artifact_digests[arm_id].items()
+            if len(values) > 1
+        }
+        for arm_id in (arm["id"] for arm in config["arms"])
+    }
+    artifact_digest_drift = {arm_id: values for arm_id, values in artifact_digest_drift.items() if values}
     split = config["evaluation"]["split"]
     arms = [arm["id"] for arm in config["arms"]]
+    paired_by = config["evaluation"]["paired_by"]
     seen_pairs: set[tuple[str, str]] = set()
     for row in rows:
         if row["split"] != split:
             continue
-        pair = (row["arm_id"], row["example_id"])
+        pair = (row["arm_id"], row[paired_by])
         if pair in seen_pairs:
             raise ExperimentError(f"duplicate evaluation row for {pair[0]}:{pair[1]}")
         seen_pairs.add(pair)
@@ -320,7 +460,7 @@ def make_receipt(config: dict[str, Any], rows: list[dict[str, Any]], observation
     min_rows = config["evaluation"]["min_rows_per_arm"]
     insufficient = [item["arm_id"] for item in summaries if item["completed_rows"] < min_rows]
     evaluation_sets = {
-        arm_id: {row["example_id"] for row in rows if row["arm_id"] == arm_id and row["split"] == split}
+        arm_id: {row[paired_by] for row in rows if row["arm_id"] == arm_id and row["split"] == split}
         for arm_id in arms
     }
     reference_set = next((values for values in evaluation_sets.values() if values), set())
@@ -332,7 +472,7 @@ def make_receipt(config: dict[str, Any], rows: list[dict[str, Any]], observation
     budgets = config["budgets"]
     budget_violations = {
         arm_id: [
-            row["example_id"]
+            row[paired_by]
             for row in rows
             if row["arm_id"] == arm_id
             and row["split"] == split
@@ -347,8 +487,34 @@ def make_receipt(config: dict[str, Any], rows: list[dict[str, Any]], observation
         for arm_id in arms
     }
     budget_violations = {arm_id: examples for arm_id, examples in budget_violations.items() if examples}
+    if config["kind"] == "multimodal_differentiation":
+        baseline_comparison = _baseline_result(rows, arms, split, paired_by)
+        ndu_control_arm = None
+        ndu_paired_deltas = None
+        digest_blockers = bool(
+            artifact_digest_drift
+            or baseline_comparison["baseline_identity_drift"]
+            or baseline_comparison["baseline_artifact_digest_drift"]
+        )
+    else:
+        control_arm = config["evaluation"]["control_arm"]
+        control_rows = [row for row in rows if row["arm_id"] == control_arm and row["split"] == split]
+        baseline_comparison = None
+        ndu_control_arm = control_arm
+        ndu_paired_deltas = {
+            arm_id: _paired_delta(
+                [row for row in rows if row["arm_id"] == arm_id and row["split"] == split],
+                control_rows,
+                paired_by,
+            )
+            for arm_id in arms
+            if arm_id != control_arm
+        }
+        digest_blockers = bool(artifact_digest_drift)
     if budget_violations:
         disposition = "resource_budget_exceeded"
+    elif digest_blockers:
+        disposition = "artifact_digest_drift"
     elif insufficient:
         disposition = "insufficient_evidence"
     elif unpaired:
@@ -361,6 +527,11 @@ def make_receipt(config: dict[str, Any], rows: list[dict[str, Any]], observation
         "insufficient_arms": insufficient,
         "unpaired_arms": unpaired,
         "budget_violations": budget_violations,
+        "artifact_digest_drift": artifact_digest_drift,
+        "paired_by": paired_by,
+        "baseline_comparison": baseline_comparison,
+        "ndu_control_arm": ndu_control_arm,
+        "ndu_paired_deltas": ndu_paired_deltas,
         "disposition": disposition,
         "winner": None,
     }

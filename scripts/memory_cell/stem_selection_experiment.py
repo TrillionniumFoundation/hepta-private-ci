@@ -16,8 +16,6 @@ The runner deliberately keeps four dimensions separate:
 No candidate is promoted or selected for serving by this module.
 """
 
-from __future__ import annotations
-
 from dataclasses import asdict, dataclass
 import argparse
 import hashlib
@@ -165,6 +163,7 @@ class StemBenchmarkBackend(Protocol):
         tasks: Sequence[TaskCase],
         *,
         cells: int,
+        active_cells: int,
         training_budget: int,
         seed: int,
     ) -> Sequence[TaskObservation]:
@@ -182,20 +181,24 @@ class SyntheticStemBackend:
         tasks: Sequence[TaskCase],
         *,
         cells: int,
+        active_cells: int,
         training_budget: int,
         seed: int,
     ) -> Sequence[TaskObservation]:
         variant.validate()
         _bounded_int(cells, low=1, high=MAX_CELLS, name="cells")
+        _bounded_int(active_cells, low=1, high=cells, name="active_cells")
         _bounded_int(training_budget, low=1, high=10_000_000, name="training_budget")
         rng = random.Random(f"{seed}:{variant.variant_id}:{cells}:{training_budget}")
         out: list[TaskObservation] = []
-        # A shared Stem is paid once, while a replicated model pays it per Cell.
-        stem_multiplier = cells if variant.replicate_full else 1
-        active_flops = (
-            stem_multiplier * variant.stem_flops_per_token_g
-            + cells * variant.head_flops_per_token_g
+        # Active FLOPs are the same workload for every candidate: only the
+        # requested Cells execute. Resident copies are accounted separately.
+        active_flops = active_cells * (
+            variant.stem_flops_per_token_g + variant.head_flops_per_token_g
         )
+        # A shared Stem is paid once in resident memory, while a replicated
+        # model pays it per Cell. This is deliberately not active compute.
+        stem_multiplier = cells if variant.replicate_full else 1
         memory = (
             stem_multiplier * variant.stem_memory_mb
             + cells * variant.head_memory_mb
@@ -214,6 +217,89 @@ class SyntheticStemBackend:
             latency *= 1.0 + rng.uniform(-0.015, 0.015)
             out.append(TaskObservation(task.task_id, quality, active_flops, latency, memory))
         return out
+
+
+class JsonlStemBenchmarkBackend:
+    """Load sealed observations produced by an external benchmark executor.
+
+    Each JSONL row must include ``variant_id``, ``task_id``, ``cells``,
+    ``active_cells``, ``training_budget``, ``seed`` and the four observation
+    fields.  The runner still recomputes all aggregate metrics, so an external
+    report cannot smuggle in a precomputed winner.
+    """
+
+    benchmark_mode = "external_observation"
+
+    def __init__(self, rows: Sequence[dict[str, Any]]) -> None:
+        self._rows: dict[tuple[str, str], TaskObservation] = {}
+        self._metadata: dict[tuple[str, str], tuple[int, int, int, int]] = {}
+        for item in rows:
+            if not isinstance(item, dict):
+                raise ValidationError("external observation must be an object")
+            variant_id = str(item.get("variant_id", ""))
+            task_id = str(item.get("task_id", ""))
+            if not variant_id or not task_id:
+                raise ValidationError("external observation needs variant_id/task_id")
+            key = (variant_id, task_id)
+            if key in self._rows:
+                raise ValidationError("duplicate external observation")
+            observation = TaskObservation(
+                task_id=task_id,
+                quality=item.get("quality", -1.0),
+                active_flops_g=item.get("active_flops_g", -1.0),
+                latency_us=item.get("latency_us", -1.0),
+                cell_memory_mb=item.get("cell_memory_mb", item.get("resident_memory_mb", -1.0)),
+            )
+            if not all(
+                _finite(getattr(observation, field))
+                for field in ("quality", "active_flops_g", "latency_us", "cell_memory_mb")
+            ):
+                raise ValidationError("external observation contains a nonfinite value")
+            self._rows[key] = observation
+            self._metadata[key] = (
+                _bounded_int(item.get("cells"), low=1, high=MAX_CELLS, name="cells"),
+                _bounded_int(item.get("active_cells"), low=1, high=MAX_CELLS, name="active_cells"),
+                _bounded_int(item.get("training_budget"), low=1, high=10_000_000, name="training_budget"),
+                _bounded_int(item.get("seed"), low=0, high=2**31 - 1, name="seed"),
+            )
+
+    @classmethod
+    def from_path(cls, path: Path) -> "JsonlStemBenchmarkBackend":
+        if not path.is_file():
+            raise ValidationError(f"external observation file does not exist: {path}")
+        rows: list[dict[str, Any]] = []
+        for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if not line.strip():
+                continue
+            try:
+                item = json.loads(line)
+            except json.JSONDecodeError as error:
+                raise ValidationError(f"invalid external JSONL at line {line_number}") from error
+            rows.append(item)
+        if not rows:
+            raise ValidationError("external observation file is empty")
+        return cls(rows)
+
+    def evaluate(
+        self,
+        variant: StemVariant,
+        tasks: Sequence[TaskCase],
+        *,
+        cells: int,
+        active_cells: int,
+        training_budget: int,
+        seed: int,
+    ) -> Sequence[TaskObservation]:
+        observations: list[TaskObservation] = []
+        for task in tasks:
+            key = (variant.variant_id, task.task_id)
+            if key not in self._rows:
+                raise ValidationError(f"missing external observation for {variant.variant_id}/{task.task_id}")
+            metadata = self._metadata[key]
+            if metadata != (cells, active_cells, training_budget, seed):
+                raise ValidationError(f"external observation metadata mismatch for {variant.variant_id}/{task.task_id}")
+            observations.append(self._rows[key])
+        return observations
 
 
 DEFAULT_VARIANTS: tuple[StemVariant, ...] = (
@@ -254,6 +340,7 @@ def run_experiment(
     variants: Sequence[StemVariant] = DEFAULT_VARIANTS,
     *,
     cells: int = 32,
+    active_cells: int = 1,
     training_budget: int = 1000,
     seed: int = DEFAULT_SEED,
     backend: StemBenchmarkBackend | None = None,
@@ -268,12 +355,22 @@ def run_experiment(
     if len({v.variant_id for v in variants}) != len(variants):
         raise ValidationError("duplicate variant_id")
     cells = _bounded_int(cells, low=1, high=MAX_CELLS, name="cells")
+    active_cells = _bounded_int(active_cells, low=1, high=cells, name="active_cells")
     training_budget = _bounded_int(training_budget, low=1, high=10_000_000, name="training_budget")
     seed = _bounded_int(seed, low=0, high=2**31 - 1, name="seed")
     backend = backend or SyntheticStemBackend()
     observations: dict[str, list[TaskObservation]] = {}
     for variant in variants:
-        rows = tuple(backend.evaluate(variant, tasks, cells=cells, training_budget=training_budget, seed=seed))
+        rows = tuple(
+            backend.evaluate(
+                variant,
+                tasks,
+                cells=cells,
+                active_cells=active_cells,
+                training_budget=training_budget,
+                seed=seed,
+            )
+        )
         if len(rows) != len(tasks) or {r.task_id for r in rows} != {t.task_id for t in tasks}:
             raise ValidationError(f"backend returned incomplete task observations for {variant.variant_id}")
         for row in rows:
@@ -286,6 +383,8 @@ def run_experiment(
     # Full-model replication is the diagnostic reference for negative transfer.
     reference_id = next((v.variant_id for v in variants if v.replicate_full), variants[-1].variant_id)
     reference = {r.task_id: r.quality for r in observations[reference_id]}
+    reference_variant = next(v for v in variants if v.variant_id == reference_id)
+    budget_gain = 1.0 - math.exp(-training_budget / 2000.0)
     result_rows: list[dict[str, Any]] = []
     for variant in variants:
         rows = observations[variant.variant_id]
@@ -295,23 +394,32 @@ def run_experiment(
         mean_flops = statistics.fmean(r.active_flops_g for r in rows)
         mean_latency = statistics.fmean(r.latency_us for r in rows)
         quality_by_id = {r.task_id: r.quality for r in rows}
-        deficits = [max(0.0, reference[r.task_id] - r.quality) for r in rows if r.task_id in reference and r.task_id != reference_id]
-        # For the reference itself this is defined as zero by convention.
-        negative_transfer = 0.0 if variant.variant_id == reference_id else math.fsum(deficits) / len(deficits) if deficits else 0.0
-        negative_count = 0 if variant.variant_id == reference_id else sum(d > 0.01 for d in deficits)
-        base_memory = variant.stem_memory_mb * (cells if variant.replicate_full else 1)
-        head_memory = variant.head_memory_mb * cells
-        incremental_memory = head_memory + (variant.stem_memory_mb if variant.replicate_full else 0.0)
+        capacity_gap = max(0.0, reference_variant.quality_ceiling - variant.quality_ceiling) * budget_gain
+        deficits = [
+            max(0.0, reference[r.task_id] - r.quality)
+            for r in rows
+            if r.task_id in reference and r.task_id != reference_id
+        ]
+        # Capacity gap is reported separately. The residual is the only part
+        # attributed to negative transfer, avoiding a lower-capacity Stem being
+        # blamed for its expected quality ceiling.
+        residuals = [max(0.0, deficit - capacity_gap) for deficit in deficits]
+        negative_transfer = math.fsum(residuals) / len(residuals) if residuals else 0.0
+        negative_count = sum(residual > 0.01 for residual in residuals)
         params = variant.stem_params_m * (cells if variant.replicate_full else 1) + variant.head_params_m * cells
         result_rows.append(
             dict(
                 variant_id=variant.variant_id,
                 shared_stem=not variant.replicate_full,
                 cells=cells,
+                active_cells=active_cells,
                 stem_params_m=variant.stem_params_m,
                 head_params_m=variant.head_params_m,
                 total_parameters_m=params,
-                resident_memory_mb=base_memory + head_memory,
+                # In external mode this is measured observation data; the
+                # profile-derived value remains available through the fixed
+                # incremental cost fields below.
+                resident_memory_mb=statistics.fmean(r.cell_memory_mb for r in rows),
                 incremental_parameters_per_cell_m=(
                     variant.stem_params_m if variant.replicate_full else variant.head_params_m
                 ),
@@ -325,6 +433,10 @@ def run_experiment(
                 utility=utility,
                 utility_per_active_flop=(utility / mean_flops if mean_flops > 0 else None),
                 active_flops_per_request_g=mean_flops,
+                resident_flops_per_token_g=(
+                    variant.stem_flops_per_token_g * (cells if variant.replicate_full else 1)
+                    + variant.head_flops_per_token_g * cells
+                ),
                 latency_us=dict(
                     p50=_quantile([r.latency_us for r in rows], 0.50),
                     p95=_quantile([r.latency_us for r in rows], 0.95),
@@ -332,6 +444,7 @@ def run_experiment(
                 ),
                 negative_transfer_mean=negative_transfer,
                 negative_transfer_count=negative_count,
+                capacity_gap_mean=capacity_gap,
                 quality_by_task=quality_by_id,
                 task_observations=[asdict(r) for r in sorted(rows, key=lambda r: r.task_id)],
             )
@@ -377,14 +490,25 @@ def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--tasks", type=Path, help="JSON task list; default is deterministic local tasks")
     parser.add_argument("--variants", type=Path, help="JSON candidate profiles; default is four registered candidates")
+    parser.add_argument("--observations", type=Path, help="sealed external benchmark observations in JSONL")
     parser.add_argument("--cells", type=int, default=32)
+    parser.add_argument("--active-cells", type=int, default=1)
     parser.add_argument("--training-budget", type=int, default=1000)
     parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
     parser.add_argument("--output", type=Path, required=True, help="new JSON report path")
     args = parser.parse_args(argv)
     tasks = load_tasks(args.tasks) if args.tasks else default_tasks()
     variants = load_variants(args.variants) if args.variants else DEFAULT_VARIANTS
-    report = run_experiment(tasks, variants, cells=args.cells, training_budget=args.training_budget, seed=args.seed)
+    backend = JsonlStemBenchmarkBackend.from_path(args.observations) if args.observations else None
+    report = run_experiment(
+        tasks,
+        variants,
+        cells=args.cells,
+        active_cells=args.active_cells,
+        training_budget=args.training_budget,
+        seed=args.seed,
+        backend=backend,
+    )
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with args.output.open("x", encoding="utf-8") as stream:
         json.dump(report, stream, ensure_ascii=False, allow_nan=False, sort_keys=True, indent=2)

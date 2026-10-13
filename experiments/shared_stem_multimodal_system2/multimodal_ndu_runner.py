@@ -4,8 +4,6 @@ The implementation is kept in :mod:`runner` so the generic CLI and tests have
 one owner.  This module is the name used by the shared Stem experiment suite.
 """
 
-from __future__ import annotations
-
 import sys
 from pathlib import Path
 

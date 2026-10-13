@@ -18,8 +18,6 @@ the diagnostic boundary: evidence conditions are inputs, labels are evaluator
 inputs, and a report never acts as model selection or promotion authority.
 """
 
-from __future__ import annotations
-
 from dataclasses import asdict, dataclass
 import argparse
 import os
@@ -80,6 +78,15 @@ class Evidence:
 
 
 @dataclass(frozen=True)
+class ReaderEvidence:
+    """Evidence view exposed to a Reader; evaluator annotations are removed."""
+
+    evidence_id: str
+    text: str
+    kind: str = "ordinary"
+
+
+@dataclass(frozen=True)
 class ReaderCase:
     question_id: str
     question: str
@@ -114,36 +121,99 @@ class ReaderBackend(Protocol):
     profile: str
     benchmark_mode: str
 
-    def answer(self, question: str, evidence: Sequence[Evidence], *, arm: str) -> str:
+    def answer(self, question: str, evidence: Sequence[ReaderEvidence]) -> str:
         ...
 
 
 class DeterministicReader:
-    """Fixture Reader: emits the answer only when a key premise is present."""
+    """Fixture Reader: echoes a supplied evidence span without evaluator labels."""
 
     identity = "deterministic-fixture-reader"
     profile = "keyword-v1"
     benchmark_mode = "synthetic_fixture"
 
-    def answer(self, question: str, evidence: Sequence[Evidence], *, arm: str) -> str:
+    def answer(self, question: str, evidence: Sequence[ReaderEvidence]) -> str:
         del question
-        if any(x.is_key_premise for x in evidence):
-            # The fixture cannot know gold answers; it returns the key premise
-            # text, making the result intentionally imperfect but reproducible.
-            return next(x.text for x in evidence if x.is_key_premise)
+        if evidence:
+            return evidence[0].text
         return "Insufficient evidence."
+
+
+def _reader_request_digest(question: str, evidence: Sequence[ReaderEvidence]) -> str:
+    """Digest the exact public Reader input, without arm or evaluator labels."""
+    return _digest(
+        {
+            "question": question,
+            "evidence": [asdict(item) for item in evidence],
+        }
+    )
+
+
+class JsonlReaderBackend:
+    """Replay answers sealed by an external Reader executor.
+
+    Rows are keyed by the public input digest. This gives a real executor a
+    deterministic handoff while keeping arm names, gold answers and evaluator
+    annotations outside its input contract.
+    """
+
+    identity = "external-jsonl-reader"
+    profile = "sealed-answer-v1"
+    benchmark_mode = "external_observation"
+
+    def __init__(self, rows: Sequence[dict[str, Any]]) -> None:
+        self._answers: dict[str, str] = {}
+        for item in rows:
+            if not isinstance(item, dict):
+                raise ValidationError("external Reader observation must be an object")
+            request_digest = item.get("request_digest")
+            answer = item.get("answer")
+            if not isinstance(request_digest, str) or len(request_digest) != 64:
+                raise ValidationError("external Reader request_digest must be sha256 hex")
+            try:
+                int(request_digest, 16)
+            except ValueError as error:
+                raise ValidationError("external Reader request_digest must be sha256 hex") from error
+            if not isinstance(answer, str) or not answer.strip():
+                raise ValidationError("external Reader answer must be nonempty text")
+            if request_digest in self._answers:
+                raise ValidationError("duplicate external Reader request_digest")
+            self._answers[request_digest] = answer
+
+    @classmethod
+    def from_path(cls, path: Path) -> "JsonlReaderBackend":
+        if not path.is_file():
+            raise ValidationError(f"external Reader observation file does not exist: {path}")
+        rows: list[dict[str, Any]] = []
+        for line_number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
+            if not line.strip():
+                continue
+            try:
+                rows.append(json.loads(line))
+            except json.JSONDecodeError as error:
+                raise ValidationError(f"invalid external Reader JSONL at line {line_number}") from error
+        if not rows:
+            raise ValidationError("external Reader observation file is empty")
+        return cls(rows)
+
+    def answer(self, question: str, evidence: Sequence[ReaderEvidence]) -> str:
+        request_digest = _reader_request_digest(question, evidence)
+        try:
+            return self._answers[request_digest]
+        except KeyError as error:
+            raise ValidationError(f"missing external Reader answer for {request_digest}") from error
 
 
 def default_cases() -> tuple[ReaderCase, ...]:
     rows = (
-        ("q-001", "Which city hosted the launch?", "Kyoto", "Kyoto hosted the launch.", "The launch was held in Kyoto.", "ordinary"),
-        ("q-002", "Who approved the change?", "Mika", "Mika approved the change.", "Approval was recorded by Mika.", "procedural"),
-        ("q-003", "When did the migration finish?", "2024-03-12", "The migration finished on 2024-03-12.", "The completion date was 2024-03-12.", "temporal"),
-        ("q-004", "Which codec was selected?", "Opus", "The selected codec was Opus.", "The team selected Opus.", "technical"),
-        ("q-005", "What was the rollback trigger?", "error rate", "Rollback triggered when error rate rose.", "The rollback trigger was a rising error rate.", "operational"),
-        ("q-006", "Which branch contains the fix?", "recovery", "The fix is on the recovery branch.", "The fix was merged to recovery.", "code"),
-        ("q-007", "What is the retention window?", "30 days", "The retention window is 30 days.", "Retention is set to 30 days.", "policy"),
-        ("q-008", "Who owns the snapshot?", "Iris", "Iris owns the snapshot.", "The snapshot owner is Iris.", "ownership"),
+        ("q-001", "Which city hosted the launch?", "Kyoto", "Kyoto hosted the launch.", "Kyoto", "ordinary"),
+        ("q-002", "Who approved the change?", "Mika", "Mika approved the change.", "Mika", "procedural"),
+        ("q-003", "When did the migration finish?", "2024-03-12", "The migration finished on 2024-03-12.", "2024-03-12", "temporal"),
+        ("q-004", "Which codec was selected?", "Opus", "The selected codec was Opus.", "Opus", "technical"),
+        ("q-005", "What was the rollback trigger?", "error rate", "Rollback triggered when error rate rose.", "error rate", "operational"),
+        ("q-006", "Which branch contains the fix?", "recovery", "The fix is on the recovery branch.", "recovery", "code"),
+        ("q-007", "What is the retention window?", "30 days", "The retention window is 30 days.", "30 days", "policy"),
+        ("q-008", "Who owns the snapshot?", "Iris", "Iris owns the snapshot.", "Iris", "ownership"),
     )
     cases = []
     for qid, question, answer, ordinary, sufficient, family in rows:
@@ -183,6 +253,11 @@ def _arm_evidence(case: ReaderCase, arm: str) -> tuple[Evidence, ...]:
     if arm == "key_premise_removed":
         return tuple(x for x in case.sufficient_evidence if not x.is_key_premise)
     raise ValidationError(f"unknown Reader arm: {arm}")
+
+
+def _reader_evidence(evidence: Sequence[Evidence]) -> tuple[ReaderEvidence, ...]:
+    """Strip key-premise labels before invoking the Reader backend."""
+    return tuple(ReaderEvidence(item.evidence_id, item.text, item.kind) for item in evidence)
 
 
 def _write_jsonl(path: Path, rows: Sequence[dict[str, Any]]) -> str:
@@ -234,7 +309,9 @@ def run_diagnostic(
                 status="failed",
             )
             try:
-                answer = backend.answer(case.question, evidence, arm=arm)
+                reader_evidence = _reader_evidence(evidence)
+                row["reader_request_digest"] = _reader_request_digest(case.question, reader_evidence)
+                answer = backend.answer(case.question, reader_evidence)
                 if not isinstance(answer, str) or not answer.strip():
                     raise ValidationError("Reader returned an empty answer")
                 row.update(status="succeeded", answer=answer, answer_digest=_digest(answer))
@@ -328,7 +405,11 @@ def run_diagnostic(
         production_accepted=False,
         model_selection_authority=False,
         semantic_entailment_independently_verified=False,
-        note="Token F1 is a diagnostic score; sufficient evidence is a registered control, not an independent semantic oracle.",
+        note=(
+            "Token F1 is a diagnostic score; sufficient evidence is a registered control, "
+            "not an independent semantic oracle. The deterministic fixture cannot establish "
+            "that a real retrieval system failed."
+        ),
     )
     if output_dir is not None:
         with (output_dir / "report.json").open("x", encoding="utf-8") as stream:
@@ -372,11 +453,13 @@ def load_cases(path: Path) -> tuple[ReaderCase, ...]:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--cases", type=Path, help="JSON case list; default is deterministic local cases")
+    parser.add_argument("--answers", type=Path, help="sealed external Reader answers in JSONL")
     parser.add_argument("--output-dir", type=Path, required=True, help="new output directory")
     parser.add_argument("--seed", type=int, default=20261013)
     args = parser.parse_args(argv)
     cases = load_cases(args.cases) if args.cases else default_cases()
-    run_diagnostic(cases, output_dir=args.output_dir, seed=args.seed)
+    backend = JsonlReaderBackend.from_path(args.answers) if args.answers else None
+    run_diagnostic(cases, backend=backend, output_dir=args.output_dir, seed=args.seed)
     return 0
 
 

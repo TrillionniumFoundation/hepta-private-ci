@@ -12,7 +12,21 @@
     "kind": {"enum": ["multimodal_differentiation", "ndu_system2_ablation"]},
     "arms": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["id"], "properties": {"id": {"type": "string", "minLength": 1}}}},
     "required_metrics": {"type": "array", "items": {"type": "string"}},
-    "evaluation": {"type": "object", "required": ["split", "paired_by", "min_rows_per_arm", "context_fields"]},
+    "evaluation": {
+      "type": "object",
+      "required": ["split", "paired_by", "min_rows_per_arm", "context_fields", "same_stem_digest_required", "same_seed_required", "artifact_digest_stability_required", "baseline"],
+      "properties": {
+        "split": {"enum": ["train", "validation", "holdout", "future"]},
+        "paired_by": {"type": "string", "minLength": 1},
+        "min_rows_per_arm": {"type": "integer", "minimum": 1},
+        "context_fields": {"type": "array", "items": {"type": "string"}},
+        "same_stem_digest_required": {"const": true},
+        "same_seed_required": {"const": true},
+        "artifact_digest_stability_required": {"const": true},
+        "control_arm": {"type": "string"},
+        "baseline": {"type": "object", "required": ["enabled", "kind", "paired_by", "required_metrics"], "properties": {"enabled": {"type": "boolean"}, "kind": {"type": "string"}, "paired_by": {"type": "string"}, "required_metrics": {"type": "array", "items": {"type": "string"}}}}
+      }
+    },
     "budgets": {"type": "object", "required": ["max_active_flops", "max_latency_ms", "max_peak_memory_bytes"]},
     "authority": {"const": {"production_accepted": false, "selection_authority": false, "training_authority": false}}
   }

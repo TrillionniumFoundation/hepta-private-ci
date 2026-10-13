@@ -26,7 +26,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         generation: 1,
         sequence: 1,
         capability_digest: grant.digest,
-        arguments: ActionArgumentsV1::Click { x: 1, y: 1 },
+        arguments: ActionArgumentsV1::Click {
+            target_digest: Digest32::of_bytes(b"element"),
+            x: 1,
+            y: 1,
+        },
     };
     let mut queue = SharedMemoryQueueV1::new(verifier, 8)?;
     queue.push(action.clone())?;

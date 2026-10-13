@@ -5,7 +5,7 @@ described in Experiment 6. It defines a 256-byte, digest-bound ABI for five
 typed actions:
 
 * read the accessibility tree;
-* click;
+* click an element identified by a digest from an accessibility-tree read;
 * type bounded UTF-8 text;
 * scroll; and
 * capture a bounded region.

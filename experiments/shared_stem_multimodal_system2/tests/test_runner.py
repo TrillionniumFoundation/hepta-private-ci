@@ -31,6 +31,18 @@ def modality_row(arm_id: str, input_modality: str, output_modality: str, example
         "model_digest": "5" * 64,
         "preprocessor_digest": "6" * 64,
         "head_digest": "7" * 64,
+        "baseline_status": "completed",
+        "baseline_id": "single-modality-text",
+        "baseline_model_digest": "8" * 64,
+        "baseline_preprocessor_digest": "9" * 64,
+        "baseline_head_digest": "a" * 64,
+        "baseline_task_utility": 0.7,
+        "baseline_active_flops": 900,
+        "baseline_latency_ms": 9,
+        "baseline_peak_rss_bytes": 90,
+        "baseline_gpu_peak_bytes": 190,
+        "baseline_retention_score": 0.88,
+        "baseline_old_task_regression": 0.02,
         "input_modality": input_modality,
         "output_modality": output_modality,
         "task_utility": 0.8,
@@ -71,6 +83,18 @@ class SharedStemRunnerTests(unittest.TestCase):
             "model_digest": "5" * 64,
             "preprocessor_digest": "6" * 64,
             "head_digest": "7" * 64,
+            "baseline_status": "completed",
+            "baseline_id": "single-modality-image",
+            "baseline_model_digest": "8" * 64,
+            "baseline_preprocessor_digest": "9" * 64,
+            "baseline_head_digest": "a" * 64,
+            "baseline_task_utility": 0.7,
+            "baseline_active_flops": 900,
+            "baseline_latency_ms": 9,
+            "baseline_peak_rss_bytes": 90,
+            "baseline_gpu_peak_bytes": 190,
+            "baseline_retention_score": 0.88,
+            "baseline_old_task_regression": 0.02,
             "input_modality": "image",
             "output_modality": "text",
         })
@@ -155,6 +179,43 @@ class SharedStemRunnerTests(unittest.TestCase):
         receipt = runner.make_receipt(config, [row], "f" * 64)
         self.assertEqual(receipt["result"]["disposition"], "resource_budget_exceeded")
         self.assertEqual(receipt["result"]["budget_violations"], {"text_text": ["q1"]})
+
+    def test_multimodal_reports_paired_single_modality_delta(self):
+        config = runner.validate_config(load("multimodal_differentiation.v1.json"))
+        row = modality_row("text_text", "text", "text", "q1")
+        receipt = runner.make_receipt(config, [row], "1" * 64)
+        comparison = receipt["result"]["baseline_comparison"]["comparisons"]["text_text"]
+        self.assertEqual(comparison["delta"]["paired_by"], "example_id")
+        self.assertEqual(comparison["delta"]["completed_pairs"], 1)
+        self.assertAlmostEqual(comparison["delta"]["external_task"]["task_utility_delta_mean"], 0.1)
+        self.assertAlmostEqual(comparison["delta"]["resource"]["active_flops_delta_mean"], 100.0)
+        self.assertAlmostEqual(comparison["delta"]["old_task"]["old_task_regression_delta_mean"], -0.01)
+
+    def test_artifact_digest_drift_is_blocker(self):
+        config = runner.validate_config(load("multimodal_differentiation.v1.json"))
+        first = modality_row("text_text", "text", "text", "q1")
+        second = modality_row("text_text", "text", "text", "q2")
+        second["head_digest"] = "8" * 64
+        receipt = runner.make_receipt(config, [first, second], "2" * 64)
+        self.assertEqual(receipt["result"]["disposition"], "artifact_digest_drift")
+        self.assertIn("text_text", receipt["result"]["artifact_digest_drift"])
+
+    def test_configured_pair_key_is_used_for_duplicates_and_deltas(self):
+        config = runner.validate_config(load("multimodal_differentiation.v1.json"))
+        config["evaluation"]["paired_by"] = "pair_id"
+        config["evaluation"]["baseline"]["paired_by"] = "pair_id"
+        row = modality_row("text_text", "text", "text", "ignored-example")
+        row["pair_id"] = "pair-a"
+        receipt = runner.make_receipt(config, [row], "3" * 64)
+        self.assertEqual(receipt["result"]["paired_by"], "pair_id")
+        self.assertEqual(receipt["result"]["baseline_comparison"]["comparisons"]["text_text"]["delta"]["paired_by"], "pair_id")
+
+    def test_empty_jsonl_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "empty.jsonl"
+            path.write_text("\n", encoding="utf-8")
+            with self.assertRaises(runner.ExperimentError):
+                runner._load_jsonl(path)
 
     def test_cli_writes_and_verifies_receipt(self):
         config_path = ROOT / "config" / "multimodal_differentiation.v1.json"

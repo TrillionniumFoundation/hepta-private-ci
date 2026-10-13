@@ -43,7 +43,24 @@
         "additionalProperties": false
       }
     },
-    "result": {"type": "object", "required": ["evaluation_split", "arms", "insufficient_arms", "unpaired_arms", "budget_violations", "disposition", "winner"]},
+    "result": {
+      "type": "object",
+      "required": ["evaluation_split", "paired_by", "arms", "insufficient_arms", "unpaired_arms", "budget_violations", "artifact_digest_drift", "baseline_comparison", "ndu_control_arm", "ndu_paired_deltas", "disposition", "winner"],
+      "properties": {
+        "evaluation_split": {"type": "string"},
+        "paired_by": {"type": "string", "minLength": 1},
+        "arms": {"type": "array"},
+        "insufficient_arms": {"type": "array", "items": {"type": "string"}},
+        "unpaired_arms": {"type": "object"},
+        "budget_violations": {"type": "object"},
+        "artifact_digest_drift": {"type": "object"},
+        "baseline_comparison": {"type": ["object", "null"]},
+        "ndu_control_arm": {"type": ["string", "null"]},
+        "ndu_paired_deltas": {"type": ["object", "null"]},
+        "disposition": {"type": "string"},
+        "winner": {"type": ["string", "null"]}
+      }
+    },
     "receipt_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
     "authority": {"const": {"authority_delta": "none", "production_accepted": false, "selection_authority": false, "training_authority": false}}
   }

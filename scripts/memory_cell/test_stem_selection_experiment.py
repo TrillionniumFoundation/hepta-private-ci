@@ -5,6 +5,7 @@ import unittest
 
 from stem_selection_experiment import (
     DEFAULT_VARIANTS,
+    JsonlStemBenchmarkBackend,
     TaskCase,
     ValidationError,
     default_tasks,
@@ -21,18 +22,47 @@ class StemSelectionExperimentTests(unittest.TestCase):
         self.assertEqual(len(report["results"]), 4)
         for result in report["results"]:
             self.assertEqual(result["cells"], 4)
+            self.assertEqual(result["active_cells"], 1)
             self.assertIn("utility", result)
             self.assertIn("utility_per_active_flop", result)
             self.assertEqual(set(result["latency_us"]), {"p50", "p95", "p99"})
             self.assertIn("resident_memory_mb", result)
             self.assertIn("negative_transfer_mean", result)
+            self.assertIn("capacity_gap_mean", result)
             self.assertIn("incremental_memory_per_cell_mb", result)
         replicated = next(r for r in report["results"] if r["variant_id"] == "replicate_full_421m")
         shared = next(r for r in report["results"] if r["variant_id"] == "small_stem_head")
         self.assertGreater(replicated["resident_memory_mb"], shared["resident_memory_mb"])
         self.assertEqual(shared["incremental_memory_per_cell_mb"], 8.0)
         self.assertEqual(replicated["incremental_memory_per_cell_mb"], 1684.0)
+        self.assertLess(replicated["latency_us"]["p95"], 140.0)
         self.assertEqual(report["profile"]["task_ids"], [x.task_id for x in default_tasks(8)])
+
+    def test_external_observations_are_loaded_and_active_workload_is_fair(self):
+        tasks = default_tasks(1)
+        rows = []
+        for variant in DEFAULT_VARIANTS:
+            rows.append(
+                {
+                    "variant_id": variant.variant_id,
+                    "task_id": tasks[0].task_id,
+                    "cells": 2,
+                    "active_cells": 1,
+                    "training_budget": 7,
+                    "seed": 3,
+                    "quality": 0.5,
+                    "active_flops_g": 2.0,
+                    "latency_us": 10.0,
+                    "resident_memory_mb": 20.0,
+                }
+            )
+        backend = JsonlStemBenchmarkBackend(rows)
+        report = run_experiment(tasks, DEFAULT_VARIANTS, cells=2, training_budget=7, seed=3, backend=backend)
+        self.assertEqual(report["benchmark_mode"], "external_observation")
+        self.assertEqual(report["results"][0]["active_flops_per_request_g"], 2.0)
+        self.assertEqual(report["results"][0]["resident_memory_mb"], 20.0)
+        with self.assertRaises(ValidationError):
+            run_experiment(tasks, DEFAULT_VARIANTS, cells=3, training_budget=7, seed=3, backend=backend)
 
     def test_duplicate_task_and_variant_ids_are_rejected(self):
         task = TaskCase("same", "family")

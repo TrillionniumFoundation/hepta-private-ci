@@ -35,6 +35,18 @@ def metric_row(arm_id, example_id, **metadata):
         "model_digest": "5" * 64,
         "preprocessor_digest": "6" * 64,
         "head_digest": "7" * 64,
+        "baseline_status": "completed",
+        "baseline_id": "single-modality",
+        "baseline_model_digest": "8" * 64,
+        "baseline_preprocessor_digest": "9" * 64,
+        "baseline_head_digest": "a" * 64,
+        "baseline_task_utility": 0.4,
+        "baseline_active_flops": 900,
+        "baseline_latency_ms": 9,
+        "baseline_peak_rss_bytes": 90,
+        "baseline_gpu_peak_bytes": 190,
+        "baseline_retention_score": 0.9,
+        "baseline_old_task_regression": 0.01,
         **metadata,
     }
     return row

@@ -6,8 +6,6 @@ the existing ``scripts/memory_cell`` convention used by the Stem and Reader
 diagnostics and exposes a small Python API for CI or local smoke runs.
 """
 
-from __future__ import annotations
-
 import argparse
 import json
 from pathlib import Path
