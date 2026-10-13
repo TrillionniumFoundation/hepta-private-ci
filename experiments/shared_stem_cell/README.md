@@ -27,6 +27,8 @@ be established by independent held-out evaluations and is not assumed.
 6. `codex-hepta-compiled-use` exposes a fixed five-action ABI, a bounded ring
    queue and a deny-by-default sandbox interface. It never executes arbitrary
    bytes or writes executable memory.
+7. `experiments/shared_stem_head_matrix/runner.py` compares linear, gated,
+   LoRA and sparse-expert Cell Heads under one frozen Stem and active workload.
 
 ## Required reporting
 

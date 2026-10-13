@@ -42,6 +42,12 @@
       "execution": "typed_ir_only",
       "arbitrary_memory_execution": false,
       "metrics": ["latency_p50", "latency_p95", "failure_recovery", "capability_denials", "rollback"]
+    },
+    {
+      "id": "cell-head-matrix",
+      "arms": ["linear", "gated", "lora", "sparse_expert"],
+      "controls": ["same_stem", "same_active_cells", "same_training_budget", "same_holdout"],
+      "metrics": ["task_utility", "active_flops", "latency_p50", "latency_p95", "latency_p99", "resident_memory", "new_cell_incremental_cost", "negative_transfer", "old_task_retention", "calibration", "ood"]
     }
   ]
 }
