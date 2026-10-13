@@ -3,15 +3,13 @@ name: hepta-neuron-next-round-matrix
 on:
   pull_request:
     paths:
-      - "qualification/stem-cell-v1/next_round_matrix.py"
-      - "qualification/stem-cell-v1/test_next_round_matrix.py"
-      - "qualification/stem-cell-v1/README.md"
+      - "qualification/stem-cell-v1/**"
+      - ".github/workflows/hepta-neuron-next-round-matrix.yml"
   push:
     branches: [main]
     paths:
-      - "qualification/stem-cell-v1/next_round_matrix.py"
-      - "qualification/stem-cell-v1/test_next_round_matrix.py"
-      - "qualification/stem-cell-v1/README.md"
+      - "qualification/stem-cell-v1/**"
+      - ".github/workflows/hepta-neuron-next-round-matrix.yml"
 
 permissions:
   contents: read
@@ -34,3 +32,42 @@ jobs:
             --reader-id reader-fixed-v1 \
             --task-set-id tasks-fixed-v1 \
             --output "$RUNNER_TEMP/next-round.json"
+
+  execution-regressions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONHASHSEED: "7347"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install pinned CPU test dependencies
+        run: |
+          python -m pip install numpy==2.3.5 safetensors==0.7.0
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Record actual source and environment
+        run: |
+          git rev-parse HEAD > "$RUNNER_TEMP/stem-source.txt"
+          python -m pip freeze > "$RUNNER_TEMP/stem-environment.txt"
+      - name: Execute complete focused suite without skips
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_*.py' -v 2>&1 | tee "$RUNNER_TEMP/stem-regression.log"
+          python -m compileall -q qualification/stem-cell-v1
+      - name: Retain exact-run source test observations
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-execution-source-tests
+          path: |
+            ${{ runner.temp }}/stem-source.txt
+            ${{ runner.temp }}/stem-environment.txt
+            ${{ runner.temp }}/stem-regression.log
+          if-no-files-found: error
