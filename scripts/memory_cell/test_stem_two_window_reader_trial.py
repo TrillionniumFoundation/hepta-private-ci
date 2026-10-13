@@ -33,16 +33,30 @@ class FakeModel:
 
 def fixture():
     reader = Obj(
-        tokenizer=FakeTokenizer(), model=FakeModel(),
-        identity="fixed-reader", profile="fixed-system",
+        tokenizer=FakeTokenizer(),
+        model=FakeModel(),
+        identity="fixed-reader",
+        profile="fixed-system",
         quarantined=False,
     )
     q = Question("q", "family", "scope", "What happened?", "2024-01-01")
     evidence = (
-        dict(label="E1", root="root-one", original_id="source-one",
-             scope="scope", observed_at="2023-01-01", excerpt="old source one"),
-        dict(label="E2", root="root-two", original_id="source-two",
-             scope="scope", observed_at="2023-01-02", excerpt="old source two"),
+        dict(
+            label="E1",
+            root="root-one",
+            original_id="source-one",
+            scope="scope",
+            observed_at="2023-01-01",
+            excerpt="old source one",
+        ),
+        dict(
+            label="E2",
+            root="root-two",
+            original_id="source-two",
+            scope="scope",
+            observed_at="2023-01-02",
+            excerpt="old source two",
+        ),
     )
     return reader, q, evidence
 
@@ -57,10 +71,18 @@ class PairedGenerationTests(unittest.TestCase):
         self.assertIn('"label": "E2"', reader.tokenizer.last[1]["content"])
         self.assertEqual(receipt["delivered_evidence"], list(evidence))
         self.assertTrue(receipt["same_original_SYSTEM_and_GENERATION"])
-        self.assertEqual(receipt["question_digest"], digest({
-            "identity": q.identity, "family": q.family, "scope": q.scope,
-            "content": q.content, "observed_at": q.observed_at,
-        }))
+        self.assertEqual(
+            receipt["question_digest"],
+            digest(
+                {
+                    "identity": q.identity,
+                    "family": q.family,
+                    "scope": q.scope,
+                    "content": q.content,
+                    "observed_at": q.observed_at,
+                }
+            ),
+        )
         self.assertEqual(receipt["input_tokens"], 3)
         self.assertEqual(receipt["generated_tokens"], 2)
         self.assertFalse(receipt["production_accepted"])
@@ -86,9 +108,11 @@ class PairedGenerationTests(unittest.TestCase):
 
     def test_more_than_two_or_wrong_labels_not_silently_admitted(self):
         reader, q, data = fixture()
-        for candidate in (data[:1], data + data, tuple(
-            dict(x, label="E1") for x in data
-        )):
+        for candidate in (
+            data[:1],
+            data + data,
+            tuple(dict(x, label="E1") for x in data),
+        ):
             with self.assertRaises(ValueError):
                 answer_two(reader, q, candidate, revoked=set())
 
