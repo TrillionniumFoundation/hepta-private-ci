@@ -390,6 +390,33 @@ advancement and exact-HEAD CI. A locally signed fixture, local fsync or
 advisory lock is NOT a substitute for external anti-rollback custody.
 Neither service nor client grants split authorization.
 
+### Independent custody signing gate for the Monotonic RPC server
+
+The read-only `CellSplitMonotonicRpcServiceV1` now requires a distinct,
+externally pinned custody verification key as well as its own RPC signer.
+Before it signs the current high-water response, it obtains three fresh,
+random-challenge-bound custody signatures from the separately retained
+`CellSplitMonotonicAuthoritativeRegistryV1::read_independent_custody`
+backend method. Each signed custody frontier must equal the actual
+committed Domain, authority epoch, revision, checkpoint digest,
+original store-record digest and durable source sequence. No default
+allow-all implementation exists. A missing, differently signed or newer
+custody record fails closed, including after restart when the server's
+process-memory high-water map is empty.
+
+Source-only disk-backed regressions exercise a valid two-key signed Unix
+exchange, an independently advanced custody floor after local Registry
+rollback, a substituted custody signer and a missing custody record.
+The fixture intentionally keeps both files under a disposable test root
+and is **not** a production custody implementation.
+
+Deployment still needs real independent and rollback-resistant storage,
+an out-of-process custody signer and original Registry ownership with
+fresh monotonic cross-read. This source gate cannot supply those guarantees
+or issue promotion/physical Cell Split authority. Rustfmt, Cargo, cross-
+platform Bazel/Clippy and cargo-deny on the final combined SHA remain
+mandatory.
+
 ### Monotonic frontier checkpoint-lineage fence (source gate)
 
 The read-only monotonic signer now refuses any revision/authority-epoch
