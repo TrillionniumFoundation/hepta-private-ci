@@ -1052,4 +1052,93 @@ fn observed_token_cost_is_not_a_settled_wal_or_authoritative_resource_debit() {
         ),
         Err(NeuronObservedCostSourceErrorV1::Stale)
     );
+
+    // Historical settlement is a separate, current-WAL comparison. The
+    // pre-settlement physical receipt is not itself a payment/debit.
+    let historical = read_neuron_settled_cost_diagnostic_v1(
+        &owner,
+        &typed,
+        &receipt,
+        &report,
+    )
+    .unwrap();
+    assert!(historical.validate_integrity());
+    assert_eq!(historical.terminal_status, NeuronFeatureTerminalStatusV1::Succeeded);
+    assert_eq!(historical.settled_tokens, 4);
+    assert_eq!(historical.settled_usage_units, 0);
+    assert_eq!(historical.dispatch_revision + 1, historical.settlement_revision);
+    assert_eq!(historical.authority, AuthorityPosture::DENY_ALL);
+    revalidate_neuron_settled_cost_diagnostic_v1(
+        &owner,
+        &typed,
+        &receipt,
+        &report,
+        &historical,
+    )
+    .unwrap();
+
+    let mut claimed_more_tokens = report.clone();
+    claimed_more_tokens.observed_tokens += 1;
+    claimed_more_tokens.source_digest = claimed_more_tokens.computed_digest();
+    assert!(claimed_more_tokens.validate_integrity());
+    assert_eq!(
+        read_neuron_settled_cost_diagnostic_v1(
+            &owner,
+            &typed,
+            &receipt,
+            &claimed_more_tokens,
+        ),
+        Err(NeuronSettledCostErrorV1::Mismatch)
+    );
+
+    let mut forged_usage = historical.clone();
+    forged_usage.settled_usage_units += 1;
+    forged_usage.diagnostic_digest = forged_usage.computed_digest();
+    assert!(forged_usage.validate_integrity());
+    assert_eq!(
+        revalidate_neuron_settled_cost_diagnostic_v1(
+            &owner,
+            &typed,
+            &receipt,
+            &report,
+            &forged_usage,
+        ),
+        Err(NeuronSettledCostErrorV1::Stale)
+    );
+    let mut wrong_receipt = receipt.clone();
+    wrong_receipt.receipt_digest = Digest32::of_bytes(b"forged-output");
+    assert_eq!(
+        read_neuron_settled_cost_diagnostic_v1(
+            &owner,
+            &typed,
+            &wrong_receipt,
+            &report,
+        ),
+        Err(NeuronSettledCostErrorV1::Mismatch)
+    );
+
+    // Actual WAL reopening is mandatory: this does not silently fall back to
+    // a cached in-process accounting claim or a live Worker instance token.
+    drop(owner);
+    let reopened = DurableInferenceControl::open(
+        directory.path().join("inference.journal"),
+        32,
+    )
+    .unwrap();
+    let after_restart = read_neuron_settled_cost_diagnostic_v1(
+        &reopened,
+        &typed,
+        &receipt,
+        &report,
+    )
+    .unwrap();
+    assert_eq!(after_restart, historical);
+    revalidate_neuron_settled_cost_diagnostic_v1(
+        &reopened,
+        &typed,
+        &receipt,
+        &report,
+        &historical,
+    )
+    .unwrap();
 }

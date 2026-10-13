@@ -638,6 +638,243 @@ pub fn revalidate_neuron_observed_cost_source_v1<D: ModelDriver>(
     Ok(())
 }
 
+/// Retrospective, read-only comparison of a known-terminal Worker token
+/// observation with the ACTUAL fsynced inference.control settlement.
+/// Historical correlation is not an independent usage attestation, NDU input,
+/// signed terminal outcome, route selection or authorization to debit quota.
+const SETTLED_COST_DOMAIN: &[u8] = b"hepta.infer-worker.neuron-settled-cost.diagnostic.v1\0";
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NeuronSettledCostDiagnosticV1 {
+    pub request_id: String,
+    pub reservation_id: String,
+    pub worker_id: String,
+    pub worker_generation: u64,
+    pub model_id: String,
+    pub model_load_revision: u64,
+    pub dispatch_revision: u64,
+    pub settlement_revision: u64,
+    pub request_digest: Digest32,
+    pub feature_receipt_digest: Digest32,
+    pub observed_cost_source_digest: Digest32,
+    pub terminal_observation_digest: Digest32,
+    pub terminal_status: NeuronFeatureTerminalStatusV1,
+    pub settled_tokens: u32,
+    /// Units recorded by the external charging owner, NEVER derived from tokens.
+    pub settled_usage_units: u64,
+    pub diagnostic_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+impl NeuronSettledCostDiagnosticV1 {
+    #[must_use]
+    pub fn computed_digest(&self) -> Digest32 {
+        let mut bytes = SETTLED_COST_DOMAIN.to_vec();
+        for id in [
+            &self.request_id,
+            &self.reservation_id,
+            &self.worker_id,
+            &self.model_id,
+        ] {
+            let raw = id.as_bytes();
+            bytes.extend_from_slice(&(raw.len() as u64).to_be_bytes());
+            bytes.extend_from_slice(raw);
+        }
+        for number in [
+            self.worker_generation,
+            self.model_load_revision,
+            self.dispatch_revision,
+            self.settlement_revision,
+        ] {
+            bytes.extend_from_slice(&number.to_be_bytes());
+        }
+        for digest in [
+            self.request_digest,
+            self.feature_receipt_digest,
+            self.observed_cost_source_digest,
+            self.terminal_observation_digest,
+        ] {
+            bytes.extend_from_slice(digest.as_array());
+        }
+        bytes.push(match self.terminal_status {
+            NeuronFeatureTerminalStatusV1::Succeeded => 0,
+            NeuronFeatureTerminalStatusV1::Failed => 1,
+            NeuronFeatureTerminalStatusV1::Cancelled => 2,
+            NeuronFeatureTerminalStatusV1::Indeterminate => 3,
+        });
+        bytes.extend_from_slice(&self.settled_tokens.to_be_bytes());
+        bytes.extend_from_slice(&self.settled_usage_units.to_be_bytes());
+        Digest32::of_bytes(&bytes)
+    }
+
+    #[must_use]
+    pub fn validate_integrity(&self) -> bool {
+        self.authority == AuthorityPosture::DENY_ALL
+            && !self.request_id.is_empty()
+            && !self.reservation_id.is_empty()
+            && !self.worker_id.is_empty()
+            && !self.model_id.is_empty()
+            && self.worker_generation > 0
+            && self.model_load_revision > 0
+            && self.dispatch_revision >= 4
+            && self.dispatch_revision.checked_add(1) == Some(self.settlement_revision)
+            && !self.request_digest.is_zero()
+            && !self.feature_receipt_digest.is_zero()
+            && !self.observed_cost_source_digest.is_zero()
+            && !self.terminal_observation_digest.is_zero()
+            && matches!(
+                self.terminal_status,
+                NeuronFeatureTerminalStatusV1::Succeeded | NeuronFeatureTerminalStatusV1::Failed
+            )
+            && !self.diagnostic_digest.is_zero()
+            && self.diagnostic_digest == self.computed_digest()
+    }
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum NeuronSettledCostErrorV1 {
+    Missing,
+    NotSettled,
+    Mismatch,
+    Stale,
+}
+
+impl fmt::Display for NeuronSettledCostErrorV1 {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{self:?}")
+    }
+}
+
+impl StdError for NeuronSettledCostErrorV1 {}
+
+/// A settlement is evaluated HISTORICALLY: it may be inspected after Worker
+/// retirement, restart or resource-grant expiry. No fresh physical model use
+/// follows from this read. Its input observed_cost_source must have been
+/// captured and independently retained while the exact live Worker and
+/// fsynced Dispatching owner were available.
+///
+/// The WAL persists request/assignment, terminal disposition, observed token
+/// count and separately priced usage units; it does NOT retain the complete
+/// terminal observation payload. This check therefore cannot independently
+/// prove output bytes or an authenticated physical meter.
+pub fn read_neuron_settled_cost_diagnostic_v1(
+    owner: &DurableInferenceControl,
+    request: &NeuronFeatureRequestV1,
+    receipt: &NeuronFeatureReceiptV1,
+    observed_cost_source: &NeuronObservedCostSourceV1,
+) -> Result<NeuronSettledCostDiagnosticV1, NeuronSettledCostErrorV1> {
+    let request_digest =
+        neuron_feature_request_digest_v1(request).map_err(|_| NeuronSettledCostErrorV1::Mismatch)?;
+    verify_neuron_feature_receipt_v1(request, receipt)
+        .map_err(|_| NeuronSettledCostErrorV1::Mismatch)?;
+    if !observed_cost_source.validate_integrity()
+        || observed_cost_source.request_id != request.request_id.as_str()
+        || observed_cost_source.model_id != request.model_id.as_str()
+        || observed_cost_source.request_digest != request_digest
+        || observed_cost_source.feature_receipt_digest != receipt.receipt_digest
+        || observed_cost_source.terminal_status != receipt.status
+    {
+        return Err(NeuronSettledCostErrorV1::Mismatch);
+    }
+    let expected_state = match receipt.status {
+        NeuronFeatureTerminalStatusV1::Succeeded => RequestState::Completed,
+        NeuronFeatureTerminalStatusV1::Failed => RequestState::Failed,
+        NeuronFeatureTerminalStatusV1::Cancelled
+        | NeuronFeatureTerminalStatusV1::Indeterminate => {
+            return Err(NeuronSettledCostErrorV1::Mismatch);
+        }
+    };
+    let record = owner
+        .get(request.request_id.as_str())
+        .ok_or(NeuronSettledCostErrorV1::Missing)?;
+    if record.state != expected_state || record.terminal_observation_digest.is_none() {
+        return Err(NeuronSettledCostErrorV1::NotSettled);
+    }
+    let reservation = record
+        .reservation
+        .as_ref()
+        .ok_or(NeuronSettledCostErrorV1::Mismatch)?;
+    let assignment = record
+        .assignment
+        .as_ref()
+        .ok_or(NeuronSettledCostErrorV1::Mismatch)?;
+    if observed_cost_source
+        .control_revision
+        .checked_add(1)
+        != Some(record.revision)
+        || record.request.request_id != request.request_id.as_str()
+        || record.request.semantic_digest != request_digest.to_string()
+        || record.request.model_digest != receipt.runtime_tuple.model_manifest_digest.to_string()
+        || reservation.reservation_id != observed_cost_source.reservation_id
+        || assignment.worker_id != observed_cost_source.worker_id
+        || assignment.worker_generation != observed_cost_source.worker_generation
+        || record.consumed_tokens != observed_cost_source.observed_tokens
+        || record.consumed_tokens > record.request.maximum_tokens
+        || record.consumed_tokens > reservation.maximum_tokens
+        || record.usage_units > reservation.quota_units
+    {
+        return Err(NeuronSettledCostErrorV1::Mismatch);
+    }
+    let terminal_observation_digest = Digest32::from_str(
+        record
+            .terminal_observation_digest
+            .as_deref()
+            .ok_or(NeuronSettledCostErrorV1::NotSettled)?,
+    )
+    .map_err(|_| NeuronSettledCostErrorV1::Mismatch)?;
+    if terminal_observation_digest.is_zero() {
+        return Err(NeuronSettledCostErrorV1::Mismatch);
+    }
+    let mut report = NeuronSettledCostDiagnosticV1 {
+        request_id: record.request.request_id.clone(),
+        reservation_id: reservation.reservation_id.clone(),
+        worker_id: assignment.worker_id.clone(),
+        worker_generation: assignment.worker_generation,
+        model_id: request.model_id.to_string(),
+        model_load_revision: observed_cost_source.model_load_revision,
+        dispatch_revision: observed_cost_source.control_revision,
+        settlement_revision: record.revision,
+        request_digest,
+        feature_receipt_digest: receipt.receipt_digest,
+        observed_cost_source_digest: observed_cost_source.source_digest,
+        terminal_observation_digest,
+        terminal_status: receipt.status,
+        settled_tokens: record.consumed_tokens,
+        settled_usage_units: record.usage_units,
+        diagnostic_digest: Digest32::ZERO,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    report.diagnostic_digest = report.computed_digest();
+    if !report.validate_integrity() {
+        return Err(NeuronSettledCostErrorV1::Mismatch);
+    }
+    Ok(report)
+}
+
+/// Re-read the durable settlement; a copied, edited or superseded report
+/// cannot be treated as a second credit or fresh Worker observation.
+pub fn revalidate_neuron_settled_cost_diagnostic_v1(
+    owner: &DurableInferenceControl,
+    request: &NeuronFeatureRequestV1,
+    receipt: &NeuronFeatureReceiptV1,
+    observed_cost_source: &NeuronObservedCostSourceV1,
+    previous: &NeuronSettledCostDiagnosticV1,
+) -> Result<(), NeuronSettledCostErrorV1> {
+    if !previous.validate_integrity() {
+        return Err(NeuronSettledCostErrorV1::Stale);
+    }
+    let current = read_neuron_settled_cost_diagnostic_v1(
+        owner,
+        request,
+        receipt,
+        observed_cost_source,
+    )?;
+    if current != *previous {
+        return Err(NeuronSettledCostErrorV1::Stale);
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 #[path = "neuron_durable_assignment_tests.rs"]
 mod tests;

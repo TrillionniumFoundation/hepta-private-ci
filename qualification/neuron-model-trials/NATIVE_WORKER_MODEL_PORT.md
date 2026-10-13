@@ -555,3 +555,36 @@ fixture ModelDriver with real fsynced Dispatching, current Worker, actual typed
 ModelPort, WAL reopen, stale/cancelled and replacement-Worker refusals. No
 real Laya training or selected production CNS route is established here.
 
+
+## Read-only historical Neuron token-settlement audit
+
+A successful known-terminal Worker execution has a short-lived
+\`NeuronObservedCostSourceV1\` tied to its original in-process Worker, load
+revision and fsynced Dispatching record. After the authorized settlement owner
+fsyncs a terminal observation, the original current-Worker read is correctly
+rejected. The new \`read_neuron_settled_cost_diagnostic_v1\` instead compares
+that previously validated, retained diagnostic with the **real reopened durable
+inference.control WAL**, requiring:
+
+- a Completed status for a Succeeded typed feature receipt, or Failed/Failed;
+  never Cancellation/Indeterminate;
+- the exact request semantic digest, model manifest, reservation/assignment,
+  Worker identity/generation and immediate Dispatching -> settlement revision;
+- the **persisted** consumed token count exactly equal to previously observed
+  tokens, within both request and reservation ceilings;
+- the separately supplied persisted \`usage_units\` within quota, with
+  **no conversion from tokens to quota units**.
+
+It returns a separate DENY_ALL, domain-separated historical checksum and
+rejects caller-rehashed token/usage changes against a fresh WAL read. Tests
+perform a real fsynced settlement, verify same-WAL and crash-reopened results,
+and reject altered token claims, charged units and receipt bytes.
+
+This is a historical reconciliation diagnostic, **not** independent
+authentication of the physical meter or of terminal output bytes: the WAL
+persists the supplied terminal observation digest, status and token count,
+not the full independently signed terminal observation. The physical Worker
+incarnation is NOT persistent proof after restart. The host must originally
+retain the source observation while the live Worker exists and must obtain
+independent real provider/Observer, quota tariff, CNS/Fence and NDU evidence
+before treating anything as a production cost or learning improvement.
