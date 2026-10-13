@@ -54,6 +54,57 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
         ):
             self.assertLess(workflow.index("      - name: " + name), first_native)
 
+    def test_unavailable_prospective_merge_ref_retains_conflict_diagnostics(self):
+        """A missing GitHub merge ref is a failed gate with retained evidence."""
+        workflow = (
+            ROOT / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text()
+        section = workflow.split(
+            "      - name: Verify GitHub prospective merge ref matches this exact candidate\n",
+            1,
+        )[1].split("      - name:", 1)[0]
+        shell = textwrap.dedent(section.split("        run: |\n", 1)[1])
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            tools = root / "bin"
+            tools.mkdir()
+            gh = tools / "gh"
+            gh.write_text("#!/bin/sh\nexit 22\n")
+            gh.chmod(0o700)
+            git = tools / "git"
+            git.write_text(
+                "#!/bin/sh\necho 'CONFLICT (content): Merge conflict in codex-rs/hepta-neuron/src/runtime.rs'\nexit 1\n"
+            )
+            git.chmod(0o700)
+            env = dict(
+                os.environ,
+                PR_NUMBER="1468",
+                REPO="TrillionniumFoundation/hepta-private-ci",
+                SOURCE_SHA="a" * 40,
+                BASE_SHA="b" * 40,
+                RUNNER_TEMP=directory,
+                GH_TOKEN="fixture-secret-must-not-appear",
+                PATH=str(tools) + os.pathsep + os.environ["PATH"],
+            )
+            result = subprocess.run(
+                ["bash", "-c", shell],
+                env=env,
+                cwd=ROOT,
+                capture_output=True,
+                text=True,
+                timeout=10,
+                check=False,
+            )
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("Prospective merge conflict", result.stdout)
+            self.assertNotIn(env["GH_TOKEN"], result.stdout + result.stderr)
+            records = root / "hepta-command-records"
+            frozen = (records / "prospective-merge-candidate.txt").read_text()
+            conflict = (records / "prospective-merge-tree.txt").read_text()
+            self.assertIn("expected_base=" + "b" * 40, frozen)
+            self.assertIn("expected_head=" + "a" * 40, frozen)
+            self.assertIn("CONFLICT (content)", conflict)
+
     def run_step(self, status: int, body: str, *, timeout: bool = False):
         workflow = (
             ROOT / ".github/workflows/hepta-architecture-convergence.yml"

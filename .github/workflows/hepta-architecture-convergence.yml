@@ -59,9 +59,31 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$PR_NUMBER"
-          ref_json="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
+          # Record the frozen candidate before querying a dynamic GitHub
+          # merge ref. A conflict or missing ref must remain an actionable
+          # failed gate, never a successful skip or a missing CI artifact.
+          mkdir -p "$RUNNER_TEMP/hepta-command-records"
+          printf 'schema=hepta.ci.prospective-merge-candidate.v1\nexpected_base=%s\nexpected_head=%s\npr_number=%s\n' \
+            "$BASE_SHA" "$SOURCE_SHA" "$PR_NUMBER" \
+            > "$RUNNER_TEMP/hepta-command-records/prospective-merge-candidate.txt"
+          if ! ref_json="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge" 2>/dev/null)"; then
+            # Inspect only this frozen base/head pair. Never replace either
+            # with a newer mutable branch tip or silently choose a side.
+            if git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA" \
+              > "$RUNNER_TEMP/hepta-command-records/prospective-merge-tree.txt" 2>&1; then
+              printf '::error title=Prospective merge ref unavailable::GitHub has no merge ref for frozen base=%s head=%s; no qualification permitted\n' \
+                "$BASE_SHA" "$SOURCE_SHA"
+            else
+              printf '::error title=Prospective merge conflict::frozen base=%s head=%s has unresolved merge conflicts; inspect retained merge-tree diagnostic\n' \
+                "$BASE_SHA" "$SOURCE_SHA"
+            fi
+            exit 1
+          fi
           actual_sha="$(jq -er '.object.sha' <<<"$ref_json")"
-          commit_json="$(gh api "repos/$REPO/git/commits/$actual_sha")"
+          if ! commit_json="$(gh api "repos/$REPO/git/commits/$actual_sha" 2>/dev/null)"; then
+            printf '::error title=Prospective merge commit unavailable::GitHub merge commit cannot be authenticated for frozen candidate\n'
+            exit 1
+          fi
           mapfile -t parents < <(jq -r '.parents[].sha' <<<"$commit_json")
           # Record the precise mismatch before failing. An asynchronously
           # advanced base branch must invalidate this frozen CI candidate;
