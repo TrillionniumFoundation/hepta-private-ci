@@ -2082,7 +2082,10 @@ mod tests {
             ) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
                 Err("retained state must not reevaluate")
             }
-            fn canary(&mut self, _split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+            fn canary(
+                &mut self,
+                _split: &CellSplitV1,
+            ) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
                 Err("retained state must not rerun canary")
             }
             fn retire(&mut self, _split: &CellSplitV1) -> Result<Digest32, Self::Error> {
