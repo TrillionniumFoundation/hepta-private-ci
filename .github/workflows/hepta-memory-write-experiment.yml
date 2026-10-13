@@ -18,6 +18,7 @@ on:
       - "scripts/memory_cell/source_candidate_kway.py"
       - "scripts/memory_cell/source_binding_specificity.py"
       - "scripts/memory_cell/test_source_binding_specificity.py"
+      - "scripts/memory_cell/test_source_margin_sparse_admission.py"
       - "scripts/memory_cell/test_source_candidate_kway.py"
       - "scripts/memory_cell/source_decode_factorial.py"
       - "scripts/memory_cell/test_source_decode_factorial.py"
@@ -267,7 +268,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/experience-result/source
-          cp scripts/memory_cell/experience_*.py scripts/memory_cell/test_experience_*.py scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write*.py scripts/memory_cell/source_recall_probe.py scripts/memory_cell/test_source_recall_probe.py scripts/memory_cell/source_recall_likelihood.py scripts/memory_cell/test_source_recall_likelihood.py scripts/memory_cell/source_confusion_probe.py scripts/memory_cell/test_source_confusion_probe.py scripts/memory_cell/source_loss_admission.py scripts/memory_cell/test_source_loss_admission.py scripts/memory_cell/source_pretrained_projection_receipt.py /tmp/experience-result/source/
+          cp scripts/memory_cell/experience_*.py scripts/memory_cell/test_experience_*.py scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write*.py scripts/memory_cell/source_recall_probe.py scripts/memory_cell/test_source_recall_probe.py scripts/memory_cell/source_recall_likelihood.py scripts/memory_cell/test_source_recall_likelihood.py scripts/memory_cell/source_confusion_probe.py scripts/memory_cell/test_source_confusion_probe.py scripts/memory_cell/source_loss_admission.py scripts/memory_cell/test_source_loss_admission.py scripts/memory_cell/test_source_margin_sparse_admission.py scripts/memory_cell/source_pretrained_projection_receipt.py /tmp/experience-result/source/
           cp scripts/memory_cell/source_decode_factorial.py scripts/memory_cell/test_source_decode_factorial.py scripts/memory_cell/source_candidate_kway.py scripts/memory_cell/test_source_candidate_kway.py /tmp/experience-result/source/
           git rev-parse HEAD > /tmp/experience-result/tested-commit.txt
           # Base and research-derived model weights are not redistributed.
