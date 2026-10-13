@@ -325,39 +325,29 @@ mod tests {
             assert_eq!(candidate.split_id, plan.split_id);
             Err("independent NDU/Selector withdrawn after last owner readback".to_string())
         };
-        let denied = require_fresh_completion_admission_v1(
-            "advance",
-            true,
-            Some(&plan),
-            &mut withdrawn,
+        let denied =
+            require_fresh_completion_admission_v1("advance", true, Some(&plan), &mut withdrawn);
+        assert!(
+            denied
+                .expect_err("revoked selection must not report complete")
+                .contains("withdrawn")
         );
-        assert!(denied.expect_err("revoked selection must not report complete").contains("withdrawn"));
         assert_eq!(checked, 1);
 
         let mut unexpected = |_: &CellSplitExecutionPlanV1| -> Result<(), String> {
             panic!("incomplete or transcript-only reads must not re-admit")
         };
-        assert!(!require_fresh_completion_admission_v1(
-            "advance",
-            false,
-            Some(&plan),
-            &mut unexpected,
-        )
-        .expect("incomplete cannot report complete"));
-        assert!(require_fresh_completion_admission_v1(
-            "transcript",
-            true,
-            None,
-            &mut unexpected,
-        )
-        .expect("historical read-only proof does not claim current selection"));
-        assert!(require_fresh_completion_admission_v1(
-            "advance",
-            true,
-            None,
-            &mut unexpected,
-        )
-        .is_err());
+        assert!(
+            !require_fresh_completion_admission_v1("advance", false, Some(&plan), &mut unexpected,)
+                .expect("incomplete cannot report complete")
+        );
+        assert!(
+            require_fresh_completion_admission_v1("transcript", true, None, &mut unexpected,)
+                .expect("historical read-only proof does not claim current selection")
+        );
+        assert!(
+            require_fresh_completion_admission_v1("advance", true, None, &mut unexpected,).is_err()
+        );
     }
 
     #[test]
