@@ -135,8 +135,19 @@ def verified_handoff(directory, *, receipt_pin):
             or receipt.get("cohort_size") * len(CONDITIONS) != len(tickets)):
         raise ValueError("handoff ticket census is incomplete")
     by_question = {}
+    visible_questions = {}
+    visible_sources = {}
     for ticket in tickets:
         view, blank, link = work[ticket], blanks[ticket], maps[ticket]
+        # Recheck reviewer-visible question fields across all four blinded
+        # conditions. A file/receipt pin proves bytes, not that the reviewer
+        # was shown the same question as the separately pinned source ledger.
+        if (type(view["question"]) is not str or not view["question"].strip()
+                or len(view["question"].encode("utf-8")) > 16384
+                or type(view["question_observed_at"]) is not str
+                or not view["question_observed_at"].strip()
+                or len(view["question_observed_at"].encode("utf-8")) > 128):
+            raise ValueError("invalid reviewer-visible question or observation time")
         if (any(blank[key] is not None for key in VERDICT_KEYS)
                 or blank["reviewer_notes"] is not None
                 or view["candidate_is_approved"] is not False
@@ -169,6 +180,24 @@ def verified_handoff(directory, *, receipt_pin):
                        for i, e in enumerate(evidence))
                 or proof["delivered_source_sha256"] != [e["source_fingerprint"] for e in evidence]):
             raise ValueError("handoff source labels/fingerprints are unbound")
+        question = (view["question"], view["question_observed_at"],
+                    proof["question_sha256"])
+        qid = link["item_id"]
+        if qid in visible_questions and visible_questions[qid] != question:
+            raise ValueError("reviewer-visible question changed across blinded conditions")
+        visible_questions[qid] = question
+        for entry in evidence:
+            if (type(entry["excerpt"]) is not str or not entry["excerpt"].strip()
+                    or len(entry["excerpt"].encode("utf-8")) > 2 * 1024 * 1024
+                    or type(entry["observed_at"]) is not str
+                    or not entry["observed_at"].strip()
+                    or len(entry["observed_at"].encode("utf-8")) > 128):
+                raise ValueError("invalid reviewer-visible source excerpt or time")
+            visible = (entry["excerpt"], entry["observed_at"])
+            fp = entry["source_fingerprint"]
+            if fp in visible_sources and visible_sources[fp] != visible:
+                raise ValueError("same source fingerprint displays inconsistent evidence")
+            visible_sources[fp] = visible
         citation_labels = ["E" + x for x in LABEL_RE.findall(view["raw_reader_answer"])]
         if citation_labels != view["cited_labels"]:
             raise ValueError("handoff cited labels differ from original answer")

@@ -259,6 +259,75 @@ class ReviewIntakeTests(unittest.TestCase):
             self.run_intake()
         self.assertFalse(self.output.exists())
 
+    def _rewrite_pinned_reviewer_view(self, change):
+        # Simulate an operator who re-pinned a malformed/private handoff.
+        # All raw files and ticket/case digests remain structurally pinned;
+        # merely checking the new SHA256SUMS would otherwise accept it.
+        questions = self.handoff / "review-questions.jsonl"
+        rows = read_lines(questions)
+        change(rows)
+        new_pin = dump_lines(questions, rows)
+        receipt = self.handoff / "handoff-receipt.json"
+        body = json.loads(receipt.read_text())
+        body["written_file_sha256"]["review-questions.jsonl"] = new_pin
+        receipt.write_text(json.dumps(body, sort_keys=True, separators=(",", ":")) + "\n")
+        receipt.chmod(0o600)
+        self.receipt_pin = hashlib.sha256(receipt.read_bytes()).hexdigest()
+
+    def test_reviewer_visible_question_cannot_change_across_blinded_conditions(self):
+        def change(rows):
+            row = next(r for r in rows
+                       if self.map[r["ticket"]]["item_id"] == "q1")
+            row["question"] += " Unrelated altered request."
+        self._rewrite_pinned_reviewer_view(change)
+        with self.assertRaisesRegex(ValueError, "question changed across blinded conditions"):
+            self.run_intake()
+        self.assertFalse(self.output.exists())
+
+    def test_reviewer_visible_question_timestamp_cannot_drift(self):
+        def change(rows):
+            row = next(r for r in rows
+                       if self.map[r["ticket"]]["item_id"] == "q1")
+            row["question_observed_at"] = "2025-01-01T01:00:00+00:00"
+        self._rewrite_pinned_reviewer_view(change)
+        with self.assertRaisesRegex(ValueError, "question changed across blinded conditions"):
+            self.run_intake()
+        self.assertFalse(self.output.exists())
+
+    def test_same_source_fingerprint_cannot_show_conflicting_original_excerpt(self):
+        # Source q1-b occurs in three conditions. Tamper just the review view,
+        # while retaining its operator-map/source-fingerprint binding.
+        def change(rows):
+            ordinary = next(r for r in rows if self.map[r["ticket"]]["item_id"] == "q1"
+                            and self.map[r["ticket"]]["condition"] == "ordinary_retrieval")
+            ordinary["evidence"][0]["excerpt"] += " fabricated reviewer-visible fact"
+        self._rewrite_pinned_reviewer_view(change)
+        with self.assertRaisesRegex(ValueError, "same source fingerprint displays inconsistent evidence"):
+            self.run_intake()
+        self.assertFalse(self.output.exists())
+
+    def test_reviewer_visible_question_and_excerpts_require_bounded_strings(self):
+        for edit in (lambda r: r.update(question={"not": "text"}),
+                     lambda r: r["evidence"][0].update(excerpt="")):
+            with self.subTest(edit=edit):
+                # The original fixture is restored between subcases so the
+                # receipt pin does not hide a later type-check failure.
+                _, _, _, originals = example()
+                other = self.root / ("handoff-" + str(len(list(self.root.glob("handoff-*")))))
+                prepare_handoff(originals, source_file_sha256="a" * 64,
+                                output=other, salt=b"\x07" * 32)
+                self.handoff = other
+                self.receipt_pin = hashlib.sha256(
+                    (other / "handoff-receipt.json").read_bytes()).hexdigest()
+                def change(rows):
+                    row = next(r for r in rows if r["evidence"])
+                    edit(row)
+                self._rewrite_pinned_reviewer_view(change)
+                with self.assertRaisesRegex(ValueError,
+                       "invalid reviewer-visible (question|source excerpt)"):
+                    self.run_intake()
+                self.assertFalse(self.output.exists())
+
     def test_output_overwrite_prevented_with_no_silent_alteration(self):
         self.run_intake()
         raw = (self.output / "reconciliation-receipt.json").read_bytes()
