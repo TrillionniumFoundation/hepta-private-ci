@@ -5,9 +5,10 @@ import unittest
 from unittest.mock import patch
 
 from system2_reader_transport_audit import (
-    AUDIT_SCHEMA, CASE_COUNT, COHORTS, NEW_CALLS, REUSED_CALLS,
+    AUDIT_SCHEMA, CASE_COUNT, NEW_CALLS, REUSED_CALLS,
     POSITIVES, ZIP_SHA, breakdown, authenticated_replay,
 )
+from system2_reader_transport_trial import COHORTS
 from system2_reader_paired_capacity_audit import STRONG_ZIP_SHA
 
 
