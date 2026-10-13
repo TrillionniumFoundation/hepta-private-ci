@@ -51,7 +51,7 @@ jobs:
               test_shared_encoder_eviction development_tensor_checks development_repository_checks \
               development_study_checks public_structural_checks \
               selection_replay_checks serving_probe_checks public_corpus_checks historical_feature_checks \
-              shared_cell_execution_checks multicell_execution_checks bounded_cell_execution_checks cell_execution_plan_checks bge_snapshot_checks cell_consolidation_checks
+              shared_cell_execution_checks multicell_execution_checks bounded_cell_execution_checks cell_execution_plan_checks bge_snapshot_checks cell_consolidation_checks cell_anchor_checks
           } 2>&1 | tee "$RUNNER_TEMP/stem-development-tests.txt"
       - name: Preserve exact-source result including failures
         if: always()
@@ -153,6 +153,22 @@ jobs:
             --source-run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
             --review-run "$OUT/consolidation" --output "$OUT/consolidation-scores.json" \
             2>&1 | tee "$OUT/consolidation-replay.log"
+      - name: Constrain consolidation to the old training-input nullspace
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-public-venv/bin/python"
+          OUT="$RUNNER_TEMP/stem-public-evidence"
+          "$PY" qualification/stem-cell-v1/cell_anchor_study.py \
+            --source-run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --consolidation-run "$OUT/consolidation" --output "$OUT/anchor-consolidation" \
+            2>&1 | tee "$OUT/anchor-consolidation.log"
+          "$PY" qualification/stem-cell-v1/cell_anchor_study.py \
+            --source-run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --consolidation-run "$OUT/consolidation" --review-run "$OUT/anchor-consolidation" \
+            --output "$OUT/anchor-consolidation-scores.json" 2>&1 | tee "$OUT/anchor-replay.log"
       - name: Retain provenance and failures, never pretrained weights
         if: always()
         run: |
