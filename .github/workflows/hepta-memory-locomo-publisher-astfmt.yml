@@ -1,0 +1,94 @@
+name: MemoryCell LoCoMo publisher Reader exact AST-safe format
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - ".github/workflows/hepta-memory-locomo-publisher-astfmt.yml"
+permissions:
+  contents: write
+concurrency:
+  group: memory-locomo-publisher-astfmt-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  format-pinned-reader:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: true
+      - name: Format only the two previously failing source files
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+          TARGET_BRANCH: codex/memory-cell-evidence-20261008
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/publisher-format
+          git rev-parse HEAD > /tmp/publisher-format/original-head.txt
+          git rev-parse HEAD^{tree} > /tmp/publisher-format/original-tree.txt
+          python3 -m pip install --user uv==0.8.22
+          export PATH="$HOME/.local/bin:$PATH"
+          python3 - <<'PY'
+          import ast
+          import json
+          from pathlib import Path
+          import subprocess
+          files = [
+              Path("scripts/memory_cell/locomo_publisher_support_reader.py"),
+              Path("scripts/memory_cell/test_locomo_publisher_support_reader.py"),
+          ]
+          original = {}
+          for path in files:
+              if path.is_symlink() or not path.is_file() or not 0 < path.stat().st_size < 256000:
+                  raise ValueError("nonregular or oversized source")
+              original[str(path)] = ast.dump(ast.parse(path.read_text(encoding="utf-8")))
+          subprocess.run(["uv", "run", "--frozen", "--project", "scripts",
+                          "ruff", "format", *map(str, files)], check=True)
+          for path in files:
+              if ast.dump(ast.parse(path.read_text(encoding="utf-8"))) != original[str(path)]:
+                  raise ValueError("AST was changed by formatting")
+          changed = set(subprocess.check_output(["git", "diff", "--name-only"], text=True).splitlines())
+          if changed - set(original):
+              raise ValueError("unapproved file modified: " + repr(sorted(changed)))
+          Path("/tmp/publisher-format/receipt.json").write_text(
+              json.dumps(dict(ast_identical=True, target_files=sorted(original),
+                              changed_files=sorted(changed),
+                              changed_business_logic=False,
+                              independent_semantic_validation=False,
+                              production_accepted=False), indent=2) + "\n"
+          )
+          PY
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_publisher_support_reader.py' -v |& tee /tmp/publisher-format/protocol.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_frozen_reader_pair.py' -v |& tee /tmp/publisher-format/frozen-reader.log
+          uv run --frozen --project scripts ruff format --check scripts/memory_cell/locomo_publisher_support_reader.py scripts/memory_cell/test_locomo_publisher_support_reader.py
+          git diff --check
+          if [[ -z "$(git diff --name-only)" ]]; then
+            echo "already formatted" > /tmp/publisher-format/status.txt
+            exit 0
+          fi
+          current="$(git ls-remote --heads origin "$TARGET_BRANCH" | cut -f1)"
+          test "$current" = "$EXPECTED_HEAD"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- scripts/memory_cell/locomo_publisher_support_reader.py scripts/memory_cell/test_locomo_publisher_support_reader.py
+          git diff --cached --check
+          git commit -m "style(memory-cell): AST-identical privileged LoCoMo Reader formatter repair"
+          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
+          git rev-parse HEAD > /tmp/publisher-format/formatted-head.txt
+      - name: Retain source, exact hashes and failure artifacts
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/publisher-format/source
+          cp scripts/memory_cell/locomo_publisher_support_reader.py /tmp/publisher-format/source/
+          cp scripts/memory_cell/test_locomo_publisher_support_reader.py /tmp/publisher-format/source/
+          cp .github/workflows/hepta-memory-locomo-publisher-astfmt.yml /tmp/publisher-format/source/
+          git rev-parse HEAD > /tmp/publisher-format/checked-head.txt
+          (cd /tmp/publisher-format && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: locomo-publisher-ast-safe-format
+          path: /tmp/publisher-format
+          if-no-files-found: error
