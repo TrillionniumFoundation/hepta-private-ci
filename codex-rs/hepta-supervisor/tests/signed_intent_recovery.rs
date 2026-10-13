@@ -122,7 +122,8 @@ fn write_intent_raw(
 }
 
 #[test]
-fn unsigned_disk_recovery_directive_never_auto_terminalizes_signed_intent() -> Result<(), SupervisorError> {
+fn unsigned_disk_recovery_directive_never_auto_terminalizes_signed_intent()
+-> Result<(), SupervisorError> {
     let fleet = fleet()?;
     let starting =
         fleet
