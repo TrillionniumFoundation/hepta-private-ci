@@ -38,8 +38,23 @@ jobs:
           mkdir -p /tmp/hepta-five-group/source
           python3 -m venv /tmp/hepta-five-group-python
           /tmp/hepta-five-group-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-          /tmp/hepta-five-group-python/bin/pip install numpy==2.2.6 safetensors==0.7.0 cryptography==46.0.4
+          /tmp/hepta-five-group-python/bin/pip install packaging==25.0 numpy==2.2.6 safetensors==0.7.0 cryptography==46.0.4
+          /tmp/hepta-five-group-python/bin/pip check | tee /tmp/hepta-five-group/pip-check.log
           /tmp/hepta-five-group-python/bin/pip freeze > /tmp/hepta-five-group/environment.txt
+      - name: Require actual module imports before test discovery
+        run: |
+          set -euo pipefail
+          PYTHONPATH=scripts/memory_cell /tmp/hepta-five-group-python/bin/python - <<'PY' | tee /tmp/hepta-five-group/import-preflight.log
+          import torch, packaging, numpy
+          from safetensors.torch import load, save
+          import five_causal_native, five_group_search
+          t = torch.arange(4, dtype=torch.float32)
+          if not torch.equal(load(save({'probe': t}))['probe'], t):
+              raise ValueError('tensor serialization roundtrip failed')
+          if t.numpy().shape != (4,):
+              raise ValueError('NumPy bridge unavailable')
+          print('GROUP_SOURCE_IMPORT_PREFLIGHT_OK_NOT_MODEL_EFFICACY')
+          PY
       - name: Preserve all inherited focused gates and test the new Group implementation
         run: |
           set -euo pipefail
