@@ -75,6 +75,49 @@ fn immutable_payload_is_shared_without_vector_copy() {
 }
 
 #[test]
+fn rejected_future_admission_cannot_poison_scheduler_clock() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    q.enqueue(10, intent("original", "scope-a", 1, 1, 100))
+        .unwrap();
+
+    let mut bad = intent("bad", "scope-b", 1, 1, 2_000);
+    bad.feature_digest = Digest32::ZERO;
+    assert_eq!(q.enqueue(1_000, bad), Err(SchedulerErrorV1::EmptyDigest));
+
+    // A rejected far-future input must not block a legitimate timestamp.
+    q.enqueue(11, intent("accepted", "scope-b", 1, 1, 100))
+        .unwrap();
+
+    // Duplicates and expiry also leave the last accepted clock intact.
+    assert_eq!(
+        q.enqueue(999, intent("accepted", "scope-b", 1, 1, 2_000)),
+        Err(SchedulerErrorV1::DuplicateRequest)
+    );
+    assert_eq!(
+        q.enqueue(200, intent("expired", "scope-b", 1, 1, 100)),
+        Err(SchedulerErrorV1::Expired)
+    );
+    assert_eq!(q.pending(), 2);
+    assert!(q.poll_physically_compatible(20).unwrap().batch.is_some());
+}
+
+#[test]
+fn rejected_future_capacity_does_not_advance_clock() {
+    let mut conf = limits();
+    conf.max_pending = 1;
+    let mut q = BoundedMicrobatchSchedulerV1::new(conf).unwrap();
+    q.enqueue(4, intent("first", "one", 1, 1, 100)).unwrap();
+    assert_eq!(
+        q.enqueue(300, intent("rejected", "two", 1, 1, 500)),
+        Err(SchedulerErrorV1::Capacity)
+    );
+    // Drain at a normally increasing timestamp after rejected admission.
+    assert!(q.poll(15).unwrap().batch.is_some());
+    q.enqueue(16, intent("later", "two", 1, 1, 100))
+        .unwrap();
+}
+
+#[test]
 fn capacity_duplicate_and_expired_fail_closed() {
     let mut conf = limits();
     conf.max_pending = 1;
