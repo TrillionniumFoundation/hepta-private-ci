@@ -2034,3 +2034,50 @@ fn final_admission_callback_cannot_mutate_local_acknowledgement_frames() {
         assert_eq!(observed.borrow().executions, 1);
     }
 }
+
+#[test]
+fn lost_ack_pending_intent_cannot_change_during_remote_predecessor_readback() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("first owner");
+        assert!(owner.advance().expect("first committed effect").is_some());
+    }
+    {
+        // Step two effects are durable at their original owner, but its ACK
+        // was lost. A subsequent coordinator must only reconcile this intent.
+        let mut port = FixturePort::new(state.clone());
+        port.drop_ack = true;
+        let mut owner =
+            CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("reopen");
+        assert!(matches!(
+            owner.advance(),
+            Err(CellSplitExecutionErrorV1::External(_))
+        ));
+        assert_eq!(state.borrow().executions, 2);
+    }
+    let port = FixturePort::new(state.clone());
+    let tamper = port.tamper_during_live_readback.clone();
+    let mut owner =
+        CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("recover");
+    *tamper.borrow_mut() = Some(root.path().join("cell-split-01-prepared.json"));
+    // The readback callback corrupts the pending frame after the initial
+    // snapshot. A positive prefix verification must not be returned.
+    assert!(matches!(
+        owner.verify_committed_prefix(),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "pending intent changed during live owner readback"
+        ))
+    ));
+    assert_eq!(owner.completed_steps(), 1);
+    assert_eq!(state.borrow().executions, 2);
+    assert!(!root.path().join("cell-split-01-committed.json").exists());
+    assert!(owner.advance().is_err(), "do not redispatch an unknown effect");
+    assert_eq!(state.borrow().executions, 2);
+}
