@@ -288,7 +288,7 @@ impl CellSplitLifecycleJournalV1 {
         }
         self.transition(
             CellSplitLifecycleStateV1::Retained,
-            retirement_intent_digest_v1(split),
+            retirement_intent_digest_v1(split)?,
         )
     }
 
@@ -316,7 +316,7 @@ impl CellSplitLifecycleJournalV1 {
         {
             return Ok(false);
         }
-        if last.evidence_digest != retirement_intent_digest_v1(split) {
+        if last.evidence_digest != retirement_intent_digest_v1(split)? {
             return Err(CellSplitLifecycleErrorV1::Binding);
         }
         Ok(true)
@@ -474,15 +474,19 @@ fn valid_transition(from: CellSplitLifecycleStateV1, to: CellSplitLifecycleState
     )
 }
 
-fn retirement_intent_digest_v1(split: &CellSplitV1) -> Digest32 {
+fn retirement_intent_digest_v1(
+    split: &CellSplitV1,
+) -> Result<Digest32, CellSplitLifecycleErrorV1> {
+    // The pre-evaluation subject digest covers the complete frozen split
+    // topology, ownership, resources, generation, retirement and rollback
+    // plan. Do not encode only a hand-picked subset of fields here.
+    let frozen = split
+        .evaluation_subject_digest()
+        .map_err(|_| CellSplitLifecycleErrorV1::Binding)?;
     let mut bytes = b"hepta.learning.cell-split.retirement-intent.v1".to_vec();
-    bytes.extend_from_slice(split.split_id.as_str().as_bytes());
-    bytes.extend_from_slice(&split.predecessor_generation.get().to_be_bytes());
-    bytes.extend_from_slice(&split.successor_generation.get().to_be_bytes());
-    bytes.extend_from_slice(split.parent_bundle_digest.as_array());
+    bytes.extend_from_slice(frozen.as_array());
     bytes.extend_from_slice(split.retirement.tombstone_digest.as_array());
-    bytes.extend_from_slice(split.rollback_predecessor_digest.as_array());
-    Digest32::of_bytes(&bytes)
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn lifecycle_digest(
