@@ -96,6 +96,13 @@ pub struct SparseJournal {
 }
 
 impl SparseJournal {
+    /// Read-only scope recorded by the actual sparse journal, not caller metadata.
+    /// This exposes no writable state or authority, and permits the signed
+    /// Neuron runtime to fence NDU admission against the journal itself.
+    pub fn scope(&self) -> JournalScope {
+        self.scope
+    }
+
     /// Bootstrap or recover the first segment without an external acknowledgement
     /// witness. This cannot detect loss of a valid suffix or empty replacement.
     pub fn open(
