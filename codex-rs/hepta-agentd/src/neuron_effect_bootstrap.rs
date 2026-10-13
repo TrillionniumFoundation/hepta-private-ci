@@ -133,11 +133,13 @@ pub fn bootstrap_durable_neuron_effect_intent_v1(
     {
         return Err(NeuronEffectBootstrapErrorV1::UnsafeFile);
     }
-    let owner = DurableNeuronEffectIntentV1::open(file, scope, generation, max_records)?;
+    let mut owner = DurableNeuronEffectIntentV1::open(file, scope, generation, max_records)?;
+    owner.bind_owner_path(path)?;
     // The file fsync inside open makes its header durable; the directory fsync
     // makes the pathname recoverable after first creation. Failure blocks
     // serving even though opening/replaying the file succeeded.
     fs::File::open(parent)?.sync_all()?;
+    owner.verify_bound_owner_path()?;
     Ok(owner)
 }
 

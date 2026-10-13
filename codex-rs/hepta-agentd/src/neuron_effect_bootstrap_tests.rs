@@ -174,3 +174,71 @@ fn mismatched_sparse_runtime_scope_is_denied_before_effect_intent_creation() {
         Err(NeuronEffectBootstrapErrorV1::ScopeMismatch)
     );
 }
+
+
+#[cfg(unix)]
+#[test]
+fn bootstrap_owner_rejects_same_bytes_at_replaced_journal_inode(
+) -> Result<(), Box<dyn std::error::Error>> {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("subject.intent");
+    let moved = directory.path().join("original.intent");
+    let mut owner =
+        bootstrap_durable_neuron_effect_intent_v1(&path, test_scope(), test_generation(), 8)?;
+    let initial = Digest32::of_bytes(b"first-business-tick");
+    owner.prepare(initial, Digest32::ZERO)?;
+    owner.resolve(initial, Digest32::of_bytes(b"first-commit"))?;
+    let bytes = std::fs::read(&path)?;
+
+    // A second process replaces the exact pathname with a plausible journal
+    // while this owner retains its lock on the original inode. Merely reading
+    // a valid digest from the replacement must not authorize another effect.
+    std::fs::rename(&path, &moved)?;
+    std::fs::write(&path, &bytes)?;
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))?;
+
+    let subsequent = Digest32::of_bytes(b"second-business-tick");
+    assert_eq!(
+        owner.can_prepare(subsequent),
+        Err(NeuronEffectIntentErrorV1::UnsafeFile),
+    );
+    assert_eq!(
+        owner.prepare(subsequent, Digest32::of_bytes(b"first-commit")),
+        Err(NeuronEffectIntentErrorV1::UnsafeFile),
+    );
+    assert!(owner.status().poisoned);
+    assert_eq!(std::fs::read(&path)?, bytes);
+    assert_eq!(std::fs::read(&moved)?, bytes);
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn pending_resolution_denied_after_path_replacement(
+) -> Result<(), Box<dyn std::error::Error>> {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("subject.intent");
+    let moved = directory.path().join("original.intent");
+    let mut owner =
+        bootstrap_durable_neuron_effect_intent_v1(&path, test_scope(), test_generation(), 8)?;
+    let pending = Digest32::of_bytes(b"pending-business-tick");
+    owner.prepare(pending, Digest32::ZERO)?;
+    let bytes = std::fs::read(&path)?;
+
+    std::fs::rename(&path, &moved)?;
+    std::fs::write(&path, &bytes)?;
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))?;
+    assert_eq!(
+        owner.resolve(pending, Digest32::of_bytes(b"committed-but-untrusted")),
+        Err(NeuronEffectIntentErrorV1::UnsafeFile),
+    );
+    assert_eq!(owner.status().unresolved_tick, Some(pending));
+    assert!(owner.status().poisoned);
+    assert_eq!(std::fs::read(&moved)?, bytes);
+    assert_eq!(std::fs::read(&path)?, bytes);
+    Ok(())
+}

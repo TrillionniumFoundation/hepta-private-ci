@@ -16,6 +16,10 @@ use std::io::Read;
 use std::io::Seek;
 use std::io::SeekFrom;
 use std::io::Write;
+#[cfg(unix)]
+use std::path::Path;
+#[cfg(unix)]
+use std::path::PathBuf;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -72,6 +76,8 @@ pub struct NeuronEffectIntentStatusV1 {
 /// and parent-directory synchronization before serving the first effect.
 pub struct DurableNeuronEffectIntentV1 {
     file: File,
+    #[cfg(unix)]
+    owner_path: Option<PathBuf>,
     limit: usize,
     records: usize,
     head: Digest32,
@@ -170,6 +176,7 @@ impl DurableNeuronEffectIntentV1 {
         let recovered_pending = pending.is_some();
         Ok(Self {
             file,
+            owner_path: None,
             limit: max_records,
             records,
             head,
@@ -202,6 +209,55 @@ impl DurableNeuronEffectIntentV1 {
         }
     }
 
+    /// Bind this owner to the exact private inode published by the Agentd
+    /// bootstrap. Direct file-handle fixtures may remain unbound, but an
+    /// admitted production owner must bind its path before any effect.
+    ///
+    /// A new file at the same path is not the original journal even if it
+    /// contains identical, correctly hashed historic intent records.
+    #[cfg(unix)]
+    pub fn bind_owner_path(
+        &mut self,
+        path: &Path,
+    ) -> Result<(), NeuronEffectIntentErrorV1> {
+        if self.owner_path.is_some() || !path.is_absolute() {
+            return Err(NeuronEffectIntentErrorV1::UnsafeFile);
+        }
+        self.owner_path = Some(path.to_path_buf());
+        if let Err(error) = self.verify_bound_owner_path() {
+            self.owner_path = None;
+            return Err(error);
+        }
+        Ok(())
+    }
+
+    /// Every admitted mutation must still refer to the originally opened
+    /// private journal, not a replacement inode or symlink at its pathname.
+    #[cfg(unix)]
+    pub fn verify_bound_owner_path(&self) -> Result<(), NeuronEffectIntentErrorV1> {
+        use std::os::unix::fs::MetadataExt as _;
+        use std::os::unix::fs::PermissionsExt as _;
+
+        let Some(path) = self.owner_path.as_ref() else {
+            return Ok(());
+        };
+        let descriptor = self.file.metadata()?;
+        let current = std::fs::symlink_metadata(path)
+            .map_err(|_| NeuronEffectIntentErrorV1::UnsafeFile)?;
+        if !descriptor.is_file()
+            || !current.is_file()
+            || descriptor.dev() != current.dev()
+            || descriptor.ino() != current.ino()
+            || descriptor.nlink() != 1
+            || current.nlink() != 1
+            || descriptor.permissions().mode() & 0o077 != 0
+            || current.permissions().mode() & 0o077 != 0
+        {
+            return Err(NeuronEffectIntentErrorV1::UnsafeFile);
+        }
+        Ok(())
+    }
+
     /// A signed NDU read does not change the owning Neuron scope/generation.
     /// Bind the intent journal to the same source subject and objective as
     /// the sparse runtime, not merely a caller-provided file handle.
@@ -218,6 +274,8 @@ impl DurableNeuronEffectIntentV1 {
     }
 
     pub fn can_prepare(&self, tick_digest: Digest32) -> Result<(), NeuronEffectIntentErrorV1> {
+        #[cfg(unix)]
+        self.verify_bound_owner_path()?;
         if self.poisoned {
             return Err(NeuronEffectIntentErrorV1::Poisoned);
         }
@@ -295,12 +353,16 @@ impl DurableNeuronEffectIntentV1 {
         bytes[33..65].copy_from_slice(checkpoint_digest.as_array());
         bytes[65..97].copy_from_slice(digest.as_array());
         self.poisoned = true;
+        #[cfg(unix)]
+        self.verify_bound_owner_path()?;
         let expected_size = (HEADER_BYTES + self.records * RECORD_BYTES) as u64;
         if self.file.seek(SeekFrom::End(0))? != expected_size {
             return Err(NeuronEffectIntentErrorV1::Corrupt);
         }
         self.file.write_all(&bytes)?;
         self.file.sync_all()?;
+        #[cfg(unix)]
+        self.verify_bound_owner_path()?;
         self.records += 1;
         self.head = digest;
         self.poisoned = false;
