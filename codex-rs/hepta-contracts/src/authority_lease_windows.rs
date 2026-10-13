@@ -53,10 +53,11 @@ fn map_error(error: io::Error) -> AuthorityLeaseError {
 
 #[cfg(test)]
 mod tests {
-    use super::super::{
-        AuthorityLease, AuthorityLeaseBinding, AuthorityLeaseFrontier, AuthorityLeaseRegistry,
-        LEASE_SCHEMA_VERSION,
-    };
+    use super::super::AuthorityLease;
+    use super::super::AuthorityLeaseBinding;
+    use super::super::AuthorityLeaseFrontier;
+    use super::super::AuthorityLeaseRegistry;
+    use super::super::LEASE_SCHEMA_VERSION;
     use super::*;
     use crate::AuthorityClock;
     use crate::AuthorityTrustError;
