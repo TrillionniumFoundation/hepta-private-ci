@@ -9,6 +9,10 @@ on:
       - "defs.bzl"
       - "MODULE.bazel.lock"
       - "codex-rs/Cargo.*"
+      - "codex-rs/network-proxy/Cargo.toml"
+      - "codex-rs/cli/Cargo.toml"
+      - "codex-rs/cli/tests/windows_stable_ingress.rs"
+      - "scripts/test_windows_proxy_bazel_leaf.py"
       - "codex-rs/rust-toolchain.toml"
       - "qualification/matrix-sdk-019/**"
       - ".github/workflows/matrix-sdk-upgrade.yml"
@@ -52,6 +56,9 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - name: Reject protocol/proxy/sandbox dependency cycles
+        shell: bash
+        run: python3 scripts/test_windows_proxy_bazel_leaf.py
       - name: Prepare pinned hermetic Bazel
         uses: ./.github/actions/prepare-bazel-ci
         with:
