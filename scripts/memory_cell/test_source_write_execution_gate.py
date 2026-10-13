@@ -57,5 +57,52 @@ class SourceWriteExecutionGateTests(unittest.TestCase):
         self.assertIn('exit "$status"', str(self.jobs["repository-format"]))
 
 
+    def test_actual_seven_arm_census_precedes_exploratory_model_probes(self):
+        steps = self.jobs["write-and-read"]["steps"]
+        names = [step.get("name", "") for step in steps]
+
+        def position(prefix):
+            positions = [i for i, name in enumerate(names) if name.startswith(prefix)]
+            self.assertEqual(len(positions), 1, prefix)
+            return positions[0]
+
+        task = position("New process reloads both committed modules")
+        effects = position("Recompute seven-arm knowledge and policy effects")
+        self.assertLess(task, effects)
+        self.assertLess(position("Train a small read policy"), task)
+        self.assertLess(position("Write observed source facts"), task)
+
+        for ident in ("kway", "recall", "decode", "likelihood", "confusion"):
+            indices = [i for i, step in enumerate(steps) if step.get("id") == ident]
+            self.assertEqual(len(indices), 1, ident)
+            step = steps[indices[0]]
+            self.assertGreater(indices[0], effects)
+            self.assertIs(step.get("continue-on-error"), True)
+            # The separate diagnostic commands must remain blind to the task
+            # plan and task output, even though they run after the task census.
+            self.assertNotIn("/tmp/experience-input/plan", step["run"])
+            self.assertNotIn("/tmp/experience-result/tasks", step["run"])
+            self.assertIn("/tmp/experience-input/observations/sources.json", step["run"])
+
+        recorded = position("Persist optional diagnostic outcomes")
+        artifact = next(
+            i for i, step in enumerate(steps)
+            if step.get("uses", "").startswith("actions/upload-artifact@")
+        )
+        final = position("Enforce full regression and every optional diagnostic")
+        self.assertGreater(recorded, max(
+            i for i, step in enumerate(steps)
+            if step.get("id") in ("kway", "recall", "decode", "likelihood", "confusion")
+        ))
+        self.assertLess(recorded, artifact)
+        self.assertLess(artifact, final)
+        self.assertEqual(steps[recorded].get("if"), "always()")
+        self.assertEqual(steps[final].get("if"), "always()")
+        self.assertIn("full-regression-exit-code.txt", steps[final]["run"])
+        self.assertIn("diagnostic-outcomes.json", steps[final]["run"])
+        self.assertIn("exit 1", steps[final]["run"])
+
+
+
 if __name__ == "__main__":
     unittest.main()
