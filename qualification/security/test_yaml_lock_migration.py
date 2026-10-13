@@ -54,7 +54,33 @@ class MigrationContractTests(unittest.TestCase):
         for item in after["package"]:
             if item["name"] == "safe":
                 item["dependencies"] = ["some-new-optional-crate"]
-        with self.assertRaisesRegex(ValueError, "unrelated locked dependency records changed"):
+        with self.assertRaisesRegex(ValueError, "unrelated locked dependency names/edges changed"):
+            check(before, after, manifest)
+
+    def test_only_preexisting_transitive_version_rebinding_is_recorded(self):
+        before, after, manifest = fixture()
+        for packages in (before["package"], after["package"]):
+            packages.extend([
+                {"name": "windows-sys", "version": "0.59.0",
+                 "source": "registry+https://github.com/rust-lang/crates.io-index"},
+                {"name": "windows-sys", "version": "0.61.2",
+                 "source": "registry+https://github.com/rust-lang/crates.io-index"},
+            ])
+        original = next(p for p in before["package"] if p["name"] == "safe")
+        candidate = next(p for p in after["package"] if p["name"] == "safe")
+        original["dependencies"] = ["windows-sys 0.59.0"]
+        candidate["dependencies"] = ["windows-sys 0.61.2"]
+        result = check(before, after, manifest)
+        self.assertEqual(result["preexisting_version_rebindings_for_review"], [{
+            "owner": "safe", "owner_version": "1.0.0",
+            "dependency": "windows-sys", "before": "windows-sys 0.59.0",
+            "after": "windows-sys 0.61.2",
+        }])
+        candidate["dependencies"] = ["windows-sys 0.62.0"]
+        with self.assertRaisesRegex(ValueError, "unreviewed version"):
+            check(before, after, manifest)
+        candidate["dependencies"] = ["different-package 0.61.2"]
+        with self.assertRaisesRegex(ValueError, "names/edges changed"):
             check(before, after, manifest)
 
     def test_exact_versions_registry_and_direct_users_required(self):
