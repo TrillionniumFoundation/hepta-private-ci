@@ -188,8 +188,12 @@ fn durable_stage_records_a_decision_and_retries_after_reopen_without_new_bytes()
     assert_eq!(decision.record_id, fixture.run.run_id);
     assert_eq!(decision.selected_candidate_id, id("action"));
     assert_eq!(decision.selected_propensity, ProbabilityQ32::ONE);
-    let original_bytes = fs::read(&path).unwrap();
+    // Snapshot the durable bytes only after the exclusive owner releases
+    // its file lock. On Windows, a second handle cannot read locked byte
+    // ranges even though the producing owner has already fsynced the append.
+    // Reopen/recover below still verifies the exact persisted bytes.
     drop(ledger);
+    let original_bytes = fs::read(&path).unwrap();
     let file = OpenOptions::new()
         .read(true)
         .write(true)
