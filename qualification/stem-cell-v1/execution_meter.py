@@ -99,7 +99,8 @@ class WorkLedger:
     def scope(self, phase, component):
         if phase not in (*PHASES, 'setup', 'verification') or self.current is not None:
             raise ValueError('known, non-nested phase required')
-        if component not in ('encoder', 'bank', 'initialization', 'publication', 'material'):
+        if component not in ('encoder', 'bank', 'initialization', 'publication', 'material',
+                             'proposer', 'verifier', 'value'):
             raise ValueError('known measurement component required')
         if self.finish_ns is not None:
             raise ValueError('ledger already finished')
@@ -126,6 +127,18 @@ class WorkLedger:
     def call(self, phase, component, function, *args, **kwargs):
         with self.scope(phase, component):
             return function(*args, **kwargs)
+
+    def budget_state(self, phase):
+        """Nonfinal resource view after completed scopes, not a work certificate."""
+        if phase not in PHASES or self.current is not None or self.finish_ns is not None:
+            raise ValueError('budget view requires a live idle ledger and known phase')
+        self.check()
+        rows = [r for r in self.rows.values() if r['phase'] == phase]
+        known = sum(r['formula_flops'] for r in rows)
+        complete = not any(r['unknown_operators'] or r['failed_calls'] for r in rows)
+        return {'remaining_formula_work': max(0, self.caps[phase] - known) if complete else None,
+                'remaining_wall_ns': max(0, self.policy['wall_time_ns'] - (self.monotonic() - self.start_ns)),
+                'known_formula_work': known, 'prefix_coverage_complete': complete}
 
     def report(self):
         if self.current is not None:

@@ -33,7 +33,7 @@ def validate_work_record(record, *, expected_policy=None):
         raise ValueError("aborted operator reservation requires a stopped ledger")
     scopes = record.get("scopes")
     totals, incomplete, seen = dict.fromkeys(PHASES, 0), set(), set()
-    if not isinstance(scopes, list) or len(scopes) > 35:
+    if not isinstance(scopes, list) or len(scopes) > 56:
         raise ValueError("bounded work scopes required")
     unknown_count = failed_count = 0
     for scope in scopes:
@@ -41,7 +41,8 @@ def validate_work_record(record, *, expected_policy=None):
             raise ValueError("complete work scope fields required")
         phase, component = scope["phase"], scope["component"]
         if phase not in (*PHASES, "setup", "verification") or component not in (
-                "encoder", "bank", "initialization", "publication", "material"):
+                "encoder", "bank", "initialization", "publication", "material",
+                "proposer", "verifier", "value"):
             raise ValueError("unknown work scope")
         key = (phase, component)
         if key in seen:

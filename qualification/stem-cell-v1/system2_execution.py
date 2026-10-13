@@ -7,8 +7,10 @@ The linear-discounted continuation helper is intentionally profile-specific.
 from __future__ import annotations
 
 import math
+import copy
+import contextlib
 import time
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import Callable
 
 from next_round_matrix import _digest
@@ -48,7 +50,8 @@ def _text(text):
 
 def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
                   continue_values: Callable, value_profile: str,
-                  max_rounds: int = 8, max_calls: int = 24):
+                  max_rounds: int = 8, max_calls: int = 24,
+                  ndu_policy=None, meter=None, clock=time.time_ns):
     """Actually call proposer/verifier, then revise using returned feedback.
 
     continue_values(task, candidate, feedback, rounds_left) returns
@@ -56,23 +59,58 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
     profile. It must use a frozen/cross-fitted estimator, not final eval labels.
     The call ceiling is NOT a FLOP/latency equivalence claim. Failed and invalid
     callback attempts are retained and charged. Final evaluation is separate.
+
+    Opt-in ndu_policy requires a matching value_profile and live WorkLedger.
+    Its value callback receives a frozen DecisionContext instead of rounds_left,
+    and returns a ContinuationEstimate (or None for unsupported). Proposed
+    values are not assumed to be learned, calibrated or independently attested.
+    All three callback kinds consume the search budget; ATen metering covers
+    this process only, never uninstrumented subprocess/API/tokenizer work.
     """
     task.validate()
+    policy = copy.deepcopy(ndu_policy)
+    task = copy.deepcopy(task) if policy is not None else task
+    fixed_task_id = _digest(asdict(task))
+    if policy is not None:
+        from ndu_continuation import validate_policy, PROFILE
+        validate_policy(policy, task_as_of_ns=task.as_of_ns)
+        if meter is None or value_profile != PROFILE:
+            raise ValueError("NDU control requires an actual work meter and its exact utility profile")
+        actual = {"max_calls": max_calls, "max_rounds": max_rounds,
+                  "meter_policy": meter.policy, "phase_caps": meter.caps}
+        if _digest(actual) != _digest(policy["execution"]):
+            raise ValueError("reasoning executor differs from the frozen resource contract")
+        now = clock()
+        if type(now) is not int or not task.as_of_ns <= now < policy["expires_at_ns"]:
+            raise ValueError("reasoning policy is not valid at the current task boundary")
+    elif meter is not None:
+        raise ValueError("metered reasoning requires a bound NDU policy")
     _text(value_profile)
     if type(max_rounds) is not int or not 1 <= max_rounds <= 64:
         raise ValueError("bounded rounds required")
     if type(max_calls) is not int or not 2 <= max_calls <= 192:
         raise ValueError("bounded callback count required")
     trace, candidate, feedback, calls = [], None, None, 0
+    decisions, pending_context, segment_start = [], None, None
+    scope = meter.scope if meter is not None else lambda *args: contextlib.nullcontext()
     started = time.perf_counter_ns()
 
     def finish(status):
-        return {"schema": "hepta.stem.executed-reasoning.v1", "status": status,
+        result = {"schema": "hepta.stem.executed-reasoning.v1", "status": status,
                 "candidate": candidate, "calls": calls, "trace": trace,
                 "elapsed_ns": time.perf_counter_ns() - started,
                 "value_profile": value_profile, "measured_flops": None,
                 "general_fbsde_solved": False, "independent_success_established": False,
                 "production_authorized": False}
+        if policy is not None:
+            result.update(schema="hepta.stem.executed-reasoning.v2", ndu_policy=policy,
+                          task_sha256=fixed_task_id, ndu_decisions=decisions,
+                          work_observation=meter.report(),
+                          accounting_gaps=["external_process_or_tool_work", "python_scalar_arithmetic",
+                                           "independent_final_evaluation", "process_energy"],
+                          native_ndu_owner_integrated=False, learned_critic_validated=False,
+                          full_cost_qualification=False)
+        return result
 
     def invoke(kind, function, *args):
         nonlocal calls
@@ -81,20 +119,35 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
         entry = {"kind": kind, "call": calls, "elapsed_ns": 0, "status": "unknown"}
         trace.append(entry)
         try:
-            result = function(*args)
-            if kind == "propose":
-                _text(result)
-                entry["output_digest"] = _digest(result)
-            elif kind == "verify":
-                if not isinstance(result, Verification):
-                    raise ValueError("verifier returned an untyped result")
-                result.validate()
-                entry["output_digest"] = _digest([result.accepted, result.feedback])
-            else:
-                if (not isinstance(result, tuple) or len(result) != 2
-                        or any(type(v) not in (float, int) or not math.isfinite(v) for v in result)):
-                    raise ValueError("finite continuation and stop values required")
-                entry["output_digest"] = _digest(result)
+            component = {"propose": "proposer", "verify": "verifier", "value": "value"}[kind]
+            with scope("search", component):
+                if policy is not None:
+                    boundary = clock()
+                    if type(boundary) is not int or not task.as_of_ns <= boundary < policy["expires_at_ns"]:
+                        raise ValueError("reasoning policy expired before callback")
+                result = function(*args)
+                if policy is not None and _digest(asdict(task)) != fixed_task_id:
+                    raise ValueError("callback mutated the fixed public task")
+                if kind == "propose":
+                    _text(result)
+                    entry["output_digest"] = _digest(result)
+                elif kind == "verify":
+                    if not isinstance(result, Verification):
+                        raise ValueError("verifier returned an untyped result")
+                    result.validate()
+                    entry["output_digest"] = _digest([result.accepted, result.feedback])
+                elif policy is not None:
+                    from ndu_continuation import ContinuationEstimate
+                    if result is not None:
+                        if type(result) is not ContinuationEstimate:
+                            raise ValueError("a typed context-bound continuation estimate is required")
+                        result.validate()
+                    entry["output_digest"] = _digest(asdict(result) if result is not None else None)
+                else:
+                    if (not isinstance(result, tuple) or len(result) != 2
+                            or any(type(v) not in (float, int) or not math.isfinite(v) for v in result)):
+                        raise ValueError("finite continuation and stop values required")
+                    entry["output_digest"] = _digest(result)
             entry["status"] = "completed"
             return result
         except Exception as exc:
@@ -109,9 +162,24 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
         if calls + 2 > max_calls:
             return finish("budget_exhausted")
         try:
+            if policy is not None and clock() >= policy["expires_at_ns"]:
+                return finish("ndu_stop:expired_policy")
             candidate = invoke("propose", propose, task, candidate, feedback)
             checked = invoke("verify", verify, task, candidate)
             feedback = checked.feedback
+            if policy is not None and segment_start is not None:
+                after = meter.budget_state("search")
+                last = decisions[-1]
+                used = (segment_start["remaining_formula_work"] - after["remaining_formula_work"]
+                        if after["remaining_formula_work"] is not None else None)
+                duration = segment_start["remaining_wall_ns"] - after["remaining_wall_ns"]
+                last.update(observed_segment_formula_work=used, observed_segment_wall_ns=duration,
+                            realized_support_bounds_satisfied=used is not None and
+                            0 <= used <= last["worst_branch_formula_work"] and
+                            0 <= duration <= last["worst_branch_duration_ns"])
+                segment_start = None
+                if not last["realized_support_bounds_satisfied"]:
+                    return finish("ndu_stop:continuation_support_violated")
             if checked.accepted:
                 return finish("verifier_accepted_not_independent_eval")
             if round_index + 1 == max_rounds:
@@ -119,11 +187,35 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
             # One valuation plus at least proposer+verifier must remain.
             if calls + 3 > max_calls:
                 return finish("budget_exhausted")
-            continuation, stop = invoke("value", continue_values, task, candidate,
-                                        feedback, max_rounds - round_index - 1)
-            if continuation <= stop:
-                return finish("utility_stop")
-        except Exception:
+            if policy is None:
+                continuation, stop = invoke("value", continue_values, task, candidate,
+                                            feedback, max_rounds - round_index - 1)
+                if continuation <= stop:
+                    return finish("utility_stop")
+            else:
+                from ndu_continuation import DecisionContext, decide
+                resources = meter.budget_state("search")
+                at = clock()
+                if type(at) is not int or at < task.as_of_ns:
+                    raise ValueError("invalid causal decision clock")
+                pending_context = DecisionContext(
+                    policy["policy_id"], fixed_task_id, _digest(candidate), _digest(feedback),
+                    _digest(trace), at, max_rounds - round_index - 1, max_calls - calls,
+                    resources["remaining_formula_work"], resources["remaining_wall_ns"])
+                context_id = pending_context.context_id
+                estimate = invoke("value", continue_values, task, candidate, feedback, pending_context)
+                if pending_context.context_id != context_id:
+                    raise ValueError("critic mutated its fixed decision context")
+                segment_start = meter.budget_state("search")
+                decision = decide(policy, pending_context, estimate, now_ns=clock(), resources=segment_start)
+                decisions.append(decision)
+                if not decision["continue_computation"]:
+                    return finish("ndu_stop:" + decision["reason"])
+        except Exception as exc:
+            if policy is not None:
+                from execution_meter import BudgetStop
+                if isinstance(exc, BudgetStop):
+                    return finish("resource_budget_stop")
             return finish("callback_failed")
     return finish("depth_exhausted")
 
