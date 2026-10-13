@@ -312,7 +312,7 @@ def run(args):
     from transformers import AutoModel, AutoTokenizer
     for key in ("HF_HUB_OFFLINE", "TRANSFORMERS_OFFLINE", "HF_DATASETS_OFFLINE"):
         os.environ[key] = "1"
-    torch.manual_seed(args.seed)
+    torch.random.default_generator.manual_seed(args.seed)
     random.seed(args.seed)
     torch.set_num_threads(max(1, min(8, os.cpu_count() or 1)))
     torch.use_deterministic_algorithms(True)
@@ -390,7 +390,7 @@ def run(args):
     # Loading different pretrained architectures may consume different RNG.
     # Reset exactly before Head initialization so matched-width Head arms
     # receive genuinely matched initialization and minibatch ordering.
-    torch.manual_seed(args.seed + 1)
+    torch.random.default_generator.manual_seed(args.seed + 1)
     head, head_parameters = build_head(torch, width, classes, args.trainable_budget)
     head = head.to(args.device)
     train_rows = sorted((r for r in rows if r["split"] == "train"),
