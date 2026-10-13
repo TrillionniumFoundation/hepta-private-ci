@@ -123,7 +123,7 @@ def compile_supervision(tokenizer, example, *, input_cap, response_cap, position
 
 
 def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=(), epochs=None,
-                         loss_profile="response-ce-v1"):
+                         loss_profile="response-ce-v1", projection_profile="full-logits-v1"):
     """Fit a disposable candidate and reload saved bytes, never publish it.
 
     response-ce-v1 retains the historical single-example schedule and loss.
@@ -133,7 +133,12 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
     validate_examples(examples, forbidden_families)
     require(loss_profile in ("response-ce-v1", "paired-response-ce-v1", "paired-evidence-margin-v1"),
             "unregistered response objective")
+    require(projection_profile in ("full-logits-v1", "assistant-logits-v1"), "unknown projection profile")
     paired = loss_profile != "response-ce-v1"
+    require(paired or projection_profile == "full-logits-v1", "projection optimization is paired-only")
+    if projection_profile == "assistant-logits-v1":
+        from assistant_projection import qualify_model
+        qualify_model(backend.loaded)
     epochs = TRAINING["epochs"] if epochs is None else epochs
     require(type(epochs) is int and 1 <= epochs <= 8, "epoch bound")
     require(not hasattr(backend.loaded, "peft_config"), "fresh base required; no stacked hidden adapter")
@@ -141,6 +146,8 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
     before_examples = c.digest(examples)
     position_cap = backend.loaded.config.max_position_embeddings
     objective = {"name": loss_profile, "paired_context_accumulation": paired}
+    if projection_profile != "full-logits-v1":
+        objective["vocabulary_projection"] = projection_profile
     if paired:
         import five_reader_evidence_pairs as pairs
         batches = pairs.prepare(backend.tokenizer, examples, position_cap=position_cap)
@@ -172,6 +179,8 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
         initial_adapter_digest = state_digest(get_peft_model_state_dict(model))
         optimizer = torch.optim.AdamW([p for _, p in trainable], lr=TRAINING["learning_rate"])
         model.eval()
+        if projection_profile == "assistant-logits-v1":
+            qualify_model(model)
         steps = tokens = supervised_tokens = scored_tokens = 0
         previous = "0" * 64
         losses = []
@@ -192,7 +201,8 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
                         diagnostics = {}
                         try:
                             if paired:
-                                loss, diagnostics = pairs.backward_pair(model, batch, loss_profile)
+                                loss, diagnostics = pairs.backward_pair(model, batch, loss_profile,
+                                                                        projection_profile=projection_profile)
                             else:
                                 loss = model(**batch, use_cache=False).loss
                                 require(bool(torch.isfinite(loss)), "nonfinite response loss")

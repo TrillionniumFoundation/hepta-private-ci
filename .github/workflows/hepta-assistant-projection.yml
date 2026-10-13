@@ -1,0 +1,78 @@
+name: Hepta exact assistant projection qualification
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/assistant_projection*.py"
+      - "scripts/memory_cell/test_assistant_projection*.py"
+      - "scripts/memory_cell/five_reader_response_learning.py"
+      - "scripts/memory_cell/five_reader_evidence_pairs.py"
+      - ".github/workflows/hepta-assistant-projection.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: assistant-projection-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  loss-gradient-and-original-material:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install original pinned worker
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/assistant-projection/source
+          python3 -m venv /tmp/projection-venv
+          /tmp/projection-venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/assistant-projection/torch-install.log 2>&1
+          /tmp/projection-venv/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/assistant-projection/worker-install.log 2>&1
+          /tmp/projection-venv/bin/pip check
+          /tmp/projection-venv/bin/pip freeze > /tmp/assistant-projection/environment.txt
+      - name: Require prior contracts and new exact loss-gradient regressions
+        run: |
+          set -euo pipefail
+          failed=0
+          for pattern in test_full_cell_matrix.py test_five_causal_experiments.py test_five_causal_native.py 'test_five_group*.py' test_five_reader_response.py 'test_five_reader_adapter*.py' test_five_encoder_snapshot.py test_five_reader_evidence_pairs.py 'test_source_time_evidence*.py' test_reader_fit_audit.py 'test_assistant_projection*.py'; do
+            name=$(printf '%s' "$pattern" | tr '*' '_')
+            if ! /tmp/projection-venv/bin/python -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/assistant-projection/$name.log"; then failed=1; fi
+          done
+          /tmp/projection-venv/bin/python -m py_compile scripts/memory_cell/assistant_projection*.py scripts/memory_cell/test_assistant_projection*.py scripts/memory_cell/five_reader_response_learning.py scripts/memory_cell/five_reader_evidence_pairs.py
+          test "$failed" -eq 0
+      - name: Retrieve exactly pinned existing material
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/projection-original.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/projection-original.zip | sha256sum -c -
+      - name: Same data and objective full versus selected projection
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/assistant-projection/process-resources.txt /tmp/projection-venv/bin/python scripts/memory_cell/assistant_projection_trial.py /tmp/projection-original.zip --work /tmp/projection-work --output /tmp/assistant-projection/study 2>&1 | tee /tmp/assistant-projection/execution.log
+      - name: Preserve exact source and failures without pretrained weights
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/assistant-projection/source
+          git rev-parse HEAD > /tmp/assistant-projection/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/assistant-projection/source/tested-tree.txt
+          cp scripts/memory_cell/assistant_projection*.py scripts/memory_cell/test_assistant_projection*.py scripts/memory_cell/five_reader_*.py scripts/memory_cell/five_causal*.py scripts/memory_cell/source_time*.py scripts/memory_cell/five_native_historical_smoke.py experiments/shared_stem_cell/execution.py .github/workflows/hepta-assistant-projection.yml /tmp/assistant-projection/source/
+          (cd /tmp/assistant-projection && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-assistant-projection-not-capability
+          path: /tmp/assistant-projection
+          if-no-files-found: error

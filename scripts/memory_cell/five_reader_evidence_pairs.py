@@ -112,7 +112,11 @@ def mean_response_logp(logits, labels):
     return -losses[mask].mean()
 
 
-def sequence_score(model, batch):
+def sequence_score(model, batch, projection_profile="full-logits-v1"):
+    if projection_profile == "assistant-logits-v1":
+        from assistant_projection import sequence_score as selected_score
+        return selected_score(model, batch)
+    c.require(projection_profile == "full-logits-v1", "unknown vocabulary projection profile")
     output = model(input_ids=batch["input_ids"], attention_mask=batch["attention_mask"], use_cache=False)
     return mean_response_logp(output.logits, batch["labels"])
 
@@ -136,7 +140,7 @@ def metrics(scores):
             "calibrated_probability": False, "semantic_sufficiency": None}
 
 
-def backward_pair(model, batch, objective):
+def backward_pair(model, batch, objective, *, projection_profile="full-logits-v1"):
     """Accumulate both context gradients before ONE optimizer step.
 
     Hold at most two response graphs, release them before the second context.
@@ -148,9 +152,9 @@ def backward_pair(model, batch, objective):
     c.require(len(variants) == 4, "four actual context-target forwards required")
     scores, total = [None]*4, 0.0
     for good, bad in ((0, 1), (3, 2)):
-        correct = sequence_score(model, variants[good][0])
+        correct = sequence_score(model, variants[good][0], projection_profile)
         with torch.set_grad_enabled(objective == MARGIN):
-            incorrect = sequence_score(model, variants[bad][0])
+            incorrect = sequence_score(model, variants[bad][0], projection_profile)
         loss = part_loss(correct, incorrect, objective)
         c.require(bool(torch.isfinite(loss)), "nonfinite paired loss")
         scores[good], scores[bad] = float(correct.detach()), float(incorrect.detach())
