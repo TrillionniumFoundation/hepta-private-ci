@@ -774,7 +774,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 "unexpected successor frame; reopen required",
             ));
         }
-        if self.pending {
+        let pending_frame = if self.pending {
             let step = CellSplitExecutionStepV1::at(self.cursor)
                 .ok_or(CellSplitExecutionErrorV1::Invalid("pending step index"))?;
             let intent = make_intent(&self.plan, &self.plan_digest, step, &predecessor);
@@ -791,7 +791,10 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                     "pending cursor changed; reopen required",
                 ));
             }
-        }
+            Some(prepared)
+        } else {
+            None
+        };
         // An original owner might have been slow or adversarial while it
         // returned a signed live receipt. Do not publish a verified view from
         // locally replaced plan, signer pins or previously checked prefix.
@@ -810,6 +813,20 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             {
                 return Err(CellSplitExecutionErrorV1::Invalid(
                     "committed frame changed during live owner readback",
+                ));
+            }
+        }
+        // The pending intent is not in local_frames because it has no
+        // committed receipt. An original-owner callback can nevertheless
+        // replace it after the first validation. Re-read its exact bytes and
+        // reject a new commit/successor before reporting a verified prefix.
+        if let Some(prepared) = pending_frame {
+            if read_frame(&frame_path(&self.root, self.cursor, "prepared"))? != Some(prepared)
+                || read_frame(&frame_path(&self.root, self.cursor, "committed"))?.is_some()
+                || has_successor_frame(&self.root, self.cursor + 1)?
+            {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "pending intent changed during live owner readback",
                 ));
             }
         }
