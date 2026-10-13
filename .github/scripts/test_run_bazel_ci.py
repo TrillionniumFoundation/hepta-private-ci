@@ -373,8 +373,13 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertEqual(
             sum(line.endswith("--noremote_cache_async") for line in configs), 1
         )
-        for global_prefix in ("common ", "common:ci ", "common:ci-linux ",
-                              "common:ci-windows ", "common:ci-windows-cross "):
+        for global_prefix in (
+            "common ",
+            "common:ci ",
+            "common:ci-linux ",
+            "common:ci-windows ",
+            "common:ci-windows-cross ",
+        ):
             self.assertNotIn(global_prefix + "--noremote_cache_async", configs)
         self.assertIn("common:ci-macos --strategy=TestRunner=darwin-sandbox,local", configs)
         self.assertIn("common:ci-macos --config=ci-bazel", configs)
