@@ -1,0 +1,242 @@
+"""Run admitted local HF weights through actual V2 Cell populations.
+
+This CPU FP32 executor supports five explicitly named, non-split/non-NDU arms.
+It seals predictions before the separate observer join. No automatic download,
+random-weight fallback, final-label loading, native installation or promotion.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import subprocess
+import time
+from pathlib import Path
+
+from hf_encoder_kernel import (snapshot_digest, validate_encoder_loading_info,
+                               verify_loaded_safetensors, vectorize_case)
+from matrix_materials import (file_sha256, public_row, strict_json, validate_config,
+                             validate_workload)
+from next_round_matrix import _digest
+from paired_execution import PHASES
+
+SOURCE_FILES = ("next_round_matrix.py", "paired_execution.py", "head_surgery.py",
+                "hf_encoder_kernel.py", "matrix_materials.py", "matrix_bank.py",
+                "matrix_runtime.py", "matrix_export.py")
+
+
+def verify_source(source_sha):
+    """Match all local first-party execution sources to the named Git commit."""
+    root = Path(__file__).resolve().parents[2]
+    hashes = {}
+    for name in SOURCE_FILES:
+        relative = "qualification/stem-cell-v1/" + name
+        observed = (root / relative).read_bytes()
+        result = subprocess.run(["git", "-C", str(root), "show", f"{source_sha}:{relative}"],
+                                capture_output=True, check=False, timeout=15)
+        if result.returncode or result.stdout != observed:
+            raise ValueError("working source does not match the execution contract commit: " + name)
+        hashes[relative] = file_sha256(root / relative)
+    return hashes
+
+
+class LocalHFEncoder:
+    """Pinned, completely materialized local tensors; operator provenance only."""
+
+    def __init__(self, snapshot, config, profile):
+        import torch
+        from transformers import AutoModel, AutoTokenizer
+        self.root = Path(snapshot).resolve()
+        self.expected = config["snapshot_sha256"]
+        if snapshot_digest(self.root) != self.expected:
+            raise ValueError("model snapshot digest mismatch")
+        self.tokenizer = AutoTokenizer.from_pretrained(str(self.root), local_files_only=True,
+                                                       trust_remote_code=False)
+        loaded = AutoModel.from_pretrained(str(self.root), local_files_only=True,
+                                          trust_remote_code=False, use_safetensors=True,
+                                          output_loading_info=True, torch_dtype=torch.float32)
+        if not isinstance(loaded, tuple) or len(loaded) != 2:
+            raise ValueError("complete weight-loading report required")
+        model, info = loaded
+        load_receipt = validate_encoder_loading_info(info)
+        model = model.to("cpu").eval().requires_grad_(False)
+        exact_receipt = verify_loaded_safetensors(torch, model, self.root)
+        count = sum(p.numel() for p in model.parameters())
+        if profile["stem"] == "421m" and not 350_000_000 <= count <= 480_000_000:
+            raise ValueError("loaded model is not a 421M-class Encoder")
+        if profile["stem"] == "smaller_control" and not 0 < count < 350_000_000:
+            raise ValueError("loaded model is not the declared smaller control")
+        self.dimension = getattr(model.config, "hidden_size", None)
+        if type(self.dimension) is not int or not 1 <= self.dimension <= 8192:
+            raise ValueError("invalid declared hidden dimension")
+        position_limit = getattr(model.config, "max_position_embeddings", None)
+        if type(position_limit) is int and position_limit < config["context_tokens"]:
+            raise ValueError("context exceeds model position budget")
+        self.model, self.max_tokens, self.calls = model, config["context_tokens"], 0
+        from head_surgery import tensor_inventory
+        self.weight_bytes = tensor_inventory(model)["unique_weight_bytes"]
+        self.receipt = dict(snapshot_sha256=self.expected, upstream_revision=config["upstream_revision"],
+                            frozen_encoder_params=count, loading=load_receipt, materialization=exact_receipt,
+                            material_approval_sha256=config["material_approval_sha256"],
+                            pretrained_provenance_independently_verified=False)
+        self.reverify()
+
+    def encode(self, row):
+        import torch
+        self.calls += 1  # Failed forward attempts also consume an invocation.
+        return vectorize_case(torch, self.model, self.tokenizer, row, "cpu", max_tokens=self.max_tokens)
+
+    def reverify(self):
+        import torch
+        if snapshot_digest(self.root) != self.expected:
+            raise ValueError("snapshot changed during execution")
+        verify_loaded_safetensors(torch, self.model, self.root)
+        if any(p.requires_grad for p in self.model.parameters()):
+            raise ValueError("selected Encoder unexpectedly became trainable")
+
+
+def execute(plan, contract, config, workload, backend, *, clock=time.time_ns):
+    """Testable tensor execution; non-HF backends remain mechanism fixtures."""
+    import torch
+    from matrix_bank import CellBank, state_digest, train_bank
+    profile = validate_config(plan, contract, config)
+    classes = validate_workload(workload, contract)
+    train = workload["train"]
+    if len(train) * backend.dimension * 4 > config["max_feature_bytes"]:
+        raise ValueError("feature allocation exceeds the frozen byte cap")
+    started = time.perf_counter_ns()
+    vectors = [backend.encode(public_row(row))[0] for row in train]
+    features = torch.stack(vectors).detach()
+    if features.shape != (len(train), backend.dimension) or not torch.isfinite(features).all().item():
+        raise ValueError("invalid actual Encoder features")
+    feature_ns = time.perf_counter_ns() - started
+    # Weight loading cannot perturb per-arm Head initialization/minibatch seed.
+    with torch.random.fork_rng(devices=[]):
+        torch.random.default_generator.manual_seed(plan["seed"])
+        bank = CellBank(backend.dimension, classes, profile, config["width_units"])
+    targets = torch.tensor([r["label"] for r in train], dtype=torch.long)
+    before = state_digest(bank)
+    started = time.perf_counter_ns()
+    training = train_bank(bank, features, targets, config, plan["seed"])
+    training_ns = time.perf_counter_ns() - started
+    trained_digest = state_digest(bank)
+    # Warmup uses approved training input, never evaluation labels, and is
+    # retained as online work while excluded only from request latencies.
+    started = time.perf_counter_ns()
+    with torch.inference_mode():
+        vector, _ = backend.encode(public_row(train[0]))
+        bank(vector.unsqueeze(0))
+    warmup_ns = time.perf_counter_ns() - started
+    if not contract["eval_start_ns"] <= clock() < contract["eval_end_ns"]:
+        raise ValueError("execution is outside the preregistered evaluation window")
+    predictions = []
+    for row in workload["eval"]:
+        start = time.perf_counter_ns()
+        record = dict(task_id=row["sample_id"], input_digest=_digest(public_row(row)),
+                      status="unknown", logits=None, token_count=None, error_type=None)
+        try:
+            if clock() >= contract["eval_end_ns"]:
+                raise TimeoutError("evaluation deadline")
+            with torch.inference_mode():
+                vector, length = backend.encode(public_row(row))
+                logits = bank(vector.unsqueeze(0))[0]
+            if not torch.isfinite(logits).all().item():
+                raise ValueError("nonfinite prediction")
+            if clock() >= contract["eval_end_ns"]:
+                raise TimeoutError("completed beyond evaluation deadline")
+            record.update(status="completed", logits=logits.tolist(), token_count=length)
+        except Exception as exc:
+            record.update(status="timed_out" if isinstance(exc, TimeoutError) else "failed",
+                          error_type=type(exc).__name__)
+        record["latency_ns"] = max(1, time.perf_counter_ns() - start)
+        record["predicted_at_ns"] = clock()
+        # After-RSS is not peak RSS, and absent energy counters are not zero.
+        record.update(energy_joules=None, peak_memory_bytes=None)
+        predictions.append(record)
+    backend.reverify()
+    if state_digest(bank) != trained_digest:
+        raise ValueError("trained bank changed during inference")
+    inventory = bank.inventory()
+    manifest = dict(schema="hepta.stem.bound-execution.v1", plan_id=plan["plan_id"],
+                    contract_id=contract["contract_id"], arm_id=config["arm_id"], config=config,
+                    source_sha=contract["source_sha"], device_id=contract["device_id"],
+                    workload_sha256=contract["workload_sha256"],
+                    execution_kind="pretrained_local_weights" if type(backend) is LocalHFEncoder else "mechanism_fixture",
+                    encoder_receipt=backend.receipt, encoder_calls=backend.calls,
+                    unique_weight_bytes=backend.weight_bytes + inventory["unique_weight_bytes"],
+                    inventory=inventory, training=training, classification_classes=classes,
+                    initial_bank_sha256=before, trained_bank_sha256=trained_digest,
+                    phase_flops={p: (0 if p in ("search", "migration") else None) for p in PHASES},
+                    flop_profile="unmeasured_full_execution", flop_components=[],
+                    durations_ns=dict(feature_materialization=feature_ns, training=training_ns, warmup=warmup_ns),
+                    actual_compute_caps_verified=False, latency_scope="sequential_encoder_plus_bank_including_failed_requests",
+                    outcomes_loaded=False, independent_success_established=False, production_authorized=False)
+    return bank, manifest, predictions
+
+
+def write_json_exclusive(path, value):
+    data = (json.dumps(value, sort_keys=True, allow_nan=False, ensure_ascii=False, indent=2) + "\n").encode()
+    with Path(path).open("xb") as stream:
+        stream.write(data)
+        stream.flush()
+        os.fsync(stream.fileno())
+
+
+def publish_prediction_bundle(root, bank, manifest, predictions, *, clock=time.time_ns):
+    """Seal newly created artifacts; callers own exclusive directory creation."""
+    from safetensors.torch import save_file
+    save_file(bank.state_dict(), str(root / "bank.safetensors"))
+    with (root / "bank.safetensors").open("rb") as stream:
+        os.fsync(stream.fileno())
+    write_json_exclusive(root / "predictions.json", predictions)
+    write_json_exclusive(root / "execution.json", manifest)
+    committed = {"schema": "hepta.stem.prediction-seal.v1", "sealed_at_ns": clock(),
+                 "files": {name: file_sha256(root / name) for name in
+                           ("predictions.json", "execution.json", "bank.safetensors")}}
+    committed["seal_id"] = _digest(committed)
+    write_json_exclusive(root / "COMMITTED.json", committed)
+    fd = os.open(root, os.O_RDONLY)
+    try:
+        os.fsync(fd)
+    finally:
+        os.close(fd)
+    return committed
+
+
+def run_bound(plan, contract, config, workload_path, snapshot, output):
+    profile = validate_config(plan, contract, config)
+    if file_sha256(workload_path) != contract["workload_sha256"]:
+        raise ValueError("workload bytes differ from the frozen contract")
+    workload = strict_json(workload_path)
+    validate_workload(workload, contract)
+    sources = verify_source(contract["source_sha"])
+    root = Path(output)
+    root.mkdir(exist_ok=False)  # A failed/partial run is never overwritten.
+    try:
+        backend = LocalHFEncoder(snapshot, config, profile)
+        bank, manifest, predictions = execute(plan, contract, config, workload, backend)
+        if file_sha256(workload_path) != contract["workload_sha256"]:
+            raise ValueError("workload changed during execution")
+        if verify_source(contract["source_sha"]) != sources:
+            raise ValueError("execution source changed")
+        manifest["source_files_sha256"] = sources
+        manifest["predictions_complete_at_ns"] = time.time_ns()
+        return publish_prediction_bundle(root, bank, manifest, predictions)
+    except Exception as exc:
+        write_json_exclusive(root / "FAILED.json", {"status": "failed", "error_type": type(exc).__name__,
+                                                    "production_authorized": False})
+        raise
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    for key in ("plan", "contract", "config", "workload", "snapshot", "output"):
+        parser.add_argument("--" + key, required=True)
+    args = parser.parse_args()
+    seal = run_bound(strict_json(args.plan), strict_json(args.contract), strict_json(args.config),
+                     args.workload, args.snapshot, args.output)
+    print(json.dumps({"seal_id": seal["seal_id"], "production_authorized": False}))
+
+
+if __name__ == "__main__":
+    main()
