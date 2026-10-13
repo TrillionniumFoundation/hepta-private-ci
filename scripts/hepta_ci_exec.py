@@ -13,6 +13,7 @@ import hashlib
 import math
 import selectors
 import signal
+import stat
 import uuid
 import os
 from pathlib import Path
@@ -23,7 +24,7 @@ import tempfile
 import time
 
 
-def git(*args: str) -> str:
+def git(*args: str, repository: Path | None = None) -> str:
     # Match the implementation-map owner's local metadata policy. Do not let
     # ambient repository/index selectors, replacements or fsmonitor hooks
     # attest a different checkout. The executed command's environment is not
@@ -35,36 +36,145 @@ def git(*args: str) -> str:
         GIT_CONFIG_NOSYSTEM="1",
         GIT_CONFIG_GLOBAL=os.devnull,
         GIT_NO_REPLACE_OBJECTS="1",
+        GIT_GRAFT_FILE=os.devnull,
         GIT_NO_LAZY_FETCH="1",
         GIT_TERMINAL_PROMPT="0",
         GIT_OPTIONAL_LOCKS="0",
     )
     return subprocess.check_output(
-        ["git", "--literal-pathspecs", "-c", "core.fsmonitor=false", *args],
+        [
+            "git",
+            "--literal-pathspecs",
+            "-c",
+            "core.fsmonitor=false",
+            "-c",
+            "core.trustctime=true",
+            "-c",
+            "core.checkstat=default",
+            "-c",
+            "core.ignorestat=false",
+            "-c",
+            "advice.graftFileDeprecated=false",
+            *args,
+        ],
         text=True,
         env=env,
+        cwd=repository,
     ).strip()
 
 
-def identity() -> dict:
+def identity(*, repository: Path | None = None) -> dict:
     # status/diff can hide changed tracked bytes behind either index flag.
     # Reuse the existing full-checkout policy, but preserve the receipt schema:
     # before-command flags reject; after-command flags fail without discarding
     # the original command exit. Never clear the caller's flags or refresh its
-    # index. These snapshots do not attest concurrent or transient mutations.
+    # index. Raw blob comparison also rejects a poisoned stat cache without
+    # refreshing the caller's index or executing clean filters. These snapshots
+    # cannot attest concurrent or transient mutations or external build inputs.
     hidden = any(
         row and (row[0] == "S" or row[0].islower())
-        for row in git("ls-files", "-v", "-z").split("\0")
+        for row in git("ls-files", "-v", "-z", repository=repository).split("\0")
     )
-    metadata = git("cat-file", "-p", "HEAD").split("\n\n", 1)[0].splitlines()
+    metadata = (
+        git("cat-file", "-p", "HEAD", repository=repository)
+        .split("\n\n", 1)[0]
+        .splitlines()
+    )
     return {
-        "commit": git("rev-parse", "HEAD"),
-        "tree": git("rev-parse", "HEAD^{tree}"),
+        "commit": git("rev-parse", "HEAD", repository=repository),
+        "tree": git("rev-parse", "HEAD^{tree}", repository=repository),
         "parents": [line[7:] for line in metadata if line.startswith("parent ")],
         "dirty": bool(
-            hidden or git("status", "--porcelain", "--untracked-files=normal")
+            hidden
+            or git(
+                "diff",
+                "--cached",
+                "--raw",
+                "-z",
+                "--no-ext-diff",
+                "--no-textconv",
+                "HEAD",
+                "--",
+                repository=repository,
+            )
+            or git(
+                "ls-files",
+                "--others",
+                "--exclude-standard",
+                "-z",
+                repository=repository,
+            )
+            or not worktree_blobs_match(repository=repository)
         ),
     }
+
+
+def worktree_blobs_match(*, repository: Path | None = None) -> bool:
+    """Compare exact Git blob bytes with bounded reads, not stat-cache claims.
+
+    This POSIX CI source policy rejects checkout transformations such as CRLF
+    or clean filters. Symlink blobs bind the link text, not external targets.
+    Missing files, unsupported gitlinks and changes during a read fail closed.
+    """
+    root = Path(git("rev-parse", "--show-toplevel", repository=repository))
+    rows = git(
+        "ls-tree", "--full-tree", "-r", "-l", "-z", "HEAD", repository=repository
+    )
+    for row in rows.split("\0"):
+        if not row:
+            continue
+        metadata, relative = row.split("\t", 1)
+        mode, kind, expected, size_text = metadata.split()
+        if kind != "blob" or mode not in {"100644", "100755", "120000"}:
+            return False
+        expected_size = int(size_text)
+        path = root / relative
+        try:
+            before = path.lstat()
+            if before.st_size != expected_size:
+                return False
+            digest = hashlib.sha1(
+                f"blob {expected_size}\0".encode(), usedforsecurity=False
+            )
+            if mode == "120000":
+                if not stat.S_ISLNK(before.st_mode):
+                    return False
+                digest.update(os.fsencode(os.readlink(path)))
+            else:
+                if not stat.S_ISREG(before.st_mode):
+                    return False
+                if bool(before.st_mode & stat.S_IXUSR) != (mode == "100755"):
+                    return False
+                flags = os.O_RDONLY | os.O_NONBLOCK | getattr(os, "O_NOFOLLOW", 0)
+                with os.fdopen(os.open(path, flags), "rb") as stream:
+                    opened = os.fstat(stream.fileno())
+                    if (opened.st_dev, opened.st_ino) != (before.st_dev, before.st_ino):
+                        return False
+                    remaining = expected_size
+                    while remaining:
+                        chunk = stream.read(min(65536, remaining))
+                        if not chunk:
+                            return False
+                        digest.update(chunk)
+                        remaining -= len(chunk)
+                    if stream.read(1):
+                        return False
+            after = path.lstat()
+            fields = (
+                "st_mode",
+                "st_dev",
+                "st_ino",
+                "st_size",
+                "st_mtime_ns",
+                "st_ctime_ns",
+            )
+            if any(getattr(before, field) != getattr(after, field) for field in fields):
+                return False
+            if digest.hexdigest() != expected:
+                return False
+        except OSError:
+            return False
+    return True
 
 
 def observed_test_counts(text: str) -> tuple[int, int]:

@@ -4,13 +4,118 @@ These are quiescent local checkout controls, not a sandbox, concurrent build
 attestation, cryptographic work qualification, or an external acceptance claim.
 """
 
+import os
 import shlex
 import subprocess
+import sys
+from unittest.mock import patch
 
+from hepta_ci_exec import worktree_blobs_match
 from test_hepta_ci_exec import GitExecutionFixture
 
 
 class HiddenSourceIdentityTests(GitExecutionFixture):
+    def test_raw_source_check_from_nested_directory_still_covers_whole_tree(self):
+        nested = self.repo / "nested"
+        nested.mkdir()
+        (nested / "source").write_text("nested source")
+        self.git("add", "nested")
+        self.git("commit", "-qm", "nested source")
+        self.assertTrue(worktree_blobs_match(repository=nested))
+        (self.repo / "input").write_text("evil\n")
+        self.assertFalse(worktree_blobs_match(repository=nested))
+
+    def test_raw_blobs_reject_filter_masked_edits_without_executing_filter(self):
+        (self.repo / ".gitattributes").write_text("input filter=mask\n")
+        self.git("add", ".gitattributes")
+        self.git("commit", "-qm", "declare filter")
+        self.source = self.git("rev-parse", "HEAD")
+        marker = self.root / "filter-effect"
+        program = self.root / "filter.py"
+        program.write_text(
+            f"from pathlib import Path\nPath({str(marker)!r}).touch()\nprint('base')\n"
+        )
+        self.git(
+            "config", "filter.mask.clean", shlex.join([sys.executable, str(program)])
+        )
+        (self.repo / "input").write_text("evil\n")
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        self.assertTrue(marker.exists())
+        marker.unlink()
+        result = self.execute()
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertFalse(marker.exists())
+        self.assertFalse(self.marker.exists())
+
+    def test_raw_symlink_blob_binds_link_text(self):
+        link = self.repo / "link"
+        link.symlink_to("input")
+        self.git("add", "link")
+        self.git("commit", "-qm", "source symlink")
+        self.source = self.git("rev-parse", "HEAD")
+        self.assertEqual(self.execute().returncode, 0)
+        self.result.unlink()
+        self.marker.unlink()
+        link.unlink()
+        link.symlink_to("other")
+        result = self.execute()
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertFalse(self.marker.exists())
+
+    def test_raw_file_hash_reads_bounded_chunks_and_rejects_shorter_file(self):
+        large = self.repo / "large"
+        large.write_bytes(b"z" * 200_000)
+        self.git("add", "large")
+        self.git("commit", "-qm", "streamed source")
+        original = os.fdopen
+        sizes = []
+
+        class Reader:
+            def __init__(self, descriptor, mode):
+                self.stream = original(descriptor, mode)
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *args):
+                self.stream.close()
+
+            def fileno(self):
+                return self.stream.fileno()
+
+            def read(self, size):
+                sizes.append(size)
+                return self.stream.read(size)
+
+        with patch("hepta_ci_exec.os.fdopen", Reader):
+            self.assertTrue(worktree_blobs_match(repository=self.repo))
+        self.assertGreaterEqual(sizes.count(65536), 3)
+        self.assertTrue(all(0 < size <= 65536 for size in sizes))
+        large.write_bytes(b"z")
+        self.assertFalse(worktree_blobs_match(repository=self.repo))
+
+    def test_local_stat_policy_cannot_hide_same_size_restored_mtime_change(self):
+        source = self.repo / "input"
+        # Make the original stat record older than the index, avoiding Git's
+        # racy-clean fallback so the weak local policy really hides this edit.
+        os.utime(source, (1_600_000_000, 1_600_000_000))
+        self.git("add", "input")
+        before = source.stat()
+        self.git("config", "core.trustctime", "false")
+        self.git("config", "core.checkstat", "minimal")
+        source.write_text("evil\n")
+        os.utime(source, ns=(before.st_atime_ns, before.st_mtime_ns))
+        self.assertEqual(self.git("status", "--porcelain"), "")
+        self.assertEqual(self.git("ls-files", "-v"), "H input")
+        index = (self.repo / ".git/index").read_bytes()
+        result = self.execute()
+        self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+        self.assertEqual(self.receipt()["status"], "rejected")
+        self.assertFalse(self.marker.exists())
+        self.assertEqual((self.repo / ".git/index").read_bytes(), index)
+        self.assertEqual(self.git("config", "core.trustctime"), "false")
+        self.assertEqual(self.git("config", "core.checkstat"), "minimal")
+
     def hidden_before(self, flag):
         self.git("update-index", flag, "input")
         (self.repo / "input").write_text("unreviewed replacement\n")
