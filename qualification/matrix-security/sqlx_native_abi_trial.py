@@ -74,8 +74,9 @@ def _read_source_archive(archive_bytes, checksum):
                 # PurePosixPath normalizes "./" and repeated separators.
                 # Reject those aliases *before* duplicate checks, otherwise
                 # distinct tar names can overwrite one canonical destination.
-                # A directory's one trailing "/" is standard tar notation.
-                canonical_name = path.as_posix() + ("/" if member.isdir() else "")
+                # tarfile strips a directory's trailing "/" when parsing
+                # TarInfo. Compare its parsed member name without restoring it.
+                canonical_name = path.as_posix()
                 if (member.name != canonical_name or
                         path.is_absolute() or len(path.parts) < 1 or
                         path.parts[0] != prefix or
