@@ -157,7 +157,7 @@ def main(root: Path, *, allow_conversion=False):
         stream.write(raw)
     config = {"schema": "hepta.shared-stem-execution.v1", "classes": 4, "cells": 2,
         "temporal": False, "steps": 20, "seed": 20261013, "batch_size": 8,
-        "maximum_tokens": 512, "run_controls": True, "measure_sharing": True,
+        "maximum_tokens": 512, "run_controls": True, "measure_sharing": True, "measure_head_batch": True,
         "dataset": {"path": "dataset.jsonl", "sha256": sha(raw)},
         "model": model}
     write_once(root / "manifest.json", config)
