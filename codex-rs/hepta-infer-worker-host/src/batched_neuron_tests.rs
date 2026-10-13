@@ -727,7 +727,10 @@ fn native_three_member_batch_preserves_distinct_signed_nonces_and_metrics() {
         PhaseMetricKindV1::NeuronFeature,
     ] {
         assert_eq!(
-            events.iter().filter(|event| event.phase == phase && event.succeeded).count(),
+            events
+                .iter()
+                .filter(|event| event.phase == phase && event.succeeded)
+                .count(),
             3
         );
     }

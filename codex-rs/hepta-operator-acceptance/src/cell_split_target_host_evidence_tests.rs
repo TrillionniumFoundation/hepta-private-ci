@@ -29,25 +29,17 @@ fn event(
         route_digest: match kind {
             CellSplitTargetHostEventKindV1::RouteCutover
             | CellSplitTargetHostEventKindV1::RestartRecovered
-            | CellSplitTargetHostEventKindV1::PowerLossRecovered => {
-                CHILD_ROUTE.to_string()
-            }
+            | CellSplitTargetHostEventKindV1::PowerLossRecovered => CHILD_ROUTE.to_string(),
             CellSplitTargetHostEventKindV1::RollbackCompleted
             | CellSplitTargetHostEventKindV1::TombstoneCommitted
-            | CellSplitTargetHostEventKindV1::NoResurrectionVerified => {
-                PARENT_ROUTE.to_string()
-            }
+            | CellSplitTargetHostEventKindV1::NoResurrectionVerified => PARENT_ROUTE.to_string(),
             _ => String::new(),
         },
         predecessor_digest: match kind {
             CellSplitTargetHostEventKindV1::RouteCutover => PARENT_ROUTE.to_string(),
-            CellSplitTargetHostEventKindV1::RollbackCompleted => {
-                CHILD_ROUTE.to_string()
-            }
+            CellSplitTargetHostEventKindV1::RollbackCompleted => CHILD_ROUTE.to_string(),
             CellSplitTargetHostEventKindV1::TombstoneCommitted
-            | CellSplitTargetHostEventKindV1::NoResurrectionVerified => {
-                PARENT_ROUTE.to_string()
-            }
+            | CellSplitTargetHostEventKindV1::NoResurrectionVerified => PARENT_ROUTE.to_string(),
             _ => String::new(),
         },
         tombstone_digest: if matches!(
@@ -174,11 +166,8 @@ fn target_host_trust_file_requires_out_of_band_exact_sha256_pin() {
     #[cfg(unix)]
     {
         use std::os::unix::fs::PermissionsExt as _;
-        std::fs::set_permissions(
-            directory.path(),
-            std::fs::Permissions::from_mode(0o700),
-        )
-        .expect("private directory");
+        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("private directory");
     }
     std::fs::write(&path, &bytes).expect("policy");
     #[cfg(unix)]
@@ -188,9 +177,8 @@ fn target_host_trust_file_requires_out_of_band_exact_sha256_pin() {
             .expect("private policy");
     }
     assert!(CellSplitTargetHostEvidenceTrustPolicyV1::from_json_file(&path).is_err());
-    let load_pinned = |pin: &str| {
-        CellSplitTargetHostEvidenceTrustPolicyV1::from_json_file_pinned(&path, pin)
-    };
+    let load_pinned =
+        |pin: &str| CellSplitTargetHostEvidenceTrustPolicyV1::from_json_file_pinned(&path, pin);
     assert!(load_pinned(&"aa".repeat(32)).is_err());
     assert!(load_pinned(&digest.to_uppercase()).is_err());
     let pinned = load_pinned(&digest).expect("independent policy pin");
@@ -252,35 +240,41 @@ fn host_observer_keys_must_be_independent_and_signer_aliases_unique() {
             BASE64.encode(observer.verifying_key().to_bytes()),
         )]),
     };
-    assert!(CellSplitTargetHostEvidenceTrustPolicyV1::from_json_bytes(
-        &canonical_json(&file).expect("independent canonical keys"),
-    )
-    .is_ok());
+    assert!(
+        CellSplitTargetHostEvidenceTrustPolicyV1::from_json_bytes(
+            &canonical_json(&file).expect("independent canonical keys"),
+        )
+        .is_ok()
+    );
     file.observer_keys.insert(
         "observer-alias".to_string(),
         BASE64.encode(observer.verifying_key().to_bytes()),
     );
-    assert!(CellSplitTargetHostEvidenceTrustPolicyV1::from_json_bytes(
-        &canonical_json(&file).expect("duplicate observer key"),
-    )
-    .is_err());
+    assert!(
+        CellSplitTargetHostEvidenceTrustPolicyV1::from_json_bytes(
+            &canonical_json(&file).expect("duplicate observer key"),
+        )
+        .is_err()
+    );
     file.observer_keys.clear();
     file.observer_keys.insert(
         "observer-signer".to_string(),
         BASE64.encode(host.verifying_key().to_bytes()),
     );
-    assert!(CellSplitTargetHostEvidenceTrustPolicyV1::from_json_bytes(
-        &canonical_json(&file).expect("shared host and observer key"),
-    )
-    .is_err());
-    file.observer_keys.insert(
-        "observer-signer".to_string(),
-        BASE64.encode([0_u8; 32]),
+    assert!(
+        CellSplitTargetHostEvidenceTrustPolicyV1::from_json_bytes(
+            &canonical_json(&file).expect("shared host and observer key"),
+        )
+        .is_err()
     );
-    assert!(CellSplitTargetHostEvidenceTrustPolicyV1::from_json_bytes(
-        &canonical_json(&file).expect("invalid or weak observer key"),
-    )
-    .is_err());
+    file.observer_keys
+        .insert("observer-signer".to_string(), BASE64.encode([0_u8; 32]));
+    assert!(
+        CellSplitTargetHostEvidenceTrustPolicyV1::from_json_bytes(
+            &canonical_json(&file).expect("invalid or weak observer key"),
+        )
+        .is_err()
+    );
 }
 
 #[test]
@@ -382,8 +376,7 @@ fn signed_production_evidence_store_is_create_only_idempotent_and_reopens_origin
         )
         .expect("independently signed alternate history");
     assert!(
-        verify_cell_split_target_host_evidence(&different_signed_history, &rotated_trust)
-            .is_ok(),
+        verify_cell_split_target_host_evidence(&different_signed_history, &rotated_trust).is_ok(),
         "both histories are individually valid but cannot share one witness path",
     );
     assert!(
@@ -520,7 +513,6 @@ fn recorder_exposes_next_event_context_for_external_host_adapters() {
     assert_ne!(next_previous, ZERO_DIGEST);
 }
 
-
 /// A signed host lifecycle report and a four-signer coordinator transcript
 /// may each verify independently while referring to unrelated operations.
 /// The Observer must sign their exact pairing and confirm every live owner.
@@ -552,7 +544,8 @@ fn signed_owner_transcript_for_host(
     let trusted = crate::CellSplitOwnerTrustV1::new(
         &plan,
         std::array::from_fn(|index| keys[index].verifying_key()),
-    ).expect("four original owners are distinct");
+    )
+    .expect("four original owners are distinct");
     let plan_digest = plan.digest().expect("frozen plan");
     let mut predecessor = plan_digest.clone();
     let mut receipts = Vec::new();
@@ -561,12 +554,18 @@ fn signed_owner_transcript_for_host(
         crate::CellSplitExecutionStepV1::ChildStateMigration,
         crate::CellSplitExecutionStepV1::CnsRouteCutover,
         crate::CellSplitExecutionStepV1::SupervisorGenerationFence,
-    ].into_iter().enumerate() {
+    ]
+    .into_iter()
+    .enumerate()
+    {
         let idempotency_key = crate::durable::sha256(
             format!(
                 "hepta.learning.cell-split.execution-owner.v1\0{}\0{}\0{}",
-                plan_digest, step.index(), predecessor,
-            ).as_bytes(),
+                plan_digest,
+                step.index(),
+                predecessor,
+            )
+            .as_bytes(),
         );
         let intent = crate::CellSplitExecutionIntentV1 {
             schema: "hepta.learning.cell-split.execution-owner.v1".into(),
@@ -594,11 +593,9 @@ fn signed_owner_transcript_for_host(
                     original_runtime_signature_bytes: Vec::new(),
                 };
                 original.original_runtime_receipt_bytes =
-                    crate::CellSplitCnsRuntimeAttestationV1::for_commit(
-                        &plan, &original,
-                    )
-                    .canonical_bytes()
-                    .expect("typed original CNS runtime");
+                    crate::CellSplitCnsRuntimeAttestationV1::for_commit(&plan, &original)
+                        .canonical_bytes()
+                        .expect("typed original CNS runtime");
                 original.original_runtime_signature_bytes = key(71)
                     .sign(&original.original_runtime_receipt_bytes)
                     .to_bytes()
@@ -630,9 +627,9 @@ fn signed_owner_transcript_for_host(
                     "receiptDigest": "00".repeat(32),
                 });
                 let decode = |value: serde_json::Value| {
-                    serde_json::from_value::<crate::cell_split_observer_join::OriginalSupervisorCheckpointV1>(
-                        value,
-                    )
+                    serde_json::from_value::<
+                        crate::cell_split_observer_join::OriginalSupervisorCheckpointV1,
+                    >(value)
                     .expect("complete durable handoff schema")
                 };
                 let digest = decode(checkpoint.clone())
@@ -645,13 +642,10 @@ fn signed_owner_transcript_for_host(
                     .expect("original Supervisor journal checkpoint");
                 let mut signing_bytes =
                     b"hepta.supervisor.cell-split.original-journal.v1\0".to_vec();
-                signing_bytes.extend_from_slice(
-                    &(intent.idempotency_key.len() as u64).to_be_bytes(),
-                );
+                signing_bytes
+                    .extend_from_slice(&(intent.idempotency_key.len() as u64).to_be_bytes());
                 signing_bytes.extend_from_slice(intent.idempotency_key.as_bytes());
-                signing_bytes.extend_from_slice(
-                    &(checkpoint_bytes.len() as u64).to_be_bytes(),
-                );
+                signing_bytes.extend_from_slice(&(checkpoint_bytes.len() as u64).to_be_bytes());
                 signing_bytes.extend_from_slice(&checkpoint_bytes);
                 let original = crate::CellSplitSupervisorCommitV1 {
                     idempotency_key: intent.idempotency_key.clone(),
@@ -714,12 +708,8 @@ fn bound_host_owner_fixture(
     let (transcript, trust) = signed_owner_transcript_for_host(&payload);
     for event in &mut payload.events {
         let receipt = match event.event_kind {
-            CellSplitTargetHostEventKindV1::ArtifactLoaded => {
-                Some(&transcript.receipts[0])
-            }
-            CellSplitTargetHostEventKindV1::RouteCutover => {
-                Some(&transcript.receipts[2])
-            }
+            CellSplitTargetHostEventKindV1::ArtifactLoaded => Some(&transcript.receipts[0]),
+            CellSplitTargetHostEventKindV1::RouteCutover => Some(&transcript.receipts[2]),
             _ => None,
         };
         if let Some(original) = receipt {
@@ -777,9 +767,11 @@ struct CurrentEffectFixture {
 impl CurrentEffectFixture {
     fn new(transcript: &crate::CellSplitExecutionTranscriptV1) -> Self {
         Self {
-            committed: transcript.receipts.iter().map(|receipt| {
-                (receipt.intent.idempotency_key.clone(), receipt.clone())
-            }).collect(),
+            committed: transcript
+                .receipts
+                .iter()
+                .map(|receipt| (receipt.intent.idempotency_key.clone(), receipt.clone()))
+                .collect(),
             verification_count: 0,
         }
     }
@@ -829,14 +821,32 @@ fn observer_join_rejects_independently_signed_disconnected_operations() {
     let observer = key(7);
     let (original, transcript, _) = bound_host_owner_fixture(&host, &observer);
     let variants = [
-        ("artifact-operation", CellSplitTargetHostEventKindV1::ArtifactLoaded, true),
-        ("artifact-receipt", CellSplitTargetHostEventKindV1::ArtifactLoaded, false),
-        ("cns-operation", CellSplitTargetHostEventKindV1::RouteCutover, true),
-        ("cns-receipt", CellSplitTargetHostEventKindV1::RouteCutover, false),
+        (
+            "artifact-operation",
+            CellSplitTargetHostEventKindV1::ArtifactLoaded,
+            true,
+        ),
+        (
+            "artifact-receipt",
+            CellSplitTargetHostEventKindV1::ArtifactLoaded,
+            false,
+        ),
+        (
+            "cns-operation",
+            CellSplitTargetHostEventKindV1::RouteCutover,
+            true,
+        ),
+        (
+            "cns-receipt",
+            CellSplitTargetHostEventKindV1::RouteCutover,
+            false,
+        ),
     ];
     for (name, stage, change_operation) in variants {
         let mut payload = original.payload.clone();
-        let event = payload.events.iter_mut()
+        let event = payload
+            .events
+            .iter_mut()
             .find(|record| record.event_kind == stage)
             .expect("required host lifecycle operation");
         if change_operation {
@@ -851,24 +861,27 @@ fn observer_join_rejects_independently_signed_disconnected_operations() {
             event.event_digest = event_digest(event).expect("new signed event digest");
             predecessor = event.event_digest.clone();
         }
-        payload.evidence_digest =
-            evidence_digest(&payload).expect("new independent host chain");
-        let unrelated = payload.sign(
-            "host-signer", &host,
-            [("observer-signer".to_string(), observer.clone())],
-        ).expect("otherwise valid independent host/Observer evidence");
+        payload.evidence_digest = evidence_digest(&payload).expect("new independent host chain");
+        let unrelated = payload
+            .sign(
+                "host-signer",
+                &host,
+                [("observer-signer".to_string(), observer.clone())],
+            )
+            .expect("otherwise valid independent host/Observer evidence");
         assert!(
-            verify_cell_split_target_host_evidence(
-                &unrelated, &policy(&host, &observer),
-            ).is_ok(),
+            verify_cell_split_target_host_evidence(&unrelated, &policy(&host, &observer),).is_ok(),
             "{name}: host and observer evidence must be independently valid",
         );
-        assert!(matches!(
-            crate::cell_split_observer_join_payload_v1(&transcript, &unrelated),
-            Err(crate::CellSplitObserverJoinErrorV1::Invalid(
-                "host lifecycle is not bound to original Artifact CAS and CNS owner receipts"
-            ))
-        ), "{name}: a valid signature on an unrelated operation must fail the join");
+        assert!(
+            matches!(
+                crate::cell_split_observer_join_payload_v1(&transcript, &unrelated),
+                Err(crate::CellSplitObserverJoinErrorV1::Invalid(
+                    "host lifecycle is not bound to original Artifact CAS and CNS owner receipts"
+                ))
+            ),
+            "{name}: a valid signature on an unrelated operation must fail the join"
+        );
     }
 }
 
@@ -905,11 +918,8 @@ fn signed_supervisor_minimum_witness(
 fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
     let host = key(3);
     let observer = key(7);
-    let (envelope, transcript, owner_trust) =
-        bound_host_owner_fixture(&host, &observer);
-    let join = signed_observer_join_fixture(
-        &envelope, &transcript, &host, &observer,
-    );
+    let (envelope, transcript, owner_trust) = bound_host_owner_fixture(&host, &observer);
+    let join = signed_observer_join_fixture(&envelope, &transcript, &host, &observer);
     let external_cns = key(71).verifying_key();
     let external_supervisor = key(72).verifying_key();
     let pinned_checkpoint_digest = {
@@ -917,9 +927,11 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
             serde_json::from_slice(&transcript.receipts[3].owner_receipt_bytes)
                 .expect("Supervisor commit");
         let checkpoint: serde_json::Value =
-            serde_json::from_slice(&signed.original_checkpoint_bytes)
-                .expect("checkpoint");
-        checkpoint["receiptDigest"].as_str().expect("checkpoint digest").to_owned()
+            serde_json::from_slice(&signed.original_checkpoint_bytes).expect("checkpoint");
+        checkpoint["receiptDigest"]
+            .as_str()
+            .expect("checkpoint digest")
+            .to_owned()
     };
     let minimum_signature = signed_supervisor_minimum_witness(
         &envelope,
@@ -934,8 +946,8 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
         supervisor_minimum_observer_signature: &minimum_signature,
     };
     let mut current = CurrentEffectFixture::new(&transcript);
-    let accepted = crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_port_v1(
+    let accepted =
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_port_v1(
             &join,
             &transcript,
             &owner_trust,
@@ -943,7 +955,8 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
             &policy(&host, &observer),
             &trust,
             &mut current,
-        ).expect("original CNS, original terminal journal and four current owners");
+        )
+        .expect("original CNS, original terminal journal and four current owners");
     assert_eq!(current.verification_count, 4);
     assert!(accepted.independently_signed_original_runtime_and_journal);
     assert_eq!(
@@ -952,9 +965,7 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
     );
     assert_eq!(
         accepted.supervisor_minimum_observer_witness_digest,
-        crate::durable::sha256(
-            &canonical_json(&minimum_signature).expect("minimum witness"),
-        ),
+        crate::durable::sha256(&canonical_json(&minimum_signature).expect("minimum witness"),),
     );
     // Correct terminal checkpoint bytes plus an attacker-issued "minimum"
     // are not independent anti-rollback evidence. The matching digest alone
@@ -972,18 +983,28 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
         supervisor_minimum_observer_signature: &forged_witness,
     };
     let mut rejected = CurrentEffectFixture::new(&transcript);
-    assert!(crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_port_v1(
-            &join, &transcript, &owner_trust, &envelope,
-            &policy(&host, &observer), &forged_minimum, &mut rejected,
-        ).is_err());
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &forged_minimum,
+            &mut rejected,
+        )
+        .is_err()
+    );
     assert_eq!(rejected.verification_count, 0);
 
     // A genuinely signed minimum belongs to a specific host execution.
     // Replaying it against a different host nonce cannot reauthorize the
     // current four-owner transcript even if the journal digest is identical.
     let mut unrelated_execution = envelope.clone();
-    unrelated_execution.payload.target_host_nonce.push_str("-other");
+    unrelated_execution
+        .payload
+        .target_host_nonce
+        .push_str("-other");
     let replay_witness = signed_supervisor_minimum_witness(
         &unrelated_execution,
         &transcript,
@@ -997,11 +1018,18 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
         supervisor_minimum_observer_signature: &replay_witness,
     };
     let mut rejected = CurrentEffectFixture::new(&transcript);
-    assert!(crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_port_v1(
-            &join, &transcript, &owner_trust, &envelope,
-            &policy(&host, &observer), &replayed_minimum, &mut rejected,
-        ).is_err());
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &replayed_minimum,
+            &mut rejected,
+        )
+        .is_err()
+    );
     assert_eq!(rejected.verification_count, 0);
 
     let independently_stale = "aa".repeat(32);
@@ -1012,11 +1040,18 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
         supervisor_minimum_observer_signature: &minimum_signature,
     };
     let mut rejected = CurrentEffectFixture::new(&transcript);
-    assert!(crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_port_v1(
-            &join, &transcript, &owner_trust, &envelope,
-            &policy(&host, &observer), &stale_minimum, &mut rejected,
-        ).is_err());
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &stale_minimum,
+            &mut rejected,
+        )
+        .is_err()
+    );
     assert_eq!(rejected.verification_count, 0);
     assert_eq!(accepted.join.split_id, transcript.plan.split_id);
     assert!(!accepted.production_activation_authorized);
@@ -1026,7 +1061,9 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
         crate::durable::sha256(
             &serde_json::from_slice::<crate::CellSplitCnsRuntimeCommitV1>(
                 &transcript.receipts[2].owner_receipt_bytes,
-            ).expect("typed cutover").original_runtime_receipt_bytes,
+            )
+            .expect("typed cutover")
+            .original_runtime_receipt_bytes,
         ),
     );
 
@@ -1039,8 +1076,8 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
         supervisor_minimum_observer_signature: &minimum_signature,
     };
     let mut current = CurrentEffectFixture::new(&transcript);
-    assert!(crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_port_v1(
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_port_v1(
             &join,
             &transcript,
             &owner_trust,
@@ -1048,7 +1085,9 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
             &policy(&host, &observer),
             &wrong_cns,
             &mut current,
-        ).is_err());
+        )
+        .is_err()
+    );
     assert_eq!(current.verification_count, 0);
 
     let incorrect_supervisor = key(74).verifying_key();
@@ -1058,8 +1097,8 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
         supervisor_minimum_checkpoint_digest: &pinned_checkpoint_digest,
         supervisor_minimum_observer_signature: &minimum_signature,
     };
-    assert!(crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_port_v1(
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_port_v1(
             &join,
             &transcript,
             &owner_trust,
@@ -1067,7 +1106,9 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
             &policy(&host, &observer),
             &wrong_supervisor,
             &mut current,
-        ).is_err());
+        )
+        .is_err()
+    );
     assert_eq!(current.verification_count, 0);
 
     // Host/Observer or outer effect owners cannot masquerade as the
@@ -1080,8 +1121,8 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
         supervisor_minimum_checkpoint_digest: &pinned_checkpoint_digest,
         supervisor_minimum_observer_signature: &minimum_signature,
     };
-    assert!(crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_port_v1(
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_port_v1(
             &join,
             &transcript,
             &owner_trust,
@@ -1089,7 +1130,9 @@ fn deep_observer_join_checks_independent_cns_and_supervisor_originals() {
             &policy(&host, &observer),
             &conflated,
             &mut current,
-        ).is_err());
+        )
+        .is_err()
+    );
     assert_eq!(current.verification_count, 0);
 }
 
@@ -1192,14 +1235,16 @@ impl crate::CellSplitSupervisorMonotonicFrontierPortV1 for SignedMonotonicFronti
             journal_revision: if self.advance_on_second && self.reads == 2 {
                 self.subject.journal_revision + 1
             } else {
-                self.revision_override.unwrap_or(self.subject.journal_revision)
+                self.revision_override
+                    .unwrap_or(self.subject.journal_revision)
             },
             minimum_checkpoint_digest: self.subject.minimum_checkpoint_digest.clone(),
             original_store_record_digest: self.store_record_digest.clone(),
             challenge_nonce: challenge_nonce.into(),
             signature_bytes: Vec::new(),
         };
-        proof.signature_bytes = self.signer
+        proof.signature_bytes = self
+            .signer
             .sign(
                 &crate::cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
                     .expect("monotonic witness payload"),
@@ -1237,26 +1282,23 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
 
     let host = key(3);
     let observer = key(7);
-    let (envelope, transcript, owner_trust) =
-        bound_host_owner_fixture(&host, &observer);
-    let join = signed_observer_join_fixture(
-        &envelope, &transcript, &host, &observer,
-    );
+    let (envelope, transcript, owner_trust) = bound_host_owner_fixture(&host, &observer);
+    let join = signed_observer_join_fixture(&envelope, &transcript, &host, &observer);
     let cns_key = key(71).verifying_key();
     let journal_key = key(72).verifying_key();
     let minimum_store_signer = key(93);
     let minimum_store_key = minimum_store_signer.verifying_key();
-    let journal: crate::CellSplitSupervisorCommitV1 = serde_json::from_slice(
-        &transcript.receipts[3].owner_receipt_bytes,
-    ).expect("original journal");
-    let checkpoint: serde_json::Value = serde_json::from_slice(
-        &journal.original_checkpoint_bytes,
-    ).expect("canonical terminal checkpoint");
-    let minimum_digest = checkpoint["receiptDigest"].as_str()
-        .expect("signed checkpoint minimum").to_owned();
-    let minimum_signature = signed_supervisor_minimum_witness(
-        &envelope, &transcript, &observer, &minimum_digest,
-    );
+    let journal: crate::CellSplitSupervisorCommitV1 =
+        serde_json::from_slice(&transcript.receipts[3].owner_receipt_bytes)
+            .expect("original journal");
+    let checkpoint: serde_json::Value = serde_json::from_slice(&journal.original_checkpoint_bytes)
+        .expect("canonical terminal checkpoint");
+    let minimum_digest = checkpoint["receiptDigest"]
+        .as_str()
+        .expect("signed checkpoint minimum")
+        .to_owned();
+    let minimum_signature =
+        signed_supervisor_minimum_witness(&envelope, &transcript, &observer, &minimum_digest);
     let runtime_trust = crate::CellSplitObserverOriginalRuntimeTrustV1 {
         cns_original_runtime_key: &cns_key,
         supervisor_original_journal_key: &journal_key,
@@ -1273,8 +1315,9 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
         journal_idempotency_key: journal.idempotency_key.clone(),
         journal_authority_epoch: journal.authority_epoch,
         journal_revision: journal.committed_revision,
-        original_checkpoint_bytes_digest:
-            crate::durable::sha256(&journal.original_checkpoint_bytes),
+        original_checkpoint_bytes_digest: crate::durable::sha256(
+            &journal.original_checkpoint_bytes,
+        ),
         minimum_checkpoint_digest: minimum_digest.clone(),
     };
 
@@ -1295,19 +1338,20 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
     forged_join.host_signature.signature_base64 = "forged".into();
     let mut forbidden_store = RejectAllMinimumReads;
     let mut unread_effects = CurrentEffectFixture::new(&transcript);
-    let result = crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_minimum_port_v1(
-        &forged_join,
-        &transcript,
-        &owner_trust,
-        &envelope,
-        &policy(&host, &observer),
-        &runtime_trust,
-        &minimum_store_key,
-        &mut forbidden_store,
-        &frontier_key,
-        &mut frontier,
-        &mut unread_effects,
-    );
+    let result =
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &forged_join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &runtime_trust,
+            &minimum_store_key,
+            &mut forbidden_store,
+            &frontier_key,
+            &mut frontier,
+            &mut unread_effects,
+        );
     assert!(
         result.is_err(),
         "forged join must not reach the minimum or effect owners"
@@ -1317,17 +1361,27 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
     let root = tempfile::tempdir().expect("external minimum root");
     fs::set_permissions(root.path(), fs::Permissions::from_mode(0o700))
         .expect("independent private storage");
-    let mut external = CellSplitSupervisorMinimumFileStoreV1::open(
-        root.path(), minimum_store_signer,
-    ).expect("separate owner");
+    let mut external =
+        CellSplitSupervisorMinimumFileStoreV1::open(root.path(), minimum_store_signer)
+            .expect("separate owner");
     let mut current = CurrentEffectFixture::new(&transcript);
-    assert!(crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_minimum_port_v1(
-            &join, &transcript, &owner_trust, &envelope,
-            &policy(&host, &observer), &runtime_trust,
-            &minimum_store_key, &mut external,
-            &frontier_key, &mut frontier, &mut current,
-        ).is_err(), "a signed old checkpoint does not replace a current store");
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &runtime_trust,
+            &minimum_store_key,
+            &mut external,
+            &frontier_key,
+            &mut frontier,
+            &mut current,
+        )
+        .is_err(),
+        "a signed old checkpoint does not replace a current store"
+    );
     assert_eq!(current.verification_count, 0);
 
     external
@@ -1337,16 +1391,25 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
         &mut external,
         &subject,
         &"aa".repeat(32),
-    ).expect("independent signed minimum record");
+    )
+    .expect("independent signed minimum record");
     frontier.store_record_digest = original.original_store_record_digest;
     let mut current = CurrentEffectFixture::new(&transcript);
-    let accepted = crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_minimum_port_v1(
-            &join, &transcript, &owner_trust, &envelope,
-            &policy(&host, &observer), &runtime_trust,
-            &minimum_store_key, &mut external,
-            &frontier_key, &mut frontier, &mut current,
-        ).expect("current minimum and four original owner observations");
+    let accepted =
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &runtime_trust,
+            &minimum_store_key,
+            &mut external,
+            &frontier_key,
+            &mut frontier,
+            &mut current,
+        )
+        .expect("current minimum and four original owner observations");
     assert!(accepted.live_minimum_readback_digest.is_some());
     assert!(accepted.live_monotonic_frontier_digest.is_some());
     assert_eq!(frontier.reads, 2);
@@ -1357,13 +1420,23 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
     // when its separate monotonic high-water mark has advanced in the domain.
     frontier.revision_override = Some(subject.journal_revision + 1);
     let mut stale = CurrentEffectFixture::new(&transcript);
-    assert!(crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_minimum_port_v1(
-            &join, &transcript, &owner_trust, &envelope,
-            &policy(&host, &observer), &runtime_trust,
-            &minimum_store_key, &mut external,
-            &frontier_key, &mut frontier, &mut stale,
-        ).is_err(), "older signed minimum cannot beat a newer high-water mark");
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &runtime_trust,
+            &minimum_store_key,
+            &mut external,
+            &frontier_key,
+            &mut frontier,
+            &mut stale,
+        )
+        .is_err(),
+        "older signed minimum cannot beat a newer high-water mark"
+    );
     assert_eq!(stale.verification_count, 0);
     frontier.revision_override = None;
 
@@ -1373,44 +1446,84 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
     frontier.advance_on_second = true;
     frontier.reads = 0;
     let mut changed = CurrentEffectFixture::new(&transcript);
-    assert!(crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_minimum_port_v1(
-            &join, &transcript, &owner_trust, &envelope,
-            &policy(&host, &observer), &runtime_trust,
-            &minimum_store_key, &mut external,
-            &frontier_key, &mut frontier, &mut changed,
-        ).is_err(), "monotonic frontier advanced during owner verification");
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &runtime_trust,
+            &minimum_store_key,
+            &mut external,
+            &frontier_key,
+            &mut frontier,
+            &mut changed,
+        )
+        .is_err(),
+        "monotonic frontier advanced during owner verification"
+    );
     assert_eq!(changed.verification_count, 4);
     frontier.advance_on_second = false;
 
     let mut shared_key = CurrentEffectFixture::new(&transcript);
-    assert!(crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_minimum_port_v1(
-            &join, &transcript, &owner_trust, &envelope,
-            &policy(&host, &observer), &runtime_trust,
-            &minimum_store_key, &mut external,
-            &minimum_store_key, &mut frontier, &mut shared_key,
-        ).is_err(), "the monotonic frontier signer cannot reuse the local minimum key");
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &runtime_trust,
+            &minimum_store_key,
+            &mut external,
+            &minimum_store_key,
+            &mut frontier,
+            &mut shared_key,
+        )
+        .is_err(),
+        "the monotonic frontier signer cannot reuse the local minimum key"
+    );
     assert_eq!(shared_key.verification_count, 0);
 
     let mut denied = CurrentEffectFixture::new(&transcript);
-    assert!(crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_minimum_port_v1(
-            &join, &transcript, &owner_trust, &envelope,
-            &policy(&host, &observer), &runtime_trust,
-            &observer.verifying_key(), &mut external,
-            &frontier_key, &mut frontier, &mut denied,
-        ).is_err(), "minimum signer cannot reuse the Observer key");
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &runtime_trust,
+            &observer.verifying_key(),
+            &mut external,
+            &frontier_key,
+            &mut frontier,
+            &mut denied,
+        )
+        .is_err(),
+        "minimum signer cannot reuse the Observer key"
+    );
     assert_eq!(denied.verification_count, 0);
     let mut denied = CurrentEffectFixture::new(&transcript);
     denied.committed.clear();
-    assert!(crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_minimum_port_v1(
-            &join, &transcript, &owner_trust, &envelope,
-            &policy(&host, &observer), &runtime_trust,
-            &minimum_store_key, &mut external,
-            &frontier_key, &mut frontier, &mut denied,
-        ).is_err(), "fresh minimum cannot conceal revoked owner receipts");
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &runtime_trust,
+            &minimum_store_key,
+            &mut external,
+            &frontier_key,
+            &mut frontier,
+            &mut denied,
+        )
+        .is_err(),
+        "fresh minimum cannot conceal revoked owner receipts"
+    );
     assert_eq!(denied.verification_count, 1);
 
     // The signed minimum must also remain live *after* the four individual
@@ -1420,13 +1533,22 @@ fn production_deep_join_requires_fresh_independent_minimum_store() {
         inner: CurrentEffectFixture::new(&transcript),
         minimum_path: root.path().join("independent-supervisor-minimum.json"),
     };
-    assert!(crate::cell_split_observer_join::
-        verify_cell_split_observer_join_deep_with_minimum_port_v1(
-            &join, &transcript, &owner_trust, &envelope,
-            &policy(&host, &observer), &runtime_trust,
-            &minimum_store_key, &mut external,
-            &frontier_key, &mut frontier, &mut interrupted,
-        ).is_err());
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_minimum_port_v1(
+            &join,
+            &transcript,
+            &owner_trust,
+            &envelope,
+            &policy(&host, &observer),
+            &runtime_trust,
+            &minimum_store_key,
+            &mut external,
+            &frontier_key,
+            &mut frontier,
+            &mut interrupted,
+        )
+        .is_err()
+    );
     assert_eq!(interrupted.inner.verification_count, 4);
 }
 
@@ -1437,27 +1559,23 @@ fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
 
     let host = key(3);
     let observer = key(7);
-    let (envelope, mut transcript, owner_trust) =
-        bound_host_owner_fixture(&host, &observer);
+    let (envelope, mut transcript, owner_trust) = bound_host_owner_fixture(&host, &observer);
     let outer = &mut transcript.receipts[3];
     let mut journal: crate::CellSplitSupervisorCommitV1 =
-        serde_json::from_slice(&outer.owner_receipt_bytes)
-            .expect("original Supervisor receipt");
+        serde_json::from_slice(&outer.owner_receipt_bytes).expect("original Supervisor receipt");
     let mut checkpoint: serde_json::Value =
         serde_json::from_slice(&journal.original_checkpoint_bytes)
             .expect("signed journal checkpoint");
     checkpoint["phase"] = serde_json::json!("route_published");
     let mutated: crate::cell_split_observer_join::OriginalSupervisorCheckpointV1 =
         serde_json::from_value(checkpoint).expect("valid nonterminal shape");
-    journal.original_checkpoint_bytes =
-        serde_json::to_vec(&mutated).expect("nonterminal journal");
+    journal.original_checkpoint_bytes = serde_json::to_vec(&mutated).expect("nonterminal journal");
     let mut payload = b"hepta.supervisor.cell-split.original-journal.v1\0".to_vec();
     payload.extend_from_slice(&(journal.idempotency_key.len() as u64).to_be_bytes());
     payload.extend_from_slice(journal.idempotency_key.as_bytes());
     payload.extend_from_slice(&(journal.original_checkpoint_bytes.len() as u64).to_be_bytes());
     payload.extend_from_slice(&journal.original_checkpoint_bytes);
-    journal.original_checkpoint_signature_bytes =
-        key(72).sign(&payload).to_bytes().to_vec();
+    journal.original_checkpoint_signature_bytes = key(72).sign(&payload).to_bytes().to_vec();
 
     // Update the complete independently valid outer Supervisor signature
     // and the full coordinator transcript digest. A stale hash cannot be
@@ -1465,8 +1583,9 @@ fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
     outer.owner_receipt_bytes = canonical_json(&journal).expect("typed original");
     outer.output_digest = crate::durable::sha256(&outer.owner_receipt_bytes);
     outer.owner_signature_bytes = key(54)
-        .sign(&crate::cell_split_execution_signing_payload_v1(outer)
-            .expect("outer signing payload"))
+        .sign(
+            &crate::cell_split_execution_signing_payload_v1(outer).expect("outer signing payload"),
+        )
         .to_bytes()
         .to_vec();
     outer.receipt_digest = crate::cell_split_execution_receipt_digest_v1(outer)
@@ -1485,9 +1604,11 @@ fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
             serde_json::from_slice(&transcript.receipts[3].owner_receipt_bytes)
                 .expect("Supervisor commit");
         let checkpoint: serde_json::Value =
-            serde_json::from_slice(&signed.original_checkpoint_bytes)
-                .expect("checkpoint");
-        checkpoint["receiptDigest"].as_str().expect("checkpoint digest").to_owned()
+            serde_json::from_slice(&signed.original_checkpoint_bytes).expect("checkpoint");
+        checkpoint["receiptDigest"]
+            .as_str()
+            .expect("checkpoint digest")
+            .to_owned()
     };
     let minimum_signature = signed_supervisor_minimum_witness(
         &envelope,
@@ -1529,9 +1650,14 @@ fn independent_observer_join_requires_all_four_current_owners() {
     let mut current = CurrentEffectFixture::new(&transcript);
 
     let receipt = crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
-        &signed_join, &transcript, &trust,
-        &envelope, &target_policy, &mut current,
-    ).expect("four original effect owners + independently signed target-host pairing");
+        &signed_join,
+        &transcript,
+        &trust,
+        &envelope,
+        &target_policy,
+        &mut current,
+    )
+    .expect("four original effect owners + independently signed target-host pairing");
     assert_eq!(current.verification_count, 4);
     assert!(receipt.four_current_owner_readbacks);
     assert!(receipt.independently_signed_host_and_observer);
@@ -1539,11 +1665,23 @@ fn independent_observer_join_requires_all_four_current_owners() {
 
     // An unrelated or revoked external owner invalidates the joined proof,
     // even though the earlier host and observer signatures are unchanged.
-    assert!(current.committed.remove(&transcript.receipts[2].intent.idempotency_key).is_some());
-    assert!(crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
-        &signed_join, &transcript, &trust,
-        &envelope, &target_policy, &mut current,
-    ).is_err());
+    assert!(
+        current
+            .committed
+            .remove(&transcript.receipts[2].intent.idempotency_key)
+            .is_some()
+    );
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
+            &signed_join,
+            &transcript,
+            &trust,
+            &envelope,
+            &target_policy,
+            &mut current,
+        )
+        .is_err()
+    );
 }
 
 #[test]
@@ -1551,38 +1689,54 @@ fn observer_join_rejects_mixed_host_and_effect_lineage_before_remote_reads() {
     let host = key(3);
     let observer = key(7);
     let (envelope, transcript, trust) = bound_host_owner_fixture(&host, &observer);
-    let mut signed_join = signed_observer_join_fixture(
-        &envelope, &transcript, &host, &observer,
-    );
+    let mut signed_join = signed_observer_join_fixture(&envelope, &transcript, &host, &observer);
     let target_policy = policy(&host, &observer);
     let mut current = CurrentEffectFixture::new(&transcript);
 
     signed_join.payload.owner_receipt_digests[1] = "ff".repeat(32);
-    assert!(crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
-        &signed_join, &transcript, &trust,
-        &envelope, &target_policy, &mut current,
-    ).is_err());
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
+            &signed_join,
+            &transcript,
+            &trust,
+            &envelope,
+            &target_policy,
+            &mut current,
+        )
+        .is_err()
+    );
     assert_eq!(current.verification_count, 0);
 
-    let mut signed_join = signed_observer_join_fixture(
-        &envelope, &transcript, &host, &observer,
-    );
+    let mut signed_join = signed_observer_join_fixture(&envelope, &transcript, &host, &observer);
     signed_join.observer_signature.signature_base64 = BASE64.encode([0_u8; 64]);
-    assert!(crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
-        &signed_join, &transcript, &trust,
-        &envelope, &target_policy, &mut current,
-    ).is_err());
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
+            &signed_join,
+            &transcript,
+            &trust,
+            &envelope,
+            &target_policy,
+            &mut current,
+        )
+        .is_err()
+    );
     assert_eq!(current.verification_count, 0);
 
     let mut changed = transcript.clone();
     changed.plan.child_artifact_digest = "99".repeat(32);
-    assert!(crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
-        &signed_join, &changed, &trust,
-        &envelope, &target_policy, &mut current,
-    ).is_err());
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
+            &signed_join,
+            &changed,
+            &trust,
+            &envelope,
+            &target_policy,
+            &mut current,
+        )
+        .is_err()
+    );
     assert_eq!(current.verification_count, 0);
 }
-
 
 #[test]
 fn observer_join_rejects_reused_effect_owner_as_host_signer() {
@@ -1591,26 +1745,22 @@ fn observer_join_rejects_reused_effect_owner_as_host_signer() {
     // independently observed production cross-attestation.
     let duplicated_host = key(51);
     let observer = key(7);
-    let (envelope, transcript, trust) =
-        bound_host_owner_fixture(&duplicated_host, &observer);
-    let join = signed_observer_join_fixture(
-        &envelope,
-        &transcript,
-        &duplicated_host,
-        &observer,
-    );
+    let (envelope, transcript, trust) = bound_host_owner_fixture(&duplicated_host, &observer);
+    let join = signed_observer_join_fixture(&envelope, &transcript, &duplicated_host, &observer);
     let mut current = CurrentEffectFixture::new(&transcript);
-    assert!(crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
-        &join,
-        &transcript,
-        &trust,
-        &envelope,
-        &policy(&duplicated_host, &observer),
-        &mut current,
-    ).is_err());
+    assert!(
+        crate::cell_split_observer_join::verify_cell_split_observer_join_with_port_v1(
+            &join,
+            &transcript,
+            &trust,
+            &envelope,
+            &policy(&duplicated_host, &observer),
+            &mut current,
+        )
+        .is_err()
+    );
     assert_eq!(current.verification_count, 0);
 }
-
 
 #[cfg(unix)]
 #[test]
@@ -1620,23 +1770,16 @@ fn observer_public_gate_refuses_independently_rekeyed_rpc_transport() {
     let host = key(3);
     let observer = key(7);
     let (envelope, transcript, trust) = bound_host_owner_fixture(&host, &observer);
-    let signed_join = signed_observer_join_fixture(
-        &envelope, &transcript, &host, &observer,
-    );
+    let signed_join = signed_observer_join_fixture(&envelope, &transcript, &host, &observer);
     let root = tempfile::tempdir().expect("local sockets not opened");
-    let endpoints = std::array::from_fn(|index| {
-        root.path().join(format!("absent-owner-{index}.sock"))
-    });
+    let endpoints =
+        std::array::from_fn(|index| root.path().join(format!("absent-owner-{index}.sock")));
     // These are four strong but DIFFERENT keys from the original owner
     // signatures in the transcript. The join must refuse before connecting.
-    let wrong_keys = [61_u8, 62, 63, 64].map(|seed| {
-        key(seed).verifying_key()
-    });
-    let mut untrusted = crate::CellSplitUnixEffectPortV1::new(
-        endpoints,
-        wrong_keys,
-        Duration::from_secs(1),
-    ).expect("well-shaped but untrusted transport");
+    let wrong_keys = [61_u8, 62, 63, 64].map(|seed| key(seed).verifying_key());
+    let mut untrusted =
+        crate::CellSplitUnixEffectPortV1::new(endpoints, wrong_keys, Duration::from_secs(1))
+            .expect("well-shaped but untrusted transport");
     let result = crate::verify_cell_split_observer_join_v1(
         &signed_join,
         &transcript,
@@ -1653,7 +1796,6 @@ fn observer_public_gate_refuses_independently_rekeyed_rpc_transport() {
     ));
 }
 
-
 #[cfg(unix)]
 #[test]
 fn observer_public_gate_rechecks_four_distinct_pinned_signed_sockets() {
@@ -1667,11 +1809,8 @@ fn observer_public_gate_rechecks_four_distinct_pinned_signed_sockets() {
 
     let host = key(3);
     let observer = key(7);
-    let (envelope, transcript, frozen_keys) =
-        bound_host_owner_fixture(&host, &observer);
-    let join = signed_observer_join_fixture(
-        &envelope, &transcript, &host, &observer,
-    );
+    let (envelope, transcript, frozen_keys) = bound_host_owner_fixture(&host, &observer);
+    let join = signed_observer_join_fixture(&envelope, &transcript, &host, &observer);
 
     // Protocol-only test fixtures: these are four actual Unix owner sockets
     // producing independently signed nonce challenges, NOT deployed owners.
@@ -1698,8 +1837,10 @@ fn observer_public_gate_rechecks_four_distinct_pinned_signed_sockets() {
                 owner_signature_bytes: Vec::new(),
             };
             proof.owner_signature_bytes = key(51 + index as u8)
-                .sign(&crate::cell_split_effect_readback_signing_payload_v1(&proof)
-                    .expect("readback signing payload"))
+                .sign(
+                    &crate::cell_split_effect_readback_signing_payload_v1(&proof)
+                        .expect("readback signing payload"),
+                )
                 .to_bytes()
                 .to_vec();
             let response = crate::CellSplitEffectRpcResponseV1 {
@@ -1714,9 +1855,9 @@ fn observer_public_gate_rechecks_four_distinct_pinned_signed_sockets() {
     }
     let pinned = [51_u8, 52, 53, 54].map(|seed| key(seed).verifying_key());
     let endpoints: [std::path::PathBuf; 4] = endpoints.try_into().expect("four sockets");
-    let mut actual_port = crate::CellSplitUnixEffectPortV1::new(
-        endpoints, pinned, Duration::from_secs(3),
-    ).expect("four independent pinned socket readers");
+    let mut actual_port =
+        crate::CellSplitUnixEffectPortV1::new(endpoints, pinned, Duration::from_secs(3))
+            .expect("four independent pinned socket readers");
     let result = crate::verify_cell_split_observer_join_v1(
         &join,
         &transcript,
@@ -1724,7 +1865,8 @@ fn observer_public_gate_rechecks_four_distinct_pinned_signed_sockets() {
         &envelope,
         &policy(&host, &observer),
         &mut actual_port,
-    ).expect("public verifier uses all four real nonce-bound transports");
+    )
+    .expect("public verifier uses all four real nonce-bound transports");
     assert!(result.four_current_owner_readbacks);
     assert!(!result.production_activation_authorized);
     for handle in handles {
@@ -1732,20 +1874,40 @@ fn observer_public_gate_rechecks_four_distinct_pinned_signed_sockets() {
     }
 }
 
-
 /// Recomputing a consistent hash chain is not evidence that the underlying
 /// lifecycle actually used one route/child identity. A separately held host
 /// signer must not be able to notarize disconnected stages as one Split.
 #[test]
 fn independently_rehashed_mismatched_lifecycle_stages_are_rejected() {
     let cases: &[(CellSplitTargetHostEventKindV1, &str)] = &[
-        (CellSplitTargetHostEventKindV1::RestartRecovered, "recovery-route"),
-        (CellSplitTargetHostEventKindV1::PowerLossRecovered, "recovery-route"),
-        (CellSplitTargetHostEventKindV1::RollbackCompleted, "rollback-predecessor"),
-        (CellSplitTargetHostEventKindV1::TombstoneCommitted, "tombstone-route"),
-        (CellSplitTargetHostEventKindV1::NoResurrectionVerified, "wrong-tombstone"),
-        (CellSplitTargetHostEventKindV1::NoResurrectionVerified, "wrong-parent-route"),
-        (CellSplitTargetHostEventKindV1::RestartRecovered, "wrong-child-artifact"),
+        (
+            CellSplitTargetHostEventKindV1::RestartRecovered,
+            "recovery-route",
+        ),
+        (
+            CellSplitTargetHostEventKindV1::PowerLossRecovered,
+            "recovery-route",
+        ),
+        (
+            CellSplitTargetHostEventKindV1::RollbackCompleted,
+            "rollback-predecessor",
+        ),
+        (
+            CellSplitTargetHostEventKindV1::TombstoneCommitted,
+            "tombstone-route",
+        ),
+        (
+            CellSplitTargetHostEventKindV1::NoResurrectionVerified,
+            "wrong-tombstone",
+        ),
+        (
+            CellSplitTargetHostEventKindV1::NoResurrectionVerified,
+            "wrong-parent-route",
+        ),
+        (
+            CellSplitTargetHostEventKindV1::RestartRecovered,
+            "wrong-child-artifact",
+        ),
     ];
     for &(kind, mutation) in cases {
         let mut payload = complete_recorder();
@@ -1778,7 +1940,10 @@ fn independently_rehashed_mismatched_lifecycle_stages_are_rejected() {
         }
         payload.evidence_digest = evidence_digest(&payload).expect("fresh forged digest");
         let rejection = replay_payload(&payload);
-        assert!(rejection.is_err(), "{mutation}: signed lineage was accepted");
+        assert!(
+            rejection.is_err(),
+            "{mutation}: signed lineage was accepted"
+        );
         let host = key(59);
         let observer = key(61);
         assert!(
@@ -1813,7 +1978,6 @@ fn independently_rehashed_mismatched_lifecycle_stages_are_rejected() {
         );
     }
 }
-
 
 #[test]
 fn target_host_ingest_rejects_noncanonical_json_even_if_signatures_verify() {
@@ -1858,7 +2022,9 @@ fn bounded_target_host_envelope_refuses_synthetic_and_excessive_observers() {
         envelope.observer_signatures.push(sign_payload(
             format!("untrusted-observer-{index}"),
             &key(90 + index as u8),
-            &payload.canonical_bytes().expect("original canonical payload"),
+            &payload
+                .canonical_bytes()
+                .expect("original canonical payload"),
         ));
     }
     assert!(
@@ -1880,10 +2046,8 @@ fn bounded_target_host_envelope_refuses_synthetic_and_excessive_observers() {
         .iter_mut()
         .find(|event| event.event_kind == CellSplitTargetHostEventKindV1::ResourceMeasurement)
         .expect("resource");
-    metric.resource
-        .as_mut()
-        .expect("sample")
-        .measurement_source = "Externally-SYNTHETIC-counter".to_string();
+    metric.resource.as_mut().expect("sample").measurement_source =
+        "Externally-SYNTHETIC-counter".to_string();
     let mut previous = ZERO_DIGEST.to_string();
     for event in &mut synthetic.events {
         event.previous_event_digest = previous;
@@ -1927,7 +2091,6 @@ fn a_well_formed_hash_chain_does_not_launder_a_nondigest_operation_receipt() {
             .is_err(),
     );
 }
-
 
 #[test]
 fn same_third_party_route_in_rollback_and_tombstone_still_fails() {
@@ -2013,11 +2176,8 @@ fn signed_host_cannot_launder_extra_gpu_or_npu_sample_in_lifecycle_event() {
         )],
         payload,
     };
-    let error = verify_cell_split_target_host_evidence(
-        &envelope,
-        &policy(&host, &observer),
-    )
-    .expect_err("signed lifecycle data must not masquerade as hardware measurements");
+    let error = verify_cell_split_target_host_evidence(&envelope, &policy(&host, &observer))
+        .expect_err("signed lifecycle data must not masquerade as hardware measurements");
     assert!(
         error
             .to_string()

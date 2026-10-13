@@ -52,6 +52,8 @@ pub use cell_split_finalization::CellSplitFinalizationAuthorityV1;
 pub use cell_split_finalization::CellSplitFinalizationBindingV1;
 pub use cell_split_finalization::CellSplitFinalizationErrorV1;
 pub use cell_split_finalization::CellSplitSupervisorJournalFinalizerV1;
+#[cfg(all(unix, feature = "cell-split-supervisor-port"))]
+pub use cell_split_supervisor_runtime_port::CellSplitSupervisorJournalRuntimePortV1;
 pub use daemon::PRODUCTION_AUTHORITY_FEATURE_ENABLED;
 pub use daemon::run_supervisord;
 pub use daemon::run_supervisord_with_grant_verifier;
@@ -176,8 +178,6 @@ pub use supervisor_qualification::H8H9SupervisorState;
 pub use supervisor_qualification::H8ShadowSupervisor;
 pub use supervisor_qualification::H9ShadowRollbackMachine;
 pub use supervisor_qualification::QualificationSupervisor;
-#[cfg(all(unix, feature = "cell-split-supervisor-port"))]
-pub use cell_split_supervisor_runtime_port::CellSplitSupervisorJournalRuntimePortV1;
 pub use writer_handoff::DurableWriterHandoffJournalV1;
 pub use writer_handoff::WriterHandoffAdvanceV1;
 pub use writer_handoff::WriterHandoffCheckpointV1;

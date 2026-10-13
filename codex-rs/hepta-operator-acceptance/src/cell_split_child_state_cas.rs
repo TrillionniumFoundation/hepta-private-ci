@@ -133,7 +133,9 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitChildStateCasOwnerV1<A> {
     ) -> Result<Self, CellSplitChildStateCasErrorV1> {
         // Require the coordinator's complete frozen-plan contract even when
         // this effect owner is opened independently of Agentd.
-        let plan_digest = plan.digest().map_err(|_| CellSplitChildStateCasErrorV1::Invalid)?;
+        let plan_digest = plan
+            .digest()
+            .map_err(|_| CellSplitChildStateCasErrorV1::Invalid)?;
         if migration.phase() != CellStateMigrationPhaseV1::Prepared
             || migration.operation_id().as_str() != plan.split_id
             || migration.parent_anchor().sequence == 0
@@ -529,11 +531,9 @@ impl<A: CellSplitMigrationAuthorityPortV1> CellSplitDurableEffectBackendV1
         // not the immutable parent Neuron checkpoint. Orphaned child payloads
         // must never advance the frontier or be adopted by a fresh Execute.
         match self.read_manifest(intent)? {
-            Some(bytes) if self.verify_manifest(intent, &bytes)? => {
-                predecessor
-                    .checked_add(1)
-                    .ok_or(CellSplitChildStateCasErrorV1::Invalid)
-            }
+            Some(bytes) if self.verify_manifest(intent, &bytes)? => predecessor
+                .checked_add(1)
+                .ok_or(CellSplitChildStateCasErrorV1::Invalid),
             Some(_) => Err(CellSplitChildStateCasErrorV1::Invalid),
             None => Ok(predecessor),
         }
