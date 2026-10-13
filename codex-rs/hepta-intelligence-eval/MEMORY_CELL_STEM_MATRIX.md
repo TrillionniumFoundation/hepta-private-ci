@@ -1701,3 +1701,44 @@ Frozen supporting-document selection and generating a valid cited answer
 must be measured separately. Original public datasets, literal-span
 Oracle output, weak source labels and test F1 cannot certify blinded
 semantic entailment, prospective transfer or production admission.
+
+## Structural ceiling: one 384-byte Reader window cannot carry several annotated sessions
+
+Rechecked against external SHA-256 pins for the **exact original LongMemEval
+native bytes** `d6f21ea9d60a0d56f34a05b609c79c88a451d2ae03597821ea3d5a9678c3a442`,
+the originally failed 95-member Stem ZIP and the earlier complete 89-member
+Stem ZIP. All hashes and all original/selected source occurrence IDs match.
+
+For the eight originally preregistered transfer questions, **seven were
+natively answerable** and **one was annotated unanswerable**. **Four of the
+seven answerable questions** have **two or three distinct annotated support
+sessions**. The frozen Reader's unchanged policy actually delivered
+**one source window per question**. Among the **six answerable cases where
+the selected source document matched a native support session**, **four
+have multi-session annotations**, so not all originally annotated source
+sessions could appear in that one Reader request.
+
+Additionally, the complete casefolded **literal answer string appeared
+in 0/6 delivered short windows** among these source-document hits, in
+both byte-pinned historical model executions. *This is a literal-coverage
+diagnostic only*: a valid paraphrase could entail an answer without copying
+its surface string, and published supporting-session annotations are not
+certified minimal/necessary evidence. Therefore neither statistic can
+certify that the Reader is incapable, or that larger Head/LoRA parameters
+would repair the omission.
+
+A new `stem_transfer_multisession_audit.py` performs this read-only
+original-archive/source count with strict corpus, manifest, question,
+session, source-scope and one-window checks. It requires both Git commit/tree
+and external ZIP byte pins, and it retains the eight original attempts,
+failures and a nonproduction result. The source-only pinned CI workflow
+recomputes the counts from the previously staged input artifact and two
+historical ZIPs, without running any model or changing a serving policy.
+
+**Prioritize a controlled evidence-set Reader arm** (same frozen Reader,
+equivalent total input-token budget, independently reviewed sufficient
+context, and a key-premise-deleted negative arm) before attributing the
+current answer failure to Encoder or Head capacity. Do not merge historical
+single-window task metrics with future multi-window experiments as if only
+the Head changed. No independent semantic citations or prospective
+production qualification are established.
