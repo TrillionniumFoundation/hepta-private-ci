@@ -6,6 +6,7 @@ on:
       - ".github/workflows/hepta-memory-locomo-publisher-astfmt.yml"
       - "scripts/memory_cell/locomo_publisher_support_reader.py"
       - "scripts/memory_cell/test_locomo_publisher_support_reader.py"
+      - "scripts/memory_cell/test_locomo_publisher_astfmt_rebase.py"
 permissions:
   contents: write
 concurrency:
@@ -63,6 +64,7 @@ jobs:
           PY
           python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_publisher_support_reader.py' -v |& tee /tmp/publisher-format/protocol.log
           python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_frozen_reader_pair.py' -v |& tee /tmp/publisher-format/frozen-reader.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_locomo_publisher_astfmt_rebase.py' -v |& tee /tmp/publisher-format/rebase-contract.log
           uv run --frozen --project scripts ruff format --check scripts/memory_cell/locomo_publisher_support_reader.py scripts/memory_cell/test_locomo_publisher_support_reader.py
           git diff --check
           if [[ -z "$(git diff --name-only)" ]]; then
