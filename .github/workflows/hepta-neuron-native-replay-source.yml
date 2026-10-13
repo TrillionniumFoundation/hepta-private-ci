@@ -5,6 +5,8 @@ on:
     paths:
       - "codex-rs/hepta-agentd/src/shared_terminal_cell.rs"
       - "codex-rs/hepta-agentd/src/neuron_runtime.rs"
+      - "codex-rs/hepta-agentd/src/neuron_final_use.rs"
+      - "qualification/neuron-model-trials/NATIVE_SIGNED_TICK_FINAL_USE.md"
       - "codex-rs/hepta-learning-ledger/src/neuron_trial_observed_tick.rs"
       - "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs"
       - "codex-rs/hepta-agentd/src/neuron_selected_artifact.rs"
@@ -46,6 +48,8 @@ jobs:
         run: cargo check --locked -p codex-hepta-agentd --lib --tests
       - name: Test owner-issued Neuron Tick identity and impersonation rejection
         run: cargo test --locked -p codex-hepta-agentd --lib neuron_runtime::tests
+      - name: Test exact Neuron kernel Final-use request preflight
+        run: cargo test --locked -p codex-hepta-agentd --lib neuron_final_use::tests
       - name: Run durable owner, SQLite Memory and Ledger integration
         run: cargo test --locked -p codex-hepta-agentd --test terminal_cell_owner clean_agent_recall_replay_training_load_and_source_withdrawal -- --exact
       - name: Verify canonical selected-model descriptor codec and owner binding

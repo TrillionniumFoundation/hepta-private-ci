@@ -6,6 +6,9 @@
 //! supplying drive/prediction vectors directly.  Constructing this owner does
 //! not itself activate it in the daemon startup path.
 
+use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_contracts::FinalUseBinding;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_learning_artifacts::ArtifactSelectionVerifierV1;
 use codex_hepta_learning_artifacts::SignedArtifactSelectionV1;
 use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
@@ -32,6 +35,8 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::fs::File;
 
+use crate::neuron_final_use::AgentdNeuronSignedTickErrorV1;
+use crate::neuron_final_use::exact_neuron_tick_final_use_binding_v1;
 use crate::neuron_selected_artifact::NeuronCandidateModelArtifactErrorV1;
 use crate::neuron_selected_artifact::NeuronCandidateModelArtifactV1;
 use crate::neuron_selected_artifact::verify_pinned_neuron_model_descriptor_v1;
@@ -106,6 +111,9 @@ where
         }
     }
 
+    /// Compatibility-only, unsigned local tick. It MUST NOT be used by
+    /// production routing until an independent owner has signed final-use,
+    /// selected and fenced the model/Cell, and admitted the real worker.
     pub fn tick(
         &mut self,
         input: NeuronTickInputV1,
@@ -116,6 +124,43 @@ where
         self.issued_cohort.clear();
         let mut model = InferenceControlModelPort::new(&mut self.inference_control);
         self.runtime.tick(&mut model, input)
+    }
+
+    /// Prepare a precise, non-authorizing request for the external
+    /// kernel.authority issuer. The actual frozen owner state and independent
+    /// Journal witness MUST already exist: bootstrap, deleted state, pending
+    /// reconciliation, wrong Scope, sequence or feature bytes fail closed.
+    pub fn prepare_neuron_tick_final_use_binding_v1(
+        &self,
+        input: &NeuronTickInputV1,
+    ) -> Result<FinalUseBinding, AgentdNeuronSignedTickErrorV1> {
+        let local = self.read_local_checkpoint_binding_v1()?;
+        exact_neuron_tick_final_use_binding_v1(&local, input)
+    }
+
+    /// Experimental opt-in Neuron tick entry with real independent signing,
+    /// durable single-use nonce and the kernel's synchronous effect fence.
+    /// The signature covers this owner's exact config/checkpoint and input;
+    /// final-use is revalidated immediately BEFORE entering inference.control.
+    ///
+    /// IMPORTANT: this is NOT production CNS route selection, an authenticated
+    /// physical ModelPort/CAS load, or a migration of legacy unsigned tick.
+    /// Deployment composition must require this entry and disable bypasses.
+    pub fn tick_with_signed_final_use_v1(
+        &mut self,
+        authority: &FinalUseAuthority,
+        signed_grant: &SignedFinalUseGrant,
+        input: NeuronTickInputV1,
+    ) -> Result<
+        (NeuronRuntimeOutputV1, AgentdNeuronTickObservationV1),
+        AgentdNeuronSignedTickErrorV1,
+    > {
+        let binding = self.prepare_neuron_tick_final_use_binding_v1(&input)?;
+        let verified = authority.claim(signed_grant, &binding)?;
+        let result = authority.with_verified_effect(verified, &binding, || {
+            self.tick_with_observation_v1(input)
+        })?;
+        Ok(result?)
     }
 
     /// Observe one real inference.control -> Neuron -> acknowledged Journal

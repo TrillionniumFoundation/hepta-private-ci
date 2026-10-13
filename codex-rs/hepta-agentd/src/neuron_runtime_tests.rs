@@ -259,3 +259,30 @@ fn owner_issued_cohort_producer_api_is_bounded_and_non_authorizing() {
         AgentdNeuronOwner::<StubWitness, StubInferenceControl>::read_observer_linked_cohort_v1;
     assert_eq!(super::MAX_ISSUED_OBSERVED_TICKS, 256);
 }
+
+#[test]
+fn agentd_signed_tick_requires_real_authority_and_current_witness_at_entry() {
+    use codex_hepta_contracts::FinalUseAuthority;
+    use codex_hepta_contracts::FinalUseBinding;
+    use codex_hepta_contracts::SignedFinalUseGrant;
+
+    use crate::AgentdNeuronSignedTickErrorV1;
+
+    let _prepare: fn(
+        &AgentdNeuronOwner<StubWitness, StubInferenceControl>,
+        &codex_hepta_neuron::NeuronTickInputV1,
+    ) -> Result<FinalUseBinding, AgentdNeuronSignedTickErrorV1> =
+        AgentdNeuronOwner::prepare_neuron_tick_final_use_binding_v1;
+    let _consume: fn(
+        &mut AgentdNeuronOwner<StubWitness, StubInferenceControl>,
+        &FinalUseAuthority,
+        &SignedFinalUseGrant,
+        codex_hepta_neuron::NeuronTickInputV1,
+    ) -> Result<
+        (
+            codex_hepta_neuron::NeuronRuntimeOutputV1,
+            crate::AgentdNeuronTickObservationV1,
+        ),
+        AgentdNeuronSignedTickErrorV1,
+    > = AgentdNeuronOwner::tick_with_signed_final_use_v1;
+}
