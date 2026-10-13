@@ -236,7 +236,7 @@ class BlindedReviewHandoffTests(unittest.TestCase):
             with patch("reader_review_handoff.os.open", side_effect=swap_path):
                 result = prepare_handoff(self.originals,
                     source_file_sha256=self.file_sha, output=dest,
-                    salt=b"\\x09" * 32)
+                    salt=b"\x09" * 32)
             self.assertEqual((swapped, result["positions"]), ([True], 8))
             self.assertFalse((decoy / "review-questions.jsonl").exists())
             for filename in ("review-questions.jsonl", "reviewer-blank-form.jsonl",
@@ -265,7 +265,7 @@ class BlindedReviewHandoffTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "symlink"):
                     prepare_handoff(self.originals,
                         source_file_sha256=self.file_sha, output=dest,
-                        salt=b"\\x09" * 32)
+                        salt=b"\x09" * 32)
             self.assertEqual(swapped, [True])
             self.assertFalse(list(decoy.iterdir()))
             self.assertFalse(list(relocated.iterdir()))
