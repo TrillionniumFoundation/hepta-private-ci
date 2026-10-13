@@ -2,7 +2,8 @@
 //! No permission-agnostic substitute for a Windows ACL owner is allowed.
 
 #[test]
-fn prompt_registry_rejects_non_unix_serving_without_private_owner() -> Result<(), Box<dyn std::error::Error>> {
+fn prompt_registry_rejects_non_unix_serving_without_private_owner()
+-> Result<(), Box<dyn std::error::Error>> {
     use codex_hepta_prompt_registry::DurablePromptRegistry;
     use codex_hepta_prompt_registry::DurableRegistryError;
 
@@ -16,8 +17,8 @@ fn prompt_registry_rejects_non_unix_serving_without_private_owner() -> Result<()
 }
 
 #[test]
-fn agentd_startup_rejects_unsupported_prompt_registry_before_readiness(
-) -> Result<(), Box<dyn std::error::Error>> {
+fn agentd_startup_rejects_unsupported_prompt_registry_before_readiness()
+-> Result<(), Box<dyn std::error::Error>> {
     use super::*;
     use codex_hepta_contracts::AgentId;
     use codex_hepta_fleet::AgentManifest;
