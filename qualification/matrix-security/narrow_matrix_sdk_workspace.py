@@ -248,6 +248,40 @@ def verify_resolved_security_closure(data, *, candidate_root, stage_root):
             raise ValueError("malformed resolved blake3 version") from error
         if len(version) != 3 or version < (1, 8, 7):
             raise ValueError("an old blake3 is still reachable")
+
+    # A Cargo package list or "sqlite" feature flag is insufficient proof
+    # of a compatible encrypted Matrix store. Require the ACTUAL runtime
+    # edge matrix-sdk -> matrix-sdk-sqlite -> rusqlite -> libsqlite3-sys.
+    # The last crate carries the native links=sqlite3 identity: a 0.37
+    # decoy reachable only through Hepta's SQLx must never be treated as the
+    # fixed 0.38.x binding needed by upstream 0.19.1.
+    sqlite = [p for p in reachable if p["name"] == "matrix-sdk-sqlite"]
+    rusqlite = [p for p in reachable if p["name"] == "rusqlite"]
+    syslibs = [p for p in reachable if p["name"] == "libsqlite3-sys"]
+    if (len(sqlite) != 1 or sqlite[0]["version"] != "0.19.1" or
+            sqlite[0]["id"] not in sdk_seen or
+            len(rusqlite) != 1 or len(syslibs) != 1):
+        raise ValueError("missing unique pinned Matrix SQLite/rusqlite native runtime chain")
+    sqlite_id, rusqlite_id, ffi_id = (
+        sqlite[0]["id"], rusqlite[0]["id"], syslibs[0]["id"])
+    if (rusqlite_id not in nodes[sqlite_id][0] or
+            ffi_id not in nodes[rusqlite_id][0]):
+        raise ValueError("Matrix SQLite/rusqlite native links must be runtime dependencies")
+    def semver_triplet(package):
+        try:
+            pieces = package["version"].split(".")
+            if len(pieces) != 3 or any(not part.isdecimal() for part in pieces):
+                raise ValueError("malformed version")
+            return tuple(int(part) for part in pieces)
+        except (TypeError, AttributeError) as error:
+            raise ValueError("malformed native SQLite version") from error
+    if not (0, 40, 2) <= semver_triplet(rusqlite[0]) < (0, 41, 0):
+        raise ValueError("Matrix SQLite rusqlite 0.40.x alignment not proven")
+    if not (0, 38, 2) <= semver_triplet(syslibs[0]) < (0, 39, 0):
+        raise ValueError("SQLite native library version is incompatible with Matrix 0.19.1")
+    if (Path(sqlite[0]["manifest_path"]).resolve() !=
+            Path(candidate_root).resolve() / "crates/matrix-sdk-sqlite/Cargo.toml"):
+        raise ValueError("Matrix SQLite source manifest is not the pinned release")
     expected = {
         selected_id: Path(stage_root).resolve() / "codex-rs/hepta-matrix-sdk/Cargo.toml",
         sdk[0]["id"]: Path(candidate_root).resolve() / "crates/matrix-sdk/Cargo.toml",
@@ -332,6 +366,9 @@ def inspect_cargo_metadata(payload, *, candidate_root, stage_root):
         "cli_starlark_absent": True,
         "codex_state_execpolicy_absent": True,
         "blake3_min_1_8_7": True,
+        "sqlite_runtime_chain_verified": True,
+        "rusqlite_0_40_x_verified": True,
+        "native_sqlite_sys_0_38_x_verified": True,
         "matrix_adapter_compilation_verified": False,
         "full_matrixd_compilation_verified": False,
         "cargo_deny_verified": False,
