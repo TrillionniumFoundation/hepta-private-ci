@@ -25,6 +25,7 @@ from experiments.shared_stem_cell.execution import LocalEncoder, measured, param
 
 SCHEMA = "hepta.five-group.bundle.v1"
 PROFILE = "hepta.five-group.one-step-expected-score.v1"
+ARCHITECTURE = "state-candidate-interaction-v2"
 PREPROCESSOR = "five-group.public-view-and-raw-answer.mean-pool.v1"
 MENU = {"rule": "empty-then-singletons-then-source-order-pairs-v1", "maximum_sources": 8}
 MODES = tuple(c.ARMS["system2"]) + tuple(c.ARMS["ndu"])
@@ -73,7 +74,11 @@ class GroupValueCell(nn.Module):
     def predict(self, candidates, state):
         features = torch.tanh(self.project(candidates))
         states = state.unsqueeze(0).expand(len(candidates), -1)
-        return torch.sigmoid(self.proposal(torch.cat((states, features), -1))).flatten()
+        # A linear concatenation [state, candidate] only adds a common bias;
+        # its ranking cannot depend on state. Multiplicative interactions are
+        # essential here. Zero state preserves the unmodulated candidate path.
+        modulated = features * (1.0 + torch.tanh(states))
+        return torch.sigmoid(self.proposal(torch.cat((states, modulated), -1))).flatten()
 
     def judge(self, view, answer):
         features = torch.cat((torch.tanh(self.project(view)), torch.tanh(self.project(answer))), -1)
@@ -121,7 +126,7 @@ def fit_group(selected, examples, *, steps=128, learning_rate=0.001, seed=202610
         candidate.zero_grad(set_to_none=True)
     candidate.eval().requires_grad_(False)
     require(parameters(selected) == before, "training mutated selected controller")
-    return candidate, {"profile": PROFILE, "steps": steps, "examples": len(rows), "mean_loss": math.fsum(losses)/len(losses),
+    return candidate, {"profile": PROFILE, "architecture": ARCHITECTURE, "steps": steps, "examples": len(rows), "mean_loss": math.fsum(losses)/len(losses),
                        "selected": before, "candidate": parameters(candidate), "cost": cost,
                        "new_encoder_calls": 0, "new_reader_calls": 0, "optimizer_state_tensor_bytes": 0,
                        "independent_outcome_authenticity_verified": False, "general_fbsde": False,
@@ -238,7 +243,7 @@ def search_views(request, controller, encode, read, *, mode, maximum_calls, call
             "reader_requests": len(trace), "maximum_reader_requests": maximum_calls,
             "stop_reason": stop_reason, "controller_parameters": before,
             "selection_criterion": "same_frozen_learned_judge_not_external_answers",
-            "profile": PROFILE, "general_fbsde": False, "reasoning_gain_established": False}
+            "profile": PROFILE, "architecture": ARCHITECTURE, "general_fbsde": False, "reasoning_gain_established": False}
 
 
 class NativeGroupOwner:
@@ -261,6 +266,7 @@ class NativeGroupOwner:
         require(isinstance(b, dict) and set(b) == set(c.BINDINGS) and all(c.sha(v) for v in b.values()), "Group bindings")
         require(b["action_menu"] == c.digest(MENU) and b["preprocessor"] == c.digest(PREPROCESSOR), "Group menu/preprocessor drift")
         weights = s["controller"]
+        require(weights.get("architecture") == ARCHITECTURE, "unregistered Group architecture; do not reinterpret old tensors")
         require(c.sha(weights.get("training_receipt_sha256")) and c.sha(weights.get("calibration_receipt_sha256")), "Group training/calibration lineage")
         require(b["verifier"] == c.digest({"controller_sha256": weights["sha256"], "profile": "common-stateless-answer-judge-v1"}), "Group verifier drift")
         source = c.source_file(self.root, weights["path"], weights["sha256"])
@@ -388,7 +394,7 @@ def run_registered(bundle, review, reader_review, root, output, experiment):
     c.check_materials(bundle, root, experiment)
     receipt = {"schema": "hepta.five-group.execution.v1", "bundle_sha256": c.digest(bundle), "experiment": experiment,
                "planned": len(rows), "failed": failures, "raw_sha256": c.file_sha(output / "raw-journal.jsonl"),
-               "profile": PROFILE, "model_loads_included_in_wall_time": True,
+               "profile": PROFILE, "architecture": ARCHITECTURE, "model_loads_included_in_wall_time": True,
                "shared_across_nodes_not_across_control_trials": True, "same_budget_is_not_matched_compute": True,
                "hard_kernel_preemption": False, "general_fbsde": False, "production_authority": False}
     c.write_new(output / "execution-receipt.json", receipt)

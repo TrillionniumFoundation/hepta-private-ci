@@ -4,12 +4,12 @@ on:
     branches: ["research/five-causal-experiments-20261013"]
     paths:
       - "scripts/memory_cell/five_group_search.py"
-      - "scripts/memory_cell/test_five_group_search.py"
+      - "scripts/memory_cell/test_five_group*.py"
       - ".github/workflows/hepta-five-group-search.yml"
   pull_request:
     paths:
       - "scripts/memory_cell/five_group_search.py"
-      - "scripts/memory_cell/test_five_group_search.py"
+      - "scripts/memory_cell/test_five_group*.py"
       - ".github/workflows/hepta-five-group-search.yml"
 permissions:
   contents: read
@@ -47,8 +47,8 @@ jobs:
           "$P" -m unittest discover -s scripts/memory_cell -p test_full_cell_matrix.py -v 2>&1 | tee /tmp/hepta-five-group/matrix.log
           "$P" -m unittest discover -s scripts/memory_cell -p test_five_causal_experiments.py -v 2>&1 | tee /tmp/hepta-five-group/contracts.log
           "$P" -m unittest discover -s scripts/memory_cell -p test_five_causal_native.py -v 2>&1 | tee /tmp/hepta-five-group/native.log
-          "$P" -m unittest discover -s scripts/memory_cell -p test_five_group_search.py -v 2>&1 | tee /tmp/hepta-five-group/group.log
-          "$P" -m py_compile scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group_search.py
+          "$P" -m unittest discover -s scripts/memory_cell -p 'test_five_group*.py' -v 2>&1 | tee /tmp/hepta-five-group/group.log
+          "$P" -m py_compile scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group_search.py scripts/memory_cell/test_five_group_interaction.py
       - name: Record source and failure artifacts without model weights
         if: always()
         run: |
@@ -56,7 +56,7 @@ jobs:
           mkdir -p /tmp/hepta-five-group/source
           git rev-parse HEAD > /tmp/hepta-five-group/tested-commit.txt
           git rev-parse HEAD^{tree} > /tmp/hepta-five-group/tested-tree.txt
-          cp scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group_search.py .github/workflows/hepta-five-group-search.yml /tmp/hepta-five-group/source/
+          cp scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group*.py .github/workflows/hepta-five-group-search.yml /tmp/hepta-five-group/source/
           (cd /tmp/hepta-five-group && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
