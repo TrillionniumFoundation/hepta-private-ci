@@ -5,7 +5,6 @@ use anyhow::Result;
 use std::io;
 use std::io::BufRead;
 use std::os::windows::ffi::OsStrExt;
-use std::path::Path;
 use std::path::PathBuf;
 use windows_sys::Win32::Foundation::FreeLibrary;
 use windows_sys::Win32::System::LibraryLoader::FindResourceW;
@@ -18,77 +17,103 @@ use windows_sys::Win32::System::LibraryLoader::SizeofResource;
 use windows_sys::Win32::UI::WindowsAndMessaging::CREATEPROCESS_MANIFEST_RESOURCE_ID;
 use windows_sys::Win32::UI::WindowsAndMessaging::RT_MANIFEST;
 
-/// Locate exactly the Bazel/Cargo test data binary, never an arbitrary
-/// installed helper. Windows Bazel commonly exposes only a runfiles MANIFEST
-/// entry instead of physically materializing the _main/... relative path.
-fn manifest_entry<R: BufRead>(reader: R, logical_path: &str) -> io::Result<Option<PathBuf>> {
-    for line in reader.lines() {
-        let line = line?;
-        if let Some((logical, physical)) = line.split_once(' ') {
-            if logical == logical_path {
-                return Ok(Some(PathBuf::from(physical)));
+/// Bazel's unsharded rust_test can receive a CARGO_BIN_EXE value expressed as
+/// an rlocation key. On Windows with --noenable_runfiles, that key is not a
+/// filesystem path: use the actual manifest entry rather than guessing a
+/// sibling executable, ignoring the test, or treating absence as success.
+fn locate_setup_executable() -> Result<PathBuf> {
+    let declared = std::env::var_os("CARGO_BIN_EXE_codex-windows-sandbox-setup")
+        .or_else(|| std::env::var_os("CARGO_BIN_EXE_codex_windows_sandbox_setup"))
+        .map(PathBuf::from)
+        .or_else(|| option_env!("CARGO_BIN_EXE_codex-windows-sandbox-setup").map(PathBuf::from))
+        .context("locate the Windows sandbox setup executable")?;
+
+    if declared.is_file() {
+        return Ok(declared);
+    }
+
+    if let Some(manifest) = std::env::var_os("RUNFILES_MANIFEST_FILE") {
+        if let Some(resolved) = find_exact_manifest_runfile(&PathBuf::from(manifest), &declared)? {
+            return Ok(resolved);
+        }
+    }
+
+    anyhow::bail!(
+        "Windows sandbox setup helper {} is missing: CARGO_BIN_EXE path and exact Bazel runfiles manifest lookup both failed",
+        declared.display()
+    )
+}
+
+/// No filename suffix matching or directory scans: a similarly named binary
+/// cannot stand in for the exact linked and manifest-bearing setup executable.
+fn find_exact_manifest_runfile(
+    manifest_path: &std::path::Path,
+    declared: &std::path::Path,
+) -> Result<Option<PathBuf>> {
+    if declared.is_absolute() {
+        return Ok(None);
+    }
+    let logical_path = declared.to_string_lossy().replace('\\', "/");
+    if logical_path.is_empty() || logical_path.contains("../") {
+        return Ok(None);
+    }
+    // Windows Bazel can expose a very large manifest; stream it rather than
+    // materializing the entire runfiles graph just to validate one executable.
+    let manifest = std::fs::File::open(manifest_path)
+        .with_context(|| format!("open Bazel runfiles manifest {}", manifest_path.display()))?;
+    for entry in std::io::BufReader::new(manifest).lines() {
+        let entry = entry.context("read Bazel runfiles manifest entry")?;
+        let Some((logical, actual)) = entry.split_once(' ') else {
+            continue;
+        };
+        if logical == logical_path {
+            let result = PathBuf::from(actual);
+            if result.is_file() {
+                return Ok(Some(result));
             }
+            anyhow::bail!(
+                "Bazel manifest mapped {} to a missing setup helper {}",
+                logical,
+                result.display()
+            );
         }
     }
     Ok(None)
 }
 
-fn resolve_setup_helper(candidate: &Path) -> Result<PathBuf> {
-    if candidate.is_file() {
-        return Ok(candidate.to_path_buf());
-    }
-    if !candidate.is_absolute() {
-        for key in ["RUNFILES_DIR", "TEST_SRCDIR"] {
-            if let Some(base) = std::env::var_os(key) {
-                let joined = PathBuf::from(base).join(candidate);
-                if joined.is_file() {
-                    return Ok(joined);
-                }
-            }
-        }
-        if let Some(manifest) = std::env::var_os("RUNFILES_MANIFEST_FILE") {
-            let path = PathBuf::from(manifest);
-            let logical = candidate.to_string_lossy().replace('\\', "/");
-            let file = std::fs::File::open(&path)
-                .with_context(|| format!("open Bazel runfiles manifest {}", path.display()))?;
-            if let Some(physical) = manifest_entry(io::BufReader::new(file), &logical)?
-                && physical.is_file()
-            {
-                return Ok(physical);
-            }
-        }
-    }
-    anyhow::bail!("setup helper missing from exact Cargo/Bazel runfiles: {}", candidate.display())
-}
-
 #[test]
-fn runfiles_manifest_resolves_only_the_exact_setup_binary() -> Result<()> {
+fn manifest_only_runfiles_resolve_the_exact_helper_with_spaces_in_physical_path() -> Result<()> {
+    let scratch = tempfile::tempdir()?;
+    let directory = scratch.path().join("with spaces");
+    std::fs::create_dir_all(&directory)?;
+    let physical = directory.join("codex-windows-sandbox-setup.exe");
+    std::fs::write(&physical, b"test fixture (never used as a production binary)")?;
+    let manifest = scratch.path().join("MANIFEST");
     let logical = "_main/codex-rs/windows-sandbox-rs/codex-windows-sandbox-setup.exe";
-    let file = format!(
-        "{logical}.tampered C:\\different\\setup.exe\n{logical} C:\\runfiles\\setup.exe\n"
-    );
+    std::fs::write(
+        &manifest,
+        format!(
+            "_main/codex-rs/windows-sandbox-rs/other-setup.exe {}\n{logical} {}\n",
+            physical.display(),
+            physical.display(),
+        ),
+    )?;
     assert_eq!(
-        manifest_entry(io::Cursor::new(file), logical)?,
-        Some(PathBuf::from(r"C:\runfiles\setup.exe"))
+        find_exact_manifest_runfile(&manifest, std::path::Path::new(logical))?,
+        Some(physical),
     );
-    assert_eq!(
-        manifest_entry(io::Cursor::new("wrong/path C:\\bin\\setup.exe\n"), logical)?,
-        None
-    );
+    assert!(find_exact_manifest_runfile(
+        &manifest,
+        std::path::Path::new("_main/codex-rs/windows-sandbox-rs/nonexistent.exe"),
+    )?
+    .is_none());
     Ok(())
 }
 
 /// The setup executable must expose an asInvoker manifest through the Windows resource API.
 #[test]
 fn setup_helper_embeds_as_invoker_manifest() -> Result<()> {
-    let setup_executable = std::env::var_os("CARGO_BIN_EXE_codex-windows-sandbox-setup")
-        .or_else(|| std::env::var_os("CARGO_BIN_EXE_codex_windows_sandbox_setup"))
-        .map(PathBuf::from)
-        .or_else(|| option_env!("CARGO_BIN_EXE_codex-windows-sandbox-setup").map(PathBuf::from))
-        .context("locate the Windows sandbox setup executable")?;
-    let setup_executable = resolve_setup_helper(&setup_executable)?;
-    std::fs::metadata(&setup_executable)
-        .with_context(|| format!("find setup helper {}", setup_executable.display()))?;
+    let setup_executable = locate_setup_executable()?;
     let setup_path = setup_executable
         .as_os_str()
         .encode_wide()
