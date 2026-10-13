@@ -165,6 +165,12 @@ def audit_metadata(meta, report, sdk_root, hepta_root):
             raise ValueError("missing or multiply resolved " + name)
         return found[0]
     root = single("codex-hepta-matrix-sdk")
+    # The candidate must reconcile the SAME native SQLite package through
+    # both real Hepta SQLx and the selected Matrix 0.19.1 encrypted store.
+    # A repaired Matrix arm with an unrelated/stubbed SQLx edge cannot pass.
+    store = single("codex-hepta-matrix-store")
+    sqlx = single("sqlx", "0.9.0")
+    sqlx_sqlite = single("sqlx-sqlite", "0.9.0")
     sdk = single("matrix-sdk", "0.19.1")
     sqlite = single("matrix-sdk-sqlite", "0.19.1")
     crypto = single("matrix-sdk-crypto", "0.19.1")
@@ -177,7 +183,7 @@ def audit_metadata(meta, report, sdk_root, hepta_root):
     # The trial must use genuine registry packages, not a local stand-in
     # that happens to declare the target versions and links=sqlite3.
     registry = "registry+https://github.com/rust-lang/crates.io-index"
-    for package in (rusqlite, ffi):
+    for package in (sqlx, sqlx_sqlite, rusqlite, ffi):
         # Report the exact invalid evidence field, never silently adopt a
         # path/git crate or a registry package with no trusted checksum.
         # Cargo may finish dependency resolution while its returned package
@@ -193,6 +199,8 @@ def audit_metadata(meta, report, sdk_root, hepta_root):
             )
     if (Path(root.get("manifest_path", "")).resolve() !=
             hepta_root / "codex-rs/hepta-matrix-sdk/Cargo.toml"
+            or Path(store.get("manifest_path", "")).resolve() !=
+            hepta_root / "codex-rs/hepta-matrix-store/Cargo.toml"
             or Path(sqlite.get("manifest_path", "")).resolve() != file
             or Path(sdk.get("manifest_path", "")).resolve() !=
                 sdk_root / "crates/matrix-sdk/Cargo.toml"
@@ -203,6 +211,11 @@ def audit_metadata(meta, report, sdk_root, hepta_root):
         if b["id"] not in edges[a["id"]]:
             raise ValueError("not a runtime edge: " + a["name"] + " -> " + b["name"])
     direct(root, sdk)
+    direct(root, store)
+    direct(store, sqlx)
+    direct(store, ffi)
+    direct(sqlx, sqlx_sqlite)
+    direct(sqlx_sqlite, ffi)
     direct(sdk, sqlite)
     direct(sqlite, rusqlite)
     direct(rusqlite, ffi)
@@ -221,6 +234,8 @@ def audit_metadata(meta, report, sdk_root, hepta_root):
         "candidate_sha256": report["trial_manifest_sha256"],
         "actual_cargo_metadata_checked": True, "runtime_edges_checked": True,
         "sqlite_chain": ["matrix-sdk-sqlite 0.19.1", "rusqlite 0.39.0", "libsqlite3-sys 0.37.0"],
+        "sqlx_chain": ["sqlx 0.9.0", "sqlx-sqlite 0.9.0", "libsqlite3-sys 0.37.0"],
+        "single_native_sqlite_owner_verified": True,
         "sdk_runtime_closure_size": len(seen),
         "compile_verified": False, "cargo_deny_verified": False,
         "e2ee_runtime_verified": False, "wal_restart_verified": False,
