@@ -48,7 +48,17 @@ class PairedExecutionTests(unittest.TestCase):
             with self.subTest(phase=phase):
                 self.right["phase_flops"] = dict.fromkeys(PHASES, 100)
                 self.right["phase_flops"][phase] = 200
-                self.assertIn(f"unmatched_measured_{phase}_flops", self.audit()["blockers"])
+                pool = "online" if phase in ("search", "inference") else "offline"
+                self.assertIn(f"unmatched_measured_{pool}_flops", self.audit()["blockers"])
+
+    def test_useful_work_and_head_critic_tradeoffs_do_not_require_dummy_work(self):
+        self.right["phase_flops"].update(search=50, inference=150, train=50, migration=150)
+        self.right["head_params"] -= 10
+        self.assertEqual(self.audit()["blockers"], [])
+        # Equal grand totals are insufficient if online cost increases.
+        self.right["phase_flops"].update(search=150, inference=150, train=0, migration=100)
+        self.assertIn("unmatched_measured_online_flops", self.audit()["blockers"])
+        self.assertIn("unmatched_measured_offline_flops", self.audit()["blockers"])
 
     def test_missing_counters_are_not_zero(self):
         self.right["phase_flops"]["search"] = None

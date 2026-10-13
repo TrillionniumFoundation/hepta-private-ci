@@ -22,6 +22,8 @@ class NextRoundMatrixTests(unittest.TestCase):
         self.assertEqual([a["ndu"] for a in plan["arms"][:5]],
                          [False, False, False, False, True])
         self.assertEqual([a["ndu"] for a in plan["arms"][5:]], [False] * 4)
+        self.assertEqual([a["split"] for a in plan["arms"]],
+                         [False, False, False, True, True, False, False, False, True])
         self.assertEqual(by_id["shared_421m_sparse_split_ndu"]["modalities"], ["text", "image", "audio"])
 
     def test_invalid_mutation_is_rejected(self):

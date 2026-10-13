@@ -50,6 +50,10 @@ CONTRASTS = (
     ("capacity", 6, 7, False),
     ("adaptive_split_64m", 7, 8, True),
 )
+WORK_POOLS = {
+    "offline": ("train", "evaluation", "migration"),
+    "online": ("search", "inference"),
+}
 MODALITY_PHASES = ("text", "image", "audio", "video")
 REQUIRED_METRICS = (
     "retained_task",
@@ -116,6 +120,7 @@ def build_plan(*, reader_id: str, task_set_id: str, seed: int = 7347) -> dict:
             "flop_scope": "encoder_head_router_critic_verifier_and_failed_work",
             "parameter_scope": "unique_physical_tensors_and_lifecycle_peak",
             "matched_steps_imply_matched_compute": False,
+            "work_pools": {name: list(phases) for name, phases in WORK_POOLS.items()},
             "latency_protocol": "warmup_excluded_then_fixed_batch_p50_p95_p99",
             "energy_protocol": "measured_counter_only_null_if_unavailable",
             "split_rule": "offline_candidate_only_then_replay",
@@ -124,7 +129,7 @@ def build_plan(*, reader_id: str, task_set_id: str, seed: int = 7347) -> dict:
             {"contrast_id": name, "baseline": ARMS[left], "candidate": ARMS[right],
              "match_total_head_budget": match,
              "requires_measured_compute_match": True,
-             "matching_scope": "all_declared_phases_and_paired_tasks",
+             "matching_scope": "paired_tasks_and_frozen_offline_online_work_pools",
              "actual_match_status": "unobserved"}
             for name, left, right, match in CONTRASTS
         ],

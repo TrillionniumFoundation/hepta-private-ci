@@ -11,7 +11,7 @@ import json
 import math
 from pathlib import Path
 
-from next_round_matrix import _digest, validate_plan
+from next_round_matrix import WORK_POOLS, _digest, validate_plan
 
 PHASES = ("train", "search", "evaluation", "inference", "migration")
 COMPONENTS = ("encoder", "head", "router", "critic", "verifier", "failed_work")
@@ -176,16 +176,25 @@ def audit_pair(plan, contract, contrast_id, baseline, candidate):
                           "peak_memory_bytes": max(memory) if len(memory) == count else None,
                           "mean_outcome": sum(outcomes) / count if len(outcomes) == count else None})
     if contrast["match_total_head_budget"]:
-        for field in ("head_params", "trainable_params", "peak_trainable_params"):
+        # Gate/critic capacity may be traded against Head capacity under the
+        # same total trainable ceiling. Equal actual Head counts as well would
+        # prohibit that fair trade and accidentally require dummy parameters.
+        for field in ("trainable_params", "peak_trainable_params"):
             if baseline[field] != candidate[field]:
                 blockers.append(f"unmatched_actual_{field}")
     if baseline["flop_profile"] != candidate["flop_profile"]:
         blockers.append("incompatible_flop_profiles")
-    for phase in PHASES:
-        left, right = baseline["phase_flops"][phase], candidate["phase_flops"][phase]
-        if left is not None and right is not None:
+    # Preserve every per-phase counter/cap, but compare useful work pools.
+    # Forcing migration or search separately equal would reward padding the
+    # no-split/no-NDU controls with dummy work. Offline work cannot offset an
+    # online compute excess. The pool partition is bound into the plan ID.
+    for pool, phases in WORK_POOLS.items():
+        left_values = [baseline["phase_flops"][p] for p in phases]
+        right_values = [candidate["phase_flops"][p] for p in phases]
+        if all(v is not None for v in left_values + right_values):
+            left, right = sum(left_values), sum(right_values)
             if abs(left - right) * 1_000_000 > max(left, right) * contract["tolerance_ppm"]:
-                blockers.append(f"unmatched_measured_{phase}_flops")
+                blockers.append(f"unmatched_measured_{pool}_flops")
     return {"schema": "hepta.stem.pair-audit.v1", "contract_id": contract["contract_id"],
             "contrast_id": contrast_id, "receipt_digests": [_digest(baseline), _digest(candidate)],
             "status": "blocked" if blockers else "structurally_comparable_unattested",
