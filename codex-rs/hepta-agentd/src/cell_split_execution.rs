@@ -106,12 +106,12 @@ pub fn advance_scope_bound_selected_cell_split_v1<A: CellSplitScopeSelectionAdmi
                 &signed_ndu_read.snapshot.scope_id,
                 admission,
             )?;
-            validate_selected_route_binding(plan, selected_scope_id, selected_split_id, admission)?;
             // Independently refresh Selector membership, not merely the
             // signature originally verified when the token was constructed.
             admission
                 .verify_current_selection(selected_scope_id, selected_split_id, selection)
                 .map_err(|e| format!("current independent Selector rejected split: {e}"))?;
+            validate_selected_route_binding(plan, selected_scope_id, selected_split_id, admission)?;
             // Verify NDU signature, protected time and live Control frontier
             // immediately before the coordinator can create an intent.
             ndu_read_verifier
@@ -315,9 +315,14 @@ mod tests {
             ..current
         };
         assert!(validate_selected_route_binding(&plan, &scope, &split_id, &stale).is_err());
+        let zero = CurrentScope {
+            route_fence_digest: Digest32::ZERO,
+            ..stale
+        };
+        assert!(validate_selected_route_binding(&plan, &scope, &split_id, &zero).is_err());
         let missing = CurrentScope {
             unavailable: true,
-            ..stale
+            ..zero
         };
         assert!(validate_selected_route_binding(&plan, &scope, &split_id, &missing).is_err());
     }
