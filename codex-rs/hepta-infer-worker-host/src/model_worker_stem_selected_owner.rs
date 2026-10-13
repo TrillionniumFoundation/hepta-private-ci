@@ -176,7 +176,8 @@ impl<'a> StemSelectedReadOwnerV1<'a> {
         signed_head: &SignedArtifactSelectionV1,
         items: Vec<StemCpuHeadBatchItemV1<'_>>,
         model_id: &str,
-    ) -> Result<(NeuronBackendBatchReceipt, StemHeadBankReadObservationV1), StemSelectedOwnerError> {
+    ) -> Result<(NeuronBackendBatchReceipt, StemHeadBankReadObservationV1), StemSelectedOwnerError>
+    {
         let result = (|| {
             // A single owner-bound clock sample controls both signed CURRENT
             // checks, independent Selector verification and Worker deadline.
