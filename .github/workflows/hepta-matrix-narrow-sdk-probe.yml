@@ -1,0 +1,261 @@
+name: Hepta Matrix narrow SDK adapter compile (non-promoting research)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/matrix-security/narrow_matrix_sdk_workspace.py"
+      - "qualification/matrix-security/test_narrow_matrix_sdk_workspace.py"
+      - "codex-rs/hepta-matrix-store/**"
+      - "codex-rs/Cargo.lock"
+      - ".github/workflows/hepta-matrix-narrow-sdk-probe.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-matrix-narrow-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  matrix-resolve-integrity:
+    name: P0 Matrix dependency closure / antiforgery contracts (L1 only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind exact source before offline tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git rev-parse HEAD HEAD^{tree}
+      - name: Reject forged resolver nodes, inactive crypto/SQLite, unrelated remediations
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python3 -m compileall -q qualification/matrix-security
+          python3 -m unittest discover -v -s qualification/matrix-security -p 'test_narrow_matrix_sdk_workspace.py'
+      - name: Confirm read-only checkout
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  sqlite-formatter:
+    name: Matrix Store precise global Rust formatter patch (diagnostic)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Record exact source identity
+        run: git rev-parse HEAD HEAD^{tree}
+      - name: Capture proposed rustfmt diff without retaining edits
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-matrix-store -- --config imports_granularity=Item
+          git diff --binary -- codex-rs/hepta-matrix-store/src codex-rs/hepta-matrix-store/tests > "$RUNNER_TEMP/matrix-store-rustfmt.patch"
+          git restore --worktree -- codex-rs/hepta-matrix-store/src codex-rs/hepta-matrix-store/tests
+          git diff --check
+          git diff --exit-code
+      - name: Retain exact source patch as diagnostic only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-store-rustfmt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/matrix-store-rustfmt.patch
+          if-no-files-found: warn
+          retention-days: 7
+
+  matrix-durable-store:
+    name: Matrix durable SQLite/WAL owner regression (not SDK release)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind exact source and immutable Cargo lock
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git rev-parse HEAD HEAD^{tree}
+          python3 scripts/verify_cargo_lock.py
+      - name: Compile unmodified Matrix store on product Rust toolchain
+        working-directory: codex-rs
+        run: cargo check --locked -p codex-hepta-matrix-store --all-targets
+      - name: Execute real SQLite WAL/FULL and durable recovery tests
+        working-directory: codex-rs
+        run: |
+          cargo test --locked -p codex-hepta-matrix-store --test sqlite_profile_contract
+          cargo test --locked -p codex-hepta-matrix-store --test durable_core
+          cargo test --locked -p codex-hepta-matrix-store --test sync_observation_v1
+          cargo test --locked -p codex-hepta-matrix-store --test sync_mutation_v2
+      - name: Strict store lint
+        working-directory: codex-rs
+        run: >-
+          cargo clippy --locked -p codex-hepta-matrix-store --all-targets --
+          -D clippy::correctness -D clippy::await_holding_lock
+          -D clippy::await_holding_invalid_type
+      - name: Repository rustfmt rules (no source mutation)
+        if: always()
+        working-directory: codex-rs
+        run: cargo fmt --package codex-hepta-matrix-store -- --config imports_granularity=Item --check
+      - name: Original checkout remains unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  narrowed-sdk:
+    name: Hepta Matrix SDK / secure isolated graph (NOT Matrixd acceptance)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      HEPTA_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bind source and run adversarial isolation tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEPTA_SHA"
+          python3 -m unittest discover -v -s qualification/matrix-security -p 'test_narrow_matrix_sdk_workspace.py'
+      - name: Fetch exact Matrix 0.19.1 released source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: b18166c68bb958a21f0bca8b2d8320cb53583362
+          path: upstream-release
+          persist-credentials: false
+          fetch-depth: 1
+      - name: Fetch exact upstream AnyMap3 source hunk
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: 9c5fdd2cf5be1b7b8b20541e56d7a109db968534
+          path: upstream-anymap-commit
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Stage real Hepta SDK in detached, narrowed workspace
+        shell: bash
+        run: |
+          set -euo pipefail
+          STAGE="$RUNNER_TEMP/hepta-narrow-$GITHUB_RUN_ID"
+          SDK="$RUNNER_TEMP/hepta-narrow-source-$GITHUB_RUN_ID"
+          git worktree add --detach "$STAGE" "$HEPTA_SHA"
+          python3 qualification/matrix-security/minimal_hepta_source_stage.py \
+            --stage "$STAGE" --release upstream-release \
+            --migration upstream-anymap-commit --candidate-dir "$SDK" \
+            --source-sha "$HEPTA_SHA" \
+            --output "$RUNNER_TEMP/hepta-narrow-source.json"
+          python3 qualification/matrix-security/narrow_matrix_sdk_workspace.py \
+            --stage "$STAGE" \
+            --source-report "$RUNNER_TEMP/hepta-narrow-source.json" \
+            --source-sha "$HEPTA_SHA" \
+            --output "$RUNNER_TEMP/hepta-narrow-workspace.json"
+          echo "NARROW_HEPTA_STAGE=$STAGE" >> "$GITHUB_ENV"
+          echo "NARROW_SDK_SOURCE=$SDK" >> "$GITHUB_ENV"
+      - name: Install candidate-only Rust 1.96
+        run: rustup toolchain install 1.96.0 --profile minimal
+      - name: Resolve genuine narrowed Cargo graph and refuse vulnerable SDK
+        shell: bash
+        run: |
+          set -euo pipefail
+          timeout 900 cargo +1.96.0 metadata \
+            --manifest-path "$NARROW_HEPTA_STAGE/codex-rs/Cargo.toml" \
+            --format-version 1 > "$RUNNER_TEMP/hepta-narrow-metadata.json" \
+            2> "$RUNNER_TEMP/hepta-narrow-metadata.stderr" || {
+              tail -n 100 "$RUNNER_TEMP/hepta-narrow-metadata.stderr"
+              exit 1
+            }
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          import sys
+          sys.path.insert(0, 'qualification/matrix-security')
+          from narrow_matrix_sdk_workspace import inspect_cargo_metadata
+          root = Path(os.environ['RUNNER_TEMP'])
+          result = inspect_cargo_metadata(
+              (root / 'hepta-narrow-metadata.json').read_bytes(),
+              candidate_root=os.environ['NARROW_SDK_SOURCE'],
+              stage_root=os.environ['NARROW_HEPTA_STAGE'])
+          (root / 'hepta-narrow-graph.json').write_text(
+              json.dumps(result, sort_keys=True, indent=2) + '\n')
+          print(json.dumps(result, sort_keys=True))
+          PY
+      - name: Compile the actual Hepta Matrix SDK adapter / E2EE SQLite build
+        shell: bash
+        run: |
+          set -uo pipefail
+          status=0
+          timeout 1800 cargo +1.96.0 check --locked \
+            --manifest-path "$NARROW_HEPTA_STAGE/codex-rs/Cargo.toml" \
+            -p codex-hepta-matrix-sdk --all-targets \
+            > "$RUNNER_TEMP/hepta-narrow-check.stdout" \
+            2> "$RUNNER_TEMP/hepta-narrow-check.stderr" || status=$?
+          STATUS="$status" python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          root = Path(os.environ['RUNNER_TEMP'])
+          status = int(os.environ['STATUS'])
+          report = {
+              'schema': 'hepta.matrix-narrow-sdk-compile.v1',
+              'hepta_sha': os.environ['HEPTA_SHA'],
+              'sdk_adapter_compile_passed': status == 0,
+              'cargo_exit_code': status,
+              'e2ee_sqlite_build_config_required': True,
+              'real_matrixd_compiled': False,
+              'original_workspace_changed': False,
+              'production_cargo_lock_changed': False,
+              'cargo_deny_verified': False,
+              'e2ee_runtime_verified': False,
+              'sqlite_wal_recovery_verified': False,
+              'production_authorized': False,
+          }
+          (root / 'hepta-narrow-compile.json').write_text(
+              json.dumps(report, sort_keys=True, indent=2) + '\n')
+          PY
+          if test "$status" -ne 0; then
+            tail -n 110 "$RUNNER_TEMP/hepta-narrow-check.stderr"
+          fi
+          exit "$status"
+      - name: Upload exact non-promoting source, graph, compiler results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-matrix-narrow-sdk-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-narrow-source.json
+            ${{ runner.temp }}/hepta-narrow-workspace.json
+            ${{ runner.temp }}/hepta-narrow-graph.json
+            ${{ runner.temp }}/hepta-narrow-compile.json
+            ${{ runner.temp }}/hepta-narrow-metadata.stderr
+            ${{ runner.temp }}/hepta-narrow-check.stderr
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Verify untouched original checkout
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -n "$NARROW_HEPTA_STAGE" && test -e "$NARROW_HEPTA_STAGE"; then
+            git worktree remove --force "$NARROW_HEPTA_STAGE"
+          fi
+          git diff --check
+          git diff --exit-code

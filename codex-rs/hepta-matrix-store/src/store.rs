@@ -1,6 +1,7 @@
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
+use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -13,13 +14,16 @@ use codex_hepta_matrix_protocol::client_user_message_id;
 use codex_hepta_matrix_protocol::room_project_idempotency_key;
 use codex_hepta_matrix_protocol::transaction_id;
 use codex_hepta_paths::HeptaAgentLayout;
-use codex_state::SqliteConfig;
-use codex_utils_absolute_path::AbsolutePathBuf;
+use sqlx::ConnectOptions;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
 use sqlx::Transaction;
+use sqlx::sqlite::SqliteConnectOptions;
+use sqlx::sqlite::SqliteJournalMode;
+use sqlx::sqlite::SqlitePoolOptions;
 use sqlx::sqlite::SqliteRow;
+use sqlx::sqlite::SqliteSynchronous;
 
 use crate::ChangeEvent;
 use crate::ChangeKind;
@@ -74,6 +78,64 @@ const MATRIX_V2_SCHEMA_FINGERPRINT: &str =
     "53a59efa865437f08e2bc84b6b44c133b53dc7f40f485ec1dc6200876d221fd1";
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
 
+/// The Matrix durable-owner connection profile, formerly obtained through
+/// codex_state::SqliteConfig. Keeping its exact WAL/FULL/foreign-key/timeout
+/// settings locally removes the unrelated Codex state/CLI/Starlark dependency
+/// from this persistence owner without changing the on-disk Matrix schema.
+///
+/// Never use a rebuildable state-DB recovery pool for the authoritative Matrix
+/// inbox/outbox. Its migration, owner and WAL checks remain unchanged.
+#[expect(
+    clippy::disallowed_methods,
+    reason = "Matrix durable owner has a separately audited WAL/FULL SQLite shim; depending on codex-state would pull unrelated CLI/Starlark into the SDK security boundary"
+)]
+async fn open_matrix_durable_evidence_pool(path: &Path) -> Result<SqlitePool, sqlx::Error> {
+    let options = SqliteConnectOptions::new()
+        .filename(path)
+        .create_if_missing(true)
+        .journal_mode(SqliteJournalMode::Wal)
+        .synchronous(SqliteSynchronous::Full)
+        .foreign_keys(true)
+        .busy_timeout(Duration::from_secs(5))
+        .disable_statement_logging();
+    SqlitePoolOptions::new()
+        .max_connections(5)
+        .connect_with(options)
+        .await
+}
+
+/// Verify the actual owner connection, not a separately opened SQLite handle.
+/// The old codex-state shim supplied these four settings. Refuse startup
+/// before schema migration if a driver or external SQLite configuration
+/// fails to honor any of them.
+async fn verify_matrix_durable_profile(pool: &SqlitePool) -> Result<(), MatrixDurableError> {
+    let mut connection = pool.acquire().await.map_err(unavailable)?;
+    let journal: String = sqlx::query_scalar("PRAGMA journal_mode")
+        .fetch_one(&mut *connection)
+        .await
+        .map_err(unavailable)?;
+    let synchronous: i64 = sqlx::query_scalar("PRAGMA synchronous")
+        .fetch_one(&mut *connection)
+        .await
+        .map_err(unavailable)?;
+    let foreign_keys: i64 = sqlx::query_scalar("PRAGMA foreign_keys")
+        .fetch_one(&mut *connection)
+        .await
+        .map_err(unavailable)?;
+    let busy_timeout: i64 = sqlx::query_scalar("PRAGMA busy_timeout")
+        .fetch_one(&mut *connection)
+        .await
+        .map_err(unavailable)?;
+    if !journal.eq_ignore_ascii_case("wal")
+        || synchronous != 2
+        || foreign_keys != 1
+        || busy_timeout != 5_000
+    {
+        return Err(MatrixDurableError::Unavailable);
+    }
+    Ok(())
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum MatrixDurableError {
     #[error("invalid Matrix durable-core request")]
@@ -119,12 +181,13 @@ impl MatrixDurableStore {
         }
         create_private_directory(&root)?;
         let path = root.join(MATRIX_DB_FILENAME);
-        let sqlite_home =
-            AbsolutePathBuf::try_from(root).map_err(|_| MatrixDurableError::Invalid)?;
-        let pool = SqliteConfig::from_sqlite_home(sqlite_home)
-            .open_durable_evidence_pool(&path)
+        let pool = open_matrix_durable_evidence_pool(&path)
             .await
             .map_err(unavailable)?;
+        if let Err(error) = verify_matrix_durable_profile(&pool).await {
+            pool.close().await;
+            return Err(error);
+        }
         if MIGRATOR.run(&pool).await.is_err() {
             pool.close().await;
             return Err(MatrixDurableError::Unavailable);
@@ -154,6 +217,15 @@ impl MatrixDurableStore {
 
     pub fn path(&self) -> &Path {
         &self.path
+    }
+
+    /// Read-only readiness check against the actual pooled owner connection.
+    ///
+    /// This does not grant any Matrix/Chat/Agent authority. It verifies the
+    /// WAL-reset-protected durable connection still has WAL, FULL fsync,
+    /// foreign keys and the bounded lock-wait profile after opening/recovery.
+    pub async fn verify_durability_profile(&self) -> Result<(), MatrixDurableError> {
+        verify_matrix_durable_profile(&self.pool).await
     }
 
     pub(crate) fn sqlite_pool(&self) -> &SqlitePool {
