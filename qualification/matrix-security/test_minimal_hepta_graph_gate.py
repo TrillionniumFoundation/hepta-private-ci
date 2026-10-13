@@ -158,7 +158,7 @@ class MinimalGraphTests(unittest.TestCase):
                 elif mutated == "foreign_edge":
                     sdk["deps"][0]["pkg"] = "unregistered-security-package"
                 else:
-                    sdk["dependencies"].append("anymap3")  # Duplicate flat ID.
+                    sdk["dependencies"].append("codex-hepta-matrixd")  # Foreign but registered flat edge.
                 outcome = audit(data, self.sdk, self.hepta)
                 self.assertFalse(outcome["isolated_prerequisite_passed"])
                 self.assertTrue(any(
