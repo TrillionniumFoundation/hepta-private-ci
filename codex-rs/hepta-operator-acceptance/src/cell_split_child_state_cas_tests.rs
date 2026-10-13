@@ -347,12 +347,7 @@ fn missing_original_migration_writer_lock_never_creates_second_writer() {
     let lock = root.path().join(crate::durable::SIDECAR_LOCK_FILE);
     fs::remove_file(&lock).expect("unlink original writer lock");
     assert!(matches!(
-        CellSplitChildStateCasOwnerV1::open(
-            root.path(),
-            execution_plan(),
-            migration,
-            authority,
-        ),
+        CellSplitChildStateCasOwnerV1::open(root.path(), execution_plan(), migration, authority,),
         Err(CellSplitChildStateCasErrorV1::Durable(_))
     ));
     assert!(!lock.exists(), "must not mint a replacement writer lock");
@@ -406,7 +401,9 @@ fn real_q24_children_commit_atomically_and_reopen_from_original_bytes() {
         let mut batch = owner(root.path(), migration.clone(), auth.clone());
         assert!(batch.read_committed(&intent).expect("empty").is_none());
         assert_eq!(
-            batch.current_sequence_for_intent(&intent).expect("pre-commit revision"),
+            batch
+                .current_sequence_for_intent(&intent)
+                .expect("pre-commit revision"),
             migration.parent_anchor().sequence
         );
         batch.commit_once(&intent).expect("real typed child CAS");
@@ -419,9 +416,14 @@ fn real_q24_children_commit_atomically_and_reopen_from_original_bytes() {
                 .verify_current(&intent, &committed)
                 .expect("live readback")
         );
-        assert_eq!(committed.owner_sequence, migration.parent_anchor().sequence + 1);
         assert_eq!(
-            batch.current_sequence_for_intent(&intent).expect("post-commit revision"),
+            committed.owner_sequence,
+            migration.parent_anchor().sequence + 1
+        );
+        assert_eq!(
+            batch
+                .current_sequence_for_intent(&intent)
+                .expect("post-commit revision"),
             committed.owner_sequence
         );
         for (index, child) in migration.children().iter().enumerate() {
@@ -444,7 +446,9 @@ fn real_q24_children_commit_atomically_and_reopen_from_original_bytes() {
         .expect("reopened marker");
     assert!(reopened.verify_current(&intent, &signed).unwrap());
     assert_eq!(
-        reopened.current_sequence_for_intent(&intent).expect("recovered revision"),
+        reopened
+            .current_sequence_for_intent(&intent)
+            .expect("recovered revision"),
         signed.owner_sequence
     );
     assert!(matches!(

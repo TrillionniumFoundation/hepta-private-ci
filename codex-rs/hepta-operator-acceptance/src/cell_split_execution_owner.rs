@@ -309,7 +309,9 @@ pub fn verify_cell_split_execution_transcript_signatures_v1(
     payload.extend_from_slice(&canonical_json(&transcript.plan)?);
     payload.extend_from_slice(&canonical_json(&transcript.receipts)?);
     if transcript.transcript_digest != sha256(&payload) {
-        return Err(CellSplitExecutionErrorV1::Invalid("transcript digest mismatch"));
+        return Err(CellSplitExecutionErrorV1::Invalid(
+            "transcript digest mismatch",
+        ));
     }
     Ok(())
 }
@@ -341,7 +343,10 @@ pub fn verify_cell_split_cns_step_receipt_v1(
     let signature = Signature::from_slice(&receipt.owner_signature_bytes)
         .map_err(|_| CellSplitExecutionErrorV1::Invalid("invalid CNS owner signature"))?;
     pinned_cns_key
-        .verify_strict(&cell_split_execution_signing_payload_v1(receipt)?, &signature)
+        .verify_strict(
+            &cell_split_execution_signing_payload_v1(receipt)?,
+            &signature,
+        )
         .map_err(|_| CellSplitExecutionErrorV1::Invalid("untrusted CNS owner signature"))
 }
 
@@ -712,10 +717,9 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         if frozen != canonical_json(&self.plan)? {
             return Err(CellSplitExecutionErrorV1::Invalid("frozen plan drift"));
         }
-        let pinned = read_frame(&self.root.join("cell-split-owner-trust-pins.json"))?
-            .ok_or(CellSplitExecutionErrorV1::Invalid(
-                "owner trust pins disappeared",
-            ))?;
+        let pinned = read_frame(&self.root.join("cell-split-owner-trust-pins.json"))?.ok_or(
+            CellSplitExecutionErrorV1::Invalid("owner trust pins disappeared"),
+        )?;
         if pinned != frozen_owner_trust_pins(&self.plan, &self.trust)? {
             return Err(CellSplitExecutionErrorV1::Invalid("owner trust pins drift"));
         }
@@ -994,9 +998,7 @@ fn verify_split_frame_namespace(root: &Path) -> Result<(), CellSplitExecutionErr
         if !name.starts_with("cell-split-") {
             continue;
         }
-        if name == "cell-split-frozen-plan.json"
-            || name == "cell-split-owner-trust-pins.json"
-        {
+        if name == "cell-split-frozen-plan.json" || name == "cell-split-owner-trust-pins.json" {
             continue;
         }
         let known = (0..STEP_COUNT).any(|index| {

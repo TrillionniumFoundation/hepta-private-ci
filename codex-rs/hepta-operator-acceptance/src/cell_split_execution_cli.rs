@@ -163,7 +163,9 @@ where
     // Transcript mode has already performed its four-owner verification;
     // avoid a second remote pass while keeping the result fail-closed.
     let verified_complete = if selected_action == "advance" {
-        owner.verified_complete().map_err(|error| error.to_string())?
+        owner
+            .verified_complete()
+            .map_err(|error| error.to_string())?
     } else {
         transcript.is_some()
     };
@@ -378,7 +380,11 @@ mod tests {
                 }
             },
         );
-        assert!(stale.expect_err("stale selection").contains("Selector revoked"));
+        assert!(
+            stale
+                .expect_err("stale selection")
+                .contains("Selector revoked")
+        );
         assert_eq!(admissions, 2);
         assert!(execution_root.join("cell-split-frozen-plan.json").exists());
         assert!(!execution_root.join("cell-split-00-prepared.json").exists());

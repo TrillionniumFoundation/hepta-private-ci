@@ -226,7 +226,9 @@ impl CellSplitTargetHostEvidenceTrustPolicyV1 {
         externally_pinned_sha256: &str,
     ) -> Result<Self, CellSplitTargetHostEvidenceErrorV1> {
         if !digest_shape(externally_pinned_sha256) {
-            return Err(invalid("invalid external target-host trust policy SHA-256 pin"));
+            return Err(invalid(
+                "invalid external target-host trust policy SHA-256 pin",
+            ));
         }
         let bytes =
             crate::durable::secure_read(path.as_ref(), crate::durable::MAX_SMALL_FILE_BYTES)
@@ -623,7 +625,9 @@ pub fn verify_cell_split_target_host_evidence(
     // ingestion; otherwise a purportedly verified report might be written
     // durably but could never be reopened through the bounded reader.
     if envelope.canonical_bytes()?.len() > MAX_EVIDENCE_BYTES {
-        return Err(invalid("signed evidence envelope exceeds durable read bound"));
+        return Err(invalid(
+            "signed evidence envelope exceeds durable read bound",
+        ));
     }
     let payload = &envelope.payload;
     replay_payload(payload)?;
@@ -636,7 +640,9 @@ pub fn verify_cell_split_target_host_evidence(
     if envelope.observer_signatures.is_empty()
         || envelope.observer_signatures.len() > MAX_OBSERVER_SIGNATURES
     {
-        return Err(invalid("bounded independent observer signatures are required"));
+        return Err(invalid(
+            "bounded independent observer signatures are required",
+        ));
     }
     let mut observer_ids = BTreeSet::new();
     let mut observer_signature_digests = Vec::with_capacity(envelope.observer_signatures.len());
@@ -858,7 +864,9 @@ fn replay_payload(
                     || restored_parent_route != Some(event.predecessor_digest.as_str())
                     || committed_tombstone != Some(event.tombstone_digest.as_str())
                 {
-                    return Err(invalid("no-resurrection evidence is not bound to tombstone"));
+                    return Err(invalid(
+                        "no-resurrection evidence is not bound to tombstone",
+                    ));
                 }
             }
             CellSplitTargetHostEventKindV1::ResourceMeasurement => {}
@@ -901,7 +909,9 @@ fn validate_event_payload(
         CellSplitTargetHostEventKindV1::ResourceMeasurement
     ) && event.artifact_digest != payload.child_artifact_digest
     {
-        return Err(invalid("lifecycle event refers to a different child artifact"));
+        return Err(invalid(
+            "lifecycle event refers to a different child artifact",
+        ));
     }
     // A hardware measurement is a typed, independently observable event.
     // Attaching extra resource samples to a lifecycle acknowledgement must
@@ -917,9 +927,7 @@ fn validate_event_payload(
     match event.event_kind {
         CellSplitTargetHostEventKindV1::ArtifactLoaded => {}
         CellSplitTargetHostEventKindV1::RouteCutover => {
-            if !digest_shape(&event.route_digest)
-                || !digest_shape(&event.predecessor_digest)
-            {
+            if !digest_shape(&event.route_digest) || !digest_shape(&event.predecessor_digest) {
                 return Err(invalid("route cutover receipt is incomplete"));
             }
         }
@@ -929,16 +937,12 @@ fn validate_event_payload(
             }
         }
         CellSplitTargetHostEventKindV1::PowerLossRecovered => {
-            if !digest_shape(&event.route_digest)
-                || !digest_shape(&event.fault_injection_digest)
-            {
+            if !digest_shape(&event.route_digest) || !digest_shape(&event.fault_injection_digest) {
                 return Err(invalid("power-loss witness is incomplete"));
             }
         }
         CellSplitTargetHostEventKindV1::RollbackCompleted => {
-            if !digest_shape(&event.predecessor_digest)
-                || !digest_shape(&event.route_digest)
-            {
+            if !digest_shape(&event.predecessor_digest) || !digest_shape(&event.route_digest) {
                 return Err(invalid("rollback predecessor is missing"));
             }
         }
