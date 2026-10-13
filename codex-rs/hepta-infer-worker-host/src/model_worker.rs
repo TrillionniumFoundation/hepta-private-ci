@@ -5,11 +5,16 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::str::FromStr;
 
+use codex_hepta_infer_core::BoundStemNeuronRequestV1;
 use codex_hepta_infer_core::NeuronFeatureObservationV1;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 use codex_hepta_infer_core::NeuronModelRuntimeTupleV1;
+use codex_hepta_infer_core::StemAccessContextV1;
+use codex_hepta_infer_core::StemFeatureRefV1;
+use codex_hepta_infer_core::StemHeadBindingV1;
+use codex_hepta_infer_core::bind_stem_feature_request_v1;
 use codex_hepta_infer_core::build_neuron_feature_receipt_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -464,6 +469,19 @@ pub struct DriverNeuronFeatureObservation {
     pub latency_micros: u64,
 }
 
+/// Exact scoped Stem feature binding + terminal inference-control receipt.
+/// The ref digest and all input identity data remain caller/host supplied and
+/// are NOT an independent signature or external model-load attestation.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct BoundStemFeatureExecutionV1 {
+    pub stem_feature_ref_digest: Digest32,
+    /// The domain-separated Scope/Principal/Generation-bound input digest
+    /// actually incorporated into the Worker payload and receipt.
+    pub scoped_input_digest: Digest32,
+    pub worker_receipt: NeuronFeatureReceiptV1,
+    pub authority: codex_hepta_types::AuthorityPosture,
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronFeatureExecutionObservation {
     pub request_id: String,
@@ -522,6 +540,15 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::ModelMismatch);
         }
+        // The Neuron feature path must obey the same admission envelope as
+        // the ordinary model Driver. A valid payload digest alone does not
+        // permit a request larger than the loaded model or reservation.
+        if request.authorization.maximum_tokens > loaded.manifest.maximum_tokens
+            || request.authorization.maximum_tokens
+                > request.authorization.reservation_maximum_tokens
+        {
+            return Err(Error::TokenLimit);
+        }
         let payload_digest = canonical_neuron_feature_payload_digest(&request);
         if request.authorization.payload_digest != payload_digest
             || request.authorization.lease_payload_digest != payload_digest
@@ -561,7 +588,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
         let observed = observed?;
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        // Enforce the full reported resident + extra transient footprint.
+        // The driver must report disjoint categories; on overcounting we
+        // conservatively reject instead of relaxing the resource grant.
+        let total_reported_bytes = observed
+            .observed_memory_bytes
+            .checked_add(observed.transient_allocation_bytes)
+            .ok_or(Error::ArithmeticOverflow)?;
+        if total_reported_bytes > self.grant.maximum_memory_bytes {
             return Err(Error::ModelCapacity);
         }
         let status = if !observed.terminal_observed {
@@ -588,6 +622,107 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
             queue_age_micros: observed.queue_age_micros,
             latency_micros: observed.latency_micros,
             terminal_observed: observed.terminal_observed,
+        })
+    }
+}
+
+/// Domain-separated raw-input + scoped feature reference digest.
+///
+/// This value (not the unscoped source input digest) is used in the existing
+/// Worker payload hash. Thus an authorization for one Scope, Principal, lease
+/// or Stem generation cannot be reused with another caller-declared binding.
+/// Cryptographic authentication of the source and principal remains the
+/// independent authority owner's responsibility.
+fn scoped_stem_worker_input_digest_v1(bound: &BoundStemNeuronRequestV1) -> Digest32 {
+    Digest32::of_parts(&[
+        b"hepta.infer-worker.scoped-stem-input.v1",
+        bound.request.input_digest.as_array(),
+        bound.feature_ref_digest.as_array(),
+    ])
+}
+
+impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
+    /// Dispatch a previously authorized and still-current shared Stem feature
+    /// through the real loaded Head driver and typed Neuron receipt boundary.
+    ///
+    /// This function never invents a lease, reservation, resource grant or
+    /// payload digest. `authorization` must be supplied by the independent
+    /// inference.control owner and must exactly bind the prepared payload.
+    ///
+    /// An externally authenticated Stem artifact load, principal/Scope
+    /// identity, current generation and final-use authority are REQUIRED
+    /// outside this boundary. `StemAccessContextV1` alone is not proof.
+    pub fn run_bound_stem_feature_receipt_v1(
+        &mut self,
+        now_ms: u64,
+        source: &StemFeatureRefV1,
+        access: &StemAccessContextV1,
+        selected_head: StemHeadBindingV1,
+        feature_vector_q24: &[i64],
+        authorization: WorkerRequest,
+    ) -> Result<BoundStemFeatureExecutionV1, Error> {
+        self.validate_current_grant(now_ms)?;
+        if access.now_ms != now_ms
+            || source.authority_epoch != self.grant.authority_epoch
+            || access.authority_epoch != self.grant.authority_epoch
+            || source.stem_generation.get() != self.generation
+            || access.stem_generation.get() != self.generation
+        {
+            return Err(Error::InvalidGrant);
+        }
+        let bound: BoundStemNeuronRequestV1 =
+            bind_stem_feature_request_v1(source, access, selected_head, feature_vector_q24)
+                .map_err(|_| Error::FeatureContract)?;
+        if bound.authority.grants_any() {
+            return Err(Error::FeatureContract);
+        }
+        let model_id = bound.request.model_id.to_string();
+        if authorization.request_id != bound.request.request_id.to_string() {
+            return Err(Error::FeatureContract);
+        }
+        // Validate against the *loaded* Head artifact before admitting work,
+        // rather than accepting caller-declared Head/manifest matches.
+        let loaded = self.models.get(&model_id).ok_or(Error::ModelNotLoaded)?;
+        if loaded.manifest.weights_digest != bound.request.weights_digest.to_string()
+            || authorization.model_digest != loaded.manifest.model_digest
+            || authorization.reservation_model_digest != loaded.manifest.model_digest
+        {
+            return Err(Error::ModelMismatch);
+        }
+        // The ordinary Worker request does not carry Scope/Principal fields.
+        // Bind them into its existing input-digest slot before comparing the
+        // independently issued lease payload. Otherwise a request authorized
+        // for Scope A could be replayed under a caller-declared Scope B when
+        // the raw input bytes happened to match.
+        let scoped_input_digest = scoped_stem_worker_input_digest_v1(&bound);
+        let request = NeuronFeatureRequest {
+            authorization,
+            encoder_digest: bound.request.encoder_digest.to_string(),
+            head_digest: bound.request.head_digest.to_string(),
+            weights_digest: bound.request.weights_digest.to_string(),
+            input_digest: scoped_input_digest.to_string(),
+            feature_vector_q24: bound.request.feature_vector_q24,
+            expected_output_width: bound.request.expected_output_width,
+        };
+        validate_request(now_ms, &request.authorization)?;
+        validate_neuron_feature_request(&request)?;
+        // Do NOT recalculate, overwrite, forge or repair the supplied owner
+        // authorization to make it match the request.
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        if request.authorization.payload_digest != payload
+            || request.authorization.lease_payload_digest != payload
+        {
+            return Err(Error::PayloadMismatch);
+        }
+        let receipt = self.run_neuron_features_receipt(now_ms, &model_id, request)?;
+        if receipt.authority.grants_any() {
+            return Err(Error::FeatureContract);
+        }
+        Ok(BoundStemFeatureExecutionV1 {
+            stem_feature_ref_digest: bound.feature_ref_digest,
+            scoped_input_digest,
+            worker_receipt: receipt,
+            authority: codex_hepta_types::AuthorityPosture::DENY_ALL,
         })
     }
 }
