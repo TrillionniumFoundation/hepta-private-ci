@@ -198,3 +198,97 @@ fn signed_neuron_phase_telemetry_latches_failure_without_minting_authority() {
     );
     assert_eq!(failed.load(Ordering::Acquire), 1);
 }
+
+/// The NDU may change while the business-tick Prepare WAL fsync is running.
+/// Even after a signed Final-use nonce was durably claimed, such a cutover or
+/// read-expiry must be denied before entering the physical device.
+#[test]
+fn post_prepare_ndu_revalidation_denies_fence_cutover_and_expiry() {
+    use crate::neuron_ndu_read::NduReadFrontierPortV1;
+    use crate::neuron_ndu_read::NduReadVerificationErrorV1;
+    use crate::neuron_ndu_read::NduReadVerifierV1;
+    use crate::neuron_ndu_read::SignedNduSnapshotReadV1;
+    use codex_hepta_contracts::AuthorityClock;
+    use codex_hepta_contracts::AuthorityTrustError;
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::Generation;
+    use codex_hepta_types::NduSnapshotRefV1;
+    use codex_hepta_types::StableId;
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+    use std::sync::Arc;
+    use std::sync::Mutex;
+    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::Ordering;
+
+    #[derive(Debug)]
+    struct ControlClock(AtomicU64);
+    impl AuthorityClock for ControlClock {
+        fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {
+            Ok(self.0.load(Ordering::SeqCst))
+        }
+    }
+    #[derive(Debug)]
+    struct ControlFrontier(Mutex<NduSnapshotRefV1>);
+    impl NduReadFrontierPortV1 for ControlFrontier {
+        fn latest(&self, scope: &StableId) -> Result<NduSnapshotRefV1, NduReadVerificationErrorV1> {
+            let snapshot = self
+                .0
+                .lock()
+                .map_err(|_| NduReadVerificationErrorV1::FrontierUnavailable)?;
+            if &snapshot.scope_id != scope {
+                return Err(NduReadVerificationErrorV1::FrontierUnavailable);
+            }
+            Ok(snapshot.clone())
+        }
+    }
+
+    let key = SigningKey::from_bytes(&[83; 32]);
+    let snapshot = NduSnapshotRefV1 {
+        scope_id: StableId::new("subject").expect("scope"),
+        owner_id: StableId::new("ndu-owner").expect("owner"),
+        generation: Generation::new(3).expect("generation"),
+        route_fence: 7,
+        revocation_epoch: 9,
+        policy_digest: Digest32::of_bytes(b"policy"),
+        snapshot_digest: Digest32::of_bytes(b"snapshot"),
+        projection_head_digest: Digest32::of_bytes(b"head"),
+    };
+    let mut read = SignedNduSnapshotReadV1 {
+        snapshot: snapshot.clone(),
+        read_id: StableId::new("read").expect("read"),
+        read_receipt_digest: Digest32::of_bytes(b"durable-owner-read"),
+        issued_at_unix_ms: 900,
+        expires_at_unix_ms: 1100,
+        signature: [0; 64],
+    };
+    read.signature = key.sign(&read.signing_bytes().expect("signing bytes")).to_bytes();
+    let clock = Arc::new(ControlClock(AtomicU64::new(1_000)));
+    let frontier = Arc::new(ControlFrontier(Mutex::new(snapshot.clone())));
+    let verifier = NduReadVerifierV1::new(
+        StableId::new("ndu-owner").expect("owner"),
+        key.verifying_key().to_bytes(),
+        clock.clone(),
+        frontier.clone(),
+    )
+    .expect("pinned verifier");
+    let claimed_read = verifier.verify(&read).expect("valid initial read");
+    assert!(
+        super::verify_ndu_after_durable_prepare_v1(&verifier, &read, claimed_read).is_ok()
+    );
+
+    let mut cutover = snapshot.clone();
+    cutover.route_fence += 1;
+    *frontier.0.lock().expect("cutover") = cutover;
+    assert!(matches!(
+        super::verify_ndu_after_durable_prepare_v1(&verifier, &read, claimed_read),
+        Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
+    ));
+
+    *frontier.0.lock().expect("restore") = snapshot;
+    clock.0.store(1_200, Ordering::SeqCst);
+    assert!(matches!(
+        super::verify_ndu_after_durable_prepare_v1(&verifier, &read, claimed_read),
+        Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
+    ));
+}

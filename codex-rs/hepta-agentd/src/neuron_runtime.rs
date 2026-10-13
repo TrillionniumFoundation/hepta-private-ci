@@ -378,6 +378,27 @@ where
                 prepared.is_ok(),
             );
             prepared.map_err(|_| NeuronRuntimeError::PendingReconciliation)?;
+            // Durable Prepare can block on fsync while CNS/NDU advances.
+            // Re-check signed time and the live Control frontier immediately
+            // before entering the device, not just before writing Prepare.
+            // On denial the durable intent remains unresolved, so a new
+            // signed nonce cannot turn an uncertain tick into automatic replay.
+            let pre_device_started = Instant::now();
+            let pre_device_read = verify_ndu_after_durable_prepare_v1(
+                read_verifier,
+                signed_read,
+                authenticated_read_receipt_digest,
+            );
+            observe_phase_v1(
+                metric_sink,
+                failed_metrics,
+                metric_scope,
+                input_digest,
+                PhaseMetricKindV1::NduRead,
+                pre_device_started.elapsed(),
+                pre_device_read.is_ok(),
+            );
+            pre_device_read?;
             self.runtime.tick_with_ndu_snapshot_guarded(
                 &mut model,
                 input,
@@ -428,6 +449,21 @@ where
     /// not exposed: it would bypass the exact signed owner entry.
     pub fn runtime(&self) -> &NeuronRuntime<W> {
         &self.runtime
+    }
+}
+
+/// A protected signed read is not a lease on the future CNS frontier. In
+/// particular, the WAL Prepare fsync may outlast the snapshot's TTL or race a
+/// generation cutover. Refuse the physical effect on either change while
+/// retaining the durable Prepare for independent reconciliation.
+fn verify_ndu_after_durable_prepare_v1(
+    verifier: &NduReadVerifierV1,
+    signed_read: &SignedNduSnapshotReadV1,
+    expected: Digest32,
+) -> Result<(), NeuronRuntimeError> {
+    match verifier.verify(signed_read) {
+        Ok(observed) if observed == expected => Ok(()),
+        _ => Err(NeuronRuntimeError::PendingReconciliation),
     }
 }
 
