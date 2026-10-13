@@ -149,6 +149,9 @@ def export_observed(plan, contract, directory, *, expected_seal_id, observer_pat
     for phase, value in execution["phase_flops"].items():
         if value is not None:
             _integer(value, phase)
+    if isinstance(observer, dict) and observer.get("schema") == "hepta.stem.common-final-labels.v1":
+        from final_panels import project_common_observer
+        observer = project_common_observer(observer, execution, expected_seal_id)
     expected_fields = {"schema", "seal_id", "contract_id", "observer_id", "created_at_ns", "rows"}
     if (not isinstance(observer, dict) or set(observer) != expected_fields
             or observer["schema"] != "hepta.stem.independent-labels.v1"
@@ -234,6 +237,8 @@ def export_observed(plan, contract, directory, *, expected_seal_id, observer_pat
         summary["retention_receipt"] = execution["retention_receipt"]
     if "work_observation" in execution:
         observation = execution["work_observation"]
+        from work_record import validate_work_record
+        validate_work_record(observation, expected_policy=execution["config"].get("measurement_policy"))
         if observation.get("stopped") is not None:
             raise ValueError("budget-stopped execution cannot be scored as completed")
         if observation.get("policy") != execution["config"].get("measurement_policy"):
