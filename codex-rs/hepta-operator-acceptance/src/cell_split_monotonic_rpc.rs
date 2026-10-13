@@ -374,8 +374,12 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
                         && observed.journal_revision < previous.journal_revision)
                     || observed.durable_source_sequence < previous.durable_source_sequence
                     || (moved_forward
-                        && observed.durable_source_sequence
-                            <= previous.durable_source_sequence)
+                        && (observed.durable_source_sequence
+                            <= previous.durable_source_sequence
+                            || observed.minimum_checkpoint_digest
+                                == previous.minimum_checkpoint_digest
+                            || observed.original_store_record_digest
+                                == previous.original_store_record_digest))
                     || (!moved_forward && observed != previous)
                 {
                     return Err(CellSplitMonotonicRpcErrorV1::Invalid);

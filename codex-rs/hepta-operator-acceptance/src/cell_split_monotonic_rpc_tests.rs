@@ -507,6 +507,18 @@ fn same_signer_denies_rolled_back_or_equivocated_frontier() {
     let mut successor = original.clone();
     successor.journal_revision += 1;
     successor.durable_source_sequence += 1;
+
+    // An epoch/revision advance must be accompanied by a new immutable
+    // checkpoint and store record. A newly allocated source sequence alone
+    // cannot make an old signed terminal checkpoint current again.
+    let stale_checkpoint = successor.clone();
+    replace_test_frontier(&file, &stale_checkpoint);
+    assert!(read_through_signed_service(&mut service, &"ab".repeat(32)).is_err());
+
+    successor.minimum_checkpoint_digest = "ee".repeat(32);
+    replace_test_frontier(&file, &successor);
+    assert!(read_through_signed_service(&mut service, &"ac".repeat(32)).is_err());
+
     successor.original_store_record_digest = "dd".repeat(32);
     replace_test_frontier(&file, &successor);
     assert!(read_through_signed_service(&mut service, &"ee".repeat(32)).is_ok());
@@ -540,7 +552,13 @@ fn same_signer_allows_epoch_rollover_only_with_new_durable_source_sequence() {
 
     stale_rollover.durable_source_sequence += 1;
     replace_test_frontier(&file, &stale_rollover);
-    assert!(read_through_signed_service(&mut service, &"cc".repeat(32)).is_ok());
+    assert!(read_through_signed_service(&mut service, &"cc".repeat(32)).is_err());
+    stale_rollover.minimum_checkpoint_digest = "cc".repeat(32);
+    replace_test_frontier(&file, &stale_rollover);
+    assert!(read_through_signed_service(&mut service, &"cd".repeat(32)).is_err());
+    stale_rollover.original_store_record_digest = "dd".repeat(32);
+    replace_test_frontier(&file, &stale_rollover);
+    assert!(read_through_signed_service(&mut service, &"ce".repeat(32)).is_ok());
     replace_test_frontier(&file, &original);
     assert!(read_through_signed_service(&mut service, &"dd".repeat(32)).is_err());
 }

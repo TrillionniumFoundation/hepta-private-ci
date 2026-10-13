@@ -390,6 +390,18 @@ advancement and exact-HEAD CI. A locally signed fixture, local fsync or
 advisory lock is NOT a substitute for external anti-rollback custody.
 Neither service nor client grants split authorization.
 
+### Monotonic frontier checkpoint-lineage fence (source gate)
+
+The read-only monotonic signer now refuses any revision/authority-epoch
+advance that only increments a local source sequence while retaining the
+previous signed checkpoint digest or immutable minimum-store record digest.
+A genuinely newer journal revision must bind a new committed checkpoint
+and an independently retained minimum record before it can be signed as a
+current domain frontier. Regression tests deny each incomplete transition
+and allow only a fully changed tuple. This is process-lifetime defense in
+depth, not a replacement for independently operated monotonic custody
+across crashes or whole-directory rollback.
+
 ### Retrospective rollback evidence is not a live successor route
 
 The signed target-host lifecycle also includes rollback, tombstone and
