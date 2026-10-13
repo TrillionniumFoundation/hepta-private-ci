@@ -10,6 +10,16 @@ permissions:
   contents: read
 
 jobs:
+  preserve-durable-e2e:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Do not sacrifice persisted Matrix keys or weaken cargo-deny
+        run: python3 -m unittest discover -s qualification/security -p 'test_matrix_sqlite_contract.py' -v
+
   resolve-locked-matrix:
     runs-on: ubuntu-24.04
     timeout-minutes: 65
