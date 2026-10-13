@@ -539,5 +539,53 @@ class ReviewIntakeTests(unittest.TestCase):
         self.assertFalse(self.output.exists())
 
 
+    def test_output_directory_swapped_during_write_stays_inode_bound(self):
+        # The comparison and receipt must never follow a replacement alias.
+        relocated = self.root / "original-private-comparison"
+        decoy = self.root / "untrusted-output"
+        decoy.mkdir()
+        real_open, swapped = os.open, []
+
+        def swap_at_first_write(name, flags, **kwargs):
+            if (name == "operator-private-comparison.jsonl"
+                    and "dir_fd" in kwargs and not swapped):
+                self.output.rename(relocated)
+                self.output.symlink_to(decoy, target_is_directory=True)
+                swapped.append(True)
+            return real_open(name, flags, **kwargs)
+
+        with patch("reader_review_handoff.os.open", side_effect=swap_at_first_write):
+            result = self.run_intake()
+        self.assertEqual(swapped, [True])
+        self.assertFalse(result["production_accepted"])
+        self.assertFalse(list(decoy.iterdir()))
+        for filename in ("operator-private-comparison.jsonl",
+                         "reconciliation-receipt.json"):
+            file = relocated / filename
+            self.assertTrue(file.is_file())
+            self.assertEqual(file.stat().st_mode & 0o077, 0)
+
+    def test_output_directory_swap_before_fd_open_rejected(self):
+        relocated = self.root / "original-private-comparison"
+        decoy = self.root / "untrusted-output"
+        decoy.mkdir()
+        real_open, swapped = os.open, []
+
+        def swap_at_fd_open(name, flags, **kwargs):
+            if (name == self.output.name and "dir_fd" in kwargs
+                    and flags & os.O_DIRECTORY and not swapped):
+                self.output.rename(relocated)
+                self.output.symlink_to(decoy, target_is_directory=True)
+                swapped.append(True)
+            return real_open(name, flags, **kwargs)
+
+        with patch("reader_review_handoff.os.open", side_effect=swap_at_fd_open):
+            with self.assertRaisesRegex(ValueError, "symlink"):
+                self.run_intake()
+        self.assertEqual(swapped, [True])
+        self.assertFalse(list(decoy.iterdir()))
+        self.assertFalse(list(relocated.iterdir()))
+
+
 if __name__ == "__main__":
     unittest.main()

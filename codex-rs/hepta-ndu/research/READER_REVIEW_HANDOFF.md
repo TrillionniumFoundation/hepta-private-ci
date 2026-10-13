@@ -95,3 +95,23 @@ Tests include a real `E1` echo as a non-refusal case and explicitly show that
 unsigned blank handoff rows fail strict final admission. The operator must
 still obtain independently approved human reviewers and owner-attested raw
 source bytes before any production or research matrix eligibility.
+
+## Directory-file-descriptor output binding
+
+Private handoff generation creates the destination exclusively with mode `0700`,
+opens its directory through a no-symlink POSIX directory-descriptor walk and
+retains that **same descriptor for all four files**. New file creation is
+relative to that descriptor with `O_CREAT|O_EXCL|O_NOFOLLOW`, mode `0600`,
+file `fsync` and directory `fsync`. This closes a path-replacement window
+where another process could rename the output directory after `mkdir` and
+point the pathname at a different directory before source bytes were written.
+An output leaf symlink cannot redirect the exclusive write.
+
+The mechanism is deliberately POSIX-only and fails closed if the required
+flags are unavailable. A trusted operator must still protect the parent
+directory against unauthorized renaming and authenticate all original bytes:
+directory FDs cannot defeat a compromised filesystem, an attacker already
+operating as the same account or a malicious privileged operator. The
+generated receipt remains unsigned, with zero authorized reviewers or
+production privileges. Hermetic tests replace output paths both immediately
+before directory opening and immediately before the first file write.

@@ -48,3 +48,22 @@ The GitHub workflow executes only **hermetic synthetic tests**, plus the existin
 ## Additional alias and canonical-citation checks
 
 The private handoff producer now refuses output paths with symlinked ancestors before writing original evidence bytes. The returned-form intake rejects two different reviewer-file paths that are hard links to one filesystem inode; two genuinely distinct files with byte-identical contents remain permissible but are still **unauthenticated**, not independent reviewer proof. Repinning a forged private handoff cannot turn `[E01]` into a valid canonical `[E1]` citation. These are strictly mechanical file/source-format checks, not signature verification, original-source authenticity, human judgment or authorization. No real private materials are consumed by CI and all 768 prospective neural positions remain blocked.
+
+## Private reconciliation output pathname race
+
+The private *output* of returned-review reconciliation now uses the same
+exclusive, owner-only directory-descriptor writer as the blank review handoff.
+Once a `0700` output directory has been created and opened without following
+any symbolic-link components, comparison rows and the receipt are created
+relative to its retained directory FD instead of resolving the pathname a
+second time. A synthetic rename-plus-symlink swap between directory creation
+and the first write must not redirect the comparison or reveal review bytes;
+a swap before acquiring the FD must fail closed.
+
+The original review source and completed reviewer forms remain **read** from
+externally pinned bytes through no-follow file descriptors. The reconciliation
+is still an **unsigned comparison**, not an independently verified reviewer
+identity, human semantic ruling, Ed25519 authorization or Reader-adequacy
+approval. Operating-system path protections do not replace operator control
+of the private parent directory and reviewer roster; all 768 prospective
+neural positions remain blocked until genuine external certification exists.

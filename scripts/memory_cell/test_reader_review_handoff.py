@@ -2,9 +2,11 @@
 import copy
 import hashlib
 import json
+import os
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from reader_originals_attestation import load_strict_json_file
 from reader_review_handoff import prepare_cases, prepare_handoff
@@ -212,6 +214,61 @@ class BlindedReviewHandoffTests(unittest.TestCase):
                                 output=alias_parent / "handoff",
                                 salt=b"\x05" * 32)
             self.assertFalse((original_parent / "handoff").exists())
+
+
+    def test_output_dir_swapped_after_creation_cannot_redirect_private_sources(self):
+        # The path is swapped AFTER mkdir and FD open but BEFORE first write.
+        # An FD-relative writer must continue writing to the original inode.
+        with tempfile.TemporaryDirectory() as root:
+            dest = Path(root) / "review-pack"
+            relocated = Path(root) / "original-private-pack"
+            decoy = Path(root) / "untrusted"
+            decoy.mkdir()
+            real_open, swapped = os.open, []
+
+            def swap_path(name, flags, **kwargs):
+                if name == "review-questions.jsonl" and "dir_fd" in kwargs and not swapped:
+                    dest.rename(relocated)
+                    dest.symlink_to(decoy, target_is_directory=True)
+                    swapped.append(True)
+                return real_open(name, flags, **kwargs)
+
+            with patch("reader_review_handoff.os.open", side_effect=swap_path):
+                result = prepare_handoff(self.originals,
+                    source_file_sha256=self.file_sha, output=dest,
+                    salt=b"\\x09" * 32)
+            self.assertEqual((swapped, result["positions"]), ([True], 8))
+            self.assertFalse((decoy / "review-questions.jsonl").exists())
+            for filename in ("review-questions.jsonl", "reviewer-blank-form.jsonl",
+                             "operator-private-map.jsonl", "handoff-receipt.json"):
+                self.assertTrue((relocated / filename).is_file())
+                self.assertEqual((relocated / filename).stat().st_mode & 0o077, 0)
+
+    def test_output_directory_symlink_swap_at_fd_open_fails_closed(self):
+        # A symlink installed after mkdir cannot redirect output on open().
+        with tempfile.TemporaryDirectory() as root:
+            dest = Path(root) / "review-pack"
+            relocated = Path(root) / "original-private-pack"
+            decoy = Path(root) / "untrusted"
+            decoy.mkdir()
+            real_open, swapped = os.open, []
+
+            def swap_before_open(name, flags, **kwargs):
+                if (name == dest.name and "dir_fd" in kwargs
+                        and flags & os.O_DIRECTORY and not swapped):
+                    dest.rename(relocated)
+                    dest.symlink_to(decoy, target_is_directory=True)
+                    swapped.append(True)
+                return real_open(name, flags, **kwargs)
+
+            with patch("reader_review_handoff.os.open", side_effect=swap_before_open):
+                with self.assertRaisesRegex(ValueError, "symlink"):
+                    prepare_handoff(self.originals,
+                        source_file_sha256=self.file_sha, output=dest,
+                        salt=b"\\x09" * 32)
+            self.assertEqual(swapped, [True])
+            self.assertFalse(list(decoy.iterdir()))
+            self.assertFalse(list(relocated.iterdir()))
 
 
 if __name__ == "__main__":
