@@ -823,6 +823,66 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         Ok(receipts)
     }
 
+    /// Recheck the frozen local ledger after the last external owner RPC.
+    /// This is a bounded on-disk continuity check, not cross-owner atomic
+    /// authorization: the physical owner must still enforce Final-use itself.
+    fn verify_local_acknowledgement_boundary(
+        &self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<(), CellSplitExecutionErrorV1> {
+        self._lock.verify_current(&self.root)?;
+        verify_split_frame_namespace(&self.root)?;
+        if !self.pending
+            || *intent
+                != make_intent(
+                    &self.plan,
+                    &self.plan_digest,
+                    intent.step,
+                    &self.previous_receipt_digest,
+                )
+            || read_frame(&self.root.join("cell-split-frozen-plan.json"))?
+                != Some(canonical_json(&self.plan)?)
+            || read_frame(&self.root.join("cell-split-owner-trust-pins.json"))?
+                != Some(frozen_owner_trust_pins(&self.plan, &self.trust)?)
+            || read_frame(&frame_path(&self.root, self.cursor, "prepared"))?
+                != Some(canonical_json(intent)?)
+            || read_frame(&frame_path(&self.root, self.cursor, "committed"))?.is_some()
+            || has_successor_frame(&self.root, self.cursor + 1)?
+        {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "split ledger changed during final owner readback",
+            ));
+        }
+
+        let mut predecessor = self.plan_digest.clone();
+        for index in 0..self.cursor {
+            let step = CellSplitExecutionStepV1::at(index)
+                .ok_or(CellSplitExecutionErrorV1::Invalid("step index"))?;
+            let prior_intent = make_intent(&self.plan, &self.plan_digest, step, &predecessor);
+            if read_frame(&frame_path(&self.root, index, "prepared"))?
+                != Some(canonical_json(&prior_intent)?)
+            {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "committed prefix changed during final owner readback",
+                ));
+            }
+            let raw = read_frame(&frame_path(&self.root, index, "committed"))?
+                .ok_or(CellSplitExecutionErrorV1::Invalid(
+                    "committed prefix disappeared during final owner readback",
+                ))?;
+            let receipt = decode_committed_receipt(&raw)?;
+            validate_receipt(&prior_intent, &receipt)?;
+            self.trust.verify(&prior_intent, &receipt)?;
+            predecessor = receipt.receipt_digest;
+        }
+        if predecessor != self.previous_receipt_digest {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "committed prefix changed during final owner readback",
+            ));
+        }
+        Ok(())
+    }
+
     /// Source-only fixture convenience. An unauthenticated callback must
     /// never be a public production entry for CAS/migration/CNS/Supervisor
     /// execution. Production callers enter through the Agentd selected-split
@@ -933,6 +993,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         self.port
             .verify_committed(&intent, &receipt)
             .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+        // The final original-owner readback can be slow. Another process may
+        // alter a local prepared frame, frozen plan or signed prefix while it
+        // runs. Recheck only local write-once bytes now: another remote call
+        // would merely create a new unprotected acknowledgement window.
+        self.verify_local_acknowledgement_boundary(&intent)?;
         write_private_new(
             &frame_path(&self.root, self.cursor, "committed"),
             &canonical_json(&receipt)?,
