@@ -183,6 +183,13 @@ where
     } else {
         transcript.is_some()
     };
+    // The verified original-owner readbacks can take long enough for Control
+    // or the independent Selector to withdraw the decision. Check once more
+    // AFTER the physical effect and readbacks, before exposing even a
+    // diagnostic successful advance to Agentd. A failure does not undo a
+    // committed effect: callers must reconcile the write-once owner journal,
+    // never dispatch a replacement request from this error.
+    revalidate_post_effect_admission(selected_action, recheck_plan.as_ref(), &mut admit_selected_plan)?;
     Ok(CellSplitExecutionCliOutcomeV1 {
         schema: OUTCOME_SCHEMA,
         action: selected_action,
@@ -192,6 +199,22 @@ where
         transcript,
         production_activation_authorized: false,
     })
+}
+
+/// Final observed Control/Selector frontier for an effectful advance.
+///
+/// This is strictly an admission recheck, never a final-use grant and never
+/// permission to replay an effect whose acknowledgement was lost.
+fn revalidate_post_effect_admission(
+    action: &str,
+    frozen_plan: Option<&CellSplitExecutionPlanV1>,
+    admit: &mut impl FnMut(&CellSplitExecutionPlanV1) -> Result<(), String>,
+) -> Result<(), String> {
+    if action != "advance" {
+        return Ok(());
+    }
+    let plan = frozen_plan.ok_or_else(|| "missing frozen post-effect admission plan".to_string())?;
+    admit(plan)
 }
 
 fn canonical_hex(value: &str) -> bool {
@@ -276,6 +299,41 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn post_effect_admission_refuses_revoked_selection_after_owner_readback() {
+        let plan = CellSplitExecutionPlanV1 {
+            split_id: "split-post-effect".to_string(),
+            scope_digest: "11".repeat(32),
+            parent_generation: 7,
+            child_generation: 8,
+            parent_artifact_digest: "22".repeat(32),
+            child_artifact_digest: "33".repeat(32),
+            ndu_snapshot_digest: "44".repeat(32),
+            route_fence_digest: "55".repeat(32),
+            owner_ids: [
+                "artifact-owner".into(),
+                "migration-owner".into(),
+                "cns-owner".into(),
+                "supervisor-owner".into(),
+            ],
+        };
+        let mut observations = 0_usize;
+        let mut admission = |selected: &CellSplitExecutionPlanV1| {
+            observations += 1;
+            assert_eq!(selected.split_id, "split-post-effect");
+            Err("Selector withdrew the selected split after effect".to_string())
+        };
+        assert!(revalidate_post_effect_admission("advance", Some(&plan), &mut admission)
+            .expect_err("post-effect Selector revocation must not be reported as success")
+            .contains("Selector withdrew"));
+        assert_eq!(observations, 1);
+        // Transcript is read-only, so it must not require fresh mutation
+        // admission or turn a historical fact into execution authority.
+        assert!(revalidate_post_effect_admission("transcript", None, &mut admission).is_ok());
+        assert_eq!(observations, 1);
+        assert!(revalidate_post_effect_admission("advance", None, &mut admission).is_err());
+    }
 
     #[test]
     fn requires_external_config_pin_before_opening_any_owner() {
