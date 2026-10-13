@@ -24,7 +24,7 @@ def roster():
         qid = f"q{i}"
         case = dict(
             question_id=qid,
-            family_proxy_digest=f"family{i // 40}",
+            family_proxy_digest=f"family{i // 8}",
             source_census_sha256=f"pool{i}",
             source_ids=[f"{qid}/D1:{k}" for k in range(1, 11)],
         )
@@ -199,7 +199,7 @@ class NeighborReaderTests(unittest.TestCase):
     def test_two_family_proxy_cases_are_not_independent_acceptance(self):
         cases, _, new, old, targets = answers()
         result = pairs(cases, new, old, targets)
-        self.assertEqual(len({q["family_proxy_digest"] for q in cases}), 1)
+        self.assertEqual(len({q["family_proxy_digest"] for q in cases}), 2)
         self.assertTrue(
             result["all"]["bounds_are_missing_outcome_not_statistical_confidence"]
         )

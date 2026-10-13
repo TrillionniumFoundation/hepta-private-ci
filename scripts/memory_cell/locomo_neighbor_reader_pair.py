@@ -7,7 +7,6 @@ for independent generalization or production acceptance.
 """
 
 import argparse
-from collections import Counter
 import json
 import os
 from pathlib import Path
@@ -23,7 +22,6 @@ from locomo_frozen_reader_pair import (
     write_once,
 )
 from locomo_neighbor_retrieval import (
-    ARMS,
     decisions,
 )
 from locomo_ninearm_source_replay import (
@@ -64,6 +62,7 @@ def selected_for_evaluation(cases, ranking):
         len(ranking) != 160
         or len(table) != 160
         or len(cases) != CASES
+        or len({c["family_proxy_digest"] for c in cases}) != 2
         or len({c["question_id"] for c in cases}) != CASES
     ):
         raise ValueError("original question or neighbor retrieval census changed")
