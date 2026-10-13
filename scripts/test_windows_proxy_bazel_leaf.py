@@ -18,7 +18,9 @@ def manifest(relative):
 
 
 def one_package(lock, name):
-    matches = [p for p in lock["package"] if p["name"] == name and p["version"] == "0.0.0"]
+    matches = [
+        p for p in lock["package"] if p["name"] == name and p["version"] == "0.0.0"
+    ]
     if len(matches) != 1:
         raise AssertionError(f"missing unique locked workspace package {name}")
     return matches[0]
@@ -34,7 +36,9 @@ def main():
     for target in proxy.get("target", {}).values():
         for kind in ("dependencies", "dev-dependencies", "build-dependencies"):
             if any("windows-sandbox" in key for key in target.get(kind, {})):
-                raise AssertionError("proxy cannot import Windows sandbox via any Cargo target")
+                raise AssertionError(
+                    "proxy cannot import Windows sandbox via any Cargo target"
+                )
     if "codex-protocol" not in sandbox["dependencies"]:
         raise AssertionError("Windows sandbox must retain real protocol boundary")
     leaf = cli.get("target", {}).get("cfg(windows)", {}).get("dev-dependencies", {})
@@ -64,7 +68,9 @@ def main():
         "codex_windows_sandbox::",
     ):
         if required not in body:
-            raise AssertionError("Windows proxy regression lost required coverage: " + required)
+            raise AssertionError(
+                "Windows proxy regression lost required coverage: " + required
+            )
     lock = tomllib.loads((CRATES / "Cargo.lock").read_text(encoding="utf-8"))
     proxy_locked = one_package(lock, "codex-network-proxy")
     cli_locked = one_package(lock, "codex-cli")
@@ -74,7 +80,9 @@ def main():
         raise AssertionError("locked CLI test must own real proxy dependency")
     if "codex-windows-sandbox" not in cli_locked["dependencies"]:
         raise AssertionError("locked CLI must keep real Windows sandbox dependency")
-    print("PASS: full restricted-token Windows ingress moved to CLI; library DAG cycle absent")
+    print(
+        "PASS: full restricted-token Windows ingress moved to CLI; library DAG cycle absent"
+    )
 
 
 if __name__ == "__main__":
