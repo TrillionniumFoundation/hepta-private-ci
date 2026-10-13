@@ -35,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 715a21282dbdc491e70c2c9abd9c1056cef739a5
+      CHAIN_SOURCE_SHA: 889f27b6a13d453859852c45ba11e7f3737fbf65
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '715a21282dbdc491e70c2c9abd9c1056cef739a5' || '591d2249d8ff3a7bd0b252b3dd33488fcdf6d69f' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '889f27b6a13d453859852c45ba11e7f3737fbf65' || '5dbe2e8ac58ca9c8aa0c4007885f91ee22623531' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -69,6 +69,13 @@ jobs:
             test "$(git -C ../chain rev-parse HEAD^{tree})" = "$(git -C ../chain merge-tree --write-tree "$CHAIN_BASE_SHA" "$CHAIN_SOURCE_SHA")"
           fi
           (cd ../chain && bash scripts/project-preflight.sh --audit)
+          python3 -m unittest -v scripts.tests.test_hepta_ci_candidate
+          python3 scripts/hepta_ci_candidate.py \
+            --source "$SOURCE_SHA" --tested "$TESTED_SHA" --base "$BASE_SHA" \
+            --lane "$HEPTA_CI_LANE" \
+            --pair-repository ../chain --pair-source "$CHAIN_SOURCE_SHA" \
+            --pair-tested "$HEPTA_PON_CHAIN_SOURCE" --pair-base "$CHAIN_BASE_SHA" \
+            > "$RUNNER_TEMP/pon-pair/candidate-tuple.json"
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/pon-pair/hepta-identity.txt"
           git -C ../chain rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/pon-pair/chain-identity.txt"
           printf 'lane=%s\nhepta_source=%s\nhepta_base=%s\nhepta_tested=%s\nchain_source=%s\nchain_base=%s\nchain_tested=%s\n' \
@@ -111,7 +118,7 @@ jobs:
       - name: Require complete CI observer and recent-window regressions
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-ci-owner.json" --minimum-tests 69 -- python3 -m unittest discover -s scripts -p 'test_hepta_ci_exec*.py' -v
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-ci-owner.json" --minimum-tests 74 -- python3 -m unittest discover -s scripts -p 'test_hepta_ci_exec*.py' -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/hepta-ci-process-owner.json" --minimum-tests 12 -- python3 -m unittest discover -s scripts -p test_hepta_ci_exec_process.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-ci-execution.json" --minimum-tests 58 -- python3 ../chain/scripts/ci/test_ci_execution.py -v
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-ci-process-owner.json" --minimum-tests 7 -- python3 ../chain/scripts/ci/test_ci_observation_process.py -v
@@ -163,11 +170,17 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-fixed-records.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::fixed_blob_read_tests:: -- --show-output --test-threads=1
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-history-read.json" --minimum-tests 3 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::history_page:: -- --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-history-read.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::history_page:: -- --show-output --test-threads=1
           for selector in store::fixed_blob_read_tests::fixed_blob_copy_preserves_null_types_and_exact_boundaries store::fixed_blob_read_tests::fixed_header_projection_bounds_all_six_fields_without_type_coercion store::fixed_blob_read_tests::fixed_record_rereads_original_errors_and_restores_both_native_backends store::fixed_blob_read_tests::fixed_context_and_active_tip_reject_oversize_prefix_aliases store::history_page::bounded_record_tests::history_record_copy_bounds_keep_original_conversion_and_shape_order; do
             receipt="$RUNNER_TEMP/pon-pair/${selector//:/_}.json"
             python3 scripts/hepta_ci_exec.py --output "$receipt" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib "$selector" -- --exact --show-output --test-threads=1
           done
+      - name: Observe complete history calls with original encoding control
+        env:
+          TRNM_PACKET_COST_DIRECTORY: ${{ runner.temp }}/pon-pair/packet-history-cost
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-packet-history-cost.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::history_page::tests::packet_reservation_history_complete_call_cost -- --exact --ignored --show-output --test-threads=1
       - name: Require complete authenticated snapshot retention and rollback controls
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-snapshots.json" --minimum-tests 16 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_authenticated_tests:: -- --show-output --test-threads=1
@@ -232,6 +245,16 @@ jobs:
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-confirmation-batches.json" --minimum-tests 11 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --example continuous_pipeline -- --show-output --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-read-snapshot.json" --minimum-tests 11 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::native_account_query_tests:: -- --show-output --test-threads=1
+      - name: Require authenticated replay history and timestamp schedule regressions
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-authenticated-replay.json" --minimum-tests 4 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::authenticated_replay_tests -- --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-daa-schedule.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test daa_adversarial_schedule -- --show-output --test-threads=1
+      - name: Require complete history length and codec equivalence
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-packet-codec.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib packet_encoding_tests -- --show-output --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-packet-history.json" --minimum-tests 1 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib store::history_page::tests::packet_reservation_history_keeps_cancel_errors_and_reopen -- --exact --show-output --test-threads=1
       - name: Require complete native model composition and no-update recovery
         run: |
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-native-models.json" --minimum-tests 8 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --test model_composition_v4 --test model_evidence_v3 -- --show-output --test-threads=1
@@ -296,6 +319,22 @@ jobs:
           for selector in offline_terminal_recovery_replays_existing_final_once_and_ignores_late_delta persisted_terminal_identity_or_incomplete_items_cannot_complete_dispatch bounded_history_cursor_survives_restart_and_reaches_turn_older_than_1600; do
             python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/$selector.json" --minimum-tests 1 -- just test --locked -p codex-hepta-matrixd --lib -E "test($selector)" --no-capture
           done
+      - name: Require actual ranker and independent selection lifetime controls
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/independent-selection.json" --minimum-tests 117 -- just test --locked -p codex-hepta-intelligence-eval --lib --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/evaluated-ranker.json" --minimum-tests 6 -- just test --locked -p codex-hepta-agentd --lib -E 'test(cognitive_ranker::tests)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/selection-ranker-composition.json" --minimum-tests 4 -- just test --locked -p codex-hepta-agentd --lib -E 'test(cognitive_ranker::tests::evaluated_selection)' --no-capture
+      - name: Require signed-intent recovery and exact local abort controls
+        env:
+          CARGO_NET_OFFLINE: "true"
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/signed-intent-recovery.json" --minimum-tests 4 -- just test --locked -p codex-hepta-supervisor --test signed_intent_recovery --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/signed-intent-owner.json" --minimum-tests 2 -- just test --locked -p codex-hepta-supervisor --lib -E 'test(signed_intent_recovery_owner_tests)' --no-capture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/signed-grant-admission.json" --minimum-tests 1 -- just test --locked -p codex-hepta-supervisor --lib -E 'test(signed_admission_owner_tests)' --no-capture
       - name: Require every concrete pipe failure selector to execute nonempty
         env:
           CARGO_NET_OFFLINE: "true"
