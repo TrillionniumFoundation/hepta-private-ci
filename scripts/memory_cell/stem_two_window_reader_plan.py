@@ -12,7 +12,12 @@ from selector_answering import selected_window, choose
 
 
 def prepare_second_window(
-    query, pool, features, original_selected, original_sources, session_by_source_id,
+    query,
+    pool,
+    features,
+    original_selected,
+    original_sources,
+    session_by_source_id,
 ):
     """Never use published answers or source labels to select E2."""
     pool.revalidate(query, set())
@@ -48,8 +53,10 @@ def prepare_second_window(
     reference = pool.windows[selected]
     first_session = session_by_source_id[reference.source_id]
     alternatives = [
-        i for i, w in enumerate(pool.windows)
-        if i != selected and w.root != reference.root
+        i
+        for i, w in enumerate(pool.windows)
+        if i != selected
+        and w.root != reference.root
         and w.source_id != reference.source_id
         and session_by_source_id[w.source_id] != first_session
     ]
@@ -101,7 +108,9 @@ def prepare_second_window(
 def compare_capacity_rows(original, repeated, extended, *, diagnose, targets):
     """Score after both NEW Reader outcome journals were fully persisted."""
     if not callable(diagnose) or len(repeated) != 16 or len(extended) != 16:
-        raise ValueError("exact original test/transfer sixteen-question census required")
+        raise ValueError(
+            "exact original test/transfer sixteen-question census required"
+        )
     phases = ("test", "transfer")
     pairs = {}
     for src, tag in ((repeated, "same-host-one"), (extended, "two")):
@@ -111,12 +120,16 @@ def compare_capacity_rows(original, repeated, extended, *, diagnose, targets):
                 raise ValueError("unregistered or duplicated Reader comparator")
             pairs[key, tag] = row
     expected = {
-        (phase, x["question_id"]) for phase in phases for x in original
+        (phase, x["question_id"])
+        for phase in phases
+        for x in original
         if x["phase"] == phase
     }
     if len(expected) != 16 or set(targets) != {qid for _, qid in expected}:
         raise ValueError("incomplete published original test/transfer target census")
-    if set(pairs) != {(key, tag) for key in expected for tag in ("same-host-one", "two")}:
+    if set(pairs) != {
+        (key, tag) for key in expected for tag in ("same-host-one", "two")
+    }:
         raise ValueError("incomplete new Reader control source census")
     result = {}
     for phase in phases:
@@ -142,30 +155,42 @@ def compare_capacity_rows(original, repeated, extended, *, diagnose, targets):
                 x = diagnose(one["answer"], targets[key[1]])
                 y = diagnose(two["answer"], targets[key[1]])
                 if x is not None and y is not None:
-                    if any(type(v) not in (int, float) or not math.isfinite(v)
-                           or not 0 <= v <= 1 for v in (x, y)):
+                    if any(
+                        type(v) not in (int, float)
+                        or not math.isfinite(v)
+                        or not 0 <= v <= 1
+                        for v in (x, y)
+                    ):
                         raise ValueError("invalid original native diagnostic target F1")
                     diff = y - x
                     sums.append(diff)
                     actual += 1
-            all_rows.append(dict(
-                question_id=key[1], eligible_second_source=eligible,
-                both_same_host_reader_calls_succeeded=comparable,
-                observed_f1_delta_two_minus_one=diff,
-                source_window_entailment_not_judged=True,
-            ))
+            all_rows.append(
+                dict(
+                    question_id=key[1],
+                    eligible_second_source=eligible,
+                    both_same_host_reader_calls_succeeded=comparable,
+                    observed_f1_delta_two_minus_one=diff,
+                    source_window_entailment_not_judged=True,
+                )
+            )
         n = len(all_rows)
         if n != 8:
             raise ValueError("changed original phase census")
         from math import fsum
+
         subtotal = fsum(sums)
         result[phase] = dict(
-            attempted=n, reader_comparable_scored_pairs=actual,
-            unscored_or_failed_pairs=n-actual,
-            second_window_unavailable=sum(not x["eligible_second_source"] for x in all_rows),
-            conditional_f1_delta_mean=subtotal/actual if actual else None,
+            attempted=n,
+            reader_comparable_scored_pairs=actual,
+            unscored_or_failed_pairs=n - actual,
+            second_window_unavailable=sum(
+                not x["eligible_second_source"] for x in all_rows
+            ),
+            conditional_f1_delta_mean=subtotal / actual if actual else None,
             all_planned_f1_delta_bounds=[
-                (subtotal-(n-actual))/n, (subtotal+(n-actual))/n,
+                (subtotal - (n - actual)) / n,
+                (subtotal + (n - actual)) / n,
             ],
             rows=all_rows,
             independently_certified_source_sufficiency=False,
