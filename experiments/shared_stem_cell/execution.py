@@ -554,7 +554,11 @@ def run(manifest_path: Path, output: Path):
             generation_seal = write_once(output / "generation.json", generation)
         scores = evaluate_sealed(output / "predictions.json", seal, labels, cases,
             expected_arms=("linear", "gated", "low_rank", "sparse_expert"))
+        from experiments.shared_stem_cell.control_evaluation import evaluate_controls
+        control_scores = evaluate_controls(output / "controls.json", controls_seal,
+                                           labels, cases, classes=config["classes"])
         report = {"schema": "hepta.shared-stem-executed.v1", "mode": "local_pretrained",
+            "control_scores": control_scores,
             "manifest_sha256": sha(manifest_raw), "predictions_sha256": seal,
             "source_sha256": sha(Path(__file__).read_bytes()), "encoding": encoding,
             "training": training, "whole_execution": whole, "scores": scores,

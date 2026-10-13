@@ -251,7 +251,8 @@ def extract(towers, cases, root):
 
 
 def run(manifest_path, output, *, _tower_factory=LocalTowers):
-    config = e.decode(manifest_path.read_bytes())
+    manifest_raw = manifest_path.read_bytes()
+    config = e.decode(manifest_raw)
     if config.get("schema") != "hepta.shared-stem-media.v1" or type(config.get("temporal", False)) is not bool:
         raise e.InputError("media execution manifest")
     output.mkdir(parents=True, exist_ok=False)
@@ -270,12 +271,28 @@ def run(manifest_path, output, *, _tower_factory=LocalTowers):
             select(test), classes=config["classes"], steps=config.get("steps", 20), seed=config.get("seed", 17))
         towers.close()
         read_cases(root, config["dataset"], config["classes"], config.get("temporal", False))
-        payload = {"case_ids": [cases[i].case_id for i in test],
+        if manifest_path.read_bytes() != manifest_raw:
+            raise e.InputError("media manifest changed during execution")
+        payload = {"frozen_predictions": result["frozen_predictions"],
+                   "case_ids": [cases[i].case_id for i in test],
                    "input_digests": [cases[i].input_digest for i in test],
                    "predictions": result["predictions"]}
         seal = e.write_once(output / "predictions.json", payload)
         sealed = e.decode(e.bound_file(output / "predictions.json", seal))
-        scores = []
+        from experiments.shared_stem_cell.control_evaluation import summarize
+        scores, learning = [], {}
+        for split in sorted({cases[i].split for i in test}):
+            selected = [j for j, i in enumerate(test) if cases[i].split == split]
+            targets = [labels[cases[test[j]].case_id] for j in selected]
+            groups = [cases[test[j]].group for j in selected]
+            learning[split] = {}
+            for arm, values in sealed["predictions"].items():
+                if arm not in sealed["frozen_predictions"]:
+                    raise e.InputError("same-initialization modality control missing")
+                before = sealed["frozen_predictions"][arm]
+                learning[split][arm] = summarize(
+                    {"learned": [values[j] for j in selected], "frozen": [before[j] for j in selected]},
+                    targets, groups, classes=config["classes"], control="frozen")
         for arm, probabilities in sealed["predictions"].items():
             p = torch.tensor(probabilities)
             if p.shape != (len(test), config["classes"]) or not bool(torch.isfinite(p).all()):
@@ -285,7 +302,7 @@ def run(manifest_path, output, *, _tower_factory=LocalTowers):
                 y = torch.tensor([labels[cases[test[j]].case_id] for j in selected])
                 scores.append({"arm": arm, "split": split, "cases": len(selected),
                                "accuracy": float((p[selected].argmax(-1) == y).float().mean())})
-        report = {"prediction_sha256": seal, "scores": scores, "connector_costs": result["costs"],
+        report = {"prediction_sha256": seal, "scores": scores, "same_init_learning": learning, "connector_costs": result["costs"],
             "model_identities": towers.identities, "model_load": load, "encoding": encoding,
             "tower_forward_calls": towers.calls, "simulated_towers": towers.simulated,
             "representation": "CLIP text/patch tokens, ordered pooled video frames; Whisper 32 time-bin means",

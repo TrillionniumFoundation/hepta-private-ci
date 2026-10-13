@@ -275,3 +275,94 @@ failure are retained in the external evidence bundle. These do not qualify the
 three required hosted Transformers API checks, genuine public-weight execution,
 full-repository Rust/Bazel/security checks or independent future NDU/split gains.
 All six scientific/product acceptance gates remain individually evaluated.
+
+## Continuation: public image/text tasks and post-seal learning comparisons
+
+This continues PR #1699 from `90667585558ee5a46e43c47e7145071cef7d9d64`.
+It reuses the existing execution, connector, Head and Reader owners; there is no
+new production trainer, NDU subject, authority issuer or experiment-name registry.
+Historical 42/78-test and browser outcomes above remain historical receipts.
+
+### Complete existing split/System2 scoring after prediction sealing
+
+`control_evaluation.py` consumes the existing immutable `controls.json` only AFTER
+its digest is sealed. It checks exact case and arm coverage, class probabilities,
+control costs and per-case stopping depth. Missing arms and changed byte streams
+fail instead of becoming zero-quality or zero-cost results. The original
+`execution.run` now includes these actual split/System2 comparisons in its report.
+Paired gains/losses/ties are measured against continued parent and fixed recurrence;
+Brier and descriptive group-mean changes are separate. Declared groups are not
+certified independent samples. Confidence intervals and general FBSDE benefits
+remain unavailable; equal depth ceilings do not claim equal FLOPs or wall time.
+
+The existing modality trainer now saves same-initialization frozen predictions
+and parameter identity before optimization. The media runner seals both frozen
+and trained predictions, then reports their paired differences on the same
+holdout/retention cases. A single-modality request previously appeared twice in
+the selected-arm list, training twice and overwriting the first cost. The list
+is now deduplicated before training. This correction does not certify any model
+learning benefit. Media manifest mutation also fails before result publication.
+
+### Public natural image/text execution, not a claim of independent new concepts
+
+`public_media.py` connects the existing CLIP/connector and causal-text execution
+paths to `lmms-lab/ScienceQA-IMG` public Parquet data. Model candidates are
+`openai/clip-vit-base-patch32` and `Qwen/Qwen2.5-0.5B-Instruct`; names alone are
+not source authority. The job resolves and seals full immutable Hub revisions
+before acquisition and verifies downloaded publisher LFS/Git identities and
+physical sizes. Plain checkpoint conversion remains an explicit separate opt-in;
+the ordinary runtime still accepts safetensors only. The original public Stem
+acquisition now also verifies publisher identities for EVERY copied member,
+including tokenizer/config/safetensors, instead of merely recording its own hash.
+
+The fixed pilot selects 64 train, 16 validation/calibration and 32 test cases.
+Selection receives ONLY image, question, all ordered choices and hint. Exactly
+four choices and the complete text within 64 actual CLIP tokens are required;
+there is no truncation. Selection is SHA-ordered, deduplicates exact text and RGB
+pixel content across folds (including differently encoded identical images), and
+seals the COMPLETE cohort BEFORE its first answer lookup. Lecture/solution/answer
+fields are rejected by the selector. Insufficient eligible material is a failure,
+not permission to reduce the denominator or synthesize replacements. Original
+image bytes are preserved. This eligibility-restricted public cohort is neither
+a whole-benchmark score nor an independently reviewed natural-concept split.
+
+The same frozen CLIP tower supplies real text/patch features to joint, text-only
+and image-only connector training with frozen controls. A separate shared Qwen
+Reader generates on up to 16 of those same held-out question/hint/options inputs,
+using its pinned chat template. It receives NO images and is explicitly a
+**text-only capacity reference**, not a multimodal Reader or NDU improvement.
+Each invocation has a durable started record and unmodified raw response; the
+full output seals before exact A/B/C/D scoring. Invalid outputs remain wrong,
+not rewritten or dropped. Failed invocations retain their started/partial records.
+This is actual causal-generation wiring, not image/audio/video generation quality
+or generator consolidation. Full elapsed wall time includes acquisition; energy,
+peak RSS and independent success claims remain absent unless separately observed.
+
+```sh
+python -m experiments.shared_stem_cell.public_media \
+  --allow-weights-only-conversion --output /new/public-image-text-study
+python -m unittest -v experiments.shared_stem_cell.test_public_media
+```
+
+The existing workflow retains its two original lanes and adds one exact-source
+public image/text lane. It runs all four required stock Transformers API tests
+(ModernBERT, CLIP, Whisper, causal Llama) before acquisition. Tiny random API
+checks are NOT pretrained evidence. Original global/native/security checks are
+unchanged. Artifacts preserve source/environment, plans, cohorts, predictions,
+conversion diagnostics and failures, but never upload model weights or whole
+Parquet shards. Upstream schema/model references:
+- https://huggingface.co/datasets/lmms-lab/ScienceQA-IMG
+- https://github.com/lupantech/ScienceQA
+- https://huggingface.co/openai/clip-vit-base-patch32
+- https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct
+
+Local exact-source regression: **97 tests passed, zero failures/skips** in that
+suite, including original real Chromium/controller/conversion tests and 19 new
+selection/scoring tests. Python AST, workflow YAML parsing and `git diff --check`
+also passed. The separate stock-HF suite was attempted but stopped at import:
+`tokenizers` is missing (and Transformers is not installed). None of its four API
+tests ran; that failure log is retained. Local dependency downloads also failed.
+No real pretrained score, full hosted/native CI success or six-gate completion is
+asserted. Genuine Laya comparison, 64..4096 target hardware, independent future
+split/NDU gain, natural audio/video, multimodal generation/consolidation and product
+FinalUse/host-crash recovery remain distinct work, not erased by these tests.

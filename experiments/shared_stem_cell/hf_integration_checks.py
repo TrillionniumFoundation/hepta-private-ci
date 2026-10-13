@@ -19,7 +19,7 @@ from transformers import (
     CLIPConfig, CLIPImageProcessor, CLIPModel, CLIPProcessor, CLIPTextConfig,
     CLIPTokenizer, CLIPVisionConfig, ModernBertConfig, ModernBertForMaskedLM,
     PreTrainedTokenizerFast, WhisperConfig, WhisperFeatureExtractor,
-    WhisperForConditionalGeneration,
+    WhisperForConditionalGeneration, LlamaConfig, LlamaForCausalLM,
 )
 
 from experiments.shared_stem_cell import execution as e
@@ -51,12 +51,32 @@ class StockHfChecks(unittest.TestCase):
                                       "a": 4, "b": 5, "[MASK]": 6, "c": 7}, unk_token="[UNK]"))
         backend.pre_tokenizer = Whitespace()
         PreTrainedTokenizerFast(tokenizer_object=backend, pad_token="[PAD]", unk_token="[UNK]",
-                                bos_token="[BOS]", eos_token="[EOS]", mask_token="[MASK]").save_pretrained(path)
+                                bos_token="[BOS]", eos_token="[EOS]", mask_token="[MASK]",
+                                model_input_names=["input_ids", "attention_mask"]).save_pretrained(path)
         loaded = e.LocalEncoder(path, manifest(path, "masked_lm"), maximum_tokens=32)
         batch = loaded.encode(["a b", "b"])
         solo = torch.cat([loaded.encode([text]) for text in ("a b", "b")])
         self.assertTrue(torch.allclose(batch, solo, atol=1e-5, rtol=1e-5))
         loaded.close()
+
+    def test_stock_causal_generator_preserves_raw_answer(self):
+        path = self.root / "causal"
+        LlamaForCausalLM(LlamaConfig(vocab_size=8, hidden_size=8, intermediate_size=16,
+            num_hidden_layers=1, num_attention_heads=2, num_key_value_heads=2,
+            max_position_embeddings=64, pad_token_id=0, bos_token_id=1,
+            eos_token_id=2)).save_pretrained(path, safe_serialization=True)
+        tokens = Tokenizer(WordLevel({"[PAD]": 0, "[BOS]": 1, "[EOS]": 2, "[UNK]": 3,
+                                     "a": 4, "b": 5, "c": 6, "d": 7}, unk_token="[UNK]"))
+        tokens.pre_tokenizer = Whitespace()
+        PreTrainedTokenizerFast(tokenizer_object=tokens, pad_token="[PAD]", unk_token="[UNK]",
+            bos_token="[BOS]", eos_token="[EOS]",
+            model_input_names=["input_ids", "attention_mask"]).save_pretrained(path)
+        generator = e.LocalTextGenerator(path, manifest(path, "causal_lm"), maximum_tokens=32)
+        result = generator.generate(["a b"], maximum_new_tokens=4)
+        self.assertEqual(len(result["outputs"]), 1)
+        self.assertLessEqual(result["outputs"][0]["generated_tokens"], 4)
+        self.assertIsNone(result["semantic_quality"])
+        self.assertFalse(result["production_accepted"])
 
     def test_stock_clip_text_image_and_frame_paths(self):
         path = self.root / "clip"

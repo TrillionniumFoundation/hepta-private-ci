@@ -39,8 +39,8 @@ jobs:
           PY="$RUNNER_TEMP/hepta-execution-env/bin/python"
           git rev-parse HEAD > "$RUNNER_TEMP/hepta-execution-source.txt"
           "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-execution-source.txt"
-          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{execution,controls,wire,browser_loop,browser_recovery,checkpoint_conversion,public_smoke,media_execution,hf_integration_checks,test_execution,test_browser,test_browser_recovery,test_checkpoint_conversion,test_media_execution}.py
-          "$PY" -m unittest -v experiments.shared_stem_cell.test_execution experiments.shared_stem_cell.test_browser experiments.shared_stem_head_matrix.tests.test_runner experiments.shared_stem_cell.test_checkpoint_conversion experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.test_browser_recovery 2>&1 | tee "$RUNNER_TEMP/hepta-execution-tests.txt"
+          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{execution,controls,wire,browser_loop,browser_recovery,checkpoint_conversion,public_smoke,public_media,control_evaluation,media_execution,hf_integration_checks,test_execution,test_browser,test_browser_recovery,test_checkpoint_conversion,test_media_execution,test_public_media}.py
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_execution experiments.shared_stem_cell.test_browser experiments.shared_stem_head_matrix.tests.test_runner experiments.shared_stem_cell.test_checkpoint_conversion experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.test_browser_recovery experiments.shared_stem_cell.test_public_media 2>&1 | tee "$RUNNER_TEMP/hepta-execution-tests.txt"
           "$PY" -m experiments.shared_stem_cell.browser_loop --output "$RUNNER_TEMP/hepta-browser-study" --tasks 24
           "$PY" -m experiments.shared_stem_cell.browser_recovery --output "$RUNNER_TEMP/hepta-controller-recovery"
           git diff --exit-code
@@ -91,6 +91,7 @@ jobs:
             ${{ runner.temp }}/hepta-public-log.txt
             ${{ runner.temp }}/hepta-hf-api-tests.txt
             ${{ runner.temp }}/hepta-public-study/model-source.json
+            ${{ runner.temp }}/hepta-public-study/verified-publisher-files.json
             ${{ runner.temp }}/hepta-public-study/conversion/conversion.json
             ${{ runner.temp }}/hepta-public-study/conversion/worker.log
             ${{ runner.temp }}/hepta-public-study/conversion/failure.json
@@ -98,3 +99,56 @@ jobs:
             ${{ runner.temp }}/hepta-public-study/manifest.json
             ${{ runner.temp }}/hepta-public-study/dataset.jsonl
             ${{ runner.temp }}/hepta-public-study/execution
+
+  public-image-text:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Isolated image and text execution runtime
+        run: |
+          python3 -m venv "$RUNNER_TEMP/hepta-media-env"
+          "$RUNNER_TEMP/hepta-media-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          "$RUNNER_TEMP/hepta-media-env/bin/pip" install transformers==4.57.1 datasets==4.2.0 numpy==2.2.6 safetensors==0.7.0 psutil==7.1.0 sentencepiece==0.2.1 pillow==12.3.0
+      - name: Actual public ScienceQA, CLIP connectors and text-only Qwen control
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          USE_TF: "0"
+          TOKENIZERS_PARALLELISM: "false"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-media-env/bin/python"
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-media-source.txt"
+          "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-media-source.txt"
+          "$PY" -m unittest -v experiments.shared_stem_cell.hf_integration_checks experiments.shared_stem_cell.test_public_media 2>&1 | tee "$RUNNER_TEMP/hepta-media-tests.txt"
+          "$PY" -m experiments.shared_stem_cell.public_media --allow-weights-only-conversion --output "$RUNNER_TEMP/hepta-public-media" 2>&1 | tee "$RUNNER_TEMP/hepta-media-log.txt"
+          git diff --exit-code
+      - name: Preserve original predictions and failures, never upload model weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-public-media-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-media-source.txt
+            ${{ runner.temp }}/hepta-media-tests.txt
+            ${{ runner.temp }}/hepta-media-log.txt
+            ${{ runner.temp }}/hepta-public-media/acquisition.json
+            ${{ runner.temp }}/hepta-public-media/dataset-source.json
+            ${{ runner.temp }}/hepta-public-media/dataset-publisher-verified.json
+            ${{ runner.temp }}/hepta-public-media/cohort-before-labels.json
+            ${{ runner.temp }}/hepta-public-media/dataset.jsonl
+            ${{ runner.temp }}/hepta-public-media/manifest.json
+            ${{ runner.temp }}/hepta-public-media/report.json
+            ${{ runner.temp }}/hepta-public-media/failure.json
+            ${{ runner.temp }}/hepta-public-media/vision/model-source.json
+            ${{ runner.temp }}/hepta-public-media/vision/verified-publisher-files.json
+            ${{ runner.temp }}/hepta-public-media/vision/conversion/*.json
+            ${{ runner.temp }}/hepta-public-media/vision/conversion/*.log
+            ${{ runner.temp }}/hepta-public-media/reader/model-source.json
+            ${{ runner.temp }}/hepta-public-media/reader/verified-publisher-files.json
+            ${{ runner.temp }}/hepta-public-media/media-execution
+            ${{ runner.temp }}/hepta-public-media/text-execution

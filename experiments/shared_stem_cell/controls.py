@@ -132,17 +132,22 @@ def modality_trial(train, labels, test, *, classes, steps=40, seed=17):
     """Real connector SGD and each unimodal baseline; untrusted tower provenance."""
     if set(train) != set(test):
         raise InputError("modality sets differ")
-    predictions, costs = {}, {}
+    predictions, frozen_predictions, costs = {}, {}, {}
     n = len(labels)
     if n < 1:
         raise InputError("empty modality training data")
-    for selected in [tuple(sorted(train)), *((name,) for name in sorted(train))]:
+    selections = list(dict.fromkeys([tuple(sorted(train)), *((name,) for name in sorted(train))]))
+    for selected in selections:
         torch.manual_seed(seed)
         shapes = {k: tuple(train[k][0].shape[1:]) for k in selected}
         model = FusionHead(shapes, classes)
         subset = {k: train[k] for k in selected}
         if any(len(v[0]) != n for v in subset.values()):
             raise InputError("unpaired training modalities")
+        name = "+".join(selected)
+        with torch.no_grad():
+            frozen_predictions[name] = model({k: test[k] for k in selected}).softmax(-1).tolist()
+        frozen_identity = parameters(model)
         optimizer = torch.optim.AdamW(model.parameters(), lr=0.01, weight_decay=0)
         with measured() as timing:
             for _ in range(integer(steps, 1, 1000, "connector steps")):
@@ -154,8 +159,9 @@ def modality_trial(train, labels, test, *, classes, steps=40, seed=17):
         name = "+".join(selected)
         with torch.no_grad():
             predictions[name] = model({k: test[k] for k in selected}).softmax(-1).tolist()
-        costs[name] = {**timing, **parameters(model), "steps": steps, "examples_processed": steps * n}
-    return {"predictions": predictions, "costs": costs,
+        costs[name] = {**timing, **parameters(model), "steps": steps, "examples_processed": steps * n,
+                       "same_init_frozen": frozen_identity}
+    return {"predictions": predictions, "frozen_predictions": frozen_predictions, "costs": costs,
             "tower_provenance_independently_verified": False,
             "semantic_quality": None, "production_accepted": False}
 

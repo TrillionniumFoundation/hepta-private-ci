@@ -5,6 +5,7 @@ immutable Hub revisions and seal them before downloading any weights/data.
 This narrow public smoke is not a Laya comparison or a model-selection gate.
 """
 import argparse
+import hashlib
 from pathlib import Path
 import shutil
 
@@ -15,6 +16,30 @@ MODEL = "jhu-clsp/mmBERT-small"
 DATASET = "fancyzhx/ag_news"
 
 
+
+def publisher_file(path, sibling):
+    """Check published LFS or Git-blob identity, not just a self-computed checksum."""
+    raw_digest = digest_file(path)
+    if path.stat().st_size != sibling.size:
+        raise ValueError("publisher file size drift")
+    lfs = getattr(sibling, "lfs", None)
+    expected = lfs.get("sha256") if isinstance(lfs, dict) else getattr(lfs, "sha256", None)
+    if lfs is not None:
+        if not isinstance(expected, str) or raw_digest != expected:
+            raise ValueError("publisher LFS content drift")
+    else:
+        expected = getattr(sibling, "blob_id", None)
+        h = hashlib.sha1(b"blob " + str(path.stat().st_size).encode() + b"\0")
+        with path.open("rb") as stream:
+            for block in iter(lambda: stream.read(1024**2), b""):
+                h.update(block)
+        if not isinstance(expected, str) or h.hexdigest() != expected:
+            raise ValueError("publisher Git content drift")
+    return {"sha256": raw_digest, "publisher_digest": expected,
+            "publisher_digest_kind": "lfs_sha256" if lfs is not None else "git_blob_sha1"}
+
+
+
 def stage_model(root, model_id, revision, *, kind, allow_conversion=False):
     """Acquire exact public artifacts, then optionally convert an explicitly accepted bin."""
     from huggingface_hub import HfApi, snapshot_download
@@ -22,6 +47,8 @@ def stage_model(root, model_id, revision, *, kind, allow_conversion=False):
     if info.sha != revision:
         raise ValueError("immutable model lookup drift")
     siblings = {item.rfilename: item for item in info.siblings}
+    if len(siblings) != len(info.siblings):
+        raise ValueError("duplicate publisher file name")
     safe = sorted(name for name in siblings if name.endswith(".safetensors"))
     names = [name for name in siblings if name.endswith((".json", ".txt", ".model")) or name == "README.md"]
     conversion = None
@@ -50,6 +77,7 @@ def stage_model(root, model_id, revision, *, kind, allow_conversion=False):
                                      cache_dir=root / "download-cache"))
     model_dir = root / "model"
     model_dir.mkdir(exist_ok=False)
+    verified = {}
     for name in names:
         if name == "pytorch_model.bin":
             continue
@@ -57,14 +85,17 @@ def stage_model(root, model_id, revision, *, kind, allow_conversion=False):
         target = model_dir / name
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(source, target, follow_symlinks=True)
+        verified[name] = publisher_file(target, siblings[name])
     if not safe:
         # Preserve source separately; inference cannot discover or unpickle it.
         original = root / "source-weights.bin"
         shutil.copyfile(snapshot / "pytorch_model.bin", original, follow_symlinks=True)
+        verified["pytorch_model.bin"] = publisher_file(original, siblings["pytorch_model.bin"])
         conversion = convert(original, expected, root / "conversion", accepted=allow_conversion)
         shutil.copyfile(root / "conversion/model.safetensors", model_dir / "model.safetensors")
     files = {p.relative_to(model_dir).as_posix(): digest_file(p)
              for p in sorted(model_dir.rglob("*")) if p.is_file()}
+    write_once(root / "verified-publisher-files.json", verified)
     return {"path": "model", "kind": kind, "revision": revision, "files": files,
             "model_id": model_id, "conversion": conversion}
 
