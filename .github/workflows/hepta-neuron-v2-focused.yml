@@ -114,6 +114,12 @@ jobs:
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --lib
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib
 
+      - name: Retain measured 64-4096 Cell CPU reference timings (not production)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib native_64_256_1024_4096_cell_gated_cpu_batches_preserve_isolation -- --nocapture
+
       - name: Strict safety lints
         shell: bash
         run: |
