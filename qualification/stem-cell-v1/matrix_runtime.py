@@ -24,7 +24,7 @@ from paired_execution import PHASES
 SOURCE_FILES = ("next_round_matrix.py", "paired_execution.py", "head_surgery.py",
                 "hf_encoder_kernel.py", "matrix_materials.py", "matrix_bank.py",
                 "matrix_runtime.py", "matrix_export.py", "aten_work.py",
-                "host_counters.py", "execution_meter.py", "matrix_growth.py", "family_routing.py", "hf_complete_checkpoint.py", "transformer_work.py", "retention_training.py")
+                "host_counters.py", "execution_meter.py", "matrix_growth.py", "family_routing.py", "hf_complete_checkpoint.py", "transformer_work.py", "retention_training.py", "consolidation_training.py", "consolidation_record.py")
 
 
 def verify_source(source_sha):
@@ -126,7 +126,7 @@ def execute(plan, contract, config, workload, backend, *, clock=time.time_ns, me
     if "retention_policy" in config:
         from retention_training import validate_retention_rows
         roles = validate_retention_rows(train, config["retention_policy"])
-        reference_bytes = len(train) * classes * 4
+        reference_bytes = len(train) * classes * 4 * (2 if "consolidation_policy" in config else 1)
         # At most one full fitting subset is retained alongside the original
         # cache/reference. Batch/activation/optimizer memory is still separate.
         subset_bytes = (len(roles["old_train_groups"]) + len(roles["new_train_groups"])) * backend.dimension * 4
@@ -231,13 +231,19 @@ def execute(plan, contract, config, workload, backend, *, clock=time.time_ns, me
             manifest["retention_receipt"] = training["retention"]
         manifest["peak_trainable_params"] = training["growth"]["peak_live_trainable_params"]
         manifest["phase_flops"]["migration"] = None if training["growth"]["split_performed"] else 0
+    if "consolidation" in training:
+        from consolidation_training import OUTPUT_PROFILE
+        manifest.update(schema="hepta.stem.bound-execution.v3", output_profile=OUTPUT_PROFILE,
+                        consolidation_receipt=training["consolidation"],
+                        retention_receipt=training["consolidation"]["final_retention"],
+                        peak_trainable_params=training["consolidation"]["peak_live_trainable_params"])
     if meter is not None:
         observation = meter.report()
         manifest["work_observation"] = observation
         manifest["flop_profile"] = observation["profile"]
         for phase in ("train", "inference"):
             manifest["phase_flops"][phase] = observation["phase_flops"][phase]
-        if "growth" in training and training["growth"]["split_performed"]:
+        if "consolidation" in training or ("growth" in training and training["growth"]["split_performed"]):
             manifest["phase_flops"]["migration"] = observation["phase_flops"]["migration"]
         manifest["latency_scope"] += "_instrumented"
         manifest["feature_cache_payload_bytes"] = features.numel() * features.element_size()
@@ -324,6 +330,9 @@ def run_bound(plan, contract, config, workload_path, snapshot, output):
         from retention_training import RetentionRejected
         if isinstance(exc, RetentionRejected):
             failure["retention_disposition"] = exc.report
+        from consolidation_training import ConsolidationRejected
+        if isinstance(exc, ConsolidationRejected):
+            failure["consolidation_disposition"] = exc.report
         if meter is not None:
             failure["work_observation"] = meter.report()
         write_json_exclusive(root / "FAILED.json", failure)

@@ -108,12 +108,14 @@ def audit_pair(plan, contract, contrast_id, baseline, candidate):
     request_fields = {"task_id", "status", "latency_ns", "energy_joules",
                       "peak_memory_bytes", "outcome", "observed_at_ns", "observer_id"}
     for role, receipt in (("baseline", baseline), ("candidate", candidate)):
-        allowed_fields = receipt_fields | ({"training_protocol_sha256"} if isinstance(receipt, dict) and receipt.get("schema") == "hepta.stem.paired-run-export.v2" else set())
+        allowed_fields = receipt_fields | ({"training_protocol_sha256"} if isinstance(receipt, dict) and receipt.get("schema") in ("hepta.stem.paired-run-export.v2", "hepta.stem.paired-run-export.v3") else set())
+        if isinstance(receipt, dict) and receipt.get("schema") == "hepta.stem.paired-run-export.v3":
+            allowed_fields |= {"output_profile", "precursor_trainable_params"}
         if not isinstance(receipt, dict) or set(receipt) != allowed_fields:
             raise ValueError("incomplete or unknown run receipt fields")
-        if receipt["schema"] not in ("hepta.stem.paired-run-export.v1", "hepta.stem.paired-run-export.v2"):
+        if receipt["schema"] not in ("hepta.stem.paired-run-export.v1", "hepta.stem.paired-run-export.v2", "hepta.stem.paired-run-export.v3"):
             raise ValueError("unsupported run export schema")
-        if receipt["schema"] == "hepta.stem.paired-run-export.v2":
+        if receipt["schema"] in ("hepta.stem.paired-run-export.v2", "hepta.stem.paired-run-export.v3"):
             _sha(receipt["training_protocol_sha256"], "training protocol digest")
         if receipt["arm_id"] != contrast[role]:
             raise ValueError("wrong arm or reversed comparison")
@@ -124,6 +126,12 @@ def audit_pair(plan, contract, contrast_id, baseline, candidate):
             _integer(receipt[key], key, 1)
         if not receipt["head_params"] <= receipt["trainable_params"] <= receipt["peak_trainable_params"]:
             raise ValueError("inconsistent measured parameter inventory")
+        if receipt["schema"] == "hepta.stem.paired-run-export.v3":
+            _integer(receipt["precursor_trainable_params"], "precursor parameters", 1)
+            if (receipt["output_profile"] != "consolidated_parent16_mlp.v1"
+                    or receipt["precursor_trainable_params"] != 2 * receipt["trainable_params"]
+                    or receipt["peak_trainable_params"] < receipt["precursor_trainable_params"] + receipt["trainable_params"]):
+                raise ValueError("invalid consolidated output stage")
         if receipt["head_params"] > profiles[receipt["arm_id"]]["total_head_budget_params"]:
             blockers.append(f"{role}:head_budget_exceeded")
         for key in ("weight_receipt_sha256", "observer_receipt_sha256"):
@@ -188,13 +196,15 @@ def audit_pair(plan, contract, contrast_id, baseline, candidate):
     # preregistered ceiling. Requiring identical transients would reward dummy
     # allocation in no-split controls. V1 retains its original stricter semantics.
     if "max_peak_trainable_params" in contract:
-        if any(r["schema"] != "hepta.stem.paired-run-export.v2" for r in (baseline, candidate)):
+        if any(r["schema"] not in ("hepta.stem.paired-run-export.v2", "hepta.stem.paired-run-export.v3") for r in (baseline, candidate)):
             blockers.append("missing_bound_training_protocol")
         elif baseline["training_protocol_sha256"] != candidate["training_protocol_sha256"]:
             blockers.append("unmatched_training_protocol")
         for role, receipt in (("baseline", baseline), ("candidate", candidate)):
             if receipt["peak_trainable_params"] > contract["max_peak_trainable_params"]:
                 blockers.append(f"{role}:peak_trainable_budget_exceeded")
+    if baseline.get("output_profile") != candidate.get("output_profile"):
+        blockers.append("unmatched_output_stage")
     if contrast["match_total_head_budget"]:
         # Gate/critic capacity may be traded against Head capacity under the
         # same total trainable ceiling. Equal actual Head counts as well would
