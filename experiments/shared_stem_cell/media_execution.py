@@ -268,12 +268,14 @@ def run(manifest_path, output, *, _tower_factory=LocalTowers):
         test = [i for i, case in enumerate(cases) if case.split in {"holdout", "retention"}]
         select = lambda ids: {k: tuple(t[ids] for t in v) for k, v in values.items()}
         result = modality_trial(select(train), torch.tensor([labels[cases[i].case_id] for i in train]),
-            select(test), classes=config["classes"], steps=config.get("steps", 20), seed=config.get("seed", 17))
+            select(test), classes=config["classes"], steps=config.get("steps", 20), seed=config.get("seed", 17),
+            test_partitions=[cases[i].split for i in test])
         towers.close()
         read_cases(root, config["dataset"], config["classes"], config.get("temporal", False))
         if manifest_path.read_bytes() != manifest_raw:
             raise e.InputError("media manifest changed during execution")
         payload = {"frozen_predictions": result["frozen_predictions"],
+                   "modality_interventions": result["modality_interventions"],
                    "case_ids": [cases[i].case_id for i in test],
                    "input_digests": [cases[i].input_digest for i in test],
                    "predictions": result["predictions"]}
@@ -302,7 +304,21 @@ def run(manifest_path, output, *, _tower_factory=LocalTowers):
                 y = torch.tensor([labels[cases[test[j]].case_id] for j in selected])
                 scores.append({"arm": arm, "split": split, "cases": len(selected),
                                "accuracy": float((p[selected].argmax(-1) == y).float().mean())})
+        interventions = sealed["modality_interventions"]
+        if interventions is None:
+            raise e.InputError("same-model modality probe missing")
+        probe_scores = {}
+        for split in sorted({cases[i].split for i in test}):
+            positions = [j for j, i in enumerate(test) if cases[i].split == split]
+            probe_scores[split] = summarize(
+                {arm: [rows[j] for j in positions] for arm, rows in interventions["predictions"].items()},
+                [labels[cases[test[j]].case_id] for j in positions],
+                [cases[test[j]].group for j in positions], classes=config["classes"], control="as_observed")
+        source_mapping = {arm: [None if j is None else cases[test[j]].case_id for j in detail["rows"]]
+                          for arm, detail in interventions["source_rows"].items()}
         report = {"prediction_sha256": seal, "scores": scores, "same_init_learning": learning, "connector_costs": result["costs"],
+            "modality_intervention_scores": probe_scores, "intervention_source_case_ids": source_mapping,
+            "intervention_costs": interventions["costs"], "intervention_scope": interventions["intervention_scope"],
             "model_identities": towers.identities, "model_load": load, "encoding": encoding,
             "tower_forward_calls": towers.calls, "simulated_towers": towers.simulated,
             "representation": "CLIP text/patch tokens, ordered pooled video frames; Whisper 32 time-bin means",

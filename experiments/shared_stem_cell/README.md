@@ -366,3 +366,112 @@ No real pretrained score, full hosted/native CI success or six-gate completion i
 asserted. Genuine Laya comparison, 64..4096 target hardware, independent future
 split/NDU gain, natural audio/video, multimodal generation/consolidation and product
 FinalUse/host-crash recovery remain distinct work, not erased by these tests.
+
+## Continuation: reusable Head parameters and same-model modality controls
+
+This increment continues PR #1699 from exact source
+`635efa075a2bbc6ff7e1e95e090d6a13352ad82b`. It adds no production registry,
+selector, signing service, runtime owner or experiment-name matrix.
+
+### Export the learning result, not just its predictions
+
+`head_artifacts.py` exports the actual existing linear, gated, low-rank and
+sparse-expert CPU Heads as create-only safetensors plus canonical JSON. The
+existing `execution.run` now exports EACH Cell's unchanged same-initialization
+Head and genuinely trained Head to `heads/<kind>/cell-<id>/<role>/`. Export and
+reopen costs are separate from optimizer timing. A manifest is published only
+after all weight bytes are written and synced; incomplete directories reject.
+The exporter never writes an Encoder copy, arbitrary Python class or pickle.
+
+A reopen requires BOTH the caller's external manifest SHA256 and exact binding:
+Scope, logical Cell, candidate generation, Stem identity, dataset identity,
+feature representation and training lineage. All tensor keys, shapes, dtype,
+finite values, physical bytes and parameter digests are checked. A bounded
+closed constructor creates only the existing Head type and preserves the caller's
+training RNG. Loaded models are read-only for inference. Continuing learning
+requires an explicit new trainable candidate copy; these artifacts deliberately
+contain NO AdamW state and do not claim exact optimizer-state resume.
+
+This is an offline candidate interchange format, NOT an alternative Artifact CAS,
+independent acceptance, CURRENT selection, live revocation/final-use or production
+checkpoint recovery. A product owner still must admit these bytes through its
+existing selected-artifact contracts. Candidate generation 1 is an experimental
+lineage label, not a self-issued Worker authority generation.
+
+```python
+from experiments.shared_stem_cell.head_artifacts import load_head
+
+# receipt and binding come from the exact completed training report, not a
+# self-described untrusted artifact. The returned model grants no authority.
+head = load_head(candidate_directory, receipt["manifest_sha256"], receipt["binding"])
+```
+
+The actual local synthetic-feature study trained two Cells with four Head kinds,
+exported 16 frozen/learned snapshots and reopened them in a genuinely fresh
+process. All 128 probability rows matched on the same owned float32 input
+materialization. A separate new-optimizer candidate changed weights while the
+original in-memory and on-disk candidates stayed byte-identical. These are
+mechanism results, not pretrained or independent future learning efficacy.
+
+An initial strict replay test on directly memory-mapped feature tensors observed
+maximum absolute logit difference `2.384185791015625e-7`, although the weights
+were identical. Copying the exact feature bytes into the same owned Torch input
+layout restored bitwise equality on this host. The first failure and diagnostic
+are retained; the test does not assert universal bitwise parity across mmap
+layouts, platforms, Torch versions or devices. No score-based tolerance tuning
+or argmax repair is performed.
+
+### Diagnose modality use without changing the trained Head
+
+`controls.paired_modality_probe` evaluates the SAME joint FusionHead on unchanged
+features, each modality entirely masked, and each modality cyclically reassigned
+from other present examples within the SAME holdout/retention partition. Missing
+modalities stay missing, singleton partitions explicitly retain identity, and
+original tensors and learned parameters are unchanged. Exact donor-case mappings,
+parameter identity and additional forward costs are preserved.
+
+The existing media runner seals these probabilities together with learned/frozen
+predictions BEFORE scoring. Paired gains/losses/ties are compared with the same
+joint model on the observed inputs, not with a different-size model. This probes
+reliance on frozen representations; it does NOT prove that a donor is semantically
+contradictory, that an image is necessary to answer a question, or that causal
+multimodal reasoning improved. No additional tower forward or training is hidden
+in a feature intervention. Real natural-data conclusions still require completion
+of the existing public image/text job and independent evaluation.
+
+### Explicit generation-token semantics and early resource rejection
+
+`LocalTextGenerator.generate` now preflights its entire supplied prompt batch
+before the first decoder call, including exact token shape, input limits and
+input-plus-continuation model context. Oversized later prompts therefore cannot
+silently waste earlier decoder work. Output cardinality, prefix and token ceiling
+must also match. The raw-text path preserves its normal special-token behavior;
+`public_media.text_reader` explicitly uses `add_special_tokens=False` after the
+checkpoint's own chat template has already formatted the input. This follows the
+pinned Transformers 4.57.1 chat-template contract and records the input policy.
+It prevents duplicate-special-token insertion for affected tokenizers; it is NOT
+an observed Qwen accuracy gain or proof that Qwen previously inserted duplicates.
+The mandatory stock causal-model API check covers the exact input token digest.
+
+Whole-study cross-Scope checks now precede model loading, and Head artifact
+binding checks precede fitting. Invalid input does not spend these expensive
+operations first. Existing production resource and authorization gates are not
+changed by these research preflights.
+
+### Reproduction and exact evidence boundary
+
+```sh
+python -m unittest -v experiments.shared_stem_cell.test_head_artifacts \
+  experiments.shared_stem_cell.test_modality_probe \
+  experiments.shared_stem_cell.test_generation_contract
+```
+
+The final local combined suite ran **130 tests, all passed, zero skips**: 97
+inherited tests plus 33 new ones. It includes actual Torch training, safetensors
+read/write and fresh processes, and the inherited real Chromium/MCP/crash tests.
+The SEPARATE four stock-HF API checks were attempted but blocked at import by
+missing `tokenizers` (Transformers also unavailable); none is counted among the
+130 passing tests. Local external DNS/download still failed. Hosted pretrained
+mmBERT/Laya/CLIP/Qwen, natural audio/video, general generation/consolidation,
+independent split/NDU benefit, target-host 64–4096 resources and product FinalUse
+remain separate unfinished acceptance conditions. No production model is selected.

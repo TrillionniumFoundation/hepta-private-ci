@@ -171,11 +171,12 @@ def text_reader(generator, cases, output):
         tokenize=False, add_generation_prompt=True) for c in selected]
     e.write_once(output / "inputs.json", {"case_ids": [c.case_id for c in selected], "prompts": prompts,
         "input_digests": [c.input_digest for c in selected], "model_digest": generator.identity,
-        "image_provided": False, "maximum_new_tokens": 32})
+        "image_provided": False, "maximum_new_tokens": 32,
+        "input_special_tokens_added": False, "prompt_profile": "tokenizer_chat_template_no_extra_specials.v1"})
     rows = []
     for i, (case, text) in enumerate(zip(selected, prompts)):
         e.write_once(output / f"started-{i:03d}.json", {"case_id": case.case_id, "input_sha256": e.sha(text.encode())})
-        result = generator.generate([text], maximum_new_tokens=32)
+        result = generator.generate([text], maximum_new_tokens=32, add_special_tokens=False)
         if len(result["outputs"]) != 1 or result["model_digest"] != generator.identity:
             raise e.InputError("Reader output coverage/model drift")
         row = {"case_id": case.case_id, **result["outputs"][0]}
