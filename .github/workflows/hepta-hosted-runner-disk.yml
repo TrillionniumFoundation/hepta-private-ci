@@ -1,0 +1,62 @@
+name: Hepta hosted runner disk qualification (no promotion)
+
+on:
+  pull_request:
+    paths:
+      - "scripts/hepta_ci_runner_disk.py"
+      - "scripts/test_hepta_ci_runner_disk.py"
+      - ".github/workflows/blocking-ci.yml"
+      - ".github/workflows/hepta-hosted-runner-disk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-hosted-runner-disk-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  disk-preflight:
+    name: Verify hosted SDK cleanup and disk headroom
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact candidate without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Prove exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+
+      - name: Test path allowlist and hosted-only safety requirements
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest -v scripts.test_hepta_ci_runner_disk
+
+      - name: Run actual hosted disk reclamation without mutating checkout
+        env:
+          RUNNER_ENVIRONMENT: ${{ runner.environment }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h "$GITHUB_WORKSPACE"
+          python3 scripts/hepta_ci_runner_disk.py --apply --min-free-gib 20
+          df -h "$GITHUB_WORKSPACE"
+
+      - name: Verify the exact source remains unchanged
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
