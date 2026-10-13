@@ -164,6 +164,11 @@ jobs:
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true' && needs.hepta-scoped-plan.result == 'success'
     runs-on: ubuntu-24.04
     timeout-minutes: 75
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
     strategy:
       fail-fast: false
       max-parallel: 4
@@ -201,6 +206,7 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
           TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           SHARD_INDEX: ${{ matrix.index }}
           EXPECTED_PACKAGES: ${{ toJSON(matrix.packages) }}
           HEPTA_CI_LANE: source-head
