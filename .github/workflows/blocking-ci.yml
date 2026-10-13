@@ -134,6 +134,37 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
+      - name: Reclaim unused hosted SDKs before scoped Rust impact tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          : "${GITHUB_WORKSPACE:?checkout root required}"
+          echo "Scoped native runner disk before cleanup:"
+          df -h "$GITHUB_WORKSPACE"
+          # This job compiles Linux Rust owners and reverse consumers, not
+          # Android, .NET, Haskell or PowerShell applications. Reclaim only
+          # the fixed paths on a disposable GitHub-hosted Linux runner.
+          # Never alter the source checkout, Cargo/V8 artifacts, target
+          # directory, test cache, or a self-hosted machine.
+          if [[ "${RUNNER_ENVIRONMENT:-}" != "github-hosted" || "${RUNNER_OS:-}" != "Linux" ]]; then
+            echo "Not a GitHub-hosted Linux runner: no SDK directories removed"
+          else
+            for unused_sdk in \
+              /usr/local/lib/android \
+              /usr/share/dotnet \
+              /opt/ghc \
+              /usr/local/share/powershell
+            do
+              if [[ -d "$unused_sdk" && ! -L "$unused_sdk" ]]; then
+                echo "Reclaiming unused preinstalled SDK at $unused_sdk"
+                sudo du -sh -- "$unused_sdk" || true
+                sudo rm -rf -- "$unused_sdk"
+              fi
+            done
+          fi
+          echo "Scoped native runner disk after cleanup:"
+          df -h "$GITHUB_WORKSPACE"
+
       - name: Prepare native test prerequisites before compilation
         run: |
           sudo apt-get update
