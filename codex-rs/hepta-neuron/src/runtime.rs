@@ -136,6 +136,12 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         self.config.generation
     }
 
+    /// Compare the *actual* sparse journal binding with the independent
+    /// pre-effect intent journal before a production owner can serve.
+    pub fn journal_scope(&self) -> JournalScope {
+        self.journal.scope()
+    }
+
     pub fn model_request(
         &self,
         input: &NeuronTickInputV1,

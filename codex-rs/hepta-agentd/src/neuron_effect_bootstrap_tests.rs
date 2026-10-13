@@ -149,3 +149,28 @@ fn relative_path_can_never_be_a_production_effect_journal() {
         ));
     }
 }
+
+#[test]
+fn mismatched_sparse_runtime_scope_is_denied_before_effect_intent_creation() {
+    let actual = JournalScope {
+        scope_digest: Digest32::of_bytes(b"actual-subject"),
+        objective_digest: Digest32::of_bytes(b"objective"),
+    };
+    let wrong_subject = JournalScope {
+        scope_digest: Digest32::of_bytes(b"other-subject"),
+        ..actual
+    };
+    let wrong_objective = JournalScope {
+        objective_digest: Digest32::of_bytes(b"other-objective"),
+        ..actual
+    };
+    assert_eq!(verify_neuron_effect_scope_v1(actual, actual), Ok(()));
+    assert_eq!(
+        verify_neuron_effect_scope_v1(actual, wrong_subject),
+        Err(NeuronEffectBootstrapErrorV1::ScopeMismatch)
+    );
+    assert_eq!(
+        verify_neuron_effect_scope_v1(actual, wrong_objective),
+        Err(NeuronEffectBootstrapErrorV1::ScopeMismatch)
+    );
+}

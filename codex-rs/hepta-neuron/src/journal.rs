@@ -96,6 +96,11 @@ pub struct SparseJournal {
 }
 
 impl SparseJournal {
+    /// Read-only recorded subject/objective, not a caller's scope claim.
+    pub fn scope(&self) -> JournalScope {
+        self.scope
+    }
+
     /// Bootstrap or recover the first segment without an external acknowledgement
     /// witness. This cannot detect loss of a valid suffix or empty replacement.
     pub fn open(

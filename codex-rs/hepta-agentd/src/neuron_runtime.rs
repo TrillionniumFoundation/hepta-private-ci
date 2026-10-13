@@ -7,6 +7,7 @@
 
 use crate::neuron_effect_bootstrap::NeuronEffectBootstrapErrorV1;
 use crate::neuron_effect_bootstrap::bootstrap_durable_neuron_effect_intent_v1;
+use crate::neuron_effect_bootstrap::verify_neuron_effect_scope_v1;
 use crate::neuron_ndu_read::NduReadVerifierV1;
 use crate::neuron_ndu_read::SignedNduSnapshotReadV1;
 use codex_hepta_contracts::FinalUseAuthority;
@@ -166,6 +167,9 @@ where
         max_records: usize,
     ) -> Result<Self, NeuronEffectBootstrapErrorV1> {
         let generation = runtime.generation();
+        // Never create a durable intent file under a caller's mismatched
+        // subject/objective when the recovered sparse journal says otherwise.
+        verify_neuron_effect_scope_v1(runtime.journal_scope(), scope)?;
         let effect_intent = bootstrap_durable_neuron_effect_intent_v1(
             effect_intent_path,
             scope,

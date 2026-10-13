@@ -17,6 +17,7 @@ use codex_hepta_types::Generation;
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum NeuronEffectBootstrapErrorV1 {
     InvalidPath,
+    ScopeMismatch,
     UnsafeDirectory,
     UnsafeFile,
     UnsupportedPlatform,
@@ -42,6 +43,22 @@ impl From<NeuronEffectIntentErrorV1> for NeuronEffectBootstrapErrorV1 {
     fn from(error: NeuronEffectIntentErrorV1) -> Self {
         Self::Journal(error)
     }
+}
+
+/// Require the independently recovered sparse journal to have the same
+/// subject/objective as the separate durable model-effect intent. Validate
+/// before creating or opening the intent journal, not after effect admission.
+pub(crate) fn verify_neuron_effect_scope_v1(
+    runtime_scope: JournalScope,
+    intent_scope: JournalScope,
+) -> Result<(), NeuronEffectBootstrapErrorV1> {
+    if runtime_scope != intent_scope
+        || runtime_scope.scope_digest.is_zero()
+        || runtime_scope.objective_digest.is_zero()
+    {
+        return Err(NeuronEffectBootstrapErrorV1::ScopeMismatch);
+    }
+    Ok(())
 }
 
 /// Reopen or create one scope/generation-specific intent journal. A new file
