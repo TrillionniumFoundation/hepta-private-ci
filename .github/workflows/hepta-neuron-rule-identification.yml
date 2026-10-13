@@ -1,0 +1,54 @@
+name: Hepta bounded rule-identification experiments
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/neuron-stem/fbsde_identification*.py"
+      - "qualification/neuron-stem/test_fbsde_identification.py"
+      - "qualification/neuron-stem/fbsde_transfer*.py"
+      - "qualification/neuron-stem/fbsde_conditional_program.py"
+      - "qualification/neuron-stem/fbsde_study.py"
+      - ".github/workflows/hepta-neuron-rule-identification.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  identification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [head, merge]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Execute original-source and complete-budget checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > source.tar.gz
+          export PYTHONPATH=qualification/neuron-stem
+          python3 -m unittest test_fbsde_identification test_fbsde_transfer -v 2>&1 | tee tests.log
+          python3 qualification/neuron-stem/fbsde_study.py --profile budgeted_rule_identification_v1 --output identification-study 2>&1 | tee study.log
+          python3 qualification/neuron-stem/fbsde_identification_artifact_checks.py -v identification-study 2>&1 | tee artifact-tests.log
+          git diff --exit-code
+      - name: Keep results and failures, not an acceptance decision
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: rule-identification-${{ matrix.source }}-${{ github.run_id }}
+          path: |
+            source.txt
+            source.tar.gz
+            tests.log
+            study.log
+            artifact-tests.log
+            identification-study/
+          if-no-files-found: error
+          retention-days: 30
