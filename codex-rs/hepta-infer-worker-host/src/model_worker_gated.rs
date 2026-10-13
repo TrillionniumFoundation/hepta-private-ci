@@ -36,7 +36,7 @@ const MAX_REGISTERED_HEADS: usize = 4_096;
 const MAX_TENSOR_BYTES: usize = 512 * 1024 * 1024;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct GatedHeadCandidateV2 {
+pub(crate) struct GatedHeadCandidateV2 {
     pub cell_identity: String,
     pub encoder_digest: String,
     pub input_width: usize,
@@ -61,7 +61,7 @@ struct GatedHeadArtifactV2 {
 /// parameter tensors rather than full OS RSS, so it is not a production
 /// resource receipt.
 #[derive(Debug)]
-pub struct GatedHeadCpuDriverV2 {
+pub(crate) struct GatedHeadCpuDriverV2 {
     selected_manifest: ModelManifest,
     heads: BTreeMap<String, GatedHeadArtifactV2>,
     dynamic_heads: BTreeMap<String, DynamicGateArtifactV3>,
