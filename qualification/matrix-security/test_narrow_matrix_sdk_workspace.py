@@ -106,6 +106,7 @@ class NarrowWorkspaceTests(unittest.TestCase):
             enc(metadata()), candidate_root="/tmp/stem-candidate",
             stage_root="/tmp/hepta-stage")
         self.assertTrue(report["cli_starlark_absent"])
+        self.assertTrue(report["codex_state_execpolicy_absent"])
         self.assertFalse(report["production_authorized"])
         self.assertFalse(report["cargo_deny_verified"])
         self.assertFalse(report["full_matrixd_compilation_verified"])
@@ -116,6 +117,7 @@ class NarrowWorkspaceTests(unittest.TestCase):
         for name, version in [
             ("anymap2", "0.13.0"), ("starlark", "0.14.2"),
             ("codex-cli", "0.0.0"), ("codex-hepta-matrixd", "0.0.0"),
+            ("codex-state", "0.0.0"), ("codex-execpolicy", "0.0.0"),
         ]:
             bad = json.loads(json.dumps(original))
             bad["packages"].append({"name": name, "id": name, "version": version})
