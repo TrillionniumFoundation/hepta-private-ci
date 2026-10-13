@@ -1,0 +1,102 @@
+{
+  "checks": {
+    "compileall": "passed",
+    "full_repository": "not_run",
+    "git_diff_cached_check": "passed",
+    "native_target": "not_run",
+    "remote_actions": "not_observed_this_increment",
+    "remote_python_blob_matches": 7,
+    "rust_fmt": "not_run_no_full_codex_rs_checkout_or_just"
+  },
+  "code_candidate": "da13e663ab17ca94a8c0896029051f8a2987eb33",
+  "command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest discover -s qualification/stem-cell-v1 -p 'test_*.py' -v",
+  "date": "2026-10-13",
+  "independent_future_retention_established": false,
+  "installed_hf_check": {
+    "defined": 3,
+    "executed": 0,
+    "failure": "ModuleNotFoundError: transformers",
+    "log": "evidence/hf-check.log"
+  },
+  "logs_in_package_evidence": {
+    "baseline.log": {
+      "bytes": 25857,
+      "sha256": "f0c1158f101874ba481091e7cd8db526758d915a2d7f38ee0bc436626cb77640"
+    },
+    "diagnostic.json": {
+      "bytes": 6680,
+      "sha256": "55228ee9170189bf93390ce3aecba7b777cea0a0921523f2ad662d87d9b49c76"
+    },
+    "diagnostic.py": {
+      "bytes": 1327,
+      "sha256": "f5b5dfc71e330682de0b06f49fbc3d8742f952453d9f0746e5049e7ff88ad19d"
+    },
+    "final1.log": {
+      "bytes": 29362,
+      "sha256": "6e7ad19babfc542d2032fb1f83c9d5e13627758f7805916d7cfb86a16fe6e3bf"
+    },
+    "final2.log": {
+      "bytes": 29362,
+      "sha256": "3b94fd2ab58c3dbc9769110bd72e0ec39edafbb7671afbe5ea9d35e99363d139"
+    },
+    "hf-check.log": {
+      "bytes": 290,
+      "sha256": "e1ceda4e3e612c7af583a9dfa61b7793b0ffe058560ded5b98c8e847a533a65b"
+    }
+  },
+  "parameter_compression_performed": false,
+  "pretrained_execution": false,
+  "production_authorized": false,
+  "runtime": {
+    "cuda_available": false,
+    "numpy": "2.3.5",
+    "python": "3.13.5",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0+cpu"
+  },
+  "schema": "hepta.retained-specialization-local-tests.v1",
+  "source_baseline": "8d3af546e8b6e374638cdcf957d47db90b638c03",
+  "source_blobs": {
+    "matrix_export.py": {
+      "git_blob_sha1": "0b11ca2933ad7aa07b7e0811072a5c0776d2c64c",
+      "sha256": "874b80832aa1e4c63dc988f3929ed0ff1385eb578416c4a39ff3f43ecebd48d9"
+    },
+    "matrix_growth.py": {
+      "git_blob_sha1": "dfd48526f7452effefbb5c662944660794470a3c",
+      "sha256": "67135572aada4e562e70dd73d4fec8363c8d4a197e7e8ec90b2422151b258e06"
+    },
+    "matrix_materials.py": {
+      "git_blob_sha1": "54ae0f4c492599724b16f3de1138163dc2bc8844",
+      "sha256": "7189e658d50902e8eebb7f0f75c91d86dbab13365c87db5848651cc3eb65bfce"
+    },
+    "matrix_runtime.py": {
+      "git_blob_sha1": "2b4b5cb0c495aa1425eca66c58c7a91a6edd70cc",
+      "sha256": "0b135d1e26a27ecde6c3125a160f12a568ab93dadc0c0b0505f57dabe78f68aa"
+    },
+    "retention_training.py": {
+      "git_blob_sha1": "32f2f9a107aee1c584a8960e50896c314ac4591f",
+      "sha256": "0aa9adea9d02692ebe0e5f0d944f60c3df0668a63a9d5d222b12d0400ff238f1"
+    },
+    "test_retention_export.py": {
+      "git_blob_sha1": "1ba2ecc317316d2f963026273056384765c2dca0",
+      "sha256": "5d0dcf23a8b6f514e5d910f469bf689a8163171c925b0e83607fc9f80bd8a806"
+    },
+    "test_retention_training.py": {
+      "git_blob_sha1": "8c52148e17c16ac4546f64ca5083b323788a145f",
+      "sha256": "6d486d0071c4f414263f0182f54db9843ae67e675b5010c7ea05b591b1136f39"
+    }
+  },
+  "surface": "session CPU source slice; not project cloud or full repository checkout",
+  "tests": {
+    "baseline_passed": 165,
+    "distinct_test_ids": 185,
+    "errors": 0,
+    "failures": 0,
+    "final_runs": 2,
+    "new_export": 8,
+    "new_training": 12,
+    "passed": 185,
+    "run": 185,
+    "skips": 0
+  }
+}
