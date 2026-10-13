@@ -18,6 +18,33 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  matrix-resolve-integrity:
+    name: P0 Matrix dependency closure / antiforgery contracts (L1 only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind exact source before offline tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git rev-parse HEAD HEAD^{tree}
+      - name: Reject forged resolver nodes, inactive crypto/SQLite, unrelated remediations
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          python3 -m compileall -q qualification/matrix-security
+          python3 -m unittest discover -v -s qualification/matrix-security -p 'test_narrow_matrix_sdk_workspace.py'
+      - name: Confirm read-only checkout
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
   sqlite-formatter:
     name: Matrix Store precise global Rust formatter patch (diagnostic)
     runs-on: ubuntu-24.04
