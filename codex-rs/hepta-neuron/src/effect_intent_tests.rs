@@ -222,3 +222,28 @@ fn capacity_reserves_resolution_slot_before_effect() {
     drop(owner);
     std::fs::remove_file(path).unwrap();
 }
+
+
+#[cfg(unix)]
+#[test]
+fn raw_unbound_journal_cannot_claim_bootstrap_path_identity() {
+    let (path, file) = fixture_file();
+    let owner = DurableNeuronEffectIntentV1::open(
+        file,
+        test_scope(),
+        Generation::new(2).expect("generation"),
+        8,
+    )
+    .expect("raw low-level journal");
+    assert_eq!(
+        owner.verify_bound_owner_path(),
+        Err(NeuronEffectIntentErrorV1::UnsafeFile),
+    );
+    // Raw-journal tests still exercise the low-level WAL, but an unbound
+    // descriptor cannot be presented as an Agentd owner-path witness.
+    assert!(
+        owner.can_prepare(Digest32::of_bytes(b"unbound-test-tick")).is_ok(),
+    );
+    drop(owner);
+    std::fs::remove_file(path).expect("remove fixture");
+}

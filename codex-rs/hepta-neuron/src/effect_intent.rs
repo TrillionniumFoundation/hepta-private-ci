@@ -239,7 +239,7 @@ impl DurableNeuronEffectIntentV1 {
         use std::os::unix::fs::PermissionsExt as _;
 
         let Some(path) = self.owner_path.as_ref() else {
-            return Ok(());
+            return Err(NeuronEffectIntentErrorV1::UnsafeFile);
         };
         let descriptor = self.file.metadata()?;
         let current = std::fs::symlink_metadata(path)
@@ -275,7 +275,9 @@ impl DurableNeuronEffectIntentV1 {
 
     pub fn can_prepare(&self, tick_digest: Digest32) -> Result<(), NeuronEffectIntentErrorV1> {
         #[cfg(unix)]
-        self.verify_bound_owner_path()?;
+        if self.owner_path.is_some() {
+            self.verify_bound_owner_path()?;
+        }
         if self.poisoned {
             return Err(NeuronEffectIntentErrorV1::Poisoned);
         }
@@ -302,11 +304,12 @@ impl DurableNeuronEffectIntentV1 {
         previous_checkpoint: Digest32,
     ) -> Result<(), NeuronEffectIntentErrorV1> {
         #[cfg(unix)]
-        if let Err(error) = self.verify_bound_owner_path() {
-            // A replaced/missing bootstrap pathname is a revoked owner,
-            // not a transient denied operation that may later be retried.
-            self.poisoned = true;
-            return Err(error);
+        if self.owner_path.is_some() {
+            if let Err(error) = self.verify_bound_owner_path() {
+                // An altered bootstrap pathname permanently fences this owner.
+                self.poisoned = true;
+                return Err(error);
+            }
         }
         self.can_prepare(tick_digest)?;
         self.append(b'P', tick_digest, previous_checkpoint)?;
@@ -361,7 +364,9 @@ impl DurableNeuronEffectIntentV1 {
         bytes[65..97].copy_from_slice(digest.as_array());
         self.poisoned = true;
         #[cfg(unix)]
-        self.verify_bound_owner_path()?;
+        if self.owner_path.is_some() {
+            self.verify_bound_owner_path()?;
+        }
         let expected_size = (HEADER_BYTES + self.records * RECORD_BYTES) as u64;
         if self.file.seek(SeekFrom::End(0))? != expected_size {
             return Err(NeuronEffectIntentErrorV1::Corrupt);
@@ -369,7 +374,9 @@ impl DurableNeuronEffectIntentV1 {
         self.file.write_all(&bytes)?;
         self.file.sync_all()?;
         #[cfg(unix)]
-        self.verify_bound_owner_path()?;
+        if self.owner_path.is_some() {
+            self.verify_bound_owner_path()?;
+        }
         self.records += 1;
         self.head = digest;
         self.poisoned = false;
