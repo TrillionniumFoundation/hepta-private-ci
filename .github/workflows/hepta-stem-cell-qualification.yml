@@ -10,6 +10,10 @@ on:
       - "codex-rs/hepta-infer-worker-host/src/model_worker*.rs"
       - "codex-rs/hepta-infer-worker-host/Cargo.toml"
       - "codex-rs/Cargo.lock"
+      - "codex-rs/network-proxy/Cargo.toml"
+      - "codex-rs/cli/Cargo.toml"
+      - "codex-rs/cli/tests/windows_stable_ingress.rs"
+      - "scripts/test_windows_proxy_bazel_leaf.py"
       - "MODULE.bazel.lock"
       - "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs"
       - "codex-rs/hepta-fleet/src/**"
@@ -56,6 +60,9 @@ jobs:
           # Exercise all BuildBuddy/Bazel wrapper transports with a fake
           # executable; no network or real model data is needed here.
           python3 -m unittest discover -v -s .github/scripts -p 'test_run_bazel_ci.py'
+          # Prevent the protocol/proxy/Windows-sandbox Bazel dependency cycle
+          # without skipping real Windows restricted-token ingress tests.
+          python3 scripts/test_windows_proxy_bazel_leaf.py
           python3 -m json.tool qualification/stem-cell-v1/protocol.json > /dev/null
       - name: Check tested source remains unmodified
         run: |
