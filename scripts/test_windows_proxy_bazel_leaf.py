@@ -41,14 +41,16 @@ def main():
     if "codex-network-proxy" not in leaf:
         raise AssertionError("CLI Windows leaf must exercise real network-proxy")
     win_deps = cli.get("target", {}).get('cfg(target_os = "windows")', {}).get(
-        "dependencies", {})
-    if not any(name.replace("_", "-") == "codex-windows-sandbox" or
-               (isinstance(spec, dict) and spec.get("package") == "codex-windows-sandbox")
-               for name, spec in win_deps.items()):
+        "dependencies", {}
+    )
+    if not any(
+        name.replace("_", "-") == "codex-windows-sandbox"
+        or (isinstance(spec, dict) and spec.get("package") == "codex-windows-sandbox")
+        for name, spec in win_deps.items()
+    ):
         raise AssertionError("CLI must retain real Windows sandbox dependency")
     test = CRATES / "cli/tests/windows_stable_ingress.rs"
-    if (not test.is_file() or
-            (CRATES / "network-proxy/tests/windows_stable_ingress.rs").exists()):
+    if not test.is_file() or (CRATES / "network-proxy/tests/windows_stable_ingress.rs").exists():
         raise AssertionError("Windows proxy test must have exactly one leaf owner")
     body = test.read_text(encoding="utf-8")
     for required in (
