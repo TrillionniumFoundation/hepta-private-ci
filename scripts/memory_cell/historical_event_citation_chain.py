@@ -117,16 +117,17 @@ def bounded_source(path, expected):
 
 
 def trace_cited_chain(spec, cited_sources, original_docs, identifier):
-    """Find a current query path using exclusively cited positive source edges.
+    """Require EVERY cited source to support a complete current answer path.
 
-    An uncited later event may still invalidate a superseded cited edge when
-    that explicit correction is visible at the same logical revision and scope.
-    Mere newer dates or unexpressed conflicts never revoke prior evidence.
+    A forward-reachable dead end or unrelated delivered citation cannot be
+    counted as a valid full source chain merely because another path succeeds.
+    This remains a formal event-graph diagnostic, not semantic entailment.
     """
     if (
         not identifier
         or not cited_sources
         or len(set(cited_sources)) != len(cited_sources)
+        or any(key not in original_docs for key in cited_sources)
     ):
         return False
     scope = original_docs[cited_sources[0]]["scope"]
@@ -141,6 +142,7 @@ def trace_cited_chain(spec, cited_sources, original_docs, identifier):
             if event["revision"] <= spec["revision"]:
                 visible[key] = event
     entities = {spec["entity"]}
+    hops = []
     for attribute in spec["path"]:
         replaced = {
             ancestor
@@ -148,17 +150,35 @@ def trace_cited_chain(spec, cited_sources, original_docs, identifier):
             if event["entity"] in entities and event["attribute"] == attribute
             for ancestor in event["supersedes"]
         }
-        next_entities = set()
-        for source_id in cited_sources:
-            if source_id in replaced or source_id not in visible:
-                continue
-            event = visible[source_id]
-            if event["entity"] in entities and event["attribute"] == attribute:
-                next_entities.add(event["value"])
-        if not next_entities:
+        edges = [
+            (source_id, visible[source_id]["entity"], visible[source_id]["value"])
+            for source_id in cited_sources
+            if source_id in visible
+            and source_id not in replaced
+            and visible[source_id]["entity"] in entities
+            and visible[source_id]["attribute"] == attribute
+        ]
+        if not edges:
             return False
-        entities = next_entities
-    return entities == {identifier}
+        hops.append(edges)
+        entities = {destination for _, _, destination in edges}
+    if entities != {identifier}:
+        return False
+    # Work backwards from the claimed answer so a cited partial path which
+    # never reaches the answer cannot count as supporting evidence.
+    supported = {identifier}
+    contributing = set()
+    for edges in reversed(hops):
+        predecessors = [
+            (source_id, source)
+            for source_id, source, destination in edges
+            if destination in supported
+        ]
+        if not predecessors:
+            return False
+        contributing.update(source_id for source_id, _ in predecessors)
+        supported = {source for _, source in predecessors}
+    return spec["entity"] in supported and contributing == set(cited_sources)
 
 
 def trace_row(row, spec, declared_support, original_docs):

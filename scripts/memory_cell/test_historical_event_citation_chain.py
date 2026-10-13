@@ -93,6 +93,47 @@ class FormalCitationTests(unittest.TestCase):
         self.assertTrue(found["program_declared_support_cited"])
         self.assertTrue(found["publicly_declared_event_path_connected"])
 
+    def test_extra_delivered_citation_is_not_a_valid_answer_path(self):
+        row, spec, docs = case()
+        row["selected"].append("wrong")
+        row["receipt"]["delivered_evidence"].append(
+            dict(
+                label="E3",
+                original_id="wrong",
+                root=docs["wrong"]["root"],
+                scope=docs["wrong"]["scope"],
+                excerpt=docs["wrong"]["content"],
+                source_digest=digest_json(docs["wrong"]["content"]),
+            )
+        )
+        row["answer"] = row["citation_audit"]["request"]["answer"] = (
+            "site_good [E1] [E2] [E3]"
+        )
+        found = trace_row(row, spec, ["first", "second"], docs)
+        self.assertTrue(found["strict_task_success"])
+        self.assertTrue(found["program_declared_support_cited"])
+        self.assertFalse(found["publicly_declared_event_path_connected"])
+
+    def test_dangling_citation_rejected_but_complete_alternative_path_allowed(self):
+        _, spec, docs = case()
+        docs["dangling"] = event("dangling", "service_1", "component", "component_2")
+        self.assertFalse(
+            trace_cited_chain(
+                spec, ["first", "second", "dangling"], docs, "site_good"
+            )
+        )
+        docs["alternate_end"] = event(
+            "alternate_end", "component_2", "location", "site_good"
+        )
+        self.assertTrue(
+            trace_cited_chain(
+                spec,
+                ["first", "second", "dangling", "alternate_end"],
+                docs,
+                "site_good",
+            )
+        )
+
     def test_wrong_disconnected_source_cannot_pretend_to_be_first_hop(self):
         row, spec, docs = case()
         self.assertFalse(trace_cited_chain(spec, ["second"], docs, "site_good"))
