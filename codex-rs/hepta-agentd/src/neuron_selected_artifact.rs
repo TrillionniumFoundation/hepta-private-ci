@@ -55,19 +55,47 @@ pub struct NeuronSelectedModelDescriptorV1 {
 /// No field asserts that the CNS/Cell route currently serves this descriptor.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronCandidateModelArtifactV1 {
-    pub artifact_id: StableId,
-    pub artifact_generation: Generation,
-    pub descriptor_sha256: Digest32,
-    pub selection_digest: Digest32,
-    pub selection_trust_digest: Digest32,
-    pub current_registry_head_digest: Digest32,
-    pub current_registry_witness_digest: Digest32,
-    pub local_checkpoint_binding_digest: Digest32,
-    pub candidate_digest: Digest32,
-    pub authority: AuthorityPosture,
+    pub(crate) artifact_id: StableId,
+    pub(crate) artifact_generation: Generation,
+    pub(crate) descriptor_sha256: Digest32,
+    pub(crate) selection_digest: Digest32,
+    pub(crate) selection_trust_digest: Digest32,
+    pub(crate) current_registry_head_digest: Digest32,
+    pub(crate) current_registry_witness_digest: Digest32,
+    pub(crate) local_checkpoint_binding_digest: Digest32,
+    pub(crate) candidate_digest: Digest32,
+    pub(crate) authority: AuthorityPosture,
 }
 
 impl NeuronCandidateModelArtifactV1 {
+    /// This token is only constructed after an independently signed selector
+    /// and exact CURRENT registry/descriptor check in this crate. Ordinary
+    /// external callers cannot fabricate or rewrite any selection fields.
+    #[must_use]
+    pub const fn local_checkpoint_binding_digest(&self) -> Digest32 {
+        self.local_checkpoint_binding_digest
+    }
+
+    #[must_use]
+    pub const fn selection_digest(&self) -> Digest32 {
+        self.selection_digest
+    }
+
+    #[must_use]
+    pub const fn candidate_digest(&self) -> Digest32 {
+        self.candidate_digest
+    }
+
+    #[must_use]
+    pub fn artifact_id(&self) -> &StableId {
+        &self.artifact_id
+    }
+
+    #[must_use]
+    pub const fn artifact_generation(&self) -> Generation {
+        self.artifact_generation
+    }
+
     #[must_use]
     pub fn computed_digest(&self) -> Digest32 {
         let mut bytes = DOMAIN.to_vec();

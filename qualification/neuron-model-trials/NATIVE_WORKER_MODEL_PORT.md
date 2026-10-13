@@ -650,3 +650,32 @@ promotion, trusted final-use, or authority to spend. If fsync or postcommit
 verification fails, the outcome must be reconciled from the owner WAL before
 any new use. Tests use actual file-backed inference.control and a fixture
 Worker driver; this remains a diagnostic boundary, not real Laya inference.
+
+## Cross-owner selected descriptor ↔ physically loaded Worker model (diagnostic)
+
+The existing Agentd Neuron Model descriptor token was previously a public
+self-rehashable DTO. Its selection fields are now crate-private: only the
+original independently verified CURRENT registry + signed selector + pinned
+descriptor path can construct a token. Read-only getters reveal the binding
+without permitting a caller to substitute a digest.
+
+The Worker crate has an additive
+read_neuron_candidate_physical_load_v1(worker, agentd, candidate, file_load, now_ms)
+entrypoint. It rereads the Agentd owned Journal/independent Witness, verifies
+the candidate matches that exact local checkpoint, revalidates the actual
+live Worker's preopened-file Model load/ordinal and active resource grant, and
+compares the loaded Worker model ID, manifest, weights, tokenizer, preprocessing,
+quantization, runtime and device digests to the locally selected Neuron tuple.
+It rereads Agentd and revalidates Worker again before issuing a DENY_ALL
+diagnostic commitment. Worker process generation is kept distinct from model
+generation and cannot be used as a surrogate identity fence.
+
+This endpoint is NOT a replacement for kernel Final-use or independent
+production CNS selection. It does not renew a stale Artifact CURRENT snapshot,
+sign an attestation, prove external driver honesty, authenticate a serving
+route or permit Neuron dispatch. The caller must first request a fresh signed
+Artifact selection from Agentd, and the real production owner must revalidate
+CURRENT, CNS route, process/fence, model source and permission before use.
+The added native tests reject all eight Worker/local tuple drift classes and
+self-mutated diagnostics. Full end-to-end production model activation, NDU and
+actual Laya-backed inference remain unverified.
