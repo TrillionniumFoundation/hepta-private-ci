@@ -3,6 +3,8 @@
 use super::ArtifactOwnerHostError;
 use std::fs;
 use std::fs::File;
+#[cfg(windows)]
+use std::fs::OpenOptions;
 use std::path::Path;
 
 pub(super) fn create_root(path: &Path) -> Result<(), ArtifactOwnerHostError> {
@@ -21,10 +23,24 @@ pub(super) fn create_root(path: &Path) -> Result<(), ArtifactOwnerHostError> {
 }
 
 pub(super) fn sync_file_and_parent(path: &Path) -> Result<(), ArtifactOwnerHostError> {
-    File::open(path)
+    open_file_for_sync(path)
         .and_then(|file| file.sync_all())
         .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
     sync_parent(path)
+}
+
+#[cfg(windows)]
+fn open_file_for_sync(path: &Path) -> std::io::Result<File> {
+    // Windows implements File::sync_all with FlushFileBuffers, which rejects
+    // a separately opened read-only handle. Reopen the owner-controlled file
+    // with write access so the durability barrier is real; any ACL or sharing
+    // failure still maps to Indeterminate at the caller.
+    OpenOptions::new().read(true).write(true).open(path)
+}
+
+#[cfg(not(windows))]
+fn open_file_for_sync(path: &Path) -> std::io::Result<File> {
+    File::open(path)
 }
 
 pub(super) fn sync_parent(path: &Path) -> Result<(), ArtifactOwnerHostError> {
