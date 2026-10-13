@@ -23,9 +23,9 @@ class CargoShardTests(unittest.TestCase):
             self.assertEqual(verify_shard(matrix, i, item["packages"]), item["packages"])
 
     def test_exact_small_set_stays_single_shard(self):
-        matrix = matrix_for_packages(["owner.b", "owner-a".replace(".", "-")], 12)
+        matrix = matrix_for_packages(["owner-b", "owner-a"], 12)
         self.assertEqual(len(matrix["include"]), 1)
-        self.assertEqual(matrix["include"][0]["packages"], ["owner-a", "owner.b"])
+        self.assertEqual(matrix["include"][0]["packages"], ["owner-a", "owner-b"])
 
     def test_empty_plan_is_one_explicit_empty_shard(self):
         matrix = matrix_for_packages([], 12)
