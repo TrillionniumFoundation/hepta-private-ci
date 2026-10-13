@@ -160,10 +160,13 @@ fn pinned_client_refuses_old_or_equivocated_signed_frontier_across_server_restar
     {
         let result = client.read_domain_frontier(DOMAIN, &nonce.repeat(32));
         if matches!(index, 0 | 3 | 5) {
-            assert!(result.is_ok(), "legitimate advance {index} rejected: {result:?}");
+            assert!(
+                result.is_ok(),
+                "legitimate advance {index} rejected: {result:?}"
+            );
         } else {
             assert!(
-                matches!(result, Err(CellSplitMonotonicRpcErrorV1::Invalid)),
+                matches!(&result, Err(CellSplitMonotonicRpcErrorV1::Invalid)),
                 "signed rollback/equivocation {index} not fenced: {result:?}"
             );
         }
