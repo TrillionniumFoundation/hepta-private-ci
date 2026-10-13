@@ -3,6 +3,7 @@
 These are not simulated QA successes; each enabled test consumes the exact
 byte-pinned model-run ZIP and mutates copies to assert rejection.
 """
+
 import copy
 import os
 from pathlib import Path
@@ -10,7 +11,9 @@ import unittest
 
 from stem_audit_archive import PinnedArchive
 from stem_audit_completed_run import (
-    ZIP_SHA256, audit_pinned_zip, reconcile,
+    ZIP_SHA256,
+    audit_pinned_zip,
+    reconcile,
 )
 
 
@@ -57,8 +60,13 @@ class CompletedNativeStemAuditTests(unittest.TestCase):
         self.assertEqual(changed["frozen_weak_native_support"], 0)
         self.assertEqual(changed["learned_weak_native_support"], 0)
         self.assertFalse(changed["answer_changed"])
-        self.assertEqual(sum(x["changed_answer_bytes"] for x in
-                             result["candidate_selection_and_answers_by_arm"].values()), 0)
+        self.assertEqual(
+            sum(
+                x["changed_answer_bytes"]
+                for x in result["candidate_selection_and_answers_by_arm"].values()
+            ),
+            0,
+        )
 
     def test_missing_or_duplicate_or_fake_policy_is_not_a_smaller_census(self):
         for kind in ("missing", "duplicate", "fake"):
@@ -81,9 +89,12 @@ class CompletedNativeStemAuditTests(unittest.TestCase):
     def test_unsupported_selected_source_cannot_be_marked_gain(self):
         rows = copy.deepcopy(self.scored)
         for row in rows:
-            if (row["stage"] == 48 and row["phase"] == "retention"
-                    and row["question_id"] == "locomo:conv-43/q217"
-                    and row["arm"] == "lineage_lora_gated"):
+            if (
+                row["stage"] == 48
+                and row["phase"] == "retention"
+                and row["question_id"] == "locomo:conv-43/q217"
+                and row["arm"] == "lineage_lora_gated"
+            ):
                 row["source_choice_correct"] = 1
         with self.assertRaisesRegex(ValueError, "no confirmed learning benefit"):
             self.check(scored=rows)

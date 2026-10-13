@@ -12,9 +12,18 @@ READER = "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225"
 def fixture():
     cross = {
         "schema": "hepta.memory-cell.cross-population-evidence.v1",
-        "source_zip_sha256": {x: "a" * 64 for x in (
-            "event_model", "event_replay", "locomo_public", "locomo_retrieval",
-            "locomo_targets", "locomo_model", "locomo_score")},
+        "source_zip_sha256": {
+            x: "a" * 64
+            for x in (
+                "event_model",
+                "event_replay",
+                "locomo_public",
+                "locomo_retrieval",
+                "locomo_targets",
+                "locomo_model",
+                "locomo_score",
+            )
+        },
         "reader_identity": READER,
         "observed_completed_model_calls": 144,
         "pooled_accuracy": None,
@@ -64,7 +73,7 @@ def fixture():
         "frozen_reader_identity": READER,
         "original_model_calls": 16,
         "matched_public_family_proxies": 2,
-        "exact_zip_sha256": {"plan": "b"*64, "reader": "c"*64, "score": "d"*64},
+        "exact_zip_sha256": {"plan": "b" * 64, "reader": "c" * 64, "score": "d" * 64},
         "original_matched_f1": {
             "lexical_k4": {
                 "baseline_token_f1": 0.17208258098192508,
@@ -134,7 +143,7 @@ class NoFalsePromotionTests(unittest.TestCase):
     def test_published_baseline_must_match_original_score(self):
         for name in ("lexical_k4", "lexical_k8"):
             cross, pub = fixture()
-            pub["original_matched_f1"][name]["baseline_token_f1"] = .9999
+            pub["original_matched_f1"][name]["baseline_token_f1"] = 0.9999
             with self.subTest(name=name), self.assertRaises(ValueError):
                 join_verified(cross, pub)
 

@@ -48,7 +48,10 @@ class InterleavedWriteTests(unittest.TestCase):
             tokenizer, examples, maximum_steps=4, token_ceiling=20
         )
         updated, after = prepare(
-            tokenizer, examples, maximum_steps=4, token_ceiling=20,
+            tokenizer,
+            examples,
+            maximum_steps=4,
+            token_ceiling=20,
             strategy="direct_interleave",
         )
         self.assertEqual(original, updated)
@@ -56,7 +59,9 @@ class InterleavedWriteTests(unittest.TestCase):
         self.assertEqual(after["entries"], [6, 0, 7, 1])
         self.assertEqual(before["planned_steps"], after["planned_steps"])
         self.assertEqual(before["planned_input_tokens"], after["planned_input_tokens"])
-        self.assertEqual(before["planned_supervised_tokens"], after["planned_supervised_tokens"])
+        self.assertEqual(
+            before["planned_supervised_tokens"], after["planned_supervised_tokens"]
+        )
         self.assertEqual(after["original_groups_digest"], before["groups_digest"])
         old_coverage = audit_coverage(
             examples, original, before, curriculum="source_two_hop"
@@ -75,7 +80,10 @@ class InterleavedWriteTests(unittest.TestCase):
             "scope-b", hops=2, direct=1
         )
         prepared, plan = prepare(
-            Tokenizer(), cases, maximum_steps=4, token_ceiling=20,
+            Tokenizer(),
+            cases,
+            maximum_steps=4,
+            token_ceiling=20,
             strategy="direct_interleave",
         )
         self.assertEqual(plan["entries"], [2, 5, 0, 3])
@@ -92,7 +100,10 @@ class InterleavedWriteTests(unittest.TestCase):
         cases = examples_for()
         original = prepare(Tokenizer(), cases, maximum_steps=4, token_ceiling=20)
         explicit = prepare(
-            Tokenizer(), cases, maximum_steps=4, token_ceiling=20,
+            Tokenizer(),
+            cases,
+            maximum_steps=4,
+            token_ceiling=20,
             strategy="original",
         )
         self.assertEqual(original, explicit)
@@ -102,20 +113,28 @@ class InterleavedWriteTests(unittest.TestCase):
     def test_fail_closed_on_unrelated_curriculum_or_wrong_scope(self):
         with self.assertRaises(ValueError):
             prepare(
-                Tokenizer(), examples_for(hops=0, direct=4),
-                maximum_steps=4, token_ceiling=20,
+                Tokenizer(),
+                examples_for(hops=0, direct=4),
+                maximum_steps=4,
+                token_ceiling=20,
                 strategy="direct_interleave",
             )
         with self.assertRaises(ValueError):
             prepare(
-                Tokenizer(), examples_for(),
-                maximum_steps=4, token_ceiling=20, strategy="unknown",
+                Tokenizer(),
+                examples_for(),
+                maximum_steps=4,
+                token_ceiling=20,
+                strategy="unknown",
             )
         rows = list(examples_for())
         rows[1] = dict(rows[1], curriculum="publisher_gold")
         with self.assertRaises(ValueError):
             prepare(
-                Tokenizer(), rows, maximum_steps=4, token_ceiling=20,
+                Tokenizer(),
+                rows,
+                maximum_steps=4,
+                token_ceiling=20,
                 strategy="direct_interleave",
             )
         with self.assertRaises(ValueError):
@@ -126,7 +145,10 @@ class InterleavedWriteTests(unittest.TestCase):
     def test_mutated_source_order_pins_cannot_be_laundered(self):
         examples = examples_for()
         prepared, plan = prepare(
-            Tokenizer(), examples, maximum_steps=4, token_ceiling=20,
+            Tokenizer(),
+            examples,
+            maximum_steps=4,
+            token_ceiling=20,
             strategy="direct_interleave",
         )
         for key, value in (
@@ -139,9 +161,7 @@ class InterleavedWriteTests(unittest.TestCase):
             changed = deepcopy(plan)
             changed[key] = value
             with self.subTest(key=key), self.assertRaises(ValueError):
-                audit_coverage(
-                    examples, prepared, changed, curriculum="source_two_hop"
-                )
+                audit_coverage(examples, prepared, changed, curriculum="source_two_hop")
         with self.assertRaises(ValueError):
             audit_coverage(examples, prepared, plan, curriculum="single_hop")
 
