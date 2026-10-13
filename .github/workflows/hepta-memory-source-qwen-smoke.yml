@@ -12,6 +12,7 @@ on:
       - scripts/memory_cell/test_source_binding_margin.py
       - scripts/memory_cell/source_loss_admission.py
       - scripts/memory_cell/test_source_loss_admission.py
+      - scripts/memory_cell/test_source_margin_sparse_admission.py
       - .github/workflows/hepta-memory-source-qwen-smoke.yml
   workflow_dispatch:
 permissions:
@@ -86,6 +87,7 @@ jobs:
             scripts/memory_cell/source_binding_margin.py \
             scripts/memory_cell/test_source_binding_margin.py \
             scripts/memory_cell/source_loss_admission.py \
+            scripts/memory_cell/test_source_margin_sparse_admission.py \
             /tmp/memory-source-qwen-smoke/source/
           git rev-parse HEAD > /tmp/memory-source-qwen-smoke/tested-commit.txt
           printf '%s\n' 'Tiny random Qwen2+PEFT numerical conformance only. No source pretrained model or answer-quality evidence.' \
