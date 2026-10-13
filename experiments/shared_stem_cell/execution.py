@@ -605,8 +605,8 @@ def run(manifest_path: Path, output: Path):
     root = manifest_path.parent
     started_wall, started_cpu = time.perf_counter_ns(), time.process_time_ns()
     try:
-        if any(type(config.get(flag, False)) is not bool for flag in ("temporal", "measure_head_batch")):
-            raise InputError("temporal and measure_head_batch must be Boolean declarations")
+        if any(type(config.get(flag, False)) is not bool for flag in ("temporal", "measure_head_batch", "export_frozen_features")):
+            raise InputError("temporal, measure_head_batch and export_frozen_features must be Boolean declarations")
         cases, labels = dataset(root / config["dataset"]["path"], config["dataset"]["sha256"],
             config["classes"], config["cells"], config.get("temporal", False))
         if config.get("head_training_backend", "scalar") not in {"scalar", "grouped"}:
@@ -622,6 +622,10 @@ def run(manifest_path: Path, output: Path):
                                    config.get("maximum_tokens", 512))
         with measured() as whole:
             x, encoding = encode_cases(backend, cases, batch_size=config.get("batch_size", 8))
+            if config.get("export_frozen_features", False):
+                from experiments.shared_stem_cell.feature_replay import checked_shape, row_index
+                checked_shape(list(x.shape))
+                row_index(cases)  # archive bounds before any Head optimization
             sharing = []
             if config.get("measure_sharing", False):
                 sample = tuple(c for c in cases if c.split == "holdout")[:8]
@@ -694,6 +698,18 @@ def run(manifest_path: Path, output: Path):
             bound_file(root / config["dataset"]["path"], config["dataset"]["sha256"])
             if manifest_path.read_bytes() != manifest_raw:
                 raise InputError("manifest changed during execution")
+            frozen_features = None
+            if config.get("export_frozen_features", False):
+                from experiments.shared_stem_cell.feature_replay import export_features, load_features
+                source_digest = sha(Path(__file__).read_bytes())
+                with measured() as feature_export_cost:
+                    frozen_features = export_features(output / "frozen-features", x, cases, config,
+                        producer_source_sha256=source_digest, simulated=bool(backend.simulated))
+                    reopened, _ = load_features(output / "frozen-features", frozen_features["manifest_sha256"],
+                        cases, config, producer_source_sha256=source_digest)
+                    if not torch.equal(x, reopened):
+                        raise InputError("frozen-feature roundtrip mismatch")
+                frozen_features["export_and_reopen_cost"] = feature_export_cost
             seal = write_once(output / "predictions.json", {"predictions": rows})
             controls_seal = write_once(output / "controls.json", controls)
             generation_seal = write_once(output / "generation.json", generation)
@@ -708,7 +724,7 @@ def run(manifest_path: Path, output: Path):
             "manifest_sha256": sha(manifest_raw), "predictions_sha256": seal,
             "source_sha256": sha(Path(__file__).read_bytes()), "encoding": encoding,
             "training": training, "whole_execution": whole, "scores": scores,
-            "model_load": model_load, "sharing": sharing,
+            "model_load": model_load, "sharing": sharing, "frozen_features": frozen_features,
             "head_batch_sha256": head_batch_seal, "head_batch_executed": bool(head_batch),
             "controls_sha256": controls_seal, "generation_sha256": generation_seal,
             "multimodal_towers_executed": False, "controls_executed": bool(controls),
