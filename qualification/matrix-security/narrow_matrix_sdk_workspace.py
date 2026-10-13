@@ -154,6 +154,66 @@ def stage_narrow_sdk(stage, source_report, source_sha):
 
 
 
+def align_scratch_sqlite_native_links(stage, source_sha, report):
+    """Resolve the observed 0.37/0.38.2 *candidate* SQLite links conflict.
+
+    Edits only the exact existing Hepta Cargo.toml inside the detached,
+    narrowed scratch worktree. This does NOT upgrade the production workspace,
+    its lockfile, SQLite WAL state, or the actual running Matrix SDK.
+    """
+    stage = Path(stage).resolve()
+    if (stage.is_symlink() or not (stage / ".git").exists()
+            or not HEX40.fullmatch(source_sha)
+            or _git(stage, "rev-parse", "HEAD") != source_sha
+            or _git(stage, "diff", "--name-only").splitlines() !=
+            ["codex-rs/Cargo.toml"]):
+        raise ValueError("SQLite trial requires the exact detached Matrix candidate")
+    candidate = stage / "codex-rs/Cargo.toml"
+    if candidate.is_symlink() or not candidate.is_file():
+        raise ValueError("SQLite trial manifest missing or symlinked")
+    raw = candidate.read_bytes()
+    if (type(report) is not dict or report.get("schema") != SCHEMA or
+            report.get("source_sha") != source_sha or
+            report.get("narrowed_manifest_sha256") != digest(raw) or
+            report.get("only_direct_workspace_member") != MEMBER or
+            report.get("production_authorized") is not False or
+            report.get("cargo_resolution_verified") is not False):
+        raise ValueError("SQLite trial source is not the authenticated narrow candidate")
+    previous = _as_document(raw)
+    deps = previous["workspace"]["dependencies"]
+    if deps.get("libsqlite3-sys") != {
+            "version": "0.37", "default-features": False}:
+        raise ValueError("unrecognized legacy SQLite native links requirement")
+    clause = b'libsqlite3-sys = { version = "0.37", default-features = false }'
+    if raw.count(clause) != 1:
+        raise ValueError("SQLite native links clause is not unique and canonical")
+    patched = raw.replace(
+        clause, b'libsqlite3-sys = { version = "=0.38.2", default-features = false }')
+    revised = _as_document(patched)
+    # Reconstruct the entire original TOML document with just the single
+    # registry version restored, proving no E2EE or other graph change.
+    revised["workspace"]["dependencies"]["libsqlite3-sys"] = deps["libsqlite3-sys"]
+    if revised != previous:
+        raise ValueError("SQLite trial unexpectedly modified other dependencies")
+    candidate.write_bytes(patched)
+    if _git(stage, "diff", "--name-only").splitlines() != ["codex-rs/Cargo.toml"]:
+        raise ValueError("SQLite trial escaped the detached workspace")
+    return {
+        **report,
+        "pre_sqlite_alignment_manifest_sha256": digest(raw),
+        "narrowed_manifest_sha256": digest(patched),
+        "sqlite_links_candidate_version": "0.38.2",
+        "sqlite_native_links_scratch_alignment": True,
+        "sqlite_wal_recovery_verified": False,
+        "hepta_production_workspace_modified": False,
+        "production_cargo_lock_modified": False,
+        "matrix_adapter_compilation_verified": False,
+        "cargo_resolution_verified": False,
+        "cargo_deny_verified": False,
+        "production_authorized": False,
+    }
+
+
 def verify_resolved_security_closure(data, *, candidate_root, stage_root):
     """Check *actual reachable* Cargo resolve edges, not just package names.
 
@@ -381,6 +441,8 @@ def main(argv=None):
     p.add_argument("--stage", type=Path, required=True)
     p.add_argument("--source-report", type=Path, required=True)
     p.add_argument("--source-sha", required=True)
+    p.add_argument("--align-sqlite-native-links", action="store_true",
+                   help="Scratch-only 0.38.2 native SQLite resolver arm; NOT production")
     p.add_argument("--output", type=Path, required=True)
     args = p.parse_args(argv)
     output = args.output.resolve()
@@ -388,6 +450,8 @@ def main(argv=None):
         p.error("output must be new and outside detached source checkout")
     report = json.loads(args.source_report.read_text(encoding="utf-8"))
     result = stage_narrow_sdk(args.stage, report, args.source_sha)
+    if args.align_sqlite_native_links:
+        result = align_scratch_sqlite_native_links(args.stage, args.source_sha, result)
     with output.open("x", encoding="utf-8") as f:
         json.dump(result, f, sort_keys=True, indent=2)
         f.write("\n")
