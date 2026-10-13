@@ -35,3 +35,24 @@ The current repository research boundary remains unchanged: shared Encoder and
 Head mechanics are implemented as candidates, while natural-language reasoning,
 multimodal transfer, split/merge benefit and production acceptance require new
 independent evidence.
+
+
+## Out-of-band review authority (required)
+
+A self-declared reviewer list and a pair of hashes stored in the same submission
+cannot prove independent human review. Before the planner can mark any neural
+row as eligible, a separate trusted owner must establish the exact SHA256 of
+the review manifest *outside* the submitted receipt and supply it via
+`HEPTA_READER_TRUST_SHA256` or the explicit trusted-review argument. The
+manifest itself must commit to the **entire** reviewed receipt content: cohort,
+all four observed condition results, model/decoder/dataset binding, and
+capability scope. Rebinding scores or replacing both the result and manifest
+will not match that prior trust root. Malformed, duplicate or revoked reviewer
+identities and unsupported capabilities fail closed.
+
+No trusted review pin is currently provisioned in the ordinary research CI.
+Therefore **all 768 configurations remain blocked by default**; a fabricated
+positive unit-test fixture with an explicitly supplied test pin verifies only
+the gate implementation, not actual reviewer identity or independent semantics.
+A SHA pin is necessary but does not itself authorize a reviewer or validate the
+underlying human judgments.

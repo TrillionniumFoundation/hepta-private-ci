@@ -8,6 +8,7 @@ are admitted only with an externally trusted, model-bound Reader gate.
 from dataclasses import asdict, dataclass
 import hashlib
 import itertools
+import os
 import json
 from pathlib import Path
 import re
@@ -84,12 +85,16 @@ def _arm(conditions: dict, name: str, cohort: list[str]) -> tuple[int, int] | No
     return grounded, refusal
 
 
-def evaluate_reader_gate(payload: dict | None, trust_manifest: dict | None = None) -> ReaderGate:
+def evaluate_reader_gate(
+    payload: dict | None, trust_manifest: dict | None = None, *,
+    trusted_review_sha256: str | None = None,
+) -> ReaderGate:
     """Derive the four-arm admission decision from an external v2 receipt.
 
-    A boolean inside the receipt is not accepted as proof of independence. The
-    caller must provide the separate trust manifest whose canonical digest is
-    bound by the receipt.
+    Receipt and manifest cannot attest to their own independence. An
+    operator-provided OUT-OF-BAND review-manifest SHA is mandatory. The
+    preapproved manifest must also bind every reviewed cohort, arm count,
+    model identity and claimed capability; otherwise every row stays blocked.
     """
     if not isinstance(payload, dict) or payload.get("schema") != "hepta.reader-gate.v2":
         return _empty_gate("missing-or-unknown-reader-gate")
@@ -114,15 +119,38 @@ def evaluate_reader_gate(payload: dict | None, trust_manifest: dict | None = Non
         "no_evidence", "ordinary_retrieval", "human_sufficient", "critical_premise_removed")}
     if any(value is None for value in rows.values()):
         return _empty_gate("reader-arm-denominator-or-cohort-mismatch")
-    if not _valid_sha(review.get("trust_manifest_sha256")) or not isinstance(trust_manifest, dict):
-        return _empty_gate("external-trust-manifest-required")
-    manifest_digest = _digest_bytes(trust_manifest)
-    if manifest_digest != review["trust_manifest_sha256"] or trust_manifest.get("schema") != "hepta.reader.trust.v1":
-        return _empty_gate("trust-manifest-digest-or-schema-mismatch")
-    reviewers = trust_manifest.get("independent_reviewers")
-    if not isinstance(reviewers, list) or not reviewers or any(
-        not isinstance(item, dict) or item.get("revoked") is not False for item in reviewers
+    if not isinstance(capabilities, dict) or any(
+        not isinstance(capabilities.get(key), list) or not capabilities[key]
+        or any(type(value) is not str or value not in allowed
+               for value in capabilities[key])
+        or len(set(capabilities[key])) != len(capabilities[key])
+        for key, allowed in (("modalities", MODALITIES), ("inference", INFERENCE))
     ):
+        return _empty_gate("invalid-reader-capabilities")
+    if not isinstance(trust_manifest, dict) or not _valid_sha(review.get("trust_manifest_sha256")):
+        return _empty_gate("external-trust-manifest-required")
+    # A self-referential pair of hashes is not an external trust root.
+    if not _valid_sha(trusted_review_sha256):
+        return _empty_gate("out-of-band-trust-pin-required")
+    manifest_digest = _digest_bytes(trust_manifest)
+    if (manifest_digest != review["trust_manifest_sha256"]
+            or trust_manifest.get("schema") != "hepta.reader.trust.v1"):
+        return _empty_gate("trust-manifest-digest-or-schema-mismatch")
+    if manifest_digest != trusted_review_sha256:
+        return _empty_gate("out-of-band-trust-pin-mismatch")
+    reviewed_content = {
+        name: payload[name] for name in (
+            "schema", "cohort", "model_binding", "conditions", "capabilities"
+        )
+    }
+    if trust_manifest.get("reviewed_gate_content_sha256") != _digest_bytes(reviewed_content):
+        return _empty_gate("review-not-bound-to-observed-reader-results")
+    reviewers = trust_manifest.get("independent_reviewers")
+    if (not isinstance(reviewers, list) or not reviewers
+            or any(not isinstance(item, dict) or type(item.get("id")) is not str
+                   or not item["id"] or item.get("revoked") is not False
+                   for item in reviewers)
+            or len({item["id"] for item in reviewers}) != len(reviewers)):
         return _empty_gate("no-current-independent-reviewer-in-trust-manifest")
     human_grounded, _ = rows["human_sufficient"]
     ordinary_grounded, _ = rows["ordinary_retrieval"]
@@ -211,8 +239,11 @@ def _capability_allows(gate: ReaderGate, record: dict) -> bool:
 
 
 def plan(output: Path, *, cells: int = 32, reader_gate: dict | None = None,
-         trust_manifest: dict | None = None) -> dict:
-    gate = evaluate_reader_gate(reader_gate, trust_manifest)
+         trust_manifest: dict | None = None,
+         trusted_review_sha256: str | None = None) -> dict:
+    gate = evaluate_reader_gate(
+        reader_gate, trust_manifest, trusted_review_sha256=trusted_review_sha256
+    )
     records = enumerate_matrix(cells)
     for record in records:
         record["reader_gate"] = asdict(gate)
@@ -248,7 +279,10 @@ def main(argv: list[str]) -> int:
         return 2
     gate = json.loads(Path(argv[2]).read_text(encoding="utf-8")) if len(argv) >= 3 else None
     trust = json.loads(Path(argv[3]).read_text(encoding="utf-8")) if len(argv) == 4 else None
-    summary = plan(Path(argv[1]), reader_gate=gate, trust_manifest=trust)
+    summary = plan(
+        Path(argv[1]), reader_gate=gate, trust_manifest=trust,
+        trusted_review_sha256=os.environ.get("HEPTA_READER_TRUST_SHA256") or None,
+    )
     print(json.dumps(summary, sort_keys=True))
     return 0
 
