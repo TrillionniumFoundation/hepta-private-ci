@@ -163,10 +163,15 @@ jobs:
             --migration upstream-anymap-commit --candidate-dir "$SDK" \
             --source-sha "$HEPTA_SHA" \
             --output "$RUNNER_TEMP/hepta-narrow-source.json"
+          # Previous exact-head cargo metadata proved upstream 0.19.1
+          # requires libsqlite3-sys 0.38.2 while the legacy Hepta store
+          # requested 0.37. Align only this disposable native-link arm;
+          # production Cargo.toml/Cargo.lock and hard cargo-deny stay red.
           python3 qualification/matrix-security/narrow_matrix_sdk_workspace.py \
             --stage "$STAGE" \
             --source-report "$RUNNER_TEMP/hepta-narrow-source.json" \
             --source-sha "$HEPTA_SHA" \
+            --align-sqlite-native-links \
             --output "$RUNNER_TEMP/hepta-narrow-workspace.json"
           echo "NARROW_HEPTA_STAGE=$STAGE" >> "$GITHUB_ENV"
           echo "NARROW_SDK_SOURCE=$SDK" >> "$GITHUB_ENV"
