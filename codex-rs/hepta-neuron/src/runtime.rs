@@ -130,6 +130,12 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         })
     }
 
+    /// Read-only serving-generation identity, used to reject a mismatched
+    /// NDU snapshot before any durable model-effect intent is prepared.
+    pub fn generation(&self) -> codex_hepta_types::Generation {
+        self.config.generation
+    }
+
     pub fn model_request(
         &self,
         input: &NeuronTickInputV1,

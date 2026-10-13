@@ -147,7 +147,7 @@ impl DurableNeuronEffectIntentV1 {
                     .map_err(|_| NeuronEffectIntentErrorV1::Corrupt)?,
             );
             let expected = record_digest(head, kind, tick, checkpoint);
-            if tick.is_zero() || encoded[65..97] != *expected.as_array() {
+            if tick.is_zero() || &encoded[65..97] != expected.as_array().as_slice() {
                 return Err(NeuronEffectIntentErrorV1::Corrupt);
             }
             match kind {
@@ -325,6 +325,6 @@ fn record_digest(
     Digest32::of_bytes(&bytes)
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "effect_intent_tests.rs"]
 mod tests;

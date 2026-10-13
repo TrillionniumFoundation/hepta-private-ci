@@ -161,6 +161,9 @@ where
             .verify(signed_read)
             .map_err(|_| NeuronRuntimeError::InvalidInput)?;
         let snapshot = &signed_read.snapshot;
+        if snapshot.generation != self.runtime.generation() {
+            return Err(NeuronRuntimeError::InvalidInput);
+        }
         let input_digest = input.semantic_digest()?;
         let effect_intent = self
             .effect_intent
