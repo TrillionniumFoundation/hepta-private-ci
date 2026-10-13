@@ -214,6 +214,31 @@ class LocalTowers:
             raise e.InputError("invalid bounded tower result")
         return result.detach().cpu().float().contiguous(), stamps
 
+    @torch.no_grad()
+    def encode_choices(self, texts, image_ref, root):
+        """One image and four answer-content strings, with original CLIP projections."""
+        if ("clip" not in self.models or not isinstance(texts, list) or len(texts) != 4
+                or any(not isinstance(t, str) or not 1 <= len(t.encode()) <= 4096 for t in texts)):
+            raise e.InputError("four bounded candidate strings and frozen CLIP required")
+        model, processor = self.models["clip"], self.processors["clip"]
+        tokens = processor.tokenizer(texts, padding=True, truncation=False, return_tensors="pt")
+        if tokens["input_ids"].shape[1] > min(77, model.config.text_config.max_position_embeddings):
+            raise e.InputError("candidate tokens exceed fixed CLIP context; no truncation")
+        image = image_bytes(reference(root, image_ref))
+        pixels = processor.image_processor(images=[image], return_tensors="pt")["pixel_values"]
+        text = model.get_text_features(**tokens)
+        self.calls["clip"] += 1
+        visual = model.get_image_features(pixel_values=pixels)
+        self.calls["clip"] += 1
+        if (text.ndim != 2 or visual.ndim != 2 or text.shape[0] != 4 or visual.shape != (1, text.shape[1])
+                or not 1 <= text.shape[1] <= 1024 or not bool(torch.isfinite(text).all())
+                or not bool(torch.isfinite(visual).all())
+                or bool((text.norm(dim=-1) <= 1e-12).any()) or bool((visual.norm(dim=-1) <= 1e-12).any())):
+            raise e.InputError("finite nonzero projected CLIP features required")
+        text = text / text.norm(dim=-1, keepdim=True)
+        visual = visual / visual.norm(dim=-1, keepdim=True)
+        return torch.cat([text, visual.expand(4, -1)], -1).detach().cpu().float().contiguous()
+
     def close(self):
         for name, manifest in self.manifests.items():
             e.verify_snapshot(self.root / manifest["path"], manifest)

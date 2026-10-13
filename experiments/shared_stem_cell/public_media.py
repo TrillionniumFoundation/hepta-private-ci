@@ -25,6 +25,7 @@ FRESH_SIZES = {"train": 64, "validation": 32, "test": 64}
 FRESH_PINS = {"clip": "3d74acf9a28c67741b2f4f2ea7635f0aaf6f0268",
               "dataset": "b9984af01798586705cee1fbdfa80a6dcbef04f1",
               "reader": "7ae557604adf67be50417f59c2c2f167def9a775"}
+CALIBRATED_COHORT = "f6955cda7bdf258d7eb3949396ac5c9dbc7ed6fb2343ad1e08a28f4c44d6cddd"
 PRIOR_COHORT = "dca913c5da6170c4b01c498773635e4f6783f1a3079a79c782e51f2cf1862beb"
 SYSTEM = "Answer the multiple-choice question with exactly one letter A, B, C, or D. No image is provided."
 
@@ -63,7 +64,7 @@ def choose(public, tokenizer, *, sizes=SIZES, excluded=()):
     if set(public) != set(SIZES) or set(sizes) != set(SIZES):
         raise e.InputError("original train/validation/test splits required")
     selected, seen_text, seen_pixels = {}, set(), set()
-    if not isinstance(excluded, tuple) or len(excluded) > 256:
+    if not isinstance(excluded, tuple) or len(excluded) > 512:
         raise e.InputError("bounded prior public cohort required")
     for item in excluded:
         if (not isinstance(item, dict) or not isinstance(item.get("text"), str)
@@ -201,20 +202,24 @@ def text_reader(generator, cases, output):
     return seal
 
 
-def main(root, *, allow_conversion=False, calibrated_fusion=False):
+def main(root, *, allow_conversion=False, calibrated_fusion=False, candidate_shared=False):
     import torch
     from huggingface_hub import HfApi
     from transformers import AutoTokenizer
 
+    if calibrated_fusion and candidate_shared:
+        raise e.InputError("choose one new-cohort profile per output")
+    fresh_profile = calibrated_fusion or candidate_shared
     started = time.perf_counter_ns()
     root.mkdir(parents=True, exist_ok=False)
     torch.set_num_threads(2)
     api = HfApi()
-    pins = dict(FRESH_PINS) if calibrated_fusion else {"dataset": revision(api.dataset_info(DATASET).sha),
+    pins = dict(FRESH_PINS) if fresh_profile else {"dataset": revision(api.dataset_info(DATASET).sha),
             "clip": revision(api.model_info(VISION).sha), "reader": revision(api.model_info(READER).sha)}
-    sizes = FRESH_SIZES if calibrated_fusion else SIZES
+    sizes = FRESH_SIZES if fresh_profile else SIZES
     e.write_once(root / "acquisition.json", {"pins": pins, "sizes": sizes,
-        "calibrated_fusion": calibrated_fusion, "excluded_prior_cohort": PRIOR_COHORT if calibrated_fusion else None,
+        "calibrated_fusion": calibrated_fusion, "candidate_shared": candidate_shared,
+        "excluded_prior_cohort": PRIOR_COHORT if fresh_profile else None,
         "selection": "four choices; full question+hint+choices <=64 CLIP tokens; SHA order; pixel/text dedup",
         "public_release_not_future": True, "independent_evaluation": False, "production_accepted": False})
     try:
@@ -225,17 +230,32 @@ def main(root, *, allow_conversion=False, calibrated_fusion=False):
         tokenizer = AutoTokenizer.from_pretrained(root / model["path"], local_files_only=True, trust_remote_code=False)
         public, labels = stage_dataset(root, pins["dataset"])
         excluded = ()
-        if calibrated_fusion:
+        if fresh_profile:
             previous = choose(public, tokenizer)
             if e.sha(e.canonical(previous)) != PRIOR_COHORT:
                 raise e.InputError("prior pre-label cohort drift; cannot assert new holdout")
             e.write_once(root / "excluded-prior-cohort.json", previous)
             excluded = tuple(item for group in previous.values() for item in group)
+            if candidate_shared:
+                previous_calibrated = choose(public, tokenizer, sizes=FRESH_SIZES, excluded=excluded)
+                if e.sha(e.canonical(previous_calibrated)) != CALIBRATED_COHORT:
+                    raise e.InputError("calibrated prior cohort drift")
+                e.write_once(root / "excluded-calibrated-cohort.json", previous_calibrated)
+                excluded += tuple(item for group in previous_calibrated.values() for item in group)
         descriptor, cohort = stage_cases(root, public, labels, tokenizer, sizes=sizes, excluded=excluded)
         config = {"schema": "hepta.shared-stem-media.v1", "classes": 4, "steps": 20,
                   "seed": 20261013, "temporal": False, "dataset": descriptor, "models": {"clip": model},
-                  "fusion_profile": "calibrated_checkpoints_v1" if calibrated_fusion else "legacy_fixed"}
+                  "fusion_profile": "answer_content_v1" if candidate_shared else
+                      "calibrated_checkpoints_v1" if calibrated_fusion else "legacy_fixed"}
         e.write_once(root / "manifest.json", config)
+        if candidate_shared:
+            from experiments.shared_stem_cell.choice_fusion import run as run_choices
+            cohort_values = e.decode((root / "cohort-before-labels.json").read_bytes())
+            result = run_choices(root, root / "choice-execution", public, cohort_values, config)
+            e.write_once(root / "report.json", {"cohort_sha256": cohort, "choice_report": result,
+                "whole_wall_ns_including_acquisition": time.perf_counter_ns() - started,
+                "excluded_records": len(excluded), "production_accepted": False})
+            return result
         result = media.run(root / "manifest.json", root / "media-execution")
         reader_root = root / "reader"
         reader_root.mkdir()
@@ -268,5 +288,8 @@ if __name__ == "__main__":
     parser.add_argument("--allow-weights-only-conversion", action="store_true")
     parser.add_argument("--calibrated-fusion", action="store_true",
                         help="same pinned towers; new cohort excluding prior inputs; calibration-only checkpoint/mixing")
+    parser.add_argument("--candidate-shared", action="store_true",
+                        help="score answer content with shared CLIP Head; exclude both preceding cohorts")
     args = parser.parse_args()
-    main(args.output, allow_conversion=args.allow_weights_only_conversion, calibrated_fusion=args.calibrated_fusion)
+    main(args.output, allow_conversion=args.allow_weights_only_conversion,
+         calibrated_fusion=args.calibrated_fusion, candidate_shared=args.candidate_shared)

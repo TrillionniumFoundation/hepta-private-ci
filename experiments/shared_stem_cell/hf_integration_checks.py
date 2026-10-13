@@ -112,6 +112,19 @@ class StockHfChecks(unittest.TestCase):
             self.assertEqual(stamps.dtype, torch.int64)
             references[name] = (item, value.clone(), stamps.clone())
         self.assertEqual(towers.calls["clip"], 3)
+        from experiments.shared_stem_cell.choice_fusion import validate
+        texts = ["a", "b", "a b", "b a"]
+        features = towers.encode_choices(texts, ref, self.root)
+        validate(features.unsqueeze(0))
+        shuffled = towers.encode_choices([texts[i] for i in (2, 0, 3, 1)], ref, self.root)
+        torch.testing.assert_close(shuffled, features[[2, 0, 3, 1]], atol=1e-6, rtol=1e-5)
+        model = towers.models["clip"]
+        with torch.no_grad():
+            inputs = towers.processors["clip"](text=texts, images=Image.open(image), return_tensors="pt", padding=True)
+            expected_logits = model(**inputs).logits_per_image[0]
+            text_features, image_features = features.chunk(2, -1)
+            actual_logits = model.logit_scale.exp() * (text_features * image_features).sum(-1)
+        torch.testing.assert_close(actual_logits, expected_logits, atol=1e-5, rtol=1e-5)
         towers.close()
         # Reproduce the older real checkpoint's persisted, now regenerated IDs.
         # Keep ALL parameters, then demand equality with the runtime buffers.
