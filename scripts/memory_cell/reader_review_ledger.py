@@ -90,7 +90,10 @@ def audit_case_ledger(cohort, conditions, reviewed_items):
     for qid in cohort:
         full = set(seen[qid, "human_sufficient"]["delivered_source_sha256"])
         removed = set(seen[qid, "critical_premise_removed"]["delivered_source_sha256"])
-        if full.issubset(removed):
+        # A premise-removal intervention must ONLY remove previously
+        # delivered evidence; introducing or replacing sources confounds
+        # both refusal and grounded-answer comparisons.
+        if not removed < full:
             return "critical-premise-not-actually-removed"
     for condition in CONDITIONS:
         claimed = conditions[condition]

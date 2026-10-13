@@ -120,6 +120,27 @@ class OriginalAttestationTests(unittest.TestCase):
         self.reviewed[2]["cited_source_sha256"][0] = new_fingerprint
         self.assertIsNone(self.audit())
 
+
+    def test_same_original_id_cannot_have_different_content_across_conditions(self):
+        # q1-b occurs in ordinary, sufficient and premise-removed conditions.
+        # Every reviewed per-row fingerprint is updated to match the forged
+        # source, so per-row hash equality alone would miss this inconsistency.
+        src = self.originals["items"][1]["delivered_sources"][0]
+        src["content"] = "Rewritten source with the same original ID."
+        src["end"] = len(src["content"].encode("utf-8"))
+        self.reviewed[1]["delivered_source_sha256"][0] = source_fingerprint(src)
+        self.assertEqual(
+            self.audit(), "original-source-identity-reused-with-different-bytes"
+        )
+
+    def test_same_original_id_cannot_change_owner_metadata_across_conditions(self):
+        src = self.originals["items"][1]["delivered_sources"][0]
+        src["root"] = "reassigned-owner"
+        self.reviewed[1]["delivered_source_sha256"][0] = source_fingerprint(src)
+        self.assertEqual(
+            self.audit(), "original-source-identity-reused-with-different-bytes"
+        )
+
     def test_changed_utf8_offset_is_rejected(self):
         self.originals["items"][2]["delivered_sources"][0]["end"] += 2
         self.assertEqual(self.audit(), "original-case-bytes-malformed")

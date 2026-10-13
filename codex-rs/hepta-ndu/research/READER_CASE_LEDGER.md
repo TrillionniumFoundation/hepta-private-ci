@@ -70,3 +70,12 @@ of at least 75 percent grounded responses with sufficient evidence and
 Default CI has NO reviewer material and must report 768 blocked rows, zero
 planned neural executions, zero neural calls and production_accepted false.
 CI runs the signature and case-ledger tests plus scoped Ruff F/E9 lint.
+
+## Non-confounded premise-removal contract
+
+The `critical_premise_removed` source-fingerprint set must be a **strict subset**
+of the *same question's* `human_sufficient` set. The comparison rejects any
+additional or replacement source, not just a missing necessary source. It is
+not sufficient for the new set to omit one source while silently inserting
+another: doing so changes both the intervention and the available evidence.
+This check still cannot independently judge semantic sufficiency.

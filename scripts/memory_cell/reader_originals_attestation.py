@@ -144,6 +144,10 @@ def audit_originals(cohort, model_binding, reviewed_items, originals):
         return "original-source-manifest-incomplete"
     expected = {(qid, arm) for qid in cohort for arm in CONDITIONS}
     original_by_key = {}
+    # Stable source identity cannot silently change owner, version, timestamp
+    # or original bytes between the four experimental conditions. Different
+    # UTF-8 excerpt windows over the SAME immutable original remain valid.
+    source_origins = {}
     try:
         size = 0
         for row in originals["items"]:
@@ -177,6 +181,14 @@ def audit_originals(cohort, model_binding, reviewed_items, originals):
                           + 4*len(input_ids) + len(answer.encode("utf-8")))
             for source in sources:
                 fingerprint = source_fingerprint(source)
+                source_key = (source["scope"], source["identity"])
+                provenance = tuple(source[field] for field in (
+                    "root", "session", "observed_at", "content"
+                ))
+                if (source_key in source_origins and
+                        source_origins[source_key] != provenance):
+                    return "original-source-identity-reused-with-different-bytes"
+                source_origins[source_key] = provenance
                 if (source["identity"] in identities or source["scope"] != question["scope"]
                         or _datetime(source["observed_at"]) > timestamp):
                     return "original-source-scope-time-or-identity-invalid"

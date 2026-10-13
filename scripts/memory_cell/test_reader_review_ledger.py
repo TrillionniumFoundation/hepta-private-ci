@@ -95,6 +95,21 @@ class SignedReaderCaseLedgerTests(unittest.TestCase):
         removed["delivered_source_sha256"] = list(human["delivered_source_sha256"])
         self.assertEqual(self.audit(), "critical-premise-not-actually-removed")
 
+
+    def test_removed_premise_must_not_inject_an_additional_source(self):
+        row = next(x for x in self.gate["reviewed_items"]
+                   if x["item_id"] == self.gate["cohort"][0]
+                   and x["condition"] == "critical_premise_removed")
+        row["delivered_source_sha256"].append("f" * 64)
+        self.assertEqual(self.audit(), "critical-premise-not-actually-removed")
+
+    def test_removed_premise_must_not_swap_in_a_different_source(self):
+        row = next(x for x in self.gate["reviewed_items"]
+                   if x["item_id"] == self.gate["cohort"][0]
+                   and x["condition"] == "critical_premise_removed")
+        row["delivered_source_sha256"] = ["f" * 64]
+        self.assertEqual(self.audit(), "critical-premise-not-actually-removed")
+
     def test_false_aggregate_is_rejected_even_when_row_schema_is_valid(self):
         self.gate["conditions"]["human_sufficient"]["grounded_and_cited"] = 19
         self.assertEqual(self.audit(),

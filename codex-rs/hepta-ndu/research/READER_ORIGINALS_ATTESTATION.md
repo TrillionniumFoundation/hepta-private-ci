@@ -99,3 +99,14 @@ No Reader/Encoder weights, NDU/Riccati/FBSDE math, production serving,
 full-regression blocking-ci, or independent natural-task results change.
 `production_accepted=false`, `human_review_available=false`,
 `neural_calls=0` in default CI. Full 768-row matrix remains blocked.
+
+## Cross-condition original-source immutability
+
+Within each exact scope, an original source `identity` reused by any reviewed
+question/condition must keep the same root, session/version, observed timestamp,
+and **full original UTF-8 content bytes**. Distinct byte windows on the same
+immutable original are permitted. A change to the source's original bytes or
+owner/version under the same identity rejects the complete review census, even
+if individual per-arm hashes and reviewer rows were recomputed consistently.
+This is an identity-consistency check, not proof that the externally supplied
+owner records or human assessments are authentic.
