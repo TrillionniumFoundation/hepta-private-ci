@@ -12,10 +12,10 @@ import hashlib
 import json
 from pathlib import Path
 import re
-import stat
 
 from reader_originals_attestation import (load_strict_json_file, canonical_sha,
                                           has_answer_beyond_evidence_labels,
+                                          read_no_symlink_file,
                                           NONCANONICAL_CITE, _datetime)
 from reader_review_handoff import _write_private, _write_private_lines
 from reader_review_ledger import CONDITIONS
@@ -50,11 +50,7 @@ def _file(path, pin):
     path = Path(path)
     if path.is_symlink() or any(p.is_symlink() for p in path.parents):
         raise ValueError("review packet path has symlink")
-    info = path.stat()
-    if not stat.S_ISREG(info.st_mode) or stat.S_IMODE(info.st_mode) & 0o077:
-        raise ValueError("review input must be an owner-only regular file")
-    with path.open("rb") as f:
-        raw = f.read(MAX_FILE_BYTES + 1)
+    raw = read_no_symlink_file(path, MAX_FILE_BYTES, private=True)
     if not raw or len(raw) > MAX_FILE_BYTES or hashlib.sha256(raw).hexdigest() != pin:
         raise ValueError("review input raw-file pin or byte budget mismatch")
     return raw

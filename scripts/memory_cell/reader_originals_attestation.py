@@ -7,8 +7,10 @@ No artificial negative labels are generated for absent or failed evidence.
 from datetime import datetime
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
+import stat
 
 from reader_review_ledger import CONDITIONS
 
@@ -52,6 +54,51 @@ def canonical_sha(value):
         allow_nan=False).encode("utf-8")).hexdigest()
 
 
+def read_no_symlink_file(path, max_bytes, *, private=False):
+    """Race-safe, bounded POSIX read through one no-follow FD per path component.
+
+    A Path.is_symlink() check alone is insufficient: an untrusted file OR
+    ancestor directory can be replaced after the check but before open().
+    Pin verification still occurs at the caller on the returned exact bytes.
+    No file content is ever used to authenticate an owner or reviewer.
+    """
+    path = Path(path)
+    if (".." in path.parts or type(max_bytes) is not int or max_bytes < 1
+            or not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "O_DIRECTORY")):
+        raise ValueError("no-follow input path and positive byte limit required")
+    parts = Path(os.path.abspath(os.fspath(path))).parts
+    if len(parts) < 2 or parts[0] != os.sep:
+        raise ValueError("absolute input path required")
+    directory_flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    file_flags = os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK
+    directory_fd = None
+    try:
+        directory_fd = os.open(os.sep, directory_flags)
+        for name in parts[1:-1]:
+            next_fd = os.open(name, directory_flags, dir_fd=directory_fd)
+            os.close(directory_fd)
+            directory_fd = next_fd
+        file_fd = os.open(parts[-1], file_flags, dir_fd=directory_fd)
+        try:
+            info = os.fstat(file_fd)
+            if not stat.S_ISREG(info.st_mode):
+                raise ValueError("review input must be an owner-only regular file"
+                                 if private else "reviewed JSON must be a regular file")
+            if private and stat.S_IMODE(info.st_mode) & 0o077:
+                raise ValueError("review input must be an owner-only regular file")
+            with os.fdopen(file_fd, "rb") as stream:
+                file_fd = None
+                return stream.read(max_bytes + 1)
+        finally:
+            if file_fd is not None:
+                os.close(file_fd)
+    except OSError as error:
+        raise ValueError("symlink or inaccessible reviewed input path") from error
+    finally:
+        if directory_fd is not None:
+            os.close(directory_fd)
+
+
 def load_strict_json_file(path, *, expected_file_sha256=None,
                           require_pin=False, max_bytes=MAX_ATTESTATION_FILE_BYTES):
     """Read one bounded ORIGINAL JSON file, rejecting duplicate keys and byte drift.
@@ -76,8 +123,7 @@ def load_strict_json_file(path, *, expected_file_sha256=None,
         raise ValueError("symlink in reviewed JSON file path")
     if not file.is_file():
         raise ValueError("reviewed JSON must be a regular file")
-    with file.open("rb") as stream:
-        raw = stream.read(max_bytes + 1)
+    raw = read_no_symlink_file(file, max_bytes)
     if not raw or len(raw) > max_bytes:
         raise ValueError("reviewed JSON file byte limit")
     if (expected_file_sha256 is not None and
