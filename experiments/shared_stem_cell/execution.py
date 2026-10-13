@@ -84,8 +84,11 @@ def write_once(path: Path, value):
 
 def tensor_digest(value: torch.Tensor) -> str:
     value = value.detach().cpu().contiguous()
+    # dtype-view requires at least one dimension. Preserve the ORIGINAL shape
+    # in the digest header, flatten only the byte transport. Non-scalar digest
+    # bytes are unchanged, including empty and formerly noncontiguous tensors.
     return sha(canonical([str(value.dtype), list(value.shape)])
-               + value.view(torch.uint8).numpy().tobytes())
+               + value.reshape(-1).view(torch.uint8).numpy().tobytes())
 
 
 def parameters(model: nn.Module):

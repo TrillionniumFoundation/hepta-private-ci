@@ -5,11 +5,15 @@ on:
     paths:
       - "scripts/memory_cell/five_group_search.py"
       - "scripts/memory_cell/test_five_group*.py"
+      - "scripts/memory_cell/five_causal_native.py"
+      - "experiments/shared_stem_cell/execution.py"
       - ".github/workflows/hepta-five-group-search.yml"
   pull_request:
     paths:
       - "scripts/memory_cell/five_group_search.py"
       - "scripts/memory_cell/test_five_group*.py"
+      - "scripts/memory_cell/five_causal_native.py"
+      - "experiments/shared_stem_cell/execution.py"
       - ".github/workflows/hepta-five-group-search.yml"
 permissions:
   contents: read
@@ -39,21 +43,21 @@ jobs:
           python3 -m venv /tmp/hepta-five-group-python
           /tmp/hepta-five-group-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
           /tmp/hepta-five-group-python/bin/pip install packaging==25.0 numpy==2.2.6 safetensors==0.7.0 cryptography==46.0.4
-          /tmp/hepta-five-group-python/bin/pip check | tee /tmp/hepta-five-group/pip-check.log
+          /tmp/hepta-five-group-python/bin/pip check | tee /tmp/hepta-five-group/pip-check.txt
           /tmp/hepta-five-group-python/bin/pip freeze > /tmp/hepta-five-group/environment.txt
-      - name: Require actual module imports before test discovery
+      - name: Verify actual native and Group imports before source suites
         run: |
           set -euo pipefail
           PYTHONPATH=scripts/memory_cell /tmp/hepta-five-group-python/bin/python - <<'PY' | tee /tmp/hepta-five-group/import-preflight.log
-          import torch, packaging, numpy
-          from safetensors.torch import load, save
+          import packaging, numpy, torch
+          from safetensors.torch import save, load
           import five_causal_native, five_group_search
-          t = torch.arange(4, dtype=torch.float32)
-          if not torch.equal(load(save({'probe': t}))['probe'], t):
-              raise ValueError('tensor serialization roundtrip failed')
-          if t.numpy().shape != (4,):
-              raise ValueError('NumPy bridge unavailable')
-          print('GROUP_SOURCE_IMPORT_PREFLIGHT_OK_NOT_MODEL_EFFICACY')
+          x = torch.arange(4, dtype=torch.float32)
+          if not torch.equal(load(save({'x': x}))['x'], x):
+              raise ValueError('tensor roundtrip failed')
+          if x.numpy().shape != (4,):
+              raise ValueError('NumPy bridge failed')
+          print('GROUP_IMPORT_TENSOR_PREFLIGHT_PASSED_NOT_MODEL_EVIDENCE')
           PY
       - name: Preserve all inherited focused gates and test the new Group implementation
         run: |
@@ -63,7 +67,7 @@ jobs:
           "$P" -m unittest discover -s scripts/memory_cell -p test_five_causal_experiments.py -v 2>&1 | tee /tmp/hepta-five-group/contracts.log
           "$P" -m unittest discover -s scripts/memory_cell -p test_five_causal_native.py -v 2>&1 | tee /tmp/hepta-five-group/native.log
           "$P" -m unittest discover -s scripts/memory_cell -p 'test_five_group*.py' -v 2>&1 | tee /tmp/hepta-five-group/group.log
-          "$P" -m py_compile scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group_search.py scripts/memory_cell/test_five_group_interaction.py
+          "$P" -m py_compile scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group_search.py scripts/memory_cell/test_five_group_interaction.py scripts/memory_cell/test_five_group_batching.py experiments/shared_stem_cell/execution.py
       - name: Record source and failure artifacts without model weights
         if: always()
         run: |
@@ -71,7 +75,7 @@ jobs:
           mkdir -p /tmp/hepta-five-group/source
           git rev-parse HEAD > /tmp/hepta-five-group/tested-commit.txt
           git rev-parse HEAD^{tree} > /tmp/hepta-five-group/tested-tree.txt
-          cp scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group*.py .github/workflows/hepta-five-group-search.yml /tmp/hepta-five-group/source/
+          cp scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group*.py scripts/memory_cell/five_causal_native.py experiments/shared_stem_cell/execution.py .github/workflows/hepta-five-group-search.yml /tmp/hepta-five-group/source/
           (cd /tmp/hepta-five-group && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()

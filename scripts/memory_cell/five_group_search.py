@@ -29,6 +29,7 @@ ARCHITECTURE = "state-candidate-interaction-v2"
 PREPROCESSOR = "five-group.public-view-and-raw-answer.mean-pool.v1"
 MENU = {"rule": "empty-then-singletons-then-source-order-pairs-v1", "maximum_sources": 8}
 MODES = tuple(c.ARMS["system2"]) + tuple(c.ARMS["ndu"])
+ENCODING_EXECUTION = "ordered-chunks-32-items-32768-padded-tokens-v1"
 
 
 def require(ok, message):
@@ -288,33 +289,86 @@ class NativeGroupOwner:
         require(self.encoder.simulated is False, "synthetic Group Encoder forbidden")
         self.load_cost = load_cost
         self.encoder_calls = 0
+        self.encoder_batches = []
+        self.last_run_cost = None
 
-    def encode(self, texts):
+    def encode(self, texts, *, deadline=None):
+        """Preserve all ordered views within the EXISTING physical batch caps.
+
+        Eight sources produce 37 views, exceeding LocalEncoder's 32-item cap.
+        Chunk size also respects its 32768 padded-token cap at the configured
+        maximum length. No dropped views, truncation, retry or partial return.
+        """
         require(not self.closed, "closed Group owner")
-        with count_forwards(self.encoder.model) as calls:
-            try:
-                result = self.encoder.encode(texts)
-            finally:
-                self.encoder_calls += calls["model_calls"]
-        return result
+        require(isinstance(texts, list) and 1 <= len(texts) <= 37
+                and all(isinstance(t, str) and t for t in texts), "bounded Group text census")
+        maximum = self.encoder.maximum_tokens
+        require(type(maximum) is int and 8 <= maximum <= 8192, "Encoder token ceiling")
+        require(deadline is None or c.finite(deadline), "invalid encoding deadline")
+        limit = min(32, 32768 // maximum)
+        chunks = []
+        for offset in range(0, len(texts), limit):
+            require(deadline is None or time.perf_counter() < deadline, "deadline before Encoder chunk")
+            part = texts[offset:offset+limit]
+            row = {"offset": offset, "items": len(part), "public_texts_sha256": c.digest(part),
+                   "status": "failed", "execution_profile": ENCODING_EXECUTION}
+            with measured() as cost, count_forwards(self.encoder.model) as calls:
+                try:
+                    value = self.encoder.encode(part)
+                    require(isinstance(value, torch.Tensor) and value.shape == (len(part), self.controller.width)
+                            and value.dtype == torch.float32 and value.device.type == "cpu"
+                            and bool(torch.isfinite(value).all()), "invalid Encoder chunk output")
+                    require(deadline is None or time.perf_counter() < deadline, "deadline after Encoder chunk")
+                    chunks.append(value.detach().clone())
+                    row["status"] = "succeeded"
+                except Exception as error:
+                    row["error"] = type(error).__name__ + ": " + str(error)[:512]
+                    raise
+                finally:
+                    self.encoder_calls += calls["model_calls"]
+                    row["actual_forwards"] = calls["model_calls"]
+                    # cost is finalized by the context manager on both paths.
+                    row["cost"] = cost
+                    self.encoder_batches.append(row)
+        return torch.cat(chunks, dim=0)
 
     def run(self, request, *, mode, timeout, emit):
         require(not self.closed and c.finite(timeout, .01, 3600), "closed owner/timeout")
         started, enc_before = time.perf_counter(), self.encoder_calls
-        calls_before = len(self.native.observations)
+        calls_before, batches_before = len(self.native.observations), len(self.encoder_batches)
+        reader_attempts = reader_errors = 0
         deadline = started + timeout
+        self.last_run_cost = None
         def read(view):
+            nonlocal reader_attempts, reader_errors
             require(time.perf_counter() < deadline, "deadline before native Reader")
-            return self.native.answer({"request": view, "checkpoint_sha256": self.spec["reader_checkpoint_sha256"],
-                                       "bindings": self.spec["bindings"], "timeout_seconds": min(3600, max(.01, deadline-time.perf_counter()))},
-                                      arm="group-shared-reader")
-        result = search_views(request, self.controller, self.encode, read, mode=mode,
-                              maximum_calls=self.spec["maximum_reader_calls"], call_cost=self.spec["call_cost"],
-                              threshold=self.spec["confidence_threshold"], seed=int(c.digest(request)[:8], 16),
-                              deadline=deadline, emit=emit)
-        reader_forwards = sum(x["model_calls"] for x in self.native.observations[calls_before:])
-        result["measured"] = {"wall_seconds": time.perf_counter()-started, "encoder_forwards": self.encoder_calls-enc_before,
-                              "reader_forwards": reader_forwards, "reader_resource_rows": self.native.observations[calls_before:]}
+            reader_attempts += 1
+            try:
+                return self.native.answer({"request": view, "checkpoint_sha256": self.spec["reader_checkpoint_sha256"],
+                                           "bindings": self.spec["bindings"], "timeout_seconds": min(3600, max(.01, deadline-time.perf_counter()))},
+                                          arm="group-shared-reader")
+            except Exception:
+                reader_errors += 1
+                raise
+        try:
+            result = search_views(request, self.controller, lambda texts: self.encode(texts, deadline=deadline), read, mode=mode,
+                                  maximum_calls=self.spec["maximum_reader_calls"], call_cost=self.spec["call_cost"],
+                                  threshold=self.spec["confidence_threshold"], seed=int(c.digest(request)[:8], 16),
+                                  deadline=deadline, emit=emit)
+        finally:
+            observations = self.native.observations[calls_before:]
+            known = sum(x["model_calls"] for x in observations)
+            # NativeSession may fail after a forward before recording a result.
+            # The missing portion remains unknown, not silently imputed to zero.
+            self.last_run_cost = {"wall_seconds": time.perf_counter()-started,
+                "encoder_forwards": self.encoder_calls-enc_before,
+                "encoder_batches": deepcopy(self.encoder_batches[batches_before:]),
+                "reader_requests_attempted": reader_attempts, "reader_requests_failed": reader_errors,
+                "reader_forwards": known if reader_errors == 0 else None,
+                "reader_forwards_known_lower_bound": known,
+                "reader_resource_rows": deepcopy(observations), "encoding_execution": ENCODING_EXECUTION,
+                "energy_joules": None, "active_flops": None}
+        result["measured"] = self.last_run_cost
         return result
 
     def close(self):
@@ -354,6 +408,7 @@ def run_registered(bundle, review, reader_review, root, output, experiment):
             previous = c.journal_append(journal, {"event": "started", "trial_id": r["trial_id"], "request_sha256": request_sha}, previous)
             owner, record, started = None, {"event": "finished", "trial_id": r["trial_id"], "request_sha256": request_sha,
                                            "status": "failed", "result": None}, time.perf_counter()
+            trace_path = None
             try:
                 owner = NativeGroupOwner(root, r["checkpoint_sha256"])
                 require(owner.spec["bindings"] == r["bindings"], "registered Group bindings differ")
@@ -379,11 +434,15 @@ def run_registered(bundle, review, reader_review, root, output, experiment):
                 record["partial_compute_is_zero"] = False
             finally:
                 if owner is not None:
+                    record["observed_group_cost"] = owner.last_run_cost
+                    record["load_cost"] = owner.load_cost
                     try:
                         owner.close()
                     except Exception as error:
                         record["cleanup_error"] = type(error).__name__ + ": " + str(error)[:512]
                         record["status"] = "failed"
+                if trace_path is not None and trace_path.is_file():
+                    record["action_trace_sha256"] = c.file_sha(trace_path)
                 record["wall_seconds_including_process_start"] = time.perf_counter()-started
                 if record["wall_seconds_including_process_start"] > r["timeout_seconds"]:
                     record["status"] = "timeout"
@@ -394,7 +453,8 @@ def run_registered(bundle, review, reader_review, root, output, experiment):
     c.check_materials(bundle, root, experiment)
     receipt = {"schema": "hepta.five-group.execution.v1", "bundle_sha256": c.digest(bundle), "experiment": experiment,
                "planned": len(rows), "failed": failures, "raw_sha256": c.file_sha(output / "raw-journal.jsonl"),
-               "profile": PROFILE, "architecture": ARCHITECTURE, "model_loads_included_in_wall_time": True,
+               "profile": PROFILE, "architecture": ARCHITECTURE, "encoding_execution": ENCODING_EXECUTION,
+               "model_loads_included_in_wall_time": True,
                "shared_across_nodes_not_across_control_trials": True, "same_budget_is_not_matched_compute": True,
                "hard_kernel_preemption": False, "general_fbsde": False, "production_authority": False}
     c.write_new(output / "execution-receipt.json", receipt)
