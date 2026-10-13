@@ -2,6 +2,8 @@
 
 from copy import deepcopy
 import unittest
+import tempfile
+from pathlib import Path
 
 from event_citation_delivery_gap import (
     ARMS, KINDS, _one, reconcile,
@@ -107,6 +109,16 @@ class DeliveredCitationGapTests(unittest.TestCase):
             a,b=fixture();a[0]["receipt"][field]=value
             with self.subTest(field=field),self.assertRaisesRegex(ValueError,"promoted"):
                 reconcile(a,b)
+
+    def test_old_python_streaming_sha_checks_bytes_before_zip_open(self):
+        # Python 3.10 has no hashlib.file_digest. Wrong transport bytes must
+        # fail by SHA instead of an AttributeError or a ZIP parser traceback.
+        from event_citation_delivery_gap import audit_archive
+        with tempfile.TemporaryDirectory() as temp:
+            tampered = Path(temp) / "untrusted.zip"
+            tampered.write_bytes(b"not the pinned original Qwen artifact")
+            with self.assertRaisesRegex(ValueError,"transport SHA256 differs"):
+                audit_archive(tampered)
 
     def test_raw_selected_must_equal_delivered_original_source_order(self):
         a,b=fixture();a[0]["selected"]=["another-source"]

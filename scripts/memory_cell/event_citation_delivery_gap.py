@@ -219,8 +219,11 @@ def audit_archive(path: Path):
     require(path.is_file() and not path.is_symlink()
             and 0 < path.stat().st_size <= 32 * 1024 * 1024,
             "bounded regular historical ZIP required")
+    verifier = hashlib.sha256()
     with path.open("rb") as stream:
-        actual = hashlib.file_digest(stream,"sha256").hexdigest()
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            verifier.update(block)
+    actual = verifier.hexdigest()
     require(actual == ORIGINAL_MODEL_ZIP_SHA256,
             "original model transport SHA256 differs")
     with zipfile.ZipFile(path) as z:
