@@ -386,7 +386,9 @@ mod tests {
         assert!(validate_selected_route_binding(&plan, &scope, &split_id, &current).is_ok());
 
         let another_split = StableId::new("different-split").expect("other split");
-        assert!(validate_selected_route_binding(&plan, &scope, &another_split, &current).is_err());
+        assert!(
+            validate_selected_route_binding(&plan, &scope, &another_split, &current).is_err()
+        );
         let another_generation = CellSplitExecutionPlanV1 {
             child_generation: 9,
             ..plan.clone()
