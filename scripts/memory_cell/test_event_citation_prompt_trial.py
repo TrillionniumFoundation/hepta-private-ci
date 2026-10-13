@@ -116,6 +116,12 @@ class PromptTests(unittest.TestCase):
         self.assertEqual(scored["unbound_label_occurrences"], ["E7"])
         self.assertFalse(scored["complete_citation_chain"])
         self.assertTrue(scored["formal_requirements_are_not_human_verified"])
+        invented = score_one(
+            row("premise_chain", "site_11223344 [E1] [E2] [E7]", receipt=receipt),
+            truth,
+        )
+        self.assertEqual(invented["unbound_label_occurrences"], ["E7"])
+        self.assertFalse(invented["complete_citation_chain"])
 
     def test_missing_prerequisite_remains_a_delivery_failure(self):
         receipt, truth = fixture()
