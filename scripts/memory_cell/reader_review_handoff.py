@@ -93,7 +93,10 @@ def prepare_cases(originals):
             raise ValueError("question changed between review conditions")
         full = set(ledger_by_key[qid, "human_sufficient"]["delivered_source_sha256"])
         removed = set(ledger_by_key[qid, "critical_premise_removed"]["delivered_source_sha256"])
-        if not full or full.issubset(removed):
+        # The removal arm must be a STRICT SUBSET of the sufficient arm.
+        # Merely dropping one fact while introducing a different fact would
+        # confound a source-withholding experiment despite a full census.
+        if not full or not removed < full:
             raise ValueError("sufficient/removed provenance not differentiated")
         if by_key[qid, "no_evidence"]["delivered_sources"]:
             raise ValueError("no-evidence condition not empty")

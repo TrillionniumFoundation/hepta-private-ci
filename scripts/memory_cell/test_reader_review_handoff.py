@@ -137,6 +137,23 @@ class BlindedReviewHandoffTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "not differentiated"):
             prepare_cases(bad)
 
+    def test_removed_condition_cannot_replace_a_missing_source(self):
+        # This formerly passed the weak "not full.issubset(removed)" test:
+        # a necessary fact was removed but a NEW fact was smuggled in.
+        bad = copy.deepcopy(self.originals)
+        removed = next(r for r in bad["items"]
+                       if r["item_id"] == "q1"
+                       and r["condition"] == "critical_premise_removed")
+        injected = copy.deepcopy(removed["delivered_sources"][0])
+        injected["identity"] = "q1-independent-replacement"
+        injected["root"] = "root-q1-independent-replacement"
+        injected["content"] = "Unregistered replacement premise."
+        injected["start"] = 0
+        injected["end"] = len(injected["content"].encode("utf-8"))
+        removed["delivered_sources"].append(injected)
+        with self.assertRaisesRegex(ValueError, "not differentiated"):
+            prepare_cases(bad)
+
     def test_unaligned_utf8_and_future_source_fail_before_writing(self):
         for future in (False, True):
             bad = copy.deepcopy(self.originals)
