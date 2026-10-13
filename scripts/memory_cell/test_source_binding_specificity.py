@@ -79,6 +79,14 @@ class QuestionBindingTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             question_binding(rows, cases)
 
+    def test_distinct_original_questions_cannot_reuse_reader_identity(self):
+        rows, cases = fixture()
+        for row in rows:
+            if row["question_id"] == "q2":
+                row["actual_reader_question_id"] = "paraphrase-q1"
+        with self.assertRaisesRegex(ValueError, "reused question identity"):
+            question_binding(rows, cases)
+
     def test_original_unpaired_question_is_counted_not_discarded(self):
         rows, cases = fixture()
         only_one = question_binding(rows[:4], cases[:1])

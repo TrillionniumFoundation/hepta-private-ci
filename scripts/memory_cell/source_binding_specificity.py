@@ -40,7 +40,7 @@ def question_binding(rows, cases):
     if len(keys) != len(expected) or len(set(keys)) != len(keys) or set(keys) != expected:
         raise ValueError("missing/duplicate original candidate model call")
     indexed = dict(zip(keys, rows, strict=True))
-    reader_profiles, prompt_ids = set(), {}
+    reader_profiles, prompt_ids, reader_question_ids = set(), {}, {}
     for case in cases:
         qid, scope = case["query"]["identity"], case["scope"]
         prompts, questions = set(), set()
@@ -79,8 +79,15 @@ def question_binding(rows, cases):
         if len(prompts) != 1 or len(questions) != 1:
             raise ValueError("source question drift between score calls")
         prompt_ids[qid] = next(iter(prompts))
-    if len(reader_profiles) != 1 or len(set(prompt_ids.values())) != len(prompt_ids):
-        raise ValueError("mixed reader or indistinguishable question prompts")
+        reader_question_ids[qid] = next(iter(questions))
+    if (
+        len(reader_profiles) != 1
+        or len(set(prompt_ids.values())) != len(prompt_ids)
+        or len(set(reader_question_ids.values())) != len(reader_question_ids)
+    ):
+        raise ValueError(
+            "mixed reader or indistinguishable question prompts or reused question identity"
+        )
     pairs, completed, missing, unequal, repeated, unpaired = [], 0, 0, 0, 0, []
     improved, dual_gains = 0, 0
     for scope, scoped in sorted(groups.items()):
