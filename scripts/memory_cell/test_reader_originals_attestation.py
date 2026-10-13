@@ -3,8 +3,10 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+import os
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from reader_originals_attestation import (
     SCHEMA, audit_originals, canonical_sha, load_strict_json_file,
@@ -273,6 +275,56 @@ class OriginalFilePinTests(unittest.TestCase):
                     alias / path.name, expected_file_sha256=sha, require_pin=True
                 )
 
+
+
+    def test_source_file_swapped_to_symlink_after_precheck_is_rejected(self):
+        # An identical target and valid out-of-band byte pin must not let a
+        # replacement symlink slip through the prior Path.is_symlink check.
+        with tempfile.TemporaryDirectory() as root:
+            raw = b'{"reviewed":true}'
+            path, sha = self.source_bytes(root, raw)
+            matching = Path(root) / "matching-bytes.json"
+            matching.write_bytes(raw)
+            real_open, swaps = os.open, []
+
+            def swap_before_open(name, flags, **kwargs):
+                if name == path.name and "dir_fd" in kwargs and not swaps:
+                    path.unlink()
+                    path.symlink_to(matching)
+                    swaps.append(True)
+                return real_open(name, flags, **kwargs)
+
+            with patch("reader_originals_attestation.os.open",
+                       side_effect=swap_before_open):
+                with self.assertRaisesRegex(ValueError, "symlink"):
+                    load_strict_json_file(path, expected_file_sha256=sha,
+                                          require_pin=True)
+            self.assertEqual(swaps, [True])
+
+    def test_source_parent_swapped_to_symlink_after_precheck_is_rejected(self):
+        with tempfile.TemporaryDirectory() as root:
+            parent = Path(root) / "source-folder"
+            parent.mkdir()
+            path = parent / "originals.json"
+            raw = b'{"reviewed":true}'
+            path.write_bytes(raw)
+            sha = hashlib.sha256(raw).hexdigest()
+            relocated = Path(root) / "relocated-source"
+            real_open, swaps = os.open, []
+
+            def swap_directory(name, flags, **kwargs):
+                if name == parent.name and "dir_fd" in kwargs and not swaps:
+                    parent.rename(relocated)
+                    parent.symlink_to(relocated, target_is_directory=True)
+                    swaps.append(True)
+                return real_open(name, flags, **kwargs)
+
+            with patch("reader_originals_attestation.os.open",
+                       side_effect=swap_directory):
+                with self.assertRaisesRegex(ValueError, "symlink"):
+                    load_strict_json_file(path, expected_file_sha256=sha,
+                                          require_pin=True)
+            self.assertEqual(swaps, [True])
 
 
 class VerbatimRefusalAttestationTests(unittest.TestCase):

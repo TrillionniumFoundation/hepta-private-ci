@@ -3,8 +3,10 @@ import copy
 import hashlib
 import json
 from pathlib import Path
+import os
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from reader_review_handoff import prepare_handoff
 from reader_review_intake import reconcile_handoff
@@ -493,6 +495,47 @@ class ReviewIntakeTests(unittest.TestCase):
         self.receipt_pin = hashlib.sha256(receipt_file.read_bytes()).hexdigest()
         with self.assertRaisesRegex(ValueError, "noncanonical reviewer-visible"):
             self.run_intake()
+        self.assertFalse(self.output.exists())
+
+
+    def test_reviewer_form_file_symlink_swap_cannot_pass_pinned_input(self):
+        # Same content and out-of-band hash are insufficient if the input
+        # inode is swapped for a symlink after the preliminary path check.
+        matching = self.root / "same-raw-review.jsonl"
+        matching.write_bytes(self.first.read_bytes())
+        matching.chmod(0o600)
+        real_open, swaps = os.open, []
+
+        def swap_file(name, flags, **kwargs):
+            if name == self.first.name and "dir_fd" in kwargs and not swaps:
+                self.first.unlink()
+                self.first.symlink_to(matching)
+                swaps.append(True)
+            return real_open(name, flags, **kwargs)
+
+        with patch("reader_originals_attestation.os.open",
+                   side_effect=swap_file):
+            with self.assertRaisesRegex(ValueError, "symlink"):
+                self.run_intake()
+        self.assertEqual(swaps, [True])
+        self.assertFalse(self.output.exists())
+
+    def test_reviewer_permission_swap_after_precheck_is_rejected(self):
+        # Owner-only permissions are checked on the OPEN descriptor, not
+        # the path metadata obtained before the open operation.
+        real_open, swaps = os.open, []
+
+        def change_mode(name, flags, **kwargs):
+            if name == self.first.name and "dir_fd" in kwargs and not swaps:
+                self.first.chmod(0o644)
+                swaps.append(True)
+            return real_open(name, flags, **kwargs)
+
+        with patch("reader_originals_attestation.os.open",
+                   side_effect=change_mode):
+            with self.assertRaisesRegex(ValueError, "owner-only"):
+                self.run_intake()
+        self.assertEqual(swaps, [True])
         self.assertFalse(self.output.exists())
 
 
