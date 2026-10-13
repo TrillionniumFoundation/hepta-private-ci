@@ -370,6 +370,7 @@ class ShardedReaderContractTests(unittest.TestCase):
                     plan_sha="b" * 64,
                     policy_sha="d" * 64,
                 )
+
     def test_unsealed_extra_shard_file_rejects(self):
         s = self.shards
         with tempfile.TemporaryDirectory() as tmp:
@@ -386,6 +387,7 @@ class ShardedReaderContractTests(unittest.TestCase):
                     commit="c" * 40,
                     prep_sha="a" * 64,
                 )
+
     def test_shard_indices_invalid_and_no_accidental_oracle_stage(self):
         s = self.shards
         for wrong in (

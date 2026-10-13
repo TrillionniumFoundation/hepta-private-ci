@@ -305,11 +305,9 @@ def _merge_shards(
                 expected_files.add("single-hop-control.json")
             if set(manifest) != expected_files:
                 raise ValueError("shard file census incomplete")
-            if (
-                folder.is_symlink()
-                or {entry.name for entry in folder.iterdir()}
-                != expected_files | {"sha-pins.json"}
-            ):
+            if folder.is_symlink() or {
+                entry.name for entry in folder.iterdir()
+            } != expected_files | {"sha-pins.json"}:
                 raise ValueError("unsealed or extra source-shard file")
             for filename, digest_pin in manifest.items():
                 if trial.file_sha(folder / filename) != digest_pin:
