@@ -186,6 +186,30 @@ jobs:
           set -euo pipefail
           /usr/bin/time -v -o /tmp/experience-result/write-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/experience_write_trial.py write /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --loss-backend supervised_positions --binding-objective "$HEPTA_OBJECTIVE" --parity-receipt /tmp/experience-result/source-loss-parity.json --parity-sha "$(sha256sum /tmp/experience-result/source-loss-parity.json | cut -d ' ' -f1)" 2>&1 | tee /tmp/experience-result/write.log
           sha256sum /tmp/experience-result/snapshot/READY.json > /tmp/experience-result/snapshot-pin.txt
+      - name: Verify the actual immutable source-only write objective
+        run: |
+          set -euo pipefail
+          /tmp/experience-python/bin/python - <<'PY'
+          import json,os
+          from pathlib import Path
+          ready=json.loads(Path('/tmp/experience-result/snapshot/READY.json').read_text())
+          t=ready['training']
+          assert t['binding_objective']==os.environ['HEPTA_OBJECTIVE']
+          assert t['maximum_steps']==128 and t['token_ceiling']==65536
+          assert 0<t['steps']<=128 and t['base_unchanged'] is True
+          assert t['loss_backend']=='supervised_positions'
+          assert ready['task_payload_consumed'] is False
+          assert ready['production_accepted'] is False
+          if t['binding_objective']=='source_margin':
+              assert t['binding_receipt']['forward_token_charge_factor']==2
+              assert t['actual_projection_positions']==t['supervised_tokens']
+              assert t['input_tokens']==2*t['write_schedule']['planned_input_tokens']
+              assert t['supervised_tokens']==2*t['write_schedule']['planned_supervised_tokens']
+              assert t['binding_receipt']['known_task_answers_consumed'] is False
+          else:
+              assert t['binding_receipt'] is None
+          print(json.dumps(dict(objective=t['binding_objective'],steps=t['steps'],input_tokens=t['input_tokens'],supervised_tokens=t['supervised_tokens'],training_seconds=t['training_seconds'],adapter_delta=t['adapter_delta_squared_norm']),sort_keys=True))
+          PY
       - name: Probe in-sample source facts before opening any evaluation task
         env:
           HF_HUB_OFFLINE: "1"
@@ -214,27 +238,6 @@ jobs:
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/experience-result/confusion-resource.txt /tmp/experience-python/bin/python scripts/memory_cell/source_confusion_probe.py /tmp/experience-input/observations/sources.json /tmp/experience-model /tmp/experience-result/snapshot /tmp/experience-result/source-confusion --source-sha 35756b456f75718cc422d8678ec7ae97790ca36ced625501d24884698fddab24 --stage-sha "$(sha256sum /tmp/experience-model/stage.json | cut -d ' ' -f1)" --ready-sha "$(cut -d ' ' -f1 /tmp/experience-result/snapshot-pin.txt)" --source-commit "$HEPTA_MEMORY_TESTED_COMMIT" --maximum 2 2>&1 | tee /tmp/experience-result/confusion.log
-      - name: Verify the actual immutable source-only write objective
-        run: |
-          set -euo pipefail
-          /tmp/experience-python/bin/python - <<'PY'
-          import json,os
-          from pathlib import Path
-          ready=json.loads(Path('/tmp/experience-result/snapshot/READY.json').read_text())
-          t=ready['training']
-          assert t['binding_objective']==os.environ['HEPTA_OBJECTIVE']
-          assert t['maximum_steps']==128 and t['token_ceiling']==65536
-          assert 0<t['steps']<=128 and t['base_unchanged'] is True
-          assert t['loss_backend']=='supervised_positions'
-          assert ready['task_payload_consumed'] is False
-          assert ready['production_accepted'] is False
-          if t['binding_objective']=='source_margin':
-              assert t['binding_receipt']['forward_token_charge_factor']==2
-              assert t['binding_receipt']['known_task_answers_consumed'] is False
-          else:
-              assert t['binding_receipt'] is None
-          print(json.dumps(dict(objective=t['binding_objective'],steps=t['steps'],input_tokens=t['input_tokens'],supervised_tokens=t['supervised_tokens'],training_seconds=t['training_seconds'],adapter_delta=t['adapter_delta_squared_norm']),sort_keys=True))
-          PY
       - name: Train a small read policy only from the declared calibration sources
         run: |
           set -euo pipefail
