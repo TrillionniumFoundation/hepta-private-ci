@@ -254,10 +254,7 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             .expect("snapshot")
             .events
             .iter()
-            .any(|event| matches!(
-                &event.kind,
-                SupervisorEventKind::RestartQueued
-            ))
+            .any(|event| matches!(&event.kind, SupervisorEventKind::RestartQueued))
     );
     assert_eq!(
         supervisor.tick(now + Duration::from_millis(499)),
@@ -284,10 +281,7 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             .expect("snapshot")
             .events
             .iter()
-            .any(|event| matches!(
-                &event.kind,
-                SupervisorEventKind::RestartQueued
-            ))
+            .any(|event| matches!(&event.kind, SupervisorEventKind::RestartQueued))
     );
     // The third durable claim uses 4x base backoff (1,000 ms); the
     // recovered supervisor must not spawn at 999 ms. This distinguishes
