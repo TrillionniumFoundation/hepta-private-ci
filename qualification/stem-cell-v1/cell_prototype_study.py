@@ -24,6 +24,37 @@ from development_study_data import digest, phase, write_once
 from development_study_replay import read_bytes, record
 
 ALL_ARMS = INHERITED + ARMS
+CORRELATED_ARMS = tuple('full_'+name for name in ARMS)
+PROFILES = ('diagonal', 'paired-full')
+
+
+def profile_arms(profile):
+    if type(profile) is not str or profile not in PROFILES:
+        raise ValueError('unregistered prototype covariance profile')
+    return ARMS + CORRELATED_ARMS if profile == 'paired-full' else ARMS
+
+
+def conditional_rule(name):
+    return name.startswith(('prototype_', 'full_prototype_'))
+
+
+def fit_profile(inputs, truth, features, config, teachers, profile):
+    """Retain the diagonal control; paired mode adds, never substitutes, full covariance."""
+    profile_arms(profile)
+    models, mean, scale, costs = fit_geometry_candidates(inputs,truth,features,config,teachers)
+    models = packets(models)
+    if profile == 'diagonal':
+        return models, mean, scale, costs
+    full, full_mean, full_scale, extra = fit_geometry_candidates(
+        inputs,truth,features,config,teachers,covariance='full')
+    if not torch.equal(mean,full_mean) or not torch.equal(scale,full_scale):
+        raise ValueError('paired geometry normalization differs')
+    models.update(packets(full, arms=CORRELATED_ARMS))
+    costs = {'arms': {**{'diagonal_'+n:v for n,v in costs['arms'].items()},
+                      **{'full_'+n:v for n,v in extra['arms'].items()}},
+             'current_encoder_calls':0, 'cpu_ns':costs['cpu_ns']+extra['cpu_ns'],
+             'wall_ns':costs['wall_ns']+extra['wall_ns']}
+    return models, mean, scale, costs
 
 
 def references(rows, features, origin, baseline, anchor_run, conditional_run):
@@ -40,42 +71,45 @@ def references(rows, features, origin, baseline, anchor_run, conditional_run):
     return {n:teachers[n] for n in ('frozen','new_only')}, config, source, logits
 
 
-def packets(candidates):
+def packets(candidates, *, arms=ARMS):
     return {n:({k:v for k,v in candidates['all_old' if n.endswith('all_old') else 'memory'].items()
-                 if n.startswith('prototype_') or k.startswith('routing_')}) for n in ARMS}
+                 if conditional_rule(n) or k.startswith('routing_')}) for n in arms}
 
 
-def evidence_rows(logits, inputs, ids):
+def evidence_rows(logits, inputs, ids, arms=ALL_ARMS):
     return [{'arm':n, 'sample_id':inputs[i]['sample_id'], 'input_fingerprint':inputs[i]['input_fingerprint'], 'logits':v}
-            for n in ALL_ARMS for i,v in zip(ids,logits[n].tolist())]
+            for n in arms for i,v in zip(ids,logits[n].tolist())]
 
 
-def execute(rows, features, origin, baseline, anchor_run, conditional_run, output):
+def execute(rows, features, origin, baseline, anchor_run, conditional_run, output, *, profile='diagonal'):
+    candidate_arms = profile_arms(profile)
+    all_arms = INHERITED + candidate_arms
+    version = 'v2' if profile == 'paired-full' else 'v1'
     start = time.process_time_ns(), time.perf_counter_ns()
     teachers, config, source, inherited = references(rows, features, origin, baseline, anchor_run, conditional_run)
     inputs,_ = prepare_views(rows); truth = {r['sample_id']:r['label'] for r in rows if phase(r) in ('base','adapt')}
     folder = Path(output); folder.mkdir(parents=True, exist_ok=False)
-    plan_sha = write_once(folder/'plan.json', {'schema':'hepta.cell.prototype-plan.v1', 'source':source,
-        'config':asdict(config), 'arms':ALL_ARMS, 'shrinks':SHRINKAGES, 'temperatures':TEMPERATURES,
+    plan_sha = write_once(folder/'plan.json', {'schema':'hepta.cell.prototype-plan.'+version, 'source':source,
+        **({'covariance_profile':profile} if version=='v2' else {}),
+        'config':asdict(config), 'arms':all_arms, 'shrinks':SHRINKAGES, 'temperatures':TEMPERATURES,
         'folds':FOLDS, 'joint_floor':asdict(JointFloor()), 'input_digest':digest(inputs),
         'implementation':implementation(), 'production_authorized':False})
     try:
-        models, mean, scale, costs = fit_geometry_candidates(inputs, truth, features, config, teachers)
-        models = packets(models)
+        models, mean, scale, costs = fit_profile(inputs,truth,features,config,teachers,profile)
         # Seal train-only parameters/CV before ANY new calibration decision or held-out prediction.
         inventory = {n:tensor_file(folder,n,t) for n,t in models.items()}
         training_sha = write_once(folder/'training.json', costs)
         ids = [i for i,r in enumerate(rows) if phase(r) in ('calibration','held_out')]
         cal = [j for j,i in enumerate(ids) if phase(rows[i])=='calibration']; ci = [ids[j] for j in cal]
         cal_logits = {n:v[cal] for n,v in inherited.items()}
-        for n,t in models.items(): cal_logits[n] = geometry_logits(t,(features[ci]-mean)/scale,config,conditional=n.startswith('prototype_'))
+        for n,t in models.items(): cal_logits[n] = geometry_logits(t,(features[ci]-mean)/scale,config,conditional=conditional_rule(n))
         scores = score_rows(cal_logits,rows,ci,config); decision = joint_select(scores,config)
         selection_sha = write_once(folder/'selection.json', {**decision, 'calibration_metrics':scores, 'checkpoints':inventory})
         logits = dict(inherited)
-        for n,t in models.items(): logits[n] = geometry_logits(t,(features[ids]-mean)/scale,config,conditional=n.startswith('prototype_'))
-        result = {'schema':'hepta.cell.prototype-run.v1', 'plan_sha256':plan_sha,
+        for n,t in models.items(): logits[n] = geometry_logits(t,(features[ids]-mean)/scale,config,conditional=conditional_rule(n))
+        result = {'schema':'hepta.cell.prototype-run.'+version, 'plan_sha256':plan_sha,
             'training_sha256':training_sha, 'selection_sha256':selection_sha,
-            'predictions_sha256':write_once(folder/'predictions.json',evidence_rows(logits,inputs,ids)),
+            'predictions_sha256':write_once(folder/'predictions.json',evidence_rows(logits,inputs,ids,all_arms)),
             'current_encoder_calls':0, 'production_authorized':False,
             'cpu_ns':time.process_time_ns()-start[0], 'wall_ns':time.perf_counter_ns()-start[1]}
         write_once(folder/'run.json',result); return result
@@ -109,17 +143,22 @@ def review(rows, features, origin, baseline, anchor_run, conditional_run, output
     run,run_sha = record(folder/'run.json'); plan,plan_sha = record(folder/'plan.json')
     selection,sel_sha = record(folder/'selection.json'); training,training_sha = record(folder/'training.json')
     preds,pred_sha = record(folder/'predictions.json',16_777_216); inputs,_ = prepare_views(rows)
-    if (run['schema']!='hepta.cell.prototype-run.v1' or plan['schema']!='hepta.cell.prototype-plan.v1'
+    version = 'v1' if plan.get('schema')=='hepta.cell.prototype-plan.v1' else 'v2'
+    profile = 'diagonal' if version=='v1' else plan.get('covariance_profile')
+    candidate_arms = profile_arms(profile); all_arms = INHERITED+candidate_arms
+    if version=='v2' and profile!='paired-full':
+        raise ValueError('invalid paired covariance schema')
+    if (run['schema']!='hepta.cell.prototype-run.'+version or plan['schema']!='hepta.cell.prototype-plan.'+version
         or run['production_authorized'] is not False or plan['production_authorized'] is not False or run['current_encoder_calls']!=0
         or (plan_sha,sel_sha,training_sha,pred_sha)!=(run['plan_sha256'],run['selection_sha256'],run['training_sha256'],run['predictions_sha256'])
         or plan['source']!=source or plan['input_digest']!=digest(inputs) or plan['implementation']!=implementation()
-        or digest(plan['config'])!=digest(asdict(config)) or plan['arms']!=list(ALL_ARMS)
+        or digest(plan['config'])!=digest(asdict(config)) or plan['arms']!=list(all_arms)
         or plan['shrinks']!=list(SHRINKAGES) or plan['temperatures']!=list(TEMPERATURES) or plan['folds']!=FOLDS
-        or plan['joint_floor']!=asdict(JointFloor()) or set(selection['checkpoints'])!=set(ARMS)):
+        or plan['joint_floor']!=asdict(JointFloor()) or set(selection['checkpoints'])!=set(candidate_arms)):
         raise ValueError('prototype source or protocol binding changed')
     truth = {r['sample_id']:r['label'] for r in rows if phase(r) in ('base','adapt')}
     # Training replay uses the SAME deterministic statistics routine, explicitly not an independent algorithm.
-    expected,mean,scale,costs = fit_geometry_candidates(inputs,truth,features,config,teachers); expected = packets(expected)
+    expected,mean,scale,costs = fit_profile(inputs,truth,features,config,teachers,profile)
     if set(training)!=set(costs) or set(training['arms'])!=set(costs['arms']): raise ValueError('training census changed')
     for scope in (training,*training['arms'].values()):
         for key in ('cpu_ns','wall_ns'):
@@ -130,14 +169,14 @@ def review(rows, features, origin, baseline, anchor_run, conditional_run, output
     close_tree(training['current_encoder_calls'],0)
     ids = [i for i,r in enumerate(rows) if phase(r) in ('calibration','held_out')]
     x = (features[ids]-mean)/scale; logits = dict(inherited)
-    for name in ARMS:
+    for name in candidate_arms:
         raw = read_bytes(folder/f'{name}.safetensors',1_048_576)
         if hashlib.sha256(raw).hexdigest()!=selection['checkpoints'][name]: raise ValueError('prototype checkpoint changed')
         t = load(raw)
         if set(t)!=set(expected[name]) or any(not torch.equal(v,expected[name][n]) or v.dtype!=torch.float32 for n,v in t.items()):
             raise ValueError('training-derived prototype tensors do not reproduce')
-        logits[name] = independent_forward(t,x,config,name.startswith('prototype_'))
-    expected_rows = evidence_rows(logits,inputs,ids)
+        logits[name] = independent_forward(t,x,config,conditional_rule(name))
+    expected_rows = evidence_rows(logits,inputs,ids,all_arms)
     if type(preds) is not list or len(preds)!=len(expected_rows): raise ValueError('prediction census changed')
     maximum = 0.
     for p,e in zip(preds,expected_rows):
@@ -153,7 +192,7 @@ def review(rows, features, origin, baseline, anchor_run, conditional_run, output
         scores[part] = score_rows({n:v[js] for n,v in logits.items()},rows,[ids[j] for j in js],config)
     decision = joint_select(scores['calibration'],config)
     close_tree(selection, {**decision,'calibration_metrics':scores['calibration'],'checkpoints':selection['checkpoints']})
-    return {'schema':'hepta.cell.prototype-review.v1','run_sha256':run_sha,**decision,'scores':scores,
+    return {'schema':'hepta.cell.prototype-review.'+version,'run_sha256':run_sha,**decision,'scores':scores,
         'prediction_rows':len(preds),'unique_held_out_inputs':sum(phase(r)=='held_out' for r in rows),
         'max_abs_logit_error':maximum,'argmax_reversals':0,'current_encoder_calls':0,
         'verification_cpu_ns':time.process_time_ns()-start[0], 'verification_wall_ns':time.perf_counter_ns()-start[1]}
@@ -164,8 +203,9 @@ if __name__ == '__main__':
     for name in ('source-run','dataset','consolidation-run','anchor-run','conditional-run','output'):
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--review-run',type=Path)
+    parser.add_argument('--covariance-profile',choices=PROFILES,default='diagonal')
     args = parser.parse_args(); torch.set_num_threads(2)
     rows,features,origin = source_features(args.source_run,args.dataset)
     values = (rows,features,origin,args.consolidation_run,args.anchor_run,args.conditional_run)
     if args.review_run: write_once(args.output,review(*values,args.review_run))
-    else: execute(*values,args.output)
+    else: execute(*values,args.output,profile=args.covariance_profile)
