@@ -1,0 +1,132 @@
+{
+  "all_original_answers_match": true,
+  "artifacts": {
+    "earlier": {
+      "reader_zip": "7a99db30fb5b1202fcd43073d22589b84315046dd34044277cc46351f1cbece8",
+      "replay_zip": "2445895a7d51e3173837471aa462cebede29eb3ec89653af3bd17e73b6114071",
+      "run_id": 38224780900,
+      "source_commit": "6304b451268c73f3d1a605985226b102df841bbf"
+    },
+    "later": {
+      "reader_zip": "de7087dbd3ee367475ef279d01dbeeeea46ee991b11399324289300df10c40bf",
+      "replay_zip": "442c7171cb2c522988e6e6c52b12201d1b59104702229dc256ca91b7bf6559c1",
+      "run_id": 38389920977,
+      "source_commit": "3b03ea7dee4b270bdf328251f7a404571c9d1013"
+    }
+  },
+  "both_complete_independent_replays": true,
+  "calibration_sensitive_to_one_case": true,
+  "full_lifecycle_cost": null,
+  "full_organizer_prompt_tokens_saved": 573,
+  "full_organizer_vs_full_path_complete_citation_gain": 0,
+  "full_organizer_vs_full_path_task_gain": 0,
+  "full_path_vs_single_hop_task_gain": 4,
+  "host_comparison": {
+    "earlier": {
+      "host": [
+        "AMD EPYC 9V45 96-Core Processor"
+      ],
+      "logical_cpu_records": 4,
+      "torch_inter_op": 2,
+      "torch_intra_op": 2
+    },
+    "later": {
+      "host": [
+        "AMD EPYC 9V74 80-Core Processor"
+      ],
+      "logical_cpu_records": 4,
+      "torch_inter_op": 4,
+      "torch_intra_op": 2
+    }
+  },
+  "independent_future_windows": 0,
+  "independent_human_semantic_judgments": 0,
+  "independent_task_families": 0,
+  "inference_seconds_cross_host_incomparable": true,
+  "matched_calibration_original_answers": 40,
+  "matched_evaluation_original_answers": 72,
+  "original_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+  "original_sha256": "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b",
+  "parametric_training_qualified": false,
+  "per_arm": {
+    "empty": {
+      "complete_declared_citations": 0,
+      "correct": 0,
+      "new_over_old_runtime_ratio": 1.635,
+      "new_reader_seconds": 59.084,
+      "old_reader_seconds": 36.139,
+      "prompt_tokens": 1630
+    },
+    "entity_time": {
+      "complete_declared_citations": 4,
+      "correct": 8,
+      "new_over_old_runtime_ratio": 1.784,
+      "new_reader_seconds": 141.302,
+      "old_reader_seconds": 79.196,
+      "prompt_tokens": 5752
+    },
+    "hybrid_k4": {
+      "complete_declared_citations": 1,
+      "correct": 3,
+      "new_over_old_runtime_ratio": 1.908,
+      "new_reader_seconds": 259.612,
+      "old_reader_seconds": 136.044,
+      "prompt_tokens": 10806
+    },
+    "hybrid_k4_reversed": {
+      "complete_declared_citations": 1,
+      "correct": 3,
+      "new_over_old_runtime_ratio": 1.905,
+      "new_reader_seconds": 258.743,
+      "old_reader_seconds": 135.831,
+      "prompt_tokens": 10806
+    },
+    "hybrid_k6": {
+      "complete_declared_citations": 0,
+      "correct": 2,
+      "new_over_old_runtime_ratio": 1.998,
+      "new_reader_seconds": 387.824,
+      "old_reader_seconds": 194.104,
+      "prompt_tokens": 15463
+    },
+    "organized": {
+      "complete_declared_citations": 4,
+      "correct": 8,
+      "new_over_old_runtime_ratio": 1.778,
+      "new_reader_seconds": 130.716,
+      "old_reader_seconds": 73.517,
+      "prompt_tokens": 5179
+    },
+    "program_support": {
+      "complete_declared_citations": 4,
+      "correct": 8,
+      "new_over_old_runtime_ratio": 1.783,
+      "new_reader_seconds": 130.334,
+      "old_reader_seconds": 73.115,
+      "prompt_tokens": 5179
+    },
+    "selected_k": {
+      "complete_declared_citations": 3,
+      "correct": 5,
+      "new_over_old_runtime_ratio": 1.714,
+      "new_reader_seconds": 107.161,
+      "old_reader_seconds": 62.51,
+      "prompt_tokens": 3961
+    },
+    "single_hop": {
+      "complete_declared_citations": 4,
+      "correct": 4,
+      "new_over_old_runtime_ratio": 1.759,
+      "new_reader_seconds": 116.147,
+      "old_reader_seconds": 66.037,
+      "prompt_tokens": 4575
+    }
+  },
+  "production_accepted": false,
+  "qualified_memory_accuracy_improvement": false,
+  "reader_id": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "schema": "hepta.memory-cell.two-completed-run-crosshost.v1",
+  "selected_k": 1,
+  "statistical_superiority_established": false,
+  "trainable_memory_optimizer_steps": 0
+}
