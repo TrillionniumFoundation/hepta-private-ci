@@ -48,3 +48,21 @@ async fn compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejecte
     );
     pool.close().await;
 }
+
+
+#[test]
+fn cognitive_generation_directory_sync_is_real_and_rejects_regular_files() {
+    let temp = tempfile::tempdir().expect("private cognitive durability directory");
+    sync_cognitive_directory(temp.path())
+        .expect("native filesystem supports a durable directory handle");
+    let file = temp.path().join("not-a-directory");
+    std::fs::write(&file, b"fixture").expect("create regular file");
+    assert!(
+        sync_cognitive_directory(&file).is_err(),
+        "a regular file must not masquerade as a directory durability barrier"
+    );
+    assert!(
+        sync_cognitive_directory(&temp.path().join("missing")).is_err(),
+        "missing directory must not be reported synced"
+    );
+}
