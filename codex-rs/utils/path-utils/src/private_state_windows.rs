@@ -359,8 +359,7 @@ unsafe fn dacl_grants_untrusted_access(dacl: *mut ACL, current_user: *mut c_void
 
 /// Check that a SID header and all sub-authorities fit inside the ACE.
 fn sid_length_fits_ace(ace_size: usize, sub_authority_count: u8) -> bool {
-    let Some(sid_bytes) =
-        ace_size.checked_sub(std::mem::offset_of!(ACCESS_ALLOWED_ACE, SidStart))
+    let Some(sid_bytes) = ace_size.checked_sub(std::mem::offset_of!(ACCESS_ALLOWED_ACE, SidStart))
     else {
         return false;
     };
