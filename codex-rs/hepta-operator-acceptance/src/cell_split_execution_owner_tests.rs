@@ -1822,3 +1822,52 @@ fn original_effect_withdrawn_during_final_admission_cannot_be_acknowledged() {
     assert!(owner.advance().is_err(), "lost effect remains ambiguous");
     assert_eq!(state.borrow().executions, 1);
 }
+
+#[test]
+fn final_owner_readback_cannot_acknowledge_late_local_ledger_tamper() {
+    for filename in [
+        "cell-split-frozen-plan.json",
+        "cell-split-owner-trust-pins.json",
+        "cell-split-00-prepared.json",
+        "cell-split-00-committed.json",
+        "cell-split-01-prepared.json",
+    ] {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        let port = FixturePort::new(state.clone());
+        let tamper = port.tamper_during_live_readback.clone();
+        let mut owner =
+            CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+                .expect("single writer");
+        let altered = root.path().join(filename);
+        let mut admission_reads = 0;
+        let result = owner.advance_with_admission(|| {
+            admission_reads += 1;
+            if admission_reads == 3 {
+                // The callback completes, then the last signed original
+                // owner readback mutates local state before acknowledging.
+                *tamper.borrow_mut() = Some(altered.clone());
+            }
+            Ok(())
+        });
+        assert!(
+            matches!(
+                result,
+                Err(CellSplitExecutionErrorV1::Invalid(
+                    "split ledger changed during final owner readback"
+                ))
+            ),
+            "acknowledged local tampering in {filename}"
+        );
+        assert_eq!(admission_reads, 3, "final owner readback was reached");
+        assert_eq!(owner.completed_steps(), 0);
+        assert_eq!(state.borrow().executions, 1, "original effect is real");
+        assert_eq!(
+            root.path().join("cell-split-00-committed.json").exists(),
+            filename == "cell-split-00-committed.json",
+            "the coordinator must not write its success frame"
+        );
+        assert!(owner.advance().is_err(), "corrupted intent stays denied");
+        assert_eq!(state.borrow().executions, 1, "no duplicate external effect");
+    }
+}
