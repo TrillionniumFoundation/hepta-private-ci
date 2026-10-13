@@ -238,6 +238,48 @@ class NarrowWorkspaceTests(unittest.TestCase):
                         enc(case), candidate_root="/tmp/stem-candidate",
                         stage_root="/tmp/hepta-stage")
 
+    def test_decoy_fix_reachable_only_from_hepta_not_sdk_is_rejected(self):
+        # The CLI may accidentally depend on a maintained crate, but that
+        # does not repair an unpatched Matrix SDK's own dependency subtree.
+        for repaired, owner in (
+            ("new-anymap", "upstream-sdk"),
+            ("new-blake3", "upstream-crypto"),
+        ):
+            with self.subTest(repaired=repaired):
+                candidate = metadata()
+                sdk = next(n for n in candidate["resolve"]["nodes"]
+                           if n["id"] == owner)
+                sdk["deps"] = [e for e in sdk["deps"]
+                               if e["pkg"] != repaired]
+                hepta = next(n for n in candidate["resolve"]["nodes"]
+                             if n["id"] == "hepta-sdk-id")
+                hepta["deps"].append({"pkg": repaired})
+                with self.assertRaisesRegex(
+                    ValueError, "required patched Matrix"
+                ):
+                    inspect_cargo_metadata(
+                        enc(candidate), candidate_root="/tmp/stem-candidate",
+                        stage_root="/tmp/hepta-stage")
+
+    def test_legacy_matrix_family_version_in_sdk_closure_is_rejected(self):
+        candidate = metadata()
+        candidate["packages"].append({
+            "name": "matrix-sdk-base", "id": "legacy-sdk-base",
+            "version": "0.18.0",
+            "manifest_path": "/tmp/stem-candidate/crates/matrix-sdk-base/Cargo.toml",
+        })
+        candidate["resolve"]["nodes"].append(
+            {"id": "legacy-sdk-base", "features": [], "deps": []})
+        sdk = next(n for n in candidate["resolve"]["nodes"]
+                   if n["id"] == "upstream-sdk")
+        sdk["deps"].append({"pkg": "legacy-sdk-base"})
+        with self.assertRaisesRegex(
+            ValueError, "mixed patched and legacy"
+        ):
+            inspect_cargo_metadata(
+                enc(candidate), candidate_root="/tmp/stem-candidate",
+                stage_root="/tmp/hepta-stage")
+
     def test_two_blake3_versions_cannot_pass_with_only_one_patched(self):
         case = metadata()
         case["packages"].append({
