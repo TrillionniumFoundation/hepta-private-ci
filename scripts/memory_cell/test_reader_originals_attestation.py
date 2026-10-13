@@ -274,5 +274,62 @@ class OriginalFilePinTests(unittest.TestCase):
                 )
 
 
+
+class VerbatimRefusalAttestationTests(unittest.TestCase):
+    """Synthetic fixtures are contract tests, NOT independent human reviews."""
+
+    def setUp(self):
+        self.cohort, self.binding, self.reviewed, self.originals = example()
+
+    def audit(self):
+        return audit_originals(self.cohort, self.binding,
+                               self.reviewed, self.originals)
+
+    def change_raw_and_resign_row_digest(self, text, *, qrow=0):
+        # A recomputed correct raw-answer hash alone cannot make an arbitrary
+        # answer count as the literal refusal requested by the frozen Reader.
+        self.originals["items"][qrow]["raw_answer"] = text
+        self.reviewed[qrow]["raw_answer_sha256"] = canonical_sha(text)
+
+    def test_original_true_refusal_remains_valid(self):
+        self.assertEqual(self.originals["items"][0]["raw_answer"],
+                         "I do not have enough evidence.")
+        self.assertTrue(self.reviewed[0]["exact_refusal"])
+        self.assertIsNone(self.audit())
+
+    def test_signed_true_refusal_cannot_be_substituted_with_e1_echo(self):
+        self.change_raw_and_resign_row_digest("E1")
+        self.assertEqual(self.audit(),
+                         "reviewed-exact-refusal-does-not-match-raw-reader-text")
+
+    def test_false_refusal_label_rejected_when_model_actually_refused(self):
+        self.reviewed[0]["exact_refusal"] = False
+        self.assertEqual(self.audit(),
+                         "reviewed-exact-refusal-does-not-match-raw-reader-text")
+
+    def test_refusal_with_quotes_whitespace_or_case_changes_is_not_exact(self):
+        for answer in ('"I do not have enough evidence."',
+                       'I do not have enough evidence. ',
+                       'i do not have enough evidence.',
+                       'I do not have enough evidence. [E1]'):
+            with self.subTest(raw_answer=answer):
+                self.setUp()
+                self.change_raw_and_resign_row_digest(answer)
+                self.assertIsNotNone(self.audit())
+
+    def test_unregistered_integer_verdict_cannot_pass_boolean_check(self):
+        self.reviewed[0]["exact_refusal"] = 1
+        self.assertEqual(self.audit(),
+                         "reviewed-exact-refusal-does-not-match-raw-reader-text")
+
+    def test_noncanonical_padded_citation_rejected_with_recomputed_sha(self):
+        text = "correct [E01]"
+        self.change_raw_and_resign_row_digest(text, qrow=2)
+        self.assertEqual(self.audit(),
+                         "original-answer-uses-noncanonical-source-label")
+
+    def test_canonical_citation_remains_valid(self):
+        self.assertIsNone(self.audit())
+
 if __name__ == "__main__":
     unittest.main()

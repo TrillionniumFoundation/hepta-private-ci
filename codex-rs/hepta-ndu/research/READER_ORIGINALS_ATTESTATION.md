@@ -110,3 +110,27 @@ owner/version under the same identity rejects the complete review census, even
 if individual per-arm hashes and reviewer rows were recomputed consistently.
 This is an identity-consistency check, not proof that the externally supplied
 owner records or human assessments are authentic.
+
+## Machine-verifiable exact refusals and canonical citations (research v1)
+
+The frozen Reader prompt registers the **literal** response
+`I do not have enough evidence.` for evidence-insufficient questions. It is
+not a semantic or reviewer-discretionary category. Original-source audit now
+checks both directions: `exact_refusal=true` requires exactly those original
+UTF-8 output bytes, and an actual exact refusal cannot be labeled false.
+A signed reviewed ledger and matching answer digests do **not** override this
+raw-text invariant. Other quoted, case-changed or trailing-content responses
+are not exact refusals; unknown/failed model work stays unknown.
+
+Only the actually delivered `[E1]`, `[E2]` citation syntax can be bound to
+original source fingerprints; ambiguous padded labels such as `[E01]` no
+longer alias `[E1]`. This remains a **syntax/provenance** test, not independent
+semantic judgment of grounded claims.
+
+Same-case duplicate, invalid scope and future-time errors retain their
+existing deterministic rejection semantics. Cross-condition reuse of a source
+identity with different original bytes or owner metadata remains a separate,
+fail-closed rejection. Local replay from the exact GitHub source blobs plus
+the reviewer test fixture passed 59 focused tests; hosted full regression and
+signed-source checks remain the admission gates. No independent human review
+or approval is thereby created; 768 neural rows stay blocked by default.

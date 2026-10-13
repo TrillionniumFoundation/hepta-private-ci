@@ -24,7 +24,12 @@ MAX_TOTAL_BYTES = 64 * 1024 * 1024
 MAX_ANSWER_BYTES = 16 * 1024
 MAX_PROMPT_IDS = 8192
 MAX_ATTESTATION_FILE_BYTES = 96 * 1024 * 1024
+# v1 frozen Reader contract: an exact refusal has these literal output bytes.
+# Changing this string requires a versioned prompt/review protocol, not a new
+# reviewer Boolean over arbitrary model text.
+EXACT_REFUSAL = "I do not have enough evidence."
 CITE = re.compile(r"\[E([0-9]+)\]", re.I)
+NONCANONICAL_CITE = re.compile(r"\[E0[0-9]+\]", re.I)
 
 
 def canonical_sha(value):
@@ -144,6 +149,7 @@ def audit_originals(cohort, model_binding, reviewed_items, originals):
         return "original-source-manifest-incomplete"
     expected = {(qid, arm) for qid in cohort for arm in CONDITIONS}
     original_by_key = {}
+    observed_refusal = {}
     # Stable source identity cannot silently change owner, version, timestamp
     # or original bytes between the four experimental conditions. Different
     # UTF-8 excerpt windows over the SAME immutable original remain valid.
@@ -181,6 +187,11 @@ def audit_originals(cohort, model_binding, reviewed_items, originals):
                           + 4*len(input_ids) + len(answer.encode("utf-8")))
             for source in sources:
                 fingerprint = source_fingerprint(source)
+                # Retain the historical same-case duplicate/scope/time error;
+                # cross-condition identity stability is a separate contract.
+                if (source["identity"] in identities or source["scope"] != question["scope"]
+                        or _datetime(source["observed_at"]) > timestamp):
+                    return "original-source-scope-time-or-identity-invalid"
                 source_key = (source["scope"], source["identity"])
                 provenance = tuple(source[field] for field in (
                     "root", "session", "observed_at", "content"
@@ -189,9 +200,6 @@ def audit_originals(cohort, model_binding, reviewed_items, originals):
                         source_origins[source_key] != provenance):
                     return "original-source-identity-reused-with-different-bytes"
                 source_origins[source_key] = provenance
-                if (source["identity"] in identities or source["scope"] != question["scope"]
-                        or _datetime(source["observed_at"]) > timestamp):
-                    return "original-source-scope-time-or-identity-invalid"
                 identities.add(source["identity"])
                 local_size += len(source["content"].encode("utf-8"))
                 fingerprints.append(fingerprint)
@@ -200,6 +208,10 @@ def audit_originals(cohort, model_binding, reviewed_items, originals):
             size += local_size
             if size > MAX_TOTAL_BYTES:
                 return "original-review-archive-size-budget-exceeded"
+            # A padded source label is NOT the delivered [E1]/[E2] syntax.
+            # Never silently normalize a model's invented [E01] to [E1].
+            if NONCANONICAL_CITE.search(answer):
+                return "original-answer-uses-noncanonical-source-label"
             citations = []
             for match in CITE.finditer(answer):
                 index = int(match[1])
@@ -208,6 +220,7 @@ def audit_originals(cohort, model_binding, reviewed_items, originals):
                 label = fingerprints[index-1]
                 if label not in citations:
                     citations.append(label)
+            observed_refusal[key] = answer == EXACT_REFUSAL
             original_by_key[key] = dict(
                 question_sha256=canonical_sha(question),
                 prompt_input_ids_sha256=canonical_sha(input_ids),
@@ -228,6 +241,12 @@ def audit_originals(cohort, model_binding, reviewed_items, originals):
             canonical = original_by_key[key]
             if any(row.get(field) != value for field, value in canonical.items()):
                 return "original-question-prompt-answer-or-citation-drift"
+            # This is a mechanically decidable claim, not human semantics:
+            # reviewers cannot certify an exact refusal the Reader never wrote
+            # or conceal a literal refusal in a zero-count ledger.
+            if (type(row.get("exact_refusal")) is not bool or
+                    row["exact_refusal"] != observed_refusal[key]):
+                return "reviewed-exact-refusal-does-not-match-raw-reader-text"
     except (UnicodeError, ValueError, TypeError, OverflowError, KeyError):
         return "original-case-bytes-malformed"
     return None
