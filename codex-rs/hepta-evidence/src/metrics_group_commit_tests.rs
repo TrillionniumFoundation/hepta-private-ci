@@ -98,6 +98,29 @@ fn replay_exposes_exact_committed_count_without_counting_unsynced_staging() {
 }
 
 #[test]
+fn owner_releases_writer_lock_before_each_reopen() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("lock-release.log");
+    for expected_groups in 1..=8_u64 {
+        let mut writer = MetricsGroupCommitV1::open(&path).unwrap();
+        assert!(matches!(
+            MetricsGroupCommitV1::open(&path),
+            Err(MetricsJournalErrorV1::WriterUnavailable)
+        ));
+        writer.stage(sample(MetricPhaseV1::Admission)).unwrap();
+        writer.flush().unwrap().unwrap();
+        drop(writer);
+
+        // Each new owner must recover exactly the committed prefix. The
+        // previous exclusive lock must not survive its writer lifetime.
+        let reopened = MetricsGroupCommitV1::open(&path).unwrap();
+        assert_eq!(reopened.committed_groups(), expected_groups);
+        assert_eq!(reopened.committed_rows(), expected_groups);
+        drop(reopened);
+    }
+}
+
+#[test]
 fn replay_rejects_modified_committed_payload_without_skipping_corruption() {
     let dir = tempfile::tempdir().unwrap();
     let path = dir.path().join("metrics");
