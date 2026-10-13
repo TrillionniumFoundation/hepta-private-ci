@@ -1,0 +1,121 @@
+name: Hepta pinned Encoder material audit
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - ".github/workflows/hepta-five-encoder-material-audit.yml"
+      - "experiments/shared_stem_cell/execution.py"
+      - "scripts/memory_cell/test_five_encoder_snapshot.py"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: five-encoder-material-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  pinned-snapshot-audit:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned worker and require imports
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/five-encoder-audit
+          python3 -m venv /tmp/five-encoder-venv
+          /tmp/five-encoder-venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/five-encoder-audit/install-torch.log 2>&1
+          /tmp/five-encoder-venv/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/five-encoder-audit/install-worker.log 2>&1
+          /tmp/five-encoder-venv/bin/pip check
+          /tmp/five-encoder-venv/bin/pip freeze > /tmp/five-encoder-audit/environment.txt
+      - name: Retrieve exact original material
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/five-encoder-original.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/five-encoder-original.zip | sha256sum -c -
+      - name: Diagnose every saved and materialized tensor without accepting ignored weights
+        run: |
+          set -euo pipefail
+          PYTHONPATH=scripts/memory_cell /tmp/five-encoder-venv/bin/python - <<'PY' | tee /tmp/five-encoder-audit/audit.log
+          from pathlib import Path
+          import torch
+          from safetensors.torch import load_file
+          from transformers import AutoModel
+          import five_causal_experiments as c
+          from five_native_historical_smoke import prepare_materials, snapshot, ENCODER_INVENTORY
+          from experiments.shared_stem_cell.execution import LocalEncoder, measured
+          output = Path('/tmp/five-encoder-audit')
+          with measured() as staging_cost:
+              _, clean, staging = prepare_materials(Path('/tmp/five-encoder-original.zip'), Path('/tmp/five-encoder-materials'))
+          path = clean / 'encoder'
+          snap = snapshot(path, 'encoder', ENCODER_INVENTORY)
+          with measured() as diagnostic_load:
+              model, info = AutoModel.from_pretrained(path, local_files_only=True, trust_remote_code=False,
+                  use_safetensors=True, output_loading_info=True, attn_implementation='eager')
+              model = model.cpu().float().eval().requires_grad_(False)
+          saved = {}
+          for name in snap['files']:
+              if name.endswith('.safetensors'):
+                  values = load_file(str(path/name))
+                  c.require(not (set(saved) & set(values)), 'duplicate saved tensor')
+                  saved.update(values)
+          state = model.state_dict()
+          buffers = dict(model.named_buffers())
+          def meta(v):
+              return {'shape': list(v.shape), 'dtype': str(v.dtype)}
+          differences = []
+          for name, v in sorted(saved.items()):
+              if name not in state or v.shape != state[name].shape or not torch.equal(v.to(state[name].dtype), state[name]):
+                  buffer = buffers.get(name)
+                  row = {'name': name, 'saved': meta(v), 'materialized_state': meta(state[name]) if name in state else None,
+                         'materialized_buffer': meta(buffer) if buffer is not None else None,
+                         'buffer_equal_including_dtype': bool(buffer is not None and buffer.dtype == v.dtype and torch.equal(v, buffer))}
+                  if name.endswith('.position_ids') and v.ndim == 2 and v.shape[0] == 1:
+                      row['exact_zero_based_positions'] = bool(v.dtype == torch.int64 and torch.equal(v, torch.arange(v.shape[1], dtype=torch.int64).unsqueeze(0)))
+                  differences.append(row)
+          report = {'schema': 'hepta.encoder.actual-material-audit.v1', 'model_class': type(model).__name__,
+                    'saved_tensor_count': len(saved), 'state_tensor_count': len(state), 'buffer_tensor_count': len(buffers),
+                    'loading_info': info, 'saved_differences': differences, 'state_only_names': sorted(set(state)-set(saved)),
+                    'diagnostic_load': diagnostic_load, 'staging_cost': staging_cost, 'inventory_sha256': ENCODER_INVENTORY,
+                    'strict_loader_passed': False, 'independent_capability': False, 'production_accepted': False}
+          c.write_new(output/'staging.json', staging)
+          try:
+              with measured() as strict_cost:
+                  backend = LocalEncoder(path, snap, 512)
+                  features = backend.encode(['Pinned Encoder material execution probe.'])
+                  backend.close()
+              report.update(strict_loader_passed=True, strict_load_and_probe_cost=strict_cost,
+                  probe_features_shape=list(features.shape), probe_finite=bool(torch.isfinite(features).all()),
+                  actual_probe_forwards=backend.forward_calls)
+          except Exception as error:
+              report['strict_error'] = type(error).__name__ + ': ' + str(error)
+          c.write_new(output/'audit.json', report)
+          print(c.canonical(report).decode())
+          c.require(report['strict_loader_passed'], 'strict material verification not passed; diagnostic is not admission')
+          PY
+      - name: Retain source and diagnostics without model material
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/five-encoder-audit/source
+          git rev-parse HEAD > /tmp/five-encoder-audit/source/tested-commit.txt
+          cp experiments/shared_stem_cell/execution.py .github/workflows/hepta-five-encoder-material-audit.yml /tmp/five-encoder-audit/source/
+          (cd /tmp/five-encoder-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-encoder-material-audit-not-capability
+          path: /tmp/five-encoder-audit
+          if-no-files-found: error
