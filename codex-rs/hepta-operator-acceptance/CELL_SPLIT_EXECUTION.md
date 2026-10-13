@@ -237,6 +237,18 @@ predecessor/child artifact digests and NDU snapshot digest, and re-verifies
 the signed NDU read against protected time and the current Control frontier.
 
 If this preflight rejects, it prepares no intent and invokes no effect owner.
+The live `CellSplitScopeSelectionAdmissionV1` reader also resolves the
+**independently selected successor route-fence plan commitment** for the exact
+Split ID, Scope ID and parent/child generations. The commitment must equal
+the pinned `routeFenceDigest` before preparing any mutation intent.
+It must come from current Selector-owned state, never from a copy of the
+operator configuration. This is **not** a claim that the successor route is
+already serving: only the original CNS effect owner can confirm live
+predecessor state, execute a fenced cutover and prove the successor route
+using its independently signed original commit/readback. Existing opt-in
+callers must implement this additional admission method; an unavailable
+current mapping fails closed.
+
 A selection receipt is **not** a final-use grant. The four independent
 effect services must still authenticate current Selector/NDU and one-shot
 final-use at their own mutation/readback boundaries. The current bridge is
