@@ -723,6 +723,16 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             return Err(CellSplitExecutionErrorV1::Invalid("owner trust pins drift"));
         }
         let mut predecessor = self.plan_digest.clone();
+        // Capture the unresolved intent BEFORE potentially slow remote owner
+        // verification. A later valid-looking pending frame cannot silently
+        // replace the one this invocation originally observed.
+        let pending_frame = if self.pending {
+            Some(read_frame(&frame_path(&self.root, self.cursor, "prepared"))?.ok_or(
+                CellSplitExecutionErrorV1::Invalid("pending intent disappeared"),
+            )?)
+        } else {
+            None
+        };
         // Retain the original bounded on-disk frames during the live owner
         // readbacks. A callback may take time; rechecking only the remote
         // effects would permit local journal or trust-frame replacement
@@ -774,14 +784,18 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 "unexpected successor frame; reopen required",
             ));
         }
-        let pending_frame = if self.pending {
+        if let Some(prepared) = &pending_frame {
             let step = CellSplitExecutionStepV1::at(self.cursor)
                 .ok_or(CellSplitExecutionErrorV1::Invalid("pending step index"))?;
             let intent = make_intent(&self.plan, &self.plan_digest, step, &predecessor);
-            let prepared = read_frame(&frame_path(&self.root, self.cursor, "prepared"))?.ok_or(
-                CellSplitExecutionErrorV1::Invalid("pending intent disappeared"),
-            )?;
-            if prepared != canonical_json(&intent)? {
+            if read_frame(&frame_path(&self.root, self.cursor, "prepared"))?.as_ref()
+                != Some(prepared)
+            {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "pending intent changed during live owner readback",
+                ));
+            }
+            if *prepared != canonical_json(&intent)? {
                 return Err(CellSplitExecutionErrorV1::Invalid("pending intent drift"));
             }
             if read_frame(&frame_path(&self.root, self.cursor, "committed"))?.is_some()
@@ -791,10 +805,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                     "pending cursor changed; reopen required",
                 ));
             }
-            Some(prepared)
-        } else {
-            None
-        };
+        }
         // An original owner might have been slow or adversarial while it
         // returned a signed live receipt. Do not publish a verified view from
         // locally replaced plan, signer pins or previously checked prefix.
