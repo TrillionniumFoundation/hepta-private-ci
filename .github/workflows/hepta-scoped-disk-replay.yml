@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-scoped-disk-replay-\${{ github.event.pull_request.number || github.ref }}
+  group: hepta-scoped-disk-replay-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 # Exact predecessor pair which previously exhausted Ubuntu hosted-runner disk
@@ -36,7 +36,7 @@ jobs:
       - name: Check out the exact previously failed source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: \${{ env.SOURCE_SHA }}
+          ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
 
@@ -88,7 +88,7 @@ jobs:
 
       - name: Resolve exact-source verified V8 artifacts
         env:
-          CODEX_REPO_ROOT: \${{ github.workspace }}
+          CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
@@ -117,13 +117,13 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-scoped-disk-replay-\${{ github.run_id }}-\${{ github.run_attempt }}
+          name: hepta-scoped-disk-replay-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            \${{ runner.temp }}/initial-disk.txt
-            \${{ runner.temp }}/after-reclaim.txt
-            \${{ runner.temp }}/final-disk.txt
-            \${{ runner.temp }}/rust-toolchain.txt
-            \${{ runner.temp }}/cargo-impact.json
-            \${{ runner.temp }}/scoped-replay.json*
+            ${{ runner.temp }}/initial-disk.txt
+            ${{ runner.temp }}/after-reclaim.txt
+            ${{ runner.temp }}/final-disk.txt
+            ${{ runner.temp }}/rust-toolchain.txt
+            ${{ runner.temp }}/cargo-impact.json
+            ${{ runner.temp }}/scoped-replay.json*
           if-no-files-found: warn
           retention-days: 14
