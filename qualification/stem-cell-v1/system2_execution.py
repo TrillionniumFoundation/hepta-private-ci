@@ -90,6 +90,11 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
         raise ValueError("bounded rounds required")
     if type(max_calls) is not int or not 2 <= max_calls <= 192:
         raise ValueError("bounded callback count required")
+    if policy is not None and policy.get("empirical_protocol_id") is not None:
+        from empirical_continuation import FrozenPairedCritic
+        if type(continue_values) is not FrozenPairedCritic:
+            raise ValueError("empirical policy requires the fitted frozen critic adapter")
+        continue_values.validate_binding(policy, propose, verify)
     trace, candidate, feedback, calls = [], None, None, 0
     decisions, pending_context, segment_start = [], None, None
     scope = meter.scope if meter is not None else lambda *args: contextlib.nullcontext()
@@ -110,6 +115,8 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
                                            "independent_final_evaluation", "process_energy"],
                           native_ndu_owner_integrated=False, learned_critic_validated=False,
                           full_cost_qualification=False)
+        if policy is not None and policy.get("empirical_protocol_id") is not None:
+            result["empirical_critic"] = continue_values.receipt()
         return result
 
     def invoke(kind, function, *args):
@@ -138,8 +145,12 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
                     entry["output_digest"] = _digest([result.accepted, result.feedback])
                 elif policy is not None:
                     from ndu_continuation import ContinuationEstimate
+                    expected_type = ContinuationEstimate
+                    if policy.get("empirical_protocol_id") is not None:
+                        from empirical_continuation import EmpiricalEstimate
+                        expected_type = EmpiricalEstimate
                     if result is not None:
-                        if type(result) is not ContinuationEstimate:
+                        if type(result) is not expected_type:
                             raise ValueError("a typed context-bound continuation estimate is required")
                         result.validate()
                     entry["output_digest"] = _digest(asdict(result) if result is not None else None)
