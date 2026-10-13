@@ -53,6 +53,9 @@ use crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION;
 
 #[path = "durable_payloads.rs"]
 mod payloads;
+#[cfg(windows)]
+#[path = "durable_windows.rs"]
+mod windows;
 
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
@@ -1404,12 +1407,26 @@ fn open_private(
     Ok(file)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<File, DurableRegistryError> {
+    windows::prepare_directory(root)
+}
+
+#[cfg(all(not(unix), not(windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn open_private(
+    directory: &File,
+    name: &str,
+    access: Access,
+) -> Result<File, DurableRegistryError> {
+    windows::open_private(directory, name, access)
+}
+
+#[cfg(all(not(unix), not(windows)))]
 fn open_private(
     _directory: &File,
     _name: &str,
@@ -1427,7 +1444,12 @@ fn entry_exists(directory: &File, name: &str) -> Result<bool, DurableRegistryErr
     }
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn entry_exists(directory: &File, name: &str) -> Result<bool, DurableRegistryError> {
+    windows::entry_exists(directory, name)
+}
+
+#[cfg(all(not(unix), not(windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
@@ -1438,7 +1460,12 @@ fn replace_state(directory: &File) -> Result<(), DurableRegistryError> {
         .map_err(|_| DurableRegistryError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn replace_state(directory: &File) -> Result<(), DurableRegistryError> {
+    windows::replace_state(directory)
+}
+
+#[cfg(all(not(unix), not(windows)))]
 fn replace_state(_directory: &File) -> Result<(), DurableRegistryError> {
     Err(DurableRegistryError::UnsafeStateDirectory)
 }
@@ -1478,23 +1505,6 @@ impl fmt::Display for DurableRegistryError {
 }
 
 impl std::error::Error for DurableRegistryError {}
-
-#[cfg(all(test, not(unix)))]
-mod unsupported_secure_backend_tests {
-    use super::*;
-
-    #[test]
-    fn unsupported_platform_cannot_create_unprotected_registry_state() {
-        let temp = tempfile::tempdir().expect("private test directory");
-        let path = temp.path().join("durable-prompt-registry");
-        let result = DurablePromptRegistry::open_state_dir(&path, 8);
-        assert!(
-            matches!(result, Err(DurableRegistryError::UnsafeStateDirectory)),
-            "no audited non-Unix secure file owner exists"
-        );
-        assert!(!path.exists(), "refusal must precede state creation");
-    }
-}
 
 #[cfg(all(test, unix))]
 mod tests {
