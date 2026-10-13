@@ -75,13 +75,16 @@ pub enum CellSplitMonotonicRpcErrorV1 {
 
 /// Production-facing client for an independent, non-writable frontier source.
 ///
-/// This type stores only the externally pinned verifier key, the Unix service
-/// endpoint, and an IO deadline. It cannot mint a signature, enroll a key,
-/// modify a checkpoint or choose a frontier revision on behalf of the server.
+/// This type stores the externally pinned verifier, Unix endpoint, deadline
+/// and a bounded process-local high-water ratchet. It cannot mint signatures,
+/// enroll keys, modify checkpoints, or choose a server-side frontier value.
+/// The ratchet catches a signed remote-server rollback *within this client
+/// lifetime*; it does not survive client restart and is not production custody.
 pub struct CellSplitSupervisorMonotonicUnixPortV1 {
     socket_path: PathBuf,
     verifier: VerifyingKey,
     timeout: Duration,
+    retained_frontiers: BTreeMap<String, (u64, u64, String, String)>,
 }
 
 impl CellSplitSupervisorMonotonicUnixPortV1 {
@@ -104,6 +107,7 @@ impl CellSplitSupervisorMonotonicUnixPortV1 {
             socket_path,
             verifier,
             timeout,
+            retained_frontiers: BTreeMap::new(),
         })
     }
 
@@ -173,6 +177,42 @@ impl CellSplitSupervisorMonotonicUnixPortV1 {
                 &signature,
             )
             .map_err(|_| CellSplitMonotonicRpcErrorV1::Untrusted)?;
+        // The separately administered signer remains the authority. Retain
+        // previously verified epochs/revisions to reject a still-signed old
+        // snapshot after the remote server restarts or its disk is restored.
+        // Never evict an older domain entry to accommodate an untrusted new
+        // domain: a bounded refusal is safer than forgetting a high-water.
+        if let Some((epoch, revision, checkpoint, record)) =
+            self.retained_frontiers.get(journal_domain_id)
+        {
+            let ahead = proof.journal_authority_epoch > *epoch
+                || (proof.journal_authority_epoch == *epoch
+                    && proof.journal_revision > *revision);
+            let behind = proof.journal_authority_epoch < *epoch
+                || (proof.journal_authority_epoch == *epoch
+                    && proof.journal_revision < *revision);
+            if behind
+                || (ahead
+                    && (proof.minimum_checkpoint_digest == *checkpoint
+                        || proof.original_store_record_digest == *record))
+                || (!ahead
+                    && (proof.minimum_checkpoint_digest != *checkpoint
+                        || proof.original_store_record_digest != *record))
+            {
+                return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+            }
+        } else if self.retained_frontiers.len() >= MAX_RETAINED_DOMAINS {
+            return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+        }
+        self.retained_frontiers.insert(
+            journal_domain_id.to_owned(),
+            (
+                proof.journal_authority_epoch,
+                proof.journal_revision,
+                proof.minimum_checkpoint_digest.clone(),
+                proof.original_store_record_digest.clone(),
+            ),
+        );
         Ok(proof)
     }
 }

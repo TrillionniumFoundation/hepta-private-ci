@@ -191,10 +191,15 @@ impl BoundedMicrobatchSchedulerV1 {
         }
     }
 
-    fn clock(&mut self, now_ms: u64) -> Result<(), SchedulerErrorV1> {
+    fn validate_clock(&self, now_ms: u64) -> Result<(), SchedulerErrorV1> {
         if self.last_now_ms.is_some_and(|last| now_ms < last) {
             return Err(SchedulerErrorV1::ClockRegressed);
         }
+        Ok(())
+    }
+
+    fn clock(&mut self, now_ms: u64) -> Result<(), SchedulerErrorV1> {
+        self.validate_clock(now_ms)?;
         self.last_now_ms = Some(now_ms);
         Ok(())
     }
@@ -204,7 +209,8 @@ impl BoundedMicrobatchSchedulerV1 {
         now_ms: u64,
         intent: InferenceIntentV1,
     ) -> Result<(), SchedulerErrorV1> {
-        self.clock(now_ms)?;
+        // A rejected future-dated intent must not poison the accepted clock.
+        self.validate_clock(now_ms)?;
         if intent.key.model_digest.is_zero() || intent.feature_digest.is_zero() {
             return Err(SchedulerErrorV1::EmptyDigest);
         }
@@ -250,6 +256,8 @@ impl BoundedMicrobatchSchedulerV1 {
             enqueued_at_ms: now_ms,
         });
         self.queued_ids.insert(id);
+        // Commit time only after every bounded admission check succeeds.
+        self.last_now_ms = Some(now_ms);
         Ok(())
     }
 

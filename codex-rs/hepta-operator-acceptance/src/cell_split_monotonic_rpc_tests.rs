@@ -562,3 +562,114 @@ fn same_signer_allows_epoch_rollover_only_with_new_durable_source_sequence() {
     replace_test_frontier(&file, &original);
     assert!(read_through_signed_service(&mut service, &"dd".repeat(32)).is_err());
 }
+
+
+#[test]
+fn client_rejects_old_still_signed_highwater_after_remote_restart() {
+    let root = tempfile::tempdir().expect("Unix RPC fixture");
+    let (socket, listener) = listener(root.path());
+    let service = thread::spawn(move || {
+        for sequence in 0..2 {
+            let (mut peer, _) = listener.accept().expect("current domain query");
+            let request: CellSplitMonotonicRpcRequestV1 =
+                receive_frame(&mut peer).expect("read-only request");
+            let mut proof = make_proof(
+                &request.journal_domain_id,
+                &request.challenge_nonce,
+                &signer(),
+            );
+            if sequence == 1 {
+                // The same trusted signing identity restarted from an older
+                // but internally valid revision. The client must not accept
+                // a fresh nonce as evidence that the state is current.
+                proof.journal_revision = 9;
+                proof.signature_bytes.clear();
+                proof.signature_bytes = signer()
+                    .sign(&cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
+                        .expect("original signing grammar"))
+                    .to_bytes()
+                    .to_vec();
+            }
+            send_frame(
+                &mut peer,
+                &CellSplitMonotonicRpcResponseV1 {
+                    schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.into(),
+                    method: READ_METHOD.into(),
+                    proof: Some(proof),
+                    error: None,
+                },
+            )
+            .expect("signed response");
+        }
+    });
+    let mut client = CellSplitSupervisorMonotonicUnixPortV1::new(
+        socket,
+        signer().verifying_key(),
+        Duration::from_secs(2),
+    )
+    .expect("pinned verifier");
+    let first = client.read_domain_frontier(DOMAIN, &"11".repeat(32))
+        .expect("signed initial high water");
+    assert_eq!(first.journal_revision, 10);
+    assert!(matches!(
+        client.read_domain_frontier(DOMAIN, &"22".repeat(32)),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+    service.join().expect("service");
+}
+
+#[test]
+fn client_accepts_advanced_signed_highwater_with_new_checkpoint_identity() {
+    let root = tempfile::tempdir().expect("Unix RPC fixture");
+    let (socket, listener) = listener(root.path());
+    let service = thread::spawn(move || {
+        for sequence in 0..2 {
+            let (mut peer, _) = listener.accept().expect("current domain query");
+            let request: CellSplitMonotonicRpcRequestV1 =
+                receive_frame(&mut peer).expect("read-only request");
+            let mut proof = make_proof(
+                &request.journal_domain_id,
+                &request.challenge_nonce,
+                &signer(),
+            );
+            if sequence == 1 {
+                proof.journal_revision = 11;
+                proof.minimum_checkpoint_digest = "cc".repeat(32);
+                proof.original_store_record_digest = "dd".repeat(32);
+                proof.signature_bytes.clear();
+                proof.signature_bytes = signer()
+                    .sign(&cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
+                        .expect("fresh higher frontier"))
+                    .to_bytes()
+                    .to_vec();
+            }
+            send_frame(
+                &mut peer,
+                &CellSplitMonotonicRpcResponseV1 {
+                    schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.into(),
+                    method: READ_METHOD.into(),
+                    proof: Some(proof),
+                    error: None,
+                },
+            )
+            .expect("signed response");
+        }
+    });
+    let mut client = CellSplitSupervisorMonotonicUnixPortV1::new(
+        socket,
+        signer().verifying_key(),
+        Duration::from_secs(2),
+    )
+    .expect("pinned verifier");
+    assert_eq!(
+        client.read_domain_frontier(DOMAIN, &"11".repeat(32))
+            .expect("first observation").journal_revision,
+        10,
+    );
+    assert_eq!(
+        client.read_domain_frontier(DOMAIN, &"22".repeat(32))
+            .expect("new independent committed frontier").journal_revision,
+        11,
+    );
+    service.join().expect("service");
+}
