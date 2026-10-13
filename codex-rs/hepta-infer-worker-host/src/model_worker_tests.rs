@@ -49,7 +49,9 @@ impl ModelDriver for Driver {
     ) -> Result<DriverRunObservation, Error> {
         self.run_calls += 1;
         if self.fail_run_after_execution {
-            return Err(Error::DriverFailure("injected unknown run state".to_string()));
+            return Err(Error::DriverFailure(
+                "injected unknown run state".to_string(),
+            ));
         }
         if self.indeterminate {
             return Ok(DriverRunObservation {
@@ -97,7 +99,9 @@ impl NeuronFeatureDriver for Driver {
     ) -> Result<DriverNeuronFeatureObservation, Error> {
         self.feature_run_calls += 1;
         if self.fail_feature_run_after_execution {
-            return Err(Error::DriverFailure("injected unknown feature state".to_string()));
+            return Err(Error::DriverFailure(
+                "injected unknown feature state".to_string(),
+            ));
         }
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
@@ -109,10 +113,10 @@ impl NeuronFeatureDriver for Driver {
                 prediction_q24: Vec::new(),
                 observed_memory_bytes: 1_024,
                 transient_allocation_bytes: if self.feature_transient_bytes == 0 {
-                2_048
-            } else {
-                self.feature_transient_bytes
-            },
+                    2_048
+                } else {
+                    self.feature_transient_bytes
+                },
                 queue_age_micros: 11,
                 latency_micros: 17,
             });
@@ -240,7 +244,10 @@ fn lost_driver_terminality_is_indeterminate() {
         worker.run(100, "model.1", request()),
         Err(Error::ExecutionIndeterminate)
     );
-    assert_eq!(worker.driver.run_calls, 1, "unknown run may not execute twice");
+    assert_eq!(
+        worker.driver.run_calls, 1,
+        "unknown run may not execute twice"
+    );
     assert_eq!(
         worker.unload_model(100, "model.1"),
         Err(Error::ExecutionIndeterminate)
@@ -512,7 +519,8 @@ fn generic_run_conservatively_retains_loaded_handle_memory_at_grant_boundary() {
     worker.load_model(100, second).expect("3 KiB model");
     worker.driver.reported_run_memory_bytes = 1;
     assert_eq!(
-        worker.run(100, "model.1", request())
+        worker
+            .run(100, "model.1", request())
             .expect("1 KiB + 3 KiB still fits conservatively")
             .status,
         ExecutionStatus::Succeeded
@@ -990,7 +998,10 @@ fn batch_rejects_wrong_member_order_and_missing_or_forged_driver_evidence() {
             worker.run_neuron_features_backend_batch(100, "model.1", two_batch_requests()),
             Err(Error::ExecutionIndeterminate)
         );
-        assert_eq!(worker.driver.backend_calls, 1, "unverified batch is never replayed");
+        assert_eq!(
+            worker.driver.backend_calls, 1,
+            "unverified batch is never replayed"
+        );
     }
 }
 
@@ -1109,10 +1120,9 @@ fn feature_transient_exceeding_generation_memory_budget_seals_single_request() {
             feature_transient_bytes: transient,
             ..Driver::default()
         };
-        let mut worker = InferenceWorker::new(
-            100, "worker.transient".to_string(), 3, grant(), driver,
-        )
-        .expect("worker");
+        let mut worker =
+            InferenceWorker::new(100, "worker.transient".to_string(), 3, grant(), driver)
+                .expect("worker");
         worker.load_model(100, manifest()).expect("load");
         assert_eq!(
             worker.run_neuron_features(100, "model.1", neuron_feature_request()),
@@ -1140,7 +1150,9 @@ fn single_feature_never_uses_driver_underreported_residency_to_hide_scratch_peak
         },
     )
     .expect("worker");
-    worker.load_model(100, manifest()).expect("3 KiB loaded model");
+    worker
+        .load_model(100, manifest())
+        .expect("3 KiB loaded model");
 
     // The driver's feature observation claims only 1 KiB resident but also
     // allocates 2 KiB scratch. The loader already observed 3 KiB resident,
@@ -1163,7 +1175,11 @@ fn feature_transient_plus_other_loaded_model_cannot_exceed_global_grant() {
     let mut resource_grant = grant();
     resource_grant.maximum_memory_bytes = 3_600;
     let mut worker = InferenceWorker::new(
-        100, "worker.shared-budget".to_string(), 3, resource_grant, Driver::default(),
+        100,
+        "worker.shared-budget".to_string(),
+        3,
+        resource_grant,
+        Driver::default(),
     )
     .expect("worker");
     worker.load_model(100, manifest()).expect("first model");
@@ -1215,9 +1231,14 @@ fn batch_peak_includes_other_models_loaded_in_worker_generation() {
 
 #[test]
 fn neuron_single_feature_respects_loaded_model_token_limit_without_driver_dispatch() {
-    let mut worker =
-        InferenceWorker::new(100, "worker.token-single".to_string(), 3, grant(), Driver::default())
-            .expect("worker");
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.token-single".to_string(),
+        3,
+        grant(),
+        Driver::default(),
+    )
+    .expect("worker");
     let mut pinned_manifest = manifest();
     pinned_manifest.maximum_tokens = 32;
     worker.load_model(100, pinned_manifest).expect("model");
@@ -1230,7 +1251,10 @@ fn neuron_single_feature_respects_loaded_model_token_limit_without_driver_dispat
         worker.run_neuron_features(100, "model.1", oversized),
         Err(Error::TokenLimit)
     );
-    assert!(!worker.requires_external_recovery(), "preflight rejection never dispatched");
+    assert!(
+        !worker.requires_external_recovery(),
+        "preflight rejection never dispatched"
+    );
 
     let mut bounded = neuron_feature_request();
     bounded.authorization.maximum_tokens = 32;
@@ -1324,10 +1348,14 @@ fn reservation_token_bound_is_shared_by_generic_single_batch_and_cancelled_neuro
         Err(Error::TokenLimit)
     );
     assert_eq!(worker.driver.backend_calls, 0);
-    assert!(!worker.requires_external_recovery(), "all rejected before backend");
+    assert!(
+        !worker.requires_external_recovery(),
+        "all rejected before backend"
+    );
 
     assert_eq!(
-        worker.run_neuron_features(100, "model.1", neuron_feature_request())
+        worker
+            .run_neuron_features(100, "model.1", neuron_feature_request())
             .expect("legitimate reserved request")
             .status,
         ExecutionStatus::Succeeded

@@ -467,9 +467,13 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         )
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertEqual(len(calls), 2)
-        self.assertEqual(calls[0], calls[1], "CI may not shrink its target set on retry")
+        self.assertEqual(
+            calls[0], calls[1], "CI may not shrink its target set on retry"
+        )
         self.assertIn("GET returned 504 Gateway Time-out", result.stdout)
-        self.assertIn("retrying the identical complete Bazel target set once", result.stdout)
+        self.assertIn(
+            "retrying the identical complete Bazel target set once", result.stdout
+        )
 
     def test_repeated_dependency_gateway_failure_keeps_ci_red(self) -> None:
         self.env["RUNNER_OS"] = "Linux"
@@ -484,8 +488,12 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.env["BAZEL_PROBE_DOWNLOAD_504_AND_TEST_FAIL"] = "1"
         result, calls = self.run_wrapper("--", "test", "--", "//fake:target")
         self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
-        self.assertEqual(len(calls), 1, "real failed test overrides transient fetch retry")
-        self.assertNotIn("retrying the identical complete Bazel target set", result.stdout)
+        self.assertEqual(
+            len(calls), 1, "real failed test overrides transient fetch retry"
+        )
+        self.assertNotIn(
+            "retrying the identical complete Bazel target set", result.stdout
+        )
 
     def test_rustc_diagnostic_during_504_never_gets_a_network_retry(self) -> None:
         self.env["RUNNER_OS"] = "Linux"

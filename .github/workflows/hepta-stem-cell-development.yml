@@ -34,7 +34,8 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/stem-development-venv"
           "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install \
             --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install numpy==2.2.6
+          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install numpy==2.2.6 llvmlite==0.47.0 safetensors==0.6.2 packaging==25.0
+          "$RUNNER_TEMP/stem-development-venv/bin/python" -c "import safetensors.torch"
       - name: Execute actual arithmetic and existing repository entrypoints
         env:
           PYTHONDONTWRITEBYTECODE: "1"
@@ -46,17 +47,210 @@ jobs:
             git rev-parse HEAD^{tree}
             "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip freeze
             "$RUNNER_TEMP/stem-development-venv/bin/python" -m unittest -v \
-              test_shared_encoder_eviction development_tensor_checks development_repository_checks
+              test_shared_encoder_eviction development_tensor_checks development_repository_checks \
+              development_ablation_checks development_native_batch_checks development_sharing_checks \
+              development_learning_checks development_stopping_checks \
+              development_quality_checks development_quality_runtime_checks development_anytime_checks \
+              development_head_training_checks development_gated_training_checks \
+              development_learning_comparison_checks hf_tensor_materialization_checks \
+              development_training_plan_checks
           } 2>&1 | tee "$RUNNER_TEMP/stem-development-tests.txt"
+      - name: Execute synthetic learning and native fixed-policy controls
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-development-venv/bin/python" \
+            qualification/stem-cell-v1/development_experiment.py --synthetic \
+            --output "$RUNNER_TEMP/stem-development-study"
+      - name: Compare prepared typed and actual native batch execution
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-development-venv/bin/python" \
+            qualification/stem-cell-v1/development_native_benchmark.py \
+            --output "$RUNNER_TEMP/stem-native-batch-study"
+      - name: Compare calibrated stopping against independently executed controls
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-development-venv/bin/python" \
+            qualification/stem-cell-v1/development_stopping_study.py --synthetic \
+            --output "$RUNNER_TEMP/stem-stopping-study"
+      - name: Compare independent quality floors and shared anytime supervision
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-development-venv/bin/python" \
+            qualification/stem-cell-v1/development_quality_study.py --synthetic \
+            --output "$RUNNER_TEMP/stem-quality-study"
+          "$RUNNER_TEMP/stem-development-venv/bin/python" \
+            qualification/stem-cell-v1/development_quality_study.py --synthetic --paired-anytime \
+            --output "$RUNNER_TEMP/stem-anytime-quality-study"
+      - name: Compare scalar and grouped independent Head training
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-development-venv/bin/python" \
+            qualification/stem-cell-v1/development_head_training_study.py --synthetic \
+            --output "$RUNNER_TEMP/stem-head-training-study"
+      - name: Compare scalar and grouped input-dependent gated Heads
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-development-venv/bin/python" \
+            qualification/stem-cell-v1/development_gated_training_study.py --synthetic \
+            --seed 1414 --output "$RUNNER_TEMP/stem-gated-head-study"
+      - name: Compare fixed per-Cell training budgets without idle matrix lanes
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-development-venv/bin/python" \
+            qualification/stem-cell-v1/development_training_plan_study.py --synthetic \
+            --seed 1919 --output "$RUNNER_TEMP/stem-training-plan-study"
       - name: Preserve exact-source result including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: stem-development-${{ matrix.source }}-${{ github.run_id }}
-          path: ${{ runner.temp }}/stem-development-tests.txt
+          path: |
+            ${{ runner.temp }}/stem-development-tests.txt
+            ${{ runner.temp }}/stem-development-study
+            ${{ runner.temp }}/stem-native-batch-study
+            ${{ runner.temp }}/stem-stopping-study
+            ${{ runner.temp }}/stem-quality-study
+            ${{ runner.temp }}/stem-anytime-quality-study
+            ${{ runner.temp }}/stem-head-training-study
+            ${{ runner.temp }}/stem-gated-head-study
+            ${{ runner.temp }}/stem-training-plan-study
           if-no-files-found: warn
           retention-days: 14
       - name: Check source unchanged
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  pretrained-bge:
+    name: Exact-head real BGE frozen Encoder and matched Cell learning
+    # Only this owned research branch (or an explicit manual run) acquires weights.
+    # Other PRs still run the unchanged synthetic/repository tests above.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' &&
+       github.event.pull_request.head.repo.full_name == github.repository &&
+       github.event.pull_request.head.ref == 'research/stem-cell-six-stage-learning-native-20261012')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Checkout exact research source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install isolated CPU and pinned HF implementations
+        run: |
+          python3 -m venv "$RUNNER_TEMP/stem-real-venv"
+          "$RUNNER_TEMP/stem-real-venv/bin/python" -m pip install \
+            --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          "$RUNNER_TEMP/stem-real-venv/bin/python" -m pip install \
+            numpy==2.2.6 transformers==4.57.1 safetensors==0.6.2
+      - name: Acquire only the fixed public safetensors snapshot
+        env:
+          HF_HUB_DISABLE_TELEMETRY: "1"
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/stem-real-evidence"
+          python3 - <<'PYMODEL'
+          import hashlib, json, os, pathlib, time, urllib.request
+          root = pathlib.Path(os.environ["RUNNER_TEMP"])
+          snapshot = root / "stem-bge-snapshot"
+          snapshot.mkdir()
+          revision = "534b6bfaaf500e70bcb9f3771cebc940c23b219d"
+          files = ("config.json", "model.safetensors", "special_tokens_map.json",
+                   "tokenizer.json", "tokenizer_config.json", "vocab.txt")
+          started, inventory = time.perf_counter_ns(), {}
+          for name in files:
+              url = f"https://huggingface.co/BAAI/bge-small-zh-v1.5/resolve/{revision}/{name}"
+              limit = 120_000_000 if name == "model.safetensors" else 2_000_000
+              digest, count = hashlib.sha256(), 0
+              with urllib.request.urlopen(url, timeout=60) as response, (snapshot / name).open("xb") as out:
+                  while chunk := response.read(1024 * 1024):
+                      count += len(chunk)
+                      if count > limit:
+                          raise ValueError("asset exceeds declared byte ceiling")
+                      digest.update(chunk)
+                      out.write(chunk)
+              if not count:
+                  raise ValueError("empty asset")
+              inventory[name] = {"bytes": count, "sha256": digest.hexdigest()}
+          if inventory["model.safetensors"]["sha256"] != "354763b9b1357bc9c44f62c6be2276321081ed2567773608c0d0785b61d5a026":
+              raise ValueError("upstream safetensors digest mismatch")
+          receipt = {"repo": "BAAI/bge-small-zh-v1.5", "revision": revision,
+                     "files": inventory, "acquisition_wall_ns": time.perf_counter_ns() - started}
+          (root / "stem-real-evidence" / "acquisition.json").write_text(json.dumps(receipt, sort_keys=True) + "\n")
+          PYMODEL
+      - name: Execute all four learning arms with real weights and frozen labels
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONPATH: qualification/stem-cell-v1
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+          HF_HUB_DISABLE_TELEMETRY: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-real-venv/bin/python"
+          SNAPSHOT="$RUNNER_TEMP/stem-bge-snapshot"
+          EXPECTED=$("$PY" -c "from model_runner import snapshot_digest; import sys; print(snapshot_digest(sys.argv[1]))" "$SNAPSHOT")
+          "$PY" - <<'PYINVENTORY'
+          import json, os, pathlib, torch
+          from safetensors import safe_open
+          root = pathlib.Path(os.environ["RUNNER_TEMP"])
+          inventory = {}
+          with safe_open(str(root / "stem-bge-snapshot" / "model.safetensors"), framework="pt", device="cpu") as stored:
+              for key in stored.keys():
+                  value = stored.get_tensor(key)
+                  row = {"shape": list(value.shape), "dtype": str(value.dtype)}
+                  if key.endswith(".position_ids") and value.numel() <= 8192:
+                      row["equals_ordinal_positions"] = (value.dtype == torch.int64 and value.ndim == 2 and
+                          value.shape[0] == 1 and torch.equal(value, torch.arange(value.shape[1]).unsqueeze(0)))
+                  inventory[key] = row
+          (root / "stem-real-evidence" / "stored-tensor-inventory.json").write_text(json.dumps(inventory, sort_keys=True) + "\n")
+          print(json.dumps(inventory, sort_keys=True))
+          PYINVENTORY
+          {
+            git rev-parse HEAD
+            git rev-parse HEAD^{tree}
+            "$PY" -m pip freeze
+            "$PY" -m unittest -v hf_tensor_materialization_checks hf_bert_materialization_checks
+            for seed in 1414 2525 3636; do
+              "$PY" qualification/stem-cell-v1/development_pretrained_study.py \
+                --snapshot "$SNAPSHOT" --snapshot-sha256 "$EXPECTED" --seed "$seed" \
+                --output "$RUNNER_TEMP/stem-real-evidence/seed-$seed"
+            done
+          } 2>&1 | tee "$RUNNER_TEMP/stem-real-evidence/execution.txt"
+      - name: Preserve real-model evidence including failures, never weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-real-bge-${{ github.run_id }}
+          path: ${{ runner.temp }}/stem-real-evidence
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Check real-model study left source unchanged
         if: always()
         run: |
           git diff --check
