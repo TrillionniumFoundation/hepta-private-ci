@@ -432,7 +432,8 @@ class Head(nn.Module):
         return output
 
 
-def fit(initial: nn.Module, x, y, *, steps=40, seed=17, batch=16):
+def fit(initial: nn.Module, x, y, *, steps=40, seed=17, batch=16,
+        soft_targets=None, soft_weight=0.0, temperature=2.0):
     from copy import deepcopy
     integer(steps, 1, 10000, "steps")
     integer(batch, 1, 256, "training batch")
@@ -440,6 +441,25 @@ def fit(initial: nn.Module, x, y, *, steps=40, seed=17, batch=16):
         raise InputError("training shape")
     if not bool(torch.isfinite(x).all()):
         raise InputError("nonfinite training input")
+    # Optional supervised/distilled objective shares the SAME optimizer/sampling.
+    # Soft targets are already temperature-scaled teacher probabilities, not gold.
+    if (type(soft_weight) not in (int, float) or not math.isfinite(soft_weight)
+            or not 0 <= soft_weight <= 1 or type(temperature) not in (int, float)
+            or not math.isfinite(temperature) or not 0 < temperature <= 10):
+        raise InputError("finite distillation profile required")
+    if soft_targets is None:
+        if soft_weight != 0:
+            raise InputError("missing soft supervision")
+    elif (not isinstance(soft_targets, torch.Tensor) or soft_targets.ndim != 2
+          or soft_targets.shape[0] != len(x) or not 2 <= soft_targets.shape[1] <= 256
+          or soft_targets.device.type != "cpu" or soft_targets.dtype != torch.float32
+          or not bool(torch.isfinite(soft_targets).all())
+          or bool(((soft_targets < 0) | (soft_targets > 1)).any())
+          or not torch.allclose(soft_targets.sum(-1), torch.ones(len(x)), atol=1e-5, rtol=0)):
+        raise InputError("bounded normalized soft supervision required")
+    if soft_targets is not None and (type(initial) is not Head
+            or soft_targets.shape[1] != initial.base.out_features):
+        raise InputError("soft supervision requires a matching concrete Head")
     original = parameters(initial)["sha256"]
     model = deepcopy(initial).train()
     rng = torch.Generator().manual_seed(seed)
@@ -450,7 +470,16 @@ def fit(initial: nn.Module, x, y, *, steps=40, seed=17, batch=16):
             ids = torch.randint(len(x), (min(batch, len(x)),), generator=rng)
             sample_hash.update(ids.numpy().astype("<i8", copy=False).tobytes())
             optimizer.zero_grad(set_to_none=True)
-            loss = F.cross_entropy(model(x[ids].detach()), y[ids])
+            logits = model(x[ids].detach())
+            if soft_targets is None or soft_weight == 0:
+                loss = F.cross_entropy(logits, y[ids])
+            else:
+                if logits.shape != soft_targets[ids].shape:
+                    raise InputError("student/teacher class dimension mismatch")
+                loss = F.kl_div((logits / temperature).log_softmax(-1),
+                                soft_targets[ids].detach(), reduction="batchmean") * temperature**2
+                if soft_weight != 1:
+                    loss = soft_weight * loss + (1 - soft_weight) * F.cross_entropy(logits, y[ids])
             if not bool(torch.isfinite(loss)):
                 raise InputError("nonfinite training loss")
             loss.backward()

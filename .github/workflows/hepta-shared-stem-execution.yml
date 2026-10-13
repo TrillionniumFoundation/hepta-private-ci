@@ -41,8 +41,8 @@ jobs:
           PY="$RUNNER_TEMP/hepta-execution-env/bin/python"
           git rev-parse HEAD > "$RUNNER_TEMP/hepta-execution-source.txt"
           "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-execution-source.txt"
-          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{execution,controls,wire,browser_loop,browser_recovery,checkpoint_conversion,public_smoke,public_media,control_evaluation,media_execution,hf_integration_checks,test_execution,test_browser,test_browser_recovery,test_checkpoint_conversion,test_media_execution,test_public_media,head_artifacts,test_head_artifacts,test_modality_probe,test_generation_contract,head_batch,head_batch_study,test_head_batch,head_training,head_training_study,test_head_training,split_learning,split_study,test_split_learning,stopping,stopping_study,test_stopping,test_materialization,calibrated_fusion,test_calibrated_fusion,choice_fusion,test_choice_fusion,feature_replay,test_feature_replay}.py
-          "$PY" -m unittest -v experiments.shared_stem_cell.test_execution experiments.shared_stem_cell.test_browser experiments.shared_stem_head_matrix.tests.test_runner experiments.shared_stem_cell.test_checkpoint_conversion experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.test_browser_recovery experiments.shared_stem_cell.test_public_media experiments.shared_stem_cell.test_head_artifacts experiments.shared_stem_cell.test_modality_probe experiments.shared_stem_cell.test_generation_contract experiments.shared_stem_cell.test_head_batch experiments.shared_stem_cell.test_head_training experiments.shared_stem_cell.test_split_learning experiments.shared_stem_cell.test_stopping experiments.shared_stem_cell.test_materialization experiments.shared_stem_cell.test_calibrated_fusion experiments.shared_stem_cell.test_choice_fusion experiments.shared_stem_cell.test_feature_replay 2>&1 | tee "$RUNNER_TEMP/hepta-execution-tests.txt"
+          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{execution,controls,wire,browser_loop,browser_recovery,checkpoint_conversion,public_smoke,public_media,control_evaluation,media_execution,hf_integration_checks,test_execution,test_browser,test_browser_recovery,test_checkpoint_conversion,test_media_execution,test_public_media,head_artifacts,test_head_artifacts,test_modality_probe,test_generation_contract,head_batch,head_batch_study,test_head_batch,head_training,head_training_study,test_head_training,split_learning,split_study,test_split_learning,stopping,stopping_study,test_stopping,test_materialization,calibrated_fusion,test_calibrated_fusion,choice_fusion,test_choice_fusion,feature_replay,test_feature_replay,consolidation,consolidation_study,consolidation_digits,test_consolidation}.py
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_execution experiments.shared_stem_cell.test_browser experiments.shared_stem_head_matrix.tests.test_runner experiments.shared_stem_cell.test_checkpoint_conversion experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.test_browser_recovery experiments.shared_stem_cell.test_public_media experiments.shared_stem_cell.test_head_artifacts experiments.shared_stem_cell.test_modality_probe experiments.shared_stem_cell.test_generation_contract experiments.shared_stem_cell.test_head_batch experiments.shared_stem_cell.test_head_training experiments.shared_stem_cell.test_split_learning experiments.shared_stem_cell.test_stopping experiments.shared_stem_cell.test_materialization experiments.shared_stem_cell.test_calibrated_fusion experiments.shared_stem_cell.test_choice_fusion experiments.shared_stem_cell.test_feature_replay experiments.shared_stem_cell.test_consolidation 2>&1 | tee "$RUNNER_TEMP/hepta-execution-tests.txt"
           "$PY" -m experiments.shared_stem_cell.browser_loop --output "$RUNNER_TEMP/hepta-browser-study" --tasks 24
           "$PY" -m experiments.shared_stem_cell.browser_recovery --output "$RUNNER_TEMP/hepta-controller-recovery"
           "$PY" -m experiments.shared_stem_cell.head_batch_study --synthetic --output "$RUNNER_TEMP/hepta-head-batch-study"
@@ -50,6 +50,7 @@ jobs:
           "$PY" -m experiments.shared_stem_cell.head_training_study --cells 32 --output "$RUNNER_TEMP/hepta-learning-digits-32"
           "$PY" -m experiments.shared_stem_cell.split_study --output "$RUNNER_TEMP/hepta-split-digits"
           "$PY" -m experiments.shared_stem_cell.stopping_study --output "$RUNNER_TEMP/hepta-stopping-digits"
+          "$PY" -m experiments.shared_stem_cell.consolidation_digits --output "$RUNNER_TEMP/hepta-consolidation-digits"
           git diff --exit-code
       - name: Retain actual results and failures
         if: always()
@@ -66,6 +67,7 @@ jobs:
             ${{ runner.temp }}/hepta-learning-digits-32
             ${{ runner.temp }}/hepta-split-digits
             ${{ runner.temp }}/hepta-stopping-digits
+            ${{ runner.temp }}/hepta-consolidation-digits
   public-pretrained-smoke:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -102,6 +104,11 @@ jobs:
           for BACKEND in scalar grouped; do
             "$PY" -m experiments.shared_stem_cell.feature_replay --manifest "$RUNNER_TEMP/hepta-replay-input/manifest.json" --producer "$RUNNER_TEMP/hepta-replay-input/producer" --report-sha256 "$REPORT_SHA" --backend "$BACKEND" --output "$RUNNER_TEMP/hepta-replay-$BACKEND" 2>&1 | tee "$RUNNER_TEMP/hepta-replay-$BACKEND.log"
           done
+          # Bound Cell teachers are copied, but NOT Encoder or tokenizer weights.
+          cp -r "$RUNNER_TEMP/hepta-replay-input" "$RUNNER_TEMP/hepta-consolidation-input"
+          mkdir -p "$RUNNER_TEMP/hepta-consolidation-input/producer/heads"
+          cp -r "$RUNNER_TEMP/hepta-public-study/execution/heads/gated" "$RUNNER_TEMP/hepta-consolidation-input/producer/heads/"
+          "$PY" -m experiments.shared_stem_cell.consolidation_study --manifest "$RUNNER_TEMP/hepta-consolidation-input/manifest.json" --producer "$RUNNER_TEMP/hepta-consolidation-input/producer" --report-sha256 "$REPORT_SHA" --output "$RUNNER_TEMP/hepta-consolidation" 2>&1 | tee "$RUNNER_TEMP/hepta-consolidation.log"
           git diff --exit-code
       - name: Retain manifests, predictions, counters and failures (no weight upload)
         if: always()
@@ -126,6 +133,9 @@ jobs:
             ${{ runner.temp }}/hepta-replay-grouped
             ${{ runner.temp }}/hepta-replay-scalar.log
             ${{ runner.temp }}/hepta-replay-grouped.log
+            ${{ runner.temp }}/hepta-consolidation-input
+            ${{ runner.temp }}/hepta-consolidation
+            ${{ runner.temp }}/hepta-consolidation.log
 
   public-image-text:
     runs-on: ubuntu-24.04
@@ -154,7 +164,7 @@ jobs:
           "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-media-source.txt"
           "$PY" -m unittest -v experiments.shared_stem_cell.hf_integration_checks experiments.shared_stem_cell.test_public_media experiments.shared_stem_cell.test_head_artifacts experiments.shared_stem_cell.test_modality_probe experiments.shared_stem_cell.test_generation_contract experiments.shared_stem_cell.test_head_batch 2>&1 | tee "$RUNNER_TEMP/hepta-media-tests.txt"
           "$PY" -m experiments.shared_stem_cell.public_media --allow-weights-only-conversion --output "$RUNNER_TEMP/hepta-public-media" 2>&1 | tee "$RUNNER_TEMP/hepta-media-log.txt"
-          "$PY" -m unittest -v experiments.shared_stem_cell.test_calibrated_fusion experiments.shared_stem_cell.test_choice_fusion experiments.shared_stem_cell.test_feature_replay 2>&1 | tee "$RUNNER_TEMP/hepta-calibrated-tests.txt"
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_calibrated_fusion experiments.shared_stem_cell.test_choice_fusion experiments.shared_stem_cell.test_feature_replay experiments.shared_stem_cell.test_consolidation 2>&1 | tee "$RUNNER_TEMP/hepta-calibrated-tests.txt"
           "$PY" -m experiments.shared_stem_cell.public_media --calibrated-fusion --allow-weights-only-conversion --output "$RUNNER_TEMP/hepta-calibrated-media" 2>&1 | tee "$RUNNER_TEMP/hepta-calibrated-log.txt"
           "$PY" -m experiments.shared_stem_cell.public_media --candidate-shared --allow-weights-only-conversion --output "$RUNNER_TEMP/hepta-choice-media" 2>&1 | tee "$RUNNER_TEMP/hepta-choice-log.txt"
           git diff --exit-code
