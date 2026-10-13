@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import fnmatch
+import hashlib
 import json
 import posixpath
 import re
@@ -592,6 +593,36 @@ def plan(
     )
 
 
+def shard_execution_plan(selected: dict, *, index: int, count: int) -> dict:
+    """Partition the exact complete test plan; no owner or reverse edge is dropped.
+
+    Each shard is executed in its own fresh runner. The union of all shards
+    equals the original exact-SHA plan, including full-workspace fallbacks.
+    The digest records the unpartitioned package set for cross-run auditing.
+    """
+    if type(index) is not int or type(count) is not int:
+        raise ValueError("test shard index/count must be integers")
+    if count < 1 or count > 8 or index < 0 or index >= count:
+        raise ValueError("test shard index must be within 0..count-1, count within 1..8")
+    names = selected["packages"]
+    if names != sorted(set(names)):
+        raise ValueError("exact test plan must contain unique sorted package names")
+    canonical = json.dumps(names, ensure_ascii=True, separators=(",", ":")).encode("utf-8")
+    return {
+        **selected,
+        "packages": names[index::count],
+        "full_workspace": False,
+        "shard": {
+            "index": index,
+            "count": count,
+            "selected_count": len(names[index::count]),
+            "total_count": len(names),
+            "original_full_workspace": selected["full_workspace"],
+            "full_selection_sha256": hashlib.sha256(canonical).hexdigest(),
+        },
+    }
+
+
 def execution_command(selected: dict, action: str) -> list[str] | None:
     """Apply one exact-revision impact plan to each native check."""
     if action == "plan" or not selected["packages"]:
@@ -645,6 +676,8 @@ def main() -> None:
         "--full", action="store_true", help="explicitly qualify the entire workspace"
     )
     parser.add_argument("--github-output", type=Path)
+    parser.add_argument("--test-shard-index", type=int)
+    parser.add_argument("--test-shard-count", type=int)
     parser.add_argument(
         "--record-output",
         type=Path,
@@ -655,12 +688,23 @@ def main() -> None:
         parser.error("--run is the compatibility alias for --action test")
     if args.record_output and not args.run and args.action == "plan":
         parser.error("--record-output requires a native execution action")
+    if (args.test_shard_index is None) != (args.test_shard_count is None):
+        parser.error("--test-shard-index and --test-shard-count must be supplied together")
+    if args.test_shard_index is not None and not (args.run or args.action == "test"):
+        parser.error("test sharding is only valid for a native test action")
     if not OID.fullmatch(args.tested):
         parser.error("--tested must be an exact 40-character SHA")
     if git(args.root, "rev-parse", "HEAD").decode().strip() != args.tested:
         parser.error("checkout differs from --tested")
     git(args.root, "diff", "--no-ext-diff", "--quiet", "HEAD", "--")
     selected = plan(args.root, args.base, args.tested, force_full=args.full)
+    if args.test_shard_index is not None:
+        try:
+            selected = shard_execution_plan(
+                selected, index=args.test_shard_index, count=args.test_shard_count
+            )
+        except ValueError as error:
+            parser.error(str(error))
     payload = {"tested_sha": args.tested, "base_sha": args.base, **selected}
     text = json.dumps(payload, sort_keys=True) + "\n"
     print(text, end="")
