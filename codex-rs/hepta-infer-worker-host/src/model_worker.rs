@@ -925,6 +925,12 @@ pub use stem_head_artifact::StemHeadArtifactError;
 pub use stem_head_artifact::StemHeadBankReadObservationV1;
 pub use stem_head_artifact::encode_cpu_head_bank_candidate_v1;
 
+#[path = "model_worker_stem_selected_owner.rs"]
+mod stem_selected_owner;
+
+pub use stem_selected_owner::StemSelectedOwnerError;
+pub use stem_selected_owner::StemSelectedReadOwnerV1;
+
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
