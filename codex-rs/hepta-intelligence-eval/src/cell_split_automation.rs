@@ -1413,6 +1413,7 @@ where
         // The one-shot retire effect is NEVER repeated: only the real owner
         // can re-observe its committed tombstone and finish the ledger.
         if split.retirement.disposition == codex_hepta_types::CellParentDispositionV1::Retire {
+            let _ = journal.retirement_pending(split)?;
             let observed = executor
                 .observe_retirement(split)
                 .map_err(|error| CellSplitAutomationErrorV1::Executor(error.to_string()))?;
@@ -1522,6 +1523,10 @@ where
     Executor: CellSplitAutomationExecutorV1,
 {
     if split.retirement.disposition == codex_hepta_types::CellParentDispositionV1::Retire {
+        // A durable one-shot intent is mandatory before invoking an external
+        // retirement owner. Unknown outcomes must only use read-only recovery.
+        journal.begin_retirement(split)?;
+        owner.commit(journal)?;
         match executor.retire(split) {
             Ok(retirement_digest) if retirement_digest == split.retirement.tombstone_digest => {
                 journal.retire(split)?;
@@ -2011,6 +2016,62 @@ mod tests {
     }
 
     #[test]
+    fn missing_writeahead_commit_prevents_retirement_effect() {
+        #[derive(Default)]
+        struct RejectRetirementIntent(CellSplitInMemoryJournalOwnerV1);
+
+        impl CellSplitAutomationJournalOwnerV1 for RejectRetirementIntent {
+            fn load(
+                &self,
+                split_id: &StableId,
+            ) -> Result<Option<CellSplitLifecycleJournalV1>, CellSplitAutomationErrorV1> {
+                self.0.load(split_id)
+            }
+
+            fn commit(
+                &mut self,
+                journal: &CellSplitLifecycleJournalV1,
+            ) -> Result<(), CellSplitAutomationErrorV1> {
+                if journal.current_state == CellSplitLifecycleStateV1::Retained
+                    && journal.events.last().is_some_and(|event| {
+                        event.from == CellSplitLifecycleStateV1::Retained
+                            && event.to == CellSplitLifecycleStateV1::Retained
+                    })
+                {
+                    return Err(CellSplitAutomationErrorV1::Store(
+                        "write-ahead commit denied".to_string(),
+                    ));
+                }
+                self.0.commit(journal)
+            }
+        }
+
+        let split = split();
+        let proposal = proposal(&split);
+        let mut owner = RejectRetirementIntent::default();
+        let mut executor = Executor {
+            evaluate_disposition: CellSplitEvaluationDispositionV1::EligibleForCanary,
+            ..Executor::default()
+        };
+        assert!(matches!(
+            run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut executor),
+            Err(CellSplitAutomationErrorV1::Store(message))
+                if message == "write-ahead commit denied"
+        ));
+        assert!(!executor.retired);
+        let retained = owner.load(&split.split_id).unwrap().unwrap();
+        assert_eq!(retained.current_state, CellSplitLifecycleStateV1::Retained);
+        assert!(!retained.retirement_pending(&split).unwrap());
+
+        // Restart/re-entry uses original-owner observation only and must not
+        // issue the effect again, even when the write-ahead commit failed.
+        let reopened = run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut executor)
+            .unwrap();
+        assert_eq!(reopened.state, CellSplitLifecycleStateV1::Retained);
+        assert!(!executor.retired);
+    }
+
+    #[test]
     fn retirement_failure_cannot_mint_a_rollback_receipt() {
         struct FailedRetirement;
         impl CellSplitAutomationExecutorV1 for FailedRetirement {
@@ -2048,7 +2109,14 @@ mod tests {
         ));
         let journal = owner.load(&split.split_id).expect("load").expect("journal");
         assert_eq!(journal.current_state, CellSplitLifecycleStateV1::Retained);
-        assert_eq!(journal.events.len(), 4);
+        assert_eq!(journal.events.len(), 5);
+        assert!(journal.retirement_pending(&split).unwrap());
+        let mut altered_plan = split.clone();
+        altered_plan.retirement.drain_watermark_digest = digest(130);
+        assert_eq!(
+            journal.retirement_pending(&altered_plan),
+            Err(CellSplitLifecycleErrorV1::Binding)
+        );
     }
 
     #[test]
@@ -2156,7 +2224,9 @@ mod tests {
         assert_eq!(outcome.state, CellSplitLifecycleStateV1::Retired);
         assert!(executor.retired);
         let journal = owner.load(&split.split_id).expect("load").expect("journal");
-        assert_eq!(journal.events.len(), 5);
+        assert_eq!(journal.events.len(), 6);
+        assert_eq!(journal.events[4].from, CellSplitLifecycleStateV1::Retained);
+        assert_eq!(journal.events[4].to, CellSplitLifecycleStateV1::Retained);
         assert_eq!(journal.current_state, CellSplitLifecycleStateV1::Retired);
 
         let replayed = run_cell_split_automation_v1(&split, &receipt, &mut owner, &mut executor)
@@ -2203,7 +2273,7 @@ mod tests {
             .expect("durable automation");
         assert_eq!(outcome.state, CellSplitLifecycleStateV1::Retired);
         let committed = owner.load(&split.split_id).expect("load").expect("journal");
-        assert_eq!(committed.events.len(), 5);
+        assert_eq!(committed.events.len(), 6);
         drop(owner);
 
         let reopened = CellSplitLearningLedgerJournalOwnerV1::recover(

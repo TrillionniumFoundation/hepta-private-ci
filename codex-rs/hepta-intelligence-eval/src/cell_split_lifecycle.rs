@@ -272,6 +272,53 @@ impl CellSplitLifecycleJournalV1 {
         self.transition(CellSplitLifecycleStateV1::Quarantined, evidence_digest)
     }
 
+    /// Persist this write-ahead transition before calling any external
+    /// retirement/tombstone owner. Retained->Retained means a retirement
+    /// dispatch may now have occurred, not that retirement has succeeded.
+    /// A restarted caller must only reconcile the original owner.
+    pub fn begin_retirement(
+        &mut self,
+        split: &CellSplitV1,
+    ) -> Result<(), CellSplitLifecycleErrorV1> {
+        if self.current_state != CellSplitLifecycleStateV1::Retained {
+            return Err(CellSplitLifecycleErrorV1::InvalidTransition);
+        }
+        if self.retirement_pending(split)? {
+            return Err(CellSplitLifecycleErrorV1::InvalidTransition);
+        }
+        self.transition(CellSplitLifecycleStateV1::Retained, retirement_intent_digest_v1(split)?)
+    }
+
+    /// Distinguish a durably prepared retirement from an ordinary retained
+    /// canary without introducing a second lifecycle owner or changing state
+    /// tags. A forged/mismatched self-transition is never treated as absence.
+    pub fn retirement_pending(
+        &self,
+        split: &CellSplitV1,
+    ) -> Result<bool, CellSplitLifecycleErrorV1> {
+        if self.split_id != split.split_id
+            || split.retirement.disposition != CellParentDispositionV1::Retire
+            || split.retirement.tombstone_digest.is_zero()
+        {
+            return Err(CellSplitLifecycleErrorV1::Binding);
+        }
+        if self.current_state != CellSplitLifecycleStateV1::Retained {
+            return Ok(false);
+        }
+        let Some(last) = self.events.last() else {
+            return Ok(false);
+        };
+        if last.from != CellSplitLifecycleStateV1::Retained
+            || last.to != CellSplitLifecycleStateV1::Retained
+        {
+            return Ok(false);
+        }
+        if last.evidence_digest != retirement_intent_digest_v1(split)? {
+            return Err(CellSplitLifecycleErrorV1::Binding);
+        }
+        Ok(true)
+    }
+
     pub fn retire(&mut self, split: &CellSplitV1) -> Result<(), CellSplitLifecycleErrorV1> {
         if split.split_id != self.split_id {
             return Err(CellSplitLifecycleErrorV1::Binding);
@@ -413,12 +460,28 @@ fn valid_transition(from: CellSplitLifecycleStateV1, to: CellSplitLifecycleState
             CellSplitLifecycleStateV1::RolledBack
         ) | (
             CellSplitLifecycleStateV1::Retained,
+            CellSplitLifecycleStateV1::Retained
+        ) | (
+            CellSplitLifecycleStateV1::Retained,
             CellSplitLifecycleStateV1::Retired
         ) | (
             CellSplitLifecycleStateV1::Retained,
             CellSplitLifecycleStateV1::RolledBack
         )
     )
+}
+
+fn retirement_intent_digest_v1(split: &CellSplitV1) -> Result<Digest32, CellSplitLifecycleErrorV1> {
+    // The pre-evaluation subject digest covers the complete frozen split
+    // topology, ownership, resources, generation, retirement and rollback
+    // plan. Do not encode only a hand-picked subset of fields here.
+    let frozen = split
+        .evaluation_subject_digest()
+        .map_err(|_| CellSplitLifecycleErrorV1::Binding)?;
+    let mut bytes = b"hepta.learning.cell-split.retirement-intent.v1".to_vec();
+    bytes.extend_from_slice(frozen.as_array());
+    bytes.extend_from_slice(split.retirement.tombstone_digest.as_array());
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn lifecycle_digest(
