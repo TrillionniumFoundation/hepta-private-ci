@@ -148,6 +148,20 @@ def export_observed(plan, contract, directory, *, expected_seal_id, observer_pat
                    failure_penalized_brier=(sum(briers) + 2 * (len(requests) - len(briers))) / len(requests),
                    retention_established=False, statistical_superiority_established=False,
                    independent_observer_authenticity_verified=False, production_authorized=False)
+    if "work_observation" in execution:
+        observation = execution["work_observation"]
+        if observation.get("stopped") is not None:
+            raise ValueError("budget-stopped execution cannot be scored as completed")
+        if observation.get("policy") != execution["config"].get("measurement_policy"):
+            raise ValueError("measurement policy differs from frozen configuration")
+        if execution["flop_profile"] != observation.get("profile"):
+            raise ValueError("measurement profile changed")
+        for phase in ("train", "inference"):
+            if execution["phase_flops"][phase] != observation["phase_flops"][phase]:
+                raise ValueError("execution count differs from its measurement record")
+        # Do not substitute a whole-process high-water mark or package energy
+        # into the stricter per-request metrics consumed by paired_execution.
+        summary["execution_work_observation"] = observation
     return export, summary
 
 

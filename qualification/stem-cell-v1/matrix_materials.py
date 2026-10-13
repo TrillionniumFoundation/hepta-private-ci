@@ -54,7 +54,7 @@ def file_sha256(path):
 def freeze_config(plan, contract, *, arm_id, snapshot_sha256, upstream_revision,
                   material_approval_sha256, device="cpu", train_steps=32,
                   batch_size=16, width_units=64, context_tokens=512,
-                  max_feature_bytes=64 * 1024 * 1024):
+                  max_feature_bytes=64 * 1024 * 1024, measurement_policy=None):
     validate_plan(plan)
     validate_contract(plan, contract)
     if arm_id not in SUPPORTED_ARMS:
@@ -75,11 +75,19 @@ def freeze_config(plan, contract, *, arm_id, snapshot_sha256, upstream_revision,
                 upstream_revision=upstream_revision, material_approval_sha256=material_approval_sha256,
                 device=device, train_steps=train_steps, batch_size=batch_size,
                 width_units=width_units, context_tokens=context_tokens, max_feature_bytes=max_feature_bytes)
+    if measurement_policy is not None:
+        from execution_meter import validate_policy
+        validate_policy(measurement_policy)
+        body["schema"] = "hepta.stem.bound-hf-config.v2"
+        body["measurement_policy"] = dict(measurement_policy)
     return {**body, "config_id": _digest(body)}
 
 
 def validate_config(plan, contract, config):
-    if not isinstance(config, dict) or set(config) != CONFIG_FIELDS:
+    if not isinstance(config, dict):
+        raise ValueError("complete bound configuration required")
+    fields_expected = CONFIG_FIELDS | ({"measurement_policy"} if config.get("schema") == "hepta.stem.bound-hf-config.v2" else set())
+    if set(config) != fields_expected or ("measurement_policy" in config and config["measurement_policy"] is None):
         raise ValueError("complete bound configuration required")
     fields = {k: v for k, v in config.items() if k not in ("schema", "contract_id", "config_id")}
     expected = freeze_config(plan, contract, **fields)

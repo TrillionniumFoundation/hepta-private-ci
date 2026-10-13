@@ -7,6 +7,7 @@ random-weight fallback, final-label loading, native installation or promotion.
 from __future__ import annotations
 
 import argparse
+import contextlib
 import json
 import os
 import subprocess
@@ -22,7 +23,8 @@ from paired_execution import PHASES
 
 SOURCE_FILES = ("next_round_matrix.py", "paired_execution.py", "head_surgery.py",
                 "hf_encoder_kernel.py", "matrix_materials.py", "matrix_bank.py",
-                "matrix_runtime.py", "matrix_export.py")
+                "matrix_runtime.py", "matrix_export.py", "aten_work.py",
+                "host_counters.py", "execution_meter.py")
 
 
 def verify_source(source_sha):
@@ -95,36 +97,51 @@ class LocalHFEncoder:
             raise ValueError("selected Encoder unexpectedly became trainable")
 
 
-def execute(plan, contract, config, workload, backend, *, clock=time.time_ns):
+def execute(plan, contract, config, workload, backend, *, clock=time.time_ns, meter=None):
     """Testable tensor execution; non-HF backends remain mechanism fixtures."""
     import torch
     from matrix_bank import CellBank, state_digest, train_bank
     profile = validate_config(plan, contract, config)
+    if ("measurement_policy" in config) != (meter is not None):
+        raise ValueError("bound measurement policy requires its actual execution meter")
+    if meter is not None and (meter.policy != config["measurement_policy"] or meter.caps != contract["flops_caps"]):
+        raise ValueError("execution meter differs from frozen policy or phase caps")
     classes = validate_workload(workload, contract)
     train = workload["train"]
     if len(train) * backend.dimension * 4 > config["max_feature_bytes"]:
         raise ValueError("feature allocation exceeds the frozen byte cap")
+    scope = meter.scope if meter is not None else lambda *args: contextlib.nullcontext()
     started = time.perf_counter_ns()
-    vectors = [backend.encode(public_row(row))[0] for row in train]
-    features = torch.stack(vectors).detach()
-    if features.shape != (len(train), backend.dimension) or not torch.isfinite(features).all().item():
-        raise ValueError("invalid actual Encoder features")
+    # One retained cache allocation, not list-of-vectors plus a second stack.
+    # The feature cap covers retained payload; process/activation memory is separate.
+    with scope("train", "encoder"):
+        features = torch.empty((len(train), backend.dimension), dtype=torch.float32)
+        for index, row in enumerate(train):
+            vector = backend.encode(public_row(row))[0]
+            if (vector.shape != (backend.dimension,) or vector.dtype != torch.float32
+                    or vector.device.type != "cpu" or vector.requires_grad
+                    or not torch.isfinite(vector).all().item()):
+                raise ValueError("invalid frozen actual Encoder features")
+            features[index].copy_(vector)
+        del vector
     feature_ns = time.perf_counter_ns() - started
-    # Weight loading cannot perturb per-arm Head initialization/minibatch seed.
-    with torch.random.fork_rng(devices=[]):
-        torch.random.default_generator.manual_seed(plan["seed"])
-        bank = CellBank(backend.dimension, classes, profile, config["width_units"])
-    targets = torch.tensor([r["label"] for r in train], dtype=torch.long)
-    before = state_digest(bank)
+    with scope("train", "initialization"):
+        # Weight loading cannot perturb Head initialization/minibatch seed.
+        with torch.random.fork_rng(devices=[]):
+            torch.random.default_generator.manual_seed(plan["seed"])
+            bank = CellBank(backend.dimension, classes, profile, config["width_units"])
+        targets = torch.tensor([r["label"] for r in train], dtype=torch.long)
+        before = state_digest(bank)
     started = time.perf_counter_ns()
-    training = train_bank(bank, features, targets, config, plan["seed"])
+    with scope("train", "bank"):
+        training = train_bank(bank, features, targets, config, plan["seed"])
+        trained_digest = state_digest(bank)
     training_ns = time.perf_counter_ns() - started
-    trained_digest = state_digest(bank)
-    # Warmup uses approved training input, never evaluation labels, and is
-    # retained as online work while excluded only from request latencies.
     started = time.perf_counter_ns()
-    with torch.inference_mode():
+    # Warmup is counted online; only its latency sample is excluded.
+    with scope("inference", "encoder"), torch.inference_mode():
         vector, _ = backend.encode(public_row(train[0]))
+    with scope("inference", "bank"), torch.inference_mode():
         bank(vector.unsqueeze(0))
     warmup_ns = time.perf_counter_ns() - started
     if not contract["eval_start_ns"] <= clock() < contract["eval_end_ns"]:
@@ -137,11 +154,12 @@ def execute(plan, contract, config, workload, backend, *, clock=time.time_ns):
         try:
             if clock() >= contract["eval_end_ns"]:
                 raise TimeoutError("evaluation deadline")
-            with torch.inference_mode():
+            with scope("inference", "encoder"), torch.inference_mode():
                 vector, length = backend.encode(public_row(row))
+            with scope("inference", "bank"), torch.inference_mode():
                 logits = bank(vector.unsqueeze(0))[0]
-            if not torch.isfinite(logits).all().item():
-                raise ValueError("nonfinite prediction")
+                if not torch.isfinite(logits).all().item():
+                    raise ValueError("nonfinite prediction")
             if clock() >= contract["eval_end_ns"]:
                 raise TimeoutError("completed beyond evaluation deadline")
             record.update(status="completed", logits=logits.tolist(), token_count=length)
@@ -153,9 +171,11 @@ def execute(plan, contract, config, workload, backend, *, clock=time.time_ns):
         # After-RSS is not peak RSS, and absent energy counters are not zero.
         record.update(energy_joules=None, peak_memory_bytes=None)
         predictions.append(record)
-    backend.reverify()
-    if state_digest(bank) != trained_digest:
-        raise ValueError("trained bank changed during inference")
+    if meter is None or meter.stopped is None:
+        with scope("verification", "material"):
+            backend.reverify()
+            if state_digest(bank) != trained_digest:
+                raise ValueError("trained bank changed during inference")
     inventory = bank.inventory()
     manifest = dict(schema="hepta.stem.bound-execution.v1", plan_id=plan["plan_id"],
                     contract_id=contract["contract_id"], arm_id=config["arm_id"], config=config,
@@ -171,6 +191,17 @@ def execute(plan, contract, config, workload, backend, *, clock=time.time_ns):
                     durations_ns=dict(feature_materialization=feature_ns, training=training_ns, warmup=warmup_ns),
                     actual_compute_caps_verified=False, latency_scope="sequential_encoder_plus_bank_including_failed_requests",
                     outcomes_loaded=False, independent_success_established=False, production_authorized=False)
+    if meter is not None:
+        observation = meter.report()
+        manifest["work_observation"] = observation
+        manifest["flop_profile"] = observation["profile"]
+        for phase in ("train", "inference"):
+            manifest["phase_flops"][phase] = observation["phase_flops"][phase]
+        manifest["latency_scope"] += "_instrumented"
+        manifest["feature_cache_payload_bytes"] = features.numel() * features.element_size()
+        manifest["accounting_gaps"] = ["independent_observer_evaluation", "publication_after_measurement",
+                                       "hardware_kernel_instructions", "python_scalar_arithmetic", "request_peak_memory", "process_energy"]
+        # Complete legacy aggregate certification remains false: evaluation is separate.
     return bank, manifest, predictions
 
 
@@ -182,24 +213,30 @@ def write_json_exclusive(path, value):
         os.fsync(stream.fileno())
 
 
-def publish_prediction_bundle(root, bank, manifest, predictions, *, clock=time.time_ns):
+def publish_prediction_bundle(root, bank, manifest, predictions, *, clock=time.time_ns, budget_check=None):
     """Seal newly created artifacts; callers own exclusive directory creation."""
     from safetensors.torch import save_file
+    check = budget_check or (lambda: None)
+    check()
     save_file(bank.state_dict(), str(root / "bank.safetensors"))
     with (root / "bank.safetensors").open("rb") as stream:
         os.fsync(stream.fileno())
+    check()
     write_json_exclusive(root / "predictions.json", predictions)
+    check()
     write_json_exclusive(root / "execution.json", manifest)
     committed = {"schema": "hepta.stem.prediction-seal.v1", "sealed_at_ns": clock(),
                  "files": {name: file_sha256(root / name) for name in
                            ("predictions.json", "execution.json", "bank.safetensors")}}
     committed["seal_id"] = _digest(committed)
+    check()
     write_json_exclusive(root / "COMMITTED.json", committed)
     fd = os.open(root, os.O_RDONLY)
     try:
         os.fsync(fd)
     finally:
         os.close(fd)
+    check()  # A late failure is fenced by run_bound's FAILED marker.
     return committed
 
 
@@ -212,19 +249,31 @@ def run_bound(plan, contract, config, workload_path, snapshot, output):
     sources = verify_source(contract["source_sha"])
     root = Path(output)
     root.mkdir(exist_ok=False)  # A failed/partial run is never overwritten.
+    meter = None
     try:
-        backend = LocalHFEncoder(snapshot, config, profile)
-        bank, manifest, predictions = execute(plan, contract, config, workload, backend)
+        if "measurement_policy" in config:
+            from execution_meter import WorkLedger, BudgetStop
+            meter = WorkLedger(config["measurement_policy"], contract["flops_caps"])
+        with meter.scope("setup", "encoder") if meter else contextlib.nullcontext():
+            backend = LocalHFEncoder(snapshot, config, profile)
+        bank, manifest, predictions = execute(plan, contract, config, workload, backend, meter=meter)
+        if meter is not None and meter.stopped:
+            write_json_exclusive(root / "partial_predictions.json", predictions)
+            raise BudgetStop(meter.stopped)
         if file_sha256(workload_path) != contract["workload_sha256"]:
             raise ValueError("workload changed during execution")
         if verify_source(contract["source_sha"]) != sources:
             raise ValueError("execution source changed")
         manifest["source_files_sha256"] = sources
         manifest["predictions_complete_at_ns"] = time.time_ns()
-        return publish_prediction_bundle(root, bank, manifest, predictions)
+        return publish_prediction_bundle(root, bank, manifest, predictions,
+                                         budget_check=meter.check if meter else None)
     except Exception as exc:
-        write_json_exclusive(root / "FAILED.json", {"status": "failed", "error_type": type(exc).__name__,
-                                                    "production_authorized": False})
+        failure = {"status": "failed", "error_type": type(exc).__name__,
+                   "expected_task_ids": contract["task_ids"], "production_authorized": False}
+        if meter is not None:
+            failure["work_observation"] = meter.report()
+        write_json_exclusive(root / "FAILED.json", failure)
         raise
 
 
