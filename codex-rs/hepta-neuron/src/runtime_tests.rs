@@ -575,24 +575,29 @@ fn ndu_cutover_during_model_effect_refuses_local_checkpoint_publication() {
             }
         },
     );
-    assert!(matches!(rejected, Err(NeuronRuntimeError::InvalidInput)));
+    assert!(matches!(
+        rejected,
+        Err(NeuronRuntimeError::NduStaleAfterEffect)
+    ));
     assert_eq!(model.inner.calls, 1);
     assert!(checked(runtime.journal.current()).is_none());
     assert!(checked(runtime.current_anchor()).is_none());
     assert!(checked(witness.current()).is_none());
 
-    // A later independently authorized tick can still commit once the
-    // current frontier has been revalidated; no stale checkpoint was written.
-    let mut renewed_model = FakeModel::new();
-    let accepted = checked(runtime.tick_with_ndu_snapshot_guarded(
-        &mut renewed_model,
+    // A renewed signed grant must not replay an already executed model effect
+    // while durable terminal reconciliation is still missing.
+    let denied_retry = runtime.tick_with_ndu_snapshot_guarded(
+        &mut model,
         input(1, Digest32::ZERO),
         &ndu_snapshot_for_guard(),
         receipt_digest,
         || Ok(()),
+    );
+    assert!(matches!(
+        denied_retry,
+        Err(NeuronRuntimeError::PendingReconciliation)
     ));
-    assert!(!accepted.tick.checkpoint_after.is_zero());
-    assert!(checked(runtime.current_anchor()).is_some());
+    assert_eq!(model.inner.calls, 1);
 }
 
 #[test]
@@ -640,4 +645,27 @@ fn ndu_guard_refuses_stale_pending_witness_reconciliation_without_model_replay()
         checked(witness.current()).expect("reconciled anchor").checkpoint_digest,
         accepted.tick.checkpoint_after
     );
+}
+
+#[test]
+fn unknown_model_effect_is_latched_until_independent_reconciliation() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let witness = MemoryWitness::default();
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native.clone(),
+        scope(),
+        /*max_records*/ 16,
+        runtime_config(&native),
+        witness,
+    ));
+    let mut model = FakeModel::new();
+    model.corrupt_head = true;
+    let first = runtime.tick(&mut model, input(1, Digest32::ZERO));
+    assert!(matches!(first, Err(NeuronRuntimeError::ModelBindingMismatch)));
+    let retry = runtime.tick(&mut model, input(1, Digest32::ZERO));
+    assert!(matches!(retry, Err(NeuronRuntimeError::PendingReconciliation)));
+    assert_eq!(model.calls, 1);
+    assert!(checked(runtime.journal.current()).is_none());
 }

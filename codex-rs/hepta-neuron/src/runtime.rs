@@ -30,6 +30,9 @@ pub struct NeuronRuntime<W: AnchorWitnessStore> {
     journal: SparseJournal,
     witness: W,
     pending: Option<PendingWitness>,
+    /// Prevent same-process replay after an external effect with an uncertain
+    /// terminal checkpoint. Crash recovery still requires a durable intent.
+    unresolved_effect: Option<Digest32>,
 }
 
 impl<W: AnchorWitnessStore> NeuronRuntime<W> {
@@ -54,6 +57,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             journal,
             witness,
             pending: None,
+            unresolved_effect: None,
         })
     }
 
@@ -122,6 +126,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             journal,
             witness,
             pending: None,
+            unresolved_effect: None,
         })
     }
 
@@ -179,13 +184,14 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             journal,
             witness,
             pending: None,
+            unresolved_effect: None,
         })
     }
 
     /// Rotate to a fresh successor segment while preserving the exact current
     /// checkpoint as the new segment's immutable seed.
     pub fn rollover(&mut self, file: File, max_records: usize) -> Result<(), NeuronRuntimeError> {
-        if self.pending.is_some() {
+        if self.pending.is_some() || self.unresolved_effect.is_some() {
             return Err(NeuronRuntimeError::PendingReconciliation);
         }
         self.journal = self.journal.start_successor(file, max_records)?;
@@ -200,7 +206,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         file: File,
         max_records: usize,
     ) -> Result<(), NeuronRuntimeError> {
-        if self.pending.is_some() {
+        if self.pending.is_some() || self.unresolved_effect.is_some() {
             return Err(NeuronRuntimeError::PendingReconciliation);
         }
         let latest = self
@@ -300,6 +306,11 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         input: NeuronTickInputV1,
         before_state_commit: impl FnOnce() -> Result<(), NeuronRuntimeError>,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        // A pending witness from a durable checkpoint can reconcile without a
+        // model call. An effect with NO confirmed checkpoint cannot be replayed.
+        if self.unresolved_effect.is_some() && self.pending.is_none() {
+            return Err(NeuronRuntimeError::PendingReconciliation);
+        }
         let model_request = self.model_request(&input)?;
         let input_digest = model_request.input_digest;
         if let Some(pending) = self.pending.clone() {
@@ -315,6 +326,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             {
                 Ok(()) => {
                     self.pending = None;
+                    self.unresolved_effect = None;
                     return Ok(pending.output);
                 }
                 Err(error) => {
@@ -336,6 +348,9 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             checkpoint_digest: checkpoint.digest(),
         });
 
+        // A driver error may be indeterminate after physical effect entry.
+        // Hold this process fenced until an independently reconciled terminal.
+        self.unresolved_effect = Some(input_digest);
         let started = Instant::now();
         let model_output = model.execute(&model_request)?;
         validate_model_output(&self.config, &model_output)?;
@@ -354,8 +369,11 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         };
         // A cutover while the model driver was running must not create a new
         // checkpoint. This is the last independent NDU check before the
-        // local durable state effect.
-        before_state_commit()?;
+        // local durable state effect. A denied guard leaves the external
+        // invocation terminal-uncertain, never eligible for automatic replay.
+        if before_state_commit().is_err() {
+            return Err(NeuronRuntimeError::NduStaleAfterEffect);
+        }
         let sparse_receipt = self.journal.commit(input.checkpoint_digest, &sparse_tick)?;
         let checkpoint = self
             .journal
@@ -454,6 +472,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
                 error,
             });
         }
+        self.unresolved_effect = None;
         Ok(output)
     }
 

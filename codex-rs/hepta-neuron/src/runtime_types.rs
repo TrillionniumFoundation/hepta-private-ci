@@ -404,6 +404,9 @@ pub enum NeuronRuntimeError {
     BootstrapWitnessPresent,
     RecoveryWitnessMismatch,
     PendingReconciliation,
+    /// External model work ran, but NDU cutover denied state publication.
+    /// This is not a retry-safe input validation error.
+    NduStaleAfterEffect,
     Model(NeuronModelError),
     Deletion(DeletionRebuildError),
     Journal(JournalError),
