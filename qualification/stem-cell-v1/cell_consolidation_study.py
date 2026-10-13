@@ -126,8 +126,10 @@ def affine_logits(tensors, features, classes):
     return result
 
 
-def review_rows(rows, features, origin, output):
+def review_rows(rows, features, origin, output, *, score_held_out=True):
     """Check original sealed bytes and recompute predictions/retention before scoring."""
+    if type(score_held_out) is not bool:
+        raise ValueError("invalid review scoring mode")
     output = Path(output)
     if (output / "FAILED.json").exists():
         raise ValueError("failed consolidation is not scoreable")
@@ -199,7 +201,7 @@ def review_rows(rows, features, origin, output):
     if by_key:
         raise ValueError("unexpected consolidation predictions")
     scores = {}
-    for p in ("calibration", "held_out"):
+    for p in (("calibration", "held_out") if score_held_out else ("calibration",)):
         mask = [j for j, i in enumerate(indices) if phase(rows[i]) == p]
         labels = torch.tensor([rows[indices[j]]["label"] for j in mask])
         groups = [rows[indices[j]]["source_group"] for j in mask]

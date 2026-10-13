@@ -202,15 +202,20 @@ def metrics(logits, labels, groups, config):
     return result
 
 
-def select_retained(metrics_by_arm, config):
+def select_retained(metrics_by_arm, config, *, extra_arms=()):
     """Empirical calibration floor, NOT a confidence guarantee or production gate."""
-    if set(metrics_by_arm) != set(ARMS):
+    if (type(extra_arms) is not tuple or len(extra_arms) > 8
+            or any(type(n) is not str or not n or len(n) > 64 or not n.replace("_", "").isalnum() for n in extra_arms)
+            or len(set(ARMS + extra_arms)) != len(ARMS + extra_arms)):
+        raise ValueError("invalid explicit additional research controls")
+    arms = ARMS + extra_arms
+    if set(metrics_by_arm) != set(arms):
         raise ValueError("missing consolidation controls")
     config.validate()
     reference = metrics_by_arm["frozen"]
     eligible = ["frozen"]
     floors = {}
-    for name in ARMS[1:]:
+    for name in arms[1:]:
         score = metrics_by_arm[name]
         retained = all(score["per_class"][str(k)]["accuracy"] >= reference["per_class"][str(k)]["accuracy"]-config.maximum_old_accuracy_drop
                        and score["per_class"][str(k)]["brier"] <= reference["per_class"][str(k)]["brier"]+config.maximum_old_brier_increase
