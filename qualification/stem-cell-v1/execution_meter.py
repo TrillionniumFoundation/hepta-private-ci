@@ -10,6 +10,7 @@ from completed work because an interrupted kernel may have partially executed.
 from __future__ import annotations
 
 import contextlib
+import copy
 import math
 import time
 from collections import Counter
@@ -138,7 +139,8 @@ class WorkLedger:
             rows = [r for r in self.rows.values() if r['phase'] == phase]
             phases[phase] = (sum(r['formula_flops'] for r in rows) if rows and
                              not any(r['unknown_operators'] or r['failed_calls'] for r in rows) else None)
-        return {'schema': 'hepta.execution-work-observation.v1', 'profile': self.arithmetic_profile,
+        # Snapshots must not expose mutable policy or live scope dictionaries.
+        return copy.deepcopy({'schema': 'hepta.execution-work-observation.v1', 'profile': self.arithmetic_profile,
                 'torch_dispatch_only': True, 'hardware_instruction_count': False,
                 'observer_evaluation_measured': False, 'policy': self.policy,
                 'stopped': self.stopped, 'phase_flops': phases,
@@ -151,7 +153,7 @@ class WorkLedger:
                 'peak_rss_scope': 'process_lifetime_not_request_peak',
                 'zone_energy': rapl_delta(self.start_energy, self.energy_end,
                                           self.finish_ns - self.start_ns, self.policy['rapl_max_power_watts']),
-                'production_authorized': False}
+                'production_authorized': False})
 
 
 class _DispatchMeter(TorchDispatchMode):

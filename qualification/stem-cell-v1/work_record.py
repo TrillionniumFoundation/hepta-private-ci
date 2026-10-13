@@ -66,9 +66,13 @@ def validate_work_record(record, *, expected_policy=None):
             _integer(value, "operator attempts", 1)
     if any(name not in operators or count > operators[name] for name, count in unknown.items()):
         raise ValueError("unknown operator inventory contradicts attempted operators")
-    # A failed known kernel also increments its scope's unknown count, but is
-    # not listed as an unknown formula. Therefore equality here is not required.
-    if sum(unknown.values()) > unknown_count or unknown_count > sum(operators.values()):
+    # Formula uncertainty and execution uncertainty are separate increments.
+    # An unknown kernel that also fails contributes to BOTH; a known failed
+    # kernel contributes only to scope uncertainty. At most one kernel failure
+    # escapes each failed scope call. Never reject a legitimate failed prefix
+    # merely because its uncertainty count exceeds its operator count.
+    formula_unknowns = sum(unknown.values())
+    if not formula_unknowns <= unknown_count <= formula_unknowns + failed_count:
         raise ValueError("scope and operator uncertainty counts disagree")
     if record["aborted_formula_reservations"] and not failed_count:
         raise ValueError("aborted operator reservation lacks a failed scope")
