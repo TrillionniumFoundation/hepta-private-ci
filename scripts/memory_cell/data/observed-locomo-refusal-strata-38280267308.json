@@ -1,0 +1,140 @@
+{
+  "by_arm": {
+    "lexical_k4": {
+      "cohorts": {
+        "publisher_support_all_retrieved": {
+          "answer_with_any_valid_label": 6,
+          "f1_sum": 1.6330737271873708,
+          "mean_f1": 0.20413421589842135,
+          "planned": 8,
+          "prompt_tokens": 3252
+        },
+        "publisher_support_missing": {
+          "answer_with_any_valid_label": 3,
+          "f1_sum": 0.12024756852343059,
+          "mean_f1": 0.024049513704686117,
+          "planned": 5,
+          "prompt_tokens": 1899
+        },
+        "publisher_support_partially_retrieved": {
+          "answer_with_any_valid_label": 0,
+          "f1_sum": 0,
+          "mean_f1": null,
+          "planned": 0,
+          "prompt_tokens": 0
+        },
+        "unanswerable": {
+          "answer_with_any_valid_label": 0,
+          "f1_sum": 1.0,
+          "mean_f1": 0.3333333333333333,
+          "planned": 3,
+          "prompt_tokens": 1103
+        }
+      },
+      "diagnostic_prefix_refusal_macro_f1": 0.2970825809819251,
+      "original_hosted_f1": 0.17208258098192508,
+      "original_official": {
+        "answer_with_any_valid_label": 9,
+        "f1_sum": 2.7533212957108013,
+        "mean_f1": 0.17208258098192508,
+        "planned": 16,
+        "prompt_tokens": 6254
+      },
+      "refusal_not_canonical": 0,
+      "refusal_prefix_with_extra_unreviewed_content": 2,
+      "refusal_strict_exact": 1
+    },
+    "lexical_k8": {
+      "cohorts": {
+        "publisher_support_all_retrieved": {
+          "answer_with_any_valid_label": 7,
+          "f1_sum": 1.681210415200563,
+          "mean_f1": 0.186801157244507,
+          "planned": 9,
+          "prompt_tokens": 5876
+        },
+        "publisher_support_missing": {
+          "answer_with_any_valid_label": 3,
+          "f1_sum": 0.10250000000000001,
+          "mean_f1": 0.025625000000000002,
+          "planned": 4,
+          "prompt_tokens": 2753
+        },
+        "publisher_support_partially_retrieved": {
+          "answer_with_any_valid_label": 0,
+          "f1_sum": 0,
+          "mean_f1": null,
+          "planned": 0,
+          "prompt_tokens": 0
+        },
+        "unanswerable": {
+          "answer_with_any_valid_label": 0,
+          "f1_sum": 0.0,
+          "mean_f1": 0.0,
+          "planned": 3,
+          "prompt_tokens": 1844
+        }
+      },
+      "diagnostic_prefix_refusal_macro_f1": 0.2989819009500352,
+      "original_hosted_f1": 0.11148190095003518,
+      "original_official": {
+        "answer_with_any_valid_label": 10,
+        "f1_sum": 1.783710415200563,
+        "mean_f1": 0.11148190095003518,
+        "planned": 16,
+        "prompt_tokens": 10473
+      },
+      "refusal_not_canonical": 0,
+      "refusal_prefix_with_extra_unreviewed_content": 3,
+      "refusal_strict_exact": 0
+    }
+  },
+  "exact_registered_k8_minus_k4_f1": -0.0606006800318899,
+  "generating_commit": "96b5ec37b82f87d445740403e07e3705e9850955",
+  "independent_future_families": 0,
+  "official_scoring_preserved": true,
+  "original_model_runs": 32,
+  "originals": {
+    "decisions": "3fb1c3272314d31b42ece1c74aa0250e2ecb06c6060cb011071d4654fef6f097",
+    "public": "51e18514c68f31220f4dcd072914f6e015aa9733b6c5b4a4d4e3b14dac25ec37",
+    "reader": "7160ede72114b04135e544fb687a804dc0c4852834cf1695440a75b85214bf48",
+    "score": "5c36103c506367de2ba42ea242bc81b53ad9734f1417132ce2945d0473ed391e",
+    "targets": "d09823324003ab431301e60fbbb280e216ca03b686e178d4f36fb6d492981978"
+  },
+  "paired_support_cohorts": {
+    "additional_support_retrieved_by_k8": {
+      "extra_prompt_tokens": 266,
+      "mean_original_delta": 0.06896551724137931,
+      "questions": 1,
+      "sum_original_delta": 0.06896551724137931
+    },
+    "support_missing_both": {
+      "extra_prompt_tokens": 1227,
+      "mean_original_delta": -0.004436892130857647,
+      "questions": 4,
+      "sum_original_delta": -0.01774756852343059
+    },
+    "support_retrieved_by_both": {
+      "extra_prompt_tokens": 1985,
+      "mean_original_delta": -0.0026036036535234024,
+      "questions": 8,
+      "sum_original_delta": -0.02082882922818722
+    },
+    "unanswerable": {
+      "extra_prompt_tokens": 741,
+      "mean_original_delta": -0.3333333333333333,
+      "questions": 3,
+      "sum_original_delta": -1.0
+    }
+  },
+  "parameter_memory_qualified": false,
+  "production_accepted": false,
+  "publisher_annotation_is_not_human_certified_sufficient": true,
+  "question_count": 16,
+  "retrieval_policy_promotion_qualified": false,
+  "schema": "hepta.memorycell.locomo-original-reader-refusal-strata.v1",
+  "semantic_citation_precision": null,
+  "sensitivity_has_no_human_semantic_validation": true,
+  "sensitivity_prefix_refusal_k8_minus_k4_f1": 0.0018993199681101025,
+  "source_family_proxies": 2
+}
