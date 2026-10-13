@@ -117,6 +117,17 @@ class ExactShaGateTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             qualify(SHA, runs, jobs)
 
+    def test_incomplete_github_pagination_does_not_masquerade_as_green(self):
+        runs, jobs = fixture()
+        runs["total_count"] = len(runs["workflow_runs"]) + 1
+        with self.assertRaisesRegex(ValueError, "pagination incomplete"):
+            qualify(SHA, runs, jobs)
+        runs["total_count"] = len(runs["workflow_runs"])
+        jobs["500"]["total_count"] = len(jobs["500"]["jobs"]) + 1
+        result = qualify(SHA, runs, jobs)
+        self.assertFalse(result["exact_sha_ci_gate_passed"])
+        self.assertTrue(any("pagination incomplete" in b for b in result["blocking_reasons"]))
+
     def test_missing_final_use_or_model_evidence_not_implied(self):
         runs, jobs = fixture()
         extra = {"production_promotion_permitted": True,
