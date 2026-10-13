@@ -138,7 +138,8 @@ class SqlxNativeAbiTrialTests(unittest.TestCase):
     def test_canonical_tar_directory_is_preserved(self):
         archive = fixture_archive(extra=[("sqlx-sqlite-0.9.0/empty/", None)])
         files, report = trial(archive, fixture_lock(archive))
-        self.assertIsNone(files["sqlx-sqlite-0.9.0/empty/"])
+        # tarfile canonicalizes directory member names without the final "/".
+        self.assertIsNone(files["sqlx-sqlite-0.9.0/empty"])
         self.assertFalse(report["production_authorized"])
 
     def test_refuses_unknown_output_locations_and_oversized_archives(self):
