@@ -15,9 +15,13 @@ import memory_cell_crossrun_audit as audit
 
 def answer():
     return {
-        "question_id": "q", "arm": "k1", "kind": "new_fact",
-        "answer": "site_11111111 [E1]", "selected": ["s1"],
-        "status": "succeeded", "candidate_digest": "pool",
+        "question_id": "q",
+        "arm": "k1",
+        "kind": "new_fact",
+        "answer": "site_11111111 [E1]",
+        "selected": ["s1"],
+        "status": "succeeded",
+        "candidate_digest": "pool",
         "strict_task_success": True,
         "receipt": {
             "reader_identity": audit.MODEL_ID,
@@ -38,10 +42,16 @@ class CrossRunSourceTests(unittest.TestCase):
         row = answer()
         other = deepcopy(row)
         other["receipt"]["seconds"] = 200
-        self.assertEqual(audit.comparable_pairs({("q", "k1"): row}, {("q", "k1"): other}), 1)
+        self.assertEqual(
+            audit.comparable_pairs({("q", "k1"): row}, {("q", "k1"): other}), 1
+        )
 
     def test_output_rewrite_rejected(self):
-        for field, value in (("answer", "site_22222222 [E1]"), ("selected", ["s2"]), ("strict_task_success", False)):
+        for field, value in (
+            ("answer", "site_22222222 [E1]"),
+            ("selected", ["s2"]),
+            ("strict_task_success", False),
+        ):
             left = answer()
             right = deepcopy(left)
             right[field] = value
@@ -100,16 +110,23 @@ class CrossRunSourceTests(unittest.TestCase):
                     audit.verified_zip(path, pinned, 1)
 
     def test_complete_real_archives_when_explicitly_supplied(self):
-        folder = Path(os.environ.get("MEMORY_CELL_CROSSRUN_ARTIFACT_DIR", "/unmounted-archives"))
-        args = [folder / name for name in (
-            "event-inputs-20261010.zip",
-            "strong-rag-prior-success-reader-38224780900.zip",
-            "strong-rag-prior-success-replay-38224780900.zip",
-            "memory-strong-rag-calibrated-reader-success-38389920977.zip",
-            "memory-strong-rag-readonly-replay-success-38389920977.zip",
-        )]
+        folder = Path(
+            os.environ.get("MEMORY_CELL_CROSSRUN_ARTIFACT_DIR", "/unmounted-archives")
+        )
+        args = [
+            folder / name
+            for name in (
+                "event-inputs-20261010.zip",
+                "strong-rag-prior-success-reader-38224780900.zip",
+                "strong-rag-prior-success-replay-38224780900.zip",
+                "memory-strong-rag-calibrated-reader-success-38389920977.zip",
+                "memory-strong-rag-readonly-replay-success-38389920977.zip",
+            )
+        ]
         if not all(p.is_file() for p in args):
-            self.skipTest("Externally pinned GitHub Action ZIPs not bundled in source repository")
+            self.skipTest(
+                "Externally pinned GitHub Action ZIPs not bundled in source repository"
+            )
         result = audit.audit(*args)
         self.assertEqual(result["matched_calibration_original_answers"], 40)
         self.assertEqual(result["matched_evaluation_original_answers"], 72)
