@@ -2,7 +2,9 @@
 from copy import deepcopy
 import unittest
 
-from locomo_publisher_support_reader import proposed, validate_plan, paired_deltas, SCHEMA
+from locomo_publisher_support_reader import (
+    proposed, validate_plan, paired_deltas, checked_disposition, SCHEMA,
+)
 from locomo_ninearm_source_replay import ZIPS
 
 
@@ -111,6 +113,26 @@ class PrivilegedSupportTests(unittest.TestCase):
         self.assertTrue(out["lexical_k8"]["all"]["missing_bounds_are_not_confidence_intervals"])
         self.assertEqual(out["lexical_k4"]["answerable"]["planned"], 15)
         self.assertEqual(out["lexical_k4"]["support_missing_by_k4"]["planned"], 14)
+
+    def test_unavailable_source_cannot_become_a_fake_model_attempt(self):
+        self.assertEqual(
+            checked_disposition("support_unavailable", {
+                "status": "unavailable", "reason": "incomplete_publisher_support"
+            }),
+            "unavailable",
+        )
+        for bad in (
+            {"status": "failed", "error_type": "TimeoutError"},
+            {"status": "succeeded", "answer": "guess"},
+            {"status": "unavailable", "answer": "fake"},
+            {"status": "unavailable", "reason": "gold_available"},
+        ):
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                checked_disposition("support_unavailable", bad)
+        with self.assertRaises(ValueError):
+            checked_disposition("publisher_support", {"status": "unavailable"})
+        with self.assertRaises(ValueError):
+            checked_disposition("publisher_support", {"status": "failed"})
 
     def test_rejected_unanswerable_support_and_wrong_census(self):
         c,d,t=cases()

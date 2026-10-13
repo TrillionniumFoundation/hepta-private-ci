@@ -21,7 +21,6 @@ SCHEMA = "hepta.locomo.publisher-support-reader.v1"
 PLANNED = 16
 MODES = ("publisher_support", "unanswerable_empty", "support_unavailable")
 BASE_ARMS = ("lexical_k4", "lexical_k8")
-ORIGINAL_READER_SHA = "7160ede72114b04135e544fb687a804dc0c4852834cf1695440a75b85214bf48"
 
 
 def proposed(cases, documents, targets):
@@ -139,6 +138,24 @@ def validate_plan(payload, cases, documents):
                     (row["support_count"] or row["unresolved_count"]))):
             raise ValueError("source-only selection or unknown/empty distinction drift")
     return rows
+
+
+def checked_disposition(mode, row):
+    """Reject rewritten missing support or fabricated model responses."""
+    status = row.get("status")
+    if ((mode == "support_unavailable") != (status == "unavailable")
+            or status not in ("succeeded", "failed", "unavailable")):
+        raise ValueError("publisher-support disposition was rewritten")
+    if status == "unavailable":
+        if (row.get("reason") != "incomplete_publisher_support"
+                or "answer" in row or "receipt" in row):
+            raise ValueError("unavailable support acquired a model response")
+    elif status == "failed":
+        if (type(row.get("error_type")) is not str
+                or not row["error_type"]
+                or "answer" in row or "receipt" in row):
+            raise ValueError("failed execution was rewritten")
+    return status
 
 
 def generate(public_dir, model_dir, plan_dir, output):
@@ -268,7 +285,7 @@ def paired_deltas(cases, rows, original, targets):
                 ties += diff == 0
             result[comparator][cohort] = dict(
                 planned=paired, complete=complete, missing_or_unscored=missing,
-                source_free_reader_success_baseline_f1=old_sum/complete if complete else None,
+                original_retrieval_reader_f1=old_sum/complete if complete else None,
                 privileged_support_reader_f1=new_sum/complete if complete else None,
                 wins=wins, losses=losses, ties=ties,
                 all_planned_delta_bounds=[
@@ -311,25 +328,23 @@ def score(public_dir, target_dir, plan_dir, generation_dir, original_zip, output
             source_census_sha256=case["source_census_sha256"],
         ).items()):
             raise ValueError("model row changed selection or family")
-        if row["status"] == "succeeded":
+        status = checked_disposition(expected["mode"], row)
+        if status == "succeeded":
             _, bundle = bundle_for(case, "publisher_support", originals, expected["selected"])
             r = row["receipt"]
             if (r["reader_identity"] != source["reader_identity"]
                     or r["reader_profile"] != source["reader_profile"]
                     or r["token_limit"] != LIMIT
+                    or type(r.get("input_tokens")) is not int
+                    or not 0 < r["input_tokens"] <= LIMIT
+                    or type(r.get("generated_tokens")) is not int
+                    or not 0 <= r["generated_tokens"] <= 64
                     or r["trainable_parameters"] != 0
                     or r["answer_postprocessed"] is not False
                     or r["delivered_evidence"] != bundle.delivered()
                     or type(row.get("answer")) is not str or not row["answer"].strip()):
                 raise ValueError("actual frozen-reader response or bytes drift")
-        elif row["status"] == "unavailable":
-            if expected["mode"] != "support_unavailable" or "answer" in row:
-                raise ValueError("unavailable source became an answer")
-        elif row["status"] == "failed":
-            if "answer" in row or "receipt" in row:
-                raise ValueError("failed source intervention has invented answer")
-        else:
-            raise ValueError("unknown original execution status")
+        # Other statuses have already been bound to the original admission.
     if sum(r["status"] == "succeeded" for r in rows) != source["succeeded"] or (
         sum(r["status"] == "failed" for r in rows) != source["failed"]
     ) or sum(r["status"] == "unavailable" for r in rows) != source["unavailable"]:
