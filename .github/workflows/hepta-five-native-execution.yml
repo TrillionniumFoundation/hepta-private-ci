@@ -6,6 +6,9 @@ on:
       - "scripts/memory_cell/five_causal_native.py"
       - "scripts/memory_cell/five_native_historical_smoke.py"
       - "scripts/memory_cell/test_five_causal_native.py"
+      - "scripts/memory_cell/five_reader_response_*.py"
+      - "scripts/memory_cell/test_five_reader_response.py"
+      - "scripts/memory_cell/five_archived_torch_reference.py"
       - "experiments/shared_stem_cell/execution.py"
       - ".github/workflows/hepta-five-native-execution.yml"
   pull_request:
@@ -13,6 +16,9 @@ on:
       - "scripts/memory_cell/five_causal_native.py"
       - "scripts/memory_cell/five_native_historical_smoke.py"
       - "scripts/memory_cell/test_five_causal_native.py"
+      - "scripts/memory_cell/five_reader_response_*.py"
+      - "scripts/memory_cell/test_five_reader_response.py"
+      - "scripts/memory_cell/five_archived_torch_reference.py"
       - "experiments/shared_stem_cell/execution.py"
       - ".github/workflows/hepta-five-native-execution.yml"
 permissions:
@@ -25,7 +31,7 @@ jobs:
   native-protocol-and-historical-diagnostic:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && github.event_name == 'push'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     env:
       OMP_NUM_THREADS: "2"
       MKL_NUM_THREADS: "2"
@@ -44,15 +50,19 @@ jobs:
           mkdir -p /tmp/hepta-five-native/source
           python3 -m venv /tmp/hepta-five-native-venv
           /tmp/hepta-five-native-venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/hepta-five-native/install-torch.log 2>&1
-          /tmp/hepta-five-native-venv/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 psutil==7.0.0 > /tmp/hepta-five-native/install-worker.log 2>&1
+          /tmp/hepta-five-native-venv/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/hepta-five-native/install-worker.log 2>&1
+          /tmp/hepta-five-native-venv/bin/pip check | tee /tmp/hepta-five-native/pip-check.log
           /tmp/hepta-five-native-venv/bin/pip freeze > /tmp/hepta-five-native/environment.txt
+          PYTHONPATH=scripts/memory_cell /tmp/hepta-five-native-venv/bin/python -c 'import five_causal_native, five_reader_response_learning, five_reader_response_trial, five_archived_torch_reference; print("NATIVE_IMPORT_PREFLIGHT_OK")' | tee /tmp/hepta-five-native/import-preflight.log
       - name: Preserve original gates and execute actual tensor optimizer tests
         run: |
           set -euo pipefail
           /tmp/hepta-five-native-venv/bin/python -m unittest discover -s scripts/memory_cell -p test_full_cell_matrix.py -v 2>&1 | tee /tmp/hepta-five-native/matrix-tests.log
           /tmp/hepta-five-native-venv/bin/python -m unittest discover -s scripts/memory_cell -p test_five_causal_experiments.py -v 2>&1 | tee /tmp/hepta-five-native/five-contract-tests.log
           /tmp/hepta-five-native-venv/bin/python -m unittest discover -s scripts/memory_cell -p test_five_causal_native.py -v 2>&1 | tee /tmp/hepta-five-native/native-tests.log
-          /tmp/hepta-five-native-venv/bin/python -m py_compile scripts/memory_cell/five_causal_native.py scripts/memory_cell/five_native_historical_smoke.py scripts/memory_cell/test_five_causal_native.py experiments/shared_stem_cell/execution.py
+          /tmp/hepta-five-native-venv/bin/python -m unittest discover -s scripts/memory_cell -p 'test_five_group*.py' -v 2>&1 | tee /tmp/hepta-five-native/group-tests.log
+          /tmp/hepta-five-native-venv/bin/python -m unittest discover -s scripts/memory_cell -p test_five_reader_response.py -v 2>&1 | tee /tmp/hepta-five-native/response-tests.log
+          /tmp/hepta-five-native-venv/bin/python -m py_compile scripts/memory_cell/five_causal_native.py scripts/memory_cell/five_native_historical_smoke.py scripts/memory_cell/test_five_causal_native.py scripts/memory_cell/five_reader_response_learning.py scripts/memory_cell/five_reader_response_trial.py scripts/memory_cell/test_five_reader_response.py experiments/shared_stem_cell/execution.py
       - name: Retrieve already-produced original model material without new model downloads
         env:
           GH_TOKEN: ${{ github.token }}
@@ -60,6 +70,10 @@ jobs:
           set -euo pipefail
           gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/original-model-material.zip
           printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/original-model-material.zip | sha256sum -c -
+      - name: Fit response-only candidate and target-shuffle control, then seal source-disjoint readout
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/hepta-five-native/response-process-resources.txt /tmp/hepta-five-native-venv/bin/python scripts/memory_cell/five_reader_response_trial.py /tmp/original-model-material.zip --work /tmp/reader-response-materials --output /tmp/hepta-five-native/response-learning 2>&1 | tee /tmp/hepta-five-native/response-execution.log
       - name: Run actual frozen Reader and Head optimizer on explicitly historical data
         run: |
           set -euo pipefail
@@ -71,7 +85,7 @@ jobs:
           mkdir -p /tmp/hepta-five-native/source
           git rev-parse HEAD > /tmp/hepta-five-native/source/tested-commit.txt
           git rev-parse HEAD^{tree} > /tmp/hepta-five-native/source/tested-tree.txt
-          cp scripts/memory_cell/five_causal_native.py scripts/memory_cell/five_native_historical_smoke.py scripts/memory_cell/test_five_causal_native.py experiments/shared_stem_cell/execution.py .github/workflows/hepta-five-native-execution.yml /tmp/hepta-five-native/source/
+          cp scripts/memory_cell/five_causal_native.py scripts/memory_cell/five_native_historical_smoke.py scripts/memory_cell/test_five_causal_native.py scripts/memory_cell/five_reader_response_*.py scripts/memory_cell/test_five_reader_response.py scripts/memory_cell/five_archived_torch_reference.py experiments/shared_stem_cell/execution.py .github/workflows/hepta-five-native-execution.yml /tmp/hepta-five-native/source/
           (cd /tmp/hepta-five-native && find . -path './output/staged' -prune -o -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()

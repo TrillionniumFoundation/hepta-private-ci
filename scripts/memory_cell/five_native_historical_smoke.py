@@ -63,6 +63,26 @@ def extract(archive, output):
     return output / "memory-inputs"
 
 
+def prepare_materials(archive, output):
+    """Use the already verified copy path, preserving original Hub metadata.
+
+    Both original and clean model directories remain beneath output, allowing
+    the hosted evidence exporter to exclude the entire material subtree.
+    Dataset lookup must use the original root, never a fabricated clean copy.
+    """
+    from five_archived_torch_reference import stage_clean
+    original = extract(archive, output / "original")
+    clean = output / "clean"
+    records = {kind: stage_clean(original / kind, clean / kind, kind)
+               for kind in ("reader", "encoder")}
+    # This pins and describes the official HF inputs; it does not select the
+    # independent PyTorch arithmetic reference as a fallback backend.
+    snapshot(clean / "reader", "causal_lm", READER_INVENTORY)
+    snapshot(clean / "encoder", "encoder", ENCODER_INVENTORY)
+    return original, clean, {"archive_sha256": ARCHIVE_SHA256, "copies": records,
+                             "original_preserved": True, "official_loader_requirements_unchanged": True}
+
+
 def inventory(path):
     return {p.relative_to(path).as_posix(): {"sha256": contract.file_sha(p), "bytes": p.stat().st_size}
             for p in sorted(path.rglob("*")) if p.is_file() and ".cache" not in p.parts}
@@ -136,10 +156,11 @@ def run(archive, output):
     contract.write_new(output / "plan.json", frozen)
     try:
         with measured() as acquisition:
-            root = extract(archive, output / "staged")
+            original, root, staging = prepare_materials(archive, output / "staged")
+        contract.write_new(output / "material-staging.json", staging)
         enc = snapshot(root / "encoder", "encoder", ENCODER_INVENTORY)
         reader = snapshot(root / "reader", "causal_lm", READER_INVENTORY)
-        matches = [p for p in root.rglob("*.json") if p.stat().st_size > 50000
+        matches = [p for p in original.rglob("*.json") if p.stat().st_size > 50000
                    and contract.file_sha(p) == LOCOMO_SHA256]
         require(len(matches) == 1, "exact historical LoCoMo material missing/ambiguous")
         benchmark, queries, selection = select_history(matches[0])
