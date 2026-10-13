@@ -583,3 +583,30 @@ quality. A label-formally complete response is still **not** a human-verified
 causal/support-entailment certificate. All original model answers are retained
 unaltered, with failures in the planned denominator, and
 `semantic_citation_precision=null`, `production_accepted=false`.
+
+## Disjoint 40+72 fixed-Qwen sharded rerun after source-format failure
+
+The first sharded calibrated-Qwen workflow
+[38381903300](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38381903300)
+failed **before any new Qwen generation** because unchanged strict Ruff
+format verification rejected exactly
+`strong_rag_sharded_ci.py` and `test_strong_rag_sharded_ci.py`.
+The inherited formatter subsequently made AST-equivalent source changes,
+but that older failing run cannot be relabelled as having completed the
+original 40 calibration and disjoint 72 model calls.
+
+The original `hepta-memory-strong-rag-sharded.yml` still enforces its
+unchanged frozen environment, original source and candidate-set pins, strict
+formatter/tests, BF16 host gate on each model-executing VM, separately sealed
+calibration and evaluation windows, individual actual answer receipts and
+independent replay. The renewed workflow adds only an **always-retained
+preflight artifact** containing the exact triggering commit/tree, immutable
+source snapshot, optional formatter diff and SHA256SUMS, even when formatting
+blocks every expensive shard. Optional diff collection never converts a
+failed strict `ruff format --check` into a pass.
+
+No 40+72 count, Reader success, source-retrieval superiority, production
+cost or independent semantic support may be claimed until an actual
+source-pinned post-format workflow reaches its own model and replay
+terminal results. This rerun does not authorize generating artificial
+citations, restoring forgotten task answers, or bypassing `blocking-ci`.

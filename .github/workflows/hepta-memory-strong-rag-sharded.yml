@@ -44,6 +44,27 @@ jobs:
           python3 -m unittest discover -s scripts/memory_cell -p 'test_strong_rag*.py' -v
           python3 -m unittest discover -s scripts/memory_cell -p 'test_historical_event_citation_chain.py' -v
           git rev-parse HEAD
+      - name: Preserve exact source and formatting repair evidence even on gate failure
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/rag-sharded-preflight/source
+          git rev-parse HEAD > /tmp/rag-sharded-preflight/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/rag-sharded-preflight/tested-tree.txt
+          cp .github/workflows/hepta-memory-strong-rag-sharded.yml /tmp/rag-sharded-preflight/source/
+          cp scripts/memory_cell/strong_rag*.py scripts/memory_cell/test_strong_rag*.py /tmp/rag-sharded-preflight/source/
+          cp scripts/memory_cell/test_historical_event_citation_chain.py /tmp/rag-sharded-preflight/source/
+          if command -v uv >/dev/null 2>&1; then
+            uv run --frozen --project scripts ruff format --diff scripts/memory_cell/strong_rag*.py scripts/memory_cell/test_strong_rag*.py > /tmp/rag-sharded-preflight/format.patch 2>&1 || true
+          fi
+          test -z "$(find /tmp/rag-sharded-preflight -type l -print -quit)"
+          (cd /tmp/rag-sharded-preflight && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-strong-rag-sharded-source-gate
+          path: /tmp/rag-sharded-preflight
+          if-no-files-found: error
 
   prepare:
     needs: preflight
