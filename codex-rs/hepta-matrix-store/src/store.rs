@@ -215,6 +215,15 @@ impl MatrixDurableStore {
         &self.path
     }
 
+    /// Read-only readiness check against the actual pooled owner connection.
+    ///
+    /// This does not grant any Matrix/Chat/Agent authority. It verifies the
+    /// WAL-reset-protected durable connection still has WAL, FULL fsync,
+    /// foreign keys and the bounded lock-wait profile after opening/recovery.
+    pub async fn verify_durability_profile(&self) -> Result<(), MatrixDurableError> {
+        verify_matrix_durable_profile(&self.pool).await
+    }
+
     pub(crate) fn sqlite_pool(&self) -> &SqlitePool {
         &self.pool
     }
