@@ -21,6 +21,9 @@ on:
       - "codex-rs/hepta-agentd/src/prompt_runtime.rs"
       - "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs"
       - "codex-rs/Cargo.lock"
+      - "codex-rs/hepta-bao-adapter/src/lease_lifecycle*.rs"
+      - "codex-rs/windows-sandbox-rs/tests/helper_manifest.rs"
+      - "codex-rs/windows-sandbox-rs/BUILD.bazel"
       - ".github/workflows/hepta-neuron-stem-qualification.yml"
 
 permissions:
@@ -204,3 +207,42 @@ jobs:
         run: |
           git diff --check
           git diff --exit-code
+
+
+  windows-bao-registry-and-manifest:
+    name: Real Windows BAO durable registry and sandbox manifest tests (no promotion)
+    runs-on: windows-latest
+    timeout-minutes: 55
+    steps:
+      - name: Checkout the exact audited PR head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Prove immutable source identity
+        shell: pwsh
+        run: |
+          if ((git rev-parse HEAD).Trim() -ne "${{ github.event.pull_request.head.sha || github.sha }}") { throw "SHA changed" }
+          git diff --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Install the exact Rust toolchain
+        shell: pwsh
+        run: rustup toolchain install 1.95.0 --profile minimal
+      - name: Real Windows BAO lease create replace sync and reopen
+        shell: pwsh
+        run: |
+          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-bao-adapter --lib lease_lifecycle::tests:: -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Windows sandbox setup RT_MANIFEST still requires asInvoker
+        shell: pwsh
+        run: |
+          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-windows-sandbox --test helper_manifest -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Verify no test mutated the exact source
+        if: always()
+        shell: pwsh
+        run: |
+          git diff --check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
