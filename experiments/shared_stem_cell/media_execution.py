@@ -156,6 +156,7 @@ class LocalTowers:
             raise e.InputError("explicit clip/whisper model manifests required")
         self.root, self.manifests = root, models
         self.models, self.processors, self.identities, self.calls = {}, {}, {}, {}
+        self.materializations = {}
         for name, manifest in models.items():
             path = root / manifest["path"]
             if Path(manifest["path"]).is_absolute() or ".." in Path(manifest["path"]).parts:
@@ -167,7 +168,7 @@ class LocalTowers:
                 use_safetensors=True, trust_remote_code=False, output_loading_info=True,
                 attn_implementation="eager")
             loaded = loaded.cpu().float().eval().requires_grad_(False)
-            e.verify_materialized(loaded, info, path, manifest)
+            self.materializations[name] = e.verify_materialized(loaded, info, path, manifest)
             self.models[name] = loaded
             self.processors[name] = processor.from_pretrained(path, local_files_only=True,
                                                                trust_remote_code=False)
@@ -319,7 +320,9 @@ def run(manifest_path, output, *, _tower_factory=LocalTowers):
         report = {"prediction_sha256": seal, "scores": scores, "same_init_learning": learning, "connector_costs": result["costs"],
             "modality_intervention_scores": probe_scores, "intervention_source_case_ids": source_mapping,
             "intervention_costs": interventions["costs"], "intervention_scope": interventions["intervention_scope"],
-            "model_identities": towers.identities, "model_load": load, "encoding": encoding,
+            "model_identities": towers.identities,
+            "model_materializations": getattr(towers, "materializations", None),
+            "model_load": load, "encoding": encoding,
             "tower_forward_calls": towers.calls, "simulated_towers": towers.simulated,
             "representation": "CLIP text/patch tokens, ordered pooled video frames; Whisper 32 time-bin means",
             "temporal_claim": config.get("temporal", False), "independent_evaluation": False,

@@ -104,13 +104,34 @@ class StockHfChecks(unittest.TestCase):
         image = self.root / "image.png"
         Image.new("RGB", (8, 8), (12, 24, 36)).save(image)
         ref = {"path": image.name, "sha256": e.sha(image.read_bytes())}
+        references = {}
         for name, item in (("text", "a b"), ("image", ref),
                            ("video", [dict(ref, timestamp_us=t) for t in (0, 1000000)])):
             value, stamps = towers.encode(name, item, self.root)
             self.assertEqual(value.ndim, 2)
             self.assertEqual(stamps.dtype, torch.int64)
+            references[name] = (item, value.clone(), stamps.clone())
         self.assertEqual(towers.calls["clip"], 3)
         towers.close()
+        # Reproduce the older real checkpoint's persisted, now regenerated IDs.
+        # Keep ALL parameters, then demand equality with the runtime buffers.
+        from safetensors.torch import save_file
+        model = towers.models["clip"]
+        legacy = {k: v.detach().clone() for k, v in model.state_dict().items()}
+        positions = {k: v.detach().clone() for k, v in model.named_buffers() if k.endswith(".position_ids")}
+        self.assertEqual(len(positions), 2)
+        save_file({**legacy, **positions}, str(path / "model.safetensors"), metadata={"format": "pt"})
+        restored = m.LocalTowers(self.root, {"clip": manifest(path, "clip")})
+        self.assertEqual(set(restored.materializations["clip"]["verified_nonpersistent_buffers"]), set(positions))
+        for name, (item, expected, stamps) in references.items():
+            value, actual_stamps = restored.encode(name, item, self.root)
+            self.assertTrue(torch.equal(value, expected))
+            self.assertTrue(torch.equal(stamps, actual_stamps))
+        restored.close()
+        positions["text_model.embeddings.position_ids"][0, 0] = 1
+        save_file({**legacy, **positions}, str(path / "model.safetensors"), metadata={"format": "pt"})
+        with self.assertRaisesRegex(e.InputError, "nonpersistent buffer mismatch"):
+            m.LocalTowers(self.root, {"clip": manifest(path, "clip")})
 
     def test_stock_whisper_bounded_audio_landmarks(self):
         path = self.root / "whisper"

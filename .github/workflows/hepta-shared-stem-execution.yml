@@ -30,7 +30,8 @@ jobs:
         run: |
           python3 -m venv "$RUNNER_TEMP/hepta-execution-env"
           "$RUNNER_TEMP/hepta-execution-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/hepta-execution-env/bin/pip" install numpy==2.2.6 safetensors==0.7.0 psutil==7.1.0 playwright==1.57.0 ruff==0.14.0 pillow==12.3.0 scikit-learn==1.8.0
+          "$RUNNER_TEMP/hepta-execution-env/bin/pip" install numpy==2.2.6 safetensors==0.7.0 packaging==25.0 psutil==7.1.0 playwright==1.57.0 ruff==0.14.0 pillow==12.3.0 scikit-learn==1.8.0
+          "$RUNNER_TEMP/hepta-execution-env/bin/python" -c "import safetensors.torch; import packaging.version"
           "$RUNNER_TEMP/hepta-execution-env/bin/python" -m playwright install --with-deps chromium
       - name: Actual tests and browser comparison
         env:
@@ -40,8 +41,8 @@ jobs:
           PY="$RUNNER_TEMP/hepta-execution-env/bin/python"
           git rev-parse HEAD > "$RUNNER_TEMP/hepta-execution-source.txt"
           "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-execution-source.txt"
-          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{execution,controls,wire,browser_loop,browser_recovery,checkpoint_conversion,public_smoke,public_media,control_evaluation,media_execution,hf_integration_checks,test_execution,test_browser,test_browser_recovery,test_checkpoint_conversion,test_media_execution,test_public_media,head_artifacts,test_head_artifacts,test_modality_probe,test_generation_contract,head_batch,head_batch_study,test_head_batch,head_training,head_training_study,test_head_training,split_learning,split_study,test_split_learning,stopping,stopping_study,test_stopping}.py
-          "$PY" -m unittest -v experiments.shared_stem_cell.test_execution experiments.shared_stem_cell.test_browser experiments.shared_stem_head_matrix.tests.test_runner experiments.shared_stem_cell.test_checkpoint_conversion experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.test_browser_recovery experiments.shared_stem_cell.test_public_media experiments.shared_stem_cell.test_head_artifacts experiments.shared_stem_cell.test_modality_probe experiments.shared_stem_cell.test_generation_contract experiments.shared_stem_cell.test_head_batch experiments.shared_stem_cell.test_head_training experiments.shared_stem_cell.test_split_learning experiments.shared_stem_cell.test_stopping 2>&1 | tee "$RUNNER_TEMP/hepta-execution-tests.txt"
+          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{execution,controls,wire,browser_loop,browser_recovery,checkpoint_conversion,public_smoke,public_media,control_evaluation,media_execution,hf_integration_checks,test_execution,test_browser,test_browser_recovery,test_checkpoint_conversion,test_media_execution,test_public_media,head_artifacts,test_head_artifacts,test_modality_probe,test_generation_contract,head_batch,head_batch_study,test_head_batch,head_training,head_training_study,test_head_training,split_learning,split_study,test_split_learning,stopping,stopping_study,test_stopping,test_materialization}.py
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_execution experiments.shared_stem_cell.test_browser experiments.shared_stem_head_matrix.tests.test_runner experiments.shared_stem_cell.test_checkpoint_conversion experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.test_browser_recovery experiments.shared_stem_cell.test_public_media experiments.shared_stem_cell.test_head_artifacts experiments.shared_stem_cell.test_modality_probe experiments.shared_stem_cell.test_generation_contract experiments.shared_stem_cell.test_head_batch experiments.shared_stem_cell.test_head_training experiments.shared_stem_cell.test_split_learning experiments.shared_stem_cell.test_stopping experiments.shared_stem_cell.test_materialization 2>&1 | tee "$RUNNER_TEMP/hepta-execution-tests.txt"
           "$PY" -m experiments.shared_stem_cell.browser_loop --output "$RUNNER_TEMP/hepta-browser-study" --tasks 24
           "$PY" -m experiments.shared_stem_cell.browser_recovery --output "$RUNNER_TEMP/hepta-controller-recovery"
           "$PY" -m experiments.shared_stem_cell.head_batch_study --synthetic --output "$RUNNER_TEMP/hepta-head-batch-study"
@@ -78,7 +79,8 @@ jobs:
         run: |
           python3 -m venv "$RUNNER_TEMP/hepta-pretrained-env"
           "$RUNNER_TEMP/hepta-pretrained-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/hepta-pretrained-env/bin/pip" install transformers==4.57.1 datasets==4.2.0 numpy==2.2.6 safetensors==0.7.0 psutil==7.1.0 sentencepiece==0.2.1 pillow==12.3.0
+          "$RUNNER_TEMP/hepta-pretrained-env/bin/pip" install transformers==4.57.1 datasets==4.2.0 numpy==2.2.6 safetensors==0.7.0 packaging==25.0 psutil==7.1.0 sentencepiece==0.2.1 pillow==12.3.0
+          "$RUNNER_TEMP/hepta-pretrained-env/bin/python" -c "import safetensors.torch; import packaging.version"
       - name: Real public weights and public records, not future evidence
         env:
           PYTHONDONTWRITEBYTECODE: "1"
@@ -124,7 +126,8 @@ jobs:
         run: |
           python3 -m venv "$RUNNER_TEMP/hepta-media-env"
           "$RUNNER_TEMP/hepta-media-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/hepta-media-env/bin/pip" install transformers==4.57.1 datasets==4.2.0 numpy==2.2.6 safetensors==0.7.0 psutil==7.1.0 sentencepiece==0.2.1 pillow==12.3.0
+          "$RUNNER_TEMP/hepta-media-env/bin/pip" install transformers==4.57.1 datasets==4.2.0 numpy==2.2.6 safetensors==0.7.0 packaging==25.0 psutil==7.1.0 sentencepiece==0.2.1 pillow==12.3.0
+          "$RUNNER_TEMP/hepta-media-env/bin/python" -c "import safetensors.torch; import packaging.version"
       - name: Actual public ScienceQA, CLIP connectors and text-only Qwen control
         env:
           PYTHONDONTWRITEBYTECODE: "1"

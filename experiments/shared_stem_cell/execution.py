@@ -186,13 +186,25 @@ def verify_snapshot(root: Path, manifest: dict):
 
 
 def verify_materialized(loaded, info, root, manifest):
-    """Check every saved tensor and exact storage aliases; shared by frozen towers."""
+    """Verify saved state and regenerated nonpersistent buffers, never ignore keys.
+
+    Older CLIP checkpoints persist position_ids; stock Transformers 4.57.1
+    regenerates those registered buffers and excludes them from state_dict.
+    They must still match the actual runtime tensor exactly, including dtype.
+    A buffer may not stand in for an unverified parameter/storage alias.
+    """
     from safetensors import safe_open
     fields = ("missing_keys", "unexpected_keys", "mismatched_keys", "error_msgs")
     if not isinstance(info, dict) or any(k not in info or info[k] for k in fields):
         raise InputError("incomplete model load")
     state = loaded.state_dict()
-    covered, aliases = set(), set()
+    runtime_buffers = {
+        f"{prefix}.{name}" if prefix else name: value
+        for prefix, module in loaded.named_modules(remove_duplicate=False)
+        for name, value in module._buffers.items()
+        if name in module._non_persistent_buffers_set and value is not None
+    }
+    covered, aliases, buffer_records = set(), set(), {}
     def alias(value):
         return (value.data_ptr(), tuple(value.shape), tuple(value.stride()), str(value.dtype))
     for name in manifest["files"]:
@@ -201,15 +213,29 @@ def verify_materialized(loaded, info, root, manifest):
         with safe_open(str(root / name), framework="pt", device="cpu") as saved:
             for key in saved.keys():
                 tensor = saved.get_tensor(key)
-                if key in covered or key not in state or tensor.shape != state[key].shape:
-                    raise InputError("snapshot tensor inventory mismatch")
-                if not bool(torch.isfinite(tensor).all()) or not torch.equal(tensor.to(state[key].dtype), state[key]):
-                    raise InputError("snapshot tensor materialization mismatch")
+                if key in covered:
+                    raise InputError(f"duplicate snapshot tensor: {key}")
+                if key in state:
+                    actual = state[key]
+                    if tensor.shape != actual.shape:
+                        raise InputError(f"snapshot tensor shape mismatch: {key}")
+                    if not bool(torch.isfinite(tensor).all()) or not torch.equal(tensor.to(actual.dtype), actual):
+                        raise InputError(f"snapshot tensor materialization mismatch: {key}")
+                    aliases.add(alias(actual))
+                elif key in runtime_buffers:
+                    actual = runtime_buffers[key]
+                    if (tensor.shape != actual.shape or tensor.dtype != actual.dtype
+                            or not bool(torch.isfinite(tensor).all()) or not torch.equal(tensor, actual)):
+                        raise InputError(f"snapshot nonpersistent buffer mismatch: {key}")
+                    buffer_records[key] = {"shape": list(tensor.shape), "dtype": str(tensor.dtype),
+                                           "sha256": tensor_digest(tensor), "runtime_equal": True}
+                else:
+                    raise InputError(f"unknown snapshot tensor: {key}")
                 covered.add(key)
-                aliases.add(alias(state[key]))
     if any(k not in covered and alias(v) not in aliases for k, v in state.items()):
         raise InputError("unverified loaded tensor")
     return {"verified_tensor_keys": len(covered), "state_keys": len(state),
+            "verified_nonpersistent_buffers": buffer_records,
             "loaded_tensor_bytes": sum(v.numel() * v.element_size() for v in state.values()),
             "storage_aliases_validated": True}
 
