@@ -71,17 +71,23 @@ class SqlxNativeAbiTrialTests(unittest.TestCase):
         archive = fixture_archive()
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            (root / "source.crate").write_bytes(archive)
-            (root / "Cargo.lock").write_bytes(fixture_lock(archive))
-            dest = root / "candidate"
-            receipt = root / "evidence.json"
-            path, observed = stage(root / "source.crate", root / "Cargo.lock", dest, receipt)
+            scratch = root / "scratch"
+            scratch.mkdir()
+            repo = root / "repo"
+            (repo / "codex-rs").mkdir(parents=True)
+            lock = repo / "codex-rs/Cargo.lock"
+            lock.write_bytes(fixture_lock(archive))
+            archive_file = scratch / "source.crate"
+            archive_file.write_bytes(archive)
+            dest = scratch / "candidate"
+            receipt = scratch / "evidence.json"
+            path, observed = stage(archive_file, lock, dest, receipt, scratch)
             self.assertEqual(path, dest / "sqlx-sqlite-0.9.0")
             self.assertIn(CANDIDATE, (path / "Cargo.toml").read_text())
             self.assertTrue(receipt.is_file())
             self.assertFalse(observed["hepta_cargo_lock_changed"])
             with self.assertRaisesRegex(ValueError, "detached outputs"):
-                stage(root / "source.crate", root / "Cargo.lock", dest, root / "second.json")
+                stage(archive_file, lock, dest, scratch / "second.json", scratch)
 
     def test_archive_checksum_or_source_substitution_fails_closed(self):
         archive = fixture_archive()
@@ -127,14 +133,26 @@ class SqlxNativeAbiTrialTests(unittest.TestCase):
         archive = fixture_archive()
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
-            (root / "archive").write_bytes(archive)
-            (root / "lock").write_bytes(fixture_lock(archive))
+            scratch = root / "scratch"
+            scratch.mkdir()
+            repo = root / "repo"
+            (repo / "codex-rs").mkdir(parents=True)
+            lock = repo / "codex-rs/Cargo.lock"
+            lock.write_bytes(fixture_lock(archive))
+            source = scratch / "archive"
+            source.write_bytes(archive)
             with self.assertRaises(ValueError):
-                stage(root / "archive", root / "lock", root / "out", root / "out" / "receipt.json")
-            symlink = root / "source-link"
-            symlink.symlink_to(root / "archive")
+                stage(source, lock, scratch / "out", scratch / "out" / "receipt.json", scratch)
+            symlink = scratch / "source-link"
+            symlink.symlink_to(source)
             with self.assertRaises(ValueError):
-                stage(symlink, root / "lock", root / "out", root / "receipt.json")
+                stage(symlink, lock, scratch / "out", scratch / "receipt.json", scratch)
+            with self.assertRaisesRegex(ValueError, "confined"):
+                stage(source, lock, repo / "injection", scratch / "receipt.json", scratch)
+            with self.assertRaisesRegex(ValueError, "confined"):
+                stage(source, lock, scratch / "out", repo / "injection.json", scratch)
+            with self.assertRaisesRegex(ValueError, "confined"):
+                stage(source, lock, repo / "injection", repo / "injection.json", repo)
 
 
 if __name__ == "__main__":
