@@ -180,8 +180,15 @@ class Top1SparseExpert(_Head):
 
     def residual(self, x: "torch.Tensor") -> "torch.Tensor":
         route = self.router(x).argmax(dim=-1)
-        values = torch.stack([expert(x).flatten() for expert in self.experts], dim=1)
-        return values.gather(1, route[:, None]).flatten()
+        # Evaluate only the selected expert for each token.  Computing every
+        # expert and gathering afterward would report dense, not top-1 sparse,
+        # active FLOPs.
+        output = x.new_zeros((len(x),))
+        for index, expert in enumerate(self.experts):
+            selected = route == index
+            if selected.any():
+                output[selected] = expert(x[selected]).flatten()
+        return output
 
 
 def make_head(kind: str, dimension: int, *, rank: int = 16) -> _Head:
