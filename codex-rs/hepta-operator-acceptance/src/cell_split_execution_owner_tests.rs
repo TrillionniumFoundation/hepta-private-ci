@@ -1613,3 +1613,84 @@ fn oversized_owner_directory_fails_before_writing_frozen_plan() {
     assert!(!root.path().join("cell-split-frozen-plan.json").exists());
     assert_eq!(state.borrow().executions, 0);
 }
+
+#[test]
+fn post_effect_selection_revocation_keeps_all_stages_pending() {
+    for completed_predecessors in 0..4 {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        {
+            let mut owner = CellSplitExecutionOwnerV1::open(
+                root.path(),
+                plan(),
+                trust(),
+                FixturePort::new(state.clone()),
+            )
+            .expect("single writer owner");
+            for _ in 0..completed_predecessors {
+                owner.advance().expect("predecessor effect").expect("receipt");
+            }
+            let mut admission_reads = 0;
+            let rejected = owner.advance_with_admission(|| {
+                admission_reads += 1;
+                if admission_reads == 1 {
+                    Ok(())
+                } else {
+                    Err("selection withdrawn after external commit".into())
+                }
+            });
+            assert!(matches!(
+                rejected,
+                Err(CellSplitExecutionErrorV1::External(reason))
+                    if reason == "selection withdrawn after external commit"
+            ));
+            assert_eq!(admission_reads, 2, "recheck selection after signed effect");
+            assert_eq!(owner.completed_steps(), completed_predecessors);
+            assert_eq!(state.borrow().executions, completed_predecessors + 1);
+            assert!(
+                root.path()
+                    .join(format!("cell-split-{completed_predecessors:02}-prepared.json"))
+                    .exists(),
+                "original intent must remain durable for recovery"
+            );
+            assert!(
+                !root
+                    .path()
+                    .join(format!("cell-split-{completed_predecessors:02}-committed.json"))
+                    .exists(),
+                "revoked selection must not be acknowledged in the local ledger"
+            );
+        }
+
+        let mut recovered = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("reopen original prepared intent");
+        assert!(matches!(
+            recovered.advance_with_admission(|| Err("selection still withdrawn".into())),
+            Err(CellSplitExecutionErrorV1::External(reason))
+                if reason == "selection still withdrawn"
+        ));
+        assert_eq!(recovered.completed_steps(), completed_predecessors);
+        assert_eq!(
+            state.borrow().executions,
+            completed_predecessors + 1,
+            "denied readback must never replay an external effect"
+        );
+
+        let original_receipt = recovered
+            .advance_with_admission(|| Ok(()))
+            .expect("read-only recovery with current selection")
+            .expect("original commit receipt");
+        assert_eq!(original_receipt.intent.step.index(), completed_predecessors);
+        assert_eq!(recovered.completed_steps(), completed_predecessors + 1);
+        assert_eq!(
+            state.borrow().executions,
+            completed_predecessors + 1,
+            "recovery must not execute a second effect"
+        );
+    }
+}
