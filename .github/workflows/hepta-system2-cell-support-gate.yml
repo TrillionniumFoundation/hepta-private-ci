@@ -5,7 +5,10 @@ on:
     paths:
       - "scripts/memory_cell/system2_cell_support_gate.py"
       - "scripts/memory_cell/test_system2_cell_support_gate.py"
+      - "scripts/memory_cell/system2_cell_action_menu.py"
+      - "scripts/memory_cell/test_system2_cell_action_menu.py"
       - "codex-rs/hepta-ndu/research/SYSTEM2_CELL_SUPPORT_GATE.md"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_CELL_ACTION_MENU.md"
       - ".github/workflows/hepta-system2-cell-support-gate.yml"
 permissions:
   contents: read
@@ -63,12 +66,17 @@ jobs:
             exit 1
           fi
           tail -5 /tmp/cell-support-gate/full-regression.log
-          /tmp/cell-gate-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_cell_support_gate.py scripts/memory_cell/test_system2_cell_support_gate.py | tee /tmp/cell-support-gate/lint.log
+          /tmp/cell-gate-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_cell_support_gate.py scripts/memory_cell/test_system2_cell_support_gate.py scripts/memory_cell/system2_cell_action_menu.py scripts/memory_cell/test_system2_cell_action_menu.py | tee /tmp/cell-support-gate/lint.log
       - name: Frozen 6-parameter Head versus zero-fit and shuffled controls, no Reader inference
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/cell-support-gate/resources.txt /tmp/cell-gate-python/bin/python scripts/memory_cell/system2_cell_support_gate.py "$HEPTA_GATE_TRAIN_320" "$HEPTA_GATE_TRAIN_180" "$HEPTA_GATE_EVAL_200" /tmp/cell-support-gate/trial > /tmp/cell-support-gate/execution.log 2>&1 || { tail -100 /tmp/cell-support-gate/execution.log; exit 1; }
           tail -1 /tmp/cell-support-gate/execution.log
+      - name: Exhaust restricted action menu after sealing source-only decisions
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/cell-support-gate/menu-resources.txt /tmp/cell-gate-python/bin/python scripts/memory_cell/system2_cell_action_menu.py "$HEPTA_GATE_TRAIN_320" "$HEPTA_GATE_TRAIN_180" "$HEPTA_GATE_EVAL_200" /tmp/cell-support-gate/action-menu > /tmp/cell-support-gate/menu-execution.log 2>&1 || { tail -100 /tmp/cell-support-gate/menu-execution.log; exit 1; }
+          tail -1 /tmp/cell-support-gate/menu-execution.log
       - name: Retain exact checked-out source, all decisions and SHA256 manifest
         if: always()
         run: |
@@ -76,8 +84,8 @@ jobs:
           mkdir -p /tmp/cell-support-gate/source
           git rev-parse HEAD > /tmp/cell-support-gate/tested-commit.txt
           git rev-parse HEAD^{tree} > /tmp/cell-support-gate/tested-tree.txt
-          cp scripts/memory_cell/{system2_cell_support_gate.py,test_system2_cell_support_gate.py} /tmp/cell-support-gate/source/
-          cp codex-rs/hepta-ndu/research/SYSTEM2_CELL_SUPPORT_GATE.md .github/workflows/hepta-system2-cell-support-gate.yml /tmp/cell-support-gate/source/
+          cp scripts/memory_cell/{system2_cell_support_gate.py,test_system2_cell_support_gate.py,system2_cell_action_menu.py,test_system2_cell_action_menu.py} /tmp/cell-support-gate/source/
+          cp codex-rs/hepta-ndu/research/{SYSTEM2_CELL_SUPPORT_GATE.md,SYSTEM2_CELL_ACTION_MENU.md} .github/workflows/hepta-system2-cell-support-gate.yml /tmp/cell-support-gate/source/
           (cd /tmp/cell-support-gate && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
