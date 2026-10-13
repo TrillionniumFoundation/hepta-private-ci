@@ -301,6 +301,13 @@ impl DurableNeuronEffectIntentV1 {
         tick_digest: Digest32,
         previous_checkpoint: Digest32,
     ) -> Result<(), NeuronEffectIntentErrorV1> {
+        #[cfg(unix)]
+        if let Err(error) = self.verify_bound_owner_path() {
+            // A replaced/missing bootstrap pathname is a revoked owner,
+            // not a transient denied operation that may later be retried.
+            self.poisoned = true;
+            return Err(error);
+        }
         self.can_prepare(tick_digest)?;
         self.append(b'P', tick_digest, previous_checkpoint)?;
         self.attempted.insert(tick_digest);

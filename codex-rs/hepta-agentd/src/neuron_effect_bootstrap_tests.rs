@@ -178,8 +178,7 @@ fn mismatched_sparse_runtime_scope_is_denied_before_effect_intent_creation() {
 
 #[cfg(unix)]
 #[test]
-fn bootstrap_owner_rejects_same_bytes_at_replaced_journal_inode(
-) -> Result<(), Box<dyn std::error::Error>> {
+fn rejects_replaced_journal_inode() -> Result<(), Box<dyn std::error::Error>> {
     use std::os::unix::fs::PermissionsExt as _;
 
     let directory = tempfile::tempdir()?;
@@ -216,8 +215,7 @@ fn bootstrap_owner_rejects_same_bytes_at_replaced_journal_inode(
 
 #[cfg(unix)]
 #[test]
-fn pending_resolution_denied_after_path_replacement(
-) -> Result<(), Box<dyn std::error::Error>> {
+fn pending_recovery_rejects_path_swap() -> Result<(), Box<dyn std::error::Error>> {
     use std::os::unix::fs::PermissionsExt as _;
 
     let directory = tempfile::tempdir()?;
