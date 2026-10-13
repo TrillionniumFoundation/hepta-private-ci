@@ -300,6 +300,8 @@ def run_probe(rows: Sequence[Any], cut: Any, *, steps: int = 32, rank: int = 16,
     """Run all heads on one shared tensor fixture and preserve every denominator."""
     _require_torch()
     dimension = rows[0].features.paired.shape[1]
+    if type(rank) is not int or not 1 <= rank <= dimension:
+        raise ValueError("explicit probe rank exceeds frozen feature dimension")
     digest = source_digest(rows)
     reports = []
     frozen_accuracy = accuracy(make_head("linear", dimension), rows, frozen=True)
@@ -389,7 +391,12 @@ def main(argv: list[str]) -> int:
         print("usage: full_cell_heads_probe.py OUTPUT_JSON", file=sys.stderr)
         return 2
     rows, cut = fixture()
-    result = run_probe(rows, cut)
+    # Synthetic smoke fixture has 8 features; do not silently request rank 16.
+    # The effective rank is explicit, and the normal public runner rejects
+    # invalid rank overrides instead of treating failures as usable results.
+    actual_rank = min(16, rows[0].features.paired.shape[1])
+    result = run_probe(rows, cut, rank=actual_rank)
+    result["actual_probe_rank"] = actual_rank
     Path(argv[1]).write_text(json.dumps(result, sort_keys=True, allow_nan=False, indent=2) + "\n")
     return 0
 

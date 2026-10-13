@@ -61,6 +61,11 @@ class FullCellHeadsProbeTests(unittest.TestCase):
             rows[0].features.paired[0, 0] += 1.0
         self.assertNotEqual(changed_dtype, source_digest(rows))
 
+    def test_explicit_rank_above_feature_dimension_fails_before_training(self):
+        rows, cut = fixture()
+        with self.assertRaisesRegex(ValueError, "rank exceeds"):
+            run_probe(rows, cut, steps=5, rank=16)
+
     def test_low_rank_is_explicit_output_adapter_not_layer_lora(self):
         head = LowRankOutputAdapter(8, rank=3)
         counts = actual_param_counts(head)
