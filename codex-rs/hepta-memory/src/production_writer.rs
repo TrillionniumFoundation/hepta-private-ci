@@ -3614,7 +3614,8 @@ mod final_use_dispatch_tests {
     }
 
     #[tokio::test]
-    async fn final_use_is_consumed_at_target_entry_and_binding_mismatch_never_calls_target() -> TestResult<()> {
+    async fn final_use_is_consumed_at_target_entry_and_binding_mismatch_never_calls_target()
+    -> TestResult<()> {
         let temp = TempDir::new().expect("temp");
         let store = store(&temp).await?;
         let owner = store.owner_agent_id().clone();
@@ -3784,7 +3785,8 @@ mod final_use_dispatch_tests {
     }
 
     #[tokio::test]
-    async fn queued_identity_survives_owner_handoff_and_dispatches_once_under_new_final_use() -> TestResult<()> {
+    async fn queued_identity_survives_owner_handoff_and_dispatches_once_under_new_final_use()
+    -> TestResult<()> {
         let temp = TempDir::new().expect("temp");
         let store = store(&temp).await?;
         let owner = store.owner_agent_id().clone();
