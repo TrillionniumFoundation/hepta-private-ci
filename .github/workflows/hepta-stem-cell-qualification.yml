@@ -238,7 +238,7 @@ jobs:
           git diff --exit-code
 
   global-python-ruff-diagnostic:
-    name: Capture global Ruff formatting patch (diagnostic only)
+    name: Global Python Ruff formatting gate and exact patch
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -257,6 +257,8 @@ jobs:
           git restore --worktree -- .github/scripts/test_run_bazel_ci.py
           git diff --check
           git diff --exit-code
+      - name: Enforce global Ruff format on Bazel wrapper tests
+        run: uv run --frozen --project scripts ruff format --check .github/scripts/test_run_bazel_ci.py
       - name: Export patch; no source mutation
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
