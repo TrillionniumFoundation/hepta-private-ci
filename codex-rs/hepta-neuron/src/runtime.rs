@@ -11,6 +11,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::NduSnapshotRefV1;
 use codex_hepta_types::StableId;
 
+use crate::DurableNeuronEffectIntentV1;
 use crate::JournalAnchor;
 use crate::JournalError;
 use crate::JournalScope;
@@ -168,6 +169,16 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         })
     }
 
+    /// Signed serving admission must match the runtime's actual generation
+    /// and sparse-journal scope, not only a caller-provided snapshot.
+    pub fn generation(&self) -> codex_hepta_types::Generation {
+        self.config.generation
+    }
+
+    pub fn journal_scope(&self) -> JournalScope {
+        self.journal.scope()
+    }
+
     pub fn model_request(
         &self,
         input: &NeuronTickInputV1,
@@ -289,6 +300,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         input: NeuronTickInputV1,
         snapshot: &NduSnapshotRefV1,
         admitted_read_receipt_digest: Digest32,
+        effect_intent: &mut DurableNeuronEffectIntentV1,
         neuron_owner_id: &StableId,
         authority: &FinalUseAuthority,
         signed_grant: &SignedFinalUseGrant,
@@ -304,6 +316,16 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             admitted_read_receipt_digest,
         )
         .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+        if self.config.generation != snapshot.generation
+            || !effect_intent.matches_tick_scope(
+                &input.subject_id,
+                input.objective_digest,
+                snapshot.generation,
+            )
+            || effect_intent.can_prepare(tick_digest).is_err()
+        {
+            return Err(NeuronRuntimeError::PendingReconciliation);
+        }
         let binding = neuron_tick_final_use_binding_v1(
             neuron_owner_id,
             &input,
@@ -320,15 +342,32 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             return Err(NeuronRuntimeError::InvalidInput);
         }
         FinalUseAuthority::with_verified_effect(authority, token, &binding, || {
-            self.tick_guarded(model, input, || {
-                // Independent Control/NDU authority must still be current
-                // after physical model execution and before journal commit.
+            // The durable business-tick Prepare is distinct from the
+            // single-use Final-use nonce and must precede model dispatch.
+            // A crash or indeterminate provider error leaves this intent
+            // unresolved; another grant must not replay it on restart.
+            effect_intent
+                .prepare(tick_digest, input.checkpoint_digest)
+                .map_err(|_| NeuronRuntimeError::PendingReconciliation)?;
+            let outcome = self.tick_guarded(model, input, || {
+                // Independently revalidate Control/NDU *after* the physical
+                // model call but before durable checkpoint publication.
                 if verify_live_ndu_read()? == admitted_read_receipt_digest {
                     Ok(())
                 } else {
                     Err(NeuronRuntimeError::NduStaleAfterEffect)
                 }
-            })
+            })?;
+            // A cutover while checkpoint/witness was being committed must
+            // leave the Prepare unresolved. Only a still-current NDU receipt
+            // may resolve the original tick's durable business identity.
+            if verify_live_ndu_read()? != admitted_read_receipt_digest {
+                return Err(NeuronRuntimeError::NduStaleAfterEffect);
+            }
+            effect_intent
+                .resolve(tick_digest, outcome.tick.checkpoint_after)
+                .map_err(|_| NeuronRuntimeError::PendingReconciliation)?;
+            Ok(outcome)
         })
         .map_err(|_| NeuronRuntimeError::InvalidInput)?
     }

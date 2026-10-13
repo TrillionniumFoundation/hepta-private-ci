@@ -11,6 +11,8 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_neuron::AnchorWitnessStore;
+use codex_hepta_neuron::DurableNeuronEffectIntentV1;
+use codex_hepta_neuron::NeuronEffectIntentStatusV1;
 use codex_hepta_neuron::InferenceControlModelPort;
 use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronRuntime;
@@ -31,6 +33,7 @@ where
     final_use: Option<FinalUseAuthority>,
     neuron_owner_id: Option<StableId>,
     ndu_read_verifier: Option<NduReadVerifierV1>,
+    effect_intent: Option<DurableNeuronEffectIntentV1>,
 }
 
 /// The kernel-authority issuer signs this exact complete binding after
@@ -62,6 +65,7 @@ where
             final_use: None,
             neuron_owner_id: None,
             ndu_read_verifier: None,
+            effect_intent: None,
         }
     }
 
@@ -80,7 +84,63 @@ where
             final_use: Some(final_use),
             neuron_owner_id: Some(neuron_owner_id),
             ndu_read_verifier: Some(ndu_read_verifier),
+            effect_intent: None,
         }
+    }
+
+    /// Source-level production composition with a separately durable
+    /// business-tick intent. The WAL must be securely bootstrapped under an
+    /// independently owned directory; a signed nonce is not a replay fence.
+    pub fn new_authorized_durable(
+        runtime: NeuronRuntime<W>,
+        inference_control: P,
+        neuron_owner_id: StableId,
+        final_use: FinalUseAuthority,
+        ndu_read_verifier: NduReadVerifierV1,
+        effect_intent: DurableNeuronEffectIntentV1,
+    ) -> Self {
+        Self {
+            runtime,
+            inference_control,
+            final_use: Some(final_use),
+            neuron_owner_id: Some(neuron_owner_id),
+            ndu_read_verifier: Some(ndu_read_verifier),
+            effect_intent: Some(effect_intent),
+        }
+    }
+
+    /// Bootstrap the real intent WAL from an externally provisioned private
+    /// path and the actual Neuron journal's verified scope/generation.
+    /// This never substitutes an in-memory model-effect ledger.
+    pub fn new_authorized_durable_from_path(
+        runtime: NeuronRuntime<W>,
+        inference_control: P,
+        neuron_owner_id: StableId,
+        final_use: FinalUseAuthority,
+        ndu_read_verifier: NduReadVerifierV1,
+        path: &std::path::Path,
+        max_records: usize,
+    ) -> Result<Self, crate::neuron_effect_bootstrap::NeuronEffectBootstrapErrorV1> {
+        let intent = crate::neuron_effect_bootstrap::bootstrap_durable_neuron_effect_intent_v1(
+            path,
+            runtime.journal_scope(),
+            runtime.generation(),
+            max_records,
+        )?;
+        Ok(Self::new_authorized_durable(
+            runtime,
+            inference_control,
+            neuron_owner_id,
+            final_use,
+            ndu_read_verifier,
+            intent,
+        ))
+    }
+
+    pub fn effect_intent_status(&self) -> Option<NeuronEffectIntentStatusV1> {
+        self.effect_intent
+            .as_ref()
+            .map(DurableNeuronEffectIntentV1::status)
     }
 
     /// The old unsigned entry is not a serving path.
@@ -129,12 +189,20 @@ where
         if signed_grant.grant.binding != binding {
             return Err(NeuronRuntimeError::InvalidInput);
         }
+        // The old signed-only constructor cannot publish physical effects:
+        // no durable business-tick Prepare means crash recovery could replay
+        // a second grant for the same already-entered model invocation.
+        let effect_intent = self
+            .effect_intent
+            .as_mut()
+            .ok_or(NeuronRuntimeError::PendingReconciliation)?;
         let mut model = InferenceControlModelPort::new(&mut self.inference_control);
         self.runtime.tick_with_ndu_snapshot(
             &mut model,
             input,
             snapshot,
             authenticated_read_receipt_digest,
+            effect_intent,
             owner_id,
             authority,
             signed_grant,
