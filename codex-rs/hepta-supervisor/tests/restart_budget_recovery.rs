@@ -256,7 +256,7 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             .iter()
             .any(|event| matches!(
                 &event.kind,
-                SupervisorEventKind::AutomaticRestartQueued { attempt: 2 }
+                SupervisorEventKind::RestartQueued
             ))
     );
     assert_eq!(
@@ -286,9 +286,17 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
             .iter()
             .any(|event| matches!(
                 &event.kind,
-                SupervisorEventKind::AutomaticRestartQueued { attempt: 3 }
+                SupervisorEventKind::RestartQueued
             ))
     );
+    // The third durable claim uses 4x base backoff (1,000 ms); the
+    // recovered supervisor must not spawn at 999 ms. This distinguishes
+    // a true carried-forward attempt 3 from an incorrectly reset attempt 1.
+    assert_eq!(
+        supervisor.tick(now + Duration::from_millis(999)),
+        TickReport::default()
+    );
+    assert_eq!(control.spawn_count(&agent_id), 3);
     now += Duration::from_secs(1);
     assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(control.spawn_count(&agent_id), 4);
@@ -303,7 +311,16 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     assert_eq!(recovered, TickReport::default());
     now += Duration::from_millis(1);
     control.crash(&agent_id);
-    assert_eq!(supervisor.tick(now), TickReport::default());
+    // Restart-budget exhaustion is a real operator-visible fault,
+    // not an empty tick or an extra replacement process.
+    let report = supervisor.tick(now);
+    assert_eq!(report.faults.len(), 1);
+    assert_eq!(report.faults[0].agent_id, agent_id);
+    assert!(
+        report.faults[0]
+            .message
+            .contains("exhausted its restart budget")
+    );
     let snapshot = supervisor.snapshot(&agent_id).expect("snapshot");
     assert!(!snapshot.active);
     assert!(snapshot.events.iter().any(|event| matches!(

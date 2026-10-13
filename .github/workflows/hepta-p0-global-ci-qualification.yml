@@ -1,0 +1,58 @@
+name: Hepta P0 Global CI Qualification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'codex-rs/core/src/client_provider_policy_tests.rs'
+      - '.github/scripts/test_run_bazel_ci.py'
+      - '.github/workflows/hepta-p0-global-ci-qualification.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  python-ruff-exact:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Install frozen uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          version: "0.11.3"
+      - name: Show actual formatter diff, without mutating checkout
+        run: uv run --frozen --project scripts ruff format --diff .github/scripts/test_run_bazel_ci.py
+      - name: Require unchanged frozen Python formatting
+        run: uv run --frozen --project scripts ruff format --check .github/scripts/test_run_bazel_ci.py
+  windows-core-test-api:
+    runs-on: windows-latest
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - name: Install exact Rust toolchain
+        shell: pwsh
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Check exact source Rustfmt without Windows workspace argv overflow
+        shell: pwsh
+        run: rustfmt +1.95.0 --edition 2024 --check core/src/client_provider_policy_tests.rs
+      - name: Execute and count all six Windows provider terminal-policy tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # The real module name in core/src/client.rs is provider_policy_tests.
+          # Filtering by the filename client_provider_policy_tests executes ZERO tests.
+          $output = @(cargo +1.95.0 test --locked -p codex-core --lib 'client::provider_policy_tests::' -- --nocapture 2>&1)
+          $output | Out-Host
+          if ($LASTEXITCODE -ne 0) { throw "Windows provider-policy tests exited $LASTEXITCODE" }
+          $summaries = @($output | Select-String -Pattern 'test result: ok\.\s+(\d+) passed; 0 failed; 0 ignored;')
+          if ($summaries.Count -ne 1) { throw 'Missing exact terminal Rust test success summary' }
+          $passed = [int]$summaries[0].Matches[0].Groups[1].Value
+          if ($passed -ne 6) { throw "Expected exactly 6 executed provider-policy tests; observed $passed" }
