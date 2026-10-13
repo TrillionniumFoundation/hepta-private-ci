@@ -884,6 +884,12 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             // Also recheck external predecessor effects and frozen local pins
             // after the preflight/admission callbacks, never trust old reads.
             self.verify_committed_prefix()?;
+            // Owner readbacks are potentially slow. Selector/NDU membership
+            // may be withdrawn while the last predecessor is being verified.
+            // Revalidate again before writing the prepared intent. This
+            // remains only a read-only guard; actual effect owners enforce
+            // independent final-use at the physical commit boundary.
+            revalidate().map_err(CellSplitExecutionErrorV1::External)?;
             write_private_new(
                 &frame_path(&self.root, self.cursor, "prepared"),
                 &canonical_json(&intent)?,
