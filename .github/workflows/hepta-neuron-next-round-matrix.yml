@@ -1,0 +1,36 @@
+name: hepta-neuron-next-round-matrix
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/next_round_matrix.py"
+      - "qualification/stem-cell-v1/test_next_round_matrix.py"
+      - "qualification/stem-cell-v1/README.md"
+  push:
+    branches: [main]
+    paths:
+      - "qualification/stem-cell-v1/next_round_matrix.py"
+      - "qualification/stem-cell-v1/test_next_round_matrix.py"
+      - "qualification/stem-cell-v1/README.md"
+
+permissions:
+  contents: read
+
+jobs:
+  preregistration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate preregistered matrix
+        run: |
+          PYTHONPATH=qualification/stem-cell-v1 python3 -m unittest -v \
+            qualification/stem-cell-v1/test_next_round_matrix.py
+          PYTHONPATH=qualification/stem-cell-v1 python3 \
+            qualification/stem-cell-v1/next_round_matrix.py \
+            --reader-id reader-fixed-v1 \
+            --task-set-id tasks-fixed-v1 \
+            --output "$RUNNER_TEMP/next-round.json"
