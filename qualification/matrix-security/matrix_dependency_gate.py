@@ -16,6 +16,7 @@ import tomllib
 
 ADVISORY_CRYPTO = "RUSTSEC-2026-0318"
 ADVISORY_ANYMAP = "RUSTSEC-2026-0319"
+ADVISORY_UNSAFE_YAML = "RUSTSEC-2024-0449"
 TARGET_REPLACEMENT = "anymap3"
 # matrix-sdk 0.19.1 is the latest audited snapshot for this experiment. It
 # requires Rust >=1.96 and STILL depends on anymap2; merely upgrading the SDK
@@ -94,7 +95,8 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
 
     versions = {name: _package_names(pkgs, name) for name in
                 ("matrix-sdk", "matrix-sdk-base", "matrix-sdk-crypto",
-                 "matrix-sdk-sqlite", "anymap2", "anymap3")}
+                 "matrix-sdk-sqlite", "anymap2", "anymap3",
+                 "serde_yaml", "unsafe-libyaml")}
     if len(versions["matrix-sdk"]) != 1:
         errors.append("MATRIX_SDK_LOCK_AMBIGUOUS_OR_MISSING")
     elif version(versions["matrix-sdk"][0]) != desired_tuple:
@@ -128,6 +130,12 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
             errors.append(f"MATRIX_FAMILY_DEPENDENCY_PATH_MISSING:{component}")
     if versions["anymap2"] or "anymap2" in graph.get("matrix-sdk", ()):
         errors.append(ADVISORY_ANYMAP)
+    # Matrix remediation cannot be considered complete while the workspace
+    # still carries the archived serde_yaml -> unsafe-libyaml parser. The
+    # package is independent of the Matrix SDK graph, so check it explicitly
+    # rather than relying on a path from the Matrix roots.
+    if versions["unsafe-libyaml"] or versions["serde_yaml"]:
+        errors.append(ADVISORY_UNSAFE_YAML)
     if versions["matrix-sdk"] and desired_tuple >= (0, 19, 0):
         notes.append("0.19.x upgrade cannot remove anymap2 without an independently audited source migration")
 
@@ -151,7 +159,7 @@ def audit(workspace, lock, deny, toolchain, matrix_sdk_manifest, matrixd_manifes
         errors.append("MATRIX_018_SQLITE_WAL_RESET_PATCH_MISSING")
 
     ignored = _deny_ignore(deny)
-    for advisory in (ADVISORY_CRYPTO, ADVISORY_ANYMAP):
+    for advisory in (ADVISORY_CRYPTO, ADVISORY_ANYMAP, ADVISORY_UNSAFE_YAML):
         if advisory in ignored:
             errors.append(f"FORBIDDEN_ADVISORY_IGNORE:{advisory}")
     # Deny's normal graph must remain full: no pruning to hide the vulnerable

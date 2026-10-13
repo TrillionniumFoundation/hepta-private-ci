@@ -2,7 +2,14 @@ import copy
 import json
 import unittest
 
-from matrix_dependency_gate import audit, find_path, version, ADVISORY_ANYMAP, ADVISORY_CRYPTO
+from matrix_dependency_gate import (
+    ADVISORY_ANYMAP,
+    ADVISORY_CRYPTO,
+    ADVISORY_UNSAFE_YAML,
+    audit,
+    find_path,
+    version,
+)
 
 
 class AuditTests(unittest.TestCase):
@@ -192,6 +199,25 @@ class AuditTests(unittest.TestCase):
         self.assertIn('FORBIDDEN_ADVISORY_IGNORE:'+ADVISORY_CRYPTO, self.result()['blocking_prerequisites'])
         self.deny['advisories']['ignore']=[ADVISORY_ANYMAP]
         self.assertIn('FORBIDDEN_ADVISORY_IGNORE:'+ADVISORY_ANYMAP, self.result()['blocking_prerequisites'])
+
+    def test_unsafe_yaml_parser_is_an_independent_release_blocker(self):
+        candidate = copy.deepcopy(self.lock)
+        candidate['package'].append({
+            'name': 'unsafe-libyaml',
+            'version': '0.2.11',
+            'dependencies': [],
+        })
+        report = audit(self.workspace, candidate, self.deny, self.toolchain,
+                       self.sdk_manifest, self.matrixd_manifest)
+        self.assertIn(ADVISORY_UNSAFE_YAML, report['blocking_prerequisites'])
+        self.assertFalse(report['static_prerequisites_passed'])
+        self.deny['advisories']['ignore'] = [
+            {'id': ADVISORY_UNSAFE_YAML, 'reason': 'pretend'}
+        ]
+        report = audit(self.workspace, candidate, self.deny, self.toolchain,
+                       self.sdk_manifest, self.matrixd_manifest)
+        self.assertIn('FORBIDDEN_ADVISORY_IGNORE:' + ADVISORY_UNSAFE_YAML,
+                      report['blocking_prerequisites'])
 
     def test_matrix_graph_pruning_does_not_prove_safety(self):
         self.deny['graph']['exclude']=['matrix-sdk 0.18.0']
