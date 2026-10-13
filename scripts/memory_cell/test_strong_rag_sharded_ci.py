@@ -46,7 +46,8 @@ class ShardedCiTransportTests(unittest.TestCase):
             self.assertEqual(receipt["actual_shard_model_staging_seconds"], 47.25)
             self.assertTrue(receipt["canonical_stage_seconds_are_historical"])
             self.assertEqual(
-                (model / "stage.json").read_bytes(), (canon / "stage.json").read_bytes()
+                (model / "stage.json").read_bytes(),
+                (canon / "stage.json").read_bytes(),
             )
             self.assertFalse(receipt["production_accepted"])
 

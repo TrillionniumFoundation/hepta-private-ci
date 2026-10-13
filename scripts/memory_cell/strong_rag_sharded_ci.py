@@ -146,7 +146,10 @@ def align_model_stage(live, canonical, observation):
         staged[key] != locked[key] for key in locked if key != "seconds"
     ):
         raise ValueError("model stage changed beyond observed download duration")
-    if type(staged["seconds"]) not in (int, float) or not 0 <= staged["seconds"] < 3600:
+    if (
+        type(staged["seconds"]) not in (int, float)
+        or not 0 <= staged["seconds"] < 3600
+    ):
         raise ValueError("untrusted model staging duration")
     if sha((canonical / "stage.json").read_bytes()) != CANONICAL_SHA["stage.json"]:
         raise ValueError("reused historical stage identity mutated")
@@ -187,7 +190,9 @@ def check_tree(directory):
         ):
             raise ValueError("folder member changed")
     physical = {
-        f.relative_to(directory).as_posix() for f in directory.rglob("*") if f.is_file()
+        f.relative_to(directory).as_posix()
+        for f in directory.rglob("*")
+        if f.is_file()
     }
     if physical != listed | {"SHA256SUMS"}:
         raise ValueError("folder census mismatch")
