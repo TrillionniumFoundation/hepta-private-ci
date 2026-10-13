@@ -494,6 +494,25 @@ mod tests {
         assert!(read_only.transcript.is_none());
         assert!(!read_only.production_activation_authorized);
 
+        // Revoked current mutation admission must not hide a frozen,
+        // signed historical readback from an independent observer.
+        let mut mutation_admissions = 0_usize;
+        let transcript_after_revocation =
+            run_pinned_cell_split_execution_with_admission_v1(
+                "transcript",
+                &config_path,
+                &pin,
+                |_| {
+                    mutation_admissions += 1;
+                    Err("current Selector withdrew mutation admission".to_string())
+                },
+            )
+            .expect("historical transcript remains read-only");
+        assert_eq!(mutation_admissions, 0);
+        assert_eq!(transcript_after_revocation.completed_steps, 0);
+        assert!(!transcript_after_revocation.complete);
+        assert!(transcript_after_revocation.transcript.is_none());
+
         // A retry also performs only the signed readiness preflight. It may
         // later execute once a real service is deployed, without an orphaned
         // local prepared intent forcing an unwarranted reconciliation.
