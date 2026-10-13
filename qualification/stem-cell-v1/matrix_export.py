@@ -106,6 +106,30 @@ def export_observed(plan, contract, directory, *, expected_seal_id, observer_pat
             validate_family_record(growth, inventory, growing)
         elif "routing_profile" in inventory or "transition_probe" in growth:
             raise ValueError("legacy flat routing cannot be relabeled as family preservation")
+    retained = execution["config"].get("retention_policy")
+    if retained is not None:
+        from retention_training import validate_retention_record
+        if execution["training"].get("retention") != execution.get("retention_receipt"):
+            raise ValueError("inconsistent retention observation")
+        validate_retention_record(execution.get("retention_receipt"), retained,
+                                  execution["trained_bank_sha256"], execution["classification_classes"])
+        role_counts = execution["retention_receipt"]["role_examples"]
+        if (growth["probe_examples"] != role_counts["old_train_groups"] + role_counts["new_train_groups"]
+                or growth.get("residual_probe_examples") != role_counts["new_train_groups"]
+                or growth["source_group_count"] != len(retained["new_train_groups"])):
+            raise ValueError("validation folds entered the growth probe")
+        phase2 = execution["config"]["train_steps"] - growing["decision_step"]
+        batch = execution["config"]["batch_size"]
+        expected = {"replay_examples_seen": phase2 * min(batch, role_counts["old_train_groups"]),
+                    "new_examples_seen": phase2 * min(batch, role_counts["new_train_groups"]),
+                    "reference_bank_rows": phase2 * min(batch, role_counts["old_train_groups"])}
+        first_seen = growing["decision_step"] * min(batch, role_counts["old_train_groups"])
+        if (execution["training"].get("retained_specialization") != expected
+                or growth["pre_growth_training"]["examples_seen"] != first_seen
+                or execution["training"]["examples_seen"] != first_seen + expected["replay_examples_seen"] + expected["new_examples_seen"]):
+            raise ValueError("replay/reference training work denominator mismatch")
+    elif "retention_receipt" in execution or "retention" in execution["training"]:
+        raise ValueError("legacy run cannot claim a retention protocol")
     if set(execution["phase_flops"]) != set(PHASES):
         raise ValueError("all physical work phases required")
     for phase, value in execution["phase_flops"].items():
@@ -192,6 +216,8 @@ def export_observed(plan, contract, directory, *, expected_seal_id, observer_pat
                    failure_penalized_brier=(sum(briers) + 2 * (len(requests) - len(briers))) / len(requests),
                    retention_established=False, statistical_superiority_established=False,
                    independent_observer_authenticity_verified=False, production_authorized=False)
+    if retained is not None:
+        summary["retention_receipt"] = execution["retention_receipt"]
     if "work_observation" in execution:
         observation = execution["work_observation"]
         if observation.get("stopped") is not None:
@@ -213,6 +239,8 @@ def export_observed(plan, contract, directory, *, expected_seal_id, observer_pat
         cfg = execution["config"]
         protocol = {k: cfg.get(k) for k in ("growth_policy", "train_steps", "batch_size", "width_units",
                     "context_tokens", "snapshot_sha256", "encoder_profile", "measurement_policy")}
+        if retained is not None:
+            protocol["retention_policy"] = retained
         protocol.update(seed=plan["seed"], workload_sha256=contract["workload_sha256"])
         export.update(schema="hepta.stem.paired-run-export.v2", training_protocol_sha256=_digest(protocol))
         summary["growth_receipt"] = growth

@@ -55,7 +55,7 @@ def freeze_config(plan, contract, *, arm_id, snapshot_sha256, upstream_revision,
                   material_approval_sha256, device="cpu", train_steps=32,
                   batch_size=16, width_units=64, context_tokens=512,
                   max_feature_bytes=64 * 1024 * 1024, measurement_policy=None,
-                  encoder_profile=None, growth_policy=None):
+                  encoder_profile=None, growth_policy=None, retention_policy=None):
     validate_plan(plan)
     validate_contract(plan, contract)
     admitted = SUPPORTED_ARMS
@@ -67,6 +67,11 @@ def freeze_config(plan, contract, *, arm_id, snapshot_sha256, upstream_revision,
         if measurement_policy is None:
             raise ValueError("growth execution requires actual metering")
         admitted = admitted | GROWTH_ARMS
+    if retention_policy is not None:
+        from retention_training import validate_retention_policy
+        validate_retention_policy(retention_policy)
+        if growth_policy is None or growth_policy.get("schema") != "hepta.cell-growth-policy.v2":
+            raise ValueError("retained specialization requires the parent-group growth protocol")
     if arm_id not in admitted:
         raise ValueError("this executor cannot implement split, NDU or replicated weights; no relabeling")
     for value in (snapshot_sha256, material_approval_sha256):
@@ -97,6 +102,10 @@ def freeze_config(plan, contract, *, arm_id, snapshot_sha256, upstream_revision,
         body["encoder_profile"] = encoder_profile
     if growth_policy is not None:
         body.update(schema="hepta.stem.bound-hf-config.v4", growth_policy=dict(growth_policy))
+    if retention_policy is not None:
+        # Copy the role lists too: later caller mutations cannot alter the frozen config.
+        import copy
+        body.update(schema="hepta.stem.bound-hf-config.v5", retention_policy=copy.deepcopy(retention_policy))
     return {**body, "config_id": _digest(body)}
 
 
@@ -105,16 +114,20 @@ def validate_config(plan, contract, config):
         raise ValueError("complete bound configuration required")
     schema = config.get("schema")
     fields_expected = set(CONFIG_FIELDS)
-    if schema in ("hepta.stem.bound-hf-config.v2", "hepta.stem.bound-hf-config.v3", "hepta.stem.bound-hf-config.v4") and "measurement_policy" in config:
+    if schema in ("hepta.stem.bound-hf-config.v2", "hepta.stem.bound-hf-config.v3", "hepta.stem.bound-hf-config.v4", "hepta.stem.bound-hf-config.v5") and "measurement_policy" in config:
         fields_expected.add("measurement_policy")
-    if schema == "hepta.stem.bound-hf-config.v3" or (schema == "hepta.stem.bound-hf-config.v4" and "encoder_profile" in config):
+    if schema == "hepta.stem.bound-hf-config.v3" or (schema in ("hepta.stem.bound-hf-config.v4", "hepta.stem.bound-hf-config.v5") and "encoder_profile" in config):
         fields_expected.add("encoder_profile")
         if config.get("encoder_profile") is None:
             raise ValueError("V3 requires its explicit checkpoint profile")
-    if schema == "hepta.stem.bound-hf-config.v4":
+    if schema in ("hepta.stem.bound-hf-config.v4", "hepta.stem.bound-hf-config.v5"):
         fields_expected.add("growth_policy")
         if config.get("growth_policy") is None:
             raise ValueError("V4 requires its explicit growth protocol")
+    if schema == "hepta.stem.bound-hf-config.v5":
+        fields_expected.add("retention_policy")
+        if config.get("retention_policy") is None:
+            raise ValueError("V5 requires its explicit retention protocol")
     if set(config) != fields_expected or ("measurement_policy" in config and config["measurement_policy"] is None):
         raise ValueError("complete bound configuration required")
     fields = {k: v for k, v in config.items() if k not in ("schema", "contract_id", "config_id")}

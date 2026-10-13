@@ -24,7 +24,7 @@ from paired_execution import PHASES
 SOURCE_FILES = ("next_round_matrix.py", "paired_execution.py", "head_surgery.py",
                 "hf_encoder_kernel.py", "matrix_materials.py", "matrix_bank.py",
                 "matrix_runtime.py", "matrix_export.py", "aten_work.py",
-                "host_counters.py", "execution_meter.py", "matrix_growth.py", "family_routing.py", "hf_complete_checkpoint.py", "transformer_work.py")
+                "host_counters.py", "execution_meter.py", "matrix_growth.py", "family_routing.py", "hf_complete_checkpoint.py", "transformer_work.py", "retention_training.py")
 
 
 def verify_source(source_sha):
@@ -122,7 +122,15 @@ def execute(plan, contract, config, workload, backend, *, clock=time.time_ns, me
         raise ValueError("execution meter differs from frozen policy or phase caps")
     classes = validate_workload(workload, contract)
     train = workload["train"]
-    if len(train) * backend.dimension * 4 > config["max_feature_bytes"]:
+    reference_bytes, subset_bytes = 0, 0
+    if "retention_policy" in config:
+        from retention_training import validate_retention_rows
+        roles = validate_retention_rows(train, config["retention_policy"])
+        reference_bytes = len(train) * classes * 4
+        # At most one full fitting subset is retained alongside the original
+        # cache/reference. Batch/activation/optimizer memory is still separate.
+        subset_bytes = (len(roles["old_train_groups"]) + len(roles["new_train_groups"])) * backend.dimension * 4
+    if len(train) * backend.dimension * 4 + reference_bytes + subset_bytes > config["max_feature_bytes"]:
         raise ValueError("feature allocation exceeds the frozen byte cap")
     scope = meter.scope if meter is not None else lambda *args: contextlib.nullcontext()
     started = time.perf_counter_ns()
@@ -219,6 +227,8 @@ def execute(plan, contract, config, workload, backend, *, clock=time.time_ns, me
     if "growth" in training:
         manifest["schema"] = "hepta.stem.bound-execution.v2"
         manifest["growth_receipt"] = training["growth"]
+        if "retention" in training:
+            manifest["retention_receipt"] = training["retention"]
         manifest["peak_trainable_params"] = training["growth"]["peak_live_trainable_params"]
         manifest["phase_flops"]["migration"] = None if training["growth"]["split_performed"] else 0
     if meter is not None:
@@ -231,6 +241,8 @@ def execute(plan, contract, config, workload, backend, *, clock=time.time_ns, me
             manifest["phase_flops"]["migration"] = observation["phase_flops"]["migration"]
         manifest["latency_scope"] += "_instrumented"
         manifest["feature_cache_payload_bytes"] = features.numel() * features.element_size()
+        if "retention_policy" in config:
+            manifest["retention_auxiliary_payload_bound_bytes"] = reference_bytes + subset_bytes
         manifest["accounting_gaps"] = ["independent_observer_evaluation", "publication_after_measurement",
                                        "hardware_kernel_instructions", "python_scalar_arithmetic", "request_peak_memory", "process_energy"]
         # Complete legacy aggregate certification remains false: evaluation is separate.
@@ -278,6 +290,9 @@ def run_bound(plan, contract, config, workload_path, snapshot, output):
         raise ValueError("workload bytes differ from the frozen contract")
     workload = strict_json(workload_path)
     validate_workload(workload, contract)
+    if "retention_policy" in config:
+        from retention_training import validate_retention_rows
+        validate_retention_rows(workload["train"], config["retention_policy"])
     sources = verify_source(contract["source_sha"])
     root = Path(output)
     root.mkdir(exist_ok=False)  # A failed/partial run is never overwritten.
@@ -306,6 +321,9 @@ def run_bound(plan, contract, config, workload_path, snapshot, output):
         from matrix_growth import GrowthNotAdmitted
         if isinstance(exc, GrowthNotAdmitted):
             failure["growth_disposition"] = exc.report
+        from retention_training import RetentionRejected
+        if isinstance(exc, RetentionRejected):
+            failure["retention_disposition"] = exc.report
         if meter is not None:
             failure["work_observation"] = meter.report()
         write_json_exclusive(root / "FAILED.json", failure)

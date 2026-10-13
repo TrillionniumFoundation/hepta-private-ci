@@ -162,37 +162,58 @@ def train_with_growth(bank, features, targets, config, contract, profile, source
         raise ValueError("growth training requires the common lifecycle cap")
     scope = meter.scope if meter else lambda *args: contextlib.nullcontext()
     step = policy["decision_step"]
+    retention = None
+    probe_features, probe_targets = features, targets
+    first_features, first_targets = features, targets
+    probe_groups = source_groups
+    if "retention_policy" in config:
+        from retention_training import RetentionSession, ROLES
+        with scope("train", "bank"):
+            retention = RetentionSession(features, targets, source_groups, config["retention_policy"],
+                                         cache_budget=config["max_feature_bytes"] - features.numel() * features.element_size())
+            old, new = retention.ids[ROLES[0]], retention.ids[ROLES[1]]
+            first_features, first_targets = features[old], targets[old]
+            fit_ids = torch.cat((old, new))
+            probe_groups = [source_groups[i] for i in new.tolist()]
     with scope("train", "bank"):
-        first = train_bank(bank, features, targets, {**config, "train_steps": step}, seed)
+        first = train_bank(bank, first_features, first_targets, {**config, "train_steps": step}, seed)
         # train_bank has released its optimizer. Clear stale gradients in BOTH
         # arms before the identical fresh-optimizer boundary.
         bank.zero_grad(set_to_none=True)
+        if retention is not None:
+            del first_features, first_targets
+            probe_features, probe_targets = features[new], targets[new]
         # no_grad retains the registered log-softmax/NLL dispatch path.
         # inference_mode selects an unregistered fused cross_entropy overload.
         with torch.no_grad():
             residual = 0.
-            for start in range(0, len(targets), 64):
-                logits = bank(features[start:start + 64])
-                residual += nn.functional.cross_entropy(logits, targets[start:start + 64], reduction="mean").item() * len(logits)
-            residual /= len(targets)
+            for start in range(0, len(probe_targets), 64):
+                logits = bank(probe_features[start:start + 64])
+                residual += nn.functional.cross_entropy(logits, probe_targets[start:start + 64], reduction="mean").item() * len(logits)
+            residual /= len(probe_targets)
         if not math.isfinite(residual):
             raise ValueError("nonfinite training residual")
     report = dict(schema="hepta.cell-growth-training.v1", policy_id=_digest(policy),
-                  decision_step=step, training_residual=residual, probe_examples=len(targets),
-                  source_group_count=len(set(source_groups)), split_performed=False,
+                  decision_step=step, training_residual=residual, probe_examples=len(fit_ids) if retention is not None else len(targets),
+                  source_group_count=len(set(probe_groups)), split_performed=False,
                   optimizer_reset_count=1, optimizer_state_transport="reset_in_all_controls",
                   pre_growth_training=first, independent_gain_established=False)
     report["peak_live_trainable_params"] = bank.inventory()["parameters"]
     report["transition_model_weight_bytes"] = bank.inventory()["unique_weight_bytes"]
+    if retention is not None:
+        with scope("train", "bank"):
+            report["residual_probe_examples"] = len(probe_targets)
+            del probe_features, probe_targets
+            retention.capture(bank)
     if profile["arm_id"] in GROWTH_ARMS:
-        eligible = len(set(source_groups)) >= policy["minimum_source_groups"] and residual > policy["loss_threshold"]
+        eligible = len(set(probe_groups)) >= policy["minimum_source_groups"] and residual > policy["loss_threshold"]
         if not eligible:
             report.update(disposition="growth_not_triggered", optimizer_reset_count=0)
             raise GrowthNotAdmitted(report)
         with scope("migration", "bank"):
             if policy["schema"] == FAMILY_SCHEMA:
                 successor, transition = split_population(bank, profile, config, seed=seed + 1, parameter_cap=cap)
-                probe = transition_parity(bank, successor, features, policy)
+                probe = transition_parity(bank, successor, features[fit_ids] if retention is not None else features, policy)
                 report.update(transition, split_performed=True, transition_probe=probe,
                               training_probe_max_logit_delta=probe["max_absolute_logit_error"])
                 if not probe["passed"]:
@@ -211,10 +232,18 @@ def train_with_growth(bank, features, targets, config, contract, profile, source
         report["routing_profile"] = ROUTING_PROFILE
     report["disposition"] = "split_candidate" if report["split_performed"] else "direct_control"
     with scope("train", "bank"):
-        second = train_bank(bank, features, targets, {**config, "train_steps": config["train_steps"] - step}, seed + step)
-    return bank, {"steps": first["steps"] + second["steps"],
+        if retention is None:
+            second = train_bank(bank, features, targets, {**config, "train_steps": config["train_steps"] - step}, seed + step)
+        else:
+            second = retention.train(bank, config, steps=config["train_steps"] - step, seed=seed + step)
+            retention_report = retention.evaluate(bank)
+    result = {"steps": first["steps"] + second["steps"],
                   "examples_seen": first["examples_seen"] + second["examples_seen"],
                   "losses": first["losses"] + second["losses"],
                   "optimizer_tensor_bytes": second["optimizer_tensor_bytes"],
                   "peak_optimizer_tensor_bytes": max(first["optimizer_tensor_bytes"], second["optimizer_tensor_bytes"]),
                   "growth": report}
+    if retention is not None:
+        result.update(retention=retention_report, retained_specialization={k: second[k] for k in
+                      ("replay_examples_seen", "new_examples_seen", "reference_bank_rows")})
+    return bank, result
