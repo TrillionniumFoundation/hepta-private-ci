@@ -1,0 +1,36 @@
+name: Hepta Windows Core Provider Policy Contract
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/core/src/client_provider_policy_tests.rs'
+      - 'codex-rs/core/src/client.rs'
+      - '.github/workflows/hepta-core-windows-provider-policy.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-provider-terminal-policy:
+    runs-on: windows-latest
+    timeout-minutes: 65
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust 1.95
+        shell: bash
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+      - name: Require complete Rust source formatting
+        shell: bash
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Compile real Core unit tests under Windows MSVC
+        shell: bash
+        run: cargo +1.95.0 test --locked -p codex-core --lib --no-run
+      - name: Exercise provider terminal acknowledgement and stream-owner tests
+        shell: bash
+        run: cargo +1.95.0 test --locked -p codex-core --lib provider_policy_tests -- --nocapture
