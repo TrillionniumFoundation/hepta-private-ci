@@ -12,11 +12,14 @@ on:
       - "scripts/memory_cell/test_reader_originals_attestation.py"
       - "scripts/memory_cell/reader_review_handoff.py"
       - "scripts/memory_cell/test_reader_review_handoff.py"
+      - "scripts/memory_cell/reader_review_intake.py"
+      - "scripts/memory_cell/test_reader_review_intake.py"
       - ".github/workflows/hepta-full-cell-matrix.yml"
       - "codex-rs/hepta-ndu/research/READER_DUAL_SIGNATURE_TRUST.md"
       - "codex-rs/hepta-ndu/research/READER_CASE_LEDGER.md"
       - "codex-rs/hepta-ndu/research/READER_ORIGINALS_ATTESTATION.md"
       - "codex-rs/hepta-ndu/research/READER_REVIEW_HANDOFF.md"
+      - "codex-rs/hepta-ndu/research/READER_REVIEW_INTAKE.md"
   pull_request:
     paths:
       - "scripts/memory_cell/full_cell_matrix.py"
@@ -27,6 +30,8 @@ on:
       - "scripts/memory_cell/test_reader_originals_attestation.py"
       - "scripts/memory_cell/reader_review_handoff.py"
       - "scripts/memory_cell/test_reader_review_handoff.py"
+      - "scripts/memory_cell/reader_review_intake.py"
+      - "scripts/memory_cell/test_reader_review_intake.py"
       - ".github/workflows/hepta-full-cell-matrix.yml"
 
 permissions:
@@ -60,7 +65,8 @@ jobs:
           /tmp/full-cell-review/bin/python -m unittest discover -s scripts/memory_cell -p 'test_reader_review_ledger.py' -v | tee /tmp/full-cell-matrix/ledger-tests.log
           /tmp/full-cell-review/bin/python -m unittest discover -s scripts/memory_cell -p 'test_reader_originals_attestation.py' -v | tee /tmp/full-cell-matrix/originals-tests.log
           /tmp/full-cell-review/bin/python -m unittest discover -s scripts/memory_cell -p 'test_reader_review_handoff.py' -v | tee /tmp/full-cell-matrix/handoff-tests.log
-          /tmp/full-cell-review/bin/ruff check --select F,E9 scripts/memory_cell/full_cell_matrix.py scripts/memory_cell/reader_review_ledger.py scripts/memory_cell/reader_originals_attestation.py scripts/memory_cell/test_full_cell_matrix.py scripts/memory_cell/test_reader_review_ledger.py scripts/memory_cell/test_reader_originals_attestation.py scripts/memory_cell/reader_review_handoff.py scripts/memory_cell/test_reader_review_handoff.py | tee /tmp/full-cell-matrix/lint.log
+          /tmp/full-cell-review/bin/python -m unittest discover -s scripts/memory_cell -p 'test_reader_review_intake.py' -v | tee /tmp/full-cell-matrix/intake-tests.log
+          /tmp/full-cell-review/bin/ruff check --select F,E9 scripts/memory_cell/full_cell_matrix.py scripts/memory_cell/reader_review_ledger.py scripts/memory_cell/reader_originals_attestation.py scripts/memory_cell/test_full_cell_matrix.py scripts/memory_cell/test_reader_review_ledger.py scripts/memory_cell/test_reader_originals_attestation.py scripts/memory_cell/reader_review_handoff.py scripts/memory_cell/test_reader_review_handoff.py scripts/memory_cell/reader_review_intake.py scripts/memory_cell/test_reader_review_intake.py | tee /tmp/full-cell-matrix/lint.log
           /tmp/full-cell-review/bin/python scripts/memory_cell/full_cell_matrix.py /tmp/full-cell-matrix/plan | tee /tmp/full-cell-matrix/run.log
           /tmp/full-cell-review/bin/python - <<'PY'
           import json
@@ -78,7 +84,7 @@ jobs:
           mkdir -p /tmp/full-cell-matrix/source
           git rev-parse HEAD > /tmp/full-cell-matrix/source/tested-commit.txt
           git rev-parse HEAD^{tree} > /tmp/full-cell-matrix/source/tested-tree.txt
-          cp scripts/memory_cell/full_cell_matrix.py scripts/memory_cell/test_full_cell_matrix.py scripts/memory_cell/reader_review_ledger.py scripts/memory_cell/test_reader_review_ledger.py scripts/memory_cell/reader_originals_attestation.py scripts/memory_cell/test_reader_originals_attestation.py scripts/memory_cell/reader_review_handoff.py scripts/memory_cell/test_reader_review_handoff.py .github/workflows/hepta-full-cell-matrix.yml codex-rs/hepta-ndu/research/READER_DUAL_SIGNATURE_TRUST.md codex-rs/hepta-ndu/research/READER_CASE_LEDGER.md codex-rs/hepta-ndu/research/READER_ORIGINALS_ATTESTATION.md codex-rs/hepta-ndu/research/READER_REVIEW_HANDOFF.md /tmp/full-cell-matrix/source/
+          cp scripts/memory_cell/full_cell_matrix.py scripts/memory_cell/test_full_cell_matrix.py scripts/memory_cell/reader_review_ledger.py scripts/memory_cell/test_reader_review_ledger.py scripts/memory_cell/reader_originals_attestation.py scripts/memory_cell/test_reader_originals_attestation.py scripts/memory_cell/reader_review_handoff.py scripts/memory_cell/test_reader_review_handoff.py scripts/memory_cell/reader_review_intake.py scripts/memory_cell/test_reader_review_intake.py .github/workflows/hepta-full-cell-matrix.yml codex-rs/hepta-ndu/research/READER_DUAL_SIGNATURE_TRUST.md codex-rs/hepta-ndu/research/READER_CASE_LEDGER.md codex-rs/hepta-ndu/research/READER_ORIGINALS_ATTESTATION.md codex-rs/hepta-ndu/research/READER_REVIEW_HANDOFF.md codex-rs/hepta-ndu/research/READER_REVIEW_INTAKE.md /tmp/full-cell-matrix/source/
           (cd /tmp/full-cell-matrix && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
