@@ -1,4 +1,6 @@
 name: MemoryCell actual source-only two-hop training comparison
+# Exact-source experiment trigger: independently compare direct and two-hop source-only writers.
+# No task labels enter either write, and outputs are research-only until all paired receipts finish.
 
 on:
   push:
