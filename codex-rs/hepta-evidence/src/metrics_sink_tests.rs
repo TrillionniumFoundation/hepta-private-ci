@@ -60,3 +60,19 @@ fn durable_sink_records_wal_and_reopens_without_corrupting_journal() {
     }
     assert!(MetricsGroupCommitV1::open(&path).is_ok());
 }
+
+#[test]
+fn signed_neuron_phase_writer_round_trips_actual_group_commit() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("neuron-phase-metrics.log");
+    {
+        let sink = DurablePhaseMetricSinkV1::open(&path, 16, 2, 1000).unwrap();
+        sink.record(sample(PhaseMetricKindV1::NduRead)).unwrap();
+        sink.record(sample(PhaseMetricKindV1::FinalUse)).unwrap();
+        sink.flush().unwrap();
+        assert_eq!(sink.status().persisted_rows, 2);
+        assert!(sink.status().healthy);
+    }
+    let reopened = MetricsGroupCommitV1::open(&path).unwrap();
+    assert_eq!(reopened.pending(), 0);
+}
