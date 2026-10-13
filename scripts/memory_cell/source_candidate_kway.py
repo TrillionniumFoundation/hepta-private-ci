@@ -207,6 +207,8 @@ def probe(
         documents, revision=2, allowed_roots=reader.roots, revoked=set()
     )
     cases, excluded = roster(examples, maximum_questions=maximum_questions)
+    if not cases:
+        raise ValueError("no complete eligible source-value lexicon")
     # Source-only questions are preregistered without seeing any generated
     # answer. The target is held internally for AFTER-journal scoring only.
     plan = []
@@ -278,20 +280,7 @@ def probe(
                     os.fsync(stream.fileno())
                     rows.append(row)
     reader.verify_frozen()
-    report = (
-        summarize(rows, cases)
-        if cases
-        else dict(
-            schema="hepta.source-lexicon.kway.v1",
-            planned_questions=0,
-            planned_model_calls=0,
-            completed_model_calls=0,
-            complete_base_adapter_questions=0,
-            lexicon_from_source_not_parameters=True,
-            significance_established=False,
-            production_accepted=False,
-        )
-    )
+    report = summarize(rows, cases)
     report.update(
         ready_sha256=ready_sha,
         source_commit=source_commit,
@@ -299,6 +288,20 @@ def probe(
         raw_sha256=hashlib.sha256(raw_path.read_bytes()).hexdigest(),
         source_lexicon_value_count=sum(len(c["candidates"]) for c in cases),
         candidate_score_attempts_logged=len(rows),
+        source_lexicon_storage_bytes=sum(
+            len(value.encode("utf-8")) for value in cases[0]["candidates"]
+        ),
+        candidate_input_tokens=sum(
+            row["input_tokens"] for row in rows if row["status"] == "succeeded"
+        ),
+        candidate_supervised_tokens=sum(
+            row["supervised_tokens"]
+            for row in rows
+            if row["status"] == "succeeded"
+        ),
+        measured_candidate_seconds=sum(
+            row["seconds"] for row in rows if row["status"] == "succeeded"
+        ),
     )
     with (out / "report.json").open("x", encoding="utf-8") as stream:
         json.dump(report, stream, allow_nan=False, indent=2)

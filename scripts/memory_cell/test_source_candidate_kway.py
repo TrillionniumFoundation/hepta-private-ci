@@ -14,7 +14,10 @@ from source_candidate_kway import ARMS, probe, roster, summarize
 
 def examples():
     return [
-        dict(query=dict(identity=f"q{i}", scope="family1", content="which value"), target=v)
+        dict(
+            query=dict(identity=f"q{i}", scope="family1", content="which value"),
+            target=v,
+        )
         for i, v in enumerate(("id_a", "id_b", "id_c"))
     ]
 
@@ -185,6 +188,9 @@ class DiskProbeTests(unittest.TestCase):
             self.assertEqual(report["planned_model_calls"], 12)
             self.assertEqual(len(observed), 12)
             self.assertEqual(report["completed_model_calls"], 12)
+            self.assertEqual(report["candidate_input_tokens"], 72)
+            self.assertEqual(report["candidate_supervised_tokens"], 24)
+            self.assertEqual(report["source_lexicon_storage_bytes"], 12)
             plan = json.loads((output / "plan.json").read_text())
             self.assertTrue(
                 all(
