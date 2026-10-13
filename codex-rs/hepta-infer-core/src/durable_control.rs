@@ -10,6 +10,7 @@ use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
 use std::io::Write;
+use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -224,9 +225,14 @@ impl DurableInferenceControl {
     }
 
     fn check_production_path(path: &Path) -> Result<(), Error> {
-        if !path.is_absolute() || path.file_name().is_none() {
+        if !path.is_absolute()
+            || path.file_name().is_none()
+            || path
+                .components()
+                .any(|component| component == Component::ParentDir)
+        {
             return Err(Error::InvalidIdentity(
-                "production WAL path must be absolute",
+                "production WAL path must be absolute and free of parent traversal",
             ));
         }
         let directory = path

@@ -222,3 +222,15 @@ fn unsupported_platform_denies_native_startup_before_serving_or_claiming_durabil
         assert_eq!(std::fs::metadata(&metrics).expect("metrics").len(), 0);
     }
 }
+
+#[test]
+fn native_production_bootstrap_rejects_parent_traversal_without_creating_files() {
+    let dir = tempfile::tempdir().expect("protected root");
+    let nested = dir.path().join("nested");
+    std::fs::create_dir(&nested).expect("nested directory");
+    let unsafe_journal = nested.join("..").join("escaped-control.wal");
+    assert!(production_metrics_journal_path_v1(&unsafe_journal).is_err());
+    assert!(open_metrics_bound_native_control_v1(&unsafe_journal, 32).is_err());
+    assert!(!dir.path().join("escaped-control.wal").exists());
+    assert!(!dir.path().join("escaped-control.wal.metrics").exists());
+}

@@ -6,6 +6,7 @@
 
 use std::error::Error;
 use std::io;
+use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -20,10 +21,14 @@ const METRICS_FLUSH_INTERVAL_MS: u64 = 250;
 /// A separate sibling journal avoids mixing telemetry lines into the control
 /// WAL. The caller must hold an owner-only directory and an absolute path.
 pub fn production_metrics_journal_path_v1(journal: &Path) -> Result<PathBuf, io::Error> {
-    if !journal.is_absolute() {
+    if !journal.is_absolute()
+        || journal
+            .components()
+            .any(|component| component == Component::ParentDir)
+    {
         return Err(io::Error::new(
             io::ErrorKind::InvalidInput,
-            "native control journal must have an absolute path",
+            "native control journal must be absolute and free of parent traversal",
         ));
     }
     let file_name = journal.file_name().ok_or_else(|| {

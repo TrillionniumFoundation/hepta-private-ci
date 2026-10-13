@@ -163,3 +163,16 @@ fn existing_hardlink_alias_cannot_become_a_second_metrics_writer() {
     fs::remove_file(&alias).expect("remove hardlink");
     assert!(MetricsGroupCommitV1::open(&path).is_ok());
 }
+
+#[test]
+fn ancestor_traversal_cannot_create_a_metrics_journal() {
+    let dir = tempfile::tempdir().expect("protected root");
+    let child = dir.path().join("inner");
+    fs::create_dir(&child).expect("child directory");
+    let unsafe_path = child.join("..").join("escaped.metrics");
+    assert!(matches!(
+        MetricsGroupCommitV1::open(&unsafe_path),
+        Err(MetricsJournalErrorV1::UnsafePath)
+    ));
+    assert!(!dir.path().join("escaped.metrics").exists());
+}

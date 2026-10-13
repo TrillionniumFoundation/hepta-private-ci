@@ -12,6 +12,7 @@ use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
 use std::io::Write;
+use std::path::Component;
 use std::path::Path;
 use std::time::Instant;
 
@@ -89,6 +90,15 @@ pub struct MetricsGroupCommitV1 {
 impl MetricsGroupCommitV1 {
     pub fn open(path: impl AsRef<Path>) -> Result<Self, MetricsJournalErrorV1> {
         let path = path.as_ref();
+        // Reject lexical ancestor traversal before create_dir_all or opening
+        // any journal file. A private final directory is not sufficient when
+        // caller-controlled ".." can escape that directory.
+        if path
+            .components()
+            .any(|component| component == Component::ParentDir)
+        {
+            return Err(MetricsJournalErrorV1::UnsafePath);
+        }
         if let Some(parent) = path.parent().filter(|p| !p.as_os_str().is_empty()) {
             fs::create_dir_all(parent)?;
         }
