@@ -1,0 +1,36 @@
+name: Hepta CI Git Fixture Cleanup Qualification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/hepta_ci_scope.py'
+      - 'scripts/hepta_ci_dependencies.py'
+      - 'scripts/tests/test_hepta_ci_scope.py'
+      - 'scripts/tests/test_hepta_ci_dependencies.py'
+      - '.github/workflows/hepta-ci-git-fixtures.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  ephemeral-git-cleanup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Verify Python and Git
+        run: |
+          python3 --version
+          git --version
+      - name: Repeated real temporary Git graph qualification and cleanup
+        run: |
+          set -euo pipefail
+          for i in $(seq 1 12); do
+            echo "=== exact Git graph fixtures and cleanup: repetition ${i}/12 ==="
+            python3 -m unittest -q               scripts.tests.test_hepta_ci_scope               scripts.tests.test_hepta_ci_dependencies
+          done
+      - name: Assert tracked repository unchanged by isolated fixtures
+        run: git diff --exit-code && git diff --cached --exit-code
