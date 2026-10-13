@@ -205,13 +205,28 @@ def verify_resolved_security_closure(data, *, candidate_root, stage_root):
     def reach_named(name):
         return [p for p in reachable if p["name"] == name]
     sdk, crypto = reach_named("matrix-sdk"), reach_named("matrix-sdk-crypto")
-    if (len(sdk) != 1 or sdk[0]["version"] != "0.19.1"
-            or not {"e2e-encryption", "sqlite"} <= nodes[sdk[0]["id"]][1]
+    if len(sdk) != 1 or sdk[0]["version"] != "0.19.1":
+        raise ValueError("missing unique pinned SDK")
+    sdk_seen, sdk_stack = set(), [sdk[0]["id"]]
+    while sdk_stack:
+        current = sdk_stack.pop()
+        if current in sdk_seen:
+            continue
+        sdk_seen.add(current)
+        sdk_stack.extend(nodes[current][0] - sdk_seen)
+    sdk_names = {package_by_id[ident]["name"] for ident in sdk_seen}
+    # It is insufficient for a decoy repaired crate to be reachable from
+    # Hepta through an unrelated direct dependency. The fixes must be in the
+    # transitive closure rooted at the actual pinned Matrix SDK.
+    if (not {"e2e-encryption", "sqlite"} <= nodes[sdk[0]["id"]][1]
             or not crypto or any(p["version"] != "0.19.1" for p in crypto)
-            or not reach_named("anymap3")
-            or not reach_named("blake3")
+            or not {"matrix-sdk-crypto", "anymap3", "blake3"} <= sdk_names
             or any(p["name"] == "anymap2" for p in reachable)):
         raise ValueError("required patched Matrix/E2EE/SQLite graph is not reachable")
+    for package in reachable:
+        if (package["name"].startswith("matrix-sdk-")
+                and package["version"] != "0.19.1"):
+            raise ValueError("mixed patched and legacy Matrix SDK family")
     for p in reach_named("blake3"):
         try:
             version = tuple(int(v) for v in p["version"].split(".")[:3])
