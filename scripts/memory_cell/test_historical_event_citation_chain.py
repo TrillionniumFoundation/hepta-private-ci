@@ -118,9 +118,7 @@ class FormalCitationTests(unittest.TestCase):
         _, spec, docs = case()
         docs["dangling"] = event("dangling", "service_1", "component", "component_2")
         self.assertFalse(
-            trace_cited_chain(
-                spec, ["first", "second", "dangling"], docs, "site_good"
-            )
+            trace_cited_chain(spec, ["first", "second", "dangling"], docs, "site_good")
         )
         docs["alternate_end"] = event(
             "alternate_end", "component_2", "location", "site_good"
