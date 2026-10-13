@@ -436,8 +436,17 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
         Err(_) if !socket_path.exists() => return Ok(()),
         Err(error) => return Err(error.into()),
     }
+    // Windows UDS rendezvous paths can disappear between the refused
+    // connection and the stale-path inspection. Permit a genuinely missing
+    // path to proceed to the exclusive listener bind, without ever removing
+    // an existing non-stale path or overriding a live listener.
     if codex_uds::is_stale_socket_path(socket_path).await? {
-        tokio::fs::remove_file(socket_path).await?;
+        match tokio::fs::remove_file(socket_path).await {
+            Ok(()) => Ok(()),
+            Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
+            Err(error) => Err(error.into()),
+        }
+    } else if !tokio::fs::try_exists(socket_path).await? {
         Ok(())
     } else {
         Err(MatrixdControlError::Io(std::io::Error::new(
