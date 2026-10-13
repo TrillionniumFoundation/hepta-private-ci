@@ -27,7 +27,11 @@ jobs:
         run: |
           set -euo pipefail
           mkdir /tmp/source-effect-validation
+          # Fail early if an automated format/source operation swaps the
+          # production auditor and its integration-test module again.
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_write_role_contract.py' -v 2>&1 | tee /tmp/source-effect-validation/module-role.log
           python3 -m unittest discover -s scripts/memory_cell -p 'test_source_write_effects.py' -v 2>&1 | tee /tmp/source-effect-validation/focused.log
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_write_audit.py' -v 2>&1 | tee /tmp/source-effect-validation/integration.log
       - name: Pin the original full regression environment
         env:
           GH_TOKEN: ${{ github.token }}
@@ -60,7 +64,10 @@ jobs:
           BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
         run: |
           set -euo pipefail
-          python3 -m pip install uv==0.8.22
+          # This repo uses the modern scripts/pyproject.toml cooldown syntax.
+          # Pin a parser-compatible uv, without updating the frozen lock file.
+          python3 -m pip install --user uv==0.12.13
+          export PATH="$HOME/.local/bin:$PATH"
           git fetch --no-tags --depth=1 origin "$BASE"
           set +e
           just fmt --check --base "$BASE" > /tmp/source-effect-validation/format.log 2>&1
@@ -68,7 +75,7 @@ jobs:
           set -e
           cat /tmp/source-effect-validation/format.log
           if [ "$status" -ne 0 ]; then
-            uv run --frozen --project scripts ruff format --diff scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write_effects.py scripts/memory_cell/test_source_write_audit.py > /tmp/source-effect-validation/format.diff || true
+            uv run --frozen --project scripts ruff format --diff scripts/memory_cell/source_write_effects.py scripts/memory_cell/test_source_write_effects.py scripts/memory_cell/test_source_write_audit.py scripts/memory_cell/test_source_write_role_contract.py > /tmp/source-effect-validation/format.diff || true
             cat /tmp/source-effect-validation/format.diff
           fi
           exit "$status"
