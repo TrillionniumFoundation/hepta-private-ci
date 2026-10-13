@@ -362,7 +362,7 @@ def codex_rust_crate(
             unit_test_library = name + "-test-lib"
             lib_rule(
                 name = unit_test_library,
-                aliases = aliases(normal_dev = True),
+                aliases = aliases(),
                 testonly = True,
                 crate_name = crate_name,
                 crate_features = crate_features + unit_test_features,
@@ -382,7 +382,7 @@ def codex_rust_crate(
         # deliberately changes cwd so Insta sees Cargo-like snapshot paths.
         rust_test(
             name = unit_test_binary,
-            aliases = aliases(normal_dev = True),
+            aliases = aliases(),
             crate = unit_test_library,
             crate_features = crate_features + unit_test_features,
             deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + maybe_deps + deps_extra,
@@ -460,7 +460,7 @@ def codex_rust_crate(
         # sharding while Clippy can still discover the underlying test crate.
         rust_test(
             name = binary_unit_test_binary,
-            aliases = aliases(normal_dev = True),
+            aliases = aliases(),
             crate = ":" + binary,
             crate_features = crate_features,
             deps = all_crate_deps(normal_dev = True),
@@ -585,7 +585,7 @@ def codex_rust_crate(
             # materialization, sharding, and flaky retry behavior.
             rust_test(
                 name = integration_test_binary,
-                aliases = aliases(normal_dev = True),
+                aliases = aliases(),
                 crate_name = test_crate_name,
                 crate_root = test,
                 srcs = [test],
@@ -626,7 +626,7 @@ def codex_rust_crate(
             # Bazel's normal test environment.
             rust_test(
                 name = test_name,
-                aliases = aliases(normal_dev = True),
+                aliases = aliases(),
                 crate_name = test_crate_name,
                 crate_root = test,
                 srcs = [test],
@@ -702,7 +702,7 @@ def codex_rust_crate(
 
         rust_test(
             name = windows_cross_test_binary,
-            aliases = aliases(normal_dev = True),
+            aliases = aliases(),
             crate_name = test_crate_name,
             crate_root = test,
             srcs = [test],
