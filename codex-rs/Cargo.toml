@@ -490,7 +490,9 @@ serde_ignored = "0.1.14"
 serde_json = "1"
 serde_path_to_error = "0.1.20"
 serde_with = "3.17"
-serde_yaml = "0.9"
+# RUSTSEC-2024-0449: no unsafe-libyaml; keep the documented serde_yaml 0.9 API
+# under a maintained pure-Rust parser shim. Exact core/shim pair is pinned.
+serde_yaml = { package = "noyalib-serde-yaml", version = "=0.0.56" }
 serial_test = "3.2.0"
 sha1 = "0.10.6"
 scopeguard = "1.2.0"
