@@ -917,3 +917,28 @@ fn slow_independent_custody_cannot_sign_after_owner_request_budget_expires() {
     assert!(receive_frame::<CellSplitMonotonicRpcResponseV1>(&mut client).is_err());
     assert!(file.exists(), "timeout must not mutate durable custody");
 }
+
+
+#[test]
+fn signed_monotonic_rpc_uses_one_end_to_end_timeout_budget() {
+    let started = Instant::now();
+    let total = Duration::from_secs(2);
+    let remaining = remaining_rpc_budget(started, total)
+        .expect("new request has time");
+    assert!(remaining > Duration::ZERO);
+    assert!(remaining <= total);
+
+    // Both sides must reject an exhausted budget. A new read/write phase
+    // cannot restart the entire configured RPC timeout after prior work.
+    let expired = Instant::now()
+        .checked_sub(Duration::from_secs(3))
+        .expect("monotonic clock has prior time");
+    assert!(matches!(
+        remaining_rpc_budget(expired, Duration::from_secs(1)),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+    assert!(matches!(
+        remaining_rpc_budget(started, Duration::ZERO),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+}

@@ -136,6 +136,10 @@ impl CellSplitSupervisorMonotonicUnixPortV1 {
         {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);
         }
+        // A single RPC budget covers both frame directions. An apparently
+        // responsive server must not reset the deadline after receiving a
+        // request or reserve another full interval for its signed response.
+        let started_at = Instant::now();
         let mut connection = UnixStream::connect(&self.socket_path)?;
         let request = CellSplitMonotonicRpcRequestV1 {
             schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.to_owned(),
@@ -143,9 +147,15 @@ impl CellSplitSupervisorMonotonicUnixPortV1 {
             journal_domain_id: journal_domain_id.to_owned(),
             challenge_nonce: challenge_nonce.to_owned(),
         };
-        send_frame_with_deadline(&mut connection, &request, self.timeout)?;
-        let response: CellSplitMonotonicRpcResponseV1 =
-            receive_frame_with_deadline(&mut connection, self.timeout)?;
+        send_frame_with_deadline(
+            &mut connection,
+            &request,
+            remaining_rpc_budget(started_at, self.timeout)?,
+        )?;
+        let response: CellSplitMonotonicRpcResponseV1 = receive_frame_with_deadline(
+            &mut connection,
+            remaining_rpc_budget(started_at, self.timeout)?,
+        )?;
         if response.schema != CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1 || response.method != READ_METHOD {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);
         }
@@ -228,6 +238,18 @@ impl CellSplitSupervisorMonotonicFrontierPortV1 for CellSplitSupervisorMonotonic
     ) -> Result<CellSplitSupervisorMonotonicFrontierV1, Self::Error> {
         self.query(journal_domain_id, challenge_nonce)
     }
+}
+
+/// One wall-clock budget for both RPC frame directions and all independent
+/// custody reads. This is a transport fence, not a backend cancellation token.
+fn remaining_rpc_budget(
+    started_at: Instant,
+    total: Duration,
+) -> Result<Duration, CellSplitMonotonicRpcErrorV1> {
+    total
+        .checked_sub(started_at.elapsed())
+        .filter(|remaining| !remaining.is_zero())
+        .ok_or(CellSplitMonotonicRpcErrorV1::Invalid)
 }
 
 fn canonical_digest(value: &str) -> bool {
@@ -406,9 +428,7 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
         // high-water if that independent verification outlived the request
         // budget. This denies stale positives; hung backend calls still
         // require deployment-managed cancellation and worker limits.
-        if started_at.elapsed() >= self.timeout {
-            return Err(CellSplitMonotonicRpcErrorV1::Invalid);
-        }
+        let remaining = remaining_rpc_budget(started_at, self.timeout)?;
         self.retained_frontiers
             .insert(first.journal_domain_id.clone(), first);
         send_frame_with_deadline(
@@ -419,7 +439,7 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
                 proof: Some(proof),
                 error: None,
             },
-            self.timeout,
+            remaining,
         )?;
         Ok(())
     }
