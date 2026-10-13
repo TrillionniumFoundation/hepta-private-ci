@@ -1117,7 +1117,7 @@ mod original_checkpoint_integrity_tests {
     use super::*;
 
     type OriginalPair = (crate::CellSplitExecutionPlanV1, CellSplitSupervisorCommitV1);
-    type OriginalTestResult = Result<(), CellSplitObserverJoinErrorV1>;
+    type TestResult = Result<(), CellSplitObserverJoinErrorV1>;
 
     fn fixture() -> Result<OriginalPair, CellSplitObserverJoinErrorV1> {
         let plan = crate::CellSplitExecutionPlanV1 {
@@ -1175,7 +1175,7 @@ mod original_checkpoint_integrity_tests {
     }
 
     #[test]
-    fn original_supervisor_checkpoint_requires_actual_journal_schema_and_digest() -> OriginalTestResult {
+    fn original_supervisor_checkpoint_requires_actual_journal_schema_and_digest() -> TestResult {
         let (plan, journal) = fixture()?;
         assert!(
             verify_original_supervisor_checkpoint_v1(
@@ -1242,8 +1242,7 @@ mod original_checkpoint_integrity_tests {
             // digest so the test exercises semantic validation independently
             // of the self-hash check.
             if name != "forged prior digest" {
-                changed.receipt_digest = changed
-                    .content_digest_v1()?;
+                changed.receipt_digest = changed.content_digest_v1()?;
             }
             let bytes = serde_json::to_vec(&changed)?;
             assert!(
@@ -1279,5 +1278,4 @@ mod original_checkpoint_integrity_tests {
         );
         Ok(())
     }
-
 }
