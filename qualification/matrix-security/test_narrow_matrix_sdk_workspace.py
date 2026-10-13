@@ -48,6 +48,12 @@ def metadata(*, candidate="/tmp/stem-candidate", stage="/tmp/hepta-stage"):
              "version": "0.19.1", "manifest_path": f"{candidate}/crates/matrix-sdk/Cargo.toml"},
             {"name": "matrix-sdk-crypto", "id": "upstream-crypto",
              "version": "0.19.1", "manifest_path": f"{candidate}/crates/matrix-sdk-crypto/Cargo.toml"},
+            {"name": "matrix-sdk-sqlite", "id": "upstream-sqlite",
+             "version": "0.19.1", "manifest_path": f"{candidate}/crates/matrix-sdk-sqlite/Cargo.toml"},
+            {"name": "rusqlite", "id": "upstream-rusqlite", "version": "0.40.2",
+             "manifest_path": "/tmp/cargo/rusqlite/Cargo.toml"},
+            {"name": "libsqlite3-sys", "id": "upstream-sqlite-ffi", "version": "0.38.2",
+             "manifest_path": "/tmp/cargo/libsqlite3-sys/Cargo.toml"},
             {"name": "anymap3", "id": "new-anymap", "version": "1.0.0",
              "manifest_path": "/tmp/cargo/anymap3/Cargo.toml"},
             {"name": "blake3", "id": "new-blake3", "version": "1.8.7",
@@ -59,9 +65,15 @@ def metadata(*, candidate="/tmp/stem-candidate", stage="/tmp/hepta-stage"):
                 {"id": "hepta-sdk-id", "features": [],
                  "deps": [{"pkg": "upstream-sdk"}]},
                 {"id": "upstream-sdk", "features": ["e2e-encryption", "sqlite"],
-                 "deps": [{"pkg": "upstream-crypto"}, {"pkg": "new-anymap"}]},
+                 "deps": [{"pkg": "upstream-crypto"}, {"pkg": "new-anymap"},
+                          {"pkg": "upstream-sqlite"}]},
                 {"id": "upstream-crypto", "features": [],
                  "deps": [{"pkg": "new-blake3"}]},
+                {"id": "upstream-sqlite", "features": [],
+                 "deps": [{"pkg": "upstream-rusqlite"}]},
+                {"id": "upstream-rusqlite", "features": [],
+                 "deps": [{"pkg": "upstream-sqlite-ffi"}]},
+                {"id": "upstream-sqlite-ffi", "features": [], "deps": []},
                 {"id": "new-anymap", "features": [], "deps": []},
                 {"id": "new-blake3", "features": [], "deps": []},
             ],
@@ -124,6 +136,9 @@ class NarrowWorkspaceTests(unittest.TestCase):
             stage_root="/tmp/hepta-stage")
         self.assertTrue(report["cli_starlark_absent"])
         self.assertTrue(report["codex_state_execpolicy_absent"])
+        self.assertTrue(report["sqlite_runtime_chain_verified"])
+        self.assertTrue(report["rusqlite_0_40_x_verified"])
+        self.assertTrue(report["native_sqlite_sys_0_38_x_verified"])
         self.assertFalse(report["production_authorized"])
         self.assertFalse(report["cargo_deny_verified"])
         self.assertFalse(report["full_matrixd_compilation_verified"])
@@ -162,6 +177,60 @@ class NarrowWorkspaceTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     inspect_cargo_metadata(
                         enc(bad), candidate_root="/tmp/stem-candidate",
+                        stage_root="/tmp/hepta-stage")
+
+    def test_sqlite_runtime_native_links_cannot_be_faked_by_decoys(self):
+        source = metadata()
+        failures = []
+        for name, old in (
+                ("matrix-sdk-sqlite", "0.18.0"),
+                ("rusqlite", "0.39.0"),
+                ("libsqlite3-sys", "0.37.0")):
+            case = json.loads(json.dumps(source))
+            next(p for p in case["packages"] if p["name"] == name)["version"] = old
+            failures.append(case)
+
+        absent = json.loads(json.dumps(source))
+        next(n for n in absent["resolve"]["nodes"]
+             if n["id"] == "upstream-sdk")["deps"] = [
+                 dep for dep in next(n for n in absent["resolve"]["nodes"]
+                                     if n["id"] == "upstream-sdk")["deps"]
+                 if dep["pkg"] != "upstream-sqlite"]
+        failures.append(absent)
+
+        for parent, dependent in (
+                ("upstream-sqlite", "upstream-rusqlite"),
+                ("upstream-rusqlite", "upstream-sqlite-ffi")):
+            candidate = json.loads(json.dumps(source))
+            node = next(n for n in candidate["resolve"]["nodes"]
+                        if n["id"] == parent)
+            next(edge for edge in node["deps"] if edge["pkg"] == dependent)[
+                "dep_kinds"] = [{"kind": "dev", "target": None}]
+            failures.append(candidate)
+
+        wrong_source = json.loads(json.dumps(source))
+        next(p for p in wrong_source["packages"]
+             if p["name"] == "matrix-sdk-sqlite")["manifest_path"] = (
+                 "/unapproved/matrix-sdk-sqlite/Cargo.toml")
+        failures.append(wrong_source)
+
+        duplicated = json.loads(json.dumps(source))
+        duplicated["packages"].append({
+            "name": "libsqlite3-sys", "id": "old-sqlite-ffi",
+            "version": "0.37.0",
+            "manifest_path": "/tmp/cargo/old-libsqlite3-sys/Cargo.toml"})
+        duplicated["resolve"]["nodes"].append({
+            "id": "old-sqlite-ffi", "features": [], "deps": []})
+        next(n for n in duplicated["resolve"]["nodes"]
+             if n["id"] == "upstream-rusqlite")["deps"].append({
+                 "pkg": "old-sqlite-ffi",
+                 "dep_kinds": [{"kind": None, "target": None}]})
+        failures.append(duplicated)
+        for case in failures:
+            with self.subTest(candidate=digest(enc(case))[:12]):
+                with self.assertRaises(ValueError):
+                    inspect_cargo_metadata(
+                        enc(case), candidate_root="/tmp/stem-candidate",
                         stage_root="/tmp/hepta-stage")
 
     def test_real_cargo_resolve_edges_required_not_decoy_package_names(self):
