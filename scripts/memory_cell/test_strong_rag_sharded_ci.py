@@ -25,8 +25,12 @@ class ShardedCiTransportTests(unittest.TestCase):
             canon.mkdir()
             inv = {"inventory_digest": "exact-qwen"}
             pub = {"revision": "exact-fixed-revision"}
-            stage = {"inventory_sha256": "i", "publisher_sha256": "p",
-                     "tier": "qwen-3b", "seconds": 25.0}
+            stage = {
+                "inventory_sha256": "i",
+                "publisher_sha256": "p",
+                "tier": "qwen-3b",
+                "seconds": 25.0,
+            }
             pins = {
                 "inventory.json": write(canon / "inventory.json", inv),
                 "publisher.json": write(canon / "publisher.json", pub),
@@ -41,8 +45,9 @@ class ShardedCiTransportTests(unittest.TestCase):
                 )
             self.assertEqual(receipt["actual_shard_model_staging_seconds"], 47.25)
             self.assertTrue(receipt["canonical_stage_seconds_are_historical"])
-            self.assertEqual((model / "stage.json").read_bytes(),
-                             (canon / "stage.json").read_bytes())
+            self.assertEqual(
+                (model / "stage.json").read_bytes(), (canon / "stage.json").read_bytes()
+            )
             self.assertFalse(receipt["production_accepted"])
 
     def test_new_weight_or_inventory_revision_may_not_be_silently_aligned(self):

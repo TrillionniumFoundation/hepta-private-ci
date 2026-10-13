@@ -16,7 +16,9 @@ import stat
 import zipfile
 
 ORIGINAL_ZIP_SHA = "23e9d44b8d2dbe756c7c33031e18853c83326458a37925d4d368881145bf142b"
-HISTORICAL_MODEL_ZIP_SHA = "129351221d56c9668c57e33f8dec79a6443c0252675752085538375b12ca25a8"
+HISTORICAL_MODEL_ZIP_SHA = (
+    "129351221d56c9668c57e33f8dec79a6443c0252675752085538375b12ca25a8"
+)
 ORIGINAL_SOURCE_COMMIT = "c9dd3aeff958fbdc4356a98718e96dec47f9b820"
 HISTORICAL_MODEL_COMMIT = "02c12b4aff0d589d10e5ed25d22b05d794ca96a0"
 CANONICAL_SHA = {
@@ -31,10 +33,16 @@ def sha(data):
 
 
 def verified_zip(path, expected_zip_sha, *, expected_commit, max_total):
-    if path.is_symlink() or not path.is_file() or path.stat().st_size > 16 * 1024 * 1024:
+    if (
+        path.is_symlink()
+        or not path.is_file()
+        or path.stat().st_size > 16 * 1024 * 1024
+    ):
         raise ValueError("bounded regular Actions ZIP required")
     if sha(path.read_bytes()) != expected_zip_sha:
-        raise ValueError("downloaded Actions artifact does not match externally pinned ZIP")
+        raise ValueError(
+            "downloaded Actions artifact does not match externally pinned ZIP"
+        )
     with zipfile.ZipFile(path) as z:
         info = z.infolist()
         if not 1 <= len(info) <= 256 or sum(i.file_size for i in info) > max_total:
@@ -42,9 +50,14 @@ def verified_zip(path, expected_zip_sha, *, expected_commit, max_total):
         names = set()
         for entry in info:
             name = PurePosixPath(entry.filename)
-            if (name.is_absolute() or ".." in name.parts or "\\" in entry.filename
-                    or entry.is_dir() or stat.S_ISLNK(entry.external_attr >> 16)
-                    or str(name) in names):
+            if (
+                name.is_absolute()
+                or ".." in name.parts
+                or "\\" in entry.filename
+                or entry.is_dir()
+                or stat.S_ISLNK(entry.external_attr >> 16)
+                or str(name) in names
+            ):
                 raise ValueError("unsafe, duplicate or nonregular ZIP member")
             names.add(str(name))
         if "SHA256SUMS" not in names or "tested-commit.txt" not in names:
@@ -56,8 +69,12 @@ def verified_zip(path, expected_zip_sha, *, expected_commit, max_total):
                 raise ValueError("invalid SHA256SUMS member")
             value, name = found.groups()
             path_name = PurePosixPath(name)
-            if (path_name.is_absolute() or ".." in path_name.parts
-                    or name not in names or name in pins):
+            if (
+                path_name.is_absolute()
+                or ".." in path_name.parts
+                or name not in names
+                or name in pins
+            ):
                 raise ValueError("unsafe, missing or repeated manifest member")
             pins[name] = value
             if sha(z.read(name)) != value:
@@ -71,8 +88,10 @@ def verified_zip(path, expected_zip_sha, *, expected_commit, max_total):
 
 def extract_original(archive, destination):
     files = verified_zip(
-        archive, ORIGINAL_ZIP_SHA,
-        expected_commit=ORIGINAL_SOURCE_COMMIT, max_total=32 * 1024 * 1024
+        archive,
+        ORIGINAL_ZIP_SHA,
+        expected_commit=ORIGINAL_SOURCE_COMMIT,
+        max_total=32 * 1024 * 1024,
     )
     destination.mkdir()
     for name, payload in files.items():
@@ -92,8 +111,10 @@ def extract_original(archive, destination):
 
 def extract_model_identity(archive, destination):
     files = verified_zip(
-        archive, HISTORICAL_MODEL_ZIP_SHA,
-        expected_commit=HISTORICAL_MODEL_COMMIT, max_total=4 * 1024 * 1024
+        archive,
+        HISTORICAL_MODEL_ZIP_SHA,
+        expected_commit=HISTORICAL_MODEL_COMMIT,
+        max_total=4 * 1024 * 1024,
     )
     if len(files) != 26:
         raise ValueError("unexpected historical model receipt census")
@@ -116,7 +137,9 @@ def align_model_stage(live, canonical, observation):
     """Align only elapsed-time-bearing stage metadata, never model files."""
     for name in ("inventory.json", "publisher.json"):
         if sha((live / name).read_bytes()) != CANONICAL_SHA[name]:
-            raise ValueError("independently staged Qwen model differs from pinned identity")
+            raise ValueError(
+                "independently staged Qwen model differs from pinned identity"
+            )
     staged = json.loads((live / "stage.json").read_text())
     locked = json.loads((canonical / "stage.json").read_text())
     if set(staged) != set(locked) or any(
@@ -157,12 +180,14 @@ def check_tree(directory):
         if name in listed or ".." in PurePosixPath(name).parts:
             raise ValueError("duplicate/unsafe manifest")
         listed.add(name)
-        if entry.is_symlink() or not entry.is_file() or sha(entry.read_bytes()) != expected:
+        if (
+            entry.is_symlink()
+            or not entry.is_file()
+            or sha(entry.read_bytes()) != expected
+        ):
             raise ValueError("folder member changed")
     physical = {
-        f.relative_to(directory).as_posix()
-        for f in directory.rglob("*")
-        if f.is_file()
+        f.relative_to(directory).as_posix() for f in directory.rglob("*") if f.is_file()
     }
     if physical != listed | {"SHA256SUMS"}:
         raise ValueError("folder census mismatch")

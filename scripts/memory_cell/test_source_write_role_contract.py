@@ -18,12 +18,11 @@ def definitions(name):
         raise ValueError("source-effects file must be a regular owned file")
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
     functions = {
-        node.name for node in tree.body
+        node.name
+        for node in tree.body
         if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef))
     }
-    classes = {
-        node.name for node in tree.body if isinstance(node, ast.ClassDef)
-    }
+    classes = {node.name for node in tree.body if isinstance(node, ast.ClassDef)}
     imports = {
         alias.name
         for node in tree.body
@@ -32,8 +31,7 @@ def definitions(name):
         if node.module == "source_write_effects"
     }
     self_import = any(
-        isinstance(node, ast.ImportFrom)
-        and node.module == "source_write_effects"
+        isinstance(node, ast.ImportFrom) and node.module == "source_write_effects"
         for node in tree.body
     )
     return tree, functions, classes, imports, self_import
@@ -45,8 +43,7 @@ class SourceWriteModuleRoleTests(unittest.TestCase):
             "source_write_effects.py"
         )
         self.assertTrue(
-            {"number", "procedure_equal", "align_records", "effects", "audit"}
-            <= funcs
+            {"number", "procedure_equal", "align_records", "effects", "audit"} <= funcs
         )
         self.assertNotIn("SourceWriteAuditTests", classes)
         self.assertFalse(self_import)
