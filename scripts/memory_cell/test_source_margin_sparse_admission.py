@@ -44,20 +44,27 @@ class SourceMarginSparseAdmissionTests(unittest.TestCase):
                     ),
                 ),
             ):
-                with self.assertRaisesRegex(
-                    ValueError,
-                    "optimized source write requires an exact parity receipt",
+                for proof, pin in (
+                    (None, None),
+                    (Path(folder) / "forged-parity.json", "f" * 64),
                 ):
-                    write_memory(
-                        Path(folder) / "sources",
-                        Path(folder) / "model",
-                        output,
-                        source_sha="c" * 64,
-                        stage_sha="d" * 64,
-                        loss_backend="supervised_positions",
-                        binding_objective="source_margin",
-                    )
-            self.assertFalse(output.exists())
+                    with self.subTest(supplied_parity=proof is not None):
+                        with self.assertRaisesRegex(
+                            ValueError,
+                            "source-margin optimized writing requires its own Qwen paired-forward parity",
+                        ):
+                            write_memory(
+                                Path(folder) / "sources",
+                                Path(folder) / "model",
+                                output,
+                                source_sha="c" * 64,
+                                stage_sha="d" * 64,
+                                loss_backend="supervised_positions",
+                                binding_objective="source_margin",
+                                parity_receipt=proof,
+                                parity_sha=pin,
+                            )
+                        self.assertFalse(output.exists())
 
     def test_source_margin_other_curriculum_still_rejects_before_model(self):
         fake_pretrained = ModuleType("pretrained")
