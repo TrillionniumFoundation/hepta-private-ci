@@ -1,0 +1,199 @@
+name: Hepta SQLx SQLite 0.38 ABI trial (scratch only, nonpromoting)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'qualification/matrix-security/sqlx_native_abi_trial.py'
+      - 'qualification/matrix-security/test_sqlx_native_abi_trial.py'
+      - '.github/workflows/hepta-matrix-sqlx-abi-trial.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-sqlx-abi-scratch-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-admission:
+    name: Verify archive source guard, no production authority (L1)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind exact input
+        run: git rev-parse HEAD HEAD^{tree}
+      - name: Test SHA-pinned archive and hostile source handling
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: |
+          python3 -m compileall -q qualification/matrix-security/sqlx_native_abi_trial.py qualification/matrix-security/test_sqlx_native_abi_trial.py
+          python3 -m unittest discover -v -s qualification/matrix-security -p 'test_sqlx_native_abi_trial.py'
+      - name: Verify checkout remains unchanged
+        run: |
+          git diff --check
+          git diff --exit-code
+
+  actual-scratch-graph:
+    name: Real 1.96 Cargo SQLite 0.38 graph + adapter compile (NO release)
+    needs: source-admission
+    runs-on: ubuntu-24.04
+    timeout-minutes: 65
+    env:
+      HEPTA_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CARGO_NET_GIT_FETCH_WITH_CLI: 'true'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Bind candidate SHA and canonical dependency lock
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$HEPTA_SHA"
+          python3 scripts/verify_cargo_lock.py
+          git rev-parse HEAD HEAD^{tree}
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: b18166c68bb958a21f0bca8b2d8320cb53583362
+          path: upstream-release
+          persist-credentials: false
+          fetch-depth: 1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          repository: matrix-org/matrix-rust-sdk
+          ref: 9c5fdd2cf5be1b7b8b20541e56d7a109db968534
+          path: upstream-anymap-commit
+          persist-credentials: false
+          fetch-depth: 2
+      - name: Stage pinned Matrix 0.19.1 and only detached scratch SQLite links
+        shell: bash
+        run: |
+          set -euo pipefail
+          STAGE="$RUNNER_TEMP/hepta-matrix-abirebind-$GITHUB_RUN_ID"
+          SDK="$RUNNER_TEMP/hepta-matrix-signed-source-$GITHUB_RUN_ID"
+          git worktree add --detach "$STAGE" "$HEPTA_SHA"
+          python3 qualification/matrix-security/minimal_hepta_source_stage.py \
+            --stage "$STAGE" --release upstream-release \
+            --migration upstream-anymap-commit --candidate-dir "$SDK" \
+            --source-sha "$HEPTA_SHA" \
+            --output "$RUNNER_TEMP/hepta-sqlx-matrix-source.json"
+          python3 qualification/matrix-security/narrow_matrix_sdk_workspace.py \
+            --stage "$STAGE" --source-report "$RUNNER_TEMP/hepta-sqlx-matrix-source.json" \
+            --source-sha "$HEPTA_SHA" --align-sqlite-native-links \
+            --output "$RUNNER_TEMP/hepta-sqlx-matrix-scratch.json"
+          echo "SCRATCH_HEPTA=$STAGE" >> "$GITHUB_ENV"
+          echo "SCRATCH_MATRIX_SDK=$SDK" >> "$GITHUB_ENV"
+      - name: Download genuine registry package; verify LOCK SHA before extraction
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --location --retry 3 --connect-timeout 15 --max-time 180 \
+            https://static.crates.io/crates/sqlx-sqlite/sqlx-sqlite-0.9.0.crate \
+            --output "$RUNNER_TEMP/sqlx-sqlite-0.9.0.crate"
+          python3 qualification/matrix-security/sqlx_native_abi_trial.py \
+            --archive "$RUNNER_TEMP/sqlx-sqlite-0.9.0.crate" \
+            --lock codex-rs/Cargo.lock \
+            --output-dir "$RUNNER_TEMP/sqlx-sqlite-abi-rebind" \
+            --report "$RUNNER_TEMP/hepta-sqlx-abi-candidate.json"
+          echo "SCRATCH_SQLX=$RUNNER_TEMP/sqlx-sqlite-abi-rebind/sqlx-sqlite-0.9.0" >> "$GITHUB_ENV"
+      - name: Install Rust 1.96 for disposable upstream SDK only
+        run: rustup toolchain install 1.96.0 --profile minimal
+      - name: Resolve actual patched SQLx/MATRIX SQLite native links and inspect E2EE closure
+        shell: bash
+        run: |
+          set -euo pipefail
+          PATCH="patch.crates-io.sqlx-sqlite.path=\"$SCRATCH_SQLX\""
+          timeout 900 cargo +1.96.0 --config "$PATCH" metadata \
+            --manifest-path "$SCRATCH_HEPTA/codex-rs/Cargo.toml" \
+            --format-version 1 > "$RUNNER_TEMP/sqlx-scratch-metadata.json" \
+            2> "$RUNNER_TEMP/sqlx-scratch-metadata.stderr" || {
+              tail -n 120 "$RUNNER_TEMP/sqlx-scratch-metadata.stderr"
+              exit 1
+            }
+          python3 - <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, 'qualification/matrix-security')
+          from narrow_matrix_sdk_workspace import inspect_cargo_metadata
+          root = Path(os.environ['RUNNER_TEMP'])
+          data = json.loads((root / 'sqlx-scratch-metadata.json').read_text())
+          sqlx = [p for p in data['packages'] if p['name'] == 'sqlx-sqlite']
+          if len(sqlx) != 1 or sqlx[0]['version'] != '0.9.0' or (
+              Path(sqlx[0]['manifest_path']).resolve() !=
+              Path(os.environ['SCRATCH_SQLX']).resolve() / 'Cargo.toml'
+          ):
+              raise ValueError('unregistered SQLx source, not the separately hash-verified scratch patch')
+          report = inspect_cargo_metadata(
+              (root / 'sqlx-scratch-metadata.json').read_bytes(),
+              candidate_root=os.environ['SCRATCH_MATRIX_SDK'],
+              stage_root=os.environ['SCRATCH_HEPTA'])
+          report.update({'sqlx_abi_trial_only': True, 'production_authorized': False,
+                         'cargo_deny_verified': False, 'matrixd_runtime_verified': False})
+          (root / 'sqlx-scratch-graph.json').write_text(
+              json.dumps(report, sort_keys=True, indent=2) + '\n')
+          print(json.dumps(report, sort_keys=True))
+          PY
+      - name: Compile genuine upstream Matrix SDK adapter against scratch SQLx ABI trial
+        shell: bash
+        run: |
+          set -uo pipefail
+          status=0
+          PATCH="patch.crates-io.sqlx-sqlite.path=\"$SCRATCH_SQLX\""
+          timeout 1800 cargo +1.96.0 --config "$PATCH" check --locked \
+            --manifest-path "$SCRATCH_HEPTA/codex-rs/Cargo.toml" \
+            -p codex-hepta-matrix-sdk --all-targets \
+            > "$RUNNER_TEMP/sqlx-scratch-check.stdout" \
+            2> "$RUNNER_TEMP/sqlx-scratch-check.stderr" || status=$?
+          STATUS="$status" python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          path = Path(os.environ['RUNNER_TEMP']) / 'hepta-sqlx-scratch-compile.json'
+          status = int(os.environ['STATUS'])
+          path.write_text(json.dumps({
+              'schema': 'hepta.sqlx-sqlite-038-compile-diagnostic.v1',
+              'source_sha': os.environ['HEPTA_SHA'],
+              'cargo_exit_code': status,
+              'scratch_sdk_compiled': status == 0,
+              'production_cargo_lock_modified': False,
+              'cargo_deny_verified': False,
+              'matrixd_e2ee_runtime_verified': False,
+              'sqlite_wal_crash_recovery_verified': False,
+              'production_authorized': False,
+          }, sort_keys=True, indent=2) + '\n')
+          PY
+          if test "$status" -ne 0; then
+            tail -n 110 "$RUNNER_TEMP/sqlx-scratch-check.stderr"
+          fi
+          exit "$status"
+      - name: Retain source hashes, actual graph and compiler diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-sqlx-abi-scratch-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-sqlx-matrix-source.json
+            ${{ runner.temp }}/hepta-sqlx-matrix-scratch.json
+            ${{ runner.temp }}/hepta-sqlx-abi-candidate.json
+            ${{ runner.temp }}/sqlx-scratch-metadata.stderr
+            ${{ runner.temp }}/sqlx-scratch-graph.json
+            ${{ runner.temp }}/sqlx-scratch-check.stderr
+            ${{ runner.temp }}/hepta-sqlx-scratch-compile.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Verify research did not alter production source
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          if test -n "${SCRATCH_HEPTA:-}" && test -d "$SCRATCH_HEPTA"; then
+            git worktree remove --force "$SCRATCH_HEPTA"
+          fi
+          git diff --check
+          git diff --exit-code
