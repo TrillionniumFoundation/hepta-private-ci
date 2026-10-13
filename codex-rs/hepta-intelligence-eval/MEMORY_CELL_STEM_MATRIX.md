@@ -1780,3 +1780,62 @@ strict-as-of candidate pool** have no in-pool substitution at all. An absent
 source is not automatically a pure retriever failure: admissibility, source
 cut and candidate-window projection can also account for its absence. This experimental budget is fixed by a deterministic
 rule before reading new model answers, not tuned on test scores.
+
+## Native complete-run independent audit — 675970bb model execution
+
+A complete *real* six-arm CPU experiment finished with **576/576 policy
+successes** at immutable source `675970bb610c70bb0ec30a2dee05c025440510e6`,
+Git tree `d280ba53070fb6457c04ff0d97fbb14ebbdbc3fb`, workflow
+`38114716982`, artifact `11693693993`. The external ZIP digest is
+`1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8`;
+all **130 internal SHA256SUMS** entries agree with the model-run bytes.
+This validates execution provenance, not semantic evidence quality.
+
+Read-only `stem_audit_completed_run.py` validates the exact transport and
+complete ZIP-manifest pins, original tested commit/tree, 576 registered
+question/arm/stage identities, unchanged post-policy answer strings,
+matching source families and candidate pools, Head training receipts,
+actual Reader calls, no-evidence controls, and source ceiling. It performs
+**zero new model inference**; nine deliberate mutation tests reject missing
+attempts, changed answers, fabricated source gains, training-label counts,
+and false production/citation claims. Its separately keyed CI downloads
+the *original immutable run*, not a synthetic replay.
+
+| Actual metric | Complete model run |
+| --- | ---: |
+| Six-arm strategy successes | **576 / 576** |
+| Genuine Reader calls (strategy plus oracle) | **44** |
+| Exact Reader cache hits | **543** |
+| Isolated same-weight no-evidence Reader calls | **32** |
+| Actual saved Head fit comparisons | **30** |
+| Admitted TRAIN rows / contrastive-eligible at 16 | **14 / 10** |
+| Admitted TRAIN rows / contrastive-eligible at 32 | **27 / 17** |
+| Admitted TRAIN rows / contrastive-eligible at 48 | **40 / 28** |
+| Learned-versus-frozen top-1 selection changes | **1 / 480** |
+| Learned-versus-frozen original answer changes | **0 / 480** |
+| Changes that improved weak native source support | **0** |
+| Actually emitted citation markers | **0** |
+
+The sole learned selection change is `48/retention/locomo:conv-43/q217/
+lineage_lora_gated`, from candidate 1 to 7. **Neither candidate is labelled
+as native supporting source**, and the generated Reader answer bytes are
+unchanged. Model fit and score residuals exist, but this cohort does not
+demonstrate independently confirmed better answers.
+
+The original 32-question development final checkpoint has **25 answerable
+with resolved native source labels and seven native-unanswerable**:
+eight answerable questions have *no native support in the retrieved pool*;
+four do have an available labelled source but the frozen top-1 missed it;
+13 already selected a weakly supported native document. These counts
+partition **retrieval ceiling versus ranking opportunity** and do not imply
+window-level entailment. The zero-evidence Reader's conditional answer-F1
+deltas are small and include negative transfer-phase difference; they do
+not establish evidence sufficiency or a better Reader.
+
+The original full experiment process peak RSS, shared pre-trained Encoder
+and Reader cost, 44 actual Reader calls, cache work and 32 separate empty
+Reader calls cannot be converted into reliable **per-arm dollar, power, or
+production p95 latency** without dedicated isolation and measured external
+environment. The cohort is exposed development data, not prospectively
+collected independent evidence. Semantic citation precision remains **null**,
+and `production_accepted=false`; no automatic Cell scaling or rollout.
