@@ -1,0 +1,60 @@
+name: MemoryCell strict 2026-10-13 bottleneck gate
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - "scripts/memory_cell/stem_oct13_bottleneck_gate.py"
+      - "scripts/memory_cell/test_stem_oct13_bottleneck_gate.py"
+      - ".github/workflows/hepta-memory-stem-oct13-bottleneck.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-stem-oct13-evidence-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  immutable-source-bottleneck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      GH_TOKEN: ${{ github.token }}
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Exact syntax and tampering regressions without model dependencies
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-oct13-bottleneck
+          git rev-parse HEAD > /tmp/stem-oct13-bottleneck/auditor-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/stem-oct13-bottleneck/auditor-tree.txt
+          python3 -m compileall -q scripts/memory_cell/stem_oct13_bottleneck_gate.py scripts/memory_cell/test_stem_oct13_bottleneck_gate.py
+          python3 -m unittest -v test_stem_oct13_bottleneck_gate 2>&1 | tee /tmp/stem-oct13-bottleneck/tests.log
+      - name: Verify external original ZIP and exact SHA256SUMS census
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11785635178/zip > /tmp/stem-oct13-original.zip
+          printf '%s  %s\n' 4d909737769b2c4ee146ec571499276dd911542d5b20b29c9adb1f5a4477a1f9 /tmp/stem-oct13-original.zip | sha256sum -c -
+          python3 scripts/memory_cell/stem_oct13_bottleneck_gate.py \
+            --archive /tmp/stem-oct13-original.zip \
+            --output /tmp/stem-oct13-bottleneck/strict-bottleneck.json \
+            2>&1 | tee /tmp/stem-oct13-bottleneck/strict-bottleneck.log
+      - name: Preserve exact audit source and complete failure receipts
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/stem-oct13-bottleneck/source
+          cp scripts/memory_cell/stem_oct13_bottleneck_gate.py /tmp/stem-oct13-bottleneck/source/
+          cp scripts/memory_cell/test_stem_oct13_bottleneck_gate.py /tmp/stem-oct13-bottleneck/source/
+          cp scripts/memory_cell/stem_audit_archive.py /tmp/stem-oct13-bottleneck/source/
+          cp .github/workflows/hepta-memory-stem-oct13-bottleneck.yml /tmp/stem-oct13-bottleneck/source/
+          (cd /tmp/stem-oct13-bottleneck && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-stem-oct13-bottleneck
+          path: /tmp/stem-oct13-bottleneck
+          if-no-files-found: error
