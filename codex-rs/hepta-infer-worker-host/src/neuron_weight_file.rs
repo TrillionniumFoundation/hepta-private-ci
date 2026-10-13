@@ -532,6 +532,10 @@ mod tests {
         file.seek(SeekFrom::Start(19)).unwrap();
         file.write_all(&[flipped[0] ^ 0x7f]).unwrap();
         file.flush().unwrap();
+        // The corruption write advances the cursor to 20. Start the next
+        // independent read at 19 so restoration is tested against the cursor
+        // present at THAT invocation, not an outdated pre-write position.
+        file.seek(SeekFrom::Start(19)).unwrap();
         assert_eq!(
             inspect_loaded_neuron_weight_file_v1(&worker, 102, "model.1", &mut file),
             Err(NeuronWeightFileDiagnosticErrorV1::DigestMismatch)
