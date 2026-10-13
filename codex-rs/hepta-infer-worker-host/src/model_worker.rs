@@ -270,6 +270,14 @@ impl<D: ModelDriver> InferenceWorker<D> {
         self.instance_identity.clone()
     }
 
+    /// Exact in-process loaded model incarnation, distinct from the Worker
+    /// process identity. Unload/reload of identical weights advances this
+    /// monotonic ordinal, so old usage cannot be current after replacement.
+    /// The revision is NOT a signed or crash-durable model-load witness.
+    pub(crate) fn current_neuron_model_load_revision(&self, model_id: &str) -> Option<u64> {
+        self.models.get(model_id).map(|model| model.load_revision)
+    }
+
     /// An ambiguous physical model-load or unload outcome requires external
     /// retirement/restart; changing the grant cannot clear this fence.
     #[must_use]

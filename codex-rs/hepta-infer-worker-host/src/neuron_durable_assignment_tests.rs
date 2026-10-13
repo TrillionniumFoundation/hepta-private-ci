@@ -955,6 +955,50 @@ fn observed_token_cost_binds_fsynced_dispatch_and_exact_worker_incarnation() {
 }
 
 #[test]
+fn observed_token_cost_rejects_identical_model_reload_inside_same_worker() {
+    let directory = tempfile::tempdir().unwrap();
+    let typed = typed_request();
+    let mut owner = control(&directory, &typed);
+    let mut worker = worker();
+    let (_, mut port) =
+        claim_neuron_durable_dispatch_v1(&mut owner, &mut worker, &typed, 100).unwrap();
+    let receipt = port.execute_feature(&typed).unwrap();
+    let cost = port.take_cost_diagnostic().unwrap();
+    drop(port);
+
+    let observed =
+        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100)
+            .unwrap();
+    let original_revision = worker.current_neuron_model_load_revision("model.1").unwrap();
+    assert_eq!(observed.model_load_revision, original_revision);
+    assert_eq!(cost.model_load_revision(), original_revision);
+
+    // Identical model, Worker ID, process generation and driver handle are NOT
+    // sufficient. Only the actual monotonically increasing load ordinal
+    // distinguishes the reloaded physical model from the prior invocation.
+    let manifest = worker.inspected_neuron_manifest(100, "model.1").unwrap().clone();
+    worker.unload_model(100, "model.1").unwrap();
+    worker.load_model(100, manifest).unwrap();
+    assert!(
+        worker.current_neuron_model_load_revision("model.1").unwrap() > original_revision
+    );
+    assert!(
+        observed.validate_integrity(),
+        "a self-consistent old diagnostic is not proof of current loading"
+    );
+    assert_eq!(
+        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100),
+        Err(NeuronObservedCostSourceErrorV1::Binding)
+    );
+    assert_eq!(
+        revalidate_neuron_observed_cost_source_v1(
+            &owner, &worker, &typed, &receipt, &cost, &observed, 100,
+        ),
+        Err(NeuronObservedCostSourceErrorV1::Binding)
+    );
+}
+
+#[test]
 fn observed_token_cost_is_not_a_settled_wal_or_authoritative_resource_debit() {
     let directory = tempfile::tempdir().unwrap();
     let typed = typed_request();

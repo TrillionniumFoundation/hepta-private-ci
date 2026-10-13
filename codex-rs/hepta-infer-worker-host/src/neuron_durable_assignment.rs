@@ -420,6 +420,8 @@ pub struct NeuronObservedCostSourceV1 {
     pub reservation_id: String,
     pub worker_id: String,
     pub worker_generation: u64,
+    /// Actual Worker model-load ordinal, distinct from process incarnation.
+    pub model_load_revision: u64,
     pub model_id: String,
     pub control_revision: u64,
     pub request_digest: Digest32,
@@ -441,6 +443,7 @@ impl NeuronObservedCostSourceV1 {
             bytes.extend_from_slice(raw);
         }
         bytes.extend_from_slice(&self.worker_generation.to_be_bytes());
+        bytes.extend_from_slice(&self.model_load_revision.to_be_bytes());
         bytes.extend_from_slice(&self.control_revision.to_be_bytes());
         for digest in [
             self.request_digest,
@@ -467,6 +470,7 @@ impl NeuronObservedCostSourceV1 {
             && !self.worker_id.is_empty()
             && !self.model_id.is_empty()
             && self.worker_generation > 0
+            && self.model_load_revision > 0
             && self.control_revision >= 4
             && !self.request_digest.is_zero()
             && !self.feature_receipt_digest.is_zero()
@@ -592,6 +596,7 @@ pub fn read_neuron_observed_cost_source_v1<D: ModelDriver>(
         reservation_id: reservation.reservation_id.clone(),
         worker_id: assignment.worker_id.clone(),
         worker_generation: assignment.worker_generation,
+        model_load_revision: cost.model_load_revision(),
         model_id: request.model_id.to_string(),
         control_revision: record.revision,
         request_digest,

@@ -517,7 +517,11 @@ signed total token/CPU cost evidence and no production promotion authority.
 ## Read-only cost/Dispatching correlation and Worker incarnation fence
 
 The physical Worker now binds each known-terminal token-cost observation to an
-opaque **in-process Worker incarnation identity**. Two Worker instances may
+opaque **in-process Worker incarnation identity** AND the exact monotonic
+`model_load_revision` of the physical model actually loaded in that Worker.
+A process identity alone cannot make a stale cost current after unloading and
+reloading the SAME model/weights/driver handle. An actual Worker regression
+tests this exact failure mode. Two Worker instances may
 present the same public ID, generation and ModelManifest after a restart, yet
 cannot inherit one another's prior observed cost. The opaque token is never
 serialized, hashed by pointer address, treated as a host attestation or accepted
@@ -529,8 +533,9 @@ functions compare one verified typed NeuronFeatureReceiptV1 and one
 WorkerNeuronTokenCostV1 against the **current real inference.control durable
 Dispatching WAL** and the exact in-memory Worker. Checks include original
 typed request digest, reservation/assignment and revision, worker incarnation,
-selected loaded model/weights/tokenizer/runtime tuple, typed receipt digest
-and known-terminal observed token count within request/reservation token caps.
+selected loaded model/weights/tokenizer/runtime tuple plus model-load ordinal,
+typed receipt digest and known-terminal observed token count within
+request/reservation token caps.
 
 The returned NeuronObservedCostSourceV1 has DENY_ALL and one recomputable
 diagnostic digest. It does NOT invoke the Worker, settle a WAL entry, charge

@@ -45,6 +45,8 @@ pub struct WorkerNeuronTokenCostV1 {
     /// Not serialized or included in the hash; an exact live Worker instance
     /// match must be established before a cost can be used by a read-side owner.
     worker_instance: WorkerInstanceIdentity,
+    /// Exact loaded model incarnation within the real Worker process.
+    model_load_revision: u64,
     request_digest: Digest32,
     feature_receipt_digest: Digest32,
     terminal_status: NeuronFeatureTerminalStatusV1,
@@ -74,6 +76,12 @@ impl WorkerNeuronTokenCostV1 {
         self.diagnostic_digest
     }
 
+    /// Never treat the same Worker ID/generation as a stable model-load ID.
+    #[must_use]
+    pub(crate) const fn model_load_revision(&self) -> u64 {
+        self.model_load_revision
+    }
+
     /// Bind to the exact in-process Worker which observed these tokens.
     /// Worker ID + generation are insufficient across process restarts.
     pub(crate) fn matches_live_worker<D: ModelDriver>(
@@ -82,6 +90,9 @@ impl WorkerNeuronTokenCostV1 {
     ) -> bool {
         self.worker_id == worker.worker_id()
             && self.worker_generation == worker.worker_generation()
+            && self.model_load_revision > 0
+            && worker.current_neuron_model_load_revision(&self.model_id)
+                == Some(self.model_load_revision)
             && self
                 .worker_instance
                 .matches(&worker.worker_instance_identity())
@@ -116,6 +127,7 @@ impl WorkerNeuronTokenCostV1 {
             bytes.extend_from_slice(value);
         }
         bytes.extend_from_slice(&self.worker_generation.to_be_bytes());
+        bytes.extend_from_slice(&self.model_load_revision.to_be_bytes());
         bytes.extend_from_slice(self.request_digest.as_array());
         bytes.extend_from_slice(self.feature_receipt_digest.as_array());
         bytes.push(match self.terminal_status {
@@ -136,6 +148,7 @@ impl WorkerNeuronTokenCostV1 {
             && !self.model_id.is_empty()
             && !self.worker_id.is_empty()
             && self.worker_generation > 0
+            && self.model_load_revision > 0
             && !self.request_digest.is_zero()
             && !self.feature_receipt_digest.is_zero()
             // An unobserved physical terminal is UNKNOWN usage, not zero
@@ -289,6 +302,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> NeuronInferenceControlPort
             worker_id: self.worker.worker_id().to_owned(),
             worker_generation: self.worker.worker_generation(),
             worker_instance: self.worker.worker_instance_identity(),
+            model_load_revision: self
+                .worker
+                .current_neuron_model_load_revision(&self.model_id)
+                .ok_or(NeuronModelError::Indeterminate)?,
             request_digest: neuron_feature_request_digest_v1(request)
                 .map_err(|_| NeuronModelError::Indeterminate)?,
             feature_receipt_digest: receipt.receipt_digest,
