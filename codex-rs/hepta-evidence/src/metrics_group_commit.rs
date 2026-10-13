@@ -31,6 +31,8 @@ pub enum MetricPhaseV1 {
     Cns = 5,
     NeuronFeature = 6,
     Wal = 7,
+    NduRead = 8,
+    FinalUse = 9,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -360,7 +362,7 @@ fn parse_group(
         if columns.len() != 5
             || !digest_hex(columns[0])
             || !digest_hex(columns[1])
-            || !matches!(columns[2], "1" | "2" | "3" | "4" | "5" | "6" | "7")
+            || !matches!(columns[2], "1" | "2" | "3" | "4" | "5" | "6" | "7" | "8" | "9")
             || columns[3].parse::<u64>().is_err()
             || !matches!(columns[4], "0" | "1")
         {

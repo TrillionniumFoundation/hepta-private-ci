@@ -74,6 +74,21 @@ fn wal_metric_phase_survives_group_commit_and_reopen() {
     assert_eq!(reopened.pending(), 0);
 }
 
+#[test]
+fn independently_signed_ndu_and_final_use_metrics_survive_replay() {
+    let dir = tempfile::tempdir().expect("temp");
+    let path = dir.path().join("neuron-metrics");
+    {
+        let mut writer = MetricsGroupCommitV1::open(&path).expect("open");
+        writer.stage(sample(MetricPhaseV1::NduRead)).expect("NDU read");
+        writer.stage(sample(MetricPhaseV1::FinalUse)).expect("Final-use");
+        let group = writer.flush().expect("flush").expect("group");
+        assert_eq!(group.rows, 2);
+    }
+    let reopened = MetricsGroupCommitV1::open(&path).expect("verify replay");
+    assert_eq!(reopened.pending(), 0);
+}
+
 #[cfg(unix)]
 #[test]
 fn existing_insecure_metrics_file_and_symlink_are_denied() {

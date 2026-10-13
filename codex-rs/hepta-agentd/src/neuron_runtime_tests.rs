@@ -103,3 +103,98 @@ fn ndu_final_use_binding_fences_snapshot_read_and_owner() {
         super::neuron_ndu_final_use_binding_v1(&owner, &tick, &wrong_scope, read_receipt).is_err()
     );
 }
+
+/// Production acceptance requires distinct telemetry observations for signed
+/// NDU reads, Final-use and WAL, without deriving any serving authority.
+#[derive(Debug, Default)]
+struct RecordedNeuronPhases(std::sync::Mutex<Vec<codex_hepta_types::PhaseMetricEventV1>>);
+
+impl codex_hepta_types::PhaseMetricSinkV1 for RecordedNeuronPhases {
+    fn record(
+        &self,
+        sample: codex_hepta_types::PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        self.0
+            .lock()
+            .map_err(|_| codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)?
+            .push(sample);
+        Ok(())
+    }
+
+    fn healthy(&self) -> bool {
+        self.0.lock().is_ok()
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
+}
+
+#[derive(Debug)]
+struct RejectNeuronMetrics;
+
+impl codex_hepta_types::PhaseMetricSinkV1 for RejectNeuronMetrics {
+    fn record(
+        &self,
+        _sample: codex_hepta_types::PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+    }
+
+    fn healthy(&self) -> bool {
+        false
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+    }
+}
+
+#[test]
+fn signed_neuron_phase_telemetry_latches_failure_without_minting_authority() {
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::PhaseMetricKindV1;
+    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::Ordering;
+    use std::time::Duration;
+
+    let scope = Digest32::of_bytes(b"scope");
+    let operation = Digest32::of_bytes(b"tick");
+    let failed = AtomicU64::new(0);
+    let captured = RecordedNeuronPhases::default();
+    super::observe_phase_v1(
+        Some(&captured),
+        &failed,
+        scope,
+        operation,
+        PhaseMetricKindV1::NduRead,
+        Duration::from_micros(2),
+        false,
+    );
+    super::observe_phase_v1(
+        Some(&captured),
+        &failed,
+        scope,
+        operation,
+        PhaseMetricKindV1::FinalUse,
+        Duration::from_micros(3),
+        true,
+    );
+    assert_eq!(failed.load(Ordering::Acquire), 0);
+    let observed = captured.0.lock().expect("observation");
+    assert_eq!(observed.len(), 2);
+    assert_eq!(observed[0].phase, PhaseMetricKindV1::NduRead);
+    assert!(!observed[0].succeeded);
+    assert_eq!(observed[1].phase, PhaseMetricKindV1::FinalUse);
+    drop(observed);
+    super::observe_phase_v1(
+        Some(&RejectNeuronMetrics),
+        &failed,
+        scope,
+        operation,
+        PhaseMetricKindV1::Wal,
+        Duration::from_micros(4),
+        false,
+    );
+    assert_eq!(failed.load(Ordering::Acquire), 1);
+}

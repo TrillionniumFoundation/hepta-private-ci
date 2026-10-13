@@ -25,6 +25,14 @@ use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::NduSnapshotRefV1;
 use codex_hepta_types::StableId;
+use codex_hepta_types::PhaseMetricEventV1;
+use codex_hepta_types::PhaseMetricKindV1;
+use codex_hepta_types::PhaseMetricSinkV1;
+use std::sync::Arc;
+use std::sync::atomic::AtomicU64;
+use std::sync::atomic::Ordering;
+use std::time::Duration;
+use std::time::Instant;
 
 pub struct AgentdNeuronOwner<W, P>
 where
@@ -37,6 +45,8 @@ where
     neuron_owner_id: Option<StableId>,
     ndu_read_verifier: Option<NduReadVerifierV1>,
     effect_intent: Option<DurableNeuronEffectIntentV1>,
+    metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
+    failed_metrics: AtomicU64,
 }
 
 /// The kernel-authority issuer signs this exact complete binding after
@@ -87,6 +97,8 @@ where
             neuron_owner_id: None,
             ndu_read_verifier: None,
             effect_intent: None,
+            metric_sink: None,
+            failed_metrics: AtomicU64::new(0),
         }
     }
 
@@ -107,6 +119,8 @@ where
             neuron_owner_id: Some(neuron_owner_id),
             ndu_read_verifier: Some(ndu_read_verifier),
             effect_intent: None,
+            metric_sink: None,
+            failed_metrics: AtomicU64::new(0),
         }
     }
 
@@ -129,6 +143,8 @@ where
             neuron_owner_id: Some(neuron_owner_id),
             ndu_read_verifier: Some(ndu_read_verifier),
             effect_intent: Some(effect_intent),
+            metric_sink: None,
+            failed_metrics: AtomicU64::new(0),
         }
     }
 
@@ -166,6 +182,50 @@ where
         ))
     }
 
+    /// Connect to the Evidence-owned durable sink. Telemetry is
+    /// non-authorizing and must never replay an uncertain external effect.
+    pub fn with_metric_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
+        self.metric_sink = Some(sink);
+        self
+    }
+
+    pub fn production_metrics_ready(&self) -> bool {
+        self.metric_sink.as_ref().is_some_and(|sink| sink.healthy())
+            && self.failed_metrics.load(Ordering::Acquire) == 0
+    }
+
+    /// Explicit group-commit barrier for qualification, outside any model
+    /// effect fence. A missing or failed sink denies acceptance readiness.
+    pub fn flush_production_metrics(&self) -> bool {
+        let Some(sink) = &self.metric_sink else {
+            return false;
+        };
+        if sink.flush().is_err() {
+            self.failed_metrics.fetch_add(1, Ordering::Release);
+            return false;
+        }
+        self.production_metrics_ready()
+    }
+
+    fn emit_phase(
+        &self,
+        scope_id: &StableId,
+        operation_digest: Digest32,
+        phase: PhaseMetricKindV1,
+        elapsed: Duration,
+        succeeded: bool,
+    ) {
+        observe_phase_v1(
+            self.metric_sink.as_deref(),
+            &self.failed_metrics,
+            Digest32::of_bytes(scope_id.as_str().as_bytes()),
+            operation_digest,
+            phase,
+            elapsed,
+            succeeded,
+        );
+    }
+
     /// Read-only reconciliation diagnostics; unresolved work must be
     /// independently inspected, never automatically replayed.
     pub fn effect_intent_status(&self) -> Option<NeuronEffectIntentStatusV1> {
@@ -190,13 +250,41 @@ where
         signed_read: &SignedNduSnapshotReadV1,
         signed_grant: &SignedFinalUseGrant,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        let started = Instant::now();
+        let scope = input.subject_id.clone();
+        let operation = input.semantic_digest()?;
+        let result = self.tick_bound_inner(input, signed_read, signed_grant);
+        self.emit_phase(
+            &scope,
+            operation,
+            PhaseMetricKindV1::NeuronFeature,
+            started.elapsed(),
+            result.is_ok(),
+        );
+        result
+    }
+
+    fn tick_bound_inner(
+        &mut self,
+        input: NeuronTickInputV1,
+        signed_read: &SignedNduSnapshotReadV1,
+        signed_grant: &SignedFinalUseGrant,
+    ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
         let read_verifier = self
             .ndu_read_verifier
             .as_ref()
             .ok_or(NeuronRuntimeError::InvalidInput)?;
-        let authenticated_read_receipt_digest = read_verifier
-            .verify(signed_read)
-            .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+        let read_started = Instant::now();
+        let read_result = read_verifier.verify(signed_read);
+        self.emit_phase(
+            &input.subject_id,
+            input.semantic_digest()?,
+            PhaseMetricKindV1::NduRead,
+            read_started.elapsed(),
+            read_result.is_ok(),
+        );
+        let authenticated_read_receipt_digest =
+            read_result.map_err(|_| NeuronRuntimeError::InvalidInput)?;
         let snapshot = &signed_read.snapshot;
         if snapshot.generation != self.runtime.generation() {
             return Err(NeuronRuntimeError::InvalidInput);
@@ -233,8 +321,16 @@ where
             snapshot,
             authenticated_read_receipt_digest,
         )?;
-        let token = FinalUseAuthority::claim(authority, signed_grant, &binding)
-            .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+        let authority_started = Instant::now();
+        let claimed = FinalUseAuthority::claim(authority, signed_grant, &binding);
+        self.emit_phase(
+            &input.subject_id,
+            input_digest,
+            PhaseMetricKindV1::FinalUse,
+            authority_started.elapsed(),
+            claimed.is_ok(),
+        );
+        let token = claimed.map_err(|_| NeuronRuntimeError::InvalidInput)?;
         // Claim persistence may advance past an NDU read cutover/expiry.
         // Consume the nonce but deny the model effect if the live frontier or
         // the protected clock changed while authority was being claimed.
@@ -245,6 +341,9 @@ where
             return Err(NeuronRuntimeError::InvalidInput);
         }
         let previous_checkpoint = input.checkpoint_digest;
+        let metric_scope = Digest32::of_bytes(input.subject_id.as_str().as_bytes());
+        let metric_sink = self.metric_sink.as_deref();
+        let failed_metrics = &self.failed_metrics;
         let effect_intent = self
             .effect_intent
             .as_mut()
@@ -255,9 +354,18 @@ where
             // verified effect fence, before the physical encoder/Head call.
             // Even a driver error or process crash now leaves an unresolved
             // durable intent. A freshly signed nonce cannot replay that tick.
-            effect_intent
-                .prepare(input_digest, previous_checkpoint)
-                .map_err(|_| NeuronRuntimeError::PendingReconciliation)?;
+            let prepare_started = Instant::now();
+            let prepared = effect_intent.prepare(input_digest, previous_checkpoint);
+            observe_phase_v1(
+                metric_sink,
+                failed_metrics,
+                metric_scope,
+                input_digest,
+                PhaseMetricKindV1::Wal,
+                prepare_started.elapsed(),
+                prepared.is_ok(),
+            );
+            prepared.map_err(|_| NeuronRuntimeError::PendingReconciliation)?;
             self.runtime.tick_with_ndu_snapshot_guarded(
                 &mut model,
                 input,
@@ -289,9 +397,18 @@ where
         // Resolve only after the checkpoint, witness, and post-effect live NDU
         // frontier are independently verified. A sync failure cannot erase the
         // unresolved Prepare; never retry the model on this failure.
-        effect_intent
-            .resolve(input_digest, output.tick.checkpoint_after)
-            .map_err(|_| NeuronRuntimeError::PendingReconciliation)?;
+        let resolved_started = Instant::now();
+        let resolved = effect_intent.resolve(input_digest, output.tick.checkpoint_after);
+        observe_phase_v1(
+            metric_sink,
+            failed_metrics,
+            metric_scope,
+            input_digest,
+            PhaseMetricKindV1::Wal,
+            resolved_started.elapsed(),
+            resolved.is_ok(),
+        );
+        resolved.map_err(|_| NeuronRuntimeError::PendingReconciliation)?;
         Ok(output)
     }
 
@@ -299,6 +416,33 @@ where
     /// not exposed: it would bypass the exact signed owner entry.
     pub fn runtime(&self) -> &NeuronRuntime<W> {
         &self.runtime
+    }
+}
+
+/// A sink failure latches acceptance readiness without affecting
+/// Final-use authorization, committed state or replay semantics.
+fn observe_phase_v1(
+    sink: Option<&dyn PhaseMetricSinkV1>,
+    failed_metrics: &AtomicU64,
+    scope_digest: Digest32,
+    operation_digest: Digest32,
+    phase: PhaseMetricKindV1,
+    elapsed: Duration,
+    succeeded: bool,
+) {
+    if let Some(sink) = sink {
+        if sink
+            .record(PhaseMetricEventV1 {
+                scope_digest,
+                operation_digest,
+                phase,
+                latency_micros: u64::try_from(elapsed.as_micros()).unwrap_or(u64::MAX),
+                succeeded,
+            })
+            .is_err()
+        {
+            failed_metrics.fetch_add(1, Ordering::Release);
+        }
     }
 }
 
