@@ -9,6 +9,12 @@ on:
       - codex-rs/windows-sandbox-rs/Cargo.toml
       - codex-rs/windows-sandbox-rs/tests/helper_manifest.rs
       - .github/workflows/hepta-p0-safe-yaml-lock.yml
+  pull_request:
+    paths:
+      - codex-rs/core-plugins/src/command_migration.rs
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - .github/workflows/hepta-p0-safe-yaml-lock.yml
   workflow_dispatch:
 
 permissions:
@@ -25,6 +31,9 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Require checkout to match the exact candidate SHA
+        run: test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
       - name: Install pinned owner toolchain
         run: rustup toolchain install 1.95.0 --profile minimal
       - name: Resolve exact changed workspace dependencies without writing upstream
