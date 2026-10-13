@@ -33,7 +33,11 @@ from locomo_ninearm_source_replay import (
     strict_json,
     verify_original_six,
 )
-from locomo_refusal_attribution import EXPECTED_ZIPS, MODEL_ID as EXPECTED_MODEL_ID, _originals
+from locomo_refusal_attribution import (
+    EXPECTED_ZIPS,
+    MODEL_ID as EXPECTED_MODEL_ID,
+    _originals,
+)
 
 SCHEMA = "hepta.locomo.neighbor-frozen-reader.v1"
 NEW_ARM = "neighbor_k8_bytebound"
@@ -54,10 +58,7 @@ def source_only(public_root):
 
 
 def selected_for_evaluation(cases, ranking):
-    table = {
-        (row["question_id"], row["arm"]): row
-        for row in ranking
-    }
+    table = {(row["question_id"], row["arm"]): row for row in ranking}
     if (
         len(ranking) != 160
         or len(table) != 160
@@ -327,8 +328,7 @@ def pairs(cases, new, original, targets):
                     old_f1=a["f1"],
                     new_f1=b["f1"],
                     extra_input_tokens=(
-                        row["receipt"]["input_tokens"]
-                        - ref["receipt"]["input_tokens"]
+                        row["receipt"]["input_tokens"] - ref["receipt"]["input_tokens"]
                     ),
                 )
         groups["all"].append(item)
@@ -356,9 +356,7 @@ def pairs(cases, new, original, targets):
             losses=sum(r["new_f1"] < r["old_f1"] for r in available),
             ties=sum(r["new_f1"] == r["old_f1"] for r in available),
             extra_input_tokens_on_complete=(
-                sum(r["extra_input_tokens"] for r in available)
-                if available
-                else None
+                sum(r["extra_input_tokens"] for r in available) if available else None
             ),
             all_planned_delta_bounds=(
                 [(delta - missing) / len(rows), (delta + missing) / len(rows)]
@@ -370,8 +368,17 @@ def pairs(cases, new, original, targets):
     return result
 
 
-def score(public_root, planned, read_root, target_zip, original_zip, score_zip,
-          output, *, expected_commit):
+def score(
+    public_root,
+    planned,
+    read_root,
+    target_zip,
+    original_zip,
+    score_zip,
+    output,
+    *,
+    expected_commit,
+):
     cases, documents, selection, decision_sha = checked_plan(public_root, planned)
     ready = strict_json((read_root / "READY.json").read_bytes())
     raw = (read_root / "raw-answers.jsonl").read_bytes()
@@ -436,7 +443,12 @@ def main():
         if cmd == "generate":
             sub.add_argument("model", type=Path)
         if cmd == "score":
-            for field in ("generation", "targets_zip", "old_reader_zip", "old_score_zip"):
+            for field in (
+                "generation",
+                "targets_zip",
+                "old_reader_zip",
+                "old_score_zip",
+            ):
                 sub.add_argument(field, type=Path)
             sub.add_argument("--expected-commit", required=True)
         sub.add_argument("output", type=Path)

@@ -128,9 +128,7 @@ class NeighborReaderTests(unittest.TestCase):
         cases, ranking = roster()
         chosen = selected_for_evaluation(cases, ranking)
         self.assertEqual(len(chosen), CASES)
-        self.assertTrue(
-            all(len(row["selected"]) == 4 for row in chosen)
-        )
+        self.assertTrue(all(len(row["selected"]) == 4 for row in chosen))
 
     def test_missing_duplicate_and_overbudget_candidate_rejected(self):
         for flaw in ("missing", "duplicate", "extra_source", "overbudget"):
