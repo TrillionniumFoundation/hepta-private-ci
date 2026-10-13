@@ -27,7 +27,11 @@ def fixture_archive(source=MANIFEST, *, extra=None, symlink=False):
             *(extra or []),
         ]:
             info = tarfile.TarInfo(name)
-            if symlink and name.endswith("src/lib.rs"):
+            if payload is None and name.endswith("/"):
+                info.type = tarfile.DIRTYPE
+                info.size = 0
+                tar.addfile(info)
+            elif symlink and name.endswith("src/lib.rs"):
                 info.type = tarfile.SYMTYPE
                 info.linkname = "/etc/passwd"
                 info.size = 0
@@ -122,12 +126,20 @@ class SqlxNativeAbiTrialTests(unittest.TestCase):
             fixture_archive(extra=[("../escape", b"secret")]),
             fixture_archive(extra=[("sqlx-sqlite-0.9.0/../escape", b"secret")]),
             fixture_archive(extra=[("sqlx-sqlite-0.9.0/Cargo.toml", MANIFEST)]),
+            fixture_archive(extra=[("sqlx-sqlite-0.9.0/src/./alias.rs", b"alias")]),
+            fixture_archive(extra=[("sqlx-sqlite-0.9.0/src//alias.rs", b"alias")]),
             fixture_archive(symlink=True),
         ]
         for b in bad_archives:
             with self.subTest(n=hashlib.sha256(b).hexdigest()[:8]):
                 with self.assertRaises(ValueError):
                     trial(b, fixture_lock(b))
+
+    def test_canonical_tar_directory_is_preserved(self):
+        archive = fixture_archive(extra=[("sqlx-sqlite-0.9.0/empty/", None)])
+        files, report = trial(archive, fixture_lock(archive))
+        self.assertIsNone(files["sqlx-sqlite-0.9.0/empty/"])
+        self.assertFalse(report["production_authorized"])
 
     def test_refuses_unknown_output_locations_and_oversized_archives(self):
         archive = fixture_archive()
