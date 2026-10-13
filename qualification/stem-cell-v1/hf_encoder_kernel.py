@@ -139,15 +139,16 @@ def validate_encoder_loading_info(info):
     }
 
 
-def verify_loaded_safetensors(torch, model, root):
+def verify_loaded_safetensors(torch, model, root, *, tied_aliases=None):
     """Exact, read-only tensor comparison against every pinned safetensors key.
 
     Transformers loading_info is advisory for some version/architecture
     combinations; a clean list by itself is NOT sufficient. Require that
     the locally admitted, base-only safetensors inventory equals the actual
     model.state_dict() inventory and every tensor value after the requested
-    model dtype conversion matches. Reject aliases/partial architecture
-    conversions until a separate audited canonical model artifact exists.
+    model dtype conversion matches. The default V1 rejects missing keys.
+    An explicit versioned profile may supply direct aliases; each omission
+    requires a serialized target and the exact same loaded physical view.
     """
     from safetensors import safe_open
 
@@ -159,6 +160,17 @@ def verify_loaded_safetensors(torch, model, root):
     stored = model.state_dict()
     if not isinstance(stored, Mapping) or not stored or len(stored) > 250_000:
         raise ValueError("unsupported pretrained model tensor inventory")
+    aliases = {} if tied_aliases is None else dict(tied_aliases)
+    for alias, target in aliases.items():
+        if alias == target or alias not in stored or target not in stored or target in aliases:
+            raise ValueError("invalid direct tied-weight alias")
+        a, b = stored[alias], stored[target]
+        # Equal values alone do NOT prove tying: the loaded tensors must share
+        # exactly the same physical view, not copies or overlapping slices.
+        if (a.device.type == "meta" or a.numel() == 0 or
+                (a.device, a.dtype, a.shape, a.stride(), a.storage_offset(), a.data_ptr()) !=
+                (b.device, b.dtype, b.shape, b.stride(), b.storage_offset(), b.data_ptr())):
+            raise ValueError("declared tied weights are not the same physical view")
     seen = set()
     elements = 0
     for file in files:
@@ -180,9 +192,10 @@ def verify_loaded_safetensors(torch, model, root):
                     raise ValueError("loaded pretrained tensor differs from pinned safetensors")
                 elements += int(expected.numel())
                 seen.add(key)
-    if seen != set(stored):
+    omitted = set(stored) - seen
+    if any(alias not in aliases or aliases[alias] not in seen for alias in omitted):
         raise ValueError("incomplete safetensors inventory for loaded Encoder")
-    return {
+    result = {
         "schema": "hepta.local-hf-exact-tensor-materialization.v1",
         "complete": True,
         "all_state_dict_tensors_compared": True,
@@ -191,6 +204,13 @@ def verify_loaded_safetensors(torch, model, root):
         "safetensors_shards": len(files),
         "production_authorization": False,
     }
+    if tied_aliases is not None:
+        result.update(schema="hepta.local-hf-exact-tied-materialization.v2",
+                      omitted_tied_keys=sorted(omitted),
+                      physical_aliases=aliases,
+                      all_state_dict_tensors_compared=not omitted,
+                      all_state_dict_tensors_accounted=True)
+    return result
 
 
 def vectorize_case(torch, model, tokenizer, row, device, *, max_tokens):

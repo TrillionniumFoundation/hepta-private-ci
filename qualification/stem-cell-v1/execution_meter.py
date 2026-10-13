@@ -22,6 +22,7 @@ from paired_execution import PHASES, _integer
 from torch.utils._python_dispatch import TorchDispatchMode
 
 POLICY_SCHEMA = 'hepta.execution-meter-policy.v1'
+TRANSFORMER_POLICY_SCHEMA = 'hepta.execution-meter-policy.v2'
 
 
 class BudgetStop(RuntimeError):
@@ -31,7 +32,15 @@ class BudgetStop(RuntimeError):
 def validate_policy(policy):
     expected = {'schema', 'mode', 'wall_time_ns', 'max_process_rss_bytes',
                 'rapl_zone', 'rapl_max_power_watts'}
-    if not isinstance(policy, dict) or set(policy) != expected or policy['schema'] != POLICY_SCHEMA:
+    if not isinstance(policy, dict):
+        raise ValueError('complete versioned measurement policy required')
+    schema = policy.get('schema')
+    if schema == TRANSFORMER_POLICY_SCHEMA:
+        from transformer_work import PROFILE as transformer_profile
+        expected.add('arithmetic_profile')
+        if policy.get('arithmetic_profile') != transformer_profile:
+            raise ValueError('unregistered Transformer arithmetic profile')
+    if set(policy) != expected or schema not in (POLICY_SCHEMA, TRANSFORMER_POLICY_SCHEMA):
         raise ValueError('complete versioned measurement policy required')
     if policy['mode'] not in ('observe', 'strict'):
         raise ValueError('measurement mode must be observe or strict')
@@ -57,6 +66,7 @@ class WorkLedger:
         for phase, limit in caps.items():
             _integer(limit, phase, 0)
         self.policy, self.caps = dict(policy), dict(caps)
+        self.arithmetic_profile = policy.get('arithmetic_profile', PROFILE)
         self.monotonic, self.cpu, self.peak_reader, self.energy_reader = monotonic, cpu, peak_reader, energy_reader
         self.start_ns, self.start_cpu = monotonic(), cpu()
         self.start_energy = energy_reader(policy['rapl_zone'])
@@ -128,7 +138,7 @@ class WorkLedger:
             rows = [r for r in self.rows.values() if r['phase'] == phase]
             phases[phase] = (sum(r['formula_flops'] for r in rows) if rows and
                              not any(r['unknown_operators'] or r['failed_calls'] for r in rows) else None)
-        return {'schema': 'hepta.execution-work-observation.v1', 'profile': PROFILE,
+        return {'schema': 'hepta.execution-work-observation.v1', 'profile': self.arithmetic_profile,
                 'torch_dispatch_only': True, 'hardware_instruction_count': False,
                 'observer_evaluation_measured': False, 'policy': self.policy,
                 'stopped': self.stopped, 'phase_flops': phases,
@@ -166,7 +176,11 @@ class _DispatchMeter(TorchDispatchMode):
                 return all(supported(v) for v in value.values())
             return True
         try:
-            charge = cost(operator, args, kwargs)
+            if ledger.arithmetic_profile == PROFILE:
+                charge = cost(operator, args, kwargs)
+            else:
+                from transformer_work import cost as transformer_cost
+                charge = transformer_cost(operator, args, kwargs)
             if not supported((args, kwargs)) or kwargs.get('dtype') in (torch.float64, torch.complex64, torch.complex128, torch.float16, torch.bfloat16):
                 charge = None
         except (ValueError, TypeError, IndexError, RuntimeError, ZeroDivisionError):
