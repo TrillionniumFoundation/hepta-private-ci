@@ -914,4 +914,20 @@ mod tests {
         task.await??;
         Ok(())
     }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn control_socket_preflight_preserves_existing_regular_files() -> TestResult {
+        let temp = tempfile::tempdir()?;
+        let path = temp.path().join("reserved-control-path");
+        fs::write(&path, b"not a socket")?;
+
+        let result = prepare_socket(&path).await;
+        assert!(
+            matches!(result, Err(MatrixdControlError::Io(_))),
+            "a non-socket path must never be treated as an abandoned socket"
+        );
+        assert_eq!(fs::read(&path)?, b"not a socket");
+        Ok(())
+    }
 }
