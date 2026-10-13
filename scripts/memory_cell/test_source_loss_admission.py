@@ -56,7 +56,7 @@ class SourceLossAdmissionTests(unittest.TestCase):
             revision="d" * 40,
         )
 
-    def admit(self, payload=None, *, digest=None):
+    def admit(self, payload=None, *, digest=None, objective="completion_ce"):
         encoded = json.dumps(payload if payload is not None else sample()).encode()
         self.file.write_bytes(encoded)
         pin = hashlib.sha256(encoded).hexdigest()
@@ -64,6 +64,7 @@ class SourceLossAdmissionTests(unittest.TestCase):
             "supervised_positions",
             self.file,
             digest if digest is not None else pin,
+            objective=objective,
             **self.arguments,
         )
 
@@ -161,6 +162,17 @@ class SourceLossAdmissionTests(unittest.TestCase):
                 hashlib.sha256(self.file.read_bytes()).hexdigest(),
                 **self.arguments,
             )
+
+    def test_paired_source_margin_cannot_borrow_single_completion_proof(self):
+        self.assertIsNone(
+            require_parity(
+                "full", None, None, objective="source_margin", **self.arguments
+            )
+        )
+        with self.assertRaisesRegex(ValueError, "paired-forward parity"):
+            self.admit(objective="source_margin")
+        with self.assertRaisesRegex(ValueError, "unregistered source write objective"):
+            require_parity("full", None, None, objective="other", **self.arguments)
 
     def test_source_two_hop_requires_a_separate_actual_parity_receipt(self):
         with self.assertRaisesRegex(ValueError, "source-two-hop optimization"):

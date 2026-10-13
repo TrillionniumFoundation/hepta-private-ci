@@ -26,7 +26,14 @@ def require_parity(
     repository,
     revision,
     curriculum="single_hop",
+    objective="completion_ce",
 ):
+    if objective not in ("completion_ce", "source_margin"):
+        raise ValueError("unregistered source write objective")
+    if backend == "supervised_positions" and objective == "source_margin":
+        raise ValueError(
+            "source-margin optimized writing requires its own Qwen paired-forward parity"
+        )
     if curriculum not in ("single_hop", "source_two_hop"):
         raise ValueError("unregistered source write curriculum")
     if backend == "supervised_positions" and curriculum != "single_hop":

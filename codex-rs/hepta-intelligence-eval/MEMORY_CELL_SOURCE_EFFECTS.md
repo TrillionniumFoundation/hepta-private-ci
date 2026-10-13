@@ -111,3 +111,15 @@ despite delivered sources. It preserves the original answers and scores. Matchin
 a label is only structural identity, never an independent semantic entailment
 verdict. Missing citations and invented labels remain visible, with independent
 precision null and `production_accepted=false`.
+
+## Objective-specific optimization admission
+
+The real Qwen sparse-projection parity receipt tests a **single completion-CE**
+source example. It is not a two-forward margin objective proof. The opt-in
+`supervised_positions` backend therefore fails closed when requested with
+`source_margin`, even with an intact completion-CE receipt. The unchanged `full`
+margin path remains available for isolated development. A future sparse-margin
+research candidate must first supply its own pinned real Qwen/PEFT paired-forward
+loss, gradient, optimizer-step, frozen-base and resource parity evidence. This
+is a validity fix, not a new model improvement, task execution or production
+permission.

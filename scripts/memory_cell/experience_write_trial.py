@@ -107,6 +107,7 @@ def write_memory(
         repository=stage["repository"],
         revision=stage["revision"],
         curriculum=curriculum,
+        objective=binding_objective,
     )
     output.mkdir()
     write(
