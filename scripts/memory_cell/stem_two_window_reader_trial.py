@@ -22,14 +22,17 @@ from index import PersistentIndex, RetrievalPolicy
 from native import digest, load
 from pretrained import Encoder, file_inventory
 from selector_answering import (
-    FrozenAnswerGenerator, GENERATION, SYSTEM,
+    FrozenAnswerGenerator,
+    GENERATION,
+    SYSTEM,
 )
 from selector_encoder import FrozenPairEncoder
 from selector_evaluation import diagnose
 from selector_windows import WindowBudget, candidate_windows
 from stem_audit_archive import PinnedArchive, require
 from stem_two_window_reader_plan import (
-    prepare_second_window, compare_capacity_rows,
+    prepare_second_window,
+    compare_capacity_rows,
 )
 
 ARCHIVED_SOURCE = "675970bb610c70bb0ec30a2dee05c025440510e6"
@@ -60,9 +63,12 @@ def answer_two(reader, question, evidence, *, revoked):
     """
     from stem_cell_time import source_not_after_question
 
-    if reader.quarantined or len(evidence) != 2 or set(
-        item["label"] for item in evidence
-    ) != {"E1", "E2"} or evidence[0]["label"] != "E1":
+    if (
+        reader.quarantined
+        or len(evidence) != 2
+        or set(item["label"] for item in evidence) != {"E1", "E2"}
+        or evidence[0]["label"] != "E1"
+    ):
         raise ValueError("isolated two-window Reader requires one E1 and one E2")
     if (
         evidence[0]["root"] == evidence[1]["root"]
@@ -71,10 +77,9 @@ def answer_two(reader, question, evidence, *, revoked):
         raise ValueError("second window not from distinct source root/session")
     for src in evidence:
         if (
-            src["root"] in revoked or src["scope"] != question.scope
-            or not source_not_after_question(
-                src["observed_at"], question.observed_at
-            )
+            src["root"] in revoked
+            or src["scope"] != question.scope
+            or not source_not_after_question(src["observed_at"], question.observed_at)
         ):
             raise ValueError("withdrawn, future or cross-scope E2 evidence")
     body = dict(
@@ -104,9 +109,10 @@ def answer_two(reader, question, evidence, *, revoked):
             eos_token_id=reader.tokenizer.eos_token_id,
             pad_token_id=reader.tokenizer.eos_token_id,
         )
-        emitted = answer[0, len(ids):].tolist()
+        emitted = answer[0, len(ids) :].tolist()
         raw = reader.tokenizer.decode(
-            emitted, skip_special_tokens=True,
+            emitted,
+            skip_special_tokens=True,
             clean_up_tokenization_spaces=False,
         )
         if not raw.strip():
@@ -135,9 +141,7 @@ def answer_two(reader, question, evidence, *, revoked):
 
 
 def run(staged, ranker_dir, zipped, output):
-    staged, ranker_dir, zipped, output = map(
-        Path, (staged, ranker_dir, zipped, output)
-    )
+    staged, ranker_dir, zipped, output = map(Path, (staged, ranker_dir, zipped, output))
     original = PinnedArchive(zipped, ARCHIVED_ZIP)
     try:
         require(
@@ -158,8 +162,7 @@ def run(staged, ranker_dir, zipped, output):
             "changed preregistered frozen Reader/selection protocol",
         )
         expected = {
-            (phase, qid) for phase in PHASES
-            for qid in plan["questions"][phase]
+            (phase, qid) for phase in PHASES for qid in plan["questions"][phase]
         }
         require(len(expected) == 16, "original test/transfer question overlap")
         frozen = {}
@@ -170,15 +173,18 @@ def run(staged, ranker_dir, zipped, output):
             if key not in expected:
                 continue
             require(key not in frozen, "duplicate original frozen baseline")
-            require(item["status"] == "succeeded"
-                    and type(item["selected"]) is int,
-                    "original frozen answer missing or had no top1 selection")
+            require(
+                item["status"] == "succeeded" and type(item["selected"]) is int,
+                "original frozen answer missing or had no top1 selection",
+            )
             frozen[key] = item
         require(set(frozen) == expected, "incomplete original frozen test/transfer")
         meta = json.loads((staged / "staging.json").read_text())
         benchmarks = {
             name: load(
-                staged / f"{name}.json", name, meta[name]["sha256"],
+                staged / f"{name}.json",
+                name,
+                meta[name]["sha256"],
                 allow_unresolved_evidence=True,
                 session_conflicts="retain-versioned",
                 invalid_history="quarantine-question",
@@ -187,8 +193,10 @@ def run(staged, ranker_dir, zipped, output):
             for name in ("locomo", "longmemeval")
         }
         require(
-            all(benchmarks[k].source_sha256 == plan["dataset_sha256"][k]
-                for k in benchmarks),
+            all(
+                benchmarks[k].source_sha256 == plan["dataset_sha256"][k]
+                for k in benchmarks
+            ),
             "original native corpus file byte hash drift",
         )
         queries = {}
@@ -196,35 +204,44 @@ def run(staged, ranker_dir, zipped, output):
         for source in benchmarks.values():
             for q in source.questions:
                 if any((phase, q.identity) in expected for phase in PHASES):
-                    require(q.identity not in queries, "duplicate source-backed question")
+                    require(
+                        q.identity not in queries, "duplicate source-backed question"
+                    )
                     queries[q.identity], owners[q.identity] = q, source
-        require(set(queries) == {qid for _, qid in expected},
-                "registered original question unavailable")
+        require(
+            set(queries) == {qid for _, qid in expected},
+            "registered original question unavailable",
+        )
 
         output.mkdir(parents=True, exist_ok=False)
-        write(output / "preregistered.json", dict(
-            schema="hepta.stem-frozen-top2-reader-research-plan.v1",
-            archived_source=ARCHIVED_SOURCE, archived_tree=ARCHIVED_TREE,
-            archived_zip_sha256=original.sha256,
-            archived_sha256_members=original.manifest_entries,
-            registered_test_transfer=[dict(phase=p, question_id=q)
-                                      for p,q in sorted(expected)],
-            only_E2_selection=(
-                "highest-frozen-score-distinct-native-session-in-original-pool"
+        write(
+            output / "preregistered.json",
+            dict(
+                schema="hepta.stem-frozen-top2-reader-research-plan.v1",
+                archived_source=ARCHIVED_SOURCE,
+                archived_tree=ARCHIVED_TREE,
+                archived_zip_sha256=original.sha256,
+                archived_sha256_members=original.manifest_entries,
+                registered_test_transfer=[
+                    dict(phase=p, question_id=q) for p, q in sorted(expected)
+                ],
+                only_E2_selection=(
+                    "highest-frozen-score-distinct-native-session-in-original-pool"
+                ),
+                one_E1_unchanged_original_bytes=True,
+                native_gold_read_before_generation=False,
+                Reader_system_sha256=digest(SYSTEM),
+                Reader_generation_config=GENERATION,
+                same_input_limit=INPUT_CEILING,
+                original_six_arm_mutation=False,
+                production_accepted=False,
             ),
-            one_E1_unchanged_original_bytes=True,
-            native_gold_read_before_generation=False,
-            Reader_system_sha256=digest(SYSTEM),
-            Reader_generation_config=GENERATION,
-            same_input_limit=INPUT_CEILING,
-            original_six_arm_mutation=False,
-            production_accepted=False,
-        ))
+        )
         retrieval = Encoder(staged / "encoder")
         require(
             retrieval.identity == plan["retriever_inventory"]
             and digest(file_inventory(staged / "encoder"))
-                == plan["retriever_inventory"],
+            == plan["retriever_inventory"],
             "frozen retrieval Encoder inventory changed",
         )
         require(
@@ -238,9 +255,11 @@ def run(staged, ranker_dir, zipped, output):
         )
         reader_load_seconds = time.perf_counter() - start
         require(
-            all(reader.identity == item["receipt"]["generator_identity"]
+            all(
+                reader.identity == item["receipt"]["generator_identity"]
                 and reader.profile == item["receipt"]["generator_profile"]
-                for item in frozen.values()),
+                for item in frozen.values()
+            ),
             "frozen Reader weight/prompt identity differs from original",
         )
         temporal = original.json("comparison/source-admission.json")
@@ -262,25 +281,35 @@ def run(staged, ranker_dir, zipped, output):
                         if key not in indices:
                             admission = temporal[key]
                             path = Path(tmp) / ("index-" + key + ".sqlite")
-                            path.write_bytes(original.read(
-                                f"comparison/index-{key}.sqlite"
-                            ))
+                            path.write_bytes(
+                                original.read(f"comparison/index-{key}.sqlite")
+                            )
                             indices[key] = PersistentIndex(
-                                path, admission["as_of_cut"], set(),
+                                path,
+                                admission["as_of_cut"],
+                                set(),
                                 expected_file_digest=admission["verified_index_digest"],
                                 expected_encoder=retrieval.identity,
                             )
                         admission = temporal[key]
                         docs, _ = indices[key].query(
-                            q, retrieval.encode([q.content])[0], RetrievalPolicy(),
-                            current_cut=admission["as_of_cut"], revoked=set(),
+                            q,
+                            retrieval.encode([q.content])[0],
+                            RetrievalPolicy(),
+                            current_cut=admission["as_of_cut"],
+                            revoked=set(),
                         )
                         pool = candidate_windows(
-                            tuple(docs), q, revoked=set(), budget=budget,
+                            tuple(docs),
+                            q,
+                            revoked=set(),
+                            budget=budget,
                             profile="query_windows",
                         )
-                        require(pool.seal() == receipt["pool_digest"],
-                                "frozen strict-as-of candidate pool changed")
+                        require(
+                            pool.seal() == receipt["pool_digest"],
+                            "frozen strict-as-of candidate pool changed",
+                        )
                         features, _ = ranker.encode(
                             q, receipt["family"], pool, revoked=set()
                         )
@@ -290,17 +319,24 @@ def run(staged, ranker_dir, zipped, output):
                             for document in source.history(q)
                         }
                         first, both, bound = prepare_second_window(
-                            q, pool, features, receipt["selected"], orig_sources,
+                            q,
+                            pool,
+                            features,
+                            receipt["selected"],
+                            orig_sources,
                             session_by_source_id,
                         )
-                        append(output / "frozen-second-source-plans.jsonl",
-                               dict(phase=phase, **bound))
+                        append(
+                            output / "frozen-second-source-plans.jsonl",
+                            dict(phase=phase, **bound),
+                        )
                         budget_receipt = dict(
                             max_new_tokens=GENERATION["max_new_tokens"],
                             input_ceiling=INPUT_CEILING,
                         )
                         base_row = dict(
-                            phase=phase, question_id=qid,
+                            phase=phase,
+                            question_id=qid,
                             source_family=receipt["family"],
                             original_E1=digest(first),
                             reader_identity=reader.identity,
@@ -310,12 +346,12 @@ def run(staged, ranker_dir, zipped, output):
                         )
                         one_row = dict(base_row, status="failed")
                         try:
-                            output_raw, gen = reader.answer(
-                                q, first, revoked=set()
-                            )
+                            output_raw, gen = reader.answer(q, first, revoked=set())
                             one_row.update(
-                                status="succeeded", answer=output_raw,
-                                receipt=gen, delivered_sources=list(first),
+                                status="succeeded",
+                                answer=output_raw,
+                                receipt=gen,
+                                delivered_sources=list(first),
                                 exactly_reproduced_archived_answer=(
                                     output_raw == receipt["answer"]
                                     and gen["input_ids_digest"]
@@ -340,12 +376,15 @@ def run(staged, ranker_dir, zipped, output):
                                     reader, q, both, revoked=set()
                                 )
                                 two_row.update(
-                                    status="succeeded", answer=output_raw,
-                                    receipt=gen, delivered_sources=list(both),
+                                    status="succeeded",
+                                    answer=output_raw,
+                                    receipt=gen,
+                                    delivered_sources=list(both),
                                 )
                             except Exception as error:
                                 two_row.update(
-                                    status="failed", error_type=type(error).__name__,
+                                    status="failed",
+                                    error_type=type(error).__name__,
                                     error=str(error)[:1024],
                                 )
                         append(output / "two-window-raw.jsonl", two_row)
@@ -359,10 +398,13 @@ def run(staged, ranker_dir, zipped, output):
         ranker.verify_frozen()
         # Gold target strings are first accessed AFTER both raw-output
         # journals are persisted. Each of 16 original questions still counts.
-        targets = {qid: owners[qid].targets[qid] for _,qid in expected}
+        targets = {qid: owners[qid].targets[qid] for _, qid in expected}
         result = compare_capacity_rows(
-            [dict(phase=p, question_id=q) for p,q in sorted(expected)],
-            one, two, diagnose=diagnose, targets=targets,
+            [dict(phase=p, question_id=q) for p, q in sorted(expected)],
+            one,
+            two,
+            diagnose=diagnose,
+            targets=targets,
         )
         result.update(
             actual_frozen_reader_executed_here=True,
@@ -374,16 +416,28 @@ def run(staged, ranker_dir, zipped, output):
                 x.get("exactly_reproduced_archived_answer") is True for x in one
             ),
             reader_input_tokens=dict(
-                one=sum(x["receipt"]["input_tokens"] for x in one
-                        if x["status"] == "succeeded"),
-                two=sum(x["receipt"]["input_tokens"] for x in two
-                        if x["status"] == "succeeded"),
+                one=sum(
+                    x["receipt"]["input_tokens"]
+                    for x in one
+                    if x["status"] == "succeeded"
+                ),
+                two=sum(
+                    x["receipt"]["input_tokens"]
+                    for x in two
+                    if x["status"] == "succeeded"
+                ),
             ),
             reader_generated_tokens=dict(
-                one=sum(x["receipt"]["generated_tokens"] for x in one
-                        if x["status"] == "succeeded"),
-                two=sum(x["receipt"]["generated_tokens"] for x in two
-                        if x["status"] == "succeeded"),
+                one=sum(
+                    x["receipt"]["generated_tokens"]
+                    for x in one
+                    if x["status"] == "succeeded"
+                ),
+                two=sum(
+                    x["receipt"]["generated_tokens"]
+                    for x in two
+                    if x["status"] == "succeeded"
+                ),
             ),
             reader_original_model_cold_load_seconds=reader_load_seconds,
             observed_peak_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
@@ -412,10 +466,13 @@ def main():
     parser.add_argument("--original-zip", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     a = parser.parse_args()
-    print(json.dumps(
-        run(a.staged, a.ranker, a.original_zip, a.output),
-        ensure_ascii=False, sort_keys=True,
-    ))
+    print(
+        json.dumps(
+            run(a.staged, a.ranker, a.original_zip, a.output),
+            ensure_ascii=False,
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":
