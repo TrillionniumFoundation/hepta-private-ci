@@ -35,6 +35,8 @@ jobs:
           # Runtime inputs are pinned to /tmp/locomo-upload-audit. Create
           # their *actual parent*, not a similarly named RUNNER_TEMP folder.
           mkdir -p "$(dirname "$HEPTA_LOCOMO_SOURCE_REVIEW_ZIP")"
+          # Separate job logs and compact audit receipts use RUNNER_TEMP.
+          mkdir -p "$RUNNER_TEMP/locomo-upload-audit"
           test "$(dirname "$HEPTA_LOCOMO_SOURCE_REVIEW_ZIP")" = "$(dirname "$HEPTA_LOCOMO_ANSWER_REVIEW_ZIP")"
           test "$(dirname "$HEPTA_LOCOMO_SOURCE_REVIEW_ZIP")" = "$(dirname "$HEPTA_LOCOMO_REVIEW_MANIFEST_ZIP")"
           test "$(dirname "$HEPTA_LOCOMO_SOURCE_REVIEW_ZIP")" = "$(dirname "$HEPTA_LOCOMO_ORIGINAL_READER_ZIP")"
