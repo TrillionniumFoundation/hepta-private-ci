@@ -73,6 +73,9 @@ class CellBank(nn.Module):
         self.calls += 1
         return output
 
+    def training_loss(self, features, targets):
+        return nn.functional.cross_entropy(self(features), targets)
+
     def inventory(self):
         return {**tensor_inventory(self), "head_params": self.head_parameter_count,
                 "gate_params": self.gate_parameter_count, "cells": len(self.heads),
@@ -105,7 +108,7 @@ def train_bank(bank, features, targets, config, seed):
     for _ in range(config["train_steps"]):
         ids = torch.randint(len(targets), (min(config["batch_size"], len(targets)),), generator=rng)
         optimizer.zero_grad(set_to_none=True)
-        loss = nn.functional.cross_entropy(bank(features[ids]), targets[ids])
+        loss = bank.training_loss(features[ids], targets[ids])
         if not torch.isfinite(loss).item():
             raise ValueError("nonfinite training loss")
         loss.backward()
