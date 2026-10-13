@@ -273,9 +273,7 @@ fn post_prepare_ndu_revalidation_denies_fence_cutover_and_expiry() {
     )
     .expect("pinned verifier");
     let claimed_read = verifier.verify(&read).expect("valid initial read");
-    assert!(
-        super::verify_ndu_after_durable_prepare_v1(&verifier, &read, claimed_read).is_ok()
-    );
+    assert!(super::verify_ndu_after_durable_prepare_v1(&verifier, &read, claimed_read).is_ok());
 
     let mut cutover = snapshot.clone();
     cutover.route_fence += 1;
