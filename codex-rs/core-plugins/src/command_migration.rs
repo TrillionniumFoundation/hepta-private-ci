@@ -319,7 +319,7 @@ fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
     mapping.iter().find_map(|(key, value)| {
         // The maintained noyalib compatibility mapping exposes String keys;
         // String::as_str() is not optional. Preserve exact scalar-only
-        // command-description admission without silently accepting YAML tags.
+        // metadata admission; YAML tag/alias policy has separate tests.
         if key.as_str().trim() == "description" {
             yaml_scalar(value)
         } else {
