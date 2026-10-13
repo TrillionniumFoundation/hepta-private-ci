@@ -1,0 +1,104 @@
+{
+  "code_candidate": "c028bf12297e2cfbbb6b2d145390d055af1439e3",
+  "independent_task_efficacy": false,
+  "parity_all_passed": true,
+  "parity_cases": 27,
+  "parity_examples": 747,
+  "parity_max_absolute_logit_error": 1.7881393432617188e-07,
+  "pretrained_execution": false,
+  "production_authorized": false,
+  "runs": [
+    {
+      "arm": "shared_421m_sparse_direct32_no_ndu",
+      "auxiliary_head_row_evaluations": 0,
+      "execution_kind": "mechanism_fixture",
+      "final_parameters": 896,
+      "initial_max_logit_change": null,
+      "initial_transition_probe": null,
+      "peak_live_model_parameters": 896,
+      "phase_formula_flops": {
+        "evaluation": null,
+        "inference": 1245,
+        "migration": 0,
+        "search": 0,
+        "train": 39022
+      },
+      "predictions_completed": 2,
+      "routing": "legacy_flat",
+      "supervised_sibling_rows": 0,
+      "unknown_operators": {}
+    },
+    {
+      "arm": "shared_421m_sparse_split_no_ndu",
+      "auxiliary_head_row_evaluations": 0,
+      "execution_kind": "mechanism_fixture",
+      "final_parameters": 896,
+      "initial_max_logit_change": 0.3348206877708435,
+      "initial_transition_probe": null,
+      "peak_live_model_parameters": 1344,
+      "phase_formula_flops": {
+        "evaluation": null,
+        "inference": 1245,
+        "migration": 3364,
+        "search": 0,
+        "train": 33550
+      },
+      "predictions_completed": 2,
+      "routing": "legacy_flat",
+      "supervised_sibling_rows": 0,
+      "unknown_operators": {}
+    },
+    {
+      "arm": "shared_421m_sparse_direct32_no_ndu",
+      "auxiliary_head_row_evaluations": 48,
+      "execution_kind": "mechanism_fixture",
+      "final_parameters": 896,
+      "initial_max_logit_change": null,
+      "initial_transition_probe": null,
+      "peak_live_model_parameters": 896,
+      "phase_formula_flops": {
+        "evaluation": null,
+        "inference": 1245,
+        "migration": 0,
+        "search": 0,
+        "train": 44633
+      },
+      "predictions_completed": 2,
+      "routing": "parent_group",
+      "supervised_sibling_rows": 24,
+      "unknown_operators": {}
+    },
+    {
+      "arm": "shared_421m_sparse_split_no_ndu",
+      "auxiliary_head_row_evaluations": 32,
+      "execution_kind": "mechanism_fixture",
+      "final_parameters": 896,
+      "initial_max_logit_change": 0.0,
+      "initial_transition_probe": {
+        "atol": 1e-06,
+        "data_role": "training_only",
+        "examples": 2,
+        "global_float_parity_established": false,
+        "max_absolute_logit_error": 0.0,
+        "max_tolerance_ratio": 0.0,
+        "passed": true,
+        "rtol": 1e-05,
+        "schema": "hepta.family-transition-probe.v1"
+      },
+      "peak_live_model_parameters": 1344,
+      "phase_formula_flops": {
+        "evaluation": null,
+        "inference": 1245,
+        "migration": 3316,
+        "search": 0,
+        "train": 37862
+      },
+      "predictions_completed": 2,
+      "routing": "parent_group",
+      "supervised_sibling_rows": 10,
+      "unknown_operators": {}
+    }
+  ],
+  "schema": "hepta.family-routing.synthetic-diagnostic.v1",
+  "work_scope": "registered CPU FP32 ATen formula work; not hardware instructions, energy or complete costs"
+}
