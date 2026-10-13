@@ -1,8 +1,9 @@
 """One residual-triggered 16->32 population split in the bound training path.
 
 The parent starts at the FINAL per-child width, so growth adds actual capacity.
-Clone initialization with flat top-k routing is NOT function preserving; its
-training-only behavioral jump is recorded. No evaluation input/label is used to
+V1 flat top-k cloning is NOT function preserving; its behavioral jump is kept.
+Opt-in V2 preserves parent groups, checks training-probe parity and learns binary
+sibling selectors with explicitly charged auxiliary work. No eval data is used to
 choose growth. Direct controls use the same probe and optimizer-reset boundary.
 This is offline candidate training, not native topology installation or NDU.
 """
@@ -15,6 +16,8 @@ import torch
 from torch import nn
 
 from matrix_bank import CellBank, state_digest, train_bank
+from family_routing import (POLICY_SCHEMA as FAMILY_SCHEMA, ROUTING_PROFILE, PRESERVATION_SCOPE,
+                            FamilyCellBank, transition_parity)
 from next_round_matrix import _digest
 
 GROWTH_SCHEMA = "hepta.cell-growth-policy.v1"
@@ -33,8 +36,19 @@ class GrowthNotAdmitted(ValueError):
 
 def validate_growth_policy(policy, *, train_steps, width_units, arm_id):
     keys = {"schema", "decision_step", "loss_threshold", "minimum_source_groups", "gate_noise_scale"}
-    if not isinstance(policy, dict) or set(policy) != keys or policy["schema"] != GROWTH_SCHEMA:
+    family = isinstance(policy, dict) and policy.get("schema") == FAMILY_SCHEMA
+    if family:
+        keys |= {"sibling_loss_weight", "transition_atol", "transition_rtol"}
+    if not isinstance(policy, dict) or set(policy) != keys or policy["schema"] not in (GROWTH_SCHEMA, FAMILY_SCHEMA):
         raise ValueError("complete, versioned growth policy required")
+    if family:
+        if arm_id == "shared_421m_sparse_fixed16_no_ndu":
+            raise ValueError("family protocol requires a split or grouped direct-32 control")
+        for key in ("sibling_loss_weight", "transition_atol", "transition_rtol"):
+            value = policy[key]
+            limit = 1 if key == "sibling_loss_weight" else 1e-4
+            if type(value) not in (int, float) or not math.isfinite(value) or not 0 < value <= limit:
+                raise ValueError("invalid family supervision/parity coefficient")
     if arm_id not in GROWTH_ARMS | CONTROL_ARMS:
         raise ValueError("growth protocol requires a split or matched sparse control")
     if type(train_steps) is not int or type(policy["decision_step"]) is not int or not 1 <= policy["decision_step"] < train_steps:
@@ -64,6 +78,9 @@ def initial_bank(dimension, classes, profile, config, *, parameter_cap):
     expected = 32 * (dimension + classes + 1) * units * (profile["total_head_budget_params"] // 32_000_000)
     if type(parameter_cap) is not int or expected > parameter_cap:
         raise ValueError("initial population exceeds common live-parameter cap")
+    if policy["schema"] == FAMILY_SCHEMA and recipe["logical_cells"] == 32:
+        return FamilyCellBank(dimension, classes, recipe, units,
+                              sibling_loss_weight=policy["sibling_loss_weight"])
     return CellBank(dimension, classes, recipe, units)
 
 
@@ -91,7 +108,10 @@ def split_population(parent, profile, config, *, seed, parameter_cap):
     recipe = {**profile, "initial_logical_cells": 32, "split": False}
     with torch.random.fork_rng(devices=[]):
         torch.random.default_generator.manual_seed(seed)
-        child = CellBank(parent.dimension, parent.classes, recipe, config["width_units"])
+        family = config["growth_policy"]["schema"] == FAMILY_SCHEMA
+        factory = FamilyCellBank if family else CellBank
+        extra = {"sibling_loss_weight": config["growth_policy"]["sibling_loss_weight"]} if family else {}
+        child = factory(parent.dimension, parent.classes, recipe, config["width_units"], **extra)
         with torch.no_grad():
             for index, head in enumerate(child.heads):
                 head.load_state_dict(parent.heads[index % 16].state_dict(), strict=True)
@@ -104,7 +124,12 @@ def split_population(parent, profile, config, *, seed, parameter_cap):
             noise = torch.empty_like(parent.gate.weight)
             scale = config["growth_policy"]["gate_noise_scale"]
             noise.uniform_(-scale, scale)
-            child.gate.weight[16:].add_(noise)
+            if family:
+                # Independent sibling contrast, not another parent competitor.
+                child.gate.weight[16:].copy_(noise)
+                child.gate.bias[16:].zero_()
+            else:
+                child.gate.weight[16:].add_(noise)
     if before != state_digest(parent):
         raise ValueError("growth mutated the predecessor")
     inventory = child.inventory()
@@ -115,7 +140,8 @@ def split_population(parent, profile, config, *, seed, parameter_cap):
                        peak_live_trainable_params=peak,
                        transition_model_weight_bytes=predecessor["unique_weight_bytes"] + inventory["unique_weight_bytes"],
                        transition_weight_scope="parent_and_successor_weights_only",
-                       parent_for_child=[i % 16 for i in range(32)], function_preserving=False,
+                       parent_for_child=[i % 16 for i in range(32)], function_preserving=family,
+                       **({"routing_profile": ROUTING_PROFILE, "preservation_scope": PRESERVATION_SCOPE} if family else {}),
                        parent_executed_rows=predecessor["executed_rows"], parent_calls=predecessor["calls"])
 
 
@@ -164,14 +190,25 @@ def train_with_growth(bank, features, targets, config, contract, profile, source
             report.update(disposition="growth_not_triggered", optimizer_reset_count=0)
             raise GrowthNotAdmitted(report)
         with scope("migration", "bank"):
-            with torch.inference_mode():
-                prior_probe = bank(features[:64]).clone()
-            successor, transition = split_population(bank, profile, config, seed=seed + 1, parameter_cap=cap)
-            with torch.inference_mode():
-                jump = (successor(features[:64]) - prior_probe).abs().max().item()
-            report.update(transition, split_performed=True, training_probe_max_logit_delta=jump)
-            del prior_probe
+            if policy["schema"] == FAMILY_SCHEMA:
+                successor, transition = split_population(bank, profile, config, seed=seed + 1, parameter_cap=cap)
+                probe = transition_parity(bank, successor, features, policy)
+                report.update(transition, split_performed=True, transition_probe=probe,
+                              training_probe_max_logit_delta=probe["max_absolute_logit_error"])
+                if not probe["passed"]:
+                    report["disposition"] = "transition_parity_failed"
+                    raise GrowthNotAdmitted(report)
+            else:
+                with torch.inference_mode():
+                    prior_probe = bank(features[:64]).clone()
+                successor, transition = split_population(bank, profile, config, seed=seed + 1, parameter_cap=cap)
+                with torch.inference_mode():
+                    jump = (successor(features[:64]) - prior_probe).abs().max().item()
+                report.update(transition, split_performed=True, training_probe_max_logit_delta=jump)
+                del prior_probe
             bank = successor
+    if policy["schema"] == FAMILY_SCHEMA:
+        report["routing_profile"] = ROUTING_PROFILE
     report["disposition"] = "split_candidate" if report["split_performed"] else "direct_control"
     with scope("train", "bank"):
         second = train_bank(bank, features, targets, {**config, "train_steps": config["train_steps"] - step}, seed + step)
