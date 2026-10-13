@@ -13,6 +13,7 @@ from collections import Counter
 from dataclasses import asdict
 from hashlib import sha256
 import math
+import re
 
 from native import digest
 from sessions import source_id
@@ -23,7 +24,7 @@ REASONS = (
     "native_unanswerable",
     "native_support_unresolved",
     "source_pool_unavailable",
-    "native_support_not_retrieved",
+    "native_support_absent_from_original_pool",
     "native_support_already_selected",
     "frozen_reader_failed",
     "eligible_native_support_top1_miss",
@@ -129,7 +130,7 @@ def prepare_native_window_interventions(
                 original_pool_sha256=pool.seal(),
             )
             if not support:
-                reason = "native_support_not_retrieved"
+                reason = "native_support_absent_from_original_pool"
             elif chosen in support:
                 reason = "native_support_already_selected"
             elif row["status"] != "succeeded":
@@ -186,6 +187,14 @@ def generate_native_window_interventions(prepared, questions, generate):
         seen.add(key)
         item = {k: v for k, v in row.items() if k not in
                 ("diagnostic_evidence", "original_answer")}
+        if row["disposition"] == "eligible_native_support_top1_miss":
+            # Preserve the EXACT attempted request even if Reader raises before
+            # it can return a receipt. No post-hoc evidence substitution.
+            item["intended_reader_evidence"] = list(row["diagnostic_evidence"])
+            item["intended_canonical_request_digest"] = digest((
+                row["original_reader_identity"], row["original_reader_profile"],
+                asdict(by_id[key]), row["diagnostic_evidence"],
+            ))
         item["status"] = "not_applicable"
         if row["disposition"] == "eligible_native_support_top1_miss":
             try:
@@ -207,9 +216,16 @@ def generate_native_window_interventions(prepared, questions, generate):
                     ))
                 ):
                     raise ValueError("Reader model/prompt/source request detached")
+                markers = re.findall(r"\[E[1-9][0-9]*\]", raw)
+                delivered_labels = {e["label"] for e in evidence}
                 item.update(
                     status="succeeded", answer=raw, receipt=receipt,
                     original_answer=row["original_answer"],
+                    emitted_citation_markers=len(markers),
+                    markers_with_original_delivered_label=sum(
+                        marker[1:-1] in delivered_labels for marker in markers
+                    ),
+                    citation_entailment_independently_verified=False,
                 )
             except Exception as exc:
                 item.update(
@@ -242,6 +258,10 @@ def review_native_window_interventions(records, targets, diagnose):
             phase=row["phase"], question_id=row["question_id"],
             disposition=row["disposition"], status=row["status"],
             paired_f1_delta=None, semantic_citation_precision=None,
+            emitted_citation_markers=row.get("emitted_citation_markers"),
+            markers_with_original_delivered_label=row.get(
+                "markers_with_original_delivered_label"
+            ),
         )
         if row["status"] == "succeeded":
             original = diagnose(row["original_answer"], targets[row["question_id"]])
@@ -270,6 +290,15 @@ def review_native_window_interventions(records, targets, diagnose):
         actual_reader_successes=sum(r["status"] == "succeeded" for r in executed),
         actual_reader_failures=sum(r["status"] == "failed" for r in executed),
         paired_answers_scored=len(observed),
+        succeeded_reader_emitted_citation_markers=sum(
+            row["emitted_citation_markers"] or 0 for row in executed
+        ),
+        markers_bound_to_one_original_delivered_window=sum(
+            row["markers_with_original_delivered_label"] or 0
+            for row in executed
+        ),
+        structural_marker_binding_is_not_semantic_entailment=True,
+        failed_requests_retain_intended_evidence_and_request_digest=True,
         conditional_paired_reader_f1_delta=(
             sum_delta / len(observed) if observed else None
         ),

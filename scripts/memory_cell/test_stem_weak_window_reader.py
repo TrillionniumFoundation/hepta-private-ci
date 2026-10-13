@@ -121,7 +121,7 @@ class WeakWindowReaderTests(unittest.TestCase):
             counts[p["disposition"]] = counts.get(p["disposition"], 0) + 1
         self.assertEqual(counts, dict(
             eligible_native_support_top1_miss=2,
-            native_support_not_retrieved=2,
+            native_support_absent_from_original_pool=2,
             native_support_already_selected=9,
             native_unanswerable=3,
         ))
@@ -176,6 +176,48 @@ class WeakWindowReaderTests(unittest.TestCase):
             with self.subTest(field=field):
                 rows = generate_native_window_interventions(plan, q, tamper)
                 self.assertEqual(sum(x["status"] == "failed" for x in rows), 2)
+
+    def test_reader_failure_retains_exact_intended_evidence_bytes(self):
+        q, targets, prepared = self.prepared()
+        def fail(query, evidence, record_key):
+            raise RuntimeError("Reader execution failed")
+        rows = generate_native_window_interventions(prepared, q, fail)
+        failed = [row for row in rows if row["status"] == "failed"]
+        self.assertEqual(len(failed), 2)
+        for row in failed:
+            self.assertEqual(
+                row["intended_reader_evidence"][0]["excerpt"],
+                "source text support",
+            )
+            self.assertEqual(len(row["intended_canonical_request_digest"]), 64)
+            self.assertFalse(row["gold_answer_passed_to_reader"])
+        report = review_native_window_interventions(
+            rows, targets, lambda a,t: 0.0,
+        )
+        self.assertEqual(report["actual_reader_failures"], 2)
+        self.assertTrue(
+            report["failed_requests_retain_intended_evidence_and_request_digest"]
+        )
+
+    def test_structural_citation_labels_are_not_semantic_precision(self):
+        q, targets, prepared = self.prepared()
+        def cited_reader(query, evidence, record_key):
+            _, receipt = fake_reader(query, evidence, record_key)
+            return "right [E1] [E99]", receipt
+        rows = generate_native_window_interventions(
+            prepared, q, cited_reader,
+        )
+        report = review_native_window_interventions(
+            rows, targets, lambda a,t: 0.0,
+        )
+        self.assertEqual(report["succeeded_reader_emitted_citation_markers"], 4)
+        self.assertEqual(
+            report["markers_bound_to_one_original_delivered_window"], 2
+        )
+        self.assertTrue(
+            report["structural_marker_binding_is_not_semantic_entailment"]
+        )
+        self.assertIsNone(report["semantic_citation_precision"])
 
     def test_original_pool_and_time_are_bound(self):
         for mode in ("pool", "feature", "future", "scope"):

@@ -1775,7 +1775,8 @@ A labelled document window may still lack sufficient evidence in its
 384-byte passage. Therefore even a better response here would measure
 a *privileged counterfactual opportunity*, **not** a learned retrieval or
 Head gain, a certified sufficient-evidence oracle, blinded human citation
-judgement, or production-ready solution. The two missed sources in the
-**retrieval** category have no in-pool substitution at all and remain
-separately accounted. This experimental budget is fixed by a deterministic
+judgement, or production-ready solution. The two cases in which native support is **absent from the original
+strict-as-of candidate pool** have no in-pool substitution at all. An absent
+source is not automatically a pure retriever failure: admissibility, source
+cut and candidate-window projection can also account for its absence. This experimental budget is fixed by a deterministic
 rule before reading new model answers, not tuned on test scores.
