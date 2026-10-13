@@ -183,9 +183,22 @@ def verify_resolved_security_closure(data, *, candidate_root, stage_root):
         deps = set()
         for edge in node["deps"]:
             if (type(edge) is not dict or type(edge.get("pkg")) is not str
-                    or edge["pkg"] not in package_by_id):
+                    or edge["pkg"] not in package_by_id
+                    or type(edge.get("dep_kinds")) is not list
+                    or not edge["dep_kinds"]):
                 raise ValueError("dangling or malformed Cargo dependency edge")
-            deps.add(edge["pkg"])
+            runtime_edge = False
+            for kind in edge["dep_kinds"]:
+                if (type(kind) is not dict
+                        or kind.get("kind") not in (None, "build", "dev")
+                        or (kind.get("target") is not None
+                            and type(kind["target"]) is not str)):
+                    raise ValueError("unregistered Cargo dependency kind")
+                if kind["kind"] is None:
+                    runtime_edge = True
+            # Dev-only fixes cannot attest E2EE/SQLite runtime dependencies.
+            if runtime_edge:
+                deps.add(edge["pkg"])
         nodes[node["id"]] = (deps, set(node["features"]))
     if set(nodes) != set(package_by_id) or not set(data["workspace_members"]) <= set(nodes):
         raise ValueError("Cargo package and resolve coverage mismatch")
