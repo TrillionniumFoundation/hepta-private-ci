@@ -1,0 +1,54 @@
+name: Hepta five causal experiment contracts
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/five_causal_experiments.py"
+      - "scripts/memory_cell/test_five_causal_experiments.py"
+      - "scripts/memory_cell/full_cell_matrix.py"
+      - ".github/workflows/hepta-five-causal-experiments.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/five_causal_experiments.py"
+      - "scripts/memory_cell/test_five_causal_experiments.py"
+      - "scripts/memory_cell/full_cell_matrix.py"
+      - ".github/workflows/hepta-five-causal-experiments.yml"
+permissions:
+  contents: read
+concurrency:
+  group: five-causal-experiments-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  protocol-and-plan-only:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Run old matrix and new five-experiment contract tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-five-causal/source
+          python3 -m unittest discover -s scripts/memory_cell -p test_full_cell_matrix.py -v 2>&1 | tee /tmp/hepta-five-causal/matrix-tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p test_five_causal_experiments.py -v 2>&1 | tee /tmp/hepta-five-causal/five-tests.log
+          python3 -m py_compile scripts/memory_cell/full_cell_matrix.py scripts/memory_cell/five_causal_experiments.py scripts/memory_cell/test_five_causal_experiments.py
+          python3 scripts/memory_cell/five_causal_experiments.py plan --output /tmp/hepta-five-causal/plan.json
+      - name: Record exact source and preserve failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-five-causal/source
+          git rev-parse HEAD > /tmp/hepta-five-causal/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-five-causal/source/tested-tree.txt
+          python3 --version > /tmp/hepta-five-causal/source/python.txt
+          cp scripts/memory_cell/full_cell_matrix.py scripts/memory_cell/test_full_cell_matrix.py scripts/memory_cell/five_causal_experiments.py scripts/memory_cell/test_five_causal_experiments.py .github/workflows/hepta-five-causal-experiments.yml /tmp/hepta-five-causal/source/
+          (cd /tmp/hepta-five-causal && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-five-causal-contracts-not-model-efficacy
+          path: /tmp/hepta-five-causal
+          if-no-files-found: error
