@@ -1155,8 +1155,7 @@ mod original_checkpoint_integrity_tests {
             "previousReceiptDigest": "65".repeat(32),
             "receiptDigest": "00".repeat(32),
         });
-        let mut checkpoint: OriginalSupervisorCheckpointV1 =
-            serde_json::from_value(json)?;
+        let mut checkpoint: OriginalSupervisorCheckpointV1 = serde_json::from_value(json)?;
         checkpoint.receipt_digest = checkpoint.content_digest_v1()?;
         let bytes = serde_json::to_vec(&checkpoint)?;
         let journal = CellSplitSupervisorCommitV1 {
