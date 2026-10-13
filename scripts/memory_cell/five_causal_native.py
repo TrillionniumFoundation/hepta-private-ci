@@ -36,6 +36,7 @@ SYSTEM = (
     "answer: I do not have enough evidence."
 )
 SCHEMA = "hepta.five-native.bundle.v1"
+ADAPTER_SCHEMA = "hepta.five-native.bundle.v2"
 MAX_MODELS = 16
 MAX_HEADS = 4096
 MAX_CACHE_BYTES = 16 * 1024 * 1024
@@ -60,8 +61,12 @@ def tokenizer_binding(snapshot):
     return contract.digest(names)
 
 
-def reader_bindings(snapshot, template, maximum_tokens, maximum_new_tokens):
-    return dict(reader=contract.digest(snapshot), tokenizer=tokenizer_binding(snapshot),
+def reader_bindings(snapshot, template, maximum_tokens, maximum_new_tokens, response_adapter=None):
+    identity = contract.digest(snapshot)
+    if response_adapter is not None:
+        from five_reader_adapter import reader_identity
+        identity = reader_identity(snapshot, response_adapter)
+    return dict(reader=identity, tokenizer=tokenizer_binding(snapshot),
                 prompt=contract.digest({"system": SYSTEM, "chat_template": template,
                                         "tokenization": "direct-chat-template-ids-v1"}),
                 decoder=contract.digest({"do_sample": False, "num_beams": 1, "use_cache": True,
@@ -116,6 +121,7 @@ class NativeSession:
     Weights may be physically shared. Scope, purpose, generation and exact input
     namespace cached features. This is NOT a product FinalUse/cache capability.
     Separate comparison arms get separate owners, avoiding cross-arm cache luck.
+    A composed Reader is immutable per owner; no per-call adapter switching.
     """
     def __init__(self, root, *, max_models=MAX_MODELS, cache_bytes=0):
         self.root = Path(root).resolve()
@@ -130,8 +136,13 @@ class NativeSession:
         require(contract.sha(digest), "checkpoint bundle SHA required")
         path = contract.source_file(self.root, f"bundles/{digest}.json", digest)
         manifest = contract.load(path)
-        require(manifest.get("schema") == SCHEMA, "native manifest schema")
+        require(manifest.get("schema") in (SCHEMA, ADAPTER_SCHEMA), "native manifest schema")
         require(manifest.get("kind") in ("reader", "head"), "unimplemented native profile")
+        if manifest["schema"] == SCHEMA:
+            require("response_adapter" not in manifest, "v1 cannot silently ignore a response adapter")
+        else:
+            require(manifest["kind"] == "reader" and isinstance(manifest.get("response_adapter"), dict),
+                    "v2 requires an explicit composed Reader")
         require(manifest.get("sharing") in ("shared", "replicated"), "explicit sharing mode required")
         for key in ("scope", "purpose", "generation", "cell"):
             require(contract.text_id(manifest.get(key)), "native scope/cell identity missing")
@@ -150,16 +161,32 @@ class NativeSession:
         namespace = tuple(manifest[k] for k in ("scope", "purpose", "generation"))
         replica = manifest["cell"] if manifest["sharing"] == "replicated" else None
         key = (arm, namespace, contract.digest(snapshot), manifest["kind"], maximum, replica)
+        spec = manifest.get("response_adapter")
+        if spec is not None:
+            from five_reader_adapter import attach, reader_identity, validate_material, verify_resident
+            require(manifest.get("schema") == ADAPTER_SCHEMA and manifest["kind"] == "reader",
+                    "response adapter requires a v2 Reader")
+            validate_material(self.root, spec, snapshot)
+            require(manifest["bindings"]["reader"] == reader_identity(snapshot, spec),
+                    "composed Reader must not reuse base-only qualification")
+            key = key + (reader_identity(snapshot, spec),)
         if key not in self.models:
             require(len(self.models) < self.max_models, "resident model capacity exceeded before loading")
             cls = LocalTextGenerator if manifest["kind"] == "reader" else LocalEncoder
+            composition = None
             with measured() as timing:
                 backend = cls(self.root / relative, snapshot, maximum)
-            require(backend.simulated is False, "simulated backend forbidden")
+                require(backend.simulated is False, "simulated backend forbidden")
+                if spec is not None:
+                    composition = attach(backend, self.root, spec, snapshot)
+            # Publish only after complete composition and original-base checks.
             self.models[key] = backend
             self.loads.append({"owner": contract.digest(key), "snapshot": contract.digest(snapshot),
                                "sharing": manifest["sharing"], "cell_replica": replica,
+                               "response_adapter": composition,
                                **parameters(backend.loaded), **timing})
+        elif spec is not None:
+            verify_resident(self.models[key])
         return key, self.models[key]
 
     def head(self, manifest, width):
@@ -183,20 +210,23 @@ class NativeSession:
         require(isinstance(packet, dict) and set(packet) == {
             "request", "checkpoint_sha256", "bindings", "timeout_seconds"}, "native packet keys")
         require(contract.finite(packet["timeout_seconds"], .01, 3600), "deadline")
+        started = time.perf_counter()
         rendered = public_text(packet["request"])
         m = self.descriptor(packet["checkpoint_sha256"])
         require(m["bindings"] == packet["bindings"], "packet/checkpoint binding mismatch")
         require(m["bindings"]["tokenizer"] == tokenizer_binding(m["snapshot"]), "tokenizer identity drift")
         key, backend = self.backend(m, arm)
-        started = time.perf_counter()
         cache_hit = False
         forward_owner = backend.loaded if m["kind"] == "reader" else backend.model
+        if m.get("response_adapter") is not None:
+            # PEFT generate delegates to this module rather than PeftModel.forward.
+            forward_owner = backend.loaded.get_base_model()
         with measured() as timing, count_forwards(forward_owner) as counter:
             if m["kind"] == "reader":
                 new = m["maximum_new_tokens"]
                 require(type(new) is int and 1 <= new <= 256, "decoder bound")
                 expected = reader_bindings(m["snapshot"], backend.tokenizer.chat_template,
-                                           m["maximum_tokens"], new)
+                                           m["maximum_tokens"], new, m.get("response_adapter"))
                 require(all(m["bindings"][k] == v for k, v in expected.items()), "Reader prompt/decoder mismatch")
                 answer, detail = generate_exact(backend, rendered, m["maximum_tokens"], new)
             else:
@@ -229,8 +259,12 @@ class NativeSession:
                 answer = packet["request"]["options"][int(probabilities.argmax())]
                 detail = {"probabilities": probabilities.tolist(), "feature_sha256": tensor_digest(value),
                           "head_sha256": m["head"]["sha256"]}
+        if m.get("response_adapter") is not None:
+            from five_reader_adapter import verify_resident
+            verify_resident(backend)
         self.observations.append({"request_sha256": contract.digest(packet), "owner": contract.digest(key),
                                   "cache_hit": cache_hit, "over_deadline": time.perf_counter()-started > packet["timeout_seconds"],
+                                  "owner_wall_ns_including_load_and_verification": int((time.perf_counter()-started)*1e9),
                                   "parameter_updates": 0, **counter, **timing, **detail})
         return {"request_sha256": contract.digest(packet), "answer": answer,
                 "resources": {"active_flops": None, "energy_joules": None,
@@ -238,6 +272,9 @@ class NativeSession:
 
     def close(self):
         for backend in self.models.values():
+            if hasattr(backend, "response_adapter_spec"):
+                from five_reader_adapter import verify_resident
+                verify_resident(backend)
             backend.close()
         return {"model_loads": self.loads, "calls": self.observations,
                 "resident_model_objects": len(self.models), "resident_heads": len(self.heads),
