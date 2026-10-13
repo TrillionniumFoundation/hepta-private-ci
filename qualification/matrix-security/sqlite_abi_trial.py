@@ -178,9 +178,19 @@ def audit_metadata(meta, report, sdk_root, hepta_root):
     # that happens to declare the target versions and links=sqlite3.
     registry = "registry+https://github.com/rust-lang/crates.io-index"
     for package in (rusqlite, ffi):
-        if (package.get("source") != registry
-                or not HEX64.fullmatch(package.get("checksum", ""))):
-            raise ValueError("native SQLite crate lacks verified registry identity")
+        # Report the exact invalid evidence field, never silently adopt a
+        # path/git crate or a registry package with no trusted checksum.
+        # Cargo may finish dependency resolution while its returned package
+        # provenance is still insufficient for a secure admission decision.
+        if package.get("source") != registry:
+            raise ValueError(
+                f"native SQLite crate {package['name']} has non-canonical registry source"
+            )
+        checksum = package.get("checksum")
+        if not isinstance(checksum, str) or not HEX64.fullmatch(checksum):
+            raise ValueError(
+                f"native SQLite crate {package['name']} is missing a 64-hex registry checksum"
+            )
     if (Path(root.get("manifest_path", "")).resolve() !=
             hepta_root / "codex-rs/hepta-matrix-sdk/Cargo.toml"
             or Path(sqlite.get("manifest_path", "")).resolve() != file
