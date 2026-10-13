@@ -167,6 +167,15 @@ fn control_with_semantic(
     request: &NeuronFeatureRequestV1,
     override_semantic_digest: Option<String>,
 ) -> DurableInferenceControl {
+    control_with_overrides(directory, request, override_semantic_digest, None)
+}
+
+fn control_with_overrides(
+    directory: &tempfile::TempDir,
+    request: &NeuronFeatureRequestV1,
+    override_semantic_digest: Option<String>,
+    override_payload_digest: Option<String>,
+) -> DurableInferenceControl {
     // Only explicitly malformed contract fixtures can be admitted to this
     // legacy WAL with a fallback digest; valid Neuron requests are always
     // bound to the complete canonical NeuronFeatureRequestV1 identity.
@@ -194,7 +203,8 @@ fn control_with_semantic(
         feature_vector_q24: request.feature_vector_q24.clone(),
         expected_output_width: request.expected_output_width,
     };
-    let payload = canonical_neuron_feature_payload_digest(&feature);
+    let payload = override_payload_digest
+        .unwrap_or_else(|| canonical_neuron_feature_payload_digest(&feature));
     feature.authorization.payload_digest = payload.clone();
     feature.authorization.lease_payload_digest = payload.clone();
 
@@ -1141,4 +1151,103 @@ fn observed_token_cost_is_not_a_settled_wal_or_authoritative_resource_debit() {
         &historical,
     )
     .unwrap();
+}
+
+
+#[test]
+fn settled_neuron_cost_refuses_generic_wal_with_unrelated_feature_payload() {
+    // First execute a real typed Worker invocation and bind its token source
+    // to an actual Dispatching record. This is still a synthetic fixture
+    // Driver, never evidence of production Laya execution.
+    let source_directory = tempfile::tempdir().unwrap();
+    let typed = typed_request();
+    let mut genuine_owner = control(&source_directory, &typed);
+    let mut actual_worker = worker();
+    let (_claim, mut port) =
+        claim_neuron_durable_dispatch_v1(&mut genuine_owner, &mut actual_worker, &typed, 100)
+            .unwrap();
+    let receipt = port.execute_feature(&typed).unwrap();
+    let cost = port.take_cost_diagnostic().unwrap();
+    drop(port);
+    let observed = read_neuron_observed_cost_source_v1(
+        &genuine_owner,
+        &actual_worker,
+        &typed,
+        &receipt,
+        &cost,
+        100,
+    )
+    .unwrap();
+
+    // The legacy control writer accepts a generic well-formed SHA-256 as
+    // payload_digest. Give this *other* durable owner the same typed semantic
+    // digest, model, reservation and Worker labels, but an unrelated payload.
+    // Its fsynced terminal can still be structurally valid for generic
+    // inference; it is NOT the actual canonical Neuron feature invocation.
+    let unrelated_directory = tempfile::tempdir().unwrap();
+    let wrong_payload = "f".repeat(64);
+    let mut unrelated = control_with_overrides(
+        &unrelated_directory,
+        &typed,
+        None,
+        Some(wrong_payload.clone()),
+    );
+    let assigned = unrelated.get(typed.request_id.as_str()).unwrap();
+    let assignment = assigned.assignment.clone().unwrap();
+    let reservation = assigned.reservation.clone().unwrap();
+    let revision = assigned.revision;
+    let dispatch = unrelated
+        .claim_dispatch(
+            100,
+            typed.request_id.as_str(),
+            revision,
+            &reservation.reservation_id,
+            &assignment,
+        )
+        .unwrap();
+    let completed = unrelated
+        .settle(
+            typed.request_id.as_str(),
+            dispatch.revision,
+            "a".repeat(64),
+            TerminalObservation {
+                request_id: typed.request_id.to_string(),
+                reservation_id: reservation.reservation_id,
+                worker_id: assignment.worker_id,
+                worker_generation: assignment.worker_generation,
+                model_digest: "2".repeat(64),
+                payload_digest: wrong_payload,
+                terminal_observed: true,
+                terminal_status: Some(RequestState::Completed),
+                output_digest: Some(receipt.output_digest.to_string()),
+                consumed_tokens: observed.observed_tokens,
+                usage_units: 0,
+            },
+        )
+        .unwrap();
+    assert_eq!(completed.state, RequestState::Completed);
+    assert_eq!(
+        read_neuron_settled_cost_diagnostic_v1(
+            &unrelated,
+            &typed,
+            &receipt,
+            &observed,
+        ),
+        Err(NeuronSettledCostErrorV1::Mismatch)
+    );
+    drop(unrelated);
+    let recovered = DurableInferenceControl::open(
+        unrelated_directory.path().join("inference.journal"),
+        32,
+    )
+    .unwrap();
+    assert_eq!(
+        read_neuron_settled_cost_diagnostic_v1(
+            &recovered,
+            &typed,
+            &receipt,
+            &observed,
+        ),
+        Err(NeuronSettledCostErrorV1::Mismatch)
+    );
 }

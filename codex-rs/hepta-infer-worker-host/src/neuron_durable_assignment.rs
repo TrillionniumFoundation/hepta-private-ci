@@ -815,6 +815,35 @@ pub fn read_neuron_settled_cost_diagnostic_v1(
     {
         return Err(NeuronSettledCostErrorV1::Mismatch);
     }
+    // Unlike the generic durable inference WAL, the Neuron typed feature
+    // request has an independently canonical Q24 payload identity. Rebuild
+    // the *entire* Worker payload at historical settlement time as well as
+    // at pre-dispatch admission: otherwise a legacy request with the right
+    // semantic digest but different bytes could inherit another execution's
+    // token-cost report after crash recovery.
+    let actual_payload = canonical_neuron_feature_payload_digest(&NeuronFeatureRequest {
+        authorization: WorkerRequest {
+            request_id: record.request.request_id.clone(),
+            reservation_id: reservation.reservation_id.clone(),
+            model_digest: record.request.model_digest.clone(),
+            payload_digest: record.request.payload_digest.clone(),
+            maximum_tokens: record.request.maximum_tokens,
+            deadline_ms: record.request.deadline_ms.min(reservation.valid_until_ms),
+            lease_payload_digest: record.request.payload_digest.clone(),
+            reservation_model_digest: record.request.model_digest.clone(),
+            reservation_maximum_tokens: reservation.maximum_tokens,
+            cancelled: false,
+        },
+        encoder_digest: request.encoder_digest.to_string(),
+        head_digest: request.head_digest.to_string(),
+        weights_digest: request.weights_digest.to_string(),
+        input_digest: request.input_digest.to_string(),
+        feature_vector_q24: request.feature_vector_q24.clone(),
+        expected_output_width: request.expected_output_width,
+    });
+    if actual_payload != record.request.payload_digest {
+        return Err(NeuronSettledCostErrorV1::Mismatch);
+    }
     let terminal_observation_digest = Digest32::from_str(
         record
             .terminal_observation_digest

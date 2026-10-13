@@ -588,3 +588,21 @@ incarnation is NOT persistent proof after restart. The host must originally
 retain the source observation while the live Worker exists and must obtain
 independent real provider/Observer, quota tariff, CNS/Fence and NDU evidence
 before treating anything as a production cost or learning improvement.
+
+## Strict historical Neuron feature-payload binding
+
+The V1 historical token-settlement reader now reconstructs the entire
+canonical typed Neuron feature payload from the **reopened durable WAL**
+(request/reservation, model/weights, Q24 features, dimensions and deadline).
+It refuses a generic legacy WAL record containing the correct typed semantic
+digest and terminal token count but a different actual execution payload.
+The same exact payload check already existed before Dispatching; it must
+also apply to post-restart historical correlation. This prevents combining
+two separately valid, nonmatching request identities into an apparent cost.
+
+An adversarial test actually fsyncs a generic Completed WAL record with an
+unrelated payload digest and otherwise matching Worker/request labels, then
+rejects historical scoring both before and after crash-style reopen. The
+positive unchanged typed-execution settlement and token accounting tests
+remain separate. No WAL format, token-price conversion, promotion authority,
+physical model loader or serving route is introduced.
