@@ -147,7 +147,7 @@ def summarize(rows, cases):
         losses += int(base and not memory)
         changed += int(per_arm["base"] != per_arm["memory"])
     missing = len(cases) - complete
-    return dict(
+    report = dict(
         schema="hepta.source-lexicon.kway.v1",
         planned_questions=len(cases),
         planned_model_calls=len(expected),
@@ -172,6 +172,10 @@ def summarize(rows, cases):
         significance_established=False,
         production_accepted=False,
     )
+    from source_binding_specificity import question_binding
+
+    report["question_value_binding"] = question_binding(rows, cases)
+    return report
 
 
 def probe(

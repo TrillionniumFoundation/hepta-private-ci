@@ -16,6 +16,8 @@ on:
       - "scripts/memory_cell/source_recall_likelihood.py"
       - "scripts/memory_cell/source_confusion_probe.py"
       - "scripts/memory_cell/source_candidate_kway.py"
+      - "scripts/memory_cell/source_binding_specificity.py"
+      - "scripts/memory_cell/test_source_binding_specificity.py"
       - "scripts/memory_cell/test_source_candidate_kway.py"
       - "scripts/memory_cell/source_decode_factorial.py"
       - "scripts/memory_cell/test_source_decode_factorial.py"
@@ -92,6 +94,8 @@ jobs:
           uv run --frozen --project scripts ruff format --check \
             scripts/memory_cell/source_completion_loss.py \
             scripts/memory_cell/source_candidate_kway.py \
+            scripts/memory_cell/source_binding_specificity.py \
+            scripts/memory_cell/test_source_binding_specificity.py \
             scripts/memory_cell/test_source_candidate_kway.py \
             scripts/memory_cell/source_decode_factorial.py \
             scripts/memory_cell/test_source_decode_factorial.py \
@@ -102,6 +106,7 @@ jobs:
           python3 -m unittest discover -s scripts/memory_cell -p 'test_source_write_execution_gate.py' -v
           python3 -m unittest discover -s scripts/memory_cell -p 'test_source_workflow_gates.py' -v
           python3 -m unittest discover -s scripts/memory_cell -p 'test_source_candidate_kway.py' -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_source_binding_specificity.py' -v
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
   write-and-read:
     needs: source-contracts

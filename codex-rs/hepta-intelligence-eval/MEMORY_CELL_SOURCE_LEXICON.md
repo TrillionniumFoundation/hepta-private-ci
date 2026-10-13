@@ -25,3 +25,22 @@ Exact observed outcomes are reported only after their generating workflow
 reaches terminal success and a complete immutable original answer journal exists.
 Source-only diagnosis never changes default serving, selected-LoRA production,
 source authority, independent reviewer requirements or existing CI gates.
+
+## Question-value binding specificity (new research diagnostic)
+
+The source K-way report now contains question_value_binding: a two-question,
+two-value interaction computed from the SAME already-journaled base and
+adapter likelihoods. It never calls the reader again. If adapter training
+merely boosts a value globally, its question-independent preference cancels
+and earns no binding specificity gain. A positive specificity shift is
+not yet a correct free-generated answer. A two-question pair whose two targets
+are identical, whose completion lengths differ, or with an actual failed
+likelihood call is recorded explicitly, not scored as an improvement.
+
+The full candidate vocabulary is source-derived and nonparametric. Paired
+questions and their target values were visible during earlier source training:
+they are NOT independent future generalization or statistical support.
+The baseline prompt and reader are unchanged, original K-way results remain
+in place, and the report maintains zero additional model calls. No semantic
+entailment or citation certification, policy acceptance or production state
+is changed; review gates remain fail-closed.
