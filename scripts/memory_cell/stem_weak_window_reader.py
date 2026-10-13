@@ -40,6 +40,7 @@ def _baseline_pairs(questions, frozen_attempts):
         set(questions) != set(PHASES)
         or any(len(questions[p]) != 8 for p in PHASES)
         or len(expected) != 16
+        or len({q.identity for p in PHASES for q in questions[p]}) != 16
     ):
         raise ValueError("exactly 16 registered test/transfer questions required")
     found = {}
@@ -123,6 +124,14 @@ def prepare_native_window_interventions(
                 type(chosen) is not int or not 0 <= chosen < len(names)
             ):
                 raise ValueError("baseline top1 not bound to original pool")
+            expected_frozen = (
+                min(range(len(names)), key=lambda i: (-float(scores[i]), names[i]))
+                if names else None
+            )
+            if chosen is not None and chosen != expected_frozen:
+                raise ValueError("baseline frozen score rank differs from recorded top1")
+            if row["status"] == "succeeded" and chosen != expected_frozen:
+                raise ValueError("successful original forced-top1 selector missing")
             base.update(
                 candidate_count=len(names),
                 weak_supported_window_count=len(support),
@@ -282,10 +291,38 @@ def review_native_window_interventions(records, targets, diagnose):
                 if r["paired_f1_delta"] is not None]
     unknown = eligible - len(observed)
     sum_delta = math.fsum(observed)
+    by_phase = {}
+    for phase in PHASES:
+        subset = [c for c in cases if c["phase"] == phase]
+        eligible_phase = [
+            c for c in subset if c["disposition"] == "eligible_native_support_top1_miss"
+        ]
+        values = [
+            c["paired_f1_delta"] for c in eligible_phase
+            if c["paired_f1_delta"] is not None
+        ]
+        missing = len(eligible_phase) - len(values)
+        total = math.fsum(values)
+        by_phase[phase] = dict(
+            original_questions=len(subset),
+            eligible_substitutions=len(eligible_phase),
+            executed_and_scored=len(values),
+            failed_or_unscored=missing,
+            mean_paired_f1_delta=(total / len(values) if values else None),
+            all_eligible_delta_bounds=(
+                [(total - missing) / len(eligible_phase),
+                 (total + missing) / len(eligible_phase)]
+                if eligible_phase else None
+            ),
+            independence_not_established=True,
+        )
+        if len(subset) != 8:
+            raise ValueError("test/transfer phase denominator drift")
     return dict(
         schema="hepta.stem-labelled-window-reader-report.v1",
         original_test_transfer_questions=16,
         disposition_counts=dict(counts),
+        per_phase=by_phase,
         eligible_postpolicy_labelled_source_substitutions=eligible,
         actual_reader_successes=sum(r["status"] == "succeeded" for r in executed),
         actual_reader_failures=sum(r["status"] == "failed" for r in executed),

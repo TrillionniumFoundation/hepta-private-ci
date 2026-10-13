@@ -236,6 +236,42 @@ class WeakWindowReaderTests(unittest.TestCase):
                     selected_window=select_window,
                 )
 
+    def test_original_frozen_top1_must_match_persisted_frozen_logits(self):
+        q, pools, features, targets, frozen = make()
+        bad = next(x for x in frozen if x["question_id"] == "test-0")
+        bad["selected"] = 1
+        with self.assertRaisesRegex(ValueError, "frozen score rank"):
+            prepare_native_window_interventions(
+                q, frozen, pools, features, targets,
+                selected_window=select_window,
+            )
+
+    def test_duplicate_native_question_across_phases_is_rejected(self):
+        q, pools, features, targets, frozen = make()
+        duplicate = q["transfer"][0]
+        q["transfer"][0] = Question(
+            "test-0", duplicate.family, duplicate.scope,
+            duplicate.content, duplicate.observed_at,
+        )
+        with self.assertRaisesRegex(ValueError, "16 registered"):
+            prepare_native_window_interventions(
+                q, frozen, pools, features, targets,
+                selected_window=select_window,
+            )
+
+    def test_test_and_transfer_keep_independent_paired_denominators(self):
+        q, targets, prepared = self.prepared()
+        results = generate_native_window_interventions(prepared, q, fake_reader)
+        report = review_native_window_interventions(
+            results, targets, lambda a,t: float(a == t.answer),
+        )
+        self.assertEqual(report["per_phase"]["test"]["original_questions"], 8)
+        self.assertEqual(report["per_phase"]["transfer"]["original_questions"], 8)
+        self.assertEqual(report["per_phase"]["test"]["eligible_substitutions"], 1)
+        self.assertEqual(report["per_phase"]["transfer"]["eligible_substitutions"], 1)
+        self.assertEqual(report["per_phase"]["test"]["all_eligible_delta_bounds"], [1, 1])
+        self.assertEqual(report["per_phase"]["transfer"]["all_eligible_delta_bounds"], [1, 1])
+
     def test_no_gold_answer_text_enters_label_guided_reader_prompt(self):
         q, _, plan = self.prepared()
         calls = []
