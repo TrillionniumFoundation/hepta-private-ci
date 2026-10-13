@@ -1,0 +1,70 @@
+name: Hepta Matrix RustSec 0.19.1 Migration Shadow Probe
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/security/**"
+      - ".github/workflows/hepta-matrix-rustsec-0191-shadow.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: matrix-rustsec-0191-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  migration-policy-contracts:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Test strict source pinning, unwaived advisories and MSRV
+        run: |
+          python3 -m compileall -q qualification/security
+          PYTHONPATH=qualification/security python3 -m unittest discover \
+            -s qualification/security -p 'test_matrix_sdk_0191_trial.py' -v
+
+  genuine-rust196-matrix-scratch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Prepare approved temporary Matrix manifest upgrade
+        run: |
+          python3 qualification/security/matrix_sdk_0191_trial.py prepare \
+            --manifest codex-rs/Cargo.toml
+      - name: Install isolated Rust 1.96 toolchain
+        run: rustup toolchain install 1.96.0 --profile minimal --component clippy,rustfmt
+      - name: Actually resolve Matrix 0.19.1 dependency graph
+        working-directory: codex-rs
+        run: cargo +1.96.0 update -p matrix-sdk --precise 0.19.1
+      - name: Compile and test real Matrix owner crates with the proposed lock
+        working-directory: codex-rs
+        run: |
+          cargo +1.96.0 test --locked -p codex-hepta-matrix-sdk -p codex-hepta-matrixd --lib
+          cargo +1.96.0 clippy --locked -p codex-hepta-matrix-sdk -p codex-hepta-matrixd --all-targets -- -D warnings
+      - name: Recheck resolved vulnerabilities, deny any still present
+        if: always()
+        run: |
+          python3 qualification/security/matrix_sdk_0191_trial.py inspect \
+            --lock codex-rs/Cargo.lock \
+            --rust 1.96.0 \
+            --sha '${{ github.event.pull_request.head.sha || github.sha }}' \
+            --out qualification/security/matrix-0191-locked-evidence.json
+      - name: Retain proposed locked graph (never mutate protected branch)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-rust196-upgrade-proposal-shadow-only
+          path: |
+            codex-rs/Cargo.lock
+            codex-rs/Cargo.toml
+            qualification/security/matrix-0191-locked-evidence.json
+          if-no-files-found: warn
+          retention-days: 14
