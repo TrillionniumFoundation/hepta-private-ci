@@ -100,6 +100,7 @@ class NarrowWorkspaceTests(unittest.TestCase):
         self.assertIn('git worktree add --detach "$STAGE" "$HEPTA_SHA"', text)
         self.assertIn("sqlite_abi_trial.py stage", text)
         self.assertIn("sqlite_abi_trial.py audit", text)
+        self.assertIn("test_sqlite_abi_trial.py", text)
         self.assertIn('hepta-narrow-sqlite-abi.json', text)
         self.assertIn('hepta-narrow-metadata.json', text)
         self.assertNotIn("--align-sqlite-native-links", text)
