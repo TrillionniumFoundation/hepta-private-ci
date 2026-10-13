@@ -26,6 +26,7 @@ use crate::model_worker::ModelDriver;
 use crate::model_worker::NeuronFeatureDriver;
 use crate::model_worker::NeuronFeatureRequest;
 use crate::model_worker::WorkerRequest;
+use crate::model_worker::WorkerInstanceIdentity;
 use crate::model_worker::canonical_neuron_feature_payload_digest;
 
 const COST_DOMAIN: &[u8] = b"hepta.inference.worker.neuron-token-cost.v1\0";
@@ -41,6 +42,9 @@ pub struct WorkerNeuronTokenCostV1 {
     model_id: String,
     worker_id: String,
     worker_generation: u64,
+    /// Not serialized or included in the hash; an exact live Worker instance
+    /// match must be established before a cost can be used by a read-side owner.
+    worker_instance: WorkerInstanceIdentity,
     request_digest: Digest32,
     feature_receipt_digest: Digest32,
     terminal_status: NeuronFeatureTerminalStatusV1,
@@ -63,6 +67,37 @@ impl WorkerNeuronTokenCostV1 {
     #[must_use]
     pub const fn receipt_digest(&self) -> Digest32 {
         self.feature_receipt_digest
+    }
+
+    #[must_use]
+    pub(crate) const fn diagnostic_digest(&self) -> Digest32 {
+        self.diagnostic_digest
+    }
+
+    /// Bind to the exact in-process Worker which observed these tokens.
+    /// Worker ID + generation are insufficient across process restarts.
+    pub(crate) fn matches_live_worker<D: ModelDriver>(
+        &self,
+        worker: &InferenceWorker<D>,
+    ) -> bool {
+        self.worker_id == worker.worker_id()
+            && self.worker_generation == worker.worker_generation()
+            && self
+                .worker_instance
+                .matches(&worker.worker_instance_identity())
+    }
+
+    /// Check the actual typed request and its durable reservation identity.
+    pub(crate) fn matches_source(
+        &self,
+        request: &NeuronFeatureRequestV1,
+        reservation_id: &str,
+        request_digest: Digest32,
+    ) -> bool {
+        self.request_id == request.request_id.as_str()
+            && self.model_id == request.model_id.as_str()
+            && self.reservation_id == reservation_id
+            && self.request_digest == request_digest
     }
 
     /// Recompute from the worker-owned request/reservation and verified typed
@@ -253,6 +288,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> NeuronInferenceControlPort
             model_id: self.model_id.clone(),
             worker_id: self.worker.worker_id().to_owned(),
             worker_generation: self.worker.worker_generation(),
+            worker_instance: self.worker.worker_instance_identity(),
             request_digest: neuron_feature_request_digest_v1(request)
                 .map_err(|_| NeuronModelError::Indeterminate)?,
             feature_receipt_digest: receipt.receipt_digest,

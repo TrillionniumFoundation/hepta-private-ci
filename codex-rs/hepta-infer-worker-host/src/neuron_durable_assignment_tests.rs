@@ -841,3 +841,171 @@ fn file_bound_dispatch_refuses_old_worker_instance_before_durable_claim() {
     );
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
 }
+
+#[test]
+fn observed_token_cost_binds_fsynced_dispatch_and_exact_worker_incarnation() {
+    let directory = tempfile::tempdir().unwrap();
+    let typed = typed_request();
+    let mut owner = control(&directory, &typed);
+    let calls = Arc::new(AtomicUsize::new(0));
+    let mut worker = worker_with_calls(Arc::clone(&calls));
+    let (claim, mut port) =
+        claim_neuron_durable_dispatch_v1(&mut owner, &mut worker, &typed, 100).unwrap();
+    assert_eq!(claim.state, RequestState::Dispatching);
+    let receipt = port.execute_feature(&typed).unwrap();
+    let cost = port.take_cost_diagnostic().expect("physically observed cost");
+    assert!(port.take_cost_diagnostic().is_none());
+    drop(port);
+    let observed =
+        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100)
+            .unwrap();
+    assert!(observed.validate_integrity());
+    assert_eq!(observed.observed_tokens, 4);
+    assert_eq!(observed.control_revision, claim.revision);
+    assert_eq!(observed.feature_receipt_digest, receipt.receipt_digest);
+    assert_eq!(observed.authority, AuthorityPosture::DENY_ALL);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    revalidate_neuron_observed_cost_source_v1(
+        &owner, &worker, &typed, &receipt, &cost, &observed, 100,
+    )
+    .unwrap();
+
+    // A new Worker may reuse every printable worker ID and generation.
+    // Its distinct in-memory incarnation must NEVER validate old metering.
+    let restarted_worker = worker();
+    assert_eq!(worker.worker_id(), restarted_worker.worker_id());
+    assert_eq!(worker.worker_generation(), restarted_worker.worker_generation());
+    assert_eq!(
+        read_neuron_observed_cost_source_v1(
+            &owner,
+            &restarted_worker,
+            &typed,
+            &receipt,
+            &cost,
+            100,
+        ),
+        Err(NeuronObservedCostSourceErrorV1::Binding)
+    );
+    let mut altered_request = typed.clone();
+    altered_request.weights_digest = Digest32::of_bytes(b"different-weight");
+    assert_eq!(
+        read_neuron_observed_cost_source_v1(
+            &owner,
+            &worker,
+            &altered_request,
+            &receipt,
+            &cost,
+            100,
+        ),
+        Err(NeuronObservedCostSourceErrorV1::Binding)
+    );
+    let mut altered_receipt = receipt.clone();
+    altered_receipt.receipt_digest = Digest32::of_bytes(b"forged-receipt");
+    assert_eq!(
+        read_neuron_observed_cost_source_v1(
+            &owner,
+            &worker,
+            &typed,
+            &altered_receipt,
+            &cost,
+            100,
+        ),
+        Err(NeuronObservedCostSourceErrorV1::Binding)
+    );
+
+    // Rehashing an arbitrary prior digest is not a license to claim a
+    // different observed cost from the current control+Worker owners.
+    let mut fabricated = observed.clone();
+    fabricated.observed_tokens += 1;
+    fabricated.source_digest = fabricated.computed_digest();
+    assert!(fabricated.validate_integrity());
+    assert_eq!(
+        revalidate_neuron_observed_cost_source_v1(
+            &owner, &worker, &typed, &receipt, &cost, &fabricated, 100,
+        ),
+        Err(NeuronObservedCostSourceErrorV1::Stale)
+    );
+
+    // Cancellation after a dispatched physical call makes the previous
+    // read-side cost diagnostic unavailable for further scoring.
+    let cancelled = owner.cancel(typed.request_id.as_str(), claim.revision).unwrap();
+    assert_eq!(cancelled.state, RequestState::Cancelling);
+    assert_eq!(
+        read_neuron_observed_cost_source_v1(
+            &owner, &worker, &typed, &receipt, &cost, 100,
+        ),
+        Err(NeuronObservedCostSourceErrorV1::Stale)
+    );
+
+    // Reopen the real durable control WAL. A terminal settlement (including
+    // failed/unknown outcomes) is not a second fresh cost observation.
+    drop(owner);
+    let reopened = DurableInferenceControl::open(
+        directory.path().join("inference.journal"),
+        32,
+    )
+    .unwrap();
+    assert_eq!(reopened.get(typed.request_id.as_str()).unwrap().state, RequestState::Cancelling);
+    assert_eq!(
+        read_neuron_observed_cost_source_v1(
+            &reopened, &worker, &typed, &receipt, &cost, 100,
+        ),
+        Err(NeuronObservedCostSourceErrorV1::Stale)
+    );
+}
+
+#[test]
+fn observed_token_cost_is_not_a_settled_wal_or_authoritative_resource_debit() {
+    let directory = tempfile::tempdir().unwrap();
+    let typed = typed_request();
+    let mut owner = control(&directory, &typed);
+    let mut worker = worker();
+    let (claim, mut port) =
+        claim_neuron_durable_dispatch_v1(&mut owner, &mut worker, &typed, 100).unwrap();
+    let receipt = port.execute_feature(&typed).unwrap();
+    let cost = port.take_cost_diagnostic().unwrap();
+    drop(port);
+    let report =
+        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100)
+            .unwrap();
+    assert_eq!(report.observed_tokens, 4);
+    let current = owner.get(typed.request_id.as_str()).unwrap();
+    assert_eq!(current.state, RequestState::Dispatching);
+    assert_eq!(current.usage_units, 0, "read-only observation cannot settle a debit");
+    assert_eq!(current.consumed_tokens, 0);
+    let durable_payload = owner
+        .get(typed.request_id.as_str())
+        .unwrap()
+        .request
+        .payload_digest
+        .clone();
+    let settlement = owner
+        .settle(
+            typed.request_id.as_str(),
+            claim.revision,
+            "a".repeat(64),
+            TerminalObservation {
+                request_id: typed.request_id.to_string(),
+                reservation_id: "reservation.1".to_owned(),
+                worker_id: worker.worker_id().to_owned(),
+                worker_generation: worker.worker_generation(),
+                model_digest: "2".repeat(64),
+                payload_digest: durable_payload,
+                terminal_observed: true,
+                terminal_status: Some(RequestState::Completed),
+                output_digest: Some(receipt.output_digest.to_string()),
+                consumed_tokens: cost.consumed_tokens(),
+                // This comes from an independent charging scheme, not a
+                // made-up conversion of tokens into quota units.
+                usage_units: 0,
+            },
+        )
+        .unwrap();
+    assert_eq!(settlement.state, RequestState::Completed);
+    assert_eq!(
+        read_neuron_observed_cost_source_v1(
+            &owner, &worker, &typed, &receipt, &cost, 100,
+        ),
+        Err(NeuronObservedCostSourceErrorV1::Stale)
+    );
+}

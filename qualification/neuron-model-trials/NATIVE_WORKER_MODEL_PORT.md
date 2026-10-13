@@ -512,3 +512,41 @@ have not changed. Future NDU may evaluate the diagnostic only after an
 independent, trusted metering Owner correlates it with resource grants,
 actual route/fence and Ledger outcomes. Current experiments provide NO
 signed total token/CPU cost evidence and no production promotion authority.
+
+
+## Read-only cost/Dispatching correlation and Worker incarnation fence
+
+The physical Worker now binds each known-terminal token-cost observation to an
+opaque **in-process Worker incarnation identity**. Two Worker instances may
+present the same public ID, generation and ModelManifest after a restart, yet
+cannot inherit one another's prior observed cost. The opaque token is never
+serialized, hashed by pointer address, treated as a host attestation or accepted
+as a persistent generation fence.
+
+The additive read-only
+read_neuron_observed_cost_source_v1 / revalidate_neuron_observed_cost_source_v1
+functions compare one verified typed NeuronFeatureReceiptV1 and one
+WorkerNeuronTokenCostV1 against the **current real inference.control durable
+Dispatching WAL** and the exact in-memory Worker. Checks include original
+typed request digest, reservation/assignment and revision, worker incarnation,
+selected loaded model/weights/tokenizer/runtime tuple, typed receipt digest
+and known-terminal observed token count within request/reservation token caps.
+
+The returned NeuronObservedCostSourceV1 has DENY_ALL and one recomputable
+diagnostic digest. It does NOT invoke the Worker, settle a WAL entry, charge
+resource quota units, assign monetary costs, infer NDU utility or let a
+request rerun. A self-rehashed report is rejected by an independent fresh read.
+Cancelling/settled/unknown requests, Worker restart, model unload and missing
+current resource grant block revalidation. A known failure can have actual
+observed token use; Indeterminate/Cancelled cannot produce a numeric cost
+in this profile. The separate quota_units field is not tokens and cannot be
+converted without an authenticated independent usage schedule.
+
+These diagnostics are transient. Future cross-process settlement requires the
+existing durable owner to append independently authenticated terminal facts
+and reconcile unknown physical effects; no opaque process incarnation pointer
+is a substitute for an external boot/session identity. Unit tests use a
+fixture ModelDriver with real fsynced Dispatching, current Worker, actual typed
+ModelPort, WAL reopen, stale/cancelled and replacement-Worker refusals. No
+real Laya training or selected production CNS route is established here.
+

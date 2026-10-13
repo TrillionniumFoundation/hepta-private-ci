@@ -172,14 +172,14 @@ pub trait ModelDriver {
 /// A restart must NEVER inherit a former Worker's file-load tickets merely
 /// because its public worker ID, generation, handle and load ordinal repeat.
 #[derive(Clone, Debug)]
-pub(super) struct WorkerInstanceIdentity(Arc<()>);
+pub(crate) struct WorkerInstanceIdentity(Arc<()>);
 
 impl WorkerInstanceIdentity {
     fn new() -> Self {
         Self(Arc::new(()))
     }
 
-    pub(super) fn matches(&self, other: &Self) -> bool {
+    pub(crate) fn matches(&self, other: &Self) -> bool {
         Arc::ptr_eq(&self.0, &other.0)
     }
 }
@@ -261,6 +261,13 @@ impl<D: ModelDriver> InferenceWorker<D> {
     /// restart changes this; it is not an independent signed deployment fence.
     pub fn worker_generation(&self) -> u64 {
         self.generation
+    }
+
+    /// In-memory incarnation identity. A restarted Worker may reuse a
+    /// public ID/generation but cannot inherit the previous instance token.
+    /// Never serialize, hash a pointer, or use this as a signed host fence.
+    pub(crate) fn worker_instance_identity(&self) -> WorkerInstanceIdentity {
+        self.instance_identity.clone()
     }
 
     /// An ambiguous physical model-load or unload outcome requires external
