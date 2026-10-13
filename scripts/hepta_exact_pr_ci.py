@@ -120,14 +120,20 @@ def run_started_after_merge(run: dict, merge_created_at: str | None) -> bool:
 
 
 def evaluate(
-    pr: dict, runs: Sequence[dict], repo: str, number: int, sha: str,
-    *, merge_created_at: str | None = None,
+    pr: dict,
+    runs: Sequence[dict],
+    repo: str,
+    number: int,
+    sha: str,
+    *,
+    merge_created_at: str | None = None,
 ) -> dict:
     _, base = validate_pr(pr, repo, number, sha)
     statuses = {}
     for workflow in REQUIRED:
         candidates = [
-            run for run in runs
+            run
+            for run in runs
             if run.get("name") == workflow
             and exact_pr_run(run, repo, number, sha, base)
             and run_started_after_merge(run, merge_created_at)
@@ -159,17 +165,17 @@ def evaluate(
 def current(repo: str, number: int, sha: str) -> tuple[dict, dict]:
     pr = gh_json(f"repos/{repo}/pulls/{number}")
     validate_pr(pr, repo, number, sha)
-    response = gh_json(
-        f"repos/{repo}/actions/runs?head_sha={sha}&per_page=100"
-    )
+    response = gh_json(f"repos/{repo}/actions/runs?head_sha={sha}&per_page=100")
     runs = response.get("workflow_runs")
     if not isinstance(runs, list):
         raise ValueError("GitHub Actions did not return the exact-head run list")
-    merge = prospective_merge_identity(
-        repo, number, sha, pr["base"]["sha"]
-    )
+    merge = prospective_merge_identity(repo, number, sha, pr["base"]["sha"])
     report = evaluate(
-        pr, runs, repo, number, sha,
+        pr,
+        runs,
+        repo,
+        number,
+        sha,
         merge_created_at=(
             merge.get("merge_created_at") if merge["qualified"] else None
         ),
@@ -185,7 +191,8 @@ def main() -> int:
     parser.add_argument("--pr", type=int, required=True)
     parser.add_argument("--expected-sha", required=True)
     parser.add_argument(
-        "--dispatch-source", action="store_true",
+        "--dispatch-source",
+        action="store_true",
         help="dispatch two manual source workflows; never claim full PR CI green",
     )
     args = parser.parse_args()

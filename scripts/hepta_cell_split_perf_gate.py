@@ -80,18 +80,22 @@ def exact_count(value: Any, field: str, *, allow_zero: bool = True) -> int:
     return value
 
 
-def validate_run_numbers(entry: dict[str, Any], scope: int, mode: str) -> dict[str, Any]:
+def validate_run_numbers(
+    entry: dict[str, Any], scope: int, mode: str
+) -> dict[str, Any]:
     """Validate one host row *before* spending resources on the other 15 runs."""
     key = (scope, mode)
     vals = {
         field: (
             exact_count(
-                entry.get(field), f"{scope}/{mode}/{field}",
+                entry.get(field),
+                f"{scope}/{mode}/{field}",
                 allow_zero=field not in ("attempted", "completed"),
             )
             if field in COUNT_FIELDS
             else positive_number(
-                entry.get(field), f"{scope}/{mode}/{field}",
+                entry.get(field),
+                f"{scope}/{mode}/{field}",
                 allow_zero=field != "elapsed_seconds",
             )
         )
@@ -104,9 +108,7 @@ def validate_run_numbers(entry: dict[str, Any], scope: int, mode: str) -> dict[s
     if vals["native_batch_requests"] > vals["completed"]:
         raise InvalidEvidence(f"{key}: impossible native batch accounting")
     if vals["native_batch_requests"] and not vals["native_backend_calls"]:
-        raise InvalidEvidence(
-            f"{key}: native batch requests without a backend call"
-        )
+        raise InvalidEvidence(f"{key}: native batch requests without a backend call")
     if vals["negative_transfer_rate"] > 1:
         raise InvalidEvidence(f"{key}: negative-transfer rate is not a fraction")
     vals["throughput_rps"] = vals["completed"] / vals["elapsed_seconds"]

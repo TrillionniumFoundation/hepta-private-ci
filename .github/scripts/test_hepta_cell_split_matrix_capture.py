@@ -129,14 +129,16 @@ Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(json.dumps(row))
             run["argv"] = [sys.executable, "-c", script]
         bad = observed(packet)
         bad["attempted"] = (1 << 53) + 1
-        bad["completed"] = (1 << 53)
+        bad["completed"] = 1 << 53
         bad["failed_requests"] = 0
         with tempfile.TemporaryDirectory() as directory:
             output = Path(directory) / "matrix"
             with (
                 patch("hepta_cell_split_matrix_capture.verify_exact_source"),
                 patch.dict(os.environ, {"HEPTA_TEST_MEASUREMENT": json.dumps(bad)}),
-                self.assertRaisesRegex(InvalidEvidence, "inconsistent terminal request"),
+                self.assertRaisesRegex(
+                    InvalidEvidence, "inconsistent terminal request"
+                ),
             ):
                 execute_matrix(packet, ROOT, output, 30)
             self.assertTrue((output / "64-no_split.stdout.log").exists())
@@ -174,7 +176,9 @@ Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(json.dumps(row))
             # source-only unit test; they never authorize production.
             data = {"measurement": observed(packet)}
             with (
-                patch("hepta_cell_split_matrix_capture.verify_exact_source") as source_check,
+                patch(
+                    "hepta_cell_split_matrix_capture.verify_exact_source"
+                ) as source_check,
                 patch.dict(os.environ, {"HEPTA_TEST_PACKET": json.dumps(data)}),
             ):
                 result = execute_matrix(packet, ROOT, output, 30)
@@ -224,9 +228,16 @@ Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(
             )
             subprocess.run(
                 [
-                    "git", "-c", "user.name=Hepta Test",
-                    "-c", "user.email=hepta-test@example.invalid",
-                    "-c", "commit.gpgsign=false", "commit", "-qm", "freeze",
+                    "git",
+                    "-c",
+                    "user.name=Hepta Test",
+                    "-c",
+                    "user.email=hepta-test@example.invalid",
+                    "-c",
+                    "commit.gpgsign=false",
+                    "commit",
+                    "-qm",
+                    "freeze",
                 ],
                 cwd=checkout,
                 check=True,
@@ -246,7 +257,6 @@ Path(os.environ["HEPTA_CELL_SPLIT_RESULT_PATH"]).write_text(
             self.assertTrue((output / "64-no_split.stdout.log").exists())
             self.assertFalse((output / "64-logical_split.stdout.log").exists())
             self.assertFalse((output / "measured-matrix.json").exists())
-
 
 
 if __name__ == "__main__":
