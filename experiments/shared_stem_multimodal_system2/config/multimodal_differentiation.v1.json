@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.shared-stem-experiment-config.v1",
+  "version": 1,
+  "experiment_id": "EXPERIMENT-3-MULTIMODAL-DIFFERENTIATION",
+  "kind": "multimodal_differentiation",
+  "description": "Paired modality paths over one frozen shared latent Stem and modality-specific adapters/heads.",
+  "arms": [
+    {"id": "text_text", "input_modality": "text", "output_modality": "text", "family": "semantic_generation"},
+    {"id": "image_text", "input_modality": "image", "output_modality": "text", "family": "perception_generation"},
+    {"id": "audio_text", "input_modality": "audio", "output_modality": "text", "family": "perception_generation"},
+    {"id": "video_text", "input_modality": "video", "output_modality": "text", "family": "temporal_perception_generation"},
+    {"id": "text_image", "input_modality": "text", "output_modality": "image", "family": "conditional_generation"},
+    {"id": "text_audio", "input_modality": "text", "output_modality": "audio", "family": "conditional_generation"}
+  ],
+  "required_metrics": ["task_utility", "active_flops", "latency_ms", "peak_rss_bytes", "gpu_peak_bytes", "retention_score", "old_task_regression"],
+  "evaluation": {
+    "split": "holdout",
+    "paired_by": "example_id",
+    "min_rows_per_arm": 1,
+    "context_fields": ["objective_digest", "stem_digest", "dataset_digest", "host_profile_digest", "measurement_interval_digest", "seed", "cell_count", "training_budget"],
+    "same_stem_digest_required": true,
+    "same_seed_required": true,
+    "independent_semantic_judgement": false
+  },
+  "budgets": {
+    "max_active_flops": 1000000000000000,
+    "max_latency_ms": 60000,
+    "max_peak_memory_bytes": 1099511627776
+  },
+  "authority": {
+    "production_accepted": false,
+    "selection_authority": false,
+    "training_authority": false
+  }
+}

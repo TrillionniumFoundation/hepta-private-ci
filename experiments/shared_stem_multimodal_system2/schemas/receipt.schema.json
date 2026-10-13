@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hepta.invalid/schemas/hepta.shared-stem-experiment-receipt.v1.json",
+  "title": "Shared Stem experiment receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "experiment_id", "kind", "config_digest", "observation_digest", "observation_count", "execution_context", "arm_artifact_digests", "result", "receipt_digest", "authority"],
+  "properties": {
+    "schema": {"const": "hepta.shared-stem-experiment-receipt.v1"},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "kind": {"enum": ["multimodal_differentiation", "ndu_system2_ablation"]},
+    "config_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "observation_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "observation_count": {"type": "integer", "minimum": 1},
+    "execution_context": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["objective_digest", "stem_digest", "dataset_digest", "host_profile_digest", "measurement_interval_digest", "seed", "cell_count", "training_budget"],
+      "properties": {
+        "objective_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "stem_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "dataset_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "host_profile_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "measurement_interval_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "model_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "preprocessor_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "head_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "seed": {"type": "integer", "minimum": 0},
+        "cell_count": {"type": "integer", "minimum": 1},
+        "training_budget": {"type": "integer", "minimum": 1}
+      }
+    },
+    "arm_artifact_digests": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["model_digest", "preprocessor_digest", "head_digest"],
+        "properties": {
+          "model_digest": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+          "preprocessor_digest": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}},
+          "head_digest": {"type": "array", "items": {"type": "string", "pattern": "^[0-9a-f]{64}$"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "result": {"type": "object", "required": ["evaluation_split", "arms", "insufficient_arms", "unpaired_arms", "budget_violations", "disposition", "winner"]},
+    "receipt_digest": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "authority": {"const": {"authority_delta": "none", "production_accepted": false, "selection_authority": false, "training_authority": false}}
+  }
+}

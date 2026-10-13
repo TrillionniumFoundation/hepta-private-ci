@@ -1,0 +1,47 @@
+{
+  "schema": "hepta.shared-stem-experiment-plan.v1",
+  "production_accepted": false,
+  "claim_ceiling": "bounded_task_distribution_only",
+  "common_controls": {
+    "same_cell_count": true,
+    "same_training_budget": true,
+    "same_evaluation_split": true,
+    "independent_evaluator": true,
+    "old_task_sentinel": true,
+    "missing_metric_disposition": "insufficient_evidence"
+  },
+  "experiments": [
+    {
+      "id": "stem-selection",
+      "arms": ["small_stem_head", "medium_stem_head", "421m_stem_head", "replicate_full_421m"],
+      "metrics": ["task_utility", "active_flops", "latency_p50", "latency_p95", "latency_p99", "rss_bytes", "peak_memory_bytes", "negative_transfer", "new_cell_incremental_cost"]
+    },
+    {
+      "id": "reader-four-arm",
+      "arms": ["no_evidence", "ordinary_retrieval", "sufficient_evidence", "key_premise_removed"],
+      "metrics": ["answer_accuracy", "evidence_support", "abstention", "citation_precision", "reader_error_rate"]
+    },
+    {
+      "id": "multimodal-baselines",
+      "arms": ["text_text", "image_text", "audio_text", "video_text", "text_image", "text_audio"],
+      "metrics": ["task_success", "cross_modal_alignment", "generation_quality", "latency", "memory", "old_task_retention"]
+    },
+    {
+      "id": "system2-ndu-ablation",
+      "arms": ["no_system2", "replay_only", "routing", "split_proposal", "full_resource_allocation"],
+      "metrics": ["external_task_utility", "resource_utility", "old_task_regression", "calibration", "ood", "internal_ndu_utility"]
+    },
+    {
+      "id": "cell-split",
+      "stages": ["parent", "split_candidate", "state_migration", "retained_task_test", "independent_evaluation", "canary", "rollback"],
+      "activation": "forbidden_until_external_selection"
+    },
+    {
+      "id": "compiled-computer-use",
+      "actions": ["read_accessibility_tree", "click", "type", "scroll", "capture_region"],
+      "execution": "typed_ir_only",
+      "arbitrary_memory_execution": false,
+      "metrics": ["latency_p50", "latency_p95", "failure_recovery", "capability_denials", "rollback"]
+    }
+  ]
+}

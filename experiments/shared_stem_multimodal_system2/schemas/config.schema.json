@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hepta.invalid/schemas/hepta.shared-stem-experiment-config.v1.json",
+  "title": "Shared Stem experiment config",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["schema", "version", "experiment_id", "kind", "arms", "required_metrics", "evaluation", "budgets", "authority"],
+  "properties": {
+    "schema": {"const": "hepta.shared-stem-experiment-config.v1"},
+    "version": {"const": 1},
+    "experiment_id": {"type": "string", "minLength": 1},
+    "kind": {"enum": ["multimodal_differentiation", "ndu_system2_ablation"]},
+    "arms": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["id"], "properties": {"id": {"type": "string", "minLength": 1}}}},
+    "required_metrics": {"type": "array", "items": {"type": "string"}},
+    "evaluation": {"type": "object", "required": ["split", "paired_by", "min_rows_per_arm", "context_fields"]},
+    "budgets": {"type": "object", "required": ["max_active_flops", "max_latency_ms", "max_peak_memory_bytes"]},
+    "authority": {"const": {"production_accepted": false, "selection_authority": false, "training_authority": false}}
+  }
+}
