@@ -8,6 +8,7 @@ on:
       - 'codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs'
       - 'codex-rs/hepta-memory/src/cognitive_store.rs'
       - 'codex-rs/hepta-memory/src/cognitive_schema_tests.rs'
+      - 'codex-rs/hepta-agentd/tests/support/terminal_cell_owner.rs'
       - '.github/workflows/hepta-neuron-windows-durable-ledger.yml'
 
 permissions:
@@ -40,3 +41,6 @@ jobs:
       - name: Real Agentd retrieval-learning Ledger and witness persistence
         shell: bash
         run: cargo +1.95.0 test --locked -p codex-hepta-agentd --lib 'cognitive_retrieval_learning::tests::' -- --nocapture
+      - name: Real terminal Cell decision/outcome, WAL restart and source withdrawal
+        shell: bash
+        run: cargo +1.95.0 test --locked -p codex-hepta-agentd --test terminal_cell_owner -- --nocapture
