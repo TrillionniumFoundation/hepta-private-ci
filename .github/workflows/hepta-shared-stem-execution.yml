@@ -29,7 +29,7 @@ jobs:
         run: |
           python3 -m venv "$RUNNER_TEMP/hepta-execution-env"
           "$RUNNER_TEMP/hepta-execution-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/hepta-execution-env/bin/pip" install numpy==2.2.6 safetensors==0.7.0 psutil==7.1.0 playwright==1.57.0 ruff==0.14.0
+          "$RUNNER_TEMP/hepta-execution-env/bin/pip" install numpy==2.2.6 safetensors==0.7.0 psutil==7.1.0 playwright==1.57.0 ruff==0.14.0 pillow==12.3.0
           "$RUNNER_TEMP/hepta-execution-env/bin/python" -m playwright install --with-deps chromium
       - name: Actual tests and browser comparison
         env:
@@ -39,9 +39,10 @@ jobs:
           PY="$RUNNER_TEMP/hepta-execution-env/bin/python"
           git rev-parse HEAD > "$RUNNER_TEMP/hepta-execution-source.txt"
           "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-execution-source.txt"
-          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{execution,controls,browser_loop,public_smoke,test_execution,test_browser}.py
-          "$PY" -m unittest -v experiments.shared_stem_cell.test_execution experiments.shared_stem_cell.test_browser experiments.shared_stem_head_matrix.tests.test_runner 2>&1 | tee "$RUNNER_TEMP/hepta-execution-tests.txt"
+          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{execution,controls,wire,browser_loop,browser_recovery,checkpoint_conversion,public_smoke,media_execution,hf_integration_checks,test_execution,test_browser,test_browser_recovery,test_checkpoint_conversion,test_media_execution}.py
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_execution experiments.shared_stem_cell.test_browser experiments.shared_stem_head_matrix.tests.test_runner experiments.shared_stem_cell.test_checkpoint_conversion experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.test_browser_recovery 2>&1 | tee "$RUNNER_TEMP/hepta-execution-tests.txt"
           "$PY" -m experiments.shared_stem_cell.browser_loop --output "$RUNNER_TEMP/hepta-browser-study" --tasks 24
+          "$PY" -m experiments.shared_stem_cell.browser_recovery --output "$RUNNER_TEMP/hepta-controller-recovery"
           git diff --exit-code
       - name: Retain actual results and failures
         if: always()
@@ -52,6 +53,7 @@ jobs:
             ${{ runner.temp }}/hepta-execution-source.txt
             ${{ runner.temp }}/hepta-execution-tests.txt
             ${{ runner.temp }}/hepta-browser-study
+            ${{ runner.temp }}/hepta-controller-recovery
   public-pretrained-smoke:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
@@ -65,7 +67,7 @@ jobs:
         run: |
           python3 -m venv "$RUNNER_TEMP/hepta-pretrained-env"
           "$RUNNER_TEMP/hepta-pretrained-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/hepta-pretrained-env/bin/pip" install transformers==4.57.1 datasets==4.2.0 numpy==2.2.6 safetensors==0.7.0 psutil==7.1.0 sentencepiece==0.2.1
+          "$RUNNER_TEMP/hepta-pretrained-env/bin/pip" install transformers==4.57.1 datasets==4.2.0 numpy==2.2.6 safetensors==0.7.0 psutil==7.1.0 sentencepiece==0.2.1 pillow==12.3.0
       - name: Real public weights and public records, not future evidence
         env:
           PYTHONDONTWRITEBYTECODE: "1"
@@ -76,7 +78,8 @@ jobs:
           PY="$RUNNER_TEMP/hepta-pretrained-env/bin/python"
           git rev-parse HEAD > "$RUNNER_TEMP/hepta-pretrained-source.txt"
           "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-pretrained-source.txt"
-          "$PY" -m experiments.shared_stem_cell.public_smoke --output "$RUNNER_TEMP/hepta-public-study" 2>&1 | tee "$RUNNER_TEMP/hepta-public-log.txt"
+          "$PY" -m unittest -v experiments.shared_stem_cell.hf_integration_checks 2>&1 | tee "$RUNNER_TEMP/hepta-hf-api-tests.txt"
+          "$PY" -m experiments.shared_stem_cell.public_smoke --allow-weights-only-conversion --output "$RUNNER_TEMP/hepta-public-study" 2>&1 | tee "$RUNNER_TEMP/hepta-public-log.txt"
           git diff --exit-code
       - name: Retain manifests, predictions, counters and failures (no weight upload)
         if: always()
@@ -86,6 +89,11 @@ jobs:
           path: |
             ${{ runner.temp }}/hepta-pretrained-source.txt
             ${{ runner.temp }}/hepta-public-log.txt
+            ${{ runner.temp }}/hepta-hf-api-tests.txt
+            ${{ runner.temp }}/hepta-public-study/model-source.json
+            ${{ runner.temp }}/hepta-public-study/conversion/conversion.json
+            ${{ runner.temp }}/hepta-public-study/conversion/worker.log
+            ${{ runner.temp }}/hepta-public-study/conversion/failure.json
             ${{ runner.temp }}/hepta-public-study/acquisition.json
             ${{ runner.temp }}/hepta-public-study/manifest.json
             ${{ runner.temp }}/hepta-public-study/dataset.jsonl

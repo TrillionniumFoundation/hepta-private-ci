@@ -5,20 +5,74 @@ immutable Hub revisions and seal them before downloading any weights/data.
 This narrow public smoke is not a Laya comparison or a model-selection gate.
 """
 import argparse
-import hashlib
 from pathlib import Path
 import shutil
 
 from experiments.shared_stem_cell.execution import canonical, run, sha, write_once
+from experiments.shared_stem_cell.checkpoint_conversion import convert, digest_file
 
 MODEL = "jhu-clsp/mmBERT-small"
 DATASET = "fancyzhx/ag_news"
 
 
-def main(root: Path):
+def stage_model(root, model_id, revision, *, kind, allow_conversion=False):
+    """Acquire exact public artifacts, then optionally convert an explicitly accepted bin."""
+    from huggingface_hub import HfApi, snapshot_download
+    info = HfApi().model_info(model_id, revision=revision, files_metadata=True)
+    if info.sha != revision:
+        raise ValueError("immutable model lookup drift")
+    siblings = {item.rfilename: item for item in info.siblings}
+    safe = sorted(name for name in siblings if name.endswith(".safetensors"))
+    names = [name for name in siblings if name.endswith((".json", ".txt", ".model")) or name == "README.md"]
+    conversion = None
+    if safe:
+        names += safe
+    else:
+        if allow_conversion is not True or "pytorch_model.bin" not in siblings:
+            raise ValueError("no safetensors; explicit separate weights-only conversion required")
+        names.append("pytorch_model.bin")
+    for name in names:
+        path = Path(name)
+        if path.is_absolute() or not path.parts or ".." in path.parts:
+            raise ValueError("invalid public artifact path")
+    # Do not start a multi-gigabyte or unbounded acquisition from a metadata guess.
+    sizes = [siblings[name].size for name in names]
+    if any(type(size) is not int or size < 0 for size in sizes) or sum(sizes) > 2 * 1024**3:
+        raise ValueError("unknown or excessive public snapshot size")
+    lfs = getattr(siblings.get("pytorch_model.bin"), "lfs", None)
+    expected = (lfs.get("sha256") if isinstance(lfs, dict) else getattr(lfs, "sha256", None))
+    if not safe and (not isinstance(expected, str) or len(expected) != 64):
+        raise ValueError("publisher LFS SHA256 required before bin acquisition")
+    write_once(root / "model-source.json", {"model_id": model_id, "revision": revision,
+        "files": names, "declared_bytes": sum(sizes), "source_bin_sha256": expected if not safe else None,
+        "conversion_explicitly_accepted": allow_conversion, "production_accepted": False})
+    snapshot = Path(snapshot_download(model_id, revision=revision, allow_patterns=names,
+                                     cache_dir=root / "download-cache"))
+    model_dir = root / "model"
+    model_dir.mkdir(exist_ok=False)
+    for name in names:
+        if name == "pytorch_model.bin":
+            continue
+        source = snapshot / name
+        target = model_dir / name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(source, target, follow_symlinks=True)
+    if not safe:
+        # Preserve source separately; inference cannot discover or unpickle it.
+        original = root / "source-weights.bin"
+        shutil.copyfile(snapshot / "pytorch_model.bin", original, follow_symlinks=True)
+        conversion = convert(original, expected, root / "conversion", accepted=allow_conversion)
+        shutil.copyfile(root / "conversion/model.safetensors", model_dir / "model.safetensors")
+    files = {p.relative_to(model_dir).as_posix(): digest_file(p)
+             for p in sorted(model_dir.rglob("*")) if p.is_file()}
+    return {"path": "model", "kind": kind, "revision": revision, "files": files,
+            "model_id": model_id, "conversion": conversion}
+
+
+def main(root: Path, *, allow_conversion=False):
     import torch
     from datasets import load_dataset
-    from huggingface_hub import HfApi, snapshot_download
+    from huggingface_hub import HfApi
 
     root.mkdir(parents=True, exist_ok=False)
     torch.set_num_threads(2)
@@ -36,20 +90,8 @@ def main(root: Path):
         "eligibility": "nonempty UTF-8 text <= 768 bytes; exact-content dedup before label access",
         "selection": "SHA256 text order; 64 train, 32 calibration, 32 test",
         "independent_evaluation": False, "production_accepted": False})
-    snapshot = Path(snapshot_download(MODEL, revision=model_info.sha,
-        allow_patterns=["*.json", "*.safetensors", "*.txt", "*.model", "README.md"],
-        cache_dir=root / "download-cache"))
-    # Copy to ordinary immutable input files; execution never follows Hub symlinks.
-    model_dir = root / "model"
-    shutil.copytree(snapshot, model_dir, symlinks=False)
-    files = {}
-    for path in sorted(model_dir.rglob("*")):
-        if path.is_file():
-            h = hashlib.sha256()
-            with path.open("rb") as stream:
-                for block in iter(lambda: stream.read(1024**2), b""):
-                    h.update(block)
-            files[path.relative_to(model_dir).as_posix()] = h.hexdigest()
+    model = stage_model(root, MODEL, model_info.sha, kind="masked_lm",
+                        allow_conversion=allow_conversion)
     # Datasets 4.x rejects executable dataset scripts; this repository is Parquet.
     selected, seen = {}, set()
     for original_split in ("train", "test"):
@@ -86,7 +128,7 @@ def main(root: Path):
         "temporal": False, "steps": 20, "seed": 20261013, "batch_size": 8,
         "maximum_tokens": 512, "run_controls": True, "measure_sharing": True,
         "dataset": {"path": "dataset.jsonl", "sha256": sha(raw)},
-        "model": {"path": "model", "kind": "masked_lm", "revision": model_info.sha, "files": files}}
+        "model": model}
     write_once(root / "manifest.json", config)
     return run(root / "manifest.json", root / "execution")
 
@@ -94,4 +136,6 @@ def main(root: Path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
-    main(parser.parse_args().output)
+    parser.add_argument("--allow-weights-only-conversion", action="store_true")
+    args = parser.parse_args()
+    main(args.output, allow_conversion=args.allow_weights_only_conversion)

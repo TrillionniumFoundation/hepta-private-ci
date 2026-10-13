@@ -16,7 +16,7 @@ import sys
 import tempfile
 import time
 
-from experiments.shared_stem_cell.execution import InputError, canonical, decode, sha, write_once
+from experiments.shared_stem_cell.wire import InputError, canonical, decode, sha, write_once
 
 PROTOCOL = "2025-11-25"
 MAX_WIRE = 65536

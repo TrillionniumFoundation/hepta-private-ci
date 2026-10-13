@@ -11,7 +11,6 @@ from collections import OrderedDict
 from contextlib import contextmanager
 from dataclasses import dataclass
 import hashlib
-import json
 import math
 import os
 from pathlib import Path
@@ -24,34 +23,7 @@ from torch import nn
 from torch.nn import functional as F
 
 
-class InputError(ValueError):
-    """An input cannot be interpreted under the frozen experiment contract."""
-
-
-def canonical(value) -> bytes:
-    return (json.dumps(value, sort_keys=True, separators=(",", ":"),
-                       ensure_ascii=False, allow_nan=False) + "\n").encode()
-
-
-def sha(raw: bytes) -> str:
-    return hashlib.sha256(raw).hexdigest()
-
-
-def _pairs(items):
-    result = {}
-    for key, value in items:
-        if key in result:
-            raise InputError(f"duplicate JSON key: {key}")
-        result[key] = value
-    return result
-
-
-def decode(raw: bytes):
-    def invalid(value):
-        raise InputError(f"nonfinite JSON number: {value}")
-    value = json.loads(raw, object_pairs_hook=_pairs, parse_constant=invalid)
-    canonical(value)  # rejects exponent overflow as well as explicit NaN
-    return value
+from experiments.shared_stem_cell.wire import InputError, canonical, decode, sha, write_once
 
 
 def integer(value, low, high, name):
@@ -73,19 +45,10 @@ def bound_file(path: Path, expected: str, maximum=16 * 1024 * 1024) -> bytes:
     return raw
 
 
-def write_once(path: Path, value):
-    raw = canonical(value)
-    with path.open("xb") as stream:
-        stream.write(raw)
-        stream.flush()
-        os.fsync(stream.fileno())
-    return sha(raw)
-
-
 def tensor_digest(value: torch.Tensor) -> str:
     value = value.detach().cpu().contiguous()
     return sha(canonical([str(value.dtype), list(value.shape)])
-               + value.view(torch.uint8).numpy().tobytes())
+               + value.reshape(-1).view(torch.uint8).numpy().tobytes())
 
 
 def parameters(model: nn.Module):
@@ -222,6 +185,35 @@ def verify_snapshot(root: Path, manifest: dict):
     return sha(canonical(manifest))
 
 
+def verify_materialized(loaded, info, root, manifest):
+    """Check every saved tensor and exact storage aliases; shared by frozen towers."""
+    from safetensors import safe_open
+    fields = ("missing_keys", "unexpected_keys", "mismatched_keys", "error_msgs")
+    if not isinstance(info, dict) or any(k not in info or info[k] for k in fields):
+        raise InputError("incomplete model load")
+    state = loaded.state_dict()
+    covered, aliases = set(), set()
+    def alias(value):
+        return (value.data_ptr(), tuple(value.shape), tuple(value.stride()), str(value.dtype))
+    for name in manifest["files"]:
+        if not name.endswith(".safetensors"):
+            continue
+        with safe_open(str(root / name), framework="pt", device="cpu") as saved:
+            for key in saved.keys():
+                tensor = saved.get_tensor(key)
+                if key in covered or key not in state or tensor.shape != state[key].shape:
+                    raise InputError("snapshot tensor inventory mismatch")
+                if not bool(torch.isfinite(tensor).all()) or not torch.equal(tensor.to(state[key].dtype), state[key]):
+                    raise InputError("snapshot tensor materialization mismatch")
+                covered.add(key)
+                aliases.add(alias(state[key]))
+    if any(k not in covered and alias(v) not in aliases for k, v in state.items()):
+        raise InputError("unverified loaded tensor")
+    return {"verified_tensor_keys": len(covered), "state_keys": len(state),
+            "loaded_tensor_bytes": sum(v.numel() * v.element_size() for v in state.values()),
+            "storage_aliases_validated": True}
+
+
 class LocalEncoder:
     """Stock HF encoder/MLM only. A Laya Decision Head is NOT silently dropped."""
     simulated = False
@@ -241,28 +233,9 @@ class LocalEncoder:
         loaded, info = factories[kind].from_pretrained(
             root, local_files_only=True, trust_remote_code=False, use_safetensors=True,
             output_loading_info=True, attn_implementation="eager")
-        if any(info.get(k) for k in ("missing_keys", "unexpected_keys", "mismatched_keys", "error_msgs")):
-            raise InputError("incomplete model load")
         self.loaded = loaded.cpu().float().eval()
         self.loaded.requires_grad_(False)
-        # A clean loading report is not enough: compare every materialized tensor.
-        from safetensors import safe_open
-        state = self.loaded.state_dict()
-        covered, pointers = set(), set()
-        for name in manifest["files"]:
-            if not name.endswith(".safetensors"):
-                continue
-            with safe_open(str(root / name), framework="pt", device="cpu") as saved:
-                for key in saved.keys():
-                    tensor = saved.get_tensor(key)
-                    if key in covered or key not in state or tensor.shape != state[key].shape:
-                        raise InputError("snapshot tensor inventory mismatch")
-                    if not torch.equal(tensor.to(state[key].dtype), state[key]):
-                        raise InputError("snapshot tensor materialization mismatch")
-                    covered.add(key)
-                    pointers.add((state[key].data_ptr(), tuple(state[key].shape)))
-        if any(k not in covered and (v.data_ptr(), tuple(v.shape)) not in pointers for k, v in state.items()):
-            raise InputError("unverified loaded tensor")
+        self.materialization = verify_materialized(self.loaded, info, root, manifest)
         verify_snapshot(root, manifest)
         self.model = self.loaded.base_model
         self.forward_calls = 0
