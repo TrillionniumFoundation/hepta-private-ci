@@ -39,6 +39,7 @@ jobs:
         run: |
           python3 -m compileall -q qualification/matrix-security
           python3 -m unittest discover -v -s qualification/matrix-security -p 'test_narrow_matrix_sdk_workspace.py'
+          python3 -m unittest discover -v -s qualification/matrix-security -p 'test_sqlite_abi_trial.py'
       - name: Confirm read-only checkout
         if: always()
         run: |
@@ -135,6 +136,7 @@ jobs:
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$HEPTA_SHA"
           python3 -m unittest discover -v -s qualification/matrix-security -p 'test_narrow_matrix_sdk_workspace.py'
+          python3 -m unittest discover -v -s qualification/matrix-security -p 'test_sqlite_abi_trial.py'
       - name: Fetch exact Matrix 0.19.1 released source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
