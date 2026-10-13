@@ -3477,6 +3477,10 @@ mod takeover_regression_tests {
 }
 
 #[cfg(all(test, unix))]
+#[allow(
+    clippy::expect_used,
+    reason = "Unix-only Final-use integration fixtures deliberately fail immediately on invalid setup",
+)]
 mod final_use_dispatch_tests {
     use super::*;
     use codex_hepta_contracts::FinalUseGrant;
