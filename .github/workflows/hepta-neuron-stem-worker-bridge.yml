@@ -43,13 +43,13 @@ jobs:
         with:
           persist-credentials: false
       - name: Install pinned Rust compiler and formatter
-        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt
       - name: Enforce exact full-source formatting
-        run: cargo +1.95.0 fmt --all -- --check
+        run: cargo +1.96.0 fmt --all -- --check
       - name: Execute actual signed TaskFlow/provider-contact and crash-recovery integration fixtures
-        run: cargo +1.95.0 test --locked -p codex-hepta-automation --test authorized_effect
+        run: cargo +1.96.0 test --locked -p codex-hepta-automation --test authorized_effect
       - name: Execute canonical circuit, context delivery, memory CAS and lease replay unit tests
-        run: cargo +1.95.0 test --locked -p codex-hepta-automation -p codex-hepta-context-compiler -p codex-hepta-memory --lib
+        run: cargo +1.96.0 test --locked -p codex-hepta-automation -p codex-hepta-context-compiler -p codex-hepta-memory --lib
 
   signed-stem-native-contracts:
     runs-on: ubuntu-24.04
@@ -62,12 +62,12 @@ jobs:
         with:
           persist-credentials: false
       - name: Install exact Rust toolchain
-        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt
       - name: Enforce full-repo Rust source format before focused signed contract
-        run: cargo +1.95.0 fmt --all -- --check
+        run: cargo +1.96.0 fmt --all -- --check
       - name: Exercise loaded Stem/Head and Ed25519 Final-use tests without suppressing E2E
         run: |
-          cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib 'model_worker::tests::' -- --nocapture
+          cargo +1.96.0 test --locked -p codex-hepta-infer-worker-host --lib 'model_worker::tests::' -- --nocapture
 
   scoped-stem-worker:
     runs-on: ubuntu-24.04
@@ -80,16 +80,16 @@ jobs:
         with:
           persist-credentials: false
       - name: Install pinned Rust toolchain and components
-        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt,clippy
       - name: Exact source formatting
-        run: cargo +1.95.0 fmt --all -- --check
+        run: cargo +1.96.0 fmt --all -- --check
       - name: Strict owner and transitive dependency Clippy (before heavyweight E2E)
-        run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets -- -D warnings
+        run: cargo +1.96.0 clippy --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --all-targets -- -D warnings
       - name: Build the exact-source Codex App Server executable for real Agentd E2E
         run: |
-          cargo +1.95.0 build --locked -p codex-app-server --bin codex-app-server
+          cargo +1.96.0 build --locked -p codex-app-server --bin codex-app-server
           test -x target/debug/codex-app-server
       - name: Typed inference core and loaded Worker driver unit tests
         env:
           HEPTA_TEST_CODEX_EXECUTABLE: ${{ github.workspace }}/codex-rs/target/debug/codex-app-server
-        run: cargo +1.95.0 test --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --lib
+        run: cargo +1.96.0 test --locked -p codex-hepta-infer-core -p codex-hepta-infer-worker-host --lib

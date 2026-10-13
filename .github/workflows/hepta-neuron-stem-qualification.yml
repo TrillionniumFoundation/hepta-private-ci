@@ -115,14 +115,14 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           persist-credentials: false
-      - name: Install pinned Rust 1.95.0 and formatting/clippy tools
-        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Install pinned Rust 1.96.0 and formatting/clippy tools
+        run: rustup toolchain install 1.96.0 --profile minimal --component rustfmt,clippy
       - name: Require exact Rust source formatting
-        run: cargo +1.95.0 fmt --all -- --check
+        run: cargo +1.96.0 fmt --all -- --check
       - name: Compile and execute shared Stem/Neuron contracts
-        run: cargo +1.95.0 test --locked -p codex-hepta-infer-core --lib
+        run: cargo +1.96.0 test --locked -p codex-hepta-infer-core --lib
       - name: Require scoped Rust Clippy
-        run: cargo +1.95.0 clippy --locked -p codex-hepta-infer-core --all-targets -- -D warnings
+        run: cargo +1.96.0 clippy --locked -p codex-hepta-infer-core --all-targets -- -D warnings
 
   secure-prompt-owner-platform:
     name: Secure Prompt Registry OS owner (no authorization)
@@ -149,24 +149,24 @@ jobs:
           git diff --check
       - name: Install pinned compiler
         shell: bash
-        run: rustup toolchain install 1.95.0 --profile minimal
+        run: rustup toolchain install 1.96.0 --profile minimal
       - name: Exercise genuine Unix secure Prompt Registry
         if: runner.os == 'Linux'
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.95.0 test --locked -p codex-hepta-prompt-registry --lib
-          cargo +1.95.0 test --locked -p codex-hepta-agentd --lib private_unix_prompt_owner_is_initialized_before_serving
+          cargo +1.96.0 test --locked -p codex-hepta-prompt-registry --lib
+          cargo +1.96.0 test --locked -p codex-hepta-agentd --lib private_unix_prompt_owner_is_initialized_before_serving
       - name: Prove genuine Windows private owner ACL, no-reparse, hardlink and recovery
         if: runner.os == 'Windows'
         shell: bash
         run: |
           set -euo pipefail
-          cargo +1.95.0 test --locked -p codex-utils-path --lib private_state_windows -- --test-threads=1
-          cargo +1.95.0 test --locked -p codex-hepta-prompt-registry --lib windows::tests:: -- --test-threads=1
-          cargo +1.95.0 test --locked -p codex-hepta-contracts --lib windows::tests:: -- --test-threads=1
-          cargo +1.95.0 test --locked -p codex-hepta-agentd --lib windows_prompt_runtime_ -- --test-threads=1
-          cargo +1.95.0 test --locked -p codex-hepta-agentd --lib serving_agent_survives_unrelated_registry_corruption -- --test-threads=1
+          cargo +1.96.0 test --locked -p codex-utils-path --lib private_state_windows -- --test-threads=1
+          cargo +1.96.0 test --locked -p codex-hepta-prompt-registry --lib windows::tests:: -- --test-threads=1
+          cargo +1.96.0 test --locked -p codex-hepta-contracts --lib windows::tests:: -- --test-threads=1
+          cargo +1.96.0 test --locked -p codex-hepta-agentd --lib windows_prompt_runtime_ -- --test-threads=1
+          cargo +1.96.0 test --locked -p codex-hepta-agentd --lib serving_agent_survives_unrelated_registry_corruption -- --test-threads=1
       - name: Assert no checkout mutations
         if: always()
         shell: bash
@@ -192,11 +192,11 @@ jobs:
           git diff --check
       - name: Install pinned Rust compiler
         shell: bash
-        run: rustup toolchain install 1.95.0 --profile minimal
+        run: rustup toolchain install 1.96.0 --profile minimal
       - name: Run real Windows wrapper and child cleanup tests
         shell: pwsh
         run: |
-          cargo +1.95.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-git-utils --lib git_process::tests:: -- --test-threads=1 --nocapture
+          cargo +1.96.0 test --locked --manifest-path codex-rs/Cargo.toml -p codex-git-utils --lib git_process::tests:: -- --test-threads=1 --nocapture
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Require unchanged repository checkout
         if: always()
