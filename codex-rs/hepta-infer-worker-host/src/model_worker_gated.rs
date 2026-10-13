@@ -1111,6 +1111,9 @@ mod tests {
             for index in 0..cell_count {
                 let mut candidate = head(&format!("cell.{index:04}"));
                 candidate.encoder_digest = encoder.to_string();
+                // A distinct exact Q24 result per Cell catches accidental
+                // Head swaps that identical reference weights would hide.
+                candidate.gate_q24[0] = Q24 + i64::try_from(index).expect("index") * 1_024;
                 candidates.push(candidate);
             }
             let mut selected = manifest_for(&candidates);
@@ -1207,8 +1210,14 @@ mod tests {
                     .run_shared_neuron_features_batch_v2(100, "model.gated", requests)
                     .expect("one genuine CPU driver batch");
                 assert_eq!(results.len(), 32);
-                for result in results {
-                    assert_eq!(result.drive_q24, vec![Q24 / 2]);
+                for (row, result) in results.into_iter().enumerate() {
+                    let index = offset + row;
+                    assert_eq!(result.cell_id.as_str(), format!("cell.{index:04}"));
+                    assert_eq!(result.head_digest, head_digests[index]);
+                    assert_eq!(
+                        result.drive_q24,
+                        vec![Q24 / 2 + i64::try_from(index).expect("index") * 512]
+                    );
                     assert_eq!(result.prediction_q24, vec![-Q24 / 4]);
                     assert!(!result.authority.grants_any());
                     assert_eq!(result.principal_id.as_str(), "principal.shared");
