@@ -40,6 +40,19 @@ jobs:
       - name: Install exact Rust toolchain
         shell: pwsh
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
-      - name: Preserve all provider terminal-policy tests and require Windows typecheck
+      - name: Check exact source Rustfmt without Windows workspace argv overflow
         shell: pwsh
-        run: cargo +1.95.0 check --locked -p codex-core --tests
+        run: rustfmt +1.95.0 --edition 2024 --check core/src/client_provider_policy_tests.rs
+      - name: Execute and count all six Windows provider terminal-policy tests
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          # The real module name in core/src/client.rs is provider_policy_tests.
+          # Filtering by the filename client_provider_policy_tests executes ZERO tests.
+          $output = @(cargo +1.95.0 test --locked -p codex-core --lib 'client::provider_policy_tests::' -- --nocapture 2>&1)
+          $output | Out-Host
+          if ($LASTEXITCODE -ne 0) { throw "Windows provider-policy tests exited $LASTEXITCODE" }
+          $summaries = @($output | Select-String -Pattern 'test result: ok\.\s+(\d+) passed; 0 failed; 0 ignored;')
+          if ($summaries.Count -ne 1) { throw 'Missing exact terminal Rust test success summary' }
+          $passed = [int]$summaries[0].Matches[0].Groups[1].Value
+          if ($passed -ne 6) { throw "Expected exactly 6 executed provider-policy tests; observed $passed" }
