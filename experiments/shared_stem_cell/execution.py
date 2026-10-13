@@ -418,9 +418,11 @@ def fit(initial: nn.Module, x, y, *, steps=40, seed=17, batch=16):
     model = deepcopy(initial).train()
     rng = torch.Generator().manual_seed(seed)
     optimizer = torch.optim.AdamW(model.parameters(), lr=0.01, weight_decay=0.0)
+    sample_hash = hashlib.sha256()
     with measured() as metrics:
         for _ in range(steps):
             ids = torch.randint(len(x), (min(batch, len(x)),), generator=rng)
+            sample_hash.update(ids.numpy().astype("<i8", copy=False).tobytes())
             optimizer.zero_grad(set_to_none=True)
             loss = F.cross_entropy(model(x[ids].detach()), y[ids])
             if not bool(torch.isfinite(loss)):
@@ -431,11 +433,12 @@ def fit(initial: nn.Module, x, y, *, steps=40, seed=17, batch=16):
     if parameters(initial)["sha256"] != original:
         raise InputError("initial/frozen control mutated")
     return model.eval(), {**metrics, **parameters(model), "steps": steps,
-                          "examples_processed": steps * min(batch, len(x))}
+                          "examples_processed": steps * min(batch, len(x)),
+                          "minibatch_sha256": sample_hash.hexdigest()}
 
 
 def head_trial(x, cases, train_labels, *, classes, kind, steps, seed,
-               artifact_dir=None, artifact_binding=None):
+               artifact_dir=None, artifact_binding=None, fitting_backend="scalar"):
     """Returns unlabeled predictions. No held-out target mapping is accepted."""
     if artifact_dir is not None:
         from experiments.shared_stem_cell.head_artifacts import _binding, _path
@@ -447,16 +450,48 @@ def head_trial(x, cases, train_labels, *, classes, kind, steps, seed,
             raise InputError("Head export scope mismatch before training")
         if _path(artifact_dir).exists():
             raise InputError("Head trial export directory must be new")
+    if fitting_backend not in {"scalar", "grouped"}:
+        raise InputError("unknown Head fitting backend")
+    prepared, grouped_report = {}, None
+    cells = sorted({case.cell for case in cases})
+    if fitting_backend == "grouped":
+        from experiments.shared_stem_cell.head_training import fit_cells, MAX_PARAMETERS_BYTES
+        from experiments.shared_stem_cell.head_artifacts import _shape_count
+        planned = _shape_count({"kind": kind, "width": x.shape[1], "classes": classes,
+                                "rank": min(8, x.shape[1])}) * 4 * len(cells)
+        if planned > MAX_PARAMETERS_BYTES:
+            raise InputError("grouped initial Head parameter budget before allocation")
+        integer(steps, 0, 1000, "grouped steps")
+        rows, targets, initials = [], [], []
+        for cell in cells:
+            ids = [i for i, c in enumerate(cases) if c.cell == cell and c.split == "train"]
+            if not ids or not any(c.cell == cell and c.split in {"holdout", "retention"} for c in cases):
+                raise InputError("each active Cell needs train and held-out cases")
+            rows.append(torch.tensor(ids, dtype=torch.long))
+            targets.append(torch.tensor([train_labels[cases[i].case_id] for i in ids], dtype=torch.long))
+            torch.manual_seed(seed + cell)
+            initials.append(Head(x.shape[1], classes, kind, min(8, x.shape[1])).eval())
+        candidates, grouped_report = fit_cells(tuple(initials), x, tuple(rows), tuple(targets),
+            seeds=(seed,) * len(cells), step_counts=(steps,) * len(cells))
+        prepared = {cell: (initials[i], candidates[i], dict(grouped_report["cells"][i]))
+                    for i, cell in enumerate(cells)}
     outputs, costs = [], []
-    for cell in sorted({case.cell for case in cases}):
+    for cell in cells:
         train_ids = [i for i, c in enumerate(cases) if c.cell == cell and c.split == "train"]
         test_ids = [i for i, c in enumerate(cases) if c.cell == cell and c.split in {"holdout", "retention"}]
         if not train_ids or not test_ids:
             raise InputError("each active Cell needs train and held-out cases")
-        torch.manual_seed(seed + cell)
-        initial = Head(x.shape[1], classes, kind, min(8, x.shape[1])).eval()
-        y = torch.tensor([train_labels[cases[i].case_id] for i in train_ids], dtype=torch.long)
-        trained, cost = fit(initial, x[train_ids], y, steps=steps, seed=seed)
+        if fitting_backend == "grouped":
+            initial, trained, cost = prepared[cell]
+            cost["backend"] = "grouped"
+            # Group/whole timings are charged ONCE, never attributed per Cell.
+            if cell == cells[0]:
+                cost["shared_training_report"] = grouped_report
+        else:
+            torch.manual_seed(seed + cell)
+            initial = Head(x.shape[1], classes, kind, min(8, x.shape[1])).eval()
+            y = torch.tensor([train_labels[cases[i].case_id] for i in train_ids], dtype=torch.long)
+            trained, cost = fit(initial, x[train_ids], y, steps=steps, seed=seed)
         artifacts = None
         if artifact_dir is not None:
             from experiments.shared_stem_cell.head_artifacts import export_head, load_head
@@ -468,6 +503,8 @@ def head_trial(x, cases, train_labels, *, classes, kind, steps, seed,
             lineage = {"seed": seed, "steps": steps, "kind": kind,
                        "train": [[cases[i].case_id, cases[i].input_digest,
                                   train_labels[cases[i].case_id]] for i in train_ids]}
+            if fitting_backend != "scalar":
+                lineage["fitting_backend"] = fitting_backend
             binding = {**artifact_binding, "logical_cell": str(cell),
                        "training_lineage_sha256": sha(canonical(lineage))}
             artifacts = {}
@@ -546,6 +583,8 @@ def run(manifest_path: Path, output: Path):
             raise InputError("temporal and measure_head_batch must be Boolean declarations")
         cases, labels = dataset(root / config["dataset"]["path"], config["dataset"]["sha256"],
             config["classes"], config["cells"], config.get("temporal", False))
+        if config.get("head_training_backend", "scalar") not in {"scalar", "grouped"}:
+            raise InputError("unknown Head fitting backend before model load")
         train_labels = {c.case_id: labels[c.case_id] for c in cases if c.split == "train"}
         # Scope partitions are explicit and checked before loading any weights.
         if len({case.scope for case in cases}) != 1:
@@ -578,6 +617,7 @@ def run(manifest_path: Path, output: Path):
                 predictions, costs = head_trial(x, cases, train_labels, classes=config["classes"],
                     kind=kind, steps=config.get("steps", 40), seed=config.get("seed", 17),
                     artifact_dir=output / "heads" / kind,
+                    fitting_backend=config.get("head_training_backend", "scalar"),
                     artifact_binding={"scope": cases[0].scope, "stem_sha256": backend.identity,
                         "dataset_sha256": config["dataset"]["sha256"],
                         "generation": integer(config.get("candidate_generation", 1), 1, 2**64 - 1, "candidate generation"),

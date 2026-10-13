@@ -475,3 +475,47 @@ missing `tokenizers` (Transformers also unavailable); none is counted among the
 mmBERT/Laya/CLIP/Qwen, natural audio/video, general generation/consolidation,
 independent split/NDU benefit, target-host 64–4096 resources and product FinalUse
 remain separate unfinished acceptance conditions. No production model is selected.
+
+## Independent AdamW Head learning backend
+
+The existing execution manifest may explicitly select
+`head_training_backend: "grouped"`; the default remains `"scalar"`. Both train the
+existing four concrete Heads, not a new model family. The grouped fitter in
+`head_training.py` accepts a shared frozen feature table and per-Cell training
+rows, labels, random seeds and fixed step counts. It receives no evaluation
+labels. Existing Head export/reload and task scoring still apply. Grouped timings
+are recorded once in the first Cell's `shared_training_report`, not duplicated as
+per-Cell time. Backend identity is part of grouped artifact training lineage.
+
+This is the existing `execution.fit` profile: replacement minibatch sampling,
+mean cross-entropy per Cell, norm-1 clipping per Cell, stock AdamW with learning
+rate 0.01 and zero weight decay. Losses are summed across Cells only after each
+Cell mean. Parameter/moment coordinates are independent. Fixed-budget and actual
+minibatch-size buckets avoid padding and remove the need to compact Adam states;
+zero-step candidates never enter an optimizer. Sample-stream hashes and actual
+optimizer calls, Cell updates, examples and terminal moment bytes are reported.
+Parameter/feature caps are not an RSS/autograd/BLAS workspace bound. Originals
+and global RNG are preserved; returned Heads are private offline candidates with
+no optimizer checkpoint or selection authority. The separately reviewed
+qualification branch's SGD/SwiGLU fitter has a different optimizer, sampling and
+Head contract and is not silently substituted for this AdamW profile.
+
+```sh
+python -m unittest -v experiments.shared_stem_cell.test_head_training
+python -m experiments.shared_stem_cell.head_training_study \
+  --cells 8 --output /new/digits-8
+python -m experiments.shared_stem_cell.head_training_study \
+  --cells 32 --output /new/digits-32
+```
+
+The bundled-digits study requires scikit-learn 1.8.0 and uses actual public 8x8
+handwritten images, not synthetic features. It records package/source data
+hashes, partitions by raw pixel hash before constructing training labels, and
+keeps duplicate images in one fold/Cell. Its representation is simply flattened
+pixels divided by 16: **no pretrained or learned Encoder is exercised**. Both
+arms use identical initial Heads, training rows, sample seeds and 80 updates per
+Cell; seven repetitions alternate order and retain whole-fitting-call costs.
+Parameters, sample hashes and unmodified heldout logits are compared. Predictions
+are sealed before scoring; writer independence, future efficacy and full Stem
+selection remain unestablished. Different Cell counts change per-Cell training
+data and aggregate updates, so this is not a causal split-benefit experiment.
