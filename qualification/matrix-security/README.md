@@ -276,3 +276,35 @@ Seven local, source-only regression tests for exact error matching, source
 identity, lock integrity and non-overwrite behavior passed before committing
 the new probe. The real disposable resolver and all locked product CI checks
 require independent GitHub Actions receipts on the final SHA.
+
+
+## Scratch-only native SQLite link alignment after actual 0.19.1 resolver failure (2026-10-13)
+
+GitHub Actions run [38384349582](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38384349582)
+reached genuine Cargo metadata and failed resolving the **single** native
+`links = "sqlite3"` constraint. Pinned upstream `matrix-sdk-sqlite 0.19.1`
+uses `rusqlite 0.40.2 -> libsqlite3-sys ^0.38.2`, while existing Hepta
+`codex-hepta-matrix-store` inherited `libsqlite3-sys ^0.37` from its
+production workspace. This is a real dependency incompatibility, not a
+mock-data test result.
+
+The existing `narrow_matrix_sdk_workspace.py` can now run the explicit
+`--align-sqlite-native-links` arm inside the **same exact-SHA detached
+scratch worktree**, only after the fully verified minimal AnyMap3 source
+stage and narrow SDK receipt. The arm replaces exactly one original Cargo
+workspace line, pinning the disposable `libsqlite3-sys` to `=0.38.2`.
+It rejects unexpected prior manifests, SHA drift, modified tracked files
+or altered E2EE/SQLite feature flags, and compares parsed TOML to prove no
+other dependency changed. The scratch report binds manifest SHA-256
+before/after and explicitly denies production Cargo/Cargo.lock modifications,
+WAL qualification, cargo-deny approval, model/Cell promotion and runtime
+authorization. Unit tests also assert source isolation and no waiver.
+
+**This is a resolver diagnostic, NOT the actual SQLite ABI migration.**
+The real Hepta workspace still pins 0.37 and requires an independent
+0.38.2 native-ABI/WAL-reset and SQLx compatibility migration, including
+clean and unclean recovery, multi-process locking, Windows and Linux.
+A successful scratch `cargo metadata` is only permission to investigate
+the next dependency and compile failure. No production Matrixd route
+may run this scratch candidate or claim security remediation until the
+independent Matrix SDK upgrade branch and full `cargo-deny` are green.
