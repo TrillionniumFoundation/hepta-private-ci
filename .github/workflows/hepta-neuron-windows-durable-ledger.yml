@@ -6,6 +6,8 @@ on:
     paths:
       - 'codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs'
       - 'codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs'
+      - 'codex-rs/hepta-memory/src/cognitive_store.rs'
+      - 'codex-rs/hepta-memory/src/cognitive_schema_tests.rs'
       - '.github/workflows/hepta-neuron-windows-durable-ledger.yml'
 
 permissions:
@@ -28,6 +30,10 @@ jobs:
       - name: Verify source formatting
         shell: bash
         run: cargo +1.95.0 fmt --all -- --check
+      - name: Real cognitive generation pointer directory fsync before recovery
+        shell: bash
+        run: |
+          cargo +1.95.0 test --locked -p codex-hepta-memory --lib 'cognitive_store::schema_tests::cognitive_generation_directory_sync_is_real_and_rejects_regular_files' -- --nocapture
       - name: Real signed Decision Ledger segmented WAL rotation and recovery
         shell: bash
         run: cargo +1.95.0 test --locked -p codex-hepta-intelligence --lib 'evaluated_shadow::tests::' -- --nocapture
