@@ -132,9 +132,7 @@ def interleave_source_kinds(examples, groups):
     return reordered
 
 
-def prepare(
-    tokenizer, examples, *, maximum_steps, token_ceiling, strategy="original"
-):
+def prepare(tokenizer, examples, *, maximum_steps, token_ceiling, strategy="original"):
     from experience_memory import render
     from grounded_protocol import completion_ids
 
@@ -148,8 +146,7 @@ def prepare(
     if strategy not in ("original", "direct_interleave"):
         raise ValueError("unregistered source write schedule strategy")
     ordered = (
-        groups if strategy == "original"
-        else interleave_source_kinds(examples, groups)
+        groups if strategy == "original" else interleave_source_kinds(examples, groups)
     )
     plan = schedule(
         prepared, ordered, maximum_steps=maximum_steps, token_ceiling=token_ceiling
@@ -164,8 +161,12 @@ def prepare(
 
 
 def preflight(
-    sources, output, *, source_sha, curriculum="single_hop",
-    schedule_strategy="original"
+    sources,
+    output,
+    *,
+    source_sha,
+    curriculum="single_hop",
+    schedule_strategy="original",
 ):
     from huggingface_hub import HfApi, snapshot_download
     from transformers import AutoTokenizer
@@ -231,7 +232,10 @@ def preflight(
         output / "tokenizer", local_files_only=True, trust_remote_code=False
     )
     prepared, plan = prepare(
-        tokenizer, examples, maximum_steps=STEPS, token_ceiling=TOKEN_CEILING,
+        tokenizer,
+        examples,
+        maximum_steps=STEPS,
+        token_ceiling=TOKEN_CEILING,
         strategy=schedule_strategy,
     )
     from source_write_coverage import audit_coverage

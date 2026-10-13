@@ -218,8 +218,11 @@ class ExperienceReader(ReferenceReader):
             raise ValueError("writer must start with a fresh adapter")
         self.scopes = {d.scope for d in documents}
         prepared, plan = prepare(
-            self.tokenizer, examples, maximum_steps=STEPS,
-            token_ceiling=TOKEN_CEILING, strategy=schedule_strategy,
+            self.tokenizer,
+            examples,
+            maximum_steps=STEPS,
+            token_ceiling=TOKEN_CEILING,
+            strategy=schedule_strategy,
         )
         from source_write_coverage import audit_coverage
 
@@ -372,8 +375,11 @@ class ExperienceReader(ReferenceReader):
                 else digest((examples, prepared)),
                 write_schedule=plan,
                 write_curriculum_coverage=coverage,
-                **({"schedule_strategy": schedule_strategy}
-                   if schedule_strategy != "original" else {}),
+                **(
+                    {"schedule_strategy": schedule_strategy}
+                    if schedule_strategy != "original"
+                    else {}
+                ),
                 schedule_sha256=digest(plan),
                 roots=sorted(self.roots),
                 scopes=plan["scopes"],

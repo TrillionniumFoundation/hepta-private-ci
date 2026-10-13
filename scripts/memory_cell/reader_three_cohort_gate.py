@@ -101,7 +101,8 @@ def join_verified(cross: dict, publisher: dict) -> dict:
             or sum(
                 other[field]
                 for field in ("paired_wins", "paired_losses", "paired_ties")
-            ) != 16
+            )
+            != 16
         ):
             raise ValueError(
                 "privileged intervention detached from original LoCoMo reader"

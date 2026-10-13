@@ -121,8 +121,11 @@ def write_memory(
             token_ceiling=TOKEN_CEILING,
             loss_backend=loss_backend,
             curriculum=curriculum,
-            **({"schedule_strategy": schedule_strategy}
-               if schedule_strategy != "original" else {}),
+            **(
+                {"schedule_strategy": schedule_strategy}
+                if schedule_strategy != "original"
+                else {}
+            ),
             source_loss_parity_sha256=parity_binding,
             evaluation_query_input=False,
             source_documents_digest=digest([asdict(d) for d in documents]),
