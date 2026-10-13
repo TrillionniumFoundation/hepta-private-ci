@@ -21,7 +21,7 @@ from system2_reader_paired_capacity_audit import (
     STRONG_READER_ID, STRONG_ZIP_SHA, open_strong,
 )
 from system2_reader_transport_trial import (
-    CASE_COUNT, COHORTS, FRESH_NAME, NEW_CALLS, REPEATED_COHORTS,
+    CASE_COUNT, FRESH_NAME, NEW_CALLS, REPEATED_COHORTS,
     REUSED_CALLS, SCHEMA as SOURCE_SCHEMA, VIEWS, registered_cohorts,
     score_pairs,
 )
