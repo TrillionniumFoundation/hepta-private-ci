@@ -15,7 +15,11 @@ from source_candidate_kway import ARMS, probe, roster, summarize
 def examples():
     return [
         dict(
-            query=dict(identity=f"q{i}", scope="family1", content=f"which value applies to q{i}"),
+            query=dict(
+                identity=f"q{i}",
+                scope="family1",
+                content=f"which value applies to q{i}",
+            ),
             target=v,
         )
         for i, v in enumerate(("id_a", "id_b", "id_c"))
@@ -32,7 +36,8 @@ def rows(cases):
                 result.append(
                     dict(
                         question_id=case["query"]["identity"],
-                        actual_reader_question_id="paraphrase-" + case["query"]["identity"],
+                        actual_reader_question_id="paraphrase-"
+                        + case["query"]["identity"],
                         scope=case["scope"],
                         arm=arm,
                         candidate_digest=digest(value),
@@ -160,7 +165,12 @@ class DiskProbeTests(unittest.TestCase):
 
         modules = dict(
             experience_memory=types.SimpleNamespace(
-                render=lambda tokenizer, q, evidence, derived: [1, 2, 3, 4 + int(q.identity[-1])],
+                render=lambda tokenizer, q, evidence, derived: [
+                    1,
+                    2,
+                    3,
+                    4 + int(q.identity[-1]),
+                ],
                 source_examples=lambda docs, **kwargs: (examples(), []),
             ),
             source_paraphrase_probe=types.SimpleNamespace(
