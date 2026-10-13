@@ -16,6 +16,7 @@ SCHEMA = "hepta.matrix-minimal-hepta-graph.v1"
 
 
 def reachable(nodes, start, destination):
+    """Follow only actual Cargo NORMAL edges, never dev/build-only decoys."""
     queue, visited = [start], set()
     while queue:
         item = queue.pop()
@@ -26,8 +27,69 @@ def reachable(nodes, start, destination):
         visited.add(item)
         node = nodes.get(item)
         if node:
-            queue.extend(node.get("dependencies", []))
+            queue.extend(node["normal_dependencies"])
     return False
+
+
+def verified_runtime_nodes(resolution, packages, errors):
+    """Build a normal-dependency graph from Cargo metadata's typed resolve.
+
+    The legacy `dependencies` array contains dev/build packages too. It
+    cannot prove a patched crypto / AnyMap / SQLite runtime path. Require the
+    full typed `deps[].dep_kinds` graph, reject every malformed/dangling edge,
+    and prove both representations describe the same resolved package set.
+    """
+    package_ids = [p["id"] for p in packages if type(p) is dict and type(p.get("id")) is str]
+    if len(package_ids) != len(set(package_ids)):
+        errors.append("DUPLICATE_CARGO_PACKAGE_ID")
+    known = set(package_ids)
+    if type(resolution.get("nodes")) is not list:
+        errors.append("MISSING_TYPED_CARGO_RESOLVE")
+        return {}
+    nodes = {}
+    for node in resolution["nodes"]:
+        if (type(node) is not dict or type(node.get("id")) is not str
+                or type(node.get("dependencies")) is not list
+                or type(node.get("deps")) is not list
+                or type(node.get("features")) is not list
+                or any(type(feature) is not str for feature in node["features"])):
+            errors.append("MALFORMED_RESOLVED_NODE")
+            continue
+        identity = node["id"]
+        if identity not in known or identity in nodes:
+            errors.append("DUPLICATE_OR_UNKNOWN_RESOLVED_NODE")
+            continue
+        flat = node["dependencies"]
+        if any(type(item) is not str or item not in known for item in flat):
+            errors.append("DANGLING_FLAT_CARGO_EDGE")
+        typed, normal = set(), set()
+        for edge in node["deps"]:
+            if (type(edge) is not dict or type(edge.get("pkg")) is not str
+                    or edge["pkg"] not in known
+                    or type(edge.get("dep_kinds")) is not list
+                    or not edge["dep_kinds"]):
+                errors.append("MALFORMED_TYPED_CARGO_EDGE")
+                continue
+            pkg = edge["pkg"]
+            typed.add(pkg)
+            for kind in edge["dep_kinds"]:
+                if (type(kind) is not dict
+                        or set(kind) != {"kind", "target"}
+                        or kind["kind"] not in (None, "dev", "build")
+                        or (kind["target"] is not None and type(kind["target"]) is not str)):
+                    errors.append("MALFORMED_CARGO_DEP_KIND")
+                    continue
+                if kind["kind"] is None:
+                    normal.add(pkg)
+        if typed != set(flat):
+            errors.append("FLAT_TYPED_CARGO_GRAPH_MISMATCH")
+        nodes[identity] = {
+            "normal_dependencies": sorted(normal),
+            "features": node["features"],
+        }
+    if set(nodes) != known:
+        errors.append("INCOMPLETE_TYPED_CARGO_RESOLVE")
+    return nodes
 
 
 def version_number(value):
@@ -109,14 +171,7 @@ def audit(metadata, sdk_root, hepta_root):
                 errors.append("UNPINNED_HEPTA_CALLER_" + name.upper().replace("-", "_"))
         except (KeyError, TypeError, ValueError):
             errors.append("UNPINNED_HEPTA_CALLER_" + name.upper().replace("-", "_"))
-    nodes = {}
-    for n in resolution.get("nodes", []):
-        if type(n) is not dict or type(n.get("id")) is not str or type(n.get("dependencies")) is not list:
-            errors.append("MALFORMED_RESOLVED_NODE")
-            continue
-        if n["id"] in nodes:
-            errors.append("DUPLICATE_RESOLVED_NODE")
-        nodes[n["id"]] = n
+    nodes = verified_runtime_nodes(resolution, packages, errors)
     sdk = by_name.get("matrix-sdk", [])
     if len(sdk) == 1:
         sdk_id = sdk[0]["id"]
