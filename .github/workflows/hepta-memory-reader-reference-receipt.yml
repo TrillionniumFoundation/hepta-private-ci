@@ -9,7 +9,7 @@ permissions:
   contents: read
   actions: read
 concurrency:
-  group: hepta-memory-reader-reference-receipt-${{ github.event.pull_request.number || github.ref }}
+  group: memory-hepta-reader-reference-receipt-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: false
 
 jobs:

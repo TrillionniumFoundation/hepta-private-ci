@@ -15,7 +15,7 @@ from source_candidate_kway import ARMS, probe, roster, summarize
 def examples():
     return [
         dict(
-            query=dict(identity=f"q{i}", scope="family1", content="which value"),
+            query=dict(identity=f"q{i}", scope="family1", content=f"which value applies to q{i}"),
             target=v,
         )
         for i, v in enumerate(("id_a", "id_b", "id_c"))
@@ -32,11 +32,11 @@ def rows(cases):
                 result.append(
                     dict(
                         question_id=case["query"]["identity"],
-                        actual_reader_question_id="paraphrase",
+                        actual_reader_question_id="paraphrase-" + case["query"]["identity"],
                         scope=case["scope"],
                         arm=arm,
                         candidate_digest=digest(value),
-                        prompt_digest="prompt",
+                        prompt_digest="prompt-" + case["query"]["identity"],
                         reader_profile="frozen",
                         delivered_evidence=[],
                         status="succeeded",
@@ -113,6 +113,15 @@ class KwayTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             summarize(data, cases)
 
+    def test_distinct_questions_must_not_reuse_indistinguishable_prompts(self):
+        cases, _ = roster(examples())
+        data = rows(cases)
+        for row in data:
+            if row["question_id"] == cases[1]["query"]["identity"]:
+                row["prompt_digest"] = "prompt-" + cases[0]["query"]["identity"]
+        with self.assertRaisesRegex(ValueError, "indistinguishable question prompts"):
+            summarize(data, cases)
+
     def test_invalid_ambiguous_or_duplicate_source_query_reject(self):
         for sample in (
             [],
@@ -129,8 +138,9 @@ class DiskProbeTests(unittest.TestCase):
         from native import digest
 
         class Question:
-            identity = "other_question"
-            content = "no evidence question"
+            def __init__(self, item):
+                self.identity = "paraphrase-" + item["query"]["identity"]
+                self.content = "no evidence question for " + item["query"]["identity"]
 
         class Reader:
             roots = {"root"}
@@ -150,11 +160,11 @@ class DiskProbeTests(unittest.TestCase):
 
         modules = dict(
             experience_memory=types.SimpleNamespace(
-                render=lambda tokenizer, q, evidence, derived: [1, 2, 3, 4],
+                render=lambda tokenizer, q, evidence, derived: [1, 2, 3, 4 + int(q.identity[-1])],
                 source_examples=lambda docs, **kwargs: (examples(), []),
             ),
             source_paraphrase_probe=types.SimpleNamespace(
-                paraphrase_writer_question=lambda entry: Question(),
+                paraphrase_writer_question=lambda entry: Question(entry),
             ),
             source_recall_likelihood=types.SimpleNamespace(
                 _valid_score=validate_score,
@@ -167,7 +177,7 @@ class DiskProbeTests(unittest.TestCase):
             observed = []
 
             def score(reader, ids, text, arm):
-                self.assertEqual(ids, [1, 2, 3, 4])
+                self.assertIn(ids, ([1, 2, 3, 4], [1, 2, 3, 5]))
                 observed.append((text, arm))
                 return dict(
                     mean_nll=0.4, seconds=0.02, input_tokens=6, supervised_tokens=2
