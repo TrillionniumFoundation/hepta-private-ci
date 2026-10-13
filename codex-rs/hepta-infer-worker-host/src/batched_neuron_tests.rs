@@ -5,6 +5,7 @@ use crate::model_worker::DriverRunObservation;
 use crate::model_worker::Error;
 use crate::model_worker::ModelManifest;
 use crate::model_worker::ResourceGrant;
+use crate::model_worker::canonical_neuron_feature_payload_digest;
 use crate::model_worker::WorkerRequest;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
