@@ -1,0 +1,85 @@
+name: Hepta fixed Reader fit budget and target audit
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/reader_fit_*.py"
+      - "scripts/memory_cell/test_reader_fit_audit.py"
+      - ".github/workflows/hepta-reader-fit-budget.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: reader-fit-budget-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  fixed-dose-and-post-generation-audit:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install exact existing model dependencies and verify imports
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-fit-budget/source
+          python3 -m venv /tmp/hepta-fit-budget-env
+          /tmp/hepta-fit-budget-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/hepta-fit-budget/install-torch.log 2>&1
+          /tmp/hepta-fit-budget-env/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/hepta-fit-budget/install-worker.log 2>&1
+          /tmp/hepta-fit-budget-env/bin/pip check | tee /tmp/hepta-fit-budget/pip-check.log
+          /tmp/hepta-fit-budget-env/bin/pip freeze > /tmp/hepta-fit-budget/environment.txt
+          PYTHONPATH=scripts/memory_cell /tmp/hepta-fit-budget-env/bin/python -c 'import reader_fit_budget_trial, reader_fit_audit; print("FIT_BUDGET_IMPORTS_OK")'
+      - name: Require all inherited contracts and the target audit before fitting
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-fit-budget-env/bin/python
+          failed=0
+          for pattern in test_full_cell_matrix.py test_five_causal_experiments.py test_five_causal_native.py 'test_five_group*.py' test_five_reader_response.py 'test_five_reader_adapter*.py' test_five_encoder_snapshot.py test_five_reader_evidence_pairs.py 'test_source_time_evidence*.py' test_reader_fit_audit.py; do
+            logfile=$(printf '%s' "$pattern" | tr '*' '_')
+            if "$P" -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/hepta-fit-budget/$logfile.log"; then
+              printf '%s\tpassed\n' "$pattern" >> /tmp/hepta-fit-budget/suites.tsv
+            else
+              failed=1
+              printf '%s\tfailed\n' "$pattern" >> /tmp/hepta-fit-budget/suites.tsv
+            fi
+          done
+          "$P" -m py_compile scripts/memory_cell/reader_fit_audit.py scripts/memory_cell/reader_fit_budget_trial.py scripts/memory_cell/test_reader_fit_audit.py
+          test "$failed" -eq 0
+      - name: Retrieve only the original pinned material
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/hepta-fit-original.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/hepta-fit-original.zip | sha256sum -c -
+      - name: Execute fixed 2-versus-8 epoch controls with frozen raw generations
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/hepta-fit-budget/process-resources.txt /tmp/hepta-fit-budget-env/bin/python scripts/memory_cell/reader_fit_budget_trial.py /tmp/hepta-fit-original.zip --work /tmp/hepta-fit-materials --output /tmp/hepta-fit-budget/study 2>&1 | tee /tmp/hepta-fit-budget/execution.log
+      - name: Preserve complete source and failures without pretrained weights
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-fit-budget/source/memory_cell
+          git rev-parse HEAD > /tmp/hepta-fit-budget/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-fit-budget/source/tested-tree.txt
+          cp scripts/memory_cell/*.py scripts/memory_cell/requirements.txt /tmp/hepta-fit-budget/source/memory_cell/
+          cp experiments/shared_stem_cell/execution.py .github/workflows/hepta-reader-fit-budget.yml /tmp/hepta-fit-budget/source/
+          (cd /tmp/hepta-fit-budget && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-reader-fixed-fit-budget-not-confirmation
+          path: /tmp/hepta-fit-budget
+          if-no-files-found: error
