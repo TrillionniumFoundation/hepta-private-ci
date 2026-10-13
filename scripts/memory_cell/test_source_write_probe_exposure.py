@@ -82,6 +82,13 @@ class ProbeExposureTests(unittest.TestCase):
             supervised_tokens=plan["planned_supervised_tokens"],
         )
 
+    def test_absent_loss_backend_cannot_claim_a_legacy_training_visit(self):
+        # A missing provenance field is NOT an implicit full-loss receipt.
+        missing = deepcopy(self.training)
+        missing.pop("loss_backend")
+        with self.assertRaisesRegex(ValueError, "registered source-written curriculum"):
+            verified_visits(self.docs, self.tokenizer, missing)
+
     def test_unvisited_scope_not_mislabeled_training_recall(self):
         visits, schedule_digest = verified_visits(
             self.docs,
