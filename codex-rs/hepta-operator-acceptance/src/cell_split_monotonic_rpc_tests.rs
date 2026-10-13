@@ -15,6 +15,10 @@ fn signer() -> SigningKey {
     SigningKey::from_bytes(&[81; 32])
 }
 
+fn custody_signer() -> SigningKey {
+    SigningKey::from_bytes(&[93; 32])
+}
+
 fn make_proof(
     domain: &str,
     nonce: &str,
@@ -326,6 +330,38 @@ impl CellSplitMonotonicAuthoritativeRegistryV1 for DiskAuthoritativeRegistry {
         let bytes = std::fs::read(&self.file)?;
         Ok(crate::durable::canonical_json(committed).map_err(std::io::Error::other)? == bytes)
     }
+
+    fn read_independent_custody(
+        &mut self,
+        domain: &str,
+        nonce: &str,
+    ) -> Result<CellSplitMonotonicCustodyProofV1, Self::Error> {
+        // Test-only file fixture, NOT a production external trust root.
+        let file = self.file.with_file_name("independently-retained-floor.json");
+        let bytes = std::fs::read(file)?;
+        let floor: CellSplitMonotonicDurableFrontierV1 =
+            serde_json::from_slice(&bytes).map_err(std::io::Error::other)?;
+        if floor.journal_domain_id != domain
+            || crate::durable::canonical_json(&floor)
+                .map_err(std::io::Error::other)? != bytes
+        {
+            return Err(std::io::Error::other("independent floor mismatch"));
+        }
+        let mut proof = CellSplitMonotonicCustodyProofV1 {
+            schema: CELL_SPLIT_MONOTONIC_CUSTODY_SCHEMA_V1.into(),
+            current: floor,
+            challenge_nonce: nonce.to_owned(),
+            signature_bytes: Vec::new(),
+        };
+        proof.signature_bytes = custody_signer()
+            .sign(
+                &cell_split_monotonic_custody_signing_payload_v1(&proof)
+                    .map_err(std::io::Error::other)?,
+            )
+            .to_bytes()
+            .to_vec();
+        Ok(proof)
+    }
 }
 
 fn write_test_registry(root: &Path) -> PathBuf {
@@ -343,6 +379,11 @@ fn write_test_registry(root: &Path) -> PathBuf {
         &crate::durable::canonical_json(&record).expect("canonical highwater"),
     )
     .expect("fsynced external fixture registry");
+    crate::durable::write_private_new(
+        &root.join("independently-retained-floor.json"),
+        &crate::durable::canonical_json(&record).expect("fixture custody floor"),
+    )
+    .expect("fsynced custody fixture");
     path
 }
 
@@ -355,7 +396,12 @@ fn independent_server_reads_real_durable_domain_and_signs_client_challenge() {
         let (mut peer, _) = listener.accept().expect("real Unix socket");
         let owner = DiskAuthoritativeRegistry::open(file);
         let mut service =
-            CellSplitMonotonicRpcServiceV1::new(owner, signer(), Duration::from_secs(3))
+            CellSplitMonotonicRpcServiceV1::new(
+                owner,
+                signer(),
+                custody_signer().verifying_key(),
+                Duration::from_secs(3),
+            )
                 .expect("separately pinned signer");
         service
             .serve_connection(&mut peer)
@@ -385,7 +431,12 @@ fn independent_server_fences_revoked_domain_before_signed_reply() {
     // authoritative record and may not sign the old current snapshot.
     backend.revoke_on_read = Some(2);
     let mut service =
-        CellSplitMonotonicRpcServiceV1::new(backend, signer(), Duration::from_secs(2))
+        CellSplitMonotonicRpcServiceV1::new(
+            backend,
+            signer(),
+            custody_signer().verifying_key(),
+            Duration::from_secs(2),
+        )
             .expect("independent owner");
     let (mut client, mut server) = std::os::unix::net::UnixStream::pair().expect("socket pair");
     send_frame(
@@ -413,6 +464,7 @@ fn independent_server_rejects_revoke_during_final_signed_read() {
     let mut service = CellSplitMonotonicRpcServiceV1::new(
         backend,
         signer(),
+        custody_signer().verifying_key(),
         Duration::from_secs(2),
     )
     .expect("independent owner");
@@ -439,6 +491,7 @@ fn independent_server_rejects_caller_supplied_highwater_and_missing_domain() {
     let mut service = CellSplitMonotonicRpcServiceV1::new(
         DiskAuthoritativeRegistry::open(file.clone()),
         signer(),
+        custody_signer().verifying_key(),
         Duration::from_secs(2),
     )
     .expect("trusted signer");
@@ -515,6 +568,7 @@ fn same_signer_denies_rolled_back_or_equivocated_frontier() {
     let mut service = CellSplitMonotonicRpcServiceV1::new(
         DiskAuthoritativeRegistry::open(file.clone()),
         signer(),
+        custody_signer().verifying_key(),
         Duration::from_secs(2),
     )
     .expect("pinned signer");
@@ -569,6 +623,7 @@ fn same_signer_allows_epoch_rollover_only_with_new_durable_source_sequence() {
     let mut service = CellSplitMonotonicRpcServiceV1::new(
         DiskAuthoritativeRegistry::open(file.clone()),
         signer(),
+        custody_signer().verifying_key(),
         Duration::from_secs(2),
     )
     .expect("pinned signer");

@@ -252,6 +252,34 @@ pub struct CellSplitMonotonicDurableFrontierV1 {
     pub durable_source_sequence: u64,
 }
 
+/// The separately retained monotonic floor is independently signed under a
+/// new nonce, not copied from the candidate registry or signed with the RPC
+/// owner's key. The distinct custody key must be pinned by deployment.
+pub const CELL_SPLIT_MONOTONIC_CUSTODY_SCHEMA_V1: &str =
+    "hepta.learning.cell-split.monotonic-custody.v1";
+
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CellSplitMonotonicCustodyProofV1 {
+    pub schema: String,
+    pub current: CellSplitMonotonicDurableFrontierV1,
+    pub challenge_nonce: String,
+    pub signature_bytes: Vec<u8>,
+}
+
+pub fn cell_split_monotonic_custody_signing_payload_v1(
+    proof: &CellSplitMonotonicCustodyProofV1,
+) -> Result<Vec<u8>, CellSplitMonotonicRpcErrorV1> {
+    let mut unsigned = proof.clone();
+    unsigned.signature_bytes.clear();
+    let mut bytes = b"hepta.learning.cell-split.monotonic-custody.v1\0".to_vec();
+    bytes.extend_from_slice(
+        &crate::durable::canonical_json(&unsigned)
+            .map_err(|_| CellSplitMonotonicRpcErrorV1::Invalid)?,
+    );
+    Ok(bytes)
+}
+
 /// The external owner MUST read its own authoritative monotonic domain
 /// registry and independently verify the committed record on every query.
 /// This interface has no allow-all fallback and no mutation method. A local
@@ -268,6 +296,15 @@ pub trait CellSplitMonotonicAuthoritativeRegistryV1 {
         &mut self,
         committed: &CellSplitMonotonicDurableFrontierV1,
     ) -> Result<bool, Self::Error>;
+
+    /// Query distinct, independently signed rollback-resistant custody.
+    /// The source must not simply re-sign its own candidate registry.
+    /// No default implementation exists for this production gate.
+    fn read_independent_custody(
+        &mut self,
+        journal_domain_id: &str,
+        challenge_nonce: &str,
+    ) -> Result<CellSplitMonotonicCustodyProofV1, Self::Error>;
 }
 
 /// One read-only signing server. It cannot let a client supply a revision,
@@ -277,6 +314,7 @@ pub trait CellSplitMonotonicAuthoritativeRegistryV1 {
 pub struct CellSplitMonotonicRpcServiceV1<R: CellSplitMonotonicAuthoritativeRegistryV1> {
     source: R,
     signer: ed25519_dalek::SigningKey,
+    custody_verifier: VerifyingKey,
     timeout: Duration,
     // Process-lifetime monotonic ratchet is defense-in-depth only. Real
     // whole-process anti-rollback requires the external registry's own
@@ -288,9 +326,12 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
     pub fn new(
         source: R,
         signer: ed25519_dalek::SigningKey,
+        custody_verifier: VerifyingKey,
         timeout: Duration,
     ) -> Result<Self, CellSplitMonotonicRpcErrorV1> {
         if signer.verifying_key().is_weak()
+            || custody_verifier.is_weak()
+            || signer.verifying_key() == custody_verifier
             || timeout < Duration::from_millis(1)
             || timeout > Duration::from_secs(30)
         {
@@ -299,6 +340,7 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
         Ok(Self {
             source,
             signer,
+            custody_verifier,
             timeout,
             retained_frontiers: BTreeMap::new(),
         })
@@ -393,8 +435,41 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
         {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);
         }
+        // Three independently challenged custody readbacks per successful
+        // response prohibit self-confirming old registry files after an RPC
+        // process restart, provided the custody key/store really are separate.
+        self.require_independent_custody(&current)?;
         self.verify_retained_frontier(&current)?;
         Ok(current)
+    }
+
+    fn require_independent_custody(
+        &mut self,
+        current: &CellSplitMonotonicDurableFrontierV1,
+    ) -> Result<(), CellSplitMonotonicRpcErrorV1> {
+        let nonce = rand::random::<[u8; 32]>()
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>();
+        let proof = self
+            .source
+            .read_independent_custody(&current.journal_domain_id, &nonce)
+            .map_err(|error| CellSplitMonotonicRpcErrorV1::Denied(error.to_string()))?;
+        if proof.schema != CELL_SPLIT_MONOTONIC_CUSTODY_SCHEMA_V1
+            || proof.current != *current
+            || proof.challenge_nonce != nonce
+            || proof.signature_bytes.len() != 64
+        {
+            return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+        }
+        let signature = Signature::from_slice(&proof.signature_bytes)
+            .map_err(|_| CellSplitMonotonicRpcErrorV1::Invalid)?;
+        self.custody_verifier
+            .verify_strict(
+                &cell_split_monotonic_custody_signing_payload_v1(&proof)?,
+                &signature,
+            )
+            .map_err(|_| CellSplitMonotonicRpcErrorV1::Untrusted)
     }
 
     fn verify_retained_frontier(
