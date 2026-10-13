@@ -5,6 +5,9 @@ on:
       - "codex-rs/hepta-matrix*/**"
       - "codex-rs/third_party/**"
       - "codex-rs/hepta-fleet/src/**"
+      - "codex-rs/skills/**"
+      - "defs.bzl"
+      - "MODULE.bazel.lock"
       - "codex-rs/Cargo.*"
       - "codex-rs/rust-toolchain.toml"
       - "qualification/matrix-sdk-019/**"
@@ -36,6 +39,49 @@ jobs:
             dotslash ./tools/buildifier -mode=diff -lint=off codex-rs/cli/BUILD.bazel defs.bzl || true
             exit 1
           fi
+          git diff --check
+          git diff --exit-code
+
+  bazel-cargo-renames:
+    name: Bazel renamed-YAML dependency and generated lock (diagnostic only)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 55
+    steps:
+      - name: Checkout exact security migration SHA
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Prepare pinned hermetic Bazel
+        uses: ./.github/actions/prepare-bazel-ci
+        with:
+          target: x86_64-unknown-linux-gnu
+          cache-scope: bazel-matrix-renamed-yaml-diagnostic
+      - name: Resolve actual bzlmod lock and compile aliased safe YAML Skill parser
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          # This lane is deliberately diagnostic: re-resolve using *real*
+          # Bazel/rules_rs Cargo metadata and upload the lock patch.
+          # The global CI remains --lockfile_mode=error and cannot be waived.
+          bazel mod deps --lockfile_mode=update
+          git diff --binary -- MODULE.bazel.lock > "$RUNNER_TEMP/matrix-bazel-lock.patch"
+          bazel build --lockfile_mode=error //codex-rs/skills:skills
+      - name: Capture only actual Cargo-to-Bazel lock changes
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-cargo-alias-bazel-lock-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/matrix-bazel-lock.patch
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Restore diagnostic-only lock output and verify immutable checkout
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git restore --worktree -- MODULE.bazel.lock
           git diff --check
           git diff --exit-code
 
