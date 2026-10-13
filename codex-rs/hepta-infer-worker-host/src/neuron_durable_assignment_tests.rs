@@ -1251,3 +1251,92 @@ fn settled_neuron_cost_refuses_generic_wal_with_unrelated_feature_payload() {
         Err(NeuronSettledCostErrorV1::Mismatch)
     );
 }
+
+#[test]
+fn historical_neuron_cost_refuses_different_fsynced_output_after_reopen() {
+    let directory = tempfile::tempdir().unwrap();
+    let typed = typed_request();
+    let mut owner = control(&directory, &typed);
+    let mut worker = worker();
+    let (claim, mut port) =
+        claim_neuron_durable_dispatch_v1(&mut owner, &mut worker, &typed, 100).unwrap();
+    let receipt = port.execute_feature(&typed).unwrap();
+    let cost = port.take_cost_diagnostic().unwrap();
+    drop(port);
+    let observed =
+        read_neuron_observed_cost_source_v1(&owner, &worker, &typed, &receipt, &cost, 100)
+            .unwrap();
+    let original_payload = owner
+        .get(typed.request_id.as_str())
+        .unwrap()
+        .request
+        .payload_digest
+        .clone();
+    let other_output = Digest32::of_bytes(b"a-different-physical-model-output").to_string();
+    assert_ne!(other_output, receipt.output_digest.to_string());
+    let unrelated = TerminalObservation {
+        request_id: typed.request_id.to_string(),
+        reservation_id: "reservation.1".to_owned(),
+        worker_id: worker.worker_id().to_owned(),
+        worker_generation: worker.worker_generation(),
+        model_digest: "2".repeat(64),
+        payload_digest: original_payload,
+        terminal_observed: true,
+        terminal_status: Some(RequestState::Completed),
+        output_digest: Some(other_output.clone()),
+        consumed_tokens: cost.consumed_tokens(),
+        usage_units: 0,
+    };
+    let terminal = owner
+        .settle(
+            typed.request_id.as_str(),
+            claim.revision,
+            "d".repeat(64),
+            unrelated.clone(),
+        )
+        .unwrap();
+    assert_eq!(terminal.state, RequestState::Completed);
+    assert_eq!(
+        owner
+            .get(typed.request_id.as_str())
+            .unwrap()
+            .terminal_output_digest
+            .as_deref(),
+        Some(other_output.as_str()),
+    );
+    assert_eq!(
+        read_neuron_settled_cost_diagnostic_v1(&owner, &typed, &receipt, &observed),
+        Err(NeuronSettledCostErrorV1::Mismatch),
+    );
+    // A changed terminal result under the SAME caller-supplied observation
+    // identity is not an idempotent acknowledgement.
+    let mut replay = unrelated.clone();
+    replay.output_digest = Some(receipt.output_digest.to_string());
+    assert!(owner
+        .settle(
+            typed.request_id.as_str(),
+            terminal.revision,
+            "d".repeat(64),
+            replay,
+        )
+        .is_err());
+    assert!(owner
+        .settle(
+            typed.request_id.as_str(),
+            terminal.revision,
+            "d".repeat(64),
+            unrelated,
+        )
+        .unwrap()
+        .idempotent);
+
+    drop(owner);
+    let reopened =
+        DurableInferenceControl::open(directory.path().join("inference.journal"), 32).unwrap();
+    assert_eq!(
+        read_neuron_settled_cost_diagnostic_v1(&reopened, &typed, &receipt, &observed),
+        Err(NeuronSettledCostErrorV1::Mismatch),
+    );
+    let record = reopened.get(typed.request_id.as_str()).unwrap();
+    assert_eq!(record.terminal_output_digest.as_deref(), Some(other_output.as_str()));
+}

@@ -790,6 +790,14 @@ pub fn read_neuron_settled_cost_diagnostic_v1(
     if record.state != expected_state || record.terminal_observation_digest.is_none() {
         return Err(NeuronSettledCostErrorV1::NotSettled);
     }
+    // The same native durable owner replays the FULL Settle event and now
+    // retains its output field. A generic matching token-count WAL cannot
+    // inherit a different typed Neuron model result after restart.
+    if record.terminal_output_digest.as_deref()
+        != Some(receipt.output_digest.to_string().as_str())
+    {
+        return Err(NeuronSettledCostErrorV1::Mismatch);
+    }
     let reservation = record
         .reservation
         .as_ref()

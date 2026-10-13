@@ -123,6 +123,10 @@ pub struct RequestRecord {
     pub reservation: Option<Reservation>,
     pub assignment: Option<Assignment>,
     pub terminal_observation_digest: Option<String>,
+    /// Output identity physically retained by the same fsynced Settle event.
+    /// Unlike the caller-selected observation digest, this can be compared to
+    /// an independently verified typed Neuron receipt after crash recovery.
+    pub terminal_output_digest: Option<String>,
     pub consumed_tokens: u32,
     pub usage_units: u64,
 }
@@ -463,6 +467,24 @@ impl DurableInferenceControl {
             return Err(Error::StaleRevision);
         }
         if record.terminal_observation_digest.as_ref() == Some(&observation_digest) {
+            // A caller-chosen observation ID is NOT proof that a repeated
+            // settlement carries the original output or resource usage.
+            // Never acknowledge changed bytes as an idempotent replay.
+            validate_terminal_for_record(record, &observation)?;
+            let expected_state = if observation.terminal_observed {
+                observation
+                    .terminal_status
+                    .ok_or(Error::TerminalObservationMissing)?
+            } else {
+                RequestState::Indeterminate
+            };
+            if record.state != expected_state
+                || record.terminal_output_digest != observation.output_digest
+                || record.consumed_tokens != observation.consumed_tokens
+                || record.usage_units != observation.usage_units
+            {
+                return Err(Error::Conflict);
+            }
             return Ok(receipt(record, /*idempotent*/ true));
         }
         if record.state.terminal() {
@@ -621,6 +643,7 @@ fn apply_event(
                     reservation: None,
                     assignment: None,
                     terminal_observation_digest: None,
+                    terminal_output_digest: None,
                     consumed_tokens: 0,
                     usage_units: 0,
                 },
@@ -731,6 +754,7 @@ fn apply_event(
                 RequestState::Indeterminate
             };
             record.terminal_observation_digest = Some(observation_digest.clone());
+            record.terminal_output_digest = observation.output_digest.clone();
             record.consumed_tokens = observation.consumed_tokens;
             record.usage_units = observation.usage_units;
             record.revision = next_revision(record.revision)?;

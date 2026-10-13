@@ -606,3 +606,22 @@ rejects historical scoring both before and after crash-style reopen. The
 positive unchanged typed-execution settlement and token accounting tests
 remain separate. No WAL format, token-price conversion, promotion authority,
 physical model loader or serving route is introduced.
+
+## Crash-replayed output identity in historical Neuron token settlement
+
+The existing durable inference.control WAL already stores a terminal
+\`output_digest\` in every complete Settle event, but previously discarded that
+field when rebuilding its in-memory \`RequestRecord\`. The same native owner now
+retains \`terminal_output_digest\` on original commit AND historical replay.
+\`read_neuron_settled_cost_diagnostic_v1\` refuses an externally supplied typed
+Neuron Feature receipt whose output digest differs from this WAL-owned value,
+even when every request/model/payload digest, Worker ID and token count match.
+
+The native \`settle\` idempotent retry also checks the exact retained output,
+terminal state and observed token/quota amounts: reusing a caller-supplied
+observation digest with changed settlement bytes cannot get a false
+idempotent acknowledgement. This is a read-side correlation check on
+previously serialized WAL facts, not a new WAL format or a physical output
+attestation; the trusted source/observer and current selection are still
+external. Tests exercise exact retry, forged matching-observation-ID retry,
+mismatched output and recovery from the real file on disk.
