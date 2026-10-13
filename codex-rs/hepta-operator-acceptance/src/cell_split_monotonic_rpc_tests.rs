@@ -102,6 +102,110 @@ fn read_only_client_sends_only_domain_and_fresh_challenge() {
 }
 
 #[test]
+fn pinned_client_refuses_old_or_equivocated_signed_frontier_across_server_restarts() {
+    let temp = tempfile::tempdir().expect("client and independent socket");
+    let (socket, listener) = listener(temp.path());
+    let server = thread::spawn(move || {
+        // Each response has a trusted signature and an exact fresh nonce;
+        // emulate a signer restart restoring an older authoritative registry.
+        let observations = [
+            (7, 10, "aa"),
+            (7, 9, "aa"),
+            (7, 10, "cc"),
+            (7, 11, "dd"),
+            (7, 10, "aa"),
+            (8, 1, "ee"),
+            (7, 12, "ff"),
+        ];
+        for (epoch, revision, minimum) in observations {
+            let (mut peer, _) = listener.accept().expect("signed frontier RPC");
+            let request: CellSplitMonotonicRpcRequestV1 =
+                receive_frame(&mut peer).expect("read-only request");
+            let mut proof = make_proof(
+                &request.journal_domain_id,
+                &request.challenge_nonce,
+                &signer(),
+            );
+            proof.journal_authority_epoch = epoch;
+            proof.journal_revision = revision;
+            proof.minimum_checkpoint_digest = minimum.repeat(32);
+            proof.signature_bytes = signer()
+                .sign(
+                    &cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
+                        .expect("domain-separated signature"),
+                )
+                .to_bytes()
+                .to_vec();
+            send_frame(
+                &mut peer,
+                &CellSplitMonotonicRpcResponseV1 {
+                    schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.into(),
+                    method: READ_METHOD.into(),
+                    proof: Some(proof),
+                    error: None,
+                },
+            )
+            .expect("independently signed response");
+        }
+    });
+    let mut client = CellSplitSupervisorMonotonicUnixPortV1::new(
+        socket,
+        signer().verifying_key(),
+        Duration::from_secs(3),
+    )
+    .expect("pinned read-only client");
+    for (index, nonce) in ["11", "22", "33", "44", "55", "66", "77"]
+        .into_iter()
+        .enumerate()
+    {
+        let result = client.read_domain_frontier(DOMAIN, &nonce.repeat(32));
+        if matches!(index, 0 | 3 | 5) {
+            assert!(result.is_ok(), "legitimate advance {index} rejected: {result:?}");
+        } else {
+            assert!(
+                matches!(result, Err(CellSplitMonotonicRpcErrorV1::Invalid)),
+                "signed rollback/equivocation {index} not fenced: {result:?}"
+            );
+        }
+    }
+    server.join().expect("independent signer responses");
+}
+
+#[test]
+fn pinned_client_ratchet_is_domain_scoped_bounded_and_never_evicts() {
+    let temp = tempfile::tempdir().expect("client-only ratchet");
+    let mut client = CellSplitSupervisorMonotonicUnixPortV1::new(
+        temp.path().join("unused.sock"),
+        signer().verifying_key(),
+        Duration::from_secs(2),
+    )
+    .expect("client");
+    // Exercise only the ratchet's bounded storage; the preceding integration
+    // test exercises signature verification through a real Unix socket.
+    let template = make_proof(DOMAIN, &"aa".repeat(32), &signer());
+    for index in 0..MAX_RETAINED_DOMAINS {
+        let mut proof = template.clone();
+        proof.journal_domain_id = format!("scope.ratchet.{index}");
+        client
+            .retain_verified_frontier(&proof)
+            .expect("bounded retained frontier");
+    }
+    let mut extra = template.clone();
+    extra.journal_domain_id = "scope.ratchet.overflow".to_owned();
+    assert!(matches!(
+        client.retain_verified_frontier(&extra),
+        Err(CellSplitMonotonicRpcErrorV1::Invalid)
+    ));
+    let mut known = template;
+    known.journal_domain_id = "scope.ratchet.0".to_owned();
+    known.journal_revision += 1;
+    known.minimum_checkpoint_digest = "cc".repeat(32);
+    client
+        .retain_verified_frontier(&known)
+        .expect("known domain can advance without eviction");
+}
+
+#[test]
 fn signed_response_from_wrong_service_identity_is_refused() {
     let temp = tempfile::tempdir().expect("fixture");
     let (socket, listener) = listener(temp.path());
