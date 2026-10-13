@@ -28,10 +28,12 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: true
       - uses: ./.github/actions/setup-ci
+      # uv >=0.9.17 is required for scripts/pyproject.toml's 7-day cooldown.
+      # Keep the current scripts/uv.lock frozen; never re-resolve for formatting.
       - name: Format only changed MemoryCell Python without changing syntax
         run: |
           set -euo pipefail
-          python3 -m pip install --user uv==0.8.22
+          python3 -m pip install --user uv==0.12.13
           export PATH="$HOME/.local/bin:$PATH"
           git fetch --no-tags --depth=1 origin "$BASE"
           mkdir -p /tmp/format-repair
