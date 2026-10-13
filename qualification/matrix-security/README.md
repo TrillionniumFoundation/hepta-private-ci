@@ -308,3 +308,54 @@ A successful scratch `cargo metadata` is only permission to investigate
 the next dependency and compile failure. No production Matrixd route
 may run this scratch candidate or claim security remediation until the
 independent Matrix SDK upgrade branch and full `cargo-deny` are green.
+
+## Narrow SDK 0.37 ABI retargeting after real SQLx 0.9 conflict (2026-10-14)
+
+At exact source SHA `9d126d035503e536d468be9ada9973095e5d2166`,
+the [real narrow Matrix SDK compile](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38428880801)
+failed in Cargo **before compilation**. The complete resolver chain was:
+
+```text
+codex-hepta-matrix-store -> sqlx 0.9.0 -> sqlx-sqlite 0.9.0
+  -> libsqlite3-sys >=0.30.1, <0.38.0
+codex-hepta-matrix-store -> libsqlite3-sys =0.38.2
+  -> native links="sqlite3" collision
+```
+
+Thus the previous detached `--align-sqlite-native-links` arm is
+**provably incompatible with the actual SQLx 0.9 owner**. Neither
+Cargo metadata nor feature flags may resolve two versions of a native
+`links="sqlite3"` package. Retrying that arm unchanged is not a
+reasonable Matrix security-remediation attempt.
+
+The **narrow SDK compile** workflow now instead retains the existing
+Hepta workspace `libsqlite3-sys 0.37` and invokes the already independently
+tested, pinned `sqlite_abi_trial.py stage` to modify *one*
+`matrix-sdk-sqlite 0.19.1` Cargo dependency
+(`rusqlite 0.40.2 -> 0.39.0`) inside the **detached upstream
+candidate only**. That helper refuses any upstream SQLite manifest
+whose exact Git blob differs from the verified signed 0.19.1 release,
+and checks that all other TOML fields, Matrix E2EE/SQLite features,
+and security-source bindings stay identical.
+
+The workflow runs **real** Rust 1.96 `cargo metadata` and requires
+`sqlite_abi_trial.py audit` to confirm exact runtime links
+`matrix-sdk-sqlite 0.19.1 -> rusqlite 0.39.0 ->
+libsqlite3-sys 0.37.0`, safe `anymap3` and repaired Crypto, source
+paths, native registry checksums and absence of CLI/Starlark.
+Only then can real scratch `cargo check --locked` attempt to
+compile the Hepta Matrix SDK adapter; it may reveal API incompatibility
+requiring an independently reviewed solution.
+
+This does **not** amend the canonical `Cargo.toml`, `Cargo.lock`,
+`MODULE.bazel.lock`, `deny.toml`, E2EE behaviour or durable SQLite
+database. A successful scratch compile would **not** prove migration
+correctness, ABI safety, crypto encryption, WAL recovery, cargo-deny
+clearance, a full Hepta Matrixd build or production authorization.
+The untouched official `rusqlite 0.40.2 / 0.38.2` arm remains an
+independent research comparison rather than a falsely green
+production replacement.
+
+**P0 stays blocked** on real product graph remediation and exact-SHA
+cargo-deny, E2EE/SQLite conformance, cross-platform and global CI.
+P1/P2/P3/P4 and all promotion gates remain closed.
