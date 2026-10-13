@@ -5,6 +5,8 @@
 //! one durable nonce for every model invocation. Low-level neuron.tick remains
 //! a mechanism for independent qualification, never an Agentd serving port.
 
+use crate::neuron_effect_bootstrap::NeuronEffectBootstrapErrorV1;
+use crate::neuron_effect_bootstrap::bootstrap_durable_neuron_effect_intent_v1;
 use crate::neuron_ndu_read::NduReadVerifierV1;
 use crate::neuron_ndu_read::SignedNduSnapshotReadV1;
 use codex_hepta_contracts::FinalUseAuthority;
@@ -12,6 +14,7 @@ use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::DurableNeuronEffectIntentV1;
+use codex_hepta_neuron::JournalScope;
 use codex_hepta_neuron::NeuronEffectIntentStatusV1;
 use codex_hepta_neuron::InferenceControlModelPort;
 use codex_hepta_neuron::NeuronInferenceControlPort;
@@ -127,6 +130,40 @@ where
             ndu_read_verifier: Some(ndu_read_verifier),
             effect_intent: Some(effect_intent),
         }
+    }
+
+    /// Production-oriented construction from a protected, durably named
+    /// journal path. The journal's generation is derived from the actual
+    /// runtime, not from an independent caller hint.
+    ///
+    /// The pinned NDU verifier and one-shot Final-use authority remain
+    /// independently initialized inputs; this method never creates trust or
+    /// overrides the recorded unresolved intent after a crash.
+    pub fn new_authorized_durable_from_path(
+        runtime: NeuronRuntime<W>,
+        inference_control: P,
+        neuron_owner_id: StableId,
+        final_use: FinalUseAuthority,
+        ndu_read_verifier: NduReadVerifierV1,
+        effect_intent_path: &std::path::Path,
+        scope: JournalScope,
+        max_records: usize,
+    ) -> Result<Self, NeuronEffectBootstrapErrorV1> {
+        let generation = runtime.generation();
+        let effect_intent = bootstrap_durable_neuron_effect_intent_v1(
+            effect_intent_path,
+            scope,
+            generation,
+            max_records,
+        )?;
+        Ok(Self::new_authorized_durable(
+            runtime,
+            inference_control,
+            neuron_owner_id,
+            final_use,
+            ndu_read_verifier,
+            effect_intent,
+        ))
     }
 
     /// Read-only reconciliation diagnostics; unresolved work must be
