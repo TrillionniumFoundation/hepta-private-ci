@@ -141,6 +141,7 @@ def score_one(row, truth):
         raise ValueError("invalid original authored requirement census")
     identifier = strict_identifier(answer)
     correct = identifier == truth["expected"]
+    unbound = [m for m in cited_markers if m not in label_map]
     result = row | dict(
         parsed_identifier=identifier,
         strict_task_success=correct,
@@ -150,9 +151,9 @@ def score_one(row, truth):
             (required & set(row["selected"])) - bound
         ),
         required_undelivered=sorted(required - set(row["selected"])),
-        unbound_label_occurrences=[m for m in cited_markers if m not in label_map],
+        unbound_label_occurrences=unbound,
         cited_not_program_declared=sorted(bound - required),
-        complete_citation_chain=required <= bound,
+        complete_citation_chain=required <= bound and not unbound,
         formal_requirements_are_not_human_verified=True,
     )
     if truth["kind"] == "procedure":
@@ -235,7 +236,11 @@ def summarize(scored, cases):
         )
     return dict(
         schema="hepta.memory-cell.frozen-citation-prompt-paired-v1",
-        real_model_calls=len(scored),
+        planned_model_attempts=len(scored),
+        successful_model_generations=sum(
+            r["status"] == "succeeded" for r in scored
+        ),
+        failed_attempts=sum(r["status"] != "succeeded" for r in scored),
         question_count=len(cases),
         same_frozen_reader=True,
         identical_selected_evidence_within_pairs=True,
