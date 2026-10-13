@@ -1,0 +1,79 @@
+name: Hepta System2 sealed Qwen Reader transport audit
+on:
+  push:
+    branches: ["codex/system2-fbsde-ablation-20261011"]
+    paths:
+      - "scripts/memory_cell/system2_reader_transport_audit.py"
+      - "scripts/memory_cell/test_system2_reader_transport_audit.py"
+      - "codex-rs/hepta-ndu/research/SYSTEM2_READER_TRANSPORT_AUDIT.md"
+      - ".github/workflows/hepta-system2-reader-transport-audit.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: system2-transport-audit-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  immutable-transport-audit:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HEPTA_ORIGINAL_QWEN_ARCHIVE: /tmp/original-qwen0p5b.zip
+      HEPTA_TRANSPORT_ARCHIVE: /tmp/transport-qwen0p5b.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Pin CPU dependencies without loading any Reader checkpoint
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-transport-audit
+          python3 -m venv /tmp/transport-audit-python
+          /tmp/transport-audit-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/reader-transport-audit/install-torch.log 2>&1
+          /tmp/transport-audit-python/bin/pip install -r scripts/memory_cell/requirements.txt cryptography==46.0.4 ruff==0.15.8 > /tmp/reader-transport-audit/install-deps.log 2>&1
+          /tmp/transport-audit-python/bin/pip freeze > /tmp/reader-transport-audit/environment.txt
+      - name: Verify EXACT complete source archives before any result analysis
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11768355664/zip > "$HEPTA_ORIGINAL_QWEN_ARCHIVE"
+          printf '%s  %s\n' 853afed48368b2c4e562191c7ed6d6bf28492bd80ec95634119b8afc7d43ab37 "$HEPTA_ORIGINAL_QWEN_ARCHIVE" | sha256sum -c -
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779301457/zip > "$HEPTA_TRANSPORT_ARCHIVE"
+          printf '%s  %s\n' 370181ca80deadf332ee2873ad1a2306038403338d64a726aff9f17bb05b5455 "$HEPTA_TRANSPORT_ARCHIVE" | sha256sum -c -
+      - name: Full MemoryCell regressions and scoped Ruff before publication
+        run: |
+          set -euo pipefail
+          if ! /tmp/transport-audit-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/reader-transport-audit/full-regression.log 2>&1; then
+            tail -100 /tmp/reader-transport-audit/full-regression.log
+            exit 1
+          fi
+          tail -5 /tmp/reader-transport-audit/full-regression.log
+          /tmp/transport-audit-python/bin/ruff check --select F,E9 scripts/memory_cell/system2_reader_transport_audit.py scripts/memory_cell/test_system2_reader_transport_audit.py | tee /tmp/reader-transport-audit/lint.log
+      - name: Recompute complete JSON/lines pairing from sealed historical answers
+        run: |
+          set -euo pipefail
+          /tmp/transport-audit-python/bin/python scripts/memory_cell/system2_reader_transport_audit.py "$HEPTA_TRANSPORT_ARCHIVE" "$HEPTA_ORIGINAL_QWEN_ARCHIVE" /tmp/reader-transport-audit/result.json > /tmp/reader-transport-audit/execution.log 2>&1 || { tail -100 /tmp/reader-transport-audit/execution.log; exit 1; }
+          tail -1 /tmp/reader-transport-audit/execution.log
+      - name: Retain exact experiment source, provenance and complete manifest
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-transport-audit/source
+          git rev-parse HEAD > /tmp/reader-transport-audit/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/reader-transport-audit/tested-tree.txt
+          cp scripts/memory_cell/{system2_reader_transport_audit.py,test_system2_reader_transport_audit.py} /tmp/reader-transport-audit/source/
+          cp codex-rs/hepta-ndu/research/SYSTEM2_READER_TRANSPORT_AUDIT.md .github/workflows/hepta-system2-reader-transport-audit.yml /tmp/reader-transport-audit/source/
+          (cd /tmp/reader-transport-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-system2-transport-sealed-audit
+          path: /tmp/reader-transport-audit
+          if-no-files-found: error
