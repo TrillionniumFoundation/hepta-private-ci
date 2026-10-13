@@ -453,11 +453,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                         {
                                             return Err(BatchWorkerErrorV1::InvalidBinding);
                                         }
-                                        let receipt = self.worker.run_neuron_features_receipt(
-                                            now_ms,
-                                            &pending.model_id,
-                                            pending.request,
-                                        ).map_err(|_| BatchWorkerErrorV1::Worker);
+                                        let receipt = self
+                                            .worker
+                                            .run_neuron_features_receipt(
+                                                now_ms,
+                                                &pending.model_id,
+                                                pending.request,
+                                            )
+                                            .map_err(|_| BatchWorkerErrorV1::Worker);
                                         // A cutover may occur inside the synchronous backend.
                                         // Consumed final-use nonces are never retried, and
                                         // stale results must not become a successful receipt.
@@ -474,7 +477,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                     },
                                 )
                                 .map_err(|_| BatchWorkerErrorV1::Authority)
-                                .and_then(|inner| inner)
+                                .flatten()
                             })
                     }
                 }
@@ -611,11 +614,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                 {
                                     return Err(BatchWorkerErrorV1::InvalidBinding);
                                 }
-                                let receipt = self.worker.run_neuron_features_receipt(
-                                    now_ms,
-                                    &pending.model_id,
-                                    pending.request,
-                                ).map_err(|_| BatchWorkerErrorV1::Worker);
+                                let receipt = self
+                                    .worker
+                                    .run_neuron_features_receipt(
+                                        now_ms,
+                                        &pending.model_id,
+                                        pending.request,
+                                    )
+                                    .map_err(|_| BatchWorkerErrorV1::Worker);
                                 if self
                                     .scope_frontier
                                     .current(&batch.key.scope_id)
@@ -629,7 +635,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                             },
                         )
                         .map_err(|_| BatchWorkerErrorV1::Authority)
-                        .and_then(|result| result)
+                        .flatten()
                     })
                     .collect()
             };

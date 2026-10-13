@@ -817,10 +817,7 @@ fn in_flight_scope_cutover_is_not_a_successful_result(batch_size: usize, physica
     assert_eq!(calls.load(std::sync::atomic::Ordering::Relaxed), 1);
     assert_eq!(finished.outcomes.len(), batch_size);
     assert!(finished.outcomes.iter().all(|outcome| {
-        matches!(
-            &outcome.result,
-            Err(BatchWorkerErrorV1::StaleAfterEffect)
-        )
+        matches!(&outcome.result, Err(BatchWorkerErrorV1::StaleAfterEffect))
     }));
     assert_eq!(execution.pending(), 0);
 }
@@ -828,11 +825,11 @@ fn in_flight_scope_cutover_is_not_a_successful_result(batch_size: usize, physica
 #[test]
 #[cfg(unix)]
 fn scalar_completion_after_scope_cutover_is_never_published() {
-    in_flight_scope_cutover_is_not_a_successful_result(1, false);
+    in_flight_scope_cutover_is_not_a_successful_result(/* batch_size */ 1, /* physical */ false);
 }
 
 #[test]
 #[cfg(unix)]
 fn physical_batch_completion_after_scope_cutover_denies_all_old_route_results() {
-    in_flight_scope_cutover_is_not_a_successful_result(2, true);
+    in_flight_scope_cutover_is_not_a_successful_result(/* batch_size */ 2, /* physical */ true);
 }
