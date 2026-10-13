@@ -1,16 +1,25 @@
 //! Real local pipe/child-process fixtures. These scripts are not Chain nodes,
 //! signed operations, model evaluation, or ordinary-product acceptance evidence.
 use super::*;
+use anyhow::Context;
 use serde_json::json;
 use std::os::unix::fs::PermissionsExt;
 
-fn fixture(script: &str, timeout: Duration) -> (tempfile::TempDir, PonLocalProviderEffectAdapter) {
-    let directory = tempfile::tempdir().unwrap();
-    let root = directory.path().canonicalize().unwrap();
+fn fixture(
+    script: &str,
+    timeout: Duration,
+) -> anyhow::Result<(tempfile::TempDir, PonLocalProviderEffectAdapter)> {
+    let directory = tempfile::tempdir().context("temp root")?;
+    let root = directory
+        .path()
+        .canonicalize()
+        .context("canonical temp root")?;
     let binary = root.join("child");
-    fs::write(&binary, script).unwrap();
-    fs::set_permissions(&binary, fs::Permissions::from_mode(0o700)).unwrap();
-    fs::write(root.join("native.sqlite"), b"fixture-not-a-ledger").unwrap();
+    fs::write(&binary, script).context("write child fixture")?;
+    fs::set_permissions(&binary, fs::Permissions::from_mode(0o700))
+        .context("child fixture permissions")?;
+    fs::write(root.join("native.sqlite"), b"fixture-not-a-ledger")
+        .context("write store fixture")?;
     let adapter = PonLocalProviderEffectAdapter {
         binary,
         binary_sha256: Sha256Digest::for_bytes(script.as_bytes()),
@@ -25,7 +34,7 @@ fn fixture(script: &str, timeout: Duration) -> (tempfile::TempDir, PonLocalProvi
         min_confirmation_work_depth_hex: format!("{}01", "00".repeat(63)),
         timeout,
     };
-    (directory, adapter)
+    Ok((directory, adapter))
 }
 
 // Script fixtures exercise the pipe boundary directly; production accepts only
@@ -53,17 +62,18 @@ fn invoke_pipe_fixture(
 }
 
 #[tokio::test]
-async fn pon_script_cannot_cross_production_executable_boundary() {
-    let (_directory, adapter) = fixture("#!/bin/sh\nexit 0\n", Duration::from_secs(2));
+async fn pon_script_cannot_cross_production_executable_boundary() -> anyhow::Result<()> {
+    let (_directory, adapter) = fixture("#!/bin/sh\nexit 0\n", Duration::from_secs(2))?;
     let outcome = tokio::task::spawn_blocking(move || adapter.invoke("submit", b"packet"))
         .await
         .unwrap();
     assert!(matches!(outcome, PonInvocation::BeforeStart));
+    Ok(())
 }
 
 #[tokio::test]
-async fn pon_blocked_stdin_is_part_of_the_original_operation_deadline() {
-    let (_directory, adapter) = fixture("#!/bin/sh\nexec sleep 5\n", Duration::from_millis(150));
+async fn pon_blocked_stdin_is_part_of_the_original_operation_deadline() -> anyhow::Result<()> {
+    let (_directory, adapter) = fixture("#!/bin/sh\nexec sleep 5\n", Duration::from_millis(150))?;
     let started = Instant::now();
     let outcome = tokio::task::spawn_blocking(move || {
         invoke_pipe_fixture(&adapter, "submit", &vec![1; 1024 * 1024])
@@ -75,12 +85,13 @@ async fn pon_blocked_stdin_is_part_of_the_original_operation_deadline() {
         started.elapsed() < Duration::from_secs(2),
         "stdin escaped original deadline"
     );
+    Ok(())
 }
 
 #[tokio::test]
-async fn pon_stderr_limit_cannot_be_hidden_by_small_success_stdout() {
+async fn pon_stderr_limit_cannot_be_hidden_by_small_success_stdout() -> anyhow::Result<()> {
     let script = "#!/bin/sh\ncat >/dev/null\nhead -c 65537 /dev/zero >&2\nprintf '{\"ok\":true}'\n";
-    let (_directory, adapter) = fixture(script, Duration::from_secs(2));
+    let (_directory, adapter) = fixture(script, Duration::from_secs(2))?;
     let outcome = tokio::task::spawn_blocking(move || {
         invoke_pipe_fixture(&adapter, "packet-status", b"packet")
     })
@@ -90,12 +101,13 @@ async fn pon_stderr_limit_cannot_be_hidden_by_small_success_stdout() {
         matches!(outcome, PonInvocation::Unknown),
         "stderr overrun was accepted"
     );
+    Ok(())
 }
 
 #[tokio::test]
-async fn pon_success_drains_both_pipes_and_observes_stdin_eof() {
+async fn pon_success_drains_both_pipes_and_observes_stdin_eof() -> anyhow::Result<()> {
     let script = "#!/bin/sh\ncat >/dev/null\nprintf diagnostic >&2\nprintf '{\"ok\":true}'\n";
-    let (_directory, adapter) = fixture(script, Duration::from_secs(2));
+    let (_directory, adapter) = fixture(script, Duration::from_secs(2))?;
     let outcome = tokio::task::spawn_blocking(move || {
         invoke_pipe_fixture(&adapter, "packet-status", &vec![2; 1024 * 1024])
     })
@@ -107,22 +119,24 @@ async fn pon_success_drains_both_pipes_and_observes_stdin_eof() {
             panic!("complete child output was lost")
         }
     }
+    Ok(())
 }
 
 #[tokio::test]
-async fn pon_stdout_limit_nonzero_exit_and_partial_json_remain_unknown() {
+async fn pon_stdout_limit_nonzero_exit_and_partial_json_remain_unknown() -> anyhow::Result<()> {
     for script in [
         "#!/bin/sh\ncat >/dev/null\nhead -c 65537 /dev/zero\n",
         "#!/bin/sh\ncat >/dev/null\nprintf '{\"ok\":true}'\nexit 7\n",
         "#!/bin/sh\ncat >/dev/null\nprintf '{'\n",
     ] {
-        let (_directory, adapter) = fixture(script, Duration::from_secs(2));
+        let (_directory, adapter) = fixture(script, Duration::from_secs(2))?;
         let outcome =
             tokio::task::spawn_blocking(move || invoke_pipe_fixture(&adapter, "submit", b"packet"))
                 .await
                 .unwrap();
         assert!(matches!(outcome, PonInvocation::Unknown));
     }
+    Ok(())
 }
 
 fn observation() -> Value {
@@ -208,14 +222,15 @@ fn pon_distinct_active_ancestor_cannot_have_zero_required_work_distance() {
 }
 
 #[tokio::test]
-async fn pon_descendant_held_pipe_cannot_extend_the_exchange_deadline() {
+async fn pon_descendant_held_pipe_cannot_extend_the_exchange_deadline() -> anyhow::Result<()> {
     // This trusted fixture descendant exits by itself. The adapter claims
     // bounded pipe handling, not arbitrary descendant supervision.
     let script = "#!/bin/sh\ncat >/dev/null\nsleep 1 &\nprintf '{\"ok\":true}'\nexit 0\n";
-    let (_directory, adapter) = fixture(script, Duration::from_millis(150));
+    let (_directory, adapter) = fixture(script, Duration::from_millis(150))?;
     let outcome =
         tokio::task::spawn_blocking(move || invoke_pipe_fixture(&adapter, "submit", b"packet"))
             .await
             .unwrap();
     assert!(matches!(outcome, PonInvocation::Unknown));
+    Ok(())
 }

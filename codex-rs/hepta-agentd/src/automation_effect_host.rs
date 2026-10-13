@@ -1595,6 +1595,7 @@ mod tests {
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
 
+    use anyhow::Context;
     use codex_hepta_automation::AuthorizedEffectIntent;
     use codex_hepta_automation::TaskFlowCommand;
     use codex_hepta_automation::TaskFlowDefinition;
@@ -1634,24 +1635,29 @@ mod tests {
     }
 
     impl Fixture {
-        async fn new() -> Self {
-            let temp = tempfile::tempdir().expect("temp root");
-            let root = temp.path().canonicalize().expect("canonical temp root");
+        async fn new() -> anyhow::Result<Self> {
+            let temp = tempfile::tempdir().context("temp root")?;
+            let root = temp.path().canonicalize().context("canonical temp root")?;
             let fleet_path = root.join("fleet");
-            let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).expect("fleet root");
-            let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
+            let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).context("fleet root")?;
+            let registry =
+                FleetRegistry::initialize(fleet_root.clone()).context("fleet registry")?;
             let workspace = root.join("workspace");
-            fs::create_dir(&workspace).expect("workspace");
-            let workspace = workspace.canonicalize().expect("canonical workspace");
-            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID).expect("agent id");
+            fs::create_dir(&workspace).context("workspace")?;
+            let workspace = workspace.canonicalize().context("canonical workspace")?;
+            let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID).context("agent id")?;
             let resources = ResourceBudget::local_default();
             let manifest = AgentManifest::new(
                 agent_id.clone(),
-                WorkspaceBinding::new(workspace.clone(), &fleet_root).expect("workspace binding"),
+                WorkspaceBinding::new(workspace.clone(), &fleet_root)
+                    .context("workspace binding")?,
                 resources.clone(),
             )
-            .expect("manifest");
-            let layout = registry.register(manifest).expect("register agent").layout;
+            .context("manifest")?;
+            let layout = registry
+                .register(manifest)
+                .context("register agent")?
+                .layout;
             let identity = AgentdIdentity {
                 agent_id: agent_id.clone(),
                 layout: layout.clone(),
@@ -1666,16 +1672,16 @@ mod tests {
             };
             let store = AutomationStore::open(&layout)
                 .await
-                .expect("automation store");
-            Self {
+                .context("automation store")?;
+            Ok(Self {
                 _temp: temp,
                 identity,
                 store,
-            }
+            })
         }
     }
 
-    fn definition() -> TaskFlowDefinition {
+    fn definition() -> anyhow::Result<TaskFlowDefinition> {
         TaskFlowDefinition::new(
             "agentd-product-effect",
             1,
@@ -1692,7 +1698,7 @@ mod tests {
             vec!["provider.deliver".to_string()],
             Sha256Digest::for_bytes(b"agentd-product-effect-policy"),
         )
-        .expect("definition")
+        .context("definition")
     }
 
     fn effect_intent(scope: &Sha256Digest) -> AuthorizedEffectIntent {
@@ -1716,8 +1722,8 @@ mod tests {
         fixture: &Fixture,
         now_ms: u64,
         intent: &AuthorizedEffectIntent,
-    ) -> TaskFlowFence {
-        let definition = definition();
+    ) -> anyhow::Result<TaskFlowFence> {
+        let definition = definition()?;
         let fence = TaskFlowFence::new(
             fixture.identity.agent_id.clone(),
             "agentd-product-effect-owner",
@@ -1725,12 +1731,12 @@ mod tests {
             1,
             "agentd-product-effect-fence",
         )
-        .expect("fence");
+        .context("fence")?;
         fixture
             .store
             .register_taskflow_definition(&definition, &fence, now_ms)
             .await
-            .expect("register definition");
+            .context("register definition")?;
         fixture
             .store
             .create_taskflow_run(
@@ -1742,12 +1748,12 @@ mod tests {
                 now_ms,
             )
             .await
-            .expect("create run");
+            .context("create run")?;
         let claimed = fixture
             .store
             .claim_taskflow_run(&intent.run_id, &fence, now_ms + 1, 60_000)
             .await
-            .expect("claim run");
+            .context("claim run")?;
         fixture
             .store
             .apply_taskflow_command(
@@ -1759,11 +1765,11 @@ mod tests {
                     TaskFlowTransition::Start,
                     now_ms + 2,
                 )
-                .expect("start command"),
+                .context("start command")?,
             )
             .await
-            .expect("start run");
-        let digest = intent.digest().expect("intent digest");
+            .context("start run")?;
+        let digest = intent.digest().context("intent digest")?;
         fixture
             .store
             .prepare_taskflow_step(
@@ -1777,7 +1783,7 @@ mod tests {
                 now_ms + 3,
             )
             .await
-            .expect("prepare step");
+            .context("prepare step")?;
         fixture
             .store
             .claim_taskflow_step(
@@ -1791,35 +1797,35 @@ mod tests {
                 now_ms + 4,
             )
             .await
-            .expect("claim step");
-        fence
+            .context("claim step")?;
+        Ok(fence)
     }
 
     fn signed_final_use(
         intent: &AuthorizedEffectIntent,
         now_ms: u64,
         signing_key: &SigningKey,
-    ) -> SignedFinalUseGrant {
-        let binding = intent.final_use_binding().expect("final-use binding");
+    ) -> anyhow::Result<SignedFinalUseGrant> {
+        let binding = intent.final_use_binding().context("final-use binding")?;
         let grant = FinalUseGrant {
             schema_version: 1,
             signer_id: "automation-security-owner".to_string(),
             authority_epoch: 9,
             grant_id: "agentd-product-effect-grant".to_string(),
-            nonce: digest_bytes_for_test(&Sha256Digest::for_bytes(b"agentd-product-effect-nonce")),
+            nonce: digest_bytes_for_test(&Sha256Digest::for_bytes(b"agentd-product-effect-nonce"))?,
             binding,
             not_before_unix_ms: now_ms.saturating_sub(1_000),
             expires_at_unix_ms: now_ms + 30_000,
         };
         let signature = signing_key
-            .sign(&grant.signing_bytes().expect("signing bytes"))
+            .sign(&grant.signing_bytes().context("signing bytes")?)
             .to_bytes()
             .to_vec();
-        SignedFinalUseGrant { grant, signature }
+        Ok(SignedFinalUseGrant { grant, signature })
     }
 
-    fn digest_bytes_for_test(digest: &Sha256Digest) -> [u8; 32] {
-        decode_hex_array::<32>(digest.as_str(), "digest").expect("digest bytes")
+    fn digest_bytes_for_test(digest: &Sha256Digest) -> anyhow::Result<[u8; 32]> {
+        decode_hex_array::<32>(digest.as_str(), "digest").context("digest bytes")
     }
 
     fn hex(bytes: &[u8]) -> String {
@@ -1996,8 +2002,8 @@ mod tests {
     }
 
     #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
-    async fn host_dispatches_exact_wire_payload_once() {
-        let fixture = Fixture::new().await;
+    async fn host_dispatches_exact_wire_payload_once() -> anyhow::Result<()> {
+        let fixture = Fixture::new().await?;
         let now_ms = u64::try_from(
             SystemTime::now()
                 .duration_since(UNIX_EPOCH)
@@ -2007,7 +2013,7 @@ mod tests {
         .expect("millis");
         let scope = Sha256Digest::for_bytes(b"provider-fixture-scope");
         let intent = effect_intent(&scope);
-        prepare_effect(&fixture, now_ms, &intent).await;
+        prepare_effect(&fixture, now_ms, &intent).await?;
 
         let server = MockServer::start().await;
         let provider_key = ProviderEffectKey::for_operation(
@@ -2105,7 +2111,7 @@ mod tests {
 
         let host =
             AgentdAutomationEffectHost::open(&fixture.identity, &host_file).expect("effect host");
-        let grant = signed_final_use(&intent, now_ms, &final_use_signer);
+        let grant = signed_final_use(&intent, now_ms, &final_use_signer)?;
         let trusted_head = host.authority.revocation_head().expect("trusted head");
         let trusted_frontier = host.authority.frontier().expect("trusted frontier");
         let mut changed_same_revision = trusted_head.clone();
@@ -2268,5 +2274,6 @@ mod tests {
             .is_err()
         );
         server.verify().await;
+        Ok(())
     }
 }
