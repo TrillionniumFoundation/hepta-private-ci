@@ -175,7 +175,8 @@ def close_tree(saved, computed):
         raise ValueError('record value changed')
 
 
-def review(rows, features, origin, baseline, anchor_run, output):
+def review(rows, features, origin, baseline, anchor_run, output, *, score_held_out=True):
+    if type(score_held_out) is not bool: raise ValueError("invalid held-out scoring mode")
     folder = Path(output)
     if (folder/'FAILED.json').exists(): raise ValueError('failed conditional run')
     teachers, anchors, config, source = load_references(rows, features, origin, baseline, anchor_run)
@@ -242,13 +243,13 @@ def review(rows, features, origin, baseline, anchor_run, output):
         delta = float((a-b).abs().max()); maximum = max(delta, maximum)
         if delta > 1e-5 or a.argmax() != b.argmax(): raise ValueError('conditional logits do not reconstruct')
     scores = {part: score_rows({n: v[js] for n, v in logits.items()}, rows, [ids[j] for j in js], config)
-              for part, js in (('calibration', cal), ('held_out', held))}
+              for part, js in ((('calibration', cal), ('held_out', held)) if score_held_out else (('calibration', cal),))}
     decision = select_retained(scores['calibration'], config, extra_arms=ANCHORS+GATE_ARMS)
     for k, v in decision.items(): close_tree(selection[k], v)
     close_tree(selection['calibration_metrics'], scores['calibration'])
-    labels = [rows[ids[j]]['label'] for j in held]
+    labels = [rows[ids[j]]['label'] for j in held] if score_held_out else []
     errors = {}
-    for n, v in logits.items():
+    for n, v in (logits.items() if score_held_out else ()):
         predicted = v[held].argmax(1).tolist()
         errors[n] = {key: sum(condition(y, p) for y, p in zip(labels, predicted)) for key, condition in {
             'old_to_new': lambda y, p: y in config.old_classes and p not in config.old_classes,
