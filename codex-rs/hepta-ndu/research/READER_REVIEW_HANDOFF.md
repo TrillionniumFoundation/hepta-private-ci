@@ -74,3 +74,24 @@ Tests exercise fake local source objects without gold scoring, private
 output permissions, blank verdicts, time/scope, UTF-8 windows, missing
 premises, absent evidence, forged citations, file hashes and overwrite
 refusal. No signing keys or real verdicts are written to repository files.
+
+## Machine-only refusal check before blind review
+
+The original-byte auditor correctly requires the **final signed review ledger**
+with `exact_refusal` matching the literal bytes `I do not have enough evidence.`.
+The blank-review handoff is a different stage: reviewer verdicts have not been
+collected and **must not be fabricated**. During source validation only, the
+handoff builds a temporary in-memory copy of each provenance row with this
+mechanically decidable refusal predicate computed from the original Reader
+answer. This copy is never written to a review packet, independent verdict,
+trust manifest, or neural gate. All exported human verdict fields remain `null`;
+output rows have zero reviewer signatures and do not authorize execution.
+
+This fixes a reproducible fail-closed integration regression in which the new
+exact-refusal audit rejected legitimate blank-review handoffs for missing
+verdict fields. The final `audit_originals` and signed Reader gate are still
+strict: passing the handoff **does not** satisfy their verdict requirements.
+Tests include a real `E1` echo as a non-refusal case and explicitly show that
+unsigned blank handoff rows fail strict final admission. The operator must
+still obtain independently approved human reviewers and owner-attested raw
+source bytes before any production or research matrix eligibility.

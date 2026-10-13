@@ -29,6 +29,37 @@ class BlindedReviewHandoffTests(unittest.TestCase):
             self.assertNotIn("exact_refusal", value)
             self.assertEqual(len(value["question_sha256"]), 64)
 
+    def test_raw_label_echo_is_visible_to_reviewers_not_prejudged(self):
+        # An actually observed E1 echo is NOT an exact refusal, but the blind
+        # handoff must remain possible so humans can assess that failure.
+        self.originals["items"][0]["raw_answer"] = "E1"
+        cases, ledger = prepare_cases(self.originals)
+        self.assertEqual(cases["q1", "no_evidence"]["raw_answer"], "E1")
+        self.assertTrue(all("exact_refusal" not in item and
+                            "grounded_and_cited" not in item
+                            for item in ledger.values()))
+        with tempfile.TemporaryDirectory() as root:
+            out = Path(root) / "handoff"
+            receipt = prepare_handoff(self.originals,
+                source_file_sha256=self.file_sha, output=out, salt=b"\x09" * 32)
+            self.assertEqual((receipt["positions"], receipt["independent_reviews"]),
+                             (8, 0))
+            views = lines(out / "review-questions.jsonl")
+            forms = lines(out / "reviewer-blank-form.jsonl")
+            self.assertTrue(any(v["raw_reader_answer"] == "E1" for v in views))
+            self.assertTrue(all(row["exact_refusal"] is None and
+                                row["grounded_and_cited"] is None
+                                for row in forms))
+
+    def test_passing_handoff_cannot_substitute_for_signed_refusal_review(self):
+        # Machine-derived internal validation data must never be admitted as
+        # independently reviewed verdicts by the later Reader gate.
+        from reader_originals_attestation import audit_originals
+        _, ledger = prepare_cases(self.originals)
+        self.assertEqual(audit_originals(
+            self.cohort, self.binding, list(ledger.values()), self.originals),
+            "reviewed-exact-refusal-does-not-match-raw-reader-text")
+
     def test_exact_complete_private_handoff_with_blank_human_forms(self):
         with tempfile.TemporaryDirectory() as root:
             out = Path(root) / "handoff"

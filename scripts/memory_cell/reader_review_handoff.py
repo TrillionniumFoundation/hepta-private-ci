@@ -15,7 +15,7 @@ from pathlib import Path
 import re
 
 from reader_originals_attestation import (
-    CASE_KEYS, CITE, SCHEMA, audit_originals, canonical_sha,
+    CASE_KEYS, CITE, EXACT_REFUSAL, SCHEMA, audit_originals, canonical_sha,
     load_strict_json_file, source_fingerprint,
 )
 from reader_review_ledger import CONDITIONS
@@ -74,7 +74,16 @@ def prepare_cases(originals):
         by_key[key] = row
     if set(by_key) != expected:
         raise ValueError("original review case census mismatch")
-    reason = audit_originals(cohort, originals["model_binding"], ledger, originals)
+    # Only the literal-refusal predicate is mechanically computable from the
+    # original Reader bytes. Use it for the *internal* provenance check, never
+    # populate the human review ledger or blank reviewer verdict forms.
+    # Actual gate admission still requires separately signed review verdicts.
+    mechanical_rows = [dict(item, exact_refusal=(
+        by_key[item["item_id"], item["condition"]]["raw_answer"] == EXACT_REFUSAL
+    )) for item in ledger]
+    reason = audit_originals(
+        cohort, originals["model_binding"], mechanical_rows, originals
+    )
     if reason is not None:
         raise ValueError("original source provenance invalid: " + reason)
     ledger_by_key = {(r["item_id"], r["condition"]): r for r in ledger}
