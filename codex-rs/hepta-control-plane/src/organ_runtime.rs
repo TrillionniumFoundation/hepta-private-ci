@@ -812,6 +812,40 @@ impl OrganHostV1 {
         Ok(deliveries)
     }
 
+    /// Return the concrete target input ports for a route without invoking a
+    /// handler. The CNS cell-split adapter uses this owner-local projection to
+    /// bind an output route to the actual port ABI rather than to a digest
+    /// supplied by a caller.
+    pub(crate) fn route_target_ports(
+        &self,
+        generation: Generation,
+        source: &StableId,
+        output_port: usize,
+    ) -> Result<Vec<(StableId, usize)>, OrganRuntimeError> {
+        if generation != self.graph.generation {
+            return Err(OrganRuntimeError::GenerationMismatch {
+                expected: self.graph.generation,
+                actual: generation,
+            });
+        }
+        let source_index = self.source_indices.get(source).copied().ok_or_else(|| {
+            OrganRuntimeError::UnknownSource {
+                organ: source.clone(),
+            }
+        })?;
+        let routes = self
+            .routes
+            .get(&(source_index, output_port))
+            .ok_or_else(|| OrganRuntimeError::UnroutedOutput {
+                organ: source.clone(),
+                port: output_port,
+            })?;
+        Ok(routes
+            .iter()
+            .map(|&(target, input_port)| (self.slots[target].id.clone(), input_port))
+            .collect())
+    }
+
     pub fn stop_all(&mut self) -> Result<(), OrganRuntimeError> {
         let order = self
             .validated

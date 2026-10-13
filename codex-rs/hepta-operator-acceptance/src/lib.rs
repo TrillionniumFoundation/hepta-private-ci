@@ -1,3 +1,26 @@
+#[cfg(unix)]
+mod cell_split_artifact_cas;
+#[cfg(unix)]
+mod cell_split_child_state_cas;
+#[cfg(unix)]
+mod cell_split_cns_cutover;
+#[cfg(unix)]
+mod cell_split_effect_rpc;
+#[cfg(unix)]
+mod cell_split_effect_service;
+#[cfg(unix)]
+mod cell_split_execution_cli;
+mod cell_split_execution_owner;
+#[cfg(unix)]
+mod cell_split_monotonic_rpc;
+mod cell_split_observer_join;
+#[cfg(unix)]
+mod cell_split_observer_minimum;
+#[cfg(unix)]
+mod cell_split_supervisor_fence;
+mod cell_split_target_host;
+mod cell_split_target_host_evidence;
+mod cell_split_target_host_runtime;
 mod ceremony;
 mod durable;
 mod evidence;
@@ -44,6 +67,186 @@ use trust::TRUST_POLICY_SCOPE;
 use trust::TrustAnchor;
 use trust::TrustInputs;
 
+#[cfg(unix)]
+pub use cell_split_artifact_cas::CellSplitArtifactCasErrorV1;
+#[cfg(unix)]
+pub use cell_split_artifact_cas::CellSplitArtifactCasOwnerV1;
+#[cfg(unix)]
+pub use cell_split_artifact_cas::CellSplitCasFinalUsePortV1;
+#[cfg(unix)]
+pub use cell_split_child_state_cas::CellSplitChildStateCasErrorV1;
+#[cfg(unix)]
+pub use cell_split_child_state_cas::CellSplitChildStateCasOwnerV1;
+#[cfg(unix)]
+pub use cell_split_child_state_cas::CellSplitMigrationAuthorityPortV1;
+#[cfg(unix)]
+pub use cell_split_cns_cutover::CELL_SPLIT_CNS_RUNTIME_ATTESTATION_SCHEMA_V1;
+#[cfg(unix)]
+pub use cell_split_cns_cutover::CellSplitCnsCutoverErrorV1;
+#[cfg(unix)]
+pub use cell_split_cns_cutover::CellSplitCnsCutoverOwnerV1;
+#[cfg(unix)]
+pub use cell_split_cns_cutover::CellSplitCnsLiveRouteV1;
+#[cfg(unix)]
+pub use cell_split_cns_cutover::CellSplitCnsRouteBindingV1;
+#[cfg(unix)]
+pub use cell_split_cns_cutover::CellSplitCnsRuntimeAttestationV1;
+#[cfg(unix)]
+pub use cell_split_cns_cutover::CellSplitCnsRuntimeCommitV1;
+#[cfg(unix)]
+pub use cell_split_cns_cutover::CellSplitCnsRuntimePortV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CELL_SPLIT_EFFECT_RPC_SCHEMA_V1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitEffectReadbackV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitEffectRpcActionV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitEffectRpcErrorV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitEffectRpcRequestV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitEffectRpcResponseV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::CellSplitUnixEffectPortV1;
+#[cfg(unix)]
+pub use cell_split_effect_rpc::cell_split_effect_readback_signing_payload_v1;
+#[cfg(unix)]
+pub use cell_split_effect_service::CellSplitDurableEffectBackendV1;
+#[cfg(unix)]
+pub use cell_split_effect_service::CellSplitEffectServiceV1;
+#[cfg(unix)]
+pub use cell_split_effect_service::CellSplitOwnedEffectV1;
+#[cfg(unix)]
+pub use cell_split_execution_cli::CellSplitExecutionCliOutcomeV1;
+#[cfg(unix)]
+pub use cell_split_execution_cli::run_pinned_cell_split_execution_v1;
+#[cfg(unix)]
+pub use cell_split_execution_cli::run_pinned_cell_split_execution_with_admission_v1;
+pub use cell_split_execution_owner::CellSplitExecutionErrorV1;
+pub use cell_split_execution_owner::CellSplitExecutionIntentV1;
+pub use cell_split_execution_owner::CellSplitExecutionOwnerV1;
+pub use cell_split_execution_owner::CellSplitExecutionPlanV1;
+pub use cell_split_execution_owner::CellSplitExecutionPortV1;
+pub use cell_split_execution_owner::CellSplitExecutionReceiptV1;
+pub use cell_split_execution_owner::CellSplitExecutionStepV1;
+pub use cell_split_execution_owner::CellSplitExecutionTranscriptV1;
+pub use cell_split_execution_owner::CellSplitOwnerTrustV1;
+pub use cell_split_execution_owner::cell_split_execution_receipt_digest_v1;
+pub use cell_split_execution_owner::cell_split_execution_signing_payload_v1;
+pub use cell_split_execution_owner::verify_cell_split_cns_step_receipt_v1;
+pub use cell_split_execution_owner::verify_cell_split_execution_transcript_signatures_v1;
+#[cfg(unix)]
+pub use cell_split_monotonic_rpc::CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1;
+#[cfg(unix)]
+pub use cell_split_monotonic_rpc::CellSplitMonotonicAuthoritativeRegistryV1;
+#[cfg(unix)]
+pub use cell_split_monotonic_rpc::CellSplitMonotonicDurableFrontierV1;
+#[cfg(unix)]
+pub use cell_split_monotonic_rpc::CellSplitMonotonicRpcErrorV1;
+#[cfg(unix)]
+pub use cell_split_monotonic_rpc::CellSplitMonotonicRpcRequestV1;
+#[cfg(unix)]
+pub use cell_split_monotonic_rpc::CellSplitMonotonicRpcResponseV1;
+#[cfg(unix)]
+pub use cell_split_monotonic_rpc::CellSplitMonotonicRpcServiceV1;
+#[cfg(unix)]
+pub use cell_split_monotonic_rpc::CellSplitSupervisorMonotonicUnixPortV1;
+pub use cell_split_observer_join::CELL_SPLIT_OBSERVER_JOIN_SCHEMA_V1;
+#[cfg(unix)]
+pub use cell_split_observer_join::CellSplitObserverDeepReceiptV1;
+pub use cell_split_observer_join::CellSplitObserverJoinErrorV1;
+pub use cell_split_observer_join::CellSplitObserverJoinPayloadV1;
+pub use cell_split_observer_join::CellSplitObserverJoinReceiptV1;
+#[cfg(unix)]
+pub use cell_split_observer_join::CellSplitObserverOriginalRuntimeTrustV1;
+pub use cell_split_observer_join::CellSplitSignedObserverJoinV1;
+pub use cell_split_observer_join::cell_split_observer_join_payload_v1;
+pub use cell_split_observer_join::cell_split_observer_join_signing_payload_v1;
+#[cfg(unix)]
+pub use cell_split_observer_join::cell_split_supervisor_minimum_signing_payload_v1;
+#[cfg(unix)]
+pub use cell_split_observer_join::verify_cell_split_observer_join_deep_v1;
+#[cfg(unix)]
+pub use cell_split_observer_join::verify_cell_split_observer_join_v1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CELL_SPLIT_SUPERVISOR_MONOTONIC_FRONTIER_SCHEMA_V1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMinimumAdmissionPortV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMinimumErrorV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMinimumFileStoreV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMinimumOnlinePortV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMinimumReadbackV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMinimumSubjectV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMonotonicFrontierPortV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::CellSplitSupervisorMonotonicFrontierV1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::cell_split_supervisor_minimum_readback_signing_payload_v1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::cell_split_supervisor_monotonic_frontier_signing_payload_v1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::verify_cell_split_supervisor_minimum_online_v1;
+#[cfg(unix)]
+pub use cell_split_observer_minimum::verify_cell_split_supervisor_monotonic_frontier_v1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorCommitV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorFenceBindingV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorFenceErrorV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorFenceOwnerV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorLiveFenceV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorPhaseV1;
+#[cfg(unix)]
+pub use cell_split_supervisor_fence::CellSplitSupervisorRuntimePortV1;
+pub use cell_split_target_host::CellSplitQualificationOriginV1;
+pub use cell_split_target_host::CellSplitQualificationStateV1;
+pub use cell_split_target_host::CellSplitTargetHostErrorV1;
+pub use cell_split_target_host::CellSplitTargetHostGatesV1;
+pub use cell_split_target_host::CellSplitTargetHostHarnessV1;
+pub use cell_split_target_host::CellSplitTargetHostQualificationReportV1;
+pub use cell_split_target_host_evidence::CELL_SPLIT_SIGNED_TARGET_HOST_EVIDENCE_SCHEMA_V1;
+pub use cell_split_target_host_evidence::CELL_SPLIT_TARGET_HOST_EVIDENCE_SCHEMA_V1;
+pub use cell_split_target_host_evidence::CELL_SPLIT_TARGET_HOST_EVIDENCE_SIGNATURE_ALGORITHM_V1;
+pub use cell_split_target_host_evidence::CELL_SPLIT_TARGET_HOST_EVIDENCE_STORE_SCHEMA_V1;
+pub use cell_split_target_host_evidence::CELL_SPLIT_TARGET_HOST_TRUST_POLICY_SCHEMA_V1;
+pub use cell_split_target_host_evidence::CellSplitSignedTargetHostEvidenceV1;
+pub use cell_split_target_host_evidence::CellSplitTargetHardwareV1;
+pub use cell_split_target_host_evidence::CellSplitTargetHostEventKindV1;
+pub use cell_split_target_host_evidence::CellSplitTargetHostEventV1;
+pub use cell_split_target_host_evidence::CellSplitTargetHostEvidenceAdapterV1;
+pub use cell_split_target_host_evidence::CellSplitTargetHostEvidenceErrorV1;
+pub use cell_split_target_host_evidence::CellSplitTargetHostEvidenceRecorderV1;
+pub use cell_split_target_host_evidence::CellSplitTargetHostEvidenceStoreV1;
+pub use cell_split_target_host_evidence::CellSplitTargetHostEvidenceTrustPolicyFileV1;
+pub use cell_split_target_host_evidence::CellSplitTargetHostEvidenceTrustPolicyV1;
+pub use cell_split_target_host_evidence::CellSplitTargetHostEvidenceV1;
+pub use cell_split_target_host_evidence::CellSplitTargetHostProductionReceiptV1;
+pub use cell_split_target_host_evidence::CellSplitTargetHostSignatureV1;
+pub use cell_split_target_host_evidence::CellSplitTargetResourceSampleV1;
+pub use cell_split_target_host_evidence::verify_cell_split_target_host_evidence;
+pub use cell_split_target_host_evidence::verify_cell_split_target_host_evidence_json;
+pub use cell_split_target_host_runtime::CELL_SPLIT_LOCAL_TARGET_HOST_RUNTIME_SCHEMA_V1;
+pub use cell_split_target_host_runtime::CELL_SPLIT_TARGET_HOST_LIFECYCLE_SCHEMA_V1;
+pub use cell_split_target_host_runtime::CellSplitTargetHostLifecycleErrorV1;
+pub use cell_split_target_host_runtime::CellSplitTargetHostLifecycleRunnerV1;
+pub use cell_split_target_host_runtime::CellSplitTargetHostMeasurementV1;
+pub use cell_split_target_host_runtime::CellSplitTargetHostOperationReceiptV1;
+pub use cell_split_target_host_runtime::CellSplitTargetHostRuntimeV1;
+pub use cell_split_target_host_runtime::LocalCellSplitTargetHostRuntimeErrorV1;
+pub use cell_split_target_host_runtime::LocalCellSplitTargetHostRuntimeV1;
 pub use g5_trust::G5_ASSESSMENT_SCHEMA;
 pub use g5_trust::G5_CHALLENGE_SCHEMA;
 pub use g5_trust::G5_CHALLENGE_SCOPE;

@@ -7,6 +7,8 @@
 
 #![forbid(unsafe_code)]
 
+#[cfg(all(unix, feature = "cell-split-cns-port"))]
+mod cell_split_cns_runtime_port;
 mod organs;
 mod topology_execution;
 
@@ -48,6 +50,12 @@ use sqlx::SqliteConnection;
 use sqlx::sqlite::SqliteConnectOptions;
 use zeroize::Zeroizing;
 
+#[cfg(all(unix, feature = "cell-split-cns-port"))]
+pub use cell_split_cns_runtime_port::CellSplitCnsKernelRuntimePortV1;
+#[cfg(all(unix, feature = "cell-split-cns-port"))]
+pub use cell_split_cns_runtime_port::CellSplitCnsKernelWitnessV1;
+#[cfg(all(unix, feature = "cell-split-cns-port"))]
+pub use cell_split_cns_runtime_port::cell_split_cns_live_route_signing_bytes_v1;
 pub use topology_execution::RuntimeTopologyApplyReceiptV1;
 pub use topology_execution::RuntimeTopologyApplyRequestV1;
 pub use topology_execution::RuntimeTopologyExecutionError;

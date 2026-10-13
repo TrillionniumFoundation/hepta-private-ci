@@ -66,6 +66,7 @@ members = [
     "hepta-memory-federation",
     "hepta-memory-retrieval",
     "hepta-bellman-operator",
+    "hepta-cell-roles",
     "hepta-infer-worker-host",
     "hepta-intelligence-eval",
     "hepta-intuition",
@@ -437,7 +438,7 @@ libsqlite3-sys = { version = "0.37", default-features = false }
 log = "0.4"
 lru = "0.18.2"
 maplit = "1.0.2"
-matrix-sdk = { version = "0.18.0", default-features = false, features = ["e2e-encryption", "sqlite"] }
+matrix-sdk = { version = "0.19.1", default-features = false, features = ["e2e-encryption", "sqlite", "rustls-aws-lc-rs"] }
 memchr = "2.7.6"
 mime_guess = "2.0.5"
 multimap = "0.10.0"
@@ -490,7 +491,7 @@ serde_ignored = "0.1.14"
 serde_json = "1"
 serde_path_to_error = "0.1.20"
 serde_with = "3.17"
-serde_yaml = "0.9"
+serde_yaml = { package = "serde-saphyr", version = "=1.3.0" }
 serial_test = "3.2.0"
 sha1 = "0.10.6"
 scopeguard = "1.2.0"
@@ -661,15 +662,12 @@ inherits = "test"
 opt-level = 0
 
 [patch.crates-io]
-# Matrix SDK/eyeball-im still require imbl 6.x. Backport the upstream 7.0.2
-# bitmap import and patched chunk dependency without changing their public API.
-imbl = { path = "third_party/imbl-6.1.0" }
-# Matrix SDK 0.18.0 pins rusqlite 0.37/libsqlite3-sys 0.35. Hepta's SQLx 0.9
-# deliberately uses libsqlite3-sys 0.37 for the WAL-reset corruption fix, and
-# Cargo permits only one native SQLite `links` crate in a graph. The vendored
-# crate is upstream matrix-sdk-sqlite 0.18.0 with only its rusqlite constraint
-# advanced to 0.39, which uses the already-selected libsqlite3-sys 0.37.
-matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.18.0" }
+# Matrix SDK 0.19.1 replaces anymap2 with anymap3 through this reviewed source.
+matrix-sdk = { path = "third_party/matrix-sdk-0.19.1" }
+# Keep Matrix storage on the WAL-safe rusqlite/libsqlite3-sys line used by SQLx.
+matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.19.1" }
+# Align the existing Starlark API with Matrix store encryption's BLAKE3 floor.
+starlark = { path = "third_party/starlark-0.14.2" }
 # Uncomment to debug local changes.
 # ratatui = { path = "../../ratatui" }
 crossterm = { git = "https://github.com/openai-oss-forks/crossterm", rev = "45fecb9508105988f42fe6ff0441783ed3717f92" }

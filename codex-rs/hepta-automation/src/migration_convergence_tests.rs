@@ -1,12 +1,8 @@
-use sqlx::migrate::Migrate;
-use sqlx::sqlite::SqlitePoolOptions;
-
 use super::*;
+use sqlx::migrate::Migrate;
 
 async fn historical_pool(displaced: bool) -> SqlitePool {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
+    let pool = codex_state::SqliteConfig::open_test_memory_pool()
         .await
         .expect("SQLite owner");
     let mut connection = pool.acquire().await.expect("owner connection");
@@ -207,4 +203,27 @@ async fn occupied_relocation_rolls_back_all_history_rebinding() {
             .expect("after rollback");
     assert_eq!(before, after);
     pool.close().await;
+}
+
+#[cfg(windows)]
+#[test]
+fn ordinary_windows_owner_root_accepts_os_verbatim_canonical_spelling() {
+    let temp = tempfile::tempdir().expect("private test parent");
+    let root = temp.path().join("automation-owner");
+    create_private_directory(&root).expect("ordinary Windows owner root");
+    assert!(root.is_dir());
+}
+
+#[cfg(unix)]
+#[test]
+fn symlinked_owner_root_is_rejected_before_sqlite_open() {
+    let temp = tempfile::tempdir().expect("private test parent");
+    let actual = temp.path().join("actual");
+    std::fs::create_dir(&actual).expect("actual root");
+    let redirected = temp.path().join("redirected");
+    std::os::unix::fs::symlink(&actual, &redirected).expect("symlink fixture");
+    assert!(matches!(
+        create_private_directory(&redirected.join("owner")),
+        Err(AutomationError::Invalid)
+    ));
 }

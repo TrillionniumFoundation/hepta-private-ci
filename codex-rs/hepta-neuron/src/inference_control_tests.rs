@@ -125,3 +125,14 @@ fn corrupted_or_indeterminate_control_receipt_fails_closed() {
         Err(NeuronModelError::Indeterminate)
     );
 }
+
+#[test]
+fn shared_feature_buffer_digest_matches_canonical_neuron_v1_binding() {
+    let features = vec![0, Q, -Q, 8 * Q, -8 * Q];
+    let shared = codex_hepta_infer_core::SharedFeatureBufferV1::from_vec(features.clone()).unwrap();
+    assert_eq!(
+        shared.digest(),
+        crate::canonical_feature_vector_digest_v1(&features)
+    );
+    assert_eq!(shared.clone().digest(), shared.digest());
+}

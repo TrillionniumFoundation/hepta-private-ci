@@ -4,16 +4,28 @@ use super::*;
 struct Driver {
     fail_terminal: bool,
     indeterminate: bool,
+    invalid_handle: bool,
     corrupt_neuron_head: bool,
+    fail_unload: bool,
+    fail_load: bool,
+    load_memory_bytes: Option<u64>,
     loaded: usize,
+    feature_vector_ptr: Option<std::sync::Arc<std::sync::atomic::AtomicUsize>>,
 }
 
 impl ModelDriver for Driver {
     fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
         self.loaded += 1;
+        if self.fail_load {
+            return Err(Error::DriverFailure("load ACK lost after effect".into()));
+        }
         Ok(DriverModelHandle {
-            opaque_id: format!("handle.{}", manifest.model_id),
-            observed_memory_bytes: 1_024,
+            opaque_id: if self.invalid_handle {
+                String::new()
+            } else {
+                format!("handle.{}", manifest.model_id)
+            },
+            observed_memory_bytes: self.load_memory_bytes.unwrap_or(1_024),
         })
     }
 
@@ -41,6 +53,9 @@ impl ModelDriver for Driver {
     }
 
     fn unload(&mut self, _handle: DriverModelHandle) -> Result<(), Error> {
+        if self.fail_unload {
+            return Err(Error::DriverFailure("unload acknowledgment lost".into()));
+        }
         self.loaded = self.loaded.saturating_sub(1);
         Ok(())
     }
@@ -52,6 +67,12 @@ impl NeuronFeatureDriver for Driver {
         _handle: &DriverModelHandle,
         request: &NeuronFeatureRequest,
     ) -> Result<DriverNeuronFeatureObservation, Error> {
+        if let Some(probe) = &self.feature_vector_ptr {
+            probe.store(
+                request.feature_vector_q24.as_ptr() as usize,
+                std::sync::atomic::Ordering::SeqCst,
+            );
+        }
         if self.indeterminate {
             return Ok(DriverNeuronFeatureObservation {
                 terminal_observed: false,
@@ -129,6 +150,28 @@ fn request() -> WorkerRequest {
 }
 
 #[test]
+fn duplicate_model_digest_cannot_create_alias_to_another_live_handle() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
+            .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let mut alias = manifest();
+    alias.model_id = "another-model-id".to_string();
+    assert_eq!(
+        worker.load_model(100, alias),
+        Err(Error::ModelAlreadyLoaded)
+    );
+    assert!(worker.model_matches_digest(
+        "model.1",
+        Digest32::from_str(&manifest().model_digest).unwrap()
+    ));
+    assert!(!worker.model_matches_digest(
+        "another-model-id",
+        Digest32::from_str(&manifest().model_digest).unwrap()
+    ));
+}
+
+#[test]
 fn loads_runs_and_unloads_exact_model_tuple() {
     let mut worker =
         InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
@@ -144,6 +187,170 @@ fn loads_runs_and_unloads_exact_model_tuple() {
             .expect("unload")
             .terminal_observed
     );
+}
+
+#[test]
+fn unloaded_model_digest_can_be_reloaded_but_failed_unload_remains_fenced() {
+    let digest = Digest32::from_str(&manifest().model_digest).expect("digest");
+    let mut worker =
+        InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
+            .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    worker.unload_model(100, "model.1").expect("unload");
+    assert!(!worker.model_matches_digest("model.1", digest));
+    let mut replacement = manifest();
+    replacement.model_id = "model.2".to_owned();
+    worker
+        .load_model(100, replacement)
+        .expect("new live handle");
+    assert!(worker.model_matches_digest("model.2", digest));
+
+    let driver = Driver {
+        fail_unload: true,
+        ..Driver::default()
+    };
+    let mut failed =
+        InferenceWorker::new(100, "worker.2".to_string(), 3, grant(), driver).expect("worker");
+    failed.load_model(100, manifest()).expect("load");
+    assert!(matches!(
+        failed.unload_model(100, "model.1"),
+        Err(Error::IndeterminateLifecycle)
+    ));
+    assert!(!failed.model_matches_digest("model.1", digest));
+    assert_eq!(
+        failed.run(100, "model.1", request()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert_eq!(
+        failed.unload_model(100, "model.1"),
+        Err(Error::IndeterminateLifecycle)
+    );
+    let mut alias = manifest();
+    alias.model_id = "alias".to_owned();
+    assert_eq!(
+        failed.load_model(100, alias),
+        Err(Error::IndeterminateLifecycle)
+    );
+}
+
+#[test]
+fn invalid_loaded_handle_is_cleaned_up_without_leaking_model_owner() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.invalid-handle".into(),
+        3,
+        grant(),
+        Driver {
+            invalid_handle: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::InvalidIdentity("model handle"))
+    );
+    assert_eq!(worker.driver.loaded, 0);
+    assert!(worker.models.is_empty());
+    assert!(!worker.poisoned);
+}
+
+#[test]
+fn failed_invalid_handle_cleanup_poison_worker() {
+    let mut worker = InferenceWorker::new(
+        100,
+        "worker.cleanup-failure".into(),
+        3,
+        grant(),
+        Driver {
+            invalid_handle: true,
+            fail_unload: true,
+            ..Driver::default()
+        },
+    )
+    .expect("worker");
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::IndeterminateLifecycle)
+    );
+    assert!(worker.poisoned);
+    assert_eq!(
+        worker.load_model(100, manifest()),
+        Err(Error::IndeterminateLifecycle)
+    );
+}
+
+#[test]
+fn uncertain_model_load_fences_digest_and_respects_capacity_bound() {
+    let driver = Driver {
+        fail_load: true,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.3".to_string(), 3, grant(), driver).expect("worker");
+    assert!(matches!(
+        worker.load_model(100, manifest()),
+        Err(Error::DriverFailure(_))
+    ));
+    let digest = Digest32::from_str(&manifest().model_digest).unwrap();
+    assert!(!worker.model_matches_digest("model.1", digest));
+    let mut alias = manifest();
+    alias.model_id = "alias".to_owned();
+    assert_eq!(
+        worker.load_model(100, alias),
+        Err(Error::ModelAlreadyLoaded)
+    );
+    // Reservations for uncertain effects consume the same real model limit.
+    let mut second = manifest();
+    second.model_id = "model.2".to_owned();
+    second.model_digest = "a".repeat(64);
+    assert!(matches!(
+        worker.load_model(100, second),
+        Err(Error::DriverFailure(_))
+    ));
+    let mut third = manifest();
+    third.model_id = "model.3".to_owned();
+    third.model_digest = "b".repeat(64);
+    assert_eq!(worker.load_model(100, third), Err(Error::ModelCapacity));
+}
+
+#[test]
+fn oversized_load_with_failed_unload_never_frees_unknown_physical_handle() {
+    let driver = Driver {
+        load_memory_bytes: Some(8_192),
+        fail_unload: true,
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.4".to_string(), 3, grant(), driver).expect("worker");
+    assert!(matches!(
+        worker.load_model(100, manifest()),
+        Err(Error::IndeterminateLifecycle)
+    ));
+    let mut alias = manifest();
+    alias.model_id = "another".to_owned();
+    assert_eq!(
+        worker.load_model(100, alias),
+        Err(Error::IndeterminateLifecycle)
+    );
+
+    // A *confirmed* backend cleanup, unlike an unknown ACK, frees the slot.
+    let driver = Driver {
+        load_memory_bytes: Some(8_192),
+        ..Driver::default()
+    };
+    let mut cleaned =
+        InferenceWorker::new(100, "worker.5".to_string(), 3, grant(), driver).expect("worker");
+    assert_eq!(
+        cleaned.load_model(100, manifest()),
+        Err(Error::ModelCapacity)
+    );
+    cleaned.driver.load_memory_bytes = Some(1_024);
+    let mut alias = manifest();
+    alias.model_id = "reloaded".to_owned();
+    cleaned
+        .load_model(100, alias)
+        .expect("confirmed cleanup permits retry");
 }
 
 #[test]
@@ -198,6 +405,57 @@ fn neuron_feature_request() -> NeuronFeatureRequest {
 }
 
 #[test]
+fn streaming_neuron_feature_digest_preserves_exact_v1_wire_for_multiple_widths() {
+    for width in [1_usize, 2, 7, 64, 256, 512] {
+        let mut request = neuron_feature_request();
+        request.feature_vector_q24 = (0..width)
+            .map(|index| {
+                let value = i64::try_from(index % 9).expect("bounded feature index") << 20;
+                if index % 2 == 0 { value } else { -value }
+            })
+            .collect();
+        request.expected_output_width = 5;
+
+        // Deliberately reconstruct the old contiguous v1 byte stream
+        // independently: the new streaming path must be byte-for-byte
+        // compatible with already-issued signed payload digests.
+        let mut legacy = b"hepta.infer-worker.neuron-feature-request.v1".to_vec();
+        legacy.extend_from_slice(request.authorization.model_digest.as_bytes());
+        legacy.extend_from_slice(request.encoder_digest.as_bytes());
+        legacy.extend_from_slice(request.head_digest.as_bytes());
+        legacy.extend_from_slice(request.weights_digest.as_bytes());
+        legacy.extend_from_slice(request.input_digest.as_bytes());
+        legacy.extend_from_slice(&(width as u64).to_be_bytes());
+        for value in &request.feature_vector_q24 {
+            legacy.extend_from_slice(&value.to_be_bytes());
+        }
+        legacy.extend_from_slice(&(request.expected_output_width as u64).to_be_bytes());
+        assert_eq!(
+            canonical_neuron_feature_payload_digest(&request),
+            Digest32::of_bytes(&legacy).to_string(),
+            "digest compatibility for feature width {width}",
+        );
+        let mut detached = request.clone();
+        detached.feature_vector_q24.clear();
+        assert_eq!(
+            canonical_neuron_feature_payload_digest_with_slice(
+                &detached,
+                &request.feature_vector_q24,
+            ),
+            Digest32::of_bytes(&legacy).to_string(),
+            "immutable borrowed features preserve the signed v1 payload",
+        );
+
+        request.feature_vector_q24[0] += 1;
+        assert_ne!(
+            canonical_neuron_feature_payload_digest(&request),
+            Digest32::of_bytes(&legacy).to_string(),
+            "one changed Q24 sample must alter the signed payload digest",
+        );
+    }
+}
+
+#[test]
 fn executes_authenticated_neuron_feature_tuple_from_loaded_manifest() {
     let mut worker =
         InferenceWorker::new(100, "worker.1".to_string(), 3, grant(), Driver::default())
@@ -207,7 +465,7 @@ fn executes_authenticated_neuron_feature_tuple_from_loaded_manifest() {
         .load_model(100, expected_manifest.clone())
         .expect("load");
     let observed = worker
-        .run_neuron_features(100, "model.1", neuron_feature_request())
+        .run_neuron_features(100, "model.1", &neuron_feature_request())
         .expect("neuron features");
     assert_eq!(observed.status, ExecutionStatus::Succeeded);
     assert_eq!(observed.manifest, expected_manifest);
@@ -228,7 +486,7 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
     let mut changed = neuron_feature_request();
     changed.feature_vector_q24[0] += 1;
     assert_eq!(
-        worker.run_neuron_features(100, "model.1", changed),
+        worker.run_neuron_features(100, "model.1", &changed),
         Err(Error::PayloadMismatch)
     );
 
@@ -240,7 +498,7 @@ fn neuron_feature_path_rejects_payload_drift_and_driver_identity_drift() {
         InferenceWorker::new(100, "worker.2".to_string(), 3, grant(), driver).expect("worker");
     worker.load_model(100, manifest()).expect("load");
     assert_eq!(
-        worker.run_neuron_features(100, "model.1", neuron_feature_request()),
+        worker.run_neuron_features(100, "model.1", &neuron_feature_request()),
         Err(Error::FeatureOutputMismatch)
     );
 }
@@ -270,4 +528,29 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     );
     assert!(!receipt.receipt_digest.is_zero());
     assert!(!receipt.authority.grants_any());
+}
+
+#[test]
+fn typed_receipt_borrows_original_q24_allocation_for_driver_execution() {
+    let observed_ptr = std::sync::Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = Driver {
+        feature_vector_ptr: Some(std::sync::Arc::clone(&observed_ptr)),
+        ..Driver::default()
+    };
+    let mut worker =
+        InferenceWorker::new(100, "worker.4".to_string(), 3, grant(), driver).expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let request = neuron_feature_request();
+    let original_allocation = request.feature_vector_q24.as_ptr() as usize;
+    let receipt = worker
+        .run_neuron_features_receipt(100, "model.1", request)
+        .expect("typed feature receipt");
+    assert_eq!(
+        observed_ptr.load(std::sync::atomic::Ordering::SeqCst),
+        original_allocation
+    );
+    assert_eq!(
+        receipt.status,
+        codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded
+    );
 }

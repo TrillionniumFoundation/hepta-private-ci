@@ -197,7 +197,7 @@ fn tick() -> NeuronTickInputV1 {
 }
 
 #[test]
-fn named_product_caller_runs_through_runtime_without_extra_authority() {
+fn named_product_caller_rejects_missing_final_use_authority() {
     let root = tempfile::tempdir().expect("tempdir");
     let file = checked(
         OpenOptions::new()
@@ -215,9 +215,9 @@ fn named_product_caller_runs_through_runtime_without_extra_authority() {
         config(&native),
         Witness::default(),
     ));
-    let output = checked(run_neuron_tick_v1(&mut runtime, &mut Model, tick()));
-    assert_eq!(output.tick.sparsity_ppm, 200_000);
-    assert!(!output.tick.abstain);
-    assert!(!output.signal.authority.grants_any());
-    assert!(checked(runtime.current_anchor()).is_some());
+    assert!(matches!(
+        run_neuron_tick_v1(&mut runtime, &mut Model, tick()),
+        Err(NeuronRuntimeError::InvalidInput)
+    ));
+    assert!(checked(runtime.current_anchor()).is_none());
 }

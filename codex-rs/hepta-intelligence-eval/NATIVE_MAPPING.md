@@ -39,6 +39,11 @@ The normative API classification is in
 | signed observed-time longitudinal verification primitive | crate-internal `decide_with_signed_longitudinal_evidence_v3` | `src/longitudinal_time.rs` | crate-internal V3; invoked by product runner for `SystemLongitudinal` |
 | trusted direct compatibility | `trusted_inprocess::decide_independently{,_v2}` | `src/lib.rs` | feature-gated; not production ingress |
 | legacy threshold comparator | `trusted_inprocess::evaluate_legacy_inprocess_v1` | `src/lib.rs` | deprecated trusted-only compatibility |
+| CellSplit subject/estimand binding | `cell_split_bound_estimand_digest_v1` | `src/cell_split_evaluation.rs` | binds `CellSplitV1::evaluation_subject_digest()` before holdout |
+| CellSplit signed long-horizon adapter | `evaluate_cell_split_long_horizon_v1` | `src/cell_split_evaluation.rs` | reuses product runner/V3 timing/role-separated observer; evidence only |
+| CellSplit lifecycle gate | `CellSplitLifecycleJournalV1` | `src/cell_split_lifecycle.rs` | replayable proposal/evaluate/canary/retain/quarantine/retire/rollback boundary |
+| CellSplit autonomous proposal/driver | `CellSplitProposalSourceV1` / `run_cell_split_automation_v1` | `src/cell_split_automation.rs` | deterministic trigger-to-lifecycle driver; durable TaskFlow/ledger owner remains an external adapter |
+| CellSplit resource evidence | `CellSplitResourceReceiptV1` | `src/cell_split_resources.rs` | host-observer-signed cost payload; local simulation rejected by production adapter |
 
 `freeze_cross_fold_plan_v2` retains the complete V1 lineage and holdout
 invariants while also binding preregistered metric roles and margins into the
@@ -117,6 +122,11 @@ Focused tests live in:
 - `src/closure_tests.rs`;
 - `src/durable_holdout_tests.rs`, `src/fenced_holdout_tests.rs` and `src/fenced_holdout_file_tests.rs`;
 - `src/product_runner_tests.rs` and `src/longitudinal_time_tests.rs`.
+- `src/cell_split_lifecycle_tests.rs` covers dispatch-fence binding and
+  tamper rejection. The source-only target-host fixture lives in
+  `../hepta-operator-acceptance/src/cell_split_target_host.rs` and is explicitly
+  marked `source-simulation`; its report cannot satisfy external target-host
+  or production qualification.
 
 Cross-crate composition is exercised by
 `../hepta-shadow-qualification/src/lane_e_closure_tests.rs`. Exact dossier IDs,

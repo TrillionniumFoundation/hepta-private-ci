@@ -95,8 +95,15 @@ Required targeted tests: zero-delta equivalence, wrong-base rejection, isolated 
 The shared contract and record design are in
 [DecisionCell mechanics](../../learning/NEURAL_BIOMIMICRY_SPEC.md);
 [organ composition](../../cns/TECHNICAL.md) defines the stable outer boundary.
-This target does not change the current native implementation, source status or
-product/activation evidence recorded below. No existing wire version is redefined.
+The semantic target remains incomplete as an end-to-end DecisionCell runtime.
+The current native source now includes an authority-free `CellStateSplitPlanV1`
+projection for sparse checkpoints. It binds validated parent/child identity,
+scope, generation and exact Q24 state partitions, and emits child payloads with
+parent-context and state digests. It does not publish a journal/CAS checkpoint,
+transfer parameter bundles, update routes, or grant topology/runtime authority;
+those remain owned by the migration, artifact and CNS boundaries. No existing
+wire version is redefined, and this source capability does not change the
+product/activation evidence recorded below.
 
 ### Capacity, depth and learning evidence target
 

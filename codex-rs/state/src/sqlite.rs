@@ -275,6 +275,21 @@ impl SqliteConfig {
         Ok(pool)
     }
 
+    /// Create a private in-memory SQLite pool for deterministic test fixtures.
+    ///
+    /// Keep raw SQLite connection construction inside the shared shim. This
+    /// pool is ephemeral and must never be used as a durable production owner.
+    pub async fn open_test_memory_pool() -> Result<SqlitePool, Error> {
+        SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect_with(
+                SqliteConnectOptions::new()
+                    .in_memory(true)
+                    .log_statements(LevelFilter::Off),
+            )
+            .await
+    }
+
     /// Open a writable Codex SQLite database, creating it if necessary.
     pub async fn open_read_write_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
         let options = SqliteConnectOptions::new()

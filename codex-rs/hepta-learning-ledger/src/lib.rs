@@ -8,6 +8,7 @@
 #![forbid(unsafe_code)]
 
 mod causal_v2;
+mod cell_split;
 mod checkpoint;
 mod dataset_receipt_v3;
 mod durable;
@@ -28,6 +29,10 @@ mod signed_evidence;
 mod trust_distribution;
 mod witness;
 
+#[cfg(test)]
+#[path = "cell_split_tests.rs"]
+mod cell_split_tests;
+
 pub use causal_v2::AuthenticatedOutcomeV1;
 pub use causal_v2::AuthenticatedPrincipalV1;
 pub use causal_v2::CandidateSetCompletenessReceiptV1;
@@ -44,6 +49,9 @@ pub use causal_v2::freeze_dataset;
 pub use causal_v2::validate_authenticated_outcome;
 pub use causal_v2::validate_candidate_set_completeness;
 pub use causal_v2::verify_independent_roles;
+pub use cell_split::CellSplitLearningLedgerV1;
+pub use cell_split::CellSplitLifecycleAppendReceiptV1;
+pub use cell_split::CellSplitLifecycleRecordV1;
 pub use checkpoint::LedgerCheckpointError;
 pub use checkpoint::LedgerIndexCheckpointV1;
 pub use checkpoint::LedgerIndexEntryV1;

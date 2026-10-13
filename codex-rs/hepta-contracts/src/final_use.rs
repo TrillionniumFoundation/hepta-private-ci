@@ -565,20 +565,47 @@ impl FinalUseAuthority {
         signed: &SignedFinalUseGrant,
         expected: &FinalUseBinding,
     ) -> Result<VerifiedUseToken, FinalUseError> {
-        let input = signed.grant.signing_bytes()?;
-        if signed.grant.signer_id != self.0.signer_id || &signed.grant.binding != expected {
-            return Err(FinalUseError::BindingMismatch);
+        self.claim_batch(&[(signed, expected)])?
+            .pop()
+            .ok_or(FinalUseError::InvalidGrant)
+    }
+
+    /// Claim an entire native batch under one owner lock, one anti-rollback
+    /// frontier transition and one append/fsync of the existing nonce journal.
+    /// A bad member rejects the whole group before any nonce is consumed.
+    /// Once persistence begins, any uncertainty fences the owner and no
+    /// physical dispatch is authorized, even if some bytes reached disk.
+    pub fn claim_batch(
+        &self,
+        entries: &[(&SignedFinalUseGrant, &FinalUseBinding)],
+    ) -> Result<Vec<VerifiedUseToken>, FinalUseError> {
+        if entries.is_empty() || entries.len() > 256 {
+            return Err(FinalUseError::CapacityExceeded);
         }
-        let signature = Signature::from_slice(&signed.signature)
-            .map_err(|_| FinalUseError::InvalidSignature)?;
-        let verified = self.0.issuer_keys.iter().any(|candidate| {
-            signed.grant.authority_epoch >= candidate.not_before_authority_epoch
-                && signed.grant.authority_epoch <= candidate.not_after_authority_epoch
-                && candidate.key.verify_strict(&input, &signature).is_ok()
-        });
-        if !verified {
-            return Err(FinalUseError::InvalidSignature);
+
+        // Verify the complete group before changing a durable frontier.
+        let mut inputs = Vec::with_capacity(entries.len());
+        let mut distinct_nonces = BTreeSet::new();
+        for (signed, expected) in entries.iter().copied() {
+            let input = signed.grant.signing_bytes()?;
+            if signed.grant.signer_id != self.0.signer_id || &signed.grant.binding != expected {
+                return Err(FinalUseError::BindingMismatch);
+            }
+            let signature = Signature::from_slice(&signed.signature)
+                .map_err(|_| FinalUseError::InvalidSignature)?;
+            if !self.0.issuer_keys.iter().any(|candidate| {
+                signed.grant.authority_epoch >= candidate.not_before_authority_epoch
+                    && signed.grant.authority_epoch <= candidate.not_after_authority_epoch
+                    && candidate.key.verify_strict(&input, &signature).is_ok()
+            }) {
+                return Err(FinalUseError::InvalidSignature);
+            }
+            if !distinct_nonces.insert(signed.grant.nonce) {
+                return Err(FinalUseError::AlreadyClaimed);
+            }
+            inputs.push(input);
         }
+
         let mut state = self
             .0
             .state
@@ -587,29 +614,34 @@ impl FinalUseAuthority {
         if state.failed {
             return Err(FinalUseError::Unavailable);
         }
-        let now_unix_ms = self.now_unix_ms()?;
-        validate_live(&signed.grant, &state.head, now_unix_ms)?;
-        if state.used_nonces.contains(&signed.grant.nonce) {
-            return Err(FinalUseError::AlreadyClaimed);
+        let now = self.now_unix_ms()?;
+        for (signed, _) in entries.iter().copied() {
+            validate_live(&signed.grant, &state.head, now)?;
+            if state.used_nonces.contains(&signed.grant.nonce) {
+                return Err(FinalUseError::AlreadyClaimed);
+            }
         }
-        if state.used_nonces.len() >= MAX_CLAIMS {
+        if state
+            .used_nonces
+            .len()
+            .checked_add(distinct_nonces.len())
+            .is_none_or(|count| count > MAX_CLAIMS)
+        {
             return Err(FinalUseError::CapacityExceeded);
         }
-        // Advance the external owner before the local append. Any uncertain
-        // append fences this owner and leaves a frontier mismatch on restart.
-        let expected_frontier = self
+
+        let before = self
             .0
             .frontier_store
             .as_ref()
             .map(|_| frontier_for_state(&state));
-        state.used_nonces.insert(signed.grant.nonce);
-        if let (Some(frontier_store), Some(expected_frontier)) =
-            (&self.0.frontier_store, expected_frontier)
-            && let Err(error) = frontier_store.compare_and_set(
-                &self.0.signer_id,
-                &expected_frontier,
-                &frontier_for_state(&state),
-            )
+        let nonce_list = distinct_nonces.into_iter().collect::<Vec<_>>();
+        for nonce in &nonce_list {
+            state.used_nonces.insert(*nonce);
+        }
+        if let (Some(frontier), Some(before)) = (&self.0.frontier_store, before)
+            && let Err(error) =
+                frontier.compare_and_set(&self.0.signer_id, &before, &frontier_for_state(&state))
         {
             state.failed = true;
             return Err(map_trust_error(error));
@@ -617,33 +649,44 @@ impl FinalUseAuthority {
         if self
             .0
             .store
-            .append_claim(state.head.authority_epoch, signed.grant.nonce)
+            .append_claims(state.head.authority_epoch, &nonce_list)
             .is_err()
         {
             state.failed = true;
             return Err(FinalUseError::Unavailable);
         }
-        // Persistence can outlast a short grant. Never admit a dispatch using
-        // the time sampled before that I/O; its nonce stays consumed on expiry.
-        validate_live(&signed.grant, &state.head, self.now_unix_ms()?)?;
+        // Post-I/O time must remain valid for *every* requested effect.
+        // The nonces remain consumed if any grant expires during the append.
+        let committed_at = self.now_unix_ms()?;
+        for (signed, _) in entries.iter().copied() {
+            validate_live(&signed.grant, &state.head, committed_at)?;
+        }
+
         let claimed_head = state.head.clone();
         let claimed_head_bytes =
             serde_json::to_vec(&claimed_head).map_err(|_| FinalUseError::InvalidTrust)?;
         let mut head_witness = b"hepta.kernel.authority.revocation-head.v1\0".to_vec();
         head_witness.extend_from_slice(&claimed_head_bytes);
         let claimed_head_sha256: [u8; 32] = Sha256::digest(&head_witness).into();
-        let mut witness = b"hepta.kernel.authority.final-use-witness.v2\0".to_vec();
-        witness.extend_from_slice(&input);
-        witness.extend_from_slice(&signed.signature);
-        witness.extend_from_slice(&claimed_head_bytes);
-        let witness_sha256: [u8; 32] = Sha256::digest(&witness).into();
-        Ok(VerifiedUseToken {
-            owner: Arc::clone(&self.0),
-            grant: signed.grant.clone(),
-            claimed_head,
-            claimed_head_sha256,
-            witness_sha256,
-        })
+        let tokens = entries
+            .iter()
+            .copied()
+            .zip(inputs)
+            .map(|((signed, _), input)| {
+                let mut witness = b"hepta.kernel.authority.final-use-witness.v2\0".to_vec();
+                witness.extend_from_slice(&input);
+                witness.extend_from_slice(&signed.signature);
+                witness.extend_from_slice(&claimed_head_bytes);
+                VerifiedUseToken {
+                    owner: Arc::clone(&self.0),
+                    grant: signed.grant.clone(),
+                    claimed_head: claimed_head.clone(),
+                    claimed_head_sha256,
+                    witness_sha256: Sha256::digest(&witness).into(),
+                }
+            })
+            .collect();
+        Ok(tokens)
     }
 
     /// Consume a verified token at the final admission point for an
@@ -694,6 +737,27 @@ impl FinalUseAuthority {
         let guard = self.enter_verified_effect(token, expected)?;
         let result = consumer();
         drop(guard);
+        Ok(result)
+    }
+
+    /// Hold the revocation fence for every independently signed request in a
+    /// native model batch. All entries are verified before the single backend
+    /// invocation. A denied member prevents the entire batch from executing;
+    /// claimed one-shot nonces are deliberately never refunded.
+    pub fn with_verified_effect_batch<T>(
+        &self,
+        claims: Vec<(VerifiedUseToken, FinalUseBinding)>,
+        consumer: impl FnOnce() -> T,
+    ) -> Result<T, FinalUseError> {
+        if claims.is_empty() {
+            return Err(FinalUseError::InvalidGrant);
+        }
+        let mut fences = Vec::with_capacity(claims.len());
+        for (token, binding) in claims {
+            fences.push(self.enter_verified_effect(token, &binding)?);
+        }
+        let result = consumer();
+        drop(fences);
         Ok(result)
     }
 
