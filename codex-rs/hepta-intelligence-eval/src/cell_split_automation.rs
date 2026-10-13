@@ -2021,6 +2021,95 @@ mod tests {
     }
 
     #[test]
+    fn denied_retirement_writeahead_commit_cannot_dispatch_a_tombstone() {
+        #[derive(Default)]
+        struct RejectRetirementIntent(CellSplitInMemoryJournalOwnerV1);
+
+        impl CellSplitAutomationJournalOwnerV1 for RejectRetirementIntent {
+            fn load(
+                &self,
+                split_id: &StableId,
+            ) -> Result<Option<CellSplitLifecycleJournalV1>, CellSplitAutomationErrorV1> {
+                self.0.load(split_id)
+            }
+
+            fn commit(
+                &mut self,
+                journal: &CellSplitLifecycleJournalV1,
+            ) -> Result<(), CellSplitAutomationErrorV1> {
+                if journal.current_state == CellSplitLifecycleStateV1::Retained
+                    && journal.events.last().is_some_and(|event| {
+                        event.from == CellSplitLifecycleStateV1::Retained
+                            && event.to == CellSplitLifecycleStateV1::Retained
+                    })
+                {
+                    return Err(CellSplitAutomationErrorV1::Store(
+                        "write-ahead commit denied".to_owned(),
+                    ));
+                }
+                self.0.commit(journal)
+            }
+        }
+
+        let split = split();
+        let receipt = proposal(&split);
+        let mut owner = RejectRetirementIntent::default();
+        let mut executor = Executor {
+            evaluate_disposition: CellSplitEvaluationDispositionV1::EligibleForCanary,
+            ..Executor::default()
+        };
+        assert!(matches!(
+            run_cell_split_automation_v1(&split, &receipt, &mut owner, &mut executor),
+            Err(CellSplitAutomationErrorV1::Store(message))
+                if message == "write-ahead commit denied"
+        ));
+        assert!(!executor.retired);
+        let retained = owner.load(&split.split_id).unwrap().unwrap();
+        assert_eq!(retained.current_state, CellSplitLifecycleStateV1::Retained);
+        assert!(!retained.retirement_pending(&split).unwrap());
+
+        // Even a forged positive original-owner readback may not manufacture
+        // retirement from a Retained state without the durable intent.
+        struct UnpreparedObserver {
+            queried: bool,
+        }
+        impl CellSplitAutomationExecutorV1 for UnpreparedObserver {
+            type Error = &'static str;
+
+            fn evaluate(
+                &mut self,
+                _split: &CellSplitV1,
+            ) -> Result<CellSplitLongHorizonEvaluationReceiptV1, Self::Error> {
+                Err("retained state must not reevaluate")
+            }
+            fn canary(&mut self, _split: &CellSplitV1) -> Result<CellSplitCanaryReceiptV1, Self::Error> {
+                Err("retained state must not rerun canary")
+            }
+            fn retire(&mut self, _split: &CellSplitV1) -> Result<Digest32, Self::Error> {
+                Err("retained state must not reissue retirement")
+            }
+            fn observe_retirement(
+                &mut self,
+                split: &CellSplitV1,
+            ) -> Result<Option<Digest32>, Self::Error> {
+                self.queried = true;
+                Ok(Some(split.retirement.tombstone_digest))
+            }
+        }
+        let mut observer = UnpreparedObserver { queried: false };
+        let reopened = run_cell_split_automation_v1(&split, &receipt, &mut owner, &mut observer)
+            .expect("unprepared retained state remains historical");
+        assert_eq!(reopened.state, CellSplitLifecycleStateV1::Retained);
+        assert!(!observer.queried);
+
+        let mut unprepared = retained;
+        assert_eq!(
+            unprepared.retire(&split),
+            Err(CellSplitLifecycleErrorV1::InvalidTransition)
+        );
+    }
+
+    #[test]
     fn retirement_failure_cannot_mint_a_rollback_receipt() {
         struct FailedRetirement;
         impl CellSplitAutomationExecutorV1 for FailedRetirement {
@@ -2060,6 +2149,12 @@ mod tests {
         assert_eq!(journal.current_state, CellSplitLifecycleStateV1::Retained);
         assert_eq!(journal.events.len(), 5);
         assert!(journal.retirement_pending(&split).expect("prepared retirement"));
+        let mut altered = split.clone();
+        altered.retirement.drain_watermark_digest = digest(130);
+        assert_eq!(
+            journal.retirement_pending(&altered),
+            Err(CellSplitLifecycleErrorV1::Binding)
+        );
     }
 
     #[test]
