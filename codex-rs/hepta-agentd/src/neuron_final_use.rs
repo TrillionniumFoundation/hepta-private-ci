@@ -35,11 +35,12 @@ pub(crate) fn exact_neuron_tick_final_use_binding_v1(
     if !local.validate_integrity()
         || input.objective_digest != local.scope.objective_digest
         || input.checkpoint_digest != local.anchor.checkpoint_digest
-        || input.logical_sequence != local
-            .anchor
-            .sequence
-            .checked_add(1)
-            .ok_or(AgentdNeuronSignedTickErrorV1::InvalidContext)?
+        || input.logical_sequence
+            != local
+                .anchor
+                .sequence
+                .checked_add(1)
+                .ok_or(AgentdNeuronSignedTickErrorV1::InvalidContext)?
         || input.body_generation != Some(local.config.generation.get())
         || input.input_feature_digest
             != canonical_feature_vector_digest_v1(&input.feature_vector_q24)
@@ -50,8 +51,8 @@ pub(crate) fn exact_neuron_tick_final_use_binding_v1(
     // Same V1 subject-scope domain and u32 length prefix as the immutable
     // Neuron Runtime. Never accept an arbitrary caller-submitted scope hash.
     let subject = input.subject_id.as_str().as_bytes();
-    let len = u32::try_from(subject.len())
-        .map_err(|_| AgentdNeuronSignedTickErrorV1::InvalidContext)?;
+    let len =
+        u32::try_from(subject.len()).map_err(|_| AgentdNeuronSignedTickErrorV1::InvalidContext)?;
     let mut scope_bytes = b"hepta.neuron.subject-scope.v1".to_vec();
     scope_bytes.extend_from_slice(&len.to_be_bytes());
     scope_bytes.extend_from_slice(subject);
@@ -182,7 +183,10 @@ mod tests {
         assert_eq!(original.destination_id, OPERATION);
         assert_eq!(original.subject_id, input.subject_id.as_str());
         assert_eq!(original.scope_sha256, *local.scope.scope_digest.as_array());
-        assert_eq!(original.payload_sha256, *input.semantic_digest().unwrap().as_array());
+        assert_eq!(
+            original.payload_sha256,
+            *input.semantic_digest().unwrap().as_array()
+        );
         let mut changed = input.clone();
         changed.tick_id = StableId::new("tick.altered").unwrap();
         assert_ne!(

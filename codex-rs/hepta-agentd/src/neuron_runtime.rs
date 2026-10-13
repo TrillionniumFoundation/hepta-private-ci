@@ -151,15 +151,12 @@ where
         authority: &FinalUseAuthority,
         signed_grant: &SignedFinalUseGrant,
         input: NeuronTickInputV1,
-    ) -> Result<
-        (NeuronRuntimeOutputV1, AgentdNeuronTickObservationV1),
-        AgentdNeuronSignedTickErrorV1,
-    > {
+    ) -> Result<(NeuronRuntimeOutputV1, AgentdNeuronTickObservationV1), AgentdNeuronSignedTickErrorV1>
+    {
         let binding = self.prepare_neuron_tick_final_use_binding_v1(&input)?;
         let verified = authority.claim(signed_grant, &binding)?;
-        let result = authority.with_verified_effect(verified, &binding, || {
-            self.tick_with_observation_v1(input)
-        })?;
+        let result = authority
+            .with_verified_effect(verified, &binding, || self.tick_with_observation_v1(input))?;
         Ok(result?)
     }
 
