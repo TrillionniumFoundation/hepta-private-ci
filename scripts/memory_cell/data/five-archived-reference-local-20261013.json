@@ -1,0 +1,44 @@
+{
+  "schema": "hepta.archived-reference.local-result.v1",
+  "source_overlay_parent": "8b782dc41de3abfe4547d179a8c63189b12a3815",
+  "model_archive_sha256": "07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af",
+  "historical_native_archive_sha256": "80037375c44927f71e15dea508abb6ac3a2d5ccd03cefe2a5c21beedad37247e",
+  "source_blobs": {
+    "five_archived_torch_reference.py": "33fd1bc640c9c2c9993f7f1b3740421cb1abd0b4",
+    "five_archived_reference_trial.py": "fbf1e7f498e6a692ae0916fa64b7af26f5041701",
+    "test_five_archived_reference.py": "46e55861eaef1e694a152927e2414a026772f3e3"
+  },
+  "final_source_local_tests": {"passed": 23, "failed": 0, "skipped": 0},
+  "historical_input_token_comparisons": 64,
+  "historical_input_token_matches": 64,
+  "complete_run_reader_calls": 16,
+  "complete_run_successful_reader_calls": 16,
+  "complete_run_decoder_forwards": 404,
+  "historical_generated_output_comparisons": 8,
+  "historical_generated_output_token_matches": 8,
+  "four_question_ids": ["locomo:conv-42/q188", "locomo:conv-42/q139", "locomo:conv-42/q28", "locomo:conv-42/q226"],
+  "exact_refusals_by_condition": {"no_evidence": 0, "ordinary_retrieval": 0, "oracle_support_plus_distractors": 0, "oracle_support_removed": 0},
+  "prior_interrupted_batches": [
+    {"completed": 2, "path": "reader-trial", "raw_sha256": "25a8630220f9d836a0b16ddd183953a4157526b96b1ac33fa394574fac83dd97", "recorded_decoder_forwards": 56, "unknown_ids": ["d5718028dbd8a4dce827dc904f490f4debd222d31b8902dcbb0f5d7e55af33d4"], "unobserved_work_cost": null},
+    {"completed": 1, "path": "reader-trial-r2", "raw_sha256": "c298e1fb08eb2e99339ef7879cf85a478dae2d49d3d807f51d8082b095e43401", "recorded_decoder_forwards": 38, "unknown_ids": ["f6e94341570530e15a373b7c246575124bf4a93434b944bc13b101cfd5a42dd8"], "unobserved_work_cost": null}
+  ],
+  "unknown_cost_is_not_zero": true,
+  "local_environment": {"torch": "2.10.0+cpu", "numpy": "2.3.5", "safetensors": "0.7.0", "regex": "2026.5.9", "Jinja2": "3.1.6"},
+  "execution_profile": "explicit_archived_reference_not_five_causal_native",
+  "data_kind": "previously_exposed_historical_material",
+  "generation_driver": "resident_Python_kernel_using_pinned_public_packets",
+  "additional_reference_probes_and_tests_not_in_trial_cost": true,
+  "independent_unseen_confirmation": false,
+  "human_sufficiency_review": false,
+  "general_hf_equivalence": false,
+  "reader_admitted": false,
+  "new_group_or_ndu_efficacy": false,
+  "five_experiments_completed": false,
+  "production_accepted": false,
+  "record_sha256": {
+    "report.json": "94950c1c96d8cc87924aebba5f940d94ca7a20ddafcbbc88b1fc4d984acb7d8c",
+    "token-parity.json": "5803752d6015b20f9c0d1065880c940943a384d2b2aa3efa7b82b4c83e18eb2d",
+    "source-provenance.json": "554dab424acfb14d279f116644fe953bf04ae98edd6ea85710c091d90a226627",
+    "reference-tests-published.log": "ff92a74ca3ce2bb2429cbfbaf3b60c9acaa09f324faefb3a57a7edae902aca5f"
+  }
+}

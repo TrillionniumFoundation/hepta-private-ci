@@ -1,0 +1,107 @@
+name: Hepta pinned archived Reader reference
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/five_archived_*.py"
+      - "scripts/memory_cell/test_five_archived_reference.py"
+      - ".github/workflows/hepta-archived-reader-reference.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/five_archived_*.py"
+      - "scripts/memory_cell/test_five_archived_reference.py"
+      - ".github/workflows/hepta-archived-reader-reference.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: archived-reference-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  archived-reference-not-formal-admission:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      PYTHONPATH: scripts/memory_cell
+      HF_HUB_OFFLINE: "1"
+      HEPTA_ARCHIVED_REFERENCE_ROOT: /tmp/reference-clean
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install isolated CPU reference dependencies
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/archived-reference-evidence
+          python3 -m venv /tmp/reference-env
+          /tmp/reference-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/reference-env/bin/pip install safetensors==0.7.0 regex==2024.11.6 Jinja2==3.1.6
+          /tmp/reference-env/bin/pip freeze > /tmp/archived-reference-evidence/environment.txt
+      - name: Retrieve unchanged externally pinned historical artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/reference-models.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11703482865/zip > /tmp/reference-original.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/reference-models.zip | sha256sum -c -
+          printf '%s  %s\n' 80037375c44927f71e15dea508abb6ac3a2d5ccd03cefe2a5c21beedad37247e /tmp/reference-original.zip | sha256sum -c -
+      - name: Preserve original material and prepare verified clean copies
+        run: |
+          set -euo pipefail
+          /tmp/reference-env/bin/python - <<'PY'
+          from pathlib import Path, PurePosixPath
+          import json, tarfile, zipfile
+          from five_archived_torch_reference import stage_clean
+          target=Path('/tmp/reference-original-material'); target.mkdir()
+          with zipfile.ZipFile('/tmp/reference-models.zip') as z:
+              if z.namelist()!=['memory-inputs.tar.gz']:
+                  raise ValueError('unexpected outer archive')
+              with z.open('memory-inputs.tar.gz') as src, tarfile.open(fileobj=src, mode='r|gz') as tar:
+                  total=0; seen=set()
+                  for member in tar:
+                      p=PurePosixPath(member.name); total+=member.size
+                      if (p.is_absolute() or '..' in p.parts or not p.parts or p.parts[0]!='memory-inputs'
+                              or not (member.isfile() or member.isdir()) or member.name in seen
+                              or total>2*1024**3 or len(seen)>=10000):
+                          raise ValueError('unsafe/oversized archive')
+                      seen.add(member.name); tar.extract(member,target,filter='data')
+          for kind in ('reader','encoder'):
+              receipt=stage_clean(target/'memory-inputs'/kind,Path('/tmp/reference-clean')/kind,kind)
+              (Path('/tmp/archived-reference-evidence')/(kind+'-staging.json')).write_text(json.dumps(receipt,indent=2))
+          PY
+      - name: Require real-asset tests then execute the historical diagnostic
+        run: |
+          set -euo pipefail
+          /tmp/reference-env/bin/python -m unittest discover -s scripts/memory_cell -p test_five_archived_reference.py -v 2>&1 | tee /tmp/archived-reference-evidence/tests.log
+          /tmp/reference-env/bin/python scripts/memory_cell/five_archived_reference_trial.py prepare --materials /tmp/reference-original-material/memory-inputs --clean /tmp/reference-clean --archive /tmp/reference-original.zip --output /tmp/archived-reference-evidence/reader
+          /usr/bin/time -v -o /tmp/archived-reference-evidence/resources.txt /tmp/reference-env/bin/python scripts/memory_cell/five_archived_reference_trial.py generate-resident --clean /tmp/reference-clean --output /tmp/archived-reference-evidence/reader
+          /tmp/reference-env/bin/python scripts/memory_cell/five_archived_reference_trial.py score --output /tmp/archived-reference-evidence/reader > /tmp/archived-reference-evidence/summary.log
+          /tmp/reference-env/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/archived-reference-evidence/reader/report.json').read_bytes())
+          if (r['planned'],r['succeeded'],r['historical_output_ids_matches'])!=(16,16,8):
+              raise ValueError('reference replay mismatch; preserve outputs, do not relabel')
+          if r['production_accepted'] or r['independent_sufficiency']:
+              raise ValueError('diagnostic cannot grant admission')
+          PY
+      - name: Retain exact source and partial failures, never model weights
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/archived-reference-evidence/source
+          git rev-parse HEAD > /tmp/archived-reference-evidence/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/archived-reference-evidence/tested-tree.txt
+          cp scripts/memory_cell/five_archived_*.py scripts/memory_cell/test_five_archived_reference.py .github/workflows/hepta-archived-reader-reference.yml /tmp/archived-reference-evidence/source/
+          (cd /tmp/archived-reference-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-archived-reference-not-natural-confirmation
+          path: /tmp/archived-reference-evidence
+          if-no-files-found: error
