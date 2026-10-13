@@ -21,7 +21,7 @@ MASS = 1_000_000
 
 def freeze_policy(*, objective_sha256, subject_id, critic_sha256, critic_cutoff_ns,
                   expires_at_ns, discount_rate_per_second, cost_per_formula_flop,
-                  cost_per_latency_ns, minimum_margin, max_estimate_age_ns, execution):
+                  cost_per_latency_ns, minimum_margin, max_estimate_age_ns, execution, empirical_protocol_id=None):
     """Bind objective, critic revision, units and thresholds BEFORE execution."""
     for value in (objective_sha256, critic_sha256):
         _sha(value, "objective/critic artifact")
@@ -54,6 +54,11 @@ def freeze_policy(*, objective_sha256, subject_id, critic_sha256, critic_cutoff_
                 expires_at_ns=expires_at_ns, discount_rate_per_second=discount_rate_per_second,
                 cost_per_formula_flop=cost_per_formula_flop, cost_per_latency_ns=cost_per_latency_ns,
                 minimum_margin=minimum_margin, max_estimate_age_ns=max_estimate_age_ns, execution=execution)
+    if empirical_protocol_id is not None:
+        _sha(empirical_protocol_id, "registered empirical critic protocol")
+        if execution["max_rounds"] != 2 or execution["max_calls"] != 5:
+            raise ValueError("empirical profile supports exactly one continuation decision")
+        body.update(schema="hepta.ndu.reasoning-policy.v2", empirical_protocol_id=empirical_protocol_id)
     return {**body, "policy_id": _digest(body)}
 
 
@@ -152,6 +157,9 @@ def decide(policy, context, estimate, *, now_ns, resources):
     _integer(now_ns, "decision time", 1)
     if now_ns < context.as_of_ns:
         raise ValueError("decision clock moved backwards")
+    if policy.get("empirical_protocol_id") is not None:
+        from empirical_continuation import decide_empirical
+        return decide_empirical(policy, context, estimate, now_ns=now_ns, resources=resources)
     report = dict(policy_id=policy["policy_id"], context_id=context.context_id,
                   context=asdict(context), estimate=None, decision_at_ns=now_ns,
                   post_critic_resources=dict(resources),
