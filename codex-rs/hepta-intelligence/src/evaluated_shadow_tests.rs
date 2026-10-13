@@ -418,7 +418,9 @@ fn ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded()
     assert!(!fs::read(&path).unwrap().is_empty());
 
     let path = temp.path().join("faulted-ledger");
-    let mut ledger = ledger_at(&path, &fixture);
+    let ledger = ledger_at(&path, &fixture);
+    #[cfg(not(windows))]
+    let mut ledger = ledger;
     // Linux permits a separate file handle to corrupt locked bytes, whereas
     // Windows byte-range locks deliberately DENY that second handle. Exercise
     // the actual rejection on both platforms: Unix checks in-process
