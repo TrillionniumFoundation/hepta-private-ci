@@ -1,0 +1,46 @@
+name: Hepta Supervisor P0 Cross-Platform Restart Qualification
+
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-supervisor/**'
+      - '.github/workflows/hepta-supervisor-p0-crossplatform.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-linux-restart:
+    name: Restart and signed recovery (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-latest
+          - ubuntu-24.04
+    defaults:
+      run:
+        working-directory: codex-rs
+    steps:
+      - name: Checkout exact PR head without write credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install pinned Rust 1.95
+        run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy
+      - name: Verify full-workspace canonical Rust format on Linux
+        if: runner.os == 'Linux'
+        run: cargo +1.95.0 fmt --all -- --check
+      - name: Verify Supervisor canonical Rust format on Windows
+        if: runner.os == 'Windows'
+        # A Windows runner cannot pass the entire huge Hepta workspace to
+        # rustfmt in one command (OS error 206: argument list too long).
+        # The same complete workspace is independently checked on Linux.
+        run: cargo +1.95.0 fmt -p codex-hepta-supervisor -- --check
+      - name: Execute actual restart budget, repeated recovery and signed intent recovery
+        run: cargo +1.95.0 test --locked -p codex-hepta-supervisor --test restart_budget --test restart_budget_recovery --test signed_intent_recovery -- --nocapture
+      - name: Strict Supervisor Clippy
+        run: cargo +1.95.0 clippy --locked -p codex-hepta-supervisor --all-targets -- -D warnings
