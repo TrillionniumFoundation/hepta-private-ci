@@ -236,3 +236,14 @@ fn existing_hardlink_alias_cannot_become_a_second_metrics_writer() {
     fs::remove_file(&alias).expect("remove hardlink");
     assert!(MetricsGroupCommitV1::open(&path).is_ok());
 }
+
+#[test]
+fn journal_open_does_not_create_an_unprovisioned_storage_directory() {
+    let dir = tempfile::tempdir().expect("fixture root");
+    let unknown_parent = dir.path().join("not-owned-by-metrics");
+    let journal = unknown_parent.join("metrics");
+    assert!(!unknown_parent.exists());
+    assert!(MetricsGroupCommitV1::open(&journal).is_err());
+    assert!(!unknown_parent.exists());
+    assert!(!journal.exists());
+}

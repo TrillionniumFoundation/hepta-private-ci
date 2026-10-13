@@ -101,9 +101,9 @@ impl Drop for MetricsGroupCommitV1 {
 impl MetricsGroupCommitV1 {
     pub fn open(path: impl AsRef<Path>) -> Result<Self, MetricsJournalErrorV1> {
         let path = path.as_ref();
-        if let Some(parent) = path.parent().filter(|p| !p.as_os_str().is_empty()) {
-            fs::create_dir_all(parent)?;
-        }
+        // Never provision an untrusted telemetry directory as a side
+        // effect of opening the writer. The deployment's own storage
+        // administrator must create and protect the parent beforehand.
         check_journal_path(path)?;
         let mut options = OpenOptions::new();
         options.create(true).append(true).read(true);
