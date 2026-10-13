@@ -11,6 +11,7 @@ from narrow_matrix_sdk_workspace import (
     PINNED_MIGRATION_SHA,
     PINNED_RELEASE_SHA,
     SOURCE_SCHEMA,
+    align_scratch_sqlite_native_links,
     digest,
     inspect_cargo_metadata,
     rewrite_workspace,
@@ -34,6 +35,7 @@ edition = "2024"
 
 [workspace.dependencies]
 matrix-sdk = {{ path = "../../sdk/crates/matrix-sdk", default-features = false, features = ["e2e-encryption", "sqlite"] }}
+libsqlite3-sys = {{ version = "0.37", default-features = false }}
 tokio = "1"
 ''').encode("utf-8")
 
@@ -471,6 +473,81 @@ class NarrowWorkspaceTests(unittest.TestCase):
                 self.assertNotEqual(output["narrowed_manifest_sha256"], digest(source))
                 self.assertTrue(output["hepta_production_workspace_modified"] is False)
                 self.assertEqual(cargo.read_bytes(), rewrite_workspace(source))
+
+    def test_sqlite_native_links_are_aligned_only_in_detached_stage(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            stage = root / "stage"
+            (stage / "codex-rs").mkdir(parents=True)
+            (stage / ".git").write_text("gitdir: /nonexistent/original\n")
+            (root / "sdk/crates/matrix-sdk").mkdir(parents=True)
+            (root / "sdk/crates/matrix-sdk/Cargo.toml").write_text(
+                '[package]\nname = "matrix-sdk"\nversion = "0.19.1"\n')
+            original = cargo_fixture()
+            (stage / "codex-rs/Cargo.toml").write_bytes(original)
+            sha = "a" * 40
+            source_report = {
+                "schema": SOURCE_SCHEMA,
+                "hepta_source_sha": sha,
+                "hepta_candidate_manifest_sha256": digest(original),
+                "signed_upstream_release_sha": PINNED_RELEASE_SHA,
+                "upstream_anymap_change_sha": PINNED_MIGRATION_SHA,
+                "minimal_upstream_patch_sha256": "f" * 64,
+                "sdk_source_root": str(root / "sdk"),
+                "production_authorized": False,
+                "cargo_resolution_verified": False,
+            }
+            def fake_git(root_path, *parts):
+                if parts == ("rev-parse", "HEAD"):
+                    return sha
+                if parts == ("diff", "--name-only"):
+                    return "codex-rs/Cargo.toml"
+                raise AssertionError(parts)
+            with patch("narrow_matrix_sdk_workspace._git", side_effect=fake_git):
+                narrowed = stage_narrow_sdk(stage, source_report, sha)
+                aligned = align_scratch_sqlite_native_links(stage, sha, narrowed)
+                body = (stage / "codex-rs/Cargo.toml").read_bytes()
+                self.assertIn(
+                    b'libsqlite3-sys = { version = "=0.38.2", default-features = false }',
+                    body)
+                self.assertIn(b'features = ["e2e-encryption", "sqlite"]', body)
+                self.assertTrue(aligned["sqlite_native_links_scratch_alignment"])
+                self.assertEqual(aligned["pre_sqlite_alignment_manifest_sha256"],
+                                 narrowed["narrowed_manifest_sha256"])
+                self.assertEqual(aligned["narrowed_manifest_sha256"], digest(body))
+                self.assertFalse(aligned["hepta_production_workspace_modified"])
+                self.assertFalse(aligned["production_cargo_lock_modified"])
+                self.assertFalse(aligned["cargo_deny_verified"])
+                self.assertFalse(aligned["sqlite_wal_recovery_verified"])
+                self.assertFalse(aligned["production_authorized"])
+                with self.assertRaisesRegex(ValueError, "source is not"):
+                    align_scratch_sqlite_native_links(stage, sha, narrowed)
+                with self.assertRaisesRegex(ValueError, "detached"):
+                    align_scratch_sqlite_native_links(stage, "b" * 40, aligned)
+
+    def test_sqlite_alignment_refuses_unrecognized_old_graph(self):
+        original = cargo_fixture()
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            (root / ".git").write_text("gitdir: /nonexistent/original\n")
+            (root / "codex-rs").mkdir()
+            manifest = root / "codex-rs/Cargo.toml"
+            invalid = rewrite_workspace(original).replace(
+                b'libsqlite3-sys = { version = "0.37", default-features = false }',
+                b'libsqlite3-sys = { version = "0.36", default-features = false }')
+            manifest.write_bytes(invalid)
+            sha = "c" * 40
+            report = {"schema": "hepta.matrix-narrow-sdk-workspace-probe.v1",
+                      "source_sha": sha, "narrowed_manifest_sha256": digest(invalid),
+                      "only_direct_workspace_member": "hepta-matrix-sdk",
+                      "production_authorized": False,
+                      "cargo_resolution_verified": False}
+            def fake_git(root_path, *parts):
+                return sha if parts == ("rev-parse", "HEAD") else "codex-rs/Cargo.toml"
+            with patch("narrow_matrix_sdk_workspace._git", side_effect=fake_git):
+                with self.assertRaisesRegex(ValueError, "unrecognized legacy SQLite"):
+                    align_scratch_sqlite_native_links(root, sha, report)
+            self.assertEqual(manifest.read_bytes(), invalid)
 
     def test_stage_fails_on_changed_sha_or_manifest(self):
         with tempfile.TemporaryDirectory() as d:
