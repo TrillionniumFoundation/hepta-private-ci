@@ -240,3 +240,130 @@ fn pending_recovery_rejects_path_swap() -> Result<(), Box<dyn std::error::Error>
     assert_eq!(std::fs::read(&path)?, bytes);
     Ok(())
 }
+
+#[cfg(unix)]
+#[test]
+fn deleted_intent_recovery_is_denied() -> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("subject.intent");
+    let tick = Digest32::of_bytes(b"previously-dispatched-tick");
+    {
+        let mut owner =
+            bootstrap_durable_neuron_effect_intent_v1(&path, test_scope(), test_generation(), 8)?;
+        owner.prepare(tick, Digest32::ZERO)?;
+        owner.resolve(tick, Digest32::of_bytes(b"durable-checkpoint"))?;
+    }
+    let marker = effect_marker_path_v1(&path)?;
+    assert!(marker.exists(), "original continuity marker must be durable");
+    std::fs::remove_file(&path)?;
+    assert!(matches!(
+        bootstrap_durable_neuron_effect_intent_v1(&path, test_scope(), test_generation(), 8),
+        Err(NeuronEffectBootstrapErrorV1::ContinuityLost)
+    ));
+    assert!(!path.exists(), "denied bootstrap must not recreate a blank WAL");
+    assert!(marker.exists(), "original continuity evidence preserved");
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn restored_journal_inode_is_denied() -> Result<(), Box<dyn std::error::Error>> {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("subject.intent");
+    let old_path = directory.path().join("original-inode.intent");
+    let tick = Digest32::of_bytes(b"committed-before-copy");
+    {
+        let mut owner =
+            bootstrap_durable_neuron_effect_intent_v1(&path, test_scope(), test_generation(), 8)?;
+        owner.prepare(tick, Digest32::ZERO)?;
+        owner.resolve(tick, Digest32::of_bytes(b"checkpoint"))?;
+    }
+    let exact_bytes = std::fs::read(&path)?;
+    std::fs::rename(&path, &old_path)?;
+    std::fs::write(&path, &exact_bytes)?;
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))?;
+    assert!(matches!(
+        bootstrap_durable_neuron_effect_intent_v1(&path, test_scope(), test_generation(), 8),
+        Err(NeuronEffectBootstrapErrorV1::ContinuityLost)
+    ));
+    assert_eq!(std::fs::read(&path)?, exact_bytes);
+    assert_eq!(std::fs::read(&old_path)?, exact_bytes);
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn lost_or_tampered_marker_is_denied() -> Result<(), Box<dyn std::error::Error>> {
+    for corrupt in [false, true] {
+        let directory = tempfile::tempdir()?;
+        let path = directory.path().join("subject.intent");
+        {
+            let _owner =
+                bootstrap_durable_neuron_effect_intent_v1(&path, test_scope(), test_generation(), 8)?;
+        }
+        let marker = effect_marker_path_v1(&path)?;
+        if corrupt {
+            std::fs::write(&marker, b"corrupted-owner-seal")?;
+        } else {
+            std::fs::remove_file(&marker)?;
+        }
+        assert!(matches!(
+            bootstrap_durable_neuron_effect_intent_v1(&path, test_scope(), test_generation(), 8),
+            Err(NeuronEffectBootstrapErrorV1::ContinuityLost)
+        ));
+        assert!(path.exists(), "original journal must be preserved");
+        if !corrupt {
+            assert!(!marker.exists(), "denied bootstrap must not reissue seal");
+        }
+    }
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn preexisting_unsealed_journal_is_denied() -> Result<(), Box<dyn std::error::Error>> {
+    use std::os::unix::fs::OpenOptionsExt as _;
+
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("legacy.intent");
+    let file = std::fs::OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .mode(0o600)
+        .open(&path)?;
+    drop(file);
+    assert!(matches!(
+        bootstrap_durable_neuron_effect_intent_v1(&path, test_scope(), test_generation(), 8),
+        Err(NeuronEffectBootstrapErrorV1::ContinuityLost)
+    ));
+    assert_eq!(std::fs::metadata(&path)?.len(), 0);
+    assert!(!effect_marker_path_v1(&path)?.exists());
+    Ok(())
+}
+
+#[cfg(unix)]
+#[test]
+fn empty_same_inode_journal_is_denied() -> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("subject.intent");
+    let tick = Digest32::of_bytes(b"attempted-before-truncation");
+    {
+        let mut owner =
+            bootstrap_durable_neuron_effect_intent_v1(&path, test_scope(), test_generation(), 8)?;
+        owner.prepare(tick, Digest32::ZERO)?;
+        owner.resolve(tick, Digest32::of_bytes(b"checkpoint"))?;
+    }
+    // Truncate without renaming: inode-only checking is insufficient.
+    std::fs::OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(&path)?;
+    assert!(matches!(
+        bootstrap_durable_neuron_effect_intent_v1(&path, test_scope(), test_generation(), 8),
+        Err(NeuronEffectBootstrapErrorV1::ContinuityLost)
+    ));
+    assert_eq!(std::fs::metadata(&path)?.len(), 0);
+    Ok(())
+}
