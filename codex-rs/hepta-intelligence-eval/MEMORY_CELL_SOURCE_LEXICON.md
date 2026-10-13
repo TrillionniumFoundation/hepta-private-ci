@@ -44,3 +44,22 @@ The baseline prompt and reader are unchanged, original K-way results remain
 in place, and the report maintains zero additional model calls. No semantic
 entailment or citation certification, policy acceptance or production state
 is changed; review gates remain fail-closed.
+
+## Audit precision on odd question counts and finite score arithmetic
+
+The same post-journal question/value test must preserve *every* originally
+planned source question, including the valid one-question case created by
+`maximum_questions=1`. An unmatched question cannot establish a
+two-question interaction. The readout therefore retains an explicit
+`unpaired_source_questions` count and hashed identities, alongside
+`all_planned_questions_accounted`. It neither silently drops the question
+nor imputes another likelihood or comparison.
+
+The symmetric binding score uses averaged per-token losses on the unchanged
+source lexicon. We separately check input NLLs and every intermediate margin
+and adapter-minus-frozen delta for finiteness, computing each half-margin
+before addition to avoid an avoidable floating-point overflow. Any
+unrepresentable cross-model effect fails closed, rather than being counted as
+an arbitrarily large adapter gain. These are accounting and numeric-safety
+changes only: no Reader/model call, training sample, cohort size, inference
+prompt, or claim of parametric recall/generalization is altered.

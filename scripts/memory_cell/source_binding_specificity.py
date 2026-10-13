@@ -81,10 +81,16 @@ def question_binding(rows, cases):
         prompt_ids[qid] = next(iter(prompts))
     if len(reader_profiles) != 1 or len(set(prompt_ids.values())) != len(prompt_ids):
         raise ValueError("mixed reader or indistinguishable question prompts")
-    pairs, completed, missing, unequal, repeated = [], 0, 0, 0, 0
+    pairs, completed, missing, unequal, repeated, unpaired = [], 0, 0, 0, 0, []
     improved, dual_gains = 0, 0
     for scope, scoped in sorted(groups.items()):
         ordered = sorted(scoped, key=lambda c: c["query"]["identity"])
+        if len(ordered) % 2:
+            unpaired.append(dict(
+                scope_digest=digest(scope),
+                question_digest=digest(ordered[-1]["query"]["identity"]),
+                disposition="unpaired_original_question_no_swap",
+            ))
         for i in range(0, len(ordered) - 1, 2):
             first, second = ordered[i], ordered[i + 1]
             if set(first["candidates"]) != set(second["candidates"]):
@@ -119,9 +125,18 @@ def question_binding(rows, cases):
 
                         left = loss(q1, b) - loss(q1, a)
                         right = loss(q2, a) - loss(q2, b)
-                        margins[arm] = (left + right) / 2
+                        if not math.isfinite(left) or not math.isfinite(right):
+                            raise ValueError("nonfinite source question/value margin")
+                        # Avoid an intermediate overflow when combining two
+                        # individually finite large signed margins.
+                        margin = left / 2 + right / 2
+                        if not math.isfinite(margin):
+                            raise ValueError("nonfinite averaged source binding")
+                        margins[arm] = margin
                         dual[arm] = left > 0 and right > 0
                     delta = margins["memory"] - margins["base"]
+                    if not math.isfinite(delta):
+                        raise ValueError("nonfinite adapter-minus-frozen binding")
                     completed += 1
                     improved += int(delta > 1e-9)
                     dual_gains += int(dual["memory"] and not dual["base"])
@@ -137,6 +152,11 @@ def question_binding(rows, cases):
     return dict(
         schema="hepta.source-question-value-binding.v1",
         planned_pairs=len(pairs),
+        unpaired_source_questions=len(unpaired),
+        unpaired_source_question_digests=unpaired,
+        all_planned_questions_accounted=(
+            2 * len(pairs) + len(unpaired) == len(cases)
+        ),
         complete_pairs=completed,
         failed_pairs=missing,
         unequal_length_pairs=unequal,

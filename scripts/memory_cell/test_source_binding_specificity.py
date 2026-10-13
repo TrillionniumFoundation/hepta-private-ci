@@ -1,5 +1,6 @@
 """Score-only question binding tests, not pretrained or independent evidence."""
 from copy import deepcopy
+import math
 import unittest
 
 from native import digest
@@ -77,6 +78,55 @@ class QuestionBindingTests(unittest.TestCase):
         rows[0]["delivered_evidence"] = [{"source": "leak"}]
         with self.assertRaises(ValueError):
             question_binding(rows, cases)
+
+    def test_original_unpaired_question_is_counted_not_discarded(self):
+        rows, cases = fixture()
+        only_one = question_binding(rows[:4], cases[:1])
+        self.assertEqual(only_one["planned_pairs"], 0)
+        self.assertEqual(only_one["unpaired_source_questions"], 1)
+        self.assertEqual(len(only_one["unpaired_source_question_digests"]), 1)
+        self.assertTrue(only_one["all_planned_questions_accounted"])
+        self.assertFalse(only_one["statistical_superiority"])
+        paired = question_binding(rows, cases)
+        self.assertEqual(paired["unpaired_source_questions"], 0)
+        self.assertEqual(paired["complete_pairs"], 1)
+
+    def test_finite_nll_but_overflowing_adapter_delta_fails_closed(self):
+        rows, cases = fixture()
+        # Both individual nonnegative NLLs are finite. Each averaged
+        # question/value margin is finite, but adapter-minus-base overflows.
+        def set_loss(arm, qid, value, nll):
+            for row in rows:
+                if (row["arm"], row["question_id"], row["candidate_digest"]) == (
+                    arm, qid, digest(value)
+                ):
+                    row["mean_nll"] = nll
+                    return
+            raise AssertionError("missing synthetic source candidate")
+
+        base = 1e308
+        for arm, reverse in (("base", True), ("memory", False)):
+            for qid, true, false in (("q1", "value_a", "value_b"),
+                                     ("q2", "value_b", "value_a")):
+                set_loss(arm, qid, true, base if reverse else 0.0)
+                set_loss(arm, qid, false, 0.0 if reverse else base)
+        with self.assertRaisesRegex(ValueError, "nonfinite adapter-minus-frozen"):
+            question_binding(rows, cases)
+
+    def test_averaged_large_finite_margins_do_not_overflow(self):
+        rows, cases = fixture()
+        # A naive (left+right)/2 would overflow even though the true
+        # average is finite and representable.
+        for row in rows:
+            if row["arm"] == "memory":
+                is_correct = (row["question_id"], row["candidate_digest"]) in (
+                    ("q1", digest("value_a")), ("q2", digest("value_b"))
+                )
+                row["mean_nll"] = 0.0 if is_correct else 1e308
+        outcome = question_binding(rows, cases)
+        self.assertEqual(outcome["complete_pairs"], 1)
+        self.assertTrue(math.isfinite(outcome["pairs"][0]["adapter_minus_frozen"]))
+        self.assertFalse(outcome["production_accepted"])
 
     def test_same_target_and_incomplete_census_are_not_positive(self):
         rows, cases = fixture()
