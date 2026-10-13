@@ -29,6 +29,7 @@ jobs:
       TRANSFORMERS_OFFLINE: "1"
       HEPTA_MEMORY_TESTED_COMMIT: ${{ github.sha }}
       HEPTA_SYSTEM2_CARDINALITY_ARCHIVE: /tmp/hepta-cardinality-parent.zip
+      HEPTA_REQUIRE_CARDINALITY_INTEGRATION: "1"
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -54,6 +55,7 @@ jobs:
       - name: Full MemoryCell Python regressions and strict scoped lint
         run: |
           set -euo pipefail
+          test -s "$HEPTA_SYSTEM2_CARDINALITY_ARCHIVE"
           if ! /tmp/onehop-label-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_*.py' -v > /tmp/system2-onehop-label/full-regression.log 2>&1; then
             tail -120 /tmp/system2-onehop-label/full-regression.log
             exit 1

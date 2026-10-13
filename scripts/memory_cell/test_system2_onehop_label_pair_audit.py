@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from system2_multihop_evidence import digest
 from system2_multihop_trial import evidence
@@ -19,8 +20,6 @@ from system2_onehop_label_pair_audit import (
     audit, compare_pairs, exact_two_sided_discordance_p,
 )
 
-PARENT = Path(os.environ.get('HEPTA_SYSTEM2_CARDINALITY_ARCHIVE',
-    '/mnt/data/hepta-onehop-cardinality-140-hosted-0abf776c.zip'))
 COMMIT = 'a' * 40
 
 
@@ -88,6 +87,39 @@ def fixture(folder):
 
 
 class LabelAuditTests(unittest.TestCase):
+    def _parent_archive(self):
+        """Resolve an explicit pinned CI artifact at TEST execution time.
+
+        Missing fixtures in source-only local runs are skipped. A hosted suite
+        that promised a pinned archive must instead fail closed.
+        """
+        raw = os.environ.get('HEPTA_SYSTEM2_CARDINALITY_ARCHIVE')
+        if not raw:
+            if os.environ.get('HEPTA_REQUIRE_CARDINALITY_INTEGRATION') == '1':
+                self.fail('required hosted cardinality archive environment absent')
+            self.skipTest('original pinned archive not staged in source-only test')
+        parent = Path(raw)
+        if not parent.is_file():
+            self.fail('required pinned original archive missing: ' + str(parent))
+        return parent
+
+    def test_hosted_missing_archive_fails_closed(self):
+        with tempfile.TemporaryDirectory() as root:
+            nonexistent = str(Path(root) / 'unavailable-parent.zip')
+            with patch.dict(os.environ, {
+                    'HEPTA_SYSTEM2_CARDINALITY_ARCHIVE': nonexistent,
+                    'HEPTA_REQUIRE_CARDINALITY_INTEGRATION': '1'}):
+                with self.assertRaisesRegex(AssertionError, 'pinned original archive missing'):
+                    self._parent_archive()
+
+    def test_source_only_no_staged_archive_skips_without_guessing(self):
+        clean = dict(os.environ)
+        clean.pop('HEPTA_SYSTEM2_CARDINALITY_ARCHIVE', None)
+        clean.pop('HEPTA_REQUIRE_CARDINALITY_INTEGRATION', None)
+        with patch.dict(os.environ, clean, clear=True):
+            with self.assertRaises(unittest.SkipTest):
+                self._parent_archive()
+
     def test_exact_discordance(self):
         self.assertEqual(exact_two_sided_discordance_p(0,0),1.)
         self.assertEqual(exact_two_sided_discordance_p(1,0),1.)
@@ -97,18 +129,16 @@ class LabelAuditTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 exact_two_sided_discordance_p(a,b)
 
-    @unittest.skipUnless(PARENT.is_file(), "original pinned archive not staged")
     def test_original_pinned_140_call_parent_replays(self):
         # This is completed, real-model historical evidence, not 140 new calls.
-        receipt=load_previous(PARENT)
+        receipt=load_previous(self._parent_archive())
         self.assertEqual(receipt['verified_files'],25)
         self.assertEqual(len(receipt['by_key']),140)
 
-    @unittest.skipUnless(PARENT.is_file(), "original pinned archive not staged")
     def test_complete_record_same_sources_and_plan(self):
         with tempfile.TemporaryDirectory() as t:
             root=Path(t)/'trial';fixture(root)
-            r=audit(root,PARENT,generating_commit=COMMIT)
+            r=audit(root,self._parent_archive(),generating_commit=COMMIT)
             self.assertEqual((r['planned_model_calls'],r['source_pairs']), (140,60))
             self.assertEqual(r['zero_evidence_control']['prescribed_refusals'],20)
             self.assertFalse(r['contains_unknown_execution_failures'])
@@ -144,16 +174,14 @@ class LabelAuditTests(unittest.TestCase):
         with self.assertRaises(ValueError): compare_pairs(rows+rows[:1],registered=cases())
         with self.assertRaises(ValueError): compare_pairs(rows+[{**rows[0],'arm':'unknown'}],registered=cases())
 
-    @unittest.skipUnless(PARENT.is_file(), "original pinned archive not staged")
     def test_missing_start_event_cannot_be_rescued_by_sealed_answers(self):
         with tempfile.TemporaryDirectory() as t:
             root=Path(t)/'trial';fixture(root)
             p=root/'starts.jsonl'
             p.write_text('\n'.join(p.read_text().splitlines()[:-1])+'\n')
             with self.assertRaisesRegex(ValueError, 'start journal'):
-                audit(root,PARENT,generating_commit=COMMIT)
+                audit(root,self._parent_archive(),generating_commit=COMMIT)
 
-    @unittest.skipUnless(PARENT.is_file(), "original pinned archive not staged")
     def test_source_excerpt_mutation_invalidates_source_binding(self):
         with tempfile.TemporaryDirectory() as t:
             root=Path(t)/'trial';fixture(root)
@@ -166,26 +194,23 @@ class LabelAuditTests(unittest.TestCase):
             seal['sha256']=hashlib.sha256(raw).hexdigest()
             (root/'raw-seal.json').write_text(json.dumps(seal))
             with self.assertRaisesRegex(ValueError, 'Reader'):
-                audit(root,PARENT,generating_commit=COMMIT)
+                audit(root,self._parent_archive(),generating_commit=COMMIT)
 
-    @unittest.skipUnless(PARENT.is_file(), "original pinned archive not staged")
     def test_raw_seal_tamper_rejected(self):
         with tempfile.TemporaryDirectory() as t:
             root=Path(t)/'trial';fixture(root)
             p=root/'raw-answers.jsonl';p.write_bytes(p.read_bytes()+b'\n')
             with self.assertRaisesRegex(ValueError,'seal'):
-                audit(root,PARENT,generating_commit=COMMIT)
+                audit(root,self._parent_archive(),generating_commit=COMMIT)
 
-    @unittest.skipUnless(PARENT.is_file(), "original pinned archive not staged")
     def test_modified_scoring_fails_after_resealing_answers(self):
         with tempfile.TemporaryDirectory() as t:
             root=Path(t)/'trial';fixture(root)
             p=root/'scored.json';data=json.loads(p.read_text());data[0]['exact_answer_only']=False
             p.write_text(json.dumps(data))
             with self.assertRaisesRegex(ValueError,'scor'):
-                audit(root,PARENT,generating_commit=COMMIT)
+                audit(root,self._parent_archive(),generating_commit=COMMIT)
 
-    @unittest.skipUnless(PARENT.is_file(), "original pinned archive not staged")
     def test_model_identity_tamper_fails_closed_even_if_new_seal(self):
         with tempfile.TemporaryDirectory() as t:
             root=Path(t)/'trial';fixture(root)
@@ -197,20 +222,18 @@ class LabelAuditTests(unittest.TestCase):
             seal['sha256']=hashlib.sha256(raw).hexdigest()
             (root/'raw-seal.json').write_text(json.dumps(seal))
             with self.assertRaisesRegex(ValueError,'Reader'):
-                audit(root,PARENT,generating_commit=COMMIT)
+                audit(root,self._parent_archive(),generating_commit=COMMIT)
 
-    @unittest.skipUnless(PARENT.is_file(), "original pinned archive not staged")
     def test_source_and_commit_drift_rejected(self):
         with tempfile.TemporaryDirectory() as t:
             root=Path(t)/'trial';fixture(root)
             with self.assertRaisesRegex(ValueError,'source/condition'):
-                audit(root,PARENT,generating_commit='b'*40)
+                audit(root,self._parent_archive(),generating_commit='b'*40)
             plan=json.loads((root/'plan.json').read_text());plan['parent_commit']='wrong'
             (root/'plan.json').write_text(json.dumps(plan))
             with self.assertRaisesRegex(ValueError,'source/condition'):
-                audit(root,PARENT,generating_commit=COMMIT)
+                audit(root,self._parent_archive(),generating_commit=COMMIT)
 
-    @unittest.skipUnless(PARENT.is_file(), "original pinned archive not staged")
     def test_disposition_cannot_be_upgraded_after_scoring(self):
         with tempfile.TemporaryDirectory() as t:
             root=Path(t)/'trial';fixture(root)
@@ -218,7 +241,7 @@ class LabelAuditTests(unittest.TestCase):
             summary['candidate_disposition']='independent_reader_confirmation_required'
             (root/'summary.json').write_text(json.dumps(summary))
             with self.assertRaisesRegex(ValueError,'promotion'):
-                audit(root,PARENT,generating_commit=COMMIT)
+                audit(root,self._parent_archive(),generating_commit=COMMIT)
 
 if __name__=='__main__':
     unittest.main()
