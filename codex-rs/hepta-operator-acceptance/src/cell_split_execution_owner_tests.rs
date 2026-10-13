@@ -1983,3 +1983,54 @@ fn selector_revoked_during_final_original_owner_readback_never_acknowledges_any_
         );
     }
 }
+
+#[test]
+fn final_admission_callback_cannot_mutate_local_acknowledgement_frames() {
+    // The fourth admission read follows the last signed original-owner
+    // verification. A slow or adversarial callback must not mutate any
+    // ledger frame and still obtain a coordinator success acknowledgement.
+    for filename in [
+        "cell-split-frozen-plan.json",
+        "cell-split-owner-trust-pins.json",
+        "cell-split-00-prepared.json",
+        "cell-split-00-committed.json",
+        "cell-split-01-prepared.json",
+    ] {
+        let root = private_tempdir();
+        let observed = Rc::new(RefCell::new(Observed::default()));
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(observed.clone()),
+        )
+        .expect("single split coordinator owner");
+        let target = root.path().join(filename);
+        let mut admission_reads = 0;
+        let denied = owner.advance_with_admission(|| {
+            admission_reads += 1;
+            if admission_reads == 4 {
+                fs::write(&target, b"{}").expect("simulate final-admission ledger tamper");
+            }
+            Ok(())
+        });
+        assert!(
+            matches!(
+                denied,
+                Err(CellSplitExecutionErrorV1::Invalid(
+                    "split ledger changed during final owner readback"
+                ))
+            ),
+            "final admission tamper in {filename} must fail closed"
+        );
+        assert_eq!(admission_reads, 4, "the final admission callback was reached");
+        assert_eq!(owner.completed_steps(), 0);
+        assert_eq!(
+            observed.borrow().executions,
+            1,
+            "the original external effect must not be dispatched twice"
+        );
+        assert!(owner.advance().is_err(), "corrupted ledger cannot advance");
+        assert_eq!(observed.borrow().executions, 1);
+    }
+}
