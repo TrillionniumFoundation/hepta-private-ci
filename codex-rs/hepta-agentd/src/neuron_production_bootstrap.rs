@@ -6,13 +6,15 @@
 //! production route ready solely because source code exists.
 
 use std::io;
+#[cfg(any(unix, test))]
 use std::path::Component;
 use std::path::Path;
+#[cfg(unix)]
 use std::sync::Arc;
 
 use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_evidence::metrics_group_commit::MetricsJournalErrorV1;
+#[cfg(unix)]
 use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::JournalScope;
@@ -24,8 +26,11 @@ use crate::neuron_effect_bootstrap::NeuronEffectBootstrapErrorV1;
 use crate::neuron_ndu_read::NduReadVerifierV1;
 use crate::neuron_runtime::AgentdNeuronOwner;
 
+#[cfg(unix)]
 const METRICS_QUEUE_CAPACITY: usize = 4_096;
+#[cfg(unix)]
 const METRICS_GROUP_SIZE: usize = 128;
+#[cfg(unix)]
 const METRICS_FLUSH_INTERVAL_MS: u64 = 250;
 
 #[derive(Debug)]
@@ -64,6 +69,7 @@ impl From<io::Error> for NeuronProductionBootstrapErrorV1 {
 /// Both journals must be distinct filenames in the same, already provisioned
 /// protected directory. Disallow lexical aliases before either journal is
 /// created, so a failed composition cannot mutate an arbitrary file.
+#[cfg(any(unix, test))]
 fn validate_production_paths(
     effect_intent_path: &Path,
     metrics_path: &Path,

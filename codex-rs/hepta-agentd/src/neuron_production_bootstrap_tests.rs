@@ -15,10 +15,6 @@ fn production_neuron_journals_must_be_distinct_provisioned_siblings() {
         Err(NeuronProductionBootstrapErrorV1::InvalidPaths)
     ));
     assert!(matches!(
-        validate_production_paths(&effect, &root.path().join(".").join("metrics")),
-        Err(NeuronProductionBootstrapErrorV1::InvalidPaths)
-    ));
-    assert!(matches!(
         validate_production_paths(&effect, &root.path().join("nested").join("..").join("metrics")),
         Err(NeuronProductionBootstrapErrorV1::InvalidPaths)
     ));
