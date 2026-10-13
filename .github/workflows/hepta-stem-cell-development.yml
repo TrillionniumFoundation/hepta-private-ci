@@ -34,7 +34,8 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/stem-development-venv"
           "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install \
             --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install numpy==2.2.6 llvmlite==0.47.0 safetensors==0.6.2
+          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install numpy==2.2.6 llvmlite==0.47.0 safetensors==0.6.2 packaging==25.0
+          "$RUNNER_TEMP/stem-development-venv/bin/python" -c "import safetensors.torch"
       - name: Execute actual arithmetic and existing repository entrypoints
         env:
           PYTHONDONTWRITEBYTECODE: "1"
@@ -51,7 +52,8 @@ jobs:
               development_learning_checks development_stopping_checks \
               development_quality_checks development_quality_runtime_checks development_anytime_checks \
               development_head_training_checks development_gated_training_checks \
-              development_learning_comparison_checks hf_tensor_materialization_checks
+              development_learning_comparison_checks hf_tensor_materialization_checks \
+              development_training_plan_checks
           } 2>&1 | tee "$RUNNER_TEMP/stem-development-tests.txt"
       - name: Execute synthetic learning and native fixed-policy controls
         env:
@@ -110,6 +112,15 @@ jobs:
           "$RUNNER_TEMP/stem-development-venv/bin/python" \
             qualification/stem-cell-v1/development_gated_training_study.py --synthetic \
             --seed 1414 --output "$RUNNER_TEMP/stem-gated-head-study"
+      - name: Compare fixed per-Cell training budgets without idle matrix lanes
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-development-venv/bin/python" \
+            qualification/stem-cell-v1/development_training_plan_study.py --synthetic \
+            --seed 1919 --output "$RUNNER_TEMP/stem-training-plan-study"
       - name: Preserve exact-source result including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -124,6 +135,7 @@ jobs:
             ${{ runner.temp }}/stem-anytime-quality-study
             ${{ runner.temp }}/stem-head-training-study
             ${{ runner.temp }}/stem-gated-head-study
+            ${{ runner.temp }}/stem-training-plan-study
           if-no-files-found: warn
           retention-days: 14
       - name: Check source unchanged
