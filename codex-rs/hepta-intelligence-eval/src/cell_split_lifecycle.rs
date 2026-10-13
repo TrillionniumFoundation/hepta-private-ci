@@ -286,7 +286,10 @@ impl CellSplitLifecycleJournalV1 {
         if self.retirement_pending(split)? {
             return Err(CellSplitLifecycleErrorV1::InvalidTransition);
         }
-        self.transition(CellSplitLifecycleStateV1::Retained, retirement_intent_digest_v1(split)?)
+        self.transition(
+            CellSplitLifecycleStateV1::Retained,
+            retirement_intent_digest_v1(split)?,
+        )
     }
 
     /// Distinguish a durably prepared retirement from an ordinary retained
@@ -319,12 +322,18 @@ impl CellSplitLifecycleJournalV1 {
         Ok(true)
     }
 
+    /// A terminal retirement needs the plan-bound write-ahead intent first.
+    /// This method only advances the local journal: the caller must still
+    /// independently verify the actual tombstone owner's durable receipt.
     pub fn retire(&mut self, split: &CellSplitV1) -> Result<(), CellSplitLifecycleErrorV1> {
         if split.split_id != self.split_id {
             return Err(CellSplitLifecycleErrorV1::Binding);
         }
         if split.retirement.disposition != CellParentDispositionV1::Retire {
             return Err(CellSplitLifecycleErrorV1::Binding);
+        }
+        if !self.retirement_pending(split)? {
+            return Err(CellSplitLifecycleErrorV1::InvalidTransition);
         }
         self.transition(
             CellSplitLifecycleStateV1::Retired,
