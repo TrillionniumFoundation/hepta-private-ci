@@ -186,11 +186,9 @@ impl CellSplitSupervisorMonotonicUnixPortV1 {
             self.retained_frontiers.get(journal_domain_id)
         {
             let ahead = proof.journal_authority_epoch > *epoch
-                || (proof.journal_authority_epoch == *epoch
-                    && proof.journal_revision > *revision);
+                || (proof.journal_authority_epoch == *epoch && proof.journal_revision > *revision);
             let behind = proof.journal_authority_epoch < *epoch
-                || (proof.journal_authority_epoch == *epoch
-                    && proof.journal_revision < *revision);
+                || (proof.journal_authority_epoch == *epoch && proof.journal_revision < *revision);
             if behind
                 || (ahead
                     && (proof.minimum_checkpoint_digest == *checkpoint
@@ -405,17 +403,14 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
             Some(previous) => {
                 let moved_forward = observed.journal_authority_epoch
                     > previous.journal_authority_epoch
-                    || (observed.journal_authority_epoch
-                        == previous.journal_authority_epoch
+                    || (observed.journal_authority_epoch == previous.journal_authority_epoch
                         && observed.journal_revision > previous.journal_revision);
                 if observed.journal_authority_epoch < previous.journal_authority_epoch
-                    || (observed.journal_authority_epoch
-                        == previous.journal_authority_epoch
+                    || (observed.journal_authority_epoch == previous.journal_authority_epoch
                         && observed.journal_revision < previous.journal_revision)
                     || observed.durable_source_sequence < previous.durable_source_sequence
                     || (moved_forward
-                        && (observed.durable_source_sequence
-                            <= previous.durable_source_sequence
+                        && (observed.durable_source_sequence <= previous.durable_source_sequence
                             || observed.minimum_checkpoint_digest
                                 == previous.minimum_checkpoint_digest
                             || observed.original_store_record_digest

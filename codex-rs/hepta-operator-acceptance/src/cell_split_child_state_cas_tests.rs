@@ -497,7 +497,9 @@ fn same_length_tampered_child_cas_is_not_a_recoverable_batch() {
     let auth = ObservedAuthority::new(anchor);
     let intent = operation(&execution_plan());
     let mut batch = owner(root.path(), migration.clone(), auth);
-    batch.commit_once(&intent).expect("original durable children");
+    batch
+        .commit_once(&intent)
+        .expect("original durable children");
     let committed = batch.read_committed(&intent).expect("original readback");
     assert!(committed.is_some());
     let child = &migration.children()[0];
@@ -510,7 +512,10 @@ fn same_length_tampered_child_cas_is_not_a_recoverable_batch() {
     assert!(!payload.is_empty());
     payload[0] ^= 1;
     fs::write(&path, &payload).expect("same-size corruption");
-    assert_eq!(fs::metadata(&path).expect("metadata").len(), payload.len() as u64);
+    assert_eq!(
+        fs::metadata(&path).expect("metadata").len(),
+        payload.len() as u64
+    );
     assert!(batch.read_committed(&intent).is_err());
     assert!(batch.current_sequence_for_intent(&intent).is_err());
 }

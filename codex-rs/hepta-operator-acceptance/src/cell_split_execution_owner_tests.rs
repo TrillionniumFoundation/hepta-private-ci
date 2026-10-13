@@ -731,8 +731,15 @@ fn selector_revoked_during_last_owner_readback_never_prepares_successor() {
         Err(CellSplitExecutionErrorV1::External(message))
             if message.contains("Selector revoked")
     ));
-    assert_eq!(admission_reads, 2, "Selector checked again after live readback");
-    assert_eq!(state.borrow().executions, 1, "no successor effect may execute");
+    assert_eq!(
+        admission_reads, 2,
+        "Selector checked again after live readback"
+    );
+    assert_eq!(
+        state.borrow().executions,
+        1,
+        "no successor effect may execute"
+    );
     assert_eq!(owner.completed_steps(), 1);
     assert!(!root.path().join("cell-split-01-prepared.json").exists());
 }
@@ -1673,7 +1680,10 @@ fn post_effect_selection_revocation_keeps_all_stages_pending() {
             )
             .expect("single writer owner");
             for _ in 0..completed_predecessors {
-                owner.advance().expect("predecessor effect").expect("receipt");
+                owner
+                    .advance()
+                    .expect("predecessor effect")
+                    .expect("receipt");
             }
             let mut admission_reads = 0;
             let rejected = owner.advance_with_admission(|| {
@@ -1697,14 +1707,18 @@ fn post_effect_selection_revocation_keeps_all_stages_pending() {
             assert_eq!(state.borrow().executions, completed_predecessors + 1);
             assert!(
                 root.path()
-                    .join(format!("cell-split-{completed_predecessors:02}-prepared.json"))
+                    .join(format!(
+                        "cell-split-{completed_predecessors:02}-prepared.json"
+                    ))
                     .exists(),
                 "original intent must remain durable for recovery"
             );
             assert!(
                 !root
                     .path()
-                    .join(format!("cell-split-{completed_predecessors:02}-committed.json"))
+                    .join(format!(
+                        "cell-split-{completed_predecessors:02}-committed.json"
+                    ))
                     .exists(),
                 "revoked selection must not be acknowledged in the local ledger"
             );
@@ -1796,7 +1810,10 @@ fn original_effect_withdrawn_during_final_admission_cannot_be_acknowledged() {
         }
         Ok(())
     });
-    assert!(matches!(result, Err(CellSplitExecutionErrorV1::External(_))));
+    assert!(matches!(
+        result,
+        Err(CellSplitExecutionErrorV1::External(_))
+    ));
     assert_eq!(admission_reads, 3);
     assert_eq!(owner.completed_steps(), 0);
     assert_eq!(state.borrow().executions, 1, "one real owner effect");
