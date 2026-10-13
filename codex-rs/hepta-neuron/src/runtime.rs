@@ -30,6 +30,9 @@ pub struct NeuronRuntime<W: AnchorWitnessStore> {
     journal: SparseJournal,
     witness: W,
     pending: Option<PendingWitness>,
+    /// Prevent same-process replay after an external effect with an uncertain
+    /// terminal checkpoint. Crash recovery still requires a durable intent.
+    unresolved_effect: Option<Digest32>,
 }
 
 impl<W: AnchorWitnessStore> NeuronRuntime<W> {
@@ -54,6 +57,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             journal,
             witness,
             pending: None,
+            unresolved_effect: None,
         })
     }
 
@@ -122,7 +126,20 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             journal,
             witness,
             pending: None,
+            unresolved_effect: None,
         })
+    }
+
+    /// Read-only serving-generation identity, used to reject a mismatched
+    /// NDU snapshot before any durable model-effect intent is prepared.
+    pub fn generation(&self) -> codex_hepta_types::Generation {
+        self.config.generation
+    }
+
+    /// Compare the *actual* sparse journal binding with the independent
+    /// pre-effect intent journal before a production owner can serve.
+    pub fn journal_scope(&self) -> JournalScope {
+        self.journal.scope()
     }
 
     pub fn model_request(
@@ -179,13 +196,14 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             journal,
             witness,
             pending: None,
+            unresolved_effect: None,
         })
     }
 
     /// Rotate to a fresh successor segment while preserving the exact current
     /// checkpoint as the new segment's immutable seed.
     pub fn rollover(&mut self, file: File, max_records: usize) -> Result<(), NeuronRuntimeError> {
-        if self.pending.is_some() {
+        if self.pending.is_some() || self.unresolved_effect.is_some() {
             return Err(NeuronRuntimeError::PendingReconciliation);
         }
         self.journal = self.journal.start_successor(file, max_records)?;
@@ -200,7 +218,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         file: File,
         max_records: usize,
     ) -> Result<(), NeuronRuntimeError> {
-        if self.pending.is_some() {
+        if self.pending.is_some() || self.unresolved_effect.is_some() {
             return Err(NeuronRuntimeError::PendingReconciliation);
         }
         let latest = self
@@ -236,23 +254,91 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         Ok(())
     }
 
+    /// Strict additive path for qualification-only callers. A serving owner
+    /// must use the guarded entry to revalidate Control-owned NDU state after
+    /// the model effect and before persisting any new Neuron state.
+    pub fn tick_with_ndu_snapshot(
+        &mut self,
+        model: &mut impl NeuronModelPort,
+        input: NeuronTickInputV1,
+        snapshot: &codex_hepta_types::NduSnapshotRefV1,
+        admitted_read_receipt_digest: Digest32,
+    ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        self.tick_with_ndu_snapshot_guarded(
+            model,
+            input,
+            snapshot,
+            admitted_read_receipt_digest,
+            || Ok(()),
+        )
+    }
+
+    /// Invoke the independent live NDU frontier check after an external model
+    /// effect but BEFORE local checkpoint/WAL publication. Also guard a
+    /// pending witness replay, so stale read authority cannot acknowledge an
+    /// already-committed checkpoint from an earlier invocation.
+    ///
+    /// This is not an atomic Control-owned compare-and-publish fence: a remote
+    /// cutover can still race the journal write. A production executor must
+    /// reconcile that remaining publication race without replaying the effect.
+    pub fn tick_with_ndu_snapshot_guarded(
+        &mut self,
+        model: &mut impl NeuronModelPort,
+        input: NeuronTickInputV1,
+        snapshot: &codex_hepta_types::NduSnapshotRefV1,
+        admitted_read_receipt_digest: Digest32,
+        before_state_commit: impl FnOnce() -> Result<(), NeuronRuntimeError>,
+    ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        let tick_digest = input.semantic_digest()?;
+        crate::bind_ndu_snapshot_stage_v1(
+            &input.subject_id,
+            self.config.generation,
+            input.ndu_snapshot_digest,
+            tick_digest,
+            snapshot,
+            admitted_read_receipt_digest,
+        )
+        .map_err(|_| NeuronRuntimeError::InvalidInput)?;
+        self.tick_guarded(model, input, before_state_commit)
+    }
+
+    /// Low-level deterministic qualification mechanism. Production serving
+    /// must not call this directly to bypass the signed NDU/Final-use owner.
     pub fn tick(
         &mut self,
         model: &mut impl NeuronModelPort,
         input: NeuronTickInputV1,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        self.tick_guarded(model, input, || Ok(()))
+    }
+
+    fn tick_guarded(
+        &mut self,
+        model: &mut impl NeuronModelPort,
+        input: NeuronTickInputV1,
+        before_state_commit: impl FnOnce() -> Result<(), NeuronRuntimeError>,
+    ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        // A pending witness from a durable checkpoint can reconcile without a
+        // model call. An effect with NO confirmed checkpoint cannot be replayed.
+        if self.unresolved_effect.is_some() && self.pending.is_none() {
+            return Err(NeuronRuntimeError::PendingReconciliation);
+        }
         let model_request = self.model_request(&input)?;
         let input_digest = model_request.input_digest;
         if let Some(pending) = self.pending.clone() {
             if pending.input_digest != input_digest {
                 return Err(NeuronRuntimeError::PendingReconciliation);
             }
+            // Even witness-only reconciliation publishes a successful tick.
+            // Never acknowledge it under a revoked NDU read.
+            before_state_commit()?;
             match self
                 .witness
                 .compare_and_swap(pending.expected, pending.next)
             {
                 Ok(()) => {
                     self.pending = None;
+                    self.unresolved_effect = None;
                     return Ok(pending.output);
                 }
                 Err(error) => {
@@ -274,6 +360,9 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             checkpoint_digest: checkpoint.digest(),
         });
 
+        // A driver error may be indeterminate after physical effect entry.
+        // Hold this process fenced until an independently reconciled terminal.
+        self.unresolved_effect = Some(input_digest);
         let started = Instant::now();
         let model_output = model.execute(&model_request)?;
         validate_model_output(&self.config, &model_output)?;
@@ -290,6 +379,13 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             drive_q24: model_output.drive_q24.clone(),
             prediction_q24: model_output.prediction_q24.clone(),
         };
+        // A cutover while the model driver was running must not create a new
+        // checkpoint. This is the last independent NDU check before the
+        // local durable state effect. A denied guard leaves the external
+        // invocation terminal-uncertain, never eligible for automatic replay.
+        if before_state_commit().is_err() {
+            return Err(NeuronRuntimeError::NduStaleAfterEffect);
+        }
         let sparse_receipt = self.journal.commit(input.checkpoint_digest, &sparse_tick)?;
         let checkpoint = self
             .journal
@@ -388,6 +484,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
                 error,
             });
         }
+        self.unresolved_effect = None;
         Ok(output)
     }
 

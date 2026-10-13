@@ -5,15 +5,15 @@ implementation. A source owner seam is evidence that the repository rejects
 incomplete transitions; it is not evidence that a production target host ran
 the transition.
 
-| Criterion                       | Repository owner now present                                                                                                                                        | Evidence still required for full 8/8                                                                             |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Replicate parameter inheritance | `CellParameterBundleManifestV1`, component-level materialization receipt, create-only CAS payload receipt, cloned registry commit, predecessor and rollback binding | Signed writer lease, durable `CURRENT`, directory sync, and restart/reopen receipts from the deployment host     |
-| Copy/partition cell state       | Q24 sparse/population projection plus `CellStateMigrationV1`; all children must match one committed parent anchor and one batch fence                               | A real child journal/CAS owner must atomically commit all children and publish an independently retained witness |
-| Give children identity          | `CellSplitV1` binds child identity, generation, scope, lineage, objective, bundle and route predicate                                                               | The target host must reload and compare those fields after restart                                               |
-| Division of labor and routing   | Dataset/task partitions, route predicates, fallback revisions, CNS route selection and concrete port/ABI digests                                                    | A live router must emit retained dispatch receipts for the deployed circuit                                      |
-| Nutrition and energy            | Resource budget contract, target-host-only resource evidence gate, and ten-metric long-horizon adapter                                                              | Independently signed measurements from the actual CPU/GPU/NPU, including communication and migration cost        |
-| Death and rollback              | Quarantine, rollback, tombstone, terminal lifecycle replay, old-route fence and no-resurrection checks                                                              | Power-loss/restart and fault-injection evidence proving the parent cannot return                                 |
-| Tissue coordination             | CNS generation cutover, child activation ordering, parent-route rejection, route fence receipt and replay payload                                                   | Durable route/registry persistence and a production runtime callsite after governance admission                  |
+| Criterion                       | Repository owner now present                                                                                                                                                                                                                                                                                                        | Evidence still required for full 8/8                                                                                                    |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| Replicate parameter inheritance | `CellParameterBundleManifestV1`, component-level materialization receipt, create-only CAS payload receipt, cloned registry commit, predecessor and rollback binding                                                                                                                                                                 | Signed writer lease, durable `CURRENT`, directory sync, and restart/reopen receipts from the deployment host                            |
+| Copy/partition cell state       | Q24 sparse/population projection plus `CellStateMigrationV1`; all children must match one committed parent anchor and one batch fence                                                                                                                                                                                               | A real child journal/CAS owner must atomically commit all children and publish an independently retained witness                        |
+| Give children identity          | `CellSplitV1` binds child identity, generation, scope, lineage, objective, bundle and route predicate                                                                                                                                                                                                                               | The target host must reload and compare those fields after restart                                                                      |
+| Division of labor and routing   | Dataset/task partitions, route predicates, fallback revisions, CNS route selection and concrete port/ABI digests                                                                                                                                                                                                                    | A live router must emit retained dispatch receipts for the deployed circuit                                                             |
+| Nutrition and energy            | Resource budget contract, target-host-only resource evidence gate, and ten-metric long-horizon adapter                                                                                                                                                                                                                              | Independently signed measurements from the actual CPU/GPU/NPU, including communication and migration cost                               |
+| Death and rollback              | Quarantine, rollback, tombstone, terminal lifecycle replay, old-route fence and no-resurrection checks                                                                                                                                                                                                                              | Power-loss/restart and fault-injection evidence proving the parent cannot return                                                        |
+| Tissue coordination             | CNS generation cutover, child activation ordering, parent-route rejection, route fence receipt and replay payload                                                                                                                                                                                                                   | Durable route/registry persistence and a production runtime callsite after governance admission                                         |
 | Survival selection              | Signed no-change baseline, retention, coverage, negative-transfer, cost, failure and rollback evaluation; deterministic `CellSplitProposalSourceV1` plus `run_cell_split_automation_v1` driver; telemetry-triggered `CellSplitProposalSignalV1` and governed `CellSplitV1` planner; fenced `CellSplitTaskFlowJournalOwnerV1` replay | Independent future-window observations plus a target-host commit/restart evidence chain and externally retained learning-ledger witness |
 
 The role-contract roadmap for Representation, MemoryRead, Predictor, Value,
@@ -33,21 +33,21 @@ The repository now contains the following replayable source owners. They make
 the missing production boundary explicit; they do not turn a local test into a
 deployment receipt.
 
-* `CellSplitTelemetryObservationV1` validates unit-bearing utility, coverage,
+- `CellSplitTelemetryObservationV1` validates unit-bearing utility, coverage,
   latency, resident-memory, communication, training and migration counters.
   `cell_split_signal_from_telemetry_v1` applies a deterministic, governed
   trigger priority (utility regression, task-coverage opportunity, then
   resource pressure).
-* `CellSplitGovernedPlannerV1` binds the signal to an immutable policy and
+- `CellSplitGovernedPlannerV1` binds the signal to an immutable policy and
   parent registry context, derives child identity/generation/lineage,
   inheritance modes, state transforms, route ports, resource budgets and
   rollback references, and runs the complete `CellSplitV1` validator.
-* `CellSplitTaskFlowJournalOwnerV1` registers an immutable TaskFlow definition,
+- `CellSplitTaskFlowJournalOwnerV1` registers an immutable TaskFlow definition,
   creates and fences a run, writes each lifecycle event as a TaskFlow
   `Wait`/`Resume` pair, persists terminal disposition, and reconstructs the
   lifecycle journal from the verified event chain after reopen. A stale owner
   generation or a rewritten prefix is rejected.
-* `CellSplitTargetHostEvidenceAdapterV1` verifies a host-signed and
+- `CellSplitTargetHostEvidenceAdapterV1` verifies a host-signed and
   independently observed canonical JSON envelope. Its production receipt is
   issued only after artifact load, route cutover, restart, power-loss
   recovery, rollback, tombstone, no-resurrection, and non-simulated

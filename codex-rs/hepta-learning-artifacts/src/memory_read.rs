@@ -1043,9 +1043,15 @@ mod tests {
             execution.role_step.receipt.state_successor_digest,
             initial.state_digest
         );
-        let directory =
-            std::env::temp_dir().join(format!("hepta-memory-read-state-{}", std::process::id()));
-        std::fs::create_dir_all(&directory).expect("directory");
+        let directory = std::env::temp_dir().join(format!(
+            "hepta-memory-read-state-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .expect("clock")
+                .as_nanos()
+        ));
+        std::fs::create_dir(&directory).expect("exclusive directory");
         let path = directory.join("state.snapshot");
         let successor = state_owner
             .commit_execution_persisted(
@@ -1093,7 +1099,9 @@ mod tests {
                 .is_err()
         );
         let mut future_generation = definition;
-        future_generation.generation = Generation::new(2).expect("generation");
+        // The fixture is already generation 2. Test an actual future
+        // generation rather than silently reopening the exact same owner.
+        future_generation.generation = Generation::new(3).expect("future generation");
         assert!(
             DurableMemoryReadStateOwnerV1::reopen(&path, future_generation, owner_id, key,)
                 .is_err()

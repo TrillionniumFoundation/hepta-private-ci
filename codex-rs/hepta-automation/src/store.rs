@@ -1273,8 +1273,25 @@ fn unavailable(_error: impl std::fmt::Display) -> AutomationError {
 
 fn create_private_directory(path: &Path) -> Result<(), AutomationError> {
     fs::create_dir_all(path).map_err(unavailable)?;
-    if path.canonicalize().map_err(unavailable)? != path {
+    let canonical = path.canonicalize().map_err(unavailable)?;
+    if !same_native_components(&canonical, path) {
         return Err(AutomationError::Invalid);
+    }
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::MetadataExt;
+        const FILE_ATTRIBUTE_REPARSE_POINT: u32 = 0x0400;
+        // Verbatim drive/UNC prefixes are just namespace spellings. Actual
+        // redirections (junctions, symlinks and mount reparse points) remain
+        // forbidden along every component of the durable owner root.
+        for ancestor in path.ancestors() {
+            let attributes = fs::symlink_metadata(ancestor)
+                .map_err(unavailable)?
+                .file_attributes();
+            if attributes & FILE_ATTRIBUTE_REPARSE_POINT != 0 {
+                return Err(AutomationError::Invalid);
+            }
+        }
     }
     #[cfg(unix)]
     {
@@ -1282,6 +1299,37 @@ fn create_private_directory(path: &Path) -> Result<(), AutomationError> {
         fs::set_permissions(path, fs::Permissions::from_mode(0o700)).map_err(unavailable)?;
     }
     Ok(())
+}
+
+#[cfg(not(windows))]
+fn same_native_components(canonical: &Path, requested: &Path) -> bool {
+    canonical == requested
+}
+
+#[cfg(windows)]
+fn same_native_components(canonical: &Path, requested: &Path) -> bool {
+    use std::path::Component;
+    use std::path::Prefix;
+
+    let mut canonical = canonical.components();
+    let mut requested = requested.components();
+    let (Some(Component::Prefix(left)), Some(Component::Prefix(right))) =
+        (canonical.next(), requested.next())
+    else {
+        return false;
+    };
+    let same_prefix = match (left.kind(), right.kind()) {
+        (
+            Prefix::Disk(left) | Prefix::VerbatimDisk(left),
+            Prefix::Disk(right) | Prefix::VerbatimDisk(right),
+        ) => left == right,
+        (
+            Prefix::UNC(left_server, left_share) | Prefix::VerbatimUNC(left_server, left_share),
+            Prefix::UNC(right_server, right_share) | Prefix::VerbatimUNC(right_server, right_share),
+        ) => left_server == right_server && left_share == right_share,
+        _ => false,
+    };
+    same_prefix && canonical.eq(requested)
 }
 
 fn protect_database_file(_path: &Path) -> Result<(), AutomationError> {

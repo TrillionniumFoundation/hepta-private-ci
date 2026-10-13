@@ -281,6 +281,7 @@ fn canonical_runtime_commits_model_bound_calibrated_signal_and_recovers() {
     assert_eq!(first.tick.sparsity_ppm, 200_000);
     assert_eq!(first.signal.model_runtime_digest.is_zero(), false);
     assert_eq!(model.calls, 1);
+    assert_eq!(runtime.journal_scope(), scope());
     let eligibility = checked(runtime.current_eligibility_sample()).expect("committed eligibility");
     assert_eq!(eligibility.checkpoint_digest(), first.tick.checkpoint_after);
     assert_eq!(eligibility.eligibility_q24().len(), native.width);
@@ -513,4 +514,167 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
         rebuilt_first.tick.checkpoint_after,
         predecessor.checkpoint_digest
     );
+}
+
+fn ndu_snapshot_for_guard() -> codex_hepta_types::NduSnapshotRefV1 {
+    codex_hepta_types::NduSnapshotRefV1 {
+        scope_id: subject(),
+        owner_id: checked(StableId::new("ndu.owner")),
+        generation: checked(Generation::new(1)),
+        route_fence: 3,
+        revocation_epoch: 5,
+        policy_digest: Digest32::of_bytes(b"ndu.policy"),
+        snapshot_digest: Digest32::of_bytes(b"ndu"),
+        projection_head_digest: Digest32::of_bytes(b"head"),
+    }
+}
+
+#[test]
+fn ndu_cutover_during_model_effect_refuses_local_checkpoint_publication() {
+    struct AdvancingModel {
+        inner: FakeModel,
+        cutover: Arc<AtomicBool>,
+    }
+    impl NeuronModelPort for AdvancingModel {
+        fn execute(
+            &mut self,
+            request: &NeuronModelRequestV1,
+        ) -> Result<NeuronModelOutputV1, NeuronModelError> {
+            let output = self.inner.execute(request)?;
+            self.cutover.store(true, Ordering::SeqCst);
+            Ok(output)
+        }
+    }
+
+    let fixture = Fixture::new();
+    let native = native_config();
+    let witness = MemoryWitness::default();
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native.clone(),
+        scope(),
+        /*max_records*/ 16,
+        runtime_config(&native),
+        witness.clone(),
+    ));
+    let cutover = Arc::new(AtomicBool::new(false));
+    let mut model = AdvancingModel {
+        inner: FakeModel::new(),
+        cutover: cutover.clone(),
+    };
+    let receipt_digest = Digest32::of_bytes(b"signed-NDU-read");
+    let rejected = runtime.tick_with_ndu_snapshot_guarded(
+        &mut model,
+        input(1, Digest32::ZERO),
+        &ndu_snapshot_for_guard(),
+        receipt_digest,
+        || {
+            if cutover.load(Ordering::SeqCst) {
+                Err(NeuronRuntimeError::InvalidInput)
+            } else {
+                Ok(())
+            }
+        },
+    );
+    assert!(matches!(
+        rejected,
+        Err(NeuronRuntimeError::NduStaleAfterEffect)
+    ));
+    assert_eq!(model.inner.calls, 1);
+    assert!(checked(runtime.journal.current()).is_none());
+    assert!(checked(runtime.current_anchor()).is_none());
+    assert!(checked(witness.current()).is_none());
+
+    // A renewed signed grant must not replay an already executed model effect
+    // while durable terminal reconciliation is still missing.
+    let denied_retry = runtime.tick_with_ndu_snapshot_guarded(
+        &mut model,
+        input(1, Digest32::ZERO),
+        &ndu_snapshot_for_guard(),
+        receipt_digest,
+        || Ok(()),
+    );
+    assert!(matches!(
+        denied_retry,
+        Err(NeuronRuntimeError::PendingReconciliation)
+    ));
+    assert_eq!(model.inner.calls, 1);
+}
+
+#[test]
+fn ndu_guard_refuses_stale_pending_witness_reconciliation_without_model_replay() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let witness = MemoryWitness::default();
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native.clone(),
+        scope(),
+        /*max_records*/ 16,
+        runtime_config(&native),
+        witness.clone(),
+    ));
+    witness.fail_next_compare_and_swap();
+    let tick = input(1, Digest32::ZERO);
+    let mut model = FakeModel::new();
+    assert!(matches!(
+        runtime.tick(&mut model, tick.clone()),
+        Err(NeuronRuntimeError::WitnessAfterCommit { .. })
+    ));
+    let rejected = runtime.tick_with_ndu_snapshot_guarded(
+        &mut model,
+        tick.clone(),
+        &ndu_snapshot_for_guard(),
+        Digest32::of_bytes(b"signed-NDU-read"),
+        || Err(NeuronRuntimeError::InvalidInput),
+    );
+    assert!(matches!(rejected, Err(NeuronRuntimeError::InvalidInput)));
+    assert_eq!(model.calls, 1);
+    assert!(checked(witness.current()).is_none());
+
+    // A separately authenticated retry reconciles the already durable
+    // checkpoint without calling the model driver a second time.
+    let accepted = checked(runtime.tick_with_ndu_snapshot_guarded(
+        &mut model,
+        tick,
+        &ndu_snapshot_for_guard(),
+        Digest32::of_bytes(b"signed-NDU-read"),
+        || Ok(()),
+    ));
+    assert_eq!(model.calls, 1);
+    assert_eq!(
+        checked(witness.current())
+            .expect("reconciled anchor")
+            .checkpoint_digest,
+        accepted.tick.checkpoint_after
+    );
+}
+
+#[test]
+fn unknown_model_effect_is_latched_until_independent_reconciliation() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let witness = MemoryWitness::default();
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native.clone(),
+        scope(),
+        /*max_records*/ 16,
+        runtime_config(&native),
+        witness,
+    ));
+    let mut model = FakeModel::new();
+    model.corrupt_head = true;
+    let first = runtime.tick(&mut model, input(1, Digest32::ZERO));
+    assert!(matches!(
+        first,
+        Err(NeuronRuntimeError::ModelBindingMismatch)
+    ));
+    let retry = runtime.tick(&mut model, input(1, Digest32::ZERO));
+    assert!(matches!(
+        retry,
+        Err(NeuronRuntimeError::PendingReconciliation)
+    ));
+    assert_eq!(model.calls, 1);
+    assert!(checked(runtime.journal.current()).is_none());
 }

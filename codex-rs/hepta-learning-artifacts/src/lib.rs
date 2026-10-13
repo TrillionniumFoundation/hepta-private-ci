@@ -188,6 +188,7 @@ pub use plasticity_owner::PlasticityCandidateOwnerErrorV1;
 pub use plasticity_owner::PlasticityCandidateOwnerV1;
 pub use plasticity_owner::PlasticityCandidatePhaseV1;
 pub use plasticity_owner::PlasticityCandidateRollbackReceiptV1;
+pub use production_owner::ArtifactCasLatencySnapshotV1;
 pub use production_owner::ArtifactCasOwnerV1;
 pub use production_owner::ArtifactLoadReceiptV1;
 pub use production_owner::ArtifactWriteReceiptV1;

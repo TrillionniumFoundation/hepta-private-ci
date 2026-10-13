@@ -15,18 +15,18 @@ deployment owner and an independently controlled observer.
 
 Stop before running the lifecycle when any of the following is unavailable:
 
-* a named deployment host and its attestation evidence;
-* the parent artifact, committed registry generation, CAS namespace and
+- a named deployment host and its attestation evidence;
+- the parent artifact, committed registry generation, CAS namespace and
   predecessor rollback reference;
-* a host signing key and at least one independently controlled observer key;
-* a live CNS/router owner that can return dispatch and old-route-rejection
+- a host signing key and at least one independently controlled observer key;
+- a live CNS/router owner that can return dispatch and old-route-rejection
   receipts;
-* a fault-injection mechanism that produces a power-loss witness;
-* real CPU/GPU/NPU counters for the selected host class;
-* an immutable no-change baseline and a frozen evaluation plan;
-* an independent observer that can collect at least two future windows after
+- a fault-injection mechanism that produces a power-loss witness;
+- real CPU/GPU/NPU counters for the selected host class;
+- an immutable no-change baseline and a frozen evaluation plan;
+- an independent observer that can collect at least two future windows after
   the plan is frozen; or
-* a durable learning-ledger namespace and independently retained witness.
+- a durable learning-ledger namespace and independently retained witness.
 
 If any item is missing, the run may produce a diagnostic report with
 `productionEvidence=false`, but it must not call the production evidence gate
@@ -51,15 +51,15 @@ not turn the fixture into target-host evidence.
 The deployment owner freezes and retains the following before the first child
 is activated:
 
-| Input | Owner/API | Required binding |
-| --- | --- | --- |
-| Parent and child split plan | `CellSplitV1`, `CellSplitGovernedPlannerV1` | Parent identity, generation, scope, lineage, route ABI, child bundle and rollback predecessor |
-| Proposal source | `CellSplitProposalSignalV1` | Telemetry observation, policy digest, parent generation and observation sequence |
-| Artifact/CAS manifest | learning.artifacts / artifact owner | Parent predecessor, child bundle, CAS receipts, writer lease and registry commit |
-| TaskFlow run | `CellSplitTaskFlowJournalOwnerV1` | Run ID, owner generation, lifecycle definition and verified event-chain head |
-| Baseline/evaluation plan | `ProductFrozenEvaluationPlanV1` | No-change baseline, objective, dataset, metric roles, temporal plans and final holdout digest |
-| Trust distribution | learning-ledger trust owner | Host, generator, evaluator, timing observer, resource observer and selector roles; key lifetime, scope, epoch and revocation |
-| Ledger namespace | `CellSplitLearningLedgerV1` plus the regular causal `LedgerWriter` | Nonzero binding, authorized files, directory handles, independent witness and retained anchor |
+| Input                       | Owner/API                                                          | Required binding                                                                                                             |
+| --------------------------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------- |
+| Parent and child split plan | `CellSplitV1`, `CellSplitGovernedPlannerV1`                        | Parent identity, generation, scope, lineage, route ABI, child bundle and rollback predecessor                                |
+| Proposal source             | `CellSplitProposalSignalV1`                                        | Telemetry observation, policy digest, parent generation and observation sequence                                             |
+| Artifact/CAS manifest       | learning.artifacts / artifact owner                                | Parent predecessor, child bundle, CAS receipts, writer lease and registry commit                                             |
+| TaskFlow run                | `CellSplitTaskFlowJournalOwnerV1`                                  | Run ID, owner generation, lifecycle definition and verified event-chain head                                                 |
+| Baseline/evaluation plan    | `ProductFrozenEvaluationPlanV1`                                    | No-change baseline, objective, dataset, metric roles, temporal plans and final holdout digest                                |
+| Trust distribution          | learning-ledger trust owner                                        | Host, generator, evaluator, timing observer, resource observer and selector roles; key lifetime, scope, epoch and revocation |
+| Ledger namespace            | `CellSplitLearningLedgerV1` plus the regular causal `LedgerWriter` | Nonzero binding, authorized files, directory handles, independent witness and retained anchor                                |
 
 `CellSplitLearningLedgerV1` is the durable owner for lifecycle facts. It is
 not a substitute for the regular causal learning ledger: decisions, outcomes,
@@ -120,14 +120,14 @@ Future-window collection starts only after the frozen plan has been registered
 and the generator has signed its exact plan digest. The independent timing
 observer creates `LongitudinalTimeEvidenceV1` with:
 
-* the frozen Unix-microsecond timestamp;
-* two to thirty-two distinct window IDs;
-* snapshot IDs already present in the frozen bundle;
-* non-overlapping start/end times after the freeze;
-* a preregistered minimum duration for every window;
-* nonzero observation counts;
-* distinct observed source-cut digests; and
-* the observer's `SignedLearningEvidenceV1` signature over
+- the frozen Unix-microsecond timestamp;
+- two to thirty-two distinct window IDs;
+- snapshot IDs already present in the frozen bundle;
+- non-overlapping start/end times after the freeze;
+- a preregistered minimum duration for every window;
+- nonzero observation counts;
+- distinct observed source-cut digests; and
+- the observer's `SignedLearningEvidenceV1` signature over
   `future_window_signing_payload_v1`.
 
 The observer must be independent from the generator, evaluator and resource
@@ -181,12 +181,12 @@ select, activate or retire a child.
 For each lifecycle transition, append a typed
 `CellSplitLifecycleRecordV1` to `CellSplitLearningLedgerV1` with:
 
-* the split and record identity;
-* monotonic lifecycle sequence and state transition;
-* evaluation/target-host evidence digest;
-* current state digest;
-* TaskFlow event digest; and
-* causal support digest from the regular learning ledger.
+- the split and record identity;
+- monotonic lifecycle sequence and state transition;
+- evaluation/target-host evidence digest;
+- current state digest;
+- TaskFlow event digest; and
+- causal support digest from the regular learning ledger.
 
 The append must use the exact current chain predecessor. The owner fsyncs the
 event and advances its independent witness before returning an append receipt.
