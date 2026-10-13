@@ -5,7 +5,6 @@ This is a structural preflight, not a substitute for real Cargo/Bazel builds.
 The Windows restricted-token ingress regression must remain executable from a
 leaf crate, never a dev dependency of the protocol-facing proxy library.
 """
-
 from pathlib import Path
 import tomllib
 
@@ -55,8 +54,9 @@ def main():
     ):
         raise AssertionError("CLI must retain real Windows sandbox dependency")
     test = CRATES / "cli/tests/windows_stable_ingress.rs"
-    original_test = CRATES / "network-proxy/tests/windows_stable_ingress.rs"
-    if not test.is_file() or original_test.exists():
+    if not test.is_file() or (
+        CRATES / "network-proxy/tests/windows_stable_ingress.rs"
+    ).exists():
         raise AssertionError("Windows proxy test must have exactly one leaf owner")
     body = test.read_text(encoding="utf-8")
     for required in (
@@ -81,8 +81,7 @@ def main():
     if "codex-windows-sandbox" not in cli_locked["dependencies"]:
         raise AssertionError("locked CLI must keep real Windows sandbox dependency")
     print(
-        "PASS: full restricted-token Windows ingress moved to CLI; "
-        "library DAG cycle absent"
+        "PASS: full restricted-token Windows ingress moved to CLI; library DAG cycle absent"
     )
 
 
