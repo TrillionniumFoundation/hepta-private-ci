@@ -25,9 +25,11 @@ jobs:
       - name: Install pinned Rust 1.95
         shell: bash
         run: rustup toolchain install 1.95.0 --profile minimal --component rustfmt
-      - name: Require complete Rust source formatting
+      - name: Check Core source formatting without Windows command-line overflow
         shell: bash
-        run: cargo +1.95.0 fmt --all -- --check
+        # Full workspace fmt remains an independent Linux blocking-ci gate.
+        # Windows MSVC cannot expand 8700 workspace inputs into one command.
+        run: cargo +1.95.0 fmt --package codex-core -- --check
       - name: Compile real Core unit tests under Windows MSVC
         shell: bash
         run: cargo +1.95.0 test --locked -p codex-core --lib --no-run
