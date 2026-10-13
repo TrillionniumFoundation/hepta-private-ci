@@ -10,7 +10,6 @@ budget. No original policy answer/Head/Adapter/retriever is modified.
 
 import argparse
 from dataclasses import asdict
-import hashlib
 import json
 from pathlib import Path
 import resource

@@ -1,7 +1,6 @@
 """Synthetic research controls; never count fixture outputs as QA gains."""
 
 from dataclasses import asdict
-from types import SimpleNamespace
 import unittest
 
 import torch
