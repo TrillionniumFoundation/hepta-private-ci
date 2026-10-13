@@ -225,6 +225,35 @@ def verify_snapshot(root: Path, manifest: dict):
     return sha(canonical(manifest))
 
 
+def verified_legacy_position_buffer(model: nn.Module, key: str, saved: torch.Tensor):
+    """Verify, never discard, the observed old BertModel position_ids entry.
+
+    Current HF BERT keeps this exact arange buffer nonpersistent, so it is not
+    in state_dict. No arbitrary ignored keys, prefix remapping, learned heads,
+    other buffers or alternate model classes are admitted by this rule.
+    """
+    if key != "embeddings.position_ids":
+        raise InputError("unrecognized saved tensor outside state_dict: " + key)
+    from transformers.models.bert.modeling_bert import BertModel
+    if type(model) is not BertModel:
+        raise InputError("legacy position buffer requires exact stock BertModel")
+    embeddings = model.embeddings
+    actual = embeddings._buffers.get("position_ids")
+    length = integer(model.config.max_position_embeddings, 1, 8192, "BERT position capacity")
+    expected = torch.arange(length, dtype=torch.int64).unsqueeze(0)
+    if ("position_ids" not in embeddings._non_persistent_buffers_set
+            or not isinstance(actual, torch.Tensor) or not isinstance(saved, torch.Tensor)
+            or actual.dtype != torch.int64 or saved.dtype != torch.int64
+            or actual.device.type != "cpu" or saved.device.type != "cpu"
+            or actual.shape != expected.shape or saved.shape != expected.shape
+            or not torch.equal(actual, expected) or not torch.equal(saved, expected)):
+        raise InputError("legacy position buffer differs from exact regenerated positions")
+    return {"profile": "bert-nonpersistent-position-equality-v1", "name": key,
+            "shape": list(saved.shape), "dtype": str(saved.dtype),
+            "saved_and_materialized_tensor_sha256": tensor_digest(saved),
+            "saved_and_materialized_equal": True}
+
+
 class LocalEncoder:
     """Stock HF encoder/MLM only. A Laya Decision Head is NOT silently dropped."""
     simulated = False
@@ -252,18 +281,25 @@ class LocalEncoder:
         from safetensors import safe_open
         state = self.loaded.state_dict()
         covered, pointers = set(), set()
+        self.verified_legacy_buffers = []
         for name in manifest["files"]:
             if not name.endswith(".safetensors"):
                 continue
             with safe_open(str(root / name), framework="pt", device="cpu") as saved:
                 for key in saved.keys():
                     tensor = saved.get_tensor(key)
-                    if key in covered or key not in state or tensor.shape != state[key].shape:
-                        raise InputError("snapshot tensor inventory mismatch")
-                    if not torch.equal(tensor.to(state[key].dtype), state[key]):
-                        raise InputError("snapshot tensor materialization mismatch")
+                    if key in covered:
+                        raise InputError("duplicate saved tensor: " + key)
+                    if key not in state:
+                        self.verified_legacy_buffers.append(
+                            verified_legacy_position_buffer(self.loaded, key, tensor))
+                    else:
+                        if tensor.shape != state[key].shape:
+                            raise InputError("snapshot tensor inventory mismatch: " + key)
+                        if not torch.equal(tensor.to(state[key].dtype), state[key]):
+                            raise InputError("snapshot tensor materialization mismatch: " + key)
+                        pointers.add((state[key].data_ptr(), tuple(state[key].shape)))
                     covered.add(key)
-                    pointers.add((state[key].data_ptr(), tuple(state[key].shape)))
         if any(k not in covered and (v.data_ptr(), tuple(v.shape)) not in pointers for k, v in state.items()):
             raise InputError("unverified loaded tensor")
         verify_snapshot(root, manifest)

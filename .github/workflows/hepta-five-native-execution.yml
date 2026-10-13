@@ -6,6 +6,7 @@ on:
       - "scripts/memory_cell/five_causal_native.py"
       - "scripts/memory_cell/five_native_historical_smoke.py"
       - "scripts/memory_cell/test_five_causal_native.py"
+      - "scripts/memory_cell/test_five_encoder_snapshot.py"
       - "scripts/memory_cell/five_reader_*.py"
       - "scripts/memory_cell/test_five_reader*.py"
       - "scripts/memory_cell/five_archived_torch_reference.py"
@@ -18,6 +19,7 @@ on:
       - "scripts/memory_cell/five_causal_native.py"
       - "scripts/memory_cell/five_native_historical_smoke.py"
       - "scripts/memory_cell/test_five_causal_native.py"
+      - "scripts/memory_cell/test_five_encoder_snapshot.py"
       - "scripts/memory_cell/five_reader_*.py"
       - "scripts/memory_cell/test_five_reader*.py"
       - "scripts/memory_cell/five_archived_torch_reference.py"
@@ -63,8 +65,8 @@ jobs:
           set -euo pipefail
           P=/tmp/hepta-five-native-venv/bin/python
           failed=0
-          patterns=('test_full_cell_matrix.py' 'test_five_causal_experiments.py' 'test_five_causal_native.py' 'test_five_group*.py' 'test_five_reader_response.py' 'test_five_reader_adapter*.py')
-          logs=(matrix-tests five-contract-tests native-tests group-tests response-tests adapter-tests)
+          patterns=('test_full_cell_matrix.py' 'test_five_causal_experiments.py' 'test_five_causal_native.py' 'test_five_group*.py' 'test_five_reader_response.py' 'test_five_reader_adapter*.py' 'test_five_encoder_snapshot.py')
+          logs=(matrix-tests five-contract-tests native-tests group-tests response-tests adapter-tests encoder-snapshot-tests)
           for i in "${!patterns[@]}"; do
             if "$P" -m unittest discover -s scripts/memory_cell -p "${patterns[$i]}" -v 2>&1 | tee "/tmp/hepta-five-native/${logs[$i]}.log"; then
               printf '%s\tpassed\n' "${patterns[$i]}" >> /tmp/hepta-five-native/suite-status.tsv
@@ -73,7 +75,7 @@ jobs:
               printf '%s\tfailed\n' "${patterns[$i]}" >> /tmp/hepta-five-native/suite-status.tsv
             fi
           done
-          if ! "$P" -m py_compile scripts/memory_cell/five_causal_native.py scripts/memory_cell/five_native_historical_smoke.py scripts/memory_cell/test_five_causal_native.py scripts/memory_cell/five_reader_response_learning.py scripts/memory_cell/five_reader_response_trial.py scripts/memory_cell/test_five_reader_response.py scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group_batching.py scripts/memory_cell/five_reader_adapter.py scripts/memory_cell/five_reader_adapter_trial.py scripts/memory_cell/test_five_reader_adapter.py scripts/memory_cell/test_five_reader_adapter_trial.py experiments/shared_stem_cell/execution.py; then
+          if ! "$P" -m py_compile scripts/memory_cell/five_causal_native.py scripts/memory_cell/five_native_historical_smoke.py scripts/memory_cell/test_five_causal_native.py scripts/memory_cell/five_reader_response_learning.py scripts/memory_cell/five_reader_response_trial.py scripts/memory_cell/test_five_reader_response.py scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group_batching.py scripts/memory_cell/five_reader_adapter.py scripts/memory_cell/five_reader_adapter_trial.py scripts/memory_cell/test_five_reader_adapter.py scripts/memory_cell/test_five_reader_adapter_trial.py scripts/memory_cell/test_five_encoder_snapshot.py experiments/shared_stem_cell/execution.py; then
             failed=1
           fi
           test "$failed" -eq 0
@@ -110,7 +112,7 @@ jobs:
           mkdir -p /tmp/hepta-five-native/source
           git rev-parse HEAD > /tmp/hepta-five-native/source/tested-commit.txt
           git rev-parse HEAD^{tree} > /tmp/hepta-five-native/source/tested-tree.txt
-          cp scripts/memory_cell/five_causal_native.py scripts/memory_cell/five_native_historical_smoke.py scripts/memory_cell/test_five_causal_native.py scripts/memory_cell/five_reader_*.py scripts/memory_cell/test_five_reader*.py scripts/memory_cell/five_archived_torch_reference.py scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group*.py experiments/shared_stem_cell/execution.py .github/workflows/hepta-five-native-execution.yml /tmp/hepta-five-native/source/
+          cp scripts/memory_cell/five_causal_native.py scripts/memory_cell/five_native_historical_smoke.py scripts/memory_cell/test_five_causal_native.py scripts/memory_cell/test_five_encoder_snapshot.py scripts/memory_cell/five_reader_*.py scripts/memory_cell/test_five_reader*.py scripts/memory_cell/five_archived_torch_reference.py scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group*.py experiments/shared_stem_cell/execution.py .github/workflows/hepta-five-native-execution.yml /tmp/hepta-five-native/source/
           (cd /tmp/hepta-five-native && find . -path './output/staged' -prune -o -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
