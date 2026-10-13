@@ -145,14 +145,19 @@ def verified_visits(documents, tokenizer, training):
         or training.get("input_tokens") != factor * existing["planned_input_tokens"]
         or training.get("supervised_tokens")
         != factor * existing["planned_supervised_tokens"]
-        or (
-            objective == "source_margin"
-            and training.get("actual_projection_positions")
-            != (
-                training.get("input_tokens")
-                if training["loss_backend"] == "full"
-                else training.get("supervised_tokens")
-            )
+        # Source-write cost is a source-derived receipt, not a model claim.
+        # The writer exposes full and actual vocabulary projection positions
+        # for BOTH completion CE and the two-forward margin variant.
+        or type(training.get("full_projection_positions")) is not int
+        or training["full_projection_positions"]
+        != factor * existing["planned_input_tokens"]
+        or type(training.get("actual_projection_positions")) is not int
+        or training["actual_projection_positions"]
+        != factor
+        * (
+            existing["planned_input_tokens"]
+            if training["loss_backend"] == "full"
+            else existing["planned_supervised_tokens"]
         )
         or not isinstance(training.get("losses"), list)
         or len(training["losses"]) != training["steps"]

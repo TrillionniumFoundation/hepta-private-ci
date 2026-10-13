@@ -80,6 +80,8 @@ class ProbeExposureTests(unittest.TestCase):
             losses=[1.0] * plan["planned_steps"],
             input_tokens=plan["planned_input_tokens"],
             supervised_tokens=plan["planned_supervised_tokens"],
+            full_projection_positions=plan["planned_input_tokens"],
+            actual_projection_positions=plan["planned_input_tokens"],
         )
 
     def test_absent_loss_backend_cannot_claim_a_legacy_training_visit(self):
@@ -88,6 +90,36 @@ class ProbeExposureTests(unittest.TestCase):
         missing.pop("loss_backend")
         with self.assertRaisesRegex(ValueError, "registered source-written curriculum"):
             verified_visits(self.docs, self.tokenizer, missing)
+
+    def test_full_and_sparse_projection_positions_must_match_writer_plan(self):
+        for backend in ("full", "supervised_positions"):
+            with self.subTest(backend=backend):
+                training = deepcopy(self.training)
+                training["loss_backend"] = backend
+                planned = training["write_schedule"]
+                training["actual_projection_positions"] = (
+                    planned["planned_input_tokens"]
+                    if backend == "full"
+                    else planned["planned_supervised_tokens"]
+                )
+                visits, _ = verified_visits(self.docs, self.tokenizer, training)
+                self.assertEqual(sorted(visits.values()), [0, 1])
+                for field in (
+                    "full_projection_positions",
+                    "actual_projection_positions",
+                ):
+                    for wrong in (
+                        None,
+                        True,
+                        training[field] + 1,
+                    ):
+                        tampered = deepcopy(training)
+                        if wrong is None:
+                            tampered.pop(field)
+                        else:
+                            tampered[field] = wrong
+                        with self.assertRaises(ValueError):
+                            verified_visits(self.docs, self.tokenizer, tampered)
 
     def test_unvisited_scope_not_mislabeled_training_recall(self):
         visits, schedule_digest = verified_visits(
@@ -199,6 +231,8 @@ class ProbeIntegrationTests(unittest.TestCase):
             losses=[1.0],
             input_tokens=schedule["planned_input_tokens"],
             supervised_tokens=schedule["planned_supervised_tokens"],
+            full_projection_positions=schedule["planned_input_tokens"],
+            actual_projection_positions=schedule["planned_input_tokens"],
         )
         reader = FakeReader(docs)
         reader.tokenizer = tokenizer
