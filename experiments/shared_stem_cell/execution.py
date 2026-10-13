@@ -264,28 +264,46 @@ class LocalTextGenerator(LocalEncoder):
     permitted_kinds = {"causal_lm"}
 
     @torch.no_grad()
-    def generate(self, prompts, maximum_new_tokens=64):
+    def generate(self, prompts, maximum_new_tokens=64, *, add_special_tokens=True):
         integer(maximum_new_tokens, 1, 256, "generation ceiling")
+        if type(add_special_tokens) is not bool:
+            raise InputError("explicit special-token policy required")
         if not isinstance(prompts, list) or not 1 <= len(prompts) <= 64:
             raise InputError("bounded generation batch")
-        rows = []
+        # Validate EVERY prompt before spending the first decoder call.
+        prepared = []
         for prompt in prompts:
-            if not isinstance(prompt, str) or not prompt:
-                raise InputError("nonempty generation prompt")
-            encoded = self.tokenizer(prompt, truncation=False, return_tensors="pt")
-            if encoded["input_ids"].shape[1] > self.maximum_tokens:
-                raise InputError("generation input exceeds ceiling; no truncation")
+            if not isinstance(prompt, str) or not 1 <= len(prompt.encode()) <= 65536:
+                raise InputError("bounded nonempty generation prompt")
+            encoded = self.tokenizer(prompt, truncation=False, return_tensors="pt",
+                                     add_special_tokens=add_special_tokens)
+            tokens = encoded.get("input_ids")
+            if (not isinstance(tokens, torch.Tensor) or tokens.dtype != torch.long
+                    or tokens.device.type != "cpu" or tokens.ndim != 2 or tokens.shape[0] != 1
+                    or not 1 <= tokens.shape[1] <= self.maximum_tokens):
+                raise InputError("generation input exceeds ceiling/shape; no truncation")
+            context = getattr(self.loaded.config, "max_position_embeddings", None)
+            if context is not None and (type(context) is not int or tokens.shape[1] + maximum_new_tokens > context):
+                raise InputError("generation continuation exceeds model context")
+            prepared.append(encoded)
+        rows = []
+        for prompt, encoded in zip(prompts, prepared):
             with measured() as timing:
                 output = self.loaded.generate(**encoded, do_sample=False,
                     max_new_tokens=maximum_new_tokens,
                     pad_token_id=self.tokenizer.eos_token_id)
             prefix = encoded["input_ids"].shape[1]
+            if (not isinstance(output, torch.Tensor) or output.dtype != torch.long
+                    or output.ndim != 2 or output.shape[0] != 1
+                    or not prefix <= output.shape[1] <= prefix + maximum_new_tokens):
+                raise InputError("generated token shape/budget mismatch")
             if not torch.equal(output[:, :prefix], encoded["input_ids"]):
                 raise InputError("causal output prefix mismatch")
             tokens = output[0, prefix:]
             rows.append({"input_sha256": sha(prompt.encode()),
                 "input_token_sha256": tensor_digest(encoded["input_ids"]),
                 "output_token_sha256": tensor_digest(tokens), "generated_tokens": len(tokens),
+                "input_tokens": prefix, "input_special_tokens_added": add_special_tokens,
                 "text": self.tokenizer.decode(tokens, skip_special_tokens=True), **timing})
         self.close()
         return {"modality": "text", "model_digest": self.identity, "outputs": rows,
@@ -416,8 +434,19 @@ def fit(initial: nn.Module, x, y, *, steps=40, seed=17, batch=16):
                           "examples_processed": steps * min(batch, len(x))}
 
 
-def head_trial(x, cases, train_labels, *, classes, kind, steps, seed):
+def head_trial(x, cases, train_labels, *, classes, kind, steps, seed,
+               artifact_dir=None, artifact_binding=None):
     """Returns unlabeled predictions. No held-out target mapping is accepted."""
+    if artifact_dir is not None:
+        from experiments.shared_stem_cell.head_artifacts import _binding, _path
+        if not isinstance(artifact_binding, dict):
+            raise InputError("explicit artifact feature binding required")
+        _binding({**artifact_binding, "logical_cell": "preflight",
+                  "training_lineage_sha256": sha(b"preflight-only")})
+        if any(c.scope != artifact_binding["scope"] for c in cases):
+            raise InputError("Head export scope mismatch before training")
+        if _path(artifact_dir).exists():
+            raise InputError("Head trial export directory must be new")
     outputs, costs = [], []
     for cell in sorted({case.cell for case in cases}):
         train_ids = [i for i, c in enumerate(cases) if c.cell == cell and c.split == "train"]
@@ -428,7 +457,34 @@ def head_trial(x, cases, train_labels, *, classes, kind, steps, seed):
         initial = Head(x.shape[1], classes, kind, min(8, x.shape[1])).eval()
         y = torch.tensor([train_labels[cases[i].case_id] for i in train_ids], dtype=torch.long)
         trained, cost = fit(initial, x[train_ids], y, steps=steps, seed=seed)
-        costs.append({"cell": cell, **cost, "frozen": parameters(initial)})
+        artifacts = None
+        if artifact_dir is not None:
+            from experiments.shared_stem_cell.head_artifacts import export_head, load_head
+            if not isinstance(artifact_binding, dict):
+                raise InputError("explicit artifact feature binding required")
+            scopes = {c.scope for c in cases if c.cell == cell}
+            if len(scopes) != 1 or artifact_binding.get("scope") not in scopes:
+                raise InputError("Head export scope mismatch")
+            lineage = {"seed": seed, "steps": steps, "kind": kind,
+                       "train": [[cases[i].case_id, cases[i].input_digest,
+                                  train_labels[cases[i].case_id]] for i in train_ids]}
+            binding = {**artifact_binding, "logical_cell": str(cell),
+                       "training_lineage_sha256": sha(canonical(lineage))}
+            artifacts = {}
+            with measured() as artifact_cost:
+                for role, candidate in (("frozen", initial), ("learned", trained)):
+                    destination = Path(artifact_dir) / f"cell-{cell}" / role
+                    receipt = export_head(destination, candidate, binding)
+                    restored = load_head(destination, receipt["manifest_sha256"], binding)
+                    with torch.no_grad():
+                        expected, actual = candidate(x[test_ids]), restored(x[test_ids])
+                    if not torch.equal(expected, actual):
+                        raise InputError("reopened Head prediction parity failed")
+                    artifacts[role] = {**receipt, "relative_path": f"cell-{cell}/{role}",
+                                       "binding": binding, "reload_logits_exact": True}
+            artifacts["export_and_reload_cost"] = artifact_cost
+        costs.append({"cell": cell, **cost, "frozen": parameters(initial),
+                      "offline_head_artifacts": artifacts})
         with torch.no_grad():
             before = initial(x[test_ids]).softmax(-1).tolist()
             after = trained(x[test_ids]).softmax(-1).tolist()
@@ -491,12 +547,12 @@ def run(manifest_path: Path, output: Path):
         cases, labels = dataset(root / config["dataset"]["path"], config["dataset"]["sha256"],
             config["classes"], config["cells"], config.get("temporal", False))
         train_labels = {c.case_id: labels[c.case_id] for c in cases if c.split == "train"}
+        # Scope partitions are explicit and checked before loading any weights.
+        if len({case.scope for case in cases}) != 1:
+            raise InputError("one scope per physical study; partition before invocation")
         with measured() as model_load:
             backend = LocalEncoder(root / config["model"]["path"], config["model"],
                                    config.get("maximum_tokens", 512))
-        # Scope partitions are explicit; no cross-scope physical sharing.
-        if len({case.scope for case in cases}) != 1:
-            raise InputError("one scope per physical study; partition before invocation")
         with measured() as whole:
             x, encoding = encode_cases(backend, cases, batch_size=config.get("batch_size", 8))
             sharing = []
@@ -520,7 +576,14 @@ def run(manifest_path: Path, output: Path):
             rows, training = [], {}
             for kind in ("linear", "gated", "low_rank", "sparse_expert"):
                 predictions, costs = head_trial(x, cases, train_labels, classes=config["classes"],
-                    kind=kind, steps=config.get("steps", 40), seed=config.get("seed", 17))
+                    kind=kind, steps=config.get("steps", 40), seed=config.get("seed", 17),
+                    artifact_dir=output / "heads" / kind,
+                    artifact_binding={"scope": cases[0].scope, "stem_sha256": backend.identity,
+                        "dataset_sha256": config["dataset"]["sha256"],
+                        "generation": integer(config.get("candidate_generation", 1), 1, 2**64 - 1, "candidate generation"),
+                        "feature_profile_sha256": sha(canonical({"width": x.shape[1],
+                            "representation": "masked_mean_float32", "model": backend.identity,
+                            "maximum_tokens": config.get("maximum_tokens", 512)}))})
                 rows.extend(predictions)
                 training[kind] = costs
             controls = {}

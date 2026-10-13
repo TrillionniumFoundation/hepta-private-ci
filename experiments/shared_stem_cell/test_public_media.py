@@ -110,7 +110,8 @@ class PublicMediaTests(unittest.TestCase):
         class Generator:
             tokenizer = Tokenizer()
             identity = "fixture-not-pretrained"
-            def generate(self, texts, *, maximum_new_tokens):
+            def generate(self, texts, *, maximum_new_tokens, add_special_tokens):
+                assert add_special_tokens is False
                 assert maximum_new_tokens == 32
                 assert all("No image is provided." in s for s in texts)
                 return {"model_digest": self.identity, "outputs": [{"text": "not a valid answer"}]}

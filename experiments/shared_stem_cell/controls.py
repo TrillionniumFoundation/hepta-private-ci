@@ -128,11 +128,63 @@ class FusionHead(nn.Module):
         return self.readout(torch.cat(values, 1))
 
 
-def modality_trial(train, labels, test, *, classes, steps=40, seed=17):
+@torch.no_grad()
+def paired_modality_probe(model, inputs, partitions):
+    """Same trained Head, source-preserving feature masks/within-fold swaps.
+
+    This diagnoses reliance on frozen features, not causal semantic correctness,
+    a raw-media intervention, or a stronger model with extra trainable parameters.
+    """
+    if type(model) is not FusionHead or set(inputs) != set(model.names):
+        raise InputError("same joint fusion model and all modalities required")
+    n = len(next(iter(inputs.values()))[0])
+    if (not isinstance(partitions, list) or len(partitions) != n
+            or any(not isinstance(p, str) or not p for p in partitions)):
+        raise InputError("explicit same-fold probe partitions required")
+    before = parameters(model)
+    predictions, costs, source_rows = {}, {}, {}
+    identity = list(range(n))
+
+    def evaluate(name, values, mapping, operator, modality):
+        with measured() as timing:
+            p = model(values).softmax(-1)
+        if not bool(torch.isfinite(p).all()):
+            raise InputError("nonfinite modality intervention")
+        predictions[name] = p.tolist()
+        source_rows[name] = {"operator": operator, "modality": modality, "rows": mapping}
+        costs[name] = {**timing, "fusion_forward_calls": 1, "cases": n,
+                       "model_sha256": before["sha256"]}
+
+    evaluate("as_observed", inputs, identity, "identity", None)
+    for name in model.names:
+        x, mask, stamps = inputs[name]
+        removed = dict(inputs)
+        removed[name] = (torch.zeros_like(x), torch.zeros_like(mask), torch.zeros_like(stamps))
+        evaluate(f"mask:{name}", removed, [None] * n, "all_absent", name)
+        donors = identity.copy()
+        for partition in sorted(set(partitions)):
+            ids = [i for i in range(n) if partitions[i] == partition and bool(mask[i].any())]
+            if len(ids) >= 2:
+                for i, donor in zip(ids, ids[1:] + ids[:1]):
+                    donors[i] = donor
+        changed = dict(inputs)
+        changed[name] = tuple(value[donors].clone() for value in inputs[name])
+        evaluate(f"rotate:{name}", changed, donors, "within_fold_rotation", name)
+    if parameters(model) != before:
+        raise InputError("probe changed the learned fusion model")
+    return {"predictions": predictions, "costs": costs, "source_rows": source_rows,
+            "partitions": partitions, "same_model_sha256": before["sha256"],
+            "intervention_scope": "frozen_features_only_no_tower_reforward",
+            "causal_semantics_established": False, "production_accepted": False}
+
+
+def modality_trial(train, labels, test, *, classes, steps=40, seed=17,
+                   test_partitions=None):
     """Real connector SGD and each unimodal baseline; untrusted tower provenance."""
     if set(train) != set(test):
         raise InputError("modality sets differ")
     predictions, frozen_predictions, costs = {}, {}, {}
+    interventions = None
     n = len(labels)
     if n < 1:
         raise InputError("empty modality training data")
@@ -161,7 +213,10 @@ def modality_trial(train, labels, test, *, classes, steps=40, seed=17):
             predictions[name] = model({k: test[k] for k in selected}).softmax(-1).tolist()
         costs[name] = {**timing, **parameters(model), "steps": steps, "examples_processed": steps * n,
                        "same_init_frozen": frozen_identity}
+        if test_partitions is not None and selected == tuple(sorted(train)):
+            interventions = paired_modality_probe(model, test, test_partitions)
     return {"predictions": predictions, "frozen_predictions": frozen_predictions, "costs": costs,
+            "modality_interventions": interventions,
             "tower_provenance_independently_verified": False,
             "semantic_quality": None, "production_accepted": False}
 

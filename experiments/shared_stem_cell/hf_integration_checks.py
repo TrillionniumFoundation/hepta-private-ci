@@ -77,6 +77,12 @@ class StockHfChecks(unittest.TestCase):
         self.assertLessEqual(result["outputs"][0]["generated_tokens"], 4)
         self.assertIsNone(result["semantic_quality"])
         self.assertFalse(result["production_accepted"])
+        # A formatted chat already owns its special tokens: do not insert again.
+        chat = "[BOS] a b [EOS]"
+        expected = generator.tokenizer(chat, return_tensors="pt", add_special_tokens=False)["input_ids"]
+        formatted = generator.generate([chat], maximum_new_tokens=4, add_special_tokens=False)
+        self.assertEqual(formatted["outputs"][0]["input_token_sha256"], e.tensor_digest(expected))
+        self.assertFalse(formatted["outputs"][0]["input_special_tokens_added"])
 
     def test_stock_clip_text_image_and_frame_paths(self):
         path = self.root / "clip"
