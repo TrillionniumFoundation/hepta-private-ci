@@ -239,7 +239,9 @@ def main() -> int:
     parser.add_argument("--timeout-seconds", type=int, default=1800)
     args = parser.parse_args()
     try:
-        manifest = read_bounded_json(args.manifest, MAX_MANIFEST_BYTES, "execution manifest")
+        manifest = read_bounded_json(
+            args.manifest, MAX_MANIFEST_BYTES, "execution manifest"
+        )
         comparison = execute_matrix(
             manifest,
             args.repository.resolve(),
