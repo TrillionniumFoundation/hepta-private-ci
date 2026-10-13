@@ -69,15 +69,67 @@ jobs:
             echo "already formatted" > /tmp/publisher-format/status.txt
             exit 0
           fi
-          current="$(git ls-remote --heads origin "$TARGET_BRANCH" | cut -f1)"
-          test "$current" = "$EXPECTED_HEAD"
+          # Save an AST-equivalent patch; never copy stale repository trees.
+          git diff --binary -- \
+            scripts/memory_cell/locomo_publisher_support_reader.py \
+            scripts/memory_cell/test_locomo_publisher_support_reader.py \
+            > /tmp/publisher-format/ast-safe.patch
+          test -s /tmp/publisher-format/ast-safe.patch
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -- scripts/memory_cell/locomo_publisher_support_reader.py scripts/memory_cell/test_locomo_publisher_support_reader.py
-          git diff --cached --check
-          git commit -m "style(memory-cell): AST-identical privileged LoCoMo Reader formatter repair"
-          git push origin "HEAD:refs/heads/$TARGET_BRANCH"
-          git rev-parse HEAD > /tmp/publisher-format/formatted-head.txt
+          for attempt in 1 2 3 4 5; do
+            git fetch --no-tags origin "refs/heads/$TARGET_BRANCH"
+            current="$(git rev-parse FETCH_HEAD)"
+            # A racing Stem commit is allowed; a racing change to either
+            # source file is NOT. Never overwrite the other author's fix.
+            for path in \
+              scripts/memory_cell/locomo_publisher_support_reader.py \
+              scripts/memory_cell/test_locomo_publisher_support_reader.py; do
+              original_blob="$(git rev-parse "$EXPECTED_HEAD:$path")"
+              current_blob="$(git rev-parse "$current:$path")"
+              if [ "$original_blob" != "$current_blob" ]; then
+                echo "publisher source changed concurrently: $path" >&2
+                exit 1
+              fi
+            done
+            git reset --hard "$current"
+            git apply --check /tmp/publisher-format/ast-safe.patch
+            git apply /tmp/publisher-format/ast-safe.patch
+            # AST is rechecked against the CURRENT parent, not only the
+            # immutable workflow-triggering commit.
+            python3 - <<'PYAST'
+          import ast
+          import subprocess
+          from pathlib import Path
+          paths = (
+              'scripts/memory_cell/locomo_publisher_support_reader.py',
+              'scripts/memory_cell/test_locomo_publisher_support_reader.py',
+          )
+          for name in paths:
+              before = subprocess.check_output(
+                  ['git', 'show', 'HEAD:' + name], text=True
+              )
+              after = Path(name).read_text(encoding='utf-8')
+              if ast.dump(ast.parse(before)) != ast.dump(ast.parse(after)):
+                  raise ValueError('formatter changed source AST: ' + name)
+          PYAST
+            uv run --frozen --project scripts ruff format --check \
+              scripts/memory_cell/locomo_publisher_support_reader.py \
+              scripts/memory_cell/test_locomo_publisher_support_reader.py
+            git diff --check
+            git add -- \
+              scripts/memory_cell/locomo_publisher_support_reader.py \
+              scripts/memory_cell/test_locomo_publisher_support_reader.py
+            git diff --cached --check
+            git commit -m "style(memory-cell): AST-identical privileged LoCoMo Reader formatter repair"
+            if git push origin "HEAD:refs/heads/$TARGET_BRANCH"; then
+              git rev-parse HEAD > /tmp/publisher-format/formatted-head.txt
+              exit 0
+            fi
+            echo "concurrent unrelated push; retrying fast-forward $attempt/5" >&2
+          done
+          echo "could not fast-forward after five independent attempts" >&2
+          exit 1
       - name: Retain source, exact hashes and failure artifacts
         if: always()
         run: |
