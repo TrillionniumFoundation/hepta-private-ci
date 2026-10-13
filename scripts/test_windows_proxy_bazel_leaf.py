@@ -50,7 +50,9 @@ def main():
     ):
         raise AssertionError("CLI must retain real Windows sandbox dependency")
     test = CRATES / "cli/tests/windows_stable_ingress.rs"
-    if not test.is_file() or (CRATES / "network-proxy/tests/windows_stable_ingress.rs").exists():
+    if not test.is_file() or (
+        CRATES / "network-proxy/tests/windows_stable_ingress.rs"
+    ).exists():
         raise AssertionError("Windows proxy test must have exactly one leaf owner")
     body = test.read_text(encoding="utf-8")
     for required in (
