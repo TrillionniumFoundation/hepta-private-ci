@@ -59,14 +59,14 @@ jobs:
           /tmp/hepta-five-native-venv/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/hepta-five-native/install-worker.log 2>&1
           /tmp/hepta-five-native-venv/bin/pip check | tee /tmp/hepta-five-native/pip-check.log
           /tmp/hepta-five-native-venv/bin/pip freeze > /tmp/hepta-five-native/environment.txt
-          PYTHONPATH=scripts/memory_cell /tmp/hepta-five-native-venv/bin/python -c 'import five_causal_native, five_reader_response_learning, five_reader_response_trial, five_reader_adapter, five_reader_adapter_trial, five_archived_torch_reference; print("NATIVE_IMPORT_PREFLIGHT_OK")' | tee /tmp/hepta-five-native/import-preflight.log
+          PYTHONPATH=scripts/memory_cell /tmp/hepta-five-native-venv/bin/python -c 'import five_causal_native, five_reader_response_learning, five_reader_response_trial, five_reader_adapter, five_reader_adapter_trial, five_archived_torch_reference, five_reader_evidence_pairs, five_reader_evidence_pair_trial; print("NATIVE_IMPORT_PREFLIGHT_OK")' | tee /tmp/hepta-five-native/import-preflight.log
       - name: Run every focused suite and require all before model execution
         run: |
           set -euo pipefail
           P=/tmp/hepta-five-native-venv/bin/python
           failed=0
-          patterns=('test_full_cell_matrix.py' 'test_five_causal_experiments.py' 'test_five_causal_native.py' 'test_five_group*.py' 'test_five_reader_response.py' 'test_five_reader_adapter*.py' 'test_five_encoder_snapshot.py')
-          logs=(matrix-tests five-contract-tests native-tests group-tests response-tests adapter-tests encoder-snapshot-tests)
+          patterns=('test_full_cell_matrix.py' 'test_five_causal_experiments.py' 'test_five_causal_native.py' 'test_five_group*.py' 'test_five_reader_response.py' 'test_five_reader_adapter*.py' 'test_five_encoder_snapshot.py' 'test_five_reader_evidence_pairs.py')
+          logs=(matrix-tests five-contract-tests native-tests group-tests response-tests adapter-tests encoder-snapshot-tests evidence-pair-tests)
           for i in "${!patterns[@]}"; do
             if "$P" -m unittest discover -s scripts/memory_cell -p "${patterns[$i]}" -v 2>&1 | tee "/tmp/hepta-five-native/${logs[$i]}.log"; then
               printf '%s\tpassed\n' "${patterns[$i]}" >> /tmp/hepta-five-native/suite-status.tsv
@@ -75,7 +75,7 @@ jobs:
               printf '%s\tfailed\n' "${patterns[$i]}" >> /tmp/hepta-five-native/suite-status.tsv
             fi
           done
-          if ! "$P" -m py_compile scripts/memory_cell/five_causal_native.py scripts/memory_cell/five_native_historical_smoke.py scripts/memory_cell/test_five_causal_native.py scripts/memory_cell/five_reader_response_learning.py scripts/memory_cell/five_reader_response_trial.py scripts/memory_cell/test_five_reader_response.py scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group_batching.py scripts/memory_cell/five_reader_adapter.py scripts/memory_cell/five_reader_adapter_trial.py scripts/memory_cell/test_five_reader_adapter.py scripts/memory_cell/test_five_reader_adapter_trial.py scripts/memory_cell/test_five_encoder_snapshot.py experiments/shared_stem_cell/execution.py; then
+          if ! "$P" -m py_compile scripts/memory_cell/five_causal_native.py scripts/memory_cell/five_native_historical_smoke.py scripts/memory_cell/test_five_causal_native.py scripts/memory_cell/five_reader_*.py scripts/memory_cell/test_five_reader*.py scripts/memory_cell/five_group_search.py scripts/memory_cell/test_five_group_batching.py scripts/memory_cell/test_five_encoder_snapshot.py experiments/shared_stem_cell/execution.py; then
             failed=1
           fi
           test "$failed" -eq 0
@@ -105,6 +105,16 @@ jobs:
         run: |
           set -euo pipefail
           /usr/bin/time -v -o /tmp/hepta-five-native/process-resources.txt /tmp/hepta-five-native-venv/bin/python scripts/memory_cell/five_native_historical_smoke.py /tmp/original-model-material.zip /tmp/hepta-five-native/output 2>&1 | tee /tmp/hepta-five-native/native-execution.log
+      - name: Diagnose and train conditional preferences on train and select only
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/hepta-five-native/evidence-pair-process-resources.txt /tmp/hepta-five-native-venv/bin/python scripts/memory_cell/five_reader_evidence_pair_trial.py --staged /tmp/reader-response-materials/staged --prior-study /tmp/hepta-five-native/response-learning --output /tmp/hepta-five-native/evidence-pair-development 2>&1 | tee /tmp/hepta-five-native/evidence-pair-execution.log
+          /tmp/hepta-five-native-venv/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/hepta-five-native/evidence-pair-development/report.json').read_bytes())
+          print('EVIDENCE_PAIR_RESULT', json.dumps(r, sort_keys=True))
+          PY
       - name: Retain exact generating source and all failures, never pretrained weights
         if: always()
         run: |

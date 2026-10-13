@@ -122,30 +122,42 @@ def compile_supervision(tokenizer, example, *, input_cap, response_cap, position
     }
 
 
-def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=(), epochs=None):
-    """Fit a disposable candidate backend; verify its original tensors unchanged.
+def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=(), epochs=None,
+                         loss_profile="response-ce-v1"):
+    """Fit a disposable candidate and reload saved bytes, never publish it.
 
-    Caller must supply a newly loaded, independently byte-verified base. This
-    function never receives the selected serving model and never publishes it.
+    response-ce-v1 retains the historical single-example schedule and loss.
+    Paired profiles reuse this exact lifecycle but accumulate the two contexts
+    before one update, recording their four actual likelihood forwards.
     """
     validate_examples(examples, forbidden_families)
+    require(loss_profile in ("response-ce-v1", "paired-response-ce-v1", "paired-evidence-margin-v1"),
+            "unregistered response objective")
+    paired = loss_profile != "response-ce-v1"
     epochs = TRAINING["epochs"] if epochs is None else epochs
     require(type(epochs) is int and 1 <= epochs <= 8, "epoch bound")
     require(not hasattr(backend.loaded, "peft_config"), "fresh base required; no stacked hidden adapter")
     require(all(not p.requires_grad for p in backend.loaded.parameters()), "base must already be frozen")
     before_examples = c.digest(examples)
     position_cap = backend.loaded.config.max_position_embeddings
-    batches = [compile_supervision(backend.tokenizer, row, input_cap=TRAINING["maximum_input_tokens"],
-               response_cap=TRAINING["maximum_response_tokens"], position_cap=position_cap) for row in examples]
+    objective = {"name": loss_profile, "paired_context_accumulation": paired}
+    if paired:
+        import five_reader_evidence_pairs as pairs
+        batches = pairs.prepare(backend.tokenizer, examples, position_cap=position_cap)
+        objective.update(margin_nats_per_token=pairs.MARGIN_NATS_PER_TOKEN,
+                         contrast_weight=pairs.CONTRAST_WEIGHT if loss_profile == pairs.MARGIN else 0.0,
+                         likelihood_normalization="mean_assistant_token_logp_including_eos",
+                         countertarget_backward=loss_profile == pairs.MARGIN)
+    else:
+        batches = [compile_supervision(backend.tokenizer, row, input_cap=TRAINING["maximum_input_tokens"],
+                   response_cap=TRAINING["maximum_response_tokens"], position_cap=position_cap) for row in examples]
     output.mkdir(parents=True, exist_ok=False)
     c.write_new(output / "training-plan.json", {"profile": PROFILE, "training": TRAINING,
         "actual_epochs": epochs, "examples_sha256": before_examples,
         "training_families": sorted({r["family"] for r in examples}),
         "forbidden_families": sorted(forbidden_families), "examples": len(examples),
-        "training_forward_counter": FORWARD_COUNTER,
-        "supervision_semantics": "caller_supplied_not_self_authenticated"})
-    # Detached views reference the exact original base storage even after PEFT
-    # renames module paths. Adapter tensors are excluded by construction.
+        "training_forward_counter": FORWARD_COUNTER, "loss_objective": objective,
+        "training_units": len(batches), "supervision_semantics": "caller_supplied_not_self_authenticated"})
     original_tensors = dict(backend.loaded.state_dict())
     original_digest = state_digest(original_tensors)
     rng = random.Random(TRAINING["seed"])
@@ -159,10 +171,8 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
         require(trainable and all("lora_" in n for n, _ in trainable), "non-LoRA weight became trainable")
         initial_adapter_digest = state_digest(get_peft_model_state_dict(model))
         optimizer = torch.optim.AdamW([p for _, p in trainable], lr=TRAINING["learning_rate"])
-        # Gradients remain enabled in eval mode. No dropout/random decoding can
-        # distinguish the aligned and shuffled-supervision arms accidentally.
         model.eval()
-        steps = tokens = supervised_tokens = 0
+        steps = tokens = supervised_tokens = scored_tokens = 0
         previous = "0" * 64
         losses = []
         forward_owner = training_forward_owner(model)
@@ -175,13 +185,18 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
                         batch, token_record = batches[index]
                         start = time.perf_counter()
                         before_forwards = forwards["model_calls"]
+                        unit_id = token_record["pair_id"] if paired else examples[index]["id"]
                         previous = c.journal_append(stream, {"event": "optimizer_started", "epoch": epoch,
-                            "index": index, "example_id": examples[index]["id"], **token_record}, previous)
+                            "index": index, "example_id": unit_id, **token_record}, previous)
                         optimizer.zero_grad(set_to_none=True)
+                        diagnostics = {}
                         try:
-                            loss = model(**batch, use_cache=False).loss
-                            require(bool(torch.isfinite(loss)), "nonfinite response loss")
-                            loss.backward()
+                            if paired:
+                                loss, diagnostics = pairs.backward_pair(model, batch, loss_profile)
+                            else:
+                                loss = model(**batch, use_cache=False).loss
+                                require(bool(torch.isfinite(loss)), "nonfinite response loss")
+                                loss.backward()
                             torch.nn.utils.clip_grad_norm_([p for _, p in trainable], 1.0, error_if_nonfinite=True)
                             optimizer.step()
                         except Exception as error:
@@ -191,15 +206,16 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
                                 "wall_seconds": time.perf_counter()-start, "retry_permitted": False}, previous)
                             raise
                         steps += 1
-                        tokens += batch["input_ids"].numel()
-                        supervised_tokens += token_record["response_tokens"]
+                        tokens += token_record["input_tokens"] if paired else batch["input_ids"].numel()
+                        supervised_tokens += token_record["target_fit_tokens"] if paired else token_record["response_tokens"]
+                        scored_tokens += token_record["response_tokens"]
                         losses.append(float(loss.detach()))
                         previous = c.journal_append(stream, {"event": "optimizer_finished", "epoch": epoch,
                             "index": index, "loss": losses[-1], "wall_seconds": time.perf_counter()-start,
+                            "pre_update_conditional_diagnostics": diagnostics,
                             "observed_decoder_forwards": forwards["model_calls"] - before_forwards}, previous)
-        # This fixed profile has no activation checkpointing or extra forwards.
-        # Validate the measured counter; never replace it with the step count.
-        require(forwards["model_calls"] == steps, "decoder observations differ from fixed training execution")
+        require(forwards["model_calls"] == steps * (4 if paired else 1),
+                "decoder observations differ from fixed training execution")
         optimizer_bytes = sum(v.numel()*v.element_size() for s in optimizer.state.values()
                               for v in s.values() if isinstance(v, torch.Tensor))
         optimizer.zero_grad(set_to_none=True)
@@ -208,8 +224,6 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
         require(state_digest(original_tensors) == original_digest and c.digest(examples) == before_examples,
                 "response learning mutated frozen base or input examples")
         model.save_pretrained(str(output / "adapter"), safe_serialization=True, save_embedding_layers=False)
-        # Remove the trained adapter, reattach exclusively from saved bytes, and
-        # use that reloaded inference instance for all subsequent evaluations.
         raw_base = model.unload()
         restored = PeftModel.from_pretrained(raw_base, str(output / "adapter"), is_trainable=False,
                                             local_files_only=True)
@@ -220,6 +234,7 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
     backend.close()
     receipt = {"profile": PROFILE, "training_examples": len(examples), "optimizer_steps": steps,
         "input_tokens_processed": tokens, "supervised_tokens_processed": supervised_tokens,
+        "scored_response_tokens_processed": scored_tokens, "loss_objective": objective,
         "base_tensor_sha256": original_digest, "base_unchanged": True,
         "initial_adapter_sha256": initial_adapter_digest, "adapter_tensor_sha256": final_adapter_digest,
         "trainable_parameters": sum(p.numel() for _, p in trainable),
