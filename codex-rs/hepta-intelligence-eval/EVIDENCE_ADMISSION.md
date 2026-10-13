@@ -136,6 +136,16 @@ must follow freezing, not overlap, have nonzero observed counts and distinct
 source cuts, and end before the observer's signed observation and trusted current
 time. The final holdout window must be among those observed windows.
 
+`VerifiedSelfEvolutionSelectionV1::validate_at` retains and rechecks the originally
+admitted generator/evaluator/observer/selector evidence windows and known revocations.
+The Agentd evaluated cognitive ranker calls it before CURRENT acquisition and after
+bounded model consumption, using Unix microseconds. Cloning or retaining the selection
+does not extend those windows. This is an immutable-trust-snapshot check: it cannot
+discover an upstream revocation that the host has not distributed. Current trust,
+withdrawal distribution and final-use authority remain with their existing owners.
+An evaluated rollback similarly rechecks its admitted selector/evaluator evidence;
+restoring predecessor bytes does not extend that rollback admission's lifetime.
+
 The independent observer signs `future_window_signing_payload_v1`. The evaluator
 signs `longitudinal_evaluation_signing_payload_v3`, including the time evidence,
 observer signature and minimum duration; a changed policy requires new evidence.

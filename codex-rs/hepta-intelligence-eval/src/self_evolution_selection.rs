@@ -105,12 +105,25 @@ impl PreparedSelfEvolutionSelectionV1 {
 #[derive(Clone, Debug)]
 pub struct VerifiedSelfEvolutionSelectionV1 {
     receipt: SelfEvolutionSelectionReceiptV1,
+    generator: VerifiedLearningEvidenceV1,
+    evaluator: VerifiedLearningEvidenceV1,
+    observer: VerifiedLearningEvidenceV1,
     selector: VerifiedLearningEvidenceV1,
     selector_evidence_digest: Digest32,
     selection_digest: Digest32,
 }
 
 impl VerifiedSelfEvolutionSelectionV1 {
+    /// Recheck the admitted role lifetimes at each bounded consumption. This
+    /// uses the original immutable trust snapshot; the host still owns fresh
+    /// trust/revocation distribution and must reload after a trust change.
+    pub fn validate_at(&self, now: u64) -> Result<(), SelfEvolutionSelectionError> {
+        for role in [&self.generator, &self.evaluator, &self.observer] {
+            verify_verified_role_separation(&self.selector, role, now)?;
+        }
+        Ok(())
+    }
+
     #[must_use]
     pub fn receipt(&self) -> &SelfEvolutionSelectionReceiptV1 {
         &self.receipt
@@ -143,6 +156,13 @@ pub struct VerifiedSelfEvolutionRollbackV1 {
 }
 
 impl VerifiedSelfEvolutionRollbackV1 {
+    /// Recheck the rollback evaluator and selector in the admitted trust
+    /// snapshot. Current owner trust distribution remains a host obligation.
+    pub fn validate_at(&self, now: u64) -> Result<(), SelfEvolutionSelectionError> {
+        verify_verified_role_separation(&self.selection.selector, &self.evaluator, now)?;
+        Ok(())
+    }
+
     #[must_use]
     pub fn selection(&self) -> &VerifiedSelfEvolutionSelectionV1 {
         &self.selection
@@ -337,6 +357,9 @@ pub fn admit_self_evolution_selection_v1(
     digest_bytes.extend_from_slice(&selector_evidence.signature);
     Ok(VerifiedSelfEvolutionSelectionV1 {
         receipt: prepared.receipt,
+        generator: prepared.generator,
+        evaluator: prepared.evaluator,
+        observer: prepared.observer,
         selector,
         selector_evidence_digest,
         selection_digest: Digest32::of_bytes(&digest_bytes),
@@ -586,8 +609,18 @@ mod tests {
         evidence
     }
 
-    #[test]
-    fn selector_and_rollback_are_opaque_independent_admissions() {
+    enum SelectorRevocation {
+        NotRevoked,
+        At(u64),
+    }
+
+    fn selected_fixture(
+        revocation: SelectorRevocation,
+    ) -> (
+        VerifiedSelfEvolutionSelectionV1,
+        LearningEvidenceVerifierV1,
+        [ed25519_dalek::SigningKey; 4],
+    ) {
         use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
         use codex_hepta_learning_ledger::TrustedLearningSignerV1;
         use ed25519_dalek::SigningKey;
@@ -629,7 +662,14 @@ mod tests {
                     controller_id: id(controller),
                     verifying_key: key.verifying_key().to_bytes(),
                     roles: vec![*role],
-                    revoked_at: None,
+                    revoked_at: if *role == LearningEvidenceRoleV1::Selector {
+                        match revocation {
+                            SelectorRevocation::NotRevoked => None,
+                            SelectorRevocation::At(at) => Some(at),
+                        }
+                    } else {
+                        None
+                    },
                 },
             )
             .collect();
@@ -704,6 +744,31 @@ mod tests {
         let selected =
             admit_self_evolution_selection_v1(prepared, &selector_evidence, &verifier, 50)
                 .expect("independent selection");
+        (selected, verifier, keys)
+    }
+
+    #[test]
+    fn retained_selection_rechecks_signed_role_lifetimes_before_late_consumption() {
+        let (selected, _, _) = selected_fixture(SelectorRevocation::NotRevoked);
+        assert!(selected.validate_at(50).is_ok());
+        assert!(selected.validate_at(90).is_ok());
+        assert!(selected.validate_at(19).is_err());
+        assert!(selected.validate_at(91).is_err());
+        // Cloning the opaque admission retains its original validity bound.
+        assert!(selected.validate_at(91).is_err());
+    }
+
+    #[test]
+    fn retained_selection_checks_revocation_already_present_in_admitted_trust() {
+        let (selected, _, _) = selected_fixture(SelectorRevocation::At(80));
+        assert!(selected.validate_at(79).is_ok());
+        assert!(selected.validate_at(80).is_err());
+        assert!(selected.validate_at(81).is_err());
+    }
+
+    #[test]
+    fn selector_and_rollback_are_opaque_independent_admissions() {
+        let (selected, verifier, keys) = selected_fixture(SelectorRevocation::NotRevoked);
         assert_eq!(selected.selector_id(), &id("selector"));
 
         let regression = digest("observed-regression");
@@ -726,6 +791,8 @@ mod tests {
         .expect("independent rollback");
         assert_eq!(rollback.rollback_generation(), generation(9));
         assert_eq!(rollback.evaluator_id(), &id("evaluator"));
+        assert!(rollback.validate_at(90).is_ok());
+        assert!(rollback.validate_at(91).is_err());
     }
 
     #[test]

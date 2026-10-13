@@ -91,3 +91,42 @@ that is not compiled Rust or a real Chain/Hepta acceptance run. Current hosted
 native and full blocking gates remain separate. Public PoN work qualification,
 independent prospective generations, physical power loss, long-term data
 availability, independently operated WAN capacity and production remain open.
+
+## Evaluated model consumption on the current owner path
+
+The existing `AgentdConfig::with_cognitive_ranker` startup composition and ordinary
+cognitive control consumption now keep the authenticated CURRENT owner trust digest
+fixed for the loaded cache. A differently signed trust snapshot cannot replace that
+owner even when registry namespace, head, manifest and payload bytes are unchanged.
+A refresh failure leaves the cache closed; restoring its former CURRENT provider
+does not revive it. A legitimate owner-trust rotation requires explicit reload.
+
+`PinnedCognitiveRanker::load_evaluated` additionally reads the original bounded
+snapshot and compares its eligible predecessor's identity, generation and payload
+digest with the independently admitted evaluation predecessor. This extra native
+snapshot read is load work; it makes no throughput claim. The consumer retains the
+opaque independent selection and checks its original four-role validity windows
+and already-known revocations before and after each bounded use. The actual ranking
+permutation is copied back only after all checks succeed. The selected trust profile
+uses Unix microseconds; artifact CURRENT keeps its existing owner time contract.
+An evaluated rollback retains and rechecks its original selector/evaluator windows
+as well; loading predecessor bytes cannot extend an expired rollback admission.
+New revocations still require the owner's authenticated distribution, not a cached
+token or a Chain work-distance observation.
+
+This hardens an existing product caller rather than adding an unused Chain model
+installer. The PoN adapter remains submission/reconciliation plus descriptive chain
+observation. An ordinary Chain-to-artifact-to-selection-to-inference coordinator,
+independent genuinely future tasks, three actually installed prospective generations,
+target-host resources, and production qualification remain separate obligations.
+Parallel RuleSlot/Stem Draft research cannot be substituted for this exact source or
+its caller, and its uncommitted work is not imported. All tests on this increment
+remain controlled source tests; no model benefit or production flag is promoted.
+
+The added composition tests obtain an opaque selection through the public ledger
+snapshot, dataset freeze, signed longitudinal prepare and independent selector
+admission APIs, then load and exercise the real ranker. Parent substitution keeps
+candidate bytes/manifest equal and the native CURRENT genuinely signed. A delayed
+CURRENT response crossing selection expiry must leave items unchanged and the cache
+closed. Test signers, source facts, intervals and chronological window claims are
+controlled fixtures, not independently observed future benefit.

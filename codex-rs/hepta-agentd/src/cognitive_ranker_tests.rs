@@ -38,12 +38,28 @@ fn item(name: &str) -> CognitiveContextItem {
     }
 }
 
-struct View(Mutex<Option<(PathBuf, RegistrySnapshotReceipt, Digest32)>>);
+struct View(
+    Mutex<Option<(PathBuf, RegistrySnapshotReceipt, Digest32)>>,
+    std::sync::atomic::AtomicBool,
+    std::sync::atomic::AtomicU64,
+);
 impl CurrentCognitiveRegistry for View {
     fn current(&self) -> Result<VerifiedCurrentRegistryViewV1, String> {
+        let delay = self.2.load(std::sync::atomic::Ordering::SeqCst);
+        if delay != 0 {
+            std::thread::sleep(std::time::Duration::from_micros(delay));
+        }
         let view = self.0.lock().unwrap();
         let (path, receipt, predecessor_head) =
             view.as_ref().ok_or("independent witness unavailable")?;
+        if self.1.load(std::sync::atomic::Ordering::SeqCst) {
+            return verified_fixture_current_view_with_signer(
+                File::open(path).map_err(|error| error.to_string())?,
+                *receipt,
+                *predecessor_head,
+                ed25519_dalek::SigningKey::from_bytes(&[24_u8; 32]),
+            );
+        }
         verified_fixture_current_view(
             File::open(path).map_err(|error| error.to_string())?,
             *receipt,
@@ -57,9 +73,36 @@ struct Fixture {
     registry: ArtifactRegistry,
     view: Arc<View>,
     ranker: Arc<PinnedCognitiveRanker>,
+    selected: PinnedCandidateSpec,
+    model_pin: TabularPayloadPinV1,
 }
 
 fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
+    fixture_with_lineage(items, scores, FixtureLineage::Root)
+}
+
+enum FixtureLineage {
+    Root,
+    Candidate {
+        parent: Box<ArtifactManifest>,
+        dataset: Digest32,
+        generation: Generation,
+    },
+}
+
+fn fixture_with_lineage(
+    items: &[CognitiveContextItem],
+    scores: &[i64],
+    lineage: FixtureLineage,
+) -> Fixture {
+    let (generation, dataset_digest, parent) = match lineage {
+        FixtureLineage::Root => (Generation::new(1).unwrap(), hash("fixture-dataset"), None),
+        FixtureLineage::Candidate {
+            parent,
+            dataset,
+            generation,
+        } => (generation, dataset, Some(*parent)),
+    };
     let directory = tempfile::tempdir().unwrap();
     let sensor = cognitive_sensor_id("lemon").unwrap();
     let actions: Vec<_> = items
@@ -71,9 +114,9 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
     let model = fit_tabular_operator_strict_v2(TabularOperatorPlanV1 {
         artifact_id: id("read-ranker"),
         producer_id: id("fixture-trainer"),
-        generation: Generation::new(1).unwrap(),
+        generation,
         objective_digest: hash("read-ranking-task"),
-        dataset_digest: hash("fixture-dataset"),
+        dataset_digest,
         sensor_core_digest: hash("exact-query-revision-v1"),
         training_profile_digest: hash("strict-table-v1"),
         minimum_samples_per_cell: 2,
@@ -110,7 +153,7 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
         artifact_id: model.artifact_id,
         kind: ArtifactKind::Policy,
         generation: model.generation,
-        predecessor_id: None,
+        predecessor_id: parent.as_ref().map(|value| value.artifact_id.clone()),
         content_digest: model_pin.payload_digest,
         objective_digest: model_pin.objective_digest,
         support_digest: model_pin.dataset_digest,
@@ -119,6 +162,14 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
         encoded_size_bytes: bytes.len() as u64,
     };
     let mut registry = ArtifactRegistry::new();
+    if let Some(parent) = parent {
+        registry
+            .append(ArtifactEvent::Register {
+                event_id: id("register-parent"),
+                manifest: parent,
+            })
+            .unwrap();
+    }
     registry
         .append(ArtifactEvent::Register {
             event_id: id("register"),
@@ -140,22 +191,23 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
         hash("fixture-host-binding"),
     )
     .unwrap();
-    let view = Arc::new(View(Mutex::new(Some((
-        snapshot.clone(),
+    let view = Arc::new(View(
+        Mutex::new(Some((snapshot.clone(), registry_receipt, Digest32::ZERO))),
+        std::sync::atomic::AtomicBool::new(false),
+        std::sync::atomic::AtomicU64::new(0),
+    ));
+    let selected = PinnedCandidateSpec {
         registry_receipt,
-        Digest32::ZERO,
-    )))));
+        manifest,
+    };
     let ranker = Arc::new(
         PinnedCognitiveRanker::load(
             owner(),
             1,
             File::open(snapshot).unwrap(),
             File::open(payload).unwrap(),
-            PinnedCandidateSpec {
-                registry_receipt,
-                manifest,
-            },
-            model_pin,
+            selected.clone(),
+            model_pin.clone(),
             view.clone(),
         )
         .unwrap(),
@@ -165,7 +217,43 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
         registry,
         view,
         ranker,
+        selected,
+        model_pin,
     }
+}
+
+#[path = "cognitive_ranker_selection_tests.rs"]
+mod evaluated_selection;
+
+#[test]
+fn a_different_signed_current_owner_cannot_reopen_the_loaded_consumer() {
+    let original = vec![item("one"), item("two")];
+    let fixture = fixture(&original, &[0, 10]);
+    let mut ranked = original.clone();
+    // The snapshot, registry namespace and manifest remain byte-for-byte equal;
+    // only the independently authenticated owner trust snapshot changes.
+    fixture
+        .view
+        .1
+        .store(true, std::sync::atomic::Ordering::SeqCst);
+    assert!(
+        fixture
+            .ranker
+            .rank(&owner(), 1, "lemon", &mut ranked)
+            .is_err()
+    );
+    assert_eq!(ranked, original);
+    fixture
+        .view
+        .1
+        .store(false, std::sync::atomic::Ordering::SeqCst);
+    assert!(
+        fixture
+            .ranker
+            .rank(&owner(), 1, "lemon", &mut ranked)
+            .is_err()
+    );
+    assert_eq!(ranked, original);
 }
 
 #[test]

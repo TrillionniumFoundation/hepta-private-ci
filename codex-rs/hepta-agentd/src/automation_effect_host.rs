@@ -515,12 +515,12 @@ fn parse_pon_chain_observation(
     }
     let result = value.get("result")?;
     if result.get("schema")?.as_str()? != "pon-native-exact-packet-observation-v3"
-        || result.get("local_target_only")?.as_bool()? != true
-        || result.get("global_absence_authority")?.as_bool()? != false
-        || result.get("confirmation_authority")?.as_bool()? != false
-        || result.get("finality_authority")?.as_bool()? != false
-        || result.get("execution_authority")?.as_bool()? != false
-        || result.get("production_activation")?.as_bool()? != false
+        || !result.get("local_target_only")?.as_bool()?
+        || result.get("global_absence_authority")?.as_bool()?
+        || result.get("confirmation_authority")?.as_bool()?
+        || result.get("finality_authority")?.as_bool()?
+        || result.get("execution_authority")?.as_bool()?
+        || result.get("production_activation")?.as_bool()?
     {
         return None;
     }

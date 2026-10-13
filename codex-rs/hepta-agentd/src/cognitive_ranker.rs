@@ -8,6 +8,8 @@
 use std::fs::File;
 use std::sync::Arc;
 use std::sync::Mutex;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use codex_hepta_bellman_operator::LoadedTabularOperatorV1;
 use codex_hepta_bellman_operator::TabularPayloadError;
@@ -21,11 +23,32 @@ use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
 use codex_hepta_learning_artifacts::RevalidatingCandidate;
 use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
 use codex_hepta_learning_artifacts::load_pinned_candidate;
+use codex_hepta_learning_artifacts::read_registry_snapshot;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
 use crate::CognitiveContextItem;
+
+enum RankerEvaluationAdmission {
+    HostPinned,
+    Selected(Box<VerifiedSelfEvolutionSelectionV1>),
+    Rollback(Box<VerifiedSelfEvolutionRollbackV1>),
+}
+
+impl RankerEvaluationAdmission {
+    fn validate_at(&self, now: u64) -> Result<(), String> {
+        match self {
+            Self::HostPinned => Ok(()),
+            Self::Selected(selection) => selection
+                .validate_at(now)
+                .map_err(|error| error.to_string()),
+            Self::Rollback(rollback) => {
+                rollback.validate_at(now).map_err(|error| error.to_string())
+            }
+        }
+    }
+}
 
 /// The artifact authority, not the model or a caller-supplied receipt,
 /// determines currentness. Implementations must return an opaque view issued
@@ -40,6 +63,21 @@ pub(crate) fn verified_fixture_current_view(
     receipt: RegistrySnapshotReceipt,
     expected_predecessor_head_digest: Digest32,
 ) -> Result<VerifiedCurrentRegistryViewV1, String> {
+    verified_fixture_current_view_with_signer(
+        snapshot,
+        receipt,
+        expected_predecessor_head_digest,
+        ed25519_dalek::SigningKey::from_bytes(&[23_u8; 32]),
+    )
+}
+
+#[cfg(test)]
+pub(crate) fn verified_fixture_current_view_with_signer(
+    snapshot: File,
+    receipt: RegistrySnapshotReceipt,
+    expected_predecessor_head_digest: Digest32,
+    key: ed25519_dalek::SigningKey,
+) -> Result<VerifiedCurrentRegistryViewV1, String> {
     use codex_hepta_learning_artifacts::ArtifactOwnerTrustV1;
     use codex_hepta_learning_artifacts::ArtifactOwnerVerifierV1;
     use codex_hepta_learning_artifacts::RegistryHeadRequirementV1;
@@ -48,9 +86,6 @@ pub(crate) fn verified_fixture_current_view(
     use codex_hepta_learning_artifacts::TrustedArtifactSignerV1;
     use codex_hepta_types::Generation;
     use ed25519_dalek::Signer;
-    use ed25519_dalek::SigningKey;
-
-    let key = SigningKey::from_bytes(&[23_u8; 32]);
     let verifying_key = key.verifying_key().to_bytes();
     let signer_id = StableId::new("agentd-current-fixture-signer".to_owned())
         .map_err(|error| error.to_string())?;
@@ -116,6 +151,8 @@ pub struct PinnedCognitiveRanker {
     policy_digest: Digest32,
     model: LoadedTabularOperatorV1,
     current: Arc<dyn CurrentCognitiveRegistry>,
+    current_owner_trust_digest: Digest32,
+    admission: RankerEvaluationAdmission,
     cache: Mutex<Option<RevalidatingCandidate>>,
 }
 
@@ -175,16 +212,22 @@ impl PinnedCognitiveRanker {
         if model.artifact_id() != &candidate.spec().manifest.artifact_id {
             return Err("model identity differs from selected registry artifact".to_string());
         }
-        let value = Self {
+        let current_view = current.current()?;
+        let current_owner_trust_digest = current_view.trust_digest();
+        let mut candidate = RevalidatingCandidate::new(candidate);
+        candidate
+            .with_current(current_view, |_| ())
+            .map_err(|error| error.to_string())?;
+        Ok(Self {
             owner,
             body_generation,
             policy_digest: model_pin.payload_digest,
             model,
             current,
-            cache: Mutex::new(Some(RevalidatingCandidate::new(candidate))),
-        };
-        value.revalidate()?;
-        Ok(value)
+            current_owner_trust_digest,
+            admission: RankerEvaluationAdmission::HostPinned,
+            cache: Mutex::new(Some(candidate)),
+        })
     }
 
     /// Load a candidate only after independent longitudinal evaluation and a
@@ -202,8 +245,28 @@ impl PinnedCognitiveRanker {
         selection: &VerifiedSelfEvolutionSelectionV1,
     ) -> Result<Self, String> {
         let receipt = selection.receipt();
+        selection
+            .validate_at(current_unix_micros()?)
+            .map_err(|error| error.to_string())?;
+        let registry = read_registry_snapshot(
+            snapshot.try_clone().map_err(|error| error.to_string())?,
+            selected.registry_receipt,
+        )
+        .map_err(|error| error.to_string())?;
+        let predecessor = registry
+            .manifest(&receipt.predecessor_id)
+            .ok_or("independently evaluated predecessor is absent from the selected snapshot")?;
+        if predecessor.generation != receipt.predecessor_generation
+            || predecessor.content_digest != receipt.predecessor_artifact_digest
+            || !registry.is_eligible(&receipt.predecessor_id)
+        {
+            return Err(
+                "selected registry predecessor differs from independent evaluation".to_string(),
+            );
+        }
         if body_generation != receipt.candidate_generation.get()
             || selected.manifest.artifact_id != receipt.candidate_id
+            || selected.manifest.predecessor_id.as_ref() != Some(&receipt.predecessor_id)
             || selected.manifest.generation != receipt.candidate_generation
             || selected.manifest.content_digest != receipt.candidate_artifact_digest
             || selected.manifest.objective_digest != receipt.objective_digest
@@ -213,7 +276,7 @@ impl PinnedCognitiveRanker {
                 "selected ranker does not match independently admitted candidate".to_string(),
             );
         }
-        Self::load(
+        let mut value = Self::load(
             owner,
             body_generation,
             snapshot,
@@ -221,7 +284,10 @@ impl PinnedCognitiveRanker {
             selected,
             model_pin,
             current,
-        )
+        )?;
+        value.admission = RankerEvaluationAdmission::Selected(Box::new(selection.clone()));
+        value.revalidate()?;
+        Ok(value)
     }
 
     /// Reload the exact predecessor only after an independent evaluator has
@@ -249,7 +315,7 @@ impl PinnedCognitiveRanker {
                 "rollback ranker does not match independently admitted predecessor".to_string(),
             );
         }
-        Self::load(
+        let mut value = Self::load(
             owner,
             body_generation,
             snapshot,
@@ -257,7 +323,10 @@ impl PinnedCognitiveRanker {
             selected,
             model_pin,
             current,
-        )
+        )?;
+        value.admission = RankerEvaluationAdmission::Rollback(Box::new(rollback.clone()));
+        value.revalidate()?;
+        Ok(value)
     }
 
     pub(crate) fn require_identity(&self, owner: &AgentId, generation: u64) -> Result<(), String> {
@@ -275,13 +344,20 @@ impl PinnedCognitiveRanker {
         let Some(mut candidate) = cache.take() else {
             return Err("ranker unavailable; explicit reload required".to_string());
         };
+        self.admission.validate_at(current_unix_micros()?)?;
         // Keep the cache absent on witness errors, panics and failed refreshes.
         // The provider cannot inject a bare file/receipt: the artifact authority
         // must first issue an opaque verified CURRENT view.
         let current = self.current.current()?;
+        if current.trust_digest() != self.current_owner_trust_digest {
+            return Err(
+                "ranker CURRENT owner trust changed; independent reload required".to_string(),
+            );
+        }
         let result = candidate
             .with_current(current, |_| consume())
             .map_err(|error| error.to_string())??;
+        self.admission.validate_at(current_unix_micros()?)?;
         *cache = Some(candidate);
         Ok(result)
     }
@@ -302,7 +378,7 @@ impl PinnedCognitiveRanker {
             return Err("ranking candidates exceed cognitive read bound".to_string());
         }
         let sensor = cognitive_sensor_id(query)?;
-        self.with_current(|| {
+        let (observation, ranked) = self.with_current(|| {
             let mut scored = Vec::with_capacity(items.len());
             for (index, item) in items.iter().enumerate() {
                 match self.model.predict(&sensor, &cognitive_action_id(item)?) {
@@ -311,27 +387,44 @@ impl PinnedCognitiveRanker {
                     // decision rather than silently assigning a fabricated
                     // propensity to a partially observed action set.
                     Err(TabularPayloadError::UnsupportedCell) => {
-                        return Ok(CognitiveRankObservation {
-                            policy_digest: self.policy_digest,
-                            propensity: ProbabilityQ32::ONE,
-                            applied: false,
-                        });
+                        return Ok((
+                            CognitiveRankObservation {
+                                policy_digest: self.policy_digest,
+                                propensity: ProbabilityQ32::ONE,
+                                applied: false,
+                            },
+                            None,
+                        ));
                     }
                     Err(error) => return Err(error.to_string()),
                 }
             }
             scored.sort_by(|left, right| right.1.cmp(&left.1).then(left.0.cmp(&right.0)));
-            let original = items.to_vec();
-            for (destination, (source, _)) in scored.into_iter().enumerate() {
-                items[destination] = original[source].clone();
-            }
-            Ok(CognitiveRankObservation {
-                policy_digest: self.policy_digest,
-                propensity: ProbabilityQ32::ONE,
-                applied: true,
-            })
-        })
+            let ranked = scored
+                .into_iter()
+                .map(|(source, _)| items[source].clone())
+                .collect::<Vec<_>>();
+            Ok((
+                CognitiveRankObservation {
+                    policy_digest: self.policy_digest,
+                    propensity: ProbabilityQ32::ONE,
+                    applied: true,
+                },
+                Some(ranked),
+            ))
+        })?;
+        if let Some(ranked) = ranked {
+            items.clone_from_slice(&ranked);
+        }
+        Ok(observation)
     }
+}
+
+fn current_unix_micros() -> Result<u64, String> {
+    let elapsed = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|error| error.to_string())?;
+    u64::try_from(elapsed.as_micros()).map_err(|error| error.to_string())
 }
 
 #[cfg(test)]
