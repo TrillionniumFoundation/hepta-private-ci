@@ -43,9 +43,39 @@ def gate_fixture():
             "critical_premise_removed": {"item_ids": ids, "total": 20, "grounded_and_cited": 0, "exact_refusal": 20},
         },
     }
+    # Synthetic, ephemeral review receipts exercise SIGNATURE CODE only;
+    # they are not real human/source judgments and confer no production trust.
+    rows = []
+    for condition in (
+        "no_evidence", "ordinary_retrieval", "human_sufficient",
+        "critical_premise_removed",
+    ):
+        summary = gate["conditions"][condition]
+        for i, qid in enumerate(ids):
+            a, b = fingerprint((qid, "source-a")), fingerprint((qid, "source-b"))
+            delivered = {
+                "no_evidence": [],
+                "ordinary_retrieval": [b],
+                "human_sufficient": [a, b],
+                "critical_premise_removed": [b],
+            }[condition]
+            grounded = i < summary["grounded_and_cited"]
+            refusal = (summary["grounded_and_cited"] <= i
+                       < summary["grounded_and_cited"] + summary["exact_refusal"])
+            rows.append(dict(
+                item_id=qid, condition=condition,
+                question_sha256=fingerprint((qid, "question")),
+                prompt_input_ids_sha256=fingerprint((qid, condition, "prompt")),
+                raw_answer_sha256=fingerprint((qid, condition, "answer")),
+                delivered_source_sha256=delivered,
+                cited_source_sha256=[delivered[0]] if grounded else [],
+                grounded_and_cited=grounded, exact_refusal=refusal,
+            ))
+    gate["reviewed_items"] = rows
     reviewed = {
         name: gate[name] for name in (
-            "schema", "cohort", "model_binding", "conditions", "capabilities"
+            "schema", "cohort", "model_binding", "conditions",
+            "capabilities", "reviewed_items"
         )
     }
     reviewed_digest = fingerprint(reviewed)
@@ -132,7 +162,8 @@ class FullCellMatrixTests(unittest.TestCase):
         ).reason, "review-not-bound-to-observed-reader-results")
         altered = copy.deepcopy(trust)
         reviewed = {name: forged[name] for name in (
-            "schema", "cohort", "model_binding", "conditions", "capabilities"
+            "schema", "cohort", "model_binding", "conditions",
+            "capabilities", "reviewed_items"
         )}
         altered["reviewed_gate_content_sha256"] = fingerprint(reviewed)
         forged["independent_review"]["trust_manifest_sha256"] = fingerprint(altered)

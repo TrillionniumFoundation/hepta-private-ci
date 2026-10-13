@@ -14,6 +14,8 @@ from pathlib import Path
 import re
 import sys
 
+from reader_review_ledger import audit_case_ledger
+
 
 STEMS = (
     ("small_stem", 150_000_000, "shared", True),
@@ -79,7 +81,7 @@ def _arm(conditions: dict, name: str, cohort: list[str]) -> tuple[int, int] | No
     total = row.get("total")
     grounded = row.get("grounded_and_cited")
     refusal = row.get("exact_refusal")
-    if total != len(cohort) or any(
+    if type(total) is not int or total != len(cohort) or any(
         type(x) is not int or x < 0 or x > total for x in (grounded, refusal)
     ):
         return None
@@ -109,12 +111,12 @@ def evaluate_reader_gate(
     binding = payload.get("model_binding")
     review = payload.get("independent_review")
     capabilities = payload.get("capabilities")
-    if not isinstance(cohort, list) or not cohort or len(cohort) > 10000 or len(set(cohort)) != len(cohort):
+    if (type(cohort) is not list or not cohort or len(cohort) > 10000
+            or any(type(item) is not str or not item for item in cohort)
+            or len(set(cohort)) != len(cohort)):
         return _empty_gate("invalid-reader-cohort")
     if not isinstance(conditions, dict) or not isinstance(binding, dict) or not isinstance(review, dict):
         return _empty_gate("reader-gate-fields-missing")
-    if any(not isinstance(item, str) or not item for item in cohort):
-        return _empty_gate("invalid-reader-item-id")
     if any(not _valid_sha(binding.get(field)) for field in BOUND_FIELDS):
         return _empty_gate("reader-model-binding-incomplete")
     if not isinstance(binding.get("revision"), str) or not binding["revision"]:
@@ -144,9 +146,14 @@ def evaluate_reader_gate(
         return _empty_gate("trust-manifest-digest-or-schema-mismatch")
     if manifest_digest != trusted_review_sha256:
         return _empty_gate("out-of-band-trust-pin-mismatch")
+    # Aggregate-only attestations do not establish per-question correctness.
+    # Require the complete source-bound review ledger IN the signed content.
+    if "reviewed_items" not in payload:
+        return _empty_gate("missing-case-level-review-ledger")
     reviewed_content = {
         name: payload[name] for name in (
-            "schema", "cohort", "model_binding", "conditions", "capabilities"
+            "schema", "cohort", "model_binding", "conditions",
+            "capabilities", "reviewed_items"
         )
     }
     if trust_manifest.get("reviewed_gate_content_sha256") != _digest_bytes(reviewed_content):
@@ -203,6 +210,11 @@ def evaluate_reader_gate(
             ).verify(bytes.fromhex(entry["signature_hex"]), signed_message)
     except (InvalidSignature, ValueError, TypeError):
         return _empty_gate("reviewer-signature-verification-failed")
+    # Cryptographic trust is necessary but insufficient: derive every numeric
+    # summary count from one signed, provenance-bound human verdict per item.
+    ledger_error = audit_case_ledger(cohort, conditions, payload["reviewed_items"])
+    if ledger_error is not None:
+        return _empty_gate(ledger_error)
     human_grounded, _ = rows["human_sufficient"]
     ordinary_grounded, _ = rows["ordinary_retrieval"]
     _, empty_refusal = rows["no_evidence"]
