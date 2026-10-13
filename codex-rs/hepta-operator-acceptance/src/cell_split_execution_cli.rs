@@ -111,14 +111,18 @@ where
     if config.schema != CONFIG_SCHEMA {
         return Err("unknown execution configuration schema".to_string());
     }
-    // No filesystem owner initialization and no prepared intent may precede
-    // this independent selection check. The operator pin alone does not
-    // establish the current NDU or Selector authorization.
-    admit_selected_plan(&config.plan)?;
-    // Opening and recovering the coordinator may require disk and original
-    // owner readbacks. Revalidate the independent selection after that work,
-    // immediately before a new durable intent may be prepared.
+    // Read-only transcripts must remain available for independent replay
+    // after a selection is revoked. Only an effectful advance requires live
+    // mutation admission; the external configuration pin, frozen owner trust,
+    // and original-owner signed readbacks are still mandatory for transcript.
     let recheck_plan = (selected_action == "advance").then(|| config.plan.clone());
+    revalidate_selected_plan_at_boundary(
+        selected_action,
+        recheck_plan.as_ref(),
+        &mut admit_selected_plan,
+    )?;
+    // Opening/recovery can perform slow disk and original-owner readbacks.
+    // Revalidate again before preparing any new durable mutation intent.
     if !(1..=30_000).contains(&config.timeout_millis) {
         return Err("RPC timeout must be between 1 and 30000 ms".to_string());
     }
@@ -183,6 +187,16 @@ where
     } else {
         transcript.is_some()
     };
+    // Final original-owner readbacks can be slow. A selection may be
+    // withdrawn after an effect has durably committed but before returning
+    // to Agentd. Refuse to report a successful advance under withdrawn
+    // NDU/Selector admission; never retry or roll back that unknown effect
+    // here. Historical read-only transcript export is exempt.
+    revalidate_selected_plan_at_boundary(
+        selected_action,
+        recheck_plan.as_ref(),
+        &mut admit_selected_plan,
+    )?;
     Ok(CellSplitExecutionCliOutcomeV1 {
         schema: OUTCOME_SCHEMA,
         action: selected_action,
@@ -192,6 +206,23 @@ where
         transcript,
         production_activation_authorized: false,
     })
+}
+
+/// Require a live, independently selected NDU/Selector view only when the
+/// caller intends to mutate a CellSplit. It is not a signed Final-use grant.
+fn revalidate_selected_plan_at_boundary(
+    action: &str,
+    frozen_plan: Option<&CellSplitExecutionPlanV1>,
+    admit: &mut impl FnMut(&CellSplitExecutionPlanV1) -> Result<(), String>,
+) -> Result<(), String> {
+    if action == "transcript" {
+        return Ok(());
+    }
+    if action != "advance" {
+        return Err("unknown CellSplit execution action".to_string());
+    }
+    let plan = frozen_plan.ok_or_else(|| "missing frozen mutation admission plan".to_string())?;
+    admit(plan)
 }
 
 fn canonical_hex(value: &str) -> bool {
@@ -276,6 +307,42 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn post_effect_revocation_blocks_success_without_replaying_effect() {
+        let plan = CellSplitExecutionPlanV1 {
+            split_id: "split-post-effect".to_string(),
+            scope_digest: "11".repeat(32),
+            parent_generation: 7,
+            child_generation: 8,
+            parent_artifact_digest: "22".repeat(32),
+            child_artifact_digest: "33".repeat(32),
+            ndu_snapshot_digest: "44".repeat(32),
+            route_fence_digest: "55".repeat(32),
+            owner_ids: [
+                "artifact-owner".into(),
+                "migration-owner".into(),
+                "cns-owner".into(),
+                "supervisor-owner".into(),
+            ],
+        };
+        let mut observations = 0_usize;
+        let mut deny = |selected: &CellSplitExecutionPlanV1| {
+            observations += 1;
+            assert_eq!(selected.split_id, plan.split_id);
+            Err("independent Selector revoked this split".to_string())
+        };
+        let error = revalidate_selected_plan_at_boundary("advance", Some(&plan), &mut deny)
+            .expect_err("post-effect revocation must block success");
+        assert!(error.contains("revoked"));
+        assert_eq!(observations, 1);
+        // Revocation must not hide historical, read-only original-owner
+        // transcripts, which remain separately signature/readback-verified.
+        assert!(revalidate_selected_plan_at_boundary("transcript", None, &mut deny).is_ok());
+        assert_eq!(observations, 1);
+        assert!(revalidate_selected_plan_at_boundary("advance", None, &mut deny).is_err());
+        assert_eq!(observations, 1);
+    }
 
     #[test]
     fn requires_external_config_pin_before_opening_any_owner() {
