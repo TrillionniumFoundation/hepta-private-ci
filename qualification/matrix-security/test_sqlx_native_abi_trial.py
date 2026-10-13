@@ -155,5 +155,23 @@ class SqlxNativeAbiTrialTests(unittest.TestCase):
                 stage(source, lock, repo / "injection", repo / "injection.json", repo)
 
 
+    def test_actual_workflow_supplies_bounded_external_scratch_root(self):
+        """Regression: CLI requires --scratch-root; skipping it must fail CI."""
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-matrix-sqlx-abi-trial.yml"
+        ).read_text(encoding="utf-8")
+        prefix = "python3 qualification/matrix-security/sqlx_native_abi_trial.py"
+        self.assertEqual(workflow.count(prefix), 1)
+        command = workflow.split(prefix, 1)[1].split('echo "SCRATCH_SQLX=', 1)[0]
+        self.assertIn('--archive "$RUNNER_TEMP/sqlx-sqlite-0.9.0.crate"', command)
+        self.assertIn('--lock codex-rs/Cargo.lock', command)
+        self.assertIn('--scratch-root "$RUNNER_TEMP"', command)
+        self.assertIn('--output-dir "$RUNNER_TEMP/sqlx-sqlite-abi-rebind"', command)
+        self.assertIn('--report "$RUNNER_TEMP/hepta-sqlx-abi-candidate.json"', command)
+        self.assertNotIn("continue-on-error: true", command)
+
+
+
 if __name__ == "__main__":
     unittest.main()
