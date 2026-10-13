@@ -139,6 +139,7 @@ pub struct VerifiedCurrentRegistryViewV1 {
     registry: ArtifactRegistry,
     witness_digest: Digest32,
     trust_digest: Digest32,
+    valid_until: u64,
 }
 
 impl VerifiedCurrentRegistryViewV1 {
@@ -147,12 +148,14 @@ impl VerifiedCurrentRegistryViewV1 {
         registry: ArtifactRegistry,
         witness_digest: Digest32,
         trust_digest: Digest32,
+        valid_until: u64,
     ) -> Self {
         Self {
             receipt,
             registry,
             witness_digest,
             trust_digest,
+            valid_until,
         }
     }
 
@@ -169,6 +172,13 @@ impl VerifiedCurrentRegistryViewV1 {
     #[must_use]
     pub const fn trust_digest(&self) -> Digest32 {
         self.trust_digest
+    }
+
+    /// Inclusive UNIX-second validity bound of the signed head and pinned key.
+    /// This evidence does not replace fresh CURRENT discovery at final use.
+    #[must_use]
+    pub const fn valid_until(&self) -> u64 {
+        self.valid_until
     }
 
     pub(crate) fn registry(&self) -> &ArtifactRegistry {
