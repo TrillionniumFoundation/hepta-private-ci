@@ -114,18 +114,18 @@ class UniqueHeldoutUnitsTests(unittest.TestCase):
         self.assertEqual(report["abstention_scored_pairs"], 1)
         self.assertEqual(report["source_support_gains"], 0)
 
-    def test_final_question_source_bounds_exclude_known_unanswerable_and_unresolved(self):
+    def test_final_question_source_bounds_exclude_known_unanswerable_and_unresolved(
+        self,
+    ):
         from dataclasses import replace
 
         plan, learning, scored, targets = fixture()
         plan["question_families"] = {
-            q: "native-family-" + q for ids in plan["questions"].values()
-            for q in ids
+            q: "native-family-" + q for ids in plan["questions"].values() for q in ids
         }
         targets["test-0"] = replace(targets["test-0"], unanswerable=True)
         targets["transfer-0"] = replace(
-            targets["transfer-0"], evidence=(),
-            unresolved_evidence=("missing-source",)
+            targets["transfer-0"], evidence=(), unresolved_evidence=("missing-source",)
         )
         bridge = train_to_heldout_gap(plan, learning, scored, targets)
         final = bridge["final_checkpoint_unique_question_units"]["gated"]
@@ -147,13 +147,11 @@ class UniqueHeldoutUnitsTests(unittest.TestCase):
 
         plan, learning, scored, targets = fixture()
         plan["question_families"] = {
-            q: "native-family-" + q for ids in plan["questions"].values()
-            for q in ids
+            q: "native-family-" + q for ids in plan["questions"].values() for q in ids
         }
         targets["test-0"] = replace(targets["test-0"], unanswerable=True)
         targets["transfer-0"] = replace(
-            targets["transfer-0"], evidence=(),
-            unresolved_evidence=("missing-source",)
+            targets["transfer-0"], evidence=(), unresolved_evidence=("missing-source",)
         )
         for row in scored:
             if row["stage"] == 48 and row["question_id"] in ("test-0", "test-1"):
@@ -163,7 +161,9 @@ class UniqueHeldoutUnitsTests(unittest.TestCase):
         primary = result["by_arm"]["gated"]["primary"]
         self.assertEqual(primary["answerable_native_source_questions"], 14)
         self.assertEqual(primary["source_support_scored_pairs"], 13)
-        self.assertEqual(primary["source_support_answerable_only_bounds"], [-1 / 14, 1 / 14])
+        self.assertEqual(
+            primary["source_support_answerable_only_bounds"], [-1 / 14, 1 / 14]
+        )
         self.assertEqual(primary["native_unanswerable_questions"], 1)
         self.assertEqual(primary["abstention_scored_pairs"], 0)
         self.assertEqual(primary["abstention_native_unanswerable_only_bounds"], [-1, 1])
@@ -188,8 +188,11 @@ class UniqueHeldoutUnitsTests(unittest.TestCase):
                 final["native_unanswerable_questions"] = payload
             else:
                 final["native_source_net_gain"] = payload
-            with self.subTest(corruption=corruption), self.assertRaisesRegex(
-                ValueError, "stratified native final question receipt"
+            with (
+                self.subTest(corruption=corruption),
+                self.assertRaisesRegex(
+                    ValueError, "stratified native final question receipt"
+                ),
             ):
                 effective_heldout_subjects(plan, altered)
 
