@@ -2065,13 +2065,8 @@ mod tests {
 
         // Restart/re-entry uses original-owner observation only and must not
         // issue the effect again, even when the write-ahead commit failed.
-        let reopened = run_cell_split_automation_v1(
-            &split,
-            &proposal,
-            &mut owner,
-            &mut executor,
-        )
-        .unwrap();
+        let reopened = run_cell_split_automation_v1(&split, &proposal, &mut owner, &mut executor)
+            .unwrap();
         assert_eq!(reopened.state, CellSplitLifecycleStateV1::Retained);
         assert!(!executor.retired);
     }
@@ -2116,6 +2111,12 @@ mod tests {
         assert_eq!(journal.current_state, CellSplitLifecycleStateV1::Retained);
         assert_eq!(journal.events.len(), 5);
         assert!(journal.retirement_pending(&split).unwrap());
+        let mut altered_plan = split.clone();
+        altered_plan.retirement.drain_watermark_digest = digest(130);
+        assert_eq!(
+            journal.retirement_pending(&altered_plan),
+            Err(CellSplitLifecycleErrorV1::Binding)
+        );
     }
 
     #[test]
