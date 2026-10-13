@@ -70,6 +70,7 @@ pub struct NeuronRuntime<W: AnchorWitnessStore> {
     journal: SparseJournal,
     witness: W,
     pending: Option<PendingWitness>,
+    unresolved_effect: Option<Digest32>,
 }
 
 impl<W: AnchorWitnessStore> NeuronRuntime<W> {
@@ -94,6 +95,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             journal,
             witness,
             pending: None,
+            unresolved_effect: None,
         })
     }
 
@@ -162,6 +164,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             journal,
             witness,
             pending: None,
+            unresolved_effect: None,
         })
     }
 
@@ -219,6 +222,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             journal,
             witness,
             pending: None,
+            unresolved_effect: None,
         })
     }
 
@@ -288,7 +292,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         neuron_owner_id: &StableId,
         authority: &FinalUseAuthority,
         signed_grant: &SignedFinalUseGrant,
-        verify_live_ndu_read: impl FnOnce() -> Result<Digest32, NeuronRuntimeError>,
+        mut verify_live_ndu_read: impl FnMut() -> Result<Digest32, NeuronRuntimeError>,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
         let tick_digest = input.semantic_digest()?;
         crate::bind_ndu_snapshot_stage_v1(
@@ -316,30 +320,55 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             return Err(NeuronRuntimeError::InvalidInput);
         }
         FinalUseAuthority::with_verified_effect(authority, token, &binding, || {
-            self.tick(model, input)
+            self.tick_guarded(model, input, || {
+                // Independent Control/NDU authority must still be current
+                // after physical model execution and before journal commit.
+                if verify_live_ndu_read()? == admitted_read_receipt_digest {
+                    Ok(())
+                } else {
+                    Err(NeuronRuntimeError::NduStaleAfterEffect)
+                }
+            })
         })
         .map_err(|_| NeuronRuntimeError::InvalidInput)?
     }
 
-    /// Internal deterministic mechanism, never an externally callable serving
-    /// entry. This preserves local recovery and qualification fixtures.
+    /// Internal deterministic mechanism for qualification only; product
+    /// serving must enter through the independently signed Final-use path.
     pub(crate) fn tick(
         &mut self,
         model: &mut impl NeuronModelPort,
         input: NeuronTickInputV1,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        self.tick_guarded(model, input, || Ok(()))
+    }
+
+    fn tick_guarded(
+        &mut self,
+        model: &mut impl NeuronModelPort,
+        input: NeuronTickInputV1,
+        before_state_commit: impl FnOnce() -> Result<(), NeuronRuntimeError>,
+    ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        // A driver error or rejected post-effect guard cannot be retried in
+        // this process. Cross-restart replay safety still requires Agentd's
+        // separately durable Prepare/Resolve intent (not yet integrated).
+        if self.unresolved_effect.is_some() && self.pending.is_none() {
+            return Err(NeuronRuntimeError::PendingReconciliation);
+        }
         let model_request = self.model_request(&input)?;
         let input_digest = model_request.input_digest;
         if let Some(pending) = self.pending.clone() {
             if pending.input_digest != input_digest {
                 return Err(NeuronRuntimeError::PendingReconciliation);
             }
+            before_state_commit()?;
             match self
                 .witness
                 .compare_and_swap(pending.expected, pending.next)
             {
                 Ok(()) => {
                     self.pending = None;
+                    self.unresolved_effect = None;
                     return Ok(pending.output);
                 }
                 Err(error) => {
@@ -361,6 +390,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             checkpoint_digest: checkpoint.digest(),
         });
 
+        self.unresolved_effect = Some(input_digest);
         let started = Instant::now();
         let model_output = model.execute(&model_request)?;
         validate_model_output(&self.config, &model_output)?;
@@ -377,6 +407,11 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             drive_q24: model_output.drive_q24.clone(),
             prediction_q24: model_output.prediction_q24.clone(),
         };
+        // Never durably publish a model effect under an expired NDU view.
+        // Retain unresolved-effect fence on failure to prohibit re-execution.
+        if before_state_commit().is_err() {
+            return Err(NeuronRuntimeError::NduStaleAfterEffect);
+        }
         let sparse_receipt = self.journal.commit(input.checkpoint_digest, &sparse_tick)?;
         let checkpoint = self
             .journal
@@ -475,6 +510,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
                 error,
             });
         }
+        self.unresolved_effect = None;
         Ok(output)
     }
 

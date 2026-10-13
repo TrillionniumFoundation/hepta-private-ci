@@ -514,3 +514,65 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
         predecessor.checkpoint_digest
     );
 }
+
+
+#[test]
+fn stale_ndu_after_model_effect_fences_checkpoint_and_replay() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let witness = MemoryWitness::default();
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native,
+        scope(),
+        /*max_records*/ 16,
+        config,
+        witness.clone(),
+    ));
+    let first = input(1, Digest32::ZERO);
+    let mut model = FakeModel::new();
+    let mut guard_calls = 0;
+    let denied = runtime.tick_guarded(&mut model, first.clone(), || {
+        guard_calls += 1;
+        Err(NeuronRuntimeError::NduStaleAfterEffect)
+    });
+    assert!(matches!(denied, Err(NeuronRuntimeError::NduStaleAfterEffect)));
+    assert_eq!(guard_calls, 1);
+    assert_eq!(model.calls, 1);
+    assert_eq!(checked(runtime.current_anchor()), None);
+    assert_eq!(checked(witness.current()), None);
+
+    let repeated = runtime.tick_guarded(&mut model, first, || Ok(()));
+    assert!(matches!(repeated, Err(NeuronRuntimeError::PendingReconciliation)));
+    assert_eq!(model.calls, 1);
+}
+
+#[test]
+fn live_ndu_guard_is_checked_before_real_sparse_commit() {
+    let fixture = Fixture::new();
+    let native = native_config();
+    let config = runtime_config(&native);
+    let mut runtime = checked(NeuronRuntime::bootstrap(
+        fixture.file(),
+        native,
+        scope(),
+        /*max_records*/ 16,
+        config,
+        MemoryWitness::default(),
+    ));
+    let mut model = FakeModel::new();
+    let mut checks = 0;
+    let output = checked(runtime.tick_guarded(&mut model, input(1, Digest32::ZERO), || {
+        checks += 1;
+        Ok(())
+    }));
+    assert_eq!(checks, 1);
+    assert_eq!(model.calls, 1);
+    assert_eq!(
+        checked(runtime.current_anchor())
+            .expect("guarded committed checkpoint")
+            .checkpoint_digest,
+        output.tick.checkpoint_after,
+    );
+}
