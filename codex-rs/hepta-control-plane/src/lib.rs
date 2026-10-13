@@ -15,6 +15,7 @@ mod cell_split_route_fence;
 #[path = "embodiment/io.rs"]
 mod io;
 mod module_runtime;
+mod ndu_publication;
 mod organ_graph;
 mod organ_hierarchy;
 mod organ_registry;
@@ -60,6 +61,8 @@ pub use io::SyntheticCartIoV1;
 pub use io::TypedActuatorDispatchV1;
 pub use io::TypedSensorReadingV1;
 pub use module_runtime::ActiveRuntimeModuleV1;
+pub use ndu_publication::NduPublicationErrorV1;
+pub use ndu_publication::NduPublicationOwnerV1;
 pub use module_runtime::MAX_MODULE_DEPENDENCIES;
 pub use module_runtime::MAX_MODULE_DOMAINS;
 pub use module_runtime::MAX_MODULE_EFFECTS;
