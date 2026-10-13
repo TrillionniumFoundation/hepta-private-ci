@@ -286,10 +286,7 @@ impl CellSplitLifecycleJournalV1 {
         if self.retirement_pending(split)? {
             return Err(CellSplitLifecycleErrorV1::InvalidTransition);
         }
-        self.transition(
-            CellSplitLifecycleStateV1::Retained,
-            retirement_intent_digest_v1(split)?,
-        )
+        self.transition(CellSplitLifecycleStateV1::Retained, retirement_intent_digest_v1(split)?)
     }
 
     /// Distinguish a durably prepared retirement from an ordinary retained
@@ -474,9 +471,7 @@ fn valid_transition(from: CellSplitLifecycleStateV1, to: CellSplitLifecycleState
     )
 }
 
-fn retirement_intent_digest_v1(
-    split: &CellSplitV1,
-) -> Result<Digest32, CellSplitLifecycleErrorV1> {
+fn retirement_intent_digest_v1(split: &CellSplitV1) -> Result<Digest32, CellSplitLifecycleErrorV1> {
     // The pre-evaluation subject digest covers the complete frozen split
     // topology, ownership, resources, generation, retirement and rollback
     // plan. Do not encode only a hand-picked subset of fields here.
