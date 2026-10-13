@@ -7,6 +7,9 @@ on:
       - "qualification/neuron-stem/fbsde_identification*.py"
       - "qualification/neuron-stem/test_fbsde_identification.py"
       - "qualification/neuron-stem/fbsde_transfer*.py"
+      - "qualification/neuron-stem/fbsde_rule_lifecycle.py"
+      - "qualification/neuron-stem/fbsde_lifecycle*.py"
+      - "qualification/neuron-stem/test_fbsde_rule_lifecycle.py"
       - "qualification/neuron-stem/fbsde_conditional_program.py"
       - "qualification/neuron-stem/fbsde_study.py"
       - ".github/workflows/hepta-neuron-rule-identification.yml"
@@ -38,6 +41,15 @@ jobs:
           python3 qualification/neuron-stem/fbsde_study.py --profile budgeted_rule_identification_v1 --output identification-study 2>&1 | tee study.log
           python3 qualification/neuron-stem/fbsde_identification_artifact_checks.py -v identification-study 2>&1 | tee artifact-tests.log
           git diff --exit-code
+      - name: Check revocation, paid relearning and silent-drift limits
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          python3 -m unittest test_fbsde_rule_lifecycle -v 2>&1 | tee lifecycle-tests.log
+          python3 qualification/neuron-stem/fbsde_study.py --profile revocable_rule_transfer_v1 --output lifecycle-study 2>&1 | tee lifecycle-study.log
+          python3 qualification/neuron-stem/fbsde_lifecycle_artifact_checks.py -v lifecycle-study 2>&1 | tee lifecycle-artifact-tests.log
+          git diff --exit-code
       - name: Keep results and failures, not an acceptance decision
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -50,5 +62,9 @@ jobs:
             study.log
             artifact-tests.log
             identification-study/
+            lifecycle-tests.log
+            lifecycle-study.log
+            lifecycle-artifact-tests.log
+            lifecycle-study/
           if-no-files-found: error
           retention-days: 30
