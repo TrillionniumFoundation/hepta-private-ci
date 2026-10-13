@@ -319,9 +319,9 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 fn parse_command_description(
     raw_frontmatter: &str,
 ) -> Result<Option<String>, InvalidCommandFrontmatter> {
-    let parsed: YamlValue = serde_yaml::from_str_with_options(
+    let parsed: YamlValue = serde_saphyr::from_str_with_options(
         raw_frontmatter,
-        serde_yaml::options! { reject_unsupported_tags: true },
+        serde_saphyr::options! { reject_unsupported_tags: true },
     )
     .map_err(|_| InvalidCommandFrontmatter)?;
     let mapping = parsed.as_object().ok_or(InvalidCommandFrontmatter)?;

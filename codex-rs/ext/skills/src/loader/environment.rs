@@ -268,9 +268,9 @@ pub fn load_environment_skills_from_discovery(
             .metadata
             .as_ref()
             .and_then(|metadata| {
-                serde_yaml::from_str_with_options::<SkillMetadataFile>(
+                serde_saphyr::from_str_with_options::<SkillMetadataFile>(
                     &metadata.contents,
-                    serde_yaml::options! { reject_unsupported_tags: true },
+                    serde_saphyr::options! { reject_unsupported_tags: true },
                 )
                 .map_err(|error| {
                     tracing::warn!(
@@ -381,9 +381,9 @@ async fn read_skill_metadata(
             return (None, None);
         }
     };
-    let parsed: SkillMetadataFile = match serde_yaml::from_str_with_options(
+    let parsed: SkillMetadataFile = match serde_saphyr::from_str_with_options(
         &contents,
-        serde_yaml::options! { reject_unsupported_tags: true },
+        serde_saphyr::options! { reject_unsupported_tags: true },
     ) {
         Ok(parsed) => parsed,
         Err(error) => {

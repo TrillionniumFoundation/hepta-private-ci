@@ -109,11 +109,26 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation,
                     SupervisorEventKind::RestartQueued,
                 );
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartQueued {
+                        attempt: claim.attempt,
+                    },
+                );
                 None
             }
             Err(RestartBudgetError::Exhausted) => {
                 slot.restart_pending = false;
                 slot.restart_not_before = None;
+                // The durable claim validates the count against this limit.
+                // A recovered live child need not have a pending claim in the slot.
+                slot.restart_attempt = self.config.restart_max_attempts;
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::AutomaticRestartBudgetExhausted {
+                        attempts: slot.restart_attempt,
+                    },
+                );
                 Some(SupervisorError::RestartBudgetExhausted(agent_id.clone()))
             }
             Err(error) => {

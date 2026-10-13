@@ -127,9 +127,9 @@ pub(super) async fn load_host_skill_metadata(
         }
     };
 
-    let parsed: SkillMetadataFile = match serde_yaml::from_str_with_options(
+    let parsed: SkillMetadataFile = match serde_saphyr::from_str_with_options(
         &contents,
-        serde_yaml::options! { reject_unsupported_tags: true },
+        serde_saphyr::options! { reject_unsupported_tags: true },
     ) {
         Ok(parsed) => parsed,
         Err(error) => {
