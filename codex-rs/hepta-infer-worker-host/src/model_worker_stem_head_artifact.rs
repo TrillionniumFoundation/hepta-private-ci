@@ -379,7 +379,7 @@ impl SelectedStemHeadBankReaderV1 {
     /// CAS artifacts. Uses ONE native CPU Head batch driver invocation and
     /// returns non-authoritative per-Cell typed receipts.
     #[allow(clippy::too_many_arguments)]
-    pub fn run_selected_cpu_head_backend_batch(
+    pub(crate) fn run_selected_cpu_head_backend_batch(
         &mut self,
         projection: &mut SelectedStemProjectionReaderV1,
         worker: &mut InferenceWorker<CpuGatedHeadDriver>,
