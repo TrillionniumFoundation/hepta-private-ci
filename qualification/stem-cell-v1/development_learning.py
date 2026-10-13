@@ -5,6 +5,7 @@ rows and TRAIN labels are separate. The CLI uses the existing safetensors-only
 local loader; it cannot download weights or fall back to a simulated model.
 """
 
+from copy import deepcopy
 from dataclasses import dataclass
 import hashlib
 import json
@@ -65,9 +66,20 @@ def validate_rows(rows, training_labels, *, classes):
     return tuple(sorted(cells))
 
 
+def _resolve_training_steps(cells, ceiling, requested):
+    """Snapshot a complete Cell-indexed plan before Encoder/optimizer work."""
+    if requested is None:
+        return (ceiling,) * len(cells)
+    if (type(requested) is not dict or set(requested) != set(cells)
+            or any(type(n) is not int or not 0 <= n <= ceiling for n in requested.values())):
+        raise ValueError("exact Cell training plan within step ceiling required")
+    return tuple(requested[cell] for cell in cells)
+
+
 def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, seed=19,
                         parameter_budget=16384, head_batch_size=1,
-                        head_kind="linear", head_hidden_size=8, encoder_batch_size=32):
+                        head_kind="linear", head_hidden_size=8, encoder_batch_size=32,
+                        training_steps_by_cell=None):
     """Actual shared forwards and per-Cell SGD; no heldout gold enters this API."""
     cells = validate_rows(rows, training_labels, classes=classes)
     if (not isinstance(engine, SharedStemEngine) or type(steps) is not int or not 1 <= steps <= 1000
@@ -78,6 +90,7 @@ def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, see
             or type(head_hidden_size) is not int or not 1 <= head_hidden_size <= 256
             or type(encoder_batch_size) is not int or not 1 <= encoder_batch_size <= 32):
         raise ValueError("invalid trial envelope")
+    step_counts = _resolve_training_steps(cells, steps, training_steps_by_cell)
     # Preflight against the selected backend before any work, including later batches.
     for row in rows:
         r = row.request
@@ -102,7 +115,7 @@ def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, see
     count_per_head = ((width + 1) * classes if head_kind == "linear" else
                       2 * (width + 1) * head_hidden_size + (head_hidden_size + 1) * classes)
     if (count_per_head > parameter_budget or (head_kind == "swiglu" and width > 512)
-            or (head_batch_size > 1 and count_per_head * len(cells) > 4_194_304)):
+            or count_per_head * len(cells) > 4_194_304):
         raise ValueError("feature width or physical Head budget mismatch")
     # Materialize repeated in-scope input features only once in the grouped path.
     # Raw feature objects remain held above and are NOT counted as tensor bytes.
@@ -143,13 +156,20 @@ def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, see
         fitter = fit_linear_cells if head_kind == "linear" else fit_gated_cells
         candidates, grouped_training = fitter(
             tuple(initials), x, tuple(training_indices), tuple(training_gold),
-            seeds=tuple(seed+i for i in range(len(cells))), steps=steps, group_size=head_batch_size)
+            seeds=tuple(seed+i for i in range(len(cells))), steps=steps, group_size=head_batch_size,
+            step_counts=step_counts)
     for index, cell in enumerate(cells):
         initial = initials[index]
         original = parameter_digest(initial)
-        if grouped_training is None:
+        if grouped_training is None and step_counts[index] == 0:
+            copy_clock = PhaseClock()
+            candidate = deepcopy(initial).eval()
+            receipt = {**copy_clock.finish(), "steps": 0, "examples_processed": 0,
+                       "trainable_parameters": sum(p.numel() for p in initial.parameters()),
+                       "last_training_loss": None, "production_authorized": False}
+        elif grouped_training is None:
             candidate, receipt = fit_candidate(initial, x[training_indices[index]], training_gold[index],
-                                                steps=steps, seed=seed+index)
+                                                steps=step_counts[index], seed=seed+index)
         else:
             candidate = candidates[index]
             # Group-level time must not be duplicated as if it were independent per-Cell time.
@@ -178,6 +198,7 @@ def run_shared_learning(engine, rows, training_labels, *, classes, steps=80, see
             "peak_cache_estimated_bytes": max(o.cache_bytes for o in observations),
             "encoder_batch_widths": [w for o in observations for w in o.backend_batch_widths],
             "head_batch_size": head_batch_size, "grouped_training": grouped_training,
+            "planned_training_steps": dict(zip(cells, step_counts)),
             "head_kind": head_kind, "head_hidden_size": head_hidden_size if head_kind == "swiglu" else None,
             "logical_feature_rows": len(rows), "materialized_feature_rows": len(x),
             "materialized_feature_tensor_bytes": x.numel() * x.element_size(),
@@ -219,7 +240,7 @@ def run_local(args):
             raise ValueError("unknown fields or heldout labels in public rows")
         rows.append(LearningRow(FeatureRequest(**row['request']), row['source_group'], row['observed_at'], row['split']))
     rows = tuple(rows)
-    validate_rows(rows, labels, classes=args.classes)
+    cells = validate_rows(rows, labels, classes=args.classes)
     if (type(args.steps) is not int or not 1 <= args.steps <= 1000
             or type(args.parameter_budget) is not int or not 1 <= args.parameter_budget <= 262144
             or type(args.max_tokens) is not int or not 1 <= args.max_tokens <= 8192
@@ -232,6 +253,11 @@ def run_local(args):
             or type(getattr(args, 'encoder_batch_size', 32)) is not int
             or not 1 <= getattr(args, 'encoder_batch_size', 32) <= 32):
         raise ValueError("invalid pre-load resource envelope")
+    plan_path, plan_hash = getattr(args, 'training_plan', None), getattr(args, 'training_plan_sha256', None)
+    if (plan_path is None) != (plan_hash is None):
+        raise ValueError("training plan path and digest must be supplied together")
+    plan = None if plan_path is None else read_pinned_json(plan_path, plan_hash)
+    _resolve_training_steps(cells, args.steps, plan)
     r = rows[0].request
     if r.encoder_digest != args.snapshot_sha256:
         raise ValueError("rows do not bind selected snapshot")
@@ -250,14 +276,17 @@ def run_local(args):
                                  head_batch_size=getattr(args, 'head_batch_size', 1),
                                  head_kind=getattr(args, 'head_kind', 'linear'),
                                  head_hidden_size=getattr(args, 'head_hidden_size', 8),
-                                 encoder_batch_size=getattr(args, 'encoder_batch_size', 32))
+                                 encoder_batch_size=getattr(args, 'encoder_batch_size', 32),
+                                 training_steps_by_cell=plan)
     # Persistent source changes must be detected before publishing predictions.
     read_pinned_json(args.rows, args.rows_sha256)
     read_pinned_json(args.labels, args.labels_sha256)
+    if plan_path is not None:
+        read_pinned_json(plan_path, plan_hash)
     if snapshot_digest(Path(args.snapshot)) != args.snapshot_sha256:
         raise ValueError("snapshot changed during learning")
     report.update({"load": load, "snapshot_sha256": args.snapshot_sha256,
-                   "rows_sha256": args.rows_sha256, "training_labels_sha256": args.labels_sha256,
+                   "rows_sha256": args.rows_sha256, "training_labels_sha256": args.labels_sha256, "training_plan_sha256": plan_hash,
                    "verified_loading": backend.verified_loading,
                    "verified_materialization": backend.verified_materialization,
                    "torch_version": torch.__version__, "device": "cpu",
@@ -273,6 +302,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     for name in ('snapshot', 'snapshot-sha256', 'rows', 'rows-sha256', 'labels', 'labels-sha256', 'output'):
         parser.add_argument('--' + name, required=True)
+    parser.add_argument('--training-plan')
+    parser.add_argument('--training-plan-sha256')
     parser.add_argument('--classes', type=int, required=True)
     parser.add_argument('--steps', type=int, default=80)
     parser.add_argument('--parameter-budget', type=int, default=16384)

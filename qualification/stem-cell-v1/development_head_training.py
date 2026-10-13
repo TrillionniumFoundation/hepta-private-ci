@@ -42,27 +42,33 @@ class SwiGLUCellHead(nn.Module):
 
 
 def fit_linear_cells(initials, features, row_indices, labels, *, seeds,
-                     steps=80, group_size=32, batch_size=32, lr=0.02):
+                     steps=80, group_size=32, batch_size=32, lr=0.02, step_counts=None):
     """Original Linear profile; defaults, loss and per-Cell SGD stay unchanged."""
     return _fit_cells(initials, features, row_indices, labels, seeds=seeds, steps=steps,
-                      group_size=group_size, batch_size=batch_size, lr=lr, family="linear")
+                      group_size=group_size, batch_size=batch_size, lr=lr, family="linear",
+                      step_counts=step_counts)
 
 
 def fit_gated_cells(initials, features, row_indices, labels, *, seeds,
-                    steps=80, group_size=32, batch_size=32, lr=0.02):
+                    steps=80, group_size=32, batch_size=32, lr=0.02, step_counts=None):
     """Independent SwiGLU Heads, using the same fitter and per-Cell SGD profile."""
     return _fit_cells(initials, features, row_indices, labels, seeds=seeds, steps=steps,
-                      group_size=group_size, batch_size=batch_size, lr=lr, family="swiglu")
+                      group_size=group_size, batch_size=batch_size, lr=lr, family="swiglu",
+                      step_counts=step_counts)
 
 
 def _fit_cells(initials, features, row_indices, labels, *, seeds,
-               steps, group_size, batch_size, lr, family):
+               steps, group_size, batch_size, lr, family, step_counts):
     """Fit 1..4096 independent candidates, at most 32 Cells in one tensor group.
 
     Each Cell owns its random minibatch stream and gradient norm. Losses are
     summed across Cells AFTER averaging each Cell's actual (unpadded) rows.
     Only supplied Cells get candidate copies; absent/dormant peer state cannot
     decay. The function receives no holdout labels and never updates the inputs.
+    Optional step_counts is frozen before training, never selected from holdout.
+    Finished Cells leave the physical matrix batch; zero-step Cells never enter
+    an optimizer and return unchanged candidate copies. This is a training budget,
+    NOT persistent dormancy, a learned allocator or production authorization.
     All shape/range checks precede the first optimizer or candidate allocation.
     Whole-call CPU/wall includes admission, input copy, RNG, and output copies.
     """
@@ -75,6 +81,11 @@ def _fit_cells(initials, features, row_indices, labels, *, seeds,
             or type(batch_size) is not int or not 1 <= batch_size <= 32
             or type(lr) not in (int, float) or not 0 < lr <= 1):
         raise ValueError("invalid bounded Cell training envelope")
+    if step_counts is None:
+        step_counts = (steps,) * len(initials)
+    if (type(step_counts) is not tuple or len(step_counts) != len(initials)
+            or any(type(n) is not int or not 0 <= n <= steps for n in step_counts)):
+        raise ValueError("per-Cell steps must be fixed integers within the common ceiling")
     checked_tensor(features, 2, "shared frozen feature table")
     if not 1 <= len(features) <= 4096 or not 1 <= features.shape[1] <= 512:
         raise ValueError("unsupported feature table shape")
@@ -132,22 +143,46 @@ def _fit_cells(initials, features, row_indices, labels, *, seeds,
         selected = initials[offset:end]
         rows, gold = rows_private[offset:end], gold_private[offset:end]
         names = tuple(dict(selected[0].named_parameters()))
-        parameters = tuple(nn.Parameter(torch.stack([dict(h.named_parameters())[name].detach()
-                                                     for h in selected])) for name in names)
-        optimizer = torch.optim.SGD(parameters, lr=lr)
+        local_steps = step_counts[offset:end]
         rngs = [torch.Generator(device='cpu').manual_seed(seed) for seed in seeds[offset:end]]
         counts = [min(len(r), batch_size) for r in rows]
-        samples = max(counts)
         clip_counts = torch.zeros(len(selected), dtype=torch.long)
         sequence_hashes = [hashlib.sha256(b'hepta.cell.minibatch.v1') for _ in selected]
-        last_loss = None
-        for _ in range(steps):
-            # Padded indices are not observations: ignored labels remove their loss.
-            index = torch.zeros(len(selected), samples, dtype=torch.long)
-            target = torch.full((len(selected), samples), -100, dtype=torch.long)
-            for i, (r, y, rng, count) in enumerate(zip(rows, gold, rngs, counts)):
+        last_loss = torch.zeros(len(selected), dtype=features.dtype)
+        completed, segments = {}, []
+        active, parameters, optimizer = (), (), None
+        physical_lanes = repack_bytes = 0
+        for step in range(max(local_steps)):
+            live = tuple(i for i, limit in enumerate(local_steps) if step < limit)
+            if live != active:
+                # This profile has NO momentum, decay or scheduler state to migrate.
+                # A stateful optimizer cannot reuse this compaction implementation.
+                if active:
+                    if any(not torch.isfinite(p).all() for p in parameters):
+                        raise ValueError("nonfinite trained bank")
+                    for position, i in enumerate(active):
+                        if i not in live:
+                            completed[i] = tuple(p[position].detach().clone() for p in parameters)
+                    keep = torch.tensor([active.index(i) for i in live], dtype=torch.long)
+                    parameters = tuple(nn.Parameter(p.detach()[keep].clone()) for p in parameters)
+                else:
+                    parameters = tuple(nn.Parameter(torch.stack([
+                        dict(selected[i].named_parameters())[name].detach() for i in live]))
+                        for name in names)
+                repack_bytes += sum(p.numel() * p.element_size() for p in parameters)
+                optimizer = torch.optim.SGD(parameters, lr=lr, momentum=0, weight_decay=0)
+                active = live
+                segments.append({"first_step": step, "steps": 0,
+                                 "cell_indices": [offset+i for i in active],
+                                 "padded_batch_width": max(counts[i] for i in active)})
+            samples = segments[-1]["padded_batch_width"]
+            active_counts = [counts[i] for i in active]
+            index = torch.zeros(len(active), samples, dtype=torch.long)
+            target = torch.full((len(active), samples), -100, dtype=torch.long)
+            for position, i in enumerate(active):
+                r, y, rng, count = rows[i], gold[i], rngs[i], counts[i]
                 local = torch.randperm(len(r), generator=rng)[:count]
-                index[i, :count], target[i, :count] = r[local], y[local]
+                index[position, :count], target[position, :count] = r[local], y[local]
                 sequence_hashes[i].update(local.numpy().astype('<i8', copy=False).tobytes())
             batch = frozen[index]
             if family == "linear":
@@ -159,42 +194,49 @@ def _fit_cells(initials, features, row_indices, labels, *, seeds,
                 value = torch.bmm(batch, vw.transpose(1, 2)) + vb[:, None, :]
                 logits = torch.bmm(gate * value, ow.transpose(1, 2)) + ob[:, None, :]
             per_row = F.cross_entropy(logits.reshape(-1, classes), target.reshape(-1),
-                                      reduction='none', ignore_index=-100).reshape(len(selected), samples)
-            losses = per_row.sum(1) / torch.tensor(counts, dtype=features.dtype)
+                                      reduction='none', ignore_index=-100).reshape(len(active), samples)
+            losses = per_row.sum(1) / torch.tensor(active_counts, dtype=features.dtype)
             if not torch.isfinite(losses).all():
                 raise ValueError("nonfinite grouped loss")
             optimizer.zero_grad(set_to_none=True)
             losses.sum().backward()
-            # Match clip_grad_norm_ over ALL parameters of EACH Head, not the bank.
             component_norms = torch.stack([torch.linalg.vector_norm(p.grad.flatten(1), 2, dim=1)
                                            for p in parameters], 1)
             norms = torch.linalg.vector_norm(component_norms, 2, dim=1)
             if not torch.isfinite(norms).all():
                 raise ValueError("nonfinite per-Cell gradient norm")
             scale = (1.0 / (norms + 1e-6)).clamp(max=1.0)
-            clip_counts += (scale < 1).long()
+            active_index = torch.tensor(active, dtype=torch.long)
+            clip_counts[active_index] += (scale < 1).long()
             for p in parameters:
                 p.grad.mul_(scale.reshape((-1,) + (1,) * (p.ndim - 1)))
             optimizer.step()
-            last_loss = losses.detach()
+            last_loss[active_index] = losses.detach()
+            physical_lanes += len(active) * samples
+            segments[-1]["steps"] += 1
         if any(not torch.isfinite(p).all() for p in parameters):
             raise ValueError("nonfinite trained bank")
+        for position, i in enumerate(active):
+            completed[i] = tuple(p[position].detach().clone() for p in parameters)
         for i, source in enumerate(selected):
             candidate = deepcopy(source).eval()
-            with torch.no_grad():
-                for target, learned in zip(candidate.parameters(), parameters):
-                    target.copy_(learned[i])
+            if i in completed:
+                with torch.no_grad():
+                    for target, learned in zip(candidate.parameters(), completed[i]):
+                        target.copy_(learned)
             trained.append(candidate)
-            reports.append({"steps": steps, "examples_processed": counts[i] * steps,
+            reports.append({"steps": local_steps[i], "examples_processed": counts[i] * local_steps[i],
                             "training_rows_available": len(rows[i]), "clipped_steps": int(clip_counts[i]),
                             "minibatch_sha256": sequence_hashes[i].hexdigest(),
                             "trainable_parameters": sum(p.numel() for p in source.parameters()),
-                            "last_training_loss": float(last_loss[i]),
+                            "last_training_loss": float(last_loss[i]) if local_steps[i] else None,
                             "group_index": len(groups), "production_authorized": False})
-        groups.append({"first_cell": offset, "cells": len(selected), "padded_batch_width": samples,
-                       "useful_example_updates": steps * sum(counts),
-                       "physical_example_lanes": steps * len(selected) * samples,
-                       "optimizer_steps": steps, **group_clock.finish()})
+        groups.append({"first_cell": offset, "cells": len(selected), "padded_batch_width": max(counts),
+                       "useful_example_updates": sum(n*c for n, c in zip(local_steps, counts)),
+                       "physical_example_lanes": physical_lanes,
+                       "optimizer_steps": max(local_steps), "segments": segments,
+                       "active_cell_steps": sum(local_steps),
+                       "parameter_repack_bytes": repack_bytes, **group_clock.finish()})
     if tuple(parameter_digest(h) for h in initials) != initial_digests:
         raise RuntimeError("source Head parameters changed during fitting")
     return tuple(trained), {"profile": "independent_sgd_cross_entropy_norm1_v1", "head_family": family,
@@ -205,5 +247,7 @@ def _fit_cells(initials, features, row_indices, labels, *, seeds,
                             "candidate_parameter_bytes": total_parameters * frozen.element_size(),
                             "feature_table_copies": 1,
                             "admission": admission, "total": clock.finish(),
+                            "planned_step_counts": step_counts,
+                            "zero_step_cells": sum(n == 0 for n in step_counts),
                             "encoder_executed": False, "rss_measured": False,
                             "production_authorized": False}
