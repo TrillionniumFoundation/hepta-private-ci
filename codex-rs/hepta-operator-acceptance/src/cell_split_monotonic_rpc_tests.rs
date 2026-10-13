@@ -56,7 +56,7 @@ fn read_only_client_sends_only_domain_and_fresh_challenge() {
             let raw: serde_json::Value = receive_frame(&mut peer).expect("request");
             // If the client could include an expected revision/digest, an old
             // restored local checkpoint could ask a service to sign itself.
-            assert_eq!(raw.as_object().map(|fields| fields.len()), Some(4));
+            assert_eq!(raw.as_object().map(serde_json::Map::len), Some(4));
             assert!(raw.get("journalRevision").is_none());
             assert!(raw.get("minimumCheckpointDigest").is_none());
             assert!(raw.get("originalStoreRecordDigest").is_none());
