@@ -256,6 +256,12 @@ where
         signed_read: &SignedNduSnapshotReadV1,
         signed_grant: &SignedFinalUseGrant,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        // No model effect may enter the product-serving path without a
+        // durable and healthy Evidence sink. This is a startup/readiness gate,
+        // never an authority grant or an excuse to replay an external effect.
+        if !self.production_metrics_ready() {
+            return Err(NeuronRuntimeError::PendingReconciliation);
+        }
         let started = Instant::now();
         let scope = input.subject_id.clone();
         let operation = input.semantic_digest()?;
