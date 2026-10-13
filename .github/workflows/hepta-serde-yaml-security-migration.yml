@@ -60,6 +60,21 @@ jobs:
             -p codex-skills -p codex-skills-extension \
             -p codex-core-plugins -p codex-external-agent-migration \
             --all-targets -- -D warnings
+      - name: Export exact audited Cargo.lock bytes for controlled branch commit
+        # The only emitted bytes are the public dependency lock manifest.
+        # No token, env value, model weight, source file or credential is read.
+        run: |
+          python3 - <<'PY'
+          import base64
+          import hashlib
+          from pathlib import Path
+          raw = Path("codex-rs/Cargo.lock").read_bytes()
+          encoded = base64.b64encode(raw).decode("ascii")
+          print(f"HEPTA_YAML_LOCK_BEGIN|{len(raw)}|{hashlib.sha256(raw).hexdigest()}")
+          for offset in range(0, len(encoded), 3072):
+              print(f"HEPTA_YAML_LOCK_CHUNK|{offset//3072:06d}|{encoded[offset:offset+3072]}")
+          print(f"HEPTA_YAML_LOCK_END|{len(raw)}|{hashlib.sha256(raw).hexdigest()}")
+          PY
       - name: Retain candidate lock and audit as non-production artifacts
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
