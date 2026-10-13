@@ -1,0 +1,129 @@
+name: Hepta scoped reverse-consumer disk replay (research only)
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/blocking-ci.yml"
+      - ".github/workflows/hepta-scoped-disk-replay.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-scoped-disk-replay-\${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+# Exact predecessor pair which previously exhausted Ubuntu hosted-runner disk
+# in blocking-ci / hepta-scoped, run 38289229984. This does not grant an
+# unrelated source SHA production release, authorization or merge admission.
+env:
+  BASE_SHA: "93b0d13e8259bb6c30ce27975ef300b8e8e20521"
+  SOURCE_SHA: "a9e05b0b5532c33f817dc94d74a86a9d40c0998c"
+  TESTED_SHA: "a9e05b0b5532c33f817dc94d74a86a9d40c0998c"
+  HEPTA_CI_LANE: "source-head"
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+
+jobs:
+  full-reverse-consumers:
+    name: Re-run previous exact-source reverse consumers with recovered disk
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    steps:
+      - name: Check out the exact previously failed source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: \${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Check original source identity and initial disk
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+          git diff --check
+          df -h "$GITHUB_WORKSPACE" | tee "$RUNNER_TEMP/initial-disk.txt"
+          rustc --version --verbose > "$RUNNER_TEMP/rust-toolchain.txt"
+
+      - name: Reclaim the same unused SDKs as proposed production step
+        shell: bash
+        run: |
+          set -euo pipefail
+          for sdk in /usr/local/lib/android /usr/share/dotnet /opt/ghc /usr/local/share/powershell; do
+            if [ -d "$sdk" ] && [ ! -L "$sdk" ]; then
+              sudo rm -rf -- "$sdk"
+            fi
+          done
+          df -h "$GITHUB_WORKSPACE" | tee "$RUNNER_TEMP/after-reclaim.txt"
+          free_kib="$(df -Pk "$GITHUB_WORKSPACE" | awk 'NR == 2 {print $4}')"
+          if [ "$free_kib" -lt "$((12 * 1024 * 1024))" ]; then
+            echo "::error::Insufficient disk for mandatory reverse-consumer tests (need 12 GiB free)"
+            exit 1
+          fi
+
+      - name: Prepare the real original Linux prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Install DotSlash to native tool PATH
+        shell: bash
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+
+      - name: Resolve exact-source verified V8 artifacts
+        env:
+          CODEX_REPO_ROOT: \${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+
+      - name: Run unmodified all-affected-owner and reverse-consumer selection
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/scoped-replay.json" -- \
+            python3 scripts/hepta_ci_dependencies.py \
+              --base "$BASE_SHA" \
+              --tested "$TESTED_SHA" \
+              --output "$RUNNER_TEMP/cargo-impact.json" \
+              --run
+
+      - name: Prove the tested source was not modified
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+          df -h "$GITHUB_WORKSPACE" | tee "$RUNNER_TEMP/final-disk.txt"
+
+      - name: Preserve exact-source disk and native execution evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-scoped-disk-replay-\${{ github.run_id }}-\${{ github.run_attempt }}
+          path: |
+            \${{ runner.temp }}/initial-disk.txt
+            \${{ runner.temp }}/after-reclaim.txt
+            \${{ runner.temp }}/final-disk.txt
+            \${{ runner.temp }}/rust-toolchain.txt
+            \${{ runner.temp }}/cargo-impact.json
+            \${{ runner.temp }}/scoped-replay.json*
+          if-no-files-found: warn
+          retention-days: 14
