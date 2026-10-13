@@ -45,7 +45,14 @@ def _baseline_pairs(questions, frozen_attempts):
         raise ValueError("exactly 16 registered test/transfer questions required")
     found = {}
     for row in frozen_attempts:
-        if row["stage"] != 48 or row["arm"] != "frozen_rerank":
+        # The native runner passes the ALREADY SEALED full 576-row six-arm
+        # journal. Earlier checkpoints and legitimate select/retention phases
+        # are not unregistered post-policy Reader counterfactuals.
+        if (
+            row["stage"] != 48
+            or row["arm"] != "frozen_rerank"
+            or row["phase"] not in PHASES
+        ):
             continue
         key = row["phase"], row["question_id"]
         if key not in expected or key in found:

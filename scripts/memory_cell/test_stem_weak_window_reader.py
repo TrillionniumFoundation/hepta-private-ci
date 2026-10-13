@@ -285,6 +285,40 @@ class WeakWindowReaderTests(unittest.TestCase):
         self.assertTrue(all(p["gold_answer_passed_to_reader"] is False
                             for p in plan))
 
+    def test_complete_original_576_policy_journal_accepts_only_test_transfer(self):
+        q, pools, features, targets, sixteen = make()
+        original = {(x["phase"], x["question_id"]): x for x in sixteen}
+        all_phases = ("select", "retention", "test", "transfer")
+        all_arms = (
+            "frozen_rerank", "prototype", "linear", "gated",
+            "lineage_lora_gated", "independent_lora_gated",
+        )
+        ledger = []
+        for stage in (16, 32, 48):
+            for phase in all_phases:
+                for i in range(8):
+                    for arm in all_arms:
+                        if stage == 48 and phase in PHASES and arm == "frozen_rerank":
+                            ledger.append(dict(original[(phase, f"{phase}-{i}")]))
+                        else:
+                            ledger.append(dict(
+                                stage=stage, phase=phase, arm=arm,
+                                question_id=f"{phase}-{i}", status="failed",
+                            ))
+        self.assertEqual(len(ledger), 576)
+        planned = prepare_native_window_interventions(
+            q, ledger, pools, features, targets,
+            selected_window=select_window,
+        )
+        self.assertEqual(len(planned), 16)
+        self.assertEqual(sum(row["disposition"] ==
+            "eligible_native_support_top1_miss" for row in planned), 2)
+        with self.assertRaisesRegex(ValueError, "duplicated frozen Reader"):
+            prepare_native_window_interventions(
+                q, ledger + [dict(original[("test", "test-0")])],
+                pools, features, targets, selected_window=select_window,
+            )
+
     def test_missing_or_duplicated_case_is_a_hard_error(self):
         q, targets, plan = self.prepared()
         for wrong in (plan[:-1], plan[:-1] + [dict(plan[0])]):
