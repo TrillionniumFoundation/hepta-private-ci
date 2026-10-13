@@ -486,7 +486,9 @@ fn valid_transition(from: CellSplitLifecycleStateV1, to: CellSplitLifecycleState
     )
 }
 
-fn retirement_intent_digest_v1(split: &CellSplitV1) -> Result<Digest32, CellSplitLifecycleErrorV1> {
+fn retirement_intent_digest_v1(
+    split: &CellSplitV1,
+) -> Result<Digest32, CellSplitLifecycleErrorV1> {
     // Bind all immutable topology, evaluation, resource, lineage, rollback and
     // retirement fields through the canonical pre-evaluation split subject.
     let frozen = split
