@@ -17,7 +17,8 @@ from reader_originals_attestation import (load_strict_json_file, canonical_sha,
                                           has_answer_beyond_evidence_labels,
                                           read_no_symlink_file,
                                           NONCANONICAL_CITE, _datetime)
-from reader_review_handoff import _write_private, _write_private_lines
+from reader_review_handoff import (_private_output_directory, _write_private,
+                                   _write_private_lines)
 from reader_review_ledger import CONDITIONS
 
 RECEIPT_SCHEMA = "hepta.reader.blinded-review-handoff.v1"
@@ -315,23 +316,25 @@ def reconcile_handoff(handoff, reviewer_one, reviewer_two, output, *,
     output = Path(output)
     if output.is_symlink() or any(p.is_symlink() for p in output.parents):
         raise ValueError("review reconciliation output path has symlink")
-    output.mkdir(mode=0o700, parents=False, exist_ok=False)
-    digest = _write_private_lines(output / "operator-private-comparison.jsonl", comparisons)
-    receipt = dict(schema=INTAKE_SCHEMA,
-                   handoff_receipt_sha256=receipt_pin,
-                   original_file_sha256=packet["receipt"]["original_file_sha256"],
-                   original_question_count=packet["receipt"]["cohort_size"],
-                   planned_positions=len(tickets), reviewer_ids_claimed=[first_id, second_id],
-                   reviewer_form_sha256=[first_pin, second_pin],
-                   identical_unverified_review_bytes=(first_pin == second_pin),
-                   **counts, comparison_file_sha256=digest,
-                   both_reviewers_externally_authenticated=False,
-                   independent_human_judgment_established=False,
-                   cryptographic_review_signatures=0,
-                   review_approval_produced=False,
-                   production_accepted=False, neural_calls=0,
-                   next_step="operator-verify-reviewers-resolve-disagreements-and-sign-original-case-ledger")
-    _write_private(output / "reconciliation-receipt.json", receipt)
+    with _private_output_directory(output) as directory_fd:
+        digest = _write_private_lines("operator-private-comparison.jsonl", comparisons,
+                                      directory_fd=directory_fd)
+        receipt = dict(schema=INTAKE_SCHEMA,
+                       handoff_receipt_sha256=receipt_pin,
+                       original_file_sha256=packet["receipt"]["original_file_sha256"],
+                       original_question_count=packet["receipt"]["cohort_size"],
+                       planned_positions=len(tickets), reviewer_ids_claimed=[first_id, second_id],
+                       reviewer_form_sha256=[first_pin, second_pin],
+                       identical_unverified_review_bytes=(first_pin == second_pin),
+                       **counts, comparison_file_sha256=digest,
+                       both_reviewers_externally_authenticated=False,
+                       independent_human_judgment_established=False,
+                       cryptographic_review_signatures=0,
+                       review_approval_produced=False,
+                       production_accepted=False, neural_calls=0,
+                       next_step="operator-verify-reviewers-resolve-disagreements-and-sign-original-case-ledger")
+        _write_private("reconciliation-receipt.json", receipt,
+                       directory_fd=directory_fd)
     return dict(positions=len(tickets), **counts,
                 review_approval_produced=False, production_accepted=False,
                 neural_calls=0)

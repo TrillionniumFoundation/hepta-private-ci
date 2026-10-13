@@ -8,11 +8,13 @@ Never upload real generated packets to public CI artifacts or GitHub.
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import hashlib
 import json
 import os
 from pathlib import Path
 import re
+import stat
 
 from reader_originals_attestation import (
     CASE_KEYS, CITE, EXACT_REFUSAL, SCHEMA, audit_originals, canonical_sha,
@@ -103,11 +105,59 @@ def prepare_cases(originals):
     return by_key, ledger_by_key
 
 
-def _write_private(path, data):
-    """Exclusive file creation in the operator-only output directory."""
-    raw = (json.dumps(data, ensure_ascii=False, sort_keys=True,
-                      separators=(",", ":"), allow_nan=False) + "\n").encode("utf-8")
-    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+@contextmanager
+def _private_output_directory(path):
+    """Create one private directory, then keep its no-follow FD for EVERY write.
+
+    Path-based writes after mkdir() would reopen an ancestor an adversary
+    could swap to a symlink. Directory-FD-relative O_EXCL writes stay inside
+    the directory inode first opened, even if its pathname changes.
+    A locally writable/swap-capable parent still requires operator control.
+    """
+    dest = Path(path)
+    if (".." in dest.parts or not dest.name or
+            not hasattr(os, "O_NOFOLLOW") or not hasattr(os, "O_DIRECTORY")):
+        raise ValueError("private output requires bounded POSIX no-follow path")
+    if dest.is_symlink() or any(p.is_symlink() for p in dest.parents):
+        raise ValueError("symlink in private output path")
+    absolute_parent = Path(os.path.abspath(os.fspath(dest.parent)))
+    flags = os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW
+    parent_fd, output_fd = None, None
+    try:
+        parent_fd = os.open(os.sep, flags)
+        for component in absolute_parent.parts[1:]:
+            next_fd = os.open(component, flags, dir_fd=parent_fd)
+            os.close(parent_fd)
+            parent_fd = next_fd
+        # Keep the exact parent inode open through creation and all writes.
+        # Existing destinations remain a FileExistsError; never overwrite.
+        os.mkdir(dest.name, mode=0o700, dir_fd=parent_fd)
+        output_fd = os.open(dest.name, flags, dir_fd=parent_fd)
+        info = os.fstat(output_fd)
+        if (not stat.S_ISDIR(info.st_mode) or
+                stat.S_IMODE(info.st_mode) & 0o077 or
+                info.st_uid != os.geteuid()):
+            raise ValueError("private output must be an owner-only directory")
+        yield output_fd
+        os.fsync(output_fd)
+    except FileExistsError:
+        raise
+    except OSError as error:
+        raise ValueError("symlink or inaccessible private output directory") from error
+    finally:
+        if output_fd is not None:
+            os.close(output_fd)
+        if parent_fd is not None:
+            os.close(parent_fd)
+
+
+def _write_private_bytes(name, raw, *, directory_fd):
+    """Write exclusively beneath the already opened private directory."""
+    if (type(name) is not str or not name or name in (".", "..")
+            or Path(name).name != name or "/" in name or "\\" in name):
+        raise ValueError("private output filename must be a single component")
+    fd = os.open(name, os.O_WRONLY | os.O_CREAT | os.O_EXCL | os.O_NOFOLLOW,
+                 0o600, dir_fd=directory_fd)
     with os.fdopen(fd, "wb") as stream:
         stream.write(raw)
         stream.flush()
@@ -115,16 +165,17 @@ def _write_private(path, data):
     return hashlib.sha256(raw).hexdigest()
 
 
-def _write_private_lines(path, rows):
+def _write_private(name, data, *, directory_fd):
+    raw = (json.dumps(data, ensure_ascii=False, sort_keys=True,
+                      separators=(",", ":"), allow_nan=False) + "\n").encode("utf-8")
+    return _write_private_bytes(name, raw, directory_fd=directory_fd)
+
+
+def _write_private_lines(name, rows, *, directory_fd):
     raw = "".join(json.dumps(row, ensure_ascii=False, sort_keys=True,
                              separators=(",", ":"), allow_nan=False) + "\n"
                   for row in rows).encode("utf-8")
-    fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
-    with os.fdopen(fd, "wb") as stream:
-        stream.write(raw)
-        stream.flush()
-        os.fsync(stream.fileno())
-    return hashlib.sha256(raw).hexdigest()
+    return _write_private_bytes(name, raw, directory_fd=directory_fd)
 
 
 def prepare_handoff(originals, *, source_file_sha256, output, salt=None):
@@ -178,28 +229,28 @@ def prepare_handoff(originals, *, source_file_sha256, output, salt=None):
     dest = Path(output)
     if dest.is_symlink() or any(parent.is_symlink() for parent in dest.parents):
         raise ValueError("symlink in private handoff output path")
-    dest.mkdir(mode=0o700, parents=False, exist_ok=False)
-    file_hashes = {
-        "review-questions.jsonl": _write_private_lines(
-            dest / "review-questions.jsonl", reviewer_views),
-        "reviewer-blank-form.jsonl": _write_private_lines(
-            dest / "reviewer-blank-form.jsonl", verdict_forms),
-        "operator-private-map.jsonl": _write_private_lines(
-            dest / "operator-private-map.jsonl", operator_map),
-    }
-    _write_private(dest / "handoff-receipt.json", dict(
-        schema="hepta.reader.blinded-review-handoff.v1",
-        original_file_sha256=source_file_sha256,
-        canonical_originals_sha256=canonical_sha(originals),
-        cohort_size=len(originals["cohort"]),
-        review_positions=len(reviewer_views),
-        written_file_sha256=file_hashes,
-        reviewer_verdicts_filled=0, reviewer_signatures=0,
-        source_producer_identity_authenticated_by_code=False,
-        independent_human_adjudication_obtained=False,
-        production_accepted=False, neural_calls=0,
-        private_source_bytes_require_operator_authorization=True,
-    ))
+    with _private_output_directory(dest) as directory_fd:
+        file_hashes = {
+            "review-questions.jsonl": _write_private_lines(
+                "review-questions.jsonl", reviewer_views, directory_fd=directory_fd),
+            "reviewer-blank-form.jsonl": _write_private_lines(
+                "reviewer-blank-form.jsonl", verdict_forms, directory_fd=directory_fd),
+            "operator-private-map.jsonl": _write_private_lines(
+                "operator-private-map.jsonl", operator_map, directory_fd=directory_fd),
+        }
+        _write_private("handoff-receipt.json", dict(
+            schema="hepta.reader.blinded-review-handoff.v1",
+            original_file_sha256=source_file_sha256,
+            canonical_originals_sha256=canonical_sha(originals),
+            cohort_size=len(originals["cohort"]),
+            review_positions=len(reviewer_views),
+            written_file_sha256=file_hashes,
+            reviewer_verdicts_filled=0, reviewer_signatures=0,
+            source_producer_identity_authenticated_by_code=False,
+            independent_human_adjudication_obtained=False,
+            production_accepted=False, neural_calls=0,
+            private_source_bytes_require_operator_authorization=True,
+        ), directory_fd=directory_fd)
     return dict(positions=len(reviewer_views), independent_reviews=0,
                 neural_calls=0, production_accepted=False)
 
