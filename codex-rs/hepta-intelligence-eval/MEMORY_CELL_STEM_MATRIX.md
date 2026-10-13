@@ -1885,3 +1885,50 @@ in the Reader-answer denominator and the 16/32/48 observations remain
 repeated measures, not 48 independent tests. This correction does not
 run any model, alter test-time choices, authenticate native weak source
 evidence or turn the completed development run into production approval.
+
+## Distinct native session as a second real frozen Reader source (October 14 candidate)
+
+Immutable strict-source evidence at `675970bb610c70bb0ec30a2dee05c025440510e6`
+was authenticated by run `38114716982` (archived ZIP SHA-256
+`1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8`).
+All **576 of 576** six-arm policy calls succeeded with the as-of guard, but
+all six arms' reported answer F1/source accuracy remained equal, all observed
+citation markers were zero and `production_accepted=false`.
+
+The 16 distinct test+transfer tasks had **13 source-answerable** subjects.
+The fixed frozen evidence pool missed native source support for 2 of those
+subjects; a further 2 had weak native support present but not chosen.
+Four of seven answerable *transfer* cases have more than one published
+annotated native support session. The original generator limits its
+user-supplied evidence to one window. Whether additional windows improve
+real answers is an **untested Reader capacity hypothesis**; native
+multi-session annotations do not establish that every source is necessary.
+
+A separate **non-production** intervention
+(`stem_two_window_reader_trial.py`) now replays the original exact
+strict as-of indices, original query, original frozen retriever and pair
+ranker. It verifies that the original E1 selection/excerpt/source offsets
+are identical to the archived frozen baseline. From the *already existing
+and sealed* candidate pool, E2 is chosen as the highest-scored different
+original **native session** (and distinct source/root), with **no answer
+labels or target text used before all new answers are journalled**.
+
+On one newly loaded instance of the same frozen Reader, it makes a new
+E1-only response and a new E1+E2 response for each of the original
+8 test and 8 transfer cases. Both use the original SYSTEM string, tokenizer
+template and 96-token greedy decoding, the original 1024-token maximum
+input; the actual E2 prompt has **more input tokens and additional
+compute**, charged and reported rather than described as compute-matched.
+The original SYSTEM's reference to `[E1]` is deliberately unchanged;
+the study **cannot** infer valid E2 citations or semantic precision.
+
+Absent distinct-session candidates, invalid as-of data, model failures,
+larger-than-limit prompts and source mismatch are retained as unavailable
+or failed original-planned cases. Only after the complete 32 new raw
+outputs are saved can the public answer references provide
+post-hoc diagnostic token F1, same-host one-vs-two uncertainty bounds
+and candidate/support sessions. The original 576 decisions, original
+reader answers, Head learning protocol and production controls remain
+untouched. No hidden result is claimed before a successful real runner;
+the research workflow cannot issue production acceptance or establish
+independent citation entailment.
