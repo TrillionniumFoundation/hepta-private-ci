@@ -43,7 +43,9 @@ def effective_heldout_subjects(plan, paired_bridge):
     families = plan["question_families"]
     routes = plan["routes"]
     if (
-        paired_bridge["schema"] != "hepta.stem-train-heldout-diagnostic-gap.v5"
+        paired_bridge["schema"] != "hepta.stem-train-heldout-diagnostic-gap.v6"
+        or paired_bridge.get("final_question_bounds_stratified_by_native_answerability")
+        is not True
         or paired_bridge["production_accepted"] is not False
         or paired_bridge["posthoc_source_annotations_only"] is not True
         or paired_bridge["native_document_support_vs_abstention_separate"] is not True
@@ -244,11 +246,24 @@ def effective_heldout_subjects(plan, paired_bridge):
                 source_support_scored_pairs=len(gain),
                 source_support_gains=sum(x == 1 for x in gain),
                 source_support_regressions=sum(x == -1 for x in gain),
+                # Retained legacy all-question bounds include known
+                # non-source tasks; use stratified intervals below for
+                # meaningful support/abstention decision analysis.
                 source_support_all_planned_bounds=_bounds(gain, n),
+                source_support_answerable_only_bounds=(
+                    _bounds(gain, by_type[KINDS[0]]) if by_type[KINDS[0]] else None
+                ),
+                unscored_answerable_source_questions=by_type[KINDS[0]] - len(gain),
                 abstention_scored_pairs=len(abstain),
                 abstention_gains=sum(x == 1 for x in abstain),
                 abstention_regressions=sum(x == -1 for x in abstain),
                 abstention_all_planned_bounds=_bounds(abstain, n),
+                abstention_native_unanswerable_only_bounds=(
+                    _bounds(abstain, by_type[KINDS[1]])
+                    if by_type[KINDS[1]] else None
+                ),
+                unscored_native_unanswerable_questions=by_type[KINDS[1]] - len(abstain),
+                mixed_all_subject_bounds_do_not_certify_source_or_abstention=True,
                 both_reader_calls_succeeded=sum(
                     x["both_original_reader_calls_succeeded"] for x in cohort
                 ),
@@ -284,9 +299,62 @@ def effective_heldout_subjects(plan, paired_bridge):
                     x["both_original_reader_calls_succeeded"] for x in observations
                 ),
             )
+        primary = summarize(stage48)
+        # Recompute the v6 final snapshot directly from all 16 original
+        # question-level panel rows, not from its self-reported summary.
+        # This makes a tampered high-level gain interval fail closed.
+        final_by_arm = paired_bridge.get("final_checkpoint_unique_question_units")
+        if not isinstance(final_by_arm, dict) or set(final_by_arm) != set(ARMS):
+            raise ValueError("missing stratified native final-question receipt")
+        claimed = final_by_arm[arm]
+        answerable_n = primary["answerable_native_source_questions"]
+        abstention_n = primary["native_unanswerable_questions"]
+        source_scored = primary["source_support_scored_pairs"]
+        abstention_scored = primary["abstention_scored_pairs"]
+        source_sum = sum(x["weak_support_gain"] for x in stage48
+                         if x["weak_support_gain"] is not None)
+        abstention_sum = sum(x["native_abstention_gain"] for x in stage48
+                            if x["native_abstention_gain"] is not None)
+        source_missing = answerable_n - source_scored
+        abstention_missing = abstention_n - abstention_scored
+        integer_counters = (
+            "unique_test_transfer_questions",
+            "native_answerable_support_questions",
+            "native_unanswerable_questions",
+            "native_support_unresolved_questions",
+            "observed_source_support_pairs",
+            "unscored_answerable_support_pairs",
+            "observed_native_abstention_pairs",
+            "unscored_native_abstention_pairs",
+            "native_source_net_gain",
+            "native_abstention_net_gain",
+        )
+        if (
+            not isinstance(claimed, dict)
+            or any(type(claimed.get(k)) is not int for k in integer_counters)
+            or claimed.get("unique_test_transfer_questions") != 16
+            or claimed.get("native_answerable_support_questions") != answerable_n
+            or claimed.get("native_unanswerable_questions") != abstention_n
+            or claimed.get("native_support_unresolved_questions")
+            != primary["unresolved_native_support_questions"]
+            or claimed.get("observed_source_support_pairs") != source_scored
+            or claimed.get("unscored_answerable_support_pairs") != source_missing
+            or claimed.get("observed_native_abstention_pairs") != abstention_scored
+            or claimed.get("unscored_native_abstention_pairs") != abstention_missing
+            or claimed.get("native_source_net_gain") != source_sum
+            or claimed.get("native_abstention_net_gain") != abstention_sum
+            or claimed.get("native_source_all_planned_net_gain_bounds")
+            != [source_sum - source_missing, source_sum + source_missing]
+            or claimed.get("native_abstention_all_planned_net_gain_bounds")
+            != [abstention_sum - abstention_missing,
+                abstention_sum + abstention_missing]
+            or claimed.get("source_and_abstention_never_combined_as_learning_gain")
+            is not True
+        ):
+            raise ValueError("stratified native final question receipt differs from panel")
         report[arm] = dict(
             primary_checkpoint=48,
-            primary=summarize(stage48),
+            primary=primary,
             per_phase=per_phase,
             per_cell=per_cell,
             repeated_checkpoint_observations=48,
@@ -300,7 +368,7 @@ def effective_heldout_subjects(plan, paired_bridge):
             independent_generalization_proven=False,
         )
     return dict(
-        schema="hepta.stem-effective-heldout-repeated-panel.v3",
+        schema="hepta.stem-effective-heldout-repeated-panel.v4",
         declared_phases=PHASES,
         stage_48_primary_predeclared_no_best_checkpoint_search=True,
         repeated_stages=STAGES,
@@ -309,6 +377,8 @@ def effective_heldout_subjects(plan, paired_bridge):
         source_family_sampling_independence_certified=False,
         original_native_source_family_structure=source_family_units,
         full_original_policy_census_verified_by_bridge=True,
+        postpolicy_stratified_source_and_abstention_recomputed_from_panel=True,
+        native_source_gain_bounds_do_not_promote_known_unanswerable_questions=True,
         semantic_citation_precision=None,
         by_arm=report,
         production_accepted=False,

@@ -18,10 +18,10 @@ def realistic_fixture():
 
 
 class UniqueHeldoutUnitsTests(unittest.TestCase):
-    def test_previous_bridge_schema_cannot_sneak_into_v5_analysis(self):
+    def test_previous_bridge_schema_cannot_sneak_into_v6_analysis(self):
         plan, bridge = realistic_fixture()
-        self.assertEqual(bridge["schema"], "hepta.stem-train-heldout-diagnostic-gap.v5")
-        bridge["schema"] = "hepta.stem-train-heldout-diagnostic-gap.v4"
+        self.assertEqual(bridge["schema"], "hepta.stem-train-heldout-diagnostic-gap.v6")
+        bridge["schema"] = "hepta.stem-train-heldout-diagnostic-gap.v5"
         with self.assertRaisesRegex(ValueError, "unbound native held-out"):
             effective_heldout_subjects(plan, bridge)
 
@@ -113,6 +113,85 @@ class UniqueHeldoutUnitsTests(unittest.TestCase):
         self.assertEqual(report["source_support_scored_pairs"], 15)
         self.assertEqual(report["abstention_scored_pairs"], 1)
         self.assertEqual(report["source_support_gains"], 0)
+
+    def test_final_question_source_bounds_exclude_known_unanswerable_and_unresolved(self):
+        from dataclasses import replace
+
+        plan, learning, scored, targets = fixture()
+        plan["question_families"] = {
+            q: "native-family-" + q for ids in plan["questions"].values()
+            for q in ids
+        }
+        targets["test-0"] = replace(targets["test-0"], unanswerable=True)
+        targets["transfer-0"] = replace(
+            targets["transfer-0"], evidence=(),
+            unresolved_evidence=("missing-source",)
+        )
+        bridge = train_to_heldout_gap(plan, learning, scored, targets)
+        final = bridge["final_checkpoint_unique_question_units"]["gated"]
+        self.assertEqual(final["native_answerable_support_questions"], 14)
+        self.assertEqual(final["native_unanswerable_questions"], 1)
+        self.assertEqual(final["native_support_unresolved_questions"], 1)
+        self.assertEqual(final["native_source_all_planned_net_gain_bounds"], [0, 0])
+        report = effective_heldout_subjects(plan, bridge)
+        primary = report["by_arm"]["gated"]["primary"]
+        self.assertEqual(primary["source_support_answerable_only_bounds"], [0, 0])
+        self.assertEqual(primary["abstention_native_unanswerable_only_bounds"], [0, 0])
+        self.assertEqual(primary["source_support_all_planned_bounds"], [-1 / 8, 1 / 8])
+        self.assertTrue(
+            report["postpolicy_stratified_source_and_abstention_recomputed_from_panel"]
+        )
+
+    def test_known_native_abstention_does_not_inflate_source_missing_bounds(self):
+        from dataclasses import replace
+
+        plan, learning, scored, targets = fixture()
+        plan["question_families"] = {
+            q: "native-family-" + q for ids in plan["questions"].values()
+            for q in ids
+        }
+        targets["test-0"] = replace(targets["test-0"], unanswerable=True)
+        targets["transfer-0"] = replace(
+            targets["transfer-0"], evidence=(),
+            unresolved_evidence=("missing-source",)
+        )
+        for row in scored:
+            if row["stage"] == 48 and row["question_id"] in ("test-0", "test-1"):
+                row["source_choice_correct"] = None
+        bridge = train_to_heldout_gap(plan, learning, scored, targets)
+        result = effective_heldout_subjects(plan, bridge)
+        primary = result["by_arm"]["gated"]["primary"]
+        self.assertEqual(primary["answerable_native_source_questions"], 14)
+        self.assertEqual(primary["source_support_scored_pairs"], 13)
+        self.assertEqual(primary["source_support_answerable_only_bounds"], [-1 / 14, 1 / 14])
+        self.assertEqual(primary["native_unanswerable_questions"], 1)
+        self.assertEqual(primary["abstention_scored_pairs"], 0)
+        self.assertEqual(primary["abstention_native_unanswerable_only_bounds"], [-1, 1])
+        self.assertEqual(primary["unresolved_native_support_questions"], 1)
+        self.assertEqual(primary["planned_unique_questions"], 16)
+
+    def test_forged_final_stratified_receipts_are_rejected(self):
+        plan, paired = realistic_fixture()
+        for corruption, payload in (
+            ("answerable", 17),
+            ("source interval", [7, 7]),
+            ("native abstention", 2),
+            ("boolean masquerading as zero", False),
+        ):
+            altered = deepcopy(paired)
+            final = altered["final_checkpoint_unique_question_units"]["gated"]
+            if corruption == "answerable":
+                final["native_answerable_support_questions"] = payload
+            elif corruption == "source interval":
+                final["native_source_all_planned_net_gain_bounds"] = payload
+            elif corruption == "native abstention":
+                final["native_unanswerable_questions"] = payload
+            else:
+                final["native_source_net_gain"] = payload
+            with self.subTest(corruption=corruption), self.assertRaisesRegex(
+                ValueError, "stratified native final question receipt"
+            ):
+                effective_heldout_subjects(plan, altered)
 
     def test_duplicate_missing_cross_family_and_changed_category_fail(self):
         plan, paired = realistic_fixture()

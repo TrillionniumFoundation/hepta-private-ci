@@ -1862,3 +1862,26 @@ Reader answer token-F1 bounds continue to use all 16 preregistered
 questions and keep failures in their denominator. No model selection,
 test-set tuning, semantic citation admission or production gate changes.
 This corrects only post-policy interpretation, not frozen/learned scores.
+
+## v6 bridge -> effective-N downstream compatibility and independent audit
+
+The post-policy `stem_effective_n.py` gate must consume **v6**, not
+the previous **v5** final-question receipt. An otherwise correct v6
+report previously would have failed this strict downstream input check.
+The downstream read-only auditor now independently reconstructs each
+arm's 16 unique TEST/TRANSFER subjects from the 240 repeated
+checkpoint observations. It verifies the reported counts for answered
+native source targets, native-unanswerable questions and unresolved
+source targets, scored and unscored support/abstention cases, and both
+net-gain uncertainty bounds, rejecting forged aggregate counts or
+boolean-as-integer counters.
+
+The auditor preserves historical all-16-question upper/lower bounds
+only as visibly **loose legacy diagnostics**. Its new answerable-only
+source bounds and unanswerable-only abstention bounds are explicitly
+separate; a source gain on a known unanswerable question is not an
+admissible potential outcome. All **16 independent question IDs** remain
+in the Reader-answer denominator and the 16/32/48 observations remain
+repeated measures, not 48 independent tests. This correction does not
+run any model, alter test-time choices, authenticate native weak source
+evidence or turn the completed development run into production approval.
