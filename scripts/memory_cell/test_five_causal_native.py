@@ -3,8 +3,8 @@
 Real pretrained acceptance is a separate explicit archived-weight execution.
 """
 from copy import deepcopy
-import json
 from pathlib import Path
+from types import SimpleNamespace
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -20,7 +20,7 @@ from experiments.shared_stem_cell.execution import Head, parameters
 
 class ToyEncoder:
     """Deliberately a patched test constructor, never a runtime fallback."""
-    simulated = False  # Exercises strict constructor checks, NOT a real model.
+    simulated = False  # Exercises constructor checks, NOT a real model claim.
     loads = 0
 
     def __init__(self, root, manifest, maximum_tokens):
@@ -157,6 +157,13 @@ class NativeSessionTests(unittest.TestCase):
             (root/m["head"]["path"]).write_bytes(b"tampered")
             with self.assertRaises(c.Invalid):n.NativeSession(root).answer(p)
 
+    def test_cached_head_does_not_bypass_modified_bytes(self):
+        with tempfile.TemporaryDirectory() as d, patch.object(n,"LocalEncoder",ToyEncoder):
+            root=Path(d);m,p=fixture(root);session=n.NativeSession(root)
+            session.answer(p)
+            (root/m["head"]["path"]).write_bytes(b"tampered after load")
+            with self.assertRaises(c.Invalid):session.answer(p)
+
     def test_active_base_cannot_be_mutated_by_head_inference(self):
         with tempfile.TemporaryDirectory() as d, patch.object(n,"LocalEncoder",ToyEncoder):
             root=Path(d);_,p=fixture(root);session=n.NativeSession(root)
@@ -177,8 +184,23 @@ class NativeSessionTests(unittest.TestCase):
             root=Path(d);_,p=fixture(root);p["request"]["options"].append("maybe")
             with self.assertRaises(c.Invalid):n.NativeSession(root).answer(p)
 
+    def test_native_stage_requires_actual_running_source_sha(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);_,p=fixture(root)
+            row={**p,"implementation_sha256":"a"*64,"arm":"shared_trained_head"}
+            with self.assertRaises(c.Invalid):n.native_profiles(n.NativeSession(root),[row],"sharing")
+
+    def test_replicated_arm_cannot_use_shared_model_owner(self):
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);_,p=fixture(root)
+            row={**p,"implementation_sha256":c.file_sha(Path(n.__file__)),"arm":"replicated_full"}
+            with self.assertRaises(c.Invalid):n.native_profiles(n.NativeSession(root),[row],"sharing")
+
 
 class NativeTrainingTests(unittest.TestCase):
+    def setUp(self):
+        ToyEncoder.loads=0
+
     def plan(self):
         return {"schema":"hepta.five-native.training.v1","data_kind":"historical_development",
                 "steps":4,"seed":13,"head_kind":"gated","model_path":"model","snapshot":{},"maximum_tokens":64,
@@ -211,6 +233,11 @@ class NativeTrainingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             with self.assertRaises(c.Invalid):n.train_heads(p,Path(d),Path(d)/"out")
 
+    def test_class_meanings_must_not_change_by_row(self):
+        p=self.plan();p["rows"][0]["request"]["options"].reverse()
+        with tempfile.TemporaryDirectory() as d:
+            with self.assertRaises(c.Invalid):n.train_heads(p,Path(d),Path(d)/"out")
+
     def test_missing_training_model_fails_without_mock_fallback(self):
         with tempfile.TemporaryDirectory() as d:
             with self.assertRaises((ValueError,ImportError,OSError)):
@@ -220,6 +247,56 @@ class NativeTrainingTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             root=Path(d)
             with self.assertRaises(FileExistsError):n.train_heads(self.plan(),root,root)
+
+
+class ExactChatTokenTests(unittest.TestCase):
+    def backend(self, capacity=16):
+        class Tokenizer:
+            eos_token_id=9
+            def __call__(self,*args,**kwargs):
+                raise AssertionError("chat tokenized twice")
+            def apply_chat_template(self,messages,*,tokenize,add_generation_prompt):
+                assert tokenize is True and add_generation_prompt is True
+                assert len(messages)==2
+                return [1,2,3]
+            def decode(self,tokens,**kwargs):
+                return "fixture answer"
+        class Model:
+            config=SimpleNamespace(max_position_embeddings=capacity,is_encoder_decoder=False)
+            calls=0
+            def generate(self,**kwargs):
+                self.calls+=1
+                assert kwargs["input_ids"].tolist()==[[1,2,3]]
+                assert kwargs["do_sample"] is False and kwargs["num_beams"]==1
+                return torch.cat([kwargs["input_ids"],torch.tensor([[8,9]])],dim=1)
+        return SimpleNamespace(tokenizer=Tokenizer(),loaded=Model())
+
+    def test_chat_template_ids_are_used_without_retokenization(self):
+        backend=self.backend()
+        answer,receipt=n.generate_exact(backend,"public",8,2)
+        self.assertEqual(answer,"fixture answer")
+        self.assertEqual(receipt["input_tokens"],3)
+        self.assertEqual(receipt["generated_tokens"],2)
+        self.assertEqual(backend.loaded.calls,1)
+
+    def test_full_position_budget_checked_before_generation(self):
+        backend=self.backend(capacity=4)
+        with self.assertRaises(c.Invalid):n.generate_exact(backend,"public",8,2)
+        self.assertEqual(backend.loaded.calls,0)
+
+    def test_no_silent_prompt_truncation(self):
+        backend=self.backend()
+        with self.assertRaises(c.Invalid):n.generate_exact(backend,"public",2,2)
+        self.assertEqual(backend.loaded.calls,0)
+
+    def test_changed_causal_prefix_rejected(self):
+        backend=self.backend()
+        backend.loaded.generate=lambda **kwargs:torch.tensor([[4,5,6,9]])
+        with self.assertRaises(c.Invalid):n.generate_exact(backend,"public",8,2)
+
+    def test_decoder_output_overrun_rejected(self):
+        backend=self.backend()
+        with self.assertRaises(c.Invalid):n.generate_exact(backend,"public",8,1)
 
 
 if __name__ == "__main__":
