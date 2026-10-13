@@ -142,11 +142,24 @@ fn checked_regular_file(path: &PathBuf, expected_sha256: &str) -> Result<(), Err
 }
 
 fn input_hash(input: &ShadowStemInput) -> Result<String, Error> {
-    // Serialize the canonical sorted-key JSON object exactly like the reviewed
-    // Python joint-input tokenizer. Any future preprocessing change needs a
-    // new digest domain and cross-language golden.
-    let value = serde_json::to_value(input).map_err(|_| Error::FeatureContract)?;
-    let bytes = serde_json::to_vec(&value).map_err(|_| Error::FeatureContract)?;
+    // Python canonical_bytes sorts options/question/state. Serializing through
+    // serde_json::Value is NOT canonical when workspace dependencies enable
+    // preserve_order (observed on the real Windows Bazel build). Serialize a
+    // typed object with explicit lexicographic field order instead, independent
+    // of serde_json map features. Never adjust the known Python golden to hide
+    // a cross-language request identity mismatch.
+    #[derive(Serialize)]
+    struct CanonicalJointInput<'a> {
+        options: &'a [String],
+        question: &'a str,
+        state: &'a str,
+    }
+    let canonical = CanonicalJointInput {
+        options: &input.options,
+        question: &input.question,
+        state: &input.state,
+    };
+    let bytes = serde_json::to_vec(&canonical).map_err(|_| Error::FeatureContract)?;
     Ok(sha256_hex(&bytes))
 }
 
