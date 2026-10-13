@@ -217,5 +217,55 @@ class StudyTests(unittest.TestCase):
                 self.assertTrue(receipt["official_loader_requirements_unchanged"])
 
 
+class ReadoutContentPreservationTests(unittest.TestCase):
+    def row(self, answer, ids=("E1",)):
+        return dict(trial_id="r", question_id="q2", family="f2", arm="aligned_lora",
+                    condition="oracle_plus_distractors", status="succeeded",
+                    answer=answer, evidence_ids=list(ids))
+
+    def score(self, answer, ids=("E1",), expected="Alpha"):
+        b = benchmark(); b.targets["q2"].answer = expected
+        return t.score_rows([self.row(answer, ids)], b)[0]
+
+    def test_bracketed_negation_is_not_erased(self):
+        self.assertFalse(self.score("Alpha [not]")["benchmark_exact_body"])
+
+    def test_bracketed_numbers_are_not_erased(self):
+        self.assertFalse(self.score("Alpha [2026]")["benchmark_exact_body"])
+
+    def test_unknown_source_label_is_not_removed(self):
+        score = self.score("Alpha [E2]")
+        self.assertFalse(score["benchmark_exact_body"])
+        self.assertFalse(score["citation_syntax_valid"])
+
+    def test_delivered_source_label_can_be_removed(self):
+        score = self.score("Alpha [E1]")
+        self.assertTrue(score["benchmark_exact_body"])
+        self.assertTrue(score["citation_syntax_valid"])
+        self.assertIsNone(score["grounded_and_cited_semantics"])
+
+    def test_empty_evidence_does_not_supply_any_strip_allowance(self):
+        self.assertFalse(self.score("Alpha [E1]", ids=())["benchmark_exact_body"])
+
+    def test_mixed_valid_and_invalid_citations_preserve_invalid_content(self):
+        score = self.score("Alpha [E1] [not]")
+        self.assertFalse(score["benchmark_exact_body"])
+        self.assertFalse(score["citation_syntax_valid"])
+
+    def test_raw_answer_and_evidence_ids_are_not_mutated(self):
+        rows = [self.row("Alpha [E1] [not]")]; before = deepcopy(rows)
+        t.score_rows(rows, benchmark())
+        self.assertEqual(rows, before)
+
+    def test_real_bracketed_target_content_remains_comparable(self):
+        score = self.score("Alpha [not] [E1]", expected="Alpha [not]")
+        self.assertTrue(score["benchmark_exact_body"])
+        self.assertFalse(score["citation_syntax_valid"])
+
+    def test_changed_readout_profile_is_explicit_in_plan_and_rows(self):
+        self.assertEqual(t.PLAN["readout_profile"], "registered-citation-only-exact-body-v2")
+        self.assertEqual(self.score("Alpha")["readout_profile"], t.PLAN["readout_profile"])
+
+
 if __name__ == "__main__":
     unittest.main()

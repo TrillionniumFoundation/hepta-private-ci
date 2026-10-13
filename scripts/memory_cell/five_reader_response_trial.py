@@ -31,7 +31,9 @@ from native import load
 
 ARMS = ("frozen_reader", "aligned_lora", "shuffled_positive_lora", "always_refuse")
 CONDITIONS = ("no_evidence", "lexical_retrieval", "oracle_plus_distractors", "support_removed")
+READOUT_PROFILE = "registered-citation-only-exact-body-v2"
 PLAN = {"schema": "hepta.five-reader.response-learning-diagnostic.v1", "profile": PROFILE,
+        "readout_profile": READOUT_PROFILE,
         "archive_sha256": ARCHIVE_SHA256, "benchmark_sha256": LOCOMO_SHA256,
         "partition": "existing_native_source_family_partition", "train_per_family": 4,
         "test_per_family": 2, "training": TRAINING, "maximum_sources_for_training": 3,
@@ -125,15 +127,21 @@ def score_rows(raw, benchmark):
         target = benchmark.targets[row["question_id"]]
         answer = row.get("answer") if row["status"] == "succeeded" else None
         labels = CITATION.findall(answer) if answer is not None else []
-        # Preserve case, word order, numbers and negations. Strip ONLY explicit
-        # source-label syntax for this separate diagnostic, not the raw answer.
-        body = " ".join(CITATION.sub("", answer).split()) if answer is not None else None
+        allowed = set(row.get("evidence_ids", []))
+        # Strip ONLY identifiers actually delivered in this row's evidence.
+        # Unknown bracketed words/numbers/negations remain answer content; they
+        # must not turn an incorrect response into an exact match. Raw output
+        # is never rewritten. This profile is explicitly bound in the plan.
+        body = (" ".join(CITATION.sub(
+            lambda match: "" if match.group(1) in allowed else match.group(0),
+            answer).split()) if answer is not None else None)
         expected = " ".join(str(target.answer).split()) if target.answer is not None else None
         result.append({"trial_id": row["trial_id"], "question_id": row["question_id"],
             "family": row["family"], "arm": row["arm"], "condition": row["condition"], "status": row["status"],
+            "readout_profile": READOUT_PROFILE,
             "exact_refusal": bool(answer is not None and answer.strip() == REFUSAL),
             "benchmark_exact_body": None if expected is None else bool(body is not None and body == expected),
-            "citation_syntax_valid": bool(labels) and set(labels) <= set(row.get("evidence_ids", [])),
+            "citation_syntax_valid": bool(labels) and set(labels) <= allowed,
             "grounded_and_cited_semantics": None, "independent_adjudication": False})
     return result
 
@@ -256,6 +264,7 @@ def run(archive, work, output):
     scored = score_rows(raw, benchmark)
     c.write_new(output / "diagnostic-scores.json", {"raw_sha256": seal, "rows": scored})
     report = {"schema": "hepta.five-reader.response-learning-result.v1", "raw_sha256": seal,
+        "readout_profile": READOUT_PROFILE,
         "plan_sha256": c.digest(PLAN), "task_families": sorted(forbidden), "distinct_questions": len(chosen["test"]),
         "planned_rows": len(raw), "training": training, "load_costs": loads, "arms": summarize(scored),
         "errors": errors, "unavailable_oracle_controls": unavailable,
