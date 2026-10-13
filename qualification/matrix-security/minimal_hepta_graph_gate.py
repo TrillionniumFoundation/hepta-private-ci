@@ -60,7 +60,10 @@ def verified_runtime_nodes(resolution, packages, errors):
             errors.append("DUPLICATE_OR_UNKNOWN_RESOLVED_NODE")
             continue
         flat = node["dependencies"]
-        if any(type(item) is not str or item not in known for item in flat):
+        flat_ids = {item for item in flat if type(item) is str}
+        if len(flat_ids) != len(flat):
+            errors.append("DUPLICATE_OR_MALFORMED_FLAT_CARGO_EDGE")
+        if not flat_ids <= known:
             errors.append("DANGLING_FLAT_CARGO_EDGE")
         typed, normal = set(), set()
         for edge in node["deps"]:
@@ -81,7 +84,7 @@ def verified_runtime_nodes(resolution, packages, errors):
                     continue
                 if kind["kind"] is None:
                     normal.add(pkg)
-        if typed != set(flat):
+        if typed != flat_ids:
             errors.append("FLAT_TYPED_CARGO_GRAPH_MISMATCH")
         nodes[identity] = {
             "normal_dependencies": sorted(normal),
