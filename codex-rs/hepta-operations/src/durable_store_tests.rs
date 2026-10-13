@@ -1,10 +1,14 @@
 use super::*;
 
+#[cfg(unix)]
 use std::collections::BTreeSet;
 use std::time::Duration;
 
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseGrant;
+#[cfg(unix)]
 use codex_hepta_contracts::FinalUseRevocations;
+#[cfg(unix)]
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
