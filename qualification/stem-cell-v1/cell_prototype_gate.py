@@ -114,8 +114,14 @@ def geometry_fit(x, labels, groups, classes, shrinkage):
     return weight, bias, center
 
 
-def fit_geometry_candidates(inputs, truth, features, config, teachers):
+def fit_geometry_candidates(inputs, truth, features, config, teachers, *, covariance="diagonal"):
     """Two replay budgets, each with its own training-only CV; no test selection."""
+    if covariance not in ('diagonal', 'full'):
+        raise ValueError('unregistered covariance family')
+    fitter = geometry_fit
+    if covariance == 'full':
+        from cell_correlated_geometry import correlated_fit
+        fitter = correlated_fit
     start = time.process_time_ns(), time.perf_counter_ns()
     old, new, memory = training_partition(inputs, truth, config)
     checked_tensor(features, 2, 'raw geometry source')
@@ -138,7 +144,7 @@ def fit_geometry_candidates(inputs, truth, features, config, teachers):
             held_scores = torch.empty(len(x), k, dtype=torch.float64)
             for f in range(FOLDS):
                 fit = (folds != f).nonzero().flatten().tolist(); val = (folds == f).nonzero().flatten().tolist()
-                w, b, center = geometry_fit(x[fit], y[fit], [groups[i] for i in fit], k, shrinkage)
+                w, b, center = fitter(x[fit], y[fit], [groups[i] for i in fit], k, shrinkage)
                 held_scores[val] = (x[val].double()-center)@w.T+b
             for temperature in TEMPERATURES:
                 raw = held_scores/temperature; old_cols = list(config.old_classes)
@@ -154,7 +160,7 @@ def fit_geometry_candidates(inputs, truth, features, config, teachers):
                 if not math.isfinite(score): raise ValueError('nonfinite CV loss')
                 grid.append({'shrinkage': shrinkage, 'temperature': temperature, 'group_balanced_binary_log_loss': score})
         chosen = min(range(len(grid)), key=lambda i: (grid[i]['group_balanced_binary_log_loss'], i))
-        row = grid[chosen]; w, b, center = geometry_fit(x, y, groups, k, row['shrinkage'])
+        row = grid[chosen]; w, b, center = fitter(x, y, groups, k, row['shrinkage'])
         # Fold raw-space geometry into the existing old-only-normalized coordinates.
         routing_w = (w*scale.double()/row['temperature']).float()
         routing_b = (b+w@(mean.double()-center)).div(row['temperature']).float()
@@ -168,6 +174,15 @@ def fit_geometry_candidates(inputs, truth, features, config, teachers):
             'conditional_parameters': 2*k*(d+1), 'conditional_weight_bytes': 2*k*(d+1)*4,
             'standalone_parameters': k*(d+1), 'standalone_weight_bytes': k*(d+1)*4,
             'optimizer_steps': 0, 'cpu_ns': time.process_time_ns()-before[0], 'wall_ns': time.perf_counter_ns()-before[1]}
+        if covariance == 'full':
+            from cell_correlated_geometry import (MAX_FIT_ELEMENTS, SOLVE_TOLERANCE,
+                                                   VARIANCE_FLOOR, fit_envelope)
+            reports[suffix].update(covariance_family='full', covariance_matrix_bytes=d*d*8,
+                factor_matrix_bytes=d*d*8, explicit_fit_envelope_bytes=fit_envelope(len(x),d,k)*8,
+                maximum_fit_elements=MAX_FIT_ELEMENTS, variance_floor=VARIANCE_FLOOR,
+                solve_tolerance=SOLVE_TOLERANCE, factorization_calls=FOLDS+int(row['shrinkage']<1),
+                spherical_fast_path_calls=FOLDS+int(row['shrinkage']==1),
+                final_fit_covariance_matrix_bytes=0 if row['shrinkage']==1 else d*d*8)
     return candidates, mean, scale, {'arms': reports, 'current_encoder_calls': 0,
         'cpu_ns': time.process_time_ns()-start[0], 'wall_ns': time.perf_counter_ns()-start[1]}
 
