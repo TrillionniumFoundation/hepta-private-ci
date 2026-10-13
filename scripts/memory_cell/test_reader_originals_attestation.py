@@ -331,5 +331,65 @@ class VerbatimRefusalAttestationTests(unittest.TestCase):
     def test_canonical_citation_remains_valid(self):
         self.assertIsNone(self.audit())
 
+
+class GroundedAnswerNotLabelEchoTests(unittest.TestCase):
+    """Grounded verdicts need answer CONTENT, not just source labels.
+
+    These are syntax/provenance tests; no fixture verdict establishes
+    human truth, semantic source support or production admission.
+    """
+
+    def setUp(self):
+        self.cohort, self.binding, self.reviewed, self.originals = example()
+
+    def change_grounded_raw(self, text):
+        # Re-sign the relevant mechanical digest in the synthetic fixture:
+        # the missing answer-content check must be the ONLY cause of denial.
+        row = self.originals["items"][2]
+        row["raw_answer"] = text
+        self.reviewed[2]["raw_answer_sha256"] = canonical_sha(text)
+
+    def audit(self):
+        return audit_originals(self.cohort, self.binding,
+                               self.reviewed, self.originals)
+
+    def test_citation_only_raw_text_cannot_be_signed_grounded(self):
+        for output in ("[E1]", "E1\n\n[E1]", "[E1] :", "[[E1]]",
+                       "E1 E2 [E1]", "[e1]   "):
+            with self.subTest(raw=output):
+                self.setUp()
+                self.change_grounded_raw(output)
+                self.assertEqual(self.audit(),
+                    "grounded-answer-is-only-label-or-refusal")
+
+    def test_two_citations_and_no_answer_are_not_grounded(self):
+        self.change_grounded_raw("[E1] [E2]")
+        source = self.originals["items"][2]["delivered_sources"][1]
+        self.reviewed[2]["cited_source_sha256"].append(source_fingerprint(source))
+        self.assertEqual(self.audit(), "grounded-answer-is-only-label-or-refusal")
+
+    def test_cited_refusal_is_not_a_grounded_answer(self):
+        for output in ("I do not have enough evidence. [E1]",
+                       '"I do not have enough evidence." [E1]'):
+            with self.subTest(raw=output):
+                self.setUp()
+                self.change_grounded_raw(output)
+                self.assertEqual(self.audit(),
+                    "grounded-answer-is-only-label-or-refusal")
+
+    def test_numeric_and_unicode_content_are_not_rejected_for_format_alone(self):
+        for output in ("42 [E1]", "0 [E1]", "设备已核验 [E1]", "true [E1]"):
+            with self.subTest(raw=output):
+                self.setUp()
+                self.change_grounded_raw(output)
+                # Accepting the output format does not judge its truth.
+                self.assertIsNone(self.audit())
+
+    def test_failed_label_echo_remains_available_for_real_human_review(self):
+        self.change_grounded_raw("[E1]")
+        self.reviewed[2]["grounded_and_cited"] = False
+        self.assertIsNone(self.audit())
+
+
 if __name__ == "__main__":
     unittest.main()

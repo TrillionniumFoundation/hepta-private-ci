@@ -134,3 +134,25 @@ fail-closed rejection. Local replay from the exact GitHub source blobs plus
 the reviewer test fixture passed 59 focused tests; hosted full regression and
 signed-source checks remain the admission gates. No independent human review
 or approval is thereby created; 768 neural rows stay blocked by default.
+
+## Citation-only raw outputs cannot satisfy a grounded verdict
+
+The original frozen Reader often echoed `E1`, `E2` source labels instead of
+answering. Before this added check, a human-review row marking a raw `"[E1]"`
+as `grounded_and_cited=true` could survive mechanical source review if the
+response hash and signed cited-source fingerprint were internally consistent.
+That output has **no substantive answer text**; the citation alone is not an
+answer. The source auditor now rejects a **positive** grounded verdict when,
+after removing genuine `[E#]` citations and bare `E#` echoes, no alphanumeric
+answer content remains, or the remaining output is exactly the registered
+no-evidence refusal sentence. Cases marked ungrounded are retained intact for
+review and failure accounting; numeric answers such as `42 [E1]` and Unicode
+answers such as `设备已核验 [E1]` are not rejected on formatting grounds alone.
+
+This is a strictly **necessary mechanical-format check** on a claimed positive
+reviewer verdict. It is NOT sufficient evidence of answer correctness, citation
+semantic support, adequate source sufficiency or independent human judgment.
+The existing four source/manifest pins, independently authorized signatures,
+full case-level review ledger, strict exact-refusal check, and >=75%/90% Reader
+thresholds remain mandatory. Default CI still has no operator-approved human
+source material: all 768 prospective neural rows remain blocked.

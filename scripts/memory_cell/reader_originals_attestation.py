@@ -30,6 +30,20 @@ MAX_ATTESTATION_FILE_BYTES = 96 * 1024 * 1024
 EXACT_REFUSAL = "I do not have enough evidence."
 CITE = re.compile(r"\[E([0-9]+)\]", re.I)
 NONCANONICAL_CITE = re.compile(r"\[E0[0-9]+\]", re.I)
+BARE_LABEL = re.compile(r"(?<!\w)E[0-9]+(?!\w)", re.I)
+
+
+def has_answer_beyond_evidence_labels(raw):
+    """Necessary output-format condition; NOT a semantic correctness test.
+
+    Source-label echoes and a refusal followed by a spurious [E1] must never
+    count as a grounded answer merely because a signed row says so. The final
+    groundedness judgment still requires authorized independent human review.
+    """
+    residue = BARE_LABEL.sub(" ", CITE.sub(" ", raw)).strip()
+    if not any(char.isalnum() for char in residue):
+        return False
+    return residue.strip("\"'").strip() != EXACT_REFUSAL
 
 
 def canonical_sha(value):
@@ -150,6 +164,7 @@ def audit_originals(cohort, model_binding, reviewed_items, originals):
     expected = {(qid, arm) for qid in cohort for arm in CONDITIONS}
     original_by_key = {}
     observed_refusal = {}
+    observed_answer_has_content = {}
     # Stable source identity cannot silently change owner, version, timestamp
     # or original bytes between the four experimental conditions. Different
     # UTF-8 excerpt windows over the SAME immutable original remain valid.
@@ -221,6 +236,7 @@ def audit_originals(cohort, model_binding, reviewed_items, originals):
                 if label not in citations:
                     citations.append(label)
             observed_refusal[key] = answer == EXACT_REFUSAL
+            observed_answer_has_content[key] = has_answer_beyond_evidence_labels(answer)
             original_by_key[key] = dict(
                 question_sha256=canonical_sha(question),
                 prompt_input_ids_sha256=canonical_sha(input_ids),
@@ -247,6 +263,12 @@ def audit_originals(cohort, model_binding, reviewed_items, originals):
             if (type(row.get("exact_refusal")) is not bool or
                     row["exact_refusal"] != observed_refusal[key]):
                 return "reviewed-exact-refusal-does-not-match-raw-reader-text"
+            # A machine-verifiable NECESSARY condition for a positive human
+            # verdict: source-label echoes have no actual answer content.
+            # This is not automatic semantic validation or a reviewer verdict.
+            if (row.get("grounded_and_cited") is True and
+                    not observed_answer_has_content[key]):
+                return "grounded-answer-is-only-label-or-refusal"
     except (UnicodeError, ValueError, TypeError, OverflowError, KeyError):
         return "original-case-bytes-malformed"
     return None
