@@ -129,6 +129,13 @@ tokio-tungstenite = { workspace = true }
 wiremock = { workspace = true }
 zstd = { workspace = true }
 
+# The Windows stable-ingress integration exercises both proxy and sandbox
+# from a leaf harness. The proxy library must not depend on the Windows
+# sandbox test fixture: that forms a Bazel protocol -> proxy -> sandbox
+# -> protocol dependency cycle, even for non-Windows release analysis.
+[target.'cfg(windows)'.dev-dependencies]
+codex-network-proxy = { workspace = true }
+
 [build-dependencies]
 codex-utils-build-identity = { workspace = true }
 
