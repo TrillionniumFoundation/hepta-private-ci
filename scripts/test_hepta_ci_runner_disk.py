@@ -43,7 +43,8 @@ class NativeDiskTests(unittest.TestCase):
                 self.assertFalse(disk.eligible(target, allowlist=(target,), workspace=work))
 
     def test_dry_run_never_invokes_sudo(self):
-        with tempfile.TemporaryDirectory() as temp, patch.object(disk.subprocess, "run") as run:
+        with tempfile.TemporaryDirectory() as temp, patch.object(disk.subprocess, "run") as run, patch.object(disk.shutil, "disk_usage") as usage:
+            usage.return_value.free = 10 * disk.GIB
             root = Path(temp)
             work = root / "work"
             work.mkdir()
@@ -67,7 +68,8 @@ class NativeDiskTests(unittest.TestCase):
             run.assert_not_called()
 
     def test_attempts_only_allowlisted_delete_with_noninteractive_sudo(self):
-        with tempfile.TemporaryDirectory() as temp, patch.object(disk.subprocess, "run") as run:
+        with tempfile.TemporaryDirectory() as temp, patch.object(disk.subprocess, "run") as run, patch.object(disk.shutil, "disk_usage") as usage:
+            usage.return_value.free = 10 * disk.GIB
             root = Path(temp)
             work = root / "work"
             work.mkdir()
