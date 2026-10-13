@@ -58,7 +58,10 @@ fn read_only_descriptor(security: &SECURITY_ATTRIBUTES) -> io::Result<()> {
         return Err(io::Error::last_os_error());
     }
     let mut ace = ptr::null_mut();
-    if unsafe { GetAce(dacl, /*dwaceindex*/ 0, &mut ace) } == 0 {
+    if unsafe {
+        GetAce(dacl, /*dwaceindex*/ 0, &mut ace)
+    } == 0
+    {
         return Err(io::Error::last_os_error());
     }
     if ace.is_null() {
