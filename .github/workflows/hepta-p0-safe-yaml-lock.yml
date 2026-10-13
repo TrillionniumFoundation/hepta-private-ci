@@ -6,6 +6,8 @@ on:
       - qualification/stem-head-single-candidate-20261013
     paths:
       - codex-rs/Cargo.toml
+      - codex-rs/windows-sandbox-rs/Cargo.toml
+      - codex-rs/windows-sandbox-rs/tests/helper_manifest.rs
       - .github/workflows/hepta-p0-safe-yaml-lock.yml
   workflow_dispatch:
 
