@@ -688,3 +688,89 @@ fn poisoned_owner_never_acknowledges_idempotent_legacy_receipts() {
     drop(recovered);
     fs::remove_file(journal).unwrap();
 }
+
+#[test]
+fn terminal_output_and_exact_idempotent_retry_survive_owner_reopen() {
+    let journal = path("terminal-output-exact-idempotence");
+    let mut owner = DurableInferenceControl::open(&journal, 32).unwrap();
+    owner.submit(100, request()).unwrap();
+    owner.reserve(100, "request.1", 1, reservation()).unwrap();
+    owner.assign("request.1", 2, assignment()).unwrap();
+    owner
+        .claim_dispatch(100, "request.1", 3, "reservation.1", &assignment())
+        .unwrap();
+    let original = TerminalObservation {
+        request_id: "request.1".to_string(),
+        reservation_id: "reservation.1".to_string(),
+        worker_id: "worker.1".to_string(),
+        worker_generation: 2,
+        model_digest: "1".repeat(64),
+        payload_digest: "2".repeat(64),
+        terminal_observed: true,
+        terminal_status: Some(RequestState::Completed),
+        output_digest: Some("5".repeat(64)),
+        consumed_tokens: 10,
+        usage_units: 5,
+    };
+    let committed = owner
+        .settle("request.1", 4, "6".repeat(64), original.clone())
+        .unwrap();
+    assert_eq!(committed.state, RequestState::Completed);
+    let written = fs::metadata(&journal).unwrap().len();
+    assert!(owner
+        .settle("request.1", committed.revision, "6".repeat(64), original.clone())
+        .unwrap()
+        .idempotent);
+
+    let mut forged = original.clone();
+    forged.output_digest = Some("7".repeat(64));
+    assert_eq!(
+        owner.settle("request.1", committed.revision, "6".repeat(64), forged),
+        Err(Error::Conflict)
+    );
+    let mut forged = original.clone();
+    forged.consumed_tokens += 1;
+    assert_eq!(
+        owner.settle("request.1", committed.revision, "6".repeat(64), forged),
+        Err(Error::Conflict)
+    );
+    let mut forged = original.clone();
+    forged.usage_units += 1;
+    assert_eq!(
+        owner.settle("request.1", committed.revision, "6".repeat(64), forged),
+        Err(Error::Conflict)
+    );
+    assert_eq!(written, fs::metadata(&journal).unwrap().len());
+    assert_eq!(
+        owner
+            .get("request.1")
+            .unwrap()
+            .terminal_output_digest
+            .as_deref(),
+        Some("5".repeat(64).as_str())
+    );
+
+    drop(owner);
+    let mut reopened = DurableInferenceControl::open(&journal, 32).unwrap();
+    assert_eq!(
+        reopened
+            .get("request.1")
+            .unwrap()
+            .terminal_output_digest
+            .as_deref(),
+        Some("5".repeat(64).as_str())
+    );
+    assert!(reopened
+        .settle("request.1", committed.revision, "6".repeat(64), original.clone())
+        .unwrap()
+        .idempotent);
+    let mut forged = original;
+    forged.output_digest = Some("8".repeat(64));
+    assert_eq!(
+        reopened.settle("request.1", committed.revision, "6".repeat(64), forged),
+        Err(Error::Conflict)
+    );
+    assert_eq!(written, fs::metadata(&journal).unwrap().len());
+    drop(reopened);
+    fs::remove_file(journal).unwrap();
+}
