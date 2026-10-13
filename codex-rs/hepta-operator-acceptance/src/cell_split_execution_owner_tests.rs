@@ -1836,9 +1836,8 @@ fn final_owner_readback_cannot_acknowledge_late_local_ledger_tamper() {
         let state = Rc::new(RefCell::new(Observed::default()));
         let port = FixturePort::new(state.clone());
         let tamper = port.tamper_during_live_readback.clone();
-        let mut owner =
-            CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
-                .expect("single writer");
+        let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+            .expect("single writer");
         let altered = root.path().join(filename);
         let mut admission_reads = 0;
         let result = owner.advance_with_admission(|| {

@@ -866,10 +866,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                     "committed prefix changed during final owner readback",
                 ));
             }
-            let raw = read_frame(&frame_path(&self.root, index, "committed"))?
-                .ok_or(CellSplitExecutionErrorV1::Invalid(
+            let raw = read_frame(&frame_path(&self.root, index, "committed"))?.ok_or(
+                CellSplitExecutionErrorV1::Invalid(
                     "committed prefix disappeared during final owner readback",
-                ))?;
+                ),
+            )?;
             let receipt = decode_committed_receipt(&raw)?;
             validate_receipt(&prior_intent, &receipt)?;
             self.trust.verify(&prior_intent, &receipt)?;
