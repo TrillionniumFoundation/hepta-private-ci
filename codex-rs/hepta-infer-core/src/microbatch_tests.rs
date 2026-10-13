@@ -105,6 +105,7 @@ fn rejected_future_admission_cannot_poison_scheduler_clock() {
 fn rejected_future_capacity_does_not_advance_clock() {
     let mut conf = limits();
     conf.max_pending = 1;
+    conf.max_batch_size = 1;
     let mut q = BoundedMicrobatchSchedulerV1::new(conf).unwrap();
     q.enqueue(4, intent("first", "one", 1, 1, 100)).unwrap();
     assert_eq!(
