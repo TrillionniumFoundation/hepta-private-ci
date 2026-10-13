@@ -88,6 +88,42 @@ class ShardedCiTransportTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 sharded.check_tree(root)
 
+    def test_absolute_or_noncanonical_manifest_path_is_rejected_before_hashing(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            stage = root / "stage"
+            stage.mkdir()
+            secret = root / "outside"
+            secret.write_bytes(b"do not read outside manifest root")
+            digest = hashlib.sha256(secret.read_bytes()).hexdigest()
+            for name in (str(secret.resolve()), "../outside", "a\\b", "a//b", "a/./b"):
+                with self.subTest(name=name):
+                    (stage / "SHA256SUMS").write_text(f"{digest}  ./{name}\n")
+                    with patch.object(sharded, "sha", side_effect=AssertionError(
+                        "a rejected path must not be hashed"
+                    )) as hashed:
+                        with self.assertRaises(ValueError):
+                            sharded.check_tree(stage)
+                    hashed.assert_not_called()
+
+    def test_manifest_with_symlinked_parent_cannot_open_external_bytes(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            outside = root / "outside"
+            outside.mkdir()
+            (outside / "leak").write_bytes(b"source from another root")
+            stage = root / "stage"
+            stage.mkdir()
+            (stage / "alias").symlink_to(outside, target_is_directory=True)
+            digest = hashlib.sha256((outside / "leak").read_bytes()).hexdigest()
+            (stage / "SHA256SUMS").write_text(f"{digest}  ./alias/leak\n")
+            with patch.object(sharded, "sha", side_effect=AssertionError(
+                "symlink-escaped bytes must not be hashed"
+            )) as hashed:
+                with self.assertRaisesRegex(ValueError, "unsafe"):
+                    sharded.check_tree(stage)
+            hashed.assert_not_called()
+
     def test_unpinned_zip_fails_before_extraction(self):
         with tempfile.TemporaryDirectory() as tmp:
             zipfile = Path(tmp) / "garbage.zip"

@@ -167,6 +167,8 @@ def align_model_stage(live, canonical, observation):
 
 
 def check_tree(directory):
+    if directory.is_symlink() or not directory.is_dir():
+        raise ValueError("unsafe or missing manifest directory")
     source = directory / "SHA256SUMS"
     if source.is_symlink() or not source.is_file():
         raise ValueError("missing directory manifest")
@@ -176,9 +178,23 @@ def check_tree(directory):
         if found is None:
             raise ValueError("invalid folder manifest")
         expected, name = found.groups()
-        entry = directory / name
-        if name in listed or ".." in PurePosixPath(name).parts:
-            raise ValueError("duplicate/unsafe manifest")
+        member = PurePosixPath(name)
+        if (
+            name in listed
+            or not member.parts
+            or member.is_absolute()
+            or ".." in member.parts
+            or "\\" in name
+            or ":" in name
+            or str(member) != name
+        ):
+            raise ValueError("duplicate/unsafe manifest path")
+        entry = directory.joinpath(*member.parts)
+        if any(
+            directory.joinpath(*member.parts[:level]).is_symlink()
+            for level in range(1, len(member.parts) + 1)
+        ):
+            raise ValueError("unsafe symlinked manifest ancestor")
         listed.add(name)
         if (
             entry.is_symlink()
