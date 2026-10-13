@@ -203,6 +203,20 @@ fn plan() -> CellSplitExecutionPlanV1 {
 }
 
 #[test]
+fn frozen_split_plan_rejects_noncanonical_split_and_owner_ids() {
+    assert!(plan().digest().is_ok());
+    for invalid_id in ["../other", "parent/child", "line\nspoof", "nul\0id"] {
+        let mut invalid_split = plan();
+        invalid_split.split_id = invalid_id.into();
+        assert!(invalid_split.digest().is_err(), "invalid split ID: {invalid_id:?}");
+
+        let mut invalid_owner = plan();
+        invalid_owner.owner_ids[2] = invalid_id.into();
+        assert!(invalid_owner.digest().is_err(), "invalid owner ID: {invalid_id:?}");
+    }
+}
+
+#[test]
 fn cns_predecessor_bridge_rejects_wrong_signer_receipt_and_plan() {
     let frozen = plan();
     let digest = frozen.digest().expect("frozen plan");
