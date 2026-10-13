@@ -5,7 +5,7 @@ name: MemoryCell one-shot exact-source formatting candidate
 on:
   push:
     branches:
-      - codex/memory-cell-evidence-20261008
+      - codex/memorycell-ast-format-20261013-g1
     paths:
       - .github/workflows/hepta-memory-atomic-format.yml
 permissions:
@@ -18,7 +18,7 @@ jobs:
       contents: write
     env:
       BASE: 78fdb0cf8537e3a84fc6e0a849707559c80881e8
-      TARGET: codex/memory-atomic-pyfmt-20261013-f
+      TARGET: codex/memorycell-ast-output-20261013-g1
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
@@ -30,7 +30,7 @@ jobs:
           mkdir -p /tmp/memory-atomic-format
           git rev-parse HEAD > /tmp/memory-atomic-format/invoking-commit.txt
           git rev-parse HEAD^{tree} > /tmp/memory-atomic-format/invoking-tree.txt
-          python3 -m pip install --user ruff==0.15.8
+          python3 -m pip install --user ruff==0.15.13
           git fetch --no-tags --depth=1 origin "$BASE"
           python3 - <<'PY'
           import ast
