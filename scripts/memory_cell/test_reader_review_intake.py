@@ -189,6 +189,40 @@ class ReviewIntakeTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "symlink"):
             self.run_intake()
 
+    def test_trailing_whitespace_is_not_an_exact_original_refusal(self):
+        # Review an unaltered raw Reader response, including trailing bytes.
+        _, _, _, originals = example()
+        for item in originals["items"]:
+            if item["item_id"] == "q1" and item["condition"] == "no_evidence":
+                item["raw_answer"] += " "
+                break
+        modified = self.root / "modified-refusal-handoff"
+        prepare_handoff(originals, source_file_sha256="a" * 64,
+                        output=modified, salt=b"\x07" * 32)
+        self.handoff = modified
+        self.receipt_pin = hashlib.sha256(
+            (modified / "handoff-receipt.json").read_bytes()).hexdigest()
+        with self.assertRaisesRegex(ValueError, "exact-refusal verdict"):
+            self.run_intake()
+        self.assertFalse(self.output.exists())
+
+    def test_label_only_reader_echo_cannot_be_reviewed_as_grounded_answer(self):
+        # Bad Reader text can be sent for blind review, not certified positive.
+        _, _, _, originals = example()
+        for item in originals["items"]:
+            if item["item_id"] == "q1" and item["condition"] == "human_sufficient":
+                item["raw_answer"] = "[E1]"
+                break
+        modified = self.root / "modified-label-only-handoff"
+        prepare_handoff(originals, source_file_sha256="a" * 64,
+                        output=modified, salt=b"\x07" * 32)
+        self.handoff = modified
+        self.receipt_pin = hashlib.sha256(
+            (modified / "handoff-receipt.json").read_bytes()).hexdigest()
+        with self.assertRaisesRegex(ValueError, "only source labels"):
+            self.run_intake()
+        self.assertFalse(self.output.exists())
+
     def test_output_overwrite_prevented_with_no_silent_alteration(self):
         self.run_intake()
         raw = (self.output / "reconciliation-receipt.json").read_bytes()

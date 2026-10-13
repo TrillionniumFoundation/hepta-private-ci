@@ -14,7 +14,8 @@ from pathlib import Path
 import re
 import stat
 
-from reader_originals_attestation import load_strict_json_file, canonical_sha
+from reader_originals_attestation import (load_strict_json_file, canonical_sha,
+                                          has_answer_beyond_evidence_labels)
 from reader_review_handoff import _write_private, _write_private_lines
 from reader_review_ledger import CONDITIONS
 
@@ -204,10 +205,14 @@ def _reviewed_forms(path, pin, tickets, views):
                 raise ValueError("claimed grounded answer lacks cited support")
         if answer["cited_semantically_supported"] is True and not views[ticket]["cited_labels"]:
             raise ValueError("cited support claimed without citations")
+        if ((answer["grounded_and_cited"] is True
+                or answer["cited_semantically_supported"] is True)
+                and not has_answer_beyond_evidence_labels(views[ticket]["raw_reader_answer"])):
+            raise ValueError("positive reviewed answer contains only source labels or refusal")
         if answer["grounded_and_cited"] is True and answer["exact_refusal"] is True:
             raise ValueError("grounded answer and refusal cannot both be true")
         if (type(answer["exact_refusal"]) is bool and
-                answer["exact_refusal"] != (views[ticket]["raw_reader_answer"].strip() == ABSTAIN)):
+                answer["exact_refusal"] != (views[ticket]["raw_reader_answer"] == ABSTAIN)):
             raise ValueError("reviewer exact-refusal verdict disagrees with raw answer")
     return forms
 
