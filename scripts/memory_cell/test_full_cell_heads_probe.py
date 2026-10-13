@@ -18,6 +18,7 @@ if torch is not None:
         fixture,
         make_head,
         run_probe,
+        source_digest,
         train_head,
     )
 
@@ -46,6 +47,19 @@ class FullCellHeadsProbeTests(unittest.TestCase):
         for row, (x, scores) in zip(rows, before):
             self.assertTrue(torch.equal(row.features.paired, x))
             self.assertTrue(torch.equal(row.features.frozen_scores, scores))
+
+    def test_source_digest_without_numpy_handles_bfloat16_and_mutation(self):
+        rows, _ = fixture()
+        original = source_digest(rows)
+        self.assertEqual(original, source_digest(rows))
+        rows[0].features.paired = rows[0].features.paired.to(torch.bfloat16)
+        rows[0].features.frozen_scores = rows[0].features.frozen_scores.to(torch.bfloat16)
+        changed_dtype = source_digest(rows)
+        self.assertNotEqual(original, changed_dtype)
+        self.assertEqual(changed_dtype, source_digest(rows))
+        with torch.no_grad():
+            rows[0].features.paired[0, 0] += 1.0
+        self.assertNotEqual(changed_dtype, source_digest(rows))
 
     def test_low_rank_is_explicit_output_adapter_not_layer_lora(self):
         head = LowRankOutputAdapter(8, rank=3)

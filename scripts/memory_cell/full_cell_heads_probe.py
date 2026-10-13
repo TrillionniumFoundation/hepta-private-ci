@@ -58,7 +58,19 @@ def source_digest(rows: Sequence[Any]) -> str:
         h.update(repr(tuple(getattr(f, "candidate_ids", ()))).encode())
         h.update(repr(tuple(sorted(getattr(f, "roots", ())))).encode())
         for tensor in (f.paired, f.frozen_scores):
-            h.update(tensor.detach().cpu().contiguous().numpy().tobytes())
+            # Torch bfloat16 and numpy-less CPU builds must retain EXACT tensor bytes.
+            # Hash dtype and shape as well, so identical payload bytes in different
+            # representations cannot silently share a feature identity.
+            contiguous = tensor.detach().cpu().contiguous()
+            descriptor = json.dumps(
+                {"dtype": str(contiguous.dtype), "shape": list(contiguous.shape)},
+                sort_keys=True, separators=(",", ":"),
+            ).encode()
+            raw = bytes(contiguous.view(torch.uint8).reshape(-1).tolist())
+            h.update(len(descriptor).to_bytes(4, "big"))
+            h.update(descriptor)
+            h.update(len(raw).to_bytes(8, "big"))
+            h.update(raw)
         h.update(repr(tuple(getattr(row, "positive_indices", ()))).encode())
     return h.hexdigest()
 

@@ -35,12 +35,16 @@ jobs:
           set -euo pipefail
           python3 -m venv /tmp/hepta-heads-python
           /tmp/hepta-heads-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/hepta-heads-python/bin/pip install numpy==1.26.4 ruff==0.15.8
+          /tmp/hepta-heads-python/bin/pip freeze > /tmp/hepta-full-cell-heads-environment.txt
       - name: Run Cell-head controls and profiler probe
         run: |
           set -euo pipefail
           mkdir -p /tmp/hepta-full-cell-heads
           /tmp/hepta-heads-python/bin/python -m unittest discover -s scripts/memory_cell -p 'test_full_cell_heads_probe.py' -v 2>&1 | tee /tmp/hepta-full-cell-heads/tests.log
+          /tmp/hepta-heads-python/bin/ruff check --select F,E9 scripts/memory_cell/full_cell_heads_probe.py scripts/memory_cell/test_full_cell_heads_probe.py | tee /tmp/hepta-full-cell-heads/lint.log
           /tmp/hepta-heads-python/bin/python scripts/memory_cell/full_cell_heads_probe.py /tmp/hepta-full-cell-heads/probe.json
+          cp /tmp/hepta-full-cell-heads-environment.txt /tmp/hepta-full-cell-heads/environment.txt
       - name: Retain source identity and probe result
         if: always()
         run: |
