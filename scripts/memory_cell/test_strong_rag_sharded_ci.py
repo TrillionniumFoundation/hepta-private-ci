@@ -2,6 +2,8 @@
 
 from copy import deepcopy
 import hashlib
+import io
+from contextlib import redirect_stderr, redirect_stdout
 import json
 from pathlib import Path
 import tempfile
@@ -94,6 +96,43 @@ class ShardedCiTransportTests(unittest.TestCase):
                 sharded.extract_original(zipfile, Path(tmp) / "original")
             with self.assertRaises(ValueError):
                 sharded.extract_model_identity(zipfile, Path(tmp) / "model")
+
+
+    def test_cli_dispatches_all_four_actions_with_exact_paths(self):
+        # Exercise argparse rather than the model or immutable artifact.
+        cases = (
+            ("original", "extract_original", ("archived.zip", "original")),
+            ("identity", "extract_model_identity", ("locked.zip", "identity")),
+            ("align", "align_model_stage", ("live", "canonical", "receipt.json")),
+            ("verify", "check_tree", ("recorded",)),
+        )
+        for action, target, raw_paths in cases:
+            result = {"tested_action": action, "model_calls": 0}
+            with self.subTest(action=action):
+                with patch("sys.argv", ["strong_rag_sharded_ci.py", action, *raw_paths]):
+                    with patch.object(sharded, target, return_value=result) as invoked:
+                        with redirect_stdout(io.StringIO()) as output:
+                            sharded.main()
+                invoked.assert_called_once_with(*(Path(p) for p in raw_paths))
+                self.assertEqual(json.loads(output.getvalue()), result)
+
+    def test_cli_rejects_missing_archive_without_any_extraction(self):
+        with patch("sys.argv", ["strong_rag_sharded_ci.py", "original"]):
+            with patch.object(sharded, "extract_original") as execute:
+                with redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit) as error:
+                        sharded.main()
+        self.assertEqual(error.exception.code, 2)
+        execute.assert_not_called()
+
+    def test_cli_rejects_unknown_operation_before_any_io(self):
+        with patch("sys.argv", ["strong_rag_sharded_ci.py", "unsupported"]):
+            with patch.object(sharded, "check_tree") as checker:
+                with redirect_stderr(io.StringIO()):
+                    with self.assertRaises(SystemExit) as error:
+                        sharded.main()
+        self.assertEqual(error.exception.code, 2)
+        checker.assert_not_called()
 
 
 if __name__ == "__main__":
