@@ -15,6 +15,22 @@ const TEST_REWRITE_PROFILE: RewriteProfile = RewriteProfile::new(
 );
 
 #[test]
+fn yaml_description_contract_is_frozen_before_security_parser_migration() {
+    for (raw, expected) in [
+        ("description: Review changes", Some("Review changes")),
+        ("description: '  Review changes  '", Some("Review changes")),
+        ("description: true", Some("true")),
+        ("description: 42", Some("42")),
+        ("description: null", None),
+        ("description: [read, write]", None),
+        ("description:\n  nested: text", None),
+        ("description: !secret text", None),
+    ] {
+        assert_eq!(parse_command_description(raw).as_deref(), expected, "{raw}");
+    }
+}
+
+#[test]
 fn command_skill_names_must_fit_codex_skill_loader_limit() {
     let source_name = "this-is-a-deeply-nested-command-with-a-very-long-name";
     let file = Path::new("commands/this/is/a/deeply/nested/command/with/a/very/long/name.md");
