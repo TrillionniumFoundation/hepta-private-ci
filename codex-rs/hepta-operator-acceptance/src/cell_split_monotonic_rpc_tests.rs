@@ -923,8 +923,7 @@ fn slow_independent_custody_cannot_sign_after_owner_request_budget_expires() {
 fn signed_monotonic_rpc_uses_one_end_to_end_timeout_budget() {
     let started = Instant::now();
     let total = Duration::from_secs(2);
-    let remaining = remaining_rpc_budget(started, total)
-        .expect("new request has time");
+    let remaining = remaining_rpc_budget(started, total).expect("new request has time");
     assert!(remaining > Duration::ZERO);
     assert!(remaining <= total);
 
