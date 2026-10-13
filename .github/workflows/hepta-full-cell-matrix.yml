@@ -7,6 +7,11 @@ on:
       - "scripts/memory_cell/full_cell_matrix.py"
       - "scripts/memory_cell/test_full_cell_matrix.py"
       - ".github/workflows/hepta-full-cell-matrix.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/full_cell_matrix.py"
+      - "scripts/memory_cell/test_full_cell_matrix.py"
+      - ".github/workflows/hepta-full-cell-matrix.yml"
 
 permissions:
   contents: read
