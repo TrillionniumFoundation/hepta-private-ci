@@ -82,6 +82,17 @@ pub struct MetricsGroupCommitV1 {
     poisoned: bool,
 }
 
+impl Drop for MetricsGroupCommitV1 {
+    fn drop(&mut self) {
+        // An owned writer lock must be released explicitly before the file
+        // descriptor is closed. Some runner/file-system combinations can
+        // otherwise leave the next owner seeing WriterUnavailable even after
+        // the previous writer has left scope. Never flush uncommitted metrics
+        // on Drop: after an abrupt exit only previously fsynced groups count.
+        let _ = self.file.unlock();
+    }
+}
+
 impl MetricsGroupCommitV1 {
     pub fn open(path: impl AsRef<Path>) -> Result<Self, MetricsJournalErrorV1> {
         let path = path.as_ref();
