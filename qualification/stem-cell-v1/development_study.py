@@ -57,6 +57,8 @@ def fit_and_seal(inputs, training_labels, features, config, output):
     output = Path(output)
     # Caller creates the experiment directory once. Existing evidence is never replaced.
     reserved = [output / p for p in ("selection.json", "predictions.json", "normalizer.safetensors")]
+    if config.seal_replay:
+        reserved.extend(output / p for p in ("replay-features.safetensors", "replay-inputs.json"))
     if any(p.exists() for p in reserved):
         raise FileExistsError("immutable experiment already contains output")
     with torch.random.fork_rng(devices=[]):
@@ -79,10 +81,17 @@ def fit_and_seal(inputs, training_labels, features, config, output):
     with (output / "normalizer.safetensors").open("xb") as handle:
         from safetensors.torch import save
         handle.write(save({"mean": mean, "scale": scale}))
-    selection.update({"schema": "hepta.stem.structural-selection.v1", "config": asdict(config),
+    selection.update({"schema": "hepta.stem.structural-selection.v2", "config": asdict(config),
                       "training_input_digest": digest([r for r in inputs if r["phase"] in TRAIN_PHASES]),
                       "costs": costs, "checkpoints": inventory})
     selection_sha = write_once(output / "selection.json", selection)
+    replay = {}
+    if config.seal_replay:
+        # Explicit opt-in: these are scoped derived features, not public by default.
+        with (output / "replay-features.safetensors").open("xb") as handle:
+            handle.write(save({"features": features.detach().contiguous()}))
+        replay = {"features_sha256": hashlib.sha256((output / "replay-features.safetensors").read_bytes()).hexdigest(),
+                  "inputs_sha256": write_once(output / "replay-inputs.json", inputs)}
     evaluated = [i for i, r in enumerate(inputs) if r["phase"] not in TRAIN_PHASES]
     if not evaluated:
         raise ValueError("no held-out evaluation input")
@@ -101,6 +110,8 @@ def fit_and_seal(inputs, training_labels, features, config, output):
             selection["costs"]["adaptation"][name]["evaluation_batch_wall_ns"] = wall_ns
     predictions_sha = write_once(output / "predictions.json", predictions)
     return {"selection_sha256": selection_sha, "predictions_sha256": predictions_sha,
+            "normalizer_sha256": hashlib.sha256((output / "normalizer.safetensors").read_bytes()).hexdigest(),
+            "replay": replay,
             "evaluation_wall_ns": {n: selection["costs"]["adaptation"][n]["evaluation_batch_wall_ns"]
                                     for n in models}, "production_authorized": False}
 
@@ -220,15 +231,21 @@ def main():
             raise ValueError("snapshot changed during execution")
         inputs, training = prepare_views(rows)
         sealed = fit_and_seal(inputs, training, torch.tensor([f.values for f in features]), config, args.output)
+        from development_serving_probe import probe_trained_head
+        held_out_requests = tuple(r for r, row in zip(requests, rows)
+                                  if row["split"] == "held_out")
+        serving_probe = probe_trained_head(args.output, sealed, held_out_requests, backend, config)
+        serving_probe_sha = write_once(args.output / "serving-probe.json", serving_probe)
         verify_loaded_safetensors(torch, backend.model, args.snapshot)
         if snapshot_digest(args.snapshot) != args.snapshot_sha256:
-            raise ValueError("snapshot changed during Head training")
+            raise ValueError("snapshot changed during Head training or serving probe")
         if hashlib.sha256(args.dataset.read_bytes()).hexdigest() != args.dataset_sha256:
             raise ValueError("dataset changed during experiment")
         import resource
-        report = {"schema": "hepta.stem.structural-run.v1", "source_sha": source,
+        report = {"schema": "hepta.stem.structural-run.v3", "source_sha": source,
             "dataset_sha256": args.dataset_sha256, "snapshot_sha256": args.snapshot_sha256,
-            "sealed": sealed, "benchmark": benchmark, "load_cpu_ns": load_cpu, "load_wall_ns": load_wall,
+            "sealed": sealed, "benchmark": benchmark,
+            "serving_probe_sha256": serving_probe_sha, "load_cpu_ns": load_cpu, "load_wall_ns": load_wall,
             "training_feature_backend_calls": sum(o.backend_calls for o in observations),
             "encoder_parameters": sum(p.numel() for p in backend.model.parameters()),
             "versions": versions, "cpu_ns": time.process_time_ns() - start_cpu,
@@ -236,6 +253,9 @@ def main():
             "linux_process_lifetime_peak_rss_bytes": resource.getrusage(resource.RUSAGE_SELF).ru_maxrss * 1024
                 if platform.system() == "Linux" else None,
             "real_weights_executed": True, "origin_independently_verified": False,
+            "time_basis": config.time_basis, "genuine_future_windows_authenticated": False,
+            "encoder_loading": backend.verified_loading,
+            "encoder_materialization": backend.verified_materialization,
             "production_authorized": False}
         write_once(args.output / "run.json", report)
     except Exception as error:

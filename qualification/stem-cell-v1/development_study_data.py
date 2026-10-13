@@ -35,6 +35,8 @@ class StudyConfig:
     benchmark_inputs: int = 4
     benchmark_replicas: int = 8
     origin: str = "public_retrospective"
+    time_basis: str = "observed_at"
+    seal_replay: bool = False
 
     def validate(self):
         limits = {"classes": (2, 128), "rank": (1, 32), "base_steps": (1, 1000),
@@ -51,6 +53,12 @@ class StudyConfig:
                 raise ValueError(f"invalid {name}")
         if self.origin not in {"public_retrospective", "prospective_hepta", "synthetic_fixture"}:
             raise ValueError("undeclared data origin")
+        if type(self.seal_replay) is not bool:
+            raise ValueError("invalid replay capture flag")
+        if self.time_basis not in {"observed_at", "publisher_partition"}:
+            raise ValueError("undeclared time basis")
+        if self.time_basis == "publisher_partition" and self.origin != "public_retrospective":
+            raise ValueError("publisher partitions cannot qualify prospective observations")
         return self
 
 
@@ -107,12 +115,17 @@ def audit_rows(rows, config):
         for name in ("state", "question"):
             if type(row[name]) is not str or not 0 < len(row[name].encode()) <= 16384:
                 raise ValueError("invalid bounded source input")
-        if type(row["observed_at"]) is not str:
-            raise ValueError("explicit timezone-aware observation time required")
-        timestamp = datetime.fromisoformat(row["observed_at"])
-        if timestamp.tzinfo is None or timestamp.utcoffset() is None:
-            raise ValueError("observation time requires timezone")
-        times.setdefault(split, []).append(timestamp)
+        if config.time_basis == "publisher_partition":
+            if row["observed_at"] is not None or split in {"future_1", "future_2"}:
+                raise ValueError("publisher partitions cannot invent dates or future windows")
+            times.setdefault(split, []).append(None)
+        else:
+            if type(row["observed_at"]) is not str:
+                raise ValueError("explicit timezone-aware observation time required")
+            timestamp = datetime.fromisoformat(row["observed_at"])
+            if timestamp.tzinfo is None or timestamp.utcoffset() is None:
+                raise ValueError("observation time requires timezone")
+            times.setdefault(split, []).append(timestamp)
         scoped.add(row["scope"])
         options.add(tuple(row["options"]))
         state = " ".join(unicodedata.normalize("NFC", row["state"]).split())
@@ -132,8 +145,9 @@ def audit_rows(rows, config):
         raise ValueError("base/adapt/extra/calibration/held_out are mandatory")
     # OOD is not assigned an invented chronology; optional future folds are.
     ordered = [p for p in PHASES[:-1] if p in times]
-    if any(max(times[a]) >= min(times[b]) for a, b in zip(ordered, ordered[1:])):
-        raise ValueError("overlapping or reversed observation windows")
+    if config.time_basis == "observed_at":
+        if any(max(times[a]) >= min(times[b]) for a, b in zip(ordered, ordered[1:])):
+            raise ValueError("overlapping or reversed observation windows")
     for split in PHASES[:3]:
         labels = {r["label"] for r in rows if phase(r) == split}
         if labels != set(range(config.classes)):

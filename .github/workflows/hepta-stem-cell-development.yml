@@ -34,7 +34,8 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/stem-development-venv"
           "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install \
             --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install numpy==2.2.6 safetensors==0.7.0
+          "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip install numpy==2.2.6 safetensors==0.7.0 packaging==25.0
+          "$RUNNER_TEMP/stem-development-venv/bin/python" -c 'import torch; from safetensors.torch import load, save; x = torch.arange(4); assert torch.equal(load(save({"x": x}))["x"], x)'
       - name: Execute actual arithmetic and existing repository entrypoints
         env:
           PYTHONDONTWRITEBYTECODE: "1"
@@ -44,17 +45,22 @@ jobs:
           {
             git rev-parse HEAD
             git rev-parse HEAD^{tree}
+            git archive --format=tar.gz HEAD qualification/stem-cell-v1 > "$RUNNER_TEMP/stem-development-source.tar.gz"
             "$RUNNER_TEMP/stem-development-venv/bin/python" -m pip freeze
             "$RUNNER_TEMP/stem-development-venv/bin/python" -m unittest -v \
               test_shared_encoder_eviction development_tensor_checks development_repository_checks \
-              development_study_checks
+              development_study_checks public_structural_checks \
+              selection_replay_checks serving_probe_checks public_corpus_checks historical_feature_checks \
+              shared_cell_execution_checks multicell_execution_checks bounded_cell_execution_checks cell_execution_plan_checks bge_snapshot_checks cell_consolidation_checks cell_anchor_checks cell_conditional_checks cell_prototype_checks cell_correlated_checks
           } 2>&1 | tee "$RUNNER_TEMP/stem-development-tests.txt"
       - name: Preserve exact-source result including failures
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: stem-development-${{ matrix.source }}-${{ github.run_id }}
-          path: ${{ runner.temp }}/stem-development-tests.txt
+          path: |
+            ${{ runner.temp }}/stem-development-tests.txt
+            ${{ runner.temp }}/stem-development-source.tar.gz
           if-no-files-found: warn
           retention-days: 14
       - name: Check source unchanged
@@ -62,3 +68,246 @@ jobs:
         run: |
           git diff --check
           git diff --exit-code
+
+
+  public-pretrained-execution:
+    name: Pinned BGE and public CLINC eight-intent physical execution
+    needs: tensor-mechanisms
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: qualification/stem-cell-v1
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      TOKENIZERS_PARALLELISM: "false"
+    steps:
+      - name: Checkout exact source head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind original source and isolated physical environment
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/stem-public-evidence"
+          git rev-parse HEAD > "$RUNNER_TEMP/stem-public-evidence/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$RUNNER_TEMP/stem-public-evidence/source-tree.txt"
+          git archive --format=tar.gz HEAD qualification/stem-cell-v1 > "$RUNNER_TEMP/stem-public-evidence/source.tar.gz"
+          python3 -m venv "$RUNNER_TEMP/stem-public-venv"
+          "$RUNNER_TEMP/stem-public-venv/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          "$RUNNER_TEMP/stem-public-venv/bin/pip" install numpy==2.2.6 safetensors==0.7.0 packaging==25.0 transformers==4.57.3 huggingface-hub==0.36.0
+          "$RUNNER_TEMP/stem-public-venv/bin/python" -c 'import torch; from safetensors.torch import load, save; x = torch.arange(4); assert torch.equal(load(save({"x": x}))["x"], x)'
+          "$RUNNER_TEMP/stem-public-venv/bin/pip" freeze > "$RUNNER_TEMP/stem-public-evidence/environment.txt"
+      - name: Provision only pinned public bytes, keeping any failed attempt
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-public-venv/bin/python" qualification/stem-cell-v1/public_structural_stage.py \
+            --output "$RUNNER_TEMP/stem-public-inputs" --partition-policy protected_content_groups_v2 \
+            --snapshot-policy bge-pinned-position-buffer-v1 \
+            2>&1 | tee "$RUNNER_TEMP/stem-public-evidence/staging.log"
+      - name: Execute existing offline Encoder and five-arm learning
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-public-venv/bin/python"
+          STAGE="$RUNNER_TEMP/stem-public-inputs"
+          DATA_SHA=$("$PY" -c 'import json,sys; print(json.load(open(sys.argv[1]))["dataset_sha256"])' "$STAGE/stage.json")
+          MODEL_SHA=$("$PY" -c 'import json,sys; print(json.load(open(sys.argv[1]))["snapshot_sha256"])' "$STAGE/stage.json")
+          FRONTIER=$("$PY" -c 'import hashlib; print(hashlib.sha256(b"non-authorizing-public-research-scope").hexdigest())')
+          "$PY" qualification/stem-cell-v1/development_study.py \
+            --dataset "$STAGE/dataset.jsonl" --dataset-sha256 "$DATA_SHA" \
+            --snapshot "$STAGE/model" --snapshot-sha256 "$MODEL_SHA" \
+            --config "$STAGE/config.jsonl" --source-root "$PWD" --expected-source-sha "$(git rev-parse HEAD)" \
+            --revocation-frontier-sha256 "$FRONTIER" --output "$RUNNER_TEMP/stem-public-evidence/study" \
+            2>&1 | tee "$RUNNER_TEMP/stem-public-evidence/execution.log"
+      - name: Separate saved-tensor replay and sealed-label scoring
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-public-venv/bin/python"
+          OUT="$RUNNER_TEMP/stem-public-evidence"
+          "$PY" qualification/stem-cell-v1/development_study_replay.py \
+            --run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --output "$OUT/replay.json" 2>&1 | tee "$OUT/replay.log"
+          "$PY" qualification/stem-cell-v1/development_study_review.py \
+            --run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --output "$OUT/scores.json" 2>&1 | tee "$OUT/scoring.log"
+      - name: Consolidate old and new Cells with retained-task controls
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-public-venv/bin/python"
+          OUT="$RUNNER_TEMP/stem-public-evidence"
+          "$PY" qualification/stem-cell-v1/cell_consolidation_study.py \
+            --source-run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --output "$OUT/consolidation" 2>&1 | tee "$OUT/consolidation.log"
+          "$PY" qualification/stem-cell-v1/cell_consolidation_study.py \
+            --source-run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --review-run "$OUT/consolidation" --output "$OUT/consolidation-scores.json" \
+            2>&1 | tee "$OUT/consolidation-replay.log"
+      - name: Constrain consolidation to the old training-input nullspace
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-public-venv/bin/python"
+          OUT="$RUNNER_TEMP/stem-public-evidence"
+          "$PY" qualification/stem-cell-v1/cell_anchor_study.py \
+            --source-run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --consolidation-run "$OUT/consolidation" --output "$OUT/anchor-consolidation" \
+            2>&1 | tee "$OUT/anchor-consolidation.log"
+          "$PY" qualification/stem-cell-v1/cell_anchor_study.py \
+            --source-run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --consolidation-run "$OUT/consolidation" --review-run "$OUT/anchor-consolidation" \
+            --output "$OUT/anchor-consolidation-scores.json" 2>&1 | tee "$OUT/anchor-replay.log"
+      - name: Frozen conditional specialists and learned group gate
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-public-venv/bin/python"
+          OUT="$RUNNER_TEMP/stem-public-evidence"
+          "$PY" qualification/stem-cell-v1/cell_conditional_study.py \
+            --source-run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --consolidation-run "$OUT/consolidation" --anchor-run "$OUT/anchor-consolidation" \
+            --output "$OUT/conditional-gate" 2>&1 | tee "$OUT/conditional-gate.log"
+          "$PY" qualification/stem-cell-v1/cell_conditional_study.py \
+            --source-run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --consolidation-run "$OUT/consolidation" --anchor-run "$OUT/anchor-consolidation" \
+            --review-run "$OUT/conditional-gate" --output "$OUT/conditional-gate-scores.json" \
+            2>&1 | tee "$OUT/conditional-gate-replay.log"
+      - name: Prototype group routing with dual old and new usefulness floors
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-public-venv/bin/python"
+          OUT="$RUNNER_TEMP/stem-public-evidence"
+          "$PY" qualification/stem-cell-v1/cell_prototype_study.py \
+            --source-run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --consolidation-run "$OUT/consolidation" --anchor-run "$OUT/anchor-consolidation" \
+            --conditional-run "$OUT/conditional-gate" --output "$OUT/prototype-gate" \
+            2>&1 | tee "$OUT/prototype-gate.log"
+          "$PY" qualification/stem-cell-v1/cell_prototype_study.py \
+            --source-run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --consolidation-run "$OUT/consolidation" --anchor-run "$OUT/anchor-consolidation" \
+            --conditional-run "$OUT/conditional-gate" --review-run "$OUT/prototype-gate" \
+            --output "$OUT/prototype-gate-scores.json" 2>&1 | tee "$OUT/prototype-replay.log"
+      - name: Compare full and diagonal covariance without changing retention floors
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-public-venv/bin/python"
+          OUT="$RUNNER_TEMP/stem-public-evidence"
+          "$PY" qualification/stem-cell-v1/cell_prototype_study.py \
+            --source-run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --consolidation-run "$OUT/consolidation" --anchor-run "$OUT/anchor-consolidation" \
+            --conditional-run "$OUT/conditional-gate" --covariance-profile paired-full \
+            --output "$OUT/correlated-geometry" 2>&1 | tee "$OUT/correlated-geometry.log"
+          "$PY" qualification/stem-cell-v1/cell_prototype_study.py \
+            --source-run "$OUT/study" --dataset "$RUNNER_TEMP/stem-public-inputs/dataset.jsonl" \
+            --consolidation-run "$OUT/consolidation" --anchor-run "$OUT/anchor-consolidation" \
+            --conditional-run "$OUT/conditional-gate" --review-run "$OUT/correlated-geometry" \
+            --output "$OUT/correlated-geometry-scores.json" 2>&1 | tee "$OUT/correlated-replay.log"
+      - name: Retain provenance and failures, never pretrained weights
+        if: always()
+        run: |
+          set -euo pipefail
+          OUT="$RUNNER_TEMP/stem-public-evidence"
+          mkdir -p "$OUT/inputs"
+          for name in PLAN.json FAILED.json stage.json publisher-model-pins.json publisher.json dataset.jsonl config.jsonl dataset-provenance.json CLINC_LICENSE.txt; do
+            if [ -f "$RUNNER_TEMP/stem-public-inputs/$name" ]; then
+              cp "$RUNNER_TEMP/stem-public-inputs/$name" "$OUT/inputs/$name"
+            fi
+          done
+          git diff --check
+          git diff --exit-code
+      - name: Upload original execution records
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-public-execution-${{ github.run_id }}
+          path: ${{ runner.temp }}/stem-public-evidence
+          if-no-files-found: error
+          retention-days: 30
+
+
+  historical-feature-learning:
+    name: Pinned historical mmBERT features and real publisher-data preflight
+    needs: tensor-mechanisms
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      PYTHONPATH: qualification/stem-cell-v1
+    steps:
+      - name: Checkout exact candidate source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install the existing CPU tensor profile
+        run: |
+          set -euo pipefail
+          mkdir "$RUNNER_TEMP/stem-cached-evidence"
+          git rev-parse HEAD > "$RUNNER_TEMP/stem-cached-evidence/source-sha.txt"
+          python3 -m venv "$RUNNER_TEMP/stem-cached-venv"
+          "$RUNNER_TEMP/stem-cached-venv/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          "$RUNNER_TEMP/stem-cached-venv/bin/pip" install numpy==2.2.6 safetensors==0.7.0 packaging==25.0
+          "$RUNNER_TEMP/stem-cached-venv/bin/python" -c 'import torch; from safetensors.torch import load, save; x = torch.arange(4); assert torch.equal(load(save({"x": x}))["x"], x)'
+          "$RUNNER_TEMP/stem-cached-venv/bin/pip" freeze > "$RUNNER_TEMP/stem-cached-evidence/environment.txt"
+      - name: Acquire one existing artifact without downloading model weights
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/${{ github.repository }}/actions/artifacts/11757461425/zip" > "$RUNNER_TEMP/stem-cached-reference.zip"
+          sha256sum "$RUNNER_TEMP/stem-cached-reference.zip" > "$RUNNER_TEMP/stem-cached-evidence/archive-sha256.txt"
+      - name: Validate original bytes and train the five controls
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-cached-venv/bin/python" qualification/stem-cell-v1/historical_feature_study.py \
+            --archive "$RUNNER_TEMP/stem-cached-reference.zip" --source-root "$PWD" \
+            --expected-source-sha "$(git rev-parse HEAD)" --output "$RUNNER_TEMP/stem-cached-evidence/study" \
+            2>&1 | tee "$RUNNER_TEMP/stem-cached-evidence/learning.log"
+      - name: Independent numerical replay followed by held-out scoring
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-cached-venv/bin/python"
+          OUT="$RUNNER_TEMP/stem-cached-evidence"
+          "$PY" qualification/stem-cell-v1/development_study_replay.py \
+            --run "$OUT/study" --dataset "$OUT/study/dataset.jsonl" --output "$OUT/replay.json"
+          "$PY" qualification/stem-cell-v1/development_study_review.py \
+            --run "$OUT/study" --dataset "$OUT/study/dataset.jsonl" --output "$OUT/scores.json"
+          "$PY" qualification/stem-cell-v1/multicell_learning_study.py \
+            --archive "$RUNNER_TEMP/stem-cached-reference.zip" --output "$OUT/multicell" --synthetic-scaling --bounded-serving --planned-serving
+          "$PY" qualification/stem-cell-v1/multicell_learning_study.py \
+            --archive "$RUNNER_TEMP/stem-cached-reference.zip" --review-run "$OUT/multicell" \
+            --output "$OUT/multicell-scores.json"
+          git diff --check
+          git diff --exit-code
+      - name: Retain results and failures, not fresh-inference claims
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-cached-learning-${{ github.run_id }}
+          path: ${{ runner.temp }}/stem-cached-evidence
+          if-no-files-found: error
+          retention-days: 30
