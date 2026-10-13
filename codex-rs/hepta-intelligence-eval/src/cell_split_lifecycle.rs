@@ -45,15 +45,6 @@ impl CellSplitCanaryReceiptV1 {
         failed_requests: u64,
         rollback_verified: bool,
     ) -> Result<Self, CellSplitLifecycleErrorV1> {
-        if split_id.as_str().is_empty()
-            || dispatch_receipt_digest.is_zero()
-            || old_route_fence_digest.is_zero()
-            || child_route_digest.is_zero()
-            || observed_requests == 0
-            || failed_requests > observed_requests
-        {
-            return Err(CellSplitLifecycleErrorV1::InvalidEvidence);
-        }
         let mut receipt = Self {
             split_id,
             candidate_generation,
@@ -65,11 +56,29 @@ impl CellSplitCanaryReceiptV1 {
             rollback_verified,
             receipt_digest: Digest32::ZERO,
         };
+        receipt.validate_shape()?;
         receipt.receipt_digest = receipt.digest();
         Ok(receipt)
     }
 
+    /// Check the same structural admission constraints on both freshly
+    /// constructed canaries and legacy/deserialized receipts. SHA-256 proves
+    /// byte integrity, not that the sampled request/fence fields are valid.
+    fn validate_shape(&self) -> Result<(), CellSplitLifecycleErrorV1> {
+        if self.split_id.as_str().is_empty()
+            || self.dispatch_receipt_digest.is_zero()
+            || self.old_route_fence_digest.is_zero()
+            || self.child_route_digest.is_zero()
+            || self.observed_requests == 0
+            || self.failed_requests > self.observed_requests
+        {
+            return Err(CellSplitLifecycleErrorV1::InvalidEvidence);
+        }
+        Ok(())
+    }
+
     pub fn verify_digest(&self) -> Result<(), CellSplitLifecycleErrorV1> {
+        self.validate_shape()?;
         if self.receipt_digest != self.digest() {
             return Err(CellSplitLifecycleErrorV1::Digest);
         }
@@ -94,7 +103,7 @@ impl CellSplitCanaryReceiptV1 {
     }
 
     pub(crate) fn passes(&self) -> bool {
-        self.observed_requests > 0 && self.failed_requests == 0 && self.rollback_verified
+        self.verify_digest().is_ok() && self.failed_requests == 0 && self.rollback_verified
     }
 }
 
