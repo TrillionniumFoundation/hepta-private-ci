@@ -18,7 +18,23 @@ fn open(root: &std::path::Path, name: &str, create: bool) -> std::fs::File {
 }
 
 fn directory(root: &std::path::Path) -> std::fs::File {
-    std::fs::File::open(root).unwrap()
+    // Windows requires FILE_FLAG_BACKUP_SEMANTICS to obtain a real
+    // synchronizable directory handle. Keep the production directory
+    // fsync contract; do not substitute a regular file or skip recovery.
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+        OpenOptions::new()
+            .read(true)
+            .write(true)
+            .custom_flags(0x0200_0000)
+            .open(root)
+            .unwrap()
+    }
+    #[cfg(not(windows))]
+    {
+        std::fs::File::open(root).unwrap()
+    }
 }
 
 fn writer(
