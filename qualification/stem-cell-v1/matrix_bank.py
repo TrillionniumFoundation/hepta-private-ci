@@ -3,6 +3,7 @@
 Dense and sparse variants have the same gate/head tensors. For 16/32 cells,
 widths are chosen so actual total trainable counts match at equal feature width
 and width_units: N*(d+c+1)*(width+1)=32*(d+c+1)*width_units.
+The explicit 64M control doubles that capacity; it is not only a new label.
 """
 import hashlib
 
@@ -19,14 +20,17 @@ class CellBank(nn.Module):
         super().__init__()
         if (type(dimension) is not int or not 1 <= dimension <= 8192
                 or type(classes) is not int or not 2 <= classes <= 16
-                or type(width_units) is not int or not 1 <= width_units <= 256):
+                or type(width_units) is not int or not 1 <= width_units <= 1024):
             raise ValueError("invalid bounded Cell geometry")
         count = profile["logical_cells"]
         if (count not in (16, 32) or profile["initial_logical_cells"] != count
                 or profile["split"] is not False or profile["ndu"] is not False
                 or profile["resident_stem_copies"] != 1):
             raise ValueError("profile requires an unimplemented executor")
-        width = (32 // count) * width_units - 1
+        capacity = profile["total_head_budget_params"] // 32_000_000
+        if capacity not in (1, 2):
+            raise ValueError("unregistered capacity multiplier")
+        width = (32 // count) * width_units * capacity - 1
         if width < 1:
             raise ValueError("width_units must leave a nonempty hidden layer")
         per_head = (dimension + classes + 1) * width + classes
@@ -44,7 +48,7 @@ class CellBank(nn.Module):
         self.gate_parameter_count = sum(p.numel() for p in self.gate.parameters())
         self.head_parameter_count = sum(p.numel() for p in self.heads.parameters())
         total = self.head_parameter_count + self.gate_parameter_count
-        if total != 32 * (dimension + classes + 1) * width_units:
+        if total != 32 * (dimension + classes + 1) * width_units * capacity:
             raise ValueError("unexpected bank tensor inventory")
         # Also cap all trainable parameters, rather than hide the gate outside
         # the nominal Head-only envelope. Actual counts are retained separately.

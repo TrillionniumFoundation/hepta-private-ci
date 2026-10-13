@@ -65,7 +65,7 @@ def freeze_config(plan, contract, *, arm_id, snapshot_sha256, upstream_revision,
     if device != "cpu":
         raise ValueError("this measured reference profile is CPU FP32; native/GPU is separate")
     for name, value, ceiling in (("steps", train_steps, 512), ("batch", batch_size, 128),
-                                 ("width units", width_units, 256), ("tokens", context_tokens, 8192),
+                                 ("width units", width_units, 1024), ("tokens", context_tokens, 8192),
                                  ("feature bytes", max_feature_bytes, 256 * 1024 * 1024)):
         _integer(value, name, 1)
         if value > ceiling:
