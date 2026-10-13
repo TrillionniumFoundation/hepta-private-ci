@@ -24,7 +24,7 @@ from paired_execution import PHASES
 SOURCE_FILES = ("next_round_matrix.py", "paired_execution.py", "head_surgery.py",
                 "hf_encoder_kernel.py", "matrix_materials.py", "matrix_bank.py",
                 "matrix_runtime.py", "matrix_export.py", "aten_work.py",
-                "host_counters.py", "execution_meter.py")
+                "host_counters.py", "execution_meter.py", "hf_complete_checkpoint.py", "transformer_work.py")
 
 
 def verify_source(source_sha):
@@ -54,16 +54,24 @@ class LocalHFEncoder:
             raise ValueError("model snapshot digest mismatch")
         self.tokenizer = AutoTokenizer.from_pretrained(str(self.root), local_files_only=True,
                                                        trust_remote_code=False)
-        loaded = AutoModel.from_pretrained(str(self.root), local_files_only=True,
-                                          trust_remote_code=False, use_safetensors=True,
-                                          output_loading_info=True, torch_dtype=torch.float32)
-        if not isinstance(loaded, tuple) or len(loaded) != 2:
-            raise ValueError("complete weight-loading report required")
-        model, info = loaded
-        load_receipt = validate_encoder_loading_info(info)
-        model = model.to("cpu").eval().requires_grad_(False)
-        exact_receipt = verify_loaded_safetensors(torch, model, self.root)
-        count = sum(p.numel() for p in model.parameters())
+        self.complete_receipt = None
+        if config.get("encoder_profile") is not None:
+            from hf_complete_checkpoint import load_complete_mlm
+            self.checkpoint_model, model, self.complete_receipt = load_complete_mlm(self.root)
+            load_receipt = self.complete_receipt["loading"]
+            exact_receipt = self.complete_receipt["materialization"]
+        else:
+            loaded = AutoModel.from_pretrained(str(self.root), local_files_only=True,
+                                              trust_remote_code=False, use_safetensors=True,
+                                              output_loading_info=True, torch_dtype=torch.float32)
+            if not isinstance(loaded, tuple) or len(loaded) != 2:
+                raise ValueError("complete weight-loading report required")
+            model, info = loaded
+            load_receipt = validate_encoder_loading_info(info)
+            model = model.to("cpu").eval().requires_grad_(False)
+            exact_receipt = verify_loaded_safetensors(torch, model, self.root)
+            self.checkpoint_model = model
+        count = sum(p.numel() for p in self.checkpoint_model.parameters())
         if profile["stem"] == "421m" and not 350_000_000 <= count <= 480_000_000:
             raise ValueError("loaded model is not a 421M-class Encoder")
         if profile["stem"] == "smaller_control" and not 0 < count < 350_000_000:
@@ -76,11 +84,13 @@ class LocalHFEncoder:
             raise ValueError("context exceeds model position budget")
         self.model, self.max_tokens, self.calls = model, config["context_tokens"], 0
         from head_surgery import tensor_inventory
-        self.weight_bytes = tensor_inventory(model)["unique_weight_bytes"]
+        self.weight_bytes = tensor_inventory(self.checkpoint_model)["unique_weight_bytes"]
         self.receipt = dict(snapshot_sha256=self.expected, upstream_revision=config["upstream_revision"],
                             frozen_encoder_params=count, loading=load_receipt, materialization=exact_receipt,
                             material_approval_sha256=config["material_approval_sha256"],
                             pretrained_provenance_independently_verified=False)
+        if self.complete_receipt is not None:
+            self.receipt["complete_checkpoint"] = self.complete_receipt
         self.reverify()
 
     def encode(self, row):
@@ -92,8 +102,12 @@ class LocalHFEncoder:
         import torch
         if snapshot_digest(self.root) != self.expected:
             raise ValueError("snapshot changed during execution")
-        verify_loaded_safetensors(torch, self.model, self.root)
-        if any(p.requires_grad for p in self.model.parameters()):
+        if self.complete_receipt is not None:
+            from hf_complete_checkpoint import TIED_ALIASES
+            verify_loaded_safetensors(torch, self.checkpoint_model, self.root, tied_aliases=TIED_ALIASES)
+        else:
+            verify_loaded_safetensors(torch, self.checkpoint_model, self.root)
+        if any(p.requires_grad for p in self.checkpoint_model.parameters()):
             raise ValueError("selected Encoder unexpectedly became trainable")
 
 

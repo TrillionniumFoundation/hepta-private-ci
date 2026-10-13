@@ -54,7 +54,8 @@ def file_sha256(path):
 def freeze_config(plan, contract, *, arm_id, snapshot_sha256, upstream_revision,
                   material_approval_sha256, device="cpu", train_steps=32,
                   batch_size=16, width_units=64, context_tokens=512,
-                  max_feature_bytes=64 * 1024 * 1024, measurement_policy=None):
+                  max_feature_bytes=64 * 1024 * 1024, measurement_policy=None,
+                  encoder_profile=None):
     validate_plan(plan)
     validate_contract(plan, contract)
     if arm_id not in SUPPORTED_ARMS:
@@ -80,13 +81,25 @@ def freeze_config(plan, contract, *, arm_id, snapshot_sha256, upstream_revision,
         validate_policy(measurement_policy)
         body["schema"] = "hepta.stem.bound-hf-config.v2"
         body["measurement_policy"] = dict(measurement_policy)
+    if encoder_profile is not None:
+        if encoder_profile != "modernbert_mlm_full_eager_v1":
+            raise ValueError("unregistered complete-checkpoint profile")
+        body["schema"] = "hepta.stem.bound-hf-config.v3"
+        body["encoder_profile"] = encoder_profile
     return {**body, "config_id": _digest(body)}
 
 
 def validate_config(plan, contract, config):
     if not isinstance(config, dict):
         raise ValueError("complete bound configuration required")
-    fields_expected = CONFIG_FIELDS | ({"measurement_policy"} if config.get("schema") == "hepta.stem.bound-hf-config.v2" else set())
+    schema = config.get("schema")
+    fields_expected = set(CONFIG_FIELDS)
+    if schema in ("hepta.stem.bound-hf-config.v2", "hepta.stem.bound-hf-config.v3") and "measurement_policy" in config:
+        fields_expected.add("measurement_policy")
+    if schema == "hepta.stem.bound-hf-config.v3":
+        fields_expected.add("encoder_profile")
+        if config.get("encoder_profile") is None:
+            raise ValueError("V3 requires its explicit checkpoint profile")
     if set(config) != fields_expected or ("measurement_policy" in config and config["measurement_policy"] is None):
         raise ValueError("complete bound configuration required")
     fields = {k: v for k, v in config.items() if k not in ("schema", "contract_id", "config_id")}
