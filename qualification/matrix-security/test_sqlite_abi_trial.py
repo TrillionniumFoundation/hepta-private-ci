@@ -18,6 +18,9 @@ def fixture():
 def cargo_graph(sdk, hepta):
     specs = [
         ("codex-hepta-matrix-sdk", "hepta", "0.0.0", f"{hepta}/codex-rs/hepta-matrix-sdk/Cargo.toml"),
+        ("codex-hepta-matrix-store", "store", "0.0.0", f"{hepta}/codex-rs/hepta-matrix-store/Cargo.toml"),
+        ("sqlx", "sqlx", "0.9.0", "/tmp/registry/sqlx/Cargo.toml"),
+        ("sqlx-sqlite", "sqlx-sqlite", "0.9.0", "/tmp/registry/sqlx-sqlite/Cargo.toml"),
         ("matrix-sdk", "sdk", "0.19.1", f"{sdk}/crates/matrix-sdk/Cargo.toml"),
         ("matrix-sdk-sqlite", "sqlite", "0.19.1", f"{sdk}/crates/matrix-sdk-sqlite/Cargo.toml"),
         ("matrix-sdk-crypto", "crypto", "0.19.1", f"{sdk}/crates/matrix-sdk-crypto/Cargo.toml"),
@@ -30,13 +33,16 @@ def cargo_graph(sdk, hepta):
             for n, ident, version, path in specs]
     next(p for p in pkgs if p["name"] == "libsqlite3-sys")["links"] = "sqlite3"
     for package in pkgs:
-        if package["name"] in ("rusqlite", "libsqlite3-sys"):
+        if package["name"] in ("sqlx", "sqlx-sqlite", "rusqlite", "libsqlite3-sys"):
             package["source"] = "registry+https://github.com/rust-lang/crates.io-index"
             package["checksum"] = "a" * 64
     def deps(*names):
         return [{"pkg": n, "dep_kinds": [{"kind": None, "target": None}]} for n in names]
     nodes = [
-        {"id": "hepta", "features": [], "deps": deps("sdk")},
+        {"id": "hepta", "features": [], "deps": deps("sdk", "store")},
+        {"id": "store", "features": [], "deps": deps("sqlx", "ffi")},
+        {"id": "sqlx", "features": ["sqlite"], "deps": deps("sqlx-sqlite")},
+        {"id": "sqlx-sqlite", "features": [], "deps": deps("ffi")},
         {"id": "sdk", "features": ["e2e-encryption", "sqlite"],
          "deps": deps("sqlite", "crypto", "anymap")},
         {"id": "sqlite", "features": [], "deps": deps("rusqlite")},
@@ -59,6 +65,7 @@ class SqliteAbiTrialTests(unittest.TestCase):
         (self.sdk / "crates/matrix-sdk-sqlite").mkdir(parents=True)
         (self.sdk / "crates/matrix-sdk").mkdir()
         (self.hepta / "codex-rs/hepta-matrix-sdk").mkdir(parents=True)
+        (self.hepta / "codex-rs/hepta-matrix-store").mkdir(parents=True)
         self.manifest = self.sdk / trial.MANIFEST
         self.source = fixture()
         self.manifest.write_bytes(self.source)
@@ -131,6 +138,10 @@ class SqliteAbiTrialTests(unittest.TestCase):
         audit = trial.audit_metadata(cargo_graph(self.sdk, self.hepta),
                                      receipt, self.sdk, self.hepta)
         self.assertTrue(audit["actual_cargo_metadata_checked"])
+        self.assertTrue(audit["single_native_sqlite_owner_verified"])
+        self.assertEqual(audit["sqlx_chain"],
+                         ["sqlx 0.9.0", "sqlx-sqlite 0.9.0",
+                          "libsqlite3-sys 0.37.0"])
         self.assertFalse(audit["production_authorized"])
         self.assertFalse(audit["compile_verified"])
 
@@ -147,6 +158,33 @@ class SqliteAbiTrialTests(unittest.TestCase):
             next(p for p in sample["packages"] if p["name"] == name)[key] = bad
             with self.subTest(name=name, key=key), self.assertRaises(ValueError):
                 trial.audit_metadata(sample, receipt, self.sdk, self.hepta)
+
+    def test_sqlx_and_matrix_must_share_actual_native_links_owner(self):
+        receipt = self.stage()
+        for src, dst in [
+            ("hepta", "store"), ("store", "sqlx"),
+            ("store", "ffi"), ("sqlx", "sqlx-sqlite"),
+            ("sqlx-sqlite", "ffi"),
+        ]:
+            candidate = cargo_graph(self.sdk, self.hepta)
+            source = next(n for n in candidate["resolve"]["nodes"]
+                          if n["id"] == src)
+            edge = next(d for d in source["deps"] if d["pkg"] == dst)
+            edge["dep_kinds"] = [{"kind": "dev", "target": None}]
+            with self.subTest(edge=(src, dst)), self.assertRaises(ValueError):
+                trial.audit_metadata(candidate, receipt, self.sdk, self.hepta)
+        for name, field, invalid in [
+            ("sqlx", "version", "0.8.6"),
+            ("sqlx-sqlite", "version", "0.8.6"),
+            ("sqlx-sqlite", "source", "path+file:///tmp/forged-sqlx"),
+            ("sqlx", "checksum", None),
+            ("codex-hepta-matrix-store", "manifest_path", "/tmp/fake-store"),
+        ]:
+            candidate = cargo_graph(self.sdk, self.hepta)
+            next(item for item in candidate["packages"]
+                 if item["name"] == name)[field] = invalid
+            with self.subTest(name=name, field=field), self.assertRaises(ValueError):
+                trial.audit_metadata(candidate, receipt, self.sdk, self.hepta)
 
     def test_foreign_sqlite_or_crypto_sources_rejected(self):
         receipt = self.stage()
