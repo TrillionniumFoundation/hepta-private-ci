@@ -1,4 +1,4 @@
-"""Exact source-margin exposure replay; authored data are not model scores."""
+"""Exact full/sparse source-margin exposure; fixtures are not model scores."""
 
 from copy import deepcopy
 from contextlib import redirect_stdout
@@ -84,10 +84,40 @@ class SourceExposureReplayTests(unittest.TestCase):
             with self.subTest(field=field), self.assertRaises(ValueError):
                 self.replay(forged)
 
+    def test_sparse_writer_exposure_matches_full_schedule_without_fake_tokens(self):
+        sparse = deepcopy(self.receipt)
+        sparse["loss_backend"] = "supervised_positions"
+        sparse["actual_projection_positions"] = sparse["supervised_tokens"]
+        sparse_visits, sparse_schedule = self.replay(sparse)
+        full_visits, full_schedule = self.replay(self.receipt)
+        self.assertEqual(sparse_visits, full_visits)
+        self.assertEqual(sparse_schedule, full_schedule)
+        self.assertEqual(sparse["input_tokens"], self.receipt["input_tokens"])
+        self.assertEqual(sparse["supervised_tokens"], self.receipt["supervised_tokens"])
+        self.assertLess(
+            sparse["actual_projection_positions"], sparse["input_tokens"]
+        )
+
+    def test_sparse_margin_rejects_wrong_projection_or_input_exposure(self):
+        sparse = deepcopy(self.receipt)
+        sparse["loss_backend"] = "supervised_positions"
+        sparse["actual_projection_positions"] = sparse["supervised_tokens"]
+        for edits in (
+            {"actual_projection_positions": sparse["input_tokens"]},
+            {"actual_projection_positions": sparse["supervised_tokens"] + 1},
+            {"input_tokens": sparse["input_tokens"] - 1},
+            {"supervised_tokens": sparse["supervised_tokens"] - 1},
+            {"loss_backend": "unknown"},
+        ):
+            corrupted = deepcopy(sparse)
+            corrupted.update(edits)
+            with self.subTest(edits=edits), self.assertRaises(ValueError):
+                self.replay(corrupted)
+
     def test_unregistered_binding_objective_or_fake_cost_reject(self):
         for updates in (
             {"binding_objective": "unregistered"},
-            {"loss_backend": "supervised_positions"},
+            {"loss_backend": "unregistered"},
             {"binding_receipt": None},
         ):
             forged = deepcopy(self.receipt)

@@ -8,6 +8,7 @@ full token schedule, without opening a downstream test plan or executing a model
 import math
 
 from native import digest
+from source_completion_loss import BACKENDS
 
 
 def verified_visits(documents, tokenizer, training):
@@ -20,9 +21,10 @@ def verified_visits(documents, tokenizer, training):
     from source_write_coverage import audit_coverage
     from source_write_schedule import prepare
 
-    if not isinstance(training, dict) or training.get("curriculum") not in (
-        "single_hop",
-        "source_two_hop",
+    if (
+        not isinstance(training, dict)
+        or training.get("curriculum") not in ("single_hop", "source_two_hop")
+        or training.get("loss_backend") not in BACKENDS
     ):
         raise ValueError("registered source-written curriculum required")
     if (
@@ -61,6 +63,9 @@ def verified_visits(documents, tokenizer, training):
     ):
         raise ValueError("source exposure exceeds the registered write bounds")
 
+    # Sparse projection is already governed by the pinned writer's Qwen parity
+    # admission; this replay checks the actual projection/exposure counters,
+    # not whether a model merely claimed to have passed that external proof.
     # Source-margin writing trains a predeclared matching SUBSET with two real
     # forwards per step. Reconstruct the full, pre-subset plan and negative
     # provenance, not just the saved active rows. Absent questions stay zero
@@ -74,7 +79,6 @@ def verified_visits(documents, tokenizer, training):
 
         if (
             training["curriculum"] != "single_hop"
-            or training.get("loss_backend") != "full"
             or ceiling != TOKEN_CEILING // 2
         ):
             raise ValueError("unsupported source-margin writer profile")
@@ -144,7 +148,11 @@ def verified_visits(documents, tokenizer, training):
         or (
             objective == "source_margin"
             and training.get("actual_projection_positions")
-            != training.get("input_tokens")
+            != (
+                training.get("input_tokens")
+                if training["loss_backend"] == "full"
+                else training.get("supervised_tokens")
+            )
         )
         or not isinstance(training.get("losses"), list)
         or len(training["losses"]) != training["steps"]
