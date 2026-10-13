@@ -120,12 +120,14 @@ jobs:
     uses: ./.github/workflows/sdk.yml
     secrets: inherit
 
-  hepta-scoped:
-    name: Hepta scoped native checks
+  hepta-scoped-plan:
+    name: Plan full exact-tree reverse-consumer coverage
     needs: scope
     if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
     runs-on: ubuntu-24.04
-    timeout-minutes: 40
+    timeout-minutes: 15
+    outputs:
+      matrix: ${{ steps.plan.outputs.matrix }}
     steps:
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -133,9 +135,51 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
-
-      - name: Prepare native test prerequisites before compilation
+      - name: Verify deterministic shard policy regressions
+        shell: bash
         run: |
+          set -euo pipefail
+          python3 -m unittest -v scripts.tests.test_hepta_ci_shards
+      - name: Plan all owners and reverse consumers from exact SHA
+        id: plan
+        shell: bash
+        env:
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_shards.py --base "$BASE_SHA" --tested "$TESTED_SHA" --max-packages 12 --output "$RUNNER_TEMP/cargo-impact-plan.json" --github-output "$GITHUB_OUTPUT"
+      - name: Preserve full impact plan
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-cargo-impact-plan-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/cargo-impact-plan.json
+          if-no-files-found: error
+          retention-days: 14
+
+  hepta-scoped-shard:
+    name: Exact reverse-consumer shard ${{ matrix.index }}
+    needs: [scope, hepta-scoped-plan]
+    if: needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true' && needs.hepta-scoped-plan.result == 'success'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix: ${{ fromJSON(needs.hepta-scoped-plan.outputs.matrix) }}
+    steps:
+      - name: Checkout exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Prepare native test prerequisites
+        shell: bash
+        run: |
+          set -euo pipefail
+          df -h "$RUNNER_TEMP"
           sudo apt-get update
           sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
           sudo sysctl -w kernel.unprivileged_userns_clone=1
@@ -147,34 +191,64 @@ jobs:
           tool: just@1.51.0,nextest@0.9.103
       - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
       - run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
-      - name: Resolve verified V8 artifacts for affected host crates
+      - name: Resolve verified V8 artifacts
         env:
           CODEX_REPO_ROOT: ${{ github.workspace }}
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
-
-      - name: Test affected owners and reverse consumers, not a hand-written package list
+      - name: Execute exact source shard, preserving all original tests
+        shell: bash
         env:
-          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          SHARD_INDEX: ${{ matrix.index }}
+          EXPECTED_PACKAGES: ${{ toJSON(matrix.packages) }}
           HEPTA_CI_LANE: source-head
-        run: >-
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test.json" --
-          python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
-          --output "$RUNNER_TEMP/cargo-impact.json" --run
-
-      - name: Retain dependency plan and real command output
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_shards.py --action test --base "$BASE_SHA" --tested "$TESTED_SHA" --max-packages 12 --shard-index "$SHARD_INDEX" --expected-packages-json "$EXPECTED_PACKAGES" --output "$RUNNER_TEMP/cargo-impact-shard.json" --record-output "$RUNNER_TEMP/impact-test.json"
+          df -h "$RUNNER_TEMP"
+      - name: Retain exact shard plan and real test execution receipt
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: hepta-cargo-impact-${{ github.run_id }}-${{ github.run_attempt }}
+          name: hepta-cargo-impact-${{ github.run_id }}-${{ github.run_attempt }}-shard-${{ matrix.index }}
           path: |
-            ${{ runner.temp }}/cargo-impact.json
+            ${{ runner.temp }}/cargo-impact-shard.json
             ${{ runner.temp }}/impact-test.json*
           if-no-files-found: error
           retention-days: 14
+      - name: Verify immutable exact tested checkout
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
 
+  hepta-scoped:
+    name: Hepta scoped native checks
+    needs: [scope, hepta-scoped-plan, hepta-scoped-shard]
+    if: always() && needs.scope.outputs.native == 'true' && needs.scope.outputs.full_repo != 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Require every exact-source shard to pass
+        shell: bash
+        env:
+          PLAN_RESULT: ${{ needs.hepta-scoped-plan.result }}
+          SHARDS_RESULT: ${{ needs.hepta-scoped-shard.result }}
+        run: |
+          set -euo pipefail
+          test "$PLAN_RESULT" = success
+          test "$SHARDS_RESULT" = success
+      - name: Checkout exact candidate for derived projections
+        if: needs.scope.outputs.derived == 'true'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
       - name: Verify generated projections when applicable
         if: needs.scope.outputs.derived == 'true'
         run: python3 scripts/hepta-module-docs.py refresh-derived --check
