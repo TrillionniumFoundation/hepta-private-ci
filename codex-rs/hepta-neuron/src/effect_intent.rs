@@ -79,6 +79,10 @@ pub struct DurableNeuronEffectIntentV1 {
     generation: Generation,
     attempted: BTreeSet<Digest32>,
     pending: Option<(Digest32, Digest32)>,
+    /// A recovered Prepare cannot be resolved with an unverified caller
+    /// digest. It requires a separate Control-owned reconciliation protocol
+    /// or a new fenced generation; never re-enable serving here.
+    recovered_pending: bool,
     poisoned: bool,
 }
 
@@ -163,6 +167,7 @@ impl DurableNeuronEffectIntentV1 {
             }
             head = expected;
         }
+        let recovered_pending = pending.is_some();
         Ok(Self {
             file,
             limit: max_records,
@@ -172,6 +177,7 @@ impl DurableNeuronEffectIntentV1 {
             generation,
             attempted,
             pending,
+            recovered_pending,
             poisoned: false,
         })
     }
@@ -255,6 +261,9 @@ impl DurableNeuronEffectIntentV1 {
     ) -> Result<(), NeuronEffectIntentErrorV1> {
         if self.poisoned {
             return Err(NeuronEffectIntentErrorV1::Poisoned);
+        }
+        if self.recovered_pending {
+            return Err(NeuronEffectIntentErrorV1::PendingReconciliation);
         }
         if !self.pending.is_some_and(|(pending, previous)| {
             pending == tick_digest && !committed_checkpoint.is_zero()

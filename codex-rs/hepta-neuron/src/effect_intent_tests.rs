@@ -104,12 +104,22 @@ fn durable_prepare_quarantines_recovery_and_reissued_nonce() {
         );
     }
     {
-        let recovered = DurableNeuronEffectIntentV1::open(
-            reopen(&path), test_scope(), Generation::new(2).unwrap(), 8,
-        ).unwrap();
+        let mut recovered = DurableNeuronEffectIntentV1::open(
+            reopen(&path),
+            test_scope(),
+            Generation::new(2).unwrap(),
+            8,
+        )
+        .unwrap();
         assert_eq!(recovered.status().unresolved_tick, Some(tick));
         assert_eq!(
             recovered.can_prepare(tick),
+            Err(NeuronEffectIntentErrorV1::PendingReconciliation)
+        );
+        // An arbitrary new checkpoint digest is not an independent signed
+        // reconciliation receipt; it cannot clear an in-doubt crash intent.
+        assert_eq!(
+            recovered.resolve(tick, Digest32::of_bytes(b"forged-after-crash")),
             Err(NeuronEffectIntentErrorV1::PendingReconciliation)
         );
     }
