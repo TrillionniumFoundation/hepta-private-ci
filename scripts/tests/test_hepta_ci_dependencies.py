@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import errno
 import importlib.util
 import json
 import subprocess
 import sys
 import tempfile
+import time
 import tomllib
 import unittest
 from pathlib import Path
@@ -115,12 +117,57 @@ class SelectionTests(unittest.TestCase):
         self.assertEqual(ci.select_packages([], self.graph, self.graph)["packages"], [])
 
 
+def cleanup_git_fixture(directory: tempfile.TemporaryDirectory[str]) -> None:
+    """Retry only transient .git ENOTEMPTY cleanup races, never hide real failure."""
+    for attempt in range(4):
+        try:
+            directory.cleanup()
+            return
+        except OSError as error:
+            if error.errno != errno.ENOTEMPTY or attempt == 3:
+                raise
+            time.sleep(0.05 * (attempt + 1))
+
+
+class GitFixtureCleanupTests(unittest.TestCase):
+    def test_transient_git_cleanup_race_is_retried(self):
+        from unittest import mock
+
+        directory = mock.Mock()
+        directory.cleanup.side_effect = [
+            OSError(errno.ENOTEMPTY, "git auto-maintenance wrote during teardown"),
+            None,
+        ]
+        cleanup_git_fixture(directory)
+        self.assertEqual(directory.cleanup.call_count, 2)
+
+    def test_permanent_or_unrelated_cleanup_errors_remain_blocking(self):
+        from unittest import mock
+
+        directory = mock.Mock()
+        directory.cleanup.side_effect = OSError(errno.EACCES, "insecure directory")
+        with self.assertRaises(OSError) as caught:
+            cleanup_git_fixture(directory)
+        self.assertEqual(caught.exception.errno, errno.EACCES)
+        self.assertEqual(directory.cleanup.call_count, 1)
+
+        directory = mock.Mock()
+        directory.cleanup.side_effect = OSError(errno.ENOTEMPTY, "never quiesced")
+        with self.assertRaises(OSError) as caught:
+            cleanup_git_fixture(directory)
+        self.assertEqual(caught.exception.errno, errno.ENOTEMPTY)
+        self.assertEqual(directory.cleanup.call_count, 4)
+
+
 class GitGraphTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temp.cleanup)
+        self.addCleanup(cleanup_git_fixture, self.temp)
         self.root = Path(self.temp.name)
         self.git("init", "-q")
+        # Avoid background Git maintenance that can race the .git teardown.
+        self.git("config", "maintenance.auto", "false")
+        self.git("config", "gc.auto", "0")
         self.git("config", "user.name", "CI regression")
         self.git("config", "user.email", "ci@example.invalid")
         self.write(
@@ -214,9 +261,12 @@ renamed = { package = "leaf", path = "leaf" }
 class DocumentInputTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.addCleanup(self.tmp.cleanup)
+        self.addCleanup(cleanup_git_fixture, self.tmp)
         self.root = Path(self.tmp.name)
         self.git("init", "-q")
+        # Avoid background Git maintenance that can race the .git teardown.
+        self.git("config", "maintenance.auto", "false")
+        self.git("config", "gc.auto", "0")
         self.git("config", "user.name", "Regression")
         self.git("config", "user.email", "regression@example.invalid")
         self.write(

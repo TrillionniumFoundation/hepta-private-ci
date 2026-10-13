@@ -1,0 +1,44 @@
+name: Hepta CI Impact Fixture Qualification
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/hepta_ci_dependencies.py'
+      - 'scripts/hepta_ci_scope.py'
+      - 'scripts/tests/test_hepta_ci_dependencies.py'
+      - 'scripts/tests/test_hepta_ci_scope.py'
+      - '.github/workflows/hepta-ci-impact-fixtures-qualification.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  exact-git-fixtures:
+    name: Exact revision and Git fixture cleanup
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact PR source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Execute all scope and dependency regression tests
+        run: |
+          set -euo pipefail
+          python3 --version
+          git --version
+          python3 -m unittest -v scripts.tests.test_hepta_ci_scope scripts.tests.test_hepta_ci_dependencies
+      - name: Re-run randomized temporary Git fixtures to catch teardown races
+        run: |
+          set -euo pipefail
+          for run in 1 2 3 4; do
+            echo "Git fixture replay ${run}/4"
+            python3 -m unittest -v scripts.tests.test_hepta_ci_dependencies.GitGraphTests scripts.tests.test_hepta_ci_dependencies.DocumentInputTests
+          done
+      - name: Verify no tracked or untracked outputs
+        run: |
+          set -euo pipefail
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
