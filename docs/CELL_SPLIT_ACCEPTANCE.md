@@ -350,6 +350,24 @@ activation remains false pending deployment-owned monotonic custody, exact
 HEAD CI, fault recovery, independent NDU/Selector final-use and measured
 target-host evidence.
 
+### Process-lifetime monotonic signer ratchet (source hardening)
+
+The read-only Unix frontier signer now retains a bounded in-process
+high-water per authorized journal domain. A new signed observation must
+either exactly match the last acknowledged source record or advance
+epoch/revision with a **strictly newer durable source sequence**. It
+rejects a lower epoch/revision, a same-revision record with changed
+checkpoint/store digest, and an epoch rollover with a reused source
+sequence. The map is limited to 4,096 domains and never evicts an old
+high-water to accept an untrusted new domain. Regression tests inject
+rollback, source equivocation and epoch rollover across separate signed
+Unix requests served by the same owner.
+
+This does **not** survive whole-process or whole-directory restoration:
+the production high-water service must still enforce monotonic custody
+in its own independently persistent source. The ratchet cannot confer
+physical-split authority, promotion, or a CI pass.
+
 ### Read-only monotonic frontier Unix signing service (source boundary)
 
 The existing externally pinned \`CellSplitSupervisorMonotonicUnixPortV1\`

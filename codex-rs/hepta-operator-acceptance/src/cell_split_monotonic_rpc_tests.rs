@@ -439,3 +439,108 @@ fn independent_server_rejects_caller_supplied_highwater_and_missing_domain() {
     assert!(service.serve_connection(&mut server).is_err());
     assert!(file.exists());
 }
+
+
+/// Single-process ratchet regression: even a freshly signed response from
+/// an otherwise valid-looking restored record must not move this signer
+/// backward. The external monotonic store remains mandatory across restarts.
+fn read_through_signed_service(
+    service: &mut CellSplitMonotonicRpcServiceV1<DiskAuthoritativeRegistry>,
+    nonce: &str,
+) -> Result<CellSplitMonotonicRpcResponseV1, CellSplitMonotonicRpcErrorV1> {
+    let (mut client, mut server) =
+        std::os::unix::net::UnixStream::pair().expect("private socket pair");
+    send_frame(
+        &mut client,
+        &CellSplitMonotonicRpcRequestV1 {
+            schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.to_owned(),
+            method: READ_METHOD.to_owned(),
+            journal_domain_id: DOMAIN.to_owned(),
+            challenge_nonce: nonce.to_owned(),
+        },
+    )
+    .expect("bounded read-only request");
+    service.serve_connection(&mut server)?;
+    receive_frame(&mut client).map_err(Into::into)
+}
+
+fn replace_test_frontier(
+    path: &Path,
+    frontier: &CellSplitMonotonicDurableFrontierV1,
+) {
+    std::fs::write(
+        path,
+        crate::durable::canonical_json(frontier).expect("canonical registry"),
+    )
+    .expect("external domain source mutation");
+}
+
+#[test]
+fn same_signer_denies_rolled_back_or_equivocated_frontier() {
+    let root = tempfile::tempdir().expect("private registry");
+    let file = write_test_registry(root.path());
+    let original: CellSplitMonotonicDurableFrontierV1 =
+        serde_json::from_slice(&std::fs::read(&file).expect("original record"))
+            .expect("typed original");
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        DiskAuthoritativeRegistry::open(file.clone()),
+        signer(),
+        Duration::from_secs(2),
+    )
+    .expect("pinned signer");
+    assert!(read_through_signed_service(&mut service, &"aa".repeat(32)).is_ok());
+
+    let mut rollback = original.clone();
+    rollback.journal_revision -= 1;
+    rollback.durable_source_sequence -= 1;
+    replace_test_frontier(&file, &rollback);
+    assert!(read_through_signed_service(&mut service, &"bb".repeat(32)).is_err());
+
+    let mut equivocated = original.clone();
+    equivocated.minimum_checkpoint_digest = "cc".repeat(32);
+    replace_test_frontier(&file, &equivocated);
+    assert!(read_through_signed_service(&mut service, &"cc".repeat(32)).is_err());
+
+    replace_test_frontier(&file, &original);
+    assert!(read_through_signed_service(&mut service, &"dd".repeat(32)).is_ok());
+
+    let mut successor = original.clone();
+    successor.journal_revision += 1;
+    successor.durable_source_sequence += 1;
+    successor.original_store_record_digest = "dd".repeat(32);
+    replace_test_frontier(&file, &successor);
+    assert!(read_through_signed_service(&mut service, &"ee".repeat(32)).is_ok());
+
+    // The previous epoch/revision cannot be accepted again, even if it
+    // carries its original valid domain registry bytes.
+    replace_test_frontier(&file, &original);
+    assert!(read_through_signed_service(&mut service, &"ff".repeat(32)).is_err());
+}
+
+#[test]
+fn same_signer_allows_epoch_rollover_only_with_new_durable_source_sequence() {
+    let root = tempfile::tempdir().expect("private registry");
+    let file = write_test_registry(root.path());
+    let original: CellSplitMonotonicDurableFrontierV1 =
+        serde_json::from_slice(&std::fs::read(&file).expect("original"))
+            .expect("typed original");
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        DiskAuthoritativeRegistry::open(file.clone()),
+        signer(),
+        Duration::from_secs(2),
+    )
+    .expect("pinned signer");
+    assert!(read_through_signed_service(&mut service, &"aa".repeat(32)).is_ok());
+
+    let mut stale_rollover = original.clone();
+    stale_rollover.journal_authority_epoch += 1;
+    stale_rollover.journal_revision = 1;
+    replace_test_frontier(&file, &stale_rollover);
+    assert!(read_through_signed_service(&mut service, &"bb".repeat(32)).is_err());
+
+    stale_rollover.durable_source_sequence += 1;
+    replace_test_frontier(&file, &stale_rollover);
+    assert!(read_through_signed_service(&mut service, &"cc".repeat(32)).is_ok());
+    replace_test_frontier(&file, &original);
+    assert!(read_through_signed_service(&mut service, &"dd".repeat(32)).is_err());
+}

@@ -8,6 +8,7 @@
 //! genuinely rollback-resistant server storage. An authenticated response
 //! is evidence, not permission to promote or physically split a Cell.
 
+use std::collections::BTreeMap;
 use std::fs;
 use std::io;
 use std::os::unix::fs::FileTypeExt as _;
@@ -34,6 +35,7 @@ use crate::cell_split_supervisor_monotonic_frontier_signing_payload_v1;
 pub const CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1: &str =
     "hepta.learning.cell-split.monotonic-frontier-rpc.v1";
 const READ_METHOD: &str = "read_domain_frontier";
+const MAX_RETAINED_DOMAINS: usize = 4_096;
 
 /// A remote store must derive its current high-water from *its own* durable
 /// journal-domain registry. Neither revision nor digest is sent to the server.
@@ -236,6 +238,10 @@ pub struct CellSplitMonotonicRpcServiceV1<R: CellSplitMonotonicAuthoritativeRegi
     source: R,
     signer: ed25519_dalek::SigningKey,
     timeout: Duration,
+    // Process-lifetime monotonic ratchet is defense-in-depth only. Real
+    // whole-process anti-rollback requires the external registry's own
+    // separately retained high-water frontier across process restarts.
+    retained_frontiers: BTreeMap<String, CellSplitMonotonicDurableFrontierV1>,
 }
 
 impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV1<R> {
@@ -254,6 +260,7 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
             source,
             signer,
             timeout,
+            retained_frontiers: BTreeMap::new(),
         })
     }
 
@@ -306,6 +313,12 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
         if self.read_verified_domain(&first.journal_domain_id)? != first {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);
         }
+        // This singleton signed owner must never go backwards while running,
+        // even if an uncooperative registry process restores older otherwise
+        // valid bytes after the previous signed request.
+        self.verify_retained_frontier(&first)?;
+        self.retained_frontiers
+            .insert(first.journal_domain_id.clone(), first);
         send_frame_with_deadline(
             stream,
             &CellSplitMonotonicRpcResponseV1 {
@@ -340,7 +353,42 @@ impl<R: CellSplitMonotonicAuthoritativeRegistryV1> CellSplitMonotonicRpcServiceV
         {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);
         }
+        self.verify_retained_frontier(&current)?;
         Ok(current)
+    }
+
+    fn verify_retained_frontier(
+        &self,
+        observed: &CellSplitMonotonicDurableFrontierV1,
+    ) -> Result<(), CellSplitMonotonicRpcErrorV1> {
+        match self.retained_frontiers.get(&observed.journal_domain_id) {
+            Some(previous) => {
+                let moved_forward = observed.journal_authority_epoch
+                    > previous.journal_authority_epoch
+                    || (observed.journal_authority_epoch
+                        == previous.journal_authority_epoch
+                        && observed.journal_revision > previous.journal_revision);
+                if observed.journal_authority_epoch < previous.journal_authority_epoch
+                    || (observed.journal_authority_epoch
+                        == previous.journal_authority_epoch
+                        && observed.journal_revision < previous.journal_revision)
+                    || observed.durable_source_sequence < previous.durable_source_sequence
+                    || (moved_forward
+                        && observed.durable_source_sequence
+                            <= previous.durable_source_sequence)
+                    || (!moved_forward && observed != previous)
+                {
+                    return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+                }
+            }
+            None if self.retained_frontiers.len() >= MAX_RETAINED_DOMAINS => {
+                // Never silently evict a previous source high-water to make
+                // room for a caller-chosen domain; bounded denial is safer.
+                return Err(CellSplitMonotonicRpcErrorV1::Invalid);
+            }
+            None => {}
+        }
+        Ok(())
     }
 }
 
