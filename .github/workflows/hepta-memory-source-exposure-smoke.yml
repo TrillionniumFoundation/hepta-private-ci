@@ -14,9 +14,9 @@ concurrency:
   group: memory-source-exposure-${{ github.sha }}
   cancel-in-progress: false
 jobs:
-  fail-closed-stdlib:
+  fail-closed-pinned-cpu:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    timeout-minutes: 20
     env:
       PYTHONPATH: scripts/memory_cell
       PYTHONDONTWRITEBYTECODE: "1"
@@ -25,6 +25,13 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
+      - name: Pinned CPU Torch import runtime, without pretrained weights
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/source-exposure-python
+          /tmp/source-exposure-python/bin/pip install --no-input \
+            torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/source-exposure-python/bin/pip freeze > /tmp/source-exposure-environment.txt
       - name: Exact historical source exposure and no-model parity regressions
         run: |
           set -euo pipefail
@@ -36,7 +43,7 @@ jobs:
             scripts/memory_cell/test_source_write_probe_exposure.py \
             scripts/memory_cell/test_source_write_likelihood_exposure.py \
             scripts/memory_cell/test_source_margin_sparse_admission.py
-          python3 -m unittest -v \
+          /tmp/source-exposure-python/bin/python -m unittest -v \
             test_source_write_probe_exposure \
             test_source_write_likelihood_exposure \
             test_source_margin_sparse_admission \
@@ -46,6 +53,9 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/source-exposure-audit/source
+          if [ -f /tmp/source-exposure-environment.txt ]; then
+            cp /tmp/source-exposure-environment.txt /tmp/source-exposure-audit/environment.txt
+          fi
           cp scripts/memory_cell/source_probe_exposure.py /tmp/source-exposure-audit/source/
           cp scripts/memory_cell/test_source_write_probe_exposure.py /tmp/source-exposure-audit/source/
           cp scripts/memory_cell/test_source_write_likelihood_exposure.py /tmp/source-exposure-audit/source/
