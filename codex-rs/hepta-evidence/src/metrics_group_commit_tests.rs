@@ -176,3 +176,15 @@ fn ancestor_traversal_cannot_create_a_metrics_journal() {
     ));
     assert!(!dir.path().join("escaped.metrics").exists());
 }
+
+// A missing parent is not created as a side effect of telemetry startup.
+// The composing owner provisions and durably publishes its directory first.
+#[test]
+fn missing_metrics_parent_is_not_created_on_open() {
+    let root = tempfile::tempdir().expect("temp root");
+    let missing = root.path().join("not-provisioned");
+    let journal = missing.join("metrics.log");
+    assert!(MetricsGroupCommitV1::open(&journal).is_err());
+    assert!(!missing.exists());
+    assert!(!journal.exists());
+}

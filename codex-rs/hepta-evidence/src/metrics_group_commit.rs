@@ -99,9 +99,9 @@ impl MetricsGroupCommitV1 {
         {
             return Err(MetricsJournalErrorV1::UnsafePath);
         }
-        if let Some(parent) = path.parent().filter(|p| !p.as_os_str().is_empty()) {
-            fs::create_dir_all(parent)?;
-        }
+        // Production Evidence journals require a pre-provisioned directory:
+        // creating it here could cause filesystem effects before path and
+        // ownership checks, or bypass the host's directory durability barrier.
         check_journal_path(path)?;
         let mut options = OpenOptions::new();
         options.create(true).append(true).read(true);

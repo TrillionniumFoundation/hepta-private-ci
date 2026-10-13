@@ -276,3 +276,16 @@ fn evidence_outage_is_not_an_authorization_failure_or_wal_retry() {
     drop(reopened);
     fs::remove_file(path).unwrap();
 }
+
+// Direct library callers cannot bypass the higher-level worker's unsupported
+// platform denial by opening the production WAL independently.
+#[cfg(not(unix))]
+#[test]
+fn production_control_refuses_unsupported_platform() {
+    let path = path("non-unix-production");
+    assert!(matches!(
+        DurableInferenceControl::open_production(&path, 32),
+        Err(Error::InvalidIdentity(_))
+    ));
+    assert!(!path.exists());
+}

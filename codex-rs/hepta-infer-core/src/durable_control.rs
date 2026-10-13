@@ -10,6 +10,7 @@ use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
 use std::io::Write;
+#[cfg(unix)]
 use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
@@ -197,6 +198,7 @@ impl DurableInferenceControl {
     /// This is stricter than `open`, which remains available for migration,
     /// repair and qualification. The read-only checks cannot authorize a
     /// dispatch: the existing single-writer lock and effect owner still apply.
+    #[cfg(unix)]
     pub fn open_production(path: impl AsRef<Path>, capacity: usize) -> Result<Self, Error> {
         let path = path.as_ref();
         Self::check_production_path(path)?;
@@ -224,6 +226,17 @@ impl DurableInferenceControl {
         Ok(opened)
     }
 
+    /// The non-Unix implementation has no audited owner-only ACL and
+    /// directory-entry durability guarantee. Even direct callers of the core
+    /// API must not bypass the worker's fail-closed production startup.
+    #[cfg(not(unix))]
+    pub fn open_production(_path: impl AsRef<Path>, _capacity: usize) -> Result<Self, Error> {
+        Err(Error::InvalidIdentity(
+            "production WAL durability is unverified on this platform",
+        ))
+    }
+
+    #[cfg(unix)]
     fn check_production_path(path: &Path) -> Result<(), Error> {
         if !path.is_absolute()
             || path.file_name().is_none()
