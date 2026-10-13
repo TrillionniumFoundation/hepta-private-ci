@@ -28,7 +28,7 @@ jobs:
       - name: Run hermetic matrix and reader-gate tests
         run: |
           set -euo pipefail
-          python3 -m unittest scripts/memory_cell/test_full_cell_matrix.py -v
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_full_cell_matrix.py' -v
           python3 scripts/memory_cell/full_cell_matrix.py /tmp/full-cell-matrix
       - name: Retain source identity and matrix plan
         if: always()
