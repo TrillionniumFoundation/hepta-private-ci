@@ -18,6 +18,35 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  sqlite-formatter:
+    name: Matrix Store precise global Rust formatter patch (diagnostic)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Record exact source identity
+        run: git rev-parse HEAD HEAD^{tree}
+      - name: Capture proposed rustfmt diff without retaining edits
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-matrix-store -- --config imports_granularity=Item
+          git diff --binary -- codex-rs/hepta-matrix-store/src codex-rs/hepta-matrix-store/tests > "$RUNNER_TEMP/matrix-store-rustfmt.patch"
+          git restore --worktree -- codex-rs/hepta-matrix-store/src codex-rs/hepta-matrix-store/tests
+          git diff --check
+          git diff --exit-code
+      - name: Retain exact source patch as diagnostic only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-store-rustfmt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/matrix-store-rustfmt.patch
+          if-no-files-found: warn
+          retention-days: 7
+
   matrix-durable-store:
     name: Matrix durable SQLite/WAL owner regression (not SDK release)
     runs-on: ubuntu-24.04
