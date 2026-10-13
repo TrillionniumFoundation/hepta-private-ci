@@ -1,0 +1,63 @@
+name: MemoryCell isolated disjoint shard formatting candidate
+on:
+  push:
+    branches:
+      - codex/memory-strong-rag-format-20261013
+    paths:
+      - .github/workflows/hepta-memory-disjoint-format-candidate.yml
+permissions:
+  contents: read
+jobs:
+  format-ast-verified:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Record exact original syntax trees
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-disjoint-format
+          python3 - <<'PY'
+          import ast, json, pathlib
+          paths = ['scripts/memory_cell/strong_rag_sharded_ci.py',
+                   'scripts/memory_cell/test_strong_rag_sharded_ci.py']
+          data = {n:ast.dump(ast.parse(pathlib.Path(n).read_text()), include_attributes=False)
+                  for n in paths}
+          pathlib.Path('/tmp/memory-disjoint-format/AST-before.json').write_text(
+              json.dumps(data, sort_keys=True))
+          PY
+      - name: Generate exact Ruff candidate without editing the PR branch
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format             scripts/memory_cell/strong_rag_sharded_ci.py             scripts/memory_cell/test_strong_rag_sharded_ci.py
+          git diff --check
+          git diff --binary --             scripts/memory_cell/strong_rag_sharded_ci.py             scripts/memory_cell/test_strong_rag_sharded_ci.py             > /tmp/memory-disjoint-format/candidate.patch
+          python3 - <<'PY'
+          import ast, json, pathlib
+          expected=json.loads(pathlib.Path('/tmp/memory-disjoint-format/AST-before.json').read_text())
+          for name, value in expected.items():
+              source=pathlib.Path(name)
+              if ast.dump(ast.parse(source.read_text()),include_attributes=False)!=value:
+                  raise ValueError('formatter changed executable AST')
+              (pathlib.Path('/tmp/memory-disjoint-format') / source.name).write_bytes(source.read_bytes())
+          PY
+          uv run --frozen --project scripts ruff format --check             scripts/memory_cell/strong_rag_sharded_ci.py             scripts/memory_cell/test_strong_rag_sharded_ci.py
+          python3 -m unittest discover -s scripts/memory_cell             -p 'test_strong_rag_sharded_ci.py' -v 2>&1 | tee /tmp/memory-disjoint-format/tests.log
+          git rev-parse HEAD > /tmp/memory-disjoint-format/base-commit.txt
+      - name: Preserve exact formatter output and failures
+        if: always()
+        run: |
+          set -euo pipefail
+          cd /tmp/memory-disjoint-format
+          find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-strong-rag-ast-format-candidate
+          path: /tmp/memory-disjoint-format
+          if-no-files-found: error
