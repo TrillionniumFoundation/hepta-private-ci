@@ -180,10 +180,21 @@ fn parse_frontmatter(
 
     let mut frontmatter = BTreeMap::new();
     for (key, value) in mapping {
-        let Some(key) = key.as_str().map(str::trim).filter(|key| !key.is_empty()) else {
+        let key = key.trim();
+        if key.is_empty() {
             continue;
-        };
-        frontmatter.insert(key.to_string(), frontmatter_value_from_yaml(value));
+        }
+        // Distinct YAML keys can become the same application key after trim.
+        // Reject the whole document rather than choose a name or permission.
+        if frontmatter
+            .insert(key.to_string(), frontmatter_value_from_yaml(value))
+            .is_some()
+        {
+            return (
+                BTreeMap::new(),
+                Some(format!("duplicate normalized frontmatter key: {key}")),
+            );
+        }
     }
 
     (frontmatter, None)
@@ -310,3 +321,7 @@ impl FrontmatterValue {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "subagents_tests.rs"]
+mod tests;
