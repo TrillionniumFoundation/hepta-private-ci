@@ -111,7 +111,9 @@ def execute(rows, features, origin, baseline, output):
         raise
 
 
-def review(rows, features, origin, baseline, output):
+def review(rows, features, origin, baseline, output, *, score_held_out=True):
+    if type(score_held_out) is not bool:
+        raise ValueError("invalid anchor review mode")
     output = Path(output)
     if (output/'FAILED.json').exists(): raise ValueError("failed run cannot be scored")
     teachers, config, source = load_base(rows, features, origin, baseline)
@@ -179,7 +181,7 @@ def review(rows, features, origin, baseline, output):
         error = float((a-b).abs().max()); maximum = max(maximum, error)
         if error > 1e-5 or a.argmax() != b.argmax(): raise ValueError("false stored prediction")
     scores = {}
-    for part in ('calibration', 'held_out'):
+    for part in (('calibration', 'held_out') if score_held_out else ('calibration',)):
         js = [j for j, i in enumerate(indices) if phase(r := rows[i]) == part]
         scores[part] = {n: metrics(v[js], torch.tensor([rows[indices[j]]['label'] for j in js]),
             [rows[indices[j]]['source_group'] for j in js], config) for n, v in logits.items()}
