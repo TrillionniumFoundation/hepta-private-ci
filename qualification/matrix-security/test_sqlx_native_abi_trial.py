@@ -172,6 +172,5 @@ class SqlxNativeAbiTrialTests(unittest.TestCase):
         self.assertNotIn("continue-on-error: true", command)
 
 
-
 if __name__ == "__main__":
     unittest.main()
