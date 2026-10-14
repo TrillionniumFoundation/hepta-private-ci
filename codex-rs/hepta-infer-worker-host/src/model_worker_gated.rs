@@ -1172,6 +1172,7 @@ mod tests {
                 .insert(1, identity, 100_000, Arc::from([Q24 / 2, -Q24 / 4]))
                 .expect("snapshot");
             let start_execution = Instant::now();
+            let mut batch_latency_micros = Vec::with_capacity(cell_count / 32);
             for offset in (0..cell_count).step_by(32) {
                 let mut requests = Vec::with_capacity(32);
                 for index in offset..(offset + 32).min(cell_count) {
@@ -1203,9 +1204,11 @@ mod tests {
                     request.authorization.lease_payload_digest = digest;
                     requests.push(request);
                 }
+                let start_batch = Instant::now();
                 let results = worker
                     .run_shared_neuron_features_batch_v2(100, "model.gated", requests)
                     .expect("one genuine CPU driver batch");
+                batch_latency_micros.push(start_batch.elapsed().as_micros());
                 assert_eq!(results.len(), 32);
                 for (row, result) in results.into_iter().enumerate() {
                     let index = offset + row;
@@ -1221,6 +1224,26 @@ mod tests {
                 }
             }
             let execution_micros = start_execution.elapsed().as_micros();
+            assert_eq!(batch_latency_micros.len(), cell_count / 32);
+            batch_latency_micros.sort_unstable();
+            // Nearest-rank reference percentiles from actual driver batch calls.
+            // Two samples at 64 Cells cannot establish production p99.
+            let percentile = |percent: usize| {
+                let rank = batch_latency_micros.len().saturating_mul(percent).div_ceil(100);
+                batch_latency_micros[rank.saturating_sub(1)]
+            };
+            // Linux CI process RSS is explicitly not GPU or deployment-host RSS.
+            let process_rss_kib = std::fs::read_to_string("/proc/self/status")
+                .ok()
+                .and_then(|status| {
+                    status.lines().find_map(|line| {
+                        line.strip_prefix("VmRSS:")?
+                            .split_whitespace()
+                            .next()?
+                            .parse::<u64>()
+                            .ok()
+                    })
+                });
             assert_eq!(worker.driver.batch_calls(), cell_count / 32);
             assert_eq!(cache.resident_bytes(), 16);
             assert!(worker.active_requests.is_empty());
@@ -1230,10 +1253,14 @@ mod tests {
             eprintln!(
                 "shadow_cell_cpu_scale cells={cell_count} registration_us={registration_micros} \
                  batch_dispatch_us={execution_micros} physical_batches={} head_tensor_bytes={} \
-                 shared_input_bytes={} production_verified=false",
+                 shared_input_bytes={} batch_p50_us={} batch_p95_us={} batch_p99_us={} \
+                 process_rss_kib={process_rss_kib:?} production_verified=false",
                 worker.driver.batch_calls(),
                 worker.driver.parameter_bytes(),
-                cache.resident_bytes()
+                cache.resident_bytes(),
+                percentile(50),
+                percentile(95),
+                percentile(99)
             );
         }
     }
