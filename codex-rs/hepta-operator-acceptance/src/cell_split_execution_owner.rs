@@ -1315,6 +1315,7 @@ fn has_successor_frame(root: &Path, from_index: usize) -> Result<bool, CellSplit
     for index in from_index..STEP_COUNT {
         if read_frame(&frame_path(root, index, "prepared"))?.is_some()
             || read_frame(&frame_path(root, index, "committed"))?.is_some()
+            || read_frame(&frame_path(root, index, "metrics-acked"))?.is_some()
         {
             return Ok(true);
         }
