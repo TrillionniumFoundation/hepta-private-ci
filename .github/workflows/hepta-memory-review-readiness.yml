@@ -1,0 +1,87 @@
+name: MemoryCell real-project source-first review readiness
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/project_pr_review_readiness.py"
+      - "scripts/memory_cell/test_project_pr_review_readiness.py"
+      - ".github/workflows/hepta-memory-review-readiness.yml"
+  push:
+    branches:
+      - codex/memorycell-review-readiness-20261014
+    paths:
+      - "scripts/memory_cell/project_pr_review_readiness.py"
+      - "scripts/memory_cell/test_project_pr_review_readiness.py"
+      - ".github/workflows/hepta-memory-review-readiness.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-review-readiness-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: false
+jobs:
+  exact-original-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_ORIGINAL_FOUR_PROJECT_ZIP: /tmp/original-four-projects.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Download exact immutable original Git object census
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11779111741/zip > "$HEPTA_ORIGINAL_FOUR_PROJECT_ZIP"
+          echo "0dd31ed0101c0125ee2c5f9ffe82ae71d083dcf4a00206eb65fdcc7cf75959e3  $HEPTA_ORIGINAL_FOUR_PROJECT_ZIP" | sha256sum --check --strict
+      - name: Execute eight adversarial tests and source byte checks
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/project_pr_review_readiness.py scripts/memory_cell/test_project_pr_review_readiness.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_project_pr_review_readiness.py -v
+      - name: Enforce repository Ruff format, without waiver
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check scripts/memory_cell/project_pr_review_readiness.py scripts/memory_cell/test_project_pr_review_readiness.py
+      - name: Retain exact Ruff source correction when format fails
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/readiness-ruff
+          if command -v uv >/dev/null 2>&1; then
+            uv run --frozen --project scripts ruff format --diff scripts/memory_cell/project_pr_review_readiness.py scripts/memory_cell/test_project_pr_review_readiness.py > /tmp/readiness-ruff/ruff.diff || true
+            uv run --frozen --project scripts ruff format scripts/memory_cell/project_pr_review_readiness.py scripts/memory_cell/test_project_pr_review_readiness.py
+            printf 'READINESS_FMT_SOURCE='
+            base64 -w0 scripts/memory_cell/project_pr_review_readiness.py
+            printf '\nREADINESS_FMT_TEST='
+            base64 -w0 scripts/memory_cell/test_project_pr_review_readiness.py
+            printf '\n'
+          fi
+          git rev-parse HEAD > /tmp/readiness-ruff/source-commit.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: memory-review-readiness-format-failure
+          path: /tmp/readiness-ruff
+          if-no-files-found: warn
+      - name: Compile source-only human review eligibility, no model scoring
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/memory-review-readiness
+          python3 scripts/memory_cell/project_pr_review_readiness.py "$HEPTA_ORIGINAL_FOUR_PROJECT_ZIP" /tmp/memory-review-readiness/unsigned-review-readiness.json
+          git rev-parse HEAD > /tmp/memory-review-readiness/auditor-commit.txt
+          sha256sum "$HEPTA_ORIGINAL_FOUR_PROJECT_ZIP" > /tmp/memory-review-readiness/source-original-sha256.txt
+          (cd /tmp/memory-review-readiness && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memory-actual-pr-review-readiness
+          path: /tmp/memory-review-readiness
+          if-no-files-found: error
