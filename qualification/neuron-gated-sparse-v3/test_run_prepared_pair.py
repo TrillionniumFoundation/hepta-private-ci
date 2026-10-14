@@ -33,6 +33,9 @@ def receipt(mode: str, arm: str = "v3", cells: int = 64, frontier: str | None = 
         "artifact_provenance_verified": False,
         "arm": arm,
         "execution_mode": mode,
+        "single_selected_config_resident": True,
+        "simultaneous_legacy_and_prepared_config_resident": False,
+        "model_config_setup_micros": 120 if mode == "legacy" else 180,
         "cells": cells,
         "width": 32,
         "trace_sha256": TRACE,
@@ -54,6 +57,9 @@ class PreparedPairedSmokeTests(unittest.TestCase):
         self.assertTrue(result["exact_checkpoint_frontier_parity"])
         self.assertEqual(result["legacy_to_prepared_p99_ratio"], "1.222222")
         self.assertGreater(result["prepared_peak_rss_bytes"], 0)
+        self.assertTrue(result["separate_mode_config_residency"])
+        self.assertEqual(result["legacy_model_config_setup_micros"], 120)
+        self.assertEqual(result["prepared_model_config_setup_micros"], 180)
         self.assertEqual(result["raw_mode_receipts"]["legacy"], matched["legacy"])
         self.assertEqual(result["raw_mode_receipts"]["prepared"], matched["prepared"])
         self.assertEqual(
@@ -91,6 +97,9 @@ class PreparedPairedSmokeTests(unittest.TestCase):
             ("arm", "ssm"), ("cells", 256), ("trace_sha256", sha(b"tampered")),
             ("process_peak_rss_bytes", None), ("p99_tick_nanos", 0),
             ("p95_tick_nanos", 100_000), ("width", 100),
+            ("single_selected_config_resident", False),
+            ("simultaneous_legacy_and_prepared_config_resident", True),
+            ("model_config_setup_micros", -1),
         ):
             records = {mode: receipt(mode) for mode in pair.MODES}
             records["prepared"][name] = changed
