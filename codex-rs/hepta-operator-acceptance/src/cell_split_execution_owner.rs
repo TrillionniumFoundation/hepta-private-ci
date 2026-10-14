@@ -40,6 +40,10 @@ use crate::durable::write_private_new;
 const SCHEMA: &str = "hepta.learning.cell-split.execution-owner.v1";
 const MAX_RECORD_BYTES: usize = 64 * 1024;
 const STEP_COUNT: usize = 4;
+// A write-once local continuation fence, written ONLY after the Evidence
+// writer has acknowledged its durable flush for the *original* signed owner
+// receipt. This is never an effect grant, signature, NDU, or runtime cutover.
+const METRICS_ACK_SCHEMA: &str = "hepta.learning.cell-split.metrics-ack.v1";
 
 /// These are ordered *committed* owner operations, not digest declarations.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Serialize, Deserialize)]
@@ -744,6 +748,66 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         }
     }
 
+    /// A completed physical effect must carry a write-once Evidence flush
+    /// acknowledgment before a metrics-bound operator may start another.
+    /// Missing/tampered acknowledgments stay denied across process restarts.
+    /// This does not affect signed read-only transcript or pending readback.
+    fn verify_metrics_committed_prefix(&self) -> Result<(), CellSplitExecutionErrorV1> {
+        if self.metric_sink.is_none() {
+            return Ok(());
+        }
+        for index in 0..self.cursor {
+            let bytes = read_frame(&frame_path(&self.root, index, "committed"))?.ok_or(
+                CellSplitExecutionErrorV1::Invalid("metrics owner lost original committed step"),
+            )?;
+            let receipt = decode_committed_receipt(&bytes)?;
+            let expected = metrics_ack_bytes(&receipt)?;
+            if read_frame(&frame_path(&self.root, index, "metrics-acked"))?
+                != Some(expected)
+            {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "cell split metrics acknowledgment missing or changed",
+                ));
+            }
+        }
+        // An injected future acceptance marker must not be adopted after
+        // crash/reopen or before a new prepared intent is written.
+        for index in self.cursor..STEP_COUNT {
+            if read_frame(&frame_path(&self.root, index, "metrics-acked"))?.is_some() {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "unexpected future metrics acknowledgment",
+                ));
+            }
+        }
+        Ok(())
+    }
+
+    /// Never convert an already committed owner effect into a retry merely
+    /// because telemetry could not fsync or its local marker could not write.
+    /// A missing marker fences any later NEW effect, including after restart.
+    fn acknowledge_committed_metrics(
+        &mut self,
+        index: usize,
+        receipt: &CellSplitExecutionReceiptV1,
+    ) {
+        let Some(sink) = self.metric_sink.as_ref() else {
+            return;
+        };
+        if self.metrics_poisoned || sink.flush().is_err() || !sink.healthy() {
+            self.metrics_poisoned = true;
+            return;
+        }
+        let accepted = metrics_ack_bytes(receipt)
+            .ok()
+            .and_then(|bytes| {
+                write_private_new(&frame_path(&self.root, index, "metrics-acked"), &bytes).ok()
+            })
+            .is_some();
+        if !accepted {
+            self.metrics_poisoned = true;
+        }
+    }
+
     #[must_use]
     pub fn completed_steps(&self) -> usize {
         self.cursor
@@ -763,6 +827,9 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             return Ok(false);
         }
         self.verify_committed_prefix()?;
+        if !self.read_only && !self.reconcile_only {
+            self.verify_metrics_committed_prefix()?;
+        }
         Ok(true)
     }
 
@@ -1015,6 +1082,9 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             ));
         }
         self.verify_committed_prefix()?;
+        if !self.pending {
+            self.verify_metrics_committed_prefix()?;
+        }
         let Some(step) = CellSplitExecutionStepV1::at(self.cursor) else {
             return Ok(None);
         };
@@ -1025,6 +1095,14 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             &self.previous_receipt_digest,
         );
         let pending = self.pending;
+        if pending && self.metric_sink.is_some() {
+            // Original CAS/CNS dispatch latency cannot be reconstructed from
+            // later signed READBACK. Reconcile the physical effect safely but
+            // do not mint a false complete telemetry barrier for a lost ACK.
+            // After restart its absent metrics-acked marker will still fence
+            // the next NEW effect until an independent repair is qualified.
+            self.metrics_poisoned = true;
+        }
         if pending {
             // A lost acknowledgement cannot permit replacing or deleting the
             // prepared intent while this owner remains alive.
@@ -1049,6 +1127,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             // Also recheck external predecessor effects and frozen local pins
             // after the preflight/admission callbacks, never trust old reads.
             self.verify_committed_prefix()?;
+            self.verify_metrics_committed_prefix()?;
             // Owner readbacks are potentially slow. Selector/NDU membership
             // may be withdrawn while the last predecessor is being verified.
             // Revalidate again before writing the prepared intent. This
@@ -1108,13 +1187,15 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // the external operation may already have committed and MUST NOT be
         // dispatched a second time.
         self.verify_committed_prefix()?;
+        let committed_index = self.cursor;
         write_private_new(
-            &frame_path(&self.root, self.cursor, "committed"),
+            &frame_path(&self.root, committed_index, "committed"),
             &canonical_json(&receipt)?,
         )?;
         self.previous_receipt_digest = receipt.receipt_digest.clone();
         self.cursor += 1;
         self.pending = false;
+        self.acknowledge_committed_metrics(committed_index, &receipt);
         Ok(Some(receipt))
     }
 }
@@ -1175,6 +1256,16 @@ fn frame_path(root: &Path, index: usize, phase: &str) -> PathBuf {
     root.join(format!("cell-split-{index:02}-{phase}.json"))
 }
 
+fn metrics_ack_bytes(
+    receipt: &CellSplitExecutionReceiptV1,
+) -> Result<Vec<u8>, CellSplitExecutionErrorV1> {
+    Ok(canonical_json(&(
+        METRICS_ACK_SCHEMA,
+        &receipt.intent.idempotency_key,
+        &receipt.receipt_digest,
+    ))?)
+}
+
 /// A broken symlink is still a persisted path, never evidence of absence.
 /// Do not use Path::exists here: it follows symlinks and can return false for
 /// malicious/dangling successors, allowing a non-prefix history to advance.
@@ -1209,6 +1300,7 @@ fn verify_split_frame_namespace(root: &Path) -> Result<(), CellSplitExecutionErr
         let known = (0..STEP_COUNT).any(|index| {
             name == format!("cell-split-{index:02}-prepared.json")
                 || name == format!("cell-split-{index:02}-committed.json")
+                || name == format!("cell-split-{index:02}-metrics-acked.json")
         });
         if !known {
             return Err(CellSplitExecutionErrorV1::Invalid(
@@ -1223,6 +1315,7 @@ fn has_successor_frame(root: &Path, from_index: usize) -> Result<bool, CellSplit
     for index in from_index..STEP_COUNT {
         if read_frame(&frame_path(root, index, "prepared"))?.is_some()
             || read_frame(&frame_path(root, index, "committed"))?.is_some()
+            || read_frame(&frame_path(root, index, "metrics-acked"))?.is_some()
         {
             return Ok(true);
         }
