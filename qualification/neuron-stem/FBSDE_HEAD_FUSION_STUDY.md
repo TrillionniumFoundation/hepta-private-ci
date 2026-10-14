@@ -79,6 +79,32 @@ PYTHONPATH=qualification/neuron-stem python3 qualification/neuron-stem/fbsde_fai
   --output /new/failed-view-one
 \`\`\`
 
+### Reconstructed-failing-input local result (negative)
+
+A distinct *local* CPU run on the exact recorded failed view, using the source
+ZIP above and frozen original Head, completed **513 alternating paired
+invocations per arm and CPU thread setting**, with 20 warmups. The full raw
+CPU/wall samples are retained by the local research runner; they are NOT the
+future queued GitHub job's results.
+
+| Original failed input | Original Head process CPU p50 | Fused Head process CPU p50 |
+| --- | ---: | ---: |
+| 1 CPU thread | 17,126 ns | 19,940 ns |
+| 2 CPU threads | 16,744 ns | 18,938 ns |
+
+The maximum original-vs-fused logits difference was exactly **0** and there
+were no argmax flips. In this small Head-only test, the fused version was
+**slower**, unlike the earlier synthetic-vector microbenchmark. The 100 ms
+historic complete-view failure did not recur; that is NOT a tail-rate
+certificate, actual repaired operation or proof that the runtime explanation
+has been isolated. Pairing and per-host variance cannot generalize a
+single measured stream to other CPUs, even with the same pinned weights.
+
+The scientific conclusion is **no supported computational win on the
+historically rejected input**. Do not promote the fused kernel based on
+the earlier synthetic p50/p99 result, hide the unfavorable measurement or
+relax the original 100,000,000 ns budget.
+
 Do not alter the original pre-registered FBSDE, model selector, objective,
 budget gates, blocking-ci or FinalUse. Any actual adoption would require
 prospective independent task quality, end-to-end per-request CPU/FLOPs/p95/p99,
