@@ -41,16 +41,23 @@ def inspect_snapshot(root, expected_sha256):
 
 
 def load_local_causal(root, *, expected_snapshot_sha256, material_approval_sha256,
-                      context_tokens=1024, max_new_tokens=64, max_output_bytes=16384):
+                      context_tokens=1024, max_new_tokens=64, max_output_bytes=16384, cache_policy=None):
     import torch
     _sha(material_approval_sha256, "external material approval reference")
     cfg = inspect_snapshot(root, expected_snapshot_sha256)
     if type(context_tokens) is not int or not 1 <= context_tokens <= cfg["n_positions"]:
         raise ValueError("generation context exceeds the actual model position budget")
+    if cache_policy is not None:
+        from causal_cache import validate_cache_policy
+        cache_policy = validate_cache_policy(cache_policy)
+        if (cache_policy["cache_format"] != "hf_dynamic_gpt2_4_57_1"
+                or (cache_policy["layers"], cache_policy["heads"], cache_policy["head_dim"]) !=
+                   (cfg["n_layer"], cfg["n_head"], cfg["n_embd"] // cfg["n_head"])):
+            raise ValueError("cache policy differs from the pinned GPT2 geometry")
     # Validate requested bounds before constructing any large model.
     freeze_generation(model_sha256="0"*64, tokenizer_sha256="0"*64,
                       vocab_size=cfg["vocab_size"], eos_token_id=0, context_tokens=context_tokens,
-                      max_new_tokens=max_new_tokens, max_output_bytes=max_output_bytes)
+                      max_new_tokens=max_new_tokens, max_output_bytes=max_output_bytes, cache_policy=cache_policy)
     import transformers
     from transformers import AutoModelForCausalLM, AutoTokenizer
     if transformers.__version__ != TRANSFORMERS_VERSION:
@@ -77,7 +84,7 @@ def load_local_causal(root, *, expected_snapshot_sha256, material_approval_sha25
     policy = freeze_generation(model_sha256=state_digest(model), tokenizer_sha256=tokenizer_digest(tokenizer),
                                vocab_size=cfg["vocab_size"], eos_token_id=tokenizer.eos_token_id,
                                context_tokens=context_tokens, max_new_tokens=max_new_tokens,
-                               max_output_bytes=max_output_bytes)
+                               max_output_bytes=max_output_bytes, cache_policy=cache_policy)
     proposer = LocalCausalProposer(model, tokenizer, policy)
     return proposer, dict(snapshot_sha256=expected_snapshot_sha256,
                          material_approval_sha256=material_approval_sha256,
