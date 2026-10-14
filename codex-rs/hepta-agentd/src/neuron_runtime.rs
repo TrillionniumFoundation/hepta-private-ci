@@ -203,6 +203,12 @@ where
         signed_read: &SignedNduSnapshotReadV1,
         signed_grant: &SignedFinalUseGrant,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        // No product-serving model effect may enter without an Evidence-owned
+        // healthy durable metric sink. Telemetry grants no Final-use authority;
+        // loss of observability withholds readiness and never causes replay.
+        if !self.production_metrics_ready() {
+            return Err(NeuronRuntimeError::PendingReconciliation);
+        }
         // Avoid rematerializing the semantic digest or reading the clock when
         // no Evidence sink is configured. This metric is the real wall-clock
         // duration of the signed tick, never a simulated NDU/WAL phase.
