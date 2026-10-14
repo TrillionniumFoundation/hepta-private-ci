@@ -1,0 +1,61 @@
+name: Native NDU matrix-free Stem research
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-ndu/research/native_stem_abcd/matrix_free/**"
+      - ".github/workflows/hepta-native-ndu-matrix-free.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  matrix-free-research:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+    steps:
+      - name: Check out exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: "3.13"
+      - name: Install pinned numerical dependencies
+        run: |
+          python -m pip install numpy==2.3.5 scipy==1.17.0
+          python -m pip install torch==2.10.0 --index-url https://download.pytorch.org/whl/cpu
+      - name: Verify derivatives and execute source-bound comparison
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE="$GITHUB_WORKSPACE/codex-rs/hepta-ndu/research/native_stem_abcd"
+          SOURCE="$BASE/matrix_free"
+          OUTPUT="$RUNNER_TEMP/ndu-matrix-free"
+          mkdir -p "$OUTPUT"
+          git rev-parse HEAD > "$OUTPUT/SOURCE_SHA.txt"
+          python -m pip freeze > "$OUTPUT/ENVIRONMENT.txt"
+          for d in "$BASE" "$BASE/population" "$BASE/nonquadratic" "$BASE/continuous" "$SOURCE"; do
+            (cd "$d" && python -m unittest -v) 2>&1 | tee -a "$OUTPUT/TESTS.log"
+          done
+          python "$SOURCE/run_matrix_free.py" sweep --out "$OUTPUT/runs" \
+            2>&1 | tee "$OUTPUT/SWEEP.log"
+          python "$SOURCE/audit/verify.py" --source "$SOURCE" --runs "$OUTPUT/runs" \
+            --out "$OUTPUT/verified" 2>&1 | tee "$OUTPUT/AUDIT.log"
+          NDU_R7_SOURCE="$SOURCE" NDU_R7_RUNS="$OUTPUT/runs" \
+            python "$SOURCE/audit/test_tamper.py" 2>&1 | tee "$OUTPUT/TAMPER.log"
+      - name: Retain complete raw results and failure evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-ndu-matrix-free-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-matrix-free
+          if-no-files-found: error
+          retention-days: 14
