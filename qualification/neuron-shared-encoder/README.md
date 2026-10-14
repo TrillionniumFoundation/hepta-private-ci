@@ -214,3 +214,43 @@ Official GTE pooling/task adapters need a separately pinned run.
 The complete five-arm schema is `SCHEMA_COMPLETE_UNVERIFIED`, not proof that
 all five models ran. All outputs remain shadow-only; no real weights or
 qualified approved data are supplied by this PR.
+
+
+### B — three-way prequential Head evidence (no independent signatures)
+
+`python -m neuron_shared_encoder.abc_evidence b-threeway --dataset
+/approved/frozen.jsonl --dataset-sha256 SHA --input-json
+/approved/threeway.json --input-sha256 SHA --output /evidence/b.json`
+requires the same exact row identities for externally obtained
+`frozen_no_change`, `frozen_head`, and `learned_head` snapshots.
+The candidate snapshot supplies a per-row pre-update Head digest;
+a label-free, ordered event journal seals all three probability vectors,
+the input, initial matched frozen Head and observed prediction time before
+the label-availability timestamp. Distinct future_1/future_2 windows cannot
+overlap in clock or source group. Report grouped bootstrap improvements
+against BOTH controls, Brier/ECE/NLL, old-task retention, OOD false
+acceptance and abstention at the precommitted threshold.
+
+A self-authored hash/timestamp does not establish authentic pre-label
+publication. A validated offline B report remains `NOT_AUTHORIZED`
+until independently signed NDU, external baseline/evaluator and full
+production FinalUse gates exist.
+
+### C — text -> vision -> audio -> video cost truth (shadow)
+
+`python -m neuron_shared_encoder.abc_evidence c-stages --input-json
+/approved/paired-stages.json --input-sha256 SHA --output /evidence/c.json`
+requires each stage to preserve the pinned text probe, all prior modality
+tasks with identical cohorts, and actual FULL-active Cell coverage at
+64, 256, 1024, and 4096. The same host, source commit and paired
+text-control workload must be present. Counters include physical encoder
+forward rows AND batches, CPU/RSS/GPU, request p95/p99, WAL, CAS/signature/CNS
+p99 and unclean crash recovery. Multimedia frames may legitimately create
+MORE encoder rows than requests, so that ratio is not silently rejected.
+It reports incremental parameter/weight/RSS cost and prior-task score
+changes; negative changes are retained.
+
+This C checker accepts self-reported metrics only as
+`SCHEMA_COMPLETE_UNVERIFIED`: it cannot authenticate host, worker,
+real model, signature, timing, external truth or recovery. The test suite
+uses deliberately synthetic contract fixtures, not real measurements.
