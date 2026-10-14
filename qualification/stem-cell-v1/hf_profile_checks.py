@@ -104,6 +104,30 @@ class InstalledHFTests(unittest.TestCase):
         self.assertFalse(scored['learning_superiority_established'])
 
 
+    def test_public_budget_controls_train_stock_features_with_complete_updates(self):
+        from transformers import AutoTokenizer
+        from hf_encoder_kernel import vectorize_case
+        from shared_learning_probe import fit_controls, freeze_study, score_sealed
+        full, encoder, _ = load_complete_mlm(self.root)
+        tok = AutoTokenizer.from_pretrained(str(self.root), local_files_only=True, trust_remote_code=False)
+        def rows(split):
+            return [dict(sample_id=f'{split}:{i}', state=f'{split} engineer garden {i}',
+                         question='Identify subject', options=['person','place','left','right']) for i in range(4)]
+        def encode(row):
+            return vectorize_case(torch,encoder,tok,row,'cpu',max_tokens=512)
+        study=freeze_study(batch_size=4,width_units=3,training_flops_budget=300000,max_budget_steps=64)
+        before={k:v.detach().clone() for k,v in full.state_dict().items()}
+        output=self.root/'budget-learning'
+        seal=fit_controls(encode,rows('train'),[0,1,2,3],rows('test'),output,dimension=8,study=study)
+        report=score_sealed(output,[0,1,2,3],expected_seal_id=seal['seal_id'])
+        self.assertTrue(report['all_arms_completed'])
+        self.assertTrue(report['parameter_matched'])
+        self.assertTrue(all(r['formula_flops'] <= 300000 for r in report['training_budget_results']))
+        for key,value in full.state_dict().items():
+            torch.testing.assert_close(value,before[key],rtol=0,atol=0)
+        self.assertFalse(report['full_system_efficiency_established'])
+
+
 if __name__ == '__main__':
     torch.set_num_threads(1)
     unittest.main()

@@ -157,6 +157,15 @@ jobs:
             --snapshot "$RUNNER_TEMP/public-encoder/snapshot" \
             --news-dir "$RUNNER_TEMP/public-news" --acquire-news \
             --output "$RUNNER_TEMP/public-learning" 2>&1 | tee "$RUNNER_TEMP/public-learning.log"
+      - name: Exercise fixed-compute public learning without quality stopping
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/shared_learning_probe.py \
+            --snapshot "$RUNNER_TEMP/public-encoder/snapshot" \
+            --news-dir "$RUNNER_TEMP/public-news" \
+            --training-flops-budget 5000000000 --max-budget-steps 4096 \
+            --output "$RUNNER_TEMP/public-budget-learning" 2>&1 | tee "$RUNNER_TEMP/public-budget-learning.log"
       - name: Retain observations, never upload model weights
         if: always()
         uses: actions/upload-artifact@v4
@@ -186,4 +195,17 @@ jobs:
             ${{ runner.temp }}/public-learning/controls/FAILED.json
             ${{ runner.temp }}/public-learning/controls/*/RUN.json
             ${{ runner.temp }}/public-learning/controls/*/FAILED.json
+            ${{ runner.temp }}/public-budget-learning.log
+            ${{ runner.temp }}/public-budget-learning/scores.json
+            ${{ runner.temp }}/public-budget-learning/selection.json
+            ${{ runner.temp }}/public-budget-learning/STUDY.json
+            ${{ runner.temp }}/public-budget-learning/source_files.json
+            ${{ runner.temp }}/public-budget-learning/COMMITTED.json
+            ${{ runner.temp }}/public-budget-learning/FAILED.json
+            ${{ runner.temp }}/public-budget-learning/controls/STUDY.json
+            ${{ runner.temp }}/public-budget-learning/controls/predictions.json
+            ${{ runner.temp }}/public-budget-learning/controls/COMMITTED.json
+            ${{ runner.temp }}/public-budget-learning/controls/FAILED.json
+            ${{ runner.temp }}/public-budget-learning/controls/*/RUN.json
+            ${{ runner.temp }}/public-budget-learning/controls/*/FAILED.json
           if-no-files-found: error
