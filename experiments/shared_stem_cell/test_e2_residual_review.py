@@ -14,10 +14,13 @@ def fixture():
     v={c['case_id']:[((int(c['case_id'][:4],16)%99)-50)/100]*width for c in p['cases']}
     fit=e1.fit_heads(p,model,v)
     panel_sha=e1.sha(e1.canonical(p))
+    from e1e2_q24_identity import feature_inventory
+    bank=feature_inventory([c['case_id'] for c in p['cases']],v)
     e1obj={'schema':'hepta.e1-english-public-pretrained-head.v1','model':model,
            'public_panel_sha256':panel_sha,'production_promotion_permitted':False,
            'actual_pretrained_local_weight_execution_claimed':True,
-           'model_revision':e1.MODELS[model][1],'feature_width':width,'fitting':fit}
+           'model_revision':e1.MODELS[model][1],'feature_width':width,'fitting':fit,
+           'frozen_feature_bank_identity':bank}
     raw=json.dumps(e1obj,sort_keys=True).encode()+b'\n'
     e2obj=e2.study(p,model,v)
     e2obj.update(source_e1_report_sha256=hashlib.sha256(raw).hexdigest(),public_panel_sha256=panel_sha,
@@ -46,6 +49,22 @@ class TestReviewer(unittest.TestCase):
     def test_different_label_and_source(self):self.deny(lambda x:x[3]['arms']['from_zero']['predictions'][0].update(joint_input_digest='f'*64))
     def test_frozen_base_parameter_mismatch(self):self.deny(lambda x:x[3].update(frozen_base_parameters_counted_as_shared_storage=0))
     def test_fake_frozen_base_replication(self):self.deny(lambda x:x[3].update(frozen_base_weight_storage_shared_among_residual_arms=False))
+    def test_e2_feature_case_tamper(self):
+        def tamper(data):
+            bank=data[3]['frozen_feature_bank_identity']['case_q24_sha256']
+            bank[next(iter(bank))]='f'*64
+        self.deny(tamper)
+    def test_e1_feature_case_tamper(self):
+        def tamper(data):
+            bank=data[1]['frozen_feature_bank_identity']['case_q24_sha256']
+            bank[next(iter(bank))]='f'*64
+        self.deny(tamper)
+    def test_e2_feature_inventory_missing(self):
+        self.deny(lambda data:data[3].pop('frozen_feature_bank_identity'))
+    def test_e2_feature_bank_digest_swap(self):
+        self.deny(lambda data:data[3]['frozen_feature_bank_identity'].update(bank_q24_sha256='f'*64))
+    def test_e1_feature_bank_incomplete(self):
+        self.deny(lambda data:data[1]['frozen_feature_bank_identity']['case_q24_sha256'].pop(next(iter(data[1]['frozen_feature_bank_identity']['case_q24_sha256']))))
     def test_invented_extra_encoder_forward(self):self.deny(lambda x:x[3].update(additional_encoder_feature_forwards=1))
     def test_forged_no_change(self):self.deny(lambda x:x[3].update(independent_no_change_production_arm_present=True))
 
