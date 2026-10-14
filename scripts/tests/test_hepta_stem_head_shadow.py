@@ -110,10 +110,7 @@ class HeadTests(unittest.TestCase):
             )
         with tempfile.TemporaryDirectory() as folder:
             malformed = Path(folder) / "bad.jsonl"
-            malformed.write_text(
-                '{"case_id":"one","case_id":"two"}\\n'.replace('\\\\n', '\\n'),
-                encoding="utf-8",
-            )
+            malformed.write_text('{"case_id":"one","case_id":"two"}\n', encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
                 MOD.read_rows(malformed)
 
