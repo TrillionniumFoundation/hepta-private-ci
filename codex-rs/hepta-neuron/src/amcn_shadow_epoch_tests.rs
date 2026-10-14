@@ -348,6 +348,7 @@ fn amcn_epoch_shadow_writer_pending_refuses_second_head_without_waiting_for_mode
     let next = shared.clone();
     let request_second = request();
     let expected_second = base.clone();
+    let (second_done_tx, second_done_rx) = channel();
     let second = thread::spawn(move || {
         let new_bound = binding(&request_second, &expected_second, d("artifact.b"));
         let counter = AtomicUsize::new(0);
@@ -356,14 +357,22 @@ fn amcn_epoch_shadow_writer_pending_refuses_second_head_without_waiting_for_mode
             counter.fetch_add(1, Ordering::SeqCst);
             Ok::<_, NeuronModelError>(())
         });
-        (reply, counter.load(Ordering::SeqCst))
+        second_done_tx.send((reply, counter.load(Ordering::SeqCst)))
+            .expect("second reader reports result");
     });
+    // Even while the earlier invocation STILL holds its read lock and the
+    // withdrawal writer is queued, a newly arriving Cell must reject WITHOUT
+    // acquiring or waiting for that read lock. Do not release the first model
+    // until the second result has already reached this assertion.
+    let (second_reply, new_calls) = second_done_rx
+        .recv_timeout(Duration::from_secs(2))
+        .expect("pending withdrawal must reject new Cell before old model finishes");
+    assert_eq!(second_reply, Err(NeuronModelError::Rejected));
+    assert_eq!(new_calls, 0);
     release_tx.send(()).expect("release first reader");
     first_thread.join().expect("first model").expect("started before withdrawal pending");
     writer.join().expect("writer").expect("withdrawal completed");
-    let (second_reply, new_calls) = second.join().expect("second reader");
-    assert_eq!(second_reply, Err(NeuronModelError::Rejected));
-    assert_eq!(new_calls, 0);
+    second.join().expect("second reader");
 }
 
 #[test]

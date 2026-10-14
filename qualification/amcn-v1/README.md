@@ -452,7 +452,11 @@ type with no caller-writable fields. A second opt-in Neuron feature,
 amcn-artifact-owner-shadow, lets the cache consume only that typed projection,
 not arbitrary caller-provided population lists. The index also now stops
 oversized external iterators at the first over-budget value, avoiding late
-allocation-based resource denial during cold load or update.
+allocation-based resource denial during cold load or update. In the withdrawal
+pending state, new Cell requests perform an atomic fast-fail BEFORE trying to
+acquire an RwLock read lease; the negative concurrent test requires that
+refusal to arrive while the earlier model is STILL running and writer waits.
+A second check after taking the lock closes the announce/acquire race.
 
 This projection is signed-CURRENT-registry *input provenance*, NOT a durable
 execution grant. A validly verified registry view may become stale while the

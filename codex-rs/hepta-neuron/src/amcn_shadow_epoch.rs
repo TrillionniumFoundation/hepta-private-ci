@@ -205,6 +205,12 @@ impl AmcnShadowEpochIndex {
 
     /// Exact O(1) current header read, not a claim that this was signed.
     pub fn header(&self) -> Result<AmcnEpochHeaderV1, NeuronModelError> {
+        // Fast refusal BEFORE joining a queued writer behind long-lived
+        // in-flight Cell readers. This is a contention/latency bound, not
+        // cross-process owner authentication.
+        if self.pending_owner_change.load(Ordering::Acquire) {
+            return Err(NeuronModelError::Indeterminate);
+        }
         let guard = self.state.read().map_err(|_| NeuronModelError::Indeterminate)?;
         if self.pending_owner_change.load(Ordering::Acquire) {
             return Err(NeuronModelError::Indeterminate);
@@ -333,8 +339,15 @@ impl AmcnSourceArtifactFence for AmcnShadowEpochFence {
         E: From<NeuronModelError>,
     {
         binding.validate_request(request).map_err(E::from)?;
+        // The writer announces revocation BEFORE attempting to acquire the
+        // exclusive lock. Do not make new readers queue while an earlier model
+        // owns the read side: refuse in bounded time even while it is running.
+        if self.index.pending_owner_change.load(Ordering::Acquire) {
+            return Err(E::from(NeuronModelError::Rejected));
+        }
         let current = self.index.state.read()
             .map_err(|_| E::from(NeuronModelError::Indeterminate))?;
+        // Recheck AFTER lock acquisition to close the announce/acquire race.
         if self.index.pending_owner_change.load(Ordering::Acquire) {
             return Err(E::from(NeuronModelError::Rejected));
         }
