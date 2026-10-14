@@ -355,3 +355,34 @@ def test_a5_bad_optimizer_type_fails_closed():
     spec = five_arm_plan()
     spec['training']['optimizer'] = None
     assert five_arm_matrix_contract(spec)['status'] == 'BLOCKED'
+
+
+def test_e2_future_labels_cannot_resize_option_schema():
+    # Two choices were visible in TRAIN. A future-only third answer is
+    # not allowed to silently change the architecture after training.
+    torch.manual_seed(17)
+    features = torch.randn(16, 8)
+    splits = ['train']*8 + ['validation']*2 + ['future']*3 + ['ood']*3
+    labels = torch.tensor([0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 2, 2, 2, 0, 1, 2])
+    from neuron_shared_encoder.validation_v3 import head_trials
+    with pytest.raises(ValueError, match='outside frozen option space'):
+        head_trials(features, labels, splits, kinds=('linear',),
+                    budgets=(2048,), steps=1)
+    report = head_trials(features, labels, splits, kinds=('linear',),
+                         budgets=(2048,), num_classes=3, steps=1)
+    assert report['frozen_output_class_count'] == 3
+    assert report['class_count_source'] == 'frozen_registered_option_width'
+    assert report['candidates'][0]['status'] == 'EVALUATED_SHADOW'
+
+
+def test_e2_declared_options_not_replaced_with_future_label_max():
+    torch.manual_seed(20)
+    features = torch.randn(16, 8)
+    splits = ['train']*8 + ['validation']*2 + ['future']*3 + ['ood']*3
+    labels = torch.tensor([0, 1]*8)
+    report = head_trials(features, labels, splits, kinds=('linear',),
+                         budgets=(2048,), num_classes=4, steps=1)
+    assert report['frozen_output_class_count'] == 4
+    with pytest.raises(ValueError, match='2..16'):
+        head_trials(features, labels, splits, kinds=('linear',),
+                    budgets=(2048,), num_classes=17, steps=1)

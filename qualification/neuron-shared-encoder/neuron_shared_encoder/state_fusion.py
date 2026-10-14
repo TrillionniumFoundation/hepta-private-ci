@@ -135,6 +135,7 @@ def learned_state_fusion_trials(
     budgets: tuple[int, ...] = (2048, 16384, 65536),
     kinds: tuple[str, ...] = ('linear', 'dynamic_gate'),
     seed: int = 42, steps: int = 16, batch: int = 32, lr: float = 0.001,
+    num_classes: int | None = None,
 ) -> dict:
     """Matched small adapter+Head training, no future-label gradient leakage."""
     if (not isinstance(frozen_public_features, torch.Tensor) or
@@ -152,9 +153,23 @@ def learned_state_fusion_trials(
             for key in ('train', 'validation', 'future', 'ood')}
     if any(not len(ids) for ids in mask.values()):
         raise ValueError('every evaluation partition must contain data')
-    classes = int(labels.max().item()) + 1
-    if classes < 2 or classes > 16 or labels.ndim != 1 or (labels < 0).any():
-        raise ValueError('invalid class label geometry')
+    if (not isinstance(labels, torch.Tensor) or labels.ndim != 1
+            or labels.dtype not in (torch.int8, torch.int16, torch.int32, torch.int64)
+            or bool((labels < 0).any())):
+        raise ValueError('labels must contain nonnegative integer positions')
+    train_ids = mask['train']
+    if num_classes is None:
+        classes = int(labels[train_ids].max().item()) + 1
+        source = 'train_labels_only_no_future_cardinality'
+    else:
+        if type(num_classes) is not int:
+            raise ValueError('registered option width must be an integer')
+        classes = num_classes
+        source = 'frozen_registered_option_width'
+    if not 2 <= classes <= 16:
+        raise ValueError('invalid frozen 2..16 option width')
+    if bool((labels >= classes).any()):
+        raise ValueError('label outside frozen option space; future truth cannot resize Head')
     started = time.perf_counter()
     state, state_bytes = fixed_state_ngram_features(rows, bins=bins)
     state_seconds = time.perf_counter() - started
@@ -235,6 +250,8 @@ def learned_state_fusion_trials(
         'production_admission': 'BLOCKED',
         'budgets_are_ceilings_not_equal_parameter_counts': True,
         'same_train_steps': steps, 'same_train_batch': batch, 'same_lr': lr,
+        'frozen_output_class_count': classes,
+        'class_count_source': source,
         'candidates': outputs,
         'warning': ('Byte-hash collisions, CPU text featurization and untrained '
                     'projection are real costs and quality limits. Neither '

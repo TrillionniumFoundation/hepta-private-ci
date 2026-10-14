@@ -404,3 +404,17 @@ knowledge of when a not-yet-observed outcome arrives in a purported
 pre-label artifact. All timestamps are still self-reported here;
 an independent append-only producer and signed witness are required
 before a real selection.
+
+
+### E2/E3 fixed option-space proof (future-label leakage regression)
+
+The number of Head output classes is now resolved only from a **frozen,
+registered choice count** (`len(options)`) for all real dataset/CLI
+experiments, and never from a future/validation/OOD label maximum. The
+standalone Python APIs accept an explicit `num_classes`; if absent they
+derive the class count from the training slice ONLY and fail closed when
+future labels fall outside that frozen geometry. A future-only class can
+be tested if it was already part of the publicly registered choices:
+its Head output neuron exists before learning, even if that class was
+not observed in training. This removes a subtle previously present
+future-label information channel in E2/E3 Head construction.

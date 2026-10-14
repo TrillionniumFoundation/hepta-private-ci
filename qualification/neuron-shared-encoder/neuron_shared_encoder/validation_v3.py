@@ -141,7 +141,8 @@ def _auroc(positive: torch.Tensor, negative: torch.Tensor) -> float:
 
 def head_trials(features: torch.Tensor, labels: torch.Tensor, splits: list[str], *,
                 budgets: tuple[int, ...] = BUDGETS, kinds: tuple[str, ...] = KINDS,
-                seed: int = 42, steps: int = 16, batch: int = 32, lr: float = 1e-3) -> dict:
+                seed: int = 42, steps: int = 16, batch: int = 32, lr: float = 1e-3,
+                num_classes: int | None = None) -> dict:
     """E2: identical frozen features, training indices/steps and tuning opportunity."""
     if features.ndim != 2 or len(features) != len(labels) or len(splits) != len(labels):
         raise ValueError('invalid aligned feature dataset')
@@ -149,13 +150,32 @@ def head_trials(features: torch.Tensor, labels: torch.Tensor, splits: list[str],
         raise ValueError('invalid features or training budget')
     if not set(('train', 'validation', 'future', 'ood')) <= set(splits):
         raise ValueError('all four disjoint splits required')
-    classes = int(labels.max().item()) + 1
-    if classes < 2:
-        raise ValueError('need at least two labeled classes')
     groups = {name: torch.tensor([i for i, s in enumerate(splits) if s == name], dtype=torch.long)
               for name in ('train', 'validation', 'future', 'ood')}
+    if any(len(ids) == 0 for ids in groups.values()):
+        raise ValueError('all experiment splits require actual records')
+    if (not isinstance(labels, torch.Tensor) or labels.ndim != 1
+            or labels.dtype not in (torch.int8, torch.int16, torch.int32, torch.int64)
+            or bool((labels < 0).any())):
+        raise ValueError('labels require nonnegative integer positions')
     train_x = features[groups['train']]
     train_y = labels[groups['train']]
+    if num_classes is None:
+        # The direct API has no options manifest; derive ONLY from the
+        # already-visible training labels, never from future/holdout truth.
+        classes = int(train_y.max().item()) + 1
+        class_source = 'train_labels_only_no_future_cardinality'
+    else:
+        if type(num_classes) is not int:
+            raise ValueError('registered option count must be an integer')
+        classes = num_classes
+        class_source = 'frozen_registered_option_width'
+    if not 2 <= classes <= 16:
+        raise ValueError('bounded 2..16 legal options required')
+    if bool((labels >= classes).any()):
+        # Evaluation truth can disqualify a pre-committed decision space,
+        # but must never resize a trained Head.
+        raise ValueError('label outside frozen option space; no future cardinality inference')
     trials = []
     for budget in budgets:
         if budget <= 0 or budget > max(BUDGETS):
@@ -200,6 +220,7 @@ def head_trials(features: torch.Tensor, labels: torch.Tensor, splits: list[str],
                 trials.append(row)
     return {'experiment': 'E2', 'evidence_class': 'TRAINED_SHADOW', 'production_admission': 'BLOCKED',
             'same_train_steps': steps, 'same_train_batch': batch, 'same_train_lr': lr,
+            'frozen_output_class_count': classes, 'class_count_source': class_source,
             'budgets_are_upper_limits_not_equal_counts': True, 'candidates': trials}
 
 
@@ -537,7 +558,8 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
         features = ((features - mu) / std).clamp(-10,10)
         trained = head_trials(features, labels, split_names,
                               budgets=BUDGETS, seed=spec['seed'], steps=spec['steps'],
-                              batch=spec['batch'], lr=float(spec['learning_rate']))
+                              batch=spec['batch'], lr=float(spec['learning_rate']),
+                              num_classes=len(rows[0]['options']))
         result = {'checkpoint_bundle_sha256': backend.bundle_sha256,
                   'weights_sha256': backend.weights_sha256,
                   'tokenizer_sha256_claimed': entry['tokenizer_sha256'],
@@ -763,14 +785,17 @@ def main() -> None:
                     _p.float().cpu(), rows, label_tensor, split_names,
                     total_dim=args.dimension, budgets=tuple(args.budgets),
                     kinds=('linear', 'dynamic_gate'), steps=args.steps,
-                    batch=args.batch, seed=args.seed)
+                    batch=args.batch, seed=args.seed,
+                    num_classes=len(rows[0]['options']))
                 compared = {
                     'joint': head_trials(joint_features, label_tensor, split_names,
                                          kinds=('linear', 'dynamic_gate'), budgets=tuple(args.budgets),
-                                         steps=args.steps, batch=args.batch, seed=args.seed),
+                                         steps=args.steps, batch=args.batch, seed=args.seed,
+                                         num_classes=len(rows[0]['options'])),
                     'public_plus_private_state': head_trials(fused_features, label_tensor, split_names,
                                          kinds=('linear', 'dynamic_gate'), budgets=tuple(args.budgets),
-                                         steps=args.steps, batch=args.batch, seed=args.seed),
+                                         steps=args.steps, batch=args.batch, seed=args.seed,
+                                         num_classes=len(rows[0]['options'])),
                     'public_plus_trainable_lightweight_state_adapter': lightweight_state,
                 }
                 result = {'experiment': 'E3', 'evidence_class': evidence_class,
@@ -814,7 +839,7 @@ def main() -> None:
                 labels = torch.tensor([r['label'] for r in rows], dtype=torch.long)
                 result = head_trials(normalized, labels, [r['split'] for r in rows],
                                      budgets=tuple(args.budgets), seed=args.seed, steps=args.steps,
-                                     batch=args.batch)
+                                     batch=args.batch, num_classes=len(rows[0]['options']))
                 result['evidence_class'] = evidence_class
             result['dataset_sha256'] = sha256_file(args.dataset)
             result['encoder_bundle_sha256'] = encoder_digest if args.encoder != 'synthetic-hash' else None

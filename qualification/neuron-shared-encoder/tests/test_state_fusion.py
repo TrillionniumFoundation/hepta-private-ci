@@ -123,3 +123,22 @@ def test_stable_weight_digest_is_sensitive_to_numeric_updates():
     with torch.no_grad():
         model.adapter.weight[0, 0] += 0.1
     assert _model_weights_digest(model) != original
+
+
+def test_e3_future_only_new_class_does_not_infer_head_width():
+    data = rows()
+    torch.manual_seed(24)
+    features = torch.randn(len(data), 96)
+    splits = [r['split'] for r in data]
+    labels = torch.tensor([i % 2 for i in range(len(data))])
+    labels[16] = 2   # new option only in future, never in training
+    with pytest.raises(ValueError, match='future truth cannot resize Head'):
+        learned_state_fusion_trials(features, data, labels, splits,
+                                    budgets=(2048,), kinds=('linear',),
+                                    steps=1)
+    result = learned_state_fusion_trials(
+        features, data, labels, splits, num_classes=3,
+        budgets=(2048,), kinds=('linear',), steps=1)
+    assert result['frozen_output_class_count'] == 3
+    assert result['class_count_source'] == 'frozen_registered_option_width'
+    assert result['candidates'][0]['status'] == 'TRAINED_LEARNED_STATE_SHADOW'
