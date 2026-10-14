@@ -436,7 +436,20 @@ impl MetricsGroupCommitV1 {
 
     /// Local readback for an independent Observer to capture and then
     /// authenticate under its OWN custody. No signer or grant is minted.
-    pub fn read_local_frontier(&self) -> Result<MetricsLocalFrontierV1, MetricsJournalErrorV1> {
+    pub fn read_local_frontier(&mut self) -> Result<MetricsLocalFrontierV1, MetricsJournalErrorV1> {
+        if self.poisoned {
+            return Err(MetricsJournalErrorV1::Poisoned);
+        }
+        let result = self.read_local_frontier_checked();
+        if result.is_err() {
+            // A failed original history observation is a sticky owner fence,
+            // not a diagnostic that may be ignored before the next fsync ACK.
+            self.poisoned = true;
+        }
+        result
+    }
+
+    fn read_local_frontier_checked(&self) -> Result<MetricsLocalFrontierV1, MetricsJournalErrorV1> {
         self.verify_original_frontier()?;
         #[cfg(unix)]
         {

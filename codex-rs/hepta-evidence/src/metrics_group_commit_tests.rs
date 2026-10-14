@@ -713,3 +713,100 @@ fn pre_highwater_marker_cannot_claim_old_nonempty_wal_without_migration() {
         Err(MetricsJournalErrorV1::Corrupt)
     ));
 }
+
+#[cfg(unix)]
+#[test]
+fn cold_replay_rejects_tampered_first_marker_row_with_valid_last_frontier() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let marker = dir.path().join("journal.owner-lock");
+    let identity_len;
+    {
+        let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
+        identity_len = owner.owner_marker_bytes.len();
+        for phase in [
+            MetricPhaseV1::Cas,
+            MetricPhaseV1::Signature,
+            MetricPhaseV1::Cns,
+        ] {
+            owner.stage(sample(phase)).expect("stage original event");
+            owner.flush().expect("committed original group");
+        }
+    }
+    let mut marker_bytes = fs::read(&marker).expect("original marker history");
+    let saved_final = marker_bytes[marker_bytes.len() - OWNER_FRONTIER_ROW_BYTES..].to_vec();
+    // Change the first (not the last) F1 sequence field. Length, inode,
+    // final tuple and original WAL bytes are all left unchanged.
+    let first_hex_digit = identity_len + 3;
+    marker_bytes[first_hex_digit] =
+        if marker_bytes[first_hex_digit] == b'0' { b'1' } else { b'0' };
+    assert_eq!(
+        &marker_bytes[marker_bytes.len() - OWNER_FRONTIER_ROW_BYTES..],
+        saved_final.as_slice()
+    );
+    fs::write(&marker, &marker_bytes).expect("tamper SAME marker inode");
+    assert!(matches!(
+        MetricsGroupCommitV1::open(&path),
+        Err(MetricsJournalErrorV1::Corrupt)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
+fn live_local_observer_rechecks_entire_marker_history_and_poisons_on_drift() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let marker = dir.path().join("journal.owner-lock");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
+    let identity_len = owner.owner_marker_bytes.len();
+    for phase in [
+        MetricPhaseV1::Admission,
+        MetricPhaseV1::Microbatch,
+        MetricPhaseV1::Wal,
+    ] {
+        owner.stage(sample(phase)).expect("group");
+        owner.flush().expect("durable original group");
+    }
+    let before = owner.read_local_frontier().expect("verified local snapshot");
+    assert_eq!(before.sequence, 3);
+    assert_eq!(before.committed_rows, 3);
+    assert_eq!(before.head_digest, owner.committed_head());
+    assert_eq!(
+        before.journal_bytes,
+        fs::metadata(&path).expect("original journal").len()
+    );
+    let mut damaged = fs::read(&marker).expect("original marker");
+    damaged[identity_len + OWNER_FRONTIER_ROW_BYTES + 3] = b'f';
+    fs::write(&marker, &damaged).expect("tamper only the middle marker record");
+    assert!(matches!(
+        owner.read_local_frontier(),
+        Err(MetricsJournalErrorV1::Corrupt)
+    ));
+    assert!(matches!(
+        owner.flush(),
+        Err(MetricsJournalErrorV1::Poisoned)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
+fn local_observer_frontier_is_read_only_and_never_counts_unflushed_staging() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let marker = dir.path().join("journal.owner-lock");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
+    owner.stage(sample(MetricPhaseV1::Cas)).expect("first");
+    owner.flush().expect("first group");
+    owner.stage(sample(MetricPhaseV1::Cns)).expect("pending only");
+    let original_wal = fs::read(&path).expect("committed group");
+    let original_marker = fs::read(&marker).expect("original highwater");
+    let snapshot = owner.read_local_frontier().expect("local observer read");
+    assert_eq!(snapshot.sequence, 1);
+    assert_eq!(snapshot.committed_rows, 1);
+    assert_eq!(owner.pending(), 1);
+    assert_eq!(fs::read(&path).expect("unchanged WAL"), original_wal);
+    assert_eq!(
+        fs::read(&marker).expect("unchanged marker"),
+        original_marker
+    );
+}
