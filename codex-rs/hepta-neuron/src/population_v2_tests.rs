@@ -321,7 +321,7 @@ fn prepared_shadow_64_tick_is_exact_legacy_copy_and_bound_to_generation() {
         legacy = Some(slow.0);
         optimized = Some(fast.0);
     }
-    let mut changed = cfg.clone();
+    let mut changed = cfg;
     changed.generation = generation(9);
     let new_prepared = checked(PreparedPopulationSparseConfigV2::new(changed));
     assert_ne!(new_prepared.digest(), prepared.digest());
