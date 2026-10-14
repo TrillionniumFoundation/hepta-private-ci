@@ -16,28 +16,39 @@ INPUT = dict(id=555, sha="4" * 64)
 
 def fixture(conclusion="success"):
     run = dict(
-        id=RUN_ID, name="MemoryCell fixed reader reference experiment",
-        head_sha=EXPECTED_SHA, run_attempt=1,
-        status="completed", conclusion=conclusion,
+        id=RUN_ID,
+        name="MemoryCell fixed reader reference experiment",
+        head_sha=EXPECTED_SHA,
+        run_attempt=1,
+        status="completed",
+        conclusion=conclusion,
     )
     artifacts = [
         dict(
-            id=20 + i, name=name, size_in_bytes=1000 + i,
+            id=20 + i,
+            name=name,
+            size_in_bytes=1000 + i,
             digest="sha256:" + str(i + 1) * 64,
-            expired=False, workflow_run=dict(head_sha=EXPECTED_SHA),
+            expired=False,
+            workflow_run=dict(head_sha=EXPECTED_SHA),
         )
-        for i, name in enumerate((
-            "memory-reader-reference-smol-1.7b",
-            "memory-reader-reference-qwen-3b",
-        ))
+        for i, name in enumerate(
+            (
+                "memory-reader-reference-smol-1.7b",
+                "memory-reader-reference-qwen-3b",
+            )
+        )
     ]
     return run, dict(total_count=len(artifacts), artifacts=artifacts)
 
 
 def audit(run, artifacts):
     return admit_run(
-        run, artifacts, expected_run_id=RUN_ID,
-        expected_source=EXPECTED_SHA, inputs=INPUT,
+        run,
+        artifacts,
+        expected_run_id=RUN_ID,
+        expected_source=EXPECTED_SHA,
+        inputs=INPUT,
     )
 
 
@@ -60,7 +71,8 @@ class ReaderReferenceAdmissionTests(unittest.TestCase):
 
     def test_cancelled_or_pending_model_cannot_be_replayed(self):
         for status, conclusion in (
-            ("completed", "cancelled"), ("in_progress", None),
+            ("completed", "cancelled"),
+            ("in_progress", None),
         ):
             run, artifacts = fixture()
             run["status"], run["conclusion"] = status, conclusion
@@ -115,18 +127,30 @@ class ReaderReferenceAdmissionTests(unittest.TestCase):
             (root / "metadata.json").write_text(json.dumps(artifacts))
             args = [
                 "reader_reference_run_gate.py",
-                "--run", str(root / "run.json"),
-                "--artifacts", str(root / "metadata.json"),
-                "--report", str(root / "blocked.json"),
-                "--downloads", str(root / "downloads.tsv"),
-                "--pins", str(root / "external-pins.json"),
-                "--expected-id", str(RUN_ID),
-                "--expected-source", EXPECTED_SHA,
-                "--inputs-id", str(INPUT["id"]),
-                "--inputs-sha256", INPUT["sha"],
+                "--run",
+                str(root / "run.json"),
+                "--artifacts",
+                str(root / "metadata.json"),
+                "--report",
+                str(root / "blocked.json"),
+                "--downloads",
+                str(root / "downloads.tsv"),
+                "--pins",
+                str(root / "external-pins.json"),
+                "--expected-id",
+                str(RUN_ID),
+                "--expected-source",
+                EXPECTED_SHA,
+                "--inputs-id",
+                str(INPUT["id"]),
+                "--inputs-sha256",
+                INPUT["sha"],
             ]
-            with patch("sys.argv", args), self.assertRaisesRegex(
-                SystemExit, "Unqualified original model execution"
+            with (
+                patch("sys.argv", args),
+                self.assertRaisesRegex(
+                    SystemExit, "Unqualified original model execution"
+                ),
             ):
                 main()
             report = json.loads((root / "blocked.json").read_text())

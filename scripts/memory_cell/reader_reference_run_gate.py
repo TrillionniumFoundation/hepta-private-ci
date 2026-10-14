@@ -32,7 +32,8 @@ def admit_run(run, metadata, *, expected_run_id, expected_source, inputs):
         or not _number(expected_run_id)
         or not isinstance(expected_source, str)
         or HEX40.fullmatch(expected_source) is None
-        or type(run.get("id")) is not int or run["id"] != expected_run_id
+        or type(run.get("id")) is not int
+        or run["id"] != expected_run_id
         or run.get("head_sha") != expected_source
         or run.get("run_attempt") != 1
         or run.get("name") != "MemoryCell fixed reader reference experiment"
@@ -56,17 +57,21 @@ def admit_run(run, metadata, *, expected_run_id, expected_source, inputs):
         if not isinstance(item, dict):
             raise ValueError("invalid frozen Reader artifact")
         ident, name, size, digest = (
-            item.get("id"), item.get("name"), item.get("size_in_bytes"),
+            item.get("id"),
+            item.get("name"),
+            item.get("size_in_bytes"),
             item.get("digest"),
         )
         if (
             not _number(ident)
-            or ident in ids or not isinstance(name, str) or not name
+            or ident in ids
+            or not isinstance(name, str)
+            or not name
             or name in by_name
-            or type(size) is not int or not 0 < size <= 64 * 1024 * 1024
-            or not isinstance(digest, str) or re.fullmatch(
-                r"sha256:[0-9a-f]{64}", digest
-            ) is None
+            or type(size) is not int
+            or not 0 < size <= 64 * 1024 * 1024
+            or not isinstance(digest, str)
+            or re.fullmatch(r"sha256:[0-9a-f]{64}", digest) is None
             or not isinstance(item.get("workflow_run"), dict)
             or item["workflow_run"].get("head_sha") != expected_source
         ):
@@ -93,7 +98,8 @@ def admit_run(run, metadata, *, expected_run_id, expected_source, inputs):
                 size_bytes=by_name[name]["size_in_bytes"],
                 expired=by_name[name].get("expired"),
             )
-            if name in by_name else None
+            if name in by_name
+            else None
         )
         for short, name in REQUIRED.items()
     }
@@ -103,7 +109,8 @@ def admit_run(run, metadata, *, expected_run_id, expected_source, inputs):
             key: dict(id=observed[key]["id"], sha=observed[key]["sha256"])
             for key in REQUIRED
         }
-        if eligible else None
+        if eligible
+        else None
     )
     return dict(
         schema="hepta.reader-reference-generating-run-admission.v1",
@@ -123,9 +130,14 @@ def admit_run(run, metadata, *, expected_run_id, expected_source, inputs):
 
 
 def _read(path):
-    if path.is_symlink() or not path.is_file() or not 0 < path.stat().st_size <= 4 * 1024 * 1024:
+    if (
+        path.is_symlink()
+        or not path.is_file()
+        or not 0 < path.stat().st_size <= 4 * 1024 * 1024
+    ):
         raise ValueError("bounded non-symlink GitHub metadata file required")
     raw = path.read_bytes()
+
     def unique(pairs):
         d = {}
         for key, value in pairs:
@@ -133,6 +145,7 @@ def _read(path):
                 raise ValueError("duplicate GitHub metadata field")
             d[key] = value
         return d
+
     return json.loads(raw, object_pairs_hook=unique), hashlib.sha256(raw).hexdigest()
 
 
@@ -151,7 +164,9 @@ def main():
     run, run_sha = _read(args.run)
     metadata, metadata_sha = _read(args.artifacts)
     outcome = admit_run(
-        run, metadata, expected_run_id=args.expected_id,
+        run,
+        metadata,
+        expected_run_id=args.expected_id,
         expected_source=args.expected_source,
         inputs=dict(id=args.inputs_id, sha=args.inputs_sha256),
     )
@@ -161,8 +176,10 @@ def main():
         json.dump(outcome, dest, indent=2, sort_keys=True, allow_nan=False)
         dest.write("\n")
     if not outcome["eligible_for_complete_replay"]:
-        raise SystemExit("Unqualified original model execution: " +
-                         ", ".join(outcome["blocked_reasons"]))
+        raise SystemExit(
+            "Unqualified original model execution: "
+            + ", ".join(outcome["blocked_reasons"])
+        )
     with args.pins.open("x", encoding="utf-8") as dest:
         json.dump(outcome["replay_download_pins"], dest, indent=2, sort_keys=True)
         dest.write("\n")

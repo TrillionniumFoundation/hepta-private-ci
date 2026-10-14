@@ -19,8 +19,7 @@ def fixture(sdk="0.18.0", *, legacy=True, yaml=True):
     return (
         "version = 4\n\n"
         + "".join(
-            f'[[package]]\nname = "{name}"\nversion = "{ver}"\n\n'
-            for name, ver in rows
+            f'[[package]]\nname = "{name}"\nversion = "{ver}"\n\n' for name, ver in rows
         )
     ).encode()
 
@@ -35,21 +34,21 @@ class SecurityCandidateTests(unittest.TestCase):
 
     def test_new_matrix_sdk_can_clear_one_vulnerability_not_all_debt(self):
         result = compare(
-            fixture(), fixture("0.19.0", legacy=False, yaml=True),
+            fixture(),
+            fixture("0.19.0", legacy=False, yaml=True),
         )
         self.assertEqual(
             result["removed_known_advisories"],
             ["RUSTSEC-2026-0318", "RUSTSEC-2026-0319"],
         )
-        self.assertEqual(
-            result["remaining_known_advisories"], ["RUSTSEC-2024-0449"]
-        )
+        self.assertEqual(result["remaining_known_advisories"], ["RUSTSEC-2024-0449"])
         self.assertFalse(result["full_cargo_deny_qualified"])
         self.assertFalse(result["production_accepted"])
 
     def test_candidate_must_not_disappear_the_crypto_dependency(self):
         raw = fixture().replace(
-            b'[[package]]\nname = "matrix-sdk-crypto"\nversion = "0.18.0"\n\n', b"",
+            b'[[package]]\nname = "matrix-sdk-crypto"\nversion = "0.18.0"\n\n',
+            b"",
         )
         with self.assertRaisesRegex(ValueError, "critical"):
             inventory(raw)

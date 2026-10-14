@@ -26,7 +26,8 @@ KNOWN = {
 def _version(value):
     match = (
         re.fullmatch(r"(\d+)\.(\d+)\.(\d+)(?:[-+][A-Za-z0-9.-]+)?", value)
-        if isinstance(value, str) else None
+        if isinstance(value, str)
+        else None
     )
     if match is None:
         raise ValueError("noncanonical Cargo package version")
