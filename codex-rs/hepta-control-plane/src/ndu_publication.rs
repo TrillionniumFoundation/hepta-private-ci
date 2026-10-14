@@ -761,8 +761,8 @@ impl NduPublicationOwnerV1 {
             state.poisoned = true;
             return Err(error);
         }
-        let identities = control_owner_file_identity(&state.file, &state.journal_path)
-            .and_then(|wal| {
+        let identities =
+            control_owner_file_identity(&state.file, &state.journal_path).and_then(|wal| {
                 control_owner_file_identity(&state.owner_lock, &state.lock_path)
                     .map(|marker| (wal, marker))
             });
@@ -883,8 +883,8 @@ impl NduPublicationOwnerV1 {
             state.poisoned = true;
             return Err(error);
         }
-        let identities = control_owner_file_identity(&state.file, &state.journal_path)
-            .and_then(|wal| {
+        let identities =
+            control_owner_file_identity(&state.file, &state.journal_path).and_then(|wal| {
                 control_owner_file_identity(&state.owner_lock, &state.lock_path)
                     .map(|marker| (wal, marker))
             });
