@@ -380,7 +380,16 @@ impl MetricsGroupCommitV1 {
     /// A forged earlier marker row with a correct final tail must be rejected.
     #[cfg(unix)]
     fn verify_complete_marker_history(&self) -> Result<(), MetricsJournalErrorV1> {
-        let mut reader = BufReader::new(File::open(&self.journal_path)?);
+        use std::io::Seek as _;
+        use std::io::SeekFrom;
+
+        // Scan the ORIGINAL locked WAL inode, never a second file obtained
+        // by following a mutable pathname between the two identity checks.
+        // This executes only on the single Evidence owner lane; all normal
+        // writes use O_APPEND, and the observer cannot issue an effect.
+        let mut original = self.file.try_clone()?;
+        original.seek(SeekFrom::Start(0))?;
+        let mut reader = BufReader::new(original);
         let mut row = Vec::new();
         let mut bytes = 0_u64;
         let mut sequence = 0_u64;
