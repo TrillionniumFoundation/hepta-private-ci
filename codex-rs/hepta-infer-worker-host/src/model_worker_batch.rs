@@ -26,7 +26,7 @@ use super::validate_request;
 /// Each batch row binds the exact request ID AND payload identity; without
 /// these fields two same-head/same-width requests could be silently swapped.
 #[derive(Clone, Debug, Eq, PartialEq)]
-pub struct NeuronFeatureBatchItemObservationV2 {
+pub(crate) struct NeuronFeatureBatchItemObservationV2 {
     pub request_id: String,
     pub payload_digest: String,
     pub feature: DriverNeuronFeatureObservation,
@@ -34,7 +34,7 @@ pub struct NeuronFeatureBatchItemObservationV2 {
 
 /// A physical backend implements one batch forward over compatible requests.
 /// Do not implement this trait by looping over `run_neuron_features`.
-pub trait NeuronFeatureBatchDriver: ModelDriver + NeuronFeatureDriver {
+pub(crate) trait NeuronFeatureBatchDriver: ModelDriver + NeuronFeatureDriver {
     fn run_neuron_features_batch(
         &mut self,
         handle: &DriverModelHandle,
@@ -79,7 +79,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
     /// Admit the entire batch before dispatch and reject partial/aliased results.
     /// Every item binds an independently admitted request, lease and reservation;
     /// requests share the loaded model, encoder and tensor shapes, not authority.
-    pub fn run_neuron_features_batch(
+    pub(crate) fn run_neuron_features_batch(
         &mut self,
         now_ms: u64,
         model_id: &str,
@@ -285,7 +285,7 @@ impl<D: ModelDriver + NeuronFeatureDriver + NeuronFeatureBatchDriver> InferenceW
     /// receipt verifier used by the single-request production boundary.
     /// V1 owns a Vec per request; this compatibility bridge intentionally
     /// still clones those vectors. A true zero-copy V2 transport is separate.
-    pub fn run_neuron_features_batch_receipts(
+    pub(crate) fn run_neuron_features_batch_receipts(
         &mut self,
         now_ms: u64,
         model_id: &str,
