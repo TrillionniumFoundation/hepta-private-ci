@@ -274,3 +274,38 @@ fn independent_4096_event_ssm_q24_stream_digest_is_bit_exact() {
         "d863ccff0948d5f34f7080d3d040df57388e15417a820e56c4c1c52cac64f61b"
     );
 }
+
+#[test]
+fn prepared_ssm_matches_original_64_tick_replay_even_with_irregular_time() {
+    let cfg = config();
+    let prepared = checked(PreparedDiagonalSsmConfigV1::new(cfg.clone()));
+    assert_eq!(prepared.digest(), checked(cfg.digest()));
+    let mut normal = None;
+    let mut cached = None;
+    for sequence in 1..=64_u64 {
+        let mut input = tick(sequence, sequence * 100 + sequence * sequence);
+        input.temporal_drive_q24 = if sequence % 2 == 0 {
+            vec![-Q / 3, Q / 2]
+        } else {
+            vec![Q, -Q / 4]
+        };
+        let a = checked(diagonal_ssm_tick_v1(&cfg, &input, normal.as_ref()));
+        let b = checked(prepared.tick(&input, cached.as_ref()));
+        assert_eq!(
+            a, b,
+            "prepared SSM must preserve original Q24 checkpoint bytes"
+        );
+        normal = Some(a.0);
+        cached = Some(b.0);
+    }
+    let mut changed = cfg;
+    changed.time_quantum_micros *= 2;
+    let newer = checked(PreparedDiagonalSsmConfigV1::new(changed));
+    assert_ne!(prepared.digest(), newer.digest());
+    assert_eq!(
+        newer
+            .tick(&tick(65, 65 * 100 + 65 * 65), cached.as_ref())
+            .err(),
+        Some(DiagonalSsmErrorV1::ConfigDrift)
+    );
+}

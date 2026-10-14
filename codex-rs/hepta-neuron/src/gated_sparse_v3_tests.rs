@@ -318,3 +318,36 @@ fn independent_4096_event_v3_temporal_q24_digest_is_bit_exact() {
         "d92a35f9f9415b62a4eb4ac60ad3614c605a9796d1ffc46084b205e8399d29ac"
     );
 }
+
+#[test]
+fn prepared_v3_matches_exact_unprepared_64_tick_replay_and_fences_generation() {
+    let cfg = config();
+    let prepared = checked(PreparedGatedSparseConfigV3::new(cfg.clone()));
+    assert_eq!(prepared.digest(), checked(cfg.digest()));
+    let mut normal = None;
+    let mut cached = None;
+    for sequence in 1..=64_u64 {
+        let mut input = tick(sequence, sequence * 10);
+        input.temporal_drive_q24 = if sequence % 2 == 0 {
+            vec![-Q / 2, Q]
+        } else {
+            vec![Q, -Q / 4]
+        };
+        let a = checked(gated_sparse_tick_v3(&cfg, &input, normal.as_ref()));
+        let b = checked(prepared.tick(&input, cached.as_ref()));
+        assert_eq!(
+            a, b,
+            "prepared and unprepared Q24 results must be identical"
+        );
+        normal = Some(a.0);
+        cached = Some(b.0);
+    }
+    let mut changed = cfg;
+    changed.base.generation = checked(Generation::new(8));
+    let newer = checked(PreparedGatedSparseConfigV3::new(changed));
+    assert_ne!(prepared.digest(), newer.digest());
+    assert_eq!(
+        newer.tick(&tick(65, 650), cached.as_ref()).err(),
+        Some(GatedSparseErrorV3::ConfigDrift)
+    );
+}

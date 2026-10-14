@@ -20,6 +20,10 @@ use codex_hepta_neuron::LowRankMinGruConfigV1;
 use codex_hepta_neuron::PopulationSparseCheckpointV2;
 use codex_hepta_neuron::PopulationSparseConfigV2;
 use codex_hepta_neuron::PopulationSparseTickV2;
+use codex_hepta_neuron::PreparedDiagonalSsmConfigV1;
+use codex_hepta_neuron::PreparedGatedSparseConfigV3;
+use codex_hepta_neuron::PreparedLowRankMinGruConfigV1;
+use codex_hepta_neuron::PreparedPopulationSparseConfigV2;
 use codex_hepta_neuron::SparseCheckpoint;
 use codex_hepta_neuron::SparseConfig;
 use codex_hepta_neuron::SparseTick;
@@ -63,6 +67,11 @@ struct Configs {
     v3: GatedSparseConfigV3,
     ssm: DiagonalSsmConfigV1,
     min_gru: LowRankMinGruConfigV1,
+    ready_v2: PreparedPopulationSparseConfigV2,
+    ready_v3: PreparedGatedSparseConfigV3,
+    ready_ssm: PreparedDiagonalSsmConfigV1,
+    ready_min_gru: PreparedLowRankMinGruConfigV1,
+    prepared_mode: bool,
 }
 
 enum ActiveState {
@@ -110,30 +119,42 @@ impl ActiveState {
                 Ok(receipt.checkpoint_after)
             }
             Self::V2(states) => {
-                let (next, receipt) =
+                let (next, receipt) = if configs.prepared_mode {
+                    configs.ready_v2.tick(input, states[cell].as_ref())
+                } else {
                     population_sparse_tick_v2(&configs.v2, input, states[cell].as_ref())
-                        .map_err(|error| format!("V2 tick rejected: {error:?}"))?;
+                }
+                .map_err(|error| format!("V2 tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
             Self::V3(states) => {
-                let (next, receipt) =
+                let (next, receipt) = if configs.prepared_mode {
+                    configs.ready_v3.tick(input, states[cell].as_ref())
+                } else {
                     gated_sparse_tick_v3(&configs.v3, input, states[cell].as_ref())
-                        .map_err(|error| format!("V3 tick rejected: {error:?}"))?;
+                }
+                .map_err(|error| format!("V3 tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
             Self::Ssm(states) => {
-                let (next, receipt) =
+                let (next, receipt) = if configs.prepared_mode {
+                    configs.ready_ssm.tick(input, states[cell].as_ref())
+                } else {
                     diagonal_ssm_tick_v1(&configs.ssm, input, states[cell].as_ref())
-                        .map_err(|error| format!("SSM tick rejected: {error:?}"))?;
+                }
+                .map_err(|error| format!("SSM tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
             Self::MinGru(states) => {
-                let (next, receipt) =
+                let (next, receipt) = if configs.prepared_mode {
+                    configs.ready_min_gru.tick(input, states[cell].as_ref())
+                } else {
                     low_rank_min_gru_tick_v1(&configs.min_gru, input, states[cell].as_ref())
-                        .map_err(|error| format!("minGRU tick rejected: {error:?}"))?;
+                }
+                .map_err(|error| format!("minGRU tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
@@ -239,12 +260,28 @@ fn make_configs(width: usize) -> Result<Configs, String> {
     min_gru
         .digest()
         .map_err(|error| format!("minGRU config: {error:?}"))?;
+    // Compile the selected, immutable model tuples exactly once per runner.
+    // Reusing a compiled model across many scoped Cells does not share or
+    // mutate their individual temporal checkpoints.
+    let ready_v2 = PreparedPopulationSparseConfigV2::new(v2.clone())
+        .map_err(|error| format!("prepared V2: {error:?}"))?;
+    let ready_v3 = PreparedGatedSparseConfigV3::new(v3.clone())
+        .map_err(|error| format!("prepared V3: {error:?}"))?;
+    let ready_ssm = PreparedDiagonalSsmConfigV1::new(ssm.clone())
+        .map_err(|error| format!("prepared SSM: {error:?}"))?;
+    let ready_min_gru = PreparedLowRankMinGruConfigV1::new(min_gru.clone())
+        .map_err(|error| format!("prepared minGRU: {error:?}"))?;
     Ok(Configs {
         v1,
         v2,
         v3,
         ssm,
         min_gru,
+        ready_v2,
+        ready_v3,
+        ready_ssm,
+        ready_min_gru,
+        prepared_mode: true,
     })
 }
 
@@ -320,10 +357,19 @@ fn process_peak_rss_bytes() -> Option<u64> {
     })
 }
 
+fn parse_prepared_mode(value: &str) -> Result<bool, String> {
+    match value {
+        "prepared" => Ok(true),
+        "legacy" => Ok(false),
+        _ => Err("mode must be legacy or prepared".to_owned()),
+    }
+}
+
 fn run() -> Result<(), String> {
     let mut arm = None;
     let mut cells = None;
     let mut trace_path = None;
+    let mut mode = "prepared".to_owned();
     let mut args = env::args().skip(1);
     while let Some(flag) = args.next() {
         let value = args
@@ -339,19 +385,22 @@ fn run() -> Result<(), String> {
                 )
             }
             "--trace" => trace_path = Some(value),
+            "--mode" => mode = value,
             _ => return Err(format!("unrecognized parameter {flag}")),
         }
     }
     let arm = arm.ok_or("required --arm")?;
     let cells = cells.ok_or("required --cells")?;
     let trace_path = trace_path.ok_or("required --trace")?;
+    let prepared_mode = parse_prepared_mode(&mode)?;
     if !ALLOWED_CELLS.contains(&cells) {
         return Err("Cell count must be 64, 256, 1024 or 4096".to_owned());
     }
     let bytes = fs::read(trace_path).map_err(|error| format!("trace file: {error}"))?;
     let trace_digest = Digest32::of_bytes(&bytes);
     let trace = parse_trace(&bytes)?;
-    let configs = make_configs(trace.width)?;
+    let mut configs = make_configs(trace.width)?;
+    configs.prepared_mode = prepared_mode;
     let mut states = ActiveState::new(&arm, cells)?;
     let mut frontiers = vec![Digest32::ZERO; cells];
     let mut samples = Vec::with_capacity(cells * trace.events.len());
@@ -388,6 +437,7 @@ fn run() -> Result<(), String> {
         "microbatch_and_gpu_measured": false,
         "artifact_provenance_verified": false,
         "arm": arm,
+        "execution_mode": mode,
         "cells": cells,
         "width": trace.width,
         "trace_sha256": trace_digest.to_string(),
