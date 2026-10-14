@@ -1,0 +1,35 @@
+{
+  "schema": "hepta.multirc.reader-local-verification.v1",
+  "date": "2026-10-14",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "parent": "cb7c5e4165adeb91b737c6ebdcb35cce4fdaa9ea",
+  "code_commit": "2d4772c7951a38c88e565fdb9eb9136b99aa10ff",
+  "focused_real_tensor_tests": 22,
+  "full_local_tests": {
+    "runs": 2,
+    "each_planned": 577,
+    "each_executed": 577,
+    "all_tests_unique": true,
+    "inventory_identical": true,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "discovery_errors": 0,
+    "source_slice_not_complete_git_checkout": true
+  },
+  "compileall": "passed",
+  "yaml_parse": "passed",
+  "source_blobs": {
+    "multirc_materials.py": "d1830c3e7d6bb627b0be10a0e9fdc7d4149dab8a",
+    "multirc_reader_study.py": "d09255265d4c48a827470871b9ce7b81d126e59e",
+    "test_multirc_real_study.py": "ce533c864e6fa145842389a295b4a813b34a375e",
+    "hf_multirc_checks.py": "7531c3b3ed502123953c67e37724319894e754f5",
+    "hepta-real-multirc-reader.yml": "951dd11b86c3f12b0436bec6eb772fe048e4bea9"
+  },
+  "pretrained_multirc_completed": false,
+  "hosted_ci_completed": false,
+  "source_data_license_approved": false,
+  "independent_quality_established": false,
+  "model_selected": false,
+  "production_authorized": false
+}
