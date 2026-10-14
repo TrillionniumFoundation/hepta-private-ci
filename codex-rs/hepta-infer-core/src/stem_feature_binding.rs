@@ -129,6 +129,21 @@ impl SharedStemQ24BufferV1 {
             FeatureDigestVerification::ImmutableBufferVerified,
         )
     }
+
+    /// Legacy owned V1 serialization with one *necessary* feature Vec copy.
+    /// All Principal/Scope/Epoch/Lease/Generation/Revocation/Head gates are
+    /// rechecked on the supplied CURRENT owner claim before allocating.
+    /// The private Arc's previously verified bytes need not be rehashed.
+    ///
+    /// Does NOT consume or establish signed Final-use authority.
+    pub fn materialize_owned_for_head(
+        &self,
+        current_access_claim: &StemAccessContextV1,
+        selected_head: &StemHeadBindingV1,
+    ) -> Result<BoundStemNeuronRequestV1, StemFeatureBindingError> {
+        self.borrow_for_head(current_access_claim, selected_head)?
+            .materialize_owned_v1()
+    }
 }
 
 /// An in-process, *borrow-only* view of the existing Stem-to-Neuron V1
@@ -892,6 +907,34 @@ mod tests {
             shared.borrow_for_head(&future, &head),
             Err(StemFeatureBindingError::Revoked)
         ));
+    }
+
+    #[test]
+    fn immutable_owned_boundary_keeps_same_v1_digest_after_fresh_claim() {
+        let (source, access, head, values) = fixture();
+        let shared = SharedStemQ24BufferV1::from_unverified_source(
+            source.clone(), values.clone()
+        ).expect("buffer initialized from exact Q24 bytes");
+        let old = bind_stem_feature_request_v1(
+            &source, &access, head.clone(), &values
+        ).expect("existing owned V1 request");
+        let actual = shared.materialize_owned_for_head(&access, &head)
+            .expect("current owner claim passes");
+        assert_eq!(old, actual);
+        assert!(!actual.authority.grants_any());
+
+        let mut expired = access.clone();
+        expired.now_ms = source.lease_expires_at_ms;
+        assert_eq!(
+            shared.materialize_owned_for_head(&expired, &head),
+            Err(StemFeatureBindingError::LeaseExpired)
+        );
+        expired.now_ms = access.now_ms;
+        expired.revocation_observed = true;
+        assert_eq!(
+            shared.materialize_owned_for_head(&expired, &head),
+            Err(StemFeatureBindingError::Revoked)
+        );
     }
 
 }
