@@ -6,6 +6,7 @@ on:
       - "scripts/memory_cell/shared_question_gate.py"
       - "scripts/memory_cell/shared_question_gate_trial.py"
       - "scripts/memory_cell/test_shared_question_gate.py"
+      - "scripts/memory_cell/test_shared_question_gate_entrypoint.py"
       - ".github/workflows/hepta-shared-question-gate.yml"
   workflow_dispatch:
 permissions:
@@ -40,11 +41,11 @@ jobs:
           /tmp/shared-gate-env/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/hepta-shared-gate/checks/install-worker.log 2>&1
           /tmp/shared-gate-env/bin/pip check
           /tmp/shared-gate-env/bin/pip freeze > /tmp/hepta-shared-gate/checks/environment.txt
-      - name: Require new mechanism and inherited input/model regressions
+      - name: Require real CLI launch and inherited input/model regressions
         run: |
           set -euo pipefail
           failed=0
-          for pattern in test_shared_question_gate.py test_five_causal_experiments.py test_full_cell_matrix.py test_five_causal_native.py test_five_encoder_snapshot.py test_select_question_relevance.py test_select_question_relevance_supplement.py test_question_evidence_relevance.py; do
+          for pattern in test_shared_question_gate_entrypoint.py test_shared_question_gate.py test_five_causal_experiments.py test_full_cell_matrix.py test_five_causal_native.py test_five_encoder_snapshot.py test_select_question_relevance.py test_select_question_relevance_supplement.py test_question_evidence_relevance.py; do
             if /tmp/shared-gate-env/bin/python -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/hepta-shared-gate/checks/$pattern.log"; then
               printf '%s\tpassed\n' "$pattern" >> /tmp/hepta-shared-gate/checks/suites.tsv
             else
@@ -52,7 +53,7 @@ jobs:
               printf '%s\tfailed\n' "$pattern" >> /tmp/hepta-shared-gate/checks/suites.tsv
             fi
           done
-          /tmp/shared-gate-env/bin/python -m py_compile scripts/memory_cell/shared_question_gate.py scripts/memory_cell/shared_question_gate_trial.py scripts/memory_cell/test_shared_question_gate.py
+          /tmp/shared-gate-env/bin/python -m py_compile scripts/memory_cell/shared_question_gate.py scripts/memory_cell/shared_question_gate_trial.py scripts/memory_cell/test_shared_question_gate.py scripts/memory_cell/test_shared_question_gate_entrypoint.py
           test "$failed" -eq 0
       - name: Retrieve fixed original weights and already chosen pair manifests
         env:
