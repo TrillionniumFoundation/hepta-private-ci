@@ -7,6 +7,7 @@ Hash checks authenticate *bytes against supplied pins*, never issuer identity.
 from __future__ import annotations
 
 from hashlib import sha256
+from math import isfinite
 import json
 from pathlib import Path
 
@@ -15,6 +16,10 @@ from amcn_core import digest, is_sha, require, shadow_disposition
 ARCHIVE_SHA = '07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af'
 LOCOMO_SHA = '79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
 MODEL_SHA = '53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db'
+VOCAB_SHA = '07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3'
+FEATURE_MANIFEST_SHA = '912931afc49f57dd3acd903ed2bef4a7c85dfbb7a2e3405f1640aca45b54b184'
+SEALED_SHA = 'd31296d818e90cd12fbe91f2c956d1271e9fe59c14bec32a88a631d95dcd8ac2'
+QUESTION_SCORE_SHA = '831474cd6f705367256a143310b1a60326f3f2cea9a5bc4d2eb31e2340bc7574'
 SOURCE_PLAN_SHA = 'ec478977b3f1e5b5b1e654a946df7acb405239745be6f4b4e84a82a6dc848f46'
 PROFILE = 'hepta.amcn.original-minilm-offline-material-audit.shadow.v1'
 SPLITS = ('select', 'future_a', 'future_b', 'retention')
@@ -62,6 +67,7 @@ def audit_receipts(feature_manifest, original_seal, query_score):
             and f.get('fp32_tensor_bytes') == 1472 * 384 * 4
             and f.get('original_model_forward_calls') == 92,
             'incomplete original pretrained feature census')
+    require(f.get('vocab_sha256') == VOCAB_SHA, 'original frozen tokenizer vocabulary changed')
     require(f.get('tensor_file_sha256') == s.get('input_feature_safetensors_sha256'),
             'original frozen features changed before Head training')
     require(s.get('actual_pretrained_weight_forward_performed') is True
@@ -120,11 +126,16 @@ def audit_receipts(feature_manifest, original_seal, query_score):
                 and 0 <= row['hit1'] <= row['hitk'] <= row['questions']
                 and 0 <= row['no_support_shortlist'] <= row['questions']
                 and type(row['mrr_at_k']) in (int, float)
+                and isfinite(row['mrr_at_k'])
                 and 0 <= row['mrr_at_k'] <= 1,
                 'invalid original weak-support score')
         rows[key] = row
     expected = {(split, kind, arm) for split in SPLITS for kind in TYPES for arm in ARMS}
     require(set(rows) == expected, 'incomplete original 48-stratum evidence')
+    require(sum(rows[(split, kind, 'lexical_top1')]['no_support_shortlist']
+                for split in SPLITS for kind in TYPES) ==
+            q['zero_support_or_zero_hit_questions'],
+            'original unsupported questions changed across receipts')
     aggregated = {}
     for split in SPLITS:
         expected_q = {'select': 16, 'future_a': 8, 'future_b': 8, 'retention': 12}[split]
@@ -135,6 +146,10 @@ def audit_receipts(feature_manifest, original_seal, query_score):
             ceiling = rows[(split, kind, ARMS[0])]
             for arm in ARMS:
                 r = rows[(split, kind, arm)]
+                require(r['hitk'] + r['no_support_shortlist'] == r['questions']
+                        and r['mrr_at_k'] + 1e-12 >= r['hit1'] / r['questions']
+                        and r['mrr_at_k'] <= r['hitk'] / r['questions'] + 1e-12,
+                        'MRR, full shortlist and weak-support accounting contradict')
                 require(r['hitk'] == ceiling['hitk']
                         and r['no_support_shortlist'] == ceiling['no_support_shortlist']
                         and r['questions'] == ceiling['questions'],
@@ -176,6 +191,9 @@ def audit_local_materials(archive, corpus, encoder_weights, vocab, features,
             ValueError('nonfinite json')))
         return value
 
+    _check_file(feature_manifest, FEATURE_MANIFEST_SHA, 1048576)
+    _check_file(seal, SEALED_SHA, 2 * 1024 * 1024)
+    _check_file(question_score, QUESTION_SCORE_SHA, 1048576)
     f = load(feature_manifest, 1048576)
     s = load(seal, 2 * 1024 * 1024)
     q = load(question_score, 1048576)
@@ -183,7 +201,7 @@ def audit_local_materials(archive, corpus, encoder_weights, vocab, features,
     _check_file(archive, ARCHIVE_SHA, 600 * 1024 * 1024)
     _check_file(corpus, LOCOMO_SHA, 8 * 1024 * 1024)
     _check_file(encoder_weights, MODEL_SHA, 150 * 1024 * 1024)
-    _check_file(vocab, f['vocab_sha256'], 1048576)
+    _check_file(vocab, VOCAB_SHA, 1048576)
     _check_file(features, f['tensor_file_sha256'], 5 * 1024 * 1024)
     bank_directory = Path(bank_directory)
     manifest_path = bank_directory / 'manifest.json'

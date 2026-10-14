@@ -89,3 +89,22 @@ and lifecycle costs, three independent snapshots, two genuine prospective
 calendar windows, >=200 effective independent families, source withdrawal
 and true parameter-unlearning/retrain, signed NDU selection, durable CNS
 cutover/rollback, and exact-head `blocking-ci`.
+
+## Independent local auditor hardening
+
+The audit also pins the original vocabulary SHA256
+`07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3`,
+feature-manifest **raw** SHA256
+`912931afc49f57dd3acd903ed2bef4a7c85dfbb7a2e3405f1640aca45b54b184`,
+sealed predictions-file **raw** SHA256
+`d31296d818e90cd12fbe91f2c956d1271e9fe59c14bec32a88a631d95dcd8ac2`,
+and question-score file **raw** SHA256
+`831474cd6f705367256a143310b1a60326f3f2cea9a5bc4d2eb31e2340bc7574`.
+These are reproducible local byte pins, **not independently signed issuers**.
+Ten isolated adverse fixtures locally passed together with the full exact
+original physical byte audit. Source-first per-stratum Hit@K plus zero-support
+must equal the full question count; the score-wide zero-support count must
+equal the disjoint stratum sum; nonfinite/impossible MRR is rejected. These
+checks prevent a candidate from hiding missed evidence while retaining a
+self-reported complete 44-question total. The hosted job does **not** rerun
+the large archive, so its success cannot be called this physical result.

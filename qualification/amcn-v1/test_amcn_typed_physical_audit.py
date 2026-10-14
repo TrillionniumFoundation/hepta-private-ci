@@ -23,6 +23,7 @@ def fixture():
         'fp32_tensor_bytes': 1472 * 384 * 4,
         'original_model_forward_calls': 92,
         'tensor_file_sha256': digest('tensor'),
+        'vocab_sha256': '07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3',
         'hf_tokenizer_parity_verified': False,
         'hf_bert_operator_parity_verified': False,
         'train_labels_opened_during_encoding': False,
@@ -53,17 +54,20 @@ def fixture():
     top1_lex = {'select': 4, 'future_a': 2, 'future_b': 3, 'retention': 5}
     top1_typed = {'select': 2, 'future_a': 0, 'future_b': 1, 'retention': 1}
     totals = []
+    missing_by_kind = {'select': (3,3), 'future_a': (1,2),
+                       'future_b': (1,0), 'retention': (2,3)}
     for split, n in [('select', 8), ('future_a', 4), ('future_b', 4), ('retention', 6)]:
         for i, kind in enumerate(TYPES):
             for arm in ARMS:
                 hits = 0
-                if i == 0 and arm == 'lexical_top1':
-                    hits = top1_lex[split]
+                if arm == 'lexical_top1':
+                    hits = min(top1_lex[split], n-missing_by_kind[split][0]) if i == 0 else max(0, top1_lex[split]-(n-missing_by_kind[split][0]))
                 if i == 0 and arm == 'typed_equal_budget':
                     hits = top1_typed[split]
                 totals.append({'split': split, 'memory_type': kind, 'arm': arm,
-                               'questions': n, 'hit1': hits, 'hitk': n,
-                               'no_support_shortlist': 0, 'mrr_at_k': 0.0})
+                               'questions': n, 'hit1': hits, 'hitk': n-missing_by_kind[split][i],
+                               'no_support_shortlist': missing_by_kind[split][i],
+                               'mrr_at_k': hits/n})
     q = {'production_accepted': False, 'metrics': {
         'profile': 'hepta.amcn.typed-question-recall.shadow.v1',
         'original_predictions_sha256': pred_digest,
@@ -125,6 +129,16 @@ class OriginalPhysicalNegativeReceiptTests(unittest.TestCase):
         f,s,q=fixture();q['metrics']['source_first_weak_support'].pop()
         with self.assertRaises(Refused):audit_receipts(f,s,q)
         f,s,q=fixture();q['metrics']['source_first_weak_support'][-1] = deepcopy(q['metrics']['source_first_weak_support'][0])
+        with self.assertRaises(Refused):audit_receipts(f,s,q)
+
+    def test_forged_missing_support_count_rejected(self):
+        f,s,q=fixture();q['metrics']['zero_support_or_zero_hit_questions']=0
+        with self.assertRaises(Refused):audit_receipts(f,s,q)
+
+    def test_nan_mrr_and_inconsistent_hitk_rejected(self):
+        f,s,q=fixture();q['metrics']['source_first_weak_support'][0]['mrr_at_k']=float('nan')
+        with self.assertRaises(Refused):audit_receipts(f,s,q)
+        f,s,q=fixture();q['metrics']['source_first_weak_support'][0]['hitk']=1
         with self.assertRaises(Refused):audit_receipts(f,s,q)
 
     def test_no_fabricated_reader_answers_or_strong_rag(self):
