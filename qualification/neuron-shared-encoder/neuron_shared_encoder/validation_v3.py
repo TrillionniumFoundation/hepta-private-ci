@@ -350,7 +350,9 @@ def prequential_order_audit(rows: list[dict], frozen_no_change: dict,
 def evaluate_shadow(rows: list[dict], dataset_digest: str,
                     frozen_no_change: dict, candidate: dict, *,
                     bootstrap_repeats: int = 500, seed: int = 42,
-                    prequential_event_log: dict | None = None) -> dict:
+                    prequential_event_log: dict | None = None,
+                    detached_forecast_witnesses: dict | None = None,
+                    detached_witness_public_key: bytes | None = None) -> dict:
     """E4: future grouped bootstrap against a file-frozen no-change prediction set.
 
     Statistical evidence alone does not establish independent NDU or permit a
@@ -401,6 +403,19 @@ def evaluate_shadow(rows: list[dict], dataset_digest: str,
         from .prequential_receipts import prequential_chain_audit
         event_chain = prequential_chain_audit(
             rows, dataset_digest, frozen_no_change, candidate, prequential_event_log)
+    if (detached_forecast_witnesses is None) != (detached_witness_public_key is None):
+        raise ValueError('E4 witness bundle and separately pinned key must be supplied together')
+    if detached_forecast_witnesses is None:
+        signature_probe = {'status': 'NOT_PROVIDED',
+                           'independent_timestamp_witness_verified': False,
+                           'production_admission': 'BLOCKED'}
+    else:
+        if prequential_event_log is None:
+            raise ValueError('E4 detached signatures require a pinned prequential event log')
+        from .forecast_witness_v1 import verify_forecast_witnesses
+        signature_probe = verify_forecast_witnesses(
+            rows, dataset_digest, frozen_no_change, candidate, prequential_event_log,
+            detached_forecast_witnesses, detached_witness_public_key)
     return {'experiment': 'E4', 'production_admission': 'BLOCKED',
             'independent_evaluator_verified': False, 'ndu_receipt_verified': False,
             'selection': 'NOT_AUTHORIZED',
@@ -408,6 +423,7 @@ def evaluate_shadow(rows: list[dict], dataset_digest: str,
             'causal_learning_verified': False,
             'prequential_order_audit': ordering,
             'prequential_event_chain_audit': event_chain,
+            'detached_forecast_witness_probe': signature_probe,
             'baseline_artifact_digest': frozen_no_change['artifact_digest'],
             'candidate_artifact_digest': candidate['artifact_digest'],
             'future_groups': len(future_groups), 'negative_transfer_group_count': negative,
@@ -615,6 +631,10 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument('--candidate-sha256', default='')
     parser.add_argument('--prequential-event-log', default='')
     parser.add_argument('--prequential-event-log-sha256', default='')
+    parser.add_argument('--detached-witnesses', default='')
+    parser.add_argument('--detached-witnesses-sha256', default='')
+    parser.add_argument('--detached-witness-public-key', default='')
+    parser.add_argument('--detached-witness-public-key-sha256', default='')
     parser.add_argument('--encoder', choices=('synthetic-hash',) + ENCODERS, default='synthetic-hash')
     parser.add_argument('--allow-synthetic', action='store_true')
     parser.add_argument('--checkpoint-dir', default='')
@@ -660,8 +680,31 @@ def main() -> None:
                 raise ValueError('E4 event-chain file and SHA256 must be supplied together')
             chain = (_read_pinned_json(args.prequential_event_log, args.prequential_event_log_sha256)
                      if args.prequential_event_log else None)
-            result = evaluate_shadow(rows, data['dataset_sha256'], baseline, candidate,
-                                     seed=args.seed, prequential_event_log=chain)
+            witness_flags = (args.detached_witnesses, args.detached_witnesses_sha256,
+                             args.detached_witness_public_key,
+                             args.detached_witness_public_key_sha256)
+            if any(witness_flags) and not all(witness_flags):
+                raise ValueError('E4 detached witness bundle/key and both SHA256 pins are required')
+            witness_bundle = None
+            public_key = None
+            if all(witness_flags):
+                if chain is None:
+                    raise ValueError('E4 detached witness requires pinned event chain')
+                witness_bundle = _read_pinned_json(
+                    args.detached_witnesses, args.detached_witnesses_sha256)
+                key_path = Path(args.detached_witness_public_key)
+                if key_path.is_symlink() or not key_path.is_file() or key_path.stat().st_size != 32:
+                    raise ValueError('E4 detached witness requires a 32-byte regular public key')
+                public_key = key_path.read_bytes()
+                if (not is_digest(args.detached_witness_public_key_sha256)
+                        or hashlib.sha256(public_key).hexdigest()
+                           != args.detached_witness_public_key_sha256):
+                    raise ValueError('E4 detached witness public key SHA256 mismatch')
+            result = evaluate_shadow(
+                rows, data['dataset_sha256'], baseline, candidate, seed=args.seed,
+                prequential_event_log=chain,
+                detached_forecast_witnesses=witness_bundle,
+                detached_witness_public_key=public_key)
             result['snapshot_file_sha256'] = {'baseline': args.baseline_sha256,
                                               'candidate': args.candidate_sha256}
         else:
