@@ -293,8 +293,34 @@ def discounted_segments(segments, *, terminal_value, discount_rate):
     return list(reversed(result))
 
 
-def aggregate_children(values, *, node_kind, probabilities=None):
-    """Chance expectation and choice optimization are deliberately distinct."""
+def aggregate_children(values, *, node_kind, probabilities=None, required_ids=None):
+    """Distinguish choice, chance, and *complete* mandatory-proof conjunctions.
+
+    An AND node is a Boolean feasibility check, NOT a numeric utility
+    aggregator. Its full obligation inventory must be fixed independently;
+    a favorable subset of children cannot stand in for all requirements.
+    This helper is not a learned FBSDE solver or a production verifier.
+    """
+    if node_kind == "and":
+        if (probabilities is not None or type(required_ids) is not tuple
+                or not 1 <= len(required_ids) <= 64
+                or any(type(i) is not str or not 1 <= len(i.encode("utf-8")) <= 128
+                       for i in required_ids)
+                or len(set(required_ids)) != len(required_ids)
+                or not isinstance(values, (list, tuple)) or len(values) != len(required_ids)):
+            raise ValueError("AND requires an exact externally fixed obligation inventory")
+        observed = {}
+        for item in values:
+            if (not isinstance(item, (tuple, list)) or len(item) != 2
+                    or type(item[0]) is not str or type(item[1]) is not bool
+                    or item[0] in observed):
+                raise ValueError("AND requires distinct typed obligation verdicts")
+            observed[item[0]] = item[1]
+        if set(observed) != set(required_ids):
+            raise ValueError("missing, replaced, or extra AND obligation")
+        return all(observed.values())
+    if required_ids is not None:
+        raise ValueError("numeric choice/chance nodes cannot accept AND requirements")
     if (not isinstance(values, (list, tuple)) or not 1 <= len(values) <= 64
             or any(type(v) not in (int, float) or not math.isfinite(v) for v in values)):
         raise ValueError("bounded finite child values required")
