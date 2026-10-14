@@ -111,6 +111,10 @@ class E0NumericOracleTests(unittest.TestCase):
         self.assertFalse(result["encoder_actually_invoked"])
         self.assertFalse(result["neuron_checkpoint_committed"])
         self.assertEqual(self.out[-1], 1 << 22)
+        # Independent golden for the Rust V1 canonical Q24 input vector domain
+        # and u64-count / signed-big-endian-i64 encoding.
+        self.assertEqual(result["neuron_v1_input_feature_digest"],
+                         "f7c508aca0ca8bcb8a927efeb0c65bc02c98b212e124d3ac74fa10da1b79b5e3")
         self.assertNotEqual(result["computed_q24_sha256"], h(bytes(256 * 8)))
 
     def test_hidden_source_change_with_recomputed_source_sha_is_detected(self):
