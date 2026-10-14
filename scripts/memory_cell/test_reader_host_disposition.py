@@ -244,5 +244,6 @@ class HostDispositionTests(unittest.TestCase):
                 any(fnmatchcase(unrelated, pattern) for pattern in patterns)
             )
 
+
 if __name__ == "__main__":
     unittest.main()
