@@ -277,8 +277,16 @@ fn writer_loop(
                 if !ok {
                     health.healthy.store(false, Ordering::Release);
                 }
+                // Stop is a linearization barrier for reopening the SAME
+                // durable Evidence WAL. Acknowledging before the original
+                // writer drops its OS lock lets the next owner spuriously
+                // observe WriterUnavailable on an otherwise healthy exit.
+                // Release the original owner before publishing success. A
+                // stalled fsync is still bounded by the caller's existing
+                // barrier timeout; there is no unbounded JoinHandle wait.
+                drop(writer);
                 let _ = reply.send(ok);
-                break;
+                return;
             }
             Err(RecvTimeoutError::Timeout) => {
                 if flush(&mut writer, &health).is_err() {
