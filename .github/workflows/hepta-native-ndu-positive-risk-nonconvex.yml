@@ -19,7 +19,7 @@ jobs:
       - name: Check out exact HEAD
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: \${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Python 3.13
         uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
@@ -46,7 +46,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: ndu-positive-risk-nonconvex-\${{ github.run_id }}-\${{ github.run_attempt }}
-          path: \${{ runner.temp }}/ndu-positive-risk
+          name: ndu-positive-risk-nonconvex-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-positive-risk
           retention-days: 14
           if-no-files-found: error
