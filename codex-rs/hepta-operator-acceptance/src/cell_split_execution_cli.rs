@@ -145,14 +145,10 @@ where
         "transcript" => "transcript",
         _ => return Err("expected advance or transcript".to_string()),
     };
-    // A missing fsync acknowledgment or saturated bounded queue removes
-    // readiness. Fail before opening even a new execution-owner directory.
-    // Read-only transcript recovery remains usable when telemetry is down.
-    if selected_action == "advance"
-        && metric_sink.as_ref().is_some_and(|sink| !sink.healthy())
-    {
-        return Err("CellSplit Evidence phase metric sink unavailable".to_string());
-    }
+    // The owner checks Evidence health only before dispatching a NEW effect.
+    // A prepared effect whose acknowledgment was lost must still be allowed
+    // to reconcile with the original owner even when telemetry is unhealthy.
+    // Read-only transcript inspection is likewise never gated by telemetry.
 
     let config_bytes = read_private_config(config_path)?;
     if !canonical_hex(externally_pinned_config_sha256)
