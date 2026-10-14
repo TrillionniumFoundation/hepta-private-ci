@@ -9,6 +9,7 @@ import unittest
 from public_stem_material_v8 import (
     AdmissionError, CATALOG, SCHEMA, acquire, canonical, make_plan,
     strict_json, validate_plan, verify_hub_against_plan,
+    PROBE_TEXTS, probe_input_digest,
 )
 
 REV = "1"*40
@@ -30,6 +31,15 @@ def fixture(candidate="granite-97m-r2"):
 
 
 class PublicStemMaterialTests(unittest.TestCase):
+    def test_probe_census_bound_and_order_sensitive(self):
+        digest = probe_input_digest(PROBE_TEXTS)
+        self.assertEqual(len(digest), 64)
+        self.assertNotEqual(digest, probe_input_digest(tuple(reversed(PROBE_TEXTS))))
+        self.assertNotEqual(digest, probe_input_digest((PROBE_TEXTS[0],)))
+        for invalid in ((), ("",), ("a", "a") * 17, ["text"]):
+            with self.subTest(invalid=invalid), self.assertRaises(AdmissionError):
+                probe_input_digest(invalid)
+
     def test_plan_has_two_independent_exact_sources(self):
         for candidate in CATALOG:
             info, _ = fixture(candidate)
