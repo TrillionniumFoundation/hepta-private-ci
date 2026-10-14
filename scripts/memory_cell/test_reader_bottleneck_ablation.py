@@ -141,7 +141,6 @@ class BottleneckAblationTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "identity"):
                     validate_row(changed, case, arms, QWEN_INVENTORY)
 
-
     def test_uses_original_registered_prerequisite_deletion(self):
         case, docs = fixture()
         case["controls"]["without_prerequisite"]["selected"] = ["event_2"]
