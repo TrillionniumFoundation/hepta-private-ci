@@ -371,9 +371,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python3 -m venv "$${{ runner.temp }}/bbc-source-venv"
-          "$${{ runner.temp }}/bbc-source-venv/bin/pip" install datasets==4.2.0 huggingface-hub==0.36.0 numpy==2.2.6 packaging==25.0 ruff==0.14.0
-          "$${{ runner.temp }}/bbc-source-venv/bin/python" -c "import datasets, huggingface_hub; assert datasets.__version__ == '4.2.0'"
+          python3 -m venv "$RUNNER_TEMP/bbc-source-venv"
+          "$RUNNER_TEMP/bbc-source-venv/bin/pip" install datasets==4.2.0 huggingface-hub==0.36.0 numpy==2.2.6 packaging==25.0 ruff==0.14.0
+          "$RUNNER_TEMP/bbc-source-venv/bin/python" -c "import datasets, huggingface_hub; assert datasets.__version__ == '4.2.0'"
       - name: Verify prior AG archive and independently acquire BBC TEXT only
         env:
           GH_TOKEN: ${{ github.token }}
@@ -383,18 +383,18 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          PY="$${{ runner.temp }}/bbc-source-venv/bin/python"
-          git rev-parse HEAD > "$${{ runner.temp }}/bbc-source-identity.txt"
-          "$PY" -m pip freeze >> "$${{ runner.temp }}/bbc-source-identity.txt"
+          PY="$RUNNER_TEMP/bbc-source-venv/bin/python"
+          git rev-parse HEAD > "$RUNNER_TEMP/bbc-source-identity.txt"
+          "$PY" -m pip freeze >> "$RUNNER_TEMP/bbc-source-identity.txt"
           "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{bbc_source_attestation,test_bbc_source_attestation,bbc_public_admission,test_bbc_public_admission,external_bbc_shift}.py
-          "$PY" -m unittest -v experiments.shared_stem_cell.test_bbc_source_attestation experiments.shared_stem_cell.test_bbc_public_admission 2>&1 | tee "$${{ runner.temp }}/bbc-source-tests.log"
-          RAW="$${{ runner.temp }}/hepta-original-pretrained.zip"
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_bbc_source_attestation experiments.shared_stem_cell.test_bbc_public_admission 2>&1 | tee "$RUNNER_TEMP/bbc-source-tests.log"
+          RAW="$RUNNER_TEMP/hepta-original-pretrained.zip"
           ORIGINAL=05b6ec4b33a7563ea368f7d5be212ad1dbf1220bbccb9195ac900ac5adde34a6
           gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11872205556/zip" > "$RAW"
           printf '%s  %s\n' "$ORIGINAL" "$RAW" | sha256sum -c -
           "$PY" -m experiments.shared_stem_cell.bbc_public_admission \
-            --archive "$RAW" --output "$${{ runner.temp }}/bbc-source-proof" \
-            2>&1 | tee "$${{ runner.temp }}/bbc-source-admission.log"
+            --archive "$RAW" --output "$RUNNER_TEMP/bbc-source-proof" \
+            2>&1 | tee "$RUNNER_TEMP/bbc-source-admission.log"
           git diff --exit-code
       - name: Retain source-only receipts, never original article text
         if: always()
