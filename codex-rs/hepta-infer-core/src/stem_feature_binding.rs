@@ -824,4 +824,74 @@ mod tests {
         ));
     }
 
+    #[test]
+    fn immutable_512d_buffer_and_mutable_slice_borrow_agree_on_v1_identity() {
+        let (mut source, access, mut head, _) = fixture();
+        let original = vec![Q24 / 8; 512];
+        source.feature_width = original.len();
+        source.feature_digest = stem_feature_vector_digest_v1(&original)
+            .expect("bounded 512D vector");
+        head.required_feature_width = original.len();
+        head.required_encoder_digest = stem_encoder_pipeline_digest_v1(&source);
+
+        let shared = SharedStemQ24BufferV1::from_unverified_source(
+            source.clone(), original.clone()
+        ).expect("one content validation during immutable construction");
+        let direct = borrow_stem_feature_request_v1(
+            &source, &access, &head, &original
+        ).expect("direct caller-provided slice validates its digest");
+        let fast = shared.borrow_for_head(&access, &head)
+            .expect("immutable Arc reuses validated digest");
+        assert_eq!(fast.feature_vector_q24(), direct.feature_vector_q24());
+        assert_eq!(fast.feature_ref_digest(), direct.feature_ref_digest());
+        assert!(!fast.authority().grants_any());
+
+        let direct_owned = direct.materialize_owned_after_refresh(
+            &source, &access, &head
+        ).expect("legacy owned V1 conversion");
+        let fast_owned = fast.materialize_owned_after_refresh(
+            &source, &access, &head
+        ).expect("immutable borrowed V1 conversion");
+        assert_eq!(direct_owned, fast_owned);
+
+        let mut changed_original = original;
+        changed_original[511] += 1;
+        assert_eq!(
+            borrow_stem_feature_request_v1(
+                &source, &access, &head, &changed_original
+            ),
+            Err(StemFeatureBindingError::FeatureDigestMismatch)
+        );
+        // Safe mutation of an unrelated Vec cannot poison immutable Arc bytes.
+        assert_eq!(shared.borrow_for_head(&access, &head)
+            .expect("unchanged shared content")
+            .feature_vector_q24(), direct_owned.request.feature_vector_q24);
+    }
+
+    #[test]
+    fn immutable_buffer_does_not_bypass_fresh_principal_or_lease() {
+        let (source, access, head, original) = fixture();
+        let shared = SharedStemQ24BufferV1::from_unverified_source(
+            source.clone(), original
+        ).expect("immutable source");
+        let mut future = access.clone();
+        future.principal_id = id("another-principal");
+        assert!(matches!(
+            shared.borrow_for_head(&future, &head),
+            Err(StemFeatureBindingError::PrincipalMismatch)
+        ));
+        future.principal_id = access.principal_id.clone();
+        future.now_ms = source.lease_expires_at_ms;
+        assert!(matches!(
+            shared.borrow_for_head(&future, &head),
+            Err(StemFeatureBindingError::LeaseExpired)
+        ));
+        future.now_ms = 900;
+        future.revocation_observed = true;
+        assert!(matches!(
+            shared.borrow_for_head(&future, &head),
+            Err(StemFeatureBindingError::Revoked)
+        ));
+    }
+
 }
