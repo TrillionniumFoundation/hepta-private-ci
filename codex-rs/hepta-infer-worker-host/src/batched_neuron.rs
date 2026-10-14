@@ -54,6 +54,9 @@ pub enum BatchWorkerErrorV1 {
     Authority,
     Worker,
     BatchUnsupported,
+    /// The configured Evidence sink failed or was unhealthy before effect.
+    /// Callers must reconcile durable intents; the Worker never replays.
+    MetricsUnavailable,
     /// A live CNS scope frontier advanced while the external backend ran.
     /// Treat the result as unresolved; never return it as successful or retry.
     StaleAfterEffect,
@@ -225,6 +228,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         scope_binding_current(self.scope_frontier.as_ref(), key)
     }
 
+    /// Research-only runs may omit a sink, but such runs can never satisfy
+    /// production_metrics_ready. Once a sink is configured, any failure is a
+    /// permanent rejection gate for new effects in this Worker lifetime.
+    fn metrics_available_for_effect(&self) -> bool {
+        self.failed_metrics.load(Ordering::Acquire) == 0
+            && self.metric_sink.as_ref().is_none_or(|sink| sink.healthy())
+    }
+
     /// Production readiness is a separate Evidence barrier, never implicit
     /// authorization from one successful model execution. A failed write
     /// remains latched even if the current metric sink later reports healthy.
@@ -288,6 +299,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         key: MicrobatchKeyV1,
         signed: SignedFinalUseGrant,
     ) -> Result<(), BatchWorkerErrorV1> {
+        if !self.metrics_available_for_effect() {
+            return Err(BatchWorkerErrorV1::MetricsUnavailable);
+        }
         let id = StableId::new(request.authorization.request_id.clone())
             .map_err(|_| BatchWorkerErrorV1::InvalidRequest)?;
         if self.retired.contains(&retired_identity(&id)) || self.pending.contains_key(&id) {
@@ -347,6 +361,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         &mut self,
         now_ms: u64,
     ) -> Result<BatchWorkerPollV1, BatchWorkerErrorV1> {
+        // Fail before dequeue if Admission telemetry poisoned this owner.
+        // Keep already durably admitted intent identities available for
+        // original-owner reconciliation, never invoke or retry a backend.
+        if !self.metrics_available_for_effect() {
+            return Err(BatchWorkerErrorV1::MetricsUnavailable);
+        }
         let started = Instant::now();
         let poll = self
             .scheduler
@@ -375,6 +395,26 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         }
         let mut outcomes = Vec::new();
         if let Some(batch) = poll.batch {
+            if !self.metrics_available_for_effect() {
+                // An Evidence record failed *after* dequeue but before any
+                // Final-use claim. Deny all members explicitly and retire
+                // their queue identities without entering the driver.
+                for intent in batch.requests {
+                    let id = intent.request_id;
+                    self.pending.remove(&id);
+                    self.retired.insert(retired_identity(&id));
+                    outcomes.push(BatchWorkerItemOutcomeV1 {
+                        request_id: id,
+                        result: Err(BatchWorkerErrorV1::MetricsUnavailable),
+                    });
+                }
+                return Ok(BatchWorkerPollV1 {
+                    expired: poll.expired_request_ids,
+                    outcomes,
+                    scanned_lanes: poll.scanned_lanes,
+                    pending: self.pending.len(),
+                });
+            }
             if batch.requests.len() > 1 {
                 outcomes.extend(self.execute_native_batch(now_ms, &batch.key, batch.requests));
             } else {
@@ -384,7 +424,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                     let outcome = match self.pending.remove(&id) {
                         None => Err(BatchWorkerErrorV1::NoAdmission),
                         Some(mut pending) => {
-                            if pending.feature.digest() != intent.feature_digest
+                            if !self.metrics_available_for_effect() {
+                                Err(BatchWorkerErrorV1::MetricsUnavailable)
+                            } else if pending.feature.digest() != intent.feature_digest
                                 || pending.signed.grant.authority_epoch != intent.key.authority_epoch
                                 || !self.binding_current(&intent.key)
                             {

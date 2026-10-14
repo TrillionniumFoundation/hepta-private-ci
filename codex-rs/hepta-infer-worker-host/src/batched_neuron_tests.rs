@@ -419,6 +419,30 @@ impl PhaseMetricSinkV1 for UnavailableMetricSink {
     }
 }
 
+#[derive(Debug)]
+struct FailAtPhaseMetricSink(PhaseMetricKindV1);
+
+impl PhaseMetricSinkV1 for FailAtPhaseMetricSink {
+    fn record(
+        &self,
+        event: PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        if event.phase == self.0 {
+            Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+        } else {
+            Ok(())
+        }
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
+}
+
 #[test]
 fn failed_metrics_latch_readiness_without_replaying_an_authorized_request() {
     let dir = tempfile::tempdir().unwrap();
@@ -435,15 +459,24 @@ fn failed_metrics_latch_readiness_without_replaying_an_authorized_request() {
         .unwrap();
     assert!(!execution.production_metrics_ready());
     assert!(!execution.flush_production_metrics());
-    let observed = execution.poll_and_execute(101).unwrap();
-    assert_eq!(observed.outcomes.len(), 1);
     assert!(matches!(
-        &observed.outcomes[0].result,
-        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+        execution.poll_and_execute(101),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
     ));
+    // Queue remains available only for original-owner reconciliation. No
+    // signed nonce was claimed and no external backend effect was entered.
+    assert_eq!(execution.pending(), 1);
+    assert_eq!(
+        execution.fence_scope(
+            &StableId::new("scope").unwrap(),
+            Generation::new(4).unwrap(),
+            4,
+            9,
+        ),
+        vec![StableId::new("req-one").unwrap()]
+    );
     assert_eq!(execution.pending(), 0);
     assert!(!execution.production_metrics_ready());
-    assert!(execution.poll_and_execute(102).unwrap().outcomes.is_empty());
 }
 
 #[test]
@@ -459,7 +492,9 @@ fn failed_native_batch_metrics_never_mark_production_ready_or_retry_driver() {
         reorder_outputs: false,
     };
     let mut worker = runner_with_driver(&signer, dir.path(), model, backend, 2)
-        .with_metric_sink(Arc::new(UnavailableMetricSink));
+        .with_metric_sink(Arc::new(FailAtPhaseMetricSink(
+            PhaseMetricKindV1::Microbatch,
+        )));
     for (index, request) in [first, second].into_iter().enumerate() {
         let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
         worker
@@ -481,13 +516,68 @@ fn failed_native_batch_metrics_never_mark_production_ready_or_retry_driver() {
     assert_eq!(results.outcomes.len(), 2);
     assert!(results.outcomes.iter().all(|item| matches!(
         &item.result,
-        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
     )));
-    assert_eq!(backend_calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    // The two legitimate grants reached Admission, but failed Phase telemetry
+    // before one physical invocation or either durable nonce claim.
+    assert_eq!(backend_calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+    assert_eq!(worker.pending(), 0);
     assert!(!worker.production_metrics_ready());
     assert!(!worker.flush_production_metrics());
-    assert!(worker.poll_and_execute(102).unwrap().outcomes.is_empty());
-    assert_eq!(backend_calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert!(matches!(
+        worker.poll_and_execute(102),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    ));
+}
+
+#[test]
+fn terminal_metric_failure_preserves_completed_effect_but_blocks_next_admission() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[84; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let backend_calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let backend = NativeTestDriver {
+        invocations: backend_calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut worker = runner_with_driver(&signer, dir.path(), model, backend, 2)
+        .with_metric_sink(Arc::new(FailAtPhaseMetricSink(
+            PhaseMetricKindV1::NeuronFeature,
+        )));
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            first,
+            key.clone(),
+            signed_member(&signer, binding, "completed-before-telemetry", 85),
+        )
+        .unwrap();
+    let observed = worker.poll_and_execute(106).unwrap();
+    assert_eq!(observed.outcomes.len(), 1);
+    assert!(matches!(
+        &observed.outcomes[0].result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    ));
+    // A terminal metric failure cannot rewrite the already observed result
+    // or cause the model to execute again.
+    assert!(!worker.production_metrics_ready());
+    let next_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
+    assert_eq!(
+        worker.enqueue(
+            107,
+            "model".into(),
+            second,
+            key,
+            signed_member(&signer, next_binding, "denied-after-telemetry", 86),
+        ),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    );
+    assert_eq!(worker.pending(), 0);
+    assert_eq!(backend_calls.load(std::sync::atomic::Ordering::SeqCst), 0);
 }
 
 #[test]
