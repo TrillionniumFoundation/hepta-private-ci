@@ -271,3 +271,39 @@ fn neuron_feature_worker_projects_exact_inference_control_receipt() {
     assert!(!receipt.receipt_digest.is_zero());
     assert!(!receipt.authority.grants_any());
 }
+
+#[test]
+fn bounded_512d_neuron_request_retains_exact_receipt_semantics_after_move() {
+    let mut worker =
+        InferenceWorker::new(100, "worker.512".to_string(), 3, grant(), Driver::default())
+            .expect("worker");
+    worker.load_model(100, manifest()).expect("load");
+    let mut request = neuron_feature_request();
+    request.feature_vector_q24 = vec![1 << 22; 512];
+    let expected_payload_digest = canonical_neuron_feature_payload_digest(&request);
+    request.authorization.payload_digest = expected_payload_digest.clone();
+    request.authorization.lease_payload_digest = expected_payload_digest;
+
+    let receipt = worker
+        .run_neuron_features_receipt(100, "model.1", request)
+        .expect("512D typed feature receipt");
+    assert_eq!(
+        receipt.status,
+        codex_hepta_infer_core::NeuronFeatureTerminalStatusV1::Succeeded
+    );
+    assert_eq!(receipt.drive_q24, vec![1 << 24; 5]);
+    assert!(!receipt.request_digest.is_zero());
+    assert!(!receipt.receipt_digest.is_zero());
+    assert!(!receipt.authority.grants_any());
+
+    let mut tampered = neuron_feature_request();
+    tampered.feature_vector_q24 = vec![1 << 22; 512];
+    tampered.authorization.payload_digest = canonical_neuron_feature_payload_digest(&tampered);
+    tampered.authorization.lease_payload_digest =
+        tampered.authorization.payload_digest.clone();
+    tampered.feature_vector_q24[511] += 1;
+    assert_eq!(
+        worker.run_neuron_features_receipt(100, "model.1", tampered),
+        Err(Error::PayloadMismatch)
+    );
+}
