@@ -1,7 +1,5 @@
 """Pretrained data-plane contracts. Synthetic scores never qualify E1/E2 efficacy."""
-import tempfile
 import unittest
-from pathlib import Path
 
 import numpy as np
 import torch
