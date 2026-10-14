@@ -11,6 +11,8 @@ on:
       - 'qualification/neuron-gated-sparse-v3/run_native_physical_matrix.py'
       - 'qualification/neuron-gated-sparse-v3/native_physical_canary.py'
       - 'qualification/neuron-gated-sparse-v3/native_float_gap.py'
+      - 'qualification/neuron-gated-sparse-v3/head_q24_oracle.py'
+      - 'qualification/neuron-gated-sparse-v3/test_head_q24_oracle.py'
       - 'codex-rs/hepta-neuron/src/bin/neuron_trained_q24_shadow.rs'
       - 'qualification/neuron-gated-sparse-v3/test_real_pipeline.py'
       - 'qualification/neuron-gated-sparse-v3/test_a4_host_gate.py'
@@ -71,6 +73,9 @@ jobs:
           python -m unittest discover \
             -s qualification/neuron-gated-sparse-v3 \
             -p 'test_candidate_inventory.py' -v
+          python -m unittest discover \
+            -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_head_q24_oracle.py' -v
       - name: Never qualify model or NDU from source fixture CI
         run: |
           echo "No real selected Cell, production Encoder, future utility, signed target-host A4, NDU, or promotion is established."
@@ -120,12 +125,19 @@ jobs:
           assert result['twenty_native_physical_model_executions']==20
           assert result['native_q24_temporal_replay_executed'] is True
           assert result['diagnostic_native_vs_float_gap_rows']==20
+          assert result['quantized_native_head_integer_oracle_matches']==20
           for row in result['results']:
               gap=row['float_surrogate_vs_native_q24_state_gap']
               assert gap['compared_event_count']>=1
               assert gap['native_q24_state_provided_by_real_rust_kernel'] is True
               assert gap['bitwise_float_to_q24_prediction_parity_proven'] is False
               assert gap['production_qualification'] is False
+              oracle=row['q24_head_integer_oracle']
+              assert oracle['all_native_head_logits_match_independent_integer_oracle'] is True
+              assert oracle['full_original_f32_policy_execution_verified'] is False
+              native=row['native_receipt']
+              assert native['quantized_q24_head_executed_in_rust'] is True
+              assert native['f32_head_executed'] is False
           assert result['native_negative_cases_rejected']==5
           assert result['full_selected_model_head_executed'] is False
           assert result['floating_torch_native_q24_prediction_parity_verified'] is False
