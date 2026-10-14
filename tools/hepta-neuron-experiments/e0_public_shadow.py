@@ -50,6 +50,14 @@ def git_sha(folder: Path) -> str:
                           check=True, capture_output=True, text=True).stdout.strip()
 
 
+def require_import_origins(items: tuple) -> None:
+    """Deny imported source implementations from shadowed / unexpected trees."""
+    for module, expected in items:
+        actual = getattr(module, "__file__", None)
+        if not actual or Path(actual).resolve() != expected.resolve():
+            raise ValueError("unqualified model/projection module import")
+
+
 def require_runtime_versions(torch_version: str, transformers_version: str) -> None:
     """Fail closed rather than silently changing the measured CPU numerical stack."""
     if torch_version != TORCH_CPU_VERSION or transformers_version != TRANSFORMERS_VERSION:
@@ -143,9 +151,7 @@ def main() -> int:
             (matrix_materials, args.research_root / "qualification/stem-cell-v1/matrix_materials.py"),
             (native_bridge, args.audited_root / "qualification/stem-cell-v1/native_bridge.py"),
         )
-        for module, expected in expected_modules:
-            if Path(module.__file__).resolve() != expected.resolve():
-                raise ValueError("unqualified model/projection module import")
+        require_import_origins(expected_modules)
         from hf_complete_checkpoint import load_complete_mlm
         from hf_encoder_kernel import vectorize_case, snapshot_digest
         from stem_projection import LowRankProjectionQ24, project_ref, save_shadow_projection, Q
