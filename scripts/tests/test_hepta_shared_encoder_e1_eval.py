@@ -83,6 +83,9 @@ class PairedTests(unittest.TestCase):
         dataset, baseline, candidate = fixtures()
         for key, value in (
             ("probability_positive", float("nan")),
+            ("probability_positive", 10**1000),
+            ("head_digest", "f" * 64),
+            ("runtime_generation", 2),
             ("model_revision", "main"),
             ("execution_receipt_id", ""),
             ("resident_bytes", -1),
