@@ -98,6 +98,35 @@ class ExecutionTests(unittest.TestCase):
         with self.assertRaises(e.InputError):
             e.encode_cases(Never(), cases)
 
+    def test_late_cross_scope_and_singleton_batch_refuse_before_any_forward(self):
+        from dataclasses import replace
+        cases = list(self.cases())
+        cases[-1] = replace(cases[-1], scope="other")
+
+        class Counting(FakeEncoder):
+            def __init__(self):
+                self.calls = 0
+
+            def encode(self, texts):
+                self.calls += 1
+                return super().encode(texts)
+
+        for batch in (1, 3, 8):
+            backend = Counting()
+            with self.subTest(batch=batch), self.assertRaises(e.InputError):
+                e.encode_cases(backend, cases, batch_size=batch, cache_bytes=1024)
+            self.assertEqual(backend.calls, 0)
+
+    def test_encoder_workload_preflight_rejects_missing_case_without_forward(self):
+        class Never(FakeEncoder):
+            def encode(self, texts):
+                raise AssertionError("invalid complete workload must not dispatch")
+
+        with self.assertRaises(e.InputError):
+            e.encode_cases(Never(), (*self.cases(), None), batch_size=1)
+        with self.assertRaises(e.InputError):
+            e.encode_cases(Never(), (), batch_size=1)
+
     def rows(self):
         return [{"case_id": str(i), "group": str(i), "split": split,
                  "observed_at": i + 1, "cell": 0, "scope": "s", "text": f"sample {i}", "label": i % 2}
