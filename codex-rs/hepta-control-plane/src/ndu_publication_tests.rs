@@ -153,6 +153,64 @@ fn valid_hash_chain_cannot_replay_direct_cns_commit_without_prior_begin() {
 
 #[cfg(unix)]
 #[test]
+fn hash_valid_begin_commit_with_mismatched_successors_fails_recovery() {
+    let dir = tempfile::tempdir().expect("private Control root");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only fixture");
+    let path = dir.path().join("mismatched-cutover.wal");
+    {
+        let owner = NduPublicationOwnerV1::open_production(
+            &path, snapshot(3), Digest32::ZERO,
+        ).expect("owner");
+        assert_eq!(owner.current().unwrap().1, Digest32::ZERO);
+    }
+    let genesis = std::fs::read_to_string(&path).expect("original WAL");
+    let anchor = decode(genesis.lines().last().expect("genesis")).expect("genesis frame");
+    let migrated = Digest32::of_bytes(b"migrated");
+    let mut begin = Event {
+        sequence: anchor.sequence + 1,
+        previous: anchor.head,
+        head: Digest32::ZERO,
+        kind: 'B',
+        snapshot: snapshot(4).semantic_digest().expect("first successor"),
+        before: Digest32::ZERO,
+        after: migrated,
+        read: Digest32::ZERO,
+        tick: Digest32::ZERO,
+    };
+    begin.head = event_hash(&begin);
+    let mut commit = Event {
+        sequence: begin.sequence + 1,
+        previous: begin.head,
+        head: Digest32::ZERO,
+        kind: 'C',
+        snapshot: snapshot(5).semantic_digest().expect("wrong successor"),
+        before: Digest32::ZERO,
+        after: migrated,
+        read: Digest32::ZERO,
+        tick: Digest32::ZERO,
+    };
+    commit.head = event_hash(&commit);
+    let mut writer = OpenOptions::new().append(true).open(&path).expect("WAL append");
+    for event in [begin, commit] {
+        write!(
+            writer, "N1|{}|{}|{}|{}|{}|{}|{}|{}|{}\n",
+            event.sequence, event.previous, event.head, event.kind, event.snapshot,
+            event.before, event.after, event.read, event.tick,
+        ).expect("append valid hash chain");
+    }
+    writer.sync_all().expect("fsync forged predecessor");
+    drop(writer);
+    let before = std::fs::read(&path).expect("durable tampered WAL");
+    assert!(matches!(
+        NduPublicationOwnerV1::open_production(&path, snapshot(5), migrated),
+        Err(NduPublicationErrorV1::Corrupt)
+    ));
+    assert_eq!(std::fs::read(&path).expect("retained bytes"), before);
+}
+
+#[cfg(unix)]
+#[test]
 fn cutover_and_checkpoint_cas_use_same_exclusive_owner() {
     let dir = tempfile::tempdir().expect("private directory");
     std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
