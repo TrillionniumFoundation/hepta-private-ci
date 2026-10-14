@@ -368,3 +368,51 @@ forge timestamps, or backfill after seeing future labels. No causal learning,
 NDU verification, trusted witness, production Final-use or Cell promotion is
 ever granted. The true independent Evaluator must consume owner-signed
 pre-outcome writes and verified later outcomes.
+
+
+## E4 detached forecast signature probe (V8, non-authorizing)
+
+An **optional** companion to the E4 prequential event chain verifies
+per-future-row **Ed25519 signatures** over the two pre-outcome forecast events.
+It verifies cryptographic integrity relative to an externally supplied **32-byte
+raw Ed25519 public key**, not the identity or trustworthiness of its holder.
+This runs in shadow qualification only and needs \`cryptography==46.0.4\`.
+Never embed a private signing key in the dataset, repository or test artifacts.
+
+When calling \`e4-future\`, keep all existing pinned dataset, frozen no-change,
+candidate snapshot and prequential event-log arguments, and additionally pass:
+
+- \`--detached-witnesses <witness.json>\`
+- \`--detached-witnesses-sha256 <sha256 of witness.json>\`
+- \`--detached-witness-public-key <separately staged raw 32-byte public-key file>\`
+- \`--detached-witness-public-key-sha256 <sha256 of raw public-key bytes>\`
+
+All four flags are mandatory together, and an E4 event log is mandatory.
+The key file must be a real, non-symlink, 32-byte file. Its SHA256 is an
+integrity pin, **not** proof of who controls the key.
+
+The JSON witness bundle has schema \`hepta.neuron.forecast-witness.v1\` and
+exactly one receipt per future row. Each receipt binds the dataset SHA,
+principal/organ/Cell scope, source group, full pre-outcome input digest,
+generation, authority epoch, two forecast sequence numbers and event digests,
+the purported witness time, and SHA256 of the out-of-band public key.
+The signature is \`signature_ed25519_hex\` (64 raw signature bytes in lower-case
+hex). The signed message is the ASCII domain separator
+\`hepta.neuron.forecast-witness.v1\\x00\` followed by UTF-8, sorted-key,
+compact JSON (without the signature field, with no NaN). See
+\`forecast_witness_v1.canonical_witness_message\` for exact bytes.
+Extra fields, in-band self-proclaimed authorization flags, missing/duplicate
+receipts, replay to another row or chain, and wrong-key signatures fail closed.
+
+Even a valid signature can have a *backdated* timestamp if the key holder
+signs an untrue statement. Consequently a passing probe returns
+\`SIGNATURES_VALID_CLOCK_AND_ISSUER_UNVERIFIED\`, plus explicit false flags
+for independent signer authority, independent timestamp and causal learning.
+The E4 Selector remains \`NOT_AUTHORIZED\` and production remains
+\`BLOCKED\`. Genuine deployment requires independently reviewed key registry,
+protected clock/append owner, live source rights, revoked-key checks, signed
+pre-outcome proofs, independent NDU Evaluator, and final-use authorization.
+
+The adversarial offline test includes a **disposable, deterministic test key**
+solely for reproducibility. It is not an authority key and must never be used
+for production signatures.
