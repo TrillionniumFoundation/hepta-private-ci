@@ -204,6 +204,11 @@ class EncoderIngressTests(unittest.TestCase):
         with self.assertRaises(ContractError):
             validated_profile(raw, sha(canonical(raw)))
 
+    def test_wrong_profile_digest_rejects_before_any_model_use(self):
+        with self.assertRaises(ContractError):
+            validated_profile(self.raw, pin("wrong-profile"))
+        self.assertEqual(self.backend.forward_calls, 0)
+
     def test_profile_in_memory_tamper_is_rejected(self):
         config, _ = profile()
         config.snapshot["files"]["model.safetensors"] = pin("tamper")

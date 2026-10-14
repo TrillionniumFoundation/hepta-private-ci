@@ -43,7 +43,9 @@ class EncoderProfile:
 
 def validated_profile(raw: dict, digest: str) -> EncoderProfile:
     _digest(digest)
-    if (type(raw) is not dict or set(raw) != {
+    if type(raw) is not dict or sha(canonical(raw)) != digest:
+        raise ContractError("encoder profile bytes and declared digest differ")
+    if (set(raw) != {
             "schema", "candidate", "snapshot", "expected_width", "maximum_tokens",
             "batch_size", "pooling", "normalization"} or raw["schema"] != PROFILE_SCHEMA):
         raise ContractError("exact pinned encoder profile required")
