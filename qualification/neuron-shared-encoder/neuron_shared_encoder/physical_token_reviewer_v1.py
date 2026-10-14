@@ -252,6 +252,7 @@ def audit_sealed_token_pair(*, results_dir: Path, source: list[dict],
         feature_digest = snapshot_sha256(tokens, mask, metadata, pins)
         prepared[cell] = (_normal(tokens, mask, by_cell[cell]), mask.cpu().numpy(), feature_digest)
     measured = []
+    paired_case_rows = []
     seen_seeds = set()
     for run in original['runs']:
         seed = run.get('seed')
@@ -351,6 +352,18 @@ def audit_sealed_token_pair(*, results_dir: Path, source: list[dict],
                 measured.append({'seed':seed,'cell':cell,'split':split,
                     'token_minus_pooled_accuracy':float(np.mean(right==gold)-np.mean(left==gold)),
                     'independent_head_results_replayed':True})
+                if split == 'holdout':
+                    for offset, original_id in enumerate(ids):
+                        paired_case_rows.append({
+                            'seed': seed, 'cell': cell,
+                            'case_id': rec[original_id]['case_id'],
+                            'source_group': rec[original_id]['group'],
+                            'label': int(gold[offset]),
+                            'pooled_logits': independent_logits[(cell, split, KINDS[0])][offset].tolist(),
+                            'token_logits': independent_logits[(cell, split, KINDS[1])][offset].tolist(),
+                        })
+    from .paired_holdout_effect_v1 import paired_original_case_effect_v1
+    paired_effect = paired_original_case_effect_v1(paired_case_rows)
     return {'schema':SCHEMA,'research_producer_report_sha256':_hash(report_raw),
             'source_zip_sha256':source_zip_sha256,'model_id':model_id,
             'model_revision':model_revision,'training_seeds':sorted(seen_seeds),
@@ -362,7 +375,8 @@ def audit_sealed_token_pair(*, results_dir: Path, source: list[dict],
             'verified_prospective_future_NDU':False,
             'deployed_no_change_compared':False,
             'production_admission':'BLOCKED','selection_authorized':False,
-            'descriptive_seed_repeated_deltas':measured}
+            'descriptive_seed_repeated_deltas':measured,
+            'paired_original_case_descriptive_effect':paired_effect}
 
 
 def review_pinned_real_token_pair(*, archive_path: Path, archive_sha256: str,
