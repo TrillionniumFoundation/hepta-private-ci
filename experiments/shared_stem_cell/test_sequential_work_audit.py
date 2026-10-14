@@ -43,6 +43,9 @@ class SequentialWorkTests(unittest.TestCase):
         self.assertEqual(total["encoder_input_rows"], 8)
         self.assertEqual(total["per_arm_head_forward_calls"]["residual_corrected"], 6)
         self.assertIsNone(total["active_flops"])
+        self.assertTrue(total["common_encoder_excluded_from_per_arm_timing"])
+        self.assertEqual(total["per_arm_reported_wall_ns"]["bank"], 200)
+        self.assertEqual(total["per_arm_reported_process_cpu_ns"]["shared"], 180)
         self.assertFalse(total["production_accepted"])
 
     def test_wrong_routing_double_count_and_fabricated_resource_reject(self):
@@ -51,6 +54,8 @@ class SequentialWorkTests(unittest.TestCase):
             ("residual_corrected", "head_rows_processed", 4),
             ("shared", "head_forward_calls", 0),
             ("linear_distilled", "active_flops", 1),
+            ("bank", "wall_ns", 0),
+            ("shared", "process_cpu_ns", 0),
         )
         for arm, key, invalid in errors:
             with self.subTest(arm=arm, key=key):
