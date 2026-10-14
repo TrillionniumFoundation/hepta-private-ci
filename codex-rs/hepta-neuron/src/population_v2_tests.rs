@@ -148,3 +148,134 @@ fn every_activation_requires_a_registered_temporal_projection() {
         Some(PopulationSparseError::InvalidConfig)
     );
 }
+
+#[test]
+fn borrowed_zero_decay_shadow_is_exactly_legacy_v2_with_copied_config_and_tick() {
+    let base = config();
+    let mut copied = base.clone();
+    copied.temporal_decay_q24 = 0;
+    assert_eq!(
+        checked(base.digest_with_temporal_decay(0)),
+        checked(copied.digest())
+    );
+    assert_eq!(
+        checked(base.digest_with_temporal_decay(base.temporal_decay_q24)),
+        checked(base.digest())
+    );
+    let mut old_state = None;
+    let mut borrowed_state = None;
+    for sequence in 1..=64_u64 {
+        let mut original = tick(sequence, sequence * 100);
+        original.temporal_drive_q24 = if sequence % 3 == 0 {
+            vec![-Q / 3, Q / 2]
+        } else {
+            vec![Q, -(Q / 2)]
+        };
+        original.prediction_q24[2] = if sequence % 2 == 0 { Q / 5 } else { -Q / 4 };
+        let forwarded = if sequence % 2 == 0 {
+            vec![Q / 4, -(Q / 2)]
+        } else {
+            vec![-Q / 2, Q / 3]
+        };
+        let mut cloned_tick = original.clone();
+        cloned_tick.temporal_drive_q24 = forwarded.clone();
+        let reference = checked(population_sparse_tick_v2(
+            &copied,
+            &cloned_tick,
+            old_state.as_ref(),
+        ));
+        let no_copy = checked(population_sparse_tick_v2_from_temporal_override(
+            &base,
+            &original,
+            &forwarded,
+            borrowed_state.as_ref(),
+        ));
+        assert_eq!(no_copy, reference, "all original V2 bytes at sequence {sequence}");
+        assert_eq!(no_copy.0.digest(), reference.0.digest());
+        assert_eq!(no_copy.1.input_digest, reference.1.input_digest);
+        old_state = Some(reference.0);
+        borrowed_state = Some(no_copy.0);
+    }
+}
+
+#[test]
+fn borrowed_shadow_rejects_bad_replacements_and_still_checks_original_tick() {
+    let baseline = config();
+    let input = tick(1, 10);
+    assert_eq!(
+        population_sparse_tick_v2_from_temporal_override(
+            &baseline,
+            &input,
+            &[Q],
+            None,
+        ).err(),
+        Some(PopulationSparseError::InvalidInput)
+    );
+    assert_eq!(
+        population_sparse_tick_v2_from_temporal_override(
+            &baseline,
+            &input,
+            &[H + 1, 0],
+            None,
+        ).err(),
+        Some(PopulationSparseError::InvalidInput)
+    );
+    let mut invalid = input.clone();
+    invalid.temporal_drive_q24[0] = H + 1;
+    assert_eq!(
+        population_sparse_tick_v2_from_temporal_override(
+            &baseline,
+            &invalid,
+            &[Q, Q],
+            None,
+        ).err(),
+        Some(PopulationSparseError::InvalidInput)
+    );
+    let (prior, _) = checked(population_sparse_tick_v2_from_temporal_override(
+        &baseline,
+        &input,
+        &[Q / 2, -Q / 2],
+        None,
+    ));
+    let next = tick(2, 20);
+    assert_eq!(
+        population_sparse_tick_v2_from_temporal_override(
+            &baseline,
+            &tick(4, 20),
+            &[Q, -Q],
+            Some(&prior),
+        ).err(),
+        Some(PopulationSparseError::Sequence)
+    );
+    assert_eq!(
+        population_sparse_tick_v2_from_temporal_override(
+            &baseline,
+            &tick(2, 10),
+            &[Q, -Q],
+            Some(&prior),
+        ).err(),
+        Some(PopulationSparseError::Clock)
+    );
+    let mut other = baseline.clone();
+    other.generation = generation(8);
+    assert_eq!(
+        population_sparse_tick_v2_from_temporal_override(
+            &other,
+            &next,
+            &[Q, Q],
+            Some(&prior),
+        ).err(),
+        Some(PopulationSparseError::ConfigDrift)
+    );
+    let mut scoped = next;
+    scoped.body_digest = Digest32::of_bytes(b"another body");
+    assert_eq!(
+        population_sparse_tick_v2_from_temporal_override(
+            &baseline,
+            &scoped,
+            &[Q, Q],
+            Some(&prior),
+        ).err(),
+        Some(PopulationSparseError::ScopeDrift)
+    );
+}
