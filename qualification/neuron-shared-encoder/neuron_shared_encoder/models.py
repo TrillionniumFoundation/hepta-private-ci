@@ -86,8 +86,8 @@ class OfflineEncoder:
     def __init__(self, kind: str, local_path: str, expected_weights_sha256: str,
                  device: str = 'cpu', max_length: int = 512,
                  expected_bundle_sha256: str | None = None):
-        if kind not in ('laya-joint', 'modernbert-joint'):
-            raise ValueError('real backend required: laya-joint or modernbert-joint')
+        if kind not in ('laya-joint', 'modernbert-joint', 'mmbert-joint', 'granite-joint'):
+            raise ValueError('real backend requires pinned laya/mmbert/granite/modernbert checkpoint')
         root = Path(local_path)
         if not root.is_dir():
             raise FileNotFoundError('local model checkpoint directory missing; online download forbidden')
