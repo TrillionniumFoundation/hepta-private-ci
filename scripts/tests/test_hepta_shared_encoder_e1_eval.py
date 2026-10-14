@@ -13,7 +13,7 @@ LIB = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(LIB)
 
 
-def packet(split, case, probability, *, committed="2026-10-15T09:00:00Z"):
+def packet(split, case, probability, *, committed="2026-09-15T09:00:00Z"):
     return {
         "case_id": case, "scope_id": "s", "task_id": "t",
         "split": split, "probability_positive": probability,
@@ -30,8 +30,8 @@ def fixtures():
         {
             "case_id": f"c{i}", "scope_id": "s", "task_id": "t",
             "split": "future" if i < 4 else ("old" if i == 4 else "ood"),
-            "event_time": "2026-10-15T08:00:00Z",
-            "label_available_at": "2026-10-15T10:00:00Z",
+            "event_time": "2026-09-15T08:00:00Z",
+            "label_available_at": "2026-09-15T10:00:00Z",
             "group_id": f"g{i}", "label": i % 2,
         }
         for i in range(6)
@@ -48,7 +48,7 @@ class PairedTests(unittest.TestCase):
     def run_compare(self, dataset, baseline, candidate):
         return LIB.compare(
             dataset, baseline, candidate, scope="s", task="t",
-            cutoff="2026-10-14T00:00:00Z", rounds=100,
+            cutoff="2026-09-14T00:00:00Z", rounds=100,
         )
 
     def test_deterministic_benefit_never_promotes(self):
@@ -72,10 +72,10 @@ class PairedTests(unittest.TestCase):
 
     def test_prediction_after_label_or_before_event_rejected(self):
         dataset, baseline, candidate = fixtures()
-        candidate[0]["prediction_committed_at"] = "2026-10-16T00:00:00Z"
+        candidate[0]["prediction_committed_at"] = "2026-09-16T00:00:00Z"
         with self.assertRaisesRegex(ValueError, "label"):
             self.run_compare(dataset, baseline, candidate)
-        candidate[0]["prediction_committed_at"] = "2026-10-14T20:00:00Z"
+        candidate[0]["prediction_committed_at"] = "2026-09-14T20:00:00Z"
         with self.assertRaises(ValueError):
             self.run_compare(dataset, baseline, candidate)
 
@@ -102,8 +102,8 @@ class PairedTests(unittest.TestCase):
         dataset, baseline, candidate = fixtures()
         train = dict(
             dataset[0], case_id="train-duplicate", split="train",
-            event_time="2026-10-13T00:00:00Z",
-            label_available_at="2026-10-13T01:00:00Z",
+            event_time="2026-09-13T00:00:00Z",
+            label_available_at="2026-09-13T01:00:00Z",
         )
         with self.assertRaisesRegex(ValueError, "group contamination"):
             self.run_compare(dataset + [train], baseline, candidate)
@@ -115,18 +115,35 @@ class PairedTests(unittest.TestCase):
         dataset, baseline, candidate = fixtures()
         late_train = dict(
             dataset[0], case_id="training-future-label", split="train",
-            group_id="train-group", event_time="2026-10-13T00:00:00Z",
-            label_available_at="2026-10-15T00:00:00Z",
+            group_id="train-group", event_time="2026-09-13T00:00:00Z",
+            label_available_at="2026-09-15T00:00:00Z",
         )
         with self.assertRaisesRegex(ValueError, "label leaked"):
             self.run_compare(dataset + [late_train], baseline, candidate)
         calibration = dict(
             dataset[0], case_id="calibration-overlap", split="calibration",
-            event_time="2026-10-13T00:00:00Z",
-            label_available_at="2026-10-13T01:00:00Z",
+            event_time="2026-09-13T00:00:00Z",
+            label_available_at="2026-09-13T01:00:00Z",
         )
         with self.assertRaisesRegex(ValueError, "cross-split group"):
             self.run_compare(dataset + [calibration], baseline, candidate)
+
+    def test_unreleased_labels_cannot_be_scored_and_dataset_scope_is_typed(self):
+        dataset, baseline, candidate = fixtures()
+        dataset[0]["label_available_at"] = "2099-01-01T00:00:00Z"
+        with self.assertRaisesRegex(ValueError, "not yet released"):
+            self.run_compare(dataset, baseline, candidate)
+        dataset, baseline, candidate = fixtures()
+        dataset[0]["scope_id"] = {"invalid": "nonhashable"}
+        with self.assertRaisesRegex(ValueError, "invalid dataset scope"):
+            self.run_compare(dataset, baseline, candidate)
+
+    def test_bounded_untrusted_jsonl(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "oversized.jsonl"
+            path.write_text(" " * 262145 + "\n", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "oversized JSONL line"):
+                LIB.read_jsonl(path)
 
     def test_refuses_overwrite_and_duplicate_json_keys(self):
         dataset, baseline, candidate = fixtures()
@@ -143,7 +160,7 @@ class PairedTests(unittest.TestCase):
                 "--dataset", str(root / "dataset.jsonl"),
                 "--no-change", str(root / "baseline.jsonl"),
                 "--candidate", str(root / "candidate.jsonl"),
-                "--scope", "s", "--task", "t", "--train-cutoff", "2026-10-14T00:00:00Z",
+                "--scope", "s", "--task", "t", "--train-cutoff", "2026-09-14T00:00:00Z",
                 "--bootstrap-rounds", "100", "--out", str(root / "report.json"),
             ]
             self.assertEqual(LIB.main(arguments), 0)
