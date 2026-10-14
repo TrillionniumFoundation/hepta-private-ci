@@ -1,0 +1,188 @@
+name: hepta-real-multirc-reader
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/**"
+      - ".github/workflows/hepta-real-multirc-reader.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  multirc-source-regressions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install pinned CPU source dependencies
+        run: |
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Run input, causal, cost, seal, and scoring regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/multirc-source-sha.txt"
+          python qualification/stem-cell-v1/run_checked_tests.py \
+            --pattern test_multirc_real_study.py --output "$RUNNER_TEMP/multirc-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-tests.log"
+          python -m compileall -q qualification/stem-cell-v1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: multirc-source-regression-observations
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/multirc-source-sha.txt
+            ${{ runner.temp }}/multirc-tests.json
+            ${{ runner.temp }}/multirc-tests.log
+
+  multirc-stock-hf:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install pinned stock Transformers CPU environment
+        run: |
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Test actual stock ModernBERT architecture with trained Readers
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/multirc-hf-source-sha.txt"
+          python qualification/stem-cell-v1/run_checked_tests.py \
+            --pattern hf_multirc_checks.py --output "$RUNNER_TEMP/multirc-hf-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-hf-tests.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: multirc-stock-hf-compatibility
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/multirc-hf-source-sha.txt
+            ${{ runner.temp }}/multirc-hf-tests.json
+            ${{ runner.temp }}/multirc-hf-tests.log
+
+  multirc-real-pretrained:
+    needs: [multirc-stock-hf, multirc-source-regressions]
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      DO_NOT_TRACK: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install pinned CPU data and pretrained dependencies
+        run: |
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1 pyarrow==20.0.0
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Acquire exact pinned local-only ModernBERT snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/multirc-pretrained-source-sha.txt"
+          python qualification/stem-cell-v1/public_encoder_probe.py \
+            --acquire-public --upstream-revision 8949b909ec900327062f0ebf497f51aef5e6f0c8 \
+            --compare-arithmetic --output "$RUNNER_TEMP/public-encoder" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-pretrained-acquisition.log"
+      - name: Acquire immutable MultiRC train and labeled validation parquet
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          from huggingface_hub import hf_hub_download
+          revision='4e14482c58d790d467ecfb29b6790e1917bf8756'
+          names={'train':'multirc/train-00000-of-00001.parquet','val':'multirc/validation-00000-of-00001.parquet'}
+          info={'repo':'aps/super_glue','revision':revision,'files':{}}
+          for split,name in names.items():
+              p=Path(hf_hub_download(repo_id='aps/super_glue',repo_type='dataset',revision=revision,filename=name))
+              info['files'][split]={'path':str(p),'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'bytes':p.stat().st_size}
+          Path(os.environ['RUNNER_TEMP'],'multirc-source-lock.json').write_text(json.dumps(info,sort_keys=True))
+          PY
+      - name: Material-owner prepares label-blind evaluation and separately stored labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          eval "$(python - <<'PY'
+          import json,os,shlex
+          d=json.load(open(os.environ['RUNNER_TEMP']+'/multirc-source-lock.json'))['files']
+          for k,v in {'TRAIN_FILE':d['train']['path'],'VAL_FILE':d['val']['path'], 'TRAIN_SHA':d['train']['sha256'],'VAL_SHA':d['val']['sha256']}.items():
+              print(f'export {k}={shlex.quote(v)}')
+          PY
+          )"
+          python qualification/stem-cell-v1/multirc_reader_study.py prepare \
+            --train-parquet "$TRAIN_FILE" --val-parquet "$VAL_FILE" \
+            --train-sha256 "$TRAIN_SHA" --val-sha256 "$VAL_SHA" \
+            --seed 7347 --train-passages 8 --eval-passages 4 \
+            --output "$RUNNER_TEMP/multirc-material" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-prepare.log"
+      - name: Train four matched Readers without reading heldout label material
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/multirc_reader_study.py run \
+            --train-bundle "$RUNNER_TEMP/multirc-material/train-bundle.json" \
+            --blind-eval-bundle "$RUNNER_TEMP/multirc-material/blind-eval-bundle.json" \
+            --snapshot "$RUNNER_TEMP/public-encoder/snapshot" --steps 64 \
+            --output "$RUNNER_TEMP/multirc-run" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-train.log"
+      - name: Join human-annotated dev labels only after prediction seal exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          SEAL=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/multirc-run/COMMITTED.json"))["seal_id"])')
+          LABEL_SHA=$(python -c 'import hashlib,os; print(hashlib.sha256(open(os.environ["RUNNER_TEMP"]+"/multirc-material/owner-only-labels.json","rb").read()).hexdigest())')
+          python qualification/stem-cell-v1/multirc_reader_study.py score \
+            --run-dir "$RUNNER_TEMP/multirc-run" --expected-seal-id "$SEAL" \
+            --label-file "$RUNNER_TEMP/multirc-material/owner-only-labels.json" \
+            --label-sha256 "$LABEL_SHA" --output "$RUNNER_TEMP/multirc-scores" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-score.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: multirc-real-human-label-reading-evidence
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/multirc-pretrained-source-sha.txt
+            ${{ runner.temp }}/multirc-pretrained-acquisition.log
+            ${{ runner.temp }}/public-encoder/source-lock.json
+            ${{ runner.temp }}/public-encoder/downloaded-material.json
+            ${{ runner.temp }}/multirc-source-lock.json
+            ${{ runner.temp }}/multirc-prepare.log
+            ${{ runner.temp }}/multirc-material/MATERIAL.json
+            ${{ runner.temp }}/multirc-train.log
+            ${{ runner.temp }}/multirc-run/predictions.json
+            ${{ runner.temp }}/multirc-run/COMMITTED.json
+            ${{ runner.temp }}/multirc-run/FAILED.json
+            ${{ runner.temp }}/multirc-score.log
+            ${{ runner.temp }}/multirc-scores/scores.json
+            ${{ runner.temp }}/multirc-scores/COMMITTED.json
+          # Deliberately exclude raw passages, model weights and labels.
