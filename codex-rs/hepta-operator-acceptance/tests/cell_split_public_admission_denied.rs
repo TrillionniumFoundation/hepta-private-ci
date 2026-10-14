@@ -32,12 +32,8 @@ fn legacy_operator_advance_stays_non_authorizing() {
     use codex_hepta_operator_acceptance::run_pinned_cell_split_execution_v1;
     use std::path::Path;
 
-    let error = run_pinned_cell_split_execution_v1(
-        "advance",
-        Path::new(""),
-        &"00".repeat(32),
-    )
-    .expect_err("legacy operator entry must be read-only");
+    let error = run_pinned_cell_split_execution_v1("advance", Path::new(""), &"00".repeat(32))
+        .expect_err("legacy operator entry must be read-only");
     assert!(
         error.contains("requires independently admitted NDU/Selector selection"),
         "pinned bytes are not an effect grant: {error}"
