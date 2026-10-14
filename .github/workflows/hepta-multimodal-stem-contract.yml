@@ -7,6 +7,7 @@ on:
       - "experiments/shared_stem_cell/test_multimodal_*.py"
       - "experiments/shared_stem_cell/MULTIMODAL_STEM_V0.md"
       - "experiments/shared_stem_cell/MULTIMODAL_ALIGNMENT_V1.md"
+      - "experiments/shared_stem_cell/PINNED_ENCODER_INGRESS_V2.md"
       - ".github/workflows/hepta-multimodal-stem-contract.yml"
   pull_request:
     paths:
@@ -14,6 +15,7 @@ on:
       - "experiments/shared_stem_cell/test_multimodal_*.py"
       - "experiments/shared_stem_cell/MULTIMODAL_STEM_V0.md"
       - "experiments/shared_stem_cell/MULTIMODAL_ALIGNMENT_V1.md"
+      - "experiments/shared_stem_cell/PINNED_ENCODER_INGRESS_V2.md"
       - ".github/workflows/hepta-multimodal-stem-contract.yml"
 permissions:
   contents: read
@@ -40,7 +42,13 @@ jobs:
         run: |
           set -euo pipefail
           PYTHONPATH=experiments/shared_stem_cell /tmp/hepta-multimodal-stem-venv/bin/python -m unittest discover -s experiments/shared_stem_cell -p 'test_multimodal_*.py' -v
-          /tmp/hepta-multimodal-stem-venv/bin/python -m py_compile experiments/shared_stem_cell/multimodal_bridge.py experiments/shared_stem_cell/multimodal_head.py experiments/shared_stem_cell/multimodal_alignment.py experiments/shared_stem_cell/multimodal_alignment_contract.py experiments/shared_stem_cell/multimodal_alignment_evaluator.py experiments/shared_stem_cell/test_multimodal_bridge.py experiments/shared_stem_cell/test_multimodal_head.py experiments/shared_stem_cell/test_multimodal_alignment.py
+          /tmp/hepta-multimodal-stem-venv/bin/python -m py_compile experiments/shared_stem_cell/multimodal_bridge.py experiments/shared_stem_cell/multimodal_head.py experiments/shared_stem_cell/multimodal_alignment.py experiments/shared_stem_cell/multimodal_alignment_contract.py experiments/shared_stem_cell/multimodal_alignment_evaluator.py experiments/shared_stem_cell/multimodal_real_encoder.py experiments/shared_stem_cell/multimodal_real_encoder_evaluator.py experiments/shared_stem_cell/test_multimodal_real_encoder.py experiments/shared_stem_cell/test_multimodal_bridge.py experiments/shared_stem_cell/test_multimodal_head.py experiments/shared_stem_cell/test_multimodal_alignment.py
+      - name: Require fail-closed offline pretrained ingress CLI surfaces
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell /tmp/hepta-multimodal-stem-venv/bin/python experiments/shared_stem_cell/multimodal_real_encoder.py --help > /tmp/encoder-train-cli-help.txt
+          PYTHONPATH=experiments/shared_stem_cell /tmp/hepta-multimodal-stem-venv/bin/python experiments/shared_stem_cell/multimodal_real_encoder_evaluator.py --help > /tmp/encoder-future-cli-help.txt
+          if grep -q future_targets /tmp/encoder-train-cli-help.txt; then echo 'train CLI exposes held-out future target mode' >&2; exit 1; fi
       - name: Emit source-disjoint toy alignment evidence with independent evaluator
         run: |
           set -euo pipefail
@@ -88,7 +96,7 @@ jobs:
           git rev-parse HEAD > /tmp/hepta-multimodal-stem-artifact/source-commit.txt
           git rev-parse HEAD^{tree} > /tmp/hepta-multimodal-stem-artifact/source-tree.txt
           cp /tmp/hepta-multimodal-stem-environment.txt /tmp/hepta-multimodal-stem-artifact/environment.txt || true
-          sha256sum experiments/shared_stem_cell/multimodal_bridge.py experiments/shared_stem_cell/multimodal_head.py experiments/shared_stem_cell/multimodal_alignment.py experiments/shared_stem_cell/multimodal_alignment_contract.py experiments/shared_stem_cell/multimodal_alignment_evaluator.py experiments/shared_stem_cell/test_multimodal_bridge.py experiments/shared_stem_cell/test_multimodal_head.py experiments/shared_stem_cell/test_multimodal_alignment.py experiments/shared_stem_cell/MULTIMODAL_STEM_V0.md experiments/shared_stem_cell/MULTIMODAL_ALIGNMENT_V1.md .github/workflows/hepta-multimodal-stem-contract.yml > /tmp/hepta-multimodal-stem-artifact/source-SHA256SUMS
+          sha256sum experiments/shared_stem_cell/multimodal_bridge.py experiments/shared_stem_cell/multimodal_head.py experiments/shared_stem_cell/multimodal_alignment.py experiments/shared_stem_cell/multimodal_alignment_contract.py experiments/shared_stem_cell/multimodal_alignment_evaluator.py experiments/shared_stem_cell/multimodal_real_encoder.py experiments/shared_stem_cell/multimodal_real_encoder_evaluator.py experiments/shared_stem_cell/test_multimodal_real_encoder.py experiments/shared_stem_cell/test_multimodal_bridge.py experiments/shared_stem_cell/test_multimodal_head.py experiments/shared_stem_cell/test_multimodal_alignment.py experiments/shared_stem_cell/MULTIMODAL_STEM_V0.md experiments/shared_stem_cell/MULTIMODAL_ALIGNMENT_V1.md experiments/shared_stem_cell/PINNED_ENCODER_INGRESS_V2.md .github/workflows/hepta-multimodal-stem-contract.yml > /tmp/hepta-multimodal-stem-artifact/source-SHA256SUMS
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
