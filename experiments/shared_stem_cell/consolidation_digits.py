@@ -9,8 +9,8 @@ import torch
 from sklearn.datasets import load_digits
 from experiments.shared_stem_cell import execution as e, consolidation as c
 
-def main(output, *, partial=False):
-    if type(partial) is not bool:
+def main(output, *, partial=False, residual=False):
+    if type(partial) is not bool or type(residual) is not bool:
         raise e.InputError("exact partial option required")
     output.mkdir(parents=True, exist_ok=False)
     torch.set_num_threads(1)
@@ -33,6 +33,9 @@ def main(output, *, partial=False):
     if partial:
         e.write_once(output/'partial-plan.json', {'source_sha256': e.sha((Path(e.__file__).parent/'partial_consolidation.py').read_bytes()),
             'selection': 'calibration-only; shared once plus retained Cell teachers; no added training', 'production_accepted': False})
+    if residual:
+        e.write_once(output/'residual-plan.json', {'source_sha256': e.sha((Path(e.__file__).parent/'residual_consolidation.py').read_bytes()),
+            'shared_source': 'fixed supervised student', 'steps_per_cell_per_arm': 80, 'production_accepted': False})
     tr,cal,hold=folds['train'],folds['calibration'],folds['holdout']
     target=lambda ids: torch.tensor([int(data.target[i]) for i in ids],dtype=torch.long)
     records=[]
@@ -46,6 +49,14 @@ def main(output, *, partial=False):
             teachers.append(model.eval().requires_grad_(False)); costs.append(cost)
         models, selection=c.fit_students(tuple(teachers),x[tr],routes[tr],target(tr),
                                           x[cal],routes[cal],target(cal),steps=80,seed=seed)
+        residual_meta = {}
+        if residual:
+            from experiments.shared_stem_cell import residual_consolidation as rc
+            residual_heads, residual_selection = rc.fit_residuals(tuple(teachers), models["supervised"],
+                x[tr], routes[tr], target(tr), x[cal], routes[cal], target(cal), steps=80, seed=seed)
+            residual_meta = {"residual_selection_sha256": e.write_once(output/f'{seed}-residual-selection.json', residual_selection),
+                             "residual_selected": residual_selection["selected"],
+                             "residual_parameters": residual_selection["parameter_counts"]}
         partial_meta = {}
         if partial:
             from experiments.shared_stem_cell import partial_consolidation as pc
@@ -60,9 +71,14 @@ def main(output, *, partial=False):
             actual = pc.predict(components, chosen["policy"], x[hold], routes[hold])
             values["predictions"]["partial_selected"] = actual["probabilities"]
             values["partial_execution"] = actual["execution"]
+        if residual:
+            result = rc.predict(tuple(teachers), models["supervised"], residual_heads, residual_selection, x[hold], routes[hold])
+            values["predictions"].update({k: result["predictions"][k] for k in rc.MODES})
+            values["predictions"]["residual_selected"] = result["predictions"][residual_selection["selected"]]
+            values["residual_execution"] = result
         prediction_sha=e.write_once(output/f'{seed}-predictions.json',{'row_ids':hold,'selection_sha256':selection_sha,**values})
         records.append({'seed':seed,'prediction_sha256':prediction_sha,'selection_sha256':selection_sha,
-                        'teacher_training':costs, **partial_meta})
+                        'teacher_training':costs, **partial_meta, **residual_meta})
     # First holdout-label read happens after EVERY seed has sealed predictions.
     gold=target(hold)
     for rec in records:
@@ -76,4 +92,5 @@ def main(output, *, partial=False):
 if __name__=='__main__':
     p=argparse.ArgumentParser(); p.add_argument('--output',type=Path,required=True)
     p.add_argument('--partial', action='store_true')
-    args=p.parse_args(); main(args.output, partial=args.partial)
+    p.add_argument('--residual', action='store_true')
+    args=p.parse_args(); main(args.output, partial=args.partial, residual=args.residual)

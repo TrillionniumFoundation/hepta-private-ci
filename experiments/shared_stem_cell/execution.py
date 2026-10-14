@@ -433,7 +433,8 @@ class Head(nn.Module):
 
 
 def fit(initial: nn.Module, x, y, *, steps=40, seed=17, batch=16,
-        soft_targets=None, soft_weight=0.0, temperature=2.0):
+        soft_targets=None, soft_weight=0.0, temperature=2.0, base_logits=None):
+    """Fit a candidate; with base_logits, return the residual Head, not its baseline."""
     from copy import deepcopy
     integer(steps, 1, 10000, "steps")
     integer(batch, 1, 256, "training batch")
@@ -460,6 +461,14 @@ def fit(initial: nn.Module, x, y, *, steps=40, seed=17, batch=16,
     if soft_targets is not None and (type(initial) is not Head
             or soft_targets.shape[1] != initial.base.out_features):
         raise InputError("soft supervision requires a matching concrete Head")
+    # Fixed baseline belongs to a separately frozen shared model; only this Head learns.
+    if base_logits is not None and (type(initial) is not Head
+            or not isinstance(base_logits, torch.Tensor) or base_logits.device.type != "cpu"
+            or base_logits.dtype != torch.float32
+            or base_logits.shape != (len(x), initial.base.out_features)
+            or base_logits.numel() * 4 > 64 * 1024**2
+            or not bool(torch.isfinite(base_logits).all())):
+        raise InputError("bounded detached baseline logits must match every training row")
     original = parameters(initial)["sha256"]
     model = deepcopy(initial).train()
     rng = torch.Generator().manual_seed(seed)
@@ -471,6 +480,8 @@ def fit(initial: nn.Module, x, y, *, steps=40, seed=17, batch=16,
             sample_hash.update(ids.numpy().astype("<i8", copy=False).tobytes())
             optimizer.zero_grad(set_to_none=True)
             logits = model(x[ids].detach())
+            if base_logits is not None:
+                logits = logits + base_logits[ids].detach()
             if soft_targets is None or soft_weight == 0:
                 loss = F.cross_entropy(logits, y[ids])
             else:

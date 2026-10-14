@@ -91,3 +91,54 @@ Per-Cell calibration nonregression is an empirical selection rule, not a promise
 of future retention. All per-Cell heldout scores remain reported, even when total
 accuracy improves. These reused public/digit cohorts remain development evidence;
 no new independent task window or product acceptance is created by this option.
+
+## Shared Head with per-Cell linear residuals
+
+`--residual` is an opt-in comparison, independent of the existing `--partial`.
+Freeze the already fitted **supervised** shared student (no test-based backbone
+choice). Each Cell fits a zero-initialized linear residual on its original input
+features; predictions are `shared([x, cell_one_hot]) + residual_cell(x)`. This
+retains information in the original feature that the shared logits alone might
+lose. The original Encoder and shared student are never updated by this step.
+
+The matched strong control distills each teacher into a standalone linear Head,
+with identical zero initialization, row samples, KL temperature 2 and per-Cell
+update count. Both paths use the existing `execution.fit`; its optional
+`base_logits` argument adds detached precomputed baseline scores during training.
+The returned model is the **residual only**, so its caller must supply the same
+bound baseline at inference. The default no-baseline arithmetic is unchanged.
+Hard train labels are validated but unused by these pure-KL fits. Calibration
+labels cannot change the trained parameters. Every Cell uses its designated
+teacher; no averaging of unrelated teachers or relabeling of data is introduced.
+
+Retain bank, uncorrected shared, standalone linear, and shared-plus-residual
+controls. Calibration uses the existing all-Cell empirical nonregression floor
+and a strict smaller-parameter condition; this is NOT independent validation or
+certified retention. Seal the decision before holdout inference, then preserve
+all predictions, including losing candidates. Residuals are exported/reopened
+with the existing linear Head format and a distinct profile bound to the frozen
+shared model. The study directory retains **all** comparison candidates; it is
+not a minimal installable bundle and no CURRENT or production model is changed.
+
+Parameter counts include the shared Head ONCE and ALL Cell residuals. Corrected
+inference processes every row in TWO Heads, not one: the shared model and its
+Cell correction. Both passes and all routed rows are recorded. Fitting requires
+`2 * cells * steps` additional optimizer updates across the two comparison arms,
+plus teacher target/shared-logit preparation. Historical shared-model training,
+other candidates, export/reopen and calibration remain separately charged. This
+is not an equal-total-history comparison with the teacher bank, nor a claim of
+lower full-process RSS, energy, or end-to-end latency. The no-change choice and
+standalone linear competitor prevent equating extra training with sharing gains.
+
+```sh
+python -m experiments.shared_stem_cell.consolidation_digits --partial --residual --output /new/digits
+python -m experiments.shared_stem_cell.consolidation_study --partial --residual \
+  --manifest /staged/manifest.json --producer /staged/producer \
+  --report-sha256 <externally-verified-sha256> --output /new/residuals
+```
+
+The existing public-pretrained job runs this on its genuine frozen mmBERT
+features without another Encoder load. Digits and the previously exposed AG News
+cohort remain development material, not new independent holdouts. No NDU,
+generator consolidation, universal no-forgetting claim or product authority is
+added by the residual profile.

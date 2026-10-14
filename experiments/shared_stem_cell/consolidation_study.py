@@ -15,8 +15,8 @@ from experiments.shared_stem_cell import consolidation as c, execution as e, fea
 from experiments.shared_stem_cell.head_artifacts import _digest, _path, _read, export_head, load_head
 
 
-def study(manifest_path, producer, report_sha256, output, *, partial=False):
-    if type(partial) is not bool:
+def study(manifest_path, producer, report_sha256, output, *, partial=False, residual=False):
+    if type(partial) is not bool or type(residual) is not bool:
         raise e.InputError("exact partial-consolidation option required")
     raw = _read(manifest_path, f.MAX_INDEX)
     config = e.decode(raw)
@@ -76,6 +76,8 @@ def study(manifest_path, producer, report_sha256, output, *, partial=False):
         "independent_evaluation": False, "production_accepted": False}
     if partial:
         origin["partial_policy_source_sha256"] = e.sha((Path(__file__).parent / "partial_consolidation.py").read_bytes())
+    if residual:
+        origin["residual_source_sha256"] = e.sha((Path(__file__).parent / "residual_consolidation.py").read_bytes())
     e.write_once(output / "plan.json", origin)
     try:
         tr, cal = folds["train"], folds["calibration"]
@@ -93,6 +95,29 @@ def study(manifest_path, producer, report_sha256, output, *, partial=False):
                 b = {**base, "training_lineage_sha256": e.sha(e.canonical([origin, selection, name]))}
                 exports[name] = {**export_head(output / "heads" / name, model, b), "binding": b}
                 models[name] = load_head(output / "heads" / name, exports[name]["manifest_sha256"], b)
+        if residual:
+            from experiments.shared_stem_cell import residual_consolidation as rc
+            residual_heads, residual_selection = rc.fit_residuals(teachers, models["supervised"],
+                x[tr], routes[tr], y(tr), x[cal], routes[cal], y(cal),
+                steps=origin["student_steps"], seed=origin["seed"])
+            residual_exports = {}
+            with e.measured() as residual_export_cost:
+                for mode, heads in residual_heads.items():
+                    loaded, residual_exports[mode] = [], []
+                    for cell, head in enumerate(heads):
+                        binding = {**teacher_receipts[cell]["binding"], "generation": base["generation"],
+                            "logical_cell": f"{mode}-cell-{cell}",
+                            "feature_profile_sha256": e.sha(e.canonical([archive["binding"]["feature_profile_sha256"],
+                                mode, residual_selection["shared_identity"]])),
+                            "training_lineage_sha256": e.sha(e.canonical([origin, residual_selection, mode, cell]))}
+                        path = output / "residual-heads" / mode / f"cell-{cell}"
+                        item = export_head(path, head, binding)
+                        loaded.append(load_head(path, item["manifest_sha256"], binding))
+                        residual_exports[mode].append({**item, "binding": binding})
+                    residual_heads[mode] = tuple(loaded)
+            residual_seal = e.write_once(output / "residual-selection.json",
+                {"selection": residual_selection, "heads": residual_exports, "origin": origin})
+            e.bound_file(output / "residual-selection.json", residual_seal, f.MAX_INDEX)
         partial_result = None
         if partial:
             from experiments.shared_stem_cell import partial_consolidation as pc
@@ -121,12 +146,21 @@ def study(manifest_path, producer, report_sha256, output, *, partial=False):
             predicted["predictions"]["partial_selected"] = partial_result["probabilities"]
             predicted["partial_execution"] = partial_result["execution"]
             predicted["partial_selection_sha256"] = partial_seal
+        if residual:
+            residual_result = rc.predict(teachers, models["supervised"], residual_heads,
+                                         residual_selection, x[test], routes[test])
+            predicted["predictions"].update({k: residual_result["predictions"][k] for k in rc.MODES})
+            predicted["predictions"]["residual_selected"] = residual_result["predictions"][residual_selection["selected"]]
+            predicted["residual_execution"] = residual_result
+            predicted["residual_selection_sha256"] = residual_seal
         payload = {"case_ids": [cases[i].case_id for i in test],
                    "input_digests": [cases[i].input_digest for i in test],
                    "routes": routes[test].tolist(), "selection_sha256": seal, **predicted}
         prediction_sha = e.write_once(output / "predictions.json", payload)
         saved = e.decode(e.bound_file(output / "predictions.json", prediction_sha, f.MAX_TENSOR))
         expected_arms = set(c.ARMS) | ({"partial_selected"} if partial else set())
+        if residual:
+            expected_arms |= {*rc.MODES, "residual_selected"}
         if set(saved["predictions"]) != expected_arms or saved["case_ids"] != payload["case_ids"]:
             raise e.InputError("complete consolidation predictions required")
         scores = {}
@@ -163,6 +197,12 @@ def study(manifest_path, producer, report_sha256, output, *, partial=False):
                 "selection_sha256": partial_seal, "bundle_sha256": bundle_sha,
                 "export_and_reopen": partial_export, "execution": partial_result["execution"],
                 "additional_training_steps": 0, "production_accepted": False}
+        if residual:
+            result["residual"] = {"selected": residual_selection["selected"],
+                "selection_sha256": residual_seal, "parameter_counts": residual_selection["parameter_counts"],
+                "additional_optimizer_steps": residual_selection["executed_optimizer_steps"],
+                "export_and_reopen": residual_export_cost, "execution": residual_result["inference_costs"],
+                "retention_certified": False, "production_accepted": False}
         e.write_once(output / "report.json", result)
         return result
     except Exception as error:
@@ -178,6 +218,7 @@ if __name__ == "__main__":
     parser.add_argument("--report-sha256", required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--partial", action="store_true")
+    parser.add_argument("--residual", action="store_true")
     args = parser.parse_args()
     torch.set_num_threads(2)
-    study(args.manifest, args.producer, args.report_sha256, args.output, partial=args.partial)
+    study(args.manifest, args.producer, args.report_sha256, args.output, partial=args.partial, residual=args.residual)
