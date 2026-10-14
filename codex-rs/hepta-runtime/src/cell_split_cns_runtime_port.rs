@@ -15,6 +15,7 @@ use std::io::Read as _;
 use std::sync::Arc;
 
 use codex_hepta_contracts::FinalUseAuthority;
+use codex_hepta_control_plane::NduPublicationOwnerV1;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_operator_acceptance::CellSplitCnsLiveRouteV1;
 use codex_hepta_operator_acceptance::CellSplitCnsRouteBindingV1;
@@ -94,6 +95,11 @@ pub struct CellSplitCnsKernelRuntimePortV1<W: CellSplitCnsKernelWitnessV1> {
     intent: CellSplitExecutionIntentV1,
     runtime_key: VerifyingKey,
     witness: W,
+    // A route observed by the runtime is NOT a Control/CNS cutover transaction.
+    // This optional owner is intentionally unconstructable via the current
+    // serving builder: until a real two-phase same-owner handoff is wired,
+    // the physical CNS mutation entry fails before Final-use or dispatch.
+    atomic_control_cutover_owner: Option<Arc<NduPublicationOwnerV1>>,
 }
 
 impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
@@ -142,6 +148,7 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
             intent,
             runtime_key,
             witness,
+            atomic_control_cutover_owner: None,
         })
     }
 
@@ -271,6 +278,17 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         binding: &CellSplitCnsRouteBindingV1,
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<(), Self::Error> {
+        // No live CNS generation replacement may happen under an unrelated
+        // route owner. A signed route observation, signed Final-use grant and
+        // digest-only predecessor are NOT a linearization transaction.
+        //
+        // This slot cannot be populated by any public API. It must remain
+        // unavailable until a reviewed, durable pre-effect Prepare / post-
+        // effect Commit protocol holds the SAME Control owner as Neuron CAS,
+        // and recovery quarantines a crash between the two writes.
+        self.atomic_control_cutover_owner.as_ref().ok_or(
+            "CNS mutation denied: no shared durable Control/Neuron cutover transaction",
+        )?;
         self.verify_pin(plan, intent)?;
         if binding != &self.binding {
             return Err("CNS cutover binding changed".into());
