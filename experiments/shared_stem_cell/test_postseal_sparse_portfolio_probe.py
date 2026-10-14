@@ -102,6 +102,8 @@ class PortfolioTests(unittest.TestCase):
         case["confirmation.json"]["predictions_sha256"] = p.a.digest(
             f.raw(case["predictions.json"]))
         case["confirmation.json"]["proposed"] = "residual_corrected"
+        case["report.json"]["confirmation_sha256"] = p.a.digest(
+            f.raw(case["confirmation.json"]))
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             f.write_fixture(root, case)
