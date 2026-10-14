@@ -137,10 +137,11 @@ pub struct BoundedMicrobatchSchedulerV1 {
     // Cutover visits only the retiring scope's active lanes, never every Cell.
     scope_lanes: BTreeMap<StableId, BTreeSet<MicrobatchKeyV1>>,
     physical_cursor: BTreeMap<PhysicalBatchKeyV1, MicrobatchKeyV1>,
-    round_robin: VecDeque<MicrobatchKeyV1>,
-    // Includes stale slots left by a coalesced lane. Re-admitting that lane
-    // reuses its existing queue position rather than duplicating it.
-    round_robin_members: BTreeSet<MicrobatchKeyV1>,
+    // Ticketed FIFO: physical coalescing and scope cutover delete in O(log N),
+    // instead of retaining stale slots or purging the global queue.
+    round_robin: BTreeMap<u128, MicrobatchKeyV1>,
+    lane_tickets: BTreeMap<MicrobatchKeyV1, u128>,
+    next_ticket: u128,
     queued_ids: BTreeSet<StableId>,
     last_now_ms: Option<u64>,
 }
@@ -153,8 +154,9 @@ impl BoundedMicrobatchSchedulerV1 {
             physical_lanes: BTreeMap::new(),
             scope_lanes: BTreeMap::new(),
             physical_cursor: BTreeMap::new(),
-            round_robin: VecDeque::new(),
-            round_robin_members: BTreeSet::new(),
+            round_robin: BTreeMap::new(),
+            lane_tickets: BTreeMap::new(),
+            next_ticket: 0,
             queued_ids: BTreeSet::new(),
             last_now_ms: None,
         })
@@ -187,20 +189,36 @@ impl BoundedMicrobatchSchedulerV1 {
         if empty_scope {
             self.scope_lanes.remove(&key.scope_id);
         }
+        self.deschedule_lane(key);
     }
 
-    // Cross-scope coalescing deliberately leaves stale round-robin slots.
-    // Rebuild infrequently and outside any global control lock rather than
-    // scanning all scopes for every physical model batch.
-    fn compact_round_robin_if_needed(&mut self) {
-        let limit = self
-            .lanes
-            .len()
-            .saturating_mul(2)
-            .saturating_add(self.limits.max_batch_size);
-        if self.round_robin.len() > limit {
-            self.round_robin.retain(|key| self.lanes.contains_key(key));
-            self.round_robin_members = self.round_robin.iter().cloned().collect();
+    fn schedule_lane(&mut self, key: MicrobatchKeyV1) {
+        if self.lane_tickets.contains_key(&key) {
+            return;
+        }
+        // Only the astronomically rare u128 rollover renumbers active tickets.
+        // Their FIFO order and original scope/fence keys are preserved.
+        if self.next_ticket == u128::MAX {
+            let mut queue = BTreeMap::new();
+            let mut tickets = BTreeMap::new();
+            for (index, existing) in self.round_robin.values().enumerate() {
+                let ticket = index as u128;
+                queue.insert(ticket, existing.clone());
+                tickets.insert(existing.clone(), ticket);
+            }
+            self.next_ticket = queue.len() as u128;
+            self.round_robin = queue;
+            self.lane_tickets = tickets;
+        }
+        let ticket = self.next_ticket;
+        self.next_ticket += 1;
+        self.lane_tickets.insert(key.clone(), ticket);
+        self.round_robin.insert(ticket, key);
+    }
+
+    fn deschedule_lane(&mut self, key: &MicrobatchKeyV1) {
+        if let Some(ticket) = self.lane_tickets.remove(key) {
+            self.round_robin.remove(&ticket);
         }
     }
 
@@ -256,9 +274,7 @@ impl BoundedMicrobatchSchedulerV1 {
         let key = intent.key.clone();
         let id = intent.request_id.clone();
         if !self.lanes.contains_key(&key) {
-            if self.round_robin_members.insert(key.clone()) {
-                self.round_robin.push_back(key.clone());
-            }
+            self.schedule_lane(key.clone());
             self.physical_lanes
                 .entry(key.physical_key())
                 .or_default()
@@ -285,27 +301,17 @@ impl BoundedMicrobatchSchedulerV1 {
         self.clock(now_ms)?;
         let mut expired = Vec::new();
         let mut selected = None;
-        // A physical batch can retire a lane without removing its queued
-        // round-robin slot. Give stale slots their own bounded skip allowance:
-        // they must not use the active-lane fairness budget or block ready
-        // requests immediately behind them. Never scan the full scope table.
-        let visits = self.round_robin.len().min(
-            self.limits
-                .max_lanes_per_poll
-                .saturating_add(self.limits.max_batch_size),
-        );
+        // Every ticket points to one live lane, so the scan budget is spent on
+        // active work rather than stale tombstones from physical coalescing.
+        let visits = self.round_robin.len().min(self.limits.max_lanes_per_poll);
         let mut scanned = 0;
         for _ in 0..visits {
-            if scanned >= self.limits.max_lanes_per_poll {
-                break;
-            }
-            let Some(key) = self.round_robin.pop_front() else {
+            let Some((_, key)) = self.round_robin.pop_first() else {
                 break;
             };
-            self.round_robin_members.remove(&key);
+            self.lane_tickets.remove(&key);
             let Some(mut lane) = self.lanes.remove(&key) else {
-                // Stale affinity slots are accounted for by the separate
-                // max_batch_size skip allowance, not scanned_lanes.
+                self.remove_physical_lane(&key);
                 continue;
             };
             scanned += 1;
@@ -346,9 +352,7 @@ impl BoundedMicrobatchSchedulerV1 {
                 });
                 break;
             }
-            if self.round_robin_members.insert(key.clone()) {
-                self.round_robin.push_back(key.clone());
-            }
+            self.schedule_lane(key.clone());
             self.lanes.insert(key, lane);
         }
         Ok(MicrobatchPollV1 {
@@ -369,11 +373,9 @@ impl BoundedMicrobatchSchedulerV1 {
     ) -> Result<MicrobatchPollV1, SchedulerErrorV1> {
         let mut observed = self.poll(now_ms)?;
         let Some(batch) = observed.batch.as_mut() else {
-            self.compact_round_robin_if_needed();
             return Ok(observed);
         };
         if batch.requests.len() >= self.limits.max_batch_size {
-            self.compact_round_robin_if_needed();
             return Ok(observed);
         }
         let group_key = batch.key.physical_key();
@@ -456,14 +458,13 @@ impl BoundedMicrobatchSchedulerV1 {
             }
         }
         observed.pending = self.pending();
-        self.compact_round_robin_if_needed();
         Ok(observed)
     }
 
     /// Explicit fence cutover: inspect only indexed lanes in this scope.
-    /// Retired round-robin tickets are lazy tombstones, reaped by bounded,
-    /// amortized compaction instead of a full queue scan on each cutover.
-    /// Call outside global control locks. No stale work is requeued.
+    /// Every retired ticket is removed by key, without scanning the global
+    /// round-robin queue. Call outside global control locks; never requeue
+    /// stale work.
     pub fn retain_scope_binding(
         &mut self,
         scope: &StableId,
@@ -493,8 +494,6 @@ impl BoundedMicrobatchSchedulerV1 {
             }
             self.remove_physical_lane(&key);
         }
-        // Also bound stale-ticket memory during enqueue/cutover-only traffic.
-        self.compact_round_robin_if_needed();
         dropped
     }
 }
