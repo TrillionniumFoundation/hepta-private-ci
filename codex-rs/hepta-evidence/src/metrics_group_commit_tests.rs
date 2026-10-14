@@ -788,9 +788,7 @@ fn cold_replay_rejects_tampered_first_marker_row_with_valid_last_frontier() {
             MetricPhaseV1::Signature,
             MetricPhaseV1::Cns,
         ] {
-            owner
-                .stage(sample(phase))
-                .expect("stage original event");
+            owner.stage(sample(phase)).expect("stage original event");
             owner.flush().expect("committed original group");
         }
     }
@@ -828,7 +826,9 @@ fn live_local_observer_rechecks_entire_marker_history_and_poisons_on_drift() {
         owner.stage(sample(phase)).expect("group");
         owner.flush().expect("durable original group");
     }
-    let before = owner.read_local_frontier().expect("verified local snapshot");
+    let before = owner
+        .read_local_frontier()
+        .expect("verified local snapshot");
     assert_eq!(before.sequence, 3);
     assert_eq!(before.committed_rows, 3);
     assert_eq!(before.head_digest, owner.committed_head());
@@ -856,9 +856,7 @@ fn local_observer_frontier_is_read_only_and_never_counts_unflushed_staging() {
     let path = dir.path().join("journal");
     let marker = dir.path().join("journal.owner-lock");
     let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
-    owner
-        .stage(sample(MetricPhaseV1::Cas))
-        .expect("first");
+    owner.stage(sample(MetricPhaseV1::Cas)).expect("first");
     owner.flush().expect("first group");
     owner
         .stage(sample(MetricPhaseV1::Cns))
@@ -902,13 +900,21 @@ fn observer_replay_does_not_mutate_original_writer_file_offset() {
     assert_eq!(snapshot.sequence, 2);
     let after = {
         let mut original = &owner.file;
-        original.stream_position().expect("unchanged original offset")
+        original
+            .stream_position()
+            .expect("unchanged original offset")
     };
     assert_eq!(after, before, "Observer must use read_at, not shared seek");
     // The original O_APPEND owner must still be able to commit normally.
-    owner.stage(sample(MetricPhaseV1::Cns)).expect("third metric");
+    owner
+        .stage(sample(MetricPhaseV1::Cns))
+        .expect("third metric");
     assert_eq!(
-        owner.flush().expect("third group").expect("durable ACK").sequence,
+        owner
+            .flush()
+            .expect("third group")
+            .expect("durable ACK")
+            .sequence,
         3
     );
     drop(owner);
@@ -932,9 +938,13 @@ fn bound_committed_metric_query_requires_exact_scope_operation_phase_and_success
         phase: MetricPhaseV1::Cas,
         succeeded: true,
     };
-    owner.stage(sample(MetricPhaseV1::Cas)).expect("unflushed sample");
+    owner
+        .stage(sample(MetricPhaseV1::Cas))
+        .expect("unflushed sample");
     assert_eq!(
-        owner.read_committed_sample(query).expect("read staged-only prefix"),
+        owner
+            .read_committed_sample(query)
+            .expect("read staged-only prefix"),
         None,
         "staged rows cannot become a false Split operation acknowledgment"
     );
@@ -1059,5 +1069,10 @@ fn invalid_bound_sample_query_never_disables_original_evidence_owner() {
     ));
     assert!(!owner.poisoned);
     owner.stage(sample(MetricPhaseV1::Cas)).unwrap();
-    assert!(owner.flush().expect("legitimate metric still works").is_some());
+    assert!(
+        owner
+            .flush()
+            .expect("legitimate metric still works")
+            .is_some()
+    );
 }
