@@ -60,6 +60,29 @@ class PinnedPublicSourceTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "frozen exact commits"):
                 m.require_research_roots(self.research, self.audit)
 
+    def test_pinned_torch_and_transformers_execution_versions(self):
+        m.require_runtime_versions("2.10.0+cpu", "4.57.1")
+        for torch_version, hf_version in (
+            ("2.10.0", "4.57.1"),
+            ("2.11.0+cpu", "4.57.1"),
+            ("2.10.0+cu130", "4.57.1"),
+            ("2.10.0+cpu", "4.58.0"),
+        ):
+            with self.subTest(torch=torch_version, hf=hf_version):
+                with self.assertRaisesRegex(ValueError, "unreviewed pretrained CPU"):
+                    m.require_runtime_versions(torch_version, hf_version)
+
+    def test_module_origin_must_be_the_frozen_file(self):
+        from types import SimpleNamespace
+        correct_file = self.research / "pinned.py"
+        loaded = SimpleNamespace(__file__=str(correct_file))
+        m.require_import_origins(((loaded, correct_file),))
+        wrong_file = self.audit / "pinned.py"
+        with self.assertRaisesRegex(ValueError, "unqualified model/projection"):
+            m.require_import_origins(((loaded, wrong_file),))
+        with self.assertRaisesRegex(ValueError, "unqualified model/projection"):
+            m.require_import_origins(((SimpleNamespace(), correct_file),))
+
     def test_wrong_research_head_rejected_before_model_import(self):
         with mock.patch.multiple(
             m,
