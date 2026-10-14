@@ -302,7 +302,8 @@ jobs:
           set -euo pipefail
           python3 -m venv "$RUNNER_TEMP/hepta-physical-env"
           "$RUNNER_TEMP/hepta-physical-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
-          "$RUNNER_TEMP/hepta-physical-env/bin/pip" install safetensors==0.7.0 packaging==25.0 ruff==0.14.0
+          "$RUNNER_TEMP/hepta-physical-env/bin/pip" install numpy==2.2.6 safetensors==0.7.0 packaging==25.0 ruff==0.14.0
+          "$RUNNER_TEMP/hepta-physical-env/bin/python" -c "import numpy, torch, safetensors.torch; assert numpy.__version__ == '2.2.6'"
       - name: Verify original archive and execute physical Head control
         shell: bash
         env:
