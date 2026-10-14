@@ -265,6 +265,122 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "original runtime cutover must stay blocked without Control",
         )
 
+    def test_legacy_cell_split_route_activation_cannot_bypass_control(self) -> None:
+        # The older CnsOrganHost reference controller replaces a generation
+        # and makes children dispatchable. Signed Final-use on a different
+        # runtime path is not evidence of Control's durable Begin/Commit.
+        source_path = "codex-rs/hepta-control-plane/src/cell_split_route.rs"
+        code = self.lexical_code(source_path)
+        self.assertIn("ControlHandoffRequired", code)
+        # A newly named public mutation entrypoint could evade checks for
+        # the two historic activation method names. The entire public
+        # controller surface is reviewed as a closed set.
+        self.assertEqual(
+            self.public_methods(source_path, "CellSplitRouteControllerV1"),
+            {
+                "new",
+                "generation",
+                "phase",
+                "with_metrics_sink",
+                "production_metrics_ready",
+                "flush_production_metrics",
+                "cns_latency_observations",
+                "parent_route",
+                "host",
+                "route_fence_receipt",
+                "child_route",
+                "start_all",
+                "dispatch_parent_once",
+                "activate_children",
+                "activate_children_with_migration",
+                "dispatch_child_once",
+            },
+            "unreviewed CellSplit controller method may bypass Control handoff",
+        )
+        for method in ("activate_children", "activate_children_with_migration"):
+            with self.subTest(entrypoint=method):
+                entrypoint = re.search(
+                    rf"\bpub\s+fn\s+{method}\b", code
+                )
+                self.assertIsNotNone(
+                    entrypoint, f"{method} public compatibility API disappeared"
+                )
+                assert entrypoint is not None
+                opening = code.find("{", entrypoint.end())
+                ending = CALLER_PROOF._matching_delimiter(code, opening, "{", "}")
+                self.assertIsNotNone(
+                    ending, f"{method}: cannot parse the complete activation body"
+                )
+                assert ending is not None
+                body = code[opening + 1 : ending]
+                self.assertRegex(
+                    body,
+                    r"^\s*if\s+!\s*cfg!\s*\(\s*test\s*\)\s*\{\s*"
+                    r"return\s+Err\s*\(\s*"
+                    r"CellSplitRouteErrorV1::ControlHandoffRequired\s*\)\s*;\s*\}",
+                    f"{method}: the first production action must deny physical cutover",
+                )
+                self.assertTrue(
+                    "replace_read_only_generation" in body,
+                    f"{method}: keep the positive reference-host tests isolated",
+                )
+
+    def test_generic_cns_generation_writer_callers_are_closed_world(self) -> None:
+        # The generic CNS host is shared beyond Cell Split and cannot be
+        # arbitrarily disabled. Freeze the concrete non-test callsites for
+        # generation replacement and recovery; any new route writer must
+        # undergo an explicit Control/Final-use owner review.
+        allowed: dict[str, set[str]] = {
+            "replace_read_only_generation": {
+                "codex-rs/hepta-control-plane/src/cell_split_route.rs",
+            },
+            "replace_read_only_generation_with_migration": {
+                "codex-rs/hepta-control-plane/src/cell_split_route.rs",
+                "codex-rs/hepta-runtime/src/organs.rs",
+            },
+            "recover_read_only_generation": set(),
+            "recover_read_only_generation_with_migration": {
+                "codex-rs/hepta-runtime/src/organs.rs",
+            },
+            "replace_admitted_read_only_generation": {
+                "codex-rs/hepta-control-plane/src/organ_hierarchy.rs",
+            },
+            "replace_admitted_read_only_generation_with_migration": {
+                "codex-rs/hepta-control-plane/src/organ_hierarchy.rs",
+            },
+            "recover_admitted_read_only_generation": {
+                "codex-rs/hepta-control-plane/src/organ_hierarchy.rs",
+            },
+            "recover_admitted_read_only_generation_with_migration": {
+                "codex-rs/hepta-control-plane/src/organ_hierarchy.rs",
+            },
+        }
+        names = tuple(allowed)
+        invocation = re.compile(
+            r"(?:\.|::)\s*(" + "|".join(re.escape(name) for name in names)
+            + r")\s*\("
+        )
+        observed: dict[str, set[str]] = {name: set() for name in names}
+        for path in self.rust_sources():
+            relative = path.relative_to(ROOT).as_posix()
+            if (
+                "/tests/" in f"/{relative}"
+                or "/examples/" in f"/{relative}"
+                or relative.endswith("_tests.rs")
+            ):
+                continue
+            raw = path.read_text(encoding="utf-8")
+            if not any(name in raw for name in names):
+                continue
+            code = self.lexical_code(relative)
+            for found in invocation.finditer(code):
+                observed[found.group(1)].add(relative)
+        self.assertEqual(
+            observed,
+            allowed,
+            "generic CNS generation writer callsites drifted; audit Control handoff",
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
