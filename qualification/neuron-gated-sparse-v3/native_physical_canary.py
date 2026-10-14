@@ -106,8 +106,9 @@ def run(binary: Path, report: Path) -> dict:
         changed={k:v.clone() for k,v in original.items()}
         changed['head.weight']=torch.zeros((2,16),dtype=torch.float32)
         negatives.append(run_negative('same-count-wrong-native-head-shape',changed))
-        negatives.append(run_negative('changed-sha-native-model',
-                                      {k:v.clone() for k,v in original.items()},stale_sha=True))
+        changed={k:v.clone() for k,v in original.items()}
+        changed['temporal.gate_bias'][0]=(changed['temporal.gate_bias'][0]+1).clamp(0,Q)
+        negatives.append(run_negative('changed-sha-native-model',changed,stale_sha=True))
         invalid_trace=dict(trace)
         invalid_trace['events']=[dict(row) for row in trace['events']]
         invalid_trace['events'][1]['sequence']=1  # duplicate logical sequence
