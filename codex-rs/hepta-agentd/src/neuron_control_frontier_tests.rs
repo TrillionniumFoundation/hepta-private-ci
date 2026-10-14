@@ -64,18 +64,23 @@ fn adapter_uses_same_durable_control_owner_for_reads_and_checkpoint_publication(
     successor.route_fence += 1;
     #[allow(deprecated)]
     let denied = owner.publish_cutover(&snapshot, next, successor, next);
-    assert_eq!(denied, Err(codex_hepta_control_plane::NduPublicationErrorV1::Unsupported));
+    assert_eq!(
+        denied,
+        Err(codex_hepta_control_plane::NduPublicationErrorV1::Unsupported)
+    );
     assert_eq!(adapter.latest(&scope).unwrap(), snapshot);
     assert_eq!(adapter.check_checkpoint_publisher(&snapshot, next), Ok(()));
     let subsequent = Digest32::of_bytes(b"second-model-checkpoint");
-    assert!(adapter
-        .compare_and_publish_checkpoint(
-            &snapshot,
-            Digest32::of_bytes(b"another-authenticated-read"),
-            Digest32::of_bytes(b"second-tick"),
-            next,
-            subsequent,
-        )
-        .is_ok());
+    assert!(
+        adapter
+            .compare_and_publish_checkpoint(
+                &snapshot,
+                Digest32::of_bytes(b"another-authenticated-read"),
+                Digest32::of_bytes(b"second-tick"),
+                next,
+                subsequent,
+            )
+            .is_ok()
+    );
     assert_eq!(owner.current().unwrap().1, subsequent);
 }

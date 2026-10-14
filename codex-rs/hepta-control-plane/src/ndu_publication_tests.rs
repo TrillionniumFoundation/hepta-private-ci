@@ -102,12 +102,8 @@ fn valid_hash_chain_cannot_replay_direct_cns_commit_without_prior_begin() {
     let path = dir.path().join("unprepared-cutover.wal");
     let prior = snapshot(3);
     {
-        let control = NduPublicationOwnerV1::open_production(
-            &path,
-            prior.clone(),
-            Digest32::ZERO,
-        )
-        .expect("protected genesis");
+        let control = NduPublicationOwnerV1::open_production(&path, prior.clone(), Digest32::ZERO)
+            .expect("protected genesis");
         assert_eq!(control.current().unwrap().0, prior);
     }
     let genesis_bytes = std::fs::read_to_string(&path).expect("genesis");
@@ -145,11 +141,7 @@ fn valid_hash_chain_cannot_replay_direct_cns_commit_without_prior_begin() {
     writer.sync_all().expect("force forged durable suffix");
     drop(writer);
     assert!(matches!(
-        NduPublicationOwnerV1::open_production(
-            &path,
-            snapshot(4),
-            forged.after,
-        ),
+        NduPublicationOwnerV1::open_production(&path, snapshot(4), forged.after,),
         Err(NduPublicationErrorV1::Corrupt)
     ));
     assert_eq!(
@@ -462,7 +454,10 @@ fn lost_wal_during_real_callback_never_publishes_success_or_recreates_history() 
         NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO),
         Err(NduPublicationErrorV1::Indeterminate)
     ));
-    assert!(!path.exists(), "recovery does not invent replacement history");
+    assert!(
+        !path.exists(),
+        "recovery does not invent replacement history"
+    );
 }
 
 #[cfg(unix)]
@@ -602,25 +597,27 @@ fn deleted_control_wal_cannot_bootstrap_a_fresh_history() {
     let path = dir.path().join("lost-control.wal");
     let original = snapshot(3);
     {
-        let owner = NduPublicationOwnerV1::open_production(
-            &path,
-            original.clone(),
-            Digest32::ZERO,
-        )
-        .expect("first durable Control owner");
+        let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+            .expect("first durable Control owner");
         assert_eq!(owner.current().unwrap(), (original.clone(), Digest32::ZERO));
     }
     let mut marker = path.as_os_str().to_os_string();
     marker.push(".owner-lock");
     let marker_path = PathBuf::from(marker);
-    assert!(marker_path.exists(), "writer history must survive owner exit");
+    assert!(
+        marker_path.exists(),
+        "writer history must survive owner exit"
+    );
     let frozen_marker = std::fs::read(&marker_path).expect("pinned original inode");
     std::fs::remove_file(&path).expect("simulate lost canonical WAL");
     assert!(matches!(
         NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO),
         Err(NduPublicationErrorV1::Indeterminate)
     ));
-    assert!(!path.exists(), "reopening cannot silently recreate an empty WAL");
+    assert!(
+        !path.exists(),
+        "reopening cannot silently recreate an empty WAL"
+    );
     assert_eq!(std::fs::read(&marker_path).unwrap(), frozen_marker);
 }
 
@@ -633,12 +630,8 @@ fn lost_writer_marker_or_replaced_wal_cannot_adopt_old_signed_state() {
     let path = dir.path().join("pinned-control.wal");
     let original = snapshot(3);
     {
-        let owner = NduPublicationOwnerV1::open_production(
-            &path,
-            original.clone(),
-            Digest32::ZERO,
-        )
-        .expect("first durable owner");
+        let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+            .expect("first durable owner");
         assert!(owner.current().is_ok());
     }
     let mut marker = path.as_os_str().to_os_string();
@@ -655,12 +648,8 @@ fn lost_writer_marker_or_replaced_wal_cannot_adopt_old_signed_state() {
     // A fresh isolated fixture can demonstrate atomic rename/substitution
     // while the original Unix file lock remains held by the first owner.
     let other = dir.path().join("replaced-control.wal");
-    let owner = NduPublicationOwnerV1::open_production(
-        &other,
-        original.clone(),
-        Digest32::ZERO,
-    )
-    .expect("active original Control writer");
+    let owner = NduPublicationOwnerV1::open_production(&other, original.clone(), Digest32::ZERO)
+        .expect("active original Control writer");
     let former_path = dir.path().join("former-control.wal");
     std::fs::rename(&other, &former_path).expect("unlink original journal name");
     std::fs::copy(&former_path, &other).expect("replacement with valid bytes");
