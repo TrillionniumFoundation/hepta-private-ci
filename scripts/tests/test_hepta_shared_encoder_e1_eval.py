@@ -138,6 +138,24 @@ class PairedTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "invalid dataset scope"):
             self.run_compare(dataset, baseline, candidate)
 
+    def test_unknown_resource_memory_is_null_not_zero(self):
+        dataset, baseline, candidate = fixtures()
+        for row in candidate:
+            row["resident_bytes"] = None
+            row["transient_bytes"] = None
+            row["resource_observation"] = "HEAD_ONLY_LATENCY_NO_RSS"
+        report = self.run_compare(dataset, baseline, candidate)
+        self.assertIsNone(
+            report["splits"]["future"]["candidate"]["max_resident_bytes_reported"]
+        )
+        self.assertFalse(
+            report["splits"]["future"]["candidate"]["resource_memory_measurement_complete"]
+        )
+        self.assertFalse(report["production_promotion_permitted"])
+        candidate[0]["transient_bytes"] = 0
+        with self.assertRaisesRegex(ValueError, "partial memory telemetry"):
+            self.run_compare(dataset, baseline, candidate)
+
     def test_bounded_untrusted_jsonl(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "oversized.jsonl"
