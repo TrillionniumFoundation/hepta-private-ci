@@ -1010,9 +1010,10 @@ fn terminal_metric_failure_preserves_completed_effect_but_blocks_next_admission(
     assert_eq!(observed.outcomes.len(), 1);
     assert!(matches!(
         &observed.outcomes[0].result,
-        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+        Err(BatchWorkerErrorV1::TerminalTelemetryIndeterminate)
     ));
-    // A terminal metric failure cannot rewrite the actual one-shot effect.
+    // Do not expose a successful receipt without original terminal Evidence.
+    // The typed error MUST NOT imply that the physical effect can be retried.
     assert_eq!(scalar_calls.load(std::sync::atomic::Ordering::SeqCst), 1);
     assert!(!worker.production_metrics_ready());
     let next_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
@@ -1277,6 +1278,97 @@ fn second_request(first: &NeuronFeatureRequest) -> NeuronFeatureRequest {
     next.authorization.request_id = "req-two".into();
     next.authorization.reservation_id = "reservation-two".into();
     next
+}
+
+/// A successful physical two-member call is not a partially certifiable
+/// result if only the second terminal Evidence enqueue fails. Both signed
+/// nonce effects are consumed once; the original owner must reconcile them.
+#[derive(Debug, Default)]
+struct FailSecondTerminalMetricSink {
+    attempted_terminals: std::sync::atomic::AtomicUsize,
+}
+
+impl PhaseMetricSinkV1 for FailSecondTerminalMetricSink {
+    fn record(
+        &self,
+        event: PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        if event.phase == PhaseMetricKindV1::NeuronFeature
+            && self
+                .attempted_terminals
+                .fetch_add(1, std::sync::atomic::Ordering::SeqCst)
+                == 1
+        {
+            return Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable);
+        }
+        Ok(())
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
+}
+
+#[test]
+fn native_batch_lost_second_terminal_evidence_withholds_all_success_receipts() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[105; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let sink = Arc::new(FailSecondTerminalMetricSink::default());
+    let backend = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut worker =
+        runner_with_driver(&signer, dir.path(), model, backend, 2).with_metric_sink(sink.clone());
+    let first_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    let second_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            first,
+            key.clone(),
+            signed_member(&signer, first_binding, "terminal-lost-1", 106),
+        )
+        .unwrap();
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            second,
+            key.clone(),
+            signed_member(&signer, second_binding, "terminal-lost-2", 107),
+        )
+        .unwrap();
+    let observed = worker.poll_and_execute(101).unwrap();
+    assert_eq!(observed.outcomes.len(), 2);
+    assert!(observed.outcomes.iter().all(|item| matches!(
+        &item.result,
+        Err(BatchWorkerErrorV1::TerminalTelemetryIndeterminate)
+    )));
+    assert_eq!(
+        sink.attempted_terminals
+            .load(std::sync::atomic::Ordering::SeqCst),
+        2
+    );
+    // One actual backend batch, no scalar rerun or implicit retry.
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert_eq!(worker.pending(), 0);
+    assert!(!worker.production_metrics_ready());
+    assert!(!worker.flush_production_metrics());
+    assert!(matches!(
+        worker.poll_and_execute(102),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    ));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
 }
 
 #[test]
