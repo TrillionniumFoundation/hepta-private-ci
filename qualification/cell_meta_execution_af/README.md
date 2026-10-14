@@ -31,7 +31,12 @@ The `source_sha` / `source_tree` refer to the exact *experiment candidate*;
 must use the same `task_set_sha256` within each window. Each observation row
 supplies independent episode count/ESS, pre-label prediction commitment,
 outcome receipt, model bundle, actual training/inference bytes and real model
-invocation count. `net_utility_lcb/ucb` **must already include** the declared
+invocation count. A–D also require at least three distinct frozen independent
+snapshot digests and exact protected-slice names on every arm/window.
+The reported interval allocation must be no more than Bonferroni
+0.05/(two future windows × registered comparisons); one protected
+slice degrading by more than 2% vetoes a provisional improvement even
+when aggregate scores rise. `net_utility_lcb/ucb` **must already include** the declared
 training, inference, migration, communication and risk costs under the fixed
 NDU profile; this reader does not recompute an unauthenticated utility function.
 An interval reported in JSON is not proof that the estimator or observer is
