@@ -169,12 +169,32 @@ def review(archive: Path):
                 frozen = {} if suffix == '/choice-execution' else pred.get('frozen_predictions')
                 if not isinstance(scores_map, dict) or not isinstance(frozen, dict):
                     raise Invalid('missing trained/frozen predictions')
+                if report.get('production_accepted') is not False or report.get('simulated_towers') is not False or report.get('independent_evaluation') is not False:
+                    raise Invalid('publication authority or model execution kind changed')
+                if suffix == '/media-execution':
+                    if not frozen or not isinstance(report.get('scores'), list):
+                        raise Invalid('missing matched frozen control or published scores')
+                    published = {}
+                    for item in report['scores']:
+                        if not isinstance(item, dict) or not isinstance(item.get('arm'), str) or item['arm'] in published:
+                            raise Invalid('invalid or duplicate published media score')
+                        if item.get('split') != 'holdout' or item.get('cases') != len(labels):
+                            raise Invalid('wrong published media score cohort')
+                        published[item['arm']] = item
+                    if set(published) != set(scores_map):
+                        raise Invalid('media score coverage differs from raw predictions')
                 calculated = {}
                 for name, matrix in {**scores_map, **{k+':frozen':v for k,v in frozen.items()}}.items():
                     res=scores(matrix,labels)
                     calculated[name] = {'correct': res['correct'], 'total':res['cases'], 'nll':res['nll']}
                     if suffix == '/choice-execution':
                         compare(res, report['scores'][name], root+'/'+name)
+                    elif name in scores_map:
+                        entry = published[name]
+                        if (type(entry.get('accuracy')) not in (float, int) or
+                                not math.isfinite(entry['accuracy']) or
+                                abs(entry['accuracy'] - res['correct']/len(labels)) > 1e-8):
+                            raise Invalid('published media accuracy differs from raw probabilities: '+name)
                 diag = {'n_holdout':len(test), 'scores':calculated, 'is_real_physical_public_model_claim':True,
                         'production_accepted':False}
                 if suffix == '/media-execution':
