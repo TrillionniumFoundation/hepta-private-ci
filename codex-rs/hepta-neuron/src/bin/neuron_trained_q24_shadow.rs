@@ -88,6 +88,8 @@ struct StepOutcome {
     activation_q24: Vec<i64>,
     prediction_error_q24: i64,
     quantized_head_logit_q24: i64,
+    head_sign_margin_status: &'static str,
+    head_sign_margin_twice_q24_lsb: u64,
 }
 
 struct WeightBank {
@@ -207,6 +209,40 @@ fn quantized_head_logit(
         sum = sum.checked_add(product).ok_or_else(|| fail("native Q24 Head sum overflow"))?;
     }
     Ok(sum)
+}
+
+/// Sufficient same-activation F32->Q24 Head sign bound. Exactly stored
+/// finite F32 coefficients are independently checked within [-8, 8] and
+/// rounded ties-even into Q24; native Q24 activation |x_i| <= 8Q.
+///
+/// The F32 bias contributes <= 0.5 Q24 LSB. Each channel contributes
+/// <= 8*0.5 coefficient LSB + 0.5 product-rounding LSB = 4.5 Q24 LSB.
+/// Thus |real_F32_linear_head - Q24_linear_head| * Q <= (9*n+1)/2.
+///
+/// This ONLY covers an ideal real-arithmetic linear readout on the same
+/// Q24 activation, not Torch FP32 accumulation, different temporal states,
+/// calibration, binary action authorization or production final-use.
+fn research_q24_head_sign_margin(
+    logit_q24: i64, activation_q24: &[i64],
+) -> Result<(&'static str, u64), String> {
+    if !(5..=256).contains(&activation_q24.len())
+        || activation_q24.iter().any(|v| !(-H..=H).contains(v))
+    {
+        return Err(fail("quantized Head margin requires bounded native Q24 activation"));
+    }
+    let twice_margin = u64::try_from(activation_q24.len() * 9 + 1)
+        .map_err(|_| fail("research margin width overflow"))?;
+    // i128 handles i64::MIN safely; checked Head arithmetic rejects
+    // overflowing dot products *before* this function is called.
+    let twice_abs_logit = i128::from(logit_q24).abs() * 2;
+    let result = if twice_abs_logit <= i128::from(twice_margin) {
+        "QUANTIZATION_AMBIGUOUS_ABSTAIN"
+    } else if logit_q24 > 0 {
+        "ACCEPT_POSITIVE_RESEARCH_ONLY"
+    } else {
+        "ACCEPT_NEGATIVE_RESEARCH_ONLY"
+    };
+    Ok((result, twice_margin))
 }
 
 fn physical_weights(
@@ -376,6 +412,8 @@ impl NativeModel {
                     prediction_error_q24: i64| -> Result<StepOutcome, String> {
             let quantized_head_logit_q24 =
                 quantized_head_logit(&activation, head_q24, bias_q24)?;
+            let (head_sign_margin_status, head_sign_margin_twice_q24_lsb) =
+                research_q24_head_sign_margin(quantized_head_logit_q24, &activation)?;
             Ok(StepOutcome {
                 sequence: event.sequence,
                 predecessor_sha256: before.to_string(),
@@ -383,6 +421,8 @@ impl NativeModel {
                 activation_q24: activation,
                 prediction_error_q24,
                 quantized_head_logit_q24,
+                head_sign_margin_status,
+                head_sign_margin_twice_q24_lsb,
             })
         };
         match self {
@@ -524,7 +564,7 @@ fn execute() -> Result<serde_json::Value, String> {
     if a != b { return Err(fail("native Q24 replay frontier mismatch")); }
 
     Ok(json!({
-        "schema":"hepta.neuron.physical-trained-q24-mechanism-replay.v2",
+        "schema":"hepta.neuron.physical-trained-q24-mechanism-replay.v3",
         "arm":arm, "private_parameter_cap":cap, "private_parameter_count":bank.parameter_count,
         "physical_tensor_count":bank.tensor_count,
         "selected_private_weight_sha256":model_sha.to_string(),
@@ -537,6 +577,9 @@ fn execute() -> Result<serde_json::Value, String> {
         "f32_head_executed":false,
         "quantized_q24_head_executed_in_rust":true,
         "f32_to_q24_head_round_ties_even_profile":"hepta.neuron.f32-q24-head.v1",
+        "head_sign_margin_profile":"hepta.neuron.same-activation-head-sign-margin.v1",
+        "head_margin_abstention_is_research_only":true,
+        "head_margin_authorized_for_final_use":false,
         "torch_f32_native_q24_prediction_parity_verified":false,
         "trusted_target_host_attested":false,
         "durable_checkpoint_cas_verified":false,
@@ -578,6 +621,62 @@ mod tests {
         assert!(quantized_head_logit(&[Q], &[], 0).is_err());
         Ok(())
     }
+
+    #[test]
+    fn conservative_sign_margin_abstains_at_exact_boundary() -> Result<(), String> {
+        let width16 = vec![0_i64; 16];
+        for value in [-72, 0, 72] {
+            let (status, bound) = research_q24_head_sign_margin(value, &width16)?;
+            assert_eq!(bound, 145);
+            assert_eq!(status, "QUANTIZATION_AMBIGUOUS_ABSTAIN");
+        }
+        assert_eq!(
+            research_q24_head_sign_margin(73, &width16)?.0,
+            "ACCEPT_POSITIVE_RESEARCH_ONLY"
+        );
+        assert_eq!(
+            research_q24_head_sign_margin(-73, &width16)?.0,
+            "ACCEPT_NEGATIVE_RESEARCH_ONLY"
+        );
+        let width256 = vec![H; 256];
+        assert_eq!(
+            research_q24_head_sign_margin(1152, &width256)?.0,
+            "QUANTIZATION_AMBIGUOUS_ABSTAIN"
+        );
+        assert_eq!(
+            research_q24_head_sign_margin(1153, &width256)?.0,
+            "ACCEPT_POSITIVE_RESEARCH_ONLY"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn conservative_sign_margin_rejects_invalid_activation_and_bounds() -> Result<(), String> {
+        assert!(research_q24_head_sign_margin(1000, &[0; 4]).is_err());
+        assert!(research_q24_head_sign_margin(1000, &[0; 257]).is_err());
+        let mut invalid = vec![0_i64; 16];
+        invalid[0] = H + 1;
+        assert!(research_q24_head_sign_margin(1000, &invalid).is_err());
+        // An extreme logit must not overflow the margin magnitude check.
+        assert_eq!(
+            research_q24_head_sign_margin(i64::MIN, &[0; 16])?.0,
+            "ACCEPT_NEGATIVE_RESEARCH_ONLY"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn conservative_sign_margin_never_promotes_zero_head() -> Result<(), String> {
+        let activation = vec![0; 32];
+        let logit = quantized_head_logit(&activation, &[0; 32], 0)?;
+        assert_eq!(logit, 0);
+        assert_eq!(
+            research_q24_head_sign_margin(logit, &activation)?.0,
+            "QUANTIZATION_AMBIGUOUS_ABSTAIN"
+        );
+        Ok(())
+    }
+
 }
 
 fn main() {
