@@ -17,9 +17,11 @@ pub use neuron_feature::NeuronFeatureRequestViewV1;
 pub use neuron_feature::NeuronFeatureTerminalStatusV1;
 pub use neuron_feature::NeuronModelRuntimeTupleV1;
 pub use neuron_feature::build_neuron_feature_receipt_v1;
+pub use neuron_feature::build_neuron_feature_receipt_view_v1;
 pub use neuron_feature::neuron_feature_request_digest_v1;
 pub use neuron_feature::neuron_feature_request_view_digest_v1;
 pub use neuron_feature::verify_neuron_feature_receipt_v1;
+pub use neuron_feature::verify_neuron_feature_receipt_view_v1;
 
 pub use shared_feature_snapshot::FeatureSnapshotBindingV1;
 pub use shared_feature_snapshot::FeatureSnapshotError;
