@@ -37,6 +37,11 @@ DIMENSIONS = {128, 256, 512, 768}
 ROLES = {"search_query", "document", "classification", "code_retrieval"}
 MAX_MEDIA_BYTES = 256 * 1024 * 1024
 MAX_BATCH = 32
+# Official defaults: 8,192-token context, 280 per image, 140 per sampled
+# 1-Hz video frame, 25 per second of 16kHz mono audio.
+MAX_TOKENS = 8192
+MAX_IMAGE_PIXELS = 16_777_216
+MAX_VIDEO_FRAMES = MAX_TOKENS // 140
 
 
 class QualificationError(ValueError):
@@ -132,6 +137,52 @@ def load_manifest(path: Path) -> tuple[dict, Path, str]:
     return manifest, root, profile_digest
 
 
+
+def inspect_media_budget(modality: str, path: Path) -> dict:
+    """Reject malformed/over-budget media before any model execution.
+
+    Default decoder preflight does not independently verify the model's actual
+    internal tokenization or alternate preprocessing configurations.
+    """
+    try:
+        if modality == "image":
+            from PIL import Image
+            with Image.open(path) as frame:
+                width, height = frame.size
+                if (width < 1 or height < 1 or width * height > MAX_IMAGE_PIXELS
+                        or frame.n_frames != 1):
+                    raise QualificationError("image pixel/frame budget exceeded")
+                frame.verify()
+            return {"bounded_default_token_estimate": 280, "media_seconds": None}
+        if modality == "audio":
+            import soundfile
+            info = soundfile.info(str(path))
+            seconds = float(info.duration)
+            if (info.channels != 1 or info.samplerate != 16000
+                    or not math.isfinite(seconds) or not 0 < seconds <= MAX_TOKENS / 25):
+                raise QualificationError("audio must be bounded 16kHz mono")
+            return {"bounded_default_token_estimate": math.ceil(seconds * 25),
+                    "media_seconds": seconds}
+        if modality == "video":
+            from torchcodec.decoders import VideoDecoder
+            decoder = VideoDecoder(str(path))
+            meta = decoder.metadata
+            seconds, fps = float(meta.duration_seconds), float(meta.average_fps)
+            if (not math.isfinite(seconds) or not math.isfinite(fps)
+                    or fps <= 0 or seconds <= 0 or math.ceil(seconds) > MAX_VIDEO_FRAMES
+                    or meta.width is None or meta.height is None
+                    or meta.width * meta.height > MAX_IMAGE_PIXELS
+                    or not 0 < len(decoder) <= 30_000):
+                raise QualificationError("video default 1fps sampled-token budget exceeded")
+            return {"bounded_default_token_estimate": math.ceil(seconds) * 140,
+                    "media_seconds": seconds}
+    except QualificationError:
+        raise
+    except (ValueError, OSError, RuntimeError, ImportError, AttributeError) as exc:
+        raise QualificationError("media decoder unavailable, corrupt or unsafe") from exc
+    raise QualificationError("unregistered modality")
+
+
 def validate_sample(row: dict, profile: str, media_root: Path | None) -> tuple[tuple, object]:
     required = {"scope_id", "principal_id", "purpose_id", "cell_id",
                 "generation", "authority_epoch", "input"}
@@ -176,6 +227,7 @@ def validate_sample(row: dict, profile: str, media_root: Path | None) -> tuple[t
             actual = hashlib.file_digest(stream, "sha256").hexdigest()
         if actual != expected:
             raise QualificationError("media bytes changed")
+        inspect_media_budget(modality, target)
         payload = {modality: str(target)}
     key = (row["scope_id"], row["principal_id"], row["purpose_id"],
            row["generation"], row["authority_epoch"], modality, role, expected)
@@ -337,7 +389,11 @@ class FrozenGemmaShadow:
             "distinct_input_rows": len(unique), "cell_requests": len(requests),
             "sentence_transformer_encode_calls": self.model_encode_calls - prior_encode_calls,
             "physical_transformer_forward_calls": None,
-            "text_token_budget_verified": bool(getattr(self, "_verified_local_weights", False)),
+            "text_token_budget_verified": bool(getattr(self, "_verified_local_weights", False))
+            and all(k[-3] in ("text", "code") for k in keys),
+            "media_default_budget_preflight_checked": all(
+                k[-3] in ("text", "code") or k[-3] in EXTENSIONS for k in keys
+            ),
             "multimodal_internal_token_budget_verified": False,
             "measured_wall_micros": (time.perf_counter_ns() - started) // 1000,
             "independently_authenticated_receipt": False,
