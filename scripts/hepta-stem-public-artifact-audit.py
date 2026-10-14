@@ -58,6 +58,52 @@ def read_json(payload):
     return result
 
 
+def recompute_public_split_controls(controls, report, by_id, classes):
+    """Public experiment control, NOT the independently frozen Hepta baseline."""
+    section = controls.get("split") or {}
+    predictions = section.get("predictions")
+    declared = (report.get("control_scores") or {}).get("split", {}).get("scores")
+    if predictions is None and declared is None:
+        return None
+    require(type(predictions) is dict and type(declared) is dict
+            and bool(predictions) and set(predictions) == set(declared),
+            "public control score/prediction arms mismatch")
+    holdout = {case_id for case_id, row in by_id.items()
+               if row["split"] == "holdout"}
+    ids = controls.get("holdout_case_ids")
+    require(type(ids) is list and len(ids) == len(holdout)
+            and len(set(ids)) == len(ids) and set(ids) == holdout,
+            "public control holdout identity mismatch")
+    verified = {}
+    for arm, vectors in predictions.items():
+        require(type(arm) is str and type(vectors) is list
+                and len(vectors) == len(ids), "public control denominator drift")
+        correct = 0
+        brier_sum = 0.0
+        for case_id, vector in zip(ids, vectors):
+            require(type(vector) is list and len(vector) == classes
+                    and all(type(v) in (int, float) and math.isfinite(v)
+                            and 0 <= v <= 1 for v in vector)
+                    and abs(sum(vector) - 1) < 0.0001,
+                    "invalid public control probability")
+            label = by_id[case_id]["label"]
+            correct += max(range(classes), key=vector.__getitem__) == label
+            brier_sum += sum((v - int(index == label)) ** 2
+                             for index, v in enumerate(vector))
+        score = declared[arm]
+        accuracy = correct / len(ids)
+        brier = brier_sum / len(ids)
+        require(type(score) is dict
+                and score.get("cases") == len(ids)
+                and score.get("correct") == correct
+                and abs(score.get("accuracy", -1) - accuracy) < 1e-12
+                and abs(score.get("brier", -1) - brier) < 1e-9,
+                "public control reported score mismatch")
+        verified[arm] = {"cases": len(ids), "correct": correct,
+                         "accuracy": accuracy, "multiclass_brier": brier}
+    return verified
+
+
 def audit(zip_path, expected_sha256, expected_model, expected_revision):
     require(type(expected_sha256) is str and HEX64.fullmatch(expected_sha256),
             "expected archive hash must be 64 lowercase hex")
@@ -110,6 +156,7 @@ def audit(zip_path, expected_sha256, expected_model, expected_revision):
         report = item("execution/report.json")
         predictions = item("execution/predictions.json")
         frozen = item("execution/frozen-features/manifest.json")
+        controls = item("execution/controls.json")
 
         require(
             source.get("model_id") == expected_model
@@ -216,6 +263,40 @@ def audit(zip_path, expected_sha256, expected_model, expected_revision):
             scores[arm] = {"cases": len(records), "correct": correct,
                            "accuracy": accuracy, "multiclass_brier": brier}
         require(set(scores) == set(by_arm), "scores missing an arm")
+        control_scores = recompute_public_split_controls(
+            controls, report, by_id, manifest["classes"]
+        )
+        paired_control = None
+        if control_scores and "parent_no_change" in control_scores:
+            local_parent = control_scores["parent_no_change"]
+            parent_vectors = controls["split"]["predictions"]["parent_no_change"]
+            parent_correct = {
+                case_id: (max(range(manifest["classes"]),
+                              key=vector.__getitem__) == by_id[case_id]["label"])
+                for case_id, vector in zip(controls["holdout_case_ids"],
+                                           parent_vectors)
+            }
+            paired_control = {}
+            for arm, records in by_arm.items():
+                gains = losses = 0
+                for record in records:
+                    case_id = record["case_id"]
+                    label = by_id[case_id]["label"]
+                    probs = record["probabilities"]
+                    candidate_correct = (
+                        max(range(manifest["classes"]), key=probs.__getitem__)
+                        == label
+                    )
+                    gains += bool(candidate_correct and not parent_correct[case_id])
+                    losses += bool(parent_correct[case_id] and not candidate_correct)
+                paired_control[arm] = {
+                    "accuracy_delta": scores[arm]["accuracy"] - local_parent["accuracy"],
+                    "brier_delta": (scores[arm]["multiclass_brier"]
+                                    - local_parent["multiclass_brier"]),
+                    "gains": gains,
+                    "losses": losses,
+                    "parent_is_deployed_hepta_no_change": False,
+                }
 
         return {
             "schema": "hepta.public-stem-artifact-audit.v1",
@@ -226,6 +307,8 @@ def audit(zip_path, expected_sha256, expected_model, expected_revision):
             "dataset_sha256": manifest["dataset"]["sha256"],
             "dataset_split_counts": dict(cohort),
             "scores_recomputed": scores,
+            "research_split_controls_recomputed": control_scores,
+            "paired_to_public_parent_no_change_research_only": paired_control,
             "encoder_forward_calls_reported": report["encoding"]["encoder_forward_calls"],
             "process_lifetime_peak_rss_bytes_reported":
                 report.get("process_lifetime_peak_rss_bytes"),
