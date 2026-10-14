@@ -5,6 +5,7 @@ on:
     branches: ["research/five-causal-experiments-20261013"]
     paths:
       - "codex-rs/hepta-memory/Cargo.toml"
+      - "codex-rs/Cargo.lock"
       - "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
       - "codex-rs/hepta-memory/src/cognitive_store_recovery_amcn_*.rs"
       - ".github/workflows/hepta-amcn-sqlite-source-fence.yml"
