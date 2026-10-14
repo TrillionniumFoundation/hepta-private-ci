@@ -265,6 +265,41 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "original runtime cutover must stay blocked without Control",
         )
 
+    def test_legacy_cell_split_route_activation_cannot_bypass_control(self) -> None:
+        # The older CnsOrganHost reference controller replaces a generation
+        # and makes children dispatchable. Signed Final-use on a different
+        # runtime path is not evidence of Control's durable Begin/Commit.
+        source_path = "codex-rs/hepta-control-plane/src/cell_split_route.rs"
+        code = self.lexical_code(source_path)
+        self.assertIn("ControlHandoffRequired", code)
+        for method in ("activate_children", "activate_children_with_migration"):
+            with self.subTest(entrypoint=method):
+                entrypoint = re.search(
+                    rf"\bpub\s+fn\s+{method}\b", code
+                )
+                self.assertIsNotNone(
+                    entrypoint, f"{method} public compatibility API disappeared"
+                )
+                assert entrypoint is not None
+                opening = code.find("{", entrypoint.end())
+                ending = CALLER_PROOF._matching_delimiter(code, opening, "{", "}")
+                self.assertIsNotNone(
+                    ending, f"{method}: cannot parse the complete activation body"
+                )
+                assert ending is not None
+                body = code[opening + 1 : ending]
+                self.assertRegex(
+                    body,
+                    r"^\s*if\s+!\s*cfg!\s*\(\s*test\s*\)\s*\{\s*"
+                    r"return\s+Err\s*\(\s*"
+                    r"CellSplitRouteErrorV1::ControlHandoffRequired\s*\)\s*;\s*\}",
+                    f"{method}: the first production action must deny physical cutover",
+                )
+                self.assertTrue(
+                    "replace_read_only_generation" in body,
+                    f"{method}: keep the positive reference-host tests isolated",
+                )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
