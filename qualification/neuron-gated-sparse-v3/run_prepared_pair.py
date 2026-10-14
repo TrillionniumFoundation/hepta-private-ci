@@ -87,6 +87,13 @@ def validate_pair(
         value = records[mode]
         require(value.get("execution_mode") == mode, "probe reported a different execution mode")
         validate_probe(value, arm=arm, cells=cells, digest=digest, events=events)
+        require(value.get("single_selected_config_resident") is True,
+                "fixture process must hold only its selected model")
+        require(value.get("simultaneous_legacy_and_prepared_config_resident") is False,
+                "fixture process must never hold both model modes")
+        require(type(value.get("model_config_setup_micros")) is int
+                and value["model_config_setup_micros"] >= 0,
+                "missing observed model config setup duration")
         require(value.get("all_model_parameter_budgets_matched") is False,
                 "untrained probe cannot claim complete trained parameter parity")
         for field in (
@@ -125,6 +132,9 @@ def validate_pair(
         ),
         "legacy_wall_micros": old["process_wall_micros"],
         "prepared_wall_micros": new["process_wall_micros"],
+        "legacy_model_config_setup_micros": old["model_config_setup_micros"],
+        "prepared_model_config_setup_micros": new["model_config_setup_micros"],
+        "separate_mode_config_residency": True,
         "raw_mode_receipts": {mode: records[mode] for mode in MODES},
         "raw_mode_receipt_sha256": {
             mode: receipt_sha256(records[mode]) for mode in MODES
@@ -167,6 +177,10 @@ def run(binary: Path, trace: Path) -> dict[str, Any]:
                 results[mode] = result
             pairs.append(validate_pair(results, arm, cells, trace_sha256, event_count))
     require(len(pairs) == len(ARMS) * len(SCALES), "paired native matrix incomplete")
+    require(sha256_binary(binary) == binary_sha256,
+            "native executable changed during 40-process comparison")
+    require(read_trace(trace) == (trace_sha256, event_count),
+            "original Q24 trace changed during 40-process comparison")
     return {
         "schema": SCHEMA,
         "evidence_kind": "UNVERIFIED_HOST_UNTRAINED_KERNEL_ONLY",
@@ -189,8 +203,9 @@ def run(binary: Path, trace: Path) -> dict[str, Any]:
         "limitations": [
             "One alternating-order pair per arm/scale gives no uncertainty interval or causal gain.",
             "Both modes use synthetic untrained tensors, shared fixture input, 8 Tick events per Cell.",
-            "The process includes Rust, journal-free checkpoint computations and model-config memory, not full model execution.",
-            "Prepared config is constructed outside the timed Tick loop; cold start and model residency are not amortized in this p99.",
+            "The process includes Rust, journal-free checkpoint computations and one selected model config, not full model execution.",
+            "Each fresh process constructs exactly one selected config before the Tick timer; cold setup micros is reported separately.",
+            "Linux process VmHWM still includes allocator, executable and checkpoint memory; it is not isolated tensor-only RSS.",
             "The runner does not verify a trusted target host, production artifact signatures, independent training or future utility.",
             "All 40 raw mode receipts are retained with locally calculated digests and executable SHA; neither constitutes independent signing or execution attestation.",
         ],

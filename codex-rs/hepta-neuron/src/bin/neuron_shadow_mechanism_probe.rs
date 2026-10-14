@@ -61,17 +61,38 @@ struct TraceEvent {
     prediction_q24: Vec<i64>,
 }
 
-struct Configs {
-    v1: SparseConfig,
-    v2: PopulationSparseConfigV2,
-    v3: GatedSparseConfigV3,
-    ssm: DiagonalSsmConfigV1,
-    min_gru: LowRankMinGruConfigV1,
-    ready_v2: PreparedPopulationSparseConfigV2,
-    ready_v3: PreparedGatedSparseConfigV3,
-    ready_ssm: PreparedDiagonalSsmConfigV1,
-    ready_min_gru: PreparedLowRankMinGruConfigV1,
-    prepared_mode: bool,
+// The process owns exactly ONE selected model configuration and ONE mode.
+// Never materialize all five models or both legacy and prepared simultaneously.
+enum Configs {
+    V1(SparseConfig),
+    V2Legacy(PopulationSparseConfigV2),
+    V2Prepared(PreparedPopulationSparseConfigV2),
+    V3Legacy(GatedSparseConfigV3),
+    V3Prepared(PreparedGatedSparseConfigV3),
+    SsmLegacy(DiagonalSsmConfigV1),
+    SsmPrepared(PreparedDiagonalSsmConfigV1),
+    MinGruLegacy(Box<LowRankMinGruConfigV1>, usize),
+    MinGruPrepared(Box<PreparedLowRankMinGruConfigV1>, usize),
+}
+
+impl Configs {
+    fn temporal_parameter_count_only(&self) -> Option<usize> {
+        match self {
+            Self::MinGruLegacy(_, value) | Self::MinGruPrepared(_, value) => Some(*value),
+            _ => None,
+        }
+    }
+
+    #[cfg(test)]
+    fn is_prepared(&self) -> bool {
+        matches!(
+            self,
+            Self::V2Prepared(_)
+                | Self::V3Prepared(_)
+                | Self::SsmPrepared(_)
+                | Self::MinGruPrepared(_)
+        )
+    }
 }
 
 enum ActiveState {
@@ -98,10 +119,10 @@ impl ActiveState {
         &mut self,
         cell: usize,
         input: &PopulationSparseTickV2,
-        configs: &Configs,
+        config: &Configs,
     ) -> Result<Digest32, String> {
-        match self {
-            Self::V1(states) => {
+        match (self, config) {
+            (Self::V1(states), Configs::V1(cfg)) => {
                 let tick = SparseTick {
                     scope_digest: input.scope_digest,
                     objective_digest: input.objective_digest,
@@ -113,80 +134,106 @@ impl ActiveState {
                     drive_q24: input.temporal_drive_q24.clone(),
                     prediction_q24: input.prediction_q24.clone(),
                 };
-                let (next, receipt) = sparse_tick(&configs.v1, &tick, states[cell].as_ref())
+                let (next, receipt) = sparse_tick(cfg, &tick, states[cell].as_ref())
                     .map_err(|error| format!("V1 tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
-            Self::V2(states) => {
-                let (next, receipt) = if configs.prepared_mode {
-                    configs.ready_v2.tick(input, states[cell].as_ref())
-                } else {
-                    population_sparse_tick_v2(&configs.v2, input, states[cell].as_ref())
-                }
-                .map_err(|error| format!("V2 tick rejected: {error:?}"))?;
+            (Self::V2(states), Configs::V2Legacy(cfg)) => {
+                let (next, receipt) = population_sparse_tick_v2(cfg, input, states[cell].as_ref())
+                    .map_err(|error| format!("V2 legacy tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
-            Self::V3(states) => {
-                let (next, receipt) = if configs.prepared_mode {
-                    configs.ready_v3.tick(input, states[cell].as_ref())
-                } else {
-                    gated_sparse_tick_v3(&configs.v3, input, states[cell].as_ref())
-                }
-                .map_err(|error| format!("V3 tick rejected: {error:?}"))?;
+            (Self::V2(states), Configs::V2Prepared(cfg)) => {
+                let (next, receipt) = cfg
+                    .tick(input, states[cell].as_ref())
+                    .map_err(|error| format!("V2 prepared tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
-            Self::Ssm(states) => {
-                let (next, receipt) = if configs.prepared_mode {
-                    configs.ready_ssm.tick(input, states[cell].as_ref())
-                } else {
-                    diagonal_ssm_tick_v1(&configs.ssm, input, states[cell].as_ref())
-                }
-                .map_err(|error| format!("SSM tick rejected: {error:?}"))?;
+            (Self::V3(states), Configs::V3Legacy(cfg)) => {
+                let (next, receipt) = gated_sparse_tick_v3(cfg, input, states[cell].as_ref())
+                    .map_err(|error| format!("V3 legacy tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
-            Self::MinGru(states) => {
-                let (next, receipt) = if configs.prepared_mode {
-                    configs.ready_min_gru.tick(input, states[cell].as_ref())
-                } else {
-                    low_rank_min_gru_tick_v1(&configs.min_gru, input, states[cell].as_ref())
-                }
-                .map_err(|error| format!("minGRU tick rejected: {error:?}"))?;
+            (Self::V3(states), Configs::V3Prepared(cfg)) => {
+                let (next, receipt) = cfg
+                    .tick(input, states[cell].as_ref())
+                    .map_err(|error| format!("V3 prepared tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
+            (Self::Ssm(states), Configs::SsmLegacy(cfg)) => {
+                let (next, receipt) = diagonal_ssm_tick_v1(cfg, input, states[cell].as_ref())
+                    .map_err(|error| format!("SSM legacy tick rejected: {error:?}"))?;
+                states[cell] = Some(next);
+                Ok(receipt.checkpoint_after)
+            }
+            (Self::Ssm(states), Configs::SsmPrepared(cfg)) => {
+                let (next, receipt) = cfg
+                    .tick(input, states[cell].as_ref())
+                    .map_err(|error| format!("SSM prepared tick rejected: {error:?}"))?;
+                states[cell] = Some(next);
+                Ok(receipt.checkpoint_after)
+            }
+            (Self::MinGru(states), Configs::MinGruLegacy(cfg, _)) => {
+                let (next, receipt) =
+                    low_rank_min_gru_tick_v1(cfg, input, states[cell].as_ref())
+                        .map_err(|error| format!("minGRU legacy tick rejected: {error:?}"))?;
+                states[cell] = Some(next);
+                Ok(receipt.checkpoint_after)
+            }
+            (Self::MinGru(states), Configs::MinGruPrepared(cfg, _)) => {
+                let (next, receipt) = cfg
+                    .tick(input, states[cell].as_ref())
+                    .map_err(|error| format!("minGRU prepared tick rejected: {error:?}"))?;
+                states[cell] = Some(next);
+                Ok(receipt.checkpoint_after)
+            }
+            _ => Err("model configuration does not match this Cell state".to_owned()),
         }
     }
 }
 
-fn make_configs(width: usize) -> Result<Configs, String> {
+// Only construct a single selected arm and mode. In particular, never
+// allocate or validate other arms even during cold setup: VmHWM includes
+// discarded graph allocations and would misrepresent model residency.
+fn make_configs(width: usize, arm: &str, prepared: bool) -> Result<Configs, String> {
     let model_digest = Digest32::of_bytes(b"fixture-untrained-mechanism-model");
     let normalization_digest = Digest32::of_bytes(b"fixture-q24-normalization");
     let generation = Generation::new(1).map_err(|error| format!("{error:?}"))?;
     let global_top_k = (width / 10).max(1);
-    let v1 = SparseConfig {
-        model_digest,
-        normalization_digest,
-        generation,
-        width,
-        top_k: global_top_k,
-        temporal_decay_q24: Q / 2,
-        inhibition_gain_q24: Q / 2,
-        inhibition: Vec::<InhibitoryEdge>::new(),
-        activity_decay_q24: Q / 2,
-        target_activity_q24: Q / 2,
-        threshold_rate_q24: Q / 16,
-        threshold_min_q24: -Q,
-        threshold_max_q24: Q,
-        eligibility_decay_q24: Q / 2,
-    };
+    if arm == "v1" {
+        let cfg = SparseConfig {
+            model_digest,
+            normalization_digest,
+            generation,
+            width,
+            top_k: global_top_k,
+            temporal_decay_q24: Q / 2,
+            inhibition_gain_q24: Q / 2,
+            inhibition: Vec::<InhibitoryEdge>::new(),
+            activity_decay_q24: Q / 2,
+            target_activity_q24: Q / 2,
+            threshold_rate_q24: Q / 16,
+            threshold_min_q24: -Q,
+            threshold_max_q24: Q,
+            eligibility_decay_q24: Q / 2,
+        };
+        cfg.digest()
+            .map_err(|error| format!("V1 config: {error:?}"))?;
+        return Ok(Configs::V1(cfg));
+    }
+    if !["v2", "v3", "ssm", "min_gru"].contains(&arm) {
+        return Err("unknown fixture mechanism arm".to_owned());
+    }
+
     let split = width / 2;
     let first_k = global_top_k.div_ceil(2);
     let second_k = (global_top_k / 2).max(1);
-    let v2 = PopulationSparseConfigV2 {
+    let base = PopulationSparseConfigV2 {
         model_digest,
         normalization_digest,
         generation,
@@ -222,67 +269,90 @@ fn make_configs(width: usize) -> Result<Configs, String> {
         threshold_max_q24: Q,
         eligibility_decay_q24: Q / 2,
     };
-    let v3 = GatedSparseConfigV3 {
-        base: v2.clone(),
-        gates: vec![
-            TemporalGateV3 {
-                bias_q24: Q / 2,
-                input_gain_q24: Q / 4,
-                change_gain_q24: Q / 8,
+    match arm {
+        "v2" => {
+            if prepared {
+                Ok(Configs::V2Prepared(
+                    PreparedPopulationSparseConfigV2::new(base)
+                        .map_err(|error| format!("prepared V2: {error:?}"))?,
+                ))
+            } else {
+                base.digest()
+                    .map_err(|error| format!("V2 config: {error:?}"))?;
+                Ok(Configs::V2Legacy(base))
+            }
+        }
+        "v3" => {
+            let cfg = GatedSparseConfigV3 {
+                base,
+                gates: vec![
+                    TemporalGateV3 {
+                        bias_q24: Q / 2,
+                        input_gain_q24: Q / 4,
+                        change_gain_q24: Q / 8,
+                    };
+                    width
+                ],
             };
-            width
-        ],
-    };
-    let ssm = DiagonalSsmConfigV1 {
-        base: v2.clone(),
-        decay_per_step_q24: vec![Q / 2; width],
-        input_gain_q24: vec![Q / 2; width],
-        time_quantum_micros: 100,
-    };
-    let min_gru = LowRankMinGruConfigV1 {
-        base: v2.clone(),
-        rank: 1,
-        gate_input_q24: vec![0; width],
-        gate_output_q24: vec![0; width],
-        candidate_input_q24: vec![0; width],
-        candidate_output_q24: vec![0; width],
-        gate_bias_q24: vec![0; width],
-        candidate_bias_q24: vec![0; width],
-    };
-    v1.digest()
-        .map_err(|error| format!("V1 config: {error:?}"))?;
-    v2.digest()
-        .map_err(|error| format!("V2 config: {error:?}"))?;
-    v3.digest()
-        .map_err(|error| format!("V3 config: {error:?}"))?;
-    ssm.digest()
-        .map_err(|error| format!("SSM config: {error:?}"))?;
-    min_gru
-        .digest()
-        .map_err(|error| format!("minGRU config: {error:?}"))?;
-    // Compile the selected, immutable model tuples exactly once per runner.
-    // Reusing a compiled model across many scoped Cells does not share or
-    // mutate their individual temporal checkpoints.
-    let ready_v2 = PreparedPopulationSparseConfigV2::new(v2.clone())
-        .map_err(|error| format!("prepared V2: {error:?}"))?;
-    let ready_v3 = PreparedGatedSparseConfigV3::new(v3.clone())
-        .map_err(|error| format!("prepared V3: {error:?}"))?;
-    let ready_ssm = PreparedDiagonalSsmConfigV1::new(ssm.clone())
-        .map_err(|error| format!("prepared SSM: {error:?}"))?;
-    let ready_min_gru = PreparedLowRankMinGruConfigV1::new(min_gru.clone())
-        .map_err(|error| format!("prepared minGRU: {error:?}"))?;
-    Ok(Configs {
-        v1,
-        v2,
-        v3,
-        ssm,
-        min_gru,
-        ready_v2,
-        ready_v3,
-        ready_ssm,
-        ready_min_gru,
-        prepared_mode: true,
-    })
+            if prepared {
+                Ok(Configs::V3Prepared(
+                    PreparedGatedSparseConfigV3::new(cfg)
+                        .map_err(|error| format!("prepared V3: {error:?}"))?,
+                ))
+            } else {
+                cfg.digest()
+                    .map_err(|error| format!("V3 config: {error:?}"))?;
+                Ok(Configs::V3Legacy(cfg))
+            }
+        }
+        "ssm" => {
+            let cfg = DiagonalSsmConfigV1 {
+                base,
+                decay_per_step_q24: vec![Q / 2; width],
+                input_gain_q24: vec![Q / 2; width],
+                time_quantum_micros: 100,
+            };
+            if prepared {
+                Ok(Configs::SsmPrepared(
+                    PreparedDiagonalSsmConfigV1::new(cfg)
+                        .map_err(|error| format!("prepared SSM: {error:?}"))?,
+                ))
+            } else {
+                cfg.digest()
+                    .map_err(|error| format!("SSM config: {error:?}"))?;
+                Ok(Configs::SsmLegacy(cfg))
+            }
+        }
+        "min_gru" => {
+            let cfg = LowRankMinGruConfigV1 {
+                base,
+                rank: 1,
+                gate_input_q24: vec![0; width],
+                gate_output_q24: vec![0; width],
+                candidate_input_q24: vec![0; width],
+                candidate_output_q24: vec![0; width],
+                gate_bias_q24: vec![0; width],
+                candidate_bias_q24: vec![0; width],
+            };
+            let params = cfg
+                .temporal_parameter_count()
+                .map_err(|error| format!("minGRU count: {error:?}"))?;
+            if prepared {
+                Ok(Configs::MinGruPrepared(
+                    Box::new(
+                        PreparedLowRankMinGruConfigV1::new(cfg)
+                            .map_err(|error| format!("prepared minGRU: {error:?}"))?,
+                    ),
+                    params,
+                ))
+            } else {
+                cfg.digest()
+                    .map_err(|error| format!("minGRU config: {error:?}"))?;
+                Ok(Configs::MinGruLegacy(Box::new(cfg), params))
+            }
+        }
+        _ => Err("unknown fixture mechanism arm".to_owned()),
+    }
 }
 
 fn parse_trace(bytes: &[u8]) -> Result<MechanismTraceV1, String> {
@@ -399,8 +469,10 @@ fn run() -> Result<(), String> {
     let bytes = fs::read(trace_path).map_err(|error| format!("trace file: {error}"))?;
     let trace_digest = Digest32::of_bytes(&bytes);
     let trace = parse_trace(&bytes)?;
-    let mut configs = make_configs(trace.width)?;
-    configs.prepared_mode = prepared_mode;
+    let preparation_started = Instant::now();
+    let configs = make_configs(trace.width, &arm, prepared_mode)?;
+    let model_config_setup_micros =
+        u64::try_from(preparation_started.elapsed().as_micros()).unwrap_or(u64::MAX);
     let mut states = ActiveState::new(&arm, cells)?;
     let mut frontiers = vec![Digest32::ZERO; cells];
     let mut samples = Vec::with_capacity(cells * trace.events.len());
@@ -430,9 +502,10 @@ fn run() -> Result<(), String> {
         "ndu_eligible": false,
         "trained_model": false,
         "all_model_parameter_budgets_matched": false,
-        "temporal_parameter_count_only": if arm == "min_gru" {
-            Some(configs.min_gru.temporal_parameter_count().map_err(|error| format!("{error:?}"))?)
-        } else { None },
+        "temporal_parameter_count_only": configs.temporal_parameter_count_only(),
+        "single_selected_config_resident": true,
+        "simultaneous_legacy_and_prepared_config_resident": false,
+        "model_config_setup_micros": model_config_setup_micros,
         "state_persistence_measured": false,
         "microbatch_and_gpu_measured": false,
         "artifact_provenance_verified": false,
@@ -514,23 +587,69 @@ mod tests {
     }
 
     #[test]
-    fn every_arm_accepts_the_exact_same_32_dimensional_trace() {
+    fn every_arm_accepts_same_trace_with_exactly_one_selected_mode() {
         let trace = parse_trace(&bytes(&sample_trace())).expect("valid 32D two-tick trace");
-        let configs = make_configs(trace.width).expect("valid mechanisms");
-        let v1 = configs.v1.digest().expect("v1 config digest");
-        let v2 = configs.v2.digest().expect("v2 config digest");
-        assert_ne!(v1, v2);
-        assert_eq!(configs.v2.populations.len(), 2);
-        assert_eq!(configs.v2.global_top_k, 3);
-        for arm in ["v1", "v2", "v3", "ssm", "min_gru"] {
-            let mut states = ActiveState::new(arm, 64).expect("valid arm");
-            for row in &trace.events {
-                let input = request_for(row, 7);
-                let frontier = states
-                    .apply(7, &input, &configs)
-                    .expect("arm must process same Q24 trace");
-                assert!(!frontier.is_zero());
+        let v1 = make_configs(trace.width, "v1", false).expect("V1");
+        let v2 = make_configs(trace.width, "v2", false).expect("V2");
+        match (&v1, &v2) {
+            (Configs::V1(a), Configs::V2Legacy(b)) => {
+                assert_ne!(a.digest().expect("V1"), b.digest().expect("V2"));
+                assert_eq!(b.populations.len(), 2);
+                assert_eq!(b.global_top_k, 3);
             }
+            _ => panic!("incorrect selected model"),
+        }
+        for arm in ["v1", "v2", "v3", "ssm", "min_gru"] {
+            for mode in [false, true] {
+                let config = make_configs(trace.width, arm, mode).expect("one selected model");
+                assert_eq!(config.is_prepared(), mode && arm != "v1");
+                let mut states = ActiveState::new(arm, 64).expect("valid arm");
+                for row in &trace.events {
+                    let input = request_for(row, 7);
+                    let frontier = states
+                        .apply(7, &input, &config)
+                        .expect("arm must process same Q24 trace");
+                    assert!(!frontier.is_zero());
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn mismatched_selected_model_and_checkpoint_state_reject() {
+        let sample = sample_trace();
+        let input = request_for(&sample.events[0], 7);
+        let v2_legacy = make_configs(32, "v2", false).expect("V2 legacy");
+        let v2_prepared = make_configs(32, "v2", true).expect("V2 prepared");
+        assert!(matches!(v2_legacy, Configs::V2Legacy(_)));
+        assert!(matches!(v2_prepared, Configs::V2Prepared(_)));
+        assert!(make_configs(32, "unknown", true).is_err());
+        let mut v3 = ActiveState::new("v3", 64).expect("V3");
+        assert!(v3.apply(7, &input, &v2_prepared).is_err());
+        let mut ssm = ActiveState::new("ssm", 64).expect("SSM");
+        assert!(ssm.apply(7, &input, &v2_legacy).is_err());
+    }
+
+    #[test]
+    fn isolated_legacy_and_prepared_modes_produce_identical_frontiers() {
+        let trace = parse_trace(&bytes(&sample_trace())).expect("valid input");
+        for arm in ["v1", "v2", "v3", "ssm", "min_gru"] {
+            let mut frontier = Vec::new();
+            for mode in [false, true] {
+                let config = make_configs(trace.width, arm, mode).expect("one selected model");
+                let mut state = ActiveState::new(arm, 64).expect("model state");
+                let mut latest = Digest32::ZERO;
+                for row in &trace.events {
+                    latest = state
+                        .apply(7, &request_for(row, 7), &config)
+                        .expect("same Q24 input");
+                }
+                frontier.push(latest);
+            }
+            assert_eq!(
+                frontier[0], frontier[1],
+                "{arm}: different checkpoint digest"
+            );
         }
     }
 
