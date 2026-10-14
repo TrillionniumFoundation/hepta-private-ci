@@ -101,8 +101,18 @@ def threeway_prequential_audit(
     artifacts = [snapshots[role]['artifact_digest'] for role in ROLES]
     if len(set(artifacts)) != 3:
         raise ValueError('no-change, frozen and learned artifacts must be distinct')
-    frozen_digest = snapshots['frozen_head'].get('head_digest')
-    head_before = snapshots['learned_head'].get('head_digests_by_row')
+    # A changed Encoder, feature normalization, input formatting or runtime
+    # can manufacture a "learning" lift even with identical Head weights.
+    # Frozen and learned Head must bind the same exact frozen features.
+    frozen = snapshots['frozen_head']
+    learned = snapshots['learned_head']
+    for field in ('encoder_bundle_sha256', 'feature_pipeline_sha256',
+                  'runtime_profile_sha256', 'input_contract_sha256'):
+        left, right = frozen.get(field), learned.get(field)
+        if not is_digest(left) or not is_digest(right) or left != right:
+            raise ValueError(f'Frozen/Learned feature-runtime mismatch: {field}')
+    frozen_digest = frozen.get('head_digest')
+    head_before = learned.get('head_digests_by_row')
     if snapshots['learned_head'].get('initial_head_digest') != frozen_digest:
         raise ValueError('learned and frozen Heads lack identical initialization')
     if (not is_digest(frozen_digest) or
@@ -117,6 +127,11 @@ def threeway_prequential_audit(
     ordered, windows = _require_timeline(rows)
     if head_before[ordered[0]] != frozen_digest:
         raise ValueError('first future learned Head must equal frozen initialization')
+    first_index = ordered[0]
+    if not torch.allclose(
+            tensors['frozen_head'][first_index],
+            tensors['learned_head'][first_index], atol=1e-7, rtol=0):
+        raise ValueError('first future matched Head prediction differs before any learning')
     records = journal.get('records')
     updates = bundle.get('postlabel_updates')
     if not isinstance(records, list) or len(records) != len(ordered):

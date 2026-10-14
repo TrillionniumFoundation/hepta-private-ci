@@ -34,6 +34,10 @@ def b_fixture():
             for idx, row in enumerate(rows):
                 if row['split'] == 'ood':
                     p[idx] = [.5, .5]
+                elif row['row_id'] == 'future-0':
+                    # The first future event must match the untouched
+                    # Frozen Head before any label is available.
+                    p[idx] = ([.7, .3] if row['label'] == 0 else [.3, .7])
         snapshots[role] = {
             'role': role, 'dataset_sha256': D('d'),
             'source_commit': 'e' * 40,
@@ -41,6 +45,13 @@ def b_fixture():
             'artifact_digest': D(sha),
             'row_ids': [r['row_id'] for r in rows], 'probabilities': p,
         }
+        if role in ('frozen_head', 'learned_head'):
+            snapshots[role].update({
+                'encoder_bundle_sha256': D('1'),
+                'feature_pipeline_sha256': D('2'),
+                'runtime_profile_sha256': D('3'),
+                'input_contract_sha256': D('4'),
+            })
     snapshots['frozen_head']['head_digest'] = D('f')
     snapshots['learned_head']['initial_head_digest'] = D('f')
     snapshots['learned_head']['head_digests_by_row'] = [D('9') for _ in rows]
@@ -320,3 +331,28 @@ def test_b_postlabel_chain_rejects_spoofed_learning(mutation):
     with pytest.raises(ValueError):
         threeway_prequential_audit(
             rows, D('d'), bundle, bootstrap=100, min_future_groups=2)
+
+
+def test_b_rejects_different_initial_prediction_despite_matching_weights():
+    rows, evidence = b_fixture()
+    evidence['snapshots']['learned_head']['probabilities'][8] = [.95, .05]
+    # An update to its signed self-report would still not explain a
+    # disagreement before the first future supervision is available.
+    evidence['prelabel_journal']['records'][0]['prediction_digests']['learned_head'] = (
+        canonical_digest({'row_id': rows[8]['row_id'],
+                          'probabilities': [.95, .05]}))
+    with pytest.raises(ValueError, match='prediction differs'):
+        threeway_prequential_audit(
+            rows, D('d'), evidence, bootstrap=100, min_future_groups=2)
+
+
+@pytest.mark.parametrize('field', [
+    'encoder_bundle_sha256', 'feature_pipeline_sha256',
+    'runtime_profile_sha256', 'input_contract_sha256',
+])
+def test_b_refuses_changed_feature_pipeline_or_runtime(field):
+    rows, evidence = b_fixture()
+    evidence['snapshots']['learned_head'][field] = D('e')
+    with pytest.raises(ValueError, match='feature-runtime mismatch'):
+        threeway_prequential_audit(
+            rows, D('d'), evidence, bootstrap=100, min_future_groups=2)

@@ -315,3 +315,18 @@ B window scores now report both `brier` (multiclass sum) and
 `brier_normalized` (divided by option count); grouped paired deltas
 always use the latter. Do not rank reports using incompatible Brier
 units.
+
+
+### B: matched first-prediction and immutable feature/runtime identity
+
+Frozen and Learned controls now must pin identical
+`encoder_bundle_sha256`, `feature_pipeline_sha256`,
+`runtime_profile_sha256` and `input_contract_sha256`. The very
+first future event must have the same probability distribution for
+the learned Head as its untouched same-initialization Frozen Head
+(up to 1e-7 float tolerance), or no learning claim is made. Digest
+agreement by itself is insufficient: this catches alternate pooling,
+input layouts, or output heads masquerading as online plasticity.
+Subsequent Head changes require the separately chained post-label
+journal. The independent production no-change arm is NOT forced to
+share these artifacts.
