@@ -1,0 +1,128 @@
+name: MemoryCell external original Reader artifact attestation
+on:
+  push:
+    branches:
+      - codex/memorycell-reader-external-artifact-admission-20261014
+    paths:
+      - "scripts/memory_cell/reader_external_artifact_audit.py"
+      - "scripts/memory_cell/test_reader_external_artifact_audit.py"
+      - ".github/workflows/hepta-memory-reader-external-artifact-audit.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/reader_external_artifact_audit.py"
+      - "scripts/memory_cell/test_reader_external_artifact_audit.py"
+      - ".github/workflows/hepta-memory-reader-external-artifact-audit.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: reader-external-source-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+env:
+  PYTHONPATH: scripts/memory_cell
+  SOURCE_RUN_ID: "38538369649"
+  ORIGINAL_SOURCE: "45388fefac75b08f2715584abd7062699bd461c0"
+
+jobs:
+  exact-source-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Verify external digest and original receipt adversarial tests
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/memory_cell/reader_external_artifact_audit.py \
+            scripts/memory_cell/test_reader_external_artifact_audit.py
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p test_reader_external_artifact_audit.py -v
+      - name: Required scoped Ruff format; no waiver
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/reader_external_artifact_audit.py \
+            scripts/memory_cell/test_reader_external_artifact_audit.py
+      - name: Preserve exact format diagnostics on source failure
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-archive-format
+          git rev-parse HEAD > /tmp/reader-archive-format/tested-commit.txt
+          if command -v uv >/dev/null; then
+            uv run --frozen --project scripts ruff format --diff \
+              scripts/memory_cell/reader_external_artifact_audit.py \
+              scripts/memory_cell/test_reader_external_artifact_audit.py \
+              > /tmp/reader-archive-format/ruff.diff || true
+            cat /tmp/reader-archive-format/ruff.diff
+          fi
+          (cd /tmp/reader-archive-format && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: memory-reader-external-source-failure
+          path: /tmp/reader-archive-format
+          if-no-files-found: warn
+
+  original-github-artifact-audit:
+    needs: exact-source-tests
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Read original generating-run metadata from GitHub, not from a shard
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/original-reader-artifacts /tmp/external-audit
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID" \
+            > /tmp/external-audit/original-run.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$SOURCE_RUN_ID/artifacts?per_page=100" \
+            > /tmp/external-audit/original-artifacts.json
+          python3 scripts/memory_cell/reader_external_artifact_audit.py plan \
+            /tmp/external-audit/original-run.json \
+            /tmp/external-audit/original-artifacts.json \
+            /tmp/external-audit/download-pins.tsv \
+            --expected-run-id "$SOURCE_RUN_ID" --expected-source "$ORIGINAL_SOURCE"
+      - name: Independently download EVERY published original ZIP and verify SHA256
+        run: |
+          set -euo pipefail
+          while IFS=$'\t' read -r artifact_id expected_sha; do
+            test -n "$artifact_id"
+            test -n "$expected_sha"
+            archive="/tmp/original-reader-artifacts/artifact-$artifact_id.zip"
+            gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" > "$archive"
+            printf '%s  %s\n' "$expected_sha" "$archive" | sha256sum --check --strict
+          done < /tmp/external-audit/download-pins.tsv
+      - name: Verify complete inner manifests and classify actual host/model attempts
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/reader_external_artifact_audit.py audit \
+            /tmp/external-audit/original-run.json \
+            /tmp/external-audit/original-artifacts.json \
+            /tmp/external-audit/partial-run-disposition.json \
+            --zip-dir /tmp/original-reader-artifacts \
+            --expected-run-id "$SOURCE_RUN_ID" --expected-source "$ORIGINAL_SOURCE"
+          git rev-parse HEAD > /tmp/external-audit/auditor-commit.txt
+          printf '%s\n' "$ORIGINAL_SOURCE" > /tmp/external-audit/original-generation-commit.txt
+          (cd /tmp/external-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-external-original-reader-shard-disposition
+          path: /tmp/external-audit
+          if-no-files-found: error
