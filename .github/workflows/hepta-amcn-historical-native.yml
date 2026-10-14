@@ -1,0 +1,115 @@
+name: Hepta AMCN real archived-Encoder historical diagnosis (NO-GO)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/amcn-v1/**"
+      - ".github/workflows/hepta-amcn-historical-native.yml"
+      - "experiments/shared_stem_cell/execution.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: amcn-real-historical-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  actual-original-weight-shadow:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      PYTHONPATH: "qualification/amcn-v1:scripts/memory_cell:."
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned original model and read-only scoring runtime
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-amcn-real-results
+          python3 -m venv /tmp/hepta-amcn-real-venv
+          P=/tmp/hepta-amcn-real-venv/bin
+          "$P/pip" install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/hepta-amcn-real-results/install-torch.log 2>&1
+          "$P/pip" install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/hepta-amcn-real-results/install-worker.log 2>&1
+          "$P/pip" check
+          "$P/pip" freeze > /tmp/hepta-amcn-real-results/environment.txt
+      - name: Fetch the real previously archived model bytes by original pinned SHA
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/hepta-amcn-original.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/hepta-amcn-original.zip | sha256sum -c -
+      - name: Freeze disjoint source groups and physically prepare original HF material
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-amcn-real-venv/bin/python
+          "$P" qualification/amcn-v1/amcn_historical_trial.py prepare \
+            /tmp/hepta-amcn-original.zip /tmp/hepta-amcn-private-stage \
+            > /tmp/hepta-amcn-real-results/preparation.stdout.json
+      - name: Actually execute frozen Encoder and TRAIN-only SemanticMemoryCell
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-amcn-real-venv/bin/python
+          /usr/bin/time -v -o /tmp/hepta-amcn-real-results/training-process-resources.txt \
+            "$P" qualification/amcn-v1/amcn_historical_trial.py train \
+            /tmp/hepta-amcn-private-stage \
+            /tmp/hepta-amcn-private-stage/public-input.json \
+            /tmp/hepta-amcn-private-stage/train-labels.json \
+            /tmp/hepta-amcn-private-stage/sealed-head \
+            > /tmp/hepta-amcn-real-results/train.stdout.json
+      - name: Open weak publisher labels after original model predictions are sealed
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-amcn-real-venv/bin/python
+          "$P" qualification/amcn-v1/amcn_historical_trial.py score \
+            /tmp/hepta-amcn-private-stage/public-input.json \
+            /tmp/hepta-amcn-private-stage/withheld-labels.json \
+            /tmp/hepta-amcn-private-stage/sealed-head \
+            /tmp/hepta-amcn-real-results/score.json \
+            > /tmp/hepta-amcn-real-results/score.stdout.json
+          "$P" - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path("/tmp/hepta-amcn-real-results/score.json")
+          report = json.loads(path.read_text())
+          assert report["production_accepted"] is False
+          assert report["metrics"]["full_Reader_responses"] == 0
+          assert report["metrics"]["true_future_calendar_windows"] == 0
+          assert report["metrics"]["independent_evaluator_accepted"] is False
+          assert report["metrics"]["score_unit"] == "source-selection-pair-not-reader-answer"
+          PY
+      - name: Retain source identity, status and failure, never copied source/model bytes
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-amcn-real-results/source
+          git rev-parse HEAD > /tmp/hepta-amcn-real-results/source/exact-head.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-amcn-real-results/source/exact-tree.txt
+          printf '%s\n' 'production_accepted=false' 'source_family_independence_unverified=true' \
+            'published_weak_support_only=true' 'future_calendar_windows=0' \
+            'original_pretrained_model_binary_is_not_uploaded=true' \
+            > /tmp/hepta-amcn-real-results/nonpromotion.txt
+          cp qualification/amcn-v1/amcn_historical_trial.py \
+             qualification/amcn-v1/amcn_native.py \
+             qualification/amcn-v1/amcn_learning.py \
+             .github/workflows/hepta-amcn-historical-native.yml \
+             /tmp/hepta-amcn-real-results/source/
+          (cd /tmp/hepta-amcn-real-results && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-amcn-real-historical-encoder-not-independent
+          path: /tmp/hepta-amcn-real-results
+          if-no-files-found: error
