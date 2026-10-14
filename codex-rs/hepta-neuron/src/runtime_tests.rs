@@ -514,3 +514,201 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
         predecessor.checkpoint_digest
     );
 }
+
+
+// This feature-only test uses the actual NeuronRuntime journal and independent
+// AnchorWitnessStore, not merely an inference.control receipt fixture.
+// A pending Journal commit may otherwise return its cached model output without
+// calling InferenceControlModelPort again, so the whole tick needs source fencing.
+#[cfg(feature = "amcn-shadow")]
+mod amcn_pending_runtime {
+    use super::*;
+
+    use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+
+    use codex_hepta_infer_core::{
+        NeuronFeatureObservationV1, NeuronFeatureReceiptV1, NeuronFeatureRequestV1,
+        NeuronFeatureTerminalStatusV1, NeuronModelRuntimeTupleV1,
+        build_neuron_feature_receipt_v1,
+    };
+    use crate::{
+        AmcnFencedModelBindingV1, AmcnSourceArtifactFence, NeuronInferenceControlPort,
+        NeuronModelError,
+    };
+
+    struct LiveSourceGate {
+        source_lease_current: Arc<AtomicBool>,
+        checks: Arc<AtomicUsize>,
+    }
+
+    impl AmcnSourceArtifactFence for LiveSourceGate {
+        fn with_fenced_candidate<T, E>(
+            &mut self,
+            _binding: &AmcnFencedModelBindingV1,
+            _request: &NeuronModelRequestV1,
+            action: impl FnOnce() -> Result<T, E>,
+        ) -> Result<T, E>
+        where
+            E: From<NeuronModelError>,
+        {
+            self.checks.fetch_add(1, Ordering::SeqCst);
+            if !self.source_lease_current.load(Ordering::SeqCst) {
+                return Err(E::from(NeuronModelError::Rejected));
+            }
+            // A production implementation MUST hold the actual source/Head/
+            // witness lock here. This fixture tests the *requirement to
+            // recheck* before pending reconciliation, not owner authority.
+            action()
+        }
+    }
+
+    struct OwnerControl {
+        config: NeuronRuntimeConfigV1,
+        calls: Arc<AtomicUsize>,
+    }
+
+    impl NeuronInferenceControlPort for OwnerControl {
+        fn execute_feature(
+            &mut self,
+            request: &NeuronFeatureRequestV1,
+        ) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
+            self.calls.fetch_add(1, Ordering::SeqCst);
+            let config = &self.config;
+            let runtime_tuple = NeuronModelRuntimeTupleV1 {
+                model_id: request.model_id.clone(),
+                model_manifest_digest: config.model_manifest_digest,
+                weights_digest: request.weights_digest,
+                tokenizer_digest: config.tokenizer_digest,
+                preprocessor_digest: config.preprocessor_digest,
+                quantization_digest: config.quantization_digest,
+                runtime_digest: config.runtime_digest,
+                device_digest: config.device_digest,
+            };
+            let observation = NeuronFeatureObservationV1 {
+                encoder_digest: request.encoder_digest,
+                head_digest: request.head_digest,
+                drive_q24: (0..request.expected_output_width)
+                    .map(|index| match index { 0 => Q, 1 => Q / 2, _ => 0 })
+                    .collect(),
+                prediction_q24: vec![0; request.expected_output_width],
+                observed_memory_bytes: 4096,
+                transient_allocation_bytes: 8192,
+                queue_age_micros: 7,
+                latency_micros: 50,
+                status: NeuronFeatureTerminalStatusV1::Succeeded,
+            };
+            build_neuron_feature_receipt_v1(request, runtime_tuple, observation)
+                .map_err(|_| NeuronModelError::Rejected)
+        }
+    }
+
+    fn bound(request: &NeuronModelRequestV1) -> AmcnFencedModelBindingV1 {
+        AmcnFencedModelBindingV1 {
+            scope: checked(StableId::new("amcn:test-owner-scope")),
+            request_id: request.request_id.clone(),
+            config_id: request.config_id.clone(),
+            generation: request.generation,
+            model_id: request.model_id.clone(),
+            encoder_digest: request.encoder_digest,
+            head_digest: request.head_digest,
+            weights_digest: request.weights_digest,
+            input_digest: request.input_digest,
+            expected_output_width: request.expected_output_width,
+            artifact_manifest_digest: Digest32::of_bytes(b"actual-param-lineage"),
+            source_frontier_digest: Digest32::of_bytes(b"authoritative-source-cut"),
+            withdrawal_registry_head_digest: Digest32::of_bytes(b"withdrawal-head"),
+            quarantine_journal_head_digest: Digest32::of_bytes(b"monotonic-quarantine-head"),
+            runtime_anchor_digest: Digest32::of_bytes(b"independent-runtime-anchor"),
+        }
+    }
+
+    #[test]
+    fn amcn_shadow_fence_runtime_pending_witness_reconciles_only_after_new_source_lease() {
+        let fixture = Fixture::new();
+        let native = native_config();
+        let config = runtime_config(&native);
+        let witness = MemoryWitness::default();
+        let mut runtime = checked(NeuronRuntime::bootstrap(
+            fixture.file(), native, scope(), 16, config.clone(), witness.clone(),
+        ));
+        let request_input = input(1, Digest32::ZERO);
+        let original_request = checked(runtime.model_request(&request_input));
+        let binding = bound(&original_request);
+        let calls = Arc::new(AtomicUsize::new(0));
+        let checks = Arc::new(AtomicUsize::new(0));
+        let current = Arc::new(AtomicBool::new(true));
+        let mut fence = LiveSourceGate {
+            source_lease_current: Arc::clone(&current),
+            checks: Arc::clone(&checks),
+        };
+        let mut control = OwnerControl {
+            config, calls: Arc::clone(&calls),
+        };
+
+        // Model execution and journal commit really succeed; the separately
+        // held witness fails after commit and leaves a cached pending receipt.
+        witness.fail_next_compare_and_swap();
+        let first = runtime.tick_amcn_fenced(
+            &mut fence, &mut control, &binding, request_input.clone(),
+        );
+        assert!(matches!(first, Err(NeuronRuntimeError::WitnessAfterCommit { .. })));
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+        assert_eq!(checked(witness.current()), None);
+
+        // Revoke the original source between model execution and retry.
+        current.store(false, Ordering::SeqCst);
+        let blocked = runtime.tick_amcn_fenced(
+            &mut fence, &mut control, &binding, request_input.clone(),
+        );
+        assert_eq!(
+            blocked, Err(NeuronRuntimeError::Model(NeuronModelError::Rejected)),
+        );
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+        assert_eq!(checked(witness.current()), None);
+        assert_eq!(checks.load(Ordering::SeqCst), 2);
+
+        // Fixture-only restoration of its valid source lease lets the pending
+        // witness reconcile WITHOUT re-running the model or reusing an
+        // unchecked cached output. Real owner tombstones must remain monotonic.
+        current.store(true, Ordering::SeqCst);
+        let reconciled = checked(runtime.tick_amcn_fenced(
+            &mut fence, &mut control, &binding, request_input,
+        ));
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+        let anchor = checked(witness.current()).expect("witness reconciled");
+        assert_eq!(anchor.checkpoint_digest, reconciled.tick.checkpoint_after);
+        assert_eq!(checks.load(Ordering::SeqCst), 3);
+        assert!(!reconciled.signal.authority.grants_any());
+    }
+
+    #[test]
+    fn amcn_shadow_fence_runtime_rejects_stale_binding_before_journal_or_model() {
+        let fixture = Fixture::new();
+        let native = native_config();
+        let config = runtime_config(&native);
+        let mut runtime = checked(NeuronRuntime::bootstrap(
+            fixture.file(), native, scope(), 16, config.clone(),
+            MemoryWitness::default(),
+        ));
+        let request_input = input(1, Digest32::ZERO);
+        let request = checked(runtime.model_request(&request_input));
+        let mut bad_binding = bound(&request);
+        bad_binding.head_digest = Digest32::of_bytes(b"replaced-head");
+        let calls = Arc::new(AtomicUsize::new(0));
+        let checks = Arc::new(AtomicUsize::new(0));
+        let mut fence = LiveSourceGate {
+            source_lease_current: Arc::new(AtomicBool::new(true)),
+            checks: Arc::clone(&checks),
+        };
+        let mut control = OwnerControl { config, calls: Arc::clone(&calls) };
+        assert_eq!(
+            runtime.tick_amcn_fenced(
+                &mut fence, &mut control, &bad_binding, request_input,
+            ),
+            Err(NeuronRuntimeError::Model(NeuronModelError::Rejected)),
+        );
+        assert_eq!(calls.load(Ordering::SeqCst), 0);
+        assert_eq!(checks.load(Ordering::SeqCst), 0);
+        assert_eq!(checked(runtime.current_anchor()), None);
+    }
+}

@@ -84,15 +84,18 @@ struct TestFence {
 }
 
 impl AmcnSourceArtifactFence for TestFence {
-    fn with_fenced_candidate<T>(
+    fn with_fenced_candidate<T, E>(
         &mut self,
         bound: &AmcnFencedModelBindingV1,
         request: &NeuronModelRequestV1,
-        action: impl FnOnce() -> Result<T, NeuronModelError>,
-    ) -> Result<T, NeuronModelError> {
+        action: impl FnOnce() -> Result<T, E>,
+    ) -> Result<T, E>
+    where
+        E: From<NeuronModelError>,
+    {
         // A POSIX/same-process mock of the REQUIRED host transaction fence.
         // This is not a CognitiveStore or persistent withdrawal witness.
-        let locked = self.state.lock().map_err(|_| NeuronModelError::Indeterminate)?;
+        let locked = self.state.lock().map_err(|_| E::from(NeuronModelError::Indeterminate))?;
         if locked.withdrawn
             || locked.pending_recovery
             || locked.scope != bound.scope
@@ -104,7 +107,7 @@ impl AmcnSourceArtifactFence for TestFence {
             || locked.manifest != bound.artifact_manifest_digest
             || locked.runtime_anchor != bound.runtime_anchor_digest
         {
-            return Err(NeuronModelError::Rejected);
+            return Err(E::from(NeuronModelError::Rejected));
         }
         self.visits.fetch_add(1, Ordering::SeqCst);
         // Deliberately hold locked across the REAL inference.control dispatch.
@@ -218,6 +221,94 @@ impl Scenario {
     ) -> Result<NeuronModelOutputV1, NeuronModelError> {
         self.execute(bound, request, NeuronFeatureTerminalStatusV1::Succeeded, false)
     }
+}
+
+
+#[test]
+fn amcn_shadow_fence_concurrent_source_writer_waits_for_actual_feature_completion() {
+    use std::sync::mpsc::{channel, RecvTimeoutError, TryRecvError};
+    use std::thread;
+    use std::time::Duration;
+
+    struct PausingControl {
+        delegate: Control,
+        entered: std::sync::mpsc::Sender<()>,
+        release: std::sync::mpsc::Receiver<()>,
+    }
+    impl NeuronInferenceControlPort for PausingControl {
+        fn execute_feature(
+            &mut self,
+            request: &NeuronFeatureRequestV1,
+        ) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
+            self.entered.send(()).map_err(|_| NeuronModelError::Indeterminate)?;
+            self.release.recv_timeout(Duration::from_secs(5))
+                .map_err(|_| NeuronModelError::Indeterminate)?;
+            self.delegate.execute_feature(request)
+        }
+    }
+
+    let case = Scenario::new();
+    let request = request();
+    let bound = binding(&request, &case.snapshot());
+    let (entered_tx, entered_rx) = channel::<()>();
+    let (release_tx, release_rx) = channel::<()>();
+    let model_source = Arc::clone(&case.source);
+    let writer_source = Arc::clone(&case.source);
+    let model_calls = Arc::clone(&case.model_calls);
+    let visits = Arc::clone(&case.visits);
+    let req_for_thread = request.clone();
+    let bound_for_thread = bound.clone();
+
+    let model_thread = thread::spawn(move || {
+        let mut fence = TestFence { state: Arc::clone(&model_source), visits };
+        let delegate = Control {
+            source: model_source,
+            calls: model_calls,
+            status: NeuronFeatureTerminalStatusV1::Succeeded,
+            corrupt: false,
+        };
+        let mut control = PausingControl {
+            delegate,
+            entered: entered_tx,
+            release: release_rx,
+        };
+        AmcnFencedNeuronModelPort::new(&mut fence, &mut control, bound_for_thread)
+            .execute(&req_for_thread)
+    });
+
+    entered_rx.recv_timeout(Duration::from_secs(5))
+        .expect("real feature execution should start under the fence");
+    let (writer_ready_tx, writer_ready_rx) = channel::<()>();
+    let (writer_committed_tx, writer_committed_rx) = channel::<()>();
+    let writer_thread = thread::spawn(move || {
+        writer_ready_tx.send(()).expect("writer ready");
+        let mut state = writer_source.lock().expect("source lock");
+        state.withdrawn = true;
+        writer_committed_tx.send(()).expect("withdrawal committed");
+    });
+    writer_ready_rx.recv_timeout(Duration::from_secs(5)).expect("writer started");
+
+    assert!(
+        matches!(case.source.try_lock(), Err(TryLockError::WouldBlock)),
+        "source-state fence must remain locked during the model invocation"
+    );
+    assert!(
+        matches!(writer_committed_rx.try_recv(), Err(TryRecvError::Empty)),
+        "concurrent revocation must not publish before current call exits"
+    );
+    release_tx.send(()).expect("release actual feature execution");
+    let answer = model_thread.join().expect("model thread should not panic");
+    assert!(answer.is_ok(), "the already-fenced call can finish its generation");
+    writer_thread.join().expect("writer completes after model releases lease");
+    assert!(
+        !matches!(writer_committed_rx.recv_timeout(Duration::from_secs(1)),
+                  Err(RecvTimeoutError::Timeout)),
+        "writer must publish after the model releases its source lease"
+    );
+    let call_count = case.model_calls.load(Ordering::SeqCst);
+    assert_eq!(call_count, 1);
+    assert_eq!(case.success(bound, &request), Err(NeuronModelError::Rejected));
+    assert_eq!(case.model_calls.load(Ordering::SeqCst), call_count);
 }
 
 #[test]

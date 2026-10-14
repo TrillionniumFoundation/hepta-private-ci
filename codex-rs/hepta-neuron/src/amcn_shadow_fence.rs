@@ -13,8 +13,9 @@
 use codex_hepta_types::{Digest32, Generation, StableId};
 
 use crate::{
-    InferenceControlModelPort, NeuronInferenceControlPort, NeuronModelError, NeuronModelOutputV1,
-    NeuronModelPort, NeuronModelRequestV1,
+    AnchorWitnessStore, InferenceControlModelPort, NeuronInferenceControlPort, NeuronModelError,
+    NeuronModelOutputV1, NeuronModelPort, NeuronModelRequestV1, NeuronRuntime,
+    NeuronRuntimeError, NeuronRuntimeOutputV1, NeuronTickInputV1,
 };
 
 /// Feature flag guards compilation, not external provenance or source authority.
@@ -83,12 +84,14 @@ impl AmcnFencedModelBindingV1 {
 /// invoking the action. The owner must not release its fence early, even on
 /// model failure. A test-double implementation is NOT production admission.
 pub trait AmcnSourceArtifactFence {
-    fn with_fenced_candidate<T>(
+    fn with_fenced_candidate<T, E>(
         &mut self,
         binding: &AmcnFencedModelBindingV1,
         request: &NeuronModelRequestV1,
-        action: impl FnOnce() -> Result<T, NeuronModelError>,
-    ) -> Result<T, NeuronModelError>;
+        action: impl FnOnce() -> Result<T, E>,
+    ) -> Result<T, E>
+    where
+        E: From<NeuronModelError>;
 }
 
 /// Calls the existing Neuron inference.control port *inside* a source owner's
@@ -130,6 +133,39 @@ impl<F: AmcnSourceArtifactFence, P: NeuronInferenceControlPort> NeuronModelPort
             // Reuse the real receipt verifier, terminal-status checks and
             // model-output decoder. No parallel fake model port.
             InferenceControlModelPort::new(control).execute(request)
+        })
+    }
+}
+
+/// REQUIRED complement to the model-port fence: keep one owner lease across
+/// the ENTIRE Neuron tick, including journal/Witness reconciliation.
+///
+/// NeuronRuntime::tick may return a previously journaled pending output *without
+/// making a new model call*. Guarding only InferenceControl.execute_feature
+/// cannot protect that replay: a withdrawal between the Journal commit and a
+/// retry could return stale output despite a now-revoked Head. This wrapper
+/// checks the exact request and holds the source/quarantine/Runtime fence
+/// across both normal execution and the pending-Witness reconciliation path.
+///
+/// No production entrypoint calls this method automatically. The external
+/// CognitiveStore/Artifacts owner must implement the fenced trait and enforce
+/// durable monotonic state across the entire closure; the Rust test-double
+/// Mutex is not a production source writer lock or an authorization signature.
+impl<W: AnchorWitnessStore> NeuronRuntime<W> {
+    pub fn tick_amcn_fenced<F: AmcnSourceArtifactFence, P: NeuronInferenceControlPort>(
+        &mut self,
+        fence: &mut F,
+        control: &mut P,
+        binding: &AmcnFencedModelBindingV1,
+        input: NeuronTickInputV1,
+    ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        let request = self.model_request(&input)?;
+        binding.validate_request(&request)?;
+        fence.with_fenced_candidate(binding, &request, || {
+            // DO NOT call AmcnFencedNeuronModelPort here: that would acquire
+            // the same owner lock again. One outer fence covers the entire
+            // tick, including the branch returning an old pending receipt.
+            self.tick(&mut InferenceControlModelPort::new(control), input)
         })
     }
 }

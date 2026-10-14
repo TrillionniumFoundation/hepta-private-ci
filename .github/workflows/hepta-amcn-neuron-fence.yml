@@ -7,6 +7,7 @@ on:
       - "codex-rs/hepta-neuron/Cargo.toml"
       - "codex-rs/hepta-neuron/src/lib.rs"
       - "codex-rs/hepta-neuron/src/amcn_shadow_fence*.rs"
+      - "codex-rs/hepta-neuron/src/runtime_tests.rs"
       - ".github/workflows/hepta-amcn-neuron-fence.yml"
   workflow_dispatch:
 
@@ -49,6 +50,8 @@ jobs:
           cargo test --locked -p codex-hepta-neuron --features amcn-shadow \
             amcn_shadow_fence -- --nocapture --test-threads=1 \
             2>&1 | tee /tmp/amcn-rust-owner-fence/feature-tests.log
+          grep -Fq 'amcn_shadow_fence_runtime_pending_witness_reconciles_only_after_new_source_lease'             /tmp/amcn-rust-owner-fence/feature-tests.log
+          grep -Fq 'amcn_shadow_fence_concurrent_source_writer_waits_for_actual_feature_completion'             /tmp/amcn-rust-owner-fence/feature-tests.log
       - name: Ensure default Neuron crate still passes without shadow feature
         working-directory: codex-rs
         run: |
@@ -67,6 +70,7 @@ jobs:
              codex-rs/hepta-neuron/src/lib.rs \
              codex-rs/hepta-neuron/src/amcn_shadow_fence.rs \
              codex-rs/hepta-neuron/src/amcn_shadow_fence_tests.rs \
+             codex-rs/hepta-neuron/src/runtime_tests.rs \
              .github/workflows/hepta-amcn-neuron-fence.yml \
              /tmp/amcn-rust-owner-fence/source/
           printf '%s\n' \

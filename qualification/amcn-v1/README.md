@@ -316,6 +316,32 @@ The dedicated hepta-amcn-neuron-fence workflow retains the exact source HEAD,
 Rust/Cargo identity, raw test logs and a negative-production-authority receipt.
 No production neuron feature flag is changed or enabled in this PR.
 
+### Whole-tick fence for pending Journal/Witness reconciliation
+
+**Important recovery bypass fixed in the research integration:** NeuronRuntime.tick
+may return a cached pending journal output on retry after the model output was
+committed but its independent checkpoint Witness failed to CAS. Such a retry
+does not call the model and would evade a fence applied only to execute_feature.
+
+The opt-in NeuronRuntime.tick_amcn_fenced now acquires the same source/withdrawal/
+artifact quarantine/runtime-generation fence BEFORE examining or replaying
+pending state, and holds it until the entire Tick (model call, journal commit
+and Witness reconciliation) completes. A rejected or pending source withdrawal
+therefore cannot release a cached previous output. It reuses the existing
+InferenceControlModelPort *inside* the outer lease; attempting to wrap this in
+a second inner AmcnFencedNeuronModelPort would double-lock the owner.
+
+The feature-gated regression intentionally causes a real NeuronRuntime
+witness.compare_and_swap to fail AFTER a successful model inference/journal
+commit, revokes the source before the identical retry, and checks that the
+cached output is refused without re-invoking the model or reconciling Witness.
+A parallel two-thread test also proves that the source writer cannot acquire
+the test-double lock while the original inference_control call is in progress.
+These exercises use original Rust runtime and model-receipt validators, but the
+source-owner implementation remains an isolated Mutex fixture. A production
+deployment would have to make the fenced whole-tick method the only dispatch
+path and persist recovery/withdrawal decisions through its actual store owner.
+
 ## No-go and required production evidence
 
 Still missing: sufficient-evidence Reader certification, strong cached hybrid
