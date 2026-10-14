@@ -34,9 +34,10 @@ source-free durable recovery protocol.
    intent. No second DB, no new writer, no separate lifecycle/ledger service.
 2. The existing `HeptaEvidenceStore::prepare_execution_intent_v1` now commits
    **both** records under one `BEGIN IMMEDIATE` transaction, or neither.
-   Unchanged original occurrences are idempotent; changing target, generation,
-   fence, scope, epoch, payload or deadline collides rather than creating a new
-   effect. Digest-only orphans are NOT backfilled and are rejected for
+   Unchanged original occurrences are idempotent; within a fixed subject,
+   scope and operation, changing target, generation, fence, epoch, payload or
+   deadline collides rather than creating a new effect. Other subjects/scopes
+   are distinct identities, never silently reused. Digest-only orphans are NOT backfilled and are rejected for
    preparation/recovery, even after restart.
 3. `recover_execution_preparation_by_key_v1(key)` reconstructs the complete
    validated `ExecutionIntentV1` **without caller-provided intent text**, while
