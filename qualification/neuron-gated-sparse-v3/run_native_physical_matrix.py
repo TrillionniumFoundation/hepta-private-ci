@@ -16,6 +16,7 @@ import sys
 import time
 
 from candidate_inventory import verify_artifact
+from realized_budget_audit import audit as audit_realized_budget
 from native_float_gap import compare as floating_gap
 from head_q24_oracle import verify_native_head
 from matched_train import (CAPS, ARMS, sha_file, unique_json, require,
@@ -122,6 +123,15 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
         a0_trusted_public_key=a0_trusted_public_key,
         a0_expected_host_id=a0_expected_host_id,
         a0_max_age_seconds=a0_max_age_seconds)
+    # Independently account for *realized* private capacity before claiming a
+    # five-ceiling matrix. The synthetic canary often contains 20 files but
+    # only four unique effective models; this is explicitly reported, never
+    # silently described as five distinct capacity comparisons.
+    budget_realization = audit_realized_budget(
+        root, receipt_sha, synthetic_fixture_only=synthetic_canary)
+    require(budget_realization['production_qualification'] is False and
+            budget_realization['same_size_head_to_head_quality_claim_admissible'] is False,
+            'physical budget accounting attempted model promotion')
     models = receipt.get('models')
     require(type(models) is list and len(models) == 20, '20 physical trained arms required')
     bound = {}
@@ -260,6 +270,7 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
         'selected_executable_sha256': binary_sha,
         'same_frozen_trace_sha256': trace_sha,
         'training_receipt_sha256': receipt_sha,
+        'budget_realization': budget_realization,
         'frozen_a0_owner_revalidation': current_a0,
         'twenty_native_physical_model_executions': len(results),
         'forty_fresh_native_process_invocations': len(results)*2,
