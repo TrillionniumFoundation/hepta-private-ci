@@ -330,6 +330,7 @@ fn affinity_index_fills_batch_without_scanning_unrelated_scopes() {
     assert_eq!(q.pending(), 0);
     assert_eq!(q.active_lanes(), 0);
     assert!(q.physical_lanes.is_empty());
+    assert!(q.scope_lanes.is_empty());
 }
 
 #[test]
@@ -348,6 +349,7 @@ fn physical_affinity_index_cleans_up_after_expiry_and_cutover() {
     assert_eq!(result.batch.unwrap().requests[0].request_id, id("live"));
     assert_eq!(q.pending(), 0);
     assert!(q.physical_lanes.is_empty());
+    assert!(q.scope_lanes.is_empty());
 }
 
 #[test]
@@ -441,6 +443,7 @@ fn repeated_cross_scope_coalescing_never_accumulates_duplicate_queue_slots() {
         assert_eq!(q.pending(), 0);
         assert!(q.round_robin.len() <= 1);
         assert_eq!(q.round_robin_members.len(), q.round_robin.len());
+        assert!(q.scope_lanes.is_empty());
     }
 }
 
