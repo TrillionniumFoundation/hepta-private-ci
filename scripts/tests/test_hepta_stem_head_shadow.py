@@ -159,6 +159,20 @@ class HeadTests(unittest.TestCase):
             ]
             self.assertEqual(MOD.main(args), 0)
             self.assertTrue((root / "exp.manifest.json").exists())
+            manifest = json.loads((root / "exp.manifest.json").read_text())
+            import hashlib
+
+            for stem in ("learned", "frozen"):
+                self.assertEqual(
+                    manifest[stem + "_predictions_sha256_unverified"],
+                    hashlib.sha256(
+                        (root / ("exp." + stem + ".jsonl")).read_bytes()
+                    ).hexdigest(),
+                )
+            self.assertTrue(manifest["manifest_written_after_prediction_files"])
+            self.assertFalse(
+                manifest["prediction_file_hashes_cryptographically_signed"]
+            )
             learned = [
                 json.loads(line) for line in
                 (root / "exp.learned.jsonl").read_text().splitlines()
