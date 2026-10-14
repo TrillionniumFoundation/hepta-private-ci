@@ -70,6 +70,12 @@ class FiniteTreeAuditTests(unittest.TestCase):
         bad["nodes"]["true1"]["success"] = False
         self.assertEqual(solve(bad, policy())["root_value"], [33, 200])
 
+    def test_and_terminal_cost_cannot_disappear_from_utility(self):
+        bad = trial()
+        bad["nodes"]["true1"]["cost_ppm"] = 500
+        with self.assertRaisesRegex(InvalidTree, "zero-cost verified"):
+            solve(bad, policy())
+
     def test_wrong_probability_mass_rejected(self):
         bad = trial()
         bad["nodes"]["root"]["edges"][1]["mass_ppm"] = 299999
