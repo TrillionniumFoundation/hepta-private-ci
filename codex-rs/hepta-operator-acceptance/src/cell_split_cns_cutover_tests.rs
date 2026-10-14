@@ -672,18 +672,36 @@ fn replayed_signed_cns_snapshot_is_not_a_fresh_readback() {
     assert!(matches!(denied, Err(CellSplitCnsCutoverErrorV1::Invalid)));
     assert!(!root.path().join(FROZEN).exists());
 
-    // An independently admitted predecessor may freeze the plan. Every
-    // subsequent readback still needs a fresh, independently signed nonce.
-    let admitted = owner(root.path(), Arc::new(AtomicBool::new(true)));
+    // A rejected initial observation still leaves the original sidecar-lock
+    // inode. The same directory MUST NOT silently rebootstrap with a newly
+    // trusted port when the frozen binding was never written.
+    let fresh_port = DiskCns::open(
+        root.path().to_path_buf(),
+        SigningKey::from_bytes(&[9; 32]),
+        Arc::new(AtomicBool::new(true)),
+    );
+    assert!(
+        CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), fresh_port).is_err(),
+        "invalid first admission must not permit sidecar-lock resurrection"
+    );
+    assert!(!root.path().join(FROZEN).exists());
+
+    // Use a genuinely separate, previously uninitialized owner directory to
+    // exercise the preexisting-frozen-binding path. Its successful admission
+    // is not allowed to repair or reinitialize the rejected directory above.
+    let admitted_root = private_root();
+    let admitted = owner(admitted_root.path(), Arc::new(AtomicBool::new(true)));
     drop(admitted);
     let stale = DiskCns::open(
-        root.path().to_path_buf(),
+        admitted_root.path().to_path_buf(),
         SigningKey::from_bytes(&[9; 32]),
         Arc::new(AtomicBool::new(true)),
     )
     .with_stale_readback();
-    let mut reopened = CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), stale)
-        .expect("preexisting frozen CNS binding");
+    let mut reopened = CellSplitCnsCutoverOwnerV1::open(
+        admitted_root.path(), plan(), binding(), stale,
+    )
+    .expect("preexisting frozen CNS binding");
     assert!(matches!(
         reopened.read_committed(&intent()),
         Err(CellSplitCnsCutoverErrorV1::Invalid)
