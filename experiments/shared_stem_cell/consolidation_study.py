@@ -217,7 +217,10 @@ def study(manifest_path, producer, report_sha256, output, *, partial=False, resi
             reloaded = load_head(producer / "heads/gated" / item["relative_path"], item["manifest_sha256"], item["binding"])
             if e.parameters(model) != e.parameters(reloaded):
                 raise e.InputError("original teacher file changed")
+        from experiments.shared_stem_cell.process_peak import linux_lifetime_peak_rss_bytes
         result = {"schema": "hepta.consolidation-executed.v1", "selection_sha256": seal,
+            "process_lifetime_peak_rss_bytes": linux_lifetime_peak_rss_bytes(),
+            "peak_is_isolated_per_consolidation_arm": False,
             "predictions_sha256": prediction_sha, "scores": scores, "source_family_retention": group_audit,
             "selected": selection["selected"],
             "parameter_counts": selection["parameter_counts"], "producer_report_sha256": report_sha256,
