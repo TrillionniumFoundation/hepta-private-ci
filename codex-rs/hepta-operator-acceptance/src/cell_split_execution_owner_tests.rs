@@ -429,7 +429,11 @@ fn successful_metrics_fsync_barrier_binds_each_signed_step_across_restarts() {
         .with_metric_sink(writer);
         assert_eq!(recovered.completed_steps(), 1);
         assert!(recovered.advance().expect("next original step").is_some());
-        assert!(root.path().join("cell-split-01-metrics-acked.json").exists());
+        assert!(
+            root.path()
+                .join("cell-split-01-metrics-acked.json")
+                .exists()
+        );
         assert_eq!(state.borrow().executions, 2);
     }
 }
@@ -507,7 +511,12 @@ fn missing_evidence_fsync_ack_never_grants_new_effect_even_after_restart() {
         ));
     }
     assert!(root.path().join("cell-split-00-committed.json").exists());
-    assert!(!root.path().join("cell-split-00-metrics-acked.json").exists());
+    assert!(
+        !root
+            .path()
+            .join("cell-split-00-metrics-acked.json")
+            .exists()
+    );
     let mut restarted = CellSplitExecutionOwnerV1::open(
         root.path(),
         plan(),
@@ -534,21 +543,21 @@ fn lost_ack_reconciliation_cannot_invent_missing_physical_metrics_after_restart(
     {
         let mut port = FixturePort::new(state.clone());
         port.drop_ack = true;
-        let mut original = CellSplitExecutionOwnerV1::open(
-            root.path(),
-            plan(),
-            trust(),
-            port,
-        )
-        .expect("single original owner")
-        .with_metric_sink(metrics.clone());
+        let mut original = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+            .expect("single original owner")
+            .with_metric_sink(metrics.clone());
         assert!(matches!(
             original.advance(),
             Err(CellSplitExecutionErrorV1::External(_))
         ));
         assert_eq!(state.borrow().executions, 1);
         assert!(original.pending);
-        assert!(!root.path().join("cell-split-00-metrics-acked.json").exists());
+        assert!(
+            !root
+                .path()
+                .join("cell-split-00-metrics-acked.json")
+                .exists()
+        );
     }
     {
         let mut recovery = CellSplitExecutionOwnerV1::open(
@@ -560,12 +569,20 @@ fn lost_ack_reconciliation_cannot_invent_missing_physical_metrics_after_restart(
         .expect("frozen original signed history")
         .with_metric_sink(metrics);
         assert!(
-            recovery.advance().expect("original signed readback").is_some(),
+            recovery
+                .advance()
+                .expect("original signed readback")
+                .is_some(),
             "lost ACK can reconcile, never repeat the physical effect"
         );
         assert_eq!(recovery.completed_steps(), 1);
         assert_eq!(state.borrow().executions, 1);
-        assert!(!root.path().join("cell-split-00-metrics-acked.json").exists());
+        assert!(
+            !root
+                .path()
+                .join("cell-split-00-metrics-acked.json")
+                .exists()
+        );
     }
     let mut later = CellSplitExecutionOwnerV1::open(
         root.path(),
@@ -600,8 +617,13 @@ fn injected_future_metrics_acceptance_never_prepares_any_original_effect() {
 
     // A future metrics frame without its original signed committed effect
     // is non-prefix history, even when it has a well-formed known filename.
-    fs::write(root.path().join("cell-split-02-metrics-acked.json"), b"{}")
-        .expect("simulate injected later-step telemetry");
+    // An injected frame must be permission-valid so we really exercise
+    // non-prefix journal denial, not an unrelated UnsafePath failure.
+    crate::durable::write_private_new(
+        &root.path().join("cell-split-02-metrics-acked.json"),
+        b"{}",
+    )
+    .expect("privately persisted injected later-step telemetry");
     assert!(matches!(
         owner.advance(),
         Err(CellSplitExecutionErrorV1::Invalid(_))
@@ -876,16 +898,18 @@ fn pending_only_reconciliation_never_dispatches_a_new_effect_or_reseeds_an_empty
         trust(),
         FixturePort::new(state.clone()),
     );
-    assert!(denied_empty.is_err(), "missing old writer lock cannot be created");
+    assert!(
+        denied_empty.is_err(),
+        "missing old writer lock cannot be created"
+    );
     assert!(!root.path().join("cell-split-frozen-plan.json").exists());
     assert!(!root.path().join(crate::durable::SIDECAR_LOCK_FILE).exists());
 
     {
         let mut effect_port = FixturePort::new(state.clone());
         effect_port.drop_ack = true;
-        let mut owner =
-            CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), effect_port)
-                .expect("frozen new-effect owner");
+        let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), effect_port)
+            .expect("frozen new-effect owner");
         assert!(owner.advance().is_err(), "effect committed but ACK lost");
         assert_eq!(state.borrow().executions, 1);
         assert!(root.path().join("cell-split-00-prepared.json").exists());
@@ -967,7 +991,11 @@ fn pending_only_recovery_refuses_missing_or_tampered_original_receipt_without_re
 
     let (key, original_receipt) = {
         let observed = state.borrow();
-        let (key, receipt) = observed.commits.iter().next().expect("durable original CAS");
+        let (key, receipt) = observed
+            .commits
+            .iter()
+            .next()
+            .expect("durable original CAS");
         (key.clone(), receipt.clone())
     };
     // An unknown external effect outcome must not be adopted from the local
@@ -1014,7 +1042,9 @@ fn pending_only_recovery_refuses_missing_or_tampered_original_receipt_without_re
         .commits
         .insert(key, original_receipt.clone());
     assert_eq!(
-        recovery.reconcile_pending_only().expect("signed live readback"),
+        recovery
+            .reconcile_pending_only()
+            .expect("signed live readback"),
         original_receipt
     );
     assert_eq!(recovery.completed_steps(), 1);
