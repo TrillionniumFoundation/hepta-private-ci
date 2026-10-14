@@ -828,7 +828,10 @@ fn native_batch_dispatches_one_backend_call_with_two_signed_receipts_and_six_met
     assert_eq!(observed.outcomes.len(), 2);
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
     assert_eq!(worker.pending(), 0);
-    assert!(observed.outcomes.iter().all(|item| matches!(&item.result, Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded)));
+    assert!(observed.outcomes.iter().all(|item| matches!(
+        &item.result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    )));
     let events = metrics.0.lock().unwrap();
     assert_eq!(events.len(), 6);
     for phase in [
