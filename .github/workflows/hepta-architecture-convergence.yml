@@ -271,10 +271,11 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-ndu-reader.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib neuron_ndu_read -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-agentd-neuron.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib neuron_runtime -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/metrics-group-commit.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --lib metrics_ -- --nocapture
-          # Compile Evidence as a normal non-test library and prove that an
-          # old valid WAL prefix cannot pass its fsynced marker high-water and
-          # that a healthy Stop ACK releases both original writer locks.
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/evidence-original-highwater-product.json" --minimum-tests 2 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --test evidence_wal_original_highwater -- --nocapture
+          # Compile Evidence as a normal non-test library: a valid older
+          # WAL prefix and a damaged earlier marker row must both deny, the
+          # local frontier must never flush staged metrics, and a healthy Stop
+          # ACK must release both original owner locks before immediate reopen.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/evidence-original-highwater-product.json" --minimum-tests 4 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --test evidence_wal_original_highwater -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-durable-execution-owner.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib cell_split_execution_owner -- --nocapture
           # An integration test compiles the Operator library WITHOUT cfg(test)
           # and proves the public callback-only seam cannot admit a new effect.
