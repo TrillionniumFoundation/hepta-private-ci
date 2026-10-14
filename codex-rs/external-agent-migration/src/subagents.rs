@@ -192,9 +192,7 @@ fn frontmatter_value_from_yaml(value: &YamlValue) -> FrontmatterValue {
         YamlValue::String(value) => FrontmatterValue::Scalar(value.trim().to_string()),
         YamlValue::Bool(value) => FrontmatterValue::Scalar(value.to_string()),
         YamlValue::Number(value) => FrontmatterValue::Scalar(value.to_string()),
-        YamlValue::Null | YamlValue::Array(_) | YamlValue::Object(_) => {
-            FrontmatterValue::Other
-        }
+        YamlValue::Null | YamlValue::Array(_) | YamlValue::Object(_) => FrontmatterValue::Other,
     }
 }
 

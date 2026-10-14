@@ -330,9 +330,7 @@ fn yaml_scalar(value: &YamlValue) -> Option<String> {
         YamlValue::String(value) => Some(value.trim().to_string()),
         YamlValue::Bool(value) => Some(value.to_string()),
         YamlValue::Number(value) => Some(value.to_string()),
-        YamlValue::Null | YamlValue::Array(_) | YamlValue::Object(_) => {
-            None
-        }
+        YamlValue::Null | YamlValue::Array(_) | YamlValue::Object(_) => None,
     }
 }
 
