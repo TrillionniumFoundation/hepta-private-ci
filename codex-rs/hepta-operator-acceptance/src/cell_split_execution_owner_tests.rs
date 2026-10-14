@@ -1879,3 +1879,74 @@ fn post_effect_admission_cannot_hide_local_plan_or_original_owner_drift() {
         assert_eq!(state.borrow().executions, 1);
     }
 }
+
+#[test]
+fn last_original_owner_readback_selector_revocation_is_reconcile_only() {
+    let root = private_tempdir();
+    let observed = Rc::new(RefCell::new(Observed::default()));
+    let selected = Rc::new(RefCell::new(true));
+    let mut port = FixturePort::new(observed.clone());
+    // The original owner checks its effect once directly after Execute and
+    // once more after the coordinator's third admission callback. Withdraw
+    // selection in that final *real owner readback*, not inside admission.
+    port.revoke_selection_on_readback = Some((selected.clone(), 2));
+    {
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            port,
+        )
+        .expect("single split owner");
+        let mut admission_reads = 0_usize;
+        let result = owner.advance_with_admission(|| {
+            admission_reads += 1;
+            if *selected.borrow() {
+                Ok(())
+            } else {
+                Err("Selector revoked during final original-owner readback".into())
+            }
+        });
+        assert!(matches!(
+            result,
+            Err(CellSplitExecutionErrorV1::External(reason))
+                if reason == "Selector revoked during final original-owner readback"
+        ));
+        assert_eq!(admission_reads, 4);
+        assert_eq!(observed.borrow().executions, 1);
+        assert_eq!(owner.completed_steps(), 0);
+        assert!(root.path().join("cell-split-00-prepared.json").exists());
+        assert!(!root.path().join("cell-split-00-committed.json").exists());
+    }
+
+    let mut recovered = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(observed.clone()),
+    )
+    .expect("reopen pending exact effect");
+    assert!(matches!(
+        recovered.advance_with_admission(|| Err("selection still withdrawn".into())),
+        Err(CellSplitExecutionErrorV1::External(reason))
+            if reason == "selection still withdrawn"
+    ));
+    assert_eq!(observed.borrow().executions, 1);
+    *selected.borrow_mut() = true;
+    recovered
+        .advance_with_admission(|| {
+            if *selected.borrow() {
+                Ok(())
+            } else {
+                Err("selection withdrawn".into())
+            }
+        })
+        .expect("read-only reconciliation")
+        .expect("original signed receipt");
+    assert_eq!(recovered.completed_steps(), 1);
+    assert_eq!(
+        observed.borrow().executions,
+        1,
+        "late revocation and recovery must never duplicate CAS"
+    );
+}
