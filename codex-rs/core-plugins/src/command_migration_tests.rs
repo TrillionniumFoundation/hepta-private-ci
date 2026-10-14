@@ -25,8 +25,22 @@ fn yaml_description_contract_is_frozen_before_security_parser_migration() {
         ("description: [read, write]", None),
         ("description:\n  nested: text", None),
         ("description: !secret text", None),
+        ("description: !!str text", None),
+        ("description: !<tag:example.org,2026:secret> text", None),
+        ("description: '!secret text'", Some("!secret text")),
     ] {
         assert_eq!(parse_command_description(raw).as_deref(), expected, "{raw}");
+    }
+
+    // Duplicate keys and YAML merge expansion must never silently select a
+    // different skill description than the reviewed literal frontmatter.
+    for raw in [
+        "description: first\ndescription: second",
+        "defaults: &defaults {description: shadow}\n<<: *defaults",
+        "description: !!binary dGV4dA==",
+        "hidden: &tagged !secret shadow\ndescription: *tagged",
+    ] {
+        assert_eq!(parse_command_description(raw), None, "{raw}");
     }
 }
 

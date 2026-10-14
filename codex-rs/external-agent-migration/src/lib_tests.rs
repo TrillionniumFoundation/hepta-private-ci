@@ -347,10 +347,27 @@ fn subagent_yaml_scalar_contract_is_frozen_before_security_parser_migration() {
     assert_eq!(rendered["name"].as_str(), Some("42"));
     assert_eq!(rendered["description"].as_str(), Some("true"));
 
-    for value in ["[read, write]", "{nested: text}", "!secret value"] {
+    for value in ["[read, write]", "{nested: text}", "!secret value", "!!str value"] {
         let source = format!("---\nname: reviewer\ndescription: {value}\n---\nReview carefully.\n");
         let document = parse_document_content(&source);
         assert!(agent_metadata(&document).is_none(), "{value}");
+    }
+
+    let tagged_name = parse_document_content(
+        "---\nname: !!str reviewer\ndescription: Inspect\n---\nReview carefully.\n",
+    );
+    assert!(agent_metadata(&tagged_name).is_none());
+
+    // Neither duplicate YAML mapping entries, merged aliases, nor tags
+    // hidden behind an anchor can become trusted agent metadata.
+    for raw in [
+        "---\nname: reviewer\ndescription: first\ndescription: second\n---\nReview carefully.\n",
+        "---\ndefaults: &defaults {name: reviewer, description: hidden}\n<<: *defaults\n---\nReview carefully.\n",
+        "---\nname: reviewer\nhidden: &tagged !secret hidden\ndescription: *tagged\n---\nReview carefully.\n",
+        "---\nname: reviewer\ndescription: !!binary dGV4dA==\n---\nReview carefully.\n",
+    ] {
+        let document = parse_document_content(raw);
+        assert!(agent_metadata(&document).is_none(), "{raw}");
     }
 }
 

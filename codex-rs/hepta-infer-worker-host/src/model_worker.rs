@@ -218,13 +218,34 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.models.len() >= model_limit {
             return Err(Error::ModelCapacity);
         }
-        let handle = self.driver.load(&manifest)?;
+        let handle = match self.driver.load(&manifest) {
+            Ok(handle) => handle,
+            Err(_) => {
+                // The driver has not proven that partial allocations did
+                // not occur before returning its error. A fresh Worker
+                // generation needs independent resource reconciliation.
+                self.poisoned = true;
+                return Err(Error::IndeterminateLifecycle);
+            }
+        };
         if let Err(error) = validate_identity(&handle.opaque_id, "model handle") {
             if self.driver.unload(handle).is_err() {
                 self.poisoned = true;
                 return Err(Error::IndeterminateLifecycle);
             }
             return Err(error);
+        }
+        // Opaque handles are owned by one loaded model. If a buggy driver
+        // returns an already-live handle for another manifest, unloading the
+        // new handle could also unload the original model. Keep both physical
+        // outcomes quarantined for owner-led generation reconciliation.
+        if self
+            .models
+            .values()
+            .any(|loaded| loaded.handle.opaque_id == handle.opaque_id)
+        {
+            self.poisoned = true;
+            return Err(Error::IndeterminateLifecycle);
         }
         // Account for all resident model handles, not merely the new model.
         let total_after_load = self
@@ -275,6 +296,8 @@ impl<D: ModelDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+        // The grant covers every resident model, not just the selected one.
+        let other_model_resident_bytes = self.other_model_resident_bytes(model_id)?;
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if request.model_digest != loaded.manifest.model_digest
             || request.reservation_model_digest != loaded.manifest.model_digest
@@ -313,27 +336,51 @@ impl<D: ModelDriver> InferenceWorker<D> {
         let observed = self.driver.run(&loaded.handle, &request);
         self.active_requests.remove(&request.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
+        let observed = match observed {
+            Ok(observed) => observed,
+            Err(_) => {
+                // Execution may already have occurred before the driver
+                // reported failure; never retry it in this generation.
+                self.poisoned = true;
+                return Err(Error::IndeterminateLifecycle);
+            }
+        };
+        if !observed.terminal_observed {
+            self.poisoned = true;
+        }
         if observed.consumed_tokens > request.maximum_tokens
             || observed.consumed_tokens > request.reservation_maximum_tokens
         {
+            self.poisoned = true;
             return Err(Error::TokenLimit);
         }
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
+        // A later driver observation cannot lower the load-time resident floor.
+        let selected_resident_bytes = observed
+            .observed_memory_bytes
+            .max(loaded.handle.observed_memory_bytes);
+        let claimed_peak = selected_resident_bytes.checked_add(other_model_resident_bytes);
+        if claimed_peak.is_none_or(|bytes| bytes > self.grant.maximum_memory_bytes) {
+            self.poisoned = true;
             return Err(Error::ModelCapacity);
         }
         let (status, output_digest, terminal_observed) = if !observed.terminal_observed {
             (ExecutionStatus::Indeterminate, None, false)
         } else if observed.succeeded {
-            let output = observed
-                .output_digest
-                .as_ref()
-                .ok_or(Error::MissingTerminalOutput)?;
-            validate_digest(output, "output")?;
+            let Some(output) = observed.output_digest.as_ref() else {
+                self.poisoned = true;
+                return Err(Error::MissingTerminalOutput);
+            };
+            if let Err(error) = validate_digest(output, "output") {
+                self.poisoned = true;
+                return Err(error);
+            }
             (ExecutionStatus::Succeeded, observed.output_digest, true)
         } else {
             if let Some(output) = &observed.output_digest {
-                validate_digest(output, "output")?;
+                if let Err(error) = validate_digest(output, "output") {
+                    self.poisoned = true;
+                    return Err(error);
+                }
             }
             (ExecutionStatus::Failed, observed.output_digest, true)
         };
@@ -374,6 +421,17 @@ impl<D: ModelDriver> InferenceWorker<D> {
             worker_generation: self.generation,
             terminal_observed: true,
         })
+    }
+
+    fn other_model_resident_bytes(&self, excluded_model_id: &str) -> Result<u64, Error> {
+        self.models
+            .iter()
+            .filter(|(model_id, _)| model_id.as_str() != excluded_model_id)
+            .try_fold(0_u64, |total, (_, model)| {
+                total
+                    .checked_add(model.handle.observed_memory_bytes)
+                    .ok_or(Error::ArithmeticOverflow)
+            })
     }
 
     fn validate_current_grant(&self, now_ms: u64) -> Result<(), Error> {
@@ -522,6 +580,52 @@ pub trait NeuronFeatureDriver: ModelDriver {
     ) -> Result<DriverNeuronFeatureObservation, Error>;
 }
 
+/// Fail closed when driver-reported transient tensors exceed the worker grant.
+/// This is an observation guard, not a measured OS RSS or independent
+/// physical-resource authority.
+fn validate_neuron_memory_budget(
+    other_model_resident_bytes: u64,
+    selected_loaded_bytes: u64,
+    maximum_memory_bytes: u64,
+    observed: &DriverNeuronFeatureObservation,
+) -> Result<(), Error> {
+    let selected_peak = selected_loaded_bytes.max(observed.observed_memory_bytes);
+    let total_peak = other_model_resident_bytes
+        .checked_add(selected_peak)
+        .and_then(|bytes| bytes.checked_add(observed.transient_allocation_bytes));
+    match total_peak {
+        Some(peak) if peak <= maximum_memory_bytes => Ok(()),
+        _ => Err(Error::ModelCapacity),
+    }
+}
+
+/// Conservative post-dispatch batch resource bound. The largest reported
+/// resident footprint plus all per-row transient allocations must fit the
+/// grant. A driver with recycled scratch needs a separate batch-level peak
+/// receipt to claim less; these row receipts are not measured OS RSS.
+fn validate_neuron_batch_memory_budget<'a>(
+    other_model_resident_bytes: u64,
+    selected_loaded_bytes: u64,
+    maximum_memory_bytes: u64,
+    observations: impl IntoIterator<Item = &'a DriverNeuronFeatureObservation>,
+) -> Result<(), Error> {
+    let mut maximum_selected_resident = selected_loaded_bytes;
+    let mut total_transient = 0_u64;
+    for observed in observations {
+        maximum_selected_resident = maximum_selected_resident.max(observed.observed_memory_bytes);
+        total_transient = total_transient
+            .checked_add(observed.transient_allocation_bytes)
+            .ok_or(Error::ModelCapacity)?;
+    }
+    let total_peak = other_model_resident_bytes
+        .checked_add(maximum_selected_resident)
+        .and_then(|bytes| bytes.checked_add(total_transient));
+    match total_peak {
+        Some(peak) if peak <= maximum_memory_bytes => Ok(()),
+        _ => Err(Error::ModelCapacity),
+    }
+}
+
 impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     pub fn run_neuron_features(
         &mut self,
@@ -543,6 +647,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if self.active_requests.len() >= request_limit {
             return Err(Error::RequestCapacity);
         }
+        let other_model_resident_bytes = self.other_model_resident_bytes(model_id)?;
         let loaded = self.models.get_mut(model_id).ok_or(Error::ModelNotLoaded)?;
         if request.authorization.model_digest != loaded.manifest.model_digest
             || request.authorization.reservation_model_digest != loaded.manifest.model_digest
@@ -594,14 +699,44 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         self.active_requests
             .remove(&request.authorization.request_id);
         loaded.active_requests = loaded.active_requests.saturating_sub(1);
-        let observed = observed?;
-        if observed.observed_memory_bytes > self.grant.maximum_memory_bytes {
-            return Err(Error::ModelCapacity);
+        let observed = match observed {
+            Ok(observed) => observed,
+            Err(_) => {
+                // A physical Encoder/Head invocation might have committed
+                // work despite an incomplete driver response.
+                self.poisoned = true;
+                return Err(Error::IndeterminateLifecycle);
+            }
+        };
+        if !observed.terminal_observed {
+            self.poisoned = true;
+        }
+        if let Err(error) = validate_neuron_memory_budget(
+            other_model_resident_bytes,
+            loaded.handle.observed_memory_bytes,
+            self.grant.maximum_memory_bytes,
+            &observed,
+        ) {
+            self.poisoned = true;
+            return Err(error);
+        }
+        // Source/model identity must match even for a failed or indeterminate
+        // physical invocation. Those outcomes have no logits to validate,
+        // but accepting a different Encoder or Head would misattribute the
+        // observation to the admitted request.
+        if observed.encoder_digest != request.encoder_digest
+            || observed.head_digest != request.head_digest
+        {
+            self.poisoned = true;
+            return Err(Error::FeatureOutputMismatch);
         }
         let status = if !observed.terminal_observed {
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
-            validate_neuron_feature_output(&request, &observed)?;
+            if let Err(error) = validate_neuron_feature_output(&request, &observed) {
+                self.poisoned = true;
+                return Err(error);
+            }
             ExecutionStatus::Succeeded
         } else {
             ExecutionStatus::Failed
@@ -609,6 +744,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         if status != ExecutionStatus::Succeeded
             && (!observed.drive_q24.is_empty() || !observed.prediction_q24.is_empty())
         {
+            self.poisoned = true;
             return Err(Error::FeatureOutputMismatch);
         }
         Ok(NeuronFeatureExecutionObservation {
@@ -642,7 +778,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     ) -> Result<NeuronFeatureReceiptV1, Error> {
         let request_copy = request.clone();
         let observed = self.run_neuron_features(now_ms, model_id, request)?;
-        project_neuron_feature_receipt_v1(request_copy, observed)
+        let already_invoked = observed.status != ExecutionStatus::Cancelled;
+        let projection = project_neuron_feature_receipt_v1(request_copy, observed);
+        if already_invoked && projection.is_err() {
+            // Never permit a second physical invocation after a successful
+            // driver call whose typed inference-control receipt was rejected.
+            self.poisoned = true;
+        }
+        projection
     }
 }
 

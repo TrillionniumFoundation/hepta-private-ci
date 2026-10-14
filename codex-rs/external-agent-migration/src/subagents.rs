@@ -164,16 +164,19 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 fn parse_frontmatter(
     raw_frontmatter: &str,
 ) -> (BTreeMap<String, FrontmatterValue>, Option<String>) {
-    let parsed: YamlValue = match serde_yaml::from_str(raw_frontmatter) {
-        Ok(parsed) => parsed,
-        Err(err) => return (BTreeMap::new(), Some(err.to_string())),
-    };
-    let Some(mapping) = parsed.as_object() else {
-        return (
-            BTreeMap::new(),
-            Some("frontmatter is not a YAML mapping".to_string()),
-        );
-    };
+    // A JSON Value drops YAML tags, so preserve the tag for each field before
+    // accepting a scalar as a name, description, or permission setting.
+    let mapping: BTreeMap<String, serde_yaml::Tagged<YamlValue>> =
+        match serde_yaml::from_str_with_options(
+            raw_frontmatter,
+            serde_yaml::options! {
+                reject_unsupported_tags: true,
+                merge_keys: serde_yaml::options::MergeKeyPolicy::Error,
+            },
+        ) {
+            Ok(parsed) => parsed,
+            Err(err) => return (BTreeMap::new(), Some(err.to_string())),
+        };
 
     let mut frontmatter = BTreeMap::new();
     for (key, value) in mapping {
@@ -181,7 +184,12 @@ fn parse_frontmatter(
         if key.is_empty() {
             continue;
         }
-        frontmatter.insert(key.to_string(), frontmatter_value_from_yaml(value));
+        let value = if value.1.is_some() {
+            FrontmatterValue::Other
+        } else {
+            frontmatter_value_from_yaml(&value.0)
+        };
+        frontmatter.insert(key.to_string(), value);
     }
 
     (frontmatter, None)
