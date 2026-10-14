@@ -1,0 +1,67 @@
+{
+  "schema": "hepta.e5.local-sigkill-checkpoint-evidence.v1",
+  "authority": "DENY_ALL",
+  "production_promotion_permitted": false,
+  "date": "2026-10-14",
+  "parent_e5_momentum_git_blob_sha": "bfb88d70879921199cbaf0fcc4b9f37d3042a5ea",
+  "data_origin": "local POSIX process SIGKILL + actual PyTorch CPU sparse Head SGD on synthetic Q24 inputs and labels",
+  "physical_experiments": [
+    {
+      "logical_cells": 64,
+      "active_cells": 8,
+      "actual_sigkill_processes": 10,
+      "visible_pre_pointer_previous_commit": 8,
+      "visible_post_pointer_new_commit": 2,
+      "final_weights_and_momentum_bit_exact": true,
+      "raw_sha256": "b3a6c8df686784066bc11e0f5f7d94063ac8b9ca37b38eb9a4e79d120116888a",
+      "source_git_blob_sha": "e9dc9db684c74141c70510820b653625de533758"
+    },
+    {
+      "logical_cells": 256,
+      "active_cells": 25,
+      "actual_sigkill_processes": 4,
+      "visible_pre_pointer_previous_commit": 2,
+      "visible_post_pointer_new_commit": 2,
+      "final_weights_and_momentum_bit_exact": true,
+      "raw_sha256": "a9aa7c537028bb3ac5ef647d6e54507205344342b7a6f64d408d790d5a1b8ad4",
+      "source_git_blob_sha": "4698d8e6852b56c6db617523372346192bdf4616"
+    }
+  ],
+  "local_checks": {
+    "physical_store_and_crash_tests": 12,
+    "independent_audit_adversarial_tests": 12,
+    "passed": 24,
+    "failed": 0,
+    "exact_upstream_momentum_dependencies_matched_git_blobs": true
+  },
+  "concurrent_writers": {
+    "simultaneous_same_expected_parent": 2,
+    "successful_commits": 1,
+    "rejected_cas_writers": 1
+  },
+  "independent_review": {
+    "raw_report_sha256": "21aa5acb7e50b253137add0ee29fa74613f6ad5401f700652f1a91918c588074",
+    "reported_sigkill_events_checked": 14,
+    "authority": "DENY_ALL",
+    "independent_physical_process_signature_verified": false
+  },
+  "source_git_blobs": {
+    "e5_crash_atomic_store.py": "e12d9fb4e9679bbd408d96c34288ba46239cd245",
+    "test_e5_crash_atomic_store.py": "88921bfb68f3b4927431a9de5efdff6dad09121a",
+    "e5_crash_matrix.py": "5021ad9424b4601e214b4522bf62459a8de50fe9",
+    "e5_crash_matrix_review.py": "49f63643e6b2ac7d539a84d2b3bf7e7a4b09a02c",
+    "test_e5_crash_matrix_review.py": "04ae0de496f6704b7388c6e5ab78c992fcffa0ff"
+  },
+  "local_source_and_receipts_zip_sha256": "02e89f9bcc4cf1c880b21e638f20cacd9158ee0cc238405db739da65a35470a1",
+  "unsupported_evidence": {
+    "real_power_cut_reboot": false,
+    "native_rust_wal": false,
+    "distributed_signed_cas": false,
+    "external_model_origin": false,
+    "real_pretrained_encoder": false,
+    "real_reader_ndu": false,
+    "revocation_final_use": false,
+    "full_scale_4096_cell_crash": false,
+    "exact_head_blocking_ci_green": false
+  }
+}
