@@ -34,6 +34,8 @@ def parameterize(torch, count, seed):
 def packed_forward(torch, weights, feature, state):
     n=state.shape[0]
     if feature.shape!=(n,384) or state.shape!=(n,64):raise Invalid('feature/state shape')
+    # Do not let a batched Cell update the shared Encoder feature or another Cell state.
+    feature=feature.detach();state=state.detach()
     for tag,shape in (('down.weight',(n,8,384)),('gate.weight',(n,8,64)),
                       ('gate.bias',(n,8)),('up.weight',(n,384,8)),
                       ('output.weight',(n,8,384)),('output.bias',(n,8))):
