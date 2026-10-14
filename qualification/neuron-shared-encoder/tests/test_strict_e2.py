@@ -29,7 +29,9 @@ def test_equal_parameter_training_and_report_is_not_authorizing():
     assert report['causal_learning_verified'] is False
     assert report['future_used_to_select_winner'] is False
     assert report['parameter_count'] <= 16384
-    assert report['validation_only_descriptive_winner'] in ('dynamic_gate', 'swiglu')
+    assert report['validation_only_descriptive_winner'] == 'INCONCLUSIVE_INSUFFICIENT_REPLICATION'
+    assert report['paired_validation_diagnostic']['training_seed_replicates'] == 2
+    assert report['actual_parameters_equal_but_compute_cost_not_verified']
     for run in report['runs']:
         a, b = run['candidates']['dynamic_gate'], run['candidates']['swiglu']
         assert a['parameter_count'] == b['parameter_count'] == report['parameter_count']
@@ -122,3 +124,54 @@ def test_cli_synthetic_and_actual_jsonl_identity(tmp_path):
         main(args)
     with pytest.raises(ValueError, match='pinned offline real'):
         main([*args, '--encoder', 'mmbert-joint'])
+
+
+def test_option_permutation_same_width_rejected():
+    x, y, rows = sample()
+    modified = deepcopy(rows)
+    modified[1]['options'] = ['yes', 'no']
+    with pytest.raises(ValueError, match='option order/content'):
+        equal_parameter_nonlinear_trial(x, y, modified, seeds=(2,), steps=1)
+
+
+def test_paired_group_bootstrap_two_axis_determinism():
+    from neuron_shared_encoder.strict_e2 import paired_validation_bootstrap
+    observations = []
+    for seed_index in range(3):
+        lhs = torch.tensor([.4 + .01 * seed_index] * 16)
+        rhs = torch.tensor([.7] * 16)
+        observations.append((lhs, rhs))
+    sources = [f'g{i // 2}' for i in range(16)]
+    report = paired_validation_bootstrap(observations, sources, repeats=200, seed=23)
+    assert report == paired_validation_bootstrap(observations, sources, repeats=200, seed=23)
+    assert report['descriptive_winner'] == 'dynamic_gate'
+    assert report['validation_source_groups'] == 8
+    assert report['training_seed_replicates'] == 3
+    assert report['paired_bootstrap_95pct_interval'][1] < 0
+    assert report['independent_causal_test'] is False
+
+
+def test_paired_group_bootstrap_inconclusive_on_mixed_source_deltas():
+    from neuron_shared_encoder.strict_e2 import paired_validation_bootstrap
+    sources = [f'g{i}' for i in range(12)]
+    dynamic = torch.tensor([.35 if i % 2 else .65 for i in range(12)])
+    swiglu = torch.tensor([.5] * 12)
+    report = paired_validation_bootstrap([(dynamic, swiglu)] * 3, sources)
+    assert report['descriptive_winner'] == 'INCONCLUSIVE_PAIRED_INTERVAL'
+    assert report['paired_bootstrap_95pct_interval'][0] < 0
+    assert report['paired_bootstrap_95pct_interval'][1] > 0
+
+
+def test_paired_group_bootstrap_preserves_correlated_rows_and_rejects_nan():
+    from neuron_shared_encoder.strict_e2 import paired_validation_bootstrap
+    sources = ['a'] * 50 + ['b'] * 2 + ['c'] * 2
+    delta = torch.tensor([.8] * 50 + [-.1] * 4)
+    zero = torch.zeros(54)
+    report = paired_validation_bootstrap([(delta, zero)] * 3, sources, repeats=100)
+    assert report['validation_source_groups'] == 3
+    assert report['descriptive_winner'] == 'INCONCLUSIVE_INSUFFICIENT_REPLICATION'
+    assert abs(report['mean_paired_validation_brier_delta'] - float(delta.mean())) < 1e-6
+    with pytest.raises(ValueError, match='invalid paired validation losses'):
+        paired_validation_bootstrap([(torch.tensor([.1]), torch.tensor([float('nan')]))], ['a'])
+    with pytest.raises(ValueError, match='invalid validation source groups'):
+        paired_validation_bootstrap([(torch.tensor([.1]), torch.tensor([.2]))], [''])
