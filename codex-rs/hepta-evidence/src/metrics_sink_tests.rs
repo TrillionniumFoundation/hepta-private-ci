@@ -36,13 +36,15 @@ fn unresponsive_writer_fixture(
 #[test]
 fn saturated_writer_rejects_flush_and_drop_without_waiting_for_queue_space() {
     let (sink, held_receiver) = unresponsive_writer_fixture(1);
-    let admitted = sink.channel.try_send(WriterCommandV1::Record(MetricSampleV1 {
-        scope_digest: Digest32::of_bytes(b"scope"),
-        operation_digest: Digest32::of_bytes(b"operation"),
-        phase: MetricPhaseV1::Cas,
-        latency_micros: 1,
-        succeeded: true,
-    }));
+    let admitted = sink
+        .channel
+        .try_send(WriterCommandV1::Record(MetricSampleV1 {
+            scope_digest: Digest32::of_bytes(b"scope"),
+            operation_digest: Digest32::of_bytes(b"operation"),
+            phase: MetricPhaseV1::Cas,
+            latency_micros: 1,
+            succeeded: true,
+        }));
     assert!(admitted.is_ok());
     assert_eq!(
         sink.flush_with_timeout(Duration::from_millis(5)),
