@@ -9,6 +9,10 @@ on:
       - "experiments/shared_stem_cell/video_value.py"
       - "experiments/shared_stem_cell/audit_video_value.py"
       - "experiments/shared_stem_cell/test_video_value.py"
+      - "experiments/shared_stem_cell/video_cpu_proxy.py"
+      - "experiments/shared_stem_cell/audit_video_cpu_proxy.py"
+      - "experiments/shared_stem_cell/test_video_cpu_proxy.py"
+      - "experiments/shared_stem_cell/VIDEO_CPU_PROXY.md"
       - "experiments/shared_stem_cell/video_batch.py"
       - "experiments/shared_stem_cell/video_batch_calibration.py"
       - "experiments/shared_stem_cell/audit_video_batch_calibration.py"
@@ -56,8 +60,8 @@ jobs:
           PY="$RUNNER_TEMP/hepta-video-env/bin/python"
           git rev-parse HEAD > "$RUNNER_TEMP/hepta-video-source.txt"
           "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-video-source.txt"
-          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{public_video,video_temporal,video_anytime,video_value,video_batch,video_batch_calibration,audit_video_anytime,audit_video_value,audit_video_batch,audit_video_batch_calibration,test_video_batch,test_video_batch_calibration,test_public_video,test_video_temporal,test_video_anytime,test_video_value}.py
-          "$PY" -m unittest -v experiments.shared_stem_cell.test_public_video experiments.shared_stem_cell.test_video_temporal experiments.shared_stem_cell.test_video_anytime experiments.shared_stem_cell.test_video_value experiments.shared_stem_cell.test_video_batch experiments.shared_stem_cell.test_video_batch_calibration experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.hf_integration_checks 2>&1 | tee "$RUNNER_TEMP/hepta-video-tests.log"
+          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{public_video,video_temporal,video_anytime,video_value,video_batch,video_cpu_proxy,audit_video_cpu_proxy,test_video_cpu_proxy,video_batch_calibration,audit_video_anytime,audit_video_value,audit_video_batch,audit_video_batch_calibration,test_video_batch,test_video_batch_calibration,test_public_video,test_video_temporal,test_video_anytime,test_video_value}.py
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_public_video experiments.shared_stem_cell.test_video_temporal experiments.shared_stem_cell.test_video_anytime experiments.shared_stem_cell.test_video_value experiments.shared_stem_cell.test_video_batch experiments.shared_stem_cell.test_video_batch_calibration experiments.shared_stem_cell.test_video_cpu_proxy experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.hf_integration_checks 2>&1 | tee "$RUNNER_TEMP/hepta-video-tests.log"
           "$PY" -m experiments.shared_stem_cell.public_video --output "$RUNNER_TEMP/hepta-video-study" 2>&1 | tee "$RUNNER_TEMP/hepta-video-execution.log"
           "$PY" -m experiments.shared_stem_cell.video_anytime --manifest "$RUNNER_TEMP/hepta-video-study/manifest.json" --output "$RUNNER_TEMP/hepta-video-study/anytime" 2>&1 | tee "$RUNNER_TEMP/hepta-video-anytime.log"
           "$PY" -m experiments.shared_stem_cell.audit_video_anytime --root "$RUNNER_TEMP/hepta-video-study" | tee "$RUNNER_TEMP/hepta-video-anytime-audit.log"
@@ -65,6 +69,9 @@ jobs:
           "$PY" -m experiments.shared_stem_cell.audit_video_value --root "$RUNNER_TEMP/hepta-video-study" | tee "$RUNNER_TEMP/hepta-video-value-audit.log"
           "$PY" -m experiments.shared_stem_cell.audit_video_batch --root "$RUNNER_TEMP/hepta-video-study" | tee "$RUNNER_TEMP/hepta-video-batch-audit.log"
           "$PY" -m experiments.shared_stem_cell.audit_video_batch_calibration --root "$RUNNER_TEMP/hepta-video-study" | tee "$RUNNER_TEMP/hepta-video-batch-calibration-audit.log"
+          # CPU Conv2d is a deliberately UNTRAINED physical-compute proxy, not CLIP.
+          OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 "$PY" -m experiments.shared_stem_cell.video_cpu_proxy --root "$RUNNER_TEMP/hepta-video-study" --output "$RUNNER_TEMP/hepta-video-study/cpu-proxy" --rounds 5 2>&1 | tee "$RUNNER_TEMP/hepta-video-cpu-proxy.log"
+          "$PY" -m experiments.shared_stem_cell.audit_video_cpu_proxy --root "$RUNNER_TEMP/hepta-video-study" --output "$RUNNER_TEMP/hepta-video-study/cpu-proxy" | tee "$RUNNER_TEMP/hepta-video-cpu-proxy-audit.log"
           git diff --exit-code
       - name: Retain reports and failures, never source/derived media or weights
         if: always()
@@ -81,12 +88,15 @@ jobs:
             ${{ runner.temp }}/hepta-video-value-audit.log
             ${{ runner.temp }}/hepta-video-batch-audit.log
             ${{ runner.temp }}/hepta-video-batch-calibration-audit.log
+            ${{ runner.temp }}/hepta-video-cpu-proxy.log
+            ${{ runner.temp }}/hepta-video-cpu-proxy-audit.log
             ${{ runner.temp }}/hepta-video-study/*.json
             ${{ runner.temp }}/hepta-video-study/*.jsonl
             ${{ runner.temp }}/hepta-video-study/SOURCE-README.txt
             ${{ runner.temp }}/hepta-video-study/execution
             ${{ runner.temp }}/hepta-video-study/anytime
             ${{ runner.temp }}/hepta-video-study/value
+            ${{ runner.temp }}/hepta-video-study/cpu-proxy
             ${{ runner.temp }}/hepta-video-study/vision/model-source.json
             ${{ runner.temp }}/hepta-video-study/vision/verified-publisher-files.json
           if-no-files-found: warn
