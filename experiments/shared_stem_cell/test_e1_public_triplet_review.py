@@ -1,0 +1,44 @@
+"""Synthetic, nonauthorizing three-model publication reviewer fault cases."""
+import copy,unittest
+import e1_public_triplet_real_cpu as trainer
+import e1_public_triplet_review as reviewer
+from test_e1_public_triplet_real_cpu import panel
+def fixture():
+ import torch
+ torch.set_num_threads(1)
+ p=panel();reports={}
+ for model,(_,revision,width) in trainer.MODELS.items():
+  vectors={c['case_id']:[((int(c['case_id'][:4],16)%99)-50)/100]*width for c in p['cases']}
+  reports[model]={'schema':'hepta.e1-english-public-pretrained-head.v1','model':model,
+   'model_revision':revision,'feature_width':width,'public_panel_sha256':trainer.sha(trainer.canonical(p)),
+   'authority':'DENY_ALL','production_promotion_permitted':False,
+   'english_only':True,'public_dataset_is_chronological_future':False,
+   'actual_pretrained_local_weight_execution_claimed':True,
+   'model_origin_independently_authenticated':False,
+   'tokens_per_case':{c['case_id']:20 for c in p['cases']},
+   'features_q24_identity':{c['case_id']:'a'*64 for c in p['cases']},
+   'fitting':trainer.fit_heads(p,model,vectors)}
+ return p,reports
+class Checks(unittest.TestCase):
+ @classmethod
+ def setUpClass(cls):cls.original=fixture()
+ def data(self):return copy.deepcopy(self.original)
+ def deny(self,fn):
+  p,arms=self.data();fn(p,arms)
+  with self.assertRaises((ValueError,TypeError,KeyError)):reviewer.evaluate(p,arms)
+ def test_descriptive_only(self):
+  p,arms=self.data();r=reviewer.evaluate(p,arms)
+  self.assertEqual(len(r['scores']),3);self.assertEqual(len(r['pairwise_test']),3)
+  self.assertFalse(r['production_promotion_permitted']);self.assertFalse(r['stem_winner_selected'])
+ def test_missing_model(self):self.deny(lambda p,a:a.pop('granite_97m_r2'))
+ def test_panel_drift(self):self.deny(lambda p,a:a['granite_97m_r2'].update(public_panel_sha256='f'*64))
+ def test_revision_drift(self):self.deny(lambda p,a:a['mmbert_small'].update(model_revision='f'*40))
+ def test_parameter_ceiling(self):self.deny(lambda p,a:a['mmbert_small']['fitting'].update(head_parameter_count=9999))
+ def test_training_budget(self):self.deny(lambda p,a:a['mmbert_small']['fitting'].update(steps=41))
+ def test_token_missing(self):self.deny(lambda p,a:a['mmbert_small']['tokens_per_case'].pop(next(iter(a['mmbert_small']['tokens_per_case']))))
+ def test_token_truncation(self):self.deny(lambda p,a:a['mmbert_small']['tokens_per_case'].__setitem__(next(iter(a['mmbert_small']['tokens_per_case'])),513))
+ def test_missing_prediction(self):self.deny(lambda p,a:a['granite_97m_r2']['fitting']['controls']['learned_head']['predictions'].pop())
+ def test_swapped_input(self):self.deny(lambda p,a:a['granite_97m_r2']['fitting']['controls']['learned_head']['predictions'][0].update(joint_input_digest='f'*64))
+ def test_nan_probability(self):self.deny(lambda p,a:a['granite_97m_r2']['fitting']['controls']['learned_head']['predictions'][0].update(positive_probability=float('nan')))
+ def test_false_future(self):self.deny(lambda p,a:a['granite_97m_r2'].update(public_dataset_is_chronological_future=True))
+if __name__=='__main__':unittest.main()
