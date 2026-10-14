@@ -1,5 +1,6 @@
 """Contract tests only; no mock output may count as physical model evidence."""
 import contextlib
+from collections import UserDict
 from datetime import datetime, timedelta, timezone
 import json
 from pathlib import Path
@@ -14,6 +15,7 @@ from embeddinggemma2_shadow import (
 )
 from embeddinggemma2_pairs import execute_pairs, paired_cosine_metrics, validate_pairs
 from differentiation_gate import DifferentiationError, advisory_gate
+from embeddinggemma2_cell_study import run_study, validate_study
 
 
 def sample(cell="cell.a", text="complete question plus options and state", **kw):
@@ -130,6 +132,28 @@ class SnapshotAndModality(unittest.TestCase):
             with self.assertRaises(QualificationError):
                 validate_sample(media, "vision", folder)
 
+    def test_full_text_token_inventory_no_hidden_truncation(self):
+        class Tokenizer:
+            def __call__(self, content, **kwargs):
+                self.calls.append((content, kwargs))
+                return UserDict({"input_ids": list(range(self.count))})
+            def __init__(self):
+                self.count = 11
+                self.calls = []
+        class Model:
+            tokenizer = Tokenizer()
+            prompts = {"Classification": "task: classification | query: "}
+        shadow = FrozenGemmaShadow.__new__(FrozenGemmaShadow)
+        shadow.model = Model()
+        shadow._check_full_text_budget("question/options/state", "Classification")
+        self.assertFalse(shadow.model.tokenizer.calls[-1][1]["truncation"])
+        self.assertTrue(shadow.model.tokenizer.calls[-1][0].startswith("task: classification"))
+        shadow.model.tokenizer.count = 8193
+        with self.assertRaises(QualificationError):
+            shadow._check_full_text_budget("very long", "Classification")
+        with self.assertRaises(QualificationError):
+            shadow._check_full_text_budget("q", "FakePrompt")
+
     def test_stub_admission_is_never_physical_evidence(self):
         class Stub:
             def encode(self, payloads, **kwargs):
@@ -208,6 +232,64 @@ class PairedEvidence(unittest.TestCase):
         with self.assertRaises(QualificationError):
             paired_cosine_metrics(rows, {k: v[:2] for k, v in vectors.items()})
         self.assertEqual(result["production_promotion"], "DENY_ALL")
+
+
+class StemHeadStudy(unittest.TestCase):
+    def dataset(self):
+        names = ("train", "calibration", "test", "future1", "future2", "future3")
+        rows = []
+        for index, split in enumerate(names):
+            for j in range(8):
+                raw = json.dumps({"question": f"task {index}/{j}",
+                                  "options": ["yes", "no"], "state": "frozen"},
+                                 sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+                rows.append({
+                    "case_id": f"{split}.{j}",
+                    "group_id": f"{split}.group.{j//4}",
+                    "observed_utc": f"2026-{index+1:02d}-{j+1:02d}T00:00:00Z",
+                    "split": split,
+                    "label": j % 2,
+                    "production_probability": 0.5,
+                    "request": sample(cell=f"shadow.{index}.{j}",
+                                      input={"modality": "text", "role": "classification",
+                                             "value": raw, "sha256": sha256(raw.encode("utf-8"))}),
+                })
+        return {"schema": "hepta.gemma2.binary-cell-study.v1",
+                "scope_id": "scope.a", "principal_id": "principal.a",
+                "purpose_id": "purpose.decision", "source_manifest_digest": "a" * 64,
+                "baseline_model_digest": "b" * 64, "cases": rows}
+
+    def test_train_calibration_test_three_future_windows_strict_order(self):
+        ds = self.dataset()
+        v = validate_study(ds)
+        self.assertEqual(v["rows"], 48)
+        self.assertEqual(len(v["dataset_digest"]), 64)
+        self.assertEqual(len(v["cohorts"]), 6)
+
+    def test_leakage_missing_baseline_partial_prompt_rejected(self):
+        ds = self.dataset()
+        ds["cases"][32]["group_id"] = ds["cases"][0]["group_id"]
+        with self.assertRaises(QualificationError):
+            validate_study(ds)
+        ds = self.dataset()
+        ds["cases"][40]["observed_utc"] = "2026-01-01T00:00:00Z"
+        with self.assertRaises(QualificationError):
+            validate_study(ds)
+        ds = self.dataset()
+        ds["cases"][16]["production_probability"] = None
+        with self.assertRaises(QualificationError):
+            validate_study(ds)
+        ds = self.dataset()
+        ds["cases"][0]["request"]["input"]["value"] = '{"state":"only"}'
+        with self.assertRaises(QualificationError):
+            validate_study(ds)
+
+    def test_stub_cannot_claim_real_stem_head_training(self):
+        class StubRunner:
+            _verified_local_weights = False
+            manifest = {"dimension": 256, "profile": "text"}
+        with self.assertRaises(QualificationError):
+            run_study(StubRunner(), self.dataset())
 
 
 class Screening(unittest.TestCase):

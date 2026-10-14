@@ -7,6 +7,7 @@ and requires an independently reviewed local SHA256-complete snapshot.
 from __future__ import annotations
 
 import argparse
+from collections.abc import Mapping
 import hashlib
 from importlib import metadata
 import json
@@ -239,6 +240,29 @@ class FrozenGemmaShadow:
         # independent attestation of Hugging Face origin or worker ownership.
         self._verified_local_weights = True
 
+    def _check_full_text_budget(self, payload: str, prompt: str | None) -> None:
+        """Reject hidden SentenceTransformer truncation of joint question/options/state.
+
+        Tokenizer and task prompt are loaded from the same exact local snapshot.
+        This check covers TEXT ONLY. Image/audio/video model-internal token use
+        still needs an independently qualified modality budget receipt.
+        """
+        tokenizer = getattr(self.model, "tokenizer", None)
+        prompts = getattr(self.model, "prompts", None)
+        if tokenizer is None or not isinstance(prompts, dict):
+            raise QualificationError("model has no inspectable pinned tokenizer/task prompt")
+        if prompt is not None and prompt not in prompts:
+            raise QualificationError("requested text task prompt missing from pinned model")
+        prefix = prompts[prompt] if prompt else ""
+        if not isinstance(prefix, str):
+            raise QualificationError("untrusted task prompt manifest")
+        encoded = tokenizer(prefix + payload, truncation=False, add_special_tokens=True)
+        ids = encoded.get("input_ids") if isinstance(encoded, Mapping) else None
+        if not isinstance(ids, list) or not all(type(token) is int for token in ids):
+            raise QualificationError("cannot independently inspect full token inventory")
+        if not ids or len(ids) > 8192:
+            raise QualificationError("full joint text exceeds model 8192-token window")
+
     def encode_cells(self, requests: list[dict], *, media_root: Path | None = None) -> dict:
         if not isinstance(requests, list) or not 1 <= len(requests) <= MAX_BATCH:
             raise QualificationError("unbounded Cell batch")
@@ -262,6 +286,10 @@ class FrozenGemmaShadow:
             groups.setdefault((key[-3], _prompt(key[-2], key[-3])), []).append((key, payload))
         for (_, prompt), chunk in groups.items():
             arguments = [payload for _, payload in chunk]
+            if getattr(self, "_verified_local_weights", False):
+                for payload in arguments:
+                    if isinstance(payload, str):
+                        self._check_full_text_budget(payload, prompt)
             # API calls are NOT equivalent to physical transformer forward count.
             with self._inference_context():
                 encoded = self.model.encode(
@@ -309,6 +337,8 @@ class FrozenGemmaShadow:
             "distinct_input_rows": len(unique), "cell_requests": len(requests),
             "sentence_transformer_encode_calls": self.model_encode_calls - prior_encode_calls,
             "physical_transformer_forward_calls": None,
+            "text_token_budget_verified": bool(getattr(self, "_verified_local_weights", False)),
+            "multimodal_internal_token_budget_verified": False,
             "measured_wall_micros": (time.perf_counter_ns() - started) // 1000,
             "independently_authenticated_receipt": False,
             "production_promotion": "DENY_ALL", "rows": result,

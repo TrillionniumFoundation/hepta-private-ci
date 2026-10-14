@@ -40,6 +40,9 @@ media datasets, training outcomes or real host benchmarks are committed here.
   model invocation is not an independently signed model receipt. A test-injected
   stub is labelled `deterministic_stub_contract_only` and will be rejected by
   the paired media evaluator. Encoded-call counts are scoped to each request.
+  A pinned model tokenizer is used for a nontruncating 8,192-token check
+  (including task prompt) for text; **multimodal model-internal token budgets
+  are not yet independently verified** and must not support capacity claims.
 - Potentially executable, pickle or legacy Torch serialized model files are
   rejected even when declared in the complete SHA256 inventory. External source
   origin remains unverified until independent provenance attestation.
@@ -103,3 +106,31 @@ predecessor receipts or signed reviewer attestations are included; therefore
 **no physical EmbeddingGemma 2 experiment or model-improvement claim follows
 from passing the offline contract tests.** This branch is a new experiment
 surface to evaluate, not a replacement for the native owner stack.
+
+## Stage 4 — frozen real Cell Head pilot
+
+`embeddinggemma2_cell_study.py` is an executable integration with the **existing**
+`cell_learning.DynamicCell` trainer in the same research stack. Its exact
+`hepta.gemma2.binary-cell-study.v1` input requires external labels, true frozen
+production no-change probabilities, original grouped source identities and a
+canonical full question/options/state for every example. Six disjoint ordered
+windows are mandatory: train, calibration, test, future1, future2 and future3,
+with at least eight cases and two source groups in each. This runner trains an
+actual 2K/8K/16K dynamic Cell Head on already pinned 256d Q24 features,
+compares identical-initialization frozen and trained Heads against the external
+no-change distribution, retains both loss and calibration metrics for all five
+post-training windows and never uses future labels for any optimizer step.
+
+```bash
+python3 qualification/neuron-dynamic-learning/embeddinggemma2_cell_study.py \
+  --manifest /approved/stem/manifest.json \
+  --cases /approved/evaluation/frozen_binary_cases.json \
+  --head-budget 2048 --steps 40
+```
+
+**This is an experimental integration, NOT a claim of a completed study:**
+no actual EmbeddingGemma 2 weights, external outcome labels, signed independent
+no-change predictions, independent evaluator attestations, train/test/future
+datasets, or end-to-end GPU measurements are provided. Even a favorable
+observational result is `DENY_ALL`; independent owners must verify evidence,
+provenance, selection, artifact availability and revocation before promotion.
