@@ -273,3 +273,24 @@ Head weights; the first future prediction must use that same initialization.
 C requires an explicit `max_retained_task_score_drop` preregistered
 before evaluating later modality stages. Any old-task score loss over the
 limit blocks the research precheck instead of being hidden by new-task gain.
+
+
+### A5 safety: no silent non-Laya truncation
+
+The real `OfflineEncoder.encode` generic mmBERT/ModernBERT/Granite path
+first tokenizes the complete joint question+options+state input with
+`truncation=False`; it rejects even one example whose complete token
+count exceeds `--max-length` before dispatching the Encoder model.
+Padding happens only after this check. The previous
+`truncation=True` behavior could compare **different tasks** across
+different checkpoints and is no longer accepted. This is a strict
+experiment-equality gate, not a production tokenizer.
+
+Laya's own `Agent._encode_state` is still a private upstream encoder
+that may already have truncated the input before its post-encode
+length can be inspected. The public Hepta harness can reject its
+over-length returned IDs but **cannot independently attest zero
+pretruncation** for Laya. Do not use Laya from this path as a strictly
+zero-truncation-qualified A5 winner without separately instrumenting
+the pinned upstream Laya tokenizer and proving lossless option and
+state encoding.

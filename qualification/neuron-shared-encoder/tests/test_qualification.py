@@ -204,3 +204,68 @@ def test_synthetic_stress_runs_and_records_real_batch_execution():
     assert report['production_admission'] == 'BLOCKED'
     assert all(r['requests'] > 0 for r in report['results'])
     assert all(r['encoder_forward_rows'] > 0 for r in report['results'])
+
+
+class _NoTruncateTokenizer:
+    def __init__(self, token_counts):
+        self.token_counts = token_counts
+        self.last_kwargs = None
+
+    def __call__(self, texts, **kwargs):
+        self.last_kwargs = kwargs
+        return {'input_ids': [[1] * n for n in self.token_counts],
+                'attention_mask': [[1] * n for n in self.token_counts]}
+
+    def pad(self, batch, *, padding, return_tensors):
+        import torch
+        maximum = max(map(len, batch['input_ids']))
+        return {k: torch.tensor([row + [0] * (maximum - len(row))
+                                  for row in rows], dtype=torch.long)
+                for k, rows in batch.items()}
+
+
+class _SimpleEncoderModule:
+    def __init__(self):
+        self.called = False
+
+    def __call__(self, **inputs):
+        from types import SimpleNamespace
+        self.called = True
+        hidden = inputs['input_ids'].float().unsqueeze(-1).repeat(1, 1, 4)
+        return SimpleNamespace(last_hidden_state=hidden)
+
+
+def _offline_stub(token_counts, maximum):
+    encoder = OfflineEncoder.__new__(OfflineEncoder)
+    encoder.kind = 'modernbert-joint'
+    encoder.device = torch.device('cpu')
+    encoder.max_length = maximum
+    encoder.tok = _NoTruncateTokenizer(token_counts)
+    encoder.model = _SimpleEncoderModule()
+    encoder._check_bundle_unchanged = lambda: None
+    return encoder
+
+
+def test_real_encoder_rejects_oversize_joint_input_without_forward():
+    encoder = _offline_stub([4, 6], 5)
+    rows = [{'state': 'x', 'question': 'q', 'options': ['a', 'b']}] * 2
+    with pytest.raises(ValueError, match='no truncation permitted'):
+        encoder.encode(rows, batch=2)
+    assert encoder.tok.last_kwargs['truncation'] is False
+    assert not encoder.model.called
+
+
+def test_real_encoder_preserves_all_tokens_and_original_batch_size():
+    encoder = _offline_stub([3, 4], 5)
+    rows = [{'state': 'x', 'question': 'q', 'options': ['a', 'b']}] * 2
+    y = encoder.encode(rows, batch=2)
+    assert y.shape == (2, 4)
+    assert encoder.model.called
+    assert encoder.tok.last_kwargs['truncation'] is False
+
+
+def test_real_encoder_rejects_wrong_or_empty_tokenizer_rows():
+    encoder = _offline_stub([], 5)
+    rows = [{'state': 'x', 'question': 'q', 'options': ['a', 'b']}]
+    with pytest.raises(ValueError, match='complete token rows'):
+        encoder.encode(rows)
