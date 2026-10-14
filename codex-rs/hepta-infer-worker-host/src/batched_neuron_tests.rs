@@ -1673,6 +1673,82 @@ fn signed_native_batch_success_is_fsynced_in_original_evidence_wal_before_public
 }
 
 #[test]
+fn real_wal_truncation_after_signed_scalar_effect_withholds_followup_success() {
+    let dir = tempfile::tempdir().unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    }
+    let final_use_dir = dir.path().join("final-use");
+    std::fs::create_dir(&final_use_dir).unwrap();
+    let wal = dir.path().join("scalar-evidence.wal");
+    let sink = Arc::new(
+        codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1::open(
+            &wal, 32, 32, 60_000,
+        )
+        .unwrap(),
+    );
+    let signer = SigningKey::from_bytes(&[118; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut worker = runner_with_driver(
+        &signer,
+        &final_use_dir,
+        model,
+        CountingScalarDriver(calls.clone()),
+        1,
+    )
+    .with_metric_sink(sink.clone());
+    let first_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            first,
+            key.clone(),
+            signed_member(&signer, first_binding, "original-first", 119),
+        )
+        .unwrap();
+    let first_result = worker.poll_and_execute(106).unwrap();
+    assert_eq!(first_result.outcomes.len(), 1);
+    assert!(first_result.outcomes[0].result.is_ok());
+    assert_eq!(sink.read_local_frontier().unwrap().committed_rows, 3);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+
+    // Deliberate test-only same-inode truncation after the first fsync.
+    // Queue acceptance must never certify the later signed physical effect.
+    std::fs::OpenOptions::new()
+        .write(true)
+        .open(&wal)
+        .unwrap()
+        .set_len(0)
+        .unwrap();
+    let second_binding =
+        neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
+    worker
+        .enqueue(
+            107,
+            "model".into(),
+            second,
+            key,
+            signed_member(&signer, second_binding, "original-second", 120),
+        )
+        .unwrap();
+    let second_result = worker.poll_and_execute(112).unwrap();
+    assert_eq!(second_result.outcomes.len(), 1);
+    assert!(matches!(
+        &second_result.outcomes[0].result,
+        Err(BatchWorkerErrorV1::TerminalTelemetryIndeterminate)
+    ));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 2);
+    assert_eq!(worker.pending(), 0);
+    assert!(!sink.healthy());
+    assert!(!worker.production_metrics_ready());
+}
+
+#[test]
 fn native_batch_dispatches_one_backend_call_with_two_signed_receipts_and_six_metrics() {
     let dir = tempfile::tempdir().unwrap();
     let signer = SigningKey::from_bytes(&[35; 32]);
