@@ -270,7 +270,7 @@ def stream_one(model, frames, root, tower, policy, critic):
             "model_sha256": e.parameters(model)["sha256"]}
 
 
-def run(manifest_path, output, *, _tower_factory=media.LocalTowers):
+def run(manifest_path, output, *, _tower_factory=media.LocalTowers, microbatch_shadow=False):
     manifest_path, output = Path(manifest_path), Path(output)
     manifest_raw = manifest_path.read_bytes()
     config = e.decode(manifest_raw)
@@ -364,6 +364,14 @@ def run(manifest_path, output, *, _tower_factory=media.LocalTowers):
         pred_seal = e.write_once(output / "predictions.json", {
             "selection_sha256": seal, "case_ids": [c.case_id for c in by["holdout"]],
             "records": records, "physical_work": costs})
+        batch_report = None
+        if type(microbatch_shadow) is not bool:
+            raise e.InputError("explicit batched shadow experiment switch required")
+        if microbatch_shadow:
+            from experiments.shared_stem_cell import video_batch
+            batch_report = video_batch.run_shadow(model, by["holdout"], root, base,
+                selection["policies"], selection["critic"], records, costs,
+                output / "batch", selection_sha256=seal, serial_predictions_sha256=pred_seal)
         base.close()
         media.read_cases(root, config["dataset"],2)
         temporal.cohort(root, config["cohort"])
@@ -371,6 +379,17 @@ def run(manifest_path, output, *, _tower_factory=media.LocalTowers):
             raise e.InputError("source or selected Reader changed")
         saved = e.decode(e.bound_file(output / "predictions.json", pred_seal))
         holdout_y = y(by["holdout"])
+        batch_scores = None
+        if batch_report is not None:
+            batch_saved = e.decode(e.bound_file(output / "batch/predictions.json",
+                                                batch_report["predictions_sha256"]))
+            batch_scores = {}
+            for batch_arm, study in batch_saved["arms"].items():
+                probabilities = torch.tensor([row["probabilities"] for row in study["records"]],
+                                             dtype=torch.float32)
+                batch_scores[batch_arm] = temporal.score(probabilities, holdout_y)
+            # Deliberately score only after BOTH serial and batched predictions are sealed;
+            # heldout labels never influence policy, batching schedule, or model weights.
         scores, pairing, per_source = {}, {}, {}
         source_of = {r["case_id"]: r["source_id"] for r in registered}
         idx = {c.case_id: i for i,c in enumerate(by["holdout"])}
@@ -417,6 +436,11 @@ def run(manifest_path, output, *, _tower_factory=media.LocalTowers):
             "ndu_is_bounded_linear_expected_next_pair_correctness": True,
             "general_ndu_fbsde_established": False, "quality_advantage_established": False,
             "source_license_declared": None, "production_accepted": False}
+        if batch_report is not None:
+            report.update({"microbatch_shadow": batch_report,
+                "microbatch_shadow_scores": batch_scores,
+                "microbatch_shadow_total_extra_calls":
+                    sum(x["batched_physical_calls"] for x in batch_report["comparison"].values())})
         e.write_once(output / "report.json", report)
         return report
     except Exception as error:
@@ -430,6 +454,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--microbatch-shadow", action="store_true",
+        help="Extra isolated batched Cell controls; no savings claimed for total research run")
     args = parser.parse_args()
     torch.set_num_threads(2)
-    run(args.manifest, args.output)
+    run(args.manifest, args.output, microbatch_shadow=args.microbatch_shadow)
