@@ -464,6 +464,16 @@ class AfEvidenceTests(unittest.TestCase):
         self.assertEqual(result["per_route_cost_diagnostics"]["full_codex_agent"]["allowed"]["model_calls"], 2)
         self.assertFalse(result["codex_extraction_authorized"])
 
+    def test_E_invalid_derived_throughput_fails_closed(self):
+        self.d["resources"]["runs"][0]["elapsed_seconds"] = 5e-324
+        check_bad(self.d, "E", "non-finite derived throughput")
+
+    def test_F_overflowed_aggregate_cost_fails_closed(self):
+        for row in self.d["codex"]["runs"]:
+            if row["route"] == "full_codex_agent" and row["case"] == "allowed":
+                row["total_cost"] = 1e308
+        check_bad(self.d, "F", "non-finite aggregate total_cost")
+
     def test_missing_E_resources_blocks_F_without_crashing(self):
         del self.d["resources"]
         report = gate.verify(self.d)
