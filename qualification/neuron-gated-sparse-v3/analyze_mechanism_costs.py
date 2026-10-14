@@ -9,9 +9,7 @@ production p99, causal speedup, training fairness or NDU utility.
 from __future__ import annotations
 
 import argparse
-from collections import defaultdict
 from decimal import Decimal, InvalidOperation
-import hashlib
 import json
 from pathlib import Path
 import sys
