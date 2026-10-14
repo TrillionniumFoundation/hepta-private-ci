@@ -46,7 +46,7 @@ def strictly_json(data: bytes) -> Any:
 
     try:
         return json.loads(data, object_pairs_hook=unique, parse_constant=reject)
-    except (UnicodeError, ValueError) as exc:
+    except (UnicodeError, json.JSONDecodeError) as exc:
         raise EvidenceError("invalid UTF-8 JSON") from exc
 
 
