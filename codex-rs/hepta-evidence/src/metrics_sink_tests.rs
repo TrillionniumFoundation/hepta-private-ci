@@ -176,7 +176,7 @@ fn metrics_flush_timeout_poisoned_when_queue_is_full_without_writer_progress() {
         sink.record(sample(PhaseMetricKindV1::Cns)),
         Err(PhaseMetricSinkErrorV1::Unavailable)
     );
-    // Make Drop's existing best-effort shutdown nonblocking in this fixture.
+    // The timed-out sink can detach without making a false flush claim.
     drop(rx);
     drop(sink);
 }
@@ -224,7 +224,10 @@ fn metrics_sink_drop_never_waits_on_saturated_unserved_channel() {
     };
     sink.record(sample(PhaseMetricKindV1::Cas)).unwrap();
     let started = std::time::Instant::now();
-    drop(sink);
+    let mut sink = sink;
+    sink.stop_with_timeout(Duration::from_millis(20));
     assert!(started.elapsed() < Duration::from_secs(2));
+    assert!(!sink.healthy());
+    drop(sink);
     drop(rx);
 }
