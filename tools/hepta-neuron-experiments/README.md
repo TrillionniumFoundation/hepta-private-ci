@@ -189,3 +189,18 @@ actual selected model loading, real Head training/selection, bounded Worker
 reservation/final-use, Q24 Neuron checkpoint CAS and witness, and genuine
 longitudinal task improvement. The numeric report flags each of these as
 **false**; running it cannot approve E0/E1 or structural Cell Split.
+
+### E0 public-source dependency-shadow hard gate
+
+Both research checkouts are now required to match their exact pinned Git commits
+**and** contain no changed tracked files **or any untracked/ignored files** before
+and after model execution. The diagnostic runner disables bytecode file creation
+before importing the research trees; GitHub Actions also exports
+`PYTHONDONTWRITEBYTECODE=1`. This blocks injection of new `.py` files,
+including `gitignore`-hidden transitive Python dependency shims, into a
+nominally frozen source checkout. Module-origin assertions independently check
+the direct imported HF / projection / Q24 Head modules. Existing polluted
+local checkouts must be cleaned or reproduced into a fresh checkout and do
+**not** pass by ignoring dirty-source evidence. These are fail-closed source
+controls, **not** proof of authenticated pretrained weights, signed final use
+or a durable Neuron checkpoint.

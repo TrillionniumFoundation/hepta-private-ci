@@ -69,10 +69,10 @@ def require_research_roots(research: Path, audited: Path) -> None:
         if git_sha(root) != expected:
             raise ValueError("research/audited source not at frozen exact commits")
         dirty = subprocess.run(
-            ["git", "-C", str(root), "status", "--porcelain", "--untracked-files=no"],
+            ["git", "-C", str(root), "status", "--porcelain", "--untracked-files=all", "--ignored"],
             check=True, capture_output=True, text=True).stdout.strip()
         if dirty:
-            raise ValueError("research/audited source has tracked file drift")
+            raise ValueError("research/audited source has tracked file drift or untracked/ignored shadow")
 
 
 def freeze_public_snapshot(root: Path, *, acquire: bool) -> Path:
@@ -130,6 +130,9 @@ def main() -> int:
     source.add_argument("--acquire-public", action="store_true")
     source.add_argument("--snapshot", type=Path)
     args = parser.parse_args()
+    # Source checkouts must remain byte-for-byte clean through final admission.
+    # Disable Python bytecode writes BEFORE importing either research tree.
+    sys.dont_write_bytecode = True
     root = args.output.absolute()
     root.mkdir(parents=True, exist_ok=False)
     try:

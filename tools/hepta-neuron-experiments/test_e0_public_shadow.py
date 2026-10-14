@@ -51,6 +51,21 @@ class PinnedPublicSourceTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "tracked file drift"):
                 m.require_research_roots(self.research, self.audit)
 
+    def test_untracked_shadow_python_module_rejected(self):
+        with self.freeze():
+            (self.audit / "paired_execution.py").write_text("raise RuntimeError('shadow')\n")
+            with self.assertRaisesRegex(ValueError, "untracked/ignored shadow"):
+                m.require_research_roots(self.research, self.audit)
+
+    def test_gitignored_untracked_module_rejected(self):
+        with self.freeze():
+            # Git's local exclude config can hide a source file from ordinary
+            # porcelain status; --ignored must still expose it.
+            (self.research / ".git" / "info" / "exclude").write_text("ghost_impl.py\n")
+            (self.research / "ghost_impl.py").write_text("raise RuntimeError('hidden')\n")
+            with self.assertRaisesRegex(ValueError, "untracked/ignored shadow"):
+                m.require_research_roots(self.research, self.audit)
+
     def test_changed_source_commit_is_rejected(self):
         with self.freeze():
             (self.audit / "pinned.py").write_text("x = 6\n")
