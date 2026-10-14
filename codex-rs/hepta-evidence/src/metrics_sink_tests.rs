@@ -268,10 +268,9 @@ fn restarted_evidence_sink_cannot_claim_a_new_history_after_wal_loss() {
     let path = dir.path().join("metrics.log");
     let retired = dir.path().join("retired-metrics.log");
     {
-        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 2, 25)
-            .expect("original durable writer");
-        sink.record(sample(PhaseMetricKindV1::Cas))
-            .expect("sample");
+        let sink =
+            DurablePhaseMetricSinkV1::open(&path, 8, 2, 25).expect("original durable writer");
+        sink.record(sample(PhaseMetricKindV1::Cas)).expect("sample");
         sink.flush().expect("original group fsync ACK");
     }
     let marker = dir.path().join("metrics.log.owner-lock");
@@ -321,4 +320,89 @@ fn graceful_evidence_stop_persists_pending_sample_before_owner_lock_release() {
         assert_eq!(reopened.committed_rows(), round + 1);
         assert_eq!(reopened.committed_groups(), round + 1);
     }
+}
+
+#[cfg(unix)]
+#[test]
+fn evidence_actor_returns_read_only_original_frontier_without_flushing_pending() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("observer.log");
+    let marker = dir.path().join("observer.log.owner-lock");
+    let sink = DurablePhaseMetricSinkV1::open(&path, 16, 8, 60_000)
+        .expect("original Evidence writer");
+    sink.record(sample(PhaseMetricKindV1::Cas))
+        .expect("committed");
+    sink.flush().expect("original durable group");
+    let first = sink.read_local_frontier().expect("read original Evidence");
+    assert_eq!(first.sequence, 1);
+    assert_eq!(first.committed_rows, 1);
+    assert_eq!(first.journal_bytes, std::fs::metadata(&path).unwrap().len());
+
+    sink.record(sample(PhaseMetricKindV1::Cns))
+        .expect("staged only");
+    let before_wal = std::fs::read(&path).expect("original WAL bytes");
+    let before_marker = std::fs::read(&marker).expect("original frontier rows");
+    let second = sink.read_local_frontier().expect("local observer read");
+    assert_eq!(second, first, "read-only query cannot commit staged metrics");
+    assert_eq!(std::fs::read(&path).expect("WAL unchanged"), before_wal);
+    assert_eq!(
+        std::fs::read(&marker).expect("marker unchanged"),
+        before_marker
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn actor_observer_rejects_corrupt_prior_marker_with_intact_last_row() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("observer.log");
+    let marker = dir.path().join("observer.log.owner-lock");
+    let sink = DurablePhaseMetricSinkV1::open(&path, 16, 1, 60_000)
+        .expect("original Evidence writer");
+    for phase in [
+        PhaseMetricKindV1::Cas,
+        PhaseMetricKindV1::Signature,
+        PhaseMetricKindV1::Cns,
+    ] {
+        sink.record(sample(phase)).expect("original metric");
+    }
+    sink.flush().expect("three committed groups");
+    assert_eq!(sink.read_local_frontier().unwrap().sequence, 3);
+    let mut bytes = std::fs::read(&marker).expect("three frontier rows");
+    let original_last = bytes[bytes.len() - 102..].to_vec();
+    let first_row = bytes
+        .windows(3)
+        .position(|segment| segment == b"F1|")
+        .expect("marker highwater format");
+    bytes[first_row + 3] = b'f';
+    assert_eq!(&bytes[bytes.len() - 102..], original_last.as_slice());
+    std::fs::write(&marker, bytes).expect("same-inode earlier marker tamper");
+    assert_eq!(
+        sink.read_local_frontier(),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+    assert!(!sink.healthy());
+    assert_eq!(sink.flush(), Err(PhaseMetricSinkErrorV1::Unavailable));
+}
+
+#[test]
+fn bounded_observer_timeout_poisoned_when_writer_never_replies() {
+    let (tx, rx) = sync_channel(1);
+    let sink = DurablePhaseMetricSinkV1 {
+        channel: tx,
+        health: Arc::new(WriterHealthV1 {
+            healthy: AtomicBool::new(true),
+            dropped: AtomicU64::new(0),
+            persisted_batches: AtomicU64::new(0),
+            persisted_rows: AtomicU64::new(0),
+        }),
+        worker: Mutex::new(None),
+    };
+    assert_eq!(
+        sink.read_local_frontier_with_timeout(Duration::from_millis(20)),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+    assert!(!sink.healthy());
+    drop(rx);
+    drop(sink);
 }
