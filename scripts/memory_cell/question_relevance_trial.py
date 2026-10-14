@@ -32,6 +32,23 @@ PLAN = {"schema": "hepta.reader.question-relevance-study.v1", "parent": "58583e9
         "independent_confirmation": False, "production_accepted": False}
 
 
+def execution_arms(names=None):
+    """Select execution units, never change the registered scientific arm census.
+
+    Omitted names preserve historical full execution. Explicit subsets are
+    recorded separately and cannot pass the existing full-result validator.
+    A restarted arm starts at the original base/seed, NOT an incomplete adapter.
+    """
+    if names is None:
+        return ARMS
+    c.require(isinstance(names, (list, tuple)) and names
+              and all(isinstance(x, str) for x in names)
+              and len(set(names)) == len(names), "nonempty unique execution arm names required")
+    chosen = tuple(row for row in ARMS if row[0] in names)
+    c.require(tuple(row[0] for row in chosen) == tuple(names), "unknown or reordered execution arms")
+    return chosen
+
+
 def train_cases(original_cases, plan, train):
     """Keep old four TRAIN recipients; add matched/mismatched donor questions."""
     units = {u["question_id"]: u for u in plan["units"]}
@@ -57,7 +74,8 @@ def train_cases(original_cases, plan, train):
     return cases
 
 
-def run(original_archive, budget_archive, select_archive, work, output):
+def run(original_archive, budget_archive, select_archive, work, output, *, only_arms=None):
+    active_arms = execution_arms(only_arms)
     import torch
     from transformers import AutoTokenizer
     import five_reader_response_learning as learning
@@ -74,6 +92,10 @@ def run(original_archive, budget_archive, select_archive, work, output):
     work, output = Path(work), Path(output)
     output.mkdir(parents=True, exist_ok=False)
     c.write_new(output/"plan.json", PLAN | {"training":learning.TRAINING})
+    if only_arms is not None:
+        c.write_new(output/"execution-subset.json", {"schema":"hepta.reader.execution-subset.v1",
+            "arms":[a for a,_ in active_arms],"scientific_plan_unchanged":True,
+            "full_study_completed_by_this_execution":False,"optimizer_state_resumed":False})
     with measured() as acquisition:
         br, bv = saved.extract_verified(budget_archive, work/"budget", saved.BUDGET_SHA)
         prior, prior_report = saved.validate_budget(br)
@@ -112,7 +134,7 @@ def run(original_archive, budget_archive, select_archive, work, output):
     c.write_new(output/"public-inputs.json",cases); seal=c.file_sha(output/"public-inputs.json")
     raw, summaries, errors, tail, initial = [], {}, [], "0"*64, None
     with (output/"events.jsonl").open("xb") as journal:
-        for arm,profile in ARMS:
+        for arm,profile in active_arms:
             backend,training,arm_error,load_cost=None,None,None,None
             tail=c.journal_append(journal,{"event":"arm_started","arm":arm},tail)
             try:
@@ -194,7 +216,7 @@ def run(original_archive, budget_archive, select_archive, work, output):
                 "load_cost":load_cost,"model_integrity_verified":integrity,
                 "diagnostic_forwards":sum(x["observed_decoder_forwards"] for x in train_diagnostics+audits)}
             print(c.canonical({"completed_arm":arm,"generation":summaries[arm]["generation"],"content":summaries[arm]["content"]}).decode(),flush=True)
-    c.require(len(raw)==len(cases)*len(ARMS) and c.file_sha(output/"public-inputs.json")==seal,"input/census drift")
+    c.require(len(raw)==len(cases)*len(active_arms) and c.file_sha(output/"public-inputs.json")==seal,"input/census drift")
     c.require(c.file_sha(matches[0])==LOCOMO_SHA256,"benchmark changed")
     c.write_new(output/"raw-answers.json",raw)
     result={"schema":"hepta.reader.question-relevance-result.v1","plan_sha256":c.digest(PLAN|{"training":learning.TRAINING}),
@@ -203,6 +225,8 @@ def run(original_archive, budget_archive, select_archive, work, output):
         "generation_forward_lower_bound":sum(x.get("observed_decoder_forwards",0) for x in raw),
         "weak_negative_labels_not_independently_adjudicated":True,"reader_adequacy_established":False,
         "independent_confirmation":False,"compute_matched":False,"production_accepted":False,"five_experiments_completed":False}
+    if only_arms is not None:
+        result.update(execution_subset=[a for a,_ in active_arms],full_study_completed_by_this_execution=False)
     c.write_new(output/"report.json",result); print("QUESTION_RELEVANCE_RESULT",c.canonical(result).decode(),flush=True)
     c.require(not errors,"retained question-relevance execution failures")
     return result
@@ -212,8 +236,9 @@ if __name__=="__main__":
     p=argparse.ArgumentParser(description=__doc__)
     for key in ("original-archive","budget-archive","select-archive","work","output"):
         p.add_argument("--"+key,type=Path,required=True)
+    p.add_argument("--only-arm", action="append", choices=[a for a,_ in ARMS])
     args=p.parse_args()
-    try: run(args.original_archive,args.budget_archive,args.select_archive,args.work,args.output)
+    try: run(args.original_archive,args.budget_archive,args.select_archive,args.work,args.output,only_arms=args.only_arm)
     except Exception as error:
         if args.output.is_dir() and not (args.output/"failure.json").exists():
             c.write_new(args.output/"failure.json",{"error":str(error)[:2048],"completed":False,"production_accepted":False})

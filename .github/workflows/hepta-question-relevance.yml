@@ -15,7 +15,9 @@ concurrency:
   cancel-in-progress: false
 jobs:
   matched-and-mismatched-questions:
-    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    # Explicit recovery commits run the complete contract suite in the recovery
+    # lane, then restart only the unfinished arm. Do not refit all completed arms.
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && !contains(github.event.head_commit.message, '[recovery-only]')
     runs-on: ubuntu-latest
     timeout-minutes: 45
     env:

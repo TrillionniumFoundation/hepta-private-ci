@@ -1,0 +1,95 @@
+name: Hepta explicit cancelled relevance recovery
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/relevance_recovery.py"
+      - "scripts/memory_cell/test_relevance_recovery.py"
+      - ".github/workflows/hepta-relevance-recovery.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: relevance-recovery-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  verify-reuse-and-restart-one-arm:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Require recovery state and retained canonical tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-recovery-checks
+          for pattern in test_relevance_recovery.py test_select_question_relevance_supplement.py test_question_evidence_relevance.py test_question_relevance_trial.py; do
+            python3 -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/hepta-recovery-checks/$pattern.log"
+          done
+          python3 -m py_compile scripts/memory_cell/relevance_recovery.py scripts/memory_cell/question_relevance_trial.py scripts/memory_cell/test_relevance_recovery.py
+      - name: Install unchanged pinned model worker
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/hepta-recovery-env
+          /tmp/hepta-recovery-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/hepta-recovery-checks/install-torch.log 2>&1
+          /tmp/hepta-recovery-env/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/hepta-recovery-checks/install-worker.log 2>&1
+          /tmp/hepta-recovery-env/bin/pip check | tee /tmp/hepta-recovery-checks/pip-check.log
+          /tmp/hepta-recovery-env/bin/pip freeze > /tmp/hepta-recovery-checks/environment.txt
+      - name: Run inherited contracts without repeating old model experiments
+        run: |
+          set -euo pipefail
+          failed=0
+          for pattern in test_full_cell_matrix.py test_five_causal_experiments.py test_five_causal_native.py 'test_five_group*.py' test_five_reader_response.py 'test_five_reader_adapter*.py' test_five_encoder_snapshot.py test_five_reader_evidence_pairs.py 'test_source_time_evidence*.py' test_reader_fit_audit.py 'test_assistant_projection*.py' test_reader_content_swap.py test_select_content_inventory.py test_answer_evidence_review.py test_question_evidence_relevance_hf.py test_select_question_relevance.py test_select_question_relevance_hf.py; do
+            name=$(printf '%s' "$pattern" | tr '*' '_')
+            if /tmp/hepta-recovery-env/bin/python -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/hepta-recovery-checks/$name.log"; then
+              printf '%s\tpassed\n' "$pattern" >> /tmp/hepta-recovery-checks/suites.tsv
+            else
+              failed=1
+              printf '%s\tfailed\n' "$pattern" >> /tmp/hepta-recovery-checks/suites.tsv
+            fi
+          done
+          test "$failed" -eq 0
+      - name: Retrieve and verify fixed cancelled and original artifacts
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11872208169/zip > /tmp/recovery-cancelled.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/recovery-original.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11838105827/zip > /tmp/recovery-budget.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11863981474/zip > /tmp/recovery-select.zip
+          printf '%s  %s\n' 601cd09ae82cc6915121aaf8bb0eac5c1fe7c8b370c9d4a832bc6e5d54b91bac /tmp/recovery-cancelled.zip | sha256sum -c -
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/recovery-original.zip | sha256sum -c -
+          printf '%s  %s\n' ce5178bf4bea0d45d65f22765e29a835b7a99a4b3a4fd1dc4fa0d248a6d5c151 /tmp/recovery-budget.zip | sha256sum -c -
+          printf '%s  %s\n' aeb4113b6d2baace0a042f960876861c78b5449b6d9dac404dee2e5c041e46fa /tmp/recovery-select.zip | sha256sum -c -
+      - name: Reuse exact completed arms and restart only reverse from original base
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/hepta-recovery-checks/process-resources.txt /tmp/hepta-recovery-env/bin/python scripts/memory_cell/relevance_recovery.py --cancelled-archive /tmp/recovery-cancelled.zip --original-archive /tmp/recovery-original.zip --budget-archive /tmp/recovery-budget.zip --select-archive /tmp/recovery-select.zip --work /tmp/hepta-recovery-materials --output /tmp/hepta-recovered --source-commit "${{ github.sha }}" 2>&1 | tee /tmp/hepta-recovery-checks/execution.log
+      - name: Retain source and costs without original weights or whole dataset
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-recovered/source/memory_cell /tmp/hepta-recovered/checks
+          cp -r /tmp/hepta-recovery-checks/. /tmp/hepta-recovered/checks/
+          git rev-parse HEAD > /tmp/hepta-recovered/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-recovered/source/tested-tree.txt
+          cp scripts/memory_cell/*.py scripts/memory_cell/requirements.txt /tmp/hepta-recovered/source/memory_cell/
+          cp experiments/shared_stem_cell/execution.py .github/workflows/hepta-relevance-recovery.yml /tmp/hepta-recovered/source/
+          (cd /tmp/hepta-recovered && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-question-relevance-recovered-development
+          path: /tmp/hepta-recovered
+          if-no-files-found: error
