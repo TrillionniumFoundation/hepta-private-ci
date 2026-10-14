@@ -91,6 +91,70 @@ fn direct_single_phase_cns_publication_is_always_denied_and_never_appends() {
 
 #[cfg(unix)]
 #[test]
+fn valid_hash_chain_cannot_replay_direct_cns_commit_without_prior_begin() {
+    let dir = tempfile::tempdir().expect("owner-only root");
+    let path = dir.path().join("unprepared-cutover.wal");
+    let prior = snapshot(3);
+    {
+        let control = NduPublicationOwnerV1::open_production(
+            &path,
+            prior.clone(),
+            Digest32::ZERO,
+        )
+        .expect("protected genesis");
+        assert_eq!(control.current().unwrap().0, prior);
+    }
+    let genesis_bytes = std::fs::read_to_string(&path).expect("genesis");
+    let genesis = decode(genesis_bytes.lines().last().expect("genesis row"))
+        .expect("authentic ledger record");
+    let mut forged = Event {
+        sequence: genesis.sequence + 1,
+        previous: genesis.head,
+        head: Digest32::ZERO,
+        kind: 'C',
+        snapshot: snapshot(4).semantic_digest().expect("successor digest"),
+        before: Digest32::ZERO,
+        after: Digest32::of_bytes(b"forged-migration"),
+        read: Digest32::ZERO,
+        tick: Digest32::ZERO,
+    };
+    forged.head = event_hash(&forged);
+    let frame = format!(
+        "N1|{}|{}|{}|{}|{}|{}|{}|{}|{}\n",
+        forged.sequence,
+        forged.previous,
+        forged.head,
+        forged.kind,
+        forged.snapshot,
+        forged.before,
+        forged.after,
+        forged.read,
+        forged.tick,
+    );
+    let mut writer = OpenOptions::new()
+        .append(true)
+        .open(&path)
+        .expect("append only to simulate tamper");
+    writer.write_all(frame.as_bytes()).expect("inject frame");
+    writer.sync_all().expect("force forged durable suffix");
+    drop(writer);
+    assert!(matches!(
+        NduPublicationOwnerV1::open_production(
+            &path,
+            snapshot(4),
+            forged.after,
+        ),
+        Err(NduPublicationErrorV1::Corrupt)
+    ));
+    assert_eq!(
+        std::fs::read_to_string(&path).expect("original bytes still present"),
+        genesis_bytes + &frame,
+        "invalid signed-shaped commit must not silently repair the WAL"
+    );
+}
+
+#[cfg(unix)]
+#[test]
 fn cutover_and_checkpoint_cas_use_same_exclusive_owner() {
     let dir = tempfile::tempdir().expect("private directory");
     let path = dir.path().join("frontier.wal");
