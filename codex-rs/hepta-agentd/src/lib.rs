@@ -198,6 +198,9 @@ pub use neuron_effect_bootstrap::NeuronEffectBootstrapErrorV1;
 pub use neuron_effect_bootstrap::bootstrap_durable_neuron_effect_intent_v1;
 // Use the existing Evidence-owned WAL writer as the downstream signed
 // Worker's concrete PhaseMetricSinkV1; this is not a signer or new owner.
+pub use codex_hepta_evidence::metrics_group_commit::MetricPhaseV1;
+pub use codex_hepta_evidence::metrics_group_commit::MetricsCommittedSampleQueryV1;
+pub use codex_hepta_evidence::metrics_group_commit::MetricsCommittedSampleReadbackV1;
 pub use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
 pub use neuron_runtime::AgentdNeuronOwner;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
