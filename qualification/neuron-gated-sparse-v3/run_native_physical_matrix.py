@@ -136,6 +136,25 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
                     require(row.get('predecessor_sha256') ==
                             frontier[ix-1]['checkpoint_sha256'],
                             f'{cap}/{arm}: broken native checkpoint chain')
+            # Independently start the *same* frozen native executable in a
+            # second OS process. In-process cold replay alone can miss process-
+            # global initialization, allocation or runtime nondeterminism.
+            sha_file(path, m['weight_sha256'])
+            sha_file(binary, binary_sha)
+            sha_file(trace, trace_sha)
+            try:
+                second = subprocess.run(command, stdin=subprocess.DEVNULL,
+                                        stdout=subprocess.PIPE,
+                                        stderr=subprocess.PIPE, timeout=30, check=False)
+            except subprocess.TimeoutExpired as exc:
+                raise ValueError(f'{cap}/{arm}: second native Q24 process timed out') from exc
+            require(second.returncode == 0 and
+                    0 < len(second.stdout) <= MAX_STDOUT and
+                    len(second.stderr) <= (1 << 16),
+                    f'{cap}/{arm}: second native process failed or produced oversized output')
+            second_receipt = unique_json(second.stdout)
+            require(second_receipt == parsed,
+                    f'{cap}/{arm}: independent-process native Q24 receipt/frontier mismatch')
             sha_file(path, m['weight_sha256'])
             sha_file(binary, binary_sha)
             sha_file(trace, trace_sha)
@@ -149,6 +168,9 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
                 'q24_head_integer_oracle':integer_head_oracle,
                 'float_surrogate_vs_native_q24_state_gap':gap,
                 'arm': arm, 'private_parameter_cap': cap,
+                'fresh_process_count': 2,
+                'independent_rust_processes_bit_identical': True,
+                'second_process_raw_stdout_sha256': sha(second.stdout),
                 'native_process_wall_micros_not_target_host_slo': elapsed_us,
                 'physical_artifact_sha256': m['weight_sha256'],
                 'q24_checkpoint_chain_final': frontier[-1]['checkpoint_sha256'],
@@ -163,6 +185,8 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
         'same_frozen_trace_sha256': trace_sha,
         'training_receipt_sha256': receipt_sha,
         'twenty_native_physical_model_executions': len(results),
+        'forty_fresh_native_process_invocations': len(results)*2,
+        'cross_process_q24_frontier_and_head_receipts_equal': len(results)==20,
         'native_q24_temporal_replay_executed': True,
         'diagnostic_native_vs_float_gap_rows': len(results),
         'quantized_native_head_integer_oracle_matches': len(results),
