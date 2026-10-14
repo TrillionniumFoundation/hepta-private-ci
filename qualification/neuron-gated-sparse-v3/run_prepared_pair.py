@@ -154,7 +154,9 @@ def read_trace(trace_file: Path) -> tuple[str, int]:
     return hashlib.sha256(raw).hexdigest(), len(events)
 
 
-def run(binary: Path, trace: Path) -> dict[str, Any]:
+def run(binary: Path, trace: Path, *, order_offset: int = 0) -> dict[str, Any]:
+    require(type(order_offset) is int and order_offset in (0, 1),
+            "only preregistered alternating process ordering is allowed")
     require(binary.is_file() and trace.is_file(), "missing binary or raw fixture trace")
     binary_sha256 = sha256_binary(binary)
     trace_sha256, event_count = read_trace(trace)
@@ -162,7 +164,8 @@ def run(binary: Path, trace: Path) -> dict[str, Any]:
     for scale_index, cells in enumerate(SCALES):
         for arm_index, arm in enumerate(ARMS):
             results: dict[str, dict[str, Any]] = {}
-            modes = MODES if (scale_index + arm_index) % 2 == 0 else tuple(reversed(MODES))
+            modes = (MODES if (scale_index + arm_index + order_offset) % 2 == 0
+                     else tuple(reversed(MODES)))
             for mode in modes:
                 args = [
                     str(binary.resolve()), "--arm", arm, "--cells", str(cells),

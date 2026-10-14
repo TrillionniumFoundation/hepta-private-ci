@@ -114,6 +114,16 @@ jobs:
             --report "$PAIRED_RESULT" \
             --binary codex-rs/target/debug/neuron_shadow_mechanism_probe \
             --audit "$PAIRED_AUDIT"
+      - name: Repeat all 20 Q24 arm-scale comparisons three times with paired frontiers
+        working-directory: codex-rs
+        env:
+          REPEATED_RESULT: ${{ runner.temp }}/neuron-q24-3x40-repeated-pairs.json
+        run: >-
+          python3 ../qualification/neuron-gated-sparse-v3/repeat_prepared_pair.py
+          --binary target/debug/neuron_shadow_mechanism_probe
+          --trace ../qualification/neuron-gated-sparse-v3/fixture_q24_trace.json
+          --repetitions 3
+          --report "$REPEATED_RESULT"
       - name: Retain explicitly non-production native fixture measurements
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -124,5 +134,6 @@ jobs:
             ${{ runner.temp }}/neuron-q24-cost-analysis.json
             ${{ runner.temp }}/neuron-q24-prepared-pairs.json
             ${{ runner.temp }}/neuron-q24-paired-structural-audit.json
+            ${{ runner.temp }}/neuron-q24-3x40-repeated-pairs.json
           if-no-files-found: warn
           retention-days: 14
