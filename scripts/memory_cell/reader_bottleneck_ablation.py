@@ -218,7 +218,7 @@ def validate_row(row, case, arms, identity):
         or receipt.get("trainable_parameters") != 0
         or receipt.get("answer_postprocessed") is not False
         or receipt.get("semantic_citation_precision") is not None
-        or receipt.get("independent_semantic_review", False) is not False
+        or receipt.get("independent_semantic_review") is not False
         or [item["original_id"] for item in receipt["delivered_evidence"]]
         != row["selected"]
         or type(receipt["input_tokens"]) is not int

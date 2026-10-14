@@ -153,12 +153,15 @@ class BottleneckAblationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "declared support"):
             selection(case, docs)
 
-    def test_real_frozen_reader_receipt_does_not_supply_human_review_flag(self):
+    def test_original_reader_requires_explicit_negative_semantic_review_flag(self):
         case, docs = fixture()
         arms, _ = selection(case, docs)
         row = answer("declared_support", arms["declared_support"])
-        row["receipt"].pop("independent_semantic_review")
         validate_row(row, case, arms, QWEN_INVENTORY)
+        missing = deepcopy(row)
+        missing["receipt"].pop("independent_semantic_review")
+        with self.assertRaisesRegex(ValueError, "identity"):
+            validate_row(missing, case, arms, QWEN_INVENTORY)
         row["receipt"]["independent_semantic_review"] = True
         with self.assertRaisesRegex(ValueError, "identity"):
             validate_row(row, case, arms, QWEN_INVENTORY)
