@@ -2,11 +2,17 @@
 
 Date: 2026-10-14. PR #1697. Parent efe97de488622b14bab1d42bbf90d4c8249734a0.
 This increment changes no existing trainer, model, threshold or serving owner.
-The new read-only study is submitted, not claimed executed at publication.
+The new read-only study was submitted without claiming execution at publication.
 Local container, private Python and visible Python returned infrastructure
 ClientError. No new local test pass or downloaded-artifact rehash is claimed.
 The observations below were read from complete decoded hosted logs and final
 job statuses, not inferred from a queued job or a PR description.
+
+Current content-swap implementation is 7a94d9e5e6bd2f6c6e516405f115abe65428073f.
+Run38493158981 / job115622846069 has now completed its required-test STEP and
+all three external archive SHA checks successfully. Its saved-model comparison
+is in progress. Individual test counts and the final model result are not yet
+claimed from a completed log. This note changes documentation only.
 
 ## 1. Eight epochs change the proxy criterion but do not establish semantic learning
 
@@ -16,11 +22,11 @@ invocations passed; 309 distinct test identities, zero skips. Three imported
 NativeAdapterTests repeat in the pair suite. The 25 fit-audit tests passed.
 This is not full-repository, Rust, target-device or prospective-merge acceptance.
 
-All 120 planned free-generation rows completed. These reuse four TRAIN and
-four SELECT questions across five arms and three/four existing conditions,
-not 120 independent tasks. Teacher-forced audit used 14 TRAIN pairs and three
-SELECT pairs with available annotations; the fourth SELECT target is missing.
-TEST families conv-43 and conv-47 remain excluded.
+All 120 planned free-generation rows completed. These reuse four TRAIN questions
+under TWO conditions and four SELECT questions under FOUR conditions, across
+five arms: (4*2 + 4*4)*5=120, not 120 independent tasks. Teacher-forced audit
+used 14 TRAIN pairs and three SELECT pairs with available annotations; the
+fourth SELECT target is missing. TEST families conv-43 and conv-47 remain excluded.
 
 | Arm | TRAIN both conditional preferences positive | SELECT both positive | TRAIN/SELECT mean full-target support margin |
 | --- | --- | --- | --- |
@@ -146,11 +152,13 @@ An integrity failure remains an error, never a successful candidate.
 New files reader_content_swap.py, reader_content_swap_trial.py and
  test_reader_content_swap.py contain27 new test definitions (15 controls,
 5 interaction/readout,4 archive integrity,3 official tiny-model checks).
-At publication they are submitted, NOT claimed locally passing. The dedicated
-lane requires all inherited suites and these tests before any original-model
-execution. It then downloads three fixed archives, verifies every result member,
-loads previously saved adapters, and runs the read-only experiment. It neither
-reruns eight-epoch training nor modifies the earlier workflows.
+At publication they were submitted without a local passing claim. The subsequent
+required-test step is successful as noted above; individual log counts await
+completed-log inspection. The dedicated lane requires all inherited suites and
+these tests before any original-model execution. It then downloads three fixed
+archives, verifies every result member, loads previously saved adapters, and runs
+the read-only experiment. It neither reruns eight-epoch training nor modifies
+the earlier workflows.
 
 The supplied archive code is never imported. Original pretrained models and
 archived source/material copies stay outside the exported output tree. Current
