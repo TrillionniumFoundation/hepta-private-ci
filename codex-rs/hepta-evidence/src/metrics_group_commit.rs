@@ -59,6 +59,21 @@ pub struct MetricsCommitReceiptV1 {
     pub sync_latency_micros: u64,
 }
 
+/// Original WAL plus local marker state witnessed by this process.
+/// This readback is NOT an independent signature, release permit or proof
+/// against coordinated rollback of both storage files.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct MetricsLocalFrontierV1 {
+    pub sequence: u64,
+    pub head_digest: Digest32,
+    pub committed_rows: u64,
+    pub journal_bytes: u64,
+    pub wal_device: u64,
+    pub wal_inode: u64,
+    pub marker_device: u64,
+    pub marker_inode: u64,
+}
+
 #[derive(Debug)]
 pub enum MetricsJournalErrorV1 {
     Io(std::io::Error),
@@ -241,6 +256,14 @@ impl MetricsGroupCommitV1 {
             let contents =
                 std::str::from_utf8(&line).map_err(|_| MetricsJournalErrorV1::Corrupt)?;
             let (next_sequence, next_head, rows) = parse_group(contents, sequence, head)?;
+            #[cfg(unix)]
+            verify_original_frontier_row(
+                &owner_marker,
+                owner_marker_bytes.len(),
+                next_sequence,
+                total,
+                next_head,
+            )?;
             last_row_len = read;
             last_row_digest = Digest32::of_bytes(&line);
             sequence = next_sequence;
@@ -355,6 +378,88 @@ impl MetricsGroupCommitV1 {
             return Err(MetricsJournalErrorV1::Corrupt);
         }
         Ok(())
+    }
+
+    /// Re-read the original full history only on explicit Observer request,
+    /// never during a Neuron inference tick or a normal metrics group fsync.
+    /// A forged earlier marker row with a correct final tail must be rejected.
+    #[cfg(unix)]
+    fn verify_complete_marker_history(&self) -> Result<(), MetricsJournalErrorV1> {
+        let mut reader = BufReader::new(File::open(&self.journal_path)?);
+        let mut row = Vec::new();
+        let mut bytes = 0_u64;
+        let mut sequence = 0_u64;
+        let mut head = Digest32::ZERO;
+        let mut committed_rows = 0_u64;
+        loop {
+            row.clear();
+            let read = (&mut reader)
+                .take((MAX_LINE_BYTES + 1) as u64)
+                .read_until(b'\n', &mut row)?;
+            if read == 0 {
+                break;
+            }
+            bytes = bytes
+                .checked_add(read as u64)
+                .ok_or(MetricsJournalErrorV1::Capacity)?;
+            if read > MAX_LINE_BYTES
+                || bytes > MAX_JOURNAL_BYTES
+                || row.pop() != Some(b'\n')
+            {
+                return Err(MetricsJournalErrorV1::Corrupt);
+            }
+            let text =
+                std::str::from_utf8(&row).map_err(|_| MetricsJournalErrorV1::Corrupt)?;
+            let (next_sequence, next_head, rows) = parse_group(text, sequence, head)?;
+            verify_original_frontier_row(
+                &self.owner_marker,
+                self.owner_marker_bytes.len(),
+                next_sequence,
+                bytes,
+                next_head,
+            )?;
+            sequence = next_sequence;
+            head = next_head;
+            committed_rows = committed_rows
+                .checked_add(rows as u64)
+                .ok_or(MetricsJournalErrorV1::Capacity)?;
+        }
+        if sequence != self.sequence
+            || head != self.head
+            || committed_rows != self.committed_rows
+            || bytes != self.bytes
+        {
+            return Err(MetricsJournalErrorV1::Corrupt);
+        }
+        Ok(())
+    }
+
+    /// Local readback for an independent Observer to capture and then
+    /// authenticate under its OWN custody. No signer or grant is minted.
+    pub fn read_local_frontier(&self) -> Result<MetricsLocalFrontierV1, MetricsJournalErrorV1> {
+        self.verify_original_frontier()?;
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt as _;
+            self.verify_complete_marker_history()?;
+            self.verify_original_frontier()?;
+            let wal = self.file.metadata()?;
+            let marker = self.owner_marker.metadata()?;
+            Ok(MetricsLocalFrontierV1 {
+                sequence: self.sequence,
+                head_digest: self.head,
+                committed_rows: self.committed_rows,
+                journal_bytes: self.bytes,
+                wal_device: wal.dev(),
+                wal_inode: wal.ino(),
+                marker_device: marker.dev(),
+                marker_inode: marker.ino(),
+            })
+        }
+        #[cfg(not(unix))]
+        {
+            Err(MetricsJournalErrorV1::UnsafePath)
+        }
     }
 
     // The original WAL group is already fsynced when this is called.
@@ -537,6 +642,38 @@ fn check_journal_path(path: &Path) -> Result<(), MetricsJournalErrorV1> {
         }
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
         Err(error) => return Err(MetricsJournalErrorV1::Io(error)),
+    }
+    Ok(())
+}
+
+/// Compare one separately persisted group frontier against the original WAL.
+/// Used during cold replay and optional full Observer readback only, not
+/// along the ordinary group-flush critical path.
+#[cfg(unix)]
+fn verify_original_frontier_row(
+    opened_marker: &File,
+    identity_bytes: usize,
+    sequence: u64,
+    bytes: u64,
+    head: Digest32,
+) -> Result<(), MetricsJournalErrorV1> {
+    use std::os::unix::fs::FileExt as _;
+
+    let offset = sequence
+        .checked_sub(1)
+        .and_then(|index| index.checked_mul(OWNER_FRONTIER_ROW_BYTES as u64))
+        .and_then(|index| index.checked_add(identity_bytes as u64))
+        .ok_or(MetricsJournalErrorV1::Capacity)?;
+    let expected = owner_frontier_row(sequence, bytes, head);
+    if expected.len() != OWNER_FRONTIER_ROW_BYTES {
+        return Err(MetricsJournalErrorV1::Corrupt);
+    }
+    let mut observed = [0_u8; OWNER_FRONTIER_ROW_BYTES];
+    opened_marker
+        .read_exact_at(&mut observed, offset)
+        .map_err(|_| MetricsJournalErrorV1::Corrupt)?;
+    if observed.as_slice() != expected.as_slice() {
+        return Err(MetricsJournalErrorV1::Corrupt);
     }
     Ok(())
 }
