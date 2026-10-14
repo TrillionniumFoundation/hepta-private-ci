@@ -166,6 +166,15 @@ jobs:
             --news-dir "$RUNNER_TEMP/public-news" \
             --training-flops-budget 5000000000 --max-budget-steps 4096 \
             --output "$RUNNER_TEMP/public-budget-learning" 2>&1 | tee "$RUNNER_TEMP/public-budget-learning.log"
+      - name: Exercise budgeted parent-preserving split against direct family control
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/shared_learning_probe.py \
+            --snapshot "$RUNNER_TEMP/public-encoder/snapshot" \
+            --news-dir "$RUNNER_TEMP/public-news" --family-split \
+            --training-flops-budget 5000000000 --max-budget-steps 4096 \
+            --output "$RUNNER_TEMP/public-family-learning" 2>&1 | tee "$RUNNER_TEMP/public-family-learning.log"
       - name: Retain observations, never upload model weights
         if: always()
         uses: actions/upload-artifact@v4
@@ -208,4 +217,17 @@ jobs:
             ${{ runner.temp }}/public-budget-learning/controls/FAILED.json
             ${{ runner.temp }}/public-budget-learning/controls/*/RUN.json
             ${{ runner.temp }}/public-budget-learning/controls/*/FAILED.json
+            ${{ runner.temp }}/public-family-learning.log
+            ${{ runner.temp }}/public-family-learning/scores.json
+            ${{ runner.temp }}/public-family-learning/selection.json
+            ${{ runner.temp }}/public-family-learning/STUDY.json
+            ${{ runner.temp }}/public-family-learning/source_files.json
+            ${{ runner.temp }}/public-family-learning/COMMITTED.json
+            ${{ runner.temp }}/public-family-learning/FAILED.json
+            ${{ runner.temp }}/public-family-learning/controls/STUDY.json
+            ${{ runner.temp }}/public-family-learning/controls/predictions.json
+            ${{ runner.temp }}/public-family-learning/controls/COMMITTED.json
+            ${{ runner.temp }}/public-family-learning/controls/FAILED.json
+            ${{ runner.temp }}/public-family-learning/controls/*/RUN.json
+            ${{ runner.temp }}/public-family-learning/controls/*/FAILED.json
           if-no-files-found: error
