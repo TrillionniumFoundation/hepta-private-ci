@@ -1018,6 +1018,54 @@ mod tests {
         drop(stream);
     }
 
+    /// A live Linux Unix listener with a full accept queue must not hold the
+    /// split coordinator forever before it can even send a framed request.
+    /// This exercises the kernel backlog, not a pre-expired synthetic clock.
+    #[cfg(target_os = "linux")]
+    #[test]
+    fn saturated_unix_owner_backlog_denies_connection_within_original_budget() {
+        let root = tempfile::tempdir().expect("root");
+        let path = root.path().join("full-owner.sock");
+        let listener = Socket::new(Domain::UNIX, Type::STREAM, None).expect("listener socket");
+        let address = SockAddr::unix(&path).expect("listener address");
+        listener.bind(&address).expect("bind real Unix socket");
+        listener.listen(1).expect("bounded accept backlog");
+
+        // Linux permits two queued connectors for listen(1). Leave both
+        // pending and deliberately do not accept either of them.
+        let pending_connections = [
+            UnixStream::connect(&path).expect("first queued connection"),
+            UnixStream::connect(&path).expect("second queued connection"),
+        ];
+
+        let (sender, receiver) = std::sync::mpsc::channel();
+        let attempt_path = path.clone();
+        let worker = thread::spawn(move || {
+            let started_at = Instant::now();
+            let denied =
+                connect_owner_with_deadline(&attempt_path, started_at, Duration::from_millis(100))
+                    .is_err();
+            let _ = sender.send((denied, started_at.elapsed()));
+        });
+
+        // A watchdog makes an accidentally restored blocking connect a
+        // bounded test failure instead of hanging the entire native CI run.
+        let (denied, elapsed) = receiver
+            .recv_timeout(Duration::from_secs(3))
+            .expect("saturated Unix connect must resolve within the watchdog");
+        worker.join().expect("bounded connection thread");
+        assert!(
+            denied,
+            "full listener backlog must not admit a third connection"
+        );
+        assert!(
+            elapsed < Duration::from_secs(2),
+            "connect must respect the bounded transport budget"
+        );
+        drop(pending_connections);
+        drop(listener);
+    }
+
     #[test]
     fn rpc_client_refuses_trickled_response() {
         use std::io::Write as _;
