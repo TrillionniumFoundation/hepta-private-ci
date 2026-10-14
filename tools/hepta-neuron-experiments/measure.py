@@ -279,20 +279,22 @@ def run(repo: Path, plan_file: Path, arm: str, output: Path, timeout: float,
                 break
             time.sleep(min(.02, max(.001, deadline - time.monotonic())))
     elapsed = time.monotonic_ns() - t0
-    # The direct child can exit successfully while a same-session helper still
-    # writes evidence or executes model code. A complete run must settle its
-    # isolated process group, not just the first PID.
-    if status == "completed":
+    # A direct child returning nonzero is NOT necessarily a stopped workload:
+    # its same-process-group helpers may still write evidence or consume
+    # compute. Always tear down the entire isolated group after reaping the
+    # leader, whether the return status was success, error or timeout.
+    # A successful direct child with live descendants is not a complete run.
+    try:
+        os.killpg(process.pid, 0)
+    except ProcessLookupError:
+        pass
+    else:
+        if status == "completed":
+            status = "unsettled_descendants"
         try:
-            os.killpg(process.pid, 0)
+            os.killpg(process.pid, signal.SIGKILL)
         except ProcessLookupError:
             pass
-        else:
-            status = "unsettled_descendants"
-            try:
-                os.killpg(process.pid, signal.SIGKILL)
-            except ProcessLookupError:
-                pass
     try:
         executable_after = sha256_file(executable)
     except (OSError, EvidenceError):

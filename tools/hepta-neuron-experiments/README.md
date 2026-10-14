@@ -264,3 +264,19 @@ fails closed. Production Encoder/Head/Worker execution still needs an
 independently selected, calibrated, fixed and authorized preprocessing
 manifest, actual loaded-tensor receipts, final-use gates and a durable
 Neuron Tick/Checkpoint with independently verified outcomes.
+
+### Fail-closed process-group cleanup even on nonzero parent exit
+
+The POSIX execution collector previously killed lingering same-group helper
+processes when the *direct child returned zero*, but not when the direct child
+returned a **nonzero exit code**. That failure receipt did correctly deny
+qualification, yet a descendant could continue doing work or writing to
+the log/artifact area. The owner now sends an isolated process-group kill
+after reaping the direct child for **all** statuses; it continues to mark
+success-with-descendants as `unsettled_descendants`, while preserving
+`failed`, `timed_out` or `output_limit` as failures. A new Linux regression
+runs an actual failing parent whose helper attempts a delayed filesystem
+write, and rejects any surviving helper effect. A child that escapes the
+isolated process group or dispatches to an independent remote service remains
+outside this local process cleanup; only a real provider/Worker owner can
+reconcile those external side effects.

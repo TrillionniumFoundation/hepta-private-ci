@@ -299,6 +299,26 @@ class ExperimentEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(m.EvidenceError, "incomplete/failed model execution"):
             m.audit(plan, self.repo, [rec])
 
+    @unittest.skipUnless(sys.platform.startswith("linux"), "requires isolated POSIX process group")
+    def test_failed_parent_cannot_leave_same_group_child_running(self) -> None:
+        # A nonzero parent is an insufficient termination witness. The child
+        # would write a marker after the parent exits unless run() kills its
+        # isolated process group on the failure path as well.
+        import time
+        marker = self.root / "failed-parent-child-escaped"
+        child = f"import time; time.sleep(.30); open({str(marker)!r}, 'w').write('escaped')"
+        parent = f"import subprocess,sys; subprocess.Popen([sys.executable,'-c',{child!r}]); sys.exit(7)"
+        command = [sys.executable, "-c", parent]
+        plan = self.plan_with_commands("failed-orphan", {"multi_head": command})
+        receipt = self.root / "failed-orphan.json"
+        with self.assertRaisesRegex(m.EvidenceError, "run failed"):
+            m.run(self.repo, plan, "multi_head", receipt, 5, command)
+        self.assertEqual(json.loads(receipt.read_text())["status"], "failed")
+        time.sleep(.40)
+        self.assertFalse(marker.exists(), "failed-parent descendant escaped experiment termination")
+        with self.assertRaisesRegex(m.EvidenceError, "incomplete/failed model execution"):
+            m.audit(plan, self.repo, [receipt])
+
     def test_v2_receipt_cannot_claim_v3_postrun_conformance(self) -> None:
         command = [sys.executable, "-c", "pass"]
         plan = self.plan_with_commands("v2-rejected", {"multi_head": command})
