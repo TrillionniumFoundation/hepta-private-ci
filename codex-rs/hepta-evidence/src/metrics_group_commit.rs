@@ -215,14 +215,9 @@ impl MetricsGroupCommitV1 {
         let owner_marker_bytes = {
             use std::os::unix::fs::MetadataExt as _;
             let metadata = file.metadata()?;
-            let expected =
-                format!("HEMW1|{}|{}\n", metadata.dev(), metadata.ino()).into_bytes();
+            let expected = format!("HEMW1|{}|{}\n", metadata.dev(), metadata.ino()).into_bytes();
             if marker_preexisting {
-                verify_original_owner_marker_header(
-                    &owner_marker_path,
-                    &owner_marker,
-                    &expected,
-                )?;
+                verify_original_owner_marker_header(&owner_marker_path, &owner_marker, &expected)?;
             } else {
                 owner_marker.write_all(&expected)?;
                 owner_marker.sync_all()?;

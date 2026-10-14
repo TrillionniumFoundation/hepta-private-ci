@@ -268,10 +268,9 @@ fn restarted_evidence_sink_cannot_claim_a_new_history_after_wal_loss() {
     let path = dir.path().join("metrics.log");
     let retired = dir.path().join("retired-metrics.log");
     {
-        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 2, 25)
-            .expect("original durable writer");
-        sink.record(sample(PhaseMetricKindV1::Cas))
-            .expect("sample");
+        let sink =
+            DurablePhaseMetricSinkV1::open(&path, 8, 2, 25).expect("original durable writer");
+        sink.record(sample(PhaseMetricKindV1::Cas)).expect("sample");
         sink.flush().expect("original group fsync ACK");
     }
     let marker = dir.path().join("metrics.log.owner-lock");
