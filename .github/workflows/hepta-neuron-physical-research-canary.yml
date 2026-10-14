@@ -103,6 +103,12 @@ jobs:
           sudo apt-get install -y build-essential pkg-config libcap-dev
           python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           python -m pip install 'safetensors==0.7.0' 'cryptography==46.0.4'
+      - name: Verify native trained-weight and quantized Head unit tests
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-neuron --bin neuron_trained_q24_shadow
+      - name: Strict Clippy native trained-weight binary
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-neuron --bin neuron_trained_q24_shadow -- -D warnings
       - name: Build physical trained-weight native Q24 binary (no production host)
         working-directory: codex-rs
         run: cargo build --locked -p codex-hepta-neuron --bin neuron_trained_q24_shadow
