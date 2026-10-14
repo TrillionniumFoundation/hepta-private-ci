@@ -73,6 +73,100 @@ mod unix {
         ));
     }
 
+    /// The public Evidence actor reads the original committed frontier from
+    /// its existing writer lane. A queued sample is NOT fsynced by Observe,
+    /// and no external signed authorization or effect is issued.
+    #[test]
+    fn non_test_actor_observer_does_not_commit_queued_metric() {
+        let root = original_private_root();
+        let wal = root.path().join("actor-frontier.wal");
+        let marker = root.path().join("actor-frontier.wal.owner-lock");
+        let sink = DurablePhaseMetricSinkV1::open(&wal, 8, 8, 60_000)
+            .expect("bounded original Evidence actor");
+        sink.record(PhaseMetricEventV1 {
+            scope_digest: Digest32::of_bytes(b"observed-scope"),
+            operation_digest: Digest32::of_bytes(b"observed-effect"),
+            phase: PhaseMetricKindV1::NduRead,
+            latency_micros: 15,
+            succeeded: true,
+        })
+        .expect("queued but not yet committed");
+        let original_wal = fs::read(&wal).expect("original WAL bytes");
+        let original_marker = fs::read(&marker).expect("original marker bytes");
+        let staged = sink.read_local_frontier().expect("read-only original frontier");
+        assert_eq!(staged.sequence, 0);
+        assert_eq!(staged.committed_rows, 0);
+        assert_eq!(staged.journal_bytes, 0);
+        assert_eq!(fs::read(&wal).expect("no Observer writes"), original_wal);
+        assert_eq!(
+            fs::read(&marker).expect("no marker mutation"),
+            original_marker
+        );
+
+        sink.flush().expect("separately requested original fsync");
+        let committed = sink.read_local_frontier().expect("committed-only frontier");
+        assert_eq!(committed.sequence, 1);
+        assert_eq!(committed.committed_rows, 1);
+        assert!(!committed.head_digest.is_zero());
+        drop(sink);
+        let reopened = MetricsGroupCommitV1::open(&wal).expect("released original locks");
+        assert_eq!(reopened.committed_rows(), 1);
+    }
+
+    /// Preserve the last correct marker row but corrupt an EARLIER row.
+    /// The normal-library actor's explicit Observer must reject the entire
+    /// original history and make future metrics unavailable.
+    #[test]
+    fn non_test_actor_observer_poisoned_by_old_marker_corruption() {
+        let root = original_private_root();
+        let wal = root.path().join("actor-corrupt.wal");
+        let marker = root.path().join("actor-corrupt.wal.owner-lock");
+        let sink = DurablePhaseMetricSinkV1::open(&wal, 8, 1, 60_000)
+            .expect("original Evidence writer");
+        for _ in 0..3 {
+            sink.record(PhaseMetricEventV1 {
+                scope_digest: Digest32::of_bytes(b"observed-scope"),
+                operation_digest: Digest32::of_bytes(b"observed-effect"),
+                phase: PhaseMetricKindV1::Cas,
+                latency_micros: 4,
+                succeeded: true,
+            })
+            .expect("real metric");
+        }
+        sink.flush().expect("three real durable groups");
+        let mut marker_bytes = fs::read(&marker).expect("original high-water rows");
+        let first = marker_bytes
+            .windows(3)
+            .position(|window| window == b"F1|")
+            .expect("first actual F1 high-water row");
+        let digit = first + 3;
+        assert!(marker_bytes[digit].is_ascii_digit());
+        marker_bytes[digit] = if marker_bytes[digit] == b'9' {
+            b'8'
+        } else {
+            b'9'
+        };
+        let mut same_inode = OpenOptions::new()
+            .write(true)
+            .open(&marker)
+            .expect("same original marker inode");
+        same_inode
+            .write_all(&marker_bytes)
+            .expect("in-place prior marker corruption");
+        same_inode.sync_all().expect("persist corruption");
+        assert!(sink.read_local_frontier().is_err());
+        assert!(!sink.healthy(), "a failed original Observer poisons the writer");
+        assert!(sink
+            .record(PhaseMetricEventV1 {
+                scope_digest: Digest32::of_bytes(b"observed-scope"),
+                operation_digest: Digest32::of_bytes(b"forbidden-effect"),
+                phase: PhaseMetricKindV1::FinalUse,
+                latency_micros: 1,
+                succeeded: false,
+            })
+            .is_err());
+    }
+
     #[test]
     fn non_test_stop_ack_releases_wal_and_marker_before_next_owner() {
         let root = original_private_root();
