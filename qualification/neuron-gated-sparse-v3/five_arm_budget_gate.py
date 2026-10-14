@@ -144,7 +144,7 @@ def verify_architecture(
         }
         for name, expected in required.items():
             need(tensors.get(name) == expected, f"{name}: missing or wrong physical shape")
-        need(not (set(tensors) & {k for k in tensors if k.startswith("temporal.")}) - set(required),
+        need(not {name for name in tensors if name.startswith("temporal.")} - set(required),
              "unexpected minGRU temporal tensor")
         return 4 * width * rank + 2 * width
     need(architecture == {}, f"{arm}: unsupported architecture descriptor")
