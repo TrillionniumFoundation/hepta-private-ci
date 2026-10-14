@@ -135,8 +135,8 @@ def _source(plan):
                     raise InvalidTree("chance outcome must reveal one public observation")
             elif successor != parent:
                 raise InvalidTree("deterministic edge cannot reveal unseen facts")
-            if node["kind"] == "and" and child["kind"] != "terminal":
-                raise InvalidTree("AND is limited to verified terminal obligations")
+            if node["kind"] == "and" and (child["kind"] != "terminal" or child["cost_ppm"] != 0):
+                raise InvalidTree("AND is limited to zero-cost verified terminal obligations")
             visit(edge["child"], depth + 1)
         if node["kind"] == "chance":
             e0, e1 = node["edges"]
