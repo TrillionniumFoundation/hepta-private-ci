@@ -33,6 +33,10 @@ STAGE_COMPARISONS = {
            'temporal_adapter': ('text_only','unaligned','temporal_reversed')},
     'E5': {'shared_stem': ('no_change',)},
 }
+RESOURCE_FIELDS = ('load_ms','encode_ms','bridge_fit_ms','head_train_ms','cache_ms',
+                   'migration_ms','recompute_ms','serving_ms','evaluation_ms','checkpoint_ms',
+                   'peak_rss_bytes','cpu_ms','gpu_ms','energy_joules','throughput_per_sec','p95_ms','p99_ms')
+LIFECYCLE_MS = RESOURCE_FIELDS[:10]
 MAX_JSON = 32 * 1024 * 1024
 class Invalid(ValueError):
     pass
@@ -115,6 +119,16 @@ def _cases(obs):
         name=stable(a.get('name'));digest(a.get('model_sha256'));digest(a.get('head_sha256'))
         if name in by_arm:raise Invalid('duplicate arm')
         if a.get('actual_model_forward') is not True:raise Invalid('model forward claimed missing')
+        if type(a.get('reader_invocations')) is not int or a['reader_invocations']<0:
+            raise Invalid('reader cost missing')
+        measures=a.get('resources')
+        if type(measures) is not dict or set(measures)!=set(RESOURCE_FIELDS):
+            raise Invalid('incomplete lifecycle resource columns')
+        for field in RESOURCE_FIELDS:
+            v=positive_num(measures[field])
+            if field in ('peak_rss_bytes','throughput_per_sec','p95_ms','p99_ms') and not v>0:
+                raise Invalid('implausible zero physical resource')
+        if measures['p99_ms']<measures['p95_ms']:raise Invalid('p99 below p95')
         rows=a.get('predictions')
         if type(rows) is not list or len(rows)!=len(by_id):raise Invalid('unpaired arm predictions')
         preds={}
@@ -135,6 +149,8 @@ def _cases(obs):
         if by_arm['learned_head'][0]['model_sha256'] != by_arm['frozen_head'][0]['model_sha256']:
             raise Invalid('E1 learned/frozen Encoder identity drift')
     if obs['stage']=='E2':
+        if len({arm['model_sha256'] for name,(arm,_) in by_arm.items() if name!='no_change'})!=1:
+            raise Invalid('E2 frozen stem drift across Head arms')
         for name,budget in (('residual_2k',2048),('residual_8k',8192),('residual_16k',16384)):
             arm=by_arm[name][0]
             n=arm.get('trainable_parameters');steps=arm.get('optimizer_steps')
@@ -293,7 +309,17 @@ def review(obs,outcomes,reader):
                                     'lcb_accuracy_gain':_lower_bound(grouped,seed,0.05/max(1,n_tests)),
                                     'sufficient_groups':True})
             report.append({'candidate':candidate,'control':control,'windows':windows})
+    observations_summary={}
+    for name,(arm,predictions) in sorted(arms.items()):
+        ood=[max(predictions[ident],1-predictions[ident]) for ident,c in by_id.items() if c['split']=='ood']
+        observations_summary[name]={
+          'reported_lifecycle_time_ms':sum(arm['resources'][k] for k in LIFECYCLE_MS),
+          'reported_peak_rss_bytes':arm['resources']['peak_rss_bytes'],
+          'reported_p99_ms':arm['resources']['p99_ms'],
+          'ood_confidence_ge_095_fraction_unadjusted':sum(v>=.95 for v in ood)/len(ood) if ood else None,
+          'ood_calibration_threshold_independently_verified':False}
     return {'schema':'hepta.stem-e1e5-confirmatory-consistency.v1','stage':obs['stage'],
+            'descriptive_arm_observations':observations_summary,
             'reader':reader_report,'temporal':temporal,'scale':scale,
             'comparisons':report,'outcome_producer_claim':producer,
             'independent_outcome_signatures_verified':False,
