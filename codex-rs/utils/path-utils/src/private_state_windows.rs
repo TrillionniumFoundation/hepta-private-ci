@@ -36,6 +36,8 @@ use windows_sys::Win32::Security::GENERIC_MAPPING;
 use windows_sys::Win32::Security::GetAce;
 use windows_sys::Win32::Security::GetAclInformation;
 use windows_sys::Win32::Security::GetTokenInformation;
+use windows_sys::Win32::Security::IsValidAcl;
+use windows_sys::Win32::Security::IsValidSid;
 use windows_sys::Win32::Security::IsWellKnownSid;
 use windows_sys::Win32::Security::MapGenericMask;
 use windows_sys::Win32::Security::OWNER_SECURITY_INFORMATION;
@@ -285,6 +287,9 @@ fn validate_private_owner_and_dacl(file: &File) -> io::Result<()> {
 }
 
 unsafe fn dacl_grants_untrusted_access(dacl: *mut ACL, current_user: *mut c_void) -> bool {
+    if dacl.is_null() || unsafe { IsValidAcl(dacl) } == 0 {
+        return true;
+    }
     let mut information: ACL_SIZE_INFORMATION = unsafe { std::mem::zeroed() };
     if unsafe {
         GetAclInformation(
@@ -316,19 +321,33 @@ unsafe fn dacl_grants_untrusted_access(dacl: *mut ACL, current_user: *mut c_void
         | WRITE_OWNER;
     for index in 0..information.AceCount {
         let mut ace = ptr::null_mut();
-        if unsafe { GetAce(dacl as *const ACL, index, &mut ace) } == 0 {
+        if unsafe { GetAce(dacl as *const ACL, index, &mut ace) } == 0 || ace.is_null() {
+            // A failed lookup or null ACE must never reach a raw dereference.
             return true;
         }
         let header = unsafe { &*(ace as *const ACE_HEADER) };
+        if usize::from(header.AceSize) < std::mem::size_of::<ACCESS_ALLOWED_ACE>() {
+            return true;
+        }
         if header.AceType == ACCESS_DENIED_ACE_TYPE || header.AceFlags & INHERIT_ONLY_ACE != 0 {
             continue;
         }
         if header.AceType != ACCESS_ALLOWED_ACE_TYPE {
             return true;
         }
+        // Validate the complete SID lies within the ACE before Win32 reads it.
+        let sid_offset = std::mem::offset_of!(ACCESS_ALLOWED_ACE, SidStart);
+        if !sid_length_fits_ace(usize::from(header.AceSize), 0) {
+            return true;
+        }
+        let sid = unsafe { ace.cast::<u8>().add(sid_offset) }.cast::<c_void>();
+        let sub_authority_count = unsafe { *sid.cast::<u8>().add(1) };
+        if !sid_length_fits_ace(usize::from(header.AceSize), sub_authority_count)
+            || unsafe { IsValidSid(sid) } == 0
+        {
+            return true;
+        }
         let allowed = unsafe { &*(ace as *const ACCESS_ALLOWED_ACE) };
-        let sid = (ace as usize + std::mem::size_of::<ACE_HEADER>() + std::mem::size_of::<u32>())
-            as *mut c_void;
         let mut mask = allowed.Mask;
         unsafe { MapGenericMask(&mut mask, &mapping) };
         if mask & access_mask != 0 && !unsafe { trusted_access_sid(sid, current_user) } {
@@ -336,6 +355,16 @@ unsafe fn dacl_grants_untrusted_access(dacl: *mut ACL, current_user: *mut c_void
         }
     }
     false
+}
+
+/// Check that a SID header and all sub-authorities fit inside the ACE.
+fn sid_length_fits_ace(ace_size: usize, sub_authority_count: u8) -> bool {
+    let Some(sid_bytes) = ace_size.checked_sub(std::mem::offset_of!(ACCESS_ALLOWED_ACE, SidStart))
+    else {
+        return false;
+    };
+    let required_bytes = 8 + usize::from(sub_authority_count) * 4;
+    sid_bytes >= required_bytes
 }
 
 unsafe fn trusted_access_sid(sid: *mut c_void, current_user: *mut c_void) -> bool {
@@ -494,6 +523,17 @@ mod tests {
             0
         );
         sid
+    }
+
+    #[test]
+    fn malformed_ace_sid_bounds_fail_closed() {
+        let offset = std::mem::offset_of!(ACCESS_ALLOWED_ACE, SidStart);
+        assert!(!sid_length_fits_ace(offset - 1, 0));
+        assert!(!sid_length_fits_ace(offset + 7, 0));
+        assert!(sid_length_fits_ace(offset + 8, 0));
+        assert!(!sid_length_fits_ace(offset + 8, 1));
+        assert!(sid_length_fits_ace(offset + 12, 1));
+        assert!(!sid_length_fits_ace(offset + 12, u8::MAX));
     }
 
     #[test]

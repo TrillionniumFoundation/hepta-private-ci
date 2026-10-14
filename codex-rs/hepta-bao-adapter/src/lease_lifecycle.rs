@@ -508,10 +508,33 @@ fn persist(path: &Path, state: &StoredRegistryV1) -> Result<(), LeaseRegistryErr
     file.write_all(&bytes)
         .and_then(|()| file.sync_all())
         .map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
+    // Windows must not have an open staging handle when replacing the durable
+    // registry. A completed file fsync must precede both close and rename.
+    drop(file);
     std::fs::rename(&next, path).map_err(|_| LeaseRegistryErrorV1::Unavailable)?;
-    File::open(parent)
-        .and_then(|directory| directory.sync_all())
-        .map_err(|_| LeaseRegistryErrorV1::Unavailable)
+    sync_parent_directory(parent).map_err(|_| LeaseRegistryErrorV1::Unavailable)
+}
+
+// Do not silently waive the post-rename durability barrier on Windows. Opening
+// a directory as an ordinary read-only File is not an appropriate Windows
+// directory handle for sync_all; use an actual writable directory handle.
+#[cfg(windows)]
+fn sync_parent_directory(path: &Path) -> std::io::Result<()> {
+    use std::fs::OpenOptions;
+    use std::os::windows::fs::OpenOptionsExt;
+
+    const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
+    OpenOptions::new()
+        .read(true)
+        .write(true)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+        .open(path)?
+        .sync_all()
+}
+
+#[cfg(not(windows))]
+fn sync_parent_directory(path: &Path) -> std::io::Result<()> {
+    File::open(path)?.sync_all()
 }
 
 fn identifier(value: &str) -> bool {

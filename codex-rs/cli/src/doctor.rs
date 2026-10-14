@@ -3973,12 +3973,11 @@ mod tests {
         let addr = listener.local_addr().expect("listener address");
         let server = std::thread::spawn(move || {
             let (mut head_stream, _) = listener.accept().expect("accept HEAD probe request");
-            let head = std::thread::spawn(move || {
-                let mut request = [0; 1024];
-                let _ = head_stream.read(&mut request);
-                std::thread::sleep(Duration::from_millis(50));
-            });
-
+            let mut request = [0; 1024];
+            let _ = head_stream.read(&mut request);
+            // Keep HEAD unanswered until GET has been served. This forces the
+            // timeout path without racing a 50 ms sleep against the Windows CI
+            // scheduler or making the fallback request share a 10 ms budget.
             let (mut get_stream, _) = listener.accept().expect("accept GET probe request");
             let mut request = [0; 1024];
             let _ = get_stream.read(&mut request);
@@ -3987,12 +3986,12 @@ mod tests {
                     b"HTTP/1.1 405 Method Not Allowed\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
                 )
                 .expect("write response");
-            head.join().expect("HEAD holder should finish");
+            drop(head_stream);
         });
 
         let status = mcp_http_probe_url_with_timeout(
             &format!("http://{addr}/mcp"),
-            Duration::from_millis(10),
+            Duration::from_secs(3),
         )
         .await;
         server.join().expect("probe server thread should finish");

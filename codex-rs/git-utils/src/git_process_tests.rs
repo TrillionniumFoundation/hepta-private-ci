@@ -108,13 +108,20 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
         .env("RELEASE_WRAPPER_FILE", &release_wrapper_file);
 
     let (mut wrapper, process_tree) = spawn_git_command(&mut command).expect("spawn Git wrapper");
-    let child_pid = tokio::time::timeout(Duration::from_secs(30), async {
+    let child_pid = tokio::time::timeout(Duration::from_secs(60), async {
         loop {
             if let Ok(child_pid) = std::fs::read_to_string(&child_pid_file)
                 && !child_pid.trim().is_empty()
                 && child_ready_file.exists()
             {
                 break child_pid.trim().to_string();
+            }
+            if let Some(status) = wrapper.try_wait().expect("poll real Git wrapper") {
+                panic!(
+                    "Git wrapper exited before its child was ready ({status}); PID marker: {}, readiness marker: {}",
+                    child_pid_file.exists(),
+                    child_ready_file.exists()
+                );
             }
             tokio::time::sleep(Duration::from_millis(25)).await;
         }

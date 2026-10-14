@@ -850,9 +850,10 @@ mod tests {
         let b = mk("cell.b", "request.b", h_second.clone());
         assert!(std::sync::Arc::ptr_eq(&a.snapshot, &b.snapshot));
 
-        // Both reservations are individually valid but the two Cells'
-        // minimum output Vec allocations would exceed this grant. The Worker
-        // must reject the *whole* cohort before dispatching any CPU work.
+        // Both reservations are valid. Their Q24 output buffers fit the
+        // remaining 32 bytes exactly, but the CPU reference Head also needs
+        // a 16-byte temporary gated vector. The Worker must reject before
+        // any batch work: counting only output Vecs would admit this cohort.
         let mut bounded_driver = GatedHeadCpuDriverV2::new(selected.clone()).expect("bounded");
         bounded_driver
             .register_head(first.clone())
@@ -869,7 +870,7 @@ mod tests {
             revoked: false,
             maximum_models: 1,
             maximum_active_requests: 4,
-            maximum_memory_bytes: resident + 16,
+            maximum_memory_bytes: resident + 32,
             semantic_digest: "1".repeat(64),
         };
         let mut bounded_worker =

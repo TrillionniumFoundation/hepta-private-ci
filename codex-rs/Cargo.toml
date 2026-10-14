@@ -624,6 +624,10 @@ ignored = [
     "icu_provider",
     "openssl-sys",
     "codex-v8-poc",
+    # cargo-shear 1.11.2 running on Linux misses genuine cfg(windows) imports.
+    # The rust-ci source contract below binds both Windows callers to this waiver.
+    # Do not remove the Windows dependency from either production crate.
+    "winapi-util",
 ]
 
 [profile.dev]
