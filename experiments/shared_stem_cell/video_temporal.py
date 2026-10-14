@@ -177,8 +177,14 @@ class FrameCacheTowers:
         if missing:
             values, _stamps = self.base.encode("video", missing, root)
             self.physical_video_calls += 1
-            if len(values) != len(missing):
-                raise e.InputError("physical frame feature coverage drift")
+            expected_stamps = torch.tensor([frame["timestamp_us"] for frame in missing], dtype=torch.long)
+            if (not isinstance(values, torch.Tensor) or values.dtype != torch.float32
+                    or values.device.type != "cpu" or values.ndim != 2
+                    or not 1 <= values.shape[1] <= 8192 or len(values) != len(missing)
+                    or not bool(torch.isfinite(values).all())
+                    or not isinstance(_stamps, torch.Tensor) or _stamps.dtype != torch.long
+                    or _stamps.device.type != "cpu" or not torch.equal(_stamps, expected_stamps)):
+                raise e.InputError("physical frame feature/timestamp coverage drift")
             for frame, value in zip(missing, values):
                 self.cache[frame["sha256"]] = value.detach().clone().contiguous()
         values = torch.stack([self.cache[frame["sha256"]] for frame in item])

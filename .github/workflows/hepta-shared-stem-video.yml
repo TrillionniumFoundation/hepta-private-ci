@@ -5,6 +5,9 @@ on:
     paths:
       - "experiments/shared_stem_cell/public_video.py"
       - "experiments/shared_stem_cell/video_temporal.py"
+      - "experiments/shared_stem_cell/video_anytime.py"
+      - "experiments/shared_stem_cell/audit_video_anytime.py"
+      - "experiments/shared_stem_cell/test_video_anytime.py"
       - "experiments/shared_stem_cell/test_public_video.py"
       - "experiments/shared_stem_cell/test_video_temporal.py"
       - "experiments/shared_stem_cell/media_execution.py"
@@ -44,9 +47,11 @@ jobs:
           PY="$RUNNER_TEMP/hepta-video-env/bin/python"
           git rev-parse HEAD > "$RUNNER_TEMP/hepta-video-source.txt"
           "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-video-source.txt"
-          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{public_video,video_temporal,test_public_video,test_video_temporal}.py
-          "$PY" -m unittest -v experiments.shared_stem_cell.test_public_video experiments.shared_stem_cell.test_video_temporal experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.hf_integration_checks 2>&1 | tee "$RUNNER_TEMP/hepta-video-tests.log"
+          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{public_video,video_temporal,video_anytime,audit_video_anytime,test_public_video,test_video_temporal,test_video_anytime}.py
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_public_video experiments.shared_stem_cell.test_video_temporal experiments.shared_stem_cell.test_video_anytime experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.hf_integration_checks 2>&1 | tee "$RUNNER_TEMP/hepta-video-tests.log"
           "$PY" -m experiments.shared_stem_cell.public_video --output "$RUNNER_TEMP/hepta-video-study" 2>&1 | tee "$RUNNER_TEMP/hepta-video-execution.log"
+          "$PY" -m experiments.shared_stem_cell.video_anytime --manifest "$RUNNER_TEMP/hepta-video-study/manifest.json" --output "$RUNNER_TEMP/hepta-video-study/anytime" 2>&1 | tee "$RUNNER_TEMP/hepta-video-anytime.log"
+          "$PY" -m experiments.shared_stem_cell.audit_video_anytime --root "$RUNNER_TEMP/hepta-video-study" | tee "$RUNNER_TEMP/hepta-video-anytime-audit.log"
           git diff --exit-code
       - name: Retain reports and failures, never source/derived media or weights
         if: always()
@@ -57,10 +62,13 @@ jobs:
             ${{ runner.temp }}/hepta-video-source.txt
             ${{ runner.temp }}/hepta-video-tests.log
             ${{ runner.temp }}/hepta-video-execution.log
+            ${{ runner.temp }}/hepta-video-anytime.log
+            ${{ runner.temp }}/hepta-video-anytime-audit.log
             ${{ runner.temp }}/hepta-video-study/*.json
             ${{ runner.temp }}/hepta-video-study/*.jsonl
             ${{ runner.temp }}/hepta-video-study/SOURCE-README.txt
             ${{ runner.temp }}/hepta-video-study/execution
+            ${{ runner.temp }}/hepta-video-study/anytime
             ${{ runner.temp }}/hepta-video-study/vision/model-source.json
             ${{ runner.temp }}/hepta-video-study/vision/verified-publisher-files.json
           if-no-files-found: warn
