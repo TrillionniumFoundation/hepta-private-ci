@@ -101,6 +101,15 @@ jobs:
           PY
           sha256sum e1_missing_real_models.json e2_dynamic_heads.json e3_input_reuse.json e5_missing_host_receipts.json >> result_hashes.txt
 
+      - name: Enforce pinned Prettier YAML formatting (show diff on failure)
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd "$GITHUB_WORKSPACE"
+          npx --yes --package=prettier@3.5.3 prettier --write .github/workflows/hepta-neuron-shared-encoder-shadow.yml
+          git --no-pager diff -- .github/workflows/hepta-neuron-shared-encoder-shadow.yml
+          git diff --quiet -- .github/workflows/hepta-neuron-shared-encoder-shadow.yml
+
       - name: Retain synthetic evidence without authority
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
