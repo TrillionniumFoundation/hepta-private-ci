@@ -31,7 +31,7 @@ def gradient(theta,n=80):
     a,b=theta
     z=x+(a-1)*x*x+b*x**3-.5*x**4
     gp=2*z+.2*(np.tanh(.5*(.4*z+.025))+np.tanh(.4*z-.025))
-    return .9*np.array([w@(gp*x*x),w@(gp*x**3)])/2
+    return .9*np.array([np.dot(w,gp*x*x),np.dot(w,gp*x**3)])/2
 
 
 def run():
