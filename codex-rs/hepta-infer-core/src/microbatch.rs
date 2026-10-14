@@ -177,10 +177,13 @@ impl BoundedMicrobatchSchedulerV1 {
                 self.physical_cursor.remove(&group);
             }
         }
-        let empty_scope = self.scope_lanes.get_mut(&key.scope_id).is_some_and(|lanes| {
-            lanes.remove(key);
-            lanes.is_empty()
-        });
+        let empty_scope = self
+            .scope_lanes
+            .get_mut(&key.scope_id)
+            .is_some_and(|lanes| {
+                lanes.remove(key);
+                lanes.is_empty()
+            });
         if empty_scope {
             self.scope_lanes.remove(&key.scope_id);
         }
