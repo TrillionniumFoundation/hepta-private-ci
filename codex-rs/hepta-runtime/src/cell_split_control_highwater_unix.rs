@@ -328,7 +328,7 @@ fn read_exact_until(
             Ok(count) => {
                 let (_, unread) = data.split_at_mut(count);
                 data = unread;
-            },
+            }
             Err(error) if error.kind() == std::io::ErrorKind::Interrupted => continue,
             Err(error) => return Err(error.to_string()),
         }
