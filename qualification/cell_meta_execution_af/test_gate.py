@@ -21,6 +21,8 @@ def synth() -> dict:
         "source_sha": "1" * 40, "source_tree": "2" * 40,
         "objective_sha256": sha("objective"), "no_change_sha256": sha("unchanged"),
         "budget_sha256": sha("budget"), "source_dataset_sha256": sha("source"),
+        "protected_slices": ["legacy-code", "legacy-retrieval"],
+        "independent_snapshots": [sha("baseline-snapshot-1"), sha("baseline-snapshot-2"), sha("baseline-snapshot-3")],
         "generator_id": "proposal-generator", "outcome_observer_id": "sealed-observer",
         "evaluator_id": "independent-evaluator", "selector_id": "independent-selector",
         "executor_id": "bounded-executor", "train_cutoff": "2026-09-30T00:00:00Z",
@@ -42,6 +44,7 @@ def synth() -> dict:
                     "task_set_sha256": sha(f"{study}/{window}/paired-input"),
                     "prediction_sha256": sha(f"{study}/{window}/{arm}/pre-label"),
                     "outcome_receipt_sha256": sha(f"{study}/{window}/{arm}/finalized"),
+                    "evaluation_receipt_sha256": sha(f"{study}/{window}/{arm}/evaluated"),
                     "model_bundle_sha256": sha(f"{study}/{arm}/bundle"),
                     "independent_episodes": 600, "effective_sample_size": 450.0,
                     "predictions_committed_at": "2026-10-02T12:00:00Z" if window == "future_1" else "2026-10-04T12:00:00Z",
@@ -53,13 +56,17 @@ def synth() -> dict:
                         "ood_false_accept": 0.04 if better else 0.08,
                         "negative_transfer_rate": 0.02 if better else 0.05,
                         "old_task_degradation": 0.01 if better else 0.0,
+                        "protected_slice_degradation": {
+                            "legacy-code": 0.01 if better else 0.0,
+                            "legacy-retrieval": 0.0,
+                        },
                         "real_model_invocations": 600,
                         "training_bytes": 4096 if better else 0,
                         "inference_bytes": 8192,
                     },
                 })
         result["studies"][study] = {
-            "budget_sha256": meta["budget_sha256"],
+            "budget_sha256": meta["budget_sha256"], "interval_alpha": 0.01,
             "objective_sha256": meta["objective_sha256"], "records": rows,
         }
     resource_rows = []
@@ -312,6 +319,24 @@ class AfEvidenceTests(unittest.TestCase):
             if r["logical_cells"] == 4096 and r["load_profile"] == "vary_active":
                 r["active_concurrency"] = 10
         check_bad(self.d, "E", "must increase")
+
+    def test_hidden_protected_slice_regression_vetoes_gain(self):
+        for row in self.d["studies"]["A"]["records"]:
+            if row["arm"] == "learning_head":
+                row["metrics"]["protected_slice_degradation"]["legacy-retrieval"] = 0.11
+        self.assertEqual(gate.verify(self.d)["gates"]["A"]["provisional_gain_arms"], [])
+
+    def test_missing_protected_slice_is_not_an_aggregate_success(self):
+        del self.d["studies"]["B"]["records"][0]["metrics"]["protected_slice_degradation"]["legacy-code"]
+        check_bad(self.d, "B", "protected slices")
+
+    def test_uncorrected_confidence_level_rejected(self):
+        self.d["studies"]["C"]["interval_alpha"] = 0.05
+        check_bad(self.d, "C", "multiple-testing")
+
+    def test_independent_snapshot_count_below_three_rejected(self):
+        self.d["candidate"]["independent_snapshots"] = self.d["candidate"]["independent_snapshots"][:2]
+        check_bad(self.d, "identity", "at least three")
 
     def test_split_late_selector_withdrawal_blocked(self):
         self.d["split_safety"]["selector_current_after_last_readback"] = False
