@@ -375,9 +375,12 @@ fn low_rank_min_gru_tick_v1_inner(
     }
 
     let (inner, v2_receipt) = match prepared {
-        Some((base, _)) => {
-            base.tick_from_temporal_override(&config.base, input, &successor, previous.map(|prior| &prior.inner))?
-        }
+        Some((base, _)) => base.tick_from_temporal_override(
+            &config.base,
+            input,
+            &successor,
+            previous.map(|prior| &prior.inner),
+        )?,
         None => population_sparse_tick_v2_from_temporal_override(
             &config.base,
             input,
