@@ -16,7 +16,7 @@ use crate::population_v2::PopulationSparseCheckpointV2;
 use crate::population_v2::PopulationSparseConfigV2;
 use crate::population_v2::PopulationSparseError;
 use crate::population_v2::PopulationSparseTickV2;
-use crate::population_v2::population_sparse_tick_v2;
+use crate::population_v2::population_sparse_tick_v2_from_temporal_override;
 
 const Q: i64 = 1 << 24;
 const H: i64 = 8 * Q;
@@ -322,12 +322,12 @@ pub fn low_rank_min_gru_tick_v1(
         successor.push(next);
     }
 
-    let mut base = config.base.clone();
-    base.temporal_decay_q24 = 0;
-    let mut forwarded = input.clone();
-    forwarded.temporal_drive_q24 = successor;
-    let (inner, v2_receipt) =
-        population_sparse_tick_v2(&base, &forwarded, previous.map(|prior| &prior.inner))?;
+    let (inner, v2_receipt) = population_sparse_tick_v2_from_temporal_override(
+        &config.base,
+        input,
+        &successor,
+        previous.map(|prior| &prior.inner),
+    )?;
     let original_input = original_input_digest(input);
     let mut checkpoint = LowRankMinGruCheckpointV1 {
         config: config_digest,
