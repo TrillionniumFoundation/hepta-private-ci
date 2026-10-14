@@ -1095,6 +1095,14 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             &self.previous_receipt_digest,
         );
         let pending = self.pending;
+        if pending && self.metric_sink.is_some() {
+            // Original CAS/CNS dispatch latency cannot be reconstructed from
+            // later signed READBACK. Reconcile the physical effect safely but
+            // do not mint a false complete telemetry barrier for a lost ACK.
+            // After restart its absent metrics-acked marker will still fence
+            // the next NEW effect until an independent repair is qualified.
+            self.metrics_poisoned = true;
+        }
         if pending {
             // A lost acknowledgement cannot permit replacing or deleting the
             // prepared intent while this owner remains alive.
