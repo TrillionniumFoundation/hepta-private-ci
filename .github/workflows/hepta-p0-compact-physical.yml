@@ -1,13 +1,7 @@
 name: Hepta P0 compact real pretrained paired AG News (DENY_ALL)
 on:
-  pull_request:
-    paths:
-      - 'experiments/ndu_tree_fbsde_gates/p0_compact_paired.py'
-      - 'experiments/ndu_tree_fbsde_gates/p0_compact_score.py'
-      - 'experiments/ndu_tree_fbsde_gates/test_p0_compact_paired.py'
-      - 'experiments/ndu_tree_fbsde_gates/P0_COMPACT_REAL_EXECUTION.md'
-      - '.github/workflows/hepta-p0-compact-physical.yml'
   workflow_dispatch:
+  workflow_call:
 permissions:
   contents: read
   actions: read
