@@ -42,6 +42,7 @@ class ResidualStudyTests(unittest.TestCase):
         self.assertEqual(o['arms']['from_zero']['trainable_parameters'],770)
         self.assertEqual(set(o['arms']),set(e.HEAD_ARMS))
         self.assertEqual(o['frozen_base_parameters_counted_as_shared_storage'],770)
+        self.assertTrue(o['frozen_base_weight_storage_shared_among_residual_arms'])
     def test_256_mrl_head_budgets(self):
         p,v=fixture(256)
         x=e.study(p,'synthetic_mrl',v)
