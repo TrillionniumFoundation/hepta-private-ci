@@ -94,7 +94,7 @@ fn fixture_request() -> (ModelManifest, NeuronFeatureRequest, MicrobatchKeyV1) {
         feature_vector_q24: vec![0, 1 << 24],
         expected_output_width: 3,
     };
-    let payload = canonical_neuron_feature_payload_digest(&request);
+    let payload = crate::model_worker::canonical_neuron_feature_payload_digest(&request);
     request.authorization.payload_digest = payload.clone();
     request.authorization.lease_payload_digest = payload;
     let key = MicrobatchKeyV1 {
