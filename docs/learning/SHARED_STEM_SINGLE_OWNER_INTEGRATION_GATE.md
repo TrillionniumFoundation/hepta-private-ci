@@ -25,15 +25,19 @@ optimization must eventually converge into this single, richer contract.
 
 1. Independently authenticated Encoder owner resolves source and weights.
 2. Q24 vector (1–512 dimensions) is checked exactly once against the source
-   feature digest when constructing the immutable buffer. The safe Rust API
-   does not expose mutable access to the Arc allocation.
+   feature digest when constructing the immutable buffer. The frozen Encoder
+   pipeline digest and source FeatureRef identity digest are also computed once
+   and retained privately alongside the Arc. The safe Rust API does not expose
+   mutable access to the source descriptor or feature allocation.
 3. Multiple compatible Cell Heads call `borrow_for_head`, each with freshly
    resolved owner claims. Principal, Scope, epoch, generation, lease expiry,
    revocation and selected Head compatibility remain checked on *each call*.
-4. Only the immutable-buffer path may skip rehashing Q24 contents, because
-   its complete content was verified at construction. The ordinary
-   `borrow_stem_feature_request_v1` path for potentially mutable borrowed
-   slices **always** hashes the actual vector on each use.
+4. Only the immutable-buffer path may skip rehashing Q24 contents and
+   rebuilding the frozen Pipeline/FeatureRef identity digests, because all
+   three were checked or derived at construction from the same private source.
+   The ordinary `borrow_stem_feature_request_v1` path for potentially mutable
+   borrowed slices **always** hashes actual Q24 bytes and recomputes source
+   identities on each use.
 5. The immutable buffer's `materialize_owned_for_head` revalidates the
    supplied current Principal/Scope/Epoch/Lease/Revocation/Head claims and
    then allocates the **one Vec required** by existing V1 serialization,
@@ -50,7 +54,9 @@ For `C` Cell Heads seeing one identical `D`-dimensional frozen feature,
 when each Head uses the immutable-buffer borrow or owned-materialization
 path, the expected input-content hashing work changes from approximately
 `O(C * D)` in repeated direct slice validation to `O(D)` for the single
-immutable-buffer construction. **This is an algorithmic cost claim only**:
+immutable-buffer construction. The Pipeline and FeatureRef digests are also
+computed once rather than C times. Source/Head compatibility checks remain
+mandatory per Cell. **This is an algorithmic cost claim only**:
 the implementation still performs `O(C)` authorization-claim/Head checks,
 digest construction, selected Head work and downstream execution. Actual
 p95/p99 throughput and RSS savings have NOT been measured.
@@ -82,6 +88,15 @@ cargo fmt --manifest-path codex-rs/Cargo.toml --all -- --check
 
 CI success for another branch/commit cannot be carried over to this
 commit. No synthetic fixture or self-reported digest upgrades these gates.
+
+## Reproducibility note: logical Cell count is not real load
+
+The additional 4,096-Head unit test on this branch checks only repeated
+borrowed references against one immutable Q24 buffer, a stable FeatureRef
+digest and DENY_ALL. It deliberately does **not** start 4,096 processes,
+run 4,096 encoders, authenticate 4,096 grants, use a production worker or
+measure tail latency. Actual resource and failure-recovery evidence is
+still required for all E4 load points.
 
 ## External evidence boundary
 
