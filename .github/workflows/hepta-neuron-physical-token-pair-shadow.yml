@@ -54,8 +54,8 @@ jobs:
         run: |
           set -euo pipefail
           PY="$RUNNER_TEMP/hepta-token-real-env/bin/python"
-          "$PY" -m pytest -q -p no:cacheprovider tests/test_physical_token_pair_v1.py tests/test_stage_modernbert_public_v1.py
-          "$PY" -m compileall -q neuron_shared_encoder/physical_token_pair_v1.py neuron_shared_encoder/stage_modernbert_public_v1.py
+          "$PY" -m pytest -q -p no:cacheprovider tests/test_physical_token_pair_v1.py tests/test_stage_modernbert_public_v1.py tests/test_physical_token_reviewer_v1.py
+          "$PY" -m compileall -q neuron_shared_encoder/physical_token_pair_v1.py neuron_shared_encoder/stage_modernbert_public_v1.py neuron_shared_encoder/physical_token_reviewer_v1.py
 
       - name: Retrieve exact original public AG News source artifact
         shell: bash
@@ -107,6 +107,36 @@ jobs:
           print('REAL_PRETRAINED_TOKEN_RESEARCH_PASS_ONLY_NOT_PRODUCTION')
           PY
 
+      - name: Independently re-encode and replay sealed Heads with NumPy
+        shell: bash
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-token-real-env/bin/python"
+          "$PY" -m neuron_shared_encoder.physical_token_reviewer_v1 \
+            --source-zip "$RUNNER_TEMP/hepta-original-public.zip" \
+            --source-sha256 "$SOURCE_SHA256" \
+            --checkpoint-dir "$RUNNER_TEMP/hepta-pinned-modernbert" \
+            --bundle-sha256 "$HEPTA_BUNDLE_SHA256" \
+            --producer "$RUNNER_TEMP/hepta-real-token-pair" \
+            --output "$RUNNER_TEMP/hepta-token-independent-review.json" \
+            --max-length 128 --batch 8
+          "$PY" - <<'PY'
+          import json, os
+          from pathlib import Path
+          r = json.loads((Path(os.environ['RUNNER_TEMP']) / 'hepta-token-independent-review.json').read_text())
+          assert r['schema'] == 'hepta.neuron.token-pair-independent-numerical-review.v1'
+          assert r['checked_head_checkpoints'] == 12
+          assert r['checked_holdout_cases_per_seed'] == 32
+          assert r['training_seeds'] == [11, 23, 47]
+          assert r['independent_numeric_replay_all_metrics_passed'] is True
+          assert r['real_pretrained_encoder_forward_reobserved'] is True
+          assert r['production_admission'] == 'BLOCKED'
+          assert r['selection_authorized'] is False
+          assert r['verified_prospective_future_NDU'] is False
+          assert r['original_observer_independently_signed'] is False
+          print('FRESH_FORWARD_NUMPY_REPLAY_RESEARCH_ONLY')
+          PY
+
       - name: Retain only small Head weights and research receipts, never source/model/tokens
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -114,6 +144,7 @@ jobs:
           name: hepta-real-token-research-${{ github.run_id }}
           path: |
             ${{ runner.temp }}/hepta-modernbert-acquisition.json
+            ${{ runner.temp }}/hepta-token-independent-review.json
             ${{ runner.temp }}/hepta-real-token-pair
           if-no-files-found: warn
           retention-days: 14
