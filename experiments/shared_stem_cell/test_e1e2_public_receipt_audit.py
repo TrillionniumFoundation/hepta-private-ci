@@ -32,7 +32,7 @@ def synthetic():
     bundle=m.canonical({'payload':payload,'payload_sha256':m.sha_bytes(m.canonical(payload))})
     receipt={'snapshot_file_sha256':m.sha_bytes(bundle),'snapshot_payload_sha256':m.sha_bytes(m.canonical(payload)),
              'trained_weights_exact_float64_reloaded':True,'frozen_weights_exact_float64_reloaded':True,
-             'trainable_parameters':2018,'training_steps':40}
+             'trainable_parameters':2018,'training_steps':40,'historical_20261014_head_byte_identity_claimed':False}
     replay={'production_promotion':'DENY_ALL','three_chronological_future_windows':False,
             'head_optimizer_steps_during_val2_evaluation':0,'snapshot_file_sha256':receipt['snapshot_file_sha256'],
             'snapshot_payload_sha256':receipt['snapshot_payload_sha256'],
@@ -48,6 +48,7 @@ def synthetic():
        'stem-laya-fresh-arm.json':arms[3],
        'stem-cell-immutable-receipt.json':receipt,
        'stem-cell-immutable-bundle.json':m.strict_json(bundle),
+       'stem-head-exploratory-calibration.json':{'selected_logit_multiplier':1024,'test_distribution_already_reviewed_by_researcher':True},
        'stem-new-source-independent-review.json':{'new_window_is_chronologically_future':False,
           'equal_total_lifecycle_cost_proven':False,'model_forward_origin_independently_authenticated':False,'metrics':published}
     }
@@ -82,6 +83,12 @@ class PublicRealReceiptTest(unittest.TestCase):
                 self.assertTrue(result['paired_prediction_replay_exact'])
         finally:tmp.cleanup()
     def test_valid_toy_numeric_pair_not_authority(self):self.run_case(lambda a,b:None,False)
+    def test_missing_exploratory_temperature_disclosure(self):
+        self.run_case(lambda a,b:a['stem-head-exploratory-calibration.json'].update(selected_logit_multiplier=512))
+    def test_historical_head_identity_overclaim(self):
+        def change(a,b):
+            for d in (a,b):d['stem-cell-immutable-receipt.json']['historical_20261014_head_byte_identity_claimed']=True
+        self.run_case(change)
     def test_wrong_label_on_both_panels(self):
         def edit(a,b):
             a['stem-agnews-new-source-panel.json']['cases'][0]['label']=1
