@@ -733,6 +733,91 @@ fn pending_only_reconciliation_never_dispatches_a_new_effect_or_reseeds_an_empty
 }
 
 #[test]
+fn pending_only_recovery_refuses_missing_or_tampered_original_receipt_without_reexecution() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let mut port = FixturePort::new(state.clone());
+        port.drop_ack = true;
+        let mut writer = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+            .expect("frozen effect owner");
+        assert!(matches!(
+            writer.advance(),
+            Err(CellSplitExecutionErrorV1::External(_))
+        ));
+        assert_eq!(state.borrow().executions, 1);
+        assert!(root.path().join("cell-split-00-prepared.json").exists());
+        assert!(!root.path().join("cell-split-00-committed.json").exists());
+    }
+
+    let (key, original_receipt) = {
+        let observed = state.borrow();
+        let (key, receipt) = observed.commits.iter().next().expect("durable original CAS");
+        (key.clone(), receipt.clone())
+    };
+    // An unknown external effect outcome must not be adopted from the local
+    // digest chain or fabricated by the coordinator after losing its ACK.
+    assert!(state.borrow_mut().commits.remove(&key).is_some());
+    let metrics = Arc::new(CapturedPhaseMetrics::default());
+    metrics.refuse_records.store(true, Ordering::SeqCst);
+    let mut recovery = CellSplitExecutionOwnerV1::open_pending_reconciliation(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("existing-only original signer and prepared intent")
+    .with_metric_sink(metrics);
+    assert!(matches!(
+        recovery.reconcile_pending_only(),
+        Err(CellSplitExecutionErrorV1::Ambiguous)
+    ));
+    assert!(recovery.pending);
+    assert_eq!(recovery.completed_steps(), 0);
+    assert_eq!(state.borrow().executions, 1);
+    assert!(!root.path().join("cell-split-00-committed.json").exists());
+
+    // Even a response that names the right effect cannot be accepted after
+    // its signed bytes are replaced: the original owner must return the
+    // *exact* authenticated receipt originally committed.
+    let mut tampered = original_receipt.clone();
+    tampered.owner_signature_bytes[0] ^= 1;
+    state.borrow_mut().commits.insert(key.clone(), tampered);
+    assert!(matches!(
+        recovery.reconcile_pending_only(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+    assert!(recovery.pending);
+    assert_eq!(state.borrow().executions, 1);
+    assert!(!root.path().join("cell-split-00-committed.json").exists());
+
+    // When the original durable owner becomes reachable again, read its
+    // authentic result only. A failed telemetry writer must not turn this
+    // historical reconciliation into a second physical CAS operation.
+    state
+        .borrow_mut()
+        .commits
+        .insert(key, original_receipt.clone());
+    assert_eq!(
+        recovery.reconcile_pending_only().expect("signed live readback"),
+        original_receipt
+    );
+    assert_eq!(recovery.completed_steps(), 1);
+    assert!(!recovery.pending);
+    assert!(recovery.metrics_poisoned);
+    assert_eq!(state.borrow().executions, 1);
+    assert!(root.path().join("cell-split-00-committed.json").exists());
+    assert!(recovery.reconcile_pending_only().is_err());
+    assert!(matches!(
+        recovery.advance_with_admission(|| Ok(())),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "reconcile-only owner cannot dispatch new effects"
+        ))
+    ));
+    assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
 fn unknown_effect_must_fail_closed_and_frozen_plan_cannot_drift() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));
