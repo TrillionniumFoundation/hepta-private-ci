@@ -75,7 +75,13 @@ fn tick(width: usize, sequence: u64, micros: u64) -> PopulationSparseTickV2 {
 
 #[test]
 fn parameter_counts_are_exact_and_cross_budget_boundaries() {
-    for (rank, expected) in [(1, 1536), (7, 7680), (15, 15872), (62, 64000), (255, 261632)] {
+    for (rank, expected) in [
+        (1, 1536),
+        (7, 7680),
+        (15, 15872),
+        (62, 64000),
+        (255, 261632),
+    ] {
         let cfg = config(256, rank);
         assert_eq!(checked(cfg.temporal_parameter_count()), expected);
         assert_eq!(checked(cfg.digest()), checked(cfg.digest()));
@@ -83,13 +89,22 @@ fn parameter_counts_are_exact_and_cross_budget_boundaries() {
     let mut cfg = config(2, 1);
     assert_eq!(checked(cfg.temporal_parameter_count()), 12);
     cfg.rank = 3;
-    assert_eq!(cfg.digest().err(), Some(LowRankMinGruErrorV1::InvalidConfig));
+    assert_eq!(
+        cfg.digest().err(),
+        Some(LowRankMinGruErrorV1::InvalidConfig)
+    );
     cfg = config(2, 1);
     cfg.gate_output_q24.push(Q);
-    assert_eq!(cfg.digest().err(), Some(LowRankMinGruErrorV1::InvalidConfig));
+    assert_eq!(
+        cfg.digest().err(),
+        Some(LowRankMinGruErrorV1::InvalidConfig)
+    );
     cfg = config(2, 1);
     cfg.gate_bias_q24[0] = Q + 1;
-    assert_eq!(cfg.digest().err(), Some(LowRankMinGruErrorV1::InvalidConfig));
+    assert_eq!(
+        cfg.digest().err(),
+        Some(LowRankMinGruErrorV1::InvalidConfig)
+    );
 }
 
 #[test]
@@ -129,7 +144,10 @@ fn gate_zero_and_one_and_rank_projection_are_deterministic() {
     let computed = checked(low_rank_min_gru_tick_v1(&cfg, &input, None));
     assert!(computed.1.gate_q24[0] > Q / 2);
     assert_ne!(computed.0.temporal_q24(), &[Q / 2, Q / 2]);
-    assert_eq!(computed, checked(low_rank_min_gru_tick_v1(&cfg, &input, None)));
+    assert_eq!(
+        computed,
+        checked(low_rank_min_gru_tick_v1(&cfg, &input, None))
+    );
 }
 
 #[test]
@@ -166,15 +184,21 @@ fn mutation_scope_sequence_clock_generation_and_input_bounds_reject() {
     scoped.scope_digest = Digest32::of_bytes(b"other-scope");
     assert_eq!(
         low_rank_min_gru_tick_v1(&cfg, &scoped, Some(&first)).err(),
-        Some(LowRankMinGruErrorV1::Mechanism(PopulationSparseError::ScopeDrift))
+        Some(LowRankMinGruErrorV1::Mechanism(
+            PopulationSparseError::ScopeDrift
+        ))
     );
     assert_eq!(
         low_rank_min_gru_tick_v1(&cfg, &tick(2, 3, 200), Some(&first)).err(),
-        Some(LowRankMinGruErrorV1::Mechanism(PopulationSparseError::Sequence))
+        Some(LowRankMinGruErrorV1::Mechanism(
+            PopulationSparseError::Sequence
+        ))
     );
     assert_eq!(
         low_rank_min_gru_tick_v1(&cfg, &tick(2, 2, 100), Some(&first)).err(),
-        Some(LowRankMinGruErrorV1::Mechanism(PopulationSparseError::Clock))
+        Some(LowRankMinGruErrorV1::Mechanism(
+            PopulationSparseError::Clock
+        ))
     );
     let mut invalid = tick(2, 2, 200);
     invalid.temporal_drive_q24[0] = H + 1;
@@ -211,7 +235,10 @@ fn cold_replay_is_bounded_and_reconstructs_the_same_checkpoint() {
     }
     assert_eq!(Some(recovered.clone()), prior);
     assert_eq!(recovered.sequence(), 32);
-    assert_eq!(replay_low_rank_min_gru_v1(&cfg, &[]).err(), Some(LowRankMinGruErrorV1::ReplayLength));
+    assert_eq!(
+        replay_low_rank_min_gru_v1(&cfg, &[]).err(),
+        Some(LowRankMinGruErrorV1::ReplayLength)
+    );
     assert_eq!(
         replay_low_rank_min_gru_v1(&cfg, &vec![tick(2, 1, 100); 1025]).err(),
         Some(LowRankMinGruErrorV1::ReplayLength)
@@ -220,6 +247,8 @@ fn cold_replay_is_bounded_and_reconstructs_the_same_checkpoint() {
     missing.remove(2);
     assert_eq!(
         replay_low_rank_min_gru_v1(&cfg, &missing).err(),
-        Some(LowRankMinGruErrorV1::Mechanism(PopulationSparseError::Sequence))
+        Some(LowRankMinGruErrorV1::Mechanism(
+            PopulationSparseError::Sequence
+        ))
     );
 }
