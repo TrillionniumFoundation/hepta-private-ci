@@ -185,6 +185,24 @@ jobs:
             --output "$RUNNER_TEMP/stem-laya-physical-arm.json" \
             --confirmatory-panel "$RUNNER_TEMP/stem-agnews-new-source-panel.json" \
             --confirmatory-output "$RUNNER_TEMP/stem-laya-fresh-arm.json"
+      - name: Bind current Laya and Gemma parameters to independently archived historical trial
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-paired-venv/bin/python" - <<'PY'
+          from pathlib import Path
+          import json, os, sys
+          sys.path.insert(0, 'qualification/neuron-dynamic-learning')
+          from historical_head_anchor import check_reports
+          root=Path(os.environ['RUNNER_TEMP'])
+          gemma=json.loads((root/'stem-gemma-physical-arms.json').read_text())
+          laya=json.loads((root/'stem-laya-physical-arm.json').read_text())
+          panel=json.loads((root/'stem-agnews-panel.json').read_text())
+          from public_agnews_panel import canonical, sha
+          attested=check_reports(original_panel_digest=sha(canonical(panel)),
+                                 original_gemma=gemma, original_laya=laya)
+          (root/'stem-historical-head-lock.json').write_text(json.dumps(attested,sort_keys=True))
+          assert attested['production_promotion']=='DENY_ALL'
+          PY
       - name: Independent paired-case audit, no causal or equal-cost promotion
         run: |
           set -euo pipefail
@@ -254,6 +272,8 @@ jobs:
             -s qualification/neuron-dynamic-learning -p 'test_public_agnews_confirmatory.py'
           PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-paired-venv/bin/python" -m unittest discover -v \
             -s qualification/neuron-dynamic-learning -p 'test_paired_confirmatory_audit.py'
+          PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-paired-venv/bin/python" -m unittest discover -v \
+            -s qualification/neuron-dynamic-learning -p 'test_historical_head_anchor.py'
           git diff --check
           git diff --exit-code
       - name: Archive only public-case digests and non-authorizing statistics
@@ -274,5 +294,6 @@ jobs:
             ${{ runner.temp }}/stem-gemma-fresh-arms.json
             ${{ runner.temp }}/stem-laya-fresh-arm.json
             ${{ runner.temp }}/stem-new-source-independent-review.json
+            ${{ runner.temp }}/stem-historical-head-lock.json
           if-no-files-found: warn
           retention-days: 7

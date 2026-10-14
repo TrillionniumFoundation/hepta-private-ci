@@ -200,6 +200,19 @@ def run_gemma(panel:dict, runner, *, seed:int=17, steps:int=40, confirmatory=Non
     if confirmatory is not None:
         from public_agnews_confirmatory import check_panel as check_fresh
         from exploratory_temperature_probe import scale_probability
+        from historical_head_anchor import check_values as require_previous_head
+        # Reject a silently retrained/replaced Head BEFORE any new val2
+        # input is passed through the real model.
+        require_previous_head(
+            original_panel_digest=panel_digest,
+            gemma_revision=runner.manifest["revision"],
+            stem_digest=runner.profile_digest,
+            frozen_head_digest=rust_candidate_digest(frozen.export_q24()),
+            trained_head_digest=rust_candidate_digest(head.export_q24()),
+            head_parameters=head.parameter_count(),
+            head_optimizer_steps=steps,
+            training_seed=seed,
+        )
         new_digest, new_cases = check_fresh(confirmatory, panel)
         extra_vectors, allocated_us = [], []
         for start in range(0, len(new_cases), 8):

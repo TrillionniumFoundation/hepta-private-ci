@@ -151,6 +151,14 @@ def verify(original, source_receipt, original_gemma, original_laya,
     old=verify_original(original,source_receipt,original_gemma,original_laya,
                         original_comparison)
     old_digest=old["panel_digest"]
+    from historical_head_anchor import check_reports as require_previous_reports
+    # Independent evaluator must not trust the runner's claim that the Head
+    # used on val2 is identical to the historical executed Q24 artifact.
+    historical_lock = require_previous_reports(
+        original_panel_digest=old_digest,
+        original_gemma=original_gemma,
+        original_laya=original_laya,
+    )
     # Rebuild from the independently SHA-256 checked *entire* val2 parquet:
     # a correctly shaped, balanced panel with forged labels is not sufficient.
     expected=create_panel(original,raw_new_source_rows)
@@ -212,6 +220,8 @@ def verify(original, source_receipt, original_gemma, original_laya,
         "metric_definitions":"binary_05_threshold_brier_8_equal_width_ece",
         "metrics":measures,
         "descriptive_pairwise_uncertainty":comparisons,
+        "historical_pre_val2_head_identity_locked": historical_lock["reference_local_tensor_lineage_matched"],
+        "historical_reference_run": historical_lock["executed_reference_run"],
         "model_reported_feature_lineage_bound":True,
         "model_forward_origin_independently_authenticated":False,
         "model_parameter_learning_on_new_holdout":False,

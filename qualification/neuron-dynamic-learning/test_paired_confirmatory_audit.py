@@ -3,6 +3,8 @@ import copy
 import hashlib
 import unittest
 from unittest.mock import patch
+from contextlib import contextmanager
+import historical_head_anchor as anchor
 import cell_learning
 
 import numpy as np
@@ -31,10 +33,16 @@ class FakeHead:
     def export_q24(self):return {"w": [int(round(t*2**24)) for t in self.w.tolist()]}
 
 
+@contextmanager
 def stub_head():
-    return patch.multiple(cell_learning,
+    with patch.multiple(cell_learning,
         budgeted_cell=lambda *a,**k: FakeHead(),
-        rust_candidate_digest=lambda weights:sha(canonical(weights)))
+        rust_candidate_digest=lambda weights:sha(canonical(weights))), \
+         patch.object(anchor,"check_values",return_value={
+             "reference_local_tensor_lineage_matched":False,
+             "executed_reference_run":0,
+         }):
+        yield
 
 
 class FakeStem:
@@ -86,7 +94,11 @@ def study():
         laya["metadata"]["model_parameter_count"]=421293827
         comp=compare(old,[*gemma,laya])
         values=(old,src,gemma,laya,comp,fresh,extra_gemma,extra_laya,new)
-        report=verify(*values)
+        with patch.object(anchor,"check_reports",return_value={
+                "reference_local_tensor_lineage_matched":False,
+                "executed_reference_run":0,
+                }):
+            report=verify(*values)
     return values,report
 
 
@@ -119,7 +131,12 @@ class ConfirmatoryAudit(unittest.TestCase):
             elif kind=="fake_scale":v[6][2]["rows"][0]["prob_sports"]+=.01
             elif kind=="old_head":v[6][2]["metadata"]["trained_head_digest"]="f"*64
             with patch.object(confirm,"SOURCE_PANEL_SHA256",sha(canonical(v[0]))):
-                with self.subTest(kind=kind),self.assertRaises((AuditError,confirm.ConfirmatoryError)):
+                with self.subTest(kind=kind), \
+                     patch.object(anchor,"check_reports",return_value={
+                         "reference_local_tensor_lineage_matched":False,
+                         "executed_reference_run":0,
+                     }), \
+                     self.assertRaises((AuditError,confirm.ConfirmatoryError)):
                     verify(*v)
 
     def test_new_labels_never_enter_head_training(self):

@@ -400,3 +400,32 @@ test results were examined. The 95% paired bootstrap is descriptive and
 not corrected for all research searches. Exact model-origin signing,
 real physical-forward attribution, target-host lifecycle cost, independent
 outcome authority, future1/future2/future3 and `blocking-ci` remain open.
+
+
+## Historical weight identity fence before new-source replication (2026-10-14)
+
+The original public three-arm study was **actually executed** in Actions
+[run #38521871187](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38521871187)
+on commit `1f231584124e62a11cf932d937ea4a7ad2437ab2`. Its independently
+downloaded ZIP (SHA256 `cbedc87a883b34bc26447fab73f425469a3baa1f76afb35361abb0a446bda75d`)
+contains the exact frozen/shared model evidence:
+
+- Stem digest: `67c4b70b017cf5fce950b2b57594a8dc3e1440d21e49ed4781cd71ba444c7017`
+- Frozen Head: `c59acb59eb450623f69b3e50eb8d3615cea0901843c6e58661036c7a14851061`
+- Trained Head: `007420eef8999ea6096d74d390c910f0bcfb5e2ae44b3bd717a0e369d7fa2e0e`
+- 2018 local parameters, 40 SGD steps, seed 17, exact Laya 421293827-parameter checkpoint.
+
+`historical_head_anchor.py` now **rejects** any substitution of those values
+before the `val2` input reaches the shared Encoder; the separately implemented
+`paired_confirmatory_audit.py` repeats the check from original model reports.
+This prevents an accidentally retrained Head or silently revised Stem from being
+presented as unchanged-parameter cross-source generalization. The Workflow
+retains a read-only historical identity receipt separate from numeric scores.
+Tests explicitly reject mismatched revision, Stem, Head, capacity, seed,
+training steps, Laya model count, and duplicate effective arm labels.
+
+This is an identity/compatibility safeguard based on an executed public
+research artifact, **not** a cryptographic model-origin signature, signed
+outcome, three chronological future learning generations or deployment
+approval. All evidence remains `DENY_ALL`; final exact-HEAD CI and external
+owner checks are still required.
