@@ -111,7 +111,8 @@ def test_reuse_counts_physical_encoder_calls_and_rows():
                                  mode='joint', batch_size=8)
     public_f, public = reuse_trial(rows, fake_encoder, encoder_digest=D('a'),
                                    tokenizer_digest=D('b'), normalizer_digest=D('c'),
-                                   mode='public', batch_size=8)
+                                   mode='public', batch_size=8,
+                                   research_synthetic_cross_source=True)
     assert joint_f.shape == public_f.shape == (32, 2)
     assert joint['distinct_input_keys'] == 32
     assert joint['encoder_forward_rows'] == 32
@@ -121,6 +122,36 @@ def test_reuse_counts_physical_encoder_calls_and_rows():
     assert public['encoder_forward_invocations'] == 1
     assert sum(len(batch) for batch in calls) == 36
     assert public['authorization_verified'] is False
+
+
+def test_public_feature_reuse_is_source_isolated_by_default():
+    rows = dataset(8)
+    calls = []
+    def encoder(batch):
+        calls.append(len(batch))
+        return torch.ones((len(batch), 4))
+    _, result = reuse_trial(rows, encoder, encoder_digest=D('a'),
+                            tokenizer_digest=D('b'), normalizer_digest=D('c'),
+                            mode='public', batch_size=8)
+    assert result['distinct_input_keys'] == 32
+    assert result['encoder_forward_rows'] == 32
+    assert result['cross_source_reuse_policy'] == 'STRICT_SOURCE_GROUP_ISOLATION'
+    assert sum(calls) == 32
+    assert result['authorization_verified'] is False
+
+
+def test_synthetic_cross_source_only_public_and_never_authorizes():
+    rows = dataset(8)
+    a, b = rows[0], rows[1]
+    kw = dict(encoder_digest=D('a'), tokenizer_digest=D('b'),
+              normalizer_digest=D('c'), mode='public')
+    assert reuse_keys(a, **kw) != reuse_keys(b, **kw)
+    assert reuse_keys(a, **kw, research_synthetic_cross_source=True) == reuse_keys(
+        b, **kw, research_synthetic_cross_source=True)
+    with pytest.raises(ValueError, match='synthetic cross-source'):
+        reuse_keys(a, **{**kw, 'mode': 'joint'}, research_synthetic_cross_source=True)
+    with pytest.raises(ValueError, match='source group'):
+        reuse_keys({**a, 'source_group': ''}, **kw)
 
 
 def test_reuse_key_fences_scope_and_artifacts():
