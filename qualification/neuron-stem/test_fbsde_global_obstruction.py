@@ -1,5 +1,8 @@
 """Exact rational tests; no pretrained model or stochastic solver evidence."""
 from fractions import Fraction as F
+import json
+from pathlib import Path
+import tempfile
 import unittest
 
 from fbsde_global_obstruction import classify, experiment, experiment_case, local_segment
@@ -46,6 +49,19 @@ class ObstructionTests(unittest.TestCase):
             local_segment(F(1), F(1), F(1))
         with self.assertRaises(ValueError):
             experiment_case(F(1), F(1), F(1), 1)
+
+    def test_registered_study_profile_publishes_only_research_receipt(self):
+        # Integration with the existing FBSDE study dispatcher/owner contract.
+        import fbsde_study
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "global-obstruction"
+            outcome = fbsde_study.run(path, profile="global_obstruction_v1")
+            sealed = json.loads((path / "report.json").read_text())
+            self.assertEqual(outcome, sealed)
+            self.assertEqual(len(outcome["sources_sha256"]), 2)
+            self.assertFalse(outcome["production_accepted"])
+            with self.assertRaises(FileExistsError):
+                fbsde_study.run(path, profile="global_obstruction_v1")
 
     def test_complete_scoped_negative_census(self):
         r = experiment()
