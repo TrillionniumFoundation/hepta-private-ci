@@ -24,7 +24,7 @@ def fixture():
                               "joint_input_digest":e.digest(e.canonical(joint))})
     panel={"schema":"hepta.stem.agnews-binary-capability-panel.v1",
            "dataset":"szhuggingface/ag_news","dataset_commit_prefix":"98c5322",
-           "dataset_file_sha256":dict(e.DATASET_BYTES),"case_count":224,
+           "dataset_file_sha256":dict(e.DATASET_BYTES),"label_mapping":{"world":0,"sports":1},"case_count":224,
            "cross_sectional_not_future":True,"production_promotion":"DENY_ALL",
            "cases":cases}
     panel_sha=e.digest(e.canonical(panel))
@@ -107,6 +107,51 @@ class ArchiveLockTests(unittest.TestCase):
         with self.assertRaises(e.Invalid):
             e.verify(p,blob,approved_panel_sha=e.digest(e.canonical(p)),
                      approved_archive_sha=e.digest(blob))
+
+    def test_training_entry_refuses_changed_public_selection_before_weights(self):
+        import tempfile,sys
+        from pathlib import Path
+        from unittest.mock import patch
+        import e1_public_triplet_real_cpu as runner
+        p,_=fixture()
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);panel=root/"case.json";panel.write_bytes(e.canonical(p))
+            argv=["e1_public_triplet_real_cpu","--panel",str(panel),"--model","granite_97m_r2",
+                  "--compact-checkout",str(root/"fake-weights"),"--output",str(root/"out.json")]
+            with patch.object(sys,"argv",argv),patch.object(runner,"encode_pretrained",side_effect=AssertionError("should not load weights")):
+                with self.assertRaisesRegex(runner.Invalid,"source selection differs"):
+                    runner.main()
+    def test_independent_numeric_entry_refuses_changed_selection(self):
+        import tempfile,sys
+        from pathlib import Path
+        from unittest.mock import patch
+        import e1_public_triplet_review as reviewer
+        p,_=fixture()
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);panel=root/"case.json";panel.write_bytes(e.canonical(p))
+            argv=["e1_public_triplet_review","--panel",str(panel),
+                  "--granite-97m-r2","g.json","--mmbert-small","m.json",
+                  "--embeddinggemma-2-text","e.json","--output",str(root/"out.json")]
+            with patch.object(sys,"argv",argv),patch.object(reviewer,"read",side_effect=lambda path:p if Path(path)==panel else {}):
+                with self.assertRaisesRegex(reviewer.Invalid,"not the preregistered"):
+                    reviewer.main()
+    def test_historical_reference_entry_refuses_changed_source(self):
+        import tempfile,sys
+        from pathlib import Path
+        from unittest.mock import patch
+        import e1_public_laya_reference as ref
+        p,_=fixture()
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d);panel=root/"case.json";panel.write_bytes(e.canonical(p))
+            for n in ("g","m","e"):
+                (root/(n+".json")).write_text("{}")
+            argv=["e1_public_laya_reference","--panel",str(panel),
+                  "--historical-laya-zip",str(root/"fake.zip"),
+                  "--granite-97m-r2",str(root/"g.json"),"--mmbert-small",str(root/"m.json"),
+                  "--embeddinggemma-2-text",str(root/"e.json"),"--output",str(root/"out.json")]
+            with patch.object(sys,"argv",argv):
+                with self.assertRaisesRegex(ref.Invalid,"changed source panel"):
+                    ref.main()
 
 if __name__=="__main__":
     unittest.main()
