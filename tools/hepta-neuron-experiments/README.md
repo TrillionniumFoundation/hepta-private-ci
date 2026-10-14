@@ -79,9 +79,37 @@ This directory contains a **no-authority** POSIX host measurement collector and 
 
 5. The existing independent `learning.eval`, `learning.ledger`, `learning.artifacts`, Neuron, inference and model owners must supply real authenticated model load/invocation, genuine Neuron Tick/Checkpoint/CAS and external task outcomes, matched unique/trainable parameters and compute, future-time holdouts, NDU value, retention and rollback. **Nothing in this collector can issue those receipts or approve a Cell Split.**
 
+## Existing real public-pretrained Encoder observation (NOT native E0 acceptance)
+
+The separate, frozen research source at
+[`research/shared-stem-hf-ci-conformance-20261014`](https://github.com/TrillionniumFoundation/hepta-private-ci/tree/research/shared-stem-hf-ci-conformance-20261014)
+records a successful [public Encoder canary job](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38513037442)
+(job `115688868903`; **different source branch/check-out from this PR**). Its original
+[`HF_PUBLIC_ENCODER_PROBE_20261014.json`](https://github.com/TrillionniumFoundation/hepta-private-ci/blob/research/shared-stem-hf-ci-conformance-20261014/qualification/stem-cell-v1/HF_PUBLIC_ENCODER_PROBE_20261014.json)
+reports actual downloaded `answerdotai/ModernBERT-base` revision
+`8949b909ec900327062f0ebf497f51aef5e6f0c8`, weight SHA-256
+`340ac08b74eef0d7bdec2d7981a6a3d4249bf0e6aab60634b72ad02c2b8023a9`,
+149,655,232 full parameters, 149,014,272 feature parameters, 768-D output and
+three real CPU feature forwards with repeat-input consistency and input distinction.
+Those measurements concern a **public research model/checkpoint on a hosted runner**.
+They do not demonstrate a selected Hepta model, an authorized local Worker,
+`InferenceControlModelPort`, a committed Q24 `NeuronTickReceiptV1`/checkpoint
+with independent witness, external task utility, FLOPs completeness or target-device
+capacity. Reuse the pinned research observation as provenance and rerun only the
+missing physical/causal comparisons rather than presenting a new dummy Encoder.
+
+For actual E0 completion, independently authorized model/Artifact and inference
+owners must bind verified loaded tensor bytes and observed invocation to the *same*
+frozen input/model tuple, then the existing Neuron owner must commit that
+observation through durable Q24 journal and independent CAS witness, and an
+independent task-outcome owner must provide genuine results. Signed original
+receipts and current revocation/fence status are required; this Python tool
+does not issue, verify, or substitute them. `execution_matrix_complete` does
+not become E0 acceptance even if every native process exits successfully.
+
 ## Limitations and refusal semantics
 
-- `run` executes a **caller-explicit trusted native command** (not a sandbox) and records observed process wall time, direct-child CPU/RSS via POSIX `wait4`, an executable digest checked before and after, and raw stdout/stderr SHA-256. Timeout/output-budget overruns kill the child's process group. Model/provider access, token accounting and worker identity must be authenticated by existing owners.
+- `run` executes a **caller-explicit trusted native command** (not a sandbox) and records observed process wall time, direct-child CPU/RSS via POSIX `wait4`, an executable digest checked before and after, and raw stdout/stderr SHA-256. After the child exits, it **rechecks the full frozen Git source/inputs/model/argument-file identity**, not only the binary. It also fails and kills leftover members of its isolated process group when the direct child reports success but helpers remain (`unsettled_descendants`). Timeout/output-budget overruns kill the process group as well. Both checks are bounded endpoint observations: a file altered and restored mid-run or a helper that escapes into a different process group remains undetected. Model/provider access, token accounting and worker identity must be authenticated by existing owners.
 - Optional `--sample-group-rss` measures a **Linux procfs sample lower bound** over visible processes with the child's process group ID, at approximately 100 ms intervals. It can miss short peaks, inaccessible processes, processes that change groups, or workloads launched in external services. It adds sampling overhead. Do not substitute it for full process-tree peak or GPU memory measurement.
 - GPU, power, model-internal inference p95/p99, FLOPs, throughput, parameter counts, effect outcomes, and scientifically matched task/compute budgets remain **unmeasured by this collector**. A complete arm matrix is not E0/E1/E2/E3/E4 acceptance.
 - Local plan/run SHA-256 digests detect unrecorded byte drift but **are not signatures or independent evidence**. A malicious writer can recompute them. Commands can import non-pinned runtime components; a loaded artifact need not be the frozen file unless the trusted inference owner provides that binding. Source weights, parameters and principal scopes are not inferred from filenames.
