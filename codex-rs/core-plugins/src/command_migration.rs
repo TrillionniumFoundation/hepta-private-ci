@@ -314,9 +314,19 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 }
 
 fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
-    let parsed: YamlValue = serde_yaml::from_str(raw_frontmatter).ok()?;
-    let mapping = parsed.as_object()?;
-    mapping.get("description").and_then(yaml_scalar)
+    // serde-saphyr deserializes tagged scalars transparently into serde_json::Value.
+    // Capture the tag at both the root and the description node; never promote an
+    // explicitly tagged value to an untagged, trusted skill description.
+    let parsed: serde_yaml::Tagged<BTreeMap<String, serde_yaml::Tagged<YamlValue>>> =
+        serde_yaml::from_str(raw_frontmatter).ok()?;
+    if parsed.1.is_some() {
+        return None;
+    }
+    let description = parsed.0.get("description")?;
+    if description.1.is_some() {
+        return None;
+    }
+    yaml_scalar(&description.0)
 }
 
 fn yaml_scalar(value: &YamlValue) -> Option<String> {

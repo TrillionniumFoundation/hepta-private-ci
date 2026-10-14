@@ -164,24 +164,32 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 fn parse_frontmatter(
     raw_frontmatter: &str,
 ) -> (BTreeMap<String, FrontmatterValue>, Option<String>) {
-    let parsed: YamlValue = match serde_yaml::from_str(raw_frontmatter) {
-        Ok(parsed) => parsed,
-        Err(err) => return (BTreeMap::new(), Some(err.to_string())),
-    };
-    let Some(mapping) = parsed.as_object() else {
+    // Keep YAML tag provenance through deserialization. A tagged name, description
+    // or permission field must not become an ordinary trusted scalar.
+    let parsed: serde_yaml::Tagged<BTreeMap<String, serde_yaml::Tagged<YamlValue>>> =
+        match serde_yaml::from_str(raw_frontmatter) {
+            Ok(parsed) => parsed,
+            Err(err) => return (BTreeMap::new(), Some(err.to_string())),
+        };
+    if parsed.1.is_some() {
         return (
             BTreeMap::new(),
-            Some("frontmatter is not a YAML mapping".to_string()),
+            Some("frontmatter is a tagged YAML mapping".to_string()),
         );
-    };
+    }
 
     let mut frontmatter = BTreeMap::new();
-    for (key, value) in mapping {
+    for (key, value) in parsed.0 {
         let key = key.trim();
         if key.is_empty() {
             continue;
         }
-        frontmatter.insert(key.to_string(), frontmatter_value_from_yaml(value));
+        let value = if value.1.is_some() {
+            FrontmatterValue::Other
+        } else {
+            frontmatter_value_from_yaml(&value.0)
+        };
+        frontmatter.insert(key.to_string(), value);
     }
 
     (frontmatter, None)
