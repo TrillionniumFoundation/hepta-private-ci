@@ -14,7 +14,9 @@ use crate::population_v2::PopulationSparseCheckpointV2;
 use crate::population_v2::PopulationSparseConfigV2;
 use crate::population_v2::PopulationSparseError;
 use crate::population_v2::PopulationSparseTickV2;
+#[cfg(test)]
 use crate::population_v2::population_sparse_tick_v2;
+use crate::population_v2::population_sparse_tick_v2_from_temporal_override;
 
 const Q: i64 = 1 << 24;
 const H: i64 = 8 * Q;
@@ -214,12 +216,12 @@ pub fn gated_sparse_tick_v3(
         gated_temporal.push(update.clamp(-H, H));
     }
 
-    let mut v2_config = config.base.clone();
-    v2_config.temporal_decay_q24 = 0;
-    let mut v2_input = input.clone();
-    v2_input.temporal_drive_q24 = gated_temporal;
-    let (inner, v2_receipt) =
-        population_sparse_tick_v2(&v2_config, &v2_input, previous.map(|prior| &prior.inner))?;
+    let (inner, v2_receipt) = population_sparse_tick_v2_from_temporal_override(
+        &config.base,
+        input,
+        &gated_temporal,
+        previous.map(|prior| &prior.inner),
+    )?;
     let original_input_digest = bind_original_input(input)?;
     let mut next = GatedSparseCheckpointV3 {
         config_digest,
