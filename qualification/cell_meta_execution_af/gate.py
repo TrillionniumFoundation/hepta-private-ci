@@ -74,7 +74,11 @@ def identity(value: Any, name: str) -> str:
 
 
 def number(value: Any, name: str, *, minimum: float = 0.0, maximum: float | None = None) -> float:
-    require(type(value) in (float, int) and math.isfinite(value), f"{name}: finite number required")
+    try:
+        finite = type(value) in (float, int) and math.isfinite(value)
+    except OverflowError:
+        finite = False
+    require(finite, f"{name}: finite number required")
     require(value >= minimum and (maximum is None or value <= maximum), f"{name}: out of bounds")
     return float(value)
 
@@ -408,7 +412,6 @@ def validate_split(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
 
 
 def verify(input_data: Any) -> dict[str, Any]:
-    root = record(input_data, "root")
     out: dict[str, Any] = {
         "schema": SCHEMA + ".report", "status": "blocked", "authority_posture": "DENY_ALL",
         "physical_split_permitted": False, "production_selection_permitted": False,
@@ -421,8 +424,9 @@ def verify(input_data: Any) -> dict[str, Any]:
         ],
     }
     try:
+        root = record(input_data, "root")
         meta, windows = common(root)
-    except (InvalidEvidence, KeyError) as exc:
+    except (InvalidEvidence, KeyError, TypeError, OverflowError) as exc:
         out["gates"]["identity"] = {"status": "blocked", "reason": str(exc)}
         return out
     out["gates"]["identity"] = {"status": "structurally_complete", "signature_verified": False}
@@ -455,10 +459,11 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         report = verify(json.loads(args.input.read_text(encoding="utf-8")))
-    except (OSError, ValueError) as exc:
+    except (OSError, ValueError, TypeError, OverflowError) as exc:
         report = {"schema": SCHEMA + ".report", "status": "blocked",
                   "authority_posture": "DENY_ALL", "error": str(exc),
-                  "physical_split_permitted": False, "production_selection_permitted": False}
+                  "physical_split_permitted": False, "production_selection_permitted": False,
+                  "model_promotion_permitted": False, "merge_or_release_permitted": False}
     output = json.dumps(report, indent=2, sort_keys=True) + "\n"
     if args.out:
         args.out.write_text(output, encoding="utf-8")
