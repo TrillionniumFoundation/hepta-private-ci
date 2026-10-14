@@ -203,7 +203,7 @@ fn amcn_epoch_shadow_concurrent_owner_epoch_write_waits_for_reader_model() {
     let (inside_tx, inside_rx) = channel::<()>();
     let (release_tx, release_rx) = channel::<()>();
     let (writer_begin_tx, writer_begin_rx) = channel::<()>();
-    let (writer_end_tx, writer_end_rx) = channel::<()>();
+    let (writer_end_tx, writer_end_rx) = channel::<Result<(), NeuronModelError>>();
     let for_model = shared.clone();
     let for_writer = shared.clone();
     let req_thread = req.clone();
