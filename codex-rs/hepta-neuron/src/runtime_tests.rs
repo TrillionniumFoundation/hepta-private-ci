@@ -524,7 +524,8 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
 mod amcn_pending_runtime {
     use super::*;
 
-    use std::sync::atomic::{AtomicBool, AtomicUsize, Ordering};
+    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::TryLockError;
 
     use codex_hepta_infer_core::{
         NeuronFeatureObservationV1, NeuronFeatureReceiptV1, NeuronFeatureRequestV1,
@@ -537,8 +538,35 @@ mod amcn_pending_runtime {
     };
 
     struct LiveSourceGate {
-        source_lease_current: Arc<AtomicBool>,
+        source_lease: Arc<Mutex<bool>>,
         checks: Arc<AtomicUsize>,
+    }
+
+    /// Independently witnessed Journal CAS must execute under the same lock.
+    #[derive(Clone)]
+    struct FencedWitness {
+        original: MemoryWitness,
+        source_lease: Arc<Mutex<bool>>,
+        cas_checks: Arc<AtomicUsize>,
+    }
+
+    impl AnchorWitnessStore for FencedWitness {
+        fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
+            self.original.current()
+        }
+
+        fn compare_and_swap(
+            &mut self,
+            expected: Option<JournalAnchor>,
+            next: JournalAnchor,
+        ) -> Result<(), WitnessStoreError> {
+            assert!(
+                matches!(self.source_lease.try_lock(), Err(TryLockError::WouldBlock)),
+                "source lease RELEASED before real Runtime Witness CAS"
+            );
+            self.cas_checks.fetch_add(1, Ordering::SeqCst);
+            self.original.compare_and_swap(expected, next)
+        }
     }
 
     impl AmcnSourceArtifactFence for LiveSourceGate {
@@ -551,20 +579,24 @@ mod amcn_pending_runtime {
         where
             E: From<NeuronModelError>,
         {
+            let owner_lock = self.source_lease.lock()
+                .map_err(|_| E::from(NeuronModelError::Indeterminate))?;
             self.checks.fetch_add(1, Ordering::SeqCst);
-            if !self.source_lease_current.load(Ordering::SeqCst) {
+            if !*owner_lock {
                 return Err(E::from(NeuronModelError::Rejected));
             }
-            // A production implementation MUST hold the actual source/Head/
-            // witness lock here. This fixture tests the *requirement to
-            // recheck* before pending reconciliation, not owner authority.
-            action()
+            // One local critical section covers actual InferenceControl,
+            // Journal commit AND independent runtime Witness CAS.
+            let outcome = action();
+            drop(owner_lock);
+            outcome
         }
     }
 
     struct OwnerControl {
         config: NeuronRuntimeConfigV1,
         calls: Arc<AtomicUsize>,
+        source_lease: Arc<Mutex<bool>>,
     }
 
     impl NeuronInferenceControlPort for OwnerControl {
@@ -572,6 +604,10 @@ mod amcn_pending_runtime {
             &mut self,
             request: &NeuronFeatureRequestV1,
         ) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
+            assert!(
+                matches!(self.source_lease.try_lock(), Err(TryLockError::WouldBlock)),
+                "source lease RELEASED before actual inference.control call"
+            );
             self.calls.fetch_add(1, Ordering::SeqCst);
             let config = &self.config;
             let runtime_tuple = NeuronModelRuntimeTupleV1 {
@@ -628,21 +664,28 @@ mod amcn_pending_runtime {
         let native = native_config();
         let config = runtime_config(&native);
         let witness = MemoryWitness::default();
+        let lease = Arc::new(Mutex::new(true));
+        let cas_checks = Arc::new(AtomicUsize::new(0));
+        let owned_witness = FencedWitness {
+            original: witness.clone(),
+            source_lease: Arc::clone(&lease),
+            cas_checks: Arc::clone(&cas_checks),
+        };
         let mut runtime = checked(NeuronRuntime::bootstrap(
-            fixture.file(), native, scope(), 16, config.clone(), witness.clone(),
+            fixture.file(), native, scope(), 16, config.clone(), owned_witness,
         ));
         let request_input = input(1, Digest32::ZERO);
         let original_request = checked(runtime.model_request(&request_input));
         let binding = bound(&original_request);
         let calls = Arc::new(AtomicUsize::new(0));
         let checks = Arc::new(AtomicUsize::new(0));
-        let current = Arc::new(AtomicBool::new(true));
         let mut fence = LiveSourceGate {
-            source_lease_current: Arc::clone(&current),
+            source_lease: Arc::clone(&lease),
             checks: Arc::clone(&checks),
         };
         let mut control = OwnerControl {
             config, calls: Arc::clone(&calls),
+            source_lease: Arc::clone(&lease),
         };
 
         // Model execution and journal commit really succeed; the separately
@@ -656,7 +699,7 @@ mod amcn_pending_runtime {
         assert_eq!(checked(witness.current()), None);
 
         // Revoke the original source between model execution and retry.
-        current.store(false, Ordering::SeqCst);
+        *checked(lease.lock()) = false;
         let blocked = runtime.tick_amcn_fenced(
             &mut fence, &mut control, &binding, request_input.clone(),
         );
@@ -670,7 +713,7 @@ mod amcn_pending_runtime {
         // Fixture-only restoration of its valid source lease lets the pending
         // witness reconcile WITHOUT re-running the model or reusing an
         // unchecked cached output. Real owner tombstones must remain monotonic.
-        current.store(true, Ordering::SeqCst);
+        *checked(lease.lock()) = true;
         let reconciled = checked(runtime.tick_amcn_fenced(
             &mut fence, &mut control, &binding, request_input,
         ));
@@ -678,6 +721,7 @@ mod amcn_pending_runtime {
         let anchor = checked(witness.current()).expect("witness reconciled");
         assert_eq!(anchor.checkpoint_digest, reconciled.tick.checkpoint_after);
         assert_eq!(checks.load(Ordering::SeqCst), 3);
+        assert_eq!(cas_checks.load(Ordering::SeqCst), 2);
         assert!(!reconciled.signal.authority.grants_any());
     }
 
@@ -696,11 +740,14 @@ mod amcn_pending_runtime {
         bad_binding.head_digest = Digest32::of_bytes(b"replaced-head");
         let calls = Arc::new(AtomicUsize::new(0));
         let checks = Arc::new(AtomicUsize::new(0));
+        let source_lease = Arc::new(Mutex::new(true));
         let mut fence = LiveSourceGate {
-            source_lease_current: Arc::new(AtomicBool::new(true)),
+            source_lease: Arc::clone(&source_lease),
             checks: Arc::clone(&checks),
         };
-        let mut control = OwnerControl { config, calls: Arc::clone(&calls) };
+        let mut control = OwnerControl {
+            config, calls: Arc::clone(&calls), source_lease,
+        };
         assert_eq!(
             runtime.tick_amcn_fenced(
                 &mut fence, &mut control, &bad_binding, request_input,
