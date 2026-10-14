@@ -2,6 +2,8 @@
 from __future__ import annotations
 
 from copy import deepcopy
+import hashlib
+import json
 import pytest
 
 from neuron_shared_encoder.abc_evidence import (
@@ -117,6 +119,7 @@ def c_fixture():
             'shared_text_stem_sha256': D('4'),
             'modality_adapter_sha256': None if index == 0 else format(index+10, '064x'),
             'paired_media_dataset_sha256': None if index == 0 else format(index+20, '064x'),
+            'media_preprocessor_sha256': None if index == 0 else format(index+30, '064x'),
             'total_parameters': 140000000 + index*1000000,
             'trainable_parameters': index*5000,
             'projection_parameters': index*1000,
@@ -230,6 +233,51 @@ def test_abc_missing_real_models_never_selects_winner():
 
 
 
+def media_prediction_payload():
+    # A minimal public, synthetic PR1774 raw prediction schema. Not actual
+    # weights, media bytes, or independently adjudicated observations.
+    pairings = []
+    for index, (modality, contrast) in enumerate((
+        ('image', 'media_substitution'),
+        ('audio', 'media_substitution'),
+        ('video', 'temporal_reordering'),
+    )):
+        video = modality == 'video'
+        pairings.append({
+            'pair_id': f'pair-{index}',
+            'source_group': f'family-{index}',
+            'split': 'holdout',
+            'modality': modality,
+            'contrast_kind': contrast,
+            'prompt_sha256': D('a'),
+            'original_source_sha256': format(41+index, '064x'),
+            'changed_source_sha256': format(51+index, '064x'),
+            'original_probabilities': [.9, .1],
+            'changed_probabilities': [.1, .9],
+            'original_timestamps_us': [0, 10] if video else None,
+            'changed_timestamps_us': [0, 10] if video else None,
+            'original_frames': [D('1'), D('2')] if video else None,
+            'changed_frames': [D('2'), D('1')] if video else None,
+            'pair_wall_ns': 1000,
+            'pair_formula_flops': 200,
+        })
+    return {
+        'schema': 'hepta.stem.paired-modality-predictions.v1',
+        'scope': 'synthetic-scope',
+        'model_sha256': D('d'),
+        'preprocessor_sha256': format(33, '064x'),
+        'source_sha256': format(23, '064x'),
+        'classes': 2,
+        'pairs': pairings,
+    }
+
+
+def media_prediction_digest():
+    raw = json.dumps(media_prediction_payload(), sort_keys=True,
+                     separators=(',', ':'), allow_nan=False).encode('utf-8')
+    return hashlib.sha256(raw).hexdigest()
+
+
 def media_policy():
     return {
         'schema': 'hepta.stem.media-review-policy.v1',
@@ -244,7 +292,7 @@ def media_policy():
 def media_truth_flip_report():
     return {
         'schema': 'hepta.stem.paired-modality-audit.v1',
-        'prediction_sha256': D('c'),
+        'prediction_sha256': media_prediction_digest(),
         'observer_receipt_sha256': D('e'),
         'actual_independent_observer_verified': False,
         'production_accepted': False,
@@ -272,6 +320,7 @@ def test_abc_even_self_reported_complete_never_grants_permission():
                                         bootstrap=100, min_future_groups=2),
         'C': multimodal_cost_audit(c_fixture()),
         'media_counterfactual': media_truth_flip_report(),
+        'media_predictions': media_prediction_payload(),
         'media_policy': media_policy(),
     })
     assert observed['status'] == 'RESEARCH_REVIEW_CANDIDATE_UNVERIFIED'
@@ -475,7 +524,11 @@ def test_abc_without_image_audio_video_truth_flips_never_advances():
 def test_c_media_semantic_shadow_pass_still_no_authority():
     result = paired_media_necessity_audit(
         media_truth_flip_report(), media_policy(),
-        expected_protocol_sha256=D('b'))
+        raw_predictions=media_prediction_payload(),
+        expected_protocol_sha256=D('b'),
+        expected_model_sha256=D('d'),
+        expected_preprocessor_sha256=format(33, '064x'),
+        expected_media_source_sha256=format(23, '064x'))
     assert result['status'] == 'SCHEMA_COMPLETE_UNVERIFIED'
     assert len(result['media_groups']) == 3
     assert result['independent_media_truth_verified'] is False
@@ -515,7 +568,8 @@ def test_c_semantic_necessity_rejects_mocked_media_success(mutation):
     else:
         report['prediction_sha256'] = 'unbound'
     result = paired_media_necessity_audit(
-        report, policy, expected_protocol_sha256=D('b'))
+        report, policy, raw_predictions=media_prediction_payload(),
+        expected_protocol_sha256=D('b'))
     assert result['status'] == 'BLOCKED'
 
 
@@ -526,3 +580,54 @@ def test_abc_manifest_overflow_float_rejected_at_pinned_decode(tmp_path):
     path.write_text(payload)
     with pytest.raises(ValueError, match='nonfinite JSON float exponent'):
         _pinned_json(str(path), sha256(payload.encode()).hexdigest())
+
+
+@pytest.mark.parametrize('mutation', [
+    'wrong_model', 'wrong_preprocessor', 'wrong_dataset',
+    'changed_raw_prediction', 'missing_raw', 'wrong_scored_count',
+])
+def test_c_media_must_match_exact_final_multimodal_source(mutation):
+    c = multimodal_cost_audit(c_fixture())
+    report = media_truth_flip_report()
+    raw = media_prediction_payload()
+    if mutation == 'wrong_model':
+        raw['model_sha256'] = D('e')
+    elif mutation == 'wrong_preprocessor':
+        raw['preprocessor_sha256'] = D('e')
+    elif mutation == 'wrong_dataset':
+        raw['source_sha256'] = D('e')
+    elif mutation == 'changed_raw_prediction':
+        raw['pairs'][0]['changed_probabilities'] = [.5, .5]
+    elif mutation == 'missing_raw':
+        raw = None
+    else:
+        report['groups']['holdout/image/media_substitution']['pairs'] = 2
+    outcome = paired_media_necessity_audit(
+        report, media_policy(), raw_predictions=raw,
+        expected_protocol_sha256=c['protocol_sha256'],
+        expected_model_sha256=c['final_multimodal_model_sha256'],
+        expected_media_source_sha256=c['final_media_source_sha256'],
+        expected_preprocessor_sha256=c['final_media_preprocessor_sha256'],
+    )
+    assert outcome['status'] == 'BLOCKED'
+
+
+def test_c_unverified_model_linkage_rejects_otherwise_complete_joint_review():
+    from neuron_shared_encoder.validation_v3 import FIVE_ARM_CANDIDATES
+    rows, b = b_fixture()
+    raw = media_prediction_payload()
+    raw['model_sha256'] = D('f')
+    evidence = {
+        'A': {'experiment': 'A5', 'dataset_sha256': D('d'),
+              'evidence_class': 'REAL_MODEL_LOCAL_SHADOW',
+              'encoders': {name: {} for name, _, _, _ in FIVE_ARM_CANDIDATES}},
+        'B': threeway_prequential_audit(
+            rows, D('d'), b, bootstrap=100, min_future_groups=2),
+        'C': multimodal_cost_audit(c_fixture()),
+        'media_counterfactual': media_truth_flip_report(),
+        'media_predictions': raw,
+        'media_policy': media_policy(),
+    }
+    result = joint_abc_evidence_gate(evidence)
+    assert result['status'] == 'BLOCKED'
+    assert result['candidate_stem_selected'] is None

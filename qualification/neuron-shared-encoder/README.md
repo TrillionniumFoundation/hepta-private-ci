@@ -479,3 +479,26 @@ and duplicate keys but also valid-looking numeric exponents such as
 No allegedly pinned model input or measured resource may become an
 infinite Python float. This is research input validation, not a signed
 source-attestation mechanism.
+
+
+### C cross-source integrity: actual paired predictions must belong to C's final model
+
+The multimodal audit now retains the registered final **video-stage**
+composite model, media source and preprocessing SHA-256 identities.
+The `abc-joint` envelope must additionally include the full
+`media_predictions` input used by the PR #1774 paired-media scorer
+alongside its `media_counterfactual` summary and frozen policy.
+The raw input is canonicalized with PR #1774's JSON encoding and hashed
+to exactly match `prediction_sha256` from that scorer. Its
+`model_sha256`, `preprocessor_sha256` and `source_sha256`
+must also match the final C-stage identities; scored cohort counts
+must match the associated source-bound raw modality pairs.
+
+This prevents a researcher from attaching a genuine image/audio/video
+truth-flip score from a *different* model, data source or processor
+to this A/B/C resource/learning comparison. It remains an **untrusted
+offline** cross-source consistency check, not a replay of PR #1774's
+entire scorer, independent media truth verification, or signed owner
+attestation. The real C final stage and paired scorer must actually
+use the same complete multimodal model/pipeline; otherwise the honest
+result is BLOCKED, not a guessed projection/identity mapping.

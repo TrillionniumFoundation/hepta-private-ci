@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict
+import hashlib
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -338,6 +339,8 @@ def multimodal_cost_audit(manifest: dict) -> dict:
             problems.append(f'{name}: invalid or missing modality adapter version')
         if name != 'text' and not is_digest(stage.get('paired_media_dataset_sha256')):
             problems.append(f'{name}: source-bound paired media cohort missing')
+        if name != 'text' and not is_digest(stage.get('media_preprocessor_sha256')):
+            problems.append(f'{name}: source-bound multimodal preprocessing identity missing')
         for field in ('total_parameters', 'trainable_parameters', 'projection_parameters',
                       'resident_weights_bytes', 'peak_training_memory_bytes', 'training_seconds'):
             if not _finite(stage.get(field)):
@@ -454,6 +457,9 @@ def multimodal_cost_audit(manifest: dict) -> dict:
     return {
         'experiment': 'C-stages', 'dataset_sha256': manifest.get('dataset_sha256'),
         'protocol_sha256': manifest.get('protocol_sha256'),
+        'final_multimodal_model_sha256': stages[-1].get('artifact_sha256') if stages else None,
+        'final_media_source_sha256': stages[-1].get('paired_media_dataset_sha256') if stages else None,
+        'final_media_preprocessor_sha256': stages[-1].get('media_preprocessor_sha256') if stages else None,
         'status': 'SCHEMA_COMPLETE_UNVERIFIED' if not problems else 'BLOCKED',
         'issues': problems, 'stage_deltas': deltas,
         'target_host_attested': False, 'independent_real_model_runs_verified': False,
@@ -473,6 +479,10 @@ MEDIA_SEMANTIC_REQUIRED = (
 
 def paired_media_necessity_audit(
     report: dict, policy: dict, *, expected_protocol_sha256: str | None = None,
+    raw_predictions: dict | None = None,
+    expected_model_sha256: str | None = None,
+    expected_media_source_sha256: str | None = None,
+    expected_preprocessor_sha256: str | None = None,
 ) -> dict:
     """Audit PR #1774's *self-reported* truth-flip output, never source authority.
 
@@ -497,6 +507,60 @@ def paired_media_necessity_audit(
         issues.append('paired prediction or external observer reference is unpinned')
     if report.get('actual_independent_observer_verified') is True or report.get('production_accepted') is True:
         issues.append('self-asserted independent authority not accepted')
+    # Bind the actual PR1774 input bytes by its canonical prediction digest,
+    # then bind model/preprocessor/media source to the final C video stage.
+    # Schema validation is intentionally not PR1774's full semantic oracle:
+    # re-run that scorer to independently check the truth labels/groups.
+    expected_keys = {
+        'schema', 'scope', 'model_sha256', 'preprocessor_sha256',
+        'source_sha256', 'classes', 'pairs',
+    }
+    observed_raw_groups = defaultdict(int)
+    if not isinstance(raw_predictions, dict) or set(raw_predictions) != expected_keys:
+        issues.append('missing exact raw paired-media prediction payload')
+    elif raw_predictions.get('schema') != 'hepta.stem.paired-modality-predictions.v1':
+        issues.append('unsupported raw paired-media payload version')
+    else:
+        for key, expected in (
+            ('model_sha256', expected_model_sha256),
+            ('preprocessor_sha256', expected_preprocessor_sha256),
+            ('source_sha256', expected_media_source_sha256),
+        ):
+            actual = raw_predictions.get(key)
+            if not is_digest(actual) or (expected is not None and actual != expected):
+                issues.append('media prediction source mismatch: ' + key)
+        if (not isinstance(raw_predictions.get('scope'), str)
+                or not raw_predictions['scope']
+                or type(raw_predictions.get('classes')) is not int
+                or not 2 <= raw_predictions['classes'] <= 16):
+            issues.append('invalid raw media inference scope/classes')
+        pairs = raw_predictions.get('pairs')
+        if not isinstance(pairs, list) or not 1 <= len(pairs) <= 2048:
+            issues.append('invalid raw paired media cohort')
+        else:
+            for pair in pairs:
+                if not isinstance(pair, dict):
+                    issues.append('non-object raw media pair')
+                    continue
+                split, kind, contrast = (
+                    pair.get('split'), pair.get('modality'), pair.get('contrast_kind'))
+                if (split not in ('holdout', 'retention')
+                        or kind not in ('image', 'audio', 'video')
+                        or contrast not in ('media_substitution', 'temporal_reordering')):
+                    issues.append('unsupported raw media pair grouping')
+                    continue
+                observed_raw_groups['/'.join((split, kind, contrast))] += 1
+        try:
+            actual_digest = hashlib.sha256(json.dumps(
+                raw_predictions, sort_keys=True, ensure_ascii=True,
+                separators=(',', ':'), allow_nan=False).encode('utf-8')).hexdigest()
+        except (ValueError, TypeError):
+            issues.append('raw paired-media JSON has invalid finite encoding')
+        else:
+            # Canonical PR1774 uses json.dumps default ASCII encoding, so
+            # non-ASCII media metadata must retain exactly those bytes.
+            if actual_digest != report.get('prediction_sha256'):
+                issues.append('media report is not bound to actual raw prediction bytes')
     min_pairs = policy.get('minimum_pairs_per_group')
     min_groups = policy.get('minimum_distinct_source_groups_per_group')
     accuracy = policy.get('minimum_both_correct_fraction')
@@ -525,6 +589,8 @@ def paired_media_necessity_audit(
             issues.append(key + ': nonnegative integer cohort/response counts required')
             continue
         pair_count, both, original, changed, moved, ignored, families = counts
+        if observed_raw_groups.get(key) != pair_count:
+            issues.append(key + ': scored pair count differs from bound raw media payload')
         if (pair_count == 0 or families > pair_count or
                 max(both, original, changed, moved, ignored) > pair_count or
                 both > min(original, changed) or moved + ignored != pair_count):
@@ -565,7 +631,11 @@ def joint_abc_evidence_gate(bundle: dict) -> dict:
     a, b, c = (bundle.get(k) for k in ('A', 'B', 'C'))
     media = paired_media_necessity_audit(
         bundle.get('media_counterfactual'), bundle.get('media_policy'),
-        expected_protocol_sha256=c.get('protocol_sha256') if isinstance(c, dict) else None)
+        raw_predictions=bundle.get('media_predictions'),
+        expected_protocol_sha256=c.get('protocol_sha256') if isinstance(c, dict) else None,
+        expected_model_sha256=c.get('final_multimodal_model_sha256') if isinstance(c, dict) else None,
+        expected_media_source_sha256=c.get('final_media_source_sha256') if isinstance(c, dict) else None,
+        expected_preprocessor_sha256=c.get('final_media_preprocessor_sha256') if isinstance(c, dict) else None)
     if media['status'] != 'SCHEMA_COMPLETE_UNVERIFIED':
         issues.append('multimodal counterfactual semantic necessity not established')
     if not all(isinstance(x, dict) for x in (a, b, c)):
@@ -637,7 +707,9 @@ def main() -> None:
     elif args.command == 'c-stages':
         result = multimodal_cost_audit(bundle)
     elif args.command == 'media-pairs':
-        result = paired_media_necessity_audit(bundle.get('report'), bundle.get('policy'))
+        result = paired_media_necessity_audit(
+            bundle.get('report'), bundle.get('policy'),
+            raw_predictions=bundle.get('raw_predictions'))
     else:
         result = joint_abc_evidence_gate(bundle)
     output = Path(args.output)
