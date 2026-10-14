@@ -1,0 +1,132 @@
+name: AMCN pinned original HF MiniLM forward (shadow evidence)
+
+on:
+  push:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_real_hf_smoke.py"
+      - "qualification/amcn-v1/test_amcn_real_hf_smoke.py"
+      - "qualification/amcn-v1/ORIGINAL_HF_FORWARD_HANDOFF.md"
+      - ".github/workflows/hepta-amcn-original-hf-forward.yml"
+  pull_request:
+    branches: ["research/amcn-five-stage-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_real_hf_smoke.py"
+      - "qualification/amcn-v1/test_amcn_real_hf_smoke.py"
+      - "qualification/amcn-v1/ORIGINAL_HF_FORWARD_HANDOFF.md"
+      - ".github/workflows/hepta-amcn-original-hf-forward.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: amcn-real-hf-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pinned-original-minilm:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install pinned actual HF model runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/hepta-amcn-real-hf
+          /tmp/hepta-amcn-real-hf/bin/pip install numpy==1.26.4
+          /tmp/hepta-amcn-real-hf/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/hepta-amcn-real-hf/bin/pip install transformers==4.46.3 tokenizers==0.20.3 safetensors==0.7.0
+          /tmp/hepta-amcn-real-hf/bin/pip check
+      - name: Execute no-model-contract and negative tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-original-hf-evidence
+          /tmp/hepta-amcn-real-hf/bin/python -m compileall -q qualification/amcn-v1/amcn_real_hf_smoke.py qualification/amcn-v1/test_amcn_real_hf_smoke.py
+          PYTHONPATH=qualification/amcn-v1 /tmp/hepta-amcn-real-hf/bin/python -m unittest discover -s qualification/amcn-v1 -p 'test_amcn_real_hf_smoke.py' -v 2>&1 | tee /tmp/amcn-original-hf-evidence/contract-tests.txt
+      - name: Download original GitHub Actions archive (no silent substitute)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-original-hf-evidence /tmp/amcn-original-hf-source
+          curl --fail --silent --show-error --location --retry 3 \
+            -H "Authorization: Bearer ${GH_TOKEN}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip \
+            --output /tmp/amcn-original-hf-source/original-archive.zip
+          printf '%s  %s\n' \
+            07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af \
+            /tmp/amcn-original-hf-source/original-archive.zip | sha256sum --check -
+          unzip -p /tmp/amcn-original-hf-source/original-archive.zip memory-inputs.tar.gz \
+            > /tmp/amcn-original-hf-source/original.tar.gz
+          mkdir -p /tmp/amcn-original-hf-source/staged
+          tar -xzf /tmp/amcn-original-hf-source/original.tar.gz \
+            -C /tmp/amcn-original-hf-source/staged --no-same-owner --no-same-permissions \
+            memory-inputs/encoder/config.json \
+            memory-inputs/encoder/model.safetensors \
+            memory-inputs/encoder/tokenizer.json \
+            memory-inputs/encoder/tokenizer_config.json \
+            memory-inputs/encoder/special_tokens_map.json \
+            memory-inputs/encoder/vocab.txt memory-inputs/locomo.json
+          printf '%s  %s\n' \
+            53aa51172d142c89d9012cce15ae4d6cc0ca6895895114379cacb4fab128d9db \
+            /tmp/amcn-original-hf-source/staged/memory-inputs/encoder/model.safetensors \
+            79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4 \
+            /tmp/amcn-original-hf-source/staged/memory-inputs/locomo.json \
+            be50c3628f2bf5bb5e3a7f17b1f74611b2561a3a27eeab05e5aa30f411572037 \
+            /tmp/amcn-original-hf-source/staged/memory-inputs/encoder/tokenizer.json \
+            07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3 \
+            /tmp/amcn-original-hf-source/staged/memory-inputs/encoder/vocab.txt \
+            953f9c0d463486b10a6871cc2fd59f223b2c70184f49815e7efbcab5d8908b41 \
+            /tmp/amcn-original-hf-source/staged/memory-inputs/encoder/config.json | sha256sum --check -
+      - name: Execute actual pretrained BertModel and fast/slow WordPiece
+        run: |
+          set -euo pipefail
+          /tmp/hepta-amcn-real-hf/bin/python \
+            qualification/amcn-v1/amcn_real_hf_smoke.py \
+            /tmp/amcn-original-hf-source/staged/memory-inputs/encoder \
+            /tmp/amcn-original-hf-source/staged/memory-inputs/locomo.json \
+            /tmp/amcn-original-hf-evidence/native-model-run \
+            > /tmp/amcn-original-hf-evidence/original-model-stdout.json
+          /tmp/hepta-amcn-real-hf/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt=json.loads(Path('/tmp/amcn-original-hf-evidence/native-model-run/receipt.json').read_text())
+          assert receipt['source_locomo_sha256']=='79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4'
+          assert receipt['feature_count']==10 and receipt['feature_width']==384
+          assert receipt['original_source_family_count']==10
+          assert receipt['physical_pretrained_encoder_forward_count']==1
+          assert receipt['hf_fast_slow_tokenization_parity_verified'] is True
+          assert receipt['parity_with_historical_manual_forward_verified'] is False
+          assert receipt['original_reader_answers']==0
+          assert receipt['future_calendar_windows']==0
+          assert receipt['training_or_heldout_gold_used'] is False
+          assert receipt['production_accepted'] is False
+          PY
+          /tmp/hepta-amcn-real-hf/bin/pip freeze > /tmp/amcn-original-hf-evidence/environment.txt
+      - name: Retain exact-source and explicit NO-GO provenance
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-original-hf-evidence/source
+          git rev-parse HEAD > /tmp/amcn-original-hf-evidence/source/head-sha.txt
+          git rev-parse HEAD^{tree} > /tmp/amcn-original-hf-evidence/source/tree-sha.txt
+          cp qualification/amcn-v1/amcn_real_hf_smoke.py qualification/amcn-v1/test_amcn_real_hf_smoke.py qualification/amcn-v1/ORIGINAL_HF_FORWARD_HANDOFF.md /tmp/amcn-original-hf-evidence/source/
+          printf '%s\n' 'production_accepted=false' 'original_reader_answers=0' 'strong_hybrid_rag_comparison=false' 'true_calendar_future_count=0' 'source_family_count=10' 'manual_vs_HF_numeric_parity_not_checked=true' 'model_loading_does_not_prove_memory_learning=true' > /tmp/amcn-original-hf-evidence/nonpromotion.txt
+          (cd /tmp/amcn-original-hf-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: original-hf-minilm-shadow-native-and-denial
+          path: /tmp/amcn-original-hf-evidence
+          if-no-files-found: error
