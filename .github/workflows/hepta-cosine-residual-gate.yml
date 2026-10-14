@@ -13,7 +13,7 @@ permissions:
   actions: read
 concurrency:
   group: cosine-residual-gate-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   train-residual-on-fixed-cosine:
     if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
