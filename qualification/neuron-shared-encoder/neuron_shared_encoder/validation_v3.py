@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict
+from datetime import datetime, timezone
 import hashlib
 import json
 import math
@@ -301,6 +302,51 @@ def _validated_snapshot(snapshot: dict, rows: list[dict], dataset_digest: str,
     return probs.float()
 
 
+def _utc_time(value: Any) -> datetime:
+    if not isinstance(value, str):
+        raise ValueError('timestamp must be ISO-8601 string')
+    try:
+        instant = datetime.fromisoformat(value.replace('Z', '+00:00'))
+    except ValueError as exc:
+        raise ValueError('invalid ISO-8601 timestamp') from exc
+    if instant.tzinfo is None or instant.utcoffset() is None:
+        raise ValueError('timezone-aware timestamp required')
+    return instant.astimezone(timezone.utc)
+
+
+def prequential_order_audit(rows: list[dict], frozen_no_change: dict,
+                            candidate: dict) -> dict:
+    """Check declared forecast-before-outcome ordering, never verify attestations.
+
+    Offline labels are visible to this harness. A correct timestamp *claim*
+    cannot prove predictions were sealed before labels, nor establish an
+    independent causal NDU improvement. Both roles are checked separately.
+    """
+    issues = []
+    future = [r for r in rows if r.get('split') == 'future']
+    if not future:
+        issues.append('future rows missing')
+    for name, snapshot in (('frozen_no_change', frozen_no_change), ('candidate', candidate)):
+        times = snapshot.get('prediction_committed_at_by_row')
+        if not isinstance(times, dict) or set(times) != {r['row_id'] for r in future}:
+            issues.append(f'{name}: incomplete prediction commitment timestamps')
+            continue
+        for row in future:
+            row_id = row['row_id']
+            try:
+                predicted_at = _utc_time(times[row_id])
+                outcome_at = _utc_time(row.get('event_time'))
+            except ValueError:
+                issues.append(f'{name}:{row_id}: invalid timestamp')
+                continue
+            if predicted_at >= outcome_at:
+                issues.append(f'{name}:{row_id}: prediction not before outcome')
+    return {'status': ('TEMPORAL_ORDER_CONSISTENT_UNVERIFIED' if not issues else 'MISSING_OR_INVALID'),
+            'issues': issues, 'commitment_signature_verified': False,
+            'independent_prequential_evaluator_verified': False,
+            'production_admission': 'BLOCKED'}
+
+
 def evaluate_shadow(rows: list[dict], dataset_digest: str,
                     frozen_no_change: dict, candidate: dict, *,
                     bootstrap_repeats: int = 500, seed: int = 42) -> dict:
@@ -343,11 +389,15 @@ def evaluate_shadow(rows: list[dict], dataset_digest: str,
                      for _ in range(bootstrap_repeats))
     lower = samples[int(.025 * (len(samples) - 1))]
     upper = samples[int(.975 * (len(samples) - 1))]
-    # A report may suggest additional shadow comparison, not mutate active Head.
+    # Retrospective statistics alone cannot certify precommitted predictions.
     strong_signal = len(future_groups) >= 30 and lower > 0 and negative == 0
+    ordering = prequential_order_audit(rows, frozen_no_change, candidate)
     return {'experiment': 'E4', 'production_admission': 'BLOCKED',
             'independent_evaluator_verified': False, 'ndu_receipt_verified': False,
-            'selection': 'NOT_AUTHORIZED', 'shadow_signal': 'POSITIVE' if strong_signal else 'INCONCLUSIVE_OR_NEGATIVE',
+            'selection': 'NOT_AUTHORIZED',
+            'shadow_signal': ('RETROSPECTIVE_POSITIVE_UNVERIFIED' if strong_signal else 'INCONCLUSIVE_OR_NEGATIVE'),
+            'causal_learning_verified': False,
+            'prequential_order_audit': ordering,
             'baseline_artifact_digest': frozen_no_change['artifact_digest'],
             'candidate_artifact_digest': candidate['artifact_digest'],
             'future_groups': len(future_groups), 'negative_transfer_group_count': negative,
