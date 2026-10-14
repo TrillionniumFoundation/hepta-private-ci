@@ -208,11 +208,17 @@ fn frozen_split_plan_rejects_noncanonical_split_and_owner_ids() {
     for invalid_id in ["../other", "parent/child", "line\nspoof", "nul\0id"] {
         let mut invalid_split = plan();
         invalid_split.split_id = invalid_id.into();
-        assert!(invalid_split.digest().is_err(), "invalid split ID: {invalid_id:?}");
+        assert!(
+            invalid_split.digest().is_err(),
+            "invalid split ID: {invalid_id:?}"
+        );
 
         let mut invalid_owner = plan();
         invalid_owner.owner_ids[2] = invalid_id.into();
-        assert!(invalid_owner.digest().is_err(), "invalid owner ID: {invalid_id:?}");
+        assert!(
+            invalid_owner.digest().is_err(),
+            "invalid owner ID: {invalid_id:?}"
+        );
     }
 }
 
@@ -661,7 +667,10 @@ fn lost_ack_pending_intent_cannot_change_during_remote_predecessor_readback() {
     assert_eq!(owner.completed_steps(), 1);
     assert_eq!(state.borrow().executions, 2);
     assert!(!root.path().join("cell-split-01-committed.json").exists());
-    assert!(owner.advance().is_err(), "do not redispatch an unknown effect");
+    assert!(
+        owner.advance().is_err(),
+        "do not redispatch an unknown effect"
+    );
     assert_eq!(state.borrow().executions, 2);
 }
 
@@ -792,8 +801,15 @@ fn selector_revoked_during_last_owner_readback_never_prepares_successor() {
         Err(CellSplitExecutionErrorV1::External(message))
             if message.contains("Selector revoked")
     ));
-    assert_eq!(admission_reads, 2, "Selector checked again after live readback");
-    assert_eq!(state.borrow().executions, 1, "no successor effect may execute");
+    assert_eq!(
+        admission_reads, 2,
+        "Selector checked again after live readback"
+    );
+    assert_eq!(
+        state.borrow().executions,
+        1,
+        "no successor effect may execute"
+    );
     assert_eq!(owner.completed_steps(), 1);
     assert!(!root.path().join("cell-split-01-prepared.json").exists());
 }

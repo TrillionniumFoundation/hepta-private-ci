@@ -84,15 +84,17 @@ pub fn bootstrap_durable_neuron_effect_intent_v1(
 
     if !path.is_absolute()
         || path.file_name().is_none()
-        || path.components().any(|component| {
-            matches!(component, Component::CurDir | Component::ParentDir)
-        })
+        || path
+            .components()
+            .any(|component| matches!(component, Component::CurDir | Component::ParentDir))
         || scope.scope_digest.is_zero()
         || scope.objective_digest.is_zero()
     {
         return Err(NeuronEffectBootstrapErrorV1::InvalidPath);
     }
-    let parent = path.parent().ok_or(NeuronEffectBootstrapErrorV1::InvalidPath)?;
+    let parent = path
+        .parent()
+        .ok_or(NeuronEffectBootstrapErrorV1::InvalidPath)?;
     let directory = fs::symlink_metadata(parent)?;
     if !directory.is_dir()
         || directory.file_type().is_symlink()

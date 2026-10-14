@@ -342,13 +342,14 @@ impl CellSplitMonotonicAuthoritativeRegistryV1 for DiskAuthoritativeRegistry {
         if let Some(delay) = self.custody_delay {
             thread::sleep(delay);
         }
-        let file = self.file.with_file_name("independently-retained-floor.json");
+        let file = self
+            .file
+            .with_file_name("independently-retained-floor.json");
         let bytes = std::fs::read(file)?;
         let floor: CellSplitMonotonicDurableFrontierV1 =
             serde_json::from_slice(&bytes).map_err(std::io::Error::other)?;
         if floor.journal_domain_id != domain
-            || crate::durable::canonical_json(&floor)
-                .map_err(std::io::Error::other)? != bytes
+            || crate::durable::canonical_json(&floor).map_err(std::io::Error::other)? != bytes
         {
             return Err(std::io::Error::other("independent floor mismatch"));
         }
@@ -400,14 +401,13 @@ fn independent_server_reads_real_durable_domain_and_signs_client_challenge() {
     let server = thread::spawn(move || {
         let (mut peer, _) = listener.accept().expect("real Unix socket");
         let owner = DiskAuthoritativeRegistry::open(file);
-        let mut service =
-            CellSplitMonotonicRpcServiceV1::new(
-                owner,
-                signer(),
-                custody_signer().verifying_key(),
-                Duration::from_secs(3),
-            )
-                .expect("separately pinned signer");
+        let mut service = CellSplitMonotonicRpcServiceV1::new(
+            owner,
+            signer(),
+            custody_signer().verifying_key(),
+            Duration::from_secs(3),
+        )
+        .expect("separately pinned signer");
         service
             .serve_connection(&mut peer)
             .expect("fresh durable frontier");
@@ -435,14 +435,13 @@ fn independent_server_fences_revoked_domain_before_signed_reply() {
     // First read succeeds; the next read observes an externally revoked
     // authoritative record and may not sign the old current snapshot.
     backend.revoke_on_read = Some(2);
-    let mut service =
-        CellSplitMonotonicRpcServiceV1::new(
-            backend,
-            signer(),
-            custody_signer().verifying_key(),
-            Duration::from_secs(2),
-        )
-            .expect("independent owner");
+    let mut service = CellSplitMonotonicRpcServiceV1::new(
+        backend,
+        signer(),
+        custody_signer().verifying_key(),
+        Duration::from_secs(2),
+    )
+    .expect("independent owner");
     let (mut client, mut server) = std::os::unix::net::UnixStream::pair().expect("socket pair");
     send_frame(
         &mut client,
@@ -473,8 +472,7 @@ fn independent_server_rejects_revoke_during_final_signed_read() {
         Duration::from_secs(2),
     )
     .expect("independent owner");
-    let (mut client, mut server) =
-        std::os::unix::net::UnixStream::pair().expect("socket pair");
+    let (mut client, mut server) = std::os::unix::net::UnixStream::pair().expect("socket pair");
     send_frame(
         &mut client,
         &CellSplitMonotonicRpcRequestV1 {
@@ -528,7 +526,6 @@ fn independent_server_rejects_caller_supplied_highwater_and_missing_domain() {
     assert!(file.exists());
 }
 
-
 /// Single-process ratchet regression: even a freshly signed response from
 /// an otherwise valid-looking restored record must not move this signer
 /// backward. The external monotonic store remains mandatory across restarts.
@@ -552,10 +549,7 @@ fn read_through_signed_service(
     receive_frame(&mut client).map_err(Into::into)
 }
 
-fn replace_test_frontier(
-    path: &Path,
-    frontier: &CellSplitMonotonicDurableFrontierV1,
-) {
+fn replace_test_frontier(path: &Path, frontier: &CellSplitMonotonicDurableFrontierV1) {
     std::fs::write(
         path,
         crate::durable::canonical_json(frontier).expect("canonical registry"),
@@ -623,8 +617,7 @@ fn same_signer_allows_epoch_rollover_only_with_new_durable_source_sequence() {
     let root = tempfile::tempdir().expect("private registry");
     let file = write_test_registry(root.path());
     let original: CellSplitMonotonicDurableFrontierV1 =
-        serde_json::from_slice(&std::fs::read(&file).expect("original"))
-            .expect("typed original");
+        serde_json::from_slice(&std::fs::read(&file).expect("original")).expect("typed original");
     let mut service = CellSplitMonotonicRpcServiceV1::new(
         DiskAuthoritativeRegistry::open(file.clone()),
         signer(),
@@ -653,7 +646,6 @@ fn same_signer_allows_epoch_rollover_only_with_new_durable_source_sequence() {
     assert!(read_through_signed_service(&mut service, &"dd".repeat(32)).is_err());
 }
 
-
 #[test]
 fn client_rejects_old_still_signed_highwater_after_remote_restart() {
     let root = tempfile::tempdir().expect("Unix RPC fixture");
@@ -675,8 +667,10 @@ fn client_rejects_old_still_signed_highwater_after_remote_restart() {
                 proof.journal_revision = 9;
                 proof.signature_bytes.clear();
                 proof.signature_bytes = signer()
-                    .sign(&cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
-                        .expect("original signing grammar"))
+                    .sign(
+                        &cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
+                            .expect("original signing grammar"),
+                    )
                     .to_bytes()
                     .to_vec();
             }
@@ -698,7 +692,8 @@ fn client_rejects_old_still_signed_highwater_after_remote_restart() {
         Duration::from_secs(2),
     )
     .expect("pinned verifier");
-    let first = client.read_domain_frontier(DOMAIN, &"11".repeat(32))
+    let first = client
+        .read_domain_frontier(DOMAIN, &"11".repeat(32))
         .expect("signed initial high water");
     assert_eq!(first.journal_revision, 10);
     assert!(matches!(
@@ -728,8 +723,10 @@ fn client_accepts_advanced_signed_highwater_with_new_checkpoint_identity() {
                 proof.original_store_record_digest = "dd".repeat(32);
                 proof.signature_bytes.clear();
                 proof.signature_bytes = signer()
-                    .sign(&cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
-                        .expect("fresh higher frontier"))
+                    .sign(
+                        &cell_split_supervisor_monotonic_frontier_signing_payload_v1(&proof)
+                            .expect("fresh higher frontier"),
+                    )
                     .to_bytes()
                     .to_vec();
             }
@@ -752,19 +749,21 @@ fn client_accepts_advanced_signed_highwater_with_new_checkpoint_identity() {
     )
     .expect("pinned verifier");
     assert_eq!(
-        client.read_domain_frontier(DOMAIN, &"11".repeat(32))
-            .expect("first observation").journal_revision,
+        client
+            .read_domain_frontier(DOMAIN, &"11".repeat(32))
+            .expect("first observation")
+            .journal_revision,
         10,
     );
     assert_eq!(
-        client.read_domain_frontier(DOMAIN, &"22".repeat(32))
-            .expect("new independent committed frontier").journal_revision,
+        client
+            .read_domain_frontier(DOMAIN, &"22".repeat(32))
+            .expect("new independent committed frontier")
+            .journal_revision,
         11,
     );
     service.join().expect("service");
 }
-
-
 
 #[test]
 fn independently_retained_newer_floor_denies_rolled_back_registry_after_server_restart() {
@@ -794,8 +793,7 @@ fn independently_retained_newer_floor_denies_rolled_back_registry_after_server_r
         Duration::from_secs(2),
     )
     .expect("new signing process with no retained memory");
-    let (mut client, mut server) =
-        std::os::unix::net::UnixStream::pair().expect("socket pair");
+    let (mut client, mut server) = std::os::unix::net::UnixStream::pair().expect("socket pair");
     send_frame(
         &mut client,
         &CellSplitMonotonicRpcRequestV1 {
@@ -810,7 +808,10 @@ fn independently_retained_newer_floor_denies_rolled_back_registry_after_server_r
         service.serve_connection(&mut server),
         Err(CellSplitMonotonicRpcErrorV1::Invalid)
     ));
-    assert!(file.exists(), "the old signed Registry record is still present");
+    assert!(
+        file.exists(),
+        "the old signed Registry record is still present"
+    );
 }
 
 #[test]
@@ -825,8 +826,7 @@ fn independently_pinned_custody_key_must_not_be_selected_by_rpc_signer() {
         Duration::from_secs(2),
     )
     .expect("distinct but incorrect custody trust root");
-    let (mut client, mut server) =
-        std::os::unix::net::UnixStream::pair().expect("socket pair");
+    let (mut client, mut server) = std::os::unix::net::UnixStream::pair().expect("socket pair");
     send_frame(
         &mut client,
         &CellSplitMonotonicRpcRequestV1 {
@@ -866,8 +866,7 @@ fn missing_independent_custody_denies_fresh_remote_monotonic_signature() {
         Duration::from_secs(2),
     )
     .expect("separate signatures");
-    let (mut client, mut server) =
-        std::os::unix::net::UnixStream::pair().expect("socket pair");
+    let (mut client, mut server) = std::os::unix::net::UnixStream::pair().expect("socket pair");
     send_frame(
         &mut client,
         &CellSplitMonotonicRpcRequestV1 {
@@ -897,8 +896,7 @@ fn slow_independent_custody_cannot_sign_after_owner_request_budget_expires() {
         Duration::from_millis(2),
     )
     .expect("small bounded owner budget");
-    let (mut client, mut server) =
-        std::os::unix::net::UnixStream::pair().expect("socket pair");
+    let (mut client, mut server) = std::os::unix::net::UnixStream::pair().expect("socket pair");
     send_frame(
         &mut client,
         &CellSplitMonotonicRpcRequestV1 {
@@ -917,7 +915,6 @@ fn slow_independent_custody_cannot_sign_after_owner_request_budget_expires() {
     assert!(receive_frame::<CellSplitMonotonicRpcResponseV1>(&mut client).is_err());
     assert!(file.exists(), "timeout must not mutate durable custody");
 }
-
 
 #[test]
 fn signed_monotonic_rpc_uses_one_end_to_end_timeout_budget() {
