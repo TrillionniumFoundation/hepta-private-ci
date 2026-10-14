@@ -446,7 +446,6 @@ fn repeated_cross_scope_coalescing_never_accumulates_duplicate_queue_slots() {
     }
 }
 
-
 #[test]
 fn ticketed_scope_cutover_keeps_unrelated_4096_lanes_and_fifo_position() {
     let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
