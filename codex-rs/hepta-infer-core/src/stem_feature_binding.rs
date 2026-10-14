@@ -73,6 +73,52 @@ pub struct BoundStemNeuronRequestV1 {
     pub authority: AuthorityPosture,
 }
 
+/// An in-process, *borrow-only* view of the existing Stem-to-Neuron V1
+/// request. A fresh externally authenticated owner admission and final-use
+/// fence are required for any actual execution. This view is NEVER a grant.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct StemFeatureRequestViewV1<'a> {
+    pub request_id: &'a StableId,
+    pub generation: Generation,
+    pub model_id: &'a StableId,
+    pub encoder_digest: Digest32,
+    pub head_digest: Digest32,
+    pub weights_digest: Digest32,
+    pub input_digest: Digest32,
+    pub feature_vector_q24: &'a [i64],
+    pub expected_output_width: usize,
+    pub feature_ref_digest: Digest32,
+    pub authority: AuthorityPosture,
+}
+
+impl StemFeatureRequestViewV1<'_> {
+    /// Explicit owned-wire boundary: one feature allocation is intentionally
+    /// made ONLY when a legacy V1 consumer actually requires an owned request.
+    /// The exact original V1 request digest is retained and checked.
+    pub fn materialize_owned_v1(
+        &self,
+    ) -> Result<BoundStemNeuronRequestV1, StemFeatureBindingError> {
+        let request = NeuronFeatureRequestV1 {
+            request_id: (*self.request_id).clone(),
+            generation: self.generation,
+            model_id: (*self.model_id).clone(),
+            encoder_digest: self.encoder_digest,
+            head_digest: self.head_digest,
+            weights_digest: self.weights_digest,
+            input_digest: self.input_digest,
+            feature_vector_q24: self.feature_vector_q24.to_vec(),
+            expected_output_width: self.expected_output_width,
+        };
+        neuron_feature_request_digest_v1(&request)
+            .map_err(|_| StemFeatureBindingError::InvalidNeuronRequest)?;
+        Ok(BoundStemNeuronRequestV1 {
+            request,
+            feature_ref_digest: self.feature_ref_digest,
+            authority: AuthorityPosture::DENY_ALL,
+        })
+    }
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum StemFeatureBindingError {
     EmptyDigest,
@@ -149,6 +195,22 @@ pub fn bind_stem_feature_request_v1(
     selected_head: StemHeadBindingV1,
     vector_q24: &[i64],
 ) -> Result<BoundStemNeuronRequestV1, StemFeatureBindingError> {
+    // Keep exact historical owned V1 wire/digest semantics. Any native
+    // feature-sharing optimization must leave this replay pathway intact.
+    borrow_stem_feature_request_v1(source, access, &selected_head, vector_q24)?
+        .materialize_owned_v1()
+}
+
+/// Validate exact existing Stem/Head constraints and return a borrowed vector
+/// view without calling `to_vec`. The caller must re-query the *actual*
+/// authority owner at final use; the supplied StemAccessContextV1 is only a
+/// claim and this pure function cannot verify independent signatures.
+pub fn borrow_stem_feature_request_v1<'a>(
+    source: &StemFeatureRefV1,
+    access: &StemAccessContextV1,
+    selected_head: &'a StemHeadBindingV1,
+    vector_q24: &'a [i64],
+) -> Result<StemFeatureRequestViewV1<'a>, StemFeatureBindingError> {
     for digest in [
         source.stem_weights_digest,
         source.tokenizer_digest,
@@ -206,19 +268,6 @@ pub fn bind_stem_feature_request_v1(
     {
         return Err(StemFeatureBindingError::IncompatibleHead);
     }
-    let request = NeuronFeatureRequestV1 {
-        request_id: selected_head.request_id,
-        generation: source.stem_generation,
-        model_id: selected_head.head_model_id,
-        encoder_digest: pipeline_digest,
-        head_digest: selected_head.head_digest,
-        weights_digest: selected_head.head_weights_digest,
-        input_digest: source.input_digest,
-        feature_vector_q24: vector_q24.to_vec(),
-        expected_output_width: selected_head.expected_output_width,
-    };
-    neuron_feature_request_digest_v1(&request)
-        .map_err(|_| StemFeatureBindingError::InvalidNeuronRequest)?;
     let mut bytes = b"hepta.inference.stem-feature-ref.v1".to_vec();
     for id in [
         &source.scope_id,
@@ -243,8 +292,16 @@ pub fn bind_stem_feature_request_v1(
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
-    Ok(BoundStemNeuronRequestV1 {
-        request,
+    Ok(StemFeatureRequestViewV1 {
+        request_id: &selected_head.request_id,
+        generation: source.stem_generation,
+        model_id: &selected_head.head_model_id,
+        encoder_digest: pipeline_digest,
+        head_digest: selected_head.head_digest,
+        weights_digest: selected_head.head_weights_digest,
+        input_digest: source.input_digest,
+        feature_vector_q24: vector_q24,
+        expected_output_width: selected_head.expected_output_width,
         feature_ref_digest: Digest32::of_bytes(&bytes),
         authority: AuthorityPosture::DENY_ALL,
     })
