@@ -1,0 +1,41 @@
+{
+  "schema": "hepta.e1e2-source-and-feature-integrity-local-observation.v1",
+  "date": "2026-10-14",
+  "source_study_original_run_id": 38541658096,
+  "original_model_run_completed_success": true,
+  "original_archive_id": 11886761368,
+  "original_archive_sha256": "e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d",
+  "original_approved_selected_panel_sha256": "2f7a013648e16b60c74614b0fcf1496aa06475f7285f215adddaa51fe29e01a4",
+  "local_test": {
+    "python": "3.13.5",
+    "torch": "2.10.0+cpu",
+    "cmd": "python -m unittest -q test_e1_source_archive_lock test_e1e2_q24_identity test_e1_public_laya_reference test_e1_public_triplet_real_cpu test_e1_public_triplet_review test_e1_three_stem_consistency test_e2_feature_residual_study test_e2_residual_review test_e3_public_media_receipt_audit test_e4_frame_reversal_gate",
+    "ran": 150,
+    "failures": 0,
+    "errors": 0,
+    "skips_reported": 0,
+    "source_log_sha256": "b7f6bdb504284e252debfbfe3b3be262df8383a98bc5d424dec6806ac7adedb6",
+    "exact_blob_matches": {
+      "e1_source_archive_lock.py": "27d06785f66bcc8de4dc2f1e31974eb50ac4b720",
+      "test_e1_source_archive_lock.py": "44e7f835313d86a79c9cb8f3fd9d8362c348b7bd",
+      "e1e2_q24_identity.py": "f456dbe74d29cd3029cae80ee729bb1fb96a2e09",
+      "test_e1e2_q24_identity.py": "b1a43c5542f9e4847521a835016c89365feb7d19",
+      "e2_feature_residual_study.py": "8a89523edf4941944de721e0ee2392967b0a22e9",
+      "test_e2_feature_residual_study.py": "fe2af1b3072a35c683b317c9d6c67a246a69d0d0",
+      "e2_residual_review.py": "c2d62ed84a3e73da18ccab57d1ce825470c27264",
+      "test_e2_residual_review.py": "464ea95494e159c5a099da51c867a14c2b605b9b"
+    },
+    "local_e1_runner_version_equivalent_but_not_exact_git_head": true,
+    "code_tests_are_synthetic_not_pretrained": true
+  },
+  "qualification": {
+    "real_three_encoder_e1_public_job_completed": false,
+    "real_new_multimodal_e3_e4_effect_verified": false,
+    "native_e5_64_256_1024_4096_completed": false,
+    "independent_future_ndu_verified": false,
+    "independent_source_model_origin_signed": false,
+    "full_blocking_ci_green": false
+  },
+  "authority": "DENY_ALL",
+  "production_promotion_permitted": false
+}
