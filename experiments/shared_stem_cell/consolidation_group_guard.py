@@ -36,7 +36,7 @@ def evaluate(predictions, cases, labels, *, control="bank"):
         raise GroupAuditError("cross-scope evaluation prohibited")
     if any(type(y) is not int or not 0 <= y <= 255 for y in labels):
         raise GroupAuditError("invalid original supervised outcome")
-    correctness, groups = {}, {}
+    correctness = {}
     classes = None
     for arm, rows in predictions.items():
         if not isinstance(arm, str) or not arm or not isinstance(rows, list) or len(rows) != len(cases):
