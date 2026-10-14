@@ -560,13 +560,93 @@ fn invalid_future_dated_first_admission_cannot_poison_owner_anchor() {
         Err(BatchWorkerErrorV1::Scheduler(SchedulerErrorV1::Expired))
     );
     assert!(worker.queue_clock_anchor.is_none());
+    assert!(worker.last_caller_now_ms.is_none());
     worker
         .enqueue(100, "model".into(), request, key, signed)
         .unwrap();
     assert!(worker.queue_clock_anchor.is_some());
+    assert_eq!(worker.last_caller_now_ms, Some(100));
     let outcome = worker.poll_and_execute(106).unwrap();
     assert_eq!(outcome.outcomes.len(), 1);
     assert!(outcome.outcomes[0].result.is_ok());
+}
+
+#[test]
+fn regressed_caller_poll_cannot_bypass_scheduler_via_monotonic_max() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[106; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let mut worker = runner_with_driver(&signer, dir.path(), model, Driver, 2);
+    worker
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    let initial = worker.poll_and_execute(101).unwrap();
+    assert!(initial.outcomes.is_empty());
+    assert_eq!(worker.pending(), 1);
+    assert_eq!(worker.last_caller_now_ms, Some(101));
+
+    // max(raw_now=100, anchor_monotonic>=100) would otherwise hide the
+    // regression and permit an invalid source time to reach the scheduler.
+    assert!(matches!(
+        worker.poll_and_execute(100),
+        Err(BatchWorkerErrorV1::Scheduler(SchedulerErrorV1::ClockRegressed))
+    ));
+    assert_eq!(worker.pending(), 1);
+    assert_eq!(worker.last_caller_now_ms, Some(101));
+    let final_poll = worker.poll_and_execute(106).unwrap();
+    assert_eq!(final_poll.outcomes.len(), 1);
+    assert!(final_poll.outcomes[0].result.is_ok());
+    assert_eq!(worker.pending(), 0);
+}
+
+#[test]
+fn regressed_caller_enqueue_does_not_consume_a_signed_batch_nonce() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[107; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let backend = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut worker = runner_with_driver(&signer, dir.path(), model, backend, 2);
+    let first_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    let second_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            first,
+            key.clone(),
+            signed_member(&signer, first_binding, "raw-clock-a", 108),
+        )
+        .unwrap();
+    let second_grant = signed_member(&signer, second_binding, "raw-clock-b", 109);
+    assert_eq!(
+        worker.enqueue(
+            99,
+            "model".into(),
+            second.clone(),
+            key.clone(),
+            second_grant.clone(),
+        ),
+        Err(BatchWorkerErrorV1::Scheduler(SchedulerErrorV1::ClockRegressed))
+    );
+    assert_eq!(worker.pending(), 1);
+    assert_eq!(worker.last_caller_now_ms, Some(100));
+    // The refused raw-clock attempt must not consume the request ID or its
+    // separately signed single-use grant.
+    worker
+        .enqueue(100, "model".into(), second, key, second_grant)
+        .unwrap();
+    let completed = worker.poll_and_execute(106).unwrap();
+    assert_eq!(completed.outcomes.len(), 2);
+    assert!(completed.outcomes.iter().all(|item| item.result.is_ok()));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert_eq!(worker.pending(), 0);
 }
 
 #[test]
