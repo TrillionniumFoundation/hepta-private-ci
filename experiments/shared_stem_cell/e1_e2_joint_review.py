@@ -172,6 +172,20 @@ def audit(mm_manifest:Path,mm_producer:Path,mm_report_sha256:str,mm_sweep:Path,
     mm_predictions=_predictions(packet(mm_sweep,mm_run),truth)
     modern_predictions=_predictions(packet(modern_sweep,modern_run),truth)
     contrasts=paired_statistics(mm_predictions,modern_predictions,truth)
+    for row in contrasts:
+        ceiling=row['head_budget_ceiling']
+        mm_counts={v['parameters'] for k,v in mm_work.items() if k[1]==ceiling}
+        modern_counts={v['parameters'] for k,v in modern_work.items() if k[1]==ceiling}
+        require(len(mm_counts)==len(modern_counts)==1,
+                'actual per-budget parameter counts differ across Cells/seeds')
+        row['mmbert_actual_parameters_per_cell']=next(iter(mm_counts))
+        row['modern_actual_parameters_per_cell']=next(iter(modern_counts))
+    mm_report=decode(checked_bytes(mm_producer/'report.json',mm_report_sha256))
+    modern_report=decode(checked_bytes(modern_producer/'report.json',modern_report_sha256))
+    for report in (mm_report,modern_report):
+        peak=report.get('process_lifetime_peak_rss_bytes')
+        require(peak is None or type(peak) is int and 0<=peak<2**63,
+                'invalid process lifetime peak RSS observation')
     # This is a descriptive posterior diagnostic, not NDU-based model selection.
     return {'schema':SCHEMA,
         'original_dataset_sha256':sha(mm_data),
@@ -182,6 +196,10 @@ def audit(mm_manifest:Path,mm_producer:Path,mm_report_sha256:str,mm_sweep:Path,
         'full_physical_checkpoint_count_each':60,
         'full_independent_prediction_vectors_each':1920,
         'original_paired_holdout_items':32,
+        'mmbert_process_lifetime_peak_rss_bytes':mm_report.get('process_lifetime_peak_rss_bytes'),
+        'modern_process_lifetime_peak_rss_bytes':modern_report.get('process_lifetime_peak_rss_bytes'),
+        'physical_peak_is_isolated_per_head_arm':False,
+        'target_host_peak_and_energy_independently_verified':False,
         'per_cell_sample_stream_identical_across_stems':True,
         'same_training_algorithm_and_steps_claimed':True,
         'per_budget_results':contrasts,
