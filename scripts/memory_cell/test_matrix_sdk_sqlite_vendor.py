@@ -1,4 +1,5 @@
 """Synthetic safe-crate tests; does not establish API compatibility."""
+
 import hashlib
 import io
 import json
@@ -9,7 +10,7 @@ import unittest
 from matrix_sdk_sqlite_vendor import candidate
 
 
-MANIFEST = b'''[package]
+MANIFEST = b"""[package]
 name = "matrix-sdk-sqlite"
 version = "0.19.0"
 [dependencies.rusqlite]
@@ -17,7 +18,7 @@ version = "0.40.2"
 features = ["modern_sqlite"]
 [dependencies.matrix-sdk-crypto]
 version = "0.19.0"
-'''
+"""
 
 
 def fixtures(manifest=MANIFEST, *, payload_path="matrix-sdk-sqlite-0.19.0/Cargo.toml"):
@@ -27,8 +28,9 @@ def fixtures(manifest=MANIFEST, *, payload_path="matrix-sdk-sqlite-0.19.0/Cargo.
         obj.size = len(manifest)
         tar.addfile(obj, io.BytesIO(manifest))
     archive = buf.getvalue()
-    registry = json.dumps({"version": {"num": "0.19.0",
-                                      "checksum": hashlib.sha256(archive).hexdigest()}}).encode()
+    registry = json.dumps(
+        {"version": {"num": "0.19.0", "checksum": hashlib.sha256(archive).hexdigest()}}
+    ).encode()
     return archive, registry
 
 
@@ -42,8 +44,10 @@ class VendorResearchTests(unittest.TestCase):
             self.assertIn('version = "0.19.0"', text)
             self.assertTrue(receipt["upstream_crate_modified_for_research_only"])
             self.assertFalse(receipt["production_compatible"])
-            self.assertNotEqual(receipt["original_manifest_sha256"],
-                                receipt["experimental_manifest_sha256"])
+            self.assertNotEqual(
+                receipt["original_manifest_sha256"],
+                receipt["experimental_manifest_sha256"],
+            )
 
     def test_different_registry_hash_does_not_write_candidate(self):
         raw, meta = fixtures()
@@ -63,8 +67,10 @@ class VendorResearchTests(unittest.TestCase):
                     candidate(tar, meta, Path(d) / "unused")
 
     def test_wrong_package_version_or_dependency_fails_closed(self):
-        for contents in (MANIFEST.replace(b"0.40.2", b"0.39.0"),
-                         MANIFEST.replace(b"0.19.0", b"0.20.0")):
+        for contents in (
+            MANIFEST.replace(b"0.40.2", b"0.39.0"),
+            MANIFEST.replace(b"0.19.0", b"0.20.0"),
+        ):
             raw, meta = fixtures(contents)
             with tempfile.TemporaryDirectory() as d:
                 with self.assertRaises(ValueError):
@@ -79,8 +85,14 @@ class VendorResearchTests(unittest.TestCase):
                 link.linkname = "../unsafe"
                 tar.addfile(link)
             raw = buf.getvalue()
-            meta = json.dumps({"version": {"num": "0.19.0",
-                         "checksum": hashlib.sha256(raw).hexdigest()}}).encode()
+            meta = json.dumps(
+                {
+                    "version": {
+                        "num": "0.19.0",
+                        "checksum": hashlib.sha256(raw).hexdigest(),
+                    }
+                }
+            ).encode()
             with tempfile.TemporaryDirectory() as d:
                 with self.assertRaises(ValueError):
                     candidate(raw, meta, Path(d) / "target")
