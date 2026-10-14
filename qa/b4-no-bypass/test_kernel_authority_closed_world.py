@@ -208,10 +208,32 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "Err(NduPublicationErrorV1::Unsupported)",
             "old direct CNS cutover API became effectful",
         )
+        joined = re.search(
+            r"\bpub\s+fn\s+verify_original_cns_receipt_binding\s*\(", lexical
+        )
+        self.assertIsNotNone(
+            joined, "independent CNS Observer must retain read-only WAL receipt join"
+        )
+        assert joined is not None
+        join_start = lexical.find("{", joined.end())
+        join_end = CALLER_PROOF._matching_delimiter(lexical, join_start, "{", "}")
+        self.assertIsNotNone(join_end, "Control receipt join body must be complete")
+        assert join_end is not None
+        join_body = lexical[join_start + 1 : join_end]
         self.assertRegex(
-            lexical,
-            r"\bpub\s+fn\s+verify_original_cns_receipt_binding\s*\(",
-            "independent CNS Observer must retain read-only WAL receipt join",
+            join_body,
+            r"\bself\s*\.\s*state\s*\.\s*lock\s*\(\s*\)",
+            "original CNS receipt comparison must hold a live Control lock",
+        )
+        self.assertNotIn(
+            "self.last_cns_original_receipt_binding()",
+            join_body,
+            "separate readback may release the lock before receipt comparison",
+        )
+        self.assertRegex(join_body, r"\bstate\s*\.\s*verify_original_paths\s*\(\s*\)")
+        self.assertRegex(join_body, r"\bstate\s*\.\s*pending_cutover\b")
+        self.assertNotIn(
+            "drop(state)", join_body, "no Control lock release before joined equality"
         )
 
         physical = self.lexical_code(
