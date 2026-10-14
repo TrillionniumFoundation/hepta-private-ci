@@ -729,10 +729,10 @@ fn selector_revoked_during_last_owner_readback_never_prepares_successor() {
     let state = Rc::new(RefCell::new(Observed::default()));
     let selected = Rc::new(RefCell::new(true));
     let mut port = FixturePort::new(state.clone());
-    // First effect verifies one original-owner receipt. Advancing the
-    // successor reads that receipt before and after remote preflight;
-    // revoke the Selector membership during the second live readback.
-    port.revoke_selection_on_readback = Some((selected.clone(), 3));
+    // First effect now verifies its original-owner receipt twice, including
+    // post-effect admission. Successor readbacks must still revoke before
+    // the second independent Selector admission and before a new intent.
+    port.revoke_selection_on_readback = Some((selected.clone(), 4));
     let mut owner =
         CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port).expect("open");
     owner.advance().expect("first effect");
