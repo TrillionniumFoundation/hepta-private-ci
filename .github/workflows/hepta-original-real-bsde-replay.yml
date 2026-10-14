@@ -1,0 +1,68 @@
+name: Hepta original real mmBERT finite BSDE vs closed form replay (DENY_ALL)
+on:
+  pull_request:
+    paths:
+      - 'qualification/ndu-real-bsde-replay/**'
+      - '.github/workflows/hepta-original-real-bsde-replay.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+jobs:
+  independent-historical-raw-replay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Source/runtime identity
+        run: |
+          git rev-parse HEAD
+          python --version
+          sha256sum qualification/ndu-real-bsde-replay/*.py
+      - name: Negative tamper tests (no pretrained model)
+        run: |
+          set -euo pipefail
+          python -W error::ResourceWarning -m unittest discover \
+            -s qualification/ndu-real-bsde-replay -p 'test_*.py' -v
+          python -O -W error::ResourceWarning -m unittest discover \
+            -s qualification/ndu-real-bsde-replay -p 'test_*.py' -v
+      - name: Acquire all six exact original Actions ZIPs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/fbsde-real-evidence"
+          while read -r id digest; do
+            curl --fail --location --retry 2 --retry-all-errors --max-time 180 \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H 'X-GitHub-Api-Version: 2022-11-28' \
+              "https://api.github.com/repos/$GITHUB_REPOSITORY/actions/artifacts/$id/zip" \
+              -o "$RUNNER_TEMP/fbsde-real-evidence/artifact-$id.zip"
+            echo "$digest  $RUNNER_TEMP/fbsde-real-evidence/artifact-$id.zip" | sha256sum -c -
+          done <<'PINNED'
+          11883369189 fe4e431223d31f92c9ce62b5906e8159bdfd262464bdb59d85fc39822324e928
+          11883734135 700dcf2e370e648dec3249954e7394b09bca84cf1ae93d061d8149f2fdd27017
+          11884466452 f989b01b4c9ada906648eb95aa5f50761cbd9e31b2ddc12ea6aa9068f4f79b6e
+          11883753667 a6ff38082a4169fd69a02bde4b448c240552743b09381021acea94afdc104d98
+          11896021005 88f5f4d012153c7697ccdeb8f07217b16493cc9dbf9c80f02d5beb0210ffc47b
+          11889260783 f53229b650e2f8e25db78f892d750323495fb06446cb7a0ed9916be40fc15df4
+          PINNED
+      - name: Independent real numerical replay and budget failure audit
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/fbsde-replay-report"
+          python qualification/ndu-real-bsde-replay/independent_audit.py \
+            --archives "$RUNNER_TEMP/fbsde-real-evidence" \
+            --output "$RUNNER_TEMP/fbsde-replay-report/independent-actual.json"
+          sha256sum "$RUNNER_TEMP/fbsde-replay-report/independent-actual.json" \
+            > "$RUNNER_TEMP/fbsde-replay-report/sealed-result.sha256"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-historical-mmbert-bsde-real-independent-no-authority
+          path: ${{ runner.temp }}/fbsde-replay-report/
+          if-no-files-found: warn
+          retention-days: 14
