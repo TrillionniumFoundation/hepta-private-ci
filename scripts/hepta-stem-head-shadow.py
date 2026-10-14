@@ -37,12 +37,24 @@ def at(value):
 
 def read_rows(path):
     rows = []
+    def unique_pairs(pairs):
+        value = {}
+        for key, item in pairs:
+            require(key not in value, "duplicate JSON key")
+            value[key] = item
+        return value
     with Path(path).open(encoding="utf-8") as stream:
         for line in stream:
             if line.strip():
-                row = json.loads(line)
+                row = json.loads(
+                    line, object_pairs_hook=unique_pairs,
+                    parse_constant=lambda x: (_ for _ in ()).throw(
+                        ValueError("nonfinite JSON constant")
+                    ),
+                )
                 require(type(row) is dict, "row must be object")
                 rows.append(row)
+                require(len(rows) <= 8192, "Q24 Head input cohort exceeds safety bound")
     require(rows, "empty feature dataset")
     return rows
 
@@ -50,6 +62,8 @@ def read_rows(path):
 def validate_packets(training, predict, cutoff, now):
     cutoff, now = at(cutoff), at(now)
     require(cutoff < now, "training freeze must precede prediction time")
+    require(2 <= len(training) <= 8192 and 2 <= len(predict) <= 8192,
+            "train/predict cohort exceeds bounded experimental limit")
     records = training + predict
     frozen_identity = None
     names = set()
