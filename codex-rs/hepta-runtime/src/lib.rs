@@ -9,6 +9,8 @@
 
 #[cfg(all(unix, feature = "cell-split-cns-port"))]
 mod cell_split_cns_runtime_port;
+#[cfg(all(unix, feature = "cell-split-cns-port"))]
+mod cell_split_control_highwater_unix;
 mod organs;
 mod topology_execution;
 
@@ -60,6 +62,14 @@ pub use cell_split_cns_runtime_port::CELL_SPLIT_SIGNED_CONTROL_HIGHWATER_SCHEMA_
 pub use cell_split_cns_runtime_port::CellSplitIndependentControlObserverV1;
 #[cfg(all(unix, feature = "cell-split-cns-port"))]
 pub use cell_split_cns_runtime_port::CellSplitSignedControlHighwaterV1;
+#[cfg(all(unix, feature = "cell-split-cns-port"))]
+pub use cell_split_control_highwater_unix::CELL_SPLIT_CONTROL_HIGHWATER_RPC_SCHEMA_V1;
+#[cfg(all(unix, feature = "cell-split-cns-port"))]
+pub use cell_split_control_highwater_unix::CellSplitControlHighwaterRpcRequestV1;
+#[cfg(all(unix, feature = "cell-split-cns-port"))]
+pub use cell_split_control_highwater_unix::CellSplitControlHighwaterRpcResponseV1;
+#[cfg(all(unix, feature = "cell-split-cns-port"))]
+pub use cell_split_control_highwater_unix::CellSplitControlHighwaterUnixPortV1;
 #[cfg(all(unix, feature = "cell-split-cns-port"))]
 pub use cell_split_cns_runtime_port::cell_split_control_highwater_signing_bytes_v1;
 #[cfg(all(unix, feature = "cell-split-cns-port"))]
