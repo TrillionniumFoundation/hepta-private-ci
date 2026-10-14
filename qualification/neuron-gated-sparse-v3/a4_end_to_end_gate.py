@@ -15,6 +15,7 @@ from typing import Any
 
 from a0_deployment_evidence import load_public_key, verify_signed
 from matched_train import CAPS, ARMS, sha_file, unique_json, require, utc
+from five_arm_budget_gate import actual_safetensors, verify_architecture
 
 SCHEMA = 'hepta.neuron.a4-end-to-end-host-100-slot.v1'
 SCALES = (64, 256, 1024, 4096)
@@ -68,11 +69,13 @@ def percentile(p: dict) -> None:
     require(p['encoder_forward_invocations'] <= p['encoder_forward_rows'] <= p['request_count'],
             'Encoder calls/rows exceed requests')
     require(p['lost_replay_count'] == 0, 'acknowledged replay history lost')
+    require(p['encoder_forward_rows'] > 0, 'actual Encoder not observed in end-to-end sample')
 
 
 def validate(host: Any, training: Any, *, host_id: str, train_sha: str,
              physical_weights_root: Path, selected_v1: Path, selected_v1_sha: str,
-             host_key_fingerprint: str) -> dict:
+             host_key_fingerprint: str, expected_commit: str,
+             expected_encoder_bundle_sha: str, expected_host_profile_sha: str) -> dict:
     exact(training, {
         'schema','source_train_sha256','encoder_digest_claimed','cell_id',
         'training_cutoff_utc','train_source_group_hashes',
@@ -104,7 +107,10 @@ def validate(host: Any, training: Any, *, host_id: str, train_sha: str,
         path = physical_weights_root / row['weight_file']
         require(path.is_relative_to(physical_weights_root) and
                 row['weight_file'] == f'{key[0]}/{key[1]}.safetensors', 'model traversal/path mismatch')
-        sha_file(path, row['weight_sha256'])
+        count, tensors = actual_safetensors(path, row['weight_sha256'])
+        require(count == row['parameter_count'], 'real safetensors/private parameter count drift')
+        if row['arm'] == 'min_gru':
+            verify_architecture('min_gru', {'width':row['width'], 'rank':row['rank']}, tensors)
         expected[key] = row['weight_sha256']
     require(set(expected) == {(cap,arm) for cap in CAPS for arm in ARMS},
             'incomplete 20 physical trained candidates')
@@ -120,6 +126,10 @@ def validate(host: Any, training: Any, *, host_id: str, train_sha: str,
     require(host['training_receipt_sha256'] == train_sha and
             host['a0_registry_sha256'] == training['a0_registry_sha256'],
             'A4 trace/census no longer pinned')
+    require(host['source_commit_sha'] == expected_commit and
+            host['encoder_bundle_sha256'] == expected_encoder_bundle_sha and
+            host['host_profile_sha256'] == expected_host_profile_sha,
+            'target-host code/Encoder/profile not equal preregistration')
     require(type(host['source_commit_sha']) is str
             and len(host['source_commit_sha']) == 40
             and all(x in HEX for x in host['source_commit_sha']),
@@ -185,7 +195,8 @@ def main() -> int:
     p = argparse.ArgumentParser(description=__doc__)
     for name in ('signed-host-receipts','trusted-host-public-key','host-id',
                  'training-receipt','training-sha256','trained-root',
-                 'selected-v1','selected-v1-sha256','report'):
+                 'selected-v1','selected-v1-sha256','expected-commit','expected-encoder-bundle-sha',
+                 'expected-host-profile-sha','report'):
         p.add_argument('--'+name,required=True)
     args=p.parse_args()
     try:
@@ -198,7 +209,10 @@ def main() -> int:
                         physical_weights_root=Path(args.trained_root).resolve(strict=True),
                         selected_v1=Path(args.selected_v1),
                         selected_v1_sha=args.selected_v1_sha256,
-                        host_key_fingerprint=fingerprint)
+                        host_key_fingerprint=fingerprint,
+                        expected_commit=args.expected_commit,
+                        expected_encoder_bundle_sha=args.expected_encoder_bundle_sha,
+                        expected_host_profile_sha=args.expected_host_profile_sha)
         with Path(args.report).open('x',encoding='utf-8') as f:
             json.dump(result,f,sort_keys=True,indent=2)
             f.write('\n')
