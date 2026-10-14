@@ -215,3 +215,13 @@ def test_monotonic_append_order_rejects_backdated_sealed_chain():
     resign(args[3])
     with pytest.raises(ValueError, match='clock moved backwards'):
         run(*args)
+
+
+def test_e4_cli_accepts_only_explicit_pinned_event_log_arguments():
+    from neuron_shared_encoder.validation_v3 import _parser
+    args = _parser().parse_args([
+        'e4-future', '--output', 'blocked-shadow.json',
+        '--prequential-event-log', 'forecast.json',
+        '--prequential-event-log-sha256', D('a')])
+    assert args.prequential_event_log == 'forecast.json'
+    assert args.prequential_event_log_sha256 == D('a')
