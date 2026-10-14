@@ -606,8 +606,14 @@ def _pinned_json(path: str, expected: str) -> dict:
     if not is_digest(expected) or sha256_file(path) != expected:
         raise ValueError('pinned evidence bytes mismatch')
     raw = Path(path).read_text(encoding='utf-8')
+    def finite_float(token: str) -> float:
+        value = float(token)
+        if not math.isfinite(value):
+            raise ValueError('nonfinite JSON float exponent forbidden')
+        return value
     obj = json.loads(raw, parse_constant=lambda _: (_ for _ in ()).throw(
-        ValueError('nonfinite JSON extension forbidden')), object_pairs_hook=_strict_pairs)
+        ValueError('nonfinite JSON extension forbidden')),
+        parse_float=finite_float, object_pairs_hook=_strict_pairs)
     if not isinstance(obj, dict):
         raise ValueError('top-level evidence must be JSON object')
     return obj

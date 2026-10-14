@@ -468,3 +468,14 @@ Missing media evidence now blocks the combined A/B/C *research review
 candidate*, even if all model/Head and four-scale resource fields are
 present. A separate authenticated Evaluator/Selector/Executor remains
 necessary for a production decision.
+
+
+### JSON number overflow is not a valid observation
+
+All three offline JSON entry points (dataset JSONL, E1/E5 manifest and
+B/C/A+B+C evidence) now reject not only literal `NaN`/`Infinity`
+and duplicate keys but also valid-looking numeric exponents such as
+`1e9999`, which Python would otherwise quietly decode as infinity.
+No allegedly pinned model input or measured resource may become an
+infinite Python float. This is research input validation, not a signed
+source-attestation mechanism.

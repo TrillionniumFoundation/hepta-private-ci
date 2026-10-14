@@ -517,3 +517,12 @@ def test_c_semantic_necessity_rejects_mocked_media_success(mutation):
     result = paired_media_necessity_audit(
         report, policy, expected_protocol_sha256=D('b'))
     assert result['status'] == 'BLOCKED'
+
+
+def test_abc_manifest_overflow_float_rejected_at_pinned_decode(tmp_path):
+    from hashlib import sha256
+    payload = '{"stages":[{"peak_rss_bytes":1e9999}]}'
+    path = tmp_path / 'huge-exponent.json'
+    path.write_text(payload)
+    with pytest.raises(ValueError, match='nonfinite JSON float exponent'):
+        _pinned_json(str(path), sha256(payload.encode()).hexdigest())

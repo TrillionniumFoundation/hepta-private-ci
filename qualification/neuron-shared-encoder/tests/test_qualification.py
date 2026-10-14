@@ -315,3 +315,15 @@ def test_dataset_symlink_file_rejected(tmp_path):
         pytest.skip('symlink creation unavailable on this host')
     with pytest.raises(ValueError, match='symlink-free'):
         load_dataset(link)
+
+
+def test_dataset_rejects_overflowing_numeric_exponents(tmp_path):
+    p = generated(tmp_path)
+    original = p.read_text()
+    # JSON literal is syntactically valid but default float parser maps it
+    # to infinity. This would survive parse_constant= checks alone.
+    bad = original.replace('"label": 0', '"label": 0, "untrusted_cost": 1e9999', 1)
+    assert bad != original
+    p.write_text(bad)
+    with pytest.raises(ValueError, match='nonfinite JSON dataset float exponent'):
+        load_dataset(p)

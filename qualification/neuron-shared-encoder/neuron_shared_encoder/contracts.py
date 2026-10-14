@@ -32,6 +32,14 @@ def _reject_nonfinite_json_constant(value: str) -> Any:
     raise ValueError(f'nonfinite JSON dataset constant: {value}')
 
 
+def _finite_json_float(value: str) -> float:
+    """Reject 1e9999-style floats that overflow even without NaN literals."""
+    parsed = float(value)
+    if not math.isfinite(parsed):
+        raise ValueError('nonfinite JSON dataset float exponent')
+    return parsed
+
+
 def sha256_file(path: str | Path) -> str:
     h = hashlib.sha256()
     with open(path, 'rb') as f:
@@ -101,7 +109,8 @@ def load_dataset(path: str | Path, *, expected_sha256: str | None = None,
             if not raw.strip():
                 raise ValueError(f'line {line_no}: blank physical JSONL row forbidden')
             obj = json.loads(raw, object_pairs_hook=_strict_json_pairs,
-                             parse_constant=_reject_nonfinite_json_constant)
+                             parse_constant=_reject_nonfinite_json_constant,
+                             parse_float=_finite_json_float)
             row = _record(obj, line_no, width)
             width = len(row['options'])
             if row['row_id'] in seen_ids:

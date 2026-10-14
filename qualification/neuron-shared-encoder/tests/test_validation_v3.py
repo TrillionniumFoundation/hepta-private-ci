@@ -407,3 +407,13 @@ def test_v3_fixed_option_inventory_validated_before_real_model_attempt():
     rows[0]['options'] = ['yes', 'no']
     with pytest.raises(ValueError, match='identical ordered choices'):
         run_real_encoder_matrix(rows, D('a'), five_arm_plan(), five_arm=True)
+
+
+def test_e1_manifest_nonfinite_exponent_rejected_before_qualification(tmp_path):
+    from hashlib import sha256
+    from neuron_shared_encoder.validation_v3 import _read_pinned_json
+    path = tmp_path / 'in.json'
+    content = '{"training":{"learning_rate":1e9999}}'
+    path.write_text(content)
+    with pytest.raises(ValueError, match='nonfinite JSON evidence float exponent'):
+        _read_pinned_json(str(path), sha256(content.encode()).hexdigest())

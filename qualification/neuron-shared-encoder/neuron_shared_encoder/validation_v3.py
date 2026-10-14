@@ -675,9 +675,15 @@ def _read_pinned_json(path: str, sha: str) -> dict:
                 raise ValueError('duplicate JSON evidence key')
             values[key] = item
         return values
+    def finite_float(token):
+        value = float(token)
+        if not math.isfinite(value):
+            raise ValueError('nonfinite JSON evidence float exponent')
+        return value
     result = json.loads(
         Path(path).read_text(encoding='utf-8'), object_pairs_hook=unique_keys,
-        parse_constant=lambda _: (_ for _ in ()).throw(ValueError('nonfinite JSON')))
+        parse_constant=lambda _: (_ for _ in ()).throw(ValueError('nonfinite JSON')),
+        parse_float=finite_float)
     if not isinstance(result, dict):
         raise ValueError('top-level JSON object required')
     return result
