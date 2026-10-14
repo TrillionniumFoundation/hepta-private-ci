@@ -30,6 +30,7 @@ use codex_hepta_types::PhaseMetricKindV1;
 use codex_hepta_types::PhaseMetricSinkV1;
 use codex_hepta_types::StableId;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
@@ -48,6 +49,7 @@ where
     effect_intent: Option<DurableNeuronEffectIntentV1>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
     failed_metrics: AtomicU64,
+    metrics_flushed: AtomicBool,
 }
 
 /// The kernel-authority issuer signs this exact complete binding after
@@ -100,6 +102,7 @@ where
             effect_intent: None,
             metric_sink: None,
             failed_metrics: AtomicU64::new(0),
+            metrics_flushed: AtomicBool::new(false),
         }
     }
 
@@ -122,6 +125,7 @@ where
             effect_intent: None,
             metric_sink: None,
             failed_metrics: AtomicU64::new(0),
+            metrics_flushed: AtomicBool::new(false),
         }
     }
 
@@ -146,6 +150,7 @@ where
             effect_intent: Some(effect_intent),
             metric_sink: None,
             failed_metrics: AtomicU64::new(0),
+            metrics_flushed: AtomicBool::new(false),
         }
     }
 
@@ -189,26 +194,29 @@ where
     /// Connect to the Evidence-owned durable sink. Telemetry is
     /// non-authorizing and must never replay an uncertain external effect.
     pub fn with_metric_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
+        // Rebinding an Evidence writer cannot reuse a previous writer's
+        // successfully acknowledged persistence frontier.
+        self.metrics_flushed.store(false, Ordering::Release);
         self.metric_sink = Some(sink);
         self
     }
 
     pub fn production_metrics_ready(&self) -> bool {
-        self.metric_sink.as_ref().is_some_and(|sink| sink.healthy())
-            && self.failed_metrics.load(Ordering::Acquire) == 0
+        metrics_ready_v1(
+            self.metric_sink.as_deref(),
+            &self.failed_metrics,
+            &self.metrics_flushed,
+        )
     }
 
-    /// Explicit group-commit barrier for qualification, outside any model
-    /// effect fence. A missing or failed sink denies acceptance readiness.
+    /// Explicit fsync-backed Evidence flush barrier outside the signed model
+    /// effect. A sink ACK is not independently signed authority or readback.
     pub fn flush_production_metrics(&self) -> bool {
-        let Some(sink) = &self.metric_sink else {
-            return false;
-        };
-        if sink.flush().is_err() {
-            self.failed_metrics.fetch_add(1, Ordering::Release);
-            return false;
-        }
-        self.production_metrics_ready()
+        flush_metrics_v1(
+            self.metric_sink.as_deref(),
+            &self.failed_metrics,
+            &self.metrics_flushed,
+        )
     }
 
     fn emit_phase(
@@ -259,9 +267,11 @@ where
         // No model effect may enter the product-serving path without a
         // durable and healthy Evidence sink. This is a startup/readiness gate,
         // never an authority grant or an excuse to replay an external effect.
-        if !self.production_metrics_ready() {
-            return Err(NeuronRuntimeError::PendingReconciliation);
-        }
+        begin_signed_tick_v1(
+            self.metric_sink.as_deref(),
+            &self.failed_metrics,
+            &self.metrics_flushed,
+        )?;
         let started = Instant::now();
         let scope = input.subject_id.clone();
         let operation = input.semantic_digest()?;
@@ -506,6 +516,52 @@ fn observe_phase_v1(
             failed_metrics.fetch_add(1, Ordering::Release);
         }
     }
+}
+
+/// Healthy queue != persisted Evidence. Only an explicit post-effect flush
+/// restores this non-authorizing acceptance gate.
+fn metrics_ready_v1(
+    sink: Option<&dyn PhaseMetricSinkV1>,
+    failed_metrics: &AtomicU64,
+    metrics_flushed: &AtomicBool,
+) -> bool {
+    metrics_flushed.load(Ordering::Acquire)
+        && failed_metrics.load(Ordering::Acquire) == 0
+        && sink.is_some_and(|writer| writer.healthy())
+}
+
+/// Consume one observed flush frontier before a signed attempt, even when
+/// later NDU/Final-use admission refuses the effect. Requires a new flush
+/// between attempts; no execution proceeds through an unacknowledged queue.
+fn begin_signed_tick_v1(
+    sink: Option<&dyn PhaseMetricSinkV1>,
+    failed_metrics: &AtomicU64,
+    metrics_flushed: &AtomicBool,
+) -> Result<(), NeuronRuntimeError> {
+    if !metrics_ready_v1(sink, failed_metrics, metrics_flushed) {
+        return Err(NeuronRuntimeError::PendingReconciliation);
+    }
+    metrics_flushed.store(false, Ordering::Release);
+    Ok(())
+}
+
+fn flush_metrics_v1(
+    sink: Option<&dyn PhaseMetricSinkV1>,
+    failed_metrics: &AtomicU64,
+    metrics_flushed: &AtomicBool,
+) -> bool {
+    let Some(sink) = sink else {
+        return false;
+    };
+    if failed_metrics.load(Ordering::Acquire) != 0 {
+        return false;
+    }
+    if !sink.healthy() || sink.flush().is_err() || !sink.healthy() {
+        failed_metrics.fetch_add(1, Ordering::Release);
+        return false;
+    }
+    metrics_flushed.store(true, Ordering::Release);
+    metrics_ready_v1(Some(sink), failed_metrics, metrics_flushed)
 }
 
 #[cfg(test)]

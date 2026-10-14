@@ -183,6 +183,15 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-scale.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core bounded_single_writer_history_emits_append_update_recovery_memory_and_disk_curve -- --ignored --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-microbatch-4096.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core workload_64_256_1024_4096_scope_cells -- --ignored --nocapture --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/inference-durable-4096.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core durable_writer_reopen_64_256_1024_4096_scope_history -- --ignored --nocapture --test-threads=1
+      - name: Signed Neuron Agentd Evidence flush gate (original owner)
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
+        run: |
+          set -euo pipefail
+          # Compile and run the changed Agentd owner tests: infer-core-only
+          # tests cannot prove that the signed Neuron call path enforces flush.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/agentd-neuron-evidence.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib agentd_metrics_
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/agentd-evidence-bootstrap.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib production_neuron
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/evidence-metrics-writer.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --lib metrics_sink
       - name: Durable operation and external-effect recovery
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
         run: |

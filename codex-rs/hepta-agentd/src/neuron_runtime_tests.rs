@@ -292,3 +292,58 @@ fn post_prepare_ndu_revalidation_denies_fence_cutover_and_expiry() {
         Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
     ));
 }
+
+#[test]
+fn agentd_metrics_readiness_needs_explicit_flush_and_is_invalidated_by_new_tick() {
+    use std::sync::atomic::AtomicBool;
+    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::Ordering;
+
+    let sink = RecordedNeuronPhases::default();
+    let failures = AtomicU64::new(0);
+    let committed = AtomicBool::new(false);
+    assert!(!super::metrics_ready_v1(Some(&sink), &failures, &committed));
+    assert!(super::flush_metrics_v1(Some(&sink), &failures, &committed));
+    assert!(super::metrics_ready_v1(Some(&sink), &failures, &committed));
+    // Exercise the exact admission helper called by the real signed tick.
+    super::begin_signed_tick_v1(Some(&sink), &failures, &committed).unwrap();
+    assert!(!super::metrics_ready_v1(Some(&sink), &failures, &committed));
+    assert!(matches!(
+        super::begin_signed_tick_v1(Some(&sink), &failures, &committed),
+        Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
+    ));
+    assert!(super::flush_metrics_v1(Some(&sink), &failures, &committed));
+    super::begin_signed_tick_v1(Some(&sink), &failures, &committed).unwrap();
+    assert!(!committed.load(Ordering::Acquire));
+    assert!(super::flush_metrics_v1(Some(&sink), &failures, &committed));
+
+    // Once observation is lost, a later apparently healthy flush cannot cure
+    // the event gap or rehabilitate this owner for subsequent effects.
+    failures.store(1, Ordering::Release);
+    assert!(!super::flush_metrics_v1(Some(&sink), &failures, &committed));
+    assert!(!super::metrics_ready_v1(Some(&sink), &failures, &committed));
+}
+
+#[test]
+fn agentd_metrics_flush_failures_and_missing_sink_fail_closed() {
+    use std::sync::atomic::AtomicBool;
+    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::Ordering;
+
+    let failures = AtomicU64::new(0);
+    let committed = AtomicBool::new(false);
+    assert!(!super::flush_metrics_v1(None, &failures, &committed));
+    assert!(!super::metrics_ready_v1(None, &failures, &committed));
+    assert!(!super::flush_metrics_v1(
+        Some(&RejectNeuronMetrics),
+        &failures,
+        &committed,
+    ));
+    assert_eq!(failures.load(Ordering::Acquire), 1);
+    assert!(!super::flush_metrics_v1(
+        Some(&RecordedNeuronPhases::default()),
+        &failures,
+        &committed,
+    ));
+    assert!(!committed.load(Ordering::Acquire));
+}
