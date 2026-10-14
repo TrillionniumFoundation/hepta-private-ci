@@ -149,6 +149,8 @@ def main():
  from e1e2_q24_identity import feature_inventory
  bank=feature_inventory([case['case_id'] for case in panel['cases']],vectors)
  fit=fit_heads(panel,a.model,vectors)
+ if feature_inventory([case['case_id'] for case in panel['cases']],vectors)!=bank:
+  raise Invalid('E1 frozen feature vectors changed during fitting')
  out={'schema':'hepta.e1-english-public-pretrained-head.v1','model':a.model,
       'model_name':MODELS[a.model][0],'model_revision':MODELS[a.model][1],
       'feature_width':MODELS[a.model][2],'public_panel_sha256':panel_sha,
