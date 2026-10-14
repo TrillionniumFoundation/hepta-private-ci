@@ -99,6 +99,46 @@ async fn cold_restart_reads_original_then_identical_stage_is_idempotent() {
 }
 
 #[tokio::test]
+async fn read_only_cold_reader_can_verify_prepare_but_cannot_stage_a_new_intent() {
+    let temp = TempDir::new().expect("temp");
+    let config = sqlite(&temp);
+    let source = intent();
+    let writer = HeptaEvidenceStore::open(&config).await.expect("original writer");
+    let saved = writer
+        .prepare_execution_intent_v1(&source, PAYLOAD)
+        .await
+        .expect("prepared");
+    writer.close().await;
+
+    let reader = HeptaEvidenceStore::open_existing_read_only(&config)
+        .await
+        .expect("read-only reopen");
+    assert_eq!(
+        reader
+            .read_execution_preparation_v1(&source)
+            .await
+            .expect("readback original"),
+        saved.readback
+    );
+    let changed = ExecutionIntentV1 {
+        operation_id: "operation:never-written".into(),
+        ..source
+    };
+    assert!(
+        reader.prepare_execution_intent_v1(&changed, PAYLOAD).await.is_err(),
+        "read-only Evidence access must not create any preparation record"
+    );
+    assert_eq!(
+        reader
+            .read_execution_preparation_v1(&changed)
+            .await
+            .expect("still absent")
+            .status,
+        ExecutionPreparationReadbackStatusV1::Absent
+    );
+}
+
+#[tokio::test]
 async fn missing_preparation_never_reports_success() {
     let temp = TempDir::new().expect("temp");
     let store = HeptaEvidenceStore::open(&sqlite(&temp)).await.expect("store");
