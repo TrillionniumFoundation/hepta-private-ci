@@ -272,13 +272,13 @@ pub fn load_environment_skills_from_discovery(
                     &metadata.contents,
                     serde_saphyr::options! { reject_unsupported_tags: true },
                 )
-                    .map_err(|error| {
-                        tracing::warn!(
-                            path = %metadata.path,
-                            "ignoring invalid discovered skill metadata: {error}"
-                        );
-                    })
-                    .ok()
+                .map_err(|error| {
+                    tracing::warn!(
+                        path = %metadata.path,
+                        "ignoring invalid discovered skill metadata: {error}"
+                    );
+                })
+                .ok()
             })
             .map(|metadata| {
                 (
