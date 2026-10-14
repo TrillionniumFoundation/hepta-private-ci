@@ -478,6 +478,98 @@ fn late_metrics_sink_cannot_certify_previously_unmetered_model_execution() {
 }
 
 #[test]
+fn frozen_caller_time_expires_queued_scalar_before_model_driver() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[101; 32]);
+    let (model, mut request, key) = fixture_request();
+    request.authorization.deadline_ms = 110;
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let backend = CountingScalarDriver(calls.clone());
+    let mut worker = runner_with_driver(&signer, dir.path(), model, backend, 1);
+    worker
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    assert_eq!(worker.pending(), 1);
+    // Same external now_ms is not a fresh timestamp. The owner must include
+    // real monotonic time elapsed since the original successful enqueue.
+    std::thread::sleep(std::time::Duration::from_millis(25));
+    let result = worker.poll_and_execute(100).unwrap();
+    assert_eq!(result.expired, vec![StableId::new("req-one").unwrap()]);
+    assert!(result.outcomes.is_empty());
+    assert_eq!(worker.pending(), 0);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+}
+
+#[test]
+fn frozen_caller_time_expires_entire_native_batch_without_claiming_nonce() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[102; 32]);
+    let (model, mut first, key) = fixture_request();
+    first.authorization.deadline_ms = 110;
+    let second = second_request(&first);
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let backend = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut worker = runner_with_driver(&signer, dir.path(), model, backend, 2);
+    for (index, request) in [first, second].into_iter().enumerate() {
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        worker
+            .enqueue(
+                100,
+                "model".into(),
+                request,
+                key.clone(),
+                signed_member(
+                    &signer,
+                    binding,
+                    &format!("frozen-clock-{index}"),
+                    u8::try_from(index).unwrap() + 103,
+                ),
+            )
+            .unwrap();
+    }
+    assert_eq!(worker.pending(), 2);
+    std::thread::sleep(std::time::Duration::from_millis(25));
+    let observed = worker.poll_and_execute(100).unwrap();
+    assert_eq!(observed.expired.len(), 2);
+    assert!(observed.outcomes.is_empty());
+    assert_eq!(worker.pending(), 0);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+}
+
+#[test]
+fn invalid_future_dated_first_admission_cannot_poison_owner_anchor() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[105; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let signed = signed(&signer, binding);
+    let mut worker = runner(&signer, dir.path(), model);
+    assert_eq!(
+        worker.enqueue(
+            12_000,
+            "model".into(),
+            request.clone(),
+            key.clone(),
+            signed.clone(),
+        ),
+        Err(BatchWorkerErrorV1::Scheduler(SchedulerErrorV1::Expired))
+    );
+    assert!(worker.queue_clock_anchor.is_none());
+    worker
+        .enqueue(100, "model".into(), request, key, signed)
+        .unwrap();
+    assert!(worker.queue_clock_anchor.is_some());
+    let outcome = worker.poll_and_execute(106).unwrap();
+    assert_eq!(outcome.outcomes.len(), 1);
+    assert!(outcome.outcomes[0].result.is_ok());
+}
+
+#[test]
 fn evidence_readiness_requires_flush_after_each_recorded_batch() {
     let dir = tempfile::tempdir().unwrap();
     let signer = SigningKey::from_bytes(&[99; 32]);

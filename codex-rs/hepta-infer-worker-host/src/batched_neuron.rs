@@ -133,6 +133,10 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     frontier_binding_frozen: bool,
     // A late sink must never make uninstrumented historical work "ready".
     unmetered_activity: bool,
+    // The very first successfully queued intent fixes a lifetime monotonic
+    // anchor. Replaying a nondecreasing but frozen caller now_ms cannot
+    // extend its own deadline across future polls.
+    queue_clock_anchor: Option<(u64, Instant)>,
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
@@ -227,6 +231,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             scope_frontier: None,
             frontier_binding_frozen: false,
             unmetered_activity: false,
+            queue_clock_anchor: None,
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
@@ -283,6 +288,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
 
     fn binding_current(&self, key: &MicrobatchKeyV1) -> bool {
         scope_binding_current(self.scope_frontier.as_ref(), key)
+    }
+
+    /// Prevent indefinitely extending a queued intent by reusing the same
+    /// previously admitted caller timestamp in a later poll or enqueue.
+    /// Initial timestamp provenance still belongs to the real Control owner.
+    fn queue_effective_now_ms(&self, observed_ms: u64) -> u64 {
+        let Some((anchored_ms, anchored_at)) = self.queue_clock_anchor else {
+            return observed_ms;
+        };
+        observed_ms.max(dispatch_now_ms_v1(anchored_ms, anchored_at))
     }
 
     /// Research-only runs may omit a sink, but such runs can never satisfy
@@ -342,10 +357,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             self.unmetered_activity = true;
         }
         let started = Instant::now();
+        let now_ms = self.queue_effective_now_ms(now_ms);
         let scope_digest = Digest32::of_bytes(key.scope_id.as_str().as_bytes());
         let operation_digest = Digest32::of_bytes(request.authorization.request_id.as_bytes());
         let result = self.enqueue_inner(now_ms, model_id, request, key, signed);
         let queued = result.is_ok();
+        if queued && self.queue_clock_anchor.is_none() {
+            // Only a successful scheduler admission sets the anchor. A
+            // rejected future-dated request must not poison the owner clock.
+            self.queue_clock_anchor = Some((now_ms, started));
+        }
         if let Some(sink) = &self.metric_sink {
             self.metrics_flushed.store(false, Ordering::Release);
             let metric_result = sink.record(PhaseMetricEventV1 {
@@ -448,6 +469,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         if !self.metrics_available_for_effect() {
             return Err(BatchWorkerErrorV1::MetricsUnavailable);
         }
+        // A fresh poll-local Instant alone cannot account for time spent in
+        // the queue if a caller resubmits a stale but nonregressing clock.
+        let now_ms = self.queue_effective_now_ms(now_ms);
         let started = Instant::now();
         let poll = self
             .scheduler
