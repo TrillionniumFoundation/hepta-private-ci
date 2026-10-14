@@ -258,3 +258,28 @@ fn evidence_writer_flush_refuses_ack_after_original_wal_inode_replacement() {
         Err(PhaseMetricSinkErrorV1::Unavailable)
     );
 }
+
+#[cfg(unix)]
+#[test]
+fn restarted_evidence_sink_cannot_claim_a_new_history_after_wal_loss() {
+    use std::fs;
+
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("metrics.log");
+    let retired = dir.path().join("retired-metrics.log");
+    {
+        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 2, 25)
+            .expect("original durable writer");
+        sink.record(sample(PhaseMetricKindV1::Cas))
+            .expect("sample");
+        sink.flush().expect("original group fsync ACK");
+    }
+    let marker = dir.path().join("metrics.log.owner-lock");
+    assert!(marker.exists(), "independent persistent identity");
+    fs::rename(&path, &retired).expect("original journal is gone");
+    assert!(
+        DurablePhaseMetricSinkV1::open(&path, 8, 2, 25).is_err(),
+        "a new process must not mint a fresh healthy Evidence owner"
+    );
+    assert!(!path.exists(), "no replacement empty journal");
+}

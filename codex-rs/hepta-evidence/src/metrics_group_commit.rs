@@ -81,6 +81,14 @@ impl std::error::Error for MetricsJournalErrorV1 {}
 pub struct MetricsGroupCommitV1 {
     file: File,
     journal_path: PathBuf,
+    // A distinct original inode survives process restarts and refuses
+    // missing/recreated WAL files instead of blessing a fresh history.
+    #[cfg(unix)]
+    owner_marker_path: PathBuf,
+    #[cfg(unix)]
+    owner_marker: File,
+    #[cfg(unix)]
+    owner_marker_bytes: Vec<u8>,
     #[cfg(unix)]
     original_parent_path: PathBuf,
     #[cfg(unix)]
@@ -105,6 +113,8 @@ impl Drop for MetricsGroupCommitV1 {
         // the previous writer has left scope. Never flush uncommitted metrics
         // on Drop: after an abrupt exit only previously fsynced groups count.
         let _ = self.file.unlock();
+        #[cfg(unix)]
+        let _ = self.owner_marker.unlock();
     }
 }
 
@@ -125,19 +135,78 @@ impl MetricsGroupCommitV1 {
             verify_original_parent_path(parent, &opened)?;
             (parent.to_path_buf(), opened)
         };
+        // A missing WAL paired with a retained durable marker is a lost
+        // history. Equally, a present WAL without its marker cannot be
+        // silently adopted. First bootstrap creates and syncs the marker
+        // inode before the WAL; half-finished bootstrap fails closed.
+        #[cfg(unix)]
+        let (owner_marker_path, mut owner_marker, marker_preexisting) = {
+            use std::os::unix::fs::OpenOptionsExt as _;
+            let mut marker_name = path.as_os_str().to_os_string();
+            marker_name.push(".owner-lock");
+            let marker_path = PathBuf::from(marker_name);
+            let exists = |p: &Path| -> Result<bool, MetricsJournalErrorV1> {
+                match fs::symlink_metadata(p) {
+                    Ok(_) => Ok(true),
+                    Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(false),
+                    Err(error) => Err(error.into()),
+                }
+            };
+            let wal_exists = exists(path)?;
+            let marker_exists = exists(&marker_path)?;
+            if wal_exists != marker_exists {
+                return Err(MetricsJournalErrorV1::UnsafePath);
+            }
+            let mut options = OpenOptions::new();
+            options.read(true).write(true).mode(0o600);
+            if !marker_exists {
+                options.create_new(true);
+            }
+            let marker = options.open(&marker_path)?;
+            check_open_file(&marker_path, &marker)?;
+            marker
+                .try_lock()
+                .map_err(|_| MetricsJournalErrorV1::WriterUnavailable)?;
+            if !marker_exists {
+                original_parent.sync_all()?;
+            }
+            (marker_path, marker, marker_exists)
+        };
         let mut options = OpenOptions::new();
-        options.create(true).append(true).read(true);
+        options.append(true).read(true);
         #[cfg(unix)]
         {
-            use std::os::unix::fs::OpenOptionsExt;
+            use std::os::unix::fs::OpenOptionsExt as _;
+            if !marker_preexisting {
+                options.create_new(true);
+            }
             options.mode(0o600);
         }
+        #[cfg(not(unix))]
+        options.create(true);
         let file = options.open(path)?;
-        // Opening with create/append must not silently accept a replacement
-        // symlink or an existing file with relaxed privacy permissions.
         check_open_file(path, &file)?;
         file.try_lock()
             .map_err(|_| MetricsJournalErrorV1::WriterUnavailable)?;
+        #[cfg(unix)]
+        let owner_marker_bytes = {
+            use std::os::unix::fs::MetadataExt as _;
+            let metadata = file.metadata()?;
+            let expected =
+                format!("HEMW1|{}|{}\n", metadata.dev(), metadata.ino()).into_bytes();
+            if marker_preexisting {
+                verify_original_owner_marker(
+                    &owner_marker_path,
+                    &owner_marker,
+                    &expected,
+                )?;
+            } else {
+                owner_marker.write_all(&expected)?;
+                owner_marker.sync_all()?;
+                original_parent.sync_all()?;
+            }
+            expected
+        };
         let mut reader = BufReader::new(file.try_clone()?);
         let mut line = Vec::new();
         let mut total = 0_u64;
@@ -176,6 +245,12 @@ impl MetricsGroupCommitV1 {
             file,
             journal_path: path.to_path_buf(),
             #[cfg(unix)]
+            owner_marker_path,
+            #[cfg(unix)]
+            owner_marker,
+            #[cfg(unix)]
+            owner_marker_bytes,
+            #[cfg(unix)]
             original_parent_path,
             #[cfg(unix)]
             original_parent,
@@ -204,7 +279,14 @@ impl MetricsGroupCommitV1 {
         // defeats checks of only the WAL file name, size and inode.
         check_journal_path(&self.journal_path)?;
         #[cfg(unix)]
-        verify_original_parent_path(&self.original_parent_path, &self.original_parent)?;
+        {
+            verify_original_parent_path(&self.original_parent_path, &self.original_parent)?;
+            verify_original_owner_marker(
+                &self.owner_marker_path,
+                &self.owner_marker,
+                &self.owner_marker_bytes,
+            )?;
+        }
         check_open_file(&self.journal_path, &self.file)?;
         if self.file.metadata()?.len() != self.bytes {
             return Err(MetricsJournalErrorV1::Corrupt);
@@ -248,7 +330,14 @@ impl MetricsGroupCommitV1 {
         // tail check; neither directory drift nor WAL replacement may ACK.
         check_journal_path(&self.journal_path)?;
         #[cfg(unix)]
-        verify_original_parent_path(&self.original_parent_path, &self.original_parent)?;
+        {
+            verify_original_parent_path(&self.original_parent_path, &self.original_parent)?;
+            verify_original_owner_marker(
+                &self.owner_marker_path,
+                &self.owner_marker,
+                &self.owner_marker_bytes,
+            )?;
+        }
         check_open_file(&self.journal_path, &self.file)?;
         if self.file.metadata()?.len() != self.bytes {
             return Err(MetricsJournalErrorV1::Corrupt);
@@ -401,6 +490,33 @@ fn check_journal_path(path: &Path) -> Result<(), MetricsJournalErrorV1> {
         }
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
         Err(error) => return Err(MetricsJournalErrorV1::Io(error)),
+    }
+    Ok(())
+}
+
+/// The independent marker is a write-once local owner identity, not a
+/// signature or external anti-rollback witness. Validate the locked original
+/// descriptor as well as its pathname and exact binding bytes.
+#[cfg(unix)]
+fn verify_original_owner_marker(
+    marker_path: &Path,
+    opened_marker: &File,
+    expected: &[u8],
+) -> Result<(), MetricsJournalErrorV1> {
+    use std::os::unix::fs::FileExt as _;
+
+    check_open_file(marker_path, opened_marker)?;
+    if opened_marker.metadata()?.len() != expected.len() as u64 {
+        return Err(MetricsJournalErrorV1::UnsafePath);
+    }
+    let mut observed = vec![0_u8; expected.len()];
+    opened_marker.read_exact_at(&mut observed, 0)?;
+    if observed.as_slice() != expected {
+        return Err(MetricsJournalErrorV1::UnsafePath);
+    }
+    check_open_file(marker_path, opened_marker)?;
+    if opened_marker.metadata()?.len() != expected.len() as u64 {
+        return Err(MetricsJournalErrorV1::UnsafePath);
     }
     Ok(())
 }
