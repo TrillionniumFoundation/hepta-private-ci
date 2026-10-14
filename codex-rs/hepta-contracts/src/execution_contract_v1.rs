@@ -188,9 +188,7 @@ impl ExecutionIntentV1 {
 
     /// Domain-separated, length-delimited request identity independent of
     /// JSON field order, serialization environment, and runtime transport.
-    pub fn binding_proposal(
-        &self,
-    ) -> Result<ExecutionBindingProposalV1, ExecutionEnvelopeErrorV1> {
+    pub fn binding_proposal(&self) -> Result<ExecutionBindingProposalV1, ExecutionEnvelopeErrorV1> {
         self.validate()?;
         let mut request = Sha256::new();
         request.update(b"hepta.execution.intent.v1\0");
@@ -239,8 +237,8 @@ impl ExecutionIntentV1 {
             .map_err(|_| ExecutionEnvelopeErrorV1::InvalidDigest)?;
         let mut bytes = [0_u8; 32];
         for (byte, pair) in bytes.iter_mut().zip(source.as_bytes().chunks_exact(2)) {
-            let pair = std::str::from_utf8(pair)
-                .map_err(|_| ExecutionEnvelopeErrorV1::InvalidDigest)?;
+            let pair =
+                std::str::from_utf8(pair).map_err(|_| ExecutionEnvelopeErrorV1::InvalidDigest)?;
             *byte = u8::from_str_radix(pair, 16)
                 .map_err(|_| ExecutionEnvelopeErrorV1::InvalidDigest)?;
         }
