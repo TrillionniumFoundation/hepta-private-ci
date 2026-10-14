@@ -329,3 +329,69 @@ def reload_pinned_typed_bank(directory, *, expected_manifest_sha256,
         models[key] = model.eval()
     return {"models": models, "manifest": manifest,
             "physical_head_bytes_verified": True, "production_accepted": False}
+
+
+def verify_reloaded_typed_predictions(loaded, matrix, type_by_row, original_predictions, *,
+                                      expected_prediction_sha256):
+    """Replay every previously sealed heldout probability from physical Heads.
+
+    No gold answer, source writer, selected model or tool call is accepted.
+    A pasted prediction JSON cannot forge a real reloaded model response.
+    """
+    require(isinstance(loaded, dict) and loaded.get("production_accepted") is False
+            and loaded.get("physical_head_bytes_verified") is True,
+            "physical Head bank proof required")
+    manifest = loaded["manifest"]
+    require(isinstance(matrix, FeatureMatrix)
+            and manifest["feature_sha256"] == matrix.identity
+            and manifest["type_inventory_sha256"] ==
+            type_inventory_digest(matrix, type_by_row), "feature/type epoch changed")
+    require(is_sha(expected_prediction_sha256) and
+            digest(original_predictions) == expected_prediction_sha256,
+            "external original prediction pin missing or changed")
+    require(isinstance(original_predictions, list), "original prediction list required")
+    expected = {r.row_id: (i, r) for i, r in enumerate(matrix.rows)
+                if r.split in HELDOUT}
+    require(len(original_predictions) == len(expected) and expected,
+            "incomplete original heldout prediction census")
+    models, types = loaded["models"], manifest["types"]
+    seen, count, maximum_error = set(), 0, 0.0
+    with torch.no_grad():
+        for record in original_predictions:
+            require(isinstance(record, dict) and set(record) ==
+                    {"row_id", "family", "split", "input_sha256", "memory_type", "probabilities"},
+                    "unexpected model original output")
+            rid = record["row_id"]
+            require(rid in expected and rid not in seen,
+                    "unknown or duplicated original model case")
+            seen.add(rid)
+            pos, row = expected[rid]
+            kind = type_by_row[rid]
+            require((record["family"], record["split"], record["input_sha256"],
+                     record["memory_type"]) ==
+                    (row.family, row.split, row.input_sha256, kind),
+                    "source-bound input or route drift")
+            other = types[1 - types.index(kind)]
+            current = {"frozen": models["frozen"],
+                       "single_shared": models["single_shared"],
+                       "typed_equal_budget": models["typed_equal_budget__" + kind],
+                       "untyped_equal_budget": models["untyped_equal_budget__" + kind],
+                       "typed_swapped_negative": models["typed_equal_budget__" + other]}
+            probs = record["probabilities"]
+            require(isinstance(probs, dict) and set(probs) == set(ARMS),
+                    "original model output arm missing")
+            for arm in ARMS:
+                p = probs[arm]
+                require(type(p) in (float, int) and isfinite(p) and 0 <= p <= 1,
+                        "invalid original probability")
+                physical = float(current[arm](matrix.x[pos:pos + 1]).softmax(-1)[0, 1].item())
+                difference = abs(physical - p)
+                require(difference <= 1e-6, "saved Head cannot reproduce original prediction")
+                maximum_error = max(maximum_error, difference)
+                count += 1
+    require(seen == set(expected) and count == len(expected) * len(ARMS),
+            "missing complete physically reloaded inference census")
+    return {"verified_predictions": len(expected), "physical_model_forward_calls": count,
+            "maximum_absolute_probability_error": maximum_error,
+            "original_predictions_sha256": expected_prediction_sha256,
+            "no_label_scores_opened": True, "production_accepted": False}

@@ -180,6 +180,38 @@ class TypedMemoryBudgetTest(unittest.TestCase):
             restored = reload_pinned_typed_bank(location,**kwargs)
             self.assertEqual(restored["manifest"]["feature_sha256"],self.matrix.identity)
 
+    def test_original_sealed_predictions_require_real_reloaded_head(self):
+        import tempfile
+        from pathlib import Path
+        from hashlib import sha256
+        from amcn_typed_budget import (seal_detached_typed_bank,
+                                       reload_pinned_typed_bank,
+                                       verify_reloaded_typed_predictions)
+        source = sha256(b"source-witness-pin").hexdigest()
+        with tempfile.TemporaryDirectory() as temporary:
+            path = Path(temporary) / "physical-bank"
+            seal = seal_detached_typed_bank(self.trial_result,self.matrix,self.types,
+                                            path,source_binding_sha256=source)
+            loaded = reload_pinned_typed_bank(path,
+                    expected_manifest_sha256=seal["manifest_sha256"],
+                    expected_feature_sha256=self.matrix.identity,
+                    expected_source_binding_sha256=source)
+            original = self.trial_result["predictions"]
+            digest_original = self.trial_result["receipt"]["metrics"]["prediction_sha256"]
+            verdict = verify_reloaded_typed_predictions(loaded,self.matrix,self.types,
+                            original,expected_prediction_sha256=digest_original)
+            self.assertEqual(verdict["verified_predictions"],len(self.withheld))
+            self.assertEqual(verdict["physical_model_forward_calls"],len(self.withheld)*5)
+            self.assertTrue(verdict["no_label_scores_opened"])
+            self.assertFalse(verdict["production_accepted"])
+            from copy import deepcopy
+            from amcn_core import digest
+            changed=deepcopy(original)
+            changed[0]["probabilities"]["typed_equal_budget"] = 0.91
+            with self.assertRaises(Refused):
+                verify_reloaded_typed_predictions(loaded,self.matrix,self.types,
+                    changed,expected_prediction_sha256=digest(changed))
+
     def test_source_binding_required_before_sealing_any_files(self):
         import tempfile
         from pathlib import Path
