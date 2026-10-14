@@ -315,7 +315,9 @@ def validate_resources(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
             varied.add(concurrency)
             variable_by_scale[scale].add(concurrency)
         summary[name] = {"rps": completed / r["elapsed_seconds"], "p99_ms": r["p99_ms"],
-                         "rss_bytes": r["rss_peak_bytes"], "network_bytes": r["network_bytes"]}
+                         "rss_bytes": r["rss_peak_bytes"], "network_bytes": r["network_bytes"],
+                         "completion_rate": completed / attempts,
+                         "cpu_seconds_per_completion": r["cpu_seconds"] / completed if completed else None}
     require(all(len(rows) == 1 for rows in shared.values()), "E: unmatched source trace, requests, or concurrency")
     require(len(active["fixed_active"]) == 1, "E: fixed-active load varies with Cell scale")
     require(len(varied) > 1 and min(varied) >= next(iter(active["fixed_active"])),
@@ -325,8 +327,25 @@ def validate_resources(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
     sequence_values = [next(iter(variable_by_scale[scale])) for scale in SCALES]
     require(all(x < y for x, y in zip(sequence_values, sequence_values[1:])),
             "E: variable active concurrency must increase independently with scale")
+    # Paired arithmetic only: these deltas never constitute causal attribution,
+    # a verified host measurement, or permission to move execution boundaries.
+    diagnostics: dict[str, dict[str, float | None]] = {}
+    for scale in SCALES:
+        for profile in LOADS:
+            base = summary[f"E/in_process/{scale}/{profile}"]
+            for mode in DEPLOYMENTS[1:]:
+                candidate = summary[f"E/{mode}/{scale}/{profile}"]
+                diagnostics[f"{mode}/{scale}/{profile}"] = {
+                    "throughput_ratio_vs_in_process": (
+                        candidate["rps"] / base["rps"] if base["rps"] else None),
+                    "p99_delta_ms": candidate["p99_ms"] - base["p99_ms"],
+                    "rss_delta_bytes": candidate["rss_bytes"] - base["rss_bytes"],
+                    "network_delta_bytes": candidate["network_bytes"] - base["network_bytes"],
+                    "completion_rate_delta": candidate["completion_rate"] - base["completion_rate"],
+                }
     return {"status": "host_measurements_structurally_complete", "run_count": len(runs),
-            "observed_summary": summary, "host_authenticity_unverified": True}
+            "observed_summary": summary, "paired_placement_diagnostics": diagnostics,
+            "host_authenticity_unverified": True, "placement_selection_authorized": False}
 
 
 def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
@@ -349,6 +368,10 @@ def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
          for r in runs], expected, "F")
     peers: dict[tuple[str, str], set[tuple[str, str]]] = {}
     successful: dict[str, int] = {route: 0 for route in ROUTES}
+    route_costs = {route: {case: {"tasks": 0, "total_cost": 0.0,
+                                 "elapsed_seconds": 0.0, "cpu_seconds": 0.0,
+                                 "task_quality": 0.0, "model_calls": 0, "token_count": 0}
+                           for case in CASES} for route in ROUTES}
     for (route, task, case), r in parsed.items():
         name = f"F/{route}/{task}/{case}"
         trace = digest(field(r, "task_input_sha256", name), name + ".task_input_sha256")
@@ -371,6 +394,11 @@ def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
         require(r["elapsed_seconds"] > 0 and r["rss_peak_bytes"] > 0,
                 f"{name}: missing real resource measurements")
         require(r.get("real_invocation_observed") is True, f"{name}: synthetic tool call")
+        totals = route_costs[route][case]
+        totals["tasks"] += 1
+        for metric in ("total_cost", "elapsed_seconds", "cpu_seconds", "task_quality",
+                       "model_calls", "token_count"):
+            totals[metric] += r[metric]
         if route == "direct_effect":
             require(r["model_calls"] == 0 and r["token_count"] == 0,
                     f"{name}: direct execution must not conceal an Agent/model call")
@@ -395,8 +423,11 @@ def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
                 require(r.get("effect_owner_receipt_sha256") is None,
                         f"{name}: owner receipt without observed effect")
     require(all(len(x) == 1 for x in peers.values()), "F: unmatched task input or policy among routes")
+    # These are task-level summaries of supplied measurements, not a provider
+    # selection: success, quality, security and uncertainty remain separate gates.
     return {"status": "codex_path_comparison_structurally_complete", "run_count": len(parsed),
-            "observed_successes": successful, "effect_authority_unverified": True}
+            "observed_successes": successful, "per_route_cost_diagnostics": route_costs,
+            "effect_authority_unverified": True, "codex_extraction_authorized": False}
 
 
 def validate_split(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
