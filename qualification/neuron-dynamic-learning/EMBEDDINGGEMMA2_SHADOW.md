@@ -238,3 +238,38 @@ public dataset bytes and retains only a bounded sample/receipt. This is
 production outcome receipt, model-execution claim, or Laya/Gemma proof.
 Real matched model inference and independent future learning evaluation
 remain mandatory. No selected artifact, FinalUse, main merge or release.
+
+## 2026-10-14: pinned same-task physical Laya/Gemma capability execution
+
+A new isolated, **read-only** physical model comparator binds all candidate
+answers to the existing frozen AG News world/sports **cross-sectional** panel.
+
+- `agnews_paired_shadow.py` evaluates three distinct arms: **frozen
+  Laya421**, **Gemma2 256d + identical-initialization frozen DynamicCell Head**,
+  and **Gemma2 256d + actual SGD-trained 2K Head**. The same 128 balanced train,
+  32 calibration and 64 held-out test inputs are source-hash-bound. Laya uses
+  its documented typed-choice prompt realization; Gemma uses the canonical
+  full joint question/options/state with its registered Classification prompt.
+  This distinction must remain explicit and is **not** a claim of identical
+  tokenizer input bytes or equal model capacity.
+- The new `hepta-stem-paired-capability.yml` Pins both public model revisions,
+  both dataset asset SHA256s, checked runtime packages and complete local
+  checkpoint file inventories, and executes the Gemma encoder/Head and
+  Laya physical model in separate Python processes on one CPU runner.
+  It uploads **no pretrained weights**. A dependency, source, model or
+  individual-case receipt failure aborts the experiment without fabricated data.
+- The independent case-level checker rejects wrong cohort counts, wrong
+  source/label/option identity, repeated case IDs, missing arm predictions,
+  modified task digests, nonfinite probabilities, nonpositive observed wall
+  time and any invented independent/outcome authority. It reports accuracy,
+  Brier, descriptive 8-bin uncalibrated ECE and observed inference timings.
+- Crucially **no** source publication, prior checkpoint reproduction,
+  train/test split or public benchmark run creates a future1/future2/future3
+  outcome. No paired statistical-screen pass, causal learning, calibrated OOD,
+  matched full training+serving+migration+pretraining cost, physical kernel
+  forward count or FinalUse is certified here.
+
+This is a diagnostic between model families, not a decision to replace Laya.
+The original physical smoke workflows and existing native owners remain
+unchanged; PR remains **Draft / Shadow / DENY_ALL** until full independent
+acceptance and `blocking-ci` are demonstrably complete.

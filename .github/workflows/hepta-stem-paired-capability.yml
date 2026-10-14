@@ -1,0 +1,199 @@
+name: Hepta real paired Laya-Gemma AG News capability (shadow)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/neuron-dynamic-learning/agnews_paired_shadow.py'
+      - 'qualification/neuron-dynamic-learning/test_agnews_paired_shadow.py'
+      - '.github/workflows/hepta-stem-paired-capability.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Keep exact-commit experiments: cancellation discards completed weight evidence.
+concurrency:
+  group: hepta-stem-paired-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  pinned-physical-pair:
+    name: Fixed public labels, real frozen Laya and trainable Gemma head (no future claim)
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'research/embeddinggemma2-multimodal-cell-20261014'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_DISABLE_XET: '0'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      GEMMA_REVISION: '914f7f89142e33e77833254d9c9b90c3cef7303b'
+      LAYA_REVISION: '55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851'
+    steps:
+      - name: Exact reviewed SHA checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Validate immutable source
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git diff --check
+      - name: Install pinned CPU model and public-data runtimes
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/stem-paired-venv"
+          PY="$RUNNER_TEMP/stem-paired-venv/bin/python"
+          "$PY" -m pip install --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu \
+            'torch==2.10.0' 'torchvision==0.25.0' 'torchcodec==0.10.0'
+          "$PY" -m pip install --only-binary=:all: \
+            'laya==0.4.6' 'transformers==5.19.0' \
+            'sentence-transformers==6.1.0' 'numpy==2.2.6' \
+            'safetensors==0.8.0' 'huggingface-hub==1.33.0' \
+            'pyarrow==21.0.0' 'pillow==11.3.0' 'soundfile==0.13.1'
+          "$PY" -m pip check
+          "$PY" -m pip freeze > "$RUNNER_TEMP/stem-paired-env.txt"
+      - name: Pin source AG News files and derive single immutable panel
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-paired-venv/bin/python" - <<'PY'
+          from huggingface_hub import HfApi, hf_hub_download
+          from pathlib import Path
+          import os, shutil, sys
+          sys.path.insert(0, 'qualification/neuron-dynamic-learning')
+          from public_agnews_panel import REPOSITORY, REVISION_PREFIX, FILES, check_file
+          root = Path(os.environ['RUNNER_TEMP']) / 'stem-paired-data'
+          root.mkdir(mode=0o700)
+          info = HfApi().repo_info(repo_id=REPOSITORY, repo_type='dataset', revision=REVISION_PREFIX)
+          assert info.sha.startswith(REVISION_PREFIX) and len(info.sha) == 40
+          for role, (name, expected) in FILES.items():
+              path = Path(hf_hub_download(repo_id=REPOSITORY, repo_type='dataset',
+                                          filename=name, revision=info.sha))
+              destination = root / (role + '.parquet')
+              with path.open('rb') as source, destination.open('xb') as sink:
+                  shutil.copyfileobj(source, sink)
+              assert check_file(destination, role) == expected
+          PY
+          ROOT="$RUNNER_TEMP/stem-paired-data"
+          "$RUNNER_TEMP/stem-paired-venv/bin/python" \
+            qualification/neuron-dynamic-learning/public_agnews_panel.py \
+            --train-parquet "$ROOT/train.parquet" \
+            --holdout-parquet "$ROOT/calibration_test.parquet" \
+            --output "$RUNNER_TEMP/stem-agnews-panel.json" \
+            --receipt "$RUNNER_TEMP/stem-agnews-source.json"
+      - name: Pin Google physical model and train/evaluate independent Cell Head
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-paired-venv/bin/python"
+          "$PY" qualification/neuron-dynamic-learning/prepare_gemma2_snapshot.py \
+            --revision "$GEMMA_REVISION" \
+            --destination "$RUNNER_TEMP/stem-gemma2-pinned" \
+            --profile text --dimension 256 --precision float32 \
+            > "$RUNNER_TEMP/stem-gemma-source.json"
+          "$PY" qualification/neuron-dynamic-learning/agnews_paired_shadow.py \
+            --mode gemma --panel "$RUNNER_TEMP/stem-agnews-panel.json" \
+            --manifest "$RUNNER_TEMP/stem-gemma2-pinned/manifest.json" \
+            --output "$RUNNER_TEMP/stem-gemma-physical-arms.json"
+      - name: Pin all Laya model bytes against fixed revision
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-paired-venv/bin/python" - <<'PY'
+          from huggingface_hub import HfApi, snapshot_download
+          from pathlib import Path
+          import hashlib, json, os, shutil
+          revision = os.environ['LAYA_REVISION']
+          assert len(revision) == 40 and all(c in '0123456789abcdef' for c in revision)
+          model_id = 'convaiinnovations/laya'
+          info = HfApi().model_info(model_id, revision=revision, files_metadata=True)
+          assert info.sha == revision
+          names = {s.rfilename:s for s in info.siblings
+                   if s.rfilename in ('model.safetensors','rl_agent_config.json')
+                   or s.rfilename.startswith(('tokenizer/','encoder/'))}
+          assert 2 <= len(names) <= 256
+          assert 'model.safetensors' in names and 'rl_agent_config.json' in names
+          cache = Path(snapshot_download(repo_id=model_id, revision=revision,
+                     allow_patterns=['model.safetensors','rl_agent_config.json',
+                                     'tokenizer/*','encoder/*']))
+          root = Path(os.environ['RUNNER_TEMP']) / 'stem-laya-verified'
+          root.mkdir(mode=0o700)
+          observed = {}; total = 0
+          for name, obj in sorted(names.items()):
+              rel = Path(name)
+              assert not rel.is_absolute() and '..' not in rel.parts and '\\' not in name
+              assert rel.suffix.lower() in ('.json','.txt','.safetensors','.model','.vocab')
+              dest = root / rel
+              dest.parent.mkdir(parents=True,exist_ok=True)
+              h = hashlib.sha256()
+              with (cache / rel).open('rb') as source, dest.open('xb') as sink:
+                  for block in iter(lambda:source.read(1024*1024),b''):
+                      total += len(block)
+                      assert total <= 2*1024**3
+                      h.update(block); sink.write(block)
+              actual = h.hexdigest()
+              lfs = getattr(obj,'lfs',None)
+              expected = lfs.get('sha256') if isinstance(lfs,dict) else getattr(lfs,'sha256',None)
+              assert not expected or actual == expected
+              observed[name] = actual
+          assert set(observed) == set(names)
+          (Path(os.environ['RUNNER_TEMP'])/'stem-laya-hashes.json').write_text(json.dumps(observed,sort_keys=True))
+          PY
+      - name: Run pinned frozen 421M Laya typed decisions on same public cases
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-paired-venv/bin/python" \
+            qualification/neuron-dynamic-learning/agnews_paired_shadow.py \
+            --mode laya --panel "$RUNNER_TEMP/stem-agnews-panel.json" \
+            --snapshot "$RUNNER_TEMP/stem-laya-verified" \
+            --sha-manifest "$RUNNER_TEMP/stem-laya-hashes.json" \
+            --revision "$LAYA_REVISION" \
+            --output "$RUNNER_TEMP/stem-laya-physical-arm.json"
+      - name: Independent paired-case audit, no causal or equal-cost promotion
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-paired-venv/bin/python" \
+            qualification/neuron-dynamic-learning/agnews_paired_shadow.py \
+            --mode compare --panel "$RUNNER_TEMP/stem-agnews-panel.json" \
+            --gemma-report "$RUNNER_TEMP/stem-gemma-physical-arms.json" \
+            --laya-report "$RUNNER_TEMP/stem-laya-physical-arm.json" \
+            --output "$RUNNER_TEMP/stem-agnews-comparison.json"
+          "$RUNNER_TEMP/stem-paired-venv/bin/python" - <<'PY'
+          from pathlib import Path
+          import json, os
+          root = Path(os.environ['RUNNER_TEMP'])
+          report = json.loads((root/'stem-agnews-comparison.json').read_text())
+          assert report['production_promotion'] == 'DENY_ALL'
+          assert not report['three_future_windows_present']
+          assert not report['matched_full_lifecycle_cost']
+          assert len(report['arms']) == 3
+          PY
+      - name: Offline schema and adversarial regression tests
+        run: |
+          set -euo pipefail
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v \
+            -s qualification/neuron-dynamic-learning -p 'test_agnews_paired_shadow.py'
+          git diff --check
+          git diff --exit-code
+      - name: Archive only public-case digests and non-authorizing statistics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: stem-paired-public-capability-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/stem-paired-env.txt
+            ${{ runner.temp }}/stem-agnews-source.json
+            ${{ runner.temp }}/stem-gemma-source.json
+            ${{ runner.temp }}/stem-gemma-physical-arms.json
+            ${{ runner.temp }}/stem-laya-physical-arm.json
+            ${{ runner.temp }}/stem-agnews-comparison.json
+          if-no-files-found: warn
+          retention-days: 7
