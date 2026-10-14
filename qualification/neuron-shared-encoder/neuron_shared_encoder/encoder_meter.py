@@ -54,8 +54,14 @@ class EncoderModuleForwardMeter:
 
     def _after(self, _module: nn.Module, _args: tuple, _kwargs: dict, _output: Any) -> None:
         if not self._pending:
+            if _output is None:
+                # A rejected prehook may still trigger always_call posthook.
+                return
             raise RuntimeError('unpaired model-forward completion')
         rows, padded = self._pending.pop()
+        if _output is None:
+            # An exceptional model forward is not a successful completion.
+            return
         self.completions += 1
         self.completed_rows += rows
         self.completed_padded_token_slots += padded
@@ -66,7 +72,7 @@ class EncoderModuleForwardMeter:
         self._entered = True
         try:
             self._handles.append(self.model.register_forward_pre_hook(self._before, with_kwargs=True))
-            self._handles.append(self.model.register_forward_hook(self._after, with_kwargs=True))
+            self._handles.append(self.model.register_forward_hook(self._after, with_kwargs=True, always_call=True))
         except Exception:
             self._remove()
             raise
