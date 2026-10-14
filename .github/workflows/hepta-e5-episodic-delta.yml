@@ -1,0 +1,108 @@
+name: Hepta E5 continual Cell sparse checkpoint (CPU research)
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e5_continual_sparse_checkpoint.py"
+      - "experiments/shared_stem_cell/test_e5_continual_sparse_checkpoint.py"
+      - "experiments/shared_stem_cell/E5_EPISODIC_SPARSE_CHECKPOINT_20261014.md"
+      - "experiments/shared_stem_cell/E5_EPISODIC_SPARSE_CHECKPOINT_20261014.json"
+      - ".github/workflows/hepta-e5-episodic-delta.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hepta-e5-episodic-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  actual-sparse-sgd-restart:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Exact research SHA checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Verify immutable source checkout
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git diff --check
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install pinned local CPU dependencies, no production runtime
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu "torch==2.10.0"
+          python -m pip install --only-binary=:all: "safetensors==0.7.0"
+          python -m pip check
+          python -m pip freeze > "$RUNNER_TEMP/e5-episodic-pip-freeze.txt"
+      - name: Real optimizer mechanism and tamper tests
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/shared_stem_cell/e5_continual_sparse_checkpoint.py
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e5_continual_sparse_checkpoint.py' -v
+      - name: Four scales, actual separate-process two-wave SGD and cold-restart verification
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/e5-episodic"
+          for cells in 64 256 1024 4096; do
+            active=$((cells/10))
+            if [ "$active" -lt 8 ]; then active=8; fi
+            mkdir -p "$RUNNER_TEMP/e5-episodic/$cells"
+            for action in first second reference verify; do
+              timeout --signal=TERM --kill-after=10s 150s \
+                python experiments/shared_stem_cell/e5_continual_sparse_checkpoint.py \
+                  --action "$action" --cells "$cells" --active "$active" \
+                  --directory "$RUNNER_TEMP/e5-episodic/$cells" \
+                  --output "$RUNNER_TEMP/e5-episodic/$cells/$action.json"
+            done
+          done
+      - name: Independent source checksum and explicit no-authority review
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])/"e5-episodic"
+          status={"schema":"hepta.e5.episodic-observational-host-review.v1",
+                  "production_promotion_permitted":False,"authority":"DENY_ALL",
+                  "all_four_scales_checked":True,"pretrained_encoder_executed":False,
+                  "final_use_native_worker_verified":False,"scales":{}}
+          for n in (64,256,1024,4096):
+              path=root/str(n)
+              reports={name:json.loads((path/(name+".json")).read_text()) for name in ("first","second","reference","verify")}
+              assert all(r["authority"]=="DENY_ALL" and r["production_promotion_permitted"] is False for r in reports.values())
+              assert reports["verify"]["measurement"]["cold_restart_equals_uninterrupted"] is True
+              a=reports["first"]["checkpoint"];b=reports["second"]["checkpoint"]
+              assert a["generation"]==1 and b["generation"]==2 and b["previous_sha256"]==a["body_sha256"]
+              hashes={}
+              for wave in ("wave1","wave2"):
+                  blob=(path/(wave+".safetensors")).read_bytes()
+                  hashes[wave]=hashlib.sha256(blob).hexdigest()
+              assert hashes["wave1"]==a["body_sha256"] and hashes["wave2"]==b["body_sha256"]
+              status["scales"][str(n)]={"active_cells":max(8,n//10),
+                  "first_sparse_checkpoint_bytes":a["body_bytes"],
+                  "second_sparse_checkpoint_bytes":b["body_bytes"],
+                  "observed_sha256":hashes,"pretrained_or_production_verified":False}
+          (root/"host-reviewed-observations.json").write_text(json.dumps(status,sort_keys=True,indent=2)+"\n")
+          PY
+      - name: Preserve raw JSON receipts including failures; no model weights uploaded
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e5-episodic-cpu-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/e5-episodic/**/*.json
+            ${{ runner.temp }}/e5-episodic/host-reviewed-observations.json
+            ${{ runner.temp }}/e5-episodic-pip-freeze.txt
+          retention-days: 7
