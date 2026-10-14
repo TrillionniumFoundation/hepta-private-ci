@@ -49,7 +49,7 @@ class SecurityCandidateTests(unittest.TestCase):
 
     def test_candidate_must_not_disappear_the_crypto_dependency(self):
         raw = fixture().replace(
-            b'name = "matrix-sdk-crypto"\nversion = "0.18.0"\n\n', b"",
+            b'[[package]]\nname = "matrix-sdk-crypto"\nversion = "0.18.0"\n\n', b"",
         )
         with self.assertRaisesRegex(ValueError, "critical"):
             inventory(raw)
