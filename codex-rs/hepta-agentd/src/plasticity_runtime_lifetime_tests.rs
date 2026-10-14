@@ -968,6 +968,14 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         .await
         .expect("owner task join")
         .expect("owner task shutdown");
+    // The sender survives in AgentdState but its only owning receiver
+    // exited. Admission must fail closed without fabricating a new owner.
+    assert!(
+        !state
+            .plasticity_admission_ready()
+            .expect("current owner health"),
+        "closed durable plasticity channel cannot admit another proposal"
+    );
     drop(state);
 
     let recovered_ledger = DurableLedger::recover(
@@ -1048,6 +1056,12 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
         .await
         .expect("restart task join")
         .expect("restart task shutdown");
+    assert!(
+        !restarted_state
+            .plasticity_admission_ready()
+            .expect("recovered owner health"),
+        "restarted channel is fenced after durable owner exit"
+    );
     drop(restarted_state);
 
     let (reconciled, _anchor_store): (

@@ -77,7 +77,16 @@ impl CognitiveTestHost {
         agent_id: AgentId,
         model: &str,
         provider_base_url: &str,
+        codex_executable: &Path,
     ) -> TestResult<Self> {
+        // The in-process product App Server needs a *real* same-build Codex
+        // executable for its hidden exec/fs helper argv modes. Never use the
+        // Rust test harness or an unspecified default as a substitute.
+        // An absent/nonregular executable is a hard test configuration error.
+        let codex_executable = codex_executable.canonicalize()?;
+        if !std::fs::metadata(&codex_executable)?.is_file() {
+            return Err("Agentd E2E requires a real regular Codex executable".into());
+        }
         validate_config_scalar(model, "model")?;
         validate_config_scalar(provider_base_url, "provider base URL")?;
         std::fs::create_dir_all(&root)?;
@@ -116,6 +125,12 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        // Mirror the production Agentd startup owner barrier. Until the
+        // already-attached critical cognitive store and revocation baseline
+        // are explicitly marked ready, mark_app_server_ready() cannot open
+        // admission and HealthSnapshot.ready stays false forever.
+        // Never force readiness by changing the timeout or skipping health.
+        state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 
@@ -133,7 +148,10 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            Arg0DispatchPaths {
+                codex_self_exe: Some(codex_executable),
+                ..Arg0DispatchPaths::default()
+            },
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,

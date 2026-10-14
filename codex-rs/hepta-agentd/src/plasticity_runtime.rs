@@ -76,6 +76,12 @@ pub struct PlasticityRuntimeHandleV1 {
 }
 
 impl PlasticityRuntimeHandleV1 {
+    /// A closed bounded owner queue cannot accept a proposal. This is a
+    /// liveness admission observation, NOT approval to issue a proposal.
+    pub fn is_closed(&self) -> bool {
+        self.sender.is_closed()
+    }
+
     pub async fn propose_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,
@@ -298,13 +304,15 @@ impl PlasticityRuntimeOwnerV1 {
                     }
                     let result = propose_agentd_plasticity_v1(
                         *request,
-                        &self.artifacts,
-                        &self.ledger,
-                        self.owner_evidence_resolver.as_ref(),
-                        &self.owner_evidence_policy,
-                        &self.verifier,
-                        &mut self.parameter_writer,
-                        &mut self.parameter_anchor_store,
+                        crate::plasticity_host::AgentdParameterPlasticityPortsV1 {
+                            artifacts: &self.artifacts,
+                            ledger: &self.ledger,
+                            owner_evidence_resolver: self.owner_evidence_resolver.as_ref(),
+                            owner_evidence_policy: &self.owner_evidence_policy,
+                            verifier: &self.verifier,
+                            writer: &mut self.parameter_writer,
+                            anchor_store: &mut self.parameter_anchor_store,
+                        },
                         now,
                     )
                     .map_err(PlasticityRuntimeCallErrorV1::Parameter);
