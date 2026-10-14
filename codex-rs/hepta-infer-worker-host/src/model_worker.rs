@@ -517,7 +517,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         self.validate_current_grant(now_ms)?;
         validate_identity(model_id, "model")?;
         validate_request(now_ms, &request.authorization)?;
-        validate_neuron_feature_request(&request)?;
+        validate_neuron_feature_request(request)?;
         if self
             .active_requests
             .contains_key(&request.authorization.request_id)
@@ -535,7 +535,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         {
             return Err(Error::ModelMismatch);
         }
-        let payload_digest = canonical_neuron_feature_payload_digest(&request);
+        let payload_digest = canonical_neuron_feature_payload_digest(request);
         if request.authorization.payload_digest != payload_digest
             || request.authorization.lease_payload_digest != payload_digest
         {
@@ -580,7 +580,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         let status = if !observed.terminal_observed {
             ExecutionStatus::Indeterminate
         } else if observed.succeeded {
-            validate_neuron_feature_output(&request, &observed)?;
+            validate_neuron_feature_output(request, &observed)?;
             ExecutionStatus::Succeeded
         } else {
             ExecutionStatus::Failed
