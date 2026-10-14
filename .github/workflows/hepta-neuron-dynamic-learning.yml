@@ -34,7 +34,7 @@ jobs:
           git diff --check
       - name: Install bounded numerical dependency (no model downloads)
         run: |
-          python3 -m pip install --only-binary=:all: 'numpy==2.2.6'
+          python3 -m pip install --only-binary=:all: 'numpy==2.2.6' 'pillow==11.3.0' 'soundfile==0.13.1'
       - name: Run actual NumPy training and no-authority adversarial tests
         env:
           PYTHONDONTWRITEBYTECODE: "1"
