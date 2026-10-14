@@ -82,6 +82,7 @@ def actual_safetensors(
         remaining_data = size - 8 - header_size
         tensors: dict[str, tuple[int, ...]] = {}
         occupied: list[tuple[int, int]] = []
+        temporal_regions: list[tuple[int, int]] = []
         count = 0
         for name, entry in header.items():
             if name == "__metadata__":
@@ -107,6 +108,9 @@ def actual_safetensors(
             need(0 <= start < end <= remaining_data
                  and end - start == n * DTYPE_BYTES[dtype],
                  "tensor byte count does not match physical offsets")
+            if name.startswith("temporal."):
+                need(dtype == "I64", "Q24 temporal weights must be signed I64")
+                temporal_regions.append((start, end))
             occupied.append((start, end))
             tensors[name] = tuple(shape)
             count += n
@@ -117,6 +121,13 @@ def actual_safetensors(
             need(start == previous, "safetensors overlap or undeclared private bytes")
             previous = end
         need(previous == remaining_data, "undeclared trailing private weights")
+        q = 1 << 24
+        for start, end in temporal_regions:
+            handle.seek(8 + header_size + start)
+            raw = handle.read(end - start)
+            for byte_offset in range(0, len(raw), 8):
+                value = int.from_bytes(raw[byte_offset:byte_offset + 8], "little", signed=True)
+                need(-q <= value <= q, "Q24 temporal parameter outside [-1,+1]")
     digest = hashlib.sha256()
     with path.open("rb") as handle:
         for chunk in iter(lambda: handle.read(1024 * 1024), b""):
