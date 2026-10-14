@@ -419,7 +419,9 @@ fn lost_evidence_wal_with_persistent_marker_never_bootstraps_new_history() {
     let missing = dir.path().join("displaced-original-journal");
     {
         let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
-        owner.stage(sample(MetricPhaseV1::Cas)).expect("original group");
+        owner
+            .stage(sample(MetricPhaseV1::Cas))
+            .expect("original group");
         owner.flush().expect("durable original group");
     }
     let marker = dir.path().join("journal.owner-lock");
@@ -440,13 +442,14 @@ fn missing_owner_marker_revokes_live_empty_flush_and_denies_reopen() {
     let path = dir.path().join("journal");
     let marker = dir.path().join("journal.owner-lock");
     let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
-    owner.stage(sample(MetricPhaseV1::Cns)).expect("first sample");
+    owner
+        .stage(sample(MetricPhaseV1::Cns))
+        .expect("first sample");
     owner.flush().expect("original durable record");
     fs::remove_file(&marker).expect("lose persistent marker");
     assert!(matches!(
         owner.flush(),
-        Err(MetricsJournalErrorV1::Io(_))
-            | Err(MetricsJournalErrorV1::UnsafePath)
+        Err(MetricsJournalErrorV1::Io(_)) | Err(MetricsJournalErrorV1::UnsafePath)
     ));
     assert!(matches!(
         owner.flush(),
@@ -470,7 +473,9 @@ fn replacement_owner_marker_inode_with_same_bytes_revokes_live_writer() {
     let marker = dir.path().join("journal.owner-lock");
     let removed = dir.path().join("previous-owner-marker");
     let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
-    owner.stage(sample(MetricPhaseV1::Admission)).expect("first sample");
+    owner
+        .stage(sample(MetricPhaseV1::Admission))
+        .expect("first sample");
     owner.flush().expect("original durable record");
     let bytes = fs::read(&marker).expect("original marker bytes");
     fs::rename(&marker, &removed).expect("move original marker inode");
@@ -494,12 +499,23 @@ fn same_inode_marker_content_corruption_denies_live_and_recovered_owner() {
     let path = dir.path().join("journal");
     let marker = dir.path().join("journal.owner-lock");
     let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
-    owner.stage(sample(MetricPhaseV1::Signature)).expect("first sample");
+    owner
+        .stage(sample(MetricPhaseV1::Signature))
+        .expect("first sample");
     owner.flush().expect("original durable record");
     let mut bytes = fs::read(&marker).expect("original identity");
-    let last_digit = bytes.len() - 2;
-    bytes[last_digit] = if bytes[last_digit] == b'0' { b'1' } else { b'0' };
-    let mut opened = OpenOptions::new().write(true).open(&marker).expect("original inode");
+    // The original HEMW1 header, not the separately tested F1 high-water
+    // tail, is the subject of this identity corruption regression.
+    let last_digit = owner.owner_marker_bytes.len() - 2;
+    bytes[last_digit] = if bytes[last_digit] == b'0' {
+        b'1'
+    } else {
+        b'0'
+    };
+    let mut opened = OpenOptions::new()
+        .write(true)
+        .open(&marker)
+        .expect("original inode");
     opened.write_all(&bytes).expect("overwrite marker with same size");
     opened.sync_all().expect("persist marker corruption");
     assert!(matches!(
@@ -538,8 +554,7 @@ fn partial_or_legacy_evidence_owner_cannot_be_adopted_as_new_genesis() {
             fs::set_permissions(&marker, fs::Permissions::from_mode(0o600))
                 .expect("private marker");
         } else {
-            fs::set_permissions(&path, fs::Permissions::from_mode(0o600))
-                .expect("private old WAL");
+            fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).expect("private old WAL");
         }
         assert!(matches!(
             MetricsGroupCommitV1::open(&path),
@@ -712,4 +727,151 @@ fn pre_highwater_marker_cannot_claim_old_nonempty_wal_without_migration() {
         MetricsGroupCommitV1::open(&path),
         Err(MetricsJournalErrorV1::Corrupt)
     ));
+}
+
+#[cfg(unix)]
+#[test]
+fn cold_replay_rejects_tampered_first_marker_row_with_valid_last_frontier() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let marker = dir.path().join("journal.owner-lock");
+    let identity_len;
+    {
+        let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
+        identity_len = owner.owner_marker_bytes.len();
+        for phase in [
+            MetricPhaseV1::Cas,
+            MetricPhaseV1::Signature,
+            MetricPhaseV1::Cns,
+        ] {
+            owner
+                .stage(sample(phase))
+                .expect("stage original event");
+            owner.flush().expect("committed original group");
+        }
+    }
+    let mut marker_bytes = fs::read(&marker).expect("original marker history");
+    let saved_final = marker_bytes[marker_bytes.len() - OWNER_FRONTIER_ROW_BYTES..].to_vec();
+    // Change the first (not the last) F1 sequence field. Length, inode,
+    // final tuple and original WAL bytes are all left unchanged.
+    let first_hex_digit = identity_len + 3;
+    assert_eq!(marker_bytes[first_hex_digit], b'0');
+    marker_bytes[first_hex_digit] = b'1';
+    assert_eq!(
+        &marker_bytes[marker_bytes.len() - OWNER_FRONTIER_ROW_BYTES..],
+        saved_final.as_slice()
+    );
+    fs::write(&marker, &marker_bytes).expect("tamper SAME marker inode");
+    assert!(matches!(
+        MetricsGroupCommitV1::open(&path),
+        Err(MetricsJournalErrorV1::Corrupt)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
+fn live_local_observer_rechecks_entire_marker_history_and_poisons_on_drift() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let marker = dir.path().join("journal.owner-lock");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
+    let identity_len = owner.owner_marker_bytes.len();
+    for phase in [
+        MetricPhaseV1::Admission,
+        MetricPhaseV1::Microbatch,
+        MetricPhaseV1::Wal,
+    ] {
+        owner.stage(sample(phase)).expect("group");
+        owner.flush().expect("durable original group");
+    }
+    let before = owner.read_local_frontier().expect("verified local snapshot");
+    assert_eq!(before.sequence, 3);
+    assert_eq!(before.committed_rows, 3);
+    assert_eq!(before.head_digest, owner.committed_head());
+    assert_eq!(
+        before.journal_bytes,
+        fs::metadata(&path).expect("original journal").len()
+    );
+    let mut damaged = fs::read(&marker).expect("original marker");
+    damaged[identity_len + OWNER_FRONTIER_ROW_BYTES + 3] = b'f';
+    fs::write(&marker, &damaged).expect("tamper only the middle marker record");
+    assert!(matches!(
+        owner.read_local_frontier(),
+        Err(MetricsJournalErrorV1::Corrupt)
+    ));
+    assert!(matches!(
+        owner.flush(),
+        Err(MetricsJournalErrorV1::Poisoned)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
+fn local_observer_frontier_is_read_only_and_never_counts_unflushed_staging() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let marker = dir.path().join("journal.owner-lock");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
+    owner
+        .stage(sample(MetricPhaseV1::Cas))
+        .expect("first");
+    owner.flush().expect("first group");
+    owner
+        .stage(sample(MetricPhaseV1::Cns))
+        .expect("pending only");
+    let original_wal = fs::read(&path).expect("committed group");
+    let original_marker = fs::read(&marker).expect("original highwater");
+    let snapshot = owner.read_local_frontier().expect("local observer read");
+    assert_eq!(snapshot.sequence, 1);
+    assert_eq!(snapshot.committed_rows, 1);
+    assert_eq!(owner.pending(), 1);
+    assert_eq!(fs::read(&path).expect("unchanged WAL"), original_wal);
+    assert_eq!(
+        fs::read(&marker).expect("unchanged marker"),
+        original_marker
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn observer_replay_does_not_mutate_original_writer_file_offset() {
+    use std::io::Seek as _;
+    use std::io::SeekFrom;
+
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("offset.log");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original WAL owner");
+    for phase in [MetricPhaseV1::Cas, MetricPhaseV1::Signature] {
+        owner.stage(sample(phase)).expect("stage original metric");
+        owner.flush().expect("durable original metric");
+    }
+    // Deliberately set an unrelated offset on the original owned FD. The
+    // previous cloned-descriptor seek(0) changed this shared offset.
+    let before = {
+        let mut original = &owner.file;
+        original
+            .seek(SeekFrom::Start(7))
+            .expect("test original fd offset");
+        original.stream_position().expect("original position")
+    };
+    let snapshot = owner.read_local_frontier().expect("read complete history");
+    assert_eq!(snapshot.sequence, 2);
+    let after = {
+        let mut original = &owner.file;
+        original.stream_position().expect("unchanged original offset")
+    };
+    assert_eq!(after, before, "Observer must use read_at, not shared seek");
+    // The original O_APPEND owner must still be able to commit normally.
+    owner.stage(sample(MetricPhaseV1::Cns)).expect("third metric");
+    assert_eq!(
+        owner.flush().expect("third group").expect("durable ACK").sequence,
+        3
+    );
+    drop(owner);
+    assert_eq!(
+        MetricsGroupCommitV1::open(&path)
+            .expect("verified recovery")
+            .committed_groups(),
+        3
+    );
 }
