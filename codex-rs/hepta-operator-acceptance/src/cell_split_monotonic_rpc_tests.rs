@@ -613,6 +613,11 @@ fn same_signer_denies_rolled_back_or_equivocated_frontier() {
 
     successor.original_store_record_digest = "dd".repeat(32);
     replace_test_frontier(&file, &successor);
+    // Advancing the local registry alone cannot convince independent custody
+    // to sign a new frontier. A new durable custody floor is mandatory.
+    assert!(read_through_signed_service(&mut service, &"ed".repeat(32)).is_err());
+    let custody_floor = file.with_file_name("independently-retained-floor.json");
+    replace_test_frontier(&custody_floor, &successor);
     assert!(read_through_signed_service(&mut service, &"ee".repeat(32)).is_ok());
 
     // The previous epoch/revision cannot be accepted again, even if it
@@ -650,6 +655,11 @@ fn same_signer_allows_epoch_rollover_only_with_new_durable_source_sequence() {
     assert!(read_through_signed_service(&mut service, &"cd".repeat(32)).is_err());
     stale_rollover.original_store_record_digest = "dd".repeat(32);
     replace_test_frontier(&file, &stale_rollover);
+    // A new epoch cannot be accepted on only a caller-controlled registry
+    // update; independently retained custody must advance as a second owner.
+    assert!(read_through_signed_service(&mut service, &"cf".repeat(32)).is_err());
+    let custody_floor = file.with_file_name("independently-retained-floor.json");
+    replace_test_frontier(&custody_floor, &stale_rollover);
     assert!(read_through_signed_service(&mut service, &"ce".repeat(32)).is_ok());
     replace_test_frontier(&file, &original);
     assert!(read_through_signed_service(&mut service, &"dd".repeat(32)).is_err());
