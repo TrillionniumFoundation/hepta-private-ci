@@ -288,8 +288,8 @@ fn evidence_stop_ack_hands_off_original_wal_and_marker_lock_before_reopen() {
     let dir = tempfile::tempdir().expect("private Evidence root");
     let path = dir.path().join("stop-handoff.log");
     for round in 0..24_u64 {
-        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 2, 60_000)
-            .expect("one original writer");
+        let sink =
+            DurablePhaseMetricSinkV1::open(&path, 8, 2, 60_000).expect("one original writer");
         sink.record(sample(PhaseMetricKindV1::Wal))
             .expect("accepted metric");
         sink.flush().expect("durably fsynced group and highwater");
@@ -297,8 +297,7 @@ fn evidence_stop_ack_hands_off_original_wal_and_marker_lock_before_reopen() {
 
         // This is an immediate original-owner reopen, not a sleep/poll test.
         // A successful Stop ACK must follow release of both file locks.
-        let recovered = MetricsGroupCommitV1::open(&path)
-            .expect("no previous writer lock remains");
+        let recovered = MetricsGroupCommitV1::open(&path).expect("no previous writer lock remains");
         assert_eq!(recovered.committed_rows(), round + 1);
         assert_eq!(recovered.committed_groups(), round + 1);
     }
@@ -309,14 +308,14 @@ fn graceful_evidence_stop_persists_pending_sample_before_owner_lock_release() {
     let dir = tempfile::tempdir().expect("private Evidence root");
     let path = dir.path().join("stop-unflushed.log");
     for round in 0..12_u64 {
-        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000)
-            .expect("one original writer");
+        let sink =
+            DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000).expect("one original writer");
         sink.record(sample(PhaseMetricKindV1::NduRead))
             .expect("accepted pending metric");
         drop(sink);
 
-        let reopened = MetricsGroupCommitV1::open(&path)
-            .expect("Stop ACK follows original owner drop");
+        let reopened =
+            MetricsGroupCommitV1::open(&path).expect("Stop ACK follows original owner drop");
         assert_eq!(reopened.committed_rows(), round + 1);
         assert_eq!(reopened.committed_groups(), round + 1);
     }
@@ -328,8 +327,8 @@ fn evidence_actor_returns_read_only_original_frontier_without_flushing_pending()
     let dir = tempfile::tempdir().expect("private Evidence root");
     let path = dir.path().join("observer.log");
     let marker = dir.path().join("observer.log.owner-lock");
-    let sink = DurablePhaseMetricSinkV1::open(&path, 16, 8, 60_000)
-        .expect("original Evidence writer");
+    let sink =
+        DurablePhaseMetricSinkV1::open(&path, 16, 8, 60_000).expect("original Evidence writer");
     sink.record(sample(PhaseMetricKindV1::Cas))
         .expect("committed");
     sink.flush().expect("original durable group");
@@ -343,7 +342,10 @@ fn evidence_actor_returns_read_only_original_frontier_without_flushing_pending()
     let before_wal = std::fs::read(&path).expect("original WAL bytes");
     let before_marker = std::fs::read(&marker).expect("original frontier rows");
     let second = sink.read_local_frontier().expect("local observer read");
-    assert_eq!(second, first, "read-only query cannot commit staged metrics");
+    assert_eq!(
+        second, first,
+        "read-only query cannot commit staged metrics"
+    );
     assert_eq!(std::fs::read(&path).expect("WAL unchanged"), before_wal);
     assert_eq!(
         std::fs::read(&marker).expect("marker unchanged"),
@@ -357,8 +359,8 @@ fn actor_observer_rejects_corrupt_prior_marker_with_intact_last_row() {
     let dir = tempfile::tempdir().expect("private Evidence root");
     let path = dir.path().join("observer.log");
     let marker = dir.path().join("observer.log.owner-lock");
-    let sink = DurablePhaseMetricSinkV1::open(&path, 16, 1, 60_000)
-        .expect("original Evidence writer");
+    let sink =
+        DurablePhaseMetricSinkV1::open(&path, 16, 1, 60_000).expect("original Evidence writer");
     for phase in [
         PhaseMetricKindV1::Cas,
         PhaseMetricKindV1::Signature,
@@ -405,4 +407,50 @@ fn bounded_observer_timeout_poisoned_when_writer_never_replies() {
     assert!(!sink.healthy());
     drop(rx);
     drop(sink);
+}
+
+#[test]
+fn poisoned_evidence_writer_drops_prequeued_events_without_flush_ack() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("queued-after-observer-timeout.log");
+    let writer = MetricsGroupCommitV1::open(&path).expect("original writer");
+    let (tx, rx) = sync_channel(2);
+    let (reply, acknowledged) = sync_channel(1);
+    tx.send(WriterCommandV1::Record(MetricSampleV1 {
+        scope_digest: Digest32::of_bytes(b"scope"),
+        operation_digest: Digest32::of_bytes(b"operation"),
+        phase: MetricPhaseV1::Cas,
+        latency_micros: 1,
+        succeeded: true,
+    }))
+    .expect("one record queued before timeout");
+    tx.send(WriterCommandV1::Flush(reply))
+        .expect("one old barrier queued before timeout");
+    let health = Arc::new(WriterHealthV1 {
+        healthy: AtomicBool::new(false),
+        dropped: AtomicU64::new(0),
+        persisted_batches: AtomicU64::new(0),
+        persisted_rows: AtomicU64::new(0),
+    });
+    // The single original writer starts running only after its caller has
+    // timed out and poisoned it. Never consume the queued success path.
+    writer_loop(
+        writer,
+        rx,
+        Arc::clone(&health),
+        2,
+        Duration::from_millis(25),
+    );
+    assert!(
+        acknowledged
+            .recv_timeout(Duration::from_millis(25))
+            .is_err(),
+        "timeout must not yield a late positive durable ACK"
+    );
+    assert!(!health.healthy.load(Ordering::Acquire));
+    assert_eq!(health.persisted_rows.load(Ordering::Acquire), 0);
+    drop(tx);
+    let recovered = MetricsGroupCommitV1::open(&path).expect("original WAL replay");
+    assert_eq!(recovered.committed_rows(), 0);
+    assert_eq!(recovered.committed_groups(), 0);
 }

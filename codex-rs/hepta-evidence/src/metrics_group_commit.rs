@@ -97,6 +97,32 @@ impl std::fmt::Display for MetricsJournalErrorV1 {
 }
 impl std::error::Error for MetricsJournalErrorV1 {}
 
+/// A read-only view of the original locked WAL descriptor that preserves
+/// its shared file offset. File::try_clone + seek changes the underlying
+/// open-file-description offset even if all normal writes are O_APPEND.
+#[cfg(unix)]
+struct OriginalWalPositionalReaderV1<'a> {
+    file: &'a File,
+    cursor: u64,
+    limit: u64,
+}
+
+#[cfg(unix)]
+impl Read for OriginalWalPositionalReaderV1<'_> {
+    fn read(&mut self, destination: &mut [u8]) -> std::io::Result<usize> {
+        use std::os::unix::fs::FileExt as _;
+
+        if self.cursor >= self.limit || destination.is_empty() {
+            return Ok(0);
+        }
+        let remaining = self.limit - self.cursor;
+        let take = remaining.min(destination.len() as u64) as usize;
+        let read = self.file.read_at(&mut destination[..take], self.cursor)?;
+        self.cursor += read as u64;
+        Ok(read)
+    }
+}
+
 /// The single writer keeps a bounded group in memory. A torn append poisons
 /// the instance until inspection/reopen, never silently skipping a record.
 pub struct MetricsGroupCommitV1 {
@@ -380,16 +406,14 @@ impl MetricsGroupCommitV1 {
     /// A forged earlier marker row with a correct final tail must be rejected.
     #[cfg(unix)]
     fn verify_complete_marker_history(&self) -> Result<(), MetricsJournalErrorV1> {
-        use std::io::Seek as _;
-        use std::io::SeekFrom;
-
-        // Scan the ORIGINAL locked WAL inode, never a second file obtained
-        // by following a mutable pathname between the two identity checks.
-        // This executes only on the single Evidence owner lane; all normal
-        // writes use O_APPEND, and the observer cannot issue an effect.
-        let mut original = self.file.try_clone()?;
-        original.seek(SeekFrom::Start(0))?;
-        let mut reader = BufReader::new(original);
+        // Positional reads remain on the ORIGINAL locked WAL inode. They
+        // preserve its shared OS file offset and stop at the frozen committed
+        // byte frontier. The final live checks still deny drift or replacement.
+        let mut reader = BufReader::new(OriginalWalPositionalReaderV1 {
+            file: &self.file,
+            cursor: 0,
+            limit: self.bytes,
+        });
         let mut row = Vec::new();
         let mut bytes = 0_u64;
         let mut sequence = 0_u64;
@@ -406,14 +430,10 @@ impl MetricsGroupCommitV1 {
             bytes = bytes
                 .checked_add(read as u64)
                 .ok_or(MetricsJournalErrorV1::Capacity)?;
-            if read > MAX_LINE_BYTES
-                || bytes > MAX_JOURNAL_BYTES
-                || row.pop() != Some(b'\n')
-            {
+            if read > MAX_LINE_BYTES || bytes > MAX_JOURNAL_BYTES || row.pop() != Some(b'\n') {
                 return Err(MetricsJournalErrorV1::Corrupt);
             }
-            let text =
-                std::str::from_utf8(&row).map_err(|_| MetricsJournalErrorV1::Corrupt)?;
+            let text = std::str::from_utf8(&row).map_err(|_| MetricsJournalErrorV1::Corrupt)?;
             let (next_sequence, next_head, rows) = parse_group(text, sequence, head)?;
             verify_original_frontier_row(
                 &self.owner_marker,
@@ -761,10 +781,7 @@ fn verify_original_owner_marker_frontier(
             return Err(MetricsJournalErrorV1::Corrupt);
         }
         let mut last = vec![0_u8; OWNER_FRONTIER_ROW_BYTES];
-        opened_marker.read_exact_at(
-            &mut last,
-            required - OWNER_FRONTIER_ROW_BYTES as u64,
-        )?;
+        opened_marker.read_exact_at(&mut last, required - OWNER_FRONTIER_ROW_BYTES as u64)?;
         if last != expected {
             return Err(MetricsJournalErrorV1::Corrupt);
         }
