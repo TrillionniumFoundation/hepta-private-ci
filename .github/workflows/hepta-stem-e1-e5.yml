@@ -1,0 +1,59 @@
+name: Hepta E1-E5 causal Stem Cell research gates
+on:
+  push:
+    branches: ["research/stem-e1-e5-causal-spine-20261014"]
+    paths:
+      - "experiments/shared_stem_cell/e1_e5_*.py"
+      - "experiments/shared_stem_cell/test_e1_e5.py"
+      - "experiments/shared_stem_cell/E1_E5_CAUSAL_RUNBOOK.md"
+      - ".github/workflows/hepta-stem-e1-e5.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e1_e5_*.py"
+      - "experiments/shared_stem_cell/test_e1_e5.py"
+      - "experiments/shared_stem_cell/E1_E5_CAUSAL_RUNBOOK.md"
+      - ".github/workflows/hepta-stem-e1-e5.yml"
+permissions:
+  contents: read
+concurrency:
+  group: stem-e1-e5-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  mechanics-no-weights-no-authority:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned CPU-only research dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/hepta-stem-e1e5-venv
+          /tmp/hepta-stem-e1e5-venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/hepta-stem-e1e5-venv/bin/pip install numpy==2.1.3 psutil==7.1.0
+          /tmp/hepta-stem-e1e5-venv/bin/pip check
+          /tmp/hepta-stem-e1e5-venv/bin/pip freeze > /tmp/hepta-stem-e1e5-environment.txt
+      - name: Actual CPU Head optimizer and adversarial evidence tests only
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell /tmp/hepta-stem-e1e5-venv/bin/python -m unittest discover -s experiments/shared_stem_cell -p 'test_e1_e5.py' -v
+          /tmp/hepta-stem-e1e5-venv/bin/python -m py_compile experiments/shared_stem_cell/e1_e5_trial.py experiments/shared_stem_cell/e1_e5_review.py experiments/shared_stem_cell/e1_e5_text_producer.py experiments/shared_stem_cell/e1_e5_head_scale.py experiments/shared_stem_cell/test_e1_e5.py
+      - name: Preserve exact source and non-capability summary
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-stem-e1e5-evidence
+          git rev-parse HEAD > /tmp/hepta-stem-e1e5-evidence/HEAD.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-stem-e1e5-evidence/tree.txt
+          cp /tmp/hepta-stem-e1e5-environment.txt /tmp/hepta-stem-e1e5-evidence/environment.txt || true
+          sha256sum experiments/shared_stem_cell/e1_e5_*.py experiments/shared_stem_cell/test_e1_e5.py experiments/shared_stem_cell/E1_E5_CAUSAL_RUNBOOK.md .github/workflows/hepta-stem-e1-e5.yml > /tmp/hepta-stem-e1e5-evidence/source-SHA256SUMS
+          printf '%s\n' 'Synthetic/adversarial contracts and Head-only CPU inference only. No pretrained checkpoints acquired, real multiclass/multimodal outcomes, native Worker or independent NDU certified. DENY_ALL.' > /tmp/hepta-stem-e1e5-evidence/disposition.txt
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: stem-e1-e5-contract-not-model-quality
+          path: /tmp/hepta-stem-e1e5-evidence
+          if-no-files-found: error
