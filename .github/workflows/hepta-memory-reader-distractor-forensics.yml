@@ -1,0 +1,108 @@
+name: MemoryCell original Qwen distractor-value attribution
+on:
+  push:
+    branches:
+      - codex/memorycell-original-distractor-forensics-20261014
+    paths:
+      - "scripts/memory_cell/reader_distractor_forensics.py"
+      - "scripts/memory_cell/test_reader_distractor_forensics.py"
+      - ".github/workflows/hepta-memory-reader-distractor-forensics.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/reader_distractor_forensics.py"
+      - "scripts/memory_cell/test_reader_distractor_forensics.py"
+      - ".github/workflows/hepta-memory-reader-distractor-forensics.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-original-distractor-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  original-literal-attribution:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONPATH: scripts/memory_cell
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Execute independent adversarial non-model tests
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/reader_distractor_forensics.py scripts/memory_cell/test_reader_distractor_forensics.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_reader_distractor_forensics.py -v
+      - name: Mandatory scoped Ruff formatting
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/reader_distractor_forensics.py \
+            scripts/memory_cell/test_reader_distractor_forensics.py
+      - name: Preserve exact formatter diagnosis on failure
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/distractor-format
+          git rev-parse HEAD > /tmp/distractor-format/checkout-commit.txt
+          if command -v uv >/dev/null; then
+            uv run --frozen --project scripts ruff format --diff \
+              scripts/memory_cell/reader_distractor_forensics.py \
+              scripts/memory_cell/test_reader_distractor_forensics.py \
+              > /tmp/distractor-format/ruff.patch || true
+            cat /tmp/distractor-format/ruff.patch
+          fi
+          (cd /tmp/distractor-format && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: memory-original-reader-forensics-source-error
+          path: /tmp/distractor-format
+          if-no-files-found: warn
+      - name: Download and verify two original immutable Actions ZIPs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11827287296/zip > /tmp/original-reader-source.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11871334405/zip > /tmp/completed-original-72-qwen.zip
+          echo '31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a  /tmp/original-reader-source.zip' | sha256sum --check --strict
+          echo 'b6ccc6606bf9935d052fb78884560487d2030772572199d8a8fa38e516fcc8be  /tmp/completed-original-72-qwen.zip' | sha256sum --check --strict
+      - name: Audit unchanged original model answers and delivered source identities
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/distractor-report
+          python3 scripts/memory_cell/reader_distractor_forensics.py \
+            /tmp/original-reader-source.zip \
+            /tmp/completed-original-72-qwen.zip \
+            /tmp/distractor-report/read-only-mechanism.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("/tmp/distractor-report/read-only-mechanism.json").read_text())
+          assert report["original_model_answer_count"] == 72
+          assert report["analyzed_unique_authored_tasks"] == 8
+          assert report["hybrid_success"] == 3
+          assert report["organized_success"] == 8
+          assert report["hybrid_losses_to_organized"] == 5
+          assert report["loss_mechanism_counts"] == {
+              "correct_literal_invalid_output_grammar": 1,
+              "wrong_literal_copied_from_other_entity": 4,
+          }
+          assert report["new_model_calls"] == 0
+          assert report["independent_semantic_adjudication"] is False
+          assert report["production_accepted"] is False
+          PY
+          git rev-parse HEAD > /tmp/distractor-report/auditor-commit.txt
+          (cd /tmp/distractor-report && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memory-original-qwen-literal-failure-provenance
+          path: /tmp/distractor-report
+          if-no-files-found: error
