@@ -8,6 +8,7 @@ writer's examples, schedule, optimizer, or computation ceiling.
 from collections import Counter
 
 from native import digest
+from source_write_schedule import schedule
 
 KINDS = ("direct", "two_hop")
 TWO_HOP = "hepta.source-only.two-hop-curriculum.v1"
@@ -59,6 +60,7 @@ def audit_coverage(examples, prepared, plan, *, curriculum):
         if kind == "invalid" or (curriculum == "single_hop" and kind != "direct"):
             raise ValueError("example curriculum differs from admitted writer")
         kinds.append(kind)
+    original_groups = groups
     strategy = plan.get("strategy", "original")
     if strategy == "direct_interleave":
         from source_write_schedule import interleave_source_kinds
@@ -80,6 +82,22 @@ def audit_coverage(examples, prepared, plan, *, curriculum):
         "groups_digest"
     ) != digest(groups):
         raise ValueError("source schedule differs from prepared source examples")
+    # Reconstruct the exact planner, not merely its visit totals. An altered
+    # exposure order can change an optimizer trajectory with identical costs.
+    expected_plan = schedule(
+        prepared,
+        groups,
+        maximum_steps=plan.get("maximum_steps"),
+        token_ceiling=plan.get("token_ceiling"),
+    )
+    if strategy == "direct_interleave":
+        expected_plan.update(
+            strategy=strategy,
+            original_groups_digest=digest(original_groups),
+            source_only_order_intervention=True,
+        )
+    if plan != expected_plan:
+        raise ValueError("source write exposure differs from canonical schedule")
     entries = plan.get("entries")
     if (
         not isinstance(entries, list)
