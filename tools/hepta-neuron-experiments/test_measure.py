@@ -266,6 +266,39 @@ class ExperimentEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(m.EvidenceError, "linked or oversized JSON evidence"):
             m.verify_plan(huge, self.repo)
 
+    def test_successful_command_that_rewrites_frozen_dataset_fails(self) -> None:
+        dataset = self.artifacts / "dataset"
+        command = [sys.executable, "-c", f"from pathlib import Path; Path({str(dataset)!r}).write_text('malicious-change')"]
+        plan = self.plan_with_commands("during-run-mutation", {"multi_head": command})
+        rec = self.root / "during-run-mutation.json"
+        with self.assertRaisesRegex(m.EvidenceError, "postrun_binding_drift"):
+            m.run(self.repo, plan, "multi_head", rec, 5, command)
+        self.assertEqual(json.loads(rec.read_text())["status"], "postrun_binding_drift")
+        self.assertFalse(json.loads(rec.read_text())["postrun_binding_verified"])
+        with self.assertRaisesRegex(m.EvidenceError, "artifact byte drift"):
+            m.audit(plan, self.repo, [rec])
+
+    def test_clean_process_has_postrun_verification(self) -> None:
+        command = [sys.executable, "-c", "print('stable')"]
+        plan = self.plan_with_commands("stable-child", {"multi_head": command})
+        rec = self.root / "stable-child.json"
+        m.run(self.repo, plan, "multi_head", rec, 5, command)
+        self.assertTrue(json.loads(rec.read_text())["postrun_binding_verified"])
+        self.assertEqual(m.audit(plan, self.repo, [rec])["executed_arms"], {"multi_head": 1})
+
+    @unittest.skipUnless(sys.platform.startswith("linux"), "requires isolated POSIX process group")
+    def test_orphaned_same_group_child_is_not_a_completed_trial(self) -> None:
+        # A short-lived parent forks a longer-lived child, then exits with code
+        # zero. The experiment owner must terminate its own process group.
+        command = [sys.executable, "-c", "import subprocess,sys; subprocess.Popen([sys.executable,'-c','import time; time.sleep(10)'])"]
+        plan = self.plan_with_commands("orphan-child", {"multi_head": command})
+        rec = self.root / "orphan-child.json"
+        with self.assertRaisesRegex(m.EvidenceError, "unsettled_descendants"):
+            m.run(self.repo, plan, "multi_head", rec, 5, command)
+        self.assertEqual(json.loads(rec.read_text())["status"], "unsettled_descendants")
+        with self.assertRaisesRegex(m.EvidenceError, "incomplete/failed model execution"):
+            m.audit(plan, self.repo, [rec])
+
     def test_timeout_receipt_and_no_success_laundering(self) -> None:
         rec = self.root / "timeout.json"
         command = [sys.executable, "-c", "import time; time.sleep(1)"]
