@@ -307,15 +307,17 @@ mod tests {
 
     #[test]
     fn read_only_transcript_never_mints_mutation_admission() {
-        let mut calls = 0usize;
+        // Interior mutability keeps the counter observable between calls
+        // while the shared callback remains borrowed for both assertions.
+        let calls = std::cell::Cell::new(0usize);
         let mut denied = |_plan: &CellSplitExecutionPlanV1| {
-            calls += 1;
+            calls.set(calls.get() + 1);
             Err("selection revoked".to_owned())
         };
         assert!(revalidate_selected_plan_at_boundary("transcript", None, &mut denied,).is_ok());
-        assert_eq!(calls, 0);
+        assert_eq!(calls.get(), 0);
         assert!(revalidate_selected_plan_at_boundary("advance", None, &mut denied,).is_err());
-        assert_eq!(calls, 0);
+        assert_eq!(calls.get(), 0);
     }
 
     #[test]
