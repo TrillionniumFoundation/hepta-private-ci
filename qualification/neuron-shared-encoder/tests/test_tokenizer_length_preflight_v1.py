@@ -4,7 +4,6 @@ from __future__ import annotations
 from collections import UserDict
 from copy import deepcopy
 import hashlib
-from pathlib import Path
 
 import pytest
 
@@ -100,7 +99,6 @@ def test_same_token_lengths_but_different_full_inputs_change_digest():
 
 
 def test_partial_model_stage_requests_only_small_pinned_tokenizer_assets(monkeypatch, tmp_path):
-    source = _public_rows(fake_public_rows())
     publisher = tmp_path / 'publisher'
     publisher.mkdir()
     expected = {}
