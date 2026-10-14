@@ -279,6 +279,41 @@ fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
 
 #[cfg(unix)]
 #[test]
+fn unsigned_ndu_owner_or_policy_change_is_denied_before_durable_begin() {
+    let dir = tempfile::tempdir().expect("private Control root");
+    let path = dir.path().join("untrusted-handoff.wal");
+    let original = snapshot(3);
+    let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+        .expect("owner");
+    let original_bytes = std::fs::read(&path).expect("recorded frontier");
+
+    let mut different_owner = snapshot(4);
+    different_owner.owner_id = StableId::new("different-ndu-issuer").unwrap();
+    let mut different_policy = snapshot(4);
+    different_policy.policy_digest = Digest32::of_bytes(b"unsigned-new-policy");
+    for successor in [different_owner, different_policy] {
+        let mut effects = 0;
+        assert!(matches!(
+            owner.publish_cutover_with_external_effect(
+                &original,
+                Digest32::ZERO,
+                successor,
+                Digest32::of_bytes(b"migrated"),
+                || -> Result<(), &'static str> {
+                    effects += 1;
+                    Ok(())
+                },
+            ),
+            Err(NduPublicationErrorV1::Stale)
+        ));
+        assert_eq!(effects, 0, "no unchecked trust-root effect may run");
+    }
+    assert_eq!(owner.current().unwrap(), (original, Digest32::ZERO));
+    assert_eq!(std::fs::read(&path).unwrap(), original_bytes);
+}
+
+#[cfg(unix)]
+#[test]
 fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
     let dir = tempfile::tempdir().expect("private Control root");
     let path = dir.path().join("unknown-physical-effect.wal");

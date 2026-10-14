@@ -481,6 +481,10 @@ impl NduPublicationOwnerV1 {
         if state.snapshot != *expected
             || state.checkpoint != expected_checkpoint
             || next.scope_id != expected.scope_id
+            // A new NDU owner or policy needs an independently signed
+            // handoff protocol. Until then never silently change trust roots.
+            || next.owner_id != expected.owner_id
+            || next.policy_digest != expected.policy_digest
             || next.generation < expected.generation
             || next.route_fence <= expected.route_fence
             || next.revocation_epoch < expected.revocation_epoch
