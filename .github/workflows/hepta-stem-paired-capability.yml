@@ -3,8 +3,7 @@ name: Hepta real paired Laya-Gemma AG News capability (shadow)
 on:
   pull_request:
     paths:
-      - 'qualification/neuron-dynamic-learning/agnews_paired_shadow.py'
-      - 'qualification/neuron-dynamic-learning/test_agnews_paired_shadow.py'
+      - 'qualification/neuron-dynamic-learning/**'
       - '.github/workflows/hepta-stem-paired-capability.yml'
   workflow_dispatch:
 
@@ -91,6 +90,31 @@ jobs:
             --holdout-parquet "$ROOT/calibration_test.parquet" \
             --output "$RUNNER_TEMP/stem-agnews-panel.json" \
             --receipt "$RUNNER_TEMP/stem-agnews-source.json"
+      - name: Freeze distinct val2 source cohort before any model weights or predictions
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-paired-venv/bin/python" - <<'PY'
+          import os, shutil, sys
+          from pathlib import Path
+          from huggingface_hub import HfApi, hf_hub_download
+          sys.path.insert(0, 'qualification/neuron-dynamic-learning')
+          from public_agnews_panel import REPOSITORY, REVISION_PREFIX
+          from public_agnews_confirmatory import CONFIRM_SOURCE, check_new_source_file
+          info=HfApi().repo_info(repo_id=REPOSITORY, repo_type='dataset', revision=REVISION_PREFIX)
+          if not (isinstance(info.sha,str) and len(info.sha)==40 and info.sha.startswith(REVISION_PREFIX)):
+              raise ValueError('new source must use same exact upstream dataset commit')
+          frozen=Path(hf_hub_download(repo_id=REPOSITORY,repo_type='dataset',
+                  filename=CONFIRM_SOURCE[0],revision=info.sha))
+          target=Path(os.environ['RUNNER_TEMP'])/'stem-paired-data/new-val2.parquet'
+          with frozen.open('rb') as f, target.open('xb') as g:
+              shutil.copyfileobj(f,g)
+          assert check_new_source_file(target)==CONFIRM_SOURCE[1]
+          PY
+          "$RUNNER_TEMP/stem-paired-venv/bin/python" \
+            qualification/neuron-dynamic-learning/public_agnews_confirmatory.py \
+            --original "$RUNNER_TEMP/stem-agnews-panel.json" \
+            --holdout-parquet "$RUNNER_TEMP/stem-paired-data/new-val2.parquet" \
+            --out "$RUNNER_TEMP/stem-agnews-new-source-panel.json"
       - name: Pin Google physical model and train/evaluate independent Cell Head
         run: |
           set -euo pipefail
@@ -103,7 +127,9 @@ jobs:
           "$PY" qualification/neuron-dynamic-learning/agnews_paired_shadow.py \
             --mode gemma --panel "$RUNNER_TEMP/stem-agnews-panel.json" \
             --manifest "$RUNNER_TEMP/stem-gemma2-pinned/manifest.json" \
-            --output "$RUNNER_TEMP/stem-gemma-physical-arms.json"
+            --output "$RUNNER_TEMP/stem-gemma-physical-arms.json" \
+            --confirmatory-panel "$RUNNER_TEMP/stem-agnews-new-source-panel.json" \
+            --confirmatory-output "$RUNNER_TEMP/stem-gemma-fresh-arms.json"
       - name: Pin all Laya model bytes against fixed revision
         run: |
           set -euo pipefail
@@ -156,7 +182,9 @@ jobs:
             --snapshot "$RUNNER_TEMP/stem-laya-verified" \
             --sha-manifest "$RUNNER_TEMP/stem-laya-hashes.json" \
             --revision "$LAYA_REVISION" \
-            --output "$RUNNER_TEMP/stem-laya-physical-arm.json"
+            --output "$RUNNER_TEMP/stem-laya-physical-arm.json" \
+            --confirmatory-panel "$RUNNER_TEMP/stem-agnews-new-source-panel.json" \
+            --confirmatory-output "$RUNNER_TEMP/stem-laya-fresh-arm.json"
       - name: Independent paired-case audit, no causal or equal-cost promotion
         run: |
           set -euo pipefail
@@ -198,15 +226,34 @@ jobs:
             --laya "$RUNNER_TEMP/stem-laya-physical-arm.json" \
             --comparison "$RUNNER_TEMP/stem-agnews-comparison.json" \
             --out "$RUNNER_TEMP/stem-head-exploratory-calibration.json"
+      - name: Independent fresh val2 replication and locked calibration review
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-paired-venv/bin/python" \
+            qualification/neuron-dynamic-learning/paired_confirmatory_audit.py \
+            --original "$RUNNER_TEMP/stem-agnews-panel.json" \
+            --source "$RUNNER_TEMP/stem-agnews-source.json" \
+            --original-gemma "$RUNNER_TEMP/stem-gemma-physical-arms.json" \
+            --original-laya "$RUNNER_TEMP/stem-laya-physical-arm.json" \
+            --original-comparison "$RUNNER_TEMP/stem-agnews-comparison.json" \
+            --confirmatory "$RUNNER_TEMP/stem-agnews-new-source-panel.json" \
+            --new-gemma "$RUNNER_TEMP/stem-gemma-fresh-arms.json" \
+            --new-laya "$RUNNER_TEMP/stem-laya-fresh-arm.json" \
+            --raw-val2-parquet "$RUNNER_TEMP/stem-paired-data/new-val2.parquet" \
+            --out "$RUNNER_TEMP/stem-new-source-independent-review.json"
       - name: Offline schema and adversarial regression tests
         run: |
           set -euo pipefail
-          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v \
+          PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-paired-venv/bin/python" -m unittest discover -v \
             -s qualification/neuron-dynamic-learning -p 'test_agnews_paired_shadow.py'
-          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v \
+          PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-paired-venv/bin/python" -m unittest discover -v \
             -s qualification/neuron-dynamic-learning -p 'test_paired_independent_audit.py'
-          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v \
+          PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-paired-venv/bin/python" -m unittest discover -v \
             -s qualification/neuron-dynamic-learning -p 'test_exploratory_temperature_probe.py'
+          PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-paired-venv/bin/python" -m unittest discover -v \
+            -s qualification/neuron-dynamic-learning -p 'test_public_agnews_confirmatory.py'
+          PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-paired-venv/bin/python" -m unittest discover -v \
+            -s qualification/neuron-dynamic-learning -p 'test_paired_confirmatory_audit.py'
           git diff --check
           git diff --exit-code
       - name: Archive only public-case digests and non-authorizing statistics
@@ -223,5 +270,9 @@ jobs:
             ${{ runner.temp }}/stem-agnews-comparison.json
             ${{ runner.temp }}/stem-paired-independent-review.json
             ${{ runner.temp }}/stem-head-exploratory-calibration.json
+            ${{ runner.temp }}/stem-agnews-new-source-panel.json
+            ${{ runner.temp }}/stem-gemma-fresh-arms.json
+            ${{ runner.temp }}/stem-laya-fresh-arm.json
+            ${{ runner.temp }}/stem-new-source-independent-review.json
           if-no-files-found: warn
           retention-days: 7

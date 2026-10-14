@@ -102,7 +102,21 @@ def _row(case, probability:float, elapsed_us:int):
             "measured_serving_micros":elapsed_us}
 
 
-def run_gemma(panel:dict, runner, *, seed:int=17, steps:int=40):
+def _fresh_report(panel_digest, original_digest, arm_id, rows, **metadata):
+    return {
+        "schema": "hepta.stem.agnews-confirmatory-physical-arm.v1",
+        "panel_digest": panel_digest,
+        "original_train_panel_digest": original_digest,
+        "arm_id": arm_id, "rows": rows, "metadata": metadata,
+        "raw_source_and_model_origin_independently_attested": False,
+        "cross_sectional_new_source_not_temporal_future": True,
+        "foundation_pretraining_overlap_ruled_out": False,
+        "matched_full_lifecycle_cost": False,
+        "production_promotion": "DENY_ALL",
+    }
+
+
+def run_gemma(panel:dict, runner, *, seed:int=17, steps:int=40, confirmatory=None):
     """Consume actual pinned-model Q24 receipts; fit existing bounded Head on train only."""
     import numpy as np
     from cell_learning import budgeted_cell, rust_candidate_digest
@@ -112,6 +126,9 @@ def run_gemma(panel:dict, runner, *, seed:int=17, steps:int=40):
             runner.manifest.get("dimension") != 256 or
             runner.manifest.get("profile") != "text"):
         raise CapabilityError("real approved 256d text snapshot required")
+    if confirmatory is not None:
+        from public_agnews_confirmatory import check_panel as check_fresh
+        check_fresh(confirmatory, panel)
     all_cases = sum((splits[k] for k in ("train","calibration","test")),[])
     features, durations = {}, {}
     for j in range(0,len(all_cases),8):
@@ -180,14 +197,90 @@ def run_gemma(panel:dict, runner, *, seed:int=17, steps:int=40):
             head_artifact_digest=rust_candidate_digest(cell.export_q24()),
             model_encode_api_calls=runner.model_encode_calls,
             cpu_batch_wall_allocation="equal_shared_batch_wall_amortized_not_direct_latency"))
+    if confirmatory is not None:
+        from public_agnews_confirmatory import check_panel as check_fresh
+        from exploratory_temperature_probe import scale_probability
+        new_digest, new_cases = check_fresh(confirmatory, panel)
+        extra_vectors, allocated_us = [], []
+        for start in range(0, len(new_cases), 8):
+            chunk = new_cases[start:start+8]
+            batch = []
+            for case in chunk:
+                source = canonical(case["joint_input"]).decode("utf-8")
+                batch.append({
+                    "scope_id": "public.agnews", "principal_id": "shadow.cpu",
+                    "purpose_id": "capability.noeffects",
+                    "cell_id": "confirm."+case["case_id"],
+                    "generation": 1, "authority_epoch": 1,
+                    "input": {"modality":"text", "role":"classification", "value":source,
+                              "sha256":sha(source.encode("utf-8"))},
+                })
+            wall = time.perf_counter_ns()
+            receipt = runner.encode_cells(batch)
+            micros = max(1, (time.perf_counter_ns()-wall)//1000)
+            if (receipt.get("physical_local_model_execution") is not True
+                    or receipt.get("evidence_type") != "local_weight_execution_unverified_origin"
+                    or receipt.get("production_promotion") != "DENY_ALL"
+                    or receipt.get("feature_dimension") != 256
+                    or receipt.get("cell_requests") != len(batch)
+                    or not isinstance(receipt.get("rows"), list)
+                    or len(receipt["rows"]) != len(batch)):
+                raise CapabilityError("unverified fresh cohort physical inference")
+            for expected, observed in zip(batch, receipt["rows"]):
+                values = observed.get("features_q24")
+                if (not isinstance(values, list) or len(values) != 256
+                        or observed.get("cell_id") != expected["cell_id"]
+                        or observed.get("input_digest") != expected["input"]["sha256"]
+                        or observed.get("feature_digest") != rust_feature_digest_q24(values)
+                        or observed.get("pipeline_digest") != runner.profile_digest
+                        or observed.get("authority") != "DENY_ALL"
+                        or observed.get("modality") != "text"
+                        or observed.get("role") != "classification"
+                        or observed.get("requires_new_neuron_profile") is not False
+                        or any(observed.get(k) != expected[k] for k in (
+                            "scope_id", "principal_id", "purpose_id", "generation", "authority_epoch"))):
+                    raise CapabilityError("new cohort source/cell/Q24 binding mismatch")
+                extra_vectors.append(np.array(values, dtype=np.float64)/(1<<24))
+                allocated_us.append(max(1, math.ceil(micros/len(chunk))))
+        x = np.stack(extra_vectors)
+        extra_reports = []
+        for name, cell, multiplier in (
+            ("gemma2_frozen_head", frozen, 1),
+            ("gemma2_trained_head", head, 1),
+            ("gemma2_trained_head_scaled_1024", head, 1024),
+        ):
+            wall = time.perf_counter_ns()
+            raw = sigmoid(cell.predict(x))
+            per_head_us = max(1,math.ceil(max(1,(time.perf_counter_ns()-wall)//1000)/len(new_cases)))
+            probabilities = [float(np.clip(v,1e-9,1-1e-9)) for v in raw]
+            if multiplier != 1:
+                probabilities = [scale_probability(v, multiplier) for v in probabilities]
+            rows = [_row(case, probability, spent+per_head_us) for case, probability, spent
+                    in zip(new_cases, probabilities, allocated_us)]
+            extra_reports.append(_fresh_report(new_digest,panel_digest,name,rows,
+                backend="google/embeddinggemma-2",
+                revision=runner.manifest["revision"],
+                stem_digest=runner.profile_digest,
+                frozen_head_digest=rust_candidate_digest(frozen.export_q24()),
+                trained_head_digest=rust_candidate_digest(head.export_q24()),
+                reported_head_digest=rust_candidate_digest(cell.export_q24()),
+                trainable_head_parameters=cell.parameter_count(),
+                head_training_steps=steps if cell is head else 0,
+                predetermined_logit_multiplier=multiplier,
+                shared_batch_wall_time_allocation="equal_amortization_not_individual_latency",
+                pretrained_model_tokenization_identity_only="not_independently_attested"))
+        return reports, extra_reports
     return reports
 
 
-def run_laya(panel:dict, agent, *, revision:str):
+def run_laya(panel:dict, agent, *, revision:str, confirmatory=None):
     """Frozen Laya uses its own typed-choice realization of same semantic task."""
     panel_digest,splits=check_panel(panel)
     if not isinstance(revision,str) or len(revision)!=40:
         raise CapabilityError("explicit model revision required")
+    if confirmatory is not None:
+        from public_agnews_confirmatory import check_panel as check_fresh
+        check_fresh(confirmatory, panel)
     questions={"category":{"type":"choice", "instructions":
               "Which category does the news report describe?",
               "criteria":{"world":"World news category","sports":"Sports news category"}}}
@@ -208,11 +301,39 @@ def run_laya(panel:dict, agent, *, revision:str):
             except (KeyError,TypeError,ValueError,AttributeError) as exc:
                 raise CapabilityError("malformed Laya model probabilities") from exc
             rows.append(_row(case,value,elapsed))
-    return _bound_report(panel_digest,"laya421_frozen",rows,
+    original = _bound_report(panel_digest,"laya421_frozen",rows,
             backend="convaiinnovations/laya",revision=revision,
             prompt_realization="typed_choice_described_world_sports",
             pretrained_checkpoint_verified_by_loader=True,
             trainable_parameters=0)
+    if confirmatory is None:
+        return original
+    from public_agnews_confirmatory import check_panel as check_fresh
+    new_digest, new_cases = check_fresh(confirmatory, panel)
+    scored = []
+    for case in new_cases:
+        tic = time.perf_counter_ns()
+        response = agent.system_one({"text":case["joint_input"]["state"]}, questions)
+        micros = max(1,(time.perf_counter_ns()-tic)//1000)
+        try:
+            choices = response["answers"]["category"]["probabilities"]
+            if (set(choices) != {"world","sports"}
+                    or not all(type(v) in (float,int) and math.isfinite(v)
+                               for v in choices.values())
+                    or abs(choices["world"]+choices["sports"]-1) > 1e-3):
+                raise ValueError("invalid frozen comparison probabilities")
+            value = float(choices["sports"])
+        except (KeyError, ValueError, AttributeError, TypeError) as exc:
+            raise CapabilityError("malformed Laya output on new cohort") from exc
+        scored.append(_row(case,value,micros))
+    extra = _fresh_report(new_digest,panel_digest,"laya421_frozen",scored,
+        backend="convaiinnovations/laya", revision=revision,
+        prompt_realization="typed_choice_described_world_sports",
+        pretrained_checkpoint_verified_by_loader=True,
+        trainable_parameters=0,
+        predetermined_logit_multiplier=1,
+        shared_batch_wall_time_allocation="not_shared_singleton_calls")
+    return original, extra
 
 
 def compare(panel:dict,reports:list[dict]):
@@ -296,14 +417,23 @@ def main():
     p.add_argument("--snapshot",type=Path)
     p.add_argument("--sha-manifest",type=Path)
     p.add_argument("--revision")
+    p.add_argument("--confirmatory-panel", type=Path)
+    p.add_argument("--confirmatory-output", type=Path)
     p.add_argument("--gemma-report",type=Path)
     p.add_argument("--laya-report",type=Path)
     args=p.parse_args()
     panel=json.loads(args.panel.read_text(encoding="utf-8"))
+    if (args.confirmatory_panel is None) != (args.confirmatory_output is None):
+        raise CapabilityError("confirmatory input/output must be explicitly paired")
+    if args.confirmatory_panel is not None and args.mode == "compare":
+        raise CapabilityError("new cohorts require physical model mode, not comparator")
+    confirmatory = (json.loads(args.confirmatory_panel.read_text(encoding="utf-8"))
+                    if args.confirmatory_panel else None)
     if args.mode=="gemma":
         from embeddinggemma2_shadow import FrozenGemmaShadow
         if args.manifest is None: raise CapabilityError("exact Gemma manifest required")
-        result=run_gemma(panel,FrozenGemmaShadow(args.manifest,device="cpu"))
+        result=run_gemma(panel,FrozenGemmaShadow(args.manifest,device="cpu"),
+                         confirmatory=confirmatory)
     elif args.mode=="laya":
         from laya import load
         if args.snapshot is None or args.sha_manifest is None or args.revision is None:
@@ -315,7 +445,8 @@ def main():
         params=sum(p.numel() for p in agent.model.parameters())
         if not 400_000_000<=params<=450_000_000:
             raise CapabilityError("Laya baseline weight scale mismatch")
-        result=run_laya(panel,agent,revision=args.revision)
+        result=run_laya(panel,agent,revision=args.revision,
+                        confirmatory=confirmatory)
         result["metadata"]["model_parameter_count"]=params
     else:
         if args.gemma_report is None or args.laya_report is None:
@@ -323,6 +454,9 @@ def main():
         reports=json.loads(args.gemma_report.read_text(encoding="utf-8"))
         laya=json.loads(args.laya_report.read_text(encoding="utf-8"))
         result=compare(panel,[*reports,laya])
+    if confirmatory is not None:
+        result, extra = result
+        args.confirmatory_output.write_bytes(canonical(extra))
     args.output.write_bytes(canonical(result))
     print(json.dumps({"mode":args.mode,"output":str(args.output),
                       "production_promotion":"DENY_ALL"},sort_keys=True))

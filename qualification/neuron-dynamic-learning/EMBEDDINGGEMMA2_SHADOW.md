@@ -352,3 +352,51 @@ decoder import, and persists separate vision/audio receipts so a later
 audio error cannot discard the completed vision numeric evidence.
 The fix itself needs a fresh exact-head CI result before it can be
 called successful.
+
+## 2026-10-14: nonoverlapping val2 source replication protocol
+
+**Shadow-only preregistered continuation; no outcome claims.** The public
+128-train/32-calibration/64-test AG News three-arm study has already been
+inspected. Its exact source panel SHA-256 is
+`2f7a013648e16b60c74614b0fcf1496aa06475f7285f215adddaa51fe29e01a4`.
+This independent *new-file* replication uses a different, reviewed upstream
+asset: `szhuggingface/ag_news` at source revision prefix `98c5322`,
+`data/val2-00000-of-00001.parquet`, whose exact source file SHA-256 is
+`51ea52a70f2751cbd13183773186dfc833099c7a17f2664535688baa85aa68f9`.
+
+`public_agnews_confirmatory.py` freezes its deterministic label-stratified
+source-hash selection before model loading: exactly 64 new world and 64 new
+sports rows. All original 224 source digests are excluded. The bounded
+selector uses an explicit domain SHA-256 and never uses model predictions,
+scores, or cost estimates. No model checkpoint or Head tensor is updated
+from these new labels.
+
+The existing physical three-arm runner receives the original and new panels
+in the *same* model-loading process. It keeps the baseline output and extends
+only the read-only study with a fourth *report arm*:
+Laya421 frozen, Gemma2 frozen Cell Head, Gemma2 trained Cell Head and the
+same trained Head transformed with the **previously chosen fixed multiplier
+1024**. The scaling is a monotone postprocessing operation, not a new model
+or 1024 independently trainable parameters. No new source outcomes are used
+for the 40 initial Head training steps or to refit the multiplier.
+
+`paired_confirmatory_audit.py` is a separately invoked read-only verifier:
+it rehashes the **entire original val2 parquet** and reconstructs source
+labels and deterministic selection, checks case and model/Head lineage,
+recomputes all 128 predictions per arm, and independently reports accuracy,
+Brier, eight-bin descriptive ECE and nominal paired bootstrap Brier
+differences. It rejects missing/duplicated/mismatched cases, modified
+weights, scale drift, independent-authentication overclaims and unsupported
+authority. The paired workflow binds this audit to the exact tested Git
+head, saves the original/replication inputs and reports separately, and
+keeps all outputs `DENY_ALL`.
+
+**Limits:** Although val2 is a different pinned source file and selected
+cases are disjoint from the earlier local study, it belongs to the same
+public AG News dataset family. This is *not* an independently observed
+chronological future episode, a proof of absence from foundation
+pretraining, or a preregistered task family fixed before the previous
+test results were examined. The 95% paired bootstrap is descriptive and
+not corrected for all research searches. Exact model-origin signing,
+real physical-forward attribution, target-host lifecycle cost, independent
+outcome authority, future1/future2/future3 and `blocking-ci` remain open.
