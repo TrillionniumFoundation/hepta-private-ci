@@ -14,7 +14,7 @@ from tempfile import TemporaryDirectory
 from types import SimpleNamespace
 import sys
 
-from matched_train import Q, train
+from matched_train import Q, train, unique_json
 from run_native_physical_matrix import evaluate, sha
 
 
@@ -121,6 +121,36 @@ def run(binary: Path, report: Path) -> dict:
                                       {k:v.clone() for k,v in original.items()},bad_trace=bad_trace))
         result['native_negative_cases_rejected']=len(negatives)
         result['native_negative_cases']=negatives
+        # A valid physical model whose Head weights and bias are all zero
+        # must *succeed* as a native kernel execution but abstain at every
+        # decision boundary. This is not a negative loader test.
+        zero_weights={k:v.clone() for k,v in original.items()}
+        zero_weights['head.weight'].zero_()
+        zero_weights['head.bias'].zero_()
+        zero_head_file=home/'valid-zero-head-must-abstain.safetensors'
+        save_file(zero_weights,str(zero_head_file))
+        zero_command=[str(binary),'--arm','v3','--model',str(zero_head_file),
+                      '--model-sha256',file_hash(zero_head_file),
+                      '--trace',str(trace_file),'--trace-sha256',file_hash(trace_file),
+                      '--cap','2048']
+        positive=subprocess.run(zero_command,stdin=subprocess.DEVNULL,
+                                stdout=subprocess.PIPE,stderr=subprocess.PIPE,
+                                timeout=30,check=False)
+        if positive.returncode or not (0<len(positive.stdout)<=16*1024*1024):
+            raise ValueError('valid zero-Head Q24 research model did not execute')
+        replay=unique_json(positive.stdout)
+        frontier=replay.get('frontier',[])
+        if not frontier or any(
+            row.get('quantized_head_logit_q24')!=0 or
+            row.get('head_sign_margin_status')!='QUANTIZATION_AMBIGUOUS_ABSTAIN'
+            for row in frontier
+        ):
+            raise ValueError('valid zero-Head native research model made an unsafe signed decision')
+        if (replay.get('head_margin_authorized_for_final_use') is not False or
+            replay.get('production_qualification') is not False or
+            replay.get('ndu_eligible') is not False):
+            raise ValueError('valid zero-Head research replay forged production authority')
+        result['valid_zero_head_native_abstentions_verified']=len(frontier)
         with report.open('x',encoding='utf-8') as out:
             json.dump(result,out,sort_keys=True,indent=2)
             out.write('\n')
