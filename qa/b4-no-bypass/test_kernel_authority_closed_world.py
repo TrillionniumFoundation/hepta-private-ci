@@ -282,7 +282,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "physical CNS permit must remain uninhabited until durable Control",
         )
         gate = re.search(
-            r"self\.atomic_control_cutover_prepared\.as_ref\(\)\.ok_or\(",
+            r"self\.atomic_control_cutover_prepared\s*\.as_ref\(\)\s*\.ok_or\(",
             port,
         )
         actual_effect = re.search(r"\bapply_governed_topology\s*\(", port)
@@ -294,6 +294,47 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 actual_effect.start(),
                 "Control transaction denial must precede physical topology mutation",
             )
+
+    def test_control_cns_writer_never_exports_untyped_success_callback(self) -> None:
+        # Importing the durable Control owner must not silently turn a
+        # success-shaped closure into public route-mutation authority. The
+        # physical CNS runtime remains denied until a typed original signed
+        # receipt and fsynced same-owner Begin/Commit are independently wired.
+        owner = self.lexical_code(
+            "codex-rs/hepta-control-plane/src/ndu_publication.rs"
+        )
+        self.assertRegex(
+            owner,
+            r"\bpub\(crate\)\s+fn\s+publish_cutover_with_external_effect\b",
+            "generic external-effect callback must remain Control crate-private",
+        )
+        self.assertNotRegex(
+            owner,
+            r"\bpub\s+fn\s+publish_cutover_with_external_effect\b",
+            "public callback could fabricate a successful physical CNS receipt",
+        )
+        legacy_start = owner.find("pub fn publish_cutover(")
+        guarded_start = owner.find("pub(crate) fn publish_cutover_with_external_effect")
+        self.assertGreaterEqual(legacy_start, 0, "missing legacy denial API")
+        self.assertGreater(guarded_start, legacy_start, "missing guarded API")
+        self.assertIn(
+            "Err(NduPublicationErrorV1::Unsupported)",
+            owner[legacy_start:guarded_start],
+            "old one-phase CNS publication must remain fail closed",
+        )
+        pending = owner.find("state.pending_cutover = true")
+        dispatch = owner.find("apply_original_runtime_once()")
+        self.assertGreaterEqual(pending, 0, "Control durable Begin fence missing")
+        self.assertGreater(
+            dispatch,
+            pending,
+            "pending Control fence must precede external runtime callback",
+        )
+        self.assertIn(
+            "if state.pending_cutover",
+            owner,
+            "competing Neuron checkpoint CAS must deny while CNS is pending",
+        )
 
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
