@@ -106,6 +106,18 @@ publisher text and changing earlier exclusion data. A digest is still not
 proof of publisher authenticity, independence from pretraining or a
 future-window model improvement.
 
+## Independent publisher-source job
+
+\`bbc-public-source-admission\` runs in a separate small, pinned Python
+environment and checks the real immutable BBC test split **without a model**.
+It retrieves the original SHA-pinned pretrained archive, verifies 128
+producer and 1,024 prior confirmation/evaluation source texts, then
+computes the full 1,000-row BBC text-column SHA and exactly 128 fixed
+source selections. Only hashes and source indices are uploaded, never
+original articles or labels. This isolates publisher/API and source
+provenance failure from the full pretrained or browser CI. It does not
+verify capability, new model inference, future independence or energy.
+
 ## Valid and invalid claims
 
 Different **publication family** offers a useful domain shift. Its label
