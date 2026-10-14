@@ -197,10 +197,21 @@ def head_trials(features: torch.Tensor, labels: torch.Tensor, splits: list[str],
 def reuse_keys(record: dict, *, encoder_digest: str, tokenizer_digest: str,
                normalizer_digest: str, principal: str | None = None,
                purpose: str = 'decision', generation: int = 1,
-               authority_epoch: int = 1, mode: str = 'joint') -> str:
-    """An experimental identity, NOT proof that a source reuse was authorized."""
+               authority_epoch: int = 1, mode: str = 'joint',
+               research_synthetic_cross_source: bool = False) -> str:
+    """Experimental identity, NOT a source entitlement or final-use authority.
+
+    Different source groups never share features by default, even if their
+    public question/options happen to match. Explicit cross-source grouping
+    is permitted only as a clearly untrusted SYNTHETIC reuse upper-bound.
+    """
     if mode not in ('joint', 'public') or generation <= 0 or authority_epoch <= 0 or not purpose:
         raise ValueError('invalid reuse contract')
+    if type(research_synthetic_cross_source) is not bool or (research_synthetic_cross_source and mode != 'public'):
+        raise ValueError('synthetic cross-source control requires public mode')
+    source_group = record.get('source_group')
+    if not isinstance(source_group, str) or not source_group:
+        raise ValueError('source group required for isolated reuse')
     if any(not is_digest(d) for d in (encoder_digest, tokenizer_digest, normalizer_digest)):
         raise ValueError('exact encoder/tokenizer/normalizer digests required')
     if principal is not None and principal != record['principal']:
@@ -213,13 +224,16 @@ def reuse_keys(record: dict, *, encoder_digest: str, tokenizer_digest: str,
         fields['state'] = record['state']
     return canonical_digest({'scope': [who, purpose, generation, authority_epoch],
                              'model': [encoder_digest, tokenizer_digest, normalizer_digest],
+                             'source_reuse_partition': ('synthetic:cross-source-upper-bound' if research_synthetic_cross_source
+                                                        else source_group),
                              'split': record['split'], 'mode': mode, 'input': fields})
 
 
 def reuse_trial(rows: list[dict], encode: Callable[[list[dict]], torch.Tensor], *,
                 encoder_digest: str, tokenizer_digest: str, normalizer_digest: str,
                 mode: str, batch_size: int = 8, purpose: str = 'decision',
-                generation: int = 1, authority_epoch: int = 1) -> tuple[torch.Tensor, dict]:
+                generation: int = 1, authority_epoch: int = 1,
+                research_synthetic_cross_source: bool = False) -> tuple[torch.Tensor, dict]:
     """E3: count actual adapter invocations AND distinct rows forwarded.
 
     Does not cache across principal, split, purpose, generation or authority epoch.
@@ -233,7 +247,8 @@ def reuse_trial(rows: list[dict], encode: Callable[[list[dict]], torch.Tensor], 
     for row in rows:
         k = reuse_keys(row, encoder_digest=encoder_digest, tokenizer_digest=tokenizer_digest,
                        normalizer_digest=normalizer_digest, mode=mode, purpose=purpose,
-                       generation=generation, authority_epoch=authority_epoch)
+                       generation=generation, authority_epoch=authority_epoch,
+                       research_synthetic_cross_source=research_synthetic_cross_source)
         keys.append(k)
         if k not in seen:
             sent = dict(row)
@@ -261,7 +276,9 @@ def reuse_trial(rows: list[dict], encode: Callable[[list[dict]], torch.Tensor], 
                       'deduplicated_rows': len(rows) - rows_forwarded,
                       'forward_row_reuse_fraction': 1 - rows_forwarded / len(rows),
                       'production_admission': 'BLOCKED', 'authorization_verified': False,
-                      'warning': 'Exact source entitlement and final-use must be checked outside this harness.'}
+                      'cross_source_reuse_policy': ('SYNTHETIC_UNVERIFIED_UPPER_BOUND' if research_synthetic_cross_source
+                                                    else 'STRICT_SOURCE_GROUP_ISOLATION'),
+                      'warning': 'No cross-source reuse authority is established by this harness.'}
 
 
 def _validated_snapshot(snapshot: dict, rows: list[dict], dataset_digest: str,
@@ -598,7 +615,8 @@ def main() -> None:
                 _p, public = reuse_trial(rows, encode, encoder_digest=encoder_digest,
                                          tokenizer_digest=tok, normalizer_digest=norm,
                                          mode='public', batch_size=args.batch,
-                                         generation=args.generation, authority_epoch=args.authority_epoch)
+                                         generation=args.generation, authority_epoch=args.authority_epoch,
+                                         research_synthetic_cross_source=(args.encoder == 'synthetic-hash' and args.allow_synthetic))
                 from .models import frozen_projection
                 if args.dimension < 4 or args.dimension > 512:
                     raise ValueError('E3 requires a bounded projected dimension 4..512')
