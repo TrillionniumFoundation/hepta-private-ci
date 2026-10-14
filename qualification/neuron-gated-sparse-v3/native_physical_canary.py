@@ -107,6 +107,9 @@ def run(binary: Path, report: Path) -> dict:
         changed['head.weight']=torch.zeros((2,16),dtype=torch.float32)
         negatives.append(run_negative('same-count-wrong-native-head-shape',changed))
         changed={k:v.clone() for k,v in original.items()}
+        changed['head.weight'][0,0]=8.5
+        negatives.append(run_negative('out-of-range-f32-native-head',changed))
+        changed={k:v.clone() for k,v in original.items()}
         changed['temporal.gate_bias'][0]=(changed['temporal.gate_bias'][0]+1).clamp(0,Q)
         negatives.append(run_negative('changed-sha-native-model',changed,stale_sha=True))
         invalid_trace=dict(trace)
