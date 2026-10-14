@@ -1,0 +1,27 @@
+name: Hepta E5 source request recount contracts
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e5_trace_recount.py"
+      - "experiments/shared_stem_cell/test_e5_trace_recount.py"
+      - "experiments/shared_stem_cell/E5_SOURCE_TRACE_RECOUNT.md"
+      - ".github/workflows/hepta-e5-trace-recount.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  recount-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Read-only mechanism contract
+        run: |
+          python -m py_compile experiments/shared_stem_cell/e5_trace_recount.py
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e5_trace_recount.py' -v
