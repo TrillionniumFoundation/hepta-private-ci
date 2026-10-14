@@ -137,6 +137,16 @@ class StreamTests(unittest.TestCase):
         self.assertNotIn(s.f.normalized('old news'),{r['normalized_sha256'] for r in rows})
         with self.assertRaises(e.InputError):s.cohort(['same']*300,[],confirmation=128,final=32)
 
+    def test_unknown_physical_work_profile_refuses_before_model_or_labels(self):
+        out = self.root / "unknown-work"
+        out.mkdir()
+        self.lock["physical_work_profile"] = "unknown.or.unmetered.v0"
+        with self.assertRaises(e.InputError):
+            s.stream(out, self.rows, self.lock,
+                     lambda _: self.fail("unknown work profile ran Encoder"),
+                     lambda _: self.fail("unknown work profile read labels"))
+        self.assertFalse((out / "candidate-lock.json").exists())
+
     def test_actual_resource_profile_requires_a_complete_meter_before_labels(self):
         from experiments.shared_stem_cell.sequential_work_audit import SCHEMA
         lock = {**self.lock, "physical_work_profile": SCHEMA,
