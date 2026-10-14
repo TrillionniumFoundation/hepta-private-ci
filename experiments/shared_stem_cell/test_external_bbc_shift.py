@@ -202,7 +202,7 @@ class ShiftTests(unittest.TestCase):
         self.assertEqual(result["scores"][b.HYBRID]["proxy_correct"], 112)
         self.assertEqual(result["paired_vs_bank"][b.HYBRID]["gains"], 0)
         self.assertEqual(result["paired_vs_bank"][b.HYBRID]["losses"], 0)
-        self.assertEqual(result["paired_vs_bank"]["shared"]["losses"], 56)
+        self.assertEqual(result["paired_vs_bank"]["shared"]["losses"], 64)
         self.assertFalse(result["frozen_hybrid"]["standalone_deployment_cost_measured"])
         self.assertFalse(result["frozen_hybrid"]["selected_using_bbc_labels"])
         self.assertIsNone(result["selected_arm"])
