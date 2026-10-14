@@ -1,6 +1,13 @@
 name: E0 public pretrained 768-to-Q24 shadow (not production)
 
 on:
+  push:
+    branches:
+      - "experiment/neuron-e0-public-pretrained-projection-shadow-20261014"
+    paths:
+      - "tools/hepta-neuron-experiments/public_e0_shadow.py"
+      - "tools/hepta-neuron-experiments/public_e0_shadow_checks.py"
+      - ".github/workflows/hepta-e0-public-projection-shadow.yml"
   pull_request:
     paths:
       - "tools/hepta-neuron-experiments/public_e0_shadow.py"
