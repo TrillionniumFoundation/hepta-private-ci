@@ -67,16 +67,16 @@ jobs:
             echo "::error::The new V3 files require rustfmt; see diff above."
             exit 1
           fi
-      - name: Test V1/V2/V3 neuron kernel without modifying legacy semantics
+      - name: Test V1/V2/V3/SSM/minGRU without modifying legacy semantics
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-neuron --all-targets
       - name: Run selected strict Clippy
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-neuron --all-targets -- -D warnings
-      - name: Build exact-source four-arm native mechanism probe
+      - name: Build exact-source five-arm native mechanism probe
         working-directory: codex-rs
         run: cargo build --locked -p codex-hepta-neuron --bin neuron_shadow_mechanism_probe
-      - name: Execute four-arm and four-size same-Q24-input fixture matrix
+      - name: Execute five-arm and four-size same-Q24-input fixture matrix
         working-directory: codex-rs
         env:
           PROBE_RESULT: ${{ runner.temp }}/neuron-q24-fixture-matrix.json
@@ -85,11 +85,22 @@ jobs:
           --binary target/debug/neuron_shadow_mechanism_probe
           --trace ../qualification/neuron-gated-sparse-v3/fixture_q24_trace.json
           --report "$PROBE_RESULT"
+      - name: Validate all 20 native records and publish relative cost ratios
+        env:
+          PROBE_RESULT: ${{ runner.temp }}/neuron-q24-fixture-matrix.json
+          COST_REPORT: ${{ runner.temp }}/neuron-q24-cost-analysis.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/neuron-gated-sparse-v3/analyze_mechanism_costs.py \
+            --matrix "$PROBE_RESULT" --output "$COST_REPORT"
       - name: Retain explicitly non-production native fixture measurements
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: neuron-q24-fixture-matrix-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/neuron-q24-fixture-matrix.json
+          path: |
+            ${{ runner.temp }}/neuron-q24-fixture-matrix.json
+            ${{ runner.temp }}/neuron-q24-cost-analysis.json
           if-no-files-found: warn
           retention-days: 14

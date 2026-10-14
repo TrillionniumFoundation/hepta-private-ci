@@ -19,6 +19,7 @@ def fake_probe() -> dict:
         "production_qualification": False,
         "ndu_eligible": False,
         "trained_model": False,
+        "all_model_parameter_budgets_matched": False,
         "state_persistence_measured": False,
         "microbatch_and_gpu_measured": False,
         "artifact_provenance_verified": False,
@@ -51,6 +52,7 @@ class ProbeMatrixProtocolTests(unittest.TestCase):
     def test_claim_of_production_qualification_fails(self) -> None:
         for forbidden in (
             "production_qualification", "ndu_eligible", "trained_model",
+            "all_model_parameter_budgets_matched",
             "state_persistence_measured", "microbatch_and_gpu_measured",
             "artifact_provenance_verified",
         ):

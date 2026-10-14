@@ -125,6 +125,14 @@ impl StdError for PopulationSparseError {}
 
 impl PopulationSparseConfigV2 {
     pub fn digest(&self) -> Result<Digest32, PopulationSparseError> {
+        self.digest_with_temporal_decay(self.temporal_decay_q24)
+    }
+
+    // Produces the digest of a copy with an effective decay without copying it.
+    fn digest_with_temporal_decay(
+        &self,
+        effective_temporal_decay_q24: i64,
+    ) -> Result<Digest32, PopulationSparseError> {
         self.validate()?;
         let mut bytes = b"hepta.neuron.population-sparse-config.q24.v2".to_vec();
         bytes.extend_from_slice(self.model_digest.as_array());
@@ -142,7 +150,7 @@ impl PopulationSparseConfigV2 {
             );
         }
         for value in [
-            self.temporal_decay_q24,
+            effective_temporal_decay_q24,
             self.inhibition_gain_q24,
             self.activity_decay_q24,
             self.target_activity_q24,
@@ -360,7 +368,53 @@ pub fn population_sparse_tick_v2(
     ),
     PopulationSparseError,
 > {
-    let config_digest = config.digest()?;
+    population_sparse_tick_v2_inner(config, input, None, previous)
+}
+
+/// Borrowed shadow-only successor equivalent to V2(config.decay=0,
+/// input.drive=forwarded). Preserves the exact V2 checkpoint digest/bytes,
+/// fences and receipt without copying the config or tick.
+pub(crate) fn population_sparse_tick_v2_from_temporal_override(
+    config: &PopulationSparseConfigV2,
+    input: &PopulationSparseTickV2,
+    forwarded_temporal_q24: &[i64],
+    previous: Option<&PopulationSparseCheckpointV2>,
+) -> Result<
+    (
+        PopulationSparseCheckpointV2,
+        PopulationSparseSignalReceiptV2,
+    ),
+    PopulationSparseError,
+> {
+    population_sparse_tick_v2_inner(config, input, Some(forwarded_temporal_q24), previous)
+}
+
+fn population_sparse_tick_v2_inner(
+    config: &PopulationSparseConfigV2,
+    input: &PopulationSparseTickV2,
+    forwarded_temporal_q24: Option<&[i64]>,
+    previous: Option<&PopulationSparseCheckpointV2>,
+) -> Result<
+    (
+        PopulationSparseCheckpointV2,
+        PopulationSparseSignalReceiptV2,
+    ),
+    PopulationSparseError,
+> {
+    let decay = if forwarded_temporal_q24.is_some() {
+        0
+    } else {
+        config.temporal_decay_q24
+    };
+    let config_digest = config.digest_with_temporal_decay(decay)?;
+    validate_input(config, input)?;
+    let drive_q24 = forwarded_temporal_q24.unwrap_or(&input.temporal_drive_q24);
+    if forwarded_temporal_q24.is_some()
+        && (drive_q24.len() != config.temporal_width
+            || drive_q24.iter().any(|value| !(-H..=H).contains(value)))
+    {
+        return Err(PopulationSparseError::InvalidInput);
+    }
     validate_input(config, input)?;
     let before = previous.map_or(Digest32::ZERO, PopulationSparseCheckpointV2::digest);
     if let Some(prior) = previous {
@@ -398,7 +452,7 @@ pub fn population_sparse_tick_v2(
     ] {
         binding.extend_from_slice(digest.as_array());
     }
-    for value in input.temporal_drive_q24.iter().chain(&input.prediction_q24) {
+    for value in drive_q24.iter().chain(&input.prediction_q24) {
         binding.extend_from_slice(&value.to_be_bytes());
     }
 
@@ -420,9 +474,9 @@ pub fn population_sparse_tick_v2(
     };
 
     let mut projections = 0_u32;
-    for (index, drive) in input.temporal_drive_q24.iter().enumerate() {
+    for (index, drive) in drive_q24.iter().enumerate() {
         let old = previous.map_or(0, |value| value.temporal[index]);
-        let raw = mul(config.temporal_decay_q24, old)
+        let raw = mul(decay, old)
             .checked_add(*drive)
             .ok_or(PopulationSparseError::Arithmetic)?;
         next.temporal[index] = raw.clamp(-H, H);

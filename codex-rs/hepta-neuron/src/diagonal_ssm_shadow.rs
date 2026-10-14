@@ -14,7 +14,9 @@ use crate::population_v2::PopulationSparseCheckpointV2;
 use crate::population_v2::PopulationSparseConfigV2;
 use crate::population_v2::PopulationSparseError;
 use crate::population_v2::PopulationSparseTickV2;
+#[cfg(test)]
 use crate::population_v2::population_sparse_tick_v2;
+use crate::population_v2::population_sparse_tick_v2_from_temporal_override;
 
 const Q: i64 = 1 << 24;
 const H: i64 = 8 * Q;
@@ -207,12 +209,12 @@ pub fn diagonal_ssm_tick_v1(
         effective.push(clamped);
     }
 
-    let mut v2_config = config.base.clone();
-    v2_config.temporal_decay_q24 = 0;
-    let mut v2_input = input.clone();
-    v2_input.temporal_drive_q24 = effective;
-    let (inner, receipt) =
-        population_sparse_tick_v2(&v2_config, &v2_input, previous.map(|prior| &prior.inner))?;
+    let (inner, receipt) = population_sparse_tick_v2_from_temporal_override(
+        &config.base,
+        input,
+        &effective,
+        previous.map(|prior| &prior.inner),
+    )?;
     let original_input = input_digest(input);
     let mut next = DiagonalSsmCheckpointV1 {
         config: config_digest,
