@@ -23,12 +23,13 @@ impl NduReadFrontierPortV1 for ControlNduFrontierAdapterV1 {
     fn check_checkpoint_publisher(
         &self,
         expected: &NduSnapshotRefV1,
+        previous_checkpoint: Digest32,
     ) -> Result<(), NduReadVerificationErrorV1> {
-        let (snapshot, _) = self
+        let (snapshot, checkpoint) = self
             .owner
             .current()
             .map_err(|_| NduReadVerificationErrorV1::CheckpointPublicationUnavailable)?;
-        if snapshot != *expected {
+        if snapshot != *expected || checkpoint != previous_checkpoint {
             return Err(NduReadVerificationErrorV1::StaleFrontier);
         }
         Ok(())

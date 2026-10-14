@@ -262,7 +262,7 @@ where
         // checkpoint they would be unable to publish. This preflight grants
         // no authority; the final same-owner durable CAS remains mandatory.
         read_verifier
-            .check_checkpoint_publisher(snapshot)
+            .check_checkpoint_publisher(snapshot, input.checkpoint_digest)
             .map_err(|_| NeuronRuntimeError::PendingReconciliation)?;
         let binding = neuron_ndu_final_use_binding_v1(
             owner_id,

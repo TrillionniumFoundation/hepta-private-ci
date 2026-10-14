@@ -272,7 +272,7 @@ fn read_only_frontier_preflight_denies_without_entering_model_or_claiming_nonce(
     let read = signed_read(&key, snapshot());
     assert!(verifier.verify(&read).is_ok());
     assert_eq!(
-        verifier.check_checkpoint_publisher(&read.snapshot),
+        verifier.check_checkpoint_publisher(&read.snapshot, Digest32::ZERO),
         Err(NduReadVerificationErrorV1::CheckpointPublicationUnavailable)
     );
 }

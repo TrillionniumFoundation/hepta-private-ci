@@ -48,6 +48,7 @@ pub trait NduReadFrontierPortV1: fmt::Debug + Send + Sync {
     fn check_checkpoint_publisher(
         &self,
         _expected: &NduSnapshotRefV1,
+        _previous_checkpoint: Digest32,
     ) -> Result<(), NduReadVerificationErrorV1> {
         Err(NduReadVerificationErrorV1::CheckpointPublicationUnavailable)
     }
@@ -186,8 +187,10 @@ impl NduReadVerifierV1 {
     pub fn check_checkpoint_publisher(
         &self,
         expected: &NduSnapshotRefV1,
+        previous_checkpoint: Digest32,
     ) -> Result<(), NduReadVerificationErrorV1> {
-        self.frontier.check_checkpoint_publisher(expected)
+        self.frontier
+            .check_checkpoint_publisher(expected, previous_checkpoint)
     }
 
     /// Reverify the independently signed read before asking Control to
