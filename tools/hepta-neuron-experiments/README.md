@@ -132,3 +132,59 @@ python3 tools/hepta-neuron-experiments/e0_projection_gate.py --contract /secure/
 The JSON contract must contain exactly `schema="hepta.neuron.e0-projection-preflight.v1"`, `encoder_width`, `projection_width`, `head_input_width`, absolute `projection_artifact`, its `projection_sha256`, `projected_features_q24` as a matching-length signed-Q24 integer list, `feature_source_sha256`, and `source_kind="externally_observed_not_authenticated"`. The output is **diagnostic only**, never an E0 acceptance receipt. It **does not execute** the projection, prove that the reported vector arose from the actual 768-D pretrained model, detect a deliberately substituted 256-D slice masquerading as a projection, verify an independent signature, or establish model quality. The real owner must run the pinned original projection against an authenticated Encoder output and prove Head/Worker/Neuron binding and checkpoint CAS separately.
 
 The new eight unit tests use only a synthetic file/vector to verify rejection behavior. Their success does not count as pretrained-model, Q24-Head, or Neuron-runtime execution.
+
+## E0 actual-f32 numerical oracle and pinned public-pretrained smoke
+
+The additive `e0_projection_numeric.py` performs a **second, independent integer
+recalculation** from actual frozen on-disk float32 big-endian features and the
+**existing** `stem_projection.py` v1 shadow projection manifest format. It
+validates byte-level source/weight SHA-256, declared tensor shape/rank, the
+original 32-bit feature digest, deterministic round-to-nearest-even Q24
+math, the full projected output, and the exact
+`hepta.stem.projected-feature-bound.v1` scope/generation/input binding.
+It rejects a projector without a nonzero path from any source dimension
+beyond the Head input width to an output dimension, and checks artifact bytes
+again after processing. This **only demonstrates numerical consistency** with
+the captured bytes; it does NOT establish that the bytes were produced by an
+authorized Model Worker or that the projection retains useful task information.
+
+A separately isolated GitHub Actions job runs
+`e0_public_shadow.py` **only for same-repository PR candidates**. This
+runs a fresh actual pretrained CPU forward using the already proven public
+`answerdotai/ModernBERT-base` revision
+`8949b909ec900327062f0ebf497f51aef5e6f0c8`, checks the
+original full tensor inventory via the pinned research owner source
+`be511bd63aaae8813c415a116d50f01fe54baba5`, then
+runs the exact existing `LowRankProjectionQ24.project_float32` implementation from
+the audited source `d6f35c362289c90427bfbdffd4505d2e535c1b1b`.
+The raw 768-wide float32 output is captured into a local file. An **untrained,
+rank-one tail-coordinate diagnostic** projector maps 768→256 with no hidden
+slice. The independent numeric oracle recalculates all outputs, and the
+existing shadow `native_bridge.native_logits` runs a deterministic
+diagnostic 2-logit Q24 Head. This is an actual public-weight execution
+*mechanism* test, not a trained/selected Cell or production Neuron invocation.
+
+In a pinned full source checkout with the approved public CPU snapshot and
+two exact upstream source checkouts, reproduce using:
+
+```sh
+python3 tools/hepta-neuron-experiments/e0_public_shadow.py \
+  --research-root /checked-out/be511bd-source \
+  --audited-root /checked-out/d6f35c-source \
+  --snapshot /secure/verified-public-snapshot \
+  --output /secure/new-e0-shadow-result
+```
+
+The opt-in `--acquire-public` mode downloads only from the **fixed, unauthenticated
+public Hub revision** and verifies both its pinned safetensors checksum and
+the full snapshot inventory before local-only feature inference. The
+experiment **never uploads** original model weights or raw features as
+a GitHub artifact; only a sanitized report/failure diagnosis is retained.
+
+If the model job has not completed on the current exact SHA, it must be
+reported as **queued/failed/unverified**, not as an inherited success from the
+earlier public canary. Only an independent owner can subsequently authenticate
+actual selected model loading, real Head training/selection, bounded Worker
+reservation/final-use, Q24 Neuron checkpoint CAS and witness, and genuine
+longitudinal task improvement. The numeric report flags each of these as
+**false**; running it cannot approve E0/E1 or structural Cell Split.
