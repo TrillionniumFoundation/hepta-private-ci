@@ -85,12 +85,12 @@ def encode_native(root: Path, model_manifest, records, *, scope, generation,
 def run_train_once(root, model_manifest, records, train_labels, *, scope,
                    generation, steps=48, output_dir):
     """Seal real Head tensor bytes before any independent held-out judgments."""
-    from safetensors.torch import save_file
     output_dir = Path(output_dir)
     require(not output_dir.exists(), "immutable output directory must not exist")
     matrix, encoder_receipt = encode_native(Path(root), model_manifest, records,
                                             scope=scope, generation=generation)
     trial = train_semantic(matrix, train_labels, steps=steps)
+    from safetensors.torch import save_file
     output_dir.mkdir(parents=True, exist_ok=False)
     state = {k: v.detach().cpu().contiguous() for k, v
              in trial["trained"].state_dict().items()}
