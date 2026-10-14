@@ -6,6 +6,7 @@ use crate::model_worker::Error;
 use crate::model_worker::ModelManifest;
 use crate::model_worker::ResourceGrant;
 use crate::model_worker::WorkerRequest;
+use crate::model_worker::canonical_neuron_feature_payload_digest;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
@@ -241,12 +242,7 @@ fn detached_batch_features_preserve_final_use_and_reject_mutation() {
     let mut changed = frozen_features;
     changed[0] += 1;
     assert_eq!(
-        neuron_batch_final_use_binding_with_slice_v1(
-            "worker-one",
-            &key,
-            &request,
-            &changed,
-        ),
+        neuron_batch_final_use_binding_with_slice_v1("worker-one", &key, &request, &changed,),
         Err(BatchWorkerErrorV1::InvalidBinding),
         "changed shared Q24 bytes must never reuse the original signed grant",
     );

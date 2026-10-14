@@ -105,6 +105,7 @@ fn rejected_future_admission_cannot_poison_scheduler_clock() {
 fn rejected_future_capacity_does_not_advance_clock() {
     let mut conf = limits();
     conf.max_pending = 1;
+    conf.max_batch_size = 1;
     let mut q = BoundedMicrobatchSchedulerV1::new(conf).unwrap();
     q.enqueue(4, intent("first", "one", 1, 1, 100)).unwrap();
     assert_eq!(
@@ -113,8 +114,7 @@ fn rejected_future_capacity_does_not_advance_clock() {
     );
     // Drain at a normally increasing timestamp after rejected admission.
     assert!(q.poll(15).unwrap().batch.is_some());
-    q.enqueue(16, intent("later", "two", 1, 1, 100))
-        .unwrap();
+    q.enqueue(16, intent("later", "two", 1, 1, 100)).unwrap();
 }
 
 #[test]
@@ -154,6 +154,87 @@ fn cutover_drops_only_stale_scope() {
     );
     assert_eq!(q.pending(), 2);
     assert_eq!(q.active_lanes(), 2);
+}
+
+#[test]
+fn scope_fence_cutover_preserves_unrelated_4096_cell_lanes() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    for cell in 0..4096 {
+        q.enqueue(
+            1,
+            intent(
+                &format!("other-request-{cell}"),
+                &format!("other-scope-{cell}"),
+                1,
+                1,
+                100,
+            ),
+        )
+        .unwrap();
+    }
+    q.enqueue(1, intent("target-old", "target-scope", 1, 1, 100))
+        .unwrap();
+    q.enqueue(1, intent("target-new", "target-scope", 2, 2, 100))
+        .unwrap();
+
+    assert_eq!(q.scope_lanes.len(), 4097);
+    assert_eq!(q.scope_lanes.get(&id("target-scope")).unwrap().len(), 2);
+    assert_eq!(
+        q.retain_scope_binding(&id("target-scope"), Generation::new(2).unwrap(), 2, 1),
+        vec![id("target-old")]
+    );
+    assert_eq!(q.scope_lanes.get(&id("target-scope")).unwrap().len(), 1);
+    assert_eq!(q.scope_lanes.len(), 4097);
+    assert_eq!(q.pending(), 4097);
+    assert_eq!(q.active_lanes(), 4097);
+    assert!(q.queued_ids.contains(&id("target-new")));
+    assert!(!q.queued_ids.contains(&id("target-old")));
+
+    // No inherited authority: the replacement lane retains its own key.
+    let mut found_replacement = false;
+    while q.pending() != 0 {
+        let batch = q.poll(11).unwrap().batch.unwrap();
+        for request in batch.requests {
+            if request.request_id == id("target-new") {
+                assert_eq!(request.key.generation, Generation::new(2).unwrap());
+                assert_eq!(request.key.route_fence, 2);
+                found_replacement = true;
+            }
+            assert_ne!(request.request_id, id("target-old"));
+        }
+    }
+    assert!(found_replacement);
+    assert!(q.scope_lanes.is_empty());
+    assert!(q.physical_lanes.is_empty());
+}
+
+#[test]
+fn cutover_only_churn_bounds_lazy_round_robin_tickets() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    for round in 0..512_u64 {
+        let scope = format!("retired-scope-{round}");
+        let now = 10 + round;
+        q.enqueue(
+            now,
+            intent(&format!("retired-request-{round}"), &scope, 1, 1, now + 100),
+        )
+        .unwrap();
+        assert_eq!(
+            q.retain_scope_binding(&id(&scope), Generation::new(2).unwrap(), 2, 1),
+            vec![id(&format!("retired-request-{round}"))]
+        );
+        assert_eq!(q.pending(), 0);
+        assert!(q.scope_lanes.is_empty());
+        assert!(q.physical_lanes.is_empty());
+        assert!(q.round_robin.len() <= q.limits.max_batch_size);
+        assert_eq!(q.round_robin.len(), q.round_robin_members.len());
+    }
+
+    q.enqueue(522, intent("healthy", "active-scope", 1, 1, 600))
+        .unwrap();
+    let result = q.poll(532).unwrap();
+    assert_eq!(result.batch.unwrap().requests[0].request_id, id("healthy"));
+    assert_eq!(q.pending(), 0);
 }
 
 #[test]
@@ -249,6 +330,7 @@ fn affinity_index_fills_batch_without_scanning_unrelated_scopes() {
     assert_eq!(q.pending(), 0);
     assert_eq!(q.active_lanes(), 0);
     assert!(q.physical_lanes.is_empty());
+    assert!(q.scope_lanes.is_empty());
 }
 
 #[test]
@@ -267,6 +349,7 @@ fn physical_affinity_index_cleans_up_after_expiry_and_cutover() {
     assert_eq!(result.batch.unwrap().requests[0].request_id, id("live"));
     assert_eq!(q.pending(), 0);
     assert!(q.physical_lanes.is_empty());
+    assert!(q.scope_lanes.is_empty());
 }
 
 #[test]
@@ -295,8 +378,7 @@ fn stale_coalesced_slots_do_not_defer_a_ready_scope_behind_a_cold_scope() {
     // The first live scope is not ready; the second is deadline-due.
     q.enqueue(12, intent("not-due", "scope-e", 1, 1, 500))
         .unwrap();
-    q.enqueue(12, intent("due", "scope-f", 1, 1, 20))
-        .unwrap();
+    q.enqueue(12, intent("due", "scope-f", 1, 1, 20)).unwrap();
     let next = q.poll(13).unwrap();
     assert_eq!(next.scanned_lanes, 2);
     let batch = next.batch.expect("ready scope behind stale slots");
@@ -360,6 +442,7 @@ fn repeated_cross_scope_coalescing_never_accumulates_duplicate_queue_slots() {
         assert_eq!(q.pending(), 0);
         assert!(q.round_robin.len() <= 1);
         assert_eq!(q.round_robin_members.len(), q.round_robin.len());
+        assert!(q.scope_lanes.is_empty());
     }
 }
 
