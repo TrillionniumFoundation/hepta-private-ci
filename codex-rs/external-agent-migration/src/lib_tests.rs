@@ -358,12 +358,14 @@ fn subagent_yaml_scalar_contract_is_frozen_before_security_parser_migration() {
         assert!(agent_metadata(&document).is_none(), "{value}");
     }
 
-    let tagged_mapping =
-        parse_document_content("---\n!secret {name: reviewer, description: Review}\n---\nReview carefully.\n");
+    let tagged_mapping = parse_document_content(
+        "---\n!secret {name: reviewer, description: Review}\n---\nReview carefully.\n",
+    );
     assert!(agent_metadata(&tagged_mapping).is_none());
 
-    let quoted_literal =
-        parse_document_content("---\nname: reviewer\ndescription: '!secret literal'\n---\nReview carefully.\n");
+    let quoted_literal = parse_document_content(
+        "---\nname: reviewer\ndescription: '!secret literal'\n---\nReview carefully.\n",
+    );
     assert!(agent_metadata(&quoted_literal).is_some());
 }
 
