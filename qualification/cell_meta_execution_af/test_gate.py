@@ -445,6 +445,13 @@ class AfEvidenceTests(unittest.TestCase):
         self.d["codex"]["device_profile_sha256"] = sha("different-device")
         check_bad(self.d, "F", "does not match E")
 
+    def test_missing_E_resources_blocks_F_without_crashing(self):
+        del self.d["resources"]
+        report = gate.verify(self.d)
+        self.assertEqual(report["gates"]["E"]["status"], "blocked")
+        self.assertEqual(report["gates"]["F"]["status"], "blocked")
+        self.assertEqual(report["authority_posture"], "DENY_ALL")
+
     def test_F_row_device_profile_drift_blocked(self):
         self.d["codex"]["runs"][0]["device_profile_sha256"] = sha("new-gpu")
         check_bad(self.d, "F", "device profile drift")
