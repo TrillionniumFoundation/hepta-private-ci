@@ -14,6 +14,8 @@ on:
       - 'qualification/neuron-gated-sparse-v3/head_q24_oracle.py'
       - 'qualification/neuron-gated-sparse-v3/test_head_q24_oracle.py'
       - 'qualification/neuron-gated-sparse-v3/test_native_matrix_admission.py'
+      - 'qualification/neuron-gated-sparse-v3/realized_budget_audit.py'
+      - 'qualification/neuron-gated-sparse-v3/test_realized_budget_audit.py'
       - 'codex-rs/hepta-neuron/src/bin/neuron_trained_q24_shadow.rs'
       - 'qualification/neuron-gated-sparse-v3/test_real_pipeline.py'
       - 'qualification/neuron-gated-sparse-v3/test_a4_host_gate.py'
@@ -84,6 +86,9 @@ jobs:
           python -m unittest discover \
             -s qualification/neuron-gated-sparse-v3 \
             -p 'test_native_matrix_admission.py' -v
+          python -m unittest discover \
+            -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_realized_budget_audit.py' -v
       - name: Never qualify model or NDU from source fixture CI
         run: |
           echo "No real selected Cell, production Encoder, future utility, signed target-host A4, NDU, or promotion is established."
@@ -142,6 +147,13 @@ jobs:
           with open(sys.argv[1], encoding='utf-8') as src:
               result=json.load(src)
           assert result['twenty_native_physical_model_executions']==20
+          audit=result['realized_budget_audit']
+          assert audit['schema']=='hepta.neuron.realized-budget-physical-audit.v2'
+          assert audit['physical_candidate_artifact_slots']==20
+          assert 1<=audit['effective_independent_physical_model_comparisons']<=20
+          assert audit['five_tier_exact_realized_parameter_design_valid'] is False
+          assert audit['ndu_eligible'] is False
+          assert audit['production_qualification'] is False
           assert result['native_q24_temporal_replay_executed'] is True
           assert result['diagnostic_native_vs_float_gap_rows']==20
           assert result['forty_fresh_native_process_invocations']==40
