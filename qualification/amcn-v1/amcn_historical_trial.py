@@ -326,6 +326,8 @@ def score_only_after_seal(public_path, withheld_path, sealed_dir, output):
         (row["row_id"], row["evidence"]["content_sha256"],
          row["evidence"]["source_root"]) for row in original]),
         "original source manifest mismatch")
+    from amcn_head_integrity import validate_sealed_semantic_head
+    verified_head = validate_sealed_semantic_head(model_path, receipt)
     pred = {}
     require(isinstance(predictions, list) and len(predictions) == len(expected),
             "incomplete real pretrained model prediction census")
@@ -412,6 +414,7 @@ def score_only_after_seal(public_path, withheld_path, sealed_dir, output):
         profile=PROFILE + ".source-first-scored.v2",
         source_sha256=info["dataset_sha256"],
         original_model_execution_receipt_sha256=digest(receipt),
+        physically_verified_saved_Head_receipt=verified_head,
         model_prediction_sha256=digest(predictions),
         candidate_plan_sha256=digest(source_plans),
         publisher_weak_support_source_first=summary,

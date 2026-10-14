@@ -1,0 +1,128 @@
+name: Hepta saved-feature similarity controls
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/shared_gate_similarity.py"
+      - "scripts/memory_cell/shared_gate_similarity_trial.py"
+      - "scripts/memory_cell/test_shared_gate_similarity.py"
+      - "scripts/memory_cell/test_shared_gate_similarity_cache.py"
+      - ".github/workflows/hepta-shared-gate-similarity.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: shared-gate-similarity-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  cached-features-no-model-or-optimizer:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Test arithmetic TRAIN isolation and real direct CLI before downloads
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/similarity-control/checks
+          python3 -m unittest discover -s scripts/memory_cell -p test_shared_gate_similarity.py -v 2>&1 | tee /tmp/similarity-control/checks/pure-tests.log
+          python3 -m py_compile scripts/memory_cell/shared_gate_similarity.py scripts/memory_cell/shared_gate_similarity_trial.py scripts/memory_cell/test_shared_gate_similarity.py scripts/memory_cell/test_shared_gate_similarity_cache.py
+      - name: Resolve the two exact upstream runs once without polling
+        id: dependency
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38526481788 > /tmp/similarity-control/checks/head-run.json
+          gh api 'repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38526481788/artifacts?per_page=100' > /tmp/similarity-control/checks/head-artifacts.json
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38526874475 > /tmp/similarity-control/checks/cross-run.json
+          gh api 'repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38526874475/artifacts?per_page=100' > /tmp/similarity-control/checks/cross-artifacts.json
+          code=0
+          python3 scripts/memory_cell/shared_gate_similarity_trial.py dependency --head-run-json /tmp/similarity-control/checks/head-run.json --head-artifacts-json /tmp/similarity-control/checks/head-artifacts.json --cross-run-json /tmp/similarity-control/checks/cross-run.json --cross-artifacts-json /tmp/similarity-control/checks/cross-artifacts.json --output /tmp/similarity-control/dependency.json || code=$?
+          if test "$code" -ne 0 && test "$code" -ne 3; then exit "$code"; fi
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          d=json.loads(Path('/tmp/similarity-control/dependency.json').read_bytes())
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:
+              out.write('ready='+str(d['ready']).lower()+'\n')
+              if d['ready']:
+                  for role in ('heads','crossed'):
+                      out.write(role+'_id='+str(d['origins'][role]['artifact_id'])+'\n')
+                      out.write(role+'_sha='+d['origins'][role]['artifact_sha256']+'\n')
+          if not d['ready']: print('DEFERRED: no complete saved-feature origins; no analysis or model acquisition.')
+          PY
+      - name: Install unchanged tensor reader and require cache/readout integration
+        if: steps.dependency.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/similarity-env
+          /tmp/similarity-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/similarity-control/checks/install-torch.log 2>&1
+          /tmp/similarity-env/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/similarity-control/checks/install-worker.log 2>&1
+          /tmp/similarity-env/bin/pip check
+          /tmp/similarity-env/bin/pip freeze > /tmp/similarity-control/checks/environment.txt
+          failed=0
+          for pattern in test_shared_gate_similarity_cache.py test_shared_gate_crossed.py test_shared_question_gate.py test_shared_question_gate_entrypoint.py test_select_content_inventory.py; do
+            if /tmp/similarity-env/bin/python -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/similarity-control/checks/$pattern.log"; then
+              printf '%s\tpassed\n' "$pattern" >> /tmp/similarity-control/checks/suites.tsv
+            else
+              failed=1
+              printf '%s\tfailed\n' "$pattern" >> /tmp/similarity-control/checks/suites.tsv
+            fi
+          done
+          test "$failed" -eq 0
+      - name: Acquire only the pinned result archives not original pretrained weights
+        if: steps.dependency.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_ID: ${{ steps.dependency.outputs.heads_id }}
+          CROSS_ID: ${{ steps.dependency.outputs.crossed_id }}
+          HEAD_SHA: ${{ steps.dependency.outputs.heads_sha }}
+          CROSS_SHA: ${{ steps.dependency.outputs.crossed_sha }}
+        run: |
+          set -euo pipefail
+          gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/${HEAD_ID}/zip" > /tmp/similarity-heads.zip
+          gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/${CROSS_ID}/zip" > /tmp/similarity-cross.zip
+          printf '%s  %s\n' "$HEAD_SHA" /tmp/similarity-heads.zip | sha256sum -c -
+          printf '%s  %s\n' "$CROSS_SHA" /tmp/similarity-cross.zip | sha256sum -c -
+      - name: Fit one TRAIN scalar then score fixed SELECT rectangles from cached vectors
+        if: steps.dependency.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/similarity-control/checks/process-resources.txt /tmp/similarity-env/bin/python scripts/memory_cell/shared_gate_similarity_trial.py run --head-archive /tmp/similarity-heads.zip --cross-archive /tmp/similarity-cross.zip --dependency-json /tmp/similarity-control/dependency.json --work /tmp/similarity-materials --output /tmp/similarity-control/study 2>&1 | tee /tmp/similarity-control/checks/execution.log
+      - name: Preserve actual disposition and source without inventing an analysis
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/similarity-control/source/memory_cell
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/similarity-control/study/report.json')
+          d=json.loads(p.read_bytes()) if p.is_file() else None
+          status={'analysis_completed':d is not None and d.get('analysis_completed') is True and d.get('errors')==[], 'new_pretrained_model_loads':0, 'semantic_accuracy':None, 'production_accepted':False}
+          Path('/tmp/similarity-control/execution-disposition.json').write_text(json.dumps(status,sort_keys=True))
+          print('SIMILARITY_DISPOSITION',json.dumps(status,sort_keys=True))
+          PY
+          git rev-parse HEAD > /tmp/similarity-control/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/similarity-control/source/tested-tree.txt
+          cp scripts/memory_cell/*.py scripts/memory_cell/requirements.txt /tmp/similarity-control/source/memory_cell/
+          cp experiments/shared_stem_cell/execution.py .github/workflows/hepta-shared-gate-similarity.yml /tmp/similarity-control/source/
+          (cd /tmp/similarity-control && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-saved-feature-similarity-check-disposition
+          path: /tmp/similarity-control
+          if-no-files-found: error

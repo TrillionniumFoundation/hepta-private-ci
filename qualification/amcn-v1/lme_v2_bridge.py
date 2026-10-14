@@ -143,7 +143,11 @@ class AMCNShadowMemory(Memory):
         with self._lock:
             n = len(self._docs)
             if not n:
-                self._last.receipt = {"count": 0, "image_unsupported": bool(query_image)}
+                self._last.receipt = {
+                    "schema": SCHEMA, "count": 0, "source_ids": [],
+                    "image_unsupported": bool(query_image),
+                    "trained_neural_cell": False, "production_qualified": False,
+                }
                 return []
             candidate_ids = set()
             for t in terms:
@@ -180,7 +184,11 @@ class AMCNShadowMemory(Memory):
 
     def post_query_hook(self, *, query: str, query_image: str | None,
                         memory_context: list[MemoryContextItem]) -> dict[str, object] | None:
-        return dict(getattr(self._last, "receipt", {"schema": SCHEMA, "count": 0}))
+        return dict(getattr(self._last, "receipt", {
+            "schema": SCHEMA, "count": 0, "source_ids": [],
+            "image_unsupported": bool(query_image),
+            "trained_neural_cell": False, "production_qualified": False,
+        }))
 
     def _save_backend(self, output_dir: Path) -> None:
         with self._lock:

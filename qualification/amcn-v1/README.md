@@ -192,6 +192,34 @@ Run the read-only replay with the originally pinned public LoCoMo file:
     PYTHONPATH=qualification/amcn-v1 python qualification/amcn-v1/amcn_historical_graph_replay.py \
       /path/to/exact/locomo.json /path/to/new/immutable/replay.json
 
+## Source deletion, parameter ancestry and actual Head validation
+
+The shadow-only amcn_revocation.py now binds a Cell generation to an immutable
+set of exact source IDs, roots, revisions, content digests, stem/Head digests,
+parent artifacts, scope and graph generation. A separately pinned current source
+frontier is compared to that manifest. Any source missing, revised or revoked
+quarantines the directly trained artifact and all its transitive split-child and
+consolidated-student descendants. An already-quarantined ancestor cannot
+silently reactivate merely because a source later reappears. Merges may not
+drop inherited source ancestry. Cross-scope/cross-stem lineage, missing parents,
+cycles and incomplete frontier pins fail closed.
+
+This is a **pure candidate invalidation census**. It is NOT proof of actual
+weight unlearning, disk removal, cache purge, deletion acknowledgments or
+integration with the production Selector. The existing Memory/Artifact Owners
+must independently persist the quarantine and revoke execution before any
+stronger "zero resurrection" statement is warranted.
+
+The historical Source-First scorer now additionally calls
+amcn_head_integrity.py to load the actual sealed Safetensors material,
+check architecture/FP32 finite values, reject unknown tensor keys and compare
+the physical parameter geometry and digest against the immutable training
+receipt. Merely rewriting a file checksum cannot make an invalid tensor model
+acceptable. This does not re-run original source/Encoder predictions, so
+the original_predictions_reexecuted_here field remains false. Fixture
+model material uses a genuine Head layout but fake evaluation scores; fixtures
+never constitute a pretrained model outcome.
+
 ## No-go and required production evidence
 
 Still missing: sufficient-evidence Reader certification, strong cached hybrid

@@ -14,6 +14,17 @@ class ShadowBridgeSecurityTests(unittest.TestCase):
                 "states": [{"url": "https://example.invalid/page",
                             "text": text, "action": "read"}]}
 
+    def test_empty_query_never_loses_negative_capabilities(self):
+        memory=self.Backend({})
+        self.assertEqual(memory.query("unknown evidence", query_image="ignored.png"), [])
+        receipt=memory.post_query_hook(query="unknown evidence", query_image="ignored.png",
+                                      memory_context=[])
+        self.assertEqual(receipt["count"], 0)
+        self.assertEqual(receipt["source_ids"], [])
+        self.assertTrue(receipt["image_unsupported"])
+        self.assertIs(receipt["trained_neural_cell"], False)
+        self.assertIs(receipt["production_qualified"], False)
+
     def test_control_character_source_id_refused(self):
         memory=self.Backend({})
         with self.assertRaises(RuntimeError):

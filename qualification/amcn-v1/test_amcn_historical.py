@@ -62,12 +62,25 @@ def fixture(root):
     } for i, r in enumerate(rows)]
     seal = root / "sealed"
     seal.mkdir()
-    model = b"fixture-safetensor-header-not-a-pretrained-model"
-    (seal / "semantic-head.safetensors").write_bytes(model)
+    # This is a real-geometry but untrained TEST-ONLY Head. Synthetic
+    # predicted probabilities are explicitly not replayed from its tensors.
+    import torch
+    from safetensors.torch import save_file
+    from experiments.shared_stem_cell.execution import Head, parameters
+    with torch.random.fork_rng(devices=[]):
+        torch.manual_seed(171)
+        head = Head(width=4, classes=2, kind="gated", rank=2).eval()
+    geometry = parameters(head)
+    save_file({k: v.detach().cpu().contiguous()
+               for k, v in head.state_dict().items()},
+              str(seal / "semantic-head.safetensors"))
+    model = (seal / "semantic-head.safetensors").read_bytes()
     receipt = {
         "schema": "hepta.amcn.real-head-candidate.v1",
         "prediction_digest": digest(answers),
         "head_tensor_sha256": sha256(model).hexdigest(),
+        "head_geometry": geometry,
+        "head_training": {"metrics": {"trained": geometry}},
         "source_manifest_sha256": digest([
             (r["row_id"], r["evidence"]["content_sha256"],
              r["evidence"]["source_root"]) for r in rows]),
