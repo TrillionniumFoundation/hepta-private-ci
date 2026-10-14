@@ -338,3 +338,31 @@ fn evidence_wal_rejects_symlink_parent_replacement_with_unchanged_file_inode() {
     assert!(matches!(owner.flush(), Err(MetricsJournalErrorV1::UnsafePath)));
     assert!(matches!(owner.flush(), Err(MetricsJournalErrorV1::Poisoned)));
 }
+
+#[cfg(unix)]
+#[test]
+fn moved_same_evidence_wal_into_new_private_parent_cannot_earn_flush_ack() {
+    use std::os::unix::fs::MetadataExt as _;
+
+    let root = tempfile::tempdir().expect("private Evidence root");
+    let parent = root.path().join("live");
+    fs::create_dir(&parent).expect("original parent");
+    let path = parent.join("journal");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
+    owner.stage(sample(MetricPhaseV1::Cas)).expect("stage");
+    owner.flush().expect("durable original group");
+    let original_inode = fs::metadata(&path).expect("original WAL").ino();
+
+    let moved = root.path().join("original-parent-moved");
+    fs::rename(&parent, &moved).expect("move original directory");
+    fs::create_dir(&parent).expect("inject new private directory");
+    fs::rename(moved.join("journal"), &path).expect("preserve original WAL inode");
+    assert_eq!(
+        fs::metadata(&path).expect("same original WAL inode").ino(),
+        original_inode
+    );
+    // The file-only identity, byte length and final-group hash all still
+    // match. The original parent OWNER identity alone must deny this ACK.
+    assert!(matches!(owner.flush(), Err(MetricsJournalErrorV1::UnsafePath)));
+    assert!(matches!(owner.flush(), Err(MetricsJournalErrorV1::Poisoned)));
+}

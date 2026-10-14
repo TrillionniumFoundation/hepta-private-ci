@@ -81,6 +81,10 @@ impl std::error::Error for MetricsJournalErrorV1 {}
 pub struct MetricsGroupCommitV1 {
     file: File,
     journal_path: PathBuf,
+    #[cfg(unix)]
+    original_parent_path: PathBuf,
+    #[cfg(unix)]
+    original_parent: File,
     staged: Vec<MetricSampleV1>,
     sequence: u64,
     head: Digest32,
@@ -111,6 +115,16 @@ impl MetricsGroupCommitV1 {
         // effect of opening the writer. The deployment's own storage
         // administrator must create and protect the parent beforehand.
         check_journal_path(path)?;
+        #[cfg(unix)]
+        let (original_parent_path, original_parent) = {
+            let parent = path
+                .parent()
+                .filter(|p| !p.as_os_str().is_empty())
+                .unwrap_or_else(|| Path::new("."));
+            let opened = File::open(parent)?;
+            verify_original_parent_path(parent, &opened)?;
+            (parent.to_path_buf(), opened)
+        };
         let mut options = OpenOptions::new();
         options.create(true).append(true).read(true);
         #[cfg(unix)]
@@ -161,6 +175,10 @@ impl MetricsGroupCommitV1 {
         let owner = Self {
             file,
             journal_path: path.to_path_buf(),
+            #[cfg(unix)]
+            original_parent_path,
+            #[cfg(unix)]
+            original_parent,
             staged: Vec::new(),
             sequence,
             head,
@@ -181,10 +199,12 @@ impl MetricsGroupCommitV1 {
     /// Bounded to MAX_LINE_BYTES: older-prefix rewrite and coordinated full
     /// rollback still require independent external custody/Observer.
     fn verify_original_frontier(&self) -> Result<(), MetricsJournalErrorV1> {
-        // The parent directory must remain the original protected namespace.
-        // A symlinked parent can preserve the file inode while redirecting
-        // the journal through an untrusted replacement directory.
+        // Protect the original parent DIRECTORY inode too. A directory
+        // swap that moves the exact same WAL inode to a new private parent
+        // defeats checks of only the WAL file name, size and inode.
         check_journal_path(&self.journal_path)?;
+        #[cfg(unix)]
+        verify_original_parent_path(&self.original_parent_path, &self.original_parent)?;
         check_open_file(&self.journal_path, &self.file)?;
         if self.file.metadata()?.len() != self.bytes {
             return Err(MetricsJournalErrorV1::Corrupt);
@@ -227,6 +247,8 @@ impl MetricsGroupCommitV1 {
         // Reread both protected parent and exact opened inode after the
         // tail check; neither directory drift nor WAL replacement may ACK.
         check_journal_path(&self.journal_path)?;
+        #[cfg(unix)]
+        verify_original_parent_path(&self.original_parent_path, &self.original_parent)?;
         check_open_file(&self.journal_path, &self.file)?;
         if self.file.metadata()?.len() != self.bytes {
             return Err(MetricsJournalErrorV1::Corrupt);
@@ -379,6 +401,30 @@ fn check_journal_path(path: &Path) -> Result<(), MetricsJournalErrorV1> {
         }
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
         Err(error) => return Err(MetricsJournalErrorV1::Io(error)),
+    }
+    Ok(())
+}
+
+/// A named parent that changes inode is not the original Evidence owner
+/// directory, even when an attacker moves the very same WAL file into it.
+/// Keep the original directory handle open to prevent inode reuse.
+#[cfg(unix)]
+fn verify_original_parent_path(
+    parent_path: &Path,
+    opened_parent: &File,
+) -> Result<(), MetricsJournalErrorV1> {
+    use std::os::unix::fs::MetadataExt;
+
+    let named = fs::symlink_metadata(parent_path)?;
+    let opened = opened_parent.metadata()?;
+    if !named.file_type().is_dir()
+        || named.file_type().is_symlink()
+        || !opened.is_dir()
+        || named.dev() != opened.dev()
+        || named.ino() != opened.ino()
+        || (named.mode() | opened.mode()) & 0o022 != 0
+    {
+        return Err(MetricsJournalErrorV1::UnsafePath);
     }
     Ok(())
 }
