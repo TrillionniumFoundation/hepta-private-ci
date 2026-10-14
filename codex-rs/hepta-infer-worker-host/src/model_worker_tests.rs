@@ -932,3 +932,256 @@ fn final_use_revocation_after_claim_fences_worker_effect_entry() {
         Err(Error::FinalUseDenied),
     );
 }
+
+
+#[cfg(unix)]
+fn assigned_stem_control_fixture(
+    path: &std::path::Path,
+    worker: &InferenceWorker<Driver>,
+    source: &StemFeatureRefV1,
+    access: &StemAccessContextV1,
+    head: &StemHeadBindingV1,
+    features: &[i64],
+    authorization: &WorkerRequest,
+) -> DurableInferenceControl {
+    use codex_hepta_infer_core::durable_control::Assignment;
+    use codex_hepta_infer_core::durable_control::InferenceRequest;
+    use codex_hepta_infer_core::durable_control::Reservation;
+
+    let binding = worker
+        .expected_stem_final_use_binding_v1(
+            100,
+            source,
+            access,
+            head.clone(),
+            features,
+            authorization,
+        )
+        .expect("correct signed binding");
+    let mut control = DurableInferenceControl::open(path, 16).expect("exclusive owner");
+    let submitted = control
+        .submit(
+            100,
+            InferenceRequest {
+                request_id: authorization.request_id.clone(),
+                principal_id: source.principal_id.to_string(),
+                model_digest: authorization.model_digest.clone(),
+                payload_digest: authorization.payload_digest.clone(),
+                maximum_tokens: authorization.maximum_tokens,
+                deadline_ms: authorization.deadline_ms,
+                semantic_digest: grant().semantic_digest,
+            },
+        )
+        .expect("durably submit");
+    let reserved = control
+        .reserve(
+            100,
+            &authorization.request_id,
+            submitted.revision,
+            Reservation {
+                reservation_id: authorization.reservation_id.clone(),
+                quota_units: 1,
+                maximum_tokens: authorization.reservation_maximum_tokens,
+                authority_epoch: 2,
+                valid_until_ms: 7_000,
+            },
+        )
+        .expect("durably reserve");
+    control
+        .assign(
+            &authorization.request_id,
+            reserved.revision,
+            Assignment {
+                worker_id: worker.worker_id().to_string(),
+                worker_generation: 3,
+                assignment_digest: Digest32::from_array(binding.request_sha256).to_string(),
+            },
+        )
+        .expect("durably assign");
+    control
+}
+
+#[cfg(unix)]
+#[test]
+fn signed_stem_dispatch_fsyncs_one_attempt_and_restart_never_reexecutes() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.durable".into(), 3, grant(), Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("loaded");
+    let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
+    let binding = worker
+        .expected_stem_final_use_binding_v1(
+            100, &source, &access, head.clone(), &features, &authorization,
+        )
+        .expect("complete proposal");
+    let temp = tempfile::tempdir().unwrap();
+    let path = temp.path().join("one-owner-inference.journal");
+    let mut control = assigned_stem_control_fixture(
+        &path, &worker, &source, &access, &head, &features, &authorization,
+    );
+    let (authority, signed, _owner_dir) = signed_stem_final_use_fixture(binding.clone());
+    let token = authority.claim(&signed, &binding).expect("real test signature");
+    let output = worker
+        .run_verified_stem_feature_durably_v1(
+            &mut control,
+            &authority,
+            token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                selected_head: head.clone(),
+                feature_vector_q24: &features,
+                authorization: authorization.clone(),
+            },
+        )
+        .expect("verified one-shot actual Driver");
+    assert_eq!(
+        output.worker_receipt.status,
+        NeuronFeatureTerminalStatusV1::Succeeded,
+    );
+    assert!(!output.authority.grants_any());
+    let record = control.get(&authorization.request_id).expect("persisted source");
+    assert_eq!(record.revision, 4);
+    assert_eq!(record.state, RequestState::Assigned);
+    assert!(record.effect_binding_digest.is_some());
+    assert!(record.terminal_observation_digest.is_none());
+    let marker = record.effect_binding_digest.clone().unwrap();
+    drop(control);
+
+    let mut reopened = DurableInferenceControl::open(&path, 16).expect("WAL replay");
+    assert_eq!(
+        reopened.get(&authorization.request_id).unwrap().effect_binding_digest.as_deref(),
+        Some(marker.as_str()),
+    );
+    // Another legitimate newly claimed single-use token MUST NOT allow a
+    // second execution of the same already-marked request after process loss.
+    let (new_authority, new_signed, _another_dir) =
+        signed_stem_final_use_fixture(binding.clone());
+    let fresh_token = new_authority.claim(&new_signed, &binding).unwrap();
+    assert_eq!(
+        worker.run_verified_stem_feature_durably_v1(
+            &mut reopened,
+            &new_authority,
+            fresh_token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                selected_head: head,
+                feature_vector_q24: &features,
+                authorization,
+            },
+        ),
+        Err(Error::FeatureContract),
+    );
+    assert_eq!(reopened.get("request.1").unwrap().revision, 4);
+}
+
+#[cfg(unix)]
+#[test]
+fn durable_stem_worker_rejects_mismatched_assignment_before_wal_append() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.durable-mismatch".into(), 3, grant(), Driver::default(),
+    )
+    .expect("worker");
+    worker.load_model(100, manifest()).expect("loaded");
+    let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
+    let binding = worker
+        .expected_stem_final_use_binding_v1(
+            100, &source, &access, head.clone(), &features, &authorization,
+        )
+        .unwrap();
+    let temp = tempfile::tempdir().unwrap();
+    let mut control = assigned_stem_control_fixture(
+        &temp.path().join("invalid.journal"),
+        &worker,
+        &source,
+        &access,
+        &head,
+        &features,
+        &authorization,
+    );
+    // Existing assigned source is valid; caller presents a DIFFERENT principal
+    // from the record (but a self-consistent source/access tuple). The effect
+    // binder itself must deny this without any new WAL event or Driver call.
+    let mut source_other = source.clone();
+    let mut access_other = access.clone();
+    source_other.principal_id = StableId::new("principal.other").unwrap();
+    access_other.principal_id = source_other.principal_id.clone();
+    let (authority, signed, _owner_dir) = signed_stem_final_use_fixture(binding.clone());
+    let token = authority.claim(&signed, &binding).unwrap();
+    let before_len = std::fs::metadata(control.journal_path()).unwrap().len();
+    assert_eq!(
+        worker.run_verified_stem_feature_durably_v1(
+            &mut control,
+            &authority,
+            token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source_other,
+                access: &access_other,
+                selected_head: head,
+                feature_vector_q24: &features,
+                authorization: authorization.clone(),
+            },
+        ),
+        Err(Error::FeatureContract),
+    );
+    assert_eq!(std::fs::metadata(control.journal_path()).unwrap().len(), before_len);
+    assert!(control.get(&authorization.request_id).unwrap().effect_binding_digest.is_none());
+}
+
+#[cfg(unix)]
+#[test]
+fn denied_final_use_after_persisting_effect_remains_reconcile_only() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.durable-denied".into(), 3, grant(), Driver::default(),
+    )
+    .unwrap();
+    worker.load_model(100, manifest()).unwrap();
+    let (source, access, head, features, authorization) = scoped_shared_stem_fixture();
+    let binding = worker
+        .expected_stem_final_use_binding_v1(
+            100, &source, &access, head.clone(), &features, &authorization,
+        )
+        .unwrap();
+    let temp = tempfile::tempdir().unwrap();
+    let path = temp.path().join("denied.journal");
+    let mut control = assigned_stem_control_fixture(
+        &path, &worker, &source, &access, &head, &features, &authorization,
+    );
+    let (issuer, signed, _issuer_dir) = signed_stem_final_use_fixture(binding.clone());
+    let token = issuer.claim(&signed, &binding).unwrap();
+    issuer
+        .update_revocations(codex_hepta_contracts::FinalUseRevocations {
+            authority_epoch: 2,
+            revision: 2,
+            revoked_grant_ids: std::collections::BTreeSet::from([
+                signed.grant.grant_id.clone(),
+            ]),
+        })
+        .unwrap();
+    assert_eq!(
+        worker.run_verified_stem_feature_durably_v1(
+            &mut control,
+            &issuer,
+            token,
+            100,
+            VerifiedStemFeatureDispatchV1 {
+                source: &source,
+                access: &access,
+                selected_head: head,
+                feature_vector_q24: &features,
+                authorization: authorization.clone(),
+            },
+        ),
+        Err(Error::FinalUseDenied),
+    );
+    assert!(control.get(&authorization.request_id).unwrap().effect_binding_digest.is_some());
+    drop(control);
+    let recovered = DurableInferenceControl::open(&path, 16).unwrap();
+    assert_eq!(recovered.get(&authorization.request_id).unwrap().revision, 4);
+    assert!(recovered.get(&authorization.request_id).unwrap().effect_binding_digest.is_some());
+}

@@ -9,6 +9,8 @@ use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::VerifiedUseToken;
 use codex_hepta_infer_core::BoundStemNeuronRequestV1;
+use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::RequestState;
 use codex_hepta_infer_core::NeuronFeatureObservationV1;
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
@@ -146,6 +148,7 @@ pub enum Error {
     FeatureOutputMismatch,
     FeatureContract,
     FinalUseDenied,
+    DurableControl(String),
 }
 
 impl fmt::Display for Error {
@@ -874,7 +877,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
     /// (same authority instance), the exact binding, current revocation and
     /// expiry, and holds an active effect fence across the Worker call.
     /// No signing key or grant issuance exists in this Worker.
-    pub fn run_verified_stem_feature_receipt_v1(
+    pub(crate) fn run_verified_stem_feature_receipt_v1(
         &mut self,
         trusted_authority: &FinalUseAuthority,
         verified_use: VerifiedUseToken,
@@ -916,6 +919,81 @@ impl<D: ModelDriver + NeuronFeatureDriver> InferenceWorker<D> {
         let mut receipt = outcome?;
         receipt.final_use_binding_digest = Some(binding_digest);
         Ok(receipt)
+    }
+
+    /// Record a real fsync-backed one-shot dispatch fence in the EXISTING
+    /// inference.control owner before entering the independently signed
+    /// Final-use Worker effect. The effect is never replayed from a recovered
+    /// journal even if the process died after WAL commit but before Driver
+    /// contact or before a terminal acknowledgement.
+    ///
+    /// Caller responsibility: submit/reserve/assign this exact request using
+    /// DurableInferenceControl first, and independently authenticate Scope,
+    /// Stem artifact, current grant, issuer and Final-use token. No second
+    /// parallel execution ledger is created by this method.
+    ///
+    /// A returned typed Worker receipt is NOT a committed checkpoint.
+    /// The actual usage/output and terminal successor still require an
+    /// independent owner to call control.settle and CAS-commit the next state.
+    pub fn run_verified_stem_feature_durably_v1(
+        &mut self,
+        control: &mut DurableInferenceControl,
+        trusted_authority: &FinalUseAuthority,
+        verified_use: VerifiedUseToken,
+        now_ms: u64,
+        proposed: VerifiedStemFeatureDispatchV1<'_>,
+    ) -> Result<BoundStemFeatureExecutionV1, Error> {
+        let authorization = &proposed.authorization;
+        let binding = self.expected_stem_final_use_binding_v1(
+            now_ms,
+            proposed.source,
+            proposed.access,
+            proposed.selected_head.clone(),
+            proposed.feature_vector_q24,
+            authorization,
+        )?;
+        let binding_digest =
+            Digest32::of_bytes(&serde_json::to_vec(&binding).map_err(|_| Error::FinalUseDenied)?);
+        let record = control
+            .get(&authorization.request_id)
+            .ok_or(Error::FeatureContract)?;
+        let reservation = record.reservation.as_ref().ok_or(Error::FeatureContract)?;
+        let assignment = record.assignment.as_ref().ok_or(Error::FeatureContract)?;
+        // Refuse an already-effect-marked/recovered assignment, even if its
+        // final-use signature is otherwise valid and one-use nonce was
+        // independently rotated after the crash.
+        if record.state != RequestState::Assigned
+            || record.effect_binding_digest.is_some()
+            || record.request.principal_id != proposed.source.principal_id.to_string()
+            || record.request.request_id != authorization.request_id
+            || record.request.model_digest != authorization.model_digest
+            || record.request.payload_digest != authorization.payload_digest
+            || record.request.semantic_digest != self.grant.semantic_digest
+            || record.request.maximum_tokens != authorization.maximum_tokens
+            || record.request.deadline_ms != authorization.deadline_ms
+            || reservation.reservation_id != authorization.reservation_id
+            || reservation.maximum_tokens != authorization.reservation_maximum_tokens
+            || reservation.authority_epoch != self.grant.authority_epoch
+            || reservation.valid_until_ms <= now_ms
+            || assignment.worker_id != self.worker_id
+            || assignment.worker_generation != self.generation
+            || assignment.assignment_digest != Digest32::from_array(binding.request_sha256).to_string()
+        {
+            return Err(Error::FeatureContract);
+        }
+        let expected_revision = record.revision;
+        // Persist BEFORE consuming the token or entering a physical Driver.
+        // No caller-supplied digest, unsigned callback or synthetic receipt can
+        // turn an already-marked/recovered record into a second dispatch.
+        control
+            .begin_effect(&authorization.request_id, expected_revision, binding_digest.to_string())
+            .map_err(|error| Error::DurableControl(error.to_string()))?;
+        self.run_verified_stem_feature_receipt_v1(
+            trusted_authority,
+            verified_use,
+            now_ms,
+            proposed,
+        )
     }
 }
 

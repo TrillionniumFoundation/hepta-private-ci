@@ -170,3 +170,118 @@ fn invalid_event_is_rejected_before_append() {
     drop(reopened);
     std::fs::remove_file(path).expect("cleanup");
 }
+
+
+#[test]
+fn signed_effect_marker_is_fsynced_and_recovered_without_reexecution() {
+    let journal = path("signed-effect-recover");
+    let digest = "a".repeat(64);
+    {
+        let mut control = DurableInferenceControl::open(&journal, 32).expect("exclusive journal");
+        control.submit(100, request()).expect("submit");
+        control.reserve(100, "request.1", 1, reservation()).expect("reserve");
+        control.assign("request.1", 2, assignment()).expect("assign");
+        let entered = control
+            .begin_effect("request.1", 3, digest.clone())
+            .expect("durable pre-effect marker");
+        assert_eq!(entered.revision, 4);
+        assert_eq!(entered.state, RequestState::Assigned);
+        assert!(!entered.terminal_observed);
+        assert_eq!(
+            control.get("request.1").unwrap().effect_binding_digest.as_deref(),
+            Some(digest.as_str())
+        );
+        assert_eq!(
+            control.begin_effect("request.1", 4, digest.clone()),
+            Err(Error::InvalidTransition),
+        );
+        assert_eq!(
+            control.begin_effect("request.1", 3, digest.clone()),
+            Err(Error::StaleRevision),
+        );
+        assert_eq!(
+            DurableInferenceControl::open(&journal, 32).unwrap_err(),
+            Error::WriterUnavailable,
+        );
+    }
+    let mut recovered =
+        DurableInferenceControl::open(&journal, 32).expect("replay exact effect fence");
+    let existing = recovered.get("request.1").expect("replayed record");
+    assert_eq!(existing.state, RequestState::Assigned);
+    assert_eq!(existing.revision, 4);
+    assert_eq!(existing.effect_binding_digest.as_deref(), Some(digest.as_str()));
+    // This is not evidence of a completed effect; a restarted Worker MUST
+    // reconcile rather than resending the already marked dispatch.
+    assert_eq!(
+        recovered.begin_effect("request.1", 4, digest),
+        Err(Error::InvalidTransition),
+    );
+    drop(recovered);
+    std::fs::remove_file(journal).expect("cleanup");
+}
+
+#[test]
+fn failed_effect_marker_never_mutates_the_wal_or_allows_late_cancelled_entry() {
+    let journal = path("effect-denials");
+    let mut control = DurableInferenceControl::open(&journal, 16).expect("journal");
+    control.submit(100, request()).expect("submit");
+    let original_len = std::fs::metadata(&journal).unwrap().len();
+    assert_eq!(
+        control.begin_effect("request.1", 1, "b".repeat(64)),
+        Err(Error::InvalidTransition),
+    );
+    assert_eq!(
+        control.begin_effect("request.1", 1, "0".repeat(64)),
+        Err(Error::InvalidDigest("final-use binding")),
+    );
+    assert_eq!(std::fs::metadata(&journal).unwrap().len(), original_len);
+    control.reserve(100, "request.1", 1, reservation()).expect("reserve");
+    control.assign("request.1", 2, assignment()).expect("assign");
+    control.cancel("request.1", 3).expect("cancel");
+    assert_eq!(
+        control.begin_effect("request.1", 4, "b".repeat(64)),
+        Err(Error::InvalidTransition),
+    );
+    assert!(control.get("request.1").unwrap().effect_binding_digest.is_none());
+    drop(control);
+    std::fs::remove_file(journal).expect("cleanup");
+}
+
+#[test]
+fn effect_marker_does_not_forge_terminal_receipt_or_change_legacy_settlement() {
+    let journal = path("effect-settle");
+    let mut control = DurableInferenceControl::open(&journal, 8).expect("journal");
+    control.submit(100, request()).expect("submit");
+    control.reserve(100, "request.1", 1, reservation()).expect("reserve");
+    control.assign("request.1", 2, assignment()).expect("assign");
+    control
+        .begin_effect("request.1", 3, "a".repeat(64))
+        .expect("pre-effect write");
+    let observation = TerminalObservation {
+        request_id: "request.1".to_string(),
+        reservation_id: "reservation.1".to_string(),
+        worker_id: "worker.1".to_string(),
+        worker_generation: 2,
+        model_digest: "1".repeat(64),
+        payload_digest: "2".repeat(64),
+        terminal_observed: false,
+        terminal_status: None,
+        output_digest: None,
+        consumed_tokens: 0,
+        usage_units: 0,
+    };
+    let settled = control
+        .settle("request.1", 4, "d".repeat(64), observation)
+        .expect("record uncertain terminal observation");
+    assert_eq!(settled.state, RequestState::Indeterminate);
+    assert!(!settled.terminal_observed);
+    assert_eq!(
+        control.get("request.1").unwrap().effect_binding_digest.as_deref(),
+        Some("a".repeat(64).as_str()),
+    );
+    drop(control);
+    let reopened = DurableInferenceControl::open(&journal, 8).unwrap();
+    assert_eq!(reopened.get("request.1").unwrap().state, RequestState::Indeterminate);
+    drop(reopened);
+    std::fs::remove_file(journal).expect("cleanup");
+}
