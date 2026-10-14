@@ -2812,3 +2812,102 @@ fn original_evidence_bound_corrupt_marker_refuses_dispatch_without_replaying_non
     ));
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
 }
+
+#[cfg(unix)]
+#[test]
+fn original_evidence_bound_cold_reopen_refuses_previously_committed_signed_effect() {
+    use crate::original_evidence_neuron::OriginalEvidenceBoundNeuronWorkerV1;
+    use crate::original_evidence_neuron::OriginalEvidenceWorkerBootstrapErrorV1;
+    use crate::original_evidence_neuron::OriginalEvidenceWriterConfigV1;
+
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("signed-effect-requires-independent-recovery.wal");
+    let signer = SigningKey::from_bytes(&[123; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut original = original_evidence_bound_fixture(
+        &signer,
+        dir.path(),
+        model.clone(),
+        CountingScalarDriver(calls.clone()),
+        1,
+        path.clone(),
+    );
+    original
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    let completed = original.poll_and_execute(106).unwrap();
+    assert_eq!(completed.outcomes.len(), 1);
+    assert!(completed.outcomes[0].result.is_ok());
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert_eq!(original.observe_original_frontier().unwrap().committed_rows, 3);
+    drop(original);
+
+    // A new signed nonce can be presented after process recovery; the
+    // original signed nonce alone cannot prove the new empty queue has
+    // reconciled every prior physical effect/request ID.
+    let reset_candidate = runner_with_driver(
+        &signer,
+        dir.path(),
+        model,
+        CountingScalarDriver(calls.clone()),
+        1,
+    );
+    let scope_frontier = reset_candidate.scope_frontier.clone().unwrap();
+    let attempted = OriginalEvidenceBoundNeuronWorkerV1::open(
+        reset_candidate.worker,
+        reset_candidate.authority,
+        MicrobatchLimitsV1 {
+            max_pending: 10,
+            max_batch_size: 1,
+            max_lanes_per_poll: 4,
+            max_wait_ms: 5,
+        },
+        scope_frontier,
+        OriginalEvidenceWriterConfigV1 {
+            wal_path: path,
+            queue_capacity: 128,
+            group_size: 64,
+            flush_interval_ms: 60_000,
+        },
+    );
+    assert_eq!(
+        attempted.err(),
+        Some(OriginalEvidenceWorkerBootstrapErrorV1::PriorHistoryNeedsReconciliation)
+    );
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
+
+#[cfg(unix)]
+#[test]
+fn original_evidence_bound_empty_preprovisioned_marker_does_not_fake_prior_effects() {
+    use codex_hepta_agentd::DurablePhaseMetricSinkV1;
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let dir = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let path = dir.path().join("empty-preprovisioned-original.wal");
+    let provisioned = DurablePhaseMetricSinkV1::open(&path, 128, 64, 60_000).unwrap();
+    assert_eq!(provisioned.read_local_frontier().unwrap().committed_rows, 0);
+    provisioned.flush().unwrap();
+    drop(provisioned);
+
+    // This is a real original file + owner marker with no previous effect.
+    // Genesis is allowed; only a nonempty committed WAL is denied pending
+    // independent original Control reconciliation.
+    let signer = SigningKey::from_bytes(&[124; 32]);
+    let (model, _request, _key) = fixture_request();
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let reopened = original_evidence_bound_fixture(
+        &signer,
+        dir.path(),
+        model,
+        CountingScalarDriver(calls.clone()),
+        1,
+        path,
+    );
+    assert_eq!(reopened.pending(), 0);
+    assert_eq!(reopened.observe_original_frontier().unwrap().committed_rows, 0);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+}
