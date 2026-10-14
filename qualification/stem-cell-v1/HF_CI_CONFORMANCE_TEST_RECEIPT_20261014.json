@@ -1,0 +1,167 @@
+{
+  "schema": "hepta.hf-ci-conformance-observation.v1",
+  "date": "2026-10-14",
+  "remote_parent": "cc8d4d844ec8bde7e9e1f161c8fc85c51e331081",
+  "tested_code_commit": "08864e3195d4443422d5f12db157370e7c6e6314",
+  "pull_request": 1785,
+  "branch": "research/shared-stem-hf-ci-conformance-20261014",
+  "change_scope": "clean CI dependency, complete test accounting and independent HF diagnostics; runtime unchanged",
+  "source_blobs": {
+    ".github/workflows/hepta-neuron-next-round-matrix.yml": {
+      "sha256": "a5cb34c2e5c57fc2a5c1150e0021f3d5ede0d1dbcbe03580be8087cf8347b5ee",
+      "git_blob_sha1": "fda15bd1322e4a6f6108fa56866c7bcc9caa80c2"
+    },
+    "qualification/stem-cell-v1/run_checked_tests.py": {
+      "sha256": "46749263e947a3c7df47cdabc5de7a2075b43171f48cf4aa28affff925d52e0d",
+      "git_blob_sha1": "416b914fdd41ab07ad55290e5a21c872655e4647"
+    },
+    "qualification/stem-cell-v1/test_checked_tests.py": {
+      "sha256": "199ae71be61b2b57f56ab6e63b774946a354c7cf34771526bdcb70fd228e1493",
+      "git_blob_sha1": "08add8e7359a8058ba371c33697f9e7226eb7f0f"
+    }
+  },
+  "local_regressions": {
+    "tests": 398,
+    "shard_counts": [
+      48,
+      48,
+      51,
+      51,
+      51,
+      47,
+      51,
+      51
+    ],
+    "all_exit_codes_zero": true,
+    "unique_exact_coverage": true,
+    "errors": 0,
+    "failures": 0,
+    "skips": 0,
+    "complete_runs": 1,
+    "source_surface": "CPU source slice; not full repository",
+    "interrupted_full_run_retained": "first-tests.log; no successful exit claimed"
+  },
+  "remote_regressions": {
+    "run_id": 38514353010,
+    "job_id": 115689680215,
+    "conclusion": "success",
+    "checkout_sha": "c203fb60959b2f6b551024cb9d7c70b082cc5533",
+    "python": "3.13.16",
+    "planned": 398,
+    "executed": 398,
+    "errors": 0,
+    "failures": 0,
+    "skips": 0,
+    "expected_failures": 0,
+    "discovery_errors": [],
+    "exact_local_test_id_match": true,
+    "all_38_remote_test_file_hashes_match_local": true,
+    "required_package": "packaging==25.0"
+  },
+  "baseline_failure": {
+    "run_id": 38513037442,
+    "job_id": 115685624515,
+    "reported_tests": 295,
+    "errors": 25,
+    "cause": "safetensors.torch imports packaging.version; clean CPU job omitted packaging",
+    "local_preinstalled_package_masked_gap": true
+  },
+  "baseline_stock_hf_checks": {
+    "run_id": 38513037442,
+    "job_id": 115685624890,
+    "checkout_sha": "d2166bc07391bca7703c18ed50c42a86a294d66f",
+    "encoder_passed": 3,
+    "causal_cache_passed": 2,
+    "conclusion": "success",
+    "random_small_architecture_not_pretrained": true
+  },
+  "public_encoder_observation": {
+    "run_id": 38513037442,
+    "job_id": 115688868903,
+    "checkout_sha": "d2166bc07391bca7703c18ed50c42a86a294d66f",
+    "model_id": "answerdotai/ModernBERT-base",
+    "upstream_revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
+    "snapshot_sha256": "43138a5545ce4e7996d91735f2330519a8913304d3abf257f6cfdfbe0541283d",
+    "weight_file_sha256": "340ac08b74eef0d7bdec2d7981a6a3d4249bf0e6aab60634b72ad02c2b8023a9",
+    "checkpoint_parameters": 149655232,
+    "feature_parameters": 149014272,
+    "feature_dimension": 768,
+    "inference_calls": 3,
+    "repeated_input_exact": true,
+    "different_input_distinguished": true,
+    "partial_known_formula_work": 27647347432,
+    "unknown_operator_calls": {
+      "aten.matmul.default": 198,
+      "aten.numpy_T.default": 3,
+      "aten.to.dtype": 474,
+      "aten.to.dtype_layout": 72
+    },
+    "complete_inference_flops": null,
+    "energy_joules": null,
+    "paired_experiment_completed": false,
+    "parameter_training_performed": false,
+    "independent_material_approval": false,
+    "efficacy_established": false
+  },
+  "verified_downloaded_artifacts": [
+    {
+      "filename": "pr1773-failed-regressions.zip",
+      "run_id": 38513037442,
+      "job_id": 115685624515,
+      "artifact_id": 11870392752,
+      "sha256": "4e6f8dcc1730bafd6a51cf6bdb8c7449f1de7a69c14129175b3f83037c6c4eee"
+    },
+    {
+      "filename": "pr1773-hf-conformance.zip",
+      "run_id": 38513037442,
+      "job_id": 115685624890,
+      "artifact_id": 11870059336,
+      "sha256": "3eb4158eeed357633abe85c9e7d349c2f5d1200703480f5a07df6943f5067b76"
+    },
+    {
+      "filename": "pr1773-public-encoder-canary.zip",
+      "run_id": 38513037442,
+      "job_id": 115688868903,
+      "artifact_id": 11871680078,
+      "sha256": "8e51ec60cc321db57fa450dfbb19c71e1bea700d49e911937d468ccd24d0a993"
+    },
+    {
+      "filename": "pr1785-complete-regressions.zip",
+      "run_id": 38514353010,
+      "job_id": 115689680215,
+      "artifact_id": 11870444796,
+      "sha256": "1dffff3e852b63aecf4721c94c52f84fd98986e32d315dc04ec91e427ef19cef"
+    },
+    {
+      "filename": "pr1785-hf-conformance.zip",
+      "run_id": 38514353010,
+      "job_id": 115689680373,
+      "artifact_id": 11871472011,
+      "sha256": "863435e762863e8d9fe84aa38e3c140a53b5fdfafb1861a50b541ea4733157a8"
+    }
+  ],
+  "checks": {
+    "compileall": "passed",
+    "git_diff_check": "passed",
+    "workflow_yaml": "passed",
+    "repo_wide_rust_fmt": "not_run: source slice lacks codex-rs/just",
+    "full_repository_native_GPU_tests": "not_run"
+  },
+  "production_authorized": false,
+  "model_or_training_algorithm_changed": false,
+  "full_system_costs_verified": false,
+  "independent_learning_gain_established": false,
+  "updated_HF_job": {
+    "run_id": 38514353010,
+    "job_id": 115689680373,
+    "checkout_sha": "c203fb60959b2f6b551024cb9d7c70b082cc5533",
+    "encoder_passed": 3,
+    "causal_cache_passed": 2,
+    "all_planned_executed": true,
+    "errors": 0,
+    "failures": 0,
+    "skips": 0,
+    "result": "success",
+    "model_source": "actual stock small random architectures; not pretrained"
+  }
+}
