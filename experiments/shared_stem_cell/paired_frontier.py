@@ -56,7 +56,7 @@ def audit(campaign, *, baseline):
     arms = campaign["arms"]
     if type(arms) is not list or not 2 <= len(arms) <= 16:
         raise InvalidFrontier("2..16 observed arms required")
-    details, canonical_cases, names = {}, None, set()
+    details, canonical_cases, names, canonical_scope = {}, None, set(), None
     for arm in arms:
         if type(arm) is not dict or set(arm) != {
             "name", "model_sha256", "stem_sha256", "scope", "isolated_process",
@@ -68,6 +68,10 @@ def audit(campaign, *, baseline):
         if not _name(name) or name in names or not _name(arm["scope"]):
             raise InvalidFrontier("arm identity/scope collision")
         names.add(name)
+        if canonical_scope is None:
+            canonical_scope = arm["scope"]
+        elif arm["scope"] != canonical_scope:
+            raise InvalidFrontier("cross-scope arm comparison forbidden")
         for k in ("model_sha256", "stem_sha256"):
             if not _sha(arm[k]):
                 raise InvalidFrontier("unbound model/Stem")
