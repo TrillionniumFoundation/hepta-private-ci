@@ -135,6 +135,8 @@ pub use cell_split_execution_owner::CellSplitExecutionPortV1;
 pub use cell_split_execution_owner::CellSplitExecutionReceiptV1;
 pub use cell_split_execution_owner::CellSplitExecutionStepV1;
 pub use cell_split_execution_owner::CellSplitExecutionTranscriptV1;
+pub use cell_split_execution_owner::CellSplitMetricsAcknowledgedStepV1;
+pub use cell_split_execution_owner::CellSplitVerifiedMetricsLedgerV1;
 pub use cell_split_execution_owner::CellSplitOwnerTrustV1;
 pub use cell_split_execution_owner::cell_split_execution_receipt_digest_v1;
 pub use cell_split_execution_owner::cell_split_execution_signing_payload_v1;

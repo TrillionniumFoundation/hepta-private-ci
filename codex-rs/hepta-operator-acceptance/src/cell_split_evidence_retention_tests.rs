@@ -259,3 +259,64 @@ fn local_binding_is_non_authorizing_even_when_retained_readback_is_valid() {
         "fixture validates an offline signature, not live owner custody"
     );
 }
+
+fn fixture_metrics_ledger(
+    transcript: &CellSplitExecutionTranscriptV1,
+) -> crate::CellSplitVerifiedMetricsLedgerV1 {
+    crate::CellSplitVerifiedMetricsLedgerV1 {
+        plan_digest: transcript.plan.digest().expect("frozen plan"),
+        transcript_digest: transcript.transcript_digest.clone(),
+        acknowledged_steps: transcript
+            .receipts
+            .iter()
+            .enumerate()
+            .map(|(index, receipt)| crate::CellSplitMetricsAcknowledgedStepV1 {
+                index,
+                step: receipt.intent.step,
+                owner_id: receipt.intent.owner_id.clone(),
+                idempotency_key: receipt.intent.idempotency_key.clone(),
+                committed_owner_receipt_digest: receipt.receipt_digest.clone(),
+                original_metrics_ack_frame_digest: "ae".repeat(32),
+            })
+            .collect(),
+        all_four_original_signed_owner_readbacks: true,
+        all_four_original_metrics_ack_frames: true,
+        production_activation_authorized: false,
+    }
+}
+
+#[test]
+fn forensic_metrics_ack_binding_requires_all_four_original_commits() {
+    let source = transcript();
+    let ledger = fixture_metrics_ledger(&source);
+    // Only a synthetic test for tuple consistency. Public production API
+    // cannot accept this local struct: it re-reads the REAL locked owner.
+    assert!(verify_evidence_original_ledger_binding_v1(&ledger, &source).is_ok());
+    assert_eq!(ledger.acknowledged_steps.len(), 4);
+    assert!(!ledger.production_activation_authorized);
+    for change in 0..13 {
+        let mut altered = ledger.clone();
+        match change {
+            0 => altered.plan_digest = "11".repeat(32),
+            1 => altered.transcript_digest = "22".repeat(32),
+            2 => altered.acknowledged_steps.pop(),
+            3 => altered.acknowledged_steps.swap(1, 2),
+            4 => altered.acknowledged_steps[0].owner_id = "other.owner".into(),
+            5 => altered.acknowledged_steps[1].idempotency_key = "be".repeat(32),
+            6 => altered.acknowledged_steps[2].committed_owner_receipt_digest =
+                "cc".repeat(32),
+            7 => altered.acknowledged_steps[3].original_metrics_ack_frame_digest =
+                "00".repeat(32),
+            8 => altered.acknowledged_steps[2].original_metrics_ack_frame_digest =
+                "not-a-canonical-digest".into(),
+            9 => altered.all_four_original_signed_owner_readbacks = false,
+            10 => altered.all_four_original_metrics_ack_frames = false,
+            11 => altered.production_activation_authorized = true,
+            _ => altered.acknowledged_steps[0].index = 2,
+        }
+        assert!(
+            verify_evidence_original_ledger_binding_v1(&altered, &source).is_err(),
+            "case {change}: fabricated or missing original ACK cannot qualify"
+        );
+    }
+}

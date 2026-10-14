@@ -176,6 +176,8 @@ pub struct CellSplitEvidenceObserverReceiptV1 {
     pub original_sample_binding_digest: String,
     pub independently_retained_record_digest: String,
     pub independently_retained_revision: u64,
+    pub original_metrics_ack_ledger_digest: String,
+    pub original_metrics_ack_ledger_verified_twice: bool,
     pub online_retention_verified_twice: bool,
     pub production_activation_authorized: bool,
 }
@@ -541,6 +543,47 @@ fn evidence_digest_shape(value: &str) -> bool {
         && value.bytes().any(|byte| byte != b'0')
 }
 
+/// Only results from the live, read-only, exclusively locked original
+/// coordinator qualify. This checker is deliberately private: caller-created
+/// digests, even when well-formed, are never accepted as physical evidence.
+#[cfg(unix)]
+fn verify_evidence_original_ledger_binding_v1(
+    ledger: &crate::CellSplitVerifiedMetricsLedgerV1,
+    transcript: &CellSplitExecutionTranscriptV1,
+) -> Result<(), CellSplitObserverJoinErrorV1> {
+    if ledger.production_activation_authorized
+        || !ledger.all_four_original_signed_owner_readbacks
+        || !ledger.all_four_original_metrics_ack_frames
+        || ledger.plan_digest
+            != transcript
+                .plan
+                .digest()
+                .map_err(|_| CellSplitObserverJoinErrorV1::Invalid("frozen metrics plan"))?
+        || ledger.transcript_digest != transcript.transcript_digest
+        || ledger.acknowledged_steps.len() != 4
+        || transcript.receipts.len() != 4
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "original Ledger Evidence ACK prefix is missing or untrusted",
+        ));
+    }
+    for (index, item) in ledger.acknowledged_steps.iter().enumerate() {
+        let receipt = &transcript.receipts[index];
+        if item.index != index
+            || item.step != receipt.intent.step
+            || item.owner_id != receipt.intent.owner_id
+            || item.idempotency_key != receipt.intent.idempotency_key
+            || item.committed_owner_receipt_digest != receipt.receipt_digest
+            || !evidence_digest_shape(&item.original_metrics_ack_frame_digest)
+        {
+            return Err(CellSplitObserverJoinErrorV1::Invalid(
+                "original Ledger ACK not bound to independently signed effect",
+            ));
+        }
+    }
+    Ok(())
+}
+
 /// Domain-separated witness bytes. This function can never sign by itself.
 #[cfg(unix)]
 pub fn cell_split_evidence_retention_signing_payload_v1(
@@ -607,6 +650,7 @@ pub fn verify_cell_split_evidence_retention_join_v1<
     trusted_supervisor_monotonic_key: &VerifyingKey,
     supervisor_monotonic: &mut H,
     live_owners: &mut CellSplitUnixEffectPortV1,
+    original_metrics_ledger: &mut crate::CellSplitExecutionOwnerV1<CellSplitUnixEffectPortV1>,
     step_index: usize,
     candidate: &CellSplitEvidenceMetricBindingV1,
     trusted_retention_domain: &str,
@@ -643,6 +687,14 @@ pub fn verify_cell_split_evidence_retention_join_v1<
             "Evidence retention authority is not independently pinned",
         ));
     }
+
+    // Original frame audit uses the independent locked Split Ledger owner,
+    // not a caller-controlled metrics ACK digest or a reconstructed marker.
+    // Transcript validation above must run before any live owner readback.
+    let original_ack_before = original_metrics_ledger
+        .verified_metrics_ack_ledger_v1()
+        .map_err(|error| CellSplitObserverJoinErrorV1::Owner(error.to_string()))?;
+    verify_evidence_original_ledger_binding_v1(&original_ack_before, transcript)?;
 
     // Two fresh observations bracket the actual four original owner RPC
     // readbacks. Neither the candidate metric nor the frozen transcript
@@ -695,12 +747,23 @@ pub fn verify_cell_split_evidence_retention_join_v1<
             "retained Evidence minimum changed during four-owner readbacks",
         ));
     }
+    let original_ack_after = original_metrics_ledger
+        .verified_metrics_ack_ledger_v1()
+        .map_err(|error| CellSplitObserverJoinErrorV1::Owner(error.to_string()))?;
+    verify_evidence_original_ledger_binding_v1(&original_ack_after, transcript)?;
+    if original_ack_before != original_ack_after {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "original durable metrics ACK ledger changed during Observer readback",
+        ));
+    }
     Ok(CellSplitEvidenceObserverReceiptV1 {
         join: current,
         effect_receipt_digest: transcript.receipts[step_index].receipt_digest.clone(),
         original_sample_binding_digest: sha256(&canonical_json(candidate)?),
         independently_retained_record_digest: first.retained_record_digest,
         independently_retained_revision: first.retained_revision,
+        original_metrics_ack_ledger_digest: sha256(&canonical_json(&original_ack_after)?),
+        original_metrics_ack_ledger_verified_twice: true,
         online_retention_verified_twice: true,
         production_activation_authorized: false,
     })
