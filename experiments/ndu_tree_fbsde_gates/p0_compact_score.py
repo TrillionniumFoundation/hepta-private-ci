@@ -6,6 +6,7 @@ import hashlib
 import json
 import math
 from collections import Counter
+import zipfile
 from pathlib import Path
 
 SCHEMA="hepta.p0.compact.physical-trial.v1"
@@ -36,7 +37,7 @@ def exact_pair_binomial(recovered,lost):
     k=min(recovered,lost)
     return min(1., 2*sum(math.comb(n,j) for j in range(k+1))/2**n)
 
-def score(source, labels, reports, *, source_digest, labels_digest, report_digests):
+def score(source, labels, reports, *, source_digest, labels_digest, report_digests, historical_path=None):
     check(type(source) is dict and source.get('schema')=='hepta.p0.compact.source-only.v1' and
           source.get('authority')=='DENY_ALL' and source.get('cross_sectional_not_future') is True,
           "source mode")
@@ -119,10 +120,73 @@ def score(source, labels, reports, *, source_digest, labels_digest, report_diges
                 'granite_recovers':r,'granite_loses':l,'delta_accuracy':(r-l)/len(ids),
                 'exploratory_exact_mcnemar_p_uncorrected':exact_pair_binomial(r,l),
                 'source_groups_clustered_by_identity':False}
+    historical = None
+    if historical_path is not None:
+        # Import only a separately authored independent archived numeric auditor,
+        # never the trainer; reject if the authoritative historical artifact is
+        # missing or its bytes/model-source identities do not match.
+        from real_model_artifact_replay import ARCHIVE_SHA256, replay
+        reviewed = replay(historical_path, expected_archive_sha256=ARCHIVE_SHA256)
+        check(reviewed['source_cases']==128 and reviewed['independent_numeric_and_case_replay'] is True and
+              reviewed['independent_model_or_source_authentication'] is False and
+              reviewed['production_accepted'] is False, "historical authority/coverage")
+        with zipfile.ZipFile(historical_path) as z:
+            old_cases=json.loads(z.read('stem-agnews-new-source-panel.json'))['cases']
+            old_gemma=json.loads(z.read('stem-gemma-fresh-arms.json'))
+            old_laya=json.loads(z.read('stem-laya-fresh-arm.json'))
+        new_cases={row['case_id']:row for row in cases if row['split']=='new_holdout'}
+        check(len(old_cases)==len(new_cases)==128, 'historical source/slot mismatch')
+        for case in old_cases:
+            check(case['case_id'] in new_cases and
+                  all(case.get(k)==new_cases[case['case_id']].get(k) for k in
+                      ('group_id','joint_input_digest','source_digest','split')) and
+                  truth_by[case['case_id']]==case['label'], 'historical data or ground-truth mismatch')
+        history={}
+        for a in old_gemma+[old_laya]:
+            name=a['arm_id']
+            check(name not in history and name in reviewed['metrics'],'unexpected historical arm')
+            rows={}
+            for row in a['rows']:
+                cid=row['case_id']
+                check(cid in new_cases and cid not in rows and
+                      row['source_digest']==new_cases[cid]['source_digest'] and
+                      row['joint_input_digest']==new_cases[cid]['joint_input_digest'] and
+                      type(row['prob_sports']) in (int,float) and
+                      math.isfinite(row['prob_sports']) and 0 <= row['prob_sports'] <= 1,
+                      'invalid historical row')
+                rows[cid]=row
+            check(set(rows)==set(new_cases),'historical missing rows')
+            history[name]=rows
+        check(set(history)=={'gemma2_frozen_head','gemma2_trained_head',
+                             'gemma2_trained_head_scaled_1024','laya421_frozen'},
+              'historical arm inventory')
+        cross={}
+        for model, new_rows in selected.items():
+            for new_arm in ARMS:
+                for old_name,old_rows in history.items():
+                    recovered=lost=0
+                    for cid in sorted(new_cases):
+                        y=bool(truth_by[cid])
+                        now=(new_rows[cid]['probs'][new_arm]>=.5)==y
+                        then=(old_rows[cid]['prob_sports']>=.5)==y
+                        recovered+=int(now and not then)
+                        lost+=int(then and not now)
+                    cross[f'{model}.{new_arm}__vs__{old_name}']={
+                        'new_correct_only':recovered,'historical_correct_only':lost,
+                        'delta_accuracy':(recovered-lost)/128,
+                        'exploratory_exact_mcnemar_p_uncorrected':exact_pair_binomial(recovered,lost)}
+        historical={'workflow_run':reviewed['workflow_run'],
+                    'artifact_sha256':reviewed['verified_local_artifact_sha256'],
+                    'historical_arms':reviewed['metrics'],
+                    'cross_model_paired_on_identical_val2_sources':cross,
+                    'model_weights_and_sources_independently_authenticated':False,
+                    'same_Head_structure_training_budget_and_cpu_cost':False,
+                    'four_model_equal_resource_winner_eligible':False,
+                    'production_accepted':False}
     return {'schema':'hepta.p0.compact.independent-source-score.v1',
             'source_digest':source_digest,'labels_digest':labels_digest,'report_sha256':report_digests,
             'cohorts':'same pinned AGNews family, original test + val2 source-disjoint but not longitudinal',
-            'models':result,'paired':paired,
+            'models':result,'paired':paired,'historical_context':historical,
             'interpretation':'descriptive only; Head/train/total compute not equal to Laya/Gemma historical controls',
             'independent_numeric_replay':True,'independent_source_authentication':False,
             'independent_model_execution_authentication':False,'pretraining_overlap_ruled_out':False,
@@ -135,11 +199,12 @@ def main():
     p.add_argument('--source',required=True);p.add_argument('--labels',required=True)
     p.add_argument('--granite',required=True);p.add_argument('--mmbert',required=True)
     p.add_argument('--output',required=True)
+    p.add_argument('--historical',help="exact frozen Gemma/Laya archive for descriptive cross-model replay")
     a=p.parse_args()
     paths={'granite97':a.granite,'mmbert_small':a.mmbert}
     scores=score(read(a.source),read(a.labels),{k:read(v) for k,v in paths.items()},
                  source_digest=file_digest(a.source),labels_digest=file_digest(a.labels),
-                 report_digests={k:file_digest(v) for k,v in paths.items()})
+                 report_digests={k:file_digest(v) for k,v in paths.items()},historical_path=a.historical)
     with Path(a.output).open('xb') as f:f.write(canon(scores))
     print(json.dumps({'score_sha256':file_digest(a.output),'production_accepted':False,'authority':'DENY_ALL'}))
 if __name__=='__main__':main()

@@ -83,3 +83,14 @@ PYTHONPATH=experiments/ndu_tree_fbsde_gates \
  python -m unittest discover -s experiments/ndu_tree_fbsde_gates \
  -p 'test_p0_compact_paired.py' -v
 ```
+
+## Source-identical historical four-model context
+
+The scorer optionally consumes the **exact same frozen historical ZIP**,
+independently invokes the existing `real_model_artifact_replay` verifier,
+checks every original Gemma/Laya probability against the 128 val2 cases and
+independent local labels, and records all Granite/mmBERT-vs-Laya/Gemma paired
+correctness disagreements. This enables descriptive *four-backbone* quality
+replay without suggesting equal Head structure, calibration budget, total
+compute, source signing or future-time model efficacy. No cross-model winner is
+selected and `four_model_equal_resource_winner_eligible=false`.

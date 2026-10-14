@@ -1,7 +1,13 @@
 name: Hepta P0 compact real pretrained paired AG News (DENY_ALL)
 on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/p0_compact_paired.py'
+      - 'experiments/ndu_tree_fbsde_gates/p0_compact_score.py'
+      - 'experiments/ndu_tree_fbsde_gates/test_p0_compact_paired.py'
+      - 'experiments/ndu_tree_fbsde_gates/P0_COMPACT_REAL_EXECUTION.md'
+      - '.github/workflows/hepta-p0-compact-physical.yml'
   workflow_dispatch:
-  workflow_call:
 permissions:
   contents: read
   actions: read
@@ -19,7 +25,7 @@ jobs:
       TOKENIZERS_PARALLELISM: 'false'
       HF_HUB_DISABLE_TELEMETRY: '1'
       PYTHONHASHSEED: '0'
-      OUTPUT_ROOT: /tmp/p0-compact-output
+      OUTPUT_ROOT: ${{ runner.temp }}/p0-compact-output
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -111,11 +117,12 @@ jobs:
             --labels "$RUNNER_TEMP/p0-secret/future-labels.json" \
             --granite "$OUTPUT_ROOT/granite97.report.json" \
             --mmbert "$OUTPUT_ROOT/mmbert_small.report.json" \
+            --historical "$RUNNER_TEMP/p0-secret/reference-11886761368.zip" \
             --output "$OUTPUT_ROOT/independent-scores.json" | tee "$OUTPUT_ROOT/score-stdout.json"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: hepta-p0-compact-real-pretrained-deny-all-${{ github.run_id }}
-          path: /tmp/p0-compact-output/
+          path: ${{ runner.temp }}/p0-compact-output/
           retention-days: 7
           if-no-files-found: warn
