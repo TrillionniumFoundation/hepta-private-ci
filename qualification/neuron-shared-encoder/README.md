@@ -254,3 +254,22 @@ This C checker accepts self-reported metrics only as
 `SCHEMA_COMPLETE_UNVERIFIED`: it cannot authenticate host, worker,
 real model, signature, timing, external truth or recovery. The test suite
 uses deliberately synthetic contract fixtures, not real measurements.
+
+
+### Explicit A/B/C joint gate and retention constraints
+
+After collecting individually pinned A5, B and C reports, pass
+`{"A": {...}, "B": {...}, "C": {...}}` to the `abc-joint` command.
+The gate requires all five **real local model** A5 arms, learned Head
+improvement against both frozen controls across the B future windows,
+complete C stage telemetry, and the same dataset identity in all reports.
+Even an entirely complete operator-authored bundle remains
+`RESEARCH_REVIEW_CANDIDATE_UNVERIFIED`, never a production selection.
+Neither file-presence nor an asserted signature field is accepted as NDU
+or effect authorization.
+
+B requires the learned Head to start from exactly the immutable frozen
+Head weights; the first future prediction must use that same initialization.
+C requires an explicit `max_retained_task_score_drop` preregistered
+before evaluating later modality stages. Any old-task score loss over the
+limit blocks the research precheck instead of being hidden by new-task gain.

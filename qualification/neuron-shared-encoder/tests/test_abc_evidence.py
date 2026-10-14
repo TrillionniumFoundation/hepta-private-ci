@@ -42,7 +42,9 @@ def b_fixture():
             'row_ids': [r['row_id'] for r in rows], 'probabilities': p,
         }
     snapshots['frozen_head']['head_digest'] = D('f')
+    snapshots['learned_head']['initial_head_digest'] = D('f')
     snapshots['learned_head']['head_digests_by_row'] = [D('9') for _ in rows]
+    snapshots['learned_head']['head_digests_by_row'][8] = D('f')
     records = []
     for i, row in enumerate(rows):
         if row['split'] != 'future':
@@ -50,7 +52,7 @@ def b_fixture():
         records.append({
             'row_id': row['row_id'], 'future_window': row['future_window'],
             'frozen_head_digest': D('f'),
-            'learned_head_digest_before': D('9'),
+            'learned_head_digest_before': snapshots['learned_head']['head_digests_by_row'][i],
             'input_digest': canonical_digest({
                 'state': row['state'], 'question': row['question'], 'options': row['options'],
             }),
@@ -114,6 +116,7 @@ def c_fixture():
         'dataset_sha256': D('d'), 'protocol_sha256': D('b'),
         'paired_text_workload_sha256': D('c'),
         'source_commit': 'f'*40, 'host_id': 'host-1',
+        'max_retained_task_score_drop': 0.01,
         'stages': stages,
     }
 
@@ -217,3 +220,34 @@ def test_b_precommit_unknown_fields_fail_closed():
     with pytest.raises(ValueError):
         threeway_prequential_audit(rows, D('d'), bundle,
                                    bootstrap=100, min_future_groups=1)
+
+
+def test_b_learned_head_must_start_with_exact_frozen_initial_weights():
+    rows, evidence = b_fixture()
+    evidence['snapshots']['learned_head']['initial_head_digest'] = D('9')
+    with pytest.raises(ValueError, match='identical initialization'):
+        threeway_prequential_audit(rows, D('d'), evidence,
+                                   bootstrap=100, min_future_groups=1)
+
+
+def test_c_retention_regression_above_preregistered_limit_blocks():
+    m = c_fixture()
+    m['stages'][3]['tasks']['text_decision']['score'] = .65
+    result = multimodal_cost_audit(m)
+    assert result['status'] == 'BLOCKED'
+    assert any('negative transfer' in x for x in result['issues'])
+
+
+def test_c_missing_retention_limit_blocks_even_with_full_telemetry():
+    m = c_fixture()
+    del m['max_retained_task_score_drop']
+    assert multimodal_cost_audit(m)['status'] == 'BLOCKED'
+
+
+def test_evidence_loader_rejects_duplicate_json_keys(tmp_path):
+    from hashlib import sha256
+    path = tmp_path / 'bad.json'
+    body = b'{"dataset_sha256":"a","dataset_sha256":"b"}'
+    path.write_bytes(body)
+    with pytest.raises(ValueError, match='duplicate'):
+        _pinned_json(str(path), sha256(body).hexdigest())

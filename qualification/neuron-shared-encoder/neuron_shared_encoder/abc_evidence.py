@@ -103,6 +103,8 @@ def threeway_prequential_audit(
         raise ValueError('no-change, frozen and learned artifacts must be distinct')
     frozen_digest = snapshots['frozen_head'].get('head_digest')
     head_before = snapshots['learned_head'].get('head_digests_by_row')
+    if snapshots['learned_head'].get('initial_head_digest') != frozen_digest:
+        raise ValueError('learned and frozen Heads lack identical initialization')
     if (not is_digest(frozen_digest) or
             not isinstance(head_before, list) or len(head_before) != len(rows) or
             any(not is_digest(d) for d in head_before)):
@@ -113,6 +115,8 @@ def threeway_prequential_audit(
     if not _finite(threshold, positive=True) or threshold >= 1:
         raise ValueError('precommitted acceptance threshold required')
     ordered, windows = _require_timeline(rows)
+    if head_before[ordered[0]] != frozen_digest:
+        raise ValueError('first future learned Head must equal frozen initialization')
     records = journal.get('records')
     if not isinstance(records, list) or len(records) != len(ordered):
         raise ValueError('one ordered, label-free precommit record per future row required')
@@ -220,6 +224,10 @@ def multimodal_cost_audit(manifest: dict) -> dict:
             problems.append(f'missing study identity {name}')
     if not is_commit_ref(manifest.get('source_commit')) or not isinstance(manifest.get('host_id'), str) or not manifest['host_id']:
         problems.append('missing exact source commit or target host')
+    allowed_drop = manifest.get('max_retained_task_score_drop')
+    if not _finite(allowed_drop) or allowed_drop > 1:
+        problems.append('preregistered retained-task regression limit required')
+        allowed_drop = 0
     stages = manifest.get('stages')
     if not isinstance(stages, list) or [s.get('stage') if isinstance(s, dict) else None for s in stages] != list(STAGES):
         problems.append('exact text -> vision -> audio -> video stages required')
@@ -260,9 +268,11 @@ def multimodal_cost_audit(manifest: dict) -> dict:
                 problems.append(f'{name}: invalid {task} truth task cohort')
                 continue
             if task in seen_tasks:
-                old_pin, old_n, _ = seen_tasks[task]
+                old_pin, old_n, old_score = seen_tasks[task]
                 if (old_pin, old_n) != (value['dataset_sha256'], value['cases']):
                     problems.append(f'{name}: changed previously frozen {task} cohort')
+                if value['score'] < old_score - allowed_drop - 1e-9:
+                    problems.append(f'{name}: negative transfer above registered limit for {task}')
             seen_tasks[task] = (value['dataset_sha256'], value['cases'], value['score'])
         cohort = stage.get('scales')
         if not isinstance(cohort, list) or [r.get('cell_count') if isinstance(r, dict) else None for r in cohort] != list(SCALES):
