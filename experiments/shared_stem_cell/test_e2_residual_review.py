@@ -45,6 +45,7 @@ class TestReviewer(unittest.TestCase):
     def test_duplicate_prediction(self):self.deny(lambda x:x[3]['arms']['residual_2k']['predictions'].__setitem__(0,copy.deepcopy(x[3]['arms']['residual_2k']['predictions'][1])))
     def test_different_label_and_source(self):self.deny(lambda x:x[3]['arms']['from_zero']['predictions'][0].update(joint_input_digest='f'*64))
     def test_frozen_base_parameter_mismatch(self):self.deny(lambda x:x[3].update(frozen_base_parameters_counted_as_shared_storage=0))
+    def test_fake_frozen_base_replication(self):self.deny(lambda x:x[3].update(frozen_base_weight_storage_shared_among_residual_arms=False))
     def test_invented_extra_encoder_forward(self):self.deny(lambda x:x[3].update(additional_encoder_feature_forwards=1))
     def test_forged_no_change(self):self.deny(lambda x:x[3].update(independent_no_change_production_arm_present=True))
 
