@@ -272,7 +272,13 @@ fn scope_reader_is_write_once_and_queued_identity_survives_failed_rebind() {
         Err(BatchWorkerErrorV1::InvalidBinding)
     );
     worker
-        .enqueue(100, "model".into(), request, key.clone(), signed(&signer, binding))
+        .enqueue(
+            100,
+            "model".into(),
+            request,
+            key.clone(),
+            signed(&signer, binding),
+        )
         .unwrap();
     assert_eq!(worker.pending(), 1);
     assert_eq!(
@@ -1833,14 +1839,8 @@ fn coalesced_batch_denies_stale_other_scope_without_claiming_either_nonce() {
         truncate_outputs: false,
         reorder_outputs: false,
     };
-    let mut worker = runner_with_driver_using_frontier(
-        &signer,
-        dir.path(),
-        model,
-        driver,
-        2,
-        frontier.clone(),
-    );
+    let mut worker =
+        runner_with_driver_using_frontier(&signer, dir.path(), model, driver, 2, frontier.clone());
     let signed_a = signed_member(
         &signer,
         neuron_batch_final_use_binding_v1("worker-one", &first_key, &first).unwrap(),
