@@ -22,6 +22,14 @@ import time
 
 SCHEMA = "hepta.public-stem-material-plan.v8"
 RECEIPT = "hepta.public-stem-material-physical-receipt.v8"
+PROBE_TEXTS = ("Birds migrate during winter.", "冬季有些鸟类迁徙。")
+
+def probe_input_digest(texts: tuple[str, ...]) -> str:
+    if (type(texts) is not tuple or not 1 <= len(texts) <= 32
+            or any(type(t) is not str or not t or len(t.encode("utf-8")) > 8192 for t in texts)):
+        raise AdmissionError("invalid fixed probe input census")
+    return sha(canonical(["hepta.public-stem-probe-input.v9", list(texts)]))
+
 SHA40 = re.compile(r"[a-f0-9]{40}\Z")
 SHA64 = re.compile(r"[a-f0-9]{64}\Z")
 WEIGHT = re.compile(r"model(?:-[0-9]{5}-of-[0-9]{5})?\.safetensors\Z")
@@ -269,7 +277,7 @@ def physical_probe(plan: dict, root: Path, material: dict) -> dict:
     started, cpu_start = time.perf_counter_ns(), time.process_time_ns()
     model = LocalEncoder(root, material["manifest"], maximum_tokens=plan["profile"]["max_tokens"])
     p = plan["profile"]
-    phrases = ["Birds migrate during winter.", "冬季有些鸟类迁徙。"]
+    phrases = list(PROBE_TEXTS)
     with torch.inference_mode():
         def encode():
             z = model.encode(phrases, pooling=p["pooling"])
@@ -295,7 +303,9 @@ def physical_probe(plan: dict, root: Path, material: dict) -> dict:
     cpu_ns = time.process_time_ns() - cpu_start
     return {"schema": RECEIPT,"candidate":plan["candidate"],"repo_id":plan["repo_id"],
             "revision":plan["revision"],"snapshot_digest":model.identity,
-            "plan_sha256":sha(canonical(plan)),"pooling":p["pooling"],
+            "plan_sha256":sha(canonical(plan)),
+            "probe_input_sha256":probe_input_digest(PROBE_TEXTS),
+            "probe_count":len(PROBE_TEXTS),"pooling":p["pooling"],
             "normalization":p["normalization"], "feature_width":p["width"],
             "feature_sha256":sha(first.detach().contiguous().numpy().tobytes()),
             "forward_calls":model.forward_calls,"wall_ns":wall_ns,"cpu_ns":cpu_ns,
