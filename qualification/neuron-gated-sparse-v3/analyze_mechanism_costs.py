@@ -40,13 +40,14 @@ def ratio(numerator: int | float, denominator: int | float) -> str:
 def analyze(report: Any) -> dict[str, Any]:
     require(isinstance(report, dict) and set(report) == {
         "schema", "source_evidence_kind", "target_host_qualified",
-        "trained_artifacts_qualified", "ndu_eligible", "trace_sha256",
+        "trained_artifacts_qualified", "ndu_eligible", "parameter_budgets_matched", "trace_sha256",
         "arms", "scales", "results", "warning",
     }, "not an exact, complete mechanism fixture matrix")
     require(report["schema"] == SCHEMA and
             report["source_evidence_kind"] == EVIDENCE_KIND,
             "source is not the expected untrained fixture matrix")
-    for field in ("target_host_qualified", "trained_artifacts_qualified", "ndu_eligible"):
+    for field in ("target_host_qualified", "trained_artifacts_qualified", "ndu_eligible",
+                  "parameter_budgets_matched"):
         require(report[field] is False, f"{field}: forbidden authority assertion")
     require(report["arms"] == list(ARMS) and report["scales"] == list(SCALES),
             "different or incomplete registered comparison arms or scales")
