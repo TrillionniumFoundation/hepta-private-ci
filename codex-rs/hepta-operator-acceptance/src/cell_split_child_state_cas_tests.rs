@@ -48,6 +48,12 @@ fn digest(value: &str) -> Digest32 {
 fn g(value: u64) -> Generation {
     Generation::new(value).expect("fixture generation")
 }
+
+/// Both projected child Heads must satisfy the production SparseConfig
+/// minimum width (five), not a special small-fixture exemption.
+fn production_valid_partitions() -> Vec<Vec<usize>> {
+    vec![vec![0, 2, 4, 6, 8], vec![1, 3, 5, 7, 9]]
+}
 fn transform(kind: CellStateTransformKindV1, mapping: Digest32) -> CellStateTransformV1 {
     CellStateTransformV1 {
         kind,
@@ -98,7 +104,7 @@ fn contract() -> CellSplitV1 {
             compatibility_digest: digest(&format!("port-compat-{index}")),
         })
         .collect();
-    let partitions = vec![vec![0, 2], vec![1, 3]];
+    let partitions = production_valid_partitions();
     let value = CellSplitV1 {
         split_id: id("split.integration"),
         proposer_id: id("proposer"),
@@ -177,7 +183,7 @@ fn parent_checkpoint() -> codex_hepta_neuron::SparseCheckpoint {
         model_digest: digest("model"),
         normalization_digest: digest("normalization"),
         generation: g(7),
-        width: 4,
+        width: 10,
         top_k: 1,
         temporal_decay_q24: Q / 2,
         inhibition_gain_q24: Q,
@@ -197,8 +203,8 @@ fn parent_checkpoint() -> codex_hepta_neuron::SparseCheckpoint {
         input_digest: digest("input"),
         sequence: 1,
         monotonic_micros: 100,
-        drive_q24: vec![Q, Q / 2, Q / 4, 0],
-        prediction_q24: vec![0; 4],
+        drive_q24: vec![Q, Q / 2, Q / 4, 0, 0, 0, 0, 0, 0, 0],
+        prediction_q24: vec![0; 10],
     };
     sparse_tick(&configuration, &input, None)
         .expect("parent state")
@@ -214,8 +220,8 @@ fn prepared() -> (CellStateMigrationV1, JournalAnchor) {
     };
     let plan = NeuronSplitPlan::from_contract(
         &contract,
-        vec![vec![0, 2], vec![1, 3]],
-        vec![vec![0, 2], vec![1, 3]],
+        production_valid_partitions(),
+        production_valid_partitions(),
     )
     .expect("typed projection plan");
     let migration = CellStateMigrationV1::begin(
