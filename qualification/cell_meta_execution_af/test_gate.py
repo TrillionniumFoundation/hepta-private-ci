@@ -54,6 +54,7 @@ def synth() -> dict:
                     "outcome_receipt_sha256": sha(f"{study}/{window}/{arm}/finalized"),
                     "evaluation_receipt_sha256": sha(f"{study}/{window}/{arm}/evaluated"),
                     "model_bundle_sha256": sha(f"{study}/{arm}/bundle"),
+                    "model_bundle_frozen_at": "2026-10-01T00:00:00Z",
                     "independent_episodes": 600, "effective_sample_size": 450.0,
                     "predictions_committed_at": "2026-10-02T12:00:00Z" if window == "future_1" else "2026-10-04T12:00:00Z",
                     "outcomes_finalized_at": "2026-10-03T12:00:00Z" if window == "future_1" else "2026-10-05T12:00:00Z",
@@ -84,6 +85,7 @@ def synth() -> dict:
                 resource_rows.append({
                     "mode": mode, "logical_cells": scale, "load_profile": load,
                     "host_id": "benchmark-host", "runtime_profile_sha256": sha("runtime"),
+                    "device_profile_sha256": sha("device"),
                     "attempt_trace_sha256": sha(f"{scale}|{load}|attempted-requests"),
                     "terminal_receipt_sha256": sha(f"{mode}/{scale}/{load}/terminal"),
                     "active_concurrency": 8 if load == "fixed_active" else scale // 4,
@@ -110,7 +112,7 @@ def synth() -> dict:
                 direct = route == "direct_effect"
                 codex_rows.append({
                     "route": route, "task_id": task, "case": case,
-                    "host_id": "benchmark-host",
+                    "host_id": "benchmark-host", "device_profile_sha256": sha("device"),
                     "task_input_sha256": sha(task + "/same-input"),
                     "policy_sha256": sha("bound-policy-" + case),
                     "terminal_observation_sha256": sha(f"{route}/{task}/{case}/terminal"),
@@ -127,6 +129,7 @@ def synth() -> dict:
                 })
     result["codex"] = {
         "host_id": "benchmark-host", "task_suite_sha256": sha("task-suite"),
+        "device_profile_sha256": sha("device"),
         "task_ids": ["shell-task", "refactor-task"], "runs": codex_rows,
     }
     result["split_safety"] = {
@@ -391,6 +394,60 @@ class AfEvidenceTests(unittest.TestCase):
     def test_split_restart_duplicate_effect_blocked(self):
         self.d["split_safety"]["restarts"][1]["no_duplicate_effect"] = False
         check_bad(self.d, "split_safety", "recovery")
+
+
+    def test_model_bundle_replaced_between_future_windows_blocked(self):
+        target = next(r for r in self.d["studies"]["A"]["records"]
+                      if r["arm"] == "learning_head" and r["window"] == "future_2")
+        target["model_bundle_sha256"] = sha("post-future-1-model")
+        check_bad(self.d, "A", "bundle changed")
+
+    def test_model_bundle_frozen_after_future_outcomes_blocked(self):
+        target = self.d["studies"]["D"]["records"][0]
+        target["model_bundle_frozen_at"] = "2026-10-04T00:00:00Z"
+        check_bad(self.d, "D", "not frozen")
+
+    def test_codex_failed_unauthorized_effect_blocked(self):
+        row = next(r for r in self.d["codex"]["runs"]
+                   if r["route"] == "full_codex_agent" and r["case"] == "allowed")
+        row["status"] = "failed"
+        row["authorized"] = False
+        check_bad(self.d, "F", "unauthorized external effect")
+
+    def test_codex_indeterminate_unauthorized_effect_blocked(self):
+        row = next(r for r in self.d["codex"]["runs"]
+                   if r["route"] == "app_server_provider" and r["case"] == "allowed")
+        row["status"] = "indeterminate"
+        row["authorized"] = False
+        check_bad(self.d, "F", "unauthorized external effect")
+
+    def test_codex_orphan_owner_receipt_blocked(self):
+        row = next(r for r in self.d["codex"]["runs"]
+                   if r["route"] == "full_codex_agent" and r["case"] == "allowed")
+        row["status"] = "failed"
+        row["external_effect_observed"] = False
+        check_bad(self.d, "F", "receipt without observed effect")
+
+    def test_codex_truthy_nonboolean_flag_blocked(self):
+        row = next(r for r in self.d["codex"]["runs"]
+                   if r["route"] == "app_server_provider" and r["case"] == "allowed")
+        row["status"] = "failed"
+        row["authorized"] = "false"
+        row["external_effect_observed"] = False
+        row["effect_owner_receipt_sha256"] = None
+        check_bad(self.d, "F", "malformed authorization")
+
+    def test_E_same_host_changed_device_profile_blocked(self):
+        self.d["resources"]["runs"][0]["device_profile_sha256"] = sha("different-device")
+        check_bad(self.d, "E", "device profile drift")
+
+    def test_F_different_device_profile_blocked(self):
+        self.d["codex"]["device_profile_sha256"] = sha("different-device")
+        check_bad(self.d, "F", "does not match E")
+
+    def test_F_row_device_profile_drift_blocked(self):
+        self.d["codex"]["runs"][0]["device_profile_sha256"] = sha("new-gpu")
+        check_bad(self.d, "F", "device profile drift")
 
     def test_cli_missing_real_bundle_is_blocked(self):
         with tempfile.TemporaryDirectory() as td:
