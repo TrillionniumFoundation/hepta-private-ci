@@ -3,6 +3,8 @@ torch>=2.0
 pytest>=8
 # Checkpoint readback uses bounded, no-pickle tensor serialization.
 safetensors==0.7.0
+# safetensors.torch's CPU serialization needs NumPy at runtime.
+numpy==2.2.6
 # Isolated shadow Ed25519 witness verification; no production signing authority.
 cryptography==46.0.4
 # Real Laya requires its own pinned package and compatible transformers release.
