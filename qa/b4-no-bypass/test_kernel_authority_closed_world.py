@@ -237,6 +237,59 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "run_pinned_cell_split_execution_with_admission_v1", entry,
             "CLI binary cannot mint its own NDU/Selector admission",
         )
+        # Rust strings and comments are removed by the shared lexical scan.
+        # A fake guard in either must not satisfy the production ingress proof.
+        binary_code = self.lexical_code(
+            "codex-rs/hepta-operator-acceptance/src/main.rs"
+        )
+        self.assertEqual(len(binary_code), len(binary))
+        executable_guard = re.search(r"\bif\s+action\s*!=", binary_code[start:end])
+        live_delegate = re.search(
+            r"\brun_pinned_cell_split_execution_v1\s*\(", binary_code[start:end]
+        )
+        self.assertIsNotNone(executable_guard, "CLI denial is merely a comment")
+        self.assertIsNotNone(live_delegate, "CLI delegation changed without review")
+        if executable_guard is not None and live_delegate is not None:
+            self.assertEqual(
+                executable_guard.start(),
+                entry.index('if action != "transcript"'),
+                "raw-source guard was spoofed in a Rust string or comment",
+            )
+            self.assertLess(
+                executable_guard.start(), live_delegate.start(),
+                "executable CLI denial must precede delegation",
+            )
+        self.assertNotIn(
+            "run_pinned_cell_split_execution_with_admission_v1", binary_code[start:end],
+            "stand-alone CLI must not self-grant NDU/Selector admission",
+        )
+        legacy_path = "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"
+        legacy_raw = (ROOT / legacy_path).read_text(encoding="utf-8")
+        legacy_code = self.lexical_code(legacy_path)
+        self.assertEqual(len(legacy_raw), len(legacy_code))
+        begin_legacy = legacy_raw.index("pub fn run_pinned_cell_split_execution_v1(")
+        end_legacy = legacy_raw.index(
+            "pub fn run_pinned_cell_split_execution_with_admission_v1", begin_legacy
+        )
+        raw_scope = legacy_raw[begin_legacy:end_legacy]
+        executable_scope = legacy_code[begin_legacy:end_legacy]
+        live_legacy_guard = re.search(r"\bif\s+action\s*==", executable_scope)
+        live_legacy_delegate = re.search(
+            r"\brun_pinned_cell_split_execution_with_admission_v1\s*\(",
+            executable_scope,
+        )
+        self.assertIsNotNone(live_legacy_guard, "legacy denial is comment-only")
+        self.assertIsNotNone(live_legacy_delegate, "legacy dispatch changed")
+        if live_legacy_guard is not None and live_legacy_delegate is not None:
+            self.assertEqual(
+                live_legacy_guard.start(),
+                raw_scope.index('if action == "advance"'),
+                "raw-source legacy guard was spoofed",
+            )
+            self.assertLess(
+                live_legacy_guard.start(), live_legacy_delegate.start(),
+                "legacy denial must precede the admitted execution interface",
+            )
         self.assertEqual(
             self.public_free_functions(
                 "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"
