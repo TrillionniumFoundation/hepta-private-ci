@@ -63,8 +63,9 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
         cap, arm = m['cap'], m['arm']
         relative = f'{cap}/{arm}.safetensors'
         require(m.get('weight_file') == relative and type(m.get('optimizer_steps')) is int
-                and m['optimizer_steps'] == receipt.get('candidate_optimizer_steps'),
-                'trained file/steps changed')
+                and m['optimizer_steps'] == receipt.get('candidate_optimizer_steps')
+                and m.get('quantization_saturations') == 0,
+                'trained file/steps/Q24 publication clamp changed')
         path = root / relative
         require(not path.is_symlink() and not path.parent.is_symlink(),
                 'symlinked Cell model path')
@@ -176,9 +177,9 @@ def main() -> int:
     args = p.parse_args()
     try:
         result = evaluate(
-            Path(args.binary).resolve(strict=True), args.binary_sha256,
-            Path(args.trained_root).resolve(strict=True), args.receipt_sha256,
-            Path(args.trace).resolve(strict=True), args.trace_sha256,
+            Path(args.binary), args.binary_sha256,
+            Path(args.trained_root), args.receipt_sha256,
+            Path(args.trace), args.trace_sha256,
             synthetic_canary=args.synthetic_canary)
         with Path(args.report).open('x',encoding='utf-8') as f:
             json.dump(result, f, sort_keys=True, indent=2)
