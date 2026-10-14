@@ -2235,11 +2235,7 @@ fn original_evidence_wal_scalar_success_has_fsynced_three_phase_rows_after_reope
     use std::os::unix::fs::PermissionsExt;
 
     let dir = tempfile::tempdir().unwrap();
-    std::fs::set_permissions(
-        dir.path(),
-        std::fs::Permissions::from_mode(0o700),
-    )
-    .unwrap();
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let path = dir.path().join("signed-scalar-original-evidence.wal");
     let signer = SigningKey::from_bytes(&[113; 32]);
     let (model, request, key) = fixture_request();
@@ -2291,10 +2287,8 @@ fn original_evidence_wal_scalar_success_has_fsynced_three_phase_rows_after_reope
     drop(evidence);
     let recovered = DurablePhaseMetricSinkV1::open(&path, 128, 64, 60_000)
         .expect("verified reopen of original Evidence WAL + marker");
-    assert_eq!(
-        recovered.read_local_frontier().expect("cold frontier"),
-        durable
-    );
+    let cold_frontier = recovered.read_local_frontier().expect("cold frontier");
+    assert_eq!(cold_frontier, durable);
 }
 
 #[cfg(unix)]
@@ -2304,11 +2298,7 @@ fn original_evidence_wal_native_batch_commits_all_six_rows_before_success() {
     use std::os::unix::fs::PermissionsExt;
 
     let dir = tempfile::tempdir().unwrap();
-    std::fs::set_permissions(
-        dir.path(),
-        std::fs::Permissions::from_mode(0o700),
-    )
-    .unwrap();
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let path = dir.path().join("signed-native-batch-original-evidence.wal");
     let signer = SigningKey::from_bytes(&[114; 32]);
     let (model, first, key) = fixture_request();
@@ -2368,9 +2358,9 @@ fn original_evidence_wal_native_batch_commits_all_six_rows_before_success() {
     drop(evidence);
     let reopened = DurablePhaseMetricSinkV1::open(&path, 128, 64, 60_000)
         .expect("reopen original WAL after signed native batch");
-    assert_eq!(
-        reopened.read_local_frontier().expect("cold native frontier"),
-        fsynced
-    );
+    let cold_frontier = reopened
+        .read_local_frontier()
+        .expect("cold native frontier");
+    assert_eq!(cold_frontier, fsynced);
     assert_eq!(invocations.load(std::sync::atomic::Ordering::SeqCst), 1);
 }
