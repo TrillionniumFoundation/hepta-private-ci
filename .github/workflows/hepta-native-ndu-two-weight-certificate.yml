@@ -1,0 +1,54 @@
+name: Native NDU two-weight exact certificate
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-ndu/research/native_stem_abcd/exact_two_weight/**'
+      - '.github/workflows/hepta-native-ndu-two-weight-certificate.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-rational-certificate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - name: Check out precise head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.13'
+      - name: Install independent diagnostic dependencies
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0
+      - name: Recompute all rational claims and preserve logs
+        shell: bash
+        run: |
+          set -euo pipefail
+          SRC="$GITHUB_WORKSPACE/codex-rs/hepta-ndu/research/native_stem_abcd/exact_two_weight"
+          OUT="$RUNNER_TEMP/ndu-two-weight"
+          mkdir -p "$OUT"
+          git rev-parse HEAD > "$OUT/HEAD.txt"
+          python -m pip freeze > "$OUT/ENVIRONMENT.txt"
+          cd "$SRC"
+          python -m compileall -q .
+          python -m unittest -v test_certificate 2>&1 | tee "$OUT/TESTS.log"
+          python certificate.py > "$OUT/CERTIFICATE.json"
+          python numerical_checks.py > "$OUT/NUMERICAL_CHECK.json"
+          python quadrature_diagnostics.py > "$OUT/QUADRATURE_NUMERICAL.json"
+          cp QUADRATURE_DIAGNOSTICS.csv "$OUT/QUADRATURE_DIAGNOSTICS.csv"
+          sha256sum certificate.py test_certificate.py numerical_checks.py quadrature_diagnostics.py "$OUT/CERTIFICATE.json" > "$OUT/SHA256.txt"
+      - name: Retain result and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-ndu-two-weight-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/ndu-two-weight
+          if-no-files-found: error
+          retention-days: 14
