@@ -542,6 +542,25 @@ fn amcn_epoch_shadow_adversarial_iterators_reject_before_unbounded_allocation() 
 }
 
 #[test]
+fn amcn_epoch_shadow_artifact_owner_digest_wire_contract_is_identical() {
+    let registry = HashSet::from([d("artifact.a"), d("artifact.b")]);
+    let withdrawn = HashSet::from([d("artifact.a")]);
+    let zero = HashSet::new();
+    let enrolled: Digest32 =
+        "0f472a85e85215b6440135d42f8fd4c56d42669c3cedd3d97b4d76dcde627476"
+            .parse().expect("enrolled golden SHA256");
+    let quarantined: Digest32 =
+        "1b176c46a94ca03dbf7c3ed6b37de4095d9a1280d19b71db0fd5373c5a7a5865"
+            .parse().expect("quarantined golden SHA256");
+    let empty: Digest32 =
+        "a6b17edb4928f12990dcb277b125c56eee9d877eeeae2a20b2520e9d24db13c0"
+            .parse().expect("empty quarantine golden SHA256");
+    assert_eq!(digest_manifest_set(ENROLLED_DOMAIN, &registry), enrolled);
+    assert_eq!(digest_manifest_set(QUARANTINED_DOMAIN, &withdrawn), quarantined);
+    assert_eq!(digest_manifest_set(QUARANTINED_DOMAIN, &zero), empty);
+}
+
+#[test]
 fn amcn_epoch_shadow_steady_state_1024_calls_are_bounded_header_checks_not_store_scans() {
     let shared = index();
     let req = request();

@@ -198,3 +198,28 @@ pub fn project_verified_amcn_artifact_epoch_v1(
         authority: AuthorityPosture::DENY_ALL,
     })
 }
+
+
+#[cfg(test)]
+#[test]
+fn amcn_artifact_epoch_digest_wire_contract_matches_neuron_v1() {
+    let registered = BTreeSet::from([
+        Digest32::of_bytes(b"artifact.a"),
+        Digest32::of_bytes(b"artifact.b"),
+    ]);
+    let one_revoked = BTreeSet::from([Digest32::of_bytes(b"artifact.a")]);
+    let empty_revocations = BTreeSet::new();
+    let expected_enrolled: Digest32 =
+        "0f472a85e85215b6440135d42f8fd4c56d42669c3cedd3d97b4d76dcde627476"
+            .parse().expect("fixed SHA-256 enrolment digest");
+    let expected_revoked: Digest32 =
+        "1b176c46a94ca03dbf7c3ed6b37de4095d9a1280d19b71db0fd5373c5a7a5865"
+            .parse().expect("fixed SHA-256 quarantine digest");
+    let expected_empty: Digest32 =
+        "a6b17edb4928f12990dcb277b125c56eee9d877eeeae2a20b2520e9d24db13c0"
+            .parse().expect("fixed SHA-256 empty quarantine digest");
+    assert_eq!(digest_manifest_set(ENROLLED_DOMAIN, &registered), expected_enrolled);
+    assert_eq!(digest_manifest_set(QUARANTINED_DOMAIN, &one_revoked), expected_revoked);
+    assert_eq!(digest_manifest_set(QUARANTINED_DOMAIN, &empty_revocations),
+               expected_empty);
+}
