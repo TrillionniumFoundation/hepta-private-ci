@@ -176,10 +176,19 @@ def replay(manifest_path: Path, producer: Path, report_sha256: str) -> dict:
                           "input_sha256": sha(canonical([source["scope"], source["text"]]))},
                 f"frozen feature row drift at {idx}")
     x = matrix(raw, "features")
+    feature_profile = sha(canonical({"width": x.shape[1],
+                                     "representation": "masked_mean_float32",
+                                     "model": preflight["model_manifest_sha256"],
+                                     "maximum_tokens": plan.get("maximum_tokens", 512)}))
+    bound = {"manifest_sha256": sha(checked_bytes(manifest_path)),
+             "stem_sha256": preflight["model_manifest_sha256"],
+             "dataset_sha256": preflight["dataset_sha256"],
+             "producer_source_sha256": report["source_sha256"],
+             "feature_profile_sha256": feature_profile}
     require(x.shape[0] == len(data) and fm.get("shape") == list(x.shape)
+            and fm.get("dtype") == "float32"
             and fm.get("tensor_bytes") == x.nbytes
-            and fm.get("binding", {}).get("stem_sha256") == preflight["model_manifest_sha256"]
-            and fm["binding"].get("dataset_sha256") == preflight["dataset_sha256"],
+            and fm.get("binding") == bound,
             "frozen feature content/binding changed")
     # tensor hash: same torch.float32 naming/canonical data as original source.
     require(fm.get("tensor_sha256") == sha(canonical(["torch.float32", list(x.shape)])
