@@ -614,6 +614,50 @@ mod tests {
     }
 
     #[test]
+    fn final_owned_conversion_refreshes_lease_epoch_and_head_identity() {
+        let (source, access, selected_head, values) = fixture();
+        let view = borrow_stem_feature_request_v1(
+            &source, &access, &selected_head, &values,
+        )
+        .expect("initial view");
+        assert_eq!(view.feature_vector_q24().as_ptr(), values.as_ptr());
+        assert!(!view.feature_ref_digest().is_zero());
+        assert!(!view.authority().grants_any());
+        let mut refreshed = access.clone();
+        refreshed.now_ms = 950;
+        let ready = view
+            .materialize_owned_after_refresh(&source, &refreshed, &selected_head)
+            .expect("within lease");
+        assert_eq!(ready.request.feature_vector_q24, values);
+        assert!(!ready.authority.grants_any());
+
+        refreshed.now_ms = source.lease_expires_at_ms;
+        assert_eq!(
+            view.materialize_owned_after_refresh(&source, &refreshed, &selected_head),
+            Err(StemFeatureBindingError::LeaseExpired)
+        );
+        refreshed.now_ms = 950;
+        refreshed.authority_epoch += 1;
+        assert_eq!(
+            view.materialize_owned_after_refresh(&source, &refreshed, &selected_head),
+            Err(StemFeatureBindingError::AuthorityEpochMismatch)
+        );
+        refreshed.authority_epoch = access.authority_epoch;
+        refreshed.revocation_observed = true;
+        assert_eq!(
+            view.materialize_owned_after_refresh(&source, &refreshed, &selected_head),
+            Err(StemFeatureBindingError::Revoked)
+        );
+        refreshed.revocation_observed = false;
+        let mut other_head = selected_head.clone();
+        other_head.head_model_id = id("different-cell-head");
+        assert_eq!(
+            view.materialize_owned_after_refresh(&source, &refreshed, &other_head),
+            Err(StemFeatureBindingError::IncompatibleHead)
+        );
+    }
+
+    #[test]
     fn borrowed_view_fails_closed_on_payload_or_selected_head_drift() {
         let (source, access, mut head, vector) = fixture();
         let mut tampered = vector.clone();
