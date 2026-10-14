@@ -130,7 +130,14 @@ hardware parity require independent native tests.
 `encoder_forward_rows` from actual calls to the adapter; counts are not
 inferred from the logical Cell count. The public-input key excludes Cell
 state but includes principal, purpose, generation, authority epoch,
-Encoder/tokenizer/normalizer digests and evaluation split. It cannot
+Encoder/tokenizer/normalizer digests, evaluation split, **and source-group
+partition by default**. Identical public questions across independent
+source groups are not automatically entitled to share an Encoder result.
+The opt-in `research_synthetic_cross_source=True` ablation deliberately
+drops this partition only in the non-authorizing synthetic-hash CLI path,
+and reports `SYNTHETIC_UNVERIFIED_UPPER_BOUND`. A real model without
+independently verified cross-source entitlement conservatively retains
+source-group isolation, even if this eliminates all such reuse. It cannot
 bypass a real source-entitlement or signed final-use check. The local
 Cell-state branch in this V3 control uses a **synthetic hash**, explicitly
 labelled `SYNTHETIC_HASH_NOT_DEPLOYABLE`. Both variants undergo equal-budget
@@ -151,10 +158,20 @@ It fails closed on scope/dataset/row/order mismatch, invalid probabilities
 or identical artifacts. It reports grouped future-window bootstrap 95%
 intervals for Brier improvement, 15-bin ECE, NLL, OOD detection AUROC and
 future source-group negative-transfer fraction. The optional positive
-*shadow signal* requires at least 30 future groups, positive lower CI and
-zero materially degraded groups; it is **not** an NDU decision. The
-independent Evaluator must still verify causal improvement and receipt
-authenticity; Selector and Executor remain separate owners.
+*retrospective statistical signal* requires at least 30 future groups,
+positive lower CI and zero materially degraded groups. It is reported as
+`RETROSPECTIVE_POSITIVE_UNVERIFIED`, **not** an NDU decision or a
+causal learning claim. V3 now inspects optional per-future-row
+`prediction_committed_at_by_row` maps in both snapshots and checks each
+declared prediction timestamp precedes the outcome's timezone-aware
+`event_time`. Missing, partial, naive or late timestamps are reported
+as `MISSING_OR_INVALID`. Even complete ordered claims remain
+`TEMPORAL_ORDER_CONSISTENT_UNVERIFIED`; untrusted JSON timestamps and
+SHA-256 pins cannot prove independent precommit or absence of
+future-label leakage. `causal_learning_verified` and final-use stay false.
+The independent Evaluator must still verify actual precommitted predictions,
+causal improvement and receipt authenticity; Selector and Executor remain
+separate owners.
 
 ### E5 — complete host telemetry schema, no fabricated measurements
 
