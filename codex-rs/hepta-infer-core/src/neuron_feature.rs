@@ -29,6 +29,37 @@ pub struct NeuronFeatureRequestV1 {
     pub expected_output_width: usize,
 }
 
+/// Borrow-only representation of a V1 neuron-feature request. The encoding
+/// and digest match the original owned V1 contract byte for byte.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct NeuronFeatureRequestViewV1<'a> {
+    pub request_id: &'a StableId,
+    pub generation: Generation,
+    pub model_id: &'a StableId,
+    pub encoder_digest: Digest32,
+    pub head_digest: Digest32,
+    pub weights_digest: Digest32,
+    pub input_digest: Digest32,
+    pub feature_vector_q24: &'a [i64],
+    pub expected_output_width: usize,
+}
+
+impl<'a> From<&'a NeuronFeatureRequestV1> for NeuronFeatureRequestViewV1<'a> {
+    fn from(value: &'a NeuronFeatureRequestV1) -> Self {
+        Self {
+            request_id: &value.request_id,
+            generation: value.generation,
+            model_id: &value.model_id,
+            encoder_digest: value.encoder_digest,
+            head_digest: value.head_digest,
+            weights_digest: value.weights_digest,
+            input_digest: value.input_digest,
+            feature_vector_q24: &value.feature_vector_q24,
+            expected_output_width: value.expected_output_width,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronModelRuntimeTupleV1 {
     pub model_id: StableId,
@@ -105,11 +136,19 @@ impl StdError for NeuronFeatureContractError {}
 pub fn neuron_feature_request_digest_v1(
     request: &NeuronFeatureRequestV1,
 ) -> Result<Digest32, NeuronFeatureContractError> {
-    validate_request(request)?;
+    neuron_feature_request_view_digest_v1(&NeuronFeatureRequestViewV1::from(request))
+}
+
+/// Compute the exact V1 digest directly from a borrowed, read-only Q24 slice.
+/// No intermediate Vec or change to the V1 domain separator is introduced.
+pub fn neuron_feature_request_view_digest_v1(
+    request: &NeuronFeatureRequestViewV1<'_>,
+) -> Result<Digest32, NeuronFeatureContractError> {
+    validate_request_view(request)?;
     let mut bytes = b"hepta.inference.neuron-feature-request.v1".to_vec();
-    push_id(&mut bytes, &request.request_id)?;
+    push_id(&mut bytes, request.request_id)?;
     bytes.extend_from_slice(&request.generation.get().to_be_bytes());
-    push_id(&mut bytes, &request.model_id)?;
+    push_id(&mut bytes, request.model_id)?;
     for digest in [
         request.encoder_digest,
         request.head_digest,
@@ -118,7 +157,7 @@ pub fn neuron_feature_request_digest_v1(
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
-    push_q24(&mut bytes, &request.feature_vector_q24)?;
+    push_q24(&mut bytes, request.feature_vector_q24)?;
     bytes.extend_from_slice(&(request.expected_output_width as u64).to_be_bytes());
     Ok(Digest32::of_bytes(&bytes))
 }
@@ -128,7 +167,20 @@ pub fn build_neuron_feature_receipt_v1(
     runtime_tuple: NeuronModelRuntimeTupleV1,
     observation: NeuronFeatureObservationV1,
 ) -> Result<NeuronFeatureReceiptV1, NeuronFeatureContractError> {
-    let request_digest = neuron_feature_request_digest_v1(request)?;
+    build_neuron_feature_receipt_view_v1(
+        &NeuronFeatureRequestViewV1::from(request),
+        runtime_tuple,
+        observation,
+    )
+}
+
+/// Build the exact V1 receipt from a borrow-only feature request.
+pub fn build_neuron_feature_receipt_view_v1(
+    request: &NeuronFeatureRequestViewV1<'_>,
+    runtime_tuple: NeuronModelRuntimeTupleV1,
+    observation: NeuronFeatureObservationV1,
+) -> Result<NeuronFeatureReceiptV1, NeuronFeatureContractError> {
+    let request_digest = neuron_feature_request_view_digest_v1(request)?;
     validate_runtime_tuple(request, &runtime_tuple)?;
     validate_observation(request, &observation)?;
     let runtime_tuple_digest = digest_runtime_tuple(&runtime_tuple)?;
@@ -151,7 +203,7 @@ pub fn build_neuron_feature_receipt_v1(
         authority: AuthorityPosture::DENY_ALL,
     };
     receipt.receipt_digest = digest_receipt(&receipt)?;
-    verify_neuron_feature_receipt_v1(request, &receipt)?;
+    verify_neuron_feature_receipt_view_v1(request, &receipt)?;
     Ok(receipt)
 }
 
@@ -159,10 +211,19 @@ pub fn verify_neuron_feature_receipt_v1(
     request: &NeuronFeatureRequestV1,
     receipt: &NeuronFeatureReceiptV1,
 ) -> Result<(), NeuronFeatureContractError> {
+    verify_neuron_feature_receipt_view_v1(&NeuronFeatureRequestViewV1::from(request), receipt)
+}
+
+/// Independently check a V1 receipt using a borrowed feature request. This
+/// checks identity and semantics but does not authenticate the remote worker.
+pub fn verify_neuron_feature_receipt_view_v1(
+    request: &NeuronFeatureRequestViewV1<'_>,
+    receipt: &NeuronFeatureReceiptV1,
+) -> Result<(), NeuronFeatureContractError> {
     if receipt.authority.grants_any() {
         return Err(NeuronFeatureContractError::AuthorityGranted);
     }
-    if receipt.request_digest != neuron_feature_request_digest_v1(request)? {
+    if receipt.request_digest != neuron_feature_request_view_digest_v1(request)? {
         return Err(NeuronFeatureContractError::RuntimeBindingMismatch);
     }
     validate_runtime_tuple(request, &receipt.runtime_tuple)?;
@@ -191,7 +252,9 @@ pub fn verify_neuron_feature_receipt_v1(
     Ok(())
 }
 
-fn validate_request(request: &NeuronFeatureRequestV1) -> Result<(), NeuronFeatureContractError> {
+fn validate_request_view(
+    request: &NeuronFeatureRequestViewV1<'_>,
+) -> Result<(), NeuronFeatureContractError> {
     for (name, digest) in [
         ("encoder", request.encoder_digest),
         ("head", request.head_digest),
@@ -217,10 +280,10 @@ fn validate_request(request: &NeuronFeatureRequestV1) -> Result<(), NeuronFeatur
 }
 
 fn validate_runtime_tuple(
-    request: &NeuronFeatureRequestV1,
+    request: &NeuronFeatureRequestViewV1<'_>,
     runtime: &NeuronModelRuntimeTupleV1,
 ) -> Result<(), NeuronFeatureContractError> {
-    if runtime.model_id != request.model_id || runtime.weights_digest != request.weights_digest {
+    if runtime.model_id != *request.model_id || runtime.weights_digest != request.weights_digest {
         return Err(NeuronFeatureContractError::RuntimeBindingMismatch);
     }
     for (name, digest) in [
@@ -240,7 +303,7 @@ fn validate_runtime_tuple(
 }
 
 fn validate_observation(
-    request: &NeuronFeatureRequestV1,
+    request: &NeuronFeatureRequestViewV1<'_>,
     observation: &NeuronFeatureObservationV1,
 ) -> Result<(), NeuronFeatureContractError> {
     match observation.status {

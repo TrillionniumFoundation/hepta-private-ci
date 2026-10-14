@@ -105,3 +105,65 @@ fn non_success_status_cannot_smuggle_numerical_output() {
     ));
     assert_eq!(receipt.status, NeuronFeatureTerminalStatusV1::Indeterminate);
 }
+
+#[test]
+fn borrowed_and_owned_receipts_are_bitwise_equivalent_for_terminal_states() {
+    let request = request();
+    let view = NeuronFeatureRequestViewV1::from(&request);
+    for status in [
+        NeuronFeatureTerminalStatusV1::Succeeded,
+        NeuronFeatureTerminalStatusV1::Failed,
+        NeuronFeatureTerminalStatusV1::Cancelled,
+        NeuronFeatureTerminalStatusV1::Indeterminate,
+    ] {
+        let mut result = observation();
+        result.status = status;
+        if status != NeuronFeatureTerminalStatusV1::Succeeded {
+            result.drive_q24.clear();
+            result.prediction_q24.clear();
+        }
+        let owned = checked(build_neuron_feature_receipt_v1(
+            &request,
+            runtime(),
+            result.clone(),
+        ));
+        let borrowed = checked(build_neuron_feature_receipt_view_v1(
+            &view,
+            runtime(),
+            result,
+        ));
+        assert_eq!(owned, borrowed);
+        checked(verify_neuron_feature_receipt_v1(&request, &borrowed));
+        checked(verify_neuron_feature_receipt_view_v1(&view, &owned));
+
+        let mut tampered = borrowed;
+        tampered.receipt_digest = Digest32::of_bytes(b"tampered");
+        assert_eq!(
+            verify_neuron_feature_receipt_view_v1(&view, &tampered),
+            Err(NeuronFeatureContractError::ReceiptDigestMismatch)
+        );
+    }
+}
+
+#[test]
+fn borrowed_q24_request_enforces_same_512_dimension_and_numeric_limits() {
+    let mut request = request();
+    request.feature_vector_q24 = vec![H; MAX_FEATURES];
+    let view = NeuronFeatureRequestViewV1::from(&request);
+    assert_eq!(
+        checked(neuron_feature_request_digest_v1(&request)),
+        checked(neuron_feature_request_view_digest_v1(&view))
+    );
+
+    request.feature_vector_q24.push(0);
+    assert_eq!(
+        neuron_feature_request_view_digest_v1(&NeuronFeatureRequestViewV1::from(&request)),
+        Err(NeuronFeatureContractError::FeatureLimit)
+    );
+
+    request.feature_vector_q24 = vec![H + 1];
+    assert_eq!(
+        neuron_feature_request_view_digest_v1(&NeuronFeatureRequestViewV1::from(&request)),
+        Err(NeuronFeatureContractError::FeatureLimit)
+    );
+}
