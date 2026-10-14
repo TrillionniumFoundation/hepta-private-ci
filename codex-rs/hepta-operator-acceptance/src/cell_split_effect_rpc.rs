@@ -7,6 +7,7 @@
 //! The transport never manufactures a receipt, advances a missing effect,
 //! treats a timeout as a negative acknowledgement, or grants split authority.
 
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::io;
 use std::io::Read;
@@ -35,6 +36,16 @@ pub const CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1: &str =
     "hepta.learning.cell-split.effect-readback.v1";
 const MAX_FRAME_BYTES: usize = 256 * 1024;
 const OWNER_COUNT: usize = 4;
+const MAX_RETAINED_READBACK_IDENTITIES: usize = 4_096;
+
+/// Process-lifetime monotonic observation only. This is never independent
+/// external anti-rollback custody and cannot survive a coordinator restart.
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct SignedReadbackFloorV1 {
+    sequence: u64,
+    committed_receipt_digest: Option<String>,
+    state_digest: Option<String>,
+}
 
 /// Execute is permitted only for a newly prepared intent. ReadBack must
 /// always be side-effect free: ambiguous/crash recovery is lookup only.
@@ -116,6 +127,9 @@ pub struct CellSplitUnixEffectPortV1 {
     endpoints: [PathBuf; OWNER_COUNT],
     verifying_keys: [VerifyingKey; OWNER_COUNT],
     timeout: Duration,
+    // A signer must not walk backward or replace a committed identity between
+    // two fresh, signed lookups made through this one live transport client.
+    readback_floors: BTreeMap<String, SignedReadbackFloorV1>,
 }
 
 impl CellSplitUnixEffectPortV1 {
@@ -147,6 +161,7 @@ impl CellSplitUnixEffectPortV1 {
             endpoints,
             verifying_keys,
             timeout,
+            readback_floors: BTreeMap::new(),
         })
     }
 
@@ -169,18 +184,26 @@ impl CellSplitUnixEffectPortV1 {
                 "effect endpoint is not a Unix socket",
             ));
         }
+        // Charge the Unix connect and outbound frame against the same
+        // response deadline. A slow send must not reset the ACK/readback
+        // timeout. Blocking Unix connect itself is not cancellation-bounded.
+        let started_at = Instant::now();
         let mut stream = UnixStream::connect(path)?;
-        stream.set_read_timeout(Some(self.timeout))?;
-        stream.set_write_timeout(Some(self.timeout))?;
         let request = CellSplitEffectRpcRequestV1 {
             schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.to_owned(),
             action,
             intent: intent.clone(),
             challenge_nonce,
         };
-        send_frame_with_deadline(&mut stream, &request, self.timeout)?;
-        let response: CellSplitEffectRpcResponseV1 =
-            receive_frame_with_deadline(&mut stream, self.timeout)?;
+        send_frame_with_deadline(
+            &mut stream,
+            &request,
+            remaining_effect_rpc_budget(started_at, self.timeout)?,
+        )?;
+        let response: CellSplitEffectRpcResponseV1 = receive_frame_with_deadline(
+            &mut stream,
+            remaining_effect_rpc_budget(started_at, self.timeout)?,
+        )?;
         if response.schema != CELL_SPLIT_EFFECT_RPC_SCHEMA_V1 || response.action != action {
             return Err(CellSplitEffectRpcErrorV1::Invalid(
                 "RPC schema or action mismatch",
@@ -225,7 +248,7 @@ impl CellSplitUnixEffectPortV1 {
     /// A lookup is a fresh, nonce-bound, separately signed read from the
     /// authority currently owning the durable artifact/state/route/generation.
     fn lookup(
-        &self,
+        &mut self,
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<Option<CellSplitExecutionReceiptV1>, CellSplitEffectRpcErrorV1> {
         let nonce = rand::random::<[u8; 32]>()
@@ -270,8 +293,52 @@ impl CellSplitUnixEffectPortV1 {
         if let Some(receipt) = response.receipt.as_ref() {
             self.verify_original_receipt(intent, receipt)?;
         }
+
+        let floor = SignedReadbackFloorV1 {
+            sequence: readback.read_sequence,
+            committed_receipt_digest: readback.committed_receipt_digest,
+            state_digest: readback.state_digest,
+        };
+        if let Some(previous) = self.readback_floors.get(&intent.idempotency_key) {
+            if floor.sequence < previous.sequence
+                || (floor.sequence == previous.sequence
+                    && (floor.committed_receipt_digest != previous.committed_receipt_digest
+                        || floor.state_digest != previous.state_digest))
+                || (previous.committed_receipt_digest.is_some()
+                    && (floor.committed_receipt_digest != previous.committed_receipt_digest
+                        || floor.state_digest != previous.state_digest))
+            {
+                // A positive effect cannot become absent or change identity,
+                // even if a rolled-back owner re-signs the stale readback.
+                return Err(CellSplitEffectRpcErrorV1::Invalid(
+                    "original owner signed readback regressed",
+                ));
+            }
+        } else if self.readback_floors.len() >= MAX_RETAINED_READBACK_IDENTITIES {
+            // Never silently evict trusted high-water marks for untrusted
+            // incoming identities. A fresh externally fenced client is needed.
+            return Err(CellSplitEffectRpcErrorV1::Invalid(
+                "original owner readback ratchet capacity",
+            ));
+        }
+        self.readback_floors
+            .insert(intent.idempotency_key.clone(), floor);
         Ok(response.receipt)
     }
+}
+
+/// The caller, not each frame, owns the RPC deadline. A sub-millisecond
+/// remainder is unusable by the framed transport and fails closed.
+fn remaining_effect_rpc_budget(
+    started_at: Instant,
+    total: Duration,
+) -> Result<Duration, CellSplitEffectRpcErrorV1> {
+    total
+        .checked_sub(started_at.elapsed())
+        .filter(|remaining| *remaining >= Duration::from_millis(1))
+        .ok_or(CellSplitEffectRpcErrorV1::Invalid(
+            "RPC transport deadline exceeded",
+        ))
 }
 
 impl CellSplitExecutionPortV1 for CellSplitUnixEffectPortV1 {
@@ -591,6 +658,181 @@ mod tests {
     }
 
     #[test]
+    fn lost_execute_ack_recovers_only_via_fresh_signed_original_owner_readback() {
+        let root = tempfile::tempdir().expect("root");
+        let cas_socket = root.path().join("cas.sock");
+        let listener = UnixListener::bind(&cas_socket).expect("CAS socket");
+        let signer = SigningKey::from_bytes(&[1_u8; 32]);
+        let keys = [1_u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
+        let server = thread::spawn(move || {
+            let mut durable_receipt: Option<CellSplitExecutionReceiptV1> = None;
+            let mut actions = Vec::new();
+            for _ in 0..3 {
+                let (mut socket, _) = listener.accept().expect("real owner accepted");
+                let request: CellSplitEffectRpcRequestV1 =
+                    receive_frame(&mut socket).expect("owner request");
+                actions.push(request.action);
+                match request.action {
+                    CellSplitEffectRpcActionV1::Execute => {
+                        assert!(durable_receipt.is_none(), "execute must not be replayed");
+                        assert!(request.challenge_nonce.is_none());
+                        durable_receipt = Some(committed(&request.intent, &signer));
+                        // The original operation is durably committed. Lose
+                        // its transport ACK before the caller can see it.
+                        drop(socket);
+                    }
+                    CellSplitEffectRpcActionV1::ReadBack => {
+                        let receipt = durable_receipt.clone().expect("real prior commit");
+                        let mut proof = CellSplitEffectReadbackV1 {
+                            schema: CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1.into(),
+                            intent: request.intent,
+                            challenge_nonce: request.challenge_nonce.expect("fresh challenge"),
+                            committed_receipt_digest: Some(receipt.receipt_digest.clone()),
+                            state_digest: Some(receipt.output_digest.clone()),
+                            read_sequence: receipt.owner_sequence + 1,
+                            owner_signature_bytes: Vec::new(),
+                        };
+                        proof.owner_signature_bytes = signer
+                            .sign(
+                                &cell_split_effect_readback_signing_payload_v1(&proof)
+                                    .expect("readback signing payload"),
+                            )
+                            .to_bytes()
+                            .to_vec();
+                        send_frame(
+                            &mut socket,
+                            &CellSplitEffectRpcResponseV1 {
+                                schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+                                action: CellSplitEffectRpcActionV1::ReadBack,
+                                receipt: Some(receipt),
+                                readback: Some(proof),
+                                error: None,
+                            },
+                        )
+                        .expect("independent signed owner readback");
+                    }
+                }
+            }
+            actions
+        });
+        let mut client = CellSplitUnixEffectPortV1::new(
+            [
+                cas_socket,
+                root.path().join("migration.sock"),
+                root.path().join("cns.sock"),
+                root.path().join("supervisor.sock"),
+            ],
+            keys,
+            Duration::from_secs(3),
+        )
+        .expect("four pinned original owner keys");
+        let effect = intent();
+        assert!(client.execute(&effect).is_err(), "original ACK was lost");
+        let recovered = client
+            .reconcile(&effect)
+            .expect("new nonce-bound durable readback")
+            .expect("original effect remains committed");
+        assert_eq!(
+            recovered,
+            committed(&effect, &SigningKey::from_bytes(&[1_u8; 32]))
+        );
+        client
+            .verify_committed(&effect, &recovered)
+            .expect("second fresh original-owner readback");
+        assert_eq!(
+            server.join().expect("owner server"),
+            vec![
+                CellSplitEffectRpcActionV1::Execute,
+                CellSplitEffectRpcActionV1::ReadBack,
+                CellSplitEffectRpcActionV1::ReadBack,
+            ],
+            "recovery and verification must never dispatch a second effect"
+        );
+    }
+
+    #[test]
+    fn signed_owner_rollback_or_effect_disappearance_is_fenced_by_live_ratchet() {
+        // A genuine pinned key can still sign a previously valid snapshot
+        // after its durable storage regresses. Fresh nonces alone cannot
+        // detect this: the client must retain its own bounded high-water.
+        for disappeared in [false, true] {
+            let root = tempfile::tempdir().expect("socket fixture");
+            let cas_socket = root.path().join("cas.sock");
+            let listener = UnixListener::bind(&cas_socket).expect("owner socket");
+            let signer = SigningKey::from_bytes(&[1_u8; 32]);
+            let keys = [1_u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
+            let server = thread::spawn(move || {
+                for attempt in 0..2 {
+                    let (mut socket, _) = listener.accept().expect("owner readback socket");
+                    let request: CellSplitEffectRpcRequestV1 =
+                        receive_frame(&mut socket).expect("fresh readback request");
+                    assert_eq!(request.action, CellSplitEffectRpcActionV1::ReadBack);
+                    let receipt = if disappeared && attempt == 1 {
+                        None
+                    } else {
+                        Some(committed(&request.intent, &signer))
+                    };
+                    let mut proof = CellSplitEffectReadbackV1 {
+                        schema: CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1.into(),
+                        intent: request.intent,
+                        challenge_nonce: request.challenge_nonce.expect("new nonce"),
+                        committed_receipt_digest: receipt
+                            .as_ref()
+                            .map(|row| row.receipt_digest.clone()),
+                        state_digest: receipt.as_ref().map(|row| row.output_digest.clone()),
+                        read_sequence: if attempt == 0 {
+                            8
+                        } else if disappeared {
+                            9
+                        } else {
+                            7
+                        },
+                        owner_signature_bytes: Vec::new(),
+                    };
+                    proof.owner_signature_bytes = signer
+                        .sign(
+                            &cell_split_effect_readback_signing_payload_v1(&proof)
+                                .expect("signed live sample"),
+                        )
+                        .to_bytes()
+                        .to_vec();
+                    send_frame(
+                        &mut socket,
+                        &CellSplitEffectRpcResponseV1 {
+                            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+                            action: CellSplitEffectRpcActionV1::ReadBack,
+                            receipt,
+                            readback: Some(proof),
+                            error: None,
+                        },
+                    )
+                    .expect("owner response");
+                }
+            });
+            let mut client = CellSplitUnixEffectPortV1::new(
+                [
+                    cas_socket,
+                    root.path().join("migration.sock"),
+                    root.path().join("cns.sock"),
+                    root.path().join("supervisor.sock"),
+                ],
+                keys,
+                Duration::from_secs(3),
+            )
+            .expect("four independently pinned keys");
+            let operation = intent();
+            assert!(client.reconcile(&operation).expect("initial signed effect").is_some());
+            assert!(matches!(
+                client.reconcile(&operation),
+                Err(CellSplitEffectRpcErrorV1::Invalid(
+                    "original owner signed readback regressed"
+                ))
+            ));
+            server.join().expect("server completed");
+        }
+    }
+
+    #[test]
     fn refuse_missing_owner_without_synthesizing_an_effect() {
         let root = tempfile::tempdir().expect("root");
         let keys = [1u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
@@ -708,6 +950,23 @@ mod tests {
         let key = SigningKey::from_bytes(&[1u8; 32]).verifying_key();
         let paths = [0, 1, 2, 3].map(|i| root.path().join(format!("{i}.sock")));
         assert!(CellSplitUnixEffectPortV1::new(paths, [key; 4], Duration::from_secs(1)).is_err());
+    }
+
+    #[test]
+    fn effect_rpc_transport_budget_cannot_reset_between_frames() {
+        // Use a deterministically elapsed clock interval instead of timing
+        // thread scheduling.  The actual call() path checks this same budget
+        // both after the connect and after the send.
+        let started_at = Instant::now() - Duration::from_secs(2);
+        let remaining = remaining_effect_rpc_budget(started_at, Duration::from_secs(10))
+            .expect("unused portion of the original transport budget");
+        assert!(remaining <= Duration::from_secs(8));
+        assert!(matches!(
+            remaining_effect_rpc_budget(started_at, Duration::from_secs(1)),
+            Err(CellSplitEffectRpcErrorV1::Invalid(
+                "RPC transport deadline exceeded"
+            ))
+        ));
     }
 
     #[test]
