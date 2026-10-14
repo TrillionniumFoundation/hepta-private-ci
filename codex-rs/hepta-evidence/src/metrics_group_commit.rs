@@ -455,14 +455,10 @@ impl MetricsGroupCommitV1 {
             bytes = bytes
                 .checked_add(read as u64)
                 .ok_or(MetricsJournalErrorV1::Capacity)?;
-            if read > MAX_LINE_BYTES
-                || bytes > MAX_JOURNAL_BYTES
-                || row.pop() != Some(b'\n')
-            {
+            if read > MAX_LINE_BYTES || bytes > MAX_JOURNAL_BYTES || row.pop() != Some(b'\n') {
                 return Err(MetricsJournalErrorV1::Corrupt);
             }
-            let text =
-                std::str::from_utf8(&row).map_err(|_| MetricsJournalErrorV1::Corrupt)?;
+            let text = std::str::from_utf8(&row).map_err(|_| MetricsJournalErrorV1::Corrupt)?;
             let (next_sequence, next_head, rows) = parse_group(text, sequence, head)?;
             verify_original_frontier_row(
                 &self.owner_marker,
