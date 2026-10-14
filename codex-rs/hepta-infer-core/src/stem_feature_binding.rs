@@ -971,4 +971,47 @@ mod tests {
         );
     }
 
+    #[test]
+    fn cached_source_and_pipeline_digests_match_direct_for_4096_logical_heads() {
+        let (source, access, mut head, features) = fixture();
+        let immutable = SharedStemQ24BufferV1::from_unverified_source(
+            source.clone(), features.clone()
+        ).expect("bounded immutable feature allocated once");
+        let shared_pointer = immutable.borrow_for_head(&access, &head)
+            .expect("borrow same immutable allocation")
+            .feature_vector_q24().as_ptr();
+        let direct_ref = borrow_stem_feature_request_v1(
+            &source, &access, &head, &features
+        ).expect("direct-source reference")
+        .feature_ref_digest();
+        for index in 0..4096 {
+            // Logical Heads only; NOT 4096 model executions or a host SLO.
+            head.request_id = id(&format!("request:cell:{index}"));
+            head.head_model_id = id(&format!("cell-head:{index}"));
+            let borrow = immutable.borrow_for_head(&access, &head)
+                .expect("each Cell checks owner and Head claims");
+            assert_eq!(borrow.feature_vector_q24().as_ptr(), shared_pointer);
+            assert_eq!(borrow.feature_ref_digest(), direct_ref);
+            assert!(!borrow.authority().grants_any());
+        }
+    }
+
+    #[test]
+    fn cached_source_identity_cannot_make_changed_head_or_epoch_valid() {
+        let (source, mut access, mut head, features) = fixture();
+        let cached = SharedStemQ24BufferV1::from_unverified_source(
+            source, features
+        ).expect("immutability source");
+        head.required_encoder_digest = digest(b"changed-encoder");
+        assert!(matches!(
+            cached.borrow_for_head(&access, &head),
+            Err(StemFeatureBindingError::IncompatibleHead)
+        ));
+        access.authority_epoch += 1;
+        assert!(matches!(
+            cached.borrow_for_head(&access, &head),
+            Err(StemFeatureBindingError::AuthorityEpochMismatch)
+        ));
+    }
+
 }
