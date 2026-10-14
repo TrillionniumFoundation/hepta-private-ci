@@ -230,16 +230,22 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
 
 
 
-    def test_generic_runtime_split_apply_and_recovery_require_control(self) -> None:
+    def test_generic_runtime_all_topology_mutation_denies_without_control_owner(self) -> None:
+        # Exact original Control Begin/Commit is not wired into RuntimeOrgans.
+        # A Replace/Merge/Rewire candidate must not conceal a physical Split.
         path = "codex-rs/hepta-runtime/src/organs.rs"
         code = self.lexical_code(path)
-        self.assertIn("TopologyOperationV2::Split", code)
-        helper = re.search(
-            r"\bfn\s+proposal_contains_cell_split_v1\s*\(", code
-        )
-        self.assertIsNotNone(helper, "generic Split classifier disappeared")
+        public = self.lexical_code("codex-rs/hepta-runtime/src/lib.rs")
+        self.assertNotIn("proposal_contains_cell_split_v1", code)
         for operation in ("apply_governed_topology", "recover_governed_topology"):
             with self.subTest(operation=operation):
+                # The public shell must continue delegating to the guarded
+                # sole live RuntimeOrgans owner, not a second mutation route.
+                self.assertRegex(
+                    public,
+                    rf"\bself\.organs\s*\.\s*{operation}\s*\(",
+                    "public HeptaRuntime mutation bypassed original organs owner",
+                )
                 method = re.search(
                     rf"\bpub\(crate\)\s+fn\s+{operation}\s*\(", code
                 )
@@ -254,14 +260,12 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 body = code[opening + 1:closing]
                 self.assertRegex(
                     body,
-                    r"^\s*if\s+!\s*cfg!\s*\(\s*test\s*\)\s*&&\s*"
-                    r"proposal_contains_cell_split_v1\s*\(\s*&request\s*\)\s*"
-                    r"\{\s*return\s+Err\s*\(\s*"
+                    r"^\s*if\s+!\s*cfg!\s*\(\s*test\s*\)\s*\{"
+                    r"\s*return\s+Err\s*\(\s*"
                     r"RuntimeTopologyExecutionError::Binding\s*\)\s*;\s*\}",
-                    "a generic Split may not bypass physical Control B/C",
+                    "normal non-test runtime must deny before lock or Final-use",
                 )
                 self.assertIn("authority.claim(", body)
-
 
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
