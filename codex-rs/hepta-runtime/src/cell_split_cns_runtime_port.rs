@@ -283,9 +283,9 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         // atomic transaction against concurrently published Neuron state.
         // The current permit is deliberately uninhabited: fail closed even
         // if preflight and original owner signatures would otherwise pass.
-        self.atomic_control_cutover_prepared.as_ref().ok_or(
-            "CNS mutation denied: no shared durable Control/Neuron cutover transaction",
-        )?;
+        self.atomic_control_cutover_prepared
+            .as_ref()
+            .ok_or("CNS mutation denied: no shared durable Control/Neuron cutover transaction")?;
         self.verify_pin(plan, intent)?;
         if binding != &self.binding {
             return Err("CNS cutover binding changed".into());
