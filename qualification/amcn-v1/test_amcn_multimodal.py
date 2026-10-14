@@ -58,6 +58,10 @@ class CrossModalMechanicsTests(unittest.TestCase):
                             result["receipt"]["metrics"]["frozen"]["sha256"])
         with self.assertRaises(Refused):
             train_connector(pairs, txt, img, split="future_a", steps=2)
+        mismatched = img.clone()
+        mismatched[0] = torch.tensor([0., 1.])
+        with self.assertRaises(Refused):
+            train_connector(pairs, txt, mismatched, split="train", steps=2)
 
 
 if __name__ == "__main__":
