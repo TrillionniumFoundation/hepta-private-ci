@@ -78,24 +78,70 @@ pub struct BoundStemNeuronRequestV1 {
 /// fence are required for any actual execution. This view is NEVER a grant.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct StemFeatureRequestViewV1<'a> {
-    pub request_id: &'a StableId,
-    pub generation: Generation,
-    pub model_id: &'a StableId,
-    pub encoder_digest: Digest32,
-    pub head_digest: Digest32,
-    pub weights_digest: Digest32,
-    pub input_digest: Digest32,
-    pub feature_vector_q24: &'a [i64],
-    pub expected_output_width: usize,
-    pub feature_ref_digest: Digest32,
-    pub authority: AuthorityPosture,
+    request_id: &'a StableId,
+    generation: Generation,
+    model_id: &'a StableId,
+    encoder_digest: Digest32,
+    head_digest: Digest32,
+    weights_digest: Digest32,
+    input_digest: Digest32,
+    feature_vector_q24: &'a [i64],
+    expected_output_width: usize,
+    feature_ref_digest: Digest32,
+    authority: AuthorityPosture,
 }
 
 impl<'a> StemFeatureRequestViewV1<'a> {
+    /// Read-only access to the validated Q24 vector. This does not grant
+    /// authorization to dispatch it or keep using it after revocation.
+    #[must_use]
+    pub fn feature_vector_q24(&self) -> &[i64] {
+        self.feature_vector_q24
+    }
+
+    #[must_use]
+    pub fn feature_ref_digest(&self) -> Digest32 {
+        self.feature_ref_digest
+    }
+
+    #[must_use]
+    pub fn authority(&self) -> AuthorityPosture {
+        AuthorityPosture::DENY_ALL
+    }
+
+    /// Revalidate the exact original feature/Head against newly supplied
+    /// access claims immediately before moving into a legacy V1 request.
+    /// The caller must obtain these claims from the *real authenticated owner*;
+    /// this pure function cannot establish their authenticity or final-use.
+    pub fn materialize_owned_after_refresh(
+        &self,
+        source: &StemFeatureRefV1,
+        access: &StemAccessContextV1,
+        selected_head: &StemHeadBindingV1,
+    ) -> Result<BoundStemNeuronRequestV1, StemFeatureBindingError> {
+        let current = borrow_stem_feature_request_v1(
+            source, access, selected_head, self.feature_vector_q24,
+        )?;
+        if current.request_id != self.request_id
+            || current.model_id != self.model_id
+            || current.generation != self.generation
+            || current.encoder_digest != self.encoder_digest
+            || current.head_digest != self.head_digest
+            || current.weights_digest != self.weights_digest
+            || current.input_digest != self.input_digest
+            || current.expected_output_width != self.expected_output_width
+            || current.feature_ref_digest != self.feature_ref_digest
+        {
+            return Err(StemFeatureBindingError::IncompatibleHead);
+        }
+        current.materialize_owned_v1()
+    }
+
     /// Explicit owned-wire boundary: one feature allocation is intentionally
     /// made ONLY when a legacy V1 consumer actually requires an owned request.
     /// The exact original V1 request digest is retained and checked.
-    pub fn materialize_owned_v1(
+    /// Private to the binding module: callers must use refreshed claims.
+    fn materialize_owned_v1(
         &self,
     ) -> Result<BoundStemNeuronRequestV1, StemFeatureBindingError> {
         let request = NeuronFeatureRequestV1 {
