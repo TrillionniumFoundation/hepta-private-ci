@@ -41,6 +41,9 @@ jobs:
           python qualification/stem-cell-v1/run_checked_tests.py \
             --pattern test_multirc_query_factorial.py --output "$RUNNER_TEMP/multirc-factorial-tests.json" \
             2>&1 | tee "$RUNNER_TEMP/multirc-factorial-tests.log"
+          python qualification/stem-cell-v1/run_checked_tests.py \
+            --pattern test_multirc_factorial_review.py --output "$RUNNER_TEMP/multirc-factorial-review-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-factorial-review-tests.log"
           python -m compileall -q qualification/stem-cell-v1
       - uses: actions/upload-artifact@v4
         if: always()
@@ -55,6 +58,8 @@ jobs:
             ${{ runner.temp }}/multirc-stress-tests.log
             ${{ runner.temp }}/multirc-factorial-tests.json
             ${{ runner.temp }}/multirc-factorial-tests.log
+            ${{ runner.temp }}/multirc-factorial-review-tests.json
+            ${{ runner.temp }}/multirc-factorial-review-tests.log
 
   multirc-stock-hf:
     runs-on: ubuntu-24.04
@@ -191,6 +196,22 @@ jobs:
             --snapshot "$RUNNER_TEMP/public-encoder/snapshot" \
             --output "$RUNNER_TEMP/multirc-query-factors" \
             2>&1 | tee "$RUNNER_TEMP/multirc-query-factors.log"
+      - name: Independently verify owner and stress seals, then audit blinded factorial groups
+        shell: bash
+        run: |
+          set -euo pipefail
+          OWNER_SEAL=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/multirc-run/COMMITTED.json"))["seal_id"])')
+          STRESS_SEAL=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/multirc-blind-stress/COMMITTED.json"))["seal_id"])')
+          FACTORIAL_SEAL=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/multirc-query-factors/COMMITTED.json"))["seal_id"])')
+          python qualification/stem-cell-v1/multirc_factorial_review.py \
+            --factorial-dir "$RUNNER_TEMP/multirc-query-factors" \
+            --expected-factorial-seal-id "$FACTORIAL_SEAL" \
+            --owner-dir "$RUNNER_TEMP/multirc-run" \
+            --expected-owner-seal-id "$OWNER_SEAL" \
+            --stress-dir "$RUNNER_TEMP/multirc-blind-stress" \
+            --expected-stress-seal-id "$STRESS_SEAL" \
+            --output "$RUNNER_TEMP/multirc-factorial-review" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-factorial-review.log"
       - name: Join human-annotated dev labels only after prediction seal exists
         shell: bash
         run: |
@@ -227,6 +248,10 @@ jobs:
             ${{ runner.temp }}/multirc-query-factors/factorial.json
             ${{ runner.temp }}/multirc-query-factors/COMMITTED.json
             ${{ runner.temp }}/multirc-query-factors/FAILED.json
+            ${{ runner.temp }}/multirc-factorial-review.log
+            ${{ runner.temp }}/multirc-factorial-review/review.json
+            ${{ runner.temp }}/multirc-factorial-review/COMMITTED.json
+            ${{ runner.temp }}/multirc-factorial-review/FAILED.json
             ${{ runner.temp }}/multirc-score.log
             ${{ runner.temp }}/multirc-scores/scores.json
             ${{ runner.temp }}/multirc-scores/COMMITTED.json
