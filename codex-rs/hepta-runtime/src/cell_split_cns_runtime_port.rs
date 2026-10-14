@@ -271,6 +271,14 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         binding: &CellSplitCnsRouteBindingV1,
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<(), Self::Error> {
+        // Original signed Final-use does not also fsync the shared Control
+        // Begin/Commit. Reference-only cutover tests may run under cfg(test);
+        // non-test builds must not issue a physical topology mutation here.
+        if !cfg!(test) {
+            return Err(
+                "CellSplit CNS cutover requires original durable Control handoff".into(),
+            );
+        }
         self.verify_pin(plan, intent)?;
         if binding != &self.binding {
             return Err("CNS cutover binding changed".into());

@@ -178,6 +178,57 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             f"kernel.authority privileged boundaries missing from privileged_inventory: {sorted(canonical - required)}",
         )
 
+
+    def test_legacy_cell_split_child_routes_deny_without_control_wal(self) -> None:
+        path = "codex-rs/hepta-control-plane/src/cell_split_route.rs"
+        code = self.lexical_code(path)
+        self.assertIn("ControlHandoffRequired", code)
+        self.assertEqual(
+            self.public_methods(path, "CellSplitRouteControllerV1"),
+            {"new", "generation", "phase", "with_metrics_sink",
+             "production_metrics_ready", "flush_production_metrics",
+             "cns_latency_observations", "parent_route", "host",
+             "route_fence_receipt", "child_route", "start_all",
+             "dispatch_parent_once", "activate_children",
+             "activate_children_with_migration", "dispatch_child_once"},
+        )
+        for name in ("activate_children", "activate_children_with_migration"):
+            with self.subTest(method=name):
+                method = re.search(rf"\bpub\s+fn\s+{name}\b", code)
+                self.assertIsNotNone(method)
+                assert method is not None
+                opening = code.find("{", method.end())
+                closing = CALLER_PROOF._matching_delimiter(code, opening, "{", "}")
+                self.assertIsNotNone(closing)
+                assert closing is not None
+                body = code[opening + 1:closing]
+                self.assertRegex(
+                    body,
+                    r"^\s*if\s+!\s*cfg!\s*\(\s*test\s*\)\s*\{\s*"
+                    r"return\s+Err\s*\(\s*"
+                    r"CellSplitRouteErrorV1::ControlHandoffRequired\s*\)\s*;\s*\}",
+                    "first production action must refuse route activation",
+                )
+
+    def test_signed_cns_kernel_port_does_not_publish_without_control_wal(self) -> None:
+        path = "codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs"
+        code = self.lexical_code(path)
+        method = re.search(r"\bfn\s+publish_once\s*\(", code)
+        self.assertIsNotNone(method)
+        assert method is not None
+        opening = code.find("{", method.end())
+        closing = CALLER_PROOF._matching_delimiter(code, opening, "{", "}")
+        self.assertIsNotNone(closing)
+        assert closing is not None
+        body = code[opening + 1:closing]
+        self.assertRegex(
+            body,
+            r"^\s*if\s+!\s*cfg!\s*\(\s*test\s*\)\s*\{\s*return\s+Err\s*\(",
+            "CNS live runtime must deny before Final-use or topology mutation",
+        )
+        self.assertIn("apply_governed_topology(", body)
+
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
