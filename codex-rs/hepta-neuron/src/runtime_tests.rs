@@ -523,7 +523,6 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
 #[cfg(feature = "amcn-shadow")]
 mod amcn_pending_runtime {
     use super::*;
-    use pretty_assertions::assert_eq;
 
     use std::sync::atomic::{AtomicUsize, Ordering};
     use std::sync::TryLockError;
@@ -533,6 +532,7 @@ mod amcn_pending_runtime {
         NeuronFeatureTerminalStatusV1, NeuronModelRuntimeTupleV1,
         build_neuron_feature_receipt_v1,
     };
+    use pretty_assertions::assert_eq;
     use crate::{
         AmcnFencedModelBindingV1, AmcnSourceArtifactFence, NeuronInferenceControlPort,
         NeuronModelError,
