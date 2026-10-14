@@ -36,8 +36,11 @@ def digest(raw):
 
 
 def canonical(value):
-    return json.dumps(value, sort_keys=True, separators=(",", ":"),
-                      ensure_ascii=False, allow_nan=False).encode()
+    # Exactly match wire.canonical()/wire.write_once() used by the producer.
+    # Omitting its terminal newline makes a genuine published receipt fail the
+    # post-seal check even though byte hashes and prediction order are correct.
+    return (json.dumps(value, sort_keys=True, separators=(",", ":"),
+                       ensure_ascii=False, allow_nan=False) + "\n").encode()
 
 
 def normalized(text):

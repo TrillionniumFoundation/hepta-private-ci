@@ -49,6 +49,32 @@ class ShiftTests(unittest.TestCase):
         with self.assertRaises(b.SourceError):
             b.score_sealed(frozen, labels, rows, source_revision="unqualified")
 
+    def test_shared_producer_write_once_bytes_score_without_reinterpretation(self):
+        from experiments.shared_stem_cell import wire
+        rows = b.public_cohort(b.sample(self.texts()))
+        probabilities = {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.ARMS}
+        packet = {"schema": b.SCHEMA, "source_revision": b.REVISION,
+                  "cohort_sha256": b.digest(wire.canonical(rows)),
+                  "case_ids": [r["case_id"] for r in rows],
+                  "predictions": probabilities, "work": {}, "production_accepted": False}
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pred, cohort = root / "predictions.json", root / "cohort.json"
+            cohort_sha = wire.write_once(cohort, rows)
+            self.assertEqual(packet["cohort_sha256"], cohort_sha)
+            seal = wire.write_once(pred, packet)
+            self.assertEqual(pred.read_bytes(), b.canonical(packet))
+            self.assertEqual(cohort.read_bytes(), b.canonical(rows))
+            count = []
+            def label(index):
+                self.assertTrue(pred.read_bytes().endswith(b"\\n"))
+                count.append(index)
+                return "business" if len(count) <= 120 else "entertainment"
+            result = b.evaluate_published(pred, seal, cohort, cohort_sha, rows, label)
+            self.assertEqual(len(count), 128)
+            self.assertEqual(result["scores"]["bank"]["proxy_correct"], 120)
+            self.assertFalse(result["production_accepted"])
+
     def test_prediction_and_cohort_bytes_must_seal_before_label_callback(self):
         rows = b.public_cohort(b.sample(self.texts()))
         probs = {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.ARMS}
