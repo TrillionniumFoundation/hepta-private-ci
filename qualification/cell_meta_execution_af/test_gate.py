@@ -75,7 +75,7 @@ def synth() -> dict:
                     },
                 })
         result["studies"][study] = {
-            "budget_sha256": meta["budget_sha256"], "interval_alpha": 0.01,
+            "budget_sha256": meta["budget_sha256"], "interval_alpha": 0.003,
             "objective_sha256": meta["objective_sha256"], "records": rows,
         }
     resource_rows = []
@@ -645,6 +645,33 @@ class AfEvidenceTests(unittest.TestCase):
             os.mkfifo(fifo)
             self.assertEqual(gate.main([str(fifo), "--out", str(out)]), 2)
             self.assertIn("regular file", json.loads(out.read_text())["error"])
+
+    def test_study_local_alpha_without_global_correction_rejected(self):
+        self.d["studies"]["A"]["interval_alpha"] = 0.01
+        check_bad(self.d, "A", "global A-D familywise")
+
+    def test_all_studies_share_conservative_global_alpha_ceiling(self):
+        result = gate.verify(self.d)
+        for letter in gate.ARMS:
+            study = result["gates"][letter]
+            self.assertLessEqual(study["reported_interval_alpha"], study["familywise_alpha_ceiling"])
+            self.assertEqual(study["familywise_alpha_ceiling"], 0.05 / (2 * 8))
+
+    def test_full_E_matrix_with_zero_completed_is_not_a_benchmark(self):
+        for r in self.d["resources"]["runs"]:
+            r["completed"] = 0
+            r["failed"] = r["attempted"] - r["rejected"]
+            r["native_batch_requests"] = 0
+            r["backend_calls"] = 0
+        check_bad(self.d, "E", "no physically completed")
+
+    def test_single_E_placement_cannot_claim_measurement_with_zero_completed(self):
+        row = self.d["resources"]["runs"][0]
+        row["completed"] = 0
+        row["failed"] = row["attempted"] - row["rejected"]
+        row["native_batch_requests"] = 0
+        row["backend_calls"] = 0
+        check_bad(self.d, "E", "no physically completed")
 
     def test_cli_missing_real_bundle_is_blocked(self):
         with tempfile.TemporaryDirectory() as td:

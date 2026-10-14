@@ -155,3 +155,23 @@ The CLI uses a single nonblocking, no-follow file descriptor, checks the opened
 regular file and rejects metadata drift during the read. This avoids the
 path-stat/path-open race where a regular input could be replaced by a FIFO or
 symlink. A valid file remains untrusted evidence.
+
+### Combined-family inference and physical execution floor
+
+The four learning studies A–D are evaluated in a single simultaneously
+reported selection family of eight preregistered candidate/control contrasts.
+Two future windows are compared, so the shadow-only one-sided interval-alpha
+ceiling is \`0.05 / (8 × 2) = 0.003125\` for **each** reported comparison.
+A locally valid study-level confidence interval cannot support a multi-study
+gain claim without this conservative familywise adjustment. This checker reads
+reported interval bounds; it does **not** recompute their statistical coverage or
+certify causal validity, cross-fitting, observation independence or signed NDU.
+
+Every one of E's 24 \`deployment × Cell scale × active load\` rows now requires
+nonzero completed model requests and nonzero actual backend calls in addition
+to exact attempted/completed/failed/rejected accounting. An all-failed run is
+not a meaningful throughput or batch-performance measurement. One successful
+request is only a structural lower bound, **not** a sufficient production
+p95/p99 sample. Existing signed host authenticity, common trace and exact
+resource/cutover acceptance requirements remain unchanged. No placement or
+Codex extraction is authorized.

@@ -167,9 +167,13 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
     digest(field(obj, "objective_sha256", letter), letter + ".objective_sha256")
     require(obj["objective_sha256"] == meta["objective_sha256"], f"{letter}: objective mismatch")
     alpha = number(field(obj, "interval_alpha", letter), letter + ".interval_alpha")
-    contrasts = sum(len(controls) for controls in CONTRASTS[letter].values())
-    require(0 < alpha <= 0.05 / (2 * contrasts),
-            f"{letter}: missing conservative two-window multiple-testing allocation")
+    # The report may simultaneously present A-D gains; the multiplicity family
+    # is all registered contrasts across all four studies and both future windows.
+    contrasts = sum(len(controls) for arms in CONTRASTS.values()
+                    for controls in arms.values())
+    familywise_alpha_ceiling = 0.05 / (2 * contrasts)
+    require(0 < alpha <= familywise_alpha_ceiling,
+            f"{letter}: missing global A-D familywise two-window multiple-testing correction")
     records = sequence(field(obj, "records", letter), f"{letter}.records")
     parsed = exact_membership(
         [((record(r, letter + ".row").get("arm"), r.get("window")), r) for r in records],
@@ -286,6 +290,7 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
         ):
             passing.append(proposed)
     return {"status": "shadow_structurally_complete", "provisional_gain_arms": passing,
+            "reported_interval_alpha": alpha, "familywise_alpha_ceiling": familywise_alpha_ceiling,
             "behavior_difference_observed": causal_behavior_difference if letter == "C" else None,
             "not_independent_qualification": True}
 
@@ -324,8 +329,8 @@ def validate_resources(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
         calls = count(field(r, "backend_calls", name), name + ".backend_calls")
         batch = count(field(r, "native_batch_requests", name), name + ".native_batch_requests")
         require(batch <= completed and batch <= calls * 256, f"{name}: impossible batch accounting")
-        if completed:
-            require(calls > 0, f"{name}: completed execution without backend call")
+        require(completed > 0 and calls > 0,
+                f"{name}: no physically completed model requests/backend calls")
         for key in ("rss_peak_bytes", "gpu_peak_bytes", "network_bytes", "fsync_count", "replayed_effects"):
             count(field(r, key, name), name + "." + key)
         require(r["rss_peak_bytes"] > 0 and r["replayed_effects"] == 0, f"{name}: invalid RSS or duplicate effect")
