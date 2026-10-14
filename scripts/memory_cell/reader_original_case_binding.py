@@ -230,14 +230,16 @@ def bind_shard(files, *, tier, index, plan, docs):
     if "run.json" in files:
         execution = strict(files["run.json"])
         if (
-            not full
+            len(rows) != len(ARMS)
             or execution.get("schema") != SCHEMA
             or execution.get("case_index") != index
             or execution.get("tier") != tier
             or execution.get("reader_identity") != IDENTITIES[tier]
             or execution.get("raw_sha256") != h(raw)
             or execution.get("attempts") != len(ARMS)
-            or execution.get("actual_successes") != len(ARMS)
+            or execution.get("actual_successes") != sum(
+                row["status"] == "succeeded" for row in rows
+            )
             or execution.get("case_plan_sha256") != h(files["case-plan.json"])
             or execution.get("production_accepted") is not False
         ):
