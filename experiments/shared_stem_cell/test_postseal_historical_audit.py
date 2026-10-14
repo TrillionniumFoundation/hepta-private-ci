@@ -35,8 +35,12 @@ def fixture():
          "gains": 0, "losses": 0, "nonregression_supported_under_iid": False}
         for cell in (0, 1)]}
     confirmation = {"candidate_lock_sha256": a.digest(raw(lock)),
+                    "predictions_sha256": a.digest(raw(predictions)),
+                    "proposed": "residual_corrected", "chosen": "bank",
+                    "new_model_selected_on_confirmation": False,
+                    "strictly_smaller": True, "production_accepted": False,
                     "confirmation_ids": [c["case_id"] for c in cohort[:512]],
-                    "confirmation_labels": [0] * 512, "bound": bound, "chosen": "bank"}
+                    "confirmation_labels": [0] * 512, "bound": bound}
     report = {"schema": "hepta.fresh-confirmation-executed.v1",
               "cohort_sha256": a.digest(raw(cohort)),
               "predictions_sha256": a.digest(raw(predictions)),
@@ -91,8 +95,23 @@ class HistoricalAuditTests(unittest.TestCase):
         self.rewrite("predictions.json")
         self.records["report.json"]["predictions_sha256"] = a.digest(
             (self.root / a.PREFIX / "predictions.json").read_bytes())
+        self.records["confirmation.json"]["predictions_sha256"] = (
+            self.records["report.json"]["predictions_sha256"])
+        self.rewrite("confirmation.json")
+        self.records["report.json"]["confirmation_sha256"] = a.digest(
+            (self.root / a.PREFIX / "confirmation.json").read_bytes())
         self.rewrite("report.json")
         with self.assertRaisesRegex(a.AuditError, "evaluator diverges"):
+            a.audit(self.root)
+
+    def test_rehashed_confirmation_cannot_retarget_the_frozen_prediction_pin(self):
+        self.records["confirmation.json"]["predictions_sha256"] = "0" * 64
+        self.rewrite("confirmation.json")
+        # Re-pin the outer report, but retain the original sealed probabilities.
+        self.records["report.json"]["confirmation_sha256"] = a.digest(
+            (self.root / a.PREFIX / "confirmation.json").read_bytes())
+        self.rewrite("report.json")
+        with self.assertRaisesRegex(a.AuditError, "frozen candidate"):
             a.audit(self.root)
 
     def test_claimed_independent_retention_refuses(self):
