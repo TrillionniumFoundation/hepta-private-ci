@@ -1,0 +1,97 @@
+{
+  "all_acceptance_gates_passed": false,
+  "authority": "DENY_ALL",
+  "caveats": {
+    "future_ndu": false,
+    "gpu_energy": false,
+    "independent_model_origin": false,
+    "independent_signatures": false,
+    "inference": "repeated_20_times_packed_vs_unpacked_no_training",
+    "input": "synthetic_Q24_vector",
+    "learning": "synthetic_labels_single_SGD_step_only_for_unpacked_shared_vs_clone",
+    "logical": "logical_Cells_resident_approx_10pct_active",
+    "native_rust_worker": false,
+    "pretrained_stem": false,
+    "production_final_use": false,
+    "run_repetitions_per_cohort": 1,
+    "valid_p99_end_to_end": false
+  },
+  "experimental_host_runtime": {
+    "cpu_threads": 1,
+    "psutil": "7.2.2",
+    "python": "3.13.5",
+    "torch": "2.10.0+cpu"
+  },
+  "measurements": {
+    "64": {
+      "active_cells": 8,
+      "cloned_physical_feature_buffers": 8,
+      "head_fp32_payload_bytes": 2494464,
+      "head_parameters": 623616,
+      "module_mean_serving_loop_ms_per_active_cell": 0.025526575000000003,
+      "module_process_peak_rss_bytes": 270553088,
+      "observed_relative_loop_speed": 1.7198052579675045,
+      "observed_rss_difference_bytes": 1150976,
+      "packed_mean_serving_loop_ms_per_active_cell": 0.014842712499999999,
+      "packed_process_peak_rss_bytes": 269402112,
+      "sgd_heads_really_updated": 8,
+      "shared_physical_feature_buffers": 1
+    },
+    "256": {
+      "active_cells": 25,
+      "cloned_physical_feature_buffers": 25,
+      "head_fp32_payload_bytes": 9977856,
+      "head_parameters": 2494464,
+      "module_mean_serving_loop_ms_per_active_cell": 0.025910784,
+      "module_process_peak_rss_bytes": 281423872,
+      "observed_relative_loop_speed": 1.8045782387403577,
+      "observed_rss_difference_bytes": 4431872,
+      "packed_mean_serving_loop_ms_per_active_cell": 0.014358359999999999,
+      "packed_process_peak_rss_bytes": 276992000,
+      "sgd_heads_really_updated": 25,
+      "shared_physical_feature_buffers": 1
+    },
+    "1024": {
+      "active_cells": 102,
+      "cloned_physical_feature_buffers": 102,
+      "head_fp32_payload_bytes": 39911424,
+      "head_parameters": 9977856,
+      "module_mean_serving_loop_ms_per_active_cell": 0.02604504362745098,
+      "module_process_peak_rss_bytes": 325603328,
+      "observed_relative_loop_speed": 2.0915641473852737,
+      "observed_rss_difference_bytes": 18591744,
+      "packed_mean_serving_loop_ms_per_active_cell": 0.012452424019607843,
+      "packed_process_peak_rss_bytes": 307011584,
+      "sgd_heads_really_updated": 102,
+      "shared_physical_feature_buffers": 1
+    },
+    "4096": {
+      "active_cells": 409,
+      "cloned_physical_feature_buffers": 409,
+      "head_fp32_payload_bytes": 159645696,
+      "head_parameters": 39911424,
+      "module_mean_serving_loop_ms_per_active_cell": 0.03247689205378973,
+      "module_process_peak_rss_bytes": 502140928,
+      "observed_relative_loop_speed": 2.5812808197198946,
+      "observed_rss_difference_bytes": 74252288,
+      "packed_mean_serving_loop_ms_per_active_cell": 0.012581696577017114,
+      "packed_process_peak_rss_bytes": 427888640,
+      "sgd_heads_really_updated": 409,
+      "shared_physical_feature_buffers": 1
+    }
+  },
+  "origin": "actual_isolated_local_PyTorch_CPU_subprocesses_one_host_untrusted",
+  "production_promotion_permitted": false,
+  "raw_receipt_count": 16,
+  "raw_receipt_sha256": "b557086f2a387e638a112417d890fbe93b0f221cb90ca1be90734154269246b3",
+  "review_report_sha256": "924717715524f2f922d21c589674c56efc6856b96a154e8d0ffe338e03fd601d",
+  "schema": "hepta.e5.local_cpu_packed_head_observation.20261014.v1",
+  "source_git_blobs": {
+    "e5_cpu_fanout_review.py": "d06abfa3353bc2e9a07be1823c6c26c1217da23f",
+    "e5_packed_head_fanout.py": "1cb44c18a1a8d02b87d2a8b411c6c686ea1aa95e",
+    "e5_physical_head_fanout.py": "6047efef5a39e283d7ad7d19a9ea2bf7f4f803b2",
+    "test_e5_cpu_fanout_review.py": "4b1ef92a1511e92db802eb669d2733c048c218ea",
+    "test_e5_packed_head_fanout.py": "a81b692a21e0685db4b3d3c0e9d55606fc6822f8",
+    "test_e5_physical_head_fanout.py": "a10ef7c71f47b5b00a0a1d760f7f7d7f1d34f2ca"
+  }
+}
