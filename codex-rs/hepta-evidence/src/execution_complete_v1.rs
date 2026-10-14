@@ -235,9 +235,7 @@ impl HeptaEvidenceStore {
 /// On every Evidence reopen, verify all complete-envelope rows and their
 /// original provider-effect digests. A local hash is still not an independent
 /// anti-rollback oracle or a signed effect outcome.
-pub(crate) async fn verify_execution_prepared_rows(
-    pool: &SqlitePool,
-) -> Result<(), EvidenceError> {
+pub(crate) async fn verify_execution_prepared_rows(pool: &SqlitePool) -> Result<(), EvidenceError> {
     // A single read snapshot and a bounded keyset cursor prevent a 4096+ Cell
     // installation from materializing every verified envelope at startup.
     // The primary key orders this scan without OFFSET's quadratic traversal.
@@ -275,12 +273,8 @@ pub(crate) async fn verify_execution_prepared_rows(
                     "execution snapshot key cursor regressed".to_owned(),
                 ));
             }
-            let original_json: String = row
-                .try_get("original_payload_json")
-                .map_err(classify_sqlx_error)?;
-            let sha: String = row
-                .try_get("original_record_sha256")
-                .map_err(classify_sqlx_error)?;
+            let original_json: String = row.try_get("original_payload_json").map_err(classify_sqlx_error)?;
+            let sha: String = row.try_get("original_record_sha256").map_err(classify_sqlx_error)?;
             if sha != Sha256Digest::for_bytes(original_json.as_bytes()).as_str() {
                 return Err(EvidenceError::Corrupt(
                     "original execution effect row was tampered".to_owned(),
