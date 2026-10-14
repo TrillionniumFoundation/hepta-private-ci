@@ -553,28 +553,30 @@ mod tests {
     use super::*;
 
     #[test]
-    fn f32_to_q24_round_ties_even_matches_signed_oracle() {
-        assert_eq!(f32_to_q24_head(0.5 / Q as f32).unwrap(), 0);
-        assert_eq!(f32_to_q24_head(1.5 / Q as f32).unwrap(), 2);
-        assert_eq!(f32_to_q24_head(-1.5 / Q as f32).unwrap(), -2);
-        assert_eq!(f32_to_q24_head(-2.5 / Q as f32).unwrap(), -2);
-        assert_eq!(f32_to_q24_head(8.0).unwrap(), 8 * Q);
-        assert_eq!(f32_to_q24_head(-8.0).unwrap(), -8 * Q);
+    fn f32_to_q24_round_ties_even_matches_signed_oracle() -> Result<(), String> {
+        assert_eq!(f32_to_q24_head(0.5 / Q as f32)?, 0);
+        assert_eq!(f32_to_q24_head(1.5 / Q as f32)?, 2);
+        assert_eq!(f32_to_q24_head(-1.5 / Q as f32)?, -2);
+        assert_eq!(f32_to_q24_head(-2.5 / Q as f32)?, -2);
+        assert_eq!(f32_to_q24_head(8.0)?, 8 * Q);
+        assert_eq!(f32_to_q24_head(-8.0)?, -8 * Q);
         assert!(f32_to_q24_head(f32::NAN).is_err());
         assert!(f32_to_q24_head(f32::INFINITY).is_err());
         assert!(f32_to_q24_head(8.5).is_err());
+        Ok(())
     }
 
     #[test]
-    fn signed_q24_head_multiplication_and_dot_are_exact() {
-        assert_eq!(q24_mul_round_ties_even(1, Q / 2).unwrap(), 0);
-        assert_eq!(q24_mul_round_ties_even(3, Q / 2).unwrap(), 2);
-        assert_eq!(q24_mul_round_ties_even(-3, Q / 2).unwrap(), -2);
-        assert_eq!(q24_mul_round_ties_even(-5, Q / 2).unwrap(), -2);
-        assert_eq!(quantized_head_logit(&[Q, Q], &[Q / 2, -(Q / 2)], Q / 4).unwrap(), Q / 4);
-        assert_eq!(quantized_head_logit(&[Q / 2, Q / 2], &[3, 3], 0).unwrap(), 4);
+    fn signed_q24_head_multiplication_and_dot_are_exact() -> Result<(), String> {
+        assert_eq!(q24_mul_round_ties_even(1, Q / 2)?, 0);
+        assert_eq!(q24_mul_round_ties_even(3, Q / 2)?, 2);
+        assert_eq!(q24_mul_round_ties_even(-3, Q / 2)?, -2);
+        assert_eq!(q24_mul_round_ties_even(-5, Q / 2)?, -2);
+        assert_eq!(quantized_head_logit(&[Q, Q], &[Q / 2, -(Q / 2)], Q / 4)?, Q / 4);
+        assert_eq!(quantized_head_logit(&[Q / 2, Q / 2], &[3, 3], 0)?, 4);
         assert!(quantized_head_logit(&[1, 1], &[Q, Q], i64::MAX).is_err());
         assert!(quantized_head_logit(&[Q], &[], 0).is_err());
+        Ok(())
     }
 }
 
