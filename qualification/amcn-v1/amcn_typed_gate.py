@@ -47,15 +47,20 @@ def typed_evidence_gate(score_receipt, *, external_evidence=None):
                 and 0 <= r["accuracy"] <= 1 and 0 <= r["brier"] <= 1,
                 "score values invalid")
         by_key[(split, arm)] = r
-    require(all((split, arm) in by_key for split in FUTURES for arm in ARMS),
-            "missing future split or control")
-    for split in FUTURES:
+    # A scorer with a missing SELECT/RETENTION stratum or mismatched arm
+    # coverage cannot be treated as a complete prediction census.
+    splits = ("select", "future_a", "future_b", "retention")
+    require(all((split, arm) in by_key for split in splits for arm in ARMS),
+            "missing required split or control")
+    require(len(by_key) == len(splits) * len(ARMS),
+            "unexpected scored census size")
+    for split in splits:
         counts = {by_key[(split, arm)]["n"] for arm in ARMS}
-        require(len(counts) == 1, "unpaired future case count")
+        require(len(counts) == 1, "unpaired split case count")
     require(type(m.get("complete_case_count")) is int
-            and m["complete_case_count"] >=
-            sum(by_key[(s, "typed_equal_budget")]["n"] for s in FUTURES),
-            "incomplete scored census")
+            and m["complete_case_count"] ==
+            sum(by_key[(s, "typed_equal_budget")]["n"] for s in splits),
+            "incomplete or inflated scored census")
 
     blockers = ["no independent prospective calendar-window observation",
                 "no source-family independent effective-sample proof",

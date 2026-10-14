@@ -53,6 +53,31 @@ class ConservativeGateTest(unittest.TestCase):
         with self.assertRaises(Refused):
             typed_evidence_gate(source)
 
+    def test_missing_select_or_retention_refused(self):
+        for split in ("select", "retention"):
+            source = fixture()
+            source["metrics"]["descriptive_scores"] = [
+                x for x in source["metrics"]["descriptive_scores"]
+                if not (x["split"] == split and x["arm"] == "single_shared")]
+            with self.subTest(split=split), self.assertRaises(Refused):
+                typed_evidence_gate(source)
+
+    def test_unpaired_select_or_retention_refused(self):
+        for split in ("select", "retention"):
+            source = fixture()
+            for row in source["metrics"]["descriptive_scores"]:
+                if row["split"] == split and row["arm"] == "single_shared":
+                    row["n"] = 99
+            with self.subTest(split=split), self.assertRaises(Refused):
+                typed_evidence_gate(source)
+
+    def test_inflated_or_missing_census_refused(self):
+        for count in (200, 399, 401, 100000):
+            source = fixture()
+            source["metrics"]["complete_case_count"] = count
+            with self.subTest(count=count), self.assertRaises(Refused):
+                typed_evidence_gate(source)
+
     def test_forged_authority_refused(self):
         source = fixture()
         source["production_accepted"] = True
