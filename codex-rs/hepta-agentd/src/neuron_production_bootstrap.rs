@@ -161,7 +161,9 @@ where
         .ok_or(NeuronProductionBootstrapErrorV1::InvalidPaths)?;
     std::fs::File::open(parent)?.sync_all()?;
     let owner = owner.with_metric_sink(sink);
-    if !owner.production_metrics_ready() {
+    // A healthy background writer may still hold uncommitted queue entries.
+    // The signed Neuron route does not start until Evidence acknowledges flush.
+    if !owner.flush_production_metrics() {
         return Err(NeuronProductionBootstrapErrorV1::NotReady);
     }
     Ok(owner)
