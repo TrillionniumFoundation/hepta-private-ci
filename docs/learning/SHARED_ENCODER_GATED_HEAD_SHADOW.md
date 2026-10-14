@@ -31,7 +31,8 @@ learnable parameter total:
 | 16,384 | 16 | 13,443 |
 
 The script also records the tensor payload **actually allocated** by the
-FP32 Head parameters and AdamW optimizer after its first update. A two-step
+FP32 Head parameters and the selected optimizer after its first update.
+The default `--optimizer adamw` results below are the stateful baseline. A two-step
 CPU fixture run reported:
 
 | Budget ceiling | Head FP32 tensor bytes | AdamW tensor bytes | Combined bytes |
@@ -39,6 +40,15 @@ CPU fixture run reported:
 | 2K | 7,692 | 15,408 | 23,100 |
 | 8K | 29,196 | 58,416 | 87,612 |
 | 16K | 53,772 | 107,568 | 161,340 |
+
+An opt-in `--optimizer sgd` (SGD without momentum) arm has **zero
+persistent optimizer tensor-state bytes** after two training steps in the
+same CPU fixture, but it is **not** established to have equivalent learning,
+stability or calibration. Holding the same sample chronology, gradient-step
+and Head parameter budget is insufficient to claim equal total compute:
+profile actual CPU/GPU training FLOPs and compare future utility before
+choosing the lower-state optimizer. Reports now use the generic
+`optimizer_tensor_payload_bytes` field and include `optimizer_kind`.
 
 These values are **test fixture measurements of tensor shapes/dtypes**, not
 production RSS, and exclude activation buffers, Python/PyTorch allocator
@@ -76,7 +86,7 @@ python3 scripts/hepta-stem-head-shadow.py \
   --train q24-train.jsonl \
   --predict q24-future-without-labels.jsonl \
   --train-cutoff 2026-10-14T00:00:00Z \
-  --budget 2048 --steps 30 --seed 17 \
+  --budget 2048 --steps 30 --seed 17 --optimizer adamw \
   --output-prefix ./shadow-cell-1
 python3 -m unittest discover -s scripts/tests -p 'test_hepta_stem_head_shadow.py' -v
 ```
