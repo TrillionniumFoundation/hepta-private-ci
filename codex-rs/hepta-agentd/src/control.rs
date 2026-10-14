@@ -30,7 +30,9 @@ const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 
 pub(crate) struct AgentdControlServer {
     listener: UnixListener,
-    socket_path: PathBuf,
+    // Deliberately do not own/unlink the pathname on Drop: a newer
+    // generation may have rebound it after this listener lost its name.
+    // Next startup validates liveness before reclaiming an abandoned socket.
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
@@ -49,7 +51,6 @@ impl AgentdControlServer {
         set_owner_only(&socket_path).await?;
         Ok(Self {
             listener,
-            socket_path,
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
@@ -76,19 +77,6 @@ impl AgentdControlServer {
                 let _permit = permit;
                 let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
             });
-        }
-    }
-}
-
-impl Drop for AgentdControlServer {
-    fn drop(&mut self) {
-        if let Err(error) = std::fs::remove_file(&self.socket_path)
-            && error.kind() != ErrorKind::NotFound
-        {
-            eprintln!(
-                "failed to remove agentd control socket {}: {error}",
-                self.socket_path.display()
-            );
         }
     }
 }
