@@ -9,7 +9,7 @@
 //! independently attest the live CNS Scope reader, signed Final-use issuer,
 //! recovery policy and immutable model artifacts before production serving.
 
-#[cfg(unix)]
+#[cfg(all(unix, test))]
 use std::path::Component;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -54,6 +54,10 @@ pub enum OriginalEvidenceWorkerBootstrapErrorV1 {
     /// has no independently reconciled original Control state; reopening
     /// it as empty would permit a differently signed duplicate request.
     PriorHistoryNeedsReconciliation,
+    /// The caller-supplied live Scope frontier has not been tied to an
+    /// independently authenticated original Control/CNS owner. A trait
+    /// object alone is never adequate production-source attestation.
+    UnverifiedOriginalControl,
     Worker(BatchWorkerErrorV1),
 }
 
@@ -81,12 +85,26 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
         live_scope_frontier: Arc<dyn MicrobatchScopeFrontierV1>,
         config: OriginalEvidenceWriterConfigV1,
     ) -> Result<Self, OriginalEvidenceWorkerBootstrapErrorV1> {
+        // The original, independently signed Control/CNS scope reader has
+        // not yet been connected to this Worker bootstrap. Accepting an
+        // arbitrary Arc<dyn MicrobatchScopeFrontierV1> would let a caller
+        // bless its own stale route and use a newly valid Final-use nonce.
+        // Fail CLOSED in every non-test Unix binary, even with an authentic
+        // original Evidence WAL. No bool/manifest hint can waive this gate.
+        // The existing signed/native fixture path remains test-only until
+        // an independently authenticated canonical Control composition is
+        // implemented, inspected and promoted through separate production CI.
+        #[cfg(all(unix, not(test)))]
+        {
+            let _ = (worker, authority, limits, live_scope_frontier, config);
+            Err(OriginalEvidenceWorkerBootstrapErrorV1::UnverifiedOriginalControl)
+        }
         #[cfg(not(unix))]
         {
             let _ = (worker, authority, limits, live_scope_frontier, config);
             Err(OriginalEvidenceWorkerBootstrapErrorV1::UnsupportedHost)
         }
-        #[cfg(unix)]
+        #[cfg(all(unix, test))]
         {
             use std::os::unix::fs::PermissionsExt as _;
 
