@@ -78,10 +78,11 @@ pub fn run_pinned_cell_split_execution_v1(
             "CellSplit recovery requires the explicit pending-only reconciliation API".to_string(),
         );
     }
-    run_pinned_cell_split_execution_with_admission_v1(
+    run_pinned_cell_split_execution_inner_v1(
         action,
         config_path,
         externally_pinned_config_sha256,
+        None,
         |_| Ok(()),
     )
 }
@@ -104,14 +105,12 @@ pub fn run_pinned_cell_split_reconcile_only_v1(
     )
 }
 
-/// Product composition seam: validate the independently admitted, frozen split
-/// against the operator's externally pinned configuration *before* opening the
-/// coordinator, preparing an intent, or contacting any effect owner.
-///
-/// This callback is not an issuer or a substitute for each durable effect
-/// backend's fresh final-use check. Its caller must validate real signed
-/// NDU/Selector evidence rather than accept self-asserted digests.
-pub fn run_pinned_cell_split_execution_with_admission_v1<F>(
+/// Test-only legacy compatibility seam. An arbitrary callback must never be
+/// exposed as a public external effect-admission API. Production callers must
+/// use the Agentd independently validated and Evidence-bound ingress.
+/// Legacy Operator API is read-only except for exact pending reconciliation.
+#[cfg(test)]
+fn run_pinned_cell_split_execution_with_admission_v1<F>(
     action: &str,
     config_path: &Path,
     externally_pinned_config_sha256: &str,
