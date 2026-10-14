@@ -1,0 +1,321 @@
+"""External source protocol tests on invented strings; NOT pretrained evidence."""
+import json
+from pathlib import Path
+import tempfile
+import unittest
+
+from experiments.shared_stem_cell import external_bbc_shift as b
+
+
+class ShiftTests(unittest.TestCase):
+    def texts(self):
+        return [f"Synthetic article content number {i:04d} about topic and "
+                f"publication number {i} with enough words to pass the limit"
+                for i in range(256)]
+
+    def test_label_free_hash_determinism_and_only_hashed_public_index(self):
+        first = b.sample(self.texts())
+        second = b.sample(list(self.texts()))
+        self.assertEqual(first, second)
+        self.assertEqual(len(first), 128)
+        self.assertEqual([r["cell"] for r in first], [i % 2 for i in range(128)])
+        self.assertNotIn("text", b.public_cohort(first)[0])
+        self.assertNotIn("synthetic", json.dumps(b.public_cohort(first)).lower())
+        self.assertEqual(len({r["source_index"] for r in first}), 128)
+
+    def test_hf_column_view_is_materialized_without_reading_gold(self):
+        data = self.texts()
+        class Column:
+            def __len__(self):
+                return len(data)
+            def __iter__(self):
+                yield from data
+        class Dataset:
+            column_names = ["text", "label", "label_text"]
+            label_reads = 0
+            def __getitem__(self, key):
+                if key != "text":
+                    self.label_reads += 1
+                    raise AssertionError("model preparation touched protected answers")
+                return Column()
+        ds = Dataset()
+        texts = b.public_text_column(ds)
+        self.assertEqual(texts, data)
+        self.assertIs(type(texts), list)
+        self.assertEqual(ds.label_reads, 0)
+        self.assertEqual(b.sample(texts), b.sample(data))
+        class Wrong(Dataset):
+            column_names = ["text", "label"]
+        with self.assertRaises(b.SourceError):
+            b.public_text_column(Wrong())
+
+    def test_source_replacement_after_prediction_cannot_supply_a_category(self):
+        original = "Original BBC publisher article content for frozen source"
+        frozen_digest = b.digest(original.encode())
+        self.assertEqual(b.verified_source_label(
+            {"text": original, "label_text": "business"}, frozen_digest),
+            "business")
+        for record, expected in (
+            ({"text": original + " tampered", "label_text": "business"}, frozen_digest),
+            ({"text": original}, frozen_digest),
+            ({"text": original, "label_text": True}, frozen_digest),
+            ({"text": original, "label_text": "business"}, "0" * 64),
+        ):
+            with self.subTest(record=record), self.assertRaises(b.SourceError):
+                b.verified_source_label(record, expected)
+
+    def test_unknown_label_never_mapped_to_one_of_four_ag_classes(self):
+        rows = b.public_cohort(b.sample(self.texts()))
+        labels = ["business", "sport", "politics", "tech", "entertainment"] * 25 + ["business"] * 3
+        frozen = b.compose_frozen_hybrid(rows, {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.BASE_ARMS})
+        result = b.score_sealed(frozen, labels, rows)
+        self.assertEqual(result["unsupported"], 25)
+        self.assertEqual(result["proxy_eligible"], 103)
+        self.assertEqual(result["scores"]["bank"]["proxy_correct"], 28)
+        self.assertFalse(result["same_label_ontology_verified"])
+        self.assertFalse(result["production_accepted"])
+        labels[0] = "unknown"
+        with self.assertRaises(b.SourceError):
+            b.score_sealed(frozen, labels, rows)
+
+    def test_unsupported_category_high_confidence_is_reported_not_scored(self):
+        rows = b.public_cohort(b.sample(self.texts()))
+        labels = ["entertainment" if i % 8 == 0 else "business" for i in range(128)]
+        probabilities = b.compose_frozen_hybrid(rows, {arm: [[0.01, 0.01, 0.96, 0.02] for _ in rows] for arm in b.BASE_ARMS})
+        report = b.score_sealed(probabilities, labels, rows)
+        for arm in b.ARMS:
+            score = report["scores"][arm]
+            self.assertEqual(score["proxy_scored"], 112)
+            self.assertEqual(score["proxy_correct"], 112)
+            self.assertAlmostEqual(score["proxy_brier_uncalibrated"], 0.0022)
+            unknown = score["unsupported_confidence"]
+            self.assertEqual(unknown["cases"], 16)
+            self.assertEqual(unknown["top1_at_least_0_8"], 16)
+            self.assertEqual(unknown["top1_at_least_0_95"], 16)
+            self.assertEqual(unknown["per_cell"]["0"]["cases"], 16)
+            self.assertEqual(unknown["per_cell"]["1"]["cases"], 0)
+        self.assertTrue(report["unsupported_confidence_is_not_a_fifth_class_prediction"])
+        self.assertFalse(report["new_ood_calibration_performed"])
+        self.assertFalse(report["production_accepted"])
+
+    def test_missing_arm_malformed_probs_and_bad_source_reject(self):
+        rows = b.public_cohort(b.sample(self.texts()))
+        labels = ["business"] * 120 + ["entertainment"] * 8
+        frozen = b.compose_frozen_hybrid(rows, {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.BASE_ARMS})
+        for wrong in (dict(list(frozen.items())[:-1]),
+                      {**frozen, "bank": frozen["bank"][:-1]},
+                      {**frozen, "bank": [[0.2, 0.2, 0.2, 0.2]] + frozen["bank"][1:]}):
+            with self.assertRaises(b.SourceError):
+                b.score_sealed(wrong, labels, rows)
+        with self.assertRaises(b.SourceError):
+            b.score_sealed(frozen, labels, rows, source_revision="unqualified")
+
+    def test_shared_producer_write_once_bytes_score_without_reinterpretation(self):
+        from experiments.shared_stem_cell import wire
+        rows = b.public_cohort(b.sample(self.texts()))
+        probabilities = b.compose_frozen_hybrid(rows, {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.BASE_ARMS})
+        packet = {"schema": b.SCHEMA, "source_revision": b.REVISION,
+                  "cohort_sha256": b.digest(wire.canonical(rows)),
+                  "case_ids": [r["case_id"] for r in rows],
+                  "predictions": probabilities, "work": {}, "production_accepted": False}
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pred, cohort = root / "predictions.json", root / "cohort.json"
+            cohort_sha = wire.write_once(cohort, rows)
+            self.assertEqual(packet["cohort_sha256"], cohort_sha)
+            seal = wire.write_once(pred, packet)
+            self.assertEqual(pred.read_bytes(), b.canonical(packet))
+            self.assertEqual(cohort.read_bytes(), b.canonical(rows))
+            count = []
+            def label(index):
+                self.assertTrue(pred.read_bytes().endswith(b"\n"))
+                count.append(index)
+                return "business" if len(count) <= 120 else "entertainment"
+            result = b.evaluate_published(pred, seal, cohort, cohort_sha, rows, label)
+            self.assertEqual(len(count), 128)
+            self.assertEqual(result["scores"]["bank"]["proxy_correct"], 120)
+            self.assertFalse(result["production_accepted"])
+
+    def test_prediction_and_cohort_bytes_must_seal_before_label_callback(self):
+        rows = b.public_cohort(b.sample(self.texts()))
+        probs = b.compose_frozen_hybrid(rows, {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.BASE_ARMS})
+        cohort_raw = b.canonical(rows)
+        cohort_sha = b.digest(cohort_raw)
+        packet = {"schema": b.SCHEMA, "source_revision": b.REVISION,
+                  "cohort_sha256": cohort_sha,
+                  "case_ids": [r["case_id"] for r in rows],
+                  "predictions": probs, "work": {}, "production_accepted": False}
+        raw = b.canonical(packet)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pred, cohort = root / "predictions.json", root / "cohort.json"
+            pred.write_bytes(raw)
+            cohort.write_bytes(cohort_raw)
+            calls = []
+            def label(index):
+                self.assertEqual(b.digest(pred.read_bytes()), b.digest(raw))
+                calls.append(index)
+                return "business" if len(calls) < 121 else "entertainment"
+            result = b.evaluate_published(pred, b.digest(raw), cohort,
+                                          cohort_sha, rows, label)
+            self.assertEqual(len(calls), 128)
+            self.assertEqual(result["scores"]["bank"]["proxy_correct"], 120)
+            calls.clear()
+            pred.write_bytes(raw + b"\n")
+            with self.assertRaises(b.SourceError):
+                b.evaluate_published(pred, b.digest(raw), cohort,
+                                     cohort_sha, rows, label)
+            self.assertEqual(calls, [])
+            pred.write_bytes(raw)
+            cohort.write_bytes(cohort_raw + b"\n")
+            with self.assertRaises(b.SourceError):
+                b.evaluate_published(pred, b.digest(raw), cohort,
+                                     cohort_sha, rows, label)
+            self.assertEqual(calls, [])
+            cohort.write_bytes(cohort_raw)
+            def tamper_with_prediction(index):
+                pred.write_bytes(b"{}")
+                return "business"
+            with self.assertRaises(b.SourceError):
+                b.evaluate_published(pred, b.digest(raw), cohort,
+                                     cohort_sha, rows, tamper_with_prediction)
+            calls.clear()
+            pred.write_bytes(raw)
+            alias = root / "alias"
+            alias.symlink_to(pred)
+            with self.assertRaises(b.SourceError):
+                b.evaluate_published(alias, b.digest(raw), cohort,
+                                     cohort_sha, rows, lambda _: self.fail("premature label"))
+
+    def test_full_historical_article_cannot_reenter_as_truncated_new_article(self):
+        original = ("Historical economic report with long article content " * 16)
+        self.assertGreater(len(original), b.PREFIX)
+        texts = [original] + self.texts()
+        # An exact full-document duplicate must be excluded despite BBC
+        # embedding only the first 320 characters as the model input.
+        rows = b.sample(texts, excluded=[original])
+        self.assertEqual(len(rows), b.COUNT)
+        self.assertTrue(all(r["source_index"] != 0 for r in rows))
+        # Exclusion by the original representation is also preserved.
+        prefix = " ".join(original.split())[:b.PREFIX]
+        rows = b.sample(texts, excluded=[prefix])
+        self.assertTrue(all(r["source_index"] != 0 for r in rows))
+
+    def test_frozen_hybrid_is_label_independent_and_pairs_are_per_cell(self):
+        rows = b.public_cohort(b.sample(self.texts()))
+        correct = [0.05, 0.05, 0.85, 0.05]
+        wrong = [0.85, 0.05, 0.05, 0.05]
+        physical = {arm: [list(correct) for _ in rows] for arm in b.BASE_ARMS}
+        for i, row in enumerate(rows):
+            physical["shared"][i] = list(correct if row["cell"] == 0 else wrong)
+            physical["residual_corrected"][i] = list(correct if row["cell"] == 1 else wrong)
+        fixed = b.compose_frozen_hybrid(rows, physical)
+        self.assertEqual(fixed[b.HYBRID], [correct] * 128)
+        labels = ["entertainment" if i % 8 == 0 else "business"
+                  for i in range(128)]
+        result = b.score_sealed(fixed, labels, rows)
+        self.assertEqual(result["scores"][b.HYBRID]["proxy_correct"], 112)
+        self.assertEqual(result["paired_vs_bank"][b.HYBRID]["gains"], 0)
+        self.assertEqual(result["paired_vs_bank"][b.HYBRID]["losses"], 0)
+        self.assertEqual(result["paired_vs_bank"]["shared"]["losses"], 64)
+        self.assertFalse(result["frozen_hybrid"]["standalone_deployment_cost_measured"])
+        self.assertFalse(result["frozen_hybrid"]["selected_using_bbc_labels"])
+        self.assertIsNone(result["selected_arm"])
+        # Post-label favorable fifth arm is not a legal independent model.
+        tampered = {key: [list(p) for p in matrix]
+                    for key, matrix in fixed.items()}
+        tampered[b.HYBRID][0] = list(wrong)
+        with self.assertRaises(b.SourceError):
+            b.score_sealed(tampered, labels, rows)
+        bad_routes = [dict(row) for row in rows]
+        bad_routes[0]["cell"] = 2
+        with self.assertRaises(b.SourceError):
+            b.compose_frozen_hybrid(bad_routes, physical)
+
+    def test_substituted_hybrid_or_malformed_parent_rejects_before_bbc_labels(self):
+        import copy
+        rows = b.public_cohort(b.sample(self.texts()))
+        physical = {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows]
+                    for arm in b.BASE_ARMS}
+        predictions = b.compose_frozen_hybrid(rows, physical)
+        cohort_raw = b.canonical(rows)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pred, cohort = root / "predictions.json", root / "cohort.json"
+            cohort.write_bytes(cohort_raw)
+            packet = {"schema": b.SCHEMA, "source_revision": b.REVISION,
+                      "cohort_sha256": b.digest(cohort_raw),
+                      "case_ids": [r["case_id"] for r in rows],
+                      "predictions": predictions, "work": {}, "production_accepted": False}
+            for kind in ("substituted_fifth_arm", "malformed_bank", "missing_shared"):
+                payload = copy.deepcopy(packet)
+                if kind == "substituted_fifth_arm":
+                    payload["predictions"][b.HYBRID][1] = [0.7, 0.1, 0.1, 0.1]
+                elif kind == "malformed_bank":
+                    payload["predictions"]["bank"][2] = [0.0, 0.0, 0.0, 1.1]
+                else:
+                    payload["predictions"].pop("shared")
+                written = b.canonical(payload)
+                pred.write_bytes(written)
+                with self.subTest(kind=kind), self.assertRaises(b.SourceError):
+                    b.evaluate_published(pred, b.digest(written), cohort,
+                                         b.digest(cohort_raw), rows,
+                                         lambda _: self.fail("premature BBC label read"))
+
+    def test_rehashed_source_cell_mutation_rejected_before_first_label(self):
+        import copy
+        original = b.public_cohort(b.sample(self.texts()))
+        physical = {arm: [[0.1, 0.1, 0.7, 0.1] for _ in original]
+                    for arm in b.BASE_ARMS}
+        for kind in ("flipped_cell", "case_index", "duplicate_excerpt",
+                     "label_field", "reordered_source"):
+            rows = copy.deepcopy(original)
+            if kind == "flipped_cell":
+                rows[0]["cell"] = 1
+            elif kind == "case_index":
+                rows[0]["case_id"] = "bbc-news:test:9999"
+            elif kind == "duplicate_excerpt":
+                rows[0]["normalized_excerpt_sha256"] = rows[1]["normalized_excerpt_sha256"]
+            elif kind == "label_field":
+                rows[0]["label_text"] = "business"
+            else:
+                rows[0], rows[1] = rows[1], rows[0]
+            with self.subTest(kind=kind):
+                # Rebuild the fifth arm by the attacker's new routing rule
+                # instead of relying on the helper that now blocks it.
+                probability = {k: [list(x) for x in v]
+                               for k, v in physical.items()}
+                probability[b.HYBRID] = [
+                    physical["shared"][i] if r["cell"] == 0
+                    else physical["residual_corrected"][i]
+                    for i, r in enumerate(rows)]
+                cohort_raw = b.canonical(rows)
+                packet = {"schema": b.SCHEMA, "source_revision": b.REVISION,
+                          "cohort_sha256": b.digest(cohort_raw),
+                          "case_ids": [r["case_id"] for r in rows],
+                          "predictions": probability,
+                          "work": {}, "production_accepted": False}
+                prediction_raw = b.canonical(packet)
+                with tempfile.TemporaryDirectory() as root:
+                    path = Path(root)
+                    (path / "cohort.json").write_bytes(cohort_raw)
+                    (path / "predictions.json").write_bytes(prediction_raw)
+                    with self.assertRaises(b.SourceError):
+                        b.evaluate_published(
+                            path / "predictions.json", b.digest(prediction_raw),
+                            path / "cohort.json", b.digest(cohort_raw), rows,
+                            lambda _: self.fail("tampered routing read BBC labels"))
+
+    def test_insufficient_or_duplicate_unlabeled_source_rejects(self):
+        with self.assertRaises(b.SourceError):
+            b.sample(self.texts()[:8])
+        with self.assertRaises(b.SourceError):
+            b.sample([self.texts()[0]] * 256)
+        with self.assertRaises(b.SourceError):
+            b.sample([*self.texts(), 7])
+        with self.assertRaises(b.SourceError):
+            b.sample(self.texts(), count=129)
+
+
+if __name__ == "__main__":
+    unittest.main()
