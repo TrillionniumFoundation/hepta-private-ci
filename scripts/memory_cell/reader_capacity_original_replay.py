@@ -24,12 +24,38 @@ WORKER = "5adfa11f201ef35480718828f30c9e5581c98e979210e3ee5a64363e3576b3d1"
 ENV = "8c6b6d4050832af6cbb21f87927147fa446ed4fafd495ee46dc62563f89cc6f2"
 GENERATION = "59f9eadd5cc919359079e04442f7343838a60057"
 MODELS = {
-    "qwen-3b": ("ad6901d916b9fb263f86ee21b24d3c97236391936eda884fde50e52af16741a9", "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225", "Qwen/Qwen2.5-3B-Instruct", "82f42baa094a9600e39ccd80d34058aeeb3abbc1"),
-    "smol-1.7b": ("149bf665ab2916e675f69d5e62cbe02dd07cf532afa98daa17804a86508a215a", "78ad24ab45f9620ada47df17a7de446f24ab4082fb993dd143ee30fce422acec", "HuggingFaceTB/SmolLM2-1.7B-Instruct", "31b70e2e869a7173562077fd711b654946d38674"),
+    "qwen-3b": (
+        "ad6901d916b9fb263f86ee21b24d3c97236391936eda884fde50e52af16741a9",
+        "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+        "Qwen/Qwen2.5-3B-Instruct",
+        "82f42baa094a9600e39ccd80d34058aeeb3abbc1",
+    ),
+    "smol-1.7b": (
+        "149bf665ab2916e675f69d5e62cbe02dd07cf532afa98daa17804a86508a215a",
+        "78ad24ab45f9620ada47df17a7de446f24ab4082fb993dd143ee30fce422acec",
+        "HuggingFaceTB/SmolLM2-1.7B-Instruct",
+        "31b70e2e869a7173562077fd711b654946d38674",
+    ),
 }
-ARMS = ("empty", "hybrid", "entity_time", "organized", "program_support", "without_prerequisite")
-SCORER = frozenset(("parsed_identifier", "strict_task_success", "required_sources_covered", "procedure_verification"))
-IDENTIFIER = re.compile(r"\s*((?:site|mode)_[0-9a-f]{8})(?:\s*\[E[1-9][0-9]*\])*\s*\.?\s*")
+ARMS = (
+    "empty",
+    "hybrid",
+    "entity_time",
+    "organized",
+    "program_support",
+    "without_prerequisite",
+)
+SCORER = frozenset(
+    (
+        "parsed_identifier",
+        "strict_task_success",
+        "required_sources_covered",
+        "procedure_verification",
+    )
+)
+IDENTIFIER = re.compile(
+    r"\s*((?:site|mode)_[0-9a-f]{8})(?:\s*\[E[1-9][0-9]*\])*\s*\.?\s*"
+)
 MANIFEST = re.compile(r"([0-9a-f]{64})  (?:\./)?([^\n]+)\Z")
 
 
@@ -54,21 +80,32 @@ def strict_json(data):
 
 def opened(path, expected, *, count):
     path = Path(path)
-    if path.is_symlink() or not path.is_file() or not 0 < path.stat().st_size < 16 * 1024 * 1024:
+    if (
+        path.is_symlink()
+        or not path.is_file()
+        or not 0 < path.stat().st_size < 16 * 1024 * 1024
+    ):
         raise ValueError("bounded original artifact required")
     if sha(path.read_bytes()) != expected:
         raise ValueError("external original ZIP SHA256 changed")
     with zipfile.ZipFile(path) as archive:
         members = archive.infolist()
-        if len(members) != count + 1 or sum(x.file_size for x in members) > 32 * 1024 * 1024:
+        if (
+            len(members) != count + 1
+            or sum(x.file_size for x in members) > 32 * 1024 * 1024
+        ):
             raise ValueError("original archive member census incomplete")
         files = {}
         for info in members:
             name = PurePosixPath(info.filename)
             if (
-                name.is_absolute() or ".." in name.parts or "\\" in info.filename
-                or name.as_posix() != info.filename or info.is_dir()
-                or stat.S_ISLNK(info.external_attr >> 16) or info.filename in files
+                name.is_absolute()
+                or ".." in name.parts
+                or "\\" in info.filename
+                or name.as_posix() != info.filename
+                or info.is_dir()
+                or stat.S_ISLNK(info.external_attr >> 16)
+                or info.filename in files
             ):
                 raise ValueError("invalid original ZIP member")
             files[info.filename] = archive.read(info)
@@ -83,7 +120,9 @@ def opened(path, expected, *, count):
         if name == "SHA256SUMS" or name in hashes or name not in files:
             raise ValueError("duplicate/unknown original manifest member")
         hashes[name] = digest
-    if set(hashes) != set(files) - {"SHA256SUMS"} or any(sha(files[k]) != v for k, v in hashes.items()):
+    if set(hashes) != set(files) - {"SHA256SUMS"} or any(
+        sha(files[k]) != v for k, v in hashes.items()
+    ):
         raise ValueError("original inner member SHA256 mismatch")
     return files
 
@@ -100,7 +139,11 @@ def run_worker(worker_path, recipe, supplied):
         raise ValueError("bounded program request required")
     result = subprocess.run(
         [sys.executable, "-I", "-S", str(worker_path)],
-        input=data, text=True, capture_output=True, timeout=10, check=False,
+        input=data,
+        text=True,
+        capture_output=True,
+        timeout=10,
+        check=False,
     )
     if len(result.stdout.encode()) + len(result.stderr.encode()) > 16384:
         raise ValueError("bounded program response required")
@@ -109,12 +152,17 @@ def run_worker(worker_path, recipe, supplied):
 
 def replay(original_zip, qwen_zip, smol_zip):
     source = opened(original_zip, SOURCE, count=41)
-    if sha(source["plan/plan.json"]) != PLAN or sha(source["source/event_probe.py"]) != WORKER or sha(source["environment.txt"]) != ENV:
+    if (
+        sha(source["plan/plan.json"]) != PLAN
+        or sha(source["source/event_probe.py"]) != WORKER
+        or sha(source["environment.txt"]) != ENV
+    ):
         raise ValueError("changed frozen plan, environment or program verifier")
     plan = strict_json(source["plan/plan.json"])
     if (
         plan.get("schema") != "hepta.event-organization.plan.v1"
-        or tuple(plan.get("arms", ())) != ARMS or len(plan.get("cases", [])) != 8
+        or tuple(plan.get("arms", ())) != ARMS
+        or len(plan.get("cases", [])) != 8
         or plan.get("token_limit") != 2048
         or plan.get("independent_human_review") is not False
         or plan.get("production_accepted") is not False
@@ -124,8 +172,14 @@ def replay(original_zip, qwen_zip, smol_zip):
     ):
         raise ValueError("source, task, authorization or label cut drift")
     cases = {item["query"]["identity"]: item for item in plan["cases"]}
-    labels = {item["id"]: item for item in strict_json(source["observations/labels.json"]) if item["phase"] == "test"}
-    docs = {item["identity"]: item for item in strict_json(source["plan/source-view.json"])}
+    labels = {
+        item["id"]: item
+        for item in strict_json(source["observations/labels.json"])
+        if item["phase"] == "test"
+    }
+    docs = {
+        item["identity"]: item for item in strict_json(source["plan/source-view.json"])
+    }
     if len(cases) != len(labels) or set(cases) != set(labels) or len(docs) != 108:
         raise ValueError("incomplete authentic authored development census")
     results, summary, all_raw, profiles = {}, {}, {}, {}
@@ -140,7 +194,8 @@ def replay(original_zip, qwen_zip, smol_zip):
             if (
                 model["tested-commit.txt"].decode().strip() != GENERATION
                 or sha(model["environment.txt"]) != ENV
-                or execution["plan_sha"] != PLAN or execution["plan"] != plan
+                or execution["plan_sha"] != PLAN
+                or execution["plan"] != plan
                 or execution["model"]["tier"] != model_name
                 or execution["model"]["inventory_digest"] != inventory
                 or execution["model"]["repository"] != repository
@@ -168,14 +223,19 @@ def replay(original_zip, qwen_zip, smol_zip):
                 case, truth = cases[qid], labels[qid]
                 ids = case["controls"][arm]["selected"]
                 if (
-                    row["kind"] != truth["kind"] or row["kind"] != case["kind"]
-                    or row["selected"] != ids or row["candidate_digest"] != case["candidate_digest"]
+                    row["kind"] != truth["kind"]
+                    or row["kind"] != case["kind"]
+                    or row["selected"] != ids
+                    or row["candidate_digest"] != case["candidate_digest"]
                     or row["status"] != "succeeded"
                     or type(row["strict_task_success"]) is not bool
                     or type(row["required_sources_covered"]) is not bool
-                    or set(truth["support"]).issubset(row["selected"]) is not row["required_sources_covered"]
+                    or set(truth["support"]).issubset(row["selected"])
+                    is not row["required_sources_covered"]
                 ):
-                    raise ValueError("source set, task identity, journal status or coverage differs")
+                    raise ValueError(
+                        "source set, task identity, journal status or coverage differs"
+                    )
                 receipt = row["receipt"]
                 if (
                     receipt["reader_identity"] != inventory
@@ -190,39 +250,55 @@ def replay(original_zip, qwen_zip, smol_zip):
                     or not 0 <= receipt["generated_tokens"] <= 64
                     or not isinstance(receipt["reader_profile"], str)
                 ):
-                    raise ValueError("Reader model, budget, training or decoding profile drift")
+                    raise ValueError(
+                        "Reader model, budget, training or decoding profile drift"
+                    )
                 provided = receipt["delivered_evidence"]
                 if [x["original_id"] for x in provided] != ids:
                     raise ValueError("original delivered evidence order changed")
                 for i, item in enumerate(provided, 1):
                     doc = docs[item["original_id"]]
                     if (
-                        item["label"] != f"E{i}" or item["excerpt"] != doc["content"]
+                        item["label"] != f"E{i}"
+                        or item["excerpt"] != doc["content"]
                         or doc["scope"] != case["query"]["scope"]
                         or item["observed_at"] != doc["observed_at"]
                     ):
-                        raise ValueError("Reader did not receive exact original event evidence")
+                        raise ValueError(
+                            "Reader did not receive exact original event evidence"
+                        )
                 parsed = strict_identifier(row["answer"])
                 if parsed != row["parsed_identifier"]:
                     raise ValueError("grader grammar differs from real generation")
                 success = parsed == truth["expected"]
                 if row["kind"] == "procedure":
-                    verified = run_worker(probe, truth["procedure"], parsed or "invalid_response")
+                    verified = run_worker(
+                        probe, truth["procedure"], parsed or "invalid_response"
+                    )
                     stored = row.get("procedure_verification")
                     if not isinstance(stored, dict) or (
-                        stored["exit_code"], stored["stdout"], stored["stderr"]
+                        stored["exit_code"],
+                        stored["stdout"],
+                        stored["stderr"],
                     ) != (verified.returncode, verified.stdout, verified.stderr):
-                        raise ValueError("original program task worker reexecution differs")
+                        raise ValueError(
+                            "original program task worker reexecution differs"
+                        )
                     success = verified.returncode == 0
                     track["rerun_bounded_program"] += 1
                 elif row.get("procedure_verification") is not None:
                     raise ValueError("nonprogram task has forbidden worker receipt")
                 if success is not row["strict_task_success"]:
-                    raise ValueError("original task success disagrees with independent scoring")
+                    raise ValueError(
+                        "original task success disagrees with independent scoring"
+                    )
                 groups[(qid, arm)] = row
                 track[arm] += int(success)
                 single_profile.add(receipt["reader_profile"])
-            if set(groups) != {(qid, arm) for qid in cases for arm in ARMS} or len(single_profile) != 1:
+            if (
+                set(groups) != {(qid, arm) for qid in cases for arm in ARMS}
+                or len(single_profile) != 1
+            ):
                 raise ValueError("Reader profile or complete paired census drift")
             for arm in ARMS:
                 rows = [groups[(qid, arm)] for qid in sorted(cases)]
@@ -230,12 +306,15 @@ def replay(original_zip, qwen_zip, smol_zip):
                 if (
                     expected["planned"] != 8
                     or expected["strict_task_successes"] != track[arm]
-                    or expected["input_tokens"] != sum(r["receipt"]["input_tokens"] for r in rows)
-                    or expected["generated_tokens"] != sum(r["receipt"]["generated_tokens"] for r in rows)
+                    or expected["input_tokens"]
+                    != sum(r["receipt"]["input_tokens"] for r in rows)
+                    or expected["generated_tokens"]
+                    != sum(r["receipt"]["generated_tokens"] for r in rows)
                     or not math.isclose(
                         expected["measured_read_seconds"],
                         sum(r["receipt"]["seconds"] for r in rows),
-                        rel_tol=1e-9, abs_tol=1e-6,
+                        rel_tol=1e-9,
+                        abs_tol=1e-6,
                     )
                 ):
                     raise ValueError("original published summary not reproducible")
@@ -243,7 +322,8 @@ def replay(original_zip, qwen_zip, smol_zip):
             profiles[model_name] = next(iter(single_profile))
             summary[model_name] = {
                 arm: dict(
-                    successful=track[arm], denominator=8,
+                    successful=track[arm],
+                    denominator=8,
                     input_tokens=report["arms"][arm]["input_tokens"],
                     output_tokens=report["arms"][arm]["generated_tokens"],
                     reader_seconds=report["arms"][arm]["measured_read_seconds"],
@@ -267,13 +347,18 @@ def replay(original_zip, qwen_zip, smol_zip):
             wins += bool(high and not low)
             losses += bool(low and not high)
             ties += bool(high == low)
-            if all_raw["qwen-3b"][(qid, arm)]["selected"] != all_raw["smol-1.7b"][(qid, arm)]["selected"]:
+            if (
+                all_raw["qwen-3b"][(qid, arm)]["selected"]
+                != all_raw["smol-1.7b"][(qid, arm)]["selected"]
+            ):
                 raise ValueError("cross-Reader original evidence drift")
         paired[arm] = dict(qwen_wins=wins, smol_wins=losses, ties=ties, n=8)
     return dict(
-        schema=SCHEMA, original_generating_commit=GENERATION,
+        schema=SCHEMA,
+        original_generating_commit=GENERATION,
         original_artifact_outer_sha256={
-            "source": SOURCE, "qwen-3b": MODELS["qwen-3b"][0],
+            "source": SOURCE,
+            "qwen-3b": MODELS["qwen-3b"][0],
             "smol-1.7b": MODELS["smol-1.7b"][0],
         },
         original_plan_sha256=PLAN,
@@ -284,9 +369,15 @@ def replay(original_zip, qwen_zip, smol_zip):
         original_authored_development_task_count=8,
         actual_historical_model_generations=96,
         new_model_generations=0,
-        models=results, per_arm=summary, paired=paired,
-        weak_reader_organized_context_success=summary["smol-1.7b"]["organized"]["successful"],
-        stronger_reader_organized_context_success=summary["qwen-3b"]["organized"]["successful"],
+        models=results,
+        per_arm=summary,
+        paired=paired,
+        weak_reader_organized_context_success=summary["smol-1.7b"]["organized"][
+            "successful"
+        ],
+        stronger_reader_organized_context_success=summary["qwen-3b"]["organized"][
+            "successful"
+        ],
         reader_capacity_is_memory_learning_gain=False,
         parametric_memory_gain_established=False,
         full_cloud_cost_usd=None,
@@ -307,7 +398,16 @@ def main():
     with args.output.open("x", encoding="utf-8") as stream:
         json.dump(data, stream, indent=2, sort_keys=True, allow_nan=False)
         stream.write("\n")
-    print(json.dumps({"original_generations": data["actual_historical_model_generations"], "new_generations": 0, "paired_organized": data["paired"]["organized"]}, sort_keys=True))
+    print(
+        json.dumps(
+            {
+                "original_generations": data["actual_historical_model_generations"],
+                "new_generations": 0,
+                "paired_organized": data["paired"]["organized"],
+            },
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":

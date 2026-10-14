@@ -56,7 +56,9 @@ class OriginalReaderCapacityTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             path = Path(temp) / "source.zip"
             path.write_bytes(payload)
-            self.assertEqual(opened(path, sha(payload), count=1)["one.json"], b'{"ok":true}\n')
+            self.assertEqual(
+                opened(path, sha(payload), count=1)["one.json"], b'{"ok":true}\n'
+            )
             with self.assertRaisesRegex(ValueError, "external original ZIP"):
                 opened(path, "f" * 64, count=1)
 
@@ -103,7 +105,9 @@ class OriginalReaderCapacityTests(unittest.TestCase):
 
     def test_workers_are_bounded_before_executing_any_process(self):
         with self.assertRaisesRegex(ValueError, "bounded program request"):
-            run_worker(Path("/nonexistent/executable.py"), {"large": "x" * 30000}, "mode")
+            run_worker(
+                Path("/nonexistent/executable.py"), {"large": "x" * 30000}, "mode"
+            )
 
     def test_absent_inputs_cannot_create_fake_new_model_results(self):
         with tempfile.TemporaryDirectory() as temp:
