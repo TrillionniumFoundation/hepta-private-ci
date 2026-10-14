@@ -301,3 +301,54 @@ The paired physical workflow now runs this independently implemented
 post-hoc review and retains its result as a distinct artifact next to
 the original raw model reports. This is an integrity gate, not an
 independent future-time learning claim.
+
+
+## 2026-10-14: first real public three-arm result and exploratory calibration
+
+The [real paired public run #38521871187](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38521871187)
+completed on **source commit `1f231584124e62a11cf932d937ea4a7ad2437ab2`**
+with the exact SHA-256-bound panel
+`2f7a013648e16b60c74614b0fcf1496aa06475f7285f215adddaa51fe29e01a4`.
+The distinct read-only numeric verifier recomputed 96 calibration/test
+source-and-prediction records and verified the following descriptive **64-row
+cross-sectional test** scores:
+
+| Arm | Accuracy | Brier | 8-bin ECE |
+| --- | ---: | ---: | ---: |
+| Laya421 frozen | 1.000000 | 0.00569167 | 0.027680 |
+| EmbeddingGemma2 frozen 2018-param Head | 0.406250 | 0.25001414 | 0.093812 |
+| EmbeddingGemma2 trained 2018-param Head (40 SGD steps) | 0.937500 | 0.24867517 | 0.436124 |
+
+Training changed the Cell decision boundary substantially, but the trained
+probabilities remained clustered near 0.5 and badly calibrated. **This public
+panel does not establish a production improvement over frozen Laya.**
+It is cross-sectional, may overlap upstream pretraining and lacks matched
+Foundation pretraining, target-host end-to-end, owner-authenticated outcome
+and three later future-window evidence. CPU batch-wall allocation is
+not independently observed per-Cell latency.
+
+A follow-up pure-probability `exploratory_temperature_probe.py` analyses
+only these immutable three raw reports. It tries a fixed, bounded set of logit
+multipliers, chooses the scale using the 32-row **calibration** Brier and
+descriptively reports the 64-row test result without changing any model
+or selected artifact. In the already-reviewed public panel, factor 1024
+moved trained-Head test Brier from `0.248675` to approximately `0.045749`,
+and descriptive ECE from `0.436124` to approximately `0.027045`; category
+accuracy remained 93.75%. **Researchers had already inspected the test
+result before adding this experiment, so it is post-hoc exploratory and
+not a confirmatory held-out win.** A new preregistered untouched dataset
+and real longitudinal episodes remain necessary.
+
+### Real multimodal runtime failure and targeted fix
+
+[Gemma physical run #38521871198](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38521871198)
+failed while decoding audio because the Ubuntu runner did not have the
+FFmpeg shared `libavutil.so.58` runtime required by the pinned
+`torchcodec==0.10.0`/`torch==2.10.0` CPU path. This was a real
+decoder-environment failure; it is **not** a measured model accuracy
+failure. The dedicated media job now installs the distribution's FFmpeg6
+runtime before downloading the large model, validates the TorchCodec
+decoder import, and persists separate vision/audio receipts so a later
+audio error cannot discard the completed vision numeric evidence.
+The fix itself needs a fresh exact-head CI result before it can be
+called successful.

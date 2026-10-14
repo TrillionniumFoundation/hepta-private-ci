@@ -45,6 +45,13 @@ jobs:
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
           git diff --check
           test -z "$(git status --porcelain)"
+      - name: Install shared FFmpeg 6 libraries before loading public weights
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends ffmpeg
+          ffmpeg -hide_banner -version | head -n 1
+          ldconfig -p | grep -F 'libavutil.so.58'
       - name: Install pinned CPU inference dependencies
         run: |
           set -euo pipefail
@@ -56,6 +63,15 @@ jobs:
             'sentence-transformers==6.1.0' 'transformers==5.19.0' \
             'pillow==11.3.0' 'soundfile==0.13.1' 'numpy==2.2.6'
           "$PY" -m pip freeze > "$RUNNER_TEMP/gemma2-environment.freeze"
+      - name: Verify TorchCodec/FFmpeg shared library load before fetching model
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/gemma2-venv/bin/python" - <<'PY'
+          from importlib.metadata import version
+          assert version('torchcodec') == '0.10.0'
+          from torchcodec.decoders import AudioDecoder
+          print('shared FFmpeg6 / TorchCodec audio decoder import succeeded')
+          PY
       - name: Prepare complete remote SHA/LFS-bound local snapshot
         run: |
           set -euo pipefail
@@ -166,6 +182,8 @@ jobs:
                   'pipeline_digest': result['rows'][0]['pipeline_digest'],
                   'production_promotion': 'DENY_ALL',
               })
+              (root / f'gemma2-real-{profile}.json').write_text(
+                  json.dumps(reports[-1], sort_keys=True))
               del runner
               gc.collect()
           print(json.dumps(reports, sort_keys=True))
@@ -198,6 +216,8 @@ jobs:
             ${{ runner.temp }}/gemma2-real-forward.json
             ${{ runner.temp }}/gemma2-numerical-review.json
             ${{ runner.temp }}/gemma2-real-media.json
+            ${{ runner.temp }}/gemma2-real-vision.json
+            ${{ runner.temp }}/gemma2-real-audio.json
           if-no-files-found: warn
           retention-days: 7
       - name: No source-tree mutation
