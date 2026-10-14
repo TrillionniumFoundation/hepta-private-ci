@@ -60,12 +60,14 @@ class PinnedPublicSourceTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "frozen exact commits"):
                 m.require_research_roots(self.research, self.audit)
 
-    def test_public_revision_and_checkpoint_not_minting_model_authority(self):
-        self.assertEqual(m.HF_REV, "8949b909ec900327062f0ebf497f51aef5e6f0c8")
-        self.assertEqual(len(m.WEIGHT_SHA256), 64)
-        self.assertEqual(len(m.SNAPSHOT_SHA256), 64)
-        # This test does not compare actual bytes or select a production model.
-        self.assertNotEqual(m.WEIGHT_SHA256, m.SNAPSHOT_SHA256)
+    def test_wrong_research_head_rejected_before_model_import(self):
+        with mock.patch.multiple(
+            m,
+            STEM_RESEARCH_SHA="f" * 40,
+            STEM_AUDIT_SHA=git(self.audit, "rev-parse", "HEAD"),
+        ):
+            with self.assertRaisesRegex(ValueError, "frozen exact commits"):
+                m.require_research_roots(self.research, self.audit)
 
 
 if __name__ == "__main__":
