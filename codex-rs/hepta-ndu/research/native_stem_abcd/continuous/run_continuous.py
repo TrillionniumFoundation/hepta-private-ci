@@ -54,7 +54,7 @@ def specs():
         runs.append(dict(family='attention',method='adam',seed=s,rule='cc5',ridge=0.))
         runs.append(dict(family='nonlinear',method='none',seed=s,rule='cc5',ridge=0.))
     for f,methods in [('matrix',('adam','adjoint')),('scalar',('adam','root'))]:
-        for m in methods:runs.append(dict(family=f,method=m,seed=11,rule='cc5',ridge=0.))
+        for m in methods: runs.append(dict(family=f,method=m,seed=11,rule='cc5',ridge=0.))
     return runs
 
 
