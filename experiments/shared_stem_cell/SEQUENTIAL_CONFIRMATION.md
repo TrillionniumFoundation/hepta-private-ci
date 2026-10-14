@@ -31,8 +31,9 @@ conditional null assumptions remain unverified. Reports never certify retention
 or authorize production use. Alpha=0.025 belongs ONLY to this NEW stream; it is
 not a 0.05 familywise guarantee over the entire prior adaptive research history.
 No old labels/evidence are pooled, and restarting after a failed stream would
-require a separately declared error budget. Resume/restart accumulation is not
-implemented. The same source/data run is reproducibility, not new evidence.
+require a separately declared error budget. The opt-in continuation below only
+replays this same stream; it never pools a fresh restart. The same source/data run
+is reproducibility, not new evidence.
 
 Method background: Waudby-Smith and Ramdas, *Estimating means of bounded random
 variables by betting*, https://arxiv.org/abs/2010.09686; Howard et al.,
@@ -77,3 +78,56 @@ python -m experiments.shared_stem_cell.sequential_confirmation \
   --previous /previous-fixed-confirmation --previous-sha256 <external-report-sha> \
   --output /new/sequential-confirmation
 ```
+
+## Interrupted-stream continuation (same evidence, no fresh restart)
+
+`sequential_replay.py` seals a **quiescent** output prefix into a new checkpoint
+folder. It requires the complete candidate/cohort lock and accepts only bounded,
+canonical ordinary files. Before publication or continuation it runs the existing
+stream on saved predictions and labels in a disposable directory, recomputing the
+exact active-Cell schedule, counts, mixture evidence, hashes, decision and final
+scores where present. It does not trust serialized statistical state. Missing
+middle batches, orphan outcomes, changed evidence/scores, malformed trailing JSON,
+wrong source/profile and a wrong externally supplied checkpoint hash reject before
+live callbacks. No damaged file or negative historical result is repaired.
+
+```sh
+python -m experiments.shared_stem_cell.sequential_replay \
+  --source /quiescent/interrupted-stream --checkpoint /new/checkpoint
+# Save the printed SHA256 outside the checkpoint. Continue with the SAME original
+# --study, --consolidation, --previous, and corresponding source report hashes:
+python -m experiments.shared_stem_cell.sequential_confirmation \
+  --study /original/study --consolidation /original/consolidation \
+  --producer-sha256 "$PRODUCER_SHA" --consolidation-sha256 "$CONSOLIDATION_SHA" \
+  --previous /original/fixed-confirmation --previous-sha256 "$PREVIOUS_SHA" \
+  --resume-checkpoint /new/checkpoint --resume-sha256 "$CHECKPOINT_SHA" \
+  --output /new/continued-stream
+```
+
+The destination is always NEW; original outputs, failure records and checkpoint
+bytes remain untouched. Saved prediction batches avoid new Encoder/Head calls;
+labels in complete outcome receipts avoid repeated label callbacks. A prediction
+without an outcome is reused and its labels are then requested. If final predictions
+are already saved, the CLI does not instantiate an Encoder. The caller must still
+supply the original fixed source/model identities. Protocol changes cannot resume
+an older checkpoint; this is deliberately not a cross-version migration facility.
+
+Each resumed report binds the checkpoint and any original failure. Its continuation
+section separates reused vs new prediction/label callback rows. Per-batch timing
+records still describe the **whole logical stream**, including historical work;
+do not sum them and claim they were all incurred by the new process. Prefix
+validation, acquisition and any required model load are separately measured.
+
+This is NOT exactly-once execution: work in flight without a complete saved record
+is unknown and may repeat. A partially written file is refused, not silently
+truncated. Quiescence and an externally managed latest checkpoint are required;
+this helper is not an anti-rollback authority, distributed lock, automatic retry
+manager or production ledger. It supplies no new error budget, evidence reset,
+model selection or lifetime retention guarantee. Existing statistical assumptions
+and failed historical decisions remain unchanged.
+
+Regression coverage includes four actual child exits after prediction, outcome,
+decision and final-prediction persistence, followed by fresh-process continuation.
+A separate development demonstration uses archived 128x384 genuine mmBERT features
+and the frozen original Head panel with three SIGKILL cuts. No Encoder or fitting
+runs in that demonstration, and it is NOT fresh scientific confirmation evidence.

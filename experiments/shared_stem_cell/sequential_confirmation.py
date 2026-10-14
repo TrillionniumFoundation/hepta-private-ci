@@ -2,7 +2,8 @@
 
 Opt-in successor, NOT a reinterpretation of the old fixed-sample decision.
 All original producer and preceding confirmation/evaluation contents are excluded.
-No fitting, candidate search, lost-row filtering, resume or hidden Encoder work.
+No fitting, candidate search, lost-row filtering or hidden Encoder work.
+An explicitly sealed prefix can be replayed to a NEW output directory.
 """
 from __future__ import annotations
 
@@ -139,16 +140,22 @@ def stream(output, rows, lock, predict_rows, label_at):
         'assumptions_verified':False,'retention_certified':False,'production_accepted':False}
 
 
-def run(study, consolidation, producer_sha, consolidation_sha, previous, previous_sha, output):
+def run(study, consolidation, producer_sha, consolidation_sha, previous, previous_sha, output,
+        *, resume_checkpoint=None, resume_sha256=None):
     from datasets import load_dataset
+    from experiments.shared_stem_cell.sequential_replay import Replay, source_identity
+    if (resume_checkpoint is None) != (resume_sha256 is None):
+        raise e.InputError('checkpoint path AND external SHA256 required together')
+    # Before acquisition or model loading, recompute the entire saved prefix.
+    with e.measured() as recovery_validation:
+        replay = Replay(resume_checkpoint, resume_sha256) if resume_checkpoint is not None else None
     output.mkdir(parents=True,exist_ok=False)
     try:
         panel,config,old,lock = f.load_panel(study,consolidation,producer_sha,consolidation_sha)
         previous_cohort = prior_rows(previous,previous_sha,lock)
         plan = {**lock,'confirmation_cap':CONFIRM,'final_size':FINAL,'alpha':ALPHA,
             'bets':list(BETS),'chunk_per_cell':CHUNK_PER_CELL,'previous_report_sha256':previous_sha,
-            'source_sha256':{name:e.sha((Path(__file__).parent/name).read_bytes()) for name in
-                            ('sequential_confirmation.py','sequential_evidence.py')},
+            'source_sha256':source_identity(),
             'error_budget_scope':'this_new_stream_only_not_all_prior_research',
             'prior_results_not_pooled':True,'extra_optimizer_steps':0,'extra_svd_calls':0}
         e.write_once(output/'plan.json',plan)
@@ -163,11 +170,16 @@ def run(study, consolidation, producer_sha, consolidation_sha, previous, previou
             rows = cohort(texts,[r.text for r in old]+[r['text'] for r in previous_cohort],
                           confirmation=CONFIRM,final=FINAL)
         expected = {r['source_index']:r['text'] for r in rows}
+        if replay is not None:
+            replay.bind(rows, plan)
+        encoder = None
         with e.measured() as model_load:
-            encoder = e.LocalEncoder(study/'model',config['model'],config['maximum_tokens'])
-        if (encoder.identity != e.sha(e.canonical(config['model']))
-                or bool(encoder.simulated) != lock['source_simulated_encoder']):
-            raise e.InputError('sequential encoder identity drift')
+            if replay is None or replay.needs_encoder:
+                encoder = e.LocalEncoder(study/'model',config['model'],config['maximum_tokens'])
+                if (encoder.identity != e.sha(e.canonical(config['model']))
+                        or bool(encoder.simulated) != lock['source_simulated_encoder']):
+                    raise e.InputError('sequential encoder identity drift')
+        model_load['encoder_loaded'] = encoder is not None
         def forward(part):
             cases = tuple(e.Case(r['case_id'],r['case_id'],r['split'],None,r['cell'],lock['scope'],r['text']) for r in part)
             x,cost = e.encode_cases(encoder,cases,batch_size=config['batch_size'])
@@ -179,13 +191,17 @@ def run(study, consolidation, producer_sha, consolidation_sha, previous, previou
                 raise e.InputError('changed source before answer access')
             return int(item['label'])
         with e.measured() as execution:
-            result = stream(output,rows,plan,forward,answer)
-        encoder.close()
+            result = (stream(output,rows,plan,forward,answer) if replay is None else
+                      replay.run(output,rows,plan,forward,answer))
+        if encoder is not None:
+            encoder.close()
         _,_,_,relocked = f.load_panel(study,consolidation,producer_sha,consolidation_sha)
         if relocked != lock or prior_rows(previous,previous_sha,lock) != previous_cohort:
             raise e.InputError('source changed during sequential execution')
         result.update(acquisition=acquisition,model_load=model_load,whole_execution=execution,
-                      extra_optimizer_steps=0,extra_svd_calls=0,source_simulated_encoder=encoder.simulated)
+                      extra_optimizer_steps=0,extra_svd_calls=0,
+                      source_simulated_encoder=lock['source_simulated_encoder'],
+                      recovery_validation=recovery_validation)
         e.write_once(output/'report.json',result)
         return result
     except Exception as error:
@@ -199,7 +215,10 @@ if __name__ == '__main__':
         parser.add_argument('--'+field,type=Path,required=True)
     for field in ('producer-sha256','consolidation-sha256','previous-sha256'):
         parser.add_argument('--'+field,required=True)
+    parser.add_argument('--resume-checkpoint', type=Path)
+    parser.add_argument('--resume-sha256')
     args = parser.parse_args()
     torch.set_num_threads(2)
     run(args.study,args.consolidation,args.producer_sha256,args.consolidation_sha256,
-        args.previous,args.previous_sha256,args.output)
+        args.previous,args.previous_sha256,args.output,
+        resume_checkpoint=args.resume_checkpoint,resume_sha256=args.resume_sha256)

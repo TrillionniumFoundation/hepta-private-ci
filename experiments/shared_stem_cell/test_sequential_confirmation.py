@@ -207,6 +207,17 @@ class StreamTests(unittest.TestCase):
             old_seen=set(Encoder.calls);Encoder.calls=[];labels.clear()
             with patch.object(s,'CONFIRM',32),patch.object(s,'FINAL',8),patch.object(s,'CHUNK_PER_CELL',4):
                 result=s.run(old,cons,prod,cons_sha,target,previous_sha,current)
+                # Full CLI owner reopens a completed prefix without loading Encoder.
+                from experiments.shared_stem_cell.sequential_replay import seal
+                anchor = seal(current, self.root/'checkpoint')
+                before_calls = list(Encoder.calls)
+                with patch.object(e, 'LocalEncoder', side_effect=AssertionError('no resumed Encoder')):
+                    reopened = s.run(old, cons, prod, cons_sha, target, previous_sha,
+                        self.root/'resumed', resume_checkpoint=self.root/'checkpoint', resume_sha256=anchor)
+                self.assertEqual(reopened['scores'], result['scores'])
+                self.assertEqual(reopened['chosen'], result['chosen'])
+                self.assertFalse(reopened['model_load']['encoder_loaded'])
+                self.assertEqual(Encoder.calls, before_calls)
         self.assertFalse(old_seen.intersection(Encoder.calls))
         self.assertEqual(len(labels),result['encoded_confirmation_rows']+8)
         self.assertEqual(len(Encoder.calls),len(labels))
