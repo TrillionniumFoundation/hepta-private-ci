@@ -479,13 +479,21 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
         if not tokenizer_file.is_file() or sha256_file(tokenizer_file) != entry['tokenizer_sha256']:
             raise ValueError(f'E1 tokenizer file digest mismatch: {kind}')
     from .models import OfflineEncoder, frozen_projection
+    from .encoder_meter import EncoderModuleForwardMeter
     for kind in ENCODERS:
         entry = matrix['encoders'][kind]
         backend = OfflineEncoder(kind, entry['local_path'], entry['weights_sha256'],
                                  max_length=max_length,
                                  expected_bundle_sha256=entry['bundle_sha256'])
         start = time.perf_counter()
-        features = backend.encode(rows, batch=spec['batch'])
+        with EncoderModuleForwardMeter(backend.model) as meter:
+            features = backend.encode(rows, batch=spec['batch'])
+        module_forwards = meter.receipt()
+        if (module_forwards['module_forward_failures_or_incomplete']
+                or module_forwards['rows_completed'] != len(rows)
+                or module_forwards['module_forward_completions']
+                != math.ceil(len(rows) / spec['batch'])):
+            raise ValueError('E1 incomplete real module forward accounting')
         encoder_seconds = time.perf_counter() - start
         features = frozen_projection(features.float().cpu(), dimension, int(spec['seed']))
         mu, std = features[masks['train']].mean(0), features[masks['train']].std(0).clamp_min(1e-4)
@@ -498,6 +506,7 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
                   'tokenizer_sha256_claimed': entry['tokenizer_sha256'],
                   'hidden_size': backend.dimension, 'projected_width': dimension,
                   'input_rows': len(rows), 'encoder_seconds': encoder_seconds,
+                  'model_forward_observation': module_forwards,
                   'trained_head_matrix': trained,
                   'normalized_from': 'train_only',
                   'joint_format': 'laya-native-markers' if kind == 'laya-joint'
@@ -658,15 +667,37 @@ def main() -> None:
                 norm = args.normalizer_sha256 or digest_bytes(b'joint-format-v3')
                 if args.encoder != 'synthetic-hash' and (not is_digest(args.tokenizer_sha256) or not is_digest(args.normalizer_sha256)):
                     raise ValueError('real reuse requires pinned tokenizer and normalizer digests')
-                _j, joint = reuse_trial(rows, encode, encoder_digest=encoder_digest,
-                                        tokenizer_digest=tok, normalizer_digest=norm,
-                                        mode='joint', batch_size=args.batch,
-                                        generation=args.generation, authority_epoch=args.authority_epoch)
-                _p, public = reuse_trial(rows, encode, encoder_digest=encoder_digest,
-                                         tokenizer_digest=tok, normalizer_digest=norm,
-                                         mode='public', batch_size=args.batch,
-                                         generation=args.generation, authority_epoch=args.authority_epoch,
-                                         research_synthetic_cross_source=(args.encoder == 'synthetic-hash' and args.allow_synthetic))
+                from contextlib import nullcontext
+                from .encoder_meter import EncoderModuleForwardMeter
+
+                def metered_reuse(mode: str, **extra):
+                    # Synthetic adapter calls are counted in reuse_trial but
+                    # are NOT actual Transformer module forwards.
+                    meter_context = (EncoderModuleForwardMeter(backend.model)
+                                     if args.encoder != 'synthetic-hash' else nullcontext())
+                    with meter_context as actual_meter:
+                        features, report = reuse_trial(
+                            rows, encode, encoder_digest=encoder_digest,
+                            tokenizer_digest=tok, normalizer_digest=norm,
+                            mode=mode, batch_size=args.batch,
+                            generation=args.generation,
+                            authority_epoch=args.authority_epoch, **extra)
+                    if actual_meter is None:
+                        report['model_forward_observation'] = None
+                    else:
+                        measured = actual_meter.receipt()
+                        if (measured['module_forward_failures_or_incomplete']
+                                or measured['module_forward_completions'] != report['encoder_forward_invocations']
+                                or measured['rows_completed'] != report['encoder_forward_rows']):
+                            raise ValueError('E3 real model forwards differ from adapter accounting')
+                        report['model_forward_observation'] = measured
+                    report['model_forward_attestation_verified'] = False
+                    return features, report
+
+                _j, joint = metered_reuse('joint')
+                _p, public = metered_reuse(
+                    'public', research_synthetic_cross_source=(
+                        args.encoder == 'synthetic-hash' and args.allow_synthetic))
                 from .models import frozen_projection
                 if args.dimension < 4 or args.dimension > 512:
                     raise ValueError('E3 requires a bounded projected dimension 4..512')
