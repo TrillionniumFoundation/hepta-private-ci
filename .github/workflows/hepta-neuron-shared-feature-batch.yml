@@ -22,6 +22,7 @@ on:
       - "codex-rs/hepta-contracts/src/final_use_store_windows.rs"
       - "codex-rs/hepta-contracts/src/final_use.rs"
       - "codex-rs/hepta-contracts/Cargo.toml"
+      - "codex-rs/hepta-bao-adapter/**"
       - "codex-rs/hepta-prompt-registry/**"
       - "codex-rs/utils/path-utils/**"
       - "codex-rs/Cargo.lock"
@@ -137,6 +138,11 @@ jobs:
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence --lib evaluated_shadow::tests:: -- --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence --lib outcome_credit_v2::tests:: -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prove BAO secret lease registry Windows fsync and restart recovery
+        shell: pwsh
+        run: |
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-bao-adapter --lib lease_lifecycle::tests:: -- --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Prove Windows process-tree cleanup and durable supervisor restart budget
         shell: pwsh
@@ -258,7 +264,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-agentd --package codex-hepta-contracts -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-agentd --package codex-hepta-contracts --package codex-hepta-bao-adapter -- --check
       - name: Verify no test checkout mutation
         if: always()
         shell: bash
