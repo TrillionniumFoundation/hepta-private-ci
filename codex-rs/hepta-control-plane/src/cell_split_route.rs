@@ -359,7 +359,6 @@ impl CellSplitRouteControllerV1 {
         Ok(())
     }
 
-
     /// The legacy migration variant is likewise non-authorizing. State
     /// migration tests execute the dedicated lower-level qualification path;
     /// production callers must use the independently audited CNS owner.
