@@ -20,6 +20,30 @@ until the full repository CI and independent review are complete.
 | 04 Split/merge | Two genuinely trained child Heads from a detached parent and a genuinely distilled student. Initialization preserves parent output; actual per-stage parameters and training work recorded. | Same-budget unsplit control, future outcomes, old-task retention, error-free owner migration and production Selector. Refer to #1726/#1733/#1742. |
 | 05 LongMemEval-V2 | Text-only lexical control matching official Memory.insert/query and persistence interface, provenance labels, checksum verification, query-only input and explicit screenshot limitation. | Actual 451-question run, trained AMCN backend, multimodal encoder, official judged scores and full end-to-end resource measurements. |
 
+## Additional executed research interfaces
+
+- amcn_native.py calls the existing physically loaded, locally tensor-verified
+  LocalEncoder with canonical question plus exact source bytes and performs
+  actual shared-feature batching. No model is downloaded or simulated when
+  the pinned files are unavailable. An unsigned local tensor check is NOT an
+  independent signed production admission. Real Head tensors can be sealed as
+  safetensors with source manifest, model and prediction digests.
+- amcn_multimodal.py adds typed text/image/audio/video spans and TRAIN-only
+  pairwise contrastive projection. It executes actual PyTorch connector
+  optimization on supplied feature tensors but loads no physical media tower;
+  positive co-reference and negative cross-event training pairs are distinct.
+- amcn_score.py compares the four original Reader arms using matching raw
+  answer digests, independently supplied descriptive judgments, source
+  citation labels, tokens and family-level conservative confidence intervals.
+  It never declares actual reviewer independence.
+- amcn_routing_audit.py compares independent Cell, fixed graph, learned routing
+  and **externally supplied** genuine strong hybrid RAG outcomes under the
+  same source, Reader and prompt identities. It cannot replace the original
+  strong RAG execution or the independent Evaluator.
+
+New work does not reinterpret HNMF's seven populations or any production
+wire version. This is a research-only typed projection and training path.
+
 ## Commands and owner integration
 
 From repository root in a CPU Python environment with PyTorch, numpy and Ruff:
