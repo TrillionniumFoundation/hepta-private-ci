@@ -219,24 +219,44 @@ impl PhaseMetricSinkV1 for DurablePhaseMetricSinkV1 {
     }
 }
 
-impl Drop for DurablePhaseMetricSinkV1 {
-    fn drop(&mut self) {
-        // A failed flush can mean fsync is stuck. Never block shutdown on
-        // that failed writer; dropping JoinHandle safely detaches it, and the
-        // independent Evidence journal lock still prevents a second writer.
+impl DurablePhaseMetricSinkV1 {
+    fn stop_with_timeout(&mut self, timeout: Duration) {
+        // Preserve the normal durable Drop barrier even when the bounded
+        // channel is temporarily full. Detach only if the writer is already
+        // unhealthy, disconnected or makes no progress by the deadline.
         if !self.healthy() {
             return;
         }
+        let deadline = std::time::Instant::now() + timeout;
         let (tx, rx) = sync_channel(1);
-        // Avoid blocking on a full queue even when the worker has not yet
-        // reported its failure. A disconnected worker performs its own
-        // best-effort final flush when it can resume.
-        if self.channel.try_send(WriterCommandV1::Stop(tx)).is_err() {
-            return;
+        let mut command = WriterCommandV1::Stop(tx);
+        loop {
+            match self.channel.try_send(command) {
+                Ok(()) => break,
+                Err(TrySendError::Disconnected(_)) => {
+                    self.health.healthy.store(false, Ordering::Release);
+                    return;
+                }
+                Err(TrySendError::Full(pending)) => {
+                    command = pending;
+                    if !self.healthy() || std::time::Instant::now() >= deadline {
+                        self.health.healthy.store(false, Ordering::Release);
+                        return;
+                    }
+                    std::thread::sleep(
+                        Duration::from_millis(1)
+                            .min(deadline.saturating_duration_since(std::time::Instant::now())),
+                    );
+                }
+            }
         }
-        if rx.recv_timeout(MAX_FLUSH_WAIT).is_err() {
-            // No ACK means no durability claim. A potentially blocked worker
-            // must not hang a Split teardown or enable another effect owner.
+        if rx
+            .recv_timeout(deadline.saturating_duration_since(std::time::Instant::now()))
+            .is_err()
+        {
+            // A timed-out writer remains in its own locked journal; never
+            // falsely report a flush or block process teardown indefinitely.
+            self.health.healthy.store(false, Ordering::Release);
             return;
         }
         if let Ok(mut handle) = self.worker.lock() {
@@ -244,6 +264,12 @@ impl Drop for DurablePhaseMetricSinkV1 {
                 let _ = worker.join();
             }
         }
+    }
+}
+
+impl Drop for DurablePhaseMetricSinkV1 {
+    fn drop(&mut self) {
+        self.stop_with_timeout(MAX_FLUSH_WAIT);
     }
 }
 
