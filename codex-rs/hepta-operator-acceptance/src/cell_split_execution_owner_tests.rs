@@ -2546,3 +2546,153 @@ fn last_original_owner_readback_selector_revocation_is_reconcile_only() {
         "late revocation and recovery must never duplicate CAS"
     );
 }
+
+#[test]
+fn original_metrics_ack_ledger_readback_binds_all_four_real_signed_fixture_steps() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let transcript = {
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("original frozen Split Owner")
+        .with_metric_sink(Arc::new(CapturedPhaseMetrics::default()));
+        for _ in 0..4 {
+            owner.advance().expect("fixture signed effect").expect("receipt");
+        }
+        owner
+            .verified_transcript()
+            .expect("four original readbacks")
+            .expect("complete transcript")
+    };
+    let first = super::verify_cell_split_original_metrics_ledger_v1(
+        root.path(),
+        &transcript,
+        &trust(),
+    )
+    .expect("exact frozen signed receipt and original metric ACK chain");
+    assert_eq!(first.len(), 64);
+    let second = super::verify_cell_split_original_metrics_ledger_v1(
+        root.path(),
+        &transcript,
+        &trust(),
+    )
+    .expect("stable read-only ledger");
+    assert_eq!(first, second);
+    assert_eq!(state.borrow().executions, 4);
+    for index in 0..4 {
+        assert!(
+            root.path()
+                .join(format!("cell-split-{index:02}-metrics-acked.json"))
+                .exists()
+        );
+    }
+}
+
+#[test]
+fn original_metrics_ack_ledger_readback_denies_missing_tampered_or_replaced_frames() {
+    for fault in ["ack_removed", "ack_changed", "signed_receipt_changed", "pins_changed"] {
+        let root = private_tempdir();
+        let observed = Rc::new(RefCell::new(Observed::default()));
+        let transcript = {
+            let mut owner = CellSplitExecutionOwnerV1::open(
+                root.path(),
+                plan(),
+                trust(),
+                FixturePort::new(observed.clone()),
+            )
+            .expect("frozen owner")
+            .with_metric_sink(Arc::new(CapturedPhaseMetrics::default()));
+            for _ in 0..4 {
+                owner.advance().expect("durably acknowledged signed step");
+            }
+            owner.verified_transcript().unwrap().unwrap()
+        };
+        let before = observed.borrow().executions;
+        match fault {
+            "ack_removed" => {
+                fs::remove_file(root.path().join("cell-split-02-metrics-acked.json"))
+                    .expect("simulate missing durable ACK");
+            }
+            "ack_changed" => {
+                fs::write(
+                    root.path().join("cell-split-02-metrics-acked.json"),
+                    b"[]",
+                )
+                .expect("tamper original ACK");
+            }
+            "signed_receipt_changed" => {
+                fs::write(root.path().join("cell-split-02-committed.json"), b"{}")
+                    .expect("tamper original signed receipt");
+            }
+            "pins_changed" => {
+                fs::write(root.path().join("cell-split-owner-trust-pins.json"), b"{}")
+                    .expect("tamper frozen original signer pins");
+            }
+            _ => unreachable!("four fault cases"),
+        }
+        assert!(
+            super::verify_cell_split_original_metrics_ledger_v1(
+                root.path(),
+                &transcript,
+                &trust(),
+            )
+            .is_err(),
+            "{fault}: local digest declaration cannot replace original ledger"
+        );
+        assert_eq!(
+            observed.borrow().executions,
+            before,
+            "read-only verifier never replays an external effect"
+        );
+    }
+}
+
+#[test]
+fn original_metrics_ack_readback_never_creates_missing_sidecar_or_replaces_lock() {
+    let root = private_tempdir();
+    let missing = root.path().join(crate::durable::SIDECAR_LOCK_FILE);
+    assert!(!missing.exists());
+    let incomplete = CellSplitExecutionTranscriptV1 {
+        plan: plan(),
+        receipts: Vec::new(),
+        transcript_digest: "aa".repeat(32),
+    };
+    assert!(
+        super::verify_cell_split_original_metrics_ledger_v1(
+            root.path(),
+            &incomplete,
+            &trust(),
+        )
+        .is_err()
+    );
+    assert!(
+        !missing.exists(),
+        "failed read-only verification may not bootstrap an owner"
+    );
+
+    let observed = Rc::new(RefCell::new(Observed::default()));
+    let transcript = {
+        let mut original = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(observed.clone()),
+        )
+        .expect("original writer")
+        .with_metric_sink(Arc::new(CapturedPhaseMetrics::default()));
+        for _ in 0..4 {
+            original.advance().expect("signed fixture step");
+        }
+        original.verified_transcript().unwrap().unwrap()
+    };
+    fs::remove_file(&missing).expect("remove original writer lock inode");
+    assert!(
+        super::verify_cell_split_original_metrics_ledger_v1(root.path(), &transcript, &trust())
+            .is_err()
+    );
+    assert!(!missing.exists(), "cannot recreate a detached original lock");
+}
