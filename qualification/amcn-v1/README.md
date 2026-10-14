@@ -130,6 +130,38 @@ AgentRunbook controls with the identical frozen Reader, question, source cut,
 effect permissions and resources. Preserve original evidence source IDs,
 citations, cost and omitted-source receipts.
 
+## Reader-first signed prerequisite: AMCN cannot self-qualify
+
+The research-only amcn_reader_prerequisite.py delegates *unchanged* to the
+existing full_cell_matrix.evaluate_reader_gate. It does not invent a new
+authority, reviewer, signature or sufficient-evidence oracle. The CLI
+amcn_reader_prerequisite_cli.py consumes only externally SHA-pinned review
+gate/trust manifest/reviewer roster, exact model binding and externally
+supplied raw-answer/judgment hashes. Without both independent trust-root
+pins, current signed gate and exact Reader identity it returns
+blocked_reader_adequacy, never a train or activation grant.
+
+Even a validly signed v2/v3 gate can only recommend the next *research*
+hypothesis: if independently reviewed sufficient evidence works and ordinary
+retrieval fails, compare fixed-Reader strong RAG against MemoryCell on new
+source families under equal source/token/compute budgets; if the Reader
+already succeeds under ordinary retrieval, do not claim additional
+retrieval headroom. The advisory always sets production_accepted=false,
+may_train_new_semantic_head_for_product=false,
+may_split_or_merge_product_cells=false, and
+may_scale_cell_population=false. It does not execute Reader, rescore
+original text, prove real-world reviewer identity or publish parameters.
+
+Run a useful no-review negative admission in the repository root:
+
+    PYTHONPATH=qualification/amcn-v1 python qualification/amcn-v1/amcn_reader_prerequisite_cli.py /tmp/new-amcn-reader-blocked.json
+
+The dedicated CPU CI repeats the missing-trust negative case and runs
+a hermetic dual-Ed25519-fixture test against the ORIGINAL Reader gate. The
+generated fixture keys are ephemeral test-only bytes; they are explicitly
+not independent human reviews and are not exported as production evidence.
+Production gate and two future calendar windows remain unproven.
+
 ## Fixed temporal graph -> hard 16-source frontier (research only)
 
 The source-only graph budget protocol is now executable in

@@ -30,6 +30,7 @@ jobs:
           /tmp/hepta-amcn-python/bin/pip install numpy==1.26.4
           /tmp/hepta-amcn-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
           /tmp/hepta-amcn-python/bin/pip install safetensors==0.6.2
+          /tmp/hepta-amcn-python/bin/pip install cryptography==46.0.4
           /tmp/hepta-amcn-python/bin/pip install ruff==0.15.8
       - name: Check source and execute actual trainable Head tests
         run: |
@@ -38,6 +39,18 @@ jobs:
           /tmp/hepta-amcn-python/bin/python -m compileall -q qualification/amcn-v1 experiments/shared_stem_cell/execution.py
           /tmp/hepta-amcn-python/bin/ruff check --select E9,F63,F7,F82 qualification/amcn-v1/ | tee /tmp/hepta-amcn-evidence/lint.log
           /tmp/hepta-amcn-python/bin/python -m unittest discover -s qualification/amcn-v1 -p 'test_*.py' -v 2>&1 | tee /tmp/hepta-amcn-evidence/tests.log
+          /tmp/hepta-amcn-python/bin/python qualification/amcn-v1/amcn_reader_prerequisite_cli.py /tmp/hepta-amcn-evidence/reader-prerequisite.json | tee /tmp/hepta-amcn-evidence/reader-prerequisite-status.txt
+          /tmp/hepta-amcn-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt=json.loads(Path('/tmp/hepta-amcn-evidence/reader-prerequisite.json').read_text())
+          assert receipt['production_accepted'] is False
+          assert receipt['metrics']['disposition']=='blocked_reader_adequacy'
+          assert receipt['metrics']['physical_reader_generations_executed']==0
+          assert receipt['metrics']['may_scale_cell_population'] is False
+          assert receipt['metrics']['may_train_new_semantic_head_for_product'] is False
+          PY
+          /tmp/hepta-amcn-python/bin/pip check
           /tmp/hepta-amcn-python/bin/pip freeze > /tmp/hepta-amcn-evidence/environment.txt
       - name: Preserve immutable execution identity and negative capability
         if: always()
@@ -52,7 +65,7 @@ jobs:
           mkdir -p /tmp/hepta-amcn-evidence/source/experiments/shared_stem_cell
           mkdir -p /tmp/hepta-amcn-evidence/source/scripts/memory_cell
           cp experiments/shared_stem_cell/execution.py /tmp/hepta-amcn-evidence/source/experiments/shared_stem_cell/
-          cp scripts/memory_cell/native.py scripts/memory_cell/sessions.py scripts/memory_cell/five_native_historical_smoke.py /tmp/hepta-amcn-evidence/source/scripts/memory_cell/
+          cp scripts/memory_cell/native.py scripts/memory_cell/sessions.py scripts/memory_cell/five_native_historical_smoke.py scripts/memory_cell/full_cell_matrix.py scripts/memory_cell/system2_reader_controls.py /tmp/hepta-amcn-evidence/source/scripts/memory_cell/
           mkdir -p /tmp/hepta-amcn-evidence/formatted-research-candidate
           cp qualification/amcn-v1/*.py /tmp/hepta-amcn-evidence/formatted-research-candidate/
           /tmp/hepta-amcn-python/bin/ruff format /tmp/hepta-amcn-evidence/formatted-research-candidate/             > /tmp/hepta-amcn-evidence/formatter-report.txt 2>&1

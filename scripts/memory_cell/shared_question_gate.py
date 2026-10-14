@@ -8,6 +8,16 @@ from __future__ import annotations
 
 from collections import defaultdict
 from copy import deepcopy
+from pathlib import Path
+import sys
+
+# Match the native worker's repository-root bootstrap before importing its
+# shared execution module. Direct script execution otherwise exposes only the
+# scripts/memory_cell directory, unlike unittest discovery from the repo root.
+REPOSITORY = Path(__file__).resolve().parents[2]
+if str(REPOSITORY) not in sys.path:
+    sys.path.insert(0, str(REPOSITORY))
+
 import torch
 from torch import nn
 from torch.nn import functional as F
