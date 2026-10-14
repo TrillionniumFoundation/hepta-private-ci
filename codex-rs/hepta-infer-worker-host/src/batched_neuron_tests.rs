@@ -651,7 +651,9 @@ fn three_authorized_neuron_items_enter_one_physical_batch_driver_invocation() {
         backend_calls: backend_calls.clone(),
         scalar_calls: scalar_calls.clone(),
     };
-    let mut execution = runner_with_batch_size_and_driver(&signer, dir.path(), model, 3, driver);
+    let metrics = std::sync::Arc::new(RecordedSink::default());
+    let mut execution = runner_with_batch_size_and_driver(&signer, dir.path(), model, 3, driver)
+        .with_metric_sink(metrics.clone());
     for i in 0_u8..3 {
         let mut request = fixture.clone();
         request.authorization.request_id = format!("batch-request-{i}");
@@ -682,6 +684,18 @@ fn three_authorized_neuron_items_enter_one_physical_batch_driver_invocation() {
     assert_eq!(backend_calls.load(std::sync::atomic::Ordering::Relaxed), 1);
     assert_eq!(scalar_calls.load(std::sync::atomic::Ordering::Relaxed), 0);
     assert_eq!(execution.pending(), 0);
+    let samples = metrics.0.lock().unwrap();
+    assert_eq!(samples.len(), 9);
+    for phase in [
+        PhaseMetricKindV1::Admission,
+        PhaseMetricKindV1::Microbatch,
+        PhaseMetricKindV1::NeuronFeature,
+    ] {
+        assert_eq!(
+            samples.iter().filter(|sample| sample.phase == phase).count(),
+            3,
+        );
+    }
 }
 
 #[test]
