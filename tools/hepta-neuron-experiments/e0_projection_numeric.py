@@ -23,7 +23,7 @@ MAX_RANK = 64
 MAX_COEFF = 600_000
 P_SCHEMA = "hepta.stem.low-rank-projection.q24.v1"
 C_SCHEMA = "hepta.neuron.e0-projection-numeric-trial.v1"
-R_SCHEMA = "hepta.neuron.e0-projection-numeric-result.v1"
+R_SCHEMA = "hepta.neuron.e0-projection-numeric-result.v2"
 P_DOMAIN = b"hepta.stem.low-rank-projection.q24.v1"
 F_DOMAIN = b"hepta.stem.feature.f32.v1"
 B_DOMAIN = b"hepta.stem.projected-feature-bound.v1"
@@ -262,6 +262,11 @@ def calculate(contract_path: Path) -> dict:
         "rank": projector["rank"], "active_source_tail_rank_paths": tail_paths,
         "reference_multiply_add_terms": projector["rank"] * (
             width + projector["output_width"]),
+        # Exact unmodified Rust canonical_feature_vector_digest_v1 framing.
+        # This is a content identifier, never a Worker/FinalUse signature.
+        "neuron_v1_input_feature_digest": hashlib.sha256(
+            b"hepta.neuron.input-features.q24.v1" + u64(len(computed)) +
+            b"".join(i64(v) for v in computed)).hexdigest(),
         "computed_q24_sha256": hashlib.sha256(
             b"".join(i64(v) for v in computed)).hexdigest(),
         "numeric_oracle_agrees": True, "non_authorizing": True,
