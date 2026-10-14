@@ -314,9 +314,22 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 }
 
 fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
-    let parsed: YamlValue = serde_yaml::from_str(raw_frontmatter).ok()?;
-    let mapping = parsed.as_object()?;
-    mapping.get("description").and_then(yaml_scalar)
+    // Preserve explicit YAML tag identity. A generic JSON Value silently erases
+    // tags and would promote a tagged value into an executable skill description.
+    let mapping: BTreeMap<String, serde_yaml::Tagged<YamlValue>> =
+        serde_yaml::from_str_with_options(
+            raw_frontmatter,
+            serde_yaml::options! {
+                reject_unsupported_tags: true,
+                merge_keys: serde_yaml::options::MergeKeyPolicy::Error,
+            },
+        )
+        .ok()?;
+    let description = mapping.get("description")?;
+    if description.1.is_some() {
+        return None;
+    }
+    yaml_scalar(&description.0)
 }
 
 fn yaml_scalar(value: &YamlValue) -> Option<String> {
