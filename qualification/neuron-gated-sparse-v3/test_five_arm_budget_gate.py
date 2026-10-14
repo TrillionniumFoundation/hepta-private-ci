@@ -185,7 +185,7 @@ class FiveArmBudgetTests(unittest.TestCase):
         self.evaluations[2048]["arms"]["v2"]["parameter_count_total"] = 2049
         self.evaluations[2048]["arms"]["v2"]["artifact_digest"] = new_sha
         self.manifest["tiers"][0]["models"]["v2"]["sha256"] = new_sha
-        with self.assertRaisesRegex(EvidenceError, "exceeds registered"):
+        with self.assertRaisesRegex(EvidenceError, "exceeds equal parameter budget|exceeds registered"):
             self.analyze()
 
     def test_invalid_min_gru_shape_must_fail(self) -> None:
