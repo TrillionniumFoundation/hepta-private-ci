@@ -174,6 +174,33 @@ pub struct CellSplitExecutionTranscriptV1 {
     pub transcript_digest: String,
 }
 
+/// Exact write-once local Evidence ACK binding to an original signed
+/// effect. The only original proof of the physical operation remains its
+/// separately pinned live effect owner, NOT this metrics marker.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CellSplitMetricsAcknowledgedStepV1 {
+    pub index: usize,
+    pub step: CellSplitExecutionStepV1,
+    pub owner_id: String,
+    pub idempotency_key: String,
+    pub committed_owner_receipt_digest: String,
+    pub original_metrics_ack_frame_digest: String,
+}
+
+/// Read-only verdict from the ORIGINAL exclusively locked Split Ledger.
+/// Never an independent Evidence signature, rollout approval or Final-use.
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CellSplitVerifiedMetricsLedgerV1 {
+    pub plan_digest: String,
+    pub transcript_digest: String,
+    pub acknowledged_steps: Vec<CellSplitMetricsAcknowledgedStepV1>,
+    pub all_four_original_signed_owner_readbacks: bool,
+    pub all_four_original_metrics_ack_frames: bool,
+    pub production_activation_authorized: bool,
+}
+
 /// Domain-separated signature payload shared with real external effect owners.
 /// It binds the step, exact idempotency key, owner result and observed sequence.
 /// A signature is not enough: read-after-write owner verification stays required.
@@ -870,6 +897,76 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             receipts,
             transcript_digest: sha256(&payload),
         }))
+    }
+
+    /// AUDIT ONLY: require every original committed step to have its matching
+    /// write-once Evidence flush ACK. Normal transcript inspection deliberately
+    /// permits missing telemetry for forensic recovery; this stricter method
+    /// is instead the independent Observer's extra qualification boundary.
+    ///
+    /// Only an existing, read-only, locked original Split owner may run this.
+    /// It cannot initialize a root, dispatch, reconcile or mint authority.
+    pub fn verified_metrics_ack_ledger_v1(
+        &mut self,
+    ) -> Result<CellSplitVerifiedMetricsLedgerV1, CellSplitExecutionErrorV1> {
+        if !self.read_only || self.reconcile_only || self.pending {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "Evidence ACK audit requires existing read-only completed owner",
+            ));
+        }
+        let transcript = self
+            .verified_transcript()?
+            .ok_or(CellSplitExecutionErrorV1::Invalid(
+                "Evidence ACK audit requires four committed effects",
+            ))?;
+        if transcript.receipts.len() != STEP_COUNT || self.cursor != STEP_COUNT {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "Evidence ACK audit requires original four-effect prefix",
+            ));
+        }
+        self._lock.verify_current(&self.root)?;
+        verify_split_frame_namespace(&self.root)?;
+        let mut acknowledged_steps = Vec::with_capacity(STEP_COUNT);
+        for (index, receipt) in transcript.receipts.iter().enumerate() {
+            let expected = metrics_ack_bytes(receipt)?;
+            if read_frame(&frame_path(&self.root, index, "metrics-acked"))?
+                != Some(expected.clone())
+            {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "original metrics-acked frame absent or changed",
+                ));
+            }
+            acknowledged_steps.push(CellSplitMetricsAcknowledgedStepV1 {
+                index,
+                step: receipt.intent.step,
+                owner_id: receipt.intent.owner_id.clone(),
+                idempotency_key: receipt.intent.idempotency_key.clone(),
+                committed_owner_receipt_digest: receipt.receipt_digest.clone(),
+                original_metrics_ack_frame_digest: sha256(&expected),
+            });
+        }
+        // The original effect callbacks may be slow; repeat both the frozen
+        // immutable prefix and ACK frame reads under the SAME original lock.
+        // This is no global atomic snapshot and needs external Observer custody.
+        self.read_verified_prefix(false, false)?;
+        self._lock.verify_current(&self.root)?;
+        verify_split_frame_namespace(&self.root)?;
+        for (index, receipt) in transcript.receipts.iter().enumerate() {
+            let expected = metrics_ack_bytes(receipt)?;
+            if read_frame(&frame_path(&self.root, index, "metrics-acked"))? != Some(expected) {
+                return Err(CellSplitExecutionErrorV1::Invalid(
+                    "original metrics-acked frame changed during live audit",
+                ));
+            }
+        }
+        Ok(CellSplitVerifiedMetricsLedgerV1 {
+            plan_digest: self.plan_digest.clone(),
+            transcript_digest: transcript.transcript_digest,
+            acknowledged_steps,
+            all_four_original_signed_owner_readbacks: true,
+            all_four_original_metrics_ack_frames: true,
+            production_activation_authorized: false,
+        })
     }
 
     /// Read each committed predecessor back from the durable ledger and from
