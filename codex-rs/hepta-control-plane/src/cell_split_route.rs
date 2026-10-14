@@ -15,8 +15,10 @@ use std::fmt;
 use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
+#[cfg(test)]
 use std::time::Instant;
 
+#[cfg(test)]
 use codex_hepta_types::CellParentDispositionV1;
 use codex_hepta_types::CellSplitContractErrorV1;
 use codex_hepta_types::CellSplitV1;
@@ -24,7 +26,9 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::PhaseLatencyHistogramV1;
 use codex_hepta_types::PhaseLatencySnapshotV1;
+#[cfg(test)]
 use codex_hepta_types::PhaseMetricEventV1;
+#[cfg(test)]
 use codex_hepta_types::PhaseMetricKindV1;
 use codex_hepta_types::PhaseMetricSinkV1;
 use codex_hepta_types::StableId;
@@ -36,10 +40,15 @@ use crate::CnsRouteV1;
 use crate::OrganRuntimeError;
 use crate::OrganStateMigrationV1;
 
+#[cfg(test)]
 use super::cell_split_route_digest::cns_child_port_compatibility_digest_v1;
+#[cfg(test)]
 use super::cell_split_route_digest::cns_circuit_route_digest_v1;
+#[cfg(test)]
 use super::cell_split_route_digest::cns_organ_abi_set_digest_v1;
+#[cfg(test)]
 use super::cell_split_route_digest::cns_organ_input_port_digest_v1;
+#[cfg(test)]
 use super::cell_split_route_digest::cns_organ_termination_port_digest_v1;
 use super::cell_split_route_digest::cns_route_port_binding_digest_v1;
 use super::cell_split_route_fence::CellSplitRouteFenceReceiptV1;
@@ -118,6 +127,8 @@ pub enum CellSplitRouteErrorV1 {
     ParentDispatchUnavailable(CellSplitRoutePhaseV1),
     ChildDispatchUnavailable(CellSplitRoutePhaseV1),
     ParentRouteFenced,
+    /// No independently owned durable Control Begin/CNS Commit route authority.
+    CutoverOwnerUnavailable,
     MissingRouteFence,
     RouteFenceMismatch,
     RestartReplayRequiresRetire,
@@ -224,6 +235,7 @@ impl CellSplitRouteControllerV1 {
         self.production_metrics_ready()
     }
 
+    #[cfg(test)]
     fn report_cutover(&self, started: Instant, operation: Digest32, succeeded: bool) {
         if let Some(sink) = &self.metrics {
             if sink
@@ -304,12 +316,23 @@ impl CellSplitRouteControllerV1 {
         Ok((deliveries, receipt))
     }
 
-    /// Activate all child routes through the existing generation cutover.
-    ///
-    /// The candidate is started and the predecessor is stopped by
-    /// `CnsOrganHostV1`.  Child routes are stored only after that method
-    /// succeeds, so a failed candidate can never receive dispatch.
+    /// The historical public API mutated the live CNS host without the
+    /// Control NDU checkpoint/CNS WAL Begin/Commit owner. This is NOT a
+    /// production route. Neither signed predicates nor fixture route digests
+    /// may authorize live generation replacement.
     pub fn activate_children(
+        &mut self,
+        _expected: Generation,
+        _next: CnsOrganHostV1,
+        _child_routes: Vec<CnsRouteV1>,
+    ) -> Result<(), CellSplitRouteErrorV1> {
+        Err(CellSplitRouteErrorV1::CutoverOwnerUnavailable)
+    }
+
+    /// Unit-test-only reference mechanism for route/ABI validation and
+    /// dispatch-fence regression; never part of the product library.
+    #[cfg(test)]
+    fn activate_children_for_qualification(
         &mut self,
         expected: Generation,
         next: CnsOrganHostV1,
@@ -336,34 +359,18 @@ impl CellSplitRouteControllerV1 {
         Ok(())
     }
 
-    /// Variant used when the authoritative state owner must migrate state
-    /// before CNS publishes the successor generation.
+
+    /// The legacy migration variant is likewise non-authorizing. State
+    /// migration tests execute the dedicated lower-level qualification path;
+    /// production callers must use the independently audited CNS owner.
     pub fn activate_children_with_migration<M: OrganStateMigrationV1 + ?Sized>(
         &mut self,
-        expected: Generation,
-        next: CnsOrganHostV1,
-        child_routes: Vec<CnsRouteV1>,
-        migration: &mut M,
+        _expected: Generation,
+        _next: CnsOrganHostV1,
+        _child_routes: Vec<CnsRouteV1>,
+        _migration: &mut M,
     ) -> Result<(), CellSplitRouteErrorV1> {
-        self.split.validate()?;
-        self.validate_child_routes(&next, &child_routes)?;
-        let children = self.bind_child_routes(child_routes)?;
-        let fence = CellSplitRouteFenceReceiptV1::new(&self.split, &self.parent_route)?;
-        let started = Instant::now();
-        let cutover = self.cns_cutover_latency.time_result(|| {
-            self.host
-                .replace_read_only_generation_with_migration(expected, next, migration)
-                .map_err(CellSplitRouteErrorV1::Runtime)
-        });
-        self.report_cutover(started, fence.fence_digest, cutover.is_ok());
-        if let Err(error) = cutover {
-            self.phase = CellSplitRoutePhaseV1::Quarantined;
-            return Err(error);
-        }
-        self.children = children;
-        self.fence_receipt = Some(fence);
-        self.phase = CellSplitRoutePhaseV1::ChildrenActive;
-        Ok(())
+        Err(CellSplitRouteErrorV1::CutoverOwnerUnavailable)
     }
 
     /// Dispatch through an activated child after the route owner has selected
@@ -417,6 +424,7 @@ impl CellSplitRouteControllerV1 {
         Ok((deliveries, receipt))
     }
 
+    #[cfg(test)]
     fn validate_child_routes(
         &self,
         next: &CnsOrganHostV1,
@@ -553,6 +561,7 @@ impl CellSplitRouteControllerV1 {
             .ok_or_else(|| CellSplitRouteErrorV1::ChildRouteNotCurrent(child_cell_id.clone()))
     }
 
+    #[cfg(test)]
     fn bind_child_routes(
         &self,
         child_routes: Vec<CnsRouteV1>,
