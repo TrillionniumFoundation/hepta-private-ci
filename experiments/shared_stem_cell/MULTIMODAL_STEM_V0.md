@@ -67,3 +67,9 @@ Run local research tests with:
 ```
 python -m unittest discover -s experiments/shared_stem_cell -p 'test_multimodal_*.py' -v
 ```
+
+## Next research increment
+
+[Multimodal alignment V1](MULTIMODAL_ALIGNMENT_V1.md) adds train-only fitted projections,
+source-disjoint future prediction sealing, and a separate geometry evaluator.
+All model admission and production authority gates remain external.

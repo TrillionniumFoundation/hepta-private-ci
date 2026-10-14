@@ -82,6 +82,43 @@ class GatedHeadTests(unittest.TestCase):
         self.assertGreaterEqual(accuracy_a, 0.95)
         self.assertGreaterEqual(accuracy_b, 0.95)
 
+    def test_state_changes_output_with_identical_shared_feature(self):
+        head = StateGatedCellHead(2, 2, 1, 2)
+        with torch.no_grad():
+            head.down.weight[:] = torch.tensor([[1.0, 0.0]])
+            head.up.weight[:] = torch.tensor([[1.0], [0.0]])
+            head.gate.weight[:] = torch.tensor([[3.0, 0.0]])
+            head.gate.bias.zero_()
+            head.output.weight[:] = torch.tensor([[1.0, 0.0], [-1.0, 0.0]])
+            head.output.bias.zero_()
+        shared = torch.tensor([[1.0, 0.0], [1.0, 0.0]])
+        before = shared.clone()
+        state = torch.tensor([[-2.0, 0.0], [2.0, 0.0]])
+        out = head(shared, state)
+        self.assertGreater((out[1] - out[0]).abs().sum().item(), 0.1)
+        self.assertTrue(torch.equal(shared, before))
+
+    def test_local_state_can_train_when_text_feature_is_constant(self):
+        # Demonstrates functional state dependence, not real-world efficacy.
+        torch.manual_seed(71)
+        model = StateGatedCellHead(2, 2, 2, 2)
+        shared = torch.tensor([[1.0, 0.0]] * 32)
+        states = torch.tensor([[-1.0, 0.0]] * 16 + [[1.0, 0.0]] * 16)
+        labels = torch.tensor([0] * 16 + [1] * 16)
+        init_sha = [p.clone() for p in model.parameters()]
+        opt = torch.optim.AdamW(model.parameters(), lr=0.06, weight_decay=0.0)
+        for _ in range(150):
+            opt.zero_grad(set_to_none=True)
+            loss = F.cross_entropy(model(shared, states), labels)
+            self.assertTrue(torch.isfinite(loss).item())
+            loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+            opt.step()
+        with torch.no_grad():
+            acc = (model(shared, states).argmax(-1) == labels).float().mean().item()
+        self.assertGreaterEqual(acc, 0.95)
+        self.assertTrue(any(not torch.equal(a, b) for a, b in zip(init_sha, model.parameters())))
+
     def test_reject_malformed_inputs_without_stem_gradient(self):
         head = StateGatedCellHead(4, 2, 2, 2)
         shared = torch.ones((3, 4), requires_grad=True)

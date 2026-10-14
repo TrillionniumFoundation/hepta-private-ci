@@ -6,12 +6,14 @@ on:
       - "experiments/shared_stem_cell/multimodal_*.py"
       - "experiments/shared_stem_cell/test_multimodal_*.py"
       - "experiments/shared_stem_cell/MULTIMODAL_STEM_V0.md"
+      - "experiments/shared_stem_cell/MULTIMODAL_ALIGNMENT_V1.md"
       - ".github/workflows/hepta-multimodal-stem-contract.yml"
   pull_request:
     paths:
       - "experiments/shared_stem_cell/multimodal_*.py"
       - "experiments/shared_stem_cell/test_multimodal_*.py"
       - "experiments/shared_stem_cell/MULTIMODAL_STEM_V0.md"
+      - "experiments/shared_stem_cell/MULTIMODAL_ALIGNMENT_V1.md"
       - ".github/workflows/hepta-multimodal-stem-contract.yml"
 permissions:
   contents: read
@@ -38,7 +40,46 @@ jobs:
         run: |
           set -euo pipefail
           PYTHONPATH=experiments/shared_stem_cell /tmp/hepta-multimodal-stem-venv/bin/python -m unittest discover -s experiments/shared_stem_cell -p 'test_multimodal_*.py' -v
-          /tmp/hepta-multimodal-stem-venv/bin/python -m py_compile experiments/shared_stem_cell/multimodal_bridge.py experiments/shared_stem_cell/multimodal_head.py experiments/shared_stem_cell/test_multimodal_bridge.py experiments/shared_stem_cell/test_multimodal_head.py
+          /tmp/hepta-multimodal-stem-venv/bin/python -m py_compile experiments/shared_stem_cell/multimodal_bridge.py experiments/shared_stem_cell/multimodal_head.py experiments/shared_stem_cell/multimodal_alignment.py experiments/shared_stem_cell/multimodal_alignment_contract.py experiments/shared_stem_cell/multimodal_alignment_evaluator.py experiments/shared_stem_cell/test_multimodal_bridge.py experiments/shared_stem_cell/test_multimodal_head.py experiments/shared_stem_cell/test_multimodal_alignment.py
+      - name: Emit source-disjoint toy alignment evidence with independent evaluator
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-multimodal-stem-artifact/toy
+          PYTHONPATH=experiments/shared_stem_cell /tmp/hepta-multimodal-stem-venv/bin/python - <<'PYTOY'
+          from pathlib import Path
+          import subprocess, sys
+          from test_multimodal_alignment import study
+          from multimodal_alignment_contract import canonical, sha, load_pinned_document, write_new
+          root = Path('experiments/shared_stem_cell')
+          output = Path('/tmp/hepta-multimodal-stem-artifact/toy')
+          examples = dict(zip(('train', 'future', 'targets'), study()))
+          pins = {}
+          for name, rows in examples.items():
+              path = output/(name+'.jsonl')
+              path.write_bytes(b''.join(canonical(row) for row in rows))
+              pins[name] = sha(path.read_bytes())
+          def run(*args):
+              subprocess.run([sys.executable, str(root/args[0]), *args[1:]], check=True, timeout=60)
+          run('multimodal_alignment.py', 'fit', '--train', str(output/'train.jsonl'),
+              '--train-sha256', pins['train'], '--output', str(output/'fit.json'))
+          fit = sha((output/'fit.json').read_bytes())
+          run('multimodal_alignment.py', 'predict', '--fit', str(output/'fit.json'),
+              '--fit-sha256', fit, '--future-inputs', str(output/'future.jsonl'),
+              '--future-inputs-sha256', pins['future'], '--output', str(output/'predictions.json'))
+          pred = sha((output/'predictions.json').read_bytes())
+          run('multimodal_alignment_evaluator.py', '--predictions', str(output/'predictions.json'),
+              '--predictions-sha256', pred, '--future-targets', str(output/'targets.jsonl'),
+              '--future-targets-sha256', pins['targets'], '--output', str(output/'evaluation.json'))
+          report = load_pinned_document(output/'evaluation.json', sha((output/'evaluation.json').read_bytes()))
+          assert report['arms']['fitted']['mean_cosine'] > 0.999, 'toy fitted geometric control failed'
+          assert report['arms']['rotated_target_control']['mean_cosine'] < -0.99, 'toy negative control failed'
+          write_new(output/'disposition.json', {'schema':'hepta.stem-alignment.toy-disposition.v1',
+              'model_weights_loaded':False,'real_multimodal_competence':False,
+              'independent_semantic_utility':False,'production_accepted':False,
+              'train_source_sha256':pins['train'],'future_source_sha256':pins['future'],
+              'target_source_sha256':pins['targets'],'fit_artifact_sha256':fit,
+              'predictions_sha256':pred,'evaluation_sha256':sha((output/'evaluation.json').read_bytes())})
+          PYTOY
       - name: Preserve exact source identity
         if: always()
         run: |
@@ -47,7 +88,7 @@ jobs:
           git rev-parse HEAD > /tmp/hepta-multimodal-stem-artifact/source-commit.txt
           git rev-parse HEAD^{tree} > /tmp/hepta-multimodal-stem-artifact/source-tree.txt
           cp /tmp/hepta-multimodal-stem-environment.txt /tmp/hepta-multimodal-stem-artifact/environment.txt || true
-          sha256sum experiments/shared_stem_cell/multimodal_bridge.py experiments/shared_stem_cell/multimodal_head.py experiments/shared_stem_cell/test_multimodal_bridge.py experiments/shared_stem_cell/test_multimodal_head.py experiments/shared_stem_cell/MULTIMODAL_STEM_V0.md .github/workflows/hepta-multimodal-stem-contract.yml > /tmp/hepta-multimodal-stem-artifact/source-SHA256SUMS
+          sha256sum experiments/shared_stem_cell/multimodal_bridge.py experiments/shared_stem_cell/multimodal_head.py experiments/shared_stem_cell/multimodal_alignment.py experiments/shared_stem_cell/multimodal_alignment_contract.py experiments/shared_stem_cell/multimodal_alignment_evaluator.py experiments/shared_stem_cell/test_multimodal_bridge.py experiments/shared_stem_cell/test_multimodal_head.py experiments/shared_stem_cell/test_multimodal_alignment.py experiments/shared_stem_cell/MULTIMODAL_STEM_V0.md experiments/shared_stem_cell/MULTIMODAL_ALIGNMENT_V1.md .github/workflows/hepta-multimodal-stem-contract.yml > /tmp/hepta-multimodal-stem-artifact/source-SHA256SUMS
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
