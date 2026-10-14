@@ -217,6 +217,36 @@ class ShiftTests(unittest.TestCase):
         with self.assertRaises(b.SourceError):
             b.compose_frozen_hybrid(bad_routes, physical)
 
+    def test_substituted_hybrid_or_malformed_parent_rejects_before_bbc_labels(self):
+        import copy
+        rows = b.public_cohort(b.sample(self.texts()))
+        physical = {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows]
+                    for arm in b.BASE_ARMS}
+        predictions = b.compose_frozen_hybrid(rows, physical)
+        cohort_raw = b.canonical(rows)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pred, cohort = root / "predictions.json", root / "cohort.json"
+            cohort.write_bytes(cohort_raw)
+            packet = {"schema": b.SCHEMA, "source_revision": b.REVISION,
+                      "cohort_sha256": b.digest(cohort_raw),
+                      "case_ids": [r["case_id"] for r in rows],
+                      "predictions": predictions, "work": {}, "production_accepted": False}
+            for kind in ("substituted_fifth_arm", "malformed_bank", "missing_shared"):
+                payload = copy.deepcopy(packet)
+                if kind == "substituted_fifth_arm":
+                    payload["predictions"][b.HYBRID][1] = [0.7, 0.1, 0.1, 0.1]
+                elif kind == "malformed_bank":
+                    payload["predictions"]["bank"][2] = [0.0, 0.0, 0.0, 1.1]
+                else:
+                    payload["predictions"].pop("shared")
+                written = b.canonical(payload)
+                pred.write_bytes(written)
+                with self.subTest(kind=kind), self.assertRaises(b.SourceError):
+                    b.evaluate_published(pred, b.digest(written), cohort,
+                                         b.digest(cohort_raw), rows,
+                                         lambda _: self.fail("premature BBC label read"))
+
     def test_insufficient_or_duplicate_unlabeled_source_rejects(self):
         with self.assertRaises(b.SourceError):
             b.sample(self.texts()[:8])

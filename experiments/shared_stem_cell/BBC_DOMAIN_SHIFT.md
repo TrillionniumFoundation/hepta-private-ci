@@ -67,6 +67,13 @@ forward plus a residual forward on Cell 1 inputs, and its independent p95/p99,
 energy and end-to-end cost are **not** measured here. Report the four-arm
 research work separately from any hypothetical serving portfolio.
 
+The evaluator performs five-arm tensor-shape/probability/route validation
+BEFORE accessing even the first BBC category label, including if a caller
+has recomputed the file's SHA after substituting a favorable arm. The
+existing full AG News confirmation and sequential execution run first in
+CI; a BBC-source outage/ontology failure must not hide their retained
+completed results. A BBC failure is still a failure, not a skipped pass.
+
 ## Valid and invalid claims
 
 Different **publication family** offers a useful domain shift. Its label

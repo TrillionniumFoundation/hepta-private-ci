@@ -139,6 +139,34 @@ def compose_frozen_hybrid(rows, physical):
         for i, row in enumerate(rows)]}
 
 
+def preflight_frozen_predictions(rows, predictions):
+    """Validate all five probability inventories before ANY outcome access.
+
+    A sealed SHA alone cannot certify route selection, normalized probability
+    rows or complete physical comparators. Require each BEFORE reading gold.
+    """
+    require(type(rows) is list and len(rows) == COUNT and
+            type(predictions) is dict and set(predictions) == ARMS,
+            "complete frozen five-arm probability inventory required")
+    require(all(type(row) is dict and type(row.get("cell")) is int
+                and row["cell"] in (0, 1) for row in rows),
+            "invalid frozen source Cell routing")
+    for arm, samples in predictions.items():
+        require(type(samples) is list and len(samples) == COUNT,
+                "incomplete frozen probability arm")
+        for vector in samples:
+            require(type(vector) is list and len(vector) == 4 and
+                    all(type(probability) in (int, float)
+                        and 0 <= probability <= 1 for probability in vector)
+                    and abs(sum(vector) - 1.0) <= 1e-5,
+                    "malformed prelabel probability vector")
+    expected = compose_frozen_hybrid(
+        rows, {arm: predictions[arm] for arm in BASE_ARMS})
+    require(predictions[HYBRID] == expected[HYBRID],
+            "substituted frozen Cell route before labels")
+    return True
+
+
 def score_sealed(predictions, labels, rows, *, source_revision=REVISION):
     """Descriptive proxy accuracy only, with an explicit unsupported category."""
     require(source_revision == REVISION and len(rows) == COUNT
@@ -155,12 +183,7 @@ def score_sealed(predictions, labels, rows, *, source_revision=REVISION):
     unsupported = [i for i, v in enumerate(gold) if v is None]
     require(len(covered) >= 16 and len(unsupported) >= 1,
             "insufficient coverage/support probe")
-    # Even a re-hashed sealed file may not substitute an after-label favorable
-    # arm for this AG-development-only, previously fixed Cell route.
-    expected_hybrid = compose_frozen_hybrid(
-        rows, {arm: predictions[arm] for arm in BASE_ARMS})
-    require(predictions[HYBRID] == expected_hybrid[HYBRID],
-            "post-label hybrid selection or fixed-route substitution")
+    preflight_frozen_predictions(rows, predictions)
     results = {}
     for arm, probabilities in predictions.items():
         require(type(probabilities) is list and len(probabilities) == len(rows),
@@ -296,6 +319,7 @@ def evaluate_published(prediction_path, prediction_sha, cohort_path, cohort_sha,
             type(packet["work"]) is dict and
             stored == rows and packet["case_ids"] == [r["case_id"] for r in rows],
             "wrong previous publication profile or case binding")
+    preflight_frozen_predictions(rows, packet["predictions"])
     # This callback is the FIRST point where source ground truth is allowed.
     answers = [label_at(r["source_index"]) for r in rows]
     require(Path(prediction_path).read_bytes() == raw and

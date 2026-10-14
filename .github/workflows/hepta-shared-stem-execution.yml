@@ -113,12 +113,12 @@ jobs:
           CONSOLIDATION_SHA=$(sha256sum "$RUNNER_TEMP/hepta-consolidation/report.json" | cut -d' ' -f1)
           "$PY" -m experiments.shared_stem_cell.fresh_confirmation --study "$RUNNER_TEMP/hepta-public-study" --consolidation "$RUNNER_TEMP/hepta-consolidation" --producer-sha256 "$REPORT_SHA" --consolidation-sha256 "$CONSOLIDATION_SHA" --output "$RUNNER_TEMP/hepta-fresh-confirmation" 2>&1 | tee "$RUNNER_TEMP/hepta-fresh-confirmation.log"
           PRIOR_SHA=$(sha256sum "$RUNNER_TEMP/hepta-fresh-confirmation/report.json" | cut -d' ' -f1)
+          "$PY" -m experiments.shared_stem_cell.sequential_confirmation --study "$RUNNER_TEMP/hepta-public-study" --consolidation "$RUNNER_TEMP/hepta-consolidation" --producer-sha256 "$REPORT_SHA" --consolidation-sha256 "$CONSOLIDATION_SHA" --previous "$RUNNER_TEMP/hepta-fresh-confirmation" --previous-sha256 "$PRIOR_SHA" --output "$RUNNER_TEMP/hepta-sequential-confirmation" 2>&1 | tee "$RUNNER_TEMP/hepta-sequential-confirmation.log"
           "$PY" -m experiments.shared_stem_cell.external_bbc_shift \
             --study "$RUNNER_TEMP/hepta-public-study" --consolidation "$RUNNER_TEMP/hepta-consolidation" \
             --producer-sha256 "$REPORT_SHA" --consolidation-sha256 "$CONSOLIDATION_SHA" \
             --previous "$RUNNER_TEMP/hepta-fresh-confirmation" --previous-sha256 "$PRIOR_SHA" \
             --output "$RUNNER_TEMP/hepta-bbc-domain-shift" 2>&1 | tee "$RUNNER_TEMP/hepta-bbc-shift.log"
-          "$PY" -m experiments.shared_stem_cell.sequential_confirmation --study "$RUNNER_TEMP/hepta-public-study" --consolidation "$RUNNER_TEMP/hepta-consolidation" --producer-sha256 "$REPORT_SHA" --consolidation-sha256 "$CONSOLIDATION_SHA" --previous "$RUNNER_TEMP/hepta-fresh-confirmation" --previous-sha256 "$PRIOR_SHA" --output "$RUNNER_TEMP/hepta-sequential-confirmation" 2>&1 | tee "$RUNNER_TEMP/hepta-sequential-confirmation.log"
           git diff --exit-code
       - name: Retain manifests, predictions, counters and failures (no weight upload)
         if: always()
