@@ -1,6 +1,7 @@
 //! Research-only: physically load learned Cell temporal parameters and invoke
-//! the **real** existing Rust Q24 kernels. Does not load a production Head,
-//! grant final-use authority, commit a checkpoint, or assert Torch/Q24 parity.
+//! the **real** existing Rust Q24 kernels and a separately versioned Q24 Head.
+//! Does not execute the original F32 Head, grant final-use authority, commit a
+//! checkpoint, or assert Torch/F32-to-Q24 numerical parity.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::env;
@@ -86,6 +87,7 @@ struct StepOutcome {
     checkpoint_sha256: String,
     activation_q24: Vec<i64>,
     prediction_error_q24: i64,
+    quantized_head_logit_q24: i64,
 }
 
 struct WeightBank {
@@ -168,6 +170,45 @@ fn load_file(path: &Path, expected_hash: Digest32, maximum: usize) -> Result<Vec
     Ok(bytes)
 }
 
+/// IEEE-754 F32 bytes are first converted exactly to F64. Scaling by 2^24
+/// is exactly representable for the admitted [-8,8] domain. Round ties-to-even
+/// and reject larger weights, rather than permitting an overflowing native Head.
+fn f32_to_q24_head(value: f32) -> Result<i64, String> {
+    if !value.is_finite() || !(-8.0..=8.0).contains(&value) {
+        return Err(fail("nonfinite or out-of-range physical F32 Head"));
+    }
+    let rounded = (f64::from(value) * (Q as f64)).round_ties_even();
+    Ok(rounded as i64)
+}
+
+fn q24_mul_round_ties_even(left: i64, right: i64) -> Result<i64, String> {
+    let product = i128::from(left) * i128::from(right);
+    let absolute = product.abs();
+    let denominator = i128::from(Q);
+    let quotient = absolute / denominator;
+    let remainder = absolute % denominator;
+    let round_up = remainder * 2 > denominator
+        || (remainder * 2 == denominator && quotient % 2 != 0);
+    let rounded = (quotient + i128::from(round_up)) * product.signum();
+    i64::try_from(rounded).map_err(|_| fail("native Q24 Head multiplication overflow"))
+}
+
+/// The quantized research Head consumes **native sparse Q24 activation**, not
+/// the floating surrogate's pre-competition state. It is not calibrated.
+fn quantized_head_logit(
+    activation_q24: &[i64], head_q24: &[i64], bias_q24: i64,
+) -> Result<i64, String> {
+    if activation_q24.len() != head_q24.len() || activation_q24.is_empty() {
+        return Err(fail("native Q24 Head activation/weight dimension mismatch"));
+    }
+    let mut sum = bias_q24;
+    for (&activation, &weight) in activation_q24.iter().zip(head_q24) {
+        let product = q24_mul_round_ties_even(activation, weight)?;
+        sum = sum.checked_add(product).ok_or_else(|| fail("native Q24 Head sum overflow"))?;
+    }
+    Ok(sum)
+}
+
 fn physical_weights(
     bytes: &[u8], arm: &str, width: usize, rank: Option<usize>, cap: usize,
 ) -> Result<WeightBank, String> {
@@ -208,10 +249,12 @@ fn physical_weights(
         count = count.checked_add(elements).ok_or_else(|| fail("parameter count overflow"))?;
         let payload = &data[start..end];
         if dtype == "F32" {
+            let mut out = Vec::with_capacity(elements);
             for chunk in payload.chunks_exact(4) {
                 let value = f32::from_le_bytes(chunk.try_into().map_err(|_| fail("bad float"))?);
-                if !value.is_finite() { return Err(fail("nonfinite learned Head weight")); }
+                out.push(f32_to_q24_head(value)?);
             }
+            weights.insert(name.to_owned(), out);
         } else {
             let mut out = Vec::with_capacity(elements);
             for chunk in payload.chunks_exact(8) {
@@ -326,21 +369,28 @@ impl NativeModel {
         Ok(model)
     }
 
-    fn tick(&mut self, event: &PopulationSparseTickV2) -> Result<StepOutcome, String> {
+    fn tick(
+        &mut self, event: &PopulationSparseTickV2, head_q24: &[i64], bias_q24: i64,
+    ) -> Result<StepOutcome, String> {
         let make = |before: Digest32, after: Digest32, activation: Vec<i64>,
-                    prediction_error_q24: i64| StepOutcome {
-            sequence: event.sequence,
-            predecessor_sha256: before.to_string(),
-            checkpoint_sha256: after.to_string(),
-            activation_q24: activation,
-            prediction_error_q24,
+                    prediction_error_q24: i64| -> Result<StepOutcome, String> {
+            let quantized_head_logit_q24 =
+                quantized_head_logit(&activation, head_q24, bias_q24)?;
+            Ok(StepOutcome {
+                sequence: event.sequence,
+                predecessor_sha256: before.to_string(),
+                checkpoint_sha256: after.to_string(),
+                activation_q24: activation,
+                prediction_error_q24,
+                quantized_head_logit_q24,
+            })
         };
         match self {
             Self::V2(cfg, prior) => {
                 let (next, receipt) = population_sparse_tick_v2(cfg, event, prior.as_ref())
                     .map_err(|e| format!("V2 native tick: {e:?}"))?;
                 let out = make(receipt.checkpoint_before, receipt.checkpoint_after,
-                               receipt.activation_q24, receipt.prediction_error_q24);
+                               receipt.activation_q24, receipt.prediction_error_q24)?;
                 *prior = Some(next);
                 Ok(out)
             }
@@ -348,7 +398,7 @@ impl NativeModel {
                 let (next, receipt) = gated_sparse_tick_v3(cfg, event, prior.as_ref())
                     .map_err(|e| format!("V3 native tick: {e:?}"))?;
                 let out = make(receipt.checkpoint_before, receipt.checkpoint_after,
-                               receipt.activation_q24, receipt.prediction_error_q24);
+                               receipt.activation_q24, receipt.prediction_error_q24)?;
                 *prior = Some(next);
                 Ok(out)
             }
@@ -356,7 +406,7 @@ impl NativeModel {
                 let (next, receipt) = diagonal_ssm_tick_v1(cfg, event, prior.as_ref())
                     .map_err(|e| format!("SSM native tick: {e:?}"))?;
                 let out = make(receipt.checkpoint_before, receipt.checkpoint_after,
-                               receipt.activation_q24, receipt.prediction_error_q24);
+                               receipt.activation_q24, receipt.prediction_error_q24)?;
                 *prior = Some(next);
                 Ok(out)
             }
@@ -364,7 +414,7 @@ impl NativeModel {
                 let (next, receipt) = low_rank_min_gru_tick_v1(cfg, event, prior.as_ref())
                     .map_err(|e| format!("minGRU native tick: {e:?}"))?;
                 let out = make(receipt.checkpoint_before, receipt.checkpoint_after,
-                               receipt.activation_q24, receipt.prediction_error_q24);
+                               receipt.activation_q24, receipt.prediction_error_q24)?;
                 *prior = Some(next);
                 Ok(out)
             }
@@ -449,22 +499,32 @@ fn execute() -> Result<serde_json::Value, String> {
     let bytes = load_file(model_path, model_sha, MAX_MODEL)?;
     let bank = physical_weights(&bytes, arm, width, rank, cap)?;
 
+    let head_q24 = weights(&bank, "head.weight")?;
+    let head_bias_q24 = *weights(&bank, "head.bias")?
+        .first().ok_or_else(|| fail("missing quantized Head bias"))?;
     let mut first = NativeModel::new(arm, &bank, model_sha, trace_sha, width, rank)?;
     let mut a = Vec::with_capacity(inputs.len());
-    for input in &inputs { a.push(first.tick(input)?); }
+    for input in &inputs {
+        a.push(first.tick(input, head_q24, head_bias_q24)?);
+    }
 
     // Reopen the physical artifact, construct an independent empty state and
     // replay the original exact ordered input bytes. This is NOT a crash test.
     let again = load_file(model_path, model_sha, MAX_MODEL)?;
     if again != bytes { return Err(fail("same-sha reloaded artifact changed")); }
     let bank2 = physical_weights(&again, arm, width, rank, cap)?;
+    let head_q24_reload = weights(&bank2, "head.weight")?;
+    let bias_q24_reload = *weights(&bank2, "head.bias")?
+        .first().ok_or_else(|| fail("missing reloaded Q24 Head bias"))?;
     let mut second = NativeModel::new(arm, &bank2, model_sha, trace_sha, width, rank)?;
     let mut b = Vec::with_capacity(inputs.len());
-    for input in &inputs { b.push(second.tick(input)?); }
+    for input in &inputs {
+        b.push(second.tick(input, head_q24_reload, bias_q24_reload)?);
+    }
     if a != b { return Err(fail("native Q24 replay frontier mismatch")); }
 
     Ok(json!({
-        "schema":"hepta.neuron.physical-trained-q24-mechanism-replay.v1",
+        "schema":"hepta.neuron.physical-trained-q24-mechanism-replay.v2",
         "arm":arm, "private_parameter_cap":cap, "private_parameter_count":bank.parameter_count,
         "physical_tensor_count":bank.tensor_count,
         "selected_private_weight_sha256":model_sha.to_string(),
@@ -475,6 +535,8 @@ fn execute() -> Result<serde_json::Value, String> {
         "independent_empty_state_replay_equal":true,
         "frontier":a,
         "f32_head_executed":false,
+        "quantized_q24_head_executed_in_rust":true,
+        "f32_to_q24_head_round_ties_even_profile":"hepta.neuron.f32-q24-head.v1",
         "torch_f32_native_q24_prediction_parity_verified":false,
         "trusted_target_host_attested":false,
         "durable_checkpoint_cas_verified":false,
