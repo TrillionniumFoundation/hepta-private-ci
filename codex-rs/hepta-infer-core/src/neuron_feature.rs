@@ -283,7 +283,7 @@ fn validate_runtime_tuple(
     request: &NeuronFeatureRequestViewV1<'_>,
     runtime: &NeuronModelRuntimeTupleV1,
 ) -> Result<(), NeuronFeatureContractError> {
-    if runtime.model_id != request.model_id || runtime.weights_digest != request.weights_digest {
+    if runtime.model_id != *request.model_id || runtime.weights_digest != request.weights_digest {
         return Err(NeuronFeatureContractError::RuntimeBindingMismatch);
     }
     for (name, digest) in [
