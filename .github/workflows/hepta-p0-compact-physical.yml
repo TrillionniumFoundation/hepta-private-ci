@@ -19,7 +19,7 @@ jobs:
       TOKENIZERS_PARALLELISM: 'false'
       HF_HUB_DISABLE_TELEMETRY: '1'
       PYTHONHASHSEED: '0'
-      OUTPUT_ROOT: ${{ runner.temp }}/p0-compact-output
+      OUTPUT_ROOT: /tmp/p0-compact-output
     steps:
       - uses: actions/checkout@v4
       - uses: actions/checkout@v4
@@ -116,6 +116,6 @@ jobs:
         if: always()
         with:
           name: hepta-p0-compact-real-pretrained-deny-all-${{ github.run_id }}
-          path: ${{ runner.temp }}/p0-compact-output/
+          path: /tmp/p0-compact-output/
           retention-days: 7
           if-no-files-found: warn
