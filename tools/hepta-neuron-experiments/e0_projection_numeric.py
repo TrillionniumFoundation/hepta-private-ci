@@ -186,14 +186,30 @@ def calculate(contract_path: Path) -> dict:
     generation = con["generation"]
     need(type(token_count) is int and 1 <= token_count <= 1_000_000, "invalid source token count")
     need(type(generation) is int and 1 <= generation < (1 << 64), "invalid generation")
-    projector = load_projector(verified_bytes(
-        con["projection_manifest"], con["projection_file_sha256"], 22_000_000))
+    projector_raw = verified_bytes(
+        con["projection_manifest"], con["projection_file_sha256"], 22_000_000)
+    projector = load_projector(projector_raw)
     need(projector["projection_digest"] == con["projection_digest"], "projection revision mismatch")
     need(type(con["head_input_width"]) is int and
          con["head_input_width"] == projector["output_width"], "Head width mismatch")
     feature_raw = verified_bytes(
         con["feature_file"], con["feature_file_sha256"], MAX_F32 * 4)
     width = projector["input_width"]
+    # A 768-D claim implemented by zero-padding a copied 256-D prefix is
+    # indistinguishable from clipping on shape checks alone. Require at least
+    # one nonzero rank path from a tail source coordinate to a live output
+    # coordinate. This is only structural sensitivity, not proof of quality.
+    tail_paths = 0
+    if width > projector["output_width"]:
+        for k in range(projector["rank"]):
+            a = projector["a_q24"]
+            b = projector["b_q24"]
+            active_tail = any(a[k * width + j] != 0
+                              for j in range(projector["output_width"], width))
+            active_output = any(b[i * projector["rank"] + k] != 0
+                                for i in range(projector["output_width"]))
+            tail_paths += int(active_tail and active_output)
+        need(tail_paths > 0, "projection ignores entire source tail (implicit slice)")
     need(len(feature_raw) == width * 4, "source f32 width mismatch (no truncation)")
     feats = struct.unpack(f">{width}f", feature_raw)
     original = [q24_scalar(v) for v in feats]
@@ -234,8 +250,8 @@ def calculate(contract_path: Path) -> dict:
     # Catch persistent source/manifest changes while the computation was in flight.
     need(verified_bytes(con["feature_file"], con["feature_file_sha256"], MAX_F32*4) == feature_raw,
          "source changed after numeric calculation")
-    need(verified_bytes(con["projection_manifest"], con["projection_file_sha256"], 22_000_000),
-         "projection manifest post-calculation missing")
+    need(verified_bytes(con["projection_manifest"], con["projection_file_sha256"], 22_000_000) == projector_raw,
+         "projection manifest changed after numeric calculation")
     return {
         "schema": R_SCHEMA, "source_feature_sha256": con["feature_file_sha256"],
         "source_feature_digest": con["feature_digest"],
@@ -243,7 +259,10 @@ def calculate(contract_path: Path) -> dict:
         "projection_digest": con["projection_digest"],
         "projected_input_digest": con["projected_input_digest"],
         "input_width": width, "output_width": len(computed),
-        "rank": projector["rank"], "computed_q24_sha256": hashlib.sha256(
+        "rank": projector["rank"], "active_source_tail_rank_paths": tail_paths,
+        "reference_multiply_add_terms": projector["rank"] * (
+            width + projector["output_width"]),
+        "computed_q24_sha256": hashlib.sha256(
             b"".join(i64(v) for v in computed)).hexdigest(),
         "numeric_oracle_agrees": True, "non_authorizing": True,
         "encoder_actually_invoked": False, "stem_projection_operator_executed": False,
