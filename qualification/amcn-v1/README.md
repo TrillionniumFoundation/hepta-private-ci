@@ -342,6 +342,23 @@ source-owner implementation remains an isolated Mutex fixture. A production
 deployment would have to make the fenced whole-tick method the only dispatch
 path and persist recovery/withdrawal decisions through its actual store owner.
 
+### Durable Witness reopen under whole-tick source fencing
+
+A feature-only Rust integration test now uses **actual FileAnchorWitnessStore**
+and the actual SparseJournal, not just the in-memory Witness fixture. It runs
+one source-fenced Neuron Tick through original InferenceControl with an
+externally supplied local Mutex test owner, commits and syncs independent
+Witness bytes, drops the runtime, and physically reopens both files. A
+generation change cannot reopen the old Witness, and a previously withdrawn
+source is refused before the first resumed feature-model call; the old
+checkpoint anchor remains unchanged. The test also asserts the owner lock is
+held during the original disk Witness CAS.
+
+This still does not prove a cross-owner transaction: the Mutex is not the
+authoritative SQLite source writer and its withdrawn flag is not a durable
+quarantine registry. Only actual source/withdrawal/Artifacts owner integration
+could prove atomicity, fleet crash-recovery and zero deletion resurrection.
+
 ## No-go and required production evidence
 
 Still missing: sufficient-evidence Reader certification, strong cached hybrid

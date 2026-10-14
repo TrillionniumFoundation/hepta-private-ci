@@ -758,4 +758,150 @@ mod amcn_pending_runtime {
         assert_eq!(checks.load(Ordering::SeqCst), 0);
         assert_eq!(checked(runtime.current_anchor()), None);
     }
+
+    // A genuinely disk-backed, independently locked Witness (not MemoryWitness)
+    // verifies the same source lease is still held during its durable CAS.
+    struct DiskFencedWitness {
+        witness: crate::FileAnchorWitnessStore,
+        source_lease: Arc<Mutex<bool>>,
+        cas_checks: Arc<AtomicUsize>,
+    }
+
+    impl AnchorWitnessStore for DiskFencedWitness {
+        fn current(&self) -> Result<Option<JournalAnchor>, WitnessStoreError> {
+            self.witness.current()
+        }
+
+        fn compare_and_swap(
+            &mut self,
+            expected: Option<JournalAnchor>,
+            next: JournalAnchor,
+        ) -> Result<(), WitnessStoreError> {
+            assert!(
+                matches!(self.source_lease.try_lock(), Err(TryLockError::WouldBlock)),
+                "source lease must remain held during the durable Witness CAS"
+            );
+            self.cas_checks.fetch_add(1, Ordering::SeqCst);
+            self.witness.compare_and_swap(expected, next)
+        }
+    }
+
+    #[test]
+    fn amcn_shadow_fence_disk_witness_restart_refuses_revoked_old_head() {
+        let fixture = Fixture::new();
+        let native = native_config();
+        let config = runtime_config(&native);
+        let source_lease = Arc::new(Mutex::new(true));
+        let calls = Arc::new(AtomicUsize::new(0));
+        let checks = Arc::new(AtomicUsize::new(0));
+        let cas_checks = Arc::new(AtomicUsize::new(0));
+        let scope_identity = scope();
+        let witnessed_generation = config.generation;
+
+        let committed_anchor = {
+            // Real append-only disk Witness and the real runtime Journal start
+            // at independent physical files. Both are fsynced by their owners.
+            let witness = checked(crate::FileAnchorWitnessStore::open(
+                fixture.named_file("amcn-durable-witness"),
+                scope_identity,
+                witnessed_generation,
+                16,
+            ));
+            let disk_witness = DiskFencedWitness {
+                witness,
+                source_lease: Arc::clone(&source_lease),
+                cas_checks: Arc::clone(&cas_checks),
+            };
+            let mut runtime = checked(NeuronRuntime::bootstrap(
+                fixture.file(),
+                native.clone(),
+                scope_identity,
+                16,
+                config.clone(),
+                disk_witness,
+            ));
+            let first_input = input(1, Digest32::ZERO);
+            let request = checked(runtime.model_request(&first_input));
+            let binding = bound(&request);
+            let mut gate = LiveSourceGate {
+                source_lease: Arc::clone(&source_lease),
+                checks: Arc::clone(&checks),
+            };
+            let mut control = OwnerControl {
+                config: config.clone(),
+                calls: Arc::clone(&calls),
+                source_lease: Arc::clone(&source_lease),
+            };
+            let committed = checked(runtime.tick_amcn_fenced(
+                &mut gate,
+                &mut control,
+                &binding,
+                first_input,
+            ));
+            assert_eq!(calls.load(Ordering::SeqCst), 1);
+            assert_eq!(cas_checks.load(Ordering::SeqCst), 1);
+            let anchor = checked(runtime.current_anchor())
+                .expect("disk Journal has a committed anchor");
+            assert_eq!(anchor.checkpoint_digest, committed.tick.checkpoint_after);
+            anchor
+        };
+        // The ephemeral runtime and disk Witness owners are now CLOSED.
+        // Reopening at a newer generation against old Witness bytes must not
+        // silently reinitialize an old acknowledged source/model history.
+        assert_eq!(
+            crate::FileAnchorWitnessStore::open(
+                fixture.named_file("amcn-durable-witness"),
+                scope_identity,
+                checked(Generation::new(2)),
+                16,
+            ).err(),
+            Some(WitnessStoreError::ContextMismatch)
+        );
+        let reopened = checked(crate::FileAnchorWitnessStore::open(
+            fixture.named_file("amcn-durable-witness"),
+            scope_identity,
+            witnessed_generation,
+            16,
+        ));
+        assert_eq!(checked(reopened.current()), Some(committed_anchor));
+        let disk_witness = DiskFencedWitness {
+            witness: reopened,
+            source_lease: Arc::clone(&source_lease),
+            cas_checks: Arc::clone(&cas_checks),
+        };
+        let mut runtime = checked(NeuronRuntime::recover(
+            fixture.file(),
+            native,
+            scope_identity,
+            16,
+            config.clone(),
+            committed_anchor,
+            disk_witness,
+        ));
+        let second_input = input(2, committed_anchor.checkpoint_digest);
+        let second_request = checked(runtime.model_request(&second_input));
+        let bound = bound(&second_request);
+        let mut gate = LiveSourceGate {
+            source_lease: Arc::clone(&source_lease),
+            checks: Arc::clone(&checks),
+        };
+        let mut control = OwnerControl {
+            config,
+            calls: Arc::clone(&calls),
+            source_lease: Arc::clone(&source_lease),
+        };
+        // The source owner would have persisted a monotonic quarantine before
+        // allowing a readmission. This negative test never claims that a bool
+        // itself is a durable tombstone; it deliberately stays false.
+        *checked(source_lease.lock()) = false;
+        assert_eq!(
+            runtime.tick_amcn_fenced(&mut gate, &mut control, &bound, second_input),
+            Err(NeuronRuntimeError::Model(NeuronModelError::Rejected))
+        );
+        assert_eq!(calls.load(Ordering::SeqCst), 1);
+        assert_eq!(cas_checks.load(Ordering::SeqCst), 1);
+        assert_eq!(checked(runtime.current_anchor()), Some(committed_anchor));
+        assert_eq!(checks.load(Ordering::SeqCst), 2);
+    }
+
 }
