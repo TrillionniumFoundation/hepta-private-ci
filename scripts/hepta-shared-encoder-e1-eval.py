@@ -7,7 +7,7 @@ future prediction sealing. Never selects a winner or authorizes promotion.
 
 import argparse
 from collections import defaultdict
-from datetime import datetime
+from datetime import datetime, timezone
 import json
 import math
 from pathlib import Path
@@ -19,6 +19,8 @@ SCHEMA = "hepta.shared-encoder-paired-shadow-e1.v1"
 HEX64 = re.compile(r"^[0-9a-f]{64}$")
 HEX40 = re.compile(r"^[0-9a-f]{40}$")
 SPLITS = {"train", "calibration", "test", "future", "ood", "old"}
+MAX_JSONL_ROWS = 32_768
+MAX_JSONL_LINE_CHARS = 262_144
 
 
 def require(condition, message):
@@ -41,6 +43,7 @@ def read_jsonl(path):
     rows = []
     with Path(path).open("r", encoding="utf-8") as handle:
         for number, line in enumerate(handle, start=1):
+            require(len(line) <= MAX_JSONL_LINE_CHARS, "oversized JSONL line")
             if not line.strip():
                 continue
             try:
@@ -58,17 +61,20 @@ def read_jsonl(path):
                 raise ValueError(f"invalid JSONL at line {number}: {exc}") from exc
             require(type(obj) is dict, "JSONL row must be object")
             rows.append(obj)
+            require(len(rows) <= MAX_JSONL_ROWS, "too many JSONL rows")
     require(bool(rows), "empty JSONL")
     return rows
 
 
-def validate_dataset(rows, scope, task, cutoff):
+def validate_dataset(rows, scope, task, cutoff, evaluated_at):
     require(type(scope) is str and bool(scope) and type(task) is str and bool(task),
             "scope/task required")
+    require(cutoff < evaluated_at, "training cutoff must precede evaluation")
     by_id = {}
     groups = defaultdict(set)
     selected = []
     for row in rows:
+        require(type(row) is dict, "dataset row must be object")
         for field in (
             "case_id", "scope_id", "task_id", "split", "group_id",
             "event_time", "label_available_at", "label"
@@ -77,6 +83,9 @@ def validate_dataset(rows, scope, task, cutoff):
         require(type(row["case_id"]) is str and bool(row["case_id"])
                 and row["case_id"] not in by_id, "duplicate/empty dataset case")
         by_id[row["case_id"]] = row
+        require(type(row["scope_id"]) is str and bool(row["scope_id"])
+                and type(row["task_id"]) is str and bool(row["task_id"]),
+                "invalid dataset scope/task")
         require(type(row["split"]) is str and row["split"] in SPLITS, "unknown dataset split")
         require(type(row["group_id"]) is str and bool(row["group_id"]), "group identity missing")
         require(type(row["label"]) is int and row["label"] in (0, 1), "binary label required")
@@ -90,6 +99,7 @@ def validate_dataset(rows, scope, task, cutoff):
                         "pre-cutoff training/calibration/test label leaked past freeze")
             elif row["split"] in {"future", "ood", "old"}:
                 require(event > cutoff, "held-out event not strictly after training cutoff")
+                require(label <= evaluated_at, "held-out label not yet released for retrospective evaluation")
                 selected.append(row)
     for splits in groups.values():
         require(len(splits) == 1, "cross-split group contamination")
@@ -202,7 +212,8 @@ def grouped_bootstrap(rows, base, candidate, rounds=500, seed=20261014):
 
 def compare(dataset, baseline, candidate, *, scope, task, cutoff, rounds=500):
     cutoff = iso_utc(cutoff)
-    cohort = validate_dataset(dataset, scope, task, cutoff)
+    evaluated_at = datetime.now(timezone.utc)
+    cohort = validate_dataset(dataset, scope, task, cutoff, evaluated_at)
     base = validate_arm(baseline, cohort, scope, task, cutoff)
     cand = validate_arm(candidate, cohort, scope, task, cutoff)
     by_split = {}
