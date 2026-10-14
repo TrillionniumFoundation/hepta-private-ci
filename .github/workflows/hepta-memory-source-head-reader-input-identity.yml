@@ -1,0 +1,149 @@
+name: MemoryCell learned versus frozen Reader input identity check
+on:
+  push:
+    branches:
+      - codex/memorycell-source-head-reader-input-identity-20261014
+    paths:
+      - "scripts/memory_cell/source_head_reader_input_equivalence.py"
+      - "scripts/memory_cell/test_source_head_reader_input_equivalence.py"
+      - ".github/workflows/hepta-memory-source-head-reader-input-identity.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/source_head_reader_input_equivalence.py"
+      - "scripts/memory_cell/test_source_head_reader_input_equivalence.py"
+      - ".github/workflows/hepta-memory-source-head-reader-input-identity.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-head-reader-choice-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+env:
+  PYTHONPATH: scripts/memory_cell
+jobs:
+  source-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Execute fail-closed no-model choice-identity tests
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/memory_cell/source_head_reader_input_equivalence.py \
+            scripts/memory_cell/test_source_head_reader_input_equivalence.py
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p test_source_head_reader_input_equivalence.py -v
+      - name: Mandatory scoped Ruff format check
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/source_head_reader_input_equivalence.py \
+            scripts/memory_cell/test_source_head_reader_input_equivalence.py
+      - name: Retain exact formatting fix on failure
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-input-gate-format
+          git rev-parse HEAD > /tmp/reader-input-gate-format/checkout-commit.txt
+          if command -v uv >/dev/null 2>&1; then
+            uv run --frozen --project scripts ruff format --diff \
+              scripts/memory_cell/source_head_reader_input_equivalence.py \
+              scripts/memory_cell/test_source_head_reader_input_equivalence.py \
+              > /tmp/reader-input-gate-format/ruff.diff || true
+            cat /tmp/reader-input-gate-format/ruff.diff
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: memory-head-reader-choice-format-diagnostics
+          path: /tmp/reader-input-gate-format
+          if-no-files-found: warn
+
+  actual-sgd-before-gold-identity:
+    needs: source-gate
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 80
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Retrieve externally fixed source archive WITHOUT reading gold
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/head-input-id
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11827287296/zip" \
+            > /tmp/head-input-id/source.zip
+          printf '%s  %s\n' '31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a' \
+            /tmp/head-input-id/source.zip | sha256sum --check --strict
+          python3 scripts/memory_cell/source_head_sgd_original.py prepare \
+            /tmp/head-input-id/source.zip /tmp/head-input-id/public
+          rm /tmp/head-input-id/source.zip
+          test ! -e /tmp/head-input-id/source.zip
+      - name: Refit original tiny CPU SGD model and seal before-gold predictions
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/head-input-id/venv
+          /tmp/head-input-id/venv/bin/pip install torch==2.5.1 \
+            --index-url https://download.pytorch.org/whl/cpu
+          /tmp/head-input-id/venv/bin/python -c 'import torch; assert torch.__version__ == "2.5.1+cpu"'
+          /tmp/head-input-id/venv/bin/python scripts/memory_cell/source_head_sgd_original.py fit \
+            /tmp/head-input-id/public/calibration-source-only.json \
+            /tmp/head-input-id/frozen-weights.json \
+            --input-sha "$(sha256sum /tmp/head-input-id/public/calibration-source-only.json | cut -d ' ' -f1)"
+          /tmp/head-input-id/venv/bin/python scripts/memory_cell/source_head_sgd_original.py predict \
+            /tmp/head-input-id/public/heldout-public-input.json \
+            /tmp/head-input-id/frozen-weights.json \
+            /tmp/head-input-id/pre-gold-predictions.json \
+            --public-sha "$(sha256sum /tmp/head-input-id/public/heldout-public-input.json | cut -d ' ' -f1)" \
+            --model-sha "$(sha256sum /tmp/head-input-id/frozen-weights.json | cut -d ' ' -f1)"
+          test ! -e /tmp/head-input-id/source.zip
+      - name: Prove source choices identical BEFORE opening gold or invoking Reader
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/source_head_reader_input_equivalence.py \
+            /tmp/head-input-id/public/heldout-public-input.json \
+            /tmp/head-input-id/frozen-weights.json \
+            /tmp/head-input-id/pre-gold-predictions.json \
+            /tmp/head-input-id/reader-input-identity.json \
+            --public-sha "$(sha256sum /tmp/head-input-id/public/heldout-public-input.json | cut -d ' ' -f1)" \
+            --weights-sha "$(sha256sum /tmp/head-input-id/frozen-weights.json | cut -d ' ' -f1)" \
+            --predictions-sha "$(sha256sum /tmp/head-input-id/pre-gold-predictions.json | cut -d ' ' -f1)"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('/tmp/head-input-id')
+          outcome = json.loads((root/'reader-input-identity.json').read_text())
+          assert outcome['original_development_task_count'] == 8
+          assert outcome['matched_choice_tasks'] == 8
+          assert outcome['distinct_choice_tasks'] == 0
+          assert outcome['model_answers_generated_in_audit'] == 0
+          assert outcome['exact_response_gain_over_strong_frozen_organizer_proven'] is False
+          assert outcome['production_accepted'] is False
+          PY
+          git rev-parse HEAD > /tmp/head-input-id/checkout-commit.txt
+          mkdir -p /tmp/head-input-id/output
+          cp /tmp/head-input-id/{reader-input-identity.json,checkout-commit.txt,frozen-weights.json,pre-gold-predictions.json} \
+            /tmp/head-input-id/output/
+          cp /tmp/head-input-id/public/split-manifest.json /tmp/head-input-id/output/
+          (cd /tmp/head-input-id/output && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memory-source-head-exact-reader-input-identity-not-a-learning-win
+          path: /tmp/head-input-id/output
+          if-no-files-found: error
