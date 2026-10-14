@@ -74,7 +74,7 @@ def review(panel,e1,e1_file_sha,e2):
             _digest(value)
         ordered=[[key,entries[key]] for key in sorted(entries)]
         canonical=json.dumps(ordered,sort_keys=True,separators=(',',':'),ensure_ascii=True).encode()
-        recomputed=hashlib.sha256(b'hepta.e1e2.bank-q24.v1\\0'+canonical).hexdigest()
+        recomputed=hashlib.sha256(b'hepta.e1e2.bank-q24.v1'+bytes([0])+canonical).hexdigest()
         if recomputed!=_digest(bank.get('bank_q24_sha256')):
             raise Invalid('inconsistent feature bank full digest')
         return entries,recomputed
