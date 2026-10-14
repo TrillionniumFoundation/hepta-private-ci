@@ -29,6 +29,37 @@ pub struct NeuronFeatureRequestV1 {
     pub expected_output_width: usize,
 }
 
+/// Borrow-only representation of a V1 neuron-feature request. The encoding
+/// and digest match the original owned V1 contract byte for byte.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct NeuronFeatureRequestViewV1<'a> {
+    pub request_id: &'a StableId,
+    pub generation: Generation,
+    pub model_id: &'a StableId,
+    pub encoder_digest: Digest32,
+    pub head_digest: Digest32,
+    pub weights_digest: Digest32,
+    pub input_digest: Digest32,
+    pub feature_vector_q24: &'a [i64],
+    pub expected_output_width: usize,
+}
+
+impl<'a> From<&'a NeuronFeatureRequestV1> for NeuronFeatureRequestViewV1<'a> {
+    fn from(value: &'a NeuronFeatureRequestV1) -> Self {
+        Self {
+            request_id: &value.request_id,
+            generation: value.generation,
+            model_id: &value.model_id,
+            encoder_digest: value.encoder_digest,
+            head_digest: value.head_digest,
+            weights_digest: value.weights_digest,
+            input_digest: value.input_digest,
+            feature_vector_q24: &value.feature_vector_q24,
+            expected_output_width: value.expected_output_width,
+        }
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NeuronModelRuntimeTupleV1 {
     pub model_id: StableId,
@@ -105,11 +136,19 @@ impl StdError for NeuronFeatureContractError {}
 pub fn neuron_feature_request_digest_v1(
     request: &NeuronFeatureRequestV1,
 ) -> Result<Digest32, NeuronFeatureContractError> {
-    validate_request(request)?;
+    neuron_feature_request_view_digest_v1(&NeuronFeatureRequestViewV1::from(request))
+}
+
+/// Compute the exact V1 digest directly from a borrowed, read-only Q24 slice.
+/// No intermediate Vec or change to the V1 domain separator is introduced.
+pub fn neuron_feature_request_view_digest_v1(
+    request: &NeuronFeatureRequestViewV1<'_>,
+) -> Result<Digest32, NeuronFeatureContractError> {
+    validate_request_view(request)?;
     let mut bytes = b"hepta.inference.neuron-feature-request.v1".to_vec();
-    push_id(&mut bytes, &request.request_id)?;
+    push_id(&mut bytes, request.request_id)?;
     bytes.extend_from_slice(&request.generation.get().to_be_bytes());
-    push_id(&mut bytes, &request.model_id)?;
+    push_id(&mut bytes, request.model_id)?;
     for digest in [
         request.encoder_digest,
         request.head_digest,
@@ -118,7 +157,7 @@ pub fn neuron_feature_request_digest_v1(
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
-    push_q24(&mut bytes, &request.feature_vector_q24)?;
+    push_q24(&mut bytes, request.feature_vector_q24)?;
     bytes.extend_from_slice(&(request.expected_output_width as u64).to_be_bytes());
     Ok(Digest32::of_bytes(&bytes))
 }
@@ -191,7 +230,9 @@ pub fn verify_neuron_feature_receipt_v1(
     Ok(())
 }
 
-fn validate_request(request: &NeuronFeatureRequestV1) -> Result<(), NeuronFeatureContractError> {
+fn validate_request_view(
+    request: &NeuronFeatureRequestViewV1<'_>,
+) -> Result<(), NeuronFeatureContractError> {
     for (name, digest) in [
         ("encoder", request.encoder_digest),
         ("head", request.head_digest),
