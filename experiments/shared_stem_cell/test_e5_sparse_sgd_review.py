@@ -24,7 +24,7 @@ def fixture():
                  'observed_resident_head_parameters':n*9744,
                  'measured_initialization_ms':1.,'measured_sgd_wall_ms':10. if mode=='packed' else 20.,
                  'measured_end_to_end_process_wall_ms':50.,'measured_process_cpu_ms':12.,
-                 'measured_peak_rss_bytes':1000000 if mode=='packed' else 2000000,
+                 'measured_peak_rss_bytes':n*9744*4+1000000 if mode=='packed' else n*9744*4+2000000,
                  'measured_current_rss_bytes':1000000,
                  'dormant_weights_unchanged':True,
                  'dormant_bank_sha256_before':H,'dormant_bank_sha256_after':H,
@@ -57,6 +57,8 @@ class Tests(unittest.TestCase):
     def test_loss_drift(self):self.fail(lambda d:d['1024']['20261014']['modules'].update(training_loss_by_step_sum=[1.,2.,3.]))
     def test_bad_label_budget(self):self.fail(lambda d:d['4096']['20261016']['packed'].update(optimizer_steps_per_active_cell=5))
     def test_wrong_cell_count(self):self.fail(lambda d:d['1024']['20261015']['modules'].update(observed_resident_head_parameters=10))
+    def test_nan_mean_loss(self):self.fail(lambda d:d['1024']['20261014']['packed'].update(last_step_training_loss_per_cell=float('nan')))
+    def test_underreported_resident_rss(self):self.fail(lambda d:d['4096']['20261015']['modules'].update(measured_peak_rss_bytes=1000000))
     def test_p99_forgery(self):self.fail(lambda d:d['256']['20261014']['packed'].update(p99_end_to_end_latency_verified=True))
 
 if __name__=='__main__':unittest.main()
