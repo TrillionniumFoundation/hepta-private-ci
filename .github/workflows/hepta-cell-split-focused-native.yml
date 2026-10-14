@@ -1,0 +1,104 @@
+name: Hepta CellSplit focused native owners
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-operator-acceptance/**"
+      - "codex-rs/hepta-evidence/src/metrics_*.rs"
+      - "codex-rs/hepta-agentd/src/cell_split_execution.rs"
+      - ".github/workflows/hepta-cell-split-focused-native.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-cell-split-focused-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "2"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+
+jobs:
+  rust-owners:
+    name: Exact CNS, Child CAS and durable recovery / Rust owner tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    steps:
+      - name: Checkout exact PR source, never an unpinned merge candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Record exact source identity and native toolchain
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${{ github.event.pull_request.head.sha || github.sha }}"
+          git diff --check
+          rustc --version --verbose
+          cargo --version
+          cargo fmt --version
+          cargo metadata --locked --no-deps --format-version 1 --manifest-path codex-rs/Cargo.toml > /dev/null
+
+      - name: Verify exactly the affected owner formatting
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-operator-acceptance --package codex-hepta-evidence -- --check
+
+      - name: Compile locked owner library and all test targets
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --all-targets
+
+      - name: Real CNS owner nonce replay, durable lock and signed route tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib cell_split_cns_cutover -- --nocapture --test-threads=1
+
+      - name: Real Q24 Child CAS migration, signed RPC and recovery tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib cell_split_child_state_cas -- --nocapture --test-threads=1
+
+      - name: Frozen CellSplit ledger, signed readback and lost ACK reconciliation
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib cell_split_execution_owner -- --nocapture --test-threads=1
+
+      - name: Pinned Operator CLI admission and reconcile-only denial tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib cell_split_execution_cli -- --nocapture --test-threads=1
+
+      - name: Original Evidence group commit and timeout regression
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --lib metrics_ -- --nocapture --test-threads=1
+
+      - name: Strict ownership and safety lints
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance -p codex-hepta-evidence --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
+
+      - name: Retain immutable tested working tree
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

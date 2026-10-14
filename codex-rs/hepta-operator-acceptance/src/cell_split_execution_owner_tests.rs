@@ -582,16 +582,18 @@ fn pending_only_reconciliation_never_dispatches_a_new_effect_or_reseeds_an_empty
         trust(),
         FixturePort::new(state.clone()),
     );
-    assert!(denied_empty.is_err(), "missing old writer lock cannot be created");
+    assert!(
+        denied_empty.is_err(),
+        "missing old writer lock cannot be created"
+    );
     assert!(!root.path().join("cell-split-frozen-plan.json").exists());
     assert!(!root.path().join(crate::durable::SIDECAR_LOCK_FILE).exists());
 
     {
         let mut effect_port = FixturePort::new(state.clone());
         effect_port.drop_ack = true;
-        let mut owner =
-            CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), effect_port)
-                .expect("frozen new-effect owner");
+        let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), effect_port)
+            .expect("frozen new-effect owner");
         assert!(owner.advance().is_err(), "effect committed but ACK lost");
         assert_eq!(state.borrow().executions, 1);
         assert!(root.path().join("cell-split-00-prepared.json").exists());
