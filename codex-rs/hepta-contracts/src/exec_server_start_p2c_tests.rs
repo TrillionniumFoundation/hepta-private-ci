@@ -206,6 +206,49 @@ fn interactive_and_environment_expansion_require_a_different_profile() {
 }
 
 #[test]
+fn cwd_requires_conservative_unambiguous_linux_uri_components() {
+    for bad in [
+        "file:///",
+        "file:////tmp",
+        "file:///tmp//logs",
+        "file:///tmp/.",
+        "file:///tmp/..",
+        "file:///tmp/../etc",
+        "file:///tmp/%2e%2e",
+        "file:///tmp/x%2Fy",
+        "file:///tmp/x?query",
+        "file:///tmp/x#fragment",
+        "file:///tmp\\sub",
+        "file:///tmp/a b",
+        "file:///tmp/界",
+    ] {
+        let mut value = wire();
+        value["params"]["cwd"] = json!(bad);
+        reject(
+            serialize(value),
+            CodexExecServerStartPreflightErrorV1::InvalidProcessProfile,
+        );
+    }
+
+    let mut value = wire();
+    value["params"]["cwd"] = json!("file:///tmp/work-1/a_b");
+    let raw = serialize(value);
+    assert!(inspect_codex_exec_server_start_v1(&intent_for(&raw), &raw).is_ok());
+}
+
+#[test]
+fn control_characters_in_argv_are_rejected_even_with_matching_digest() {
+    for arg in ["x\ny", "x\ry", "x\ty", "x\u{7f}y"] {
+        let mut value = wire();
+        value["params"]["argv"] = json!(["/bin/echo", arg]);
+        reject(
+            serialize(value),
+            CodexExecServerStartPreflightErrorV1::InvalidProcessProfile,
+        );
+    }
+}
+
+#[test]
 fn argv_must_be_nonempty_bounded_and_without_nul() {
     for argv in [
         json!([]),

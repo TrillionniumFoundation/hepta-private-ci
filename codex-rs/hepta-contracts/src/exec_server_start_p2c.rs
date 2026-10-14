@@ -121,9 +121,7 @@ pub fn inspect_codex_exec_server_start_v1(
         || params.tty
         || params.pipe_stdin
         || params.arg0.is_some()
-        || !params.cwd.starts_with("file:///")
-        || params.cwd.len() > 2048
-        || params.cwd.as_bytes().contains(&0)
+        || !canonical_pilot_cwd(&params.cwd)
     {
         return Err(CodexExecServerStartPreflightErrorV1::InvalidProcessProfile);
     }
@@ -131,7 +129,7 @@ pub fn inspect_codex_exec_server_start_v1(
     let mut argv_hasher = Sha256::new();
     argv_hasher.update(b"hepta.exec-server.p2c.argv.v1\0");
     for argument in &params.argv {
-        if argument.is_empty() || argument.len() > 4096 || argument.as_bytes().contains(&0) {
+        if argument.is_empty() || argument.len() > 4096 || argument.chars().any(char::is_control) {
             return Err(CodexExecServerStartPreflightErrorV1::InvalidProcessProfile);
         }
         total_argv_bytes = total_argv_bytes
@@ -156,6 +154,27 @@ pub fn inspect_codex_exec_server_start_v1(
             .map_err(|_| CodexExecServerStartPreflightErrorV1::InvalidProcessProfile)?,
         method: CODEX_EXEC_SERVER_P2C_START_METHOD,
     })
+}
+
+// A conservative Linux-like lexical subset. This prevents obvious path
+// ambiguity at the wire boundary, but does NOT verify filesystem identity,
+// symlinks, mount policy or sandbox custody. Only the original owner can do so.
+fn canonical_pilot_cwd(cwd: &str) -> bool {
+    if cwd.len() > 2048 {
+        return false;
+    }
+    let Some(path) = cwd.strip_prefix("file:///") else {
+        return false;
+    };
+    !path.is_empty()
+        && path.split('/').all(|part| {
+            !part.is_empty()
+                && part != "."
+                && part != ".."
+                && part
+                    .bytes()
+                    .all(|byte| byte.is_ascii_alphanumeric() || matches!(byte, b'.' | b'_' | b'-'))
+        })
 }
 
 #[cfg(test)]
