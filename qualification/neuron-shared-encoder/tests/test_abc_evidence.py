@@ -82,14 +82,14 @@ def c_fixture():
         stage = {
             'stage': name, 'artifact_sha256': D(chr(97 + index)),
             'model_revision': 'f'*40,
-            'frozen_text_probe_sha256': D('t'),
+            'frozen_text_probe_sha256': D('a'),
             'total_parameters': 140000000 + index*1000000,
             'trainable_parameters': index*5000,
             'projection_parameters': index*1000,
             'resident_weights_bytes': 280000000 + index*2000000,
             'peak_training_memory_bytes': 1000000 + index*500,
             'training_seconds': 10 + index,
-            'tasks': {k: {'dataset_sha256': D(k[0]), 'cases': 50, 'score': tasks[k]}
+            'tasks': {k: {'dataset_sha256': canonical_digest(k), 'cases': 50, 'score': tasks[k]}
                       for k in seen},
             'scales': [],
         }
@@ -99,7 +99,7 @@ def c_fixture():
                 'actually_executed_cell_count': n, 'requests': n,
                 'encoder_forward_rows': n*2, 'encoder_batch_calls': n//2,
                 'host_id': 'host-1', 'source_commit': 'f'*40,
-                'paired_text_workload_sha256': D('w'),
+                'paired_text_workload_sha256': D('c'),
                 'device': 'cpu', 'gpu_peak_bytes': None,
                 'throughput_rps': 10, 'cpu_seconds': 1, 'rss_peak_bytes': 10000000 + n,
                 'request_p95_ms': 1, 'request_p99_ms': 2,
@@ -110,8 +110,8 @@ def c_fixture():
             })
         stages.append(stage)
     return {
-        'dataset_sha256': D('d'), 'protocol_sha256': D('p'),
-        'paired_text_workload_sha256': D('w'),
+        'dataset_sha256': D('d'), 'protocol_sha256': D('b'),
+        'paired_text_workload_sha256': D('c'),
         'source_commit': 'f'*40, 'host_id': 'host-1',
         'stages': stages,
     }
@@ -160,7 +160,7 @@ def test_c_all_stages_complete_is_only_unverified_schema():
 def test_c_rejects_fake_or_incompatible_modality_bench(change):
     m = c_fixture()
     if change == 'probe':
-        m['stages'][1]['frozen_text_probe_sha256'] = D('q')
+        m['stages'][1]['frozen_text_probe_sha256'] = D('f')
     elif change == 'missing_task':
         del m['stages'][2]['tasks']['visual_relations']
     elif change == 'partial':
@@ -172,5 +172,5 @@ def test_c_rejects_fake_or_incompatible_modality_bench(change):
     elif change == 'wal':
         m['stages'][1]['scales'][1]['unclean_crash_recovered'] = False
     else:
-        m['stages'][0]['scales'][0]['paired_text_workload_sha256'] = D('x')
+        m['stages'][0]['scales'][0]['paired_text_workload_sha256'] = D('e')
     assert multimodal_cost_audit(m)['status'] == 'BLOCKED'
