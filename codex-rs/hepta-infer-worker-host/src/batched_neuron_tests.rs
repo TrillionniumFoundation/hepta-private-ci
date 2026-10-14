@@ -353,7 +353,10 @@ fn multi_request_batch_records_each_member_in_all_three_metric_phases() {
         PhaseMetricKindV1::Microbatch,
         PhaseMetricKindV1::NeuronFeature,
     ] {
-        assert_eq!(events.iter().filter(|event| event.phase == phase).count(), 2);
+        assert_eq!(
+            events.iter().filter(|event| event.phase == phase).count(),
+            2
+        );
     }
     for request in request_digests {
         assert_eq!(
@@ -693,7 +696,10 @@ fn three_authorized_neuron_items_enter_one_physical_batch_driver_invocation() {
         PhaseMetricKindV1::NeuronFeature,
     ] {
         assert_eq!(
-            samples.iter().filter(|sample| sample.phase == phase).count(),
+            samples
+                .iter()
+                .filter(|sample| sample.phase == phase)
+                .count(),
             3,
         );
     }
