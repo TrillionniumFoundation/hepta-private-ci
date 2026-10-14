@@ -169,18 +169,26 @@ impl CellSplitUnixEffectPortV1 {
                 "effect endpoint is not a Unix socket",
             ));
         }
+        // The entire transport (connect, request write and response read)
+        // has one wall-clock budget. A slow request must never grant the owner
+        // a second full interval for acknowledging an ambiguous effect.
+        let started_at = Instant::now();
         let mut stream = UnixStream::connect(path)?;
-        stream.set_read_timeout(Some(self.timeout))?;
-        stream.set_write_timeout(Some(self.timeout))?;
         let request = CellSplitEffectRpcRequestV1 {
             schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.to_owned(),
             action,
             intent: intent.clone(),
             challenge_nonce,
         };
-        send_frame_with_deadline(&mut stream, &request, self.timeout)?;
-        let response: CellSplitEffectRpcResponseV1 =
-            receive_frame_with_deadline(&mut stream, self.timeout)?;
+        send_frame_with_deadline(
+            &mut stream,
+            &request,
+            remaining_effect_rpc_budget(started_at, self.timeout)?,
+        )?;
+        let response: CellSplitEffectRpcResponseV1 = receive_frame_with_deadline(
+            &mut stream,
+            remaining_effect_rpc_budget(started_at, self.timeout)?,
+        )?;
         if response.schema != CELL_SPLIT_EFFECT_RPC_SCHEMA_V1 || response.action != action {
             return Err(CellSplitEffectRpcErrorV1::Invalid(
                 "RPC schema or action mismatch",
@@ -272,6 +280,20 @@ impl CellSplitUnixEffectPortV1 {
         }
         Ok(response.receipt)
     }
+}
+
+/// The caller, not each frame, owns the RPC deadline. A sub-millisecond
+/// remainder is unusable by the framed transport and fails closed.
+fn remaining_effect_rpc_budget(
+    started_at: Instant,
+    total: Duration,
+) -> Result<Duration, CellSplitEffectRpcErrorV1> {
+    total
+        .checked_sub(started_at.elapsed())
+        .filter(|remaining| *remaining >= Duration::from_millis(1))
+        .ok_or(CellSplitEffectRpcErrorV1::Invalid(
+            "RPC transport deadline exceeded",
+        ))
 }
 
 impl CellSplitExecutionPortV1 for CellSplitUnixEffectPortV1 {
@@ -708,6 +730,23 @@ mod tests {
         let key = SigningKey::from_bytes(&[1u8; 32]).verifying_key();
         let paths = [0, 1, 2, 3].map(|i| root.path().join(format!("{i}.sock")));
         assert!(CellSplitUnixEffectPortV1::new(paths, [key; 4], Duration::from_secs(1)).is_err());
+    }
+
+    #[test]
+    fn effect_rpc_transport_budget_cannot_reset_between_frames() {
+        // Use a deterministically elapsed clock interval instead of timing
+        // thread scheduling.  The actual call() path checks this same budget
+        // both after the connect and after the send.
+        let started_at = Instant::now() - Duration::from_secs(2);
+        let remaining = remaining_effect_rpc_budget(started_at, Duration::from_secs(10))
+            .expect("unused portion of the original transport budget");
+        assert!(remaining <= Duration::from_secs(8));
+        assert!(matches!(
+            remaining_effect_rpc_budget(started_at, Duration::from_secs(1)),
+            Err(CellSplitEffectRpcErrorV1::Invalid(
+                "RPC transport deadline exceeded"
+            ))
+        ));
     }
 
     #[test]
