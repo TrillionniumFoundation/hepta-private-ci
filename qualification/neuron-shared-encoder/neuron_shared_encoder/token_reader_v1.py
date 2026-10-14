@@ -27,18 +27,23 @@ def _hex_digest(value: object) -> bool:
 
 
 def _tensor_storage_bytes(value: Tensor) -> bytes:
-    """Exact CPU tensor bytes without the optional PyTorch NumPy integration.
+    """Read the EXACT logical CPU tensor bytes without optional NumPy.
 
-    A contiguous view can still start partway into a larger storage. Clone only
-    when the storage spans bytes outside the logical tensor, so no other
-    principal's adjacent tensor data is hashed or exposed accidentally.
+    UntypedStorage.__iter__ visits one byte through Python and becomes
+    pathological for thousands of Cells. Read a bounded uint8 tensor slice
+    through PyTorch's C-backed tolist conversion instead. The view respects
+    storage_offset, including contiguous subviews of larger allocations.
     """
-    flat = value.detach().contiguous()
-    storage = flat.untyped_storage()
-    if flat.storage_offset() or storage.nbytes() != flat.numel() * flat.element_size():
-        flat = flat.clone()
-        storage = flat.untyped_storage()
-    return bytes(storage)
+    if not isinstance(value, Tensor) or value.device.type != 'cpu':
+        raise ValueError('CPU tensor required for canonical snapshot hash')
+    byte_view = value.detach().contiguous().reshape(-1).view(torch.uint8)
+    size = byte_view.numel()
+    output = bytearray(size)
+    chunk_size = 64 * 1024
+    for start in range(0, size, chunk_size):
+        end = min(start + chunk_size, size)
+        output[start:end] = bytes(byte_view[start:end].tolist())
+    return bytes(output)
 
 
 def snapshot_sha256(tokens: Tensor, mask: Tensor, rows: list[dict], pins: dict) -> str:
