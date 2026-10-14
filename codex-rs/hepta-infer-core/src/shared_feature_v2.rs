@@ -149,6 +149,16 @@ impl SharedFeatureCacheV2 {
             return Err(SharedFeatureErrorV2::InvalidFeature);
         }
         let content_digest = feature_content_digest_v2(&features_q24);
+        // An expired key may be re-admitted, but a live immutable identity
+        // must never be silently replaced. Old Arc readers remain immutable
+        // and still require independent final-use checks.
+        if self
+            .snapshots
+            .get(&identity_digest)
+            .is_some_and(|existing| now_ms >= existing.expires_at_ms)
+        {
+            self.purge_expired(now_ms);
+        }
         if let Some(existing) = self.snapshots.get(&identity_digest) {
             if existing.identity == identity
                 && existing.expires_at_ms == expires_at_ms
@@ -164,10 +174,19 @@ impl SharedFeatureCacheV2 {
             .len()
             .checked_mul(std::mem::size_of::<i64>())
             .ok_or(SharedFeatureErrorV2::Overflow)?;
-        let next_bytes = self
+        let mut next_bytes = self
             .resident_bytes
             .checked_add(bytes)
             .ok_or(SharedFeatureErrorV2::Overflow)?;
+        // Reclaim expired capacity only when needed. Live entries are never
+        // evicted to satisfy a different Cell or principal.
+        if self.snapshots.len() >= self.maximum_entries || next_bytes > self.maximum_bytes {
+            self.purge_expired(now_ms);
+            next_bytes = self
+                .resident_bytes
+                .checked_add(bytes)
+                .ok_or(SharedFeatureErrorV2::Overflow)?;
+        }
         if self.snapshots.len() >= self.maximum_entries || next_bytes > self.maximum_bytes {
             return Err(SharedFeatureErrorV2::CapacityExceeded);
         }
@@ -343,6 +362,63 @@ mod tests {
         assert_eq!(cache.purge_expired(20), 1);
         assert!(cache.is_empty());
         assert_eq!(cache.resident_bytes(), 0);
+    }
+
+    #[test]
+    fn expired_capacity_is_reclaimed_without_evicting_live_entries() {
+        let mut cache = SharedFeatureCacheV2::new(2, 16).expect("cache");
+        let old_id = identity("old", "purpose", 2);
+        let old_snapshot = cache
+            .insert(10, old_id.clone(), 20, Arc::from([1_i64]))
+            .expect("old snapshot");
+        let live_id = identity("live", "purpose", 2);
+        let live_snapshot = cache
+            .insert(10, live_id.clone(), 40, Arc::from([2_i64]))
+            .expect("live snapshot");
+        let new_id = identity("new", "purpose", 2);
+        assert_eq!(
+            cache.insert(19, new_id.clone(), 40, Arc::from([3_i64])),
+            Err(SharedFeatureErrorV2::CapacityExceeded)
+        );
+        assert_eq!(
+            cache.insert(20, new_id.clone(), 40, Arc::from([9_i64 << 24])),
+            Err(SharedFeatureErrorV2::InvalidFeature)
+        );
+        assert_eq!(cache.len(), 2);
+        cache
+            .insert(20, new_id.clone(), 40, Arc::from([3_i64]))
+            .expect("expired capacity may be reused");
+        assert_eq!(cache.len(), 2);
+        assert_eq!(cache.resident_bytes(), 16);
+        assert!(cache.get(20, &old_id).expect("expired lookup").is_none());
+        assert!(cache.get(20, &new_id).expect("new lookup").is_some());
+        let live_hit = cache
+            .get(20, &live_id)
+            .expect("live lookup")
+            .expect("present");
+        assert!(Arc::ptr_eq(&live_snapshot, &live_hit));
+        assert_eq!(old_snapshot.features_q24.as_ref(), &[1]);
+    }
+
+    #[test]
+    fn expired_identity_can_be_readmitted_without_mutating_old_readers() {
+        let mut cache = SharedFeatureCacheV2::new(1, 16).expect("cache");
+        let id = identity("p", "q", 2);
+        let original = cache
+            .insert(10, id.clone(), 20, Arc::from([1_i64, 2]))
+            .expect("original");
+        assert_eq!(
+            cache.insert(19, id.clone(), 30, Arc::from([3_i64, 4])),
+            Err(SharedFeatureErrorV2::ConflictingSnapshot)
+        );
+        let replacement = cache
+            .insert(20, id, 30, Arc::from([3_i64, 4]))
+            .expect("expired identity may be readmitted");
+        assert_ne!(original.content_digest, replacement.content_digest);
+        assert_eq!(original.features_q24.as_ref(), &[1, 2]);
+        assert_eq!(replacement.features_q24.as_ref(), &[3, 4]);
+        assert_eq!(cache.len(), 1);
+        assert_eq!(cache.resident_bytes(), 16);
     }
 
     #[test]

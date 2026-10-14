@@ -624,6 +624,9 @@ ignored = [
     "icu_provider",
     "openssl-sys",
     "codex-v8-poc",
+    # cargo-shear on Linux misses genuine cfg(windows) imports;
+    # rust-ci must independently prove both Windows use sites.
+    "winapi-util",
 ]
 
 [profile.dev]
