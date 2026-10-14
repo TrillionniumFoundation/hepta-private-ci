@@ -10,6 +10,7 @@ mod cell_split_effect_rpc;
 mod cell_split_effect_service;
 #[cfg(unix)]
 mod cell_split_execution_cli;
+mod cell_split_evidence_custody;
 mod cell_split_execution_owner;
 #[cfg(unix)]
 mod cell_split_monotonic_rpc;
@@ -127,6 +128,14 @@ pub use cell_split_execution_cli::run_pinned_cell_split_execution_v1;
 pub use cell_split_execution_cli::run_pinned_cell_split_execution_with_admission_and_metrics_v1;
 #[cfg(unix)]
 pub use cell_split_execution_cli::run_pinned_cell_split_reconcile_only_v1;
+pub use cell_split_evidence_custody::CELL_SPLIT_EVIDENCE_CUSTODY_SCHEMA_V1;
+pub use cell_split_evidence_custody::CellSplitEvidenceCustodyComparisonV1;
+pub use cell_split_evidence_custody::CellSplitEvidenceCustodyErrorV1;
+pub use cell_split_evidence_custody::CellSplitEvidenceCustodyPortV1;
+pub use cell_split_evidence_custody::CellSplitEvidenceLocalFrontierV1;
+pub use cell_split_evidence_custody::CellSplitEvidenceSignedCustodyV1;
+pub use cell_split_evidence_custody::cell_split_evidence_custody_signing_payload_v1;
+pub use cell_split_evidence_custody::verify_cell_split_evidence_custody_v1;
 pub use cell_split_execution_owner::CellSplitExecutionErrorV1;
 pub use cell_split_execution_owner::CellSplitExecutionIntentV1;
 pub use cell_split_execution_owner::CellSplitExecutionOwnerV1;
