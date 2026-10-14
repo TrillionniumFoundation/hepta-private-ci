@@ -97,6 +97,13 @@ pub fn run_pinned_cell_split_execution_with_admission_v1<F>(
 where
     F: FnMut(&CellSplitExecutionPlanV1) -> Result<(), String>,
 {
+    // A caller-provided Selector/NDU callback is not proof of a durable
+    // Evidence writer. Keep read-only transcript, reject new effects here.
+    if action == "advance" {
+        return Err(
+            "CellSplit advance requires an Evidence-owned durable phase metric sink".to_string(),
+        );
+    }
     run_pinned_cell_split_execution_inner_v1(
         action,
         config_path,
@@ -382,6 +389,28 @@ mod tests {
         }
     }
 
+    /// Explicit test-only sink for the independent Selector and absent-owner
+    /// negative fixtures; never valid as the concrete Agentd Evidence writer.
+    #[derive(Debug)]
+    struct HealthyFixtureMetricSink;
+
+    impl PhaseMetricSinkV1 for HealthyFixtureMetricSink {
+        fn record(
+            &self,
+            _event: codex_hepta_types::PhaseMetricEventV1,
+        ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+            Ok(())
+        }
+
+        fn healthy(&self) -> bool {
+            true
+        }
+
+        fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+            Ok(())
+        }
+    }
+
     #[test]
     fn read_only_transcript_never_mints_mutation_admission() {
         let calls = std::cell::Cell::new(0usize);
@@ -476,11 +505,13 @@ mod tests {
         std::fs::set_permissions(&config_path, std::fs::Permissions::from_mode(0o600))
             .expect("private config");
 
+        let sink = Arc::new(HealthyFixtureMetricSink);
         let mut inspected_selected_plan = false;
-        let denied = run_pinned_cell_split_execution_with_admission_v1(
+        let denied = run_pinned_cell_split_execution_with_admission_and_metrics_v1(
             "advance",
             &config_path,
             &pin,
+            sink.clone(),
             |selected| {
                 inspected_selected_plan = true;
                 assert_eq!(selected.split_id, "split-pinned-test");
@@ -499,10 +530,11 @@ mod tests {
         // A valid selection can be revoked while the coordinator opens its
         // frozen plan. A second denial must leave no prepared effect intent.
         let mut admissions = 0_usize;
-        let stale = run_pinned_cell_split_execution_with_admission_v1(
+        let stale = run_pinned_cell_split_execution_with_admission_and_metrics_v1(
             "advance",
             &config_path,
             &pin,
+            sink.clone(),
             |_| {
                 admissions += 1;
                 if admissions == 1 {
@@ -525,10 +557,11 @@ mod tests {
         // missing owner socket into an ambiguous effect. The coordinator may
         // freeze its plan, but must never write a prepared intent.
         assert!(
-            run_pinned_cell_split_execution_with_admission_v1(
+            run_pinned_cell_split_execution_with_admission_and_metrics_v1(
                 "advance",
                 &config_path,
                 &pin,
+                sink.clone(),
                 |_| Ok(()),
             )
             .is_err()
@@ -578,16 +611,43 @@ mod tests {
         // later execute once a real service is deployed, without an orphaned
         // local prepared intent forcing an unwarranted reconciliation.
         assert!(
-            run_pinned_cell_split_execution_with_admission_v1(
+            run_pinned_cell_split_execution_with_admission_and_metrics_v1(
                 "advance",
                 &config_path,
                 &pin,
+                sink.clone(),
                 |_| Ok(()),
             )
             .is_err()
         );
         assert!(!pending.exists());
         assert!(!committed.exists());
+    }
+
+    #[test]
+    fn legacy_admission_only_api_cannot_bypass_durable_evidence_metrics() {
+        let root = tempfile::tempdir().expect("private fixture");
+        let missing_config = root.path().join("not-opened.json");
+        let mut admission_called = false;
+        let rejected = run_pinned_cell_split_execution_with_admission_v1(
+            "advance",
+            &missing_config,
+            &"00".repeat(32),
+            |_| {
+                admission_called = true;
+                Ok(())
+            },
+        )
+        .expect_err("callback-only mutation must fail closed");
+        assert!(rejected.contains("Evidence-owned durable phase metric sink"));
+        assert!(!admission_called);
+        assert!(!missing_config.exists());
+        assert_eq!(
+            std::fs::read_dir(root.path())
+                .expect("no new journal or mutation")
+                .count(),
+            0
+        );
     }
 
     #[test]
