@@ -11,6 +11,7 @@
 //! The feature never installs into the default product Neuron Runtime.
 
 use std::collections::HashSet;
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, RwLock};
 
 use codex_hepta_types::{Digest32, Generation, StableId};
@@ -84,6 +85,7 @@ struct CurrentEpoch {
 #[derive(Clone)]
 pub struct AmcnShadowEpochIndex {
     state: Arc<RwLock<CurrentEpoch>>,
+    pending_owner_change: Arc<AtomicBool>,
 }
 
 impl AmcnShadowEpochIndex {
@@ -117,13 +119,23 @@ impl AmcnShadowEpochIndex {
                 enrolled_manifests: enrolled,
                 quarantined_manifests: blocked,
             })),
+            pending_owner_change: Arc::new(AtomicBool::new(false)),
         })
     }
 
     /// Exact O(1) current header read, not a claim that this was signed.
     pub fn header(&self) -> Result<AmcnEpochHeaderV1, NeuronModelError> {
         let guard = self.state.read().map_err(|_| NeuronModelError::Indeterminate)?;
+        if self.pending_owner_change.load(Ordering::Acquire) {
+            return Err(NeuronModelError::Indeterminate);
+        }
         Ok(guard.header.clone())
+    }
+
+    /// True while the source owner is waiting for active Cells to finish.
+    /// This is observable mechanism state, not proof of an authenticated owner.
+    pub fn owner_change_pending(&self) -> bool {
+        self.pending_owner_change.load(Ordering::Acquire)
     }
 
     /// Research replay of an externally authenticated and DURABLY written
@@ -136,6 +148,16 @@ impl AmcnShadowEpochIndex {
         newly_enrolled: impl IntoIterator<Item = Digest32>,
         additional_quarantined: impl IntoIterator<Item = Digest32>,
     ) -> Result<(), NeuronModelError> {
+        // Set pending BEFORE waiting on the RwLock writer. This prevents a
+        // high-volume reader stream from starving an already requested
+        // withdrawal. Even if validation fails, this index remains fenced
+        // until an independent-current-floor rebootstrap; no silent rollback
+        // or clearance of adverse source-change evidence is permitted.
+        if self.pending_owner_change.compare_exchange(
+            false, true, Ordering::AcqRel, Ordering::Acquire,
+        ).is_err() {
+            return Err(NeuronModelError::Indeterminate);
+        }
         next.validate()?;
         let mut guard = self.state.write().map_err(|_| NeuronModelError::Indeterminate)?;
         let old = &guard.header;
@@ -179,6 +201,7 @@ impl AmcnShadowEpochIndex {
         guard.enrolled_manifests.extend(enrolled);
         guard.quarantined_manifests.extend(additional);
         guard.header = next;
+        self.pending_owner_change.store(false, Ordering::Release);
         Ok(())
     }
 
@@ -213,6 +236,9 @@ impl AmcnSourceArtifactFence for AmcnShadowEpochFence {
         binding.validate_request(request).map_err(E::from)?;
         let current = self.index.state.read()
             .map_err(|_| E::from(NeuronModelError::Indeterminate))?;
+        if self.index.pending_owner_change.load(Ordering::Acquire) {
+            return Err(E::from(NeuronModelError::Rejected));
+        }
         if current.header != self.expected
             || !current.header.same_owner_binding(binding)
             || !current.enrolled_manifests.contains(&binding.artifact_manifest_digest)

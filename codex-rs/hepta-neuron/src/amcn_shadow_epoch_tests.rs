@@ -219,6 +219,14 @@ fn amcn_epoch_shadow_concurrent_owner_epoch_write_waits_for_reader_model() {
         writer_end_tx.send(result).expect("writer done");
     });
     writer_begin_rx.recv_timeout(Duration::from_secs(5)).expect("writer attempted epoch");
+    for _ in 0..500 {
+        if shared.owner_change_pending() {
+            break;
+        }
+        thread::sleep(Duration::from_millis(1));
+    }
+    assert!(shared.owner_change_pending(),
+            "writer publishes pending withdrawal BEFORE waiting for old read leases");
     assert!(
         matches!(writer_end_rx.recv_timeout(Duration::from_millis(80)),
                  Err(RecvTimeoutError::Timeout)),
@@ -234,43 +242,118 @@ fn amcn_epoch_shadow_concurrent_owner_epoch_write_waits_for_reader_model() {
 }
 
 #[test]
-fn amcn_epoch_shadow_rollback_fork_and_malformed_owner_transitions_fail() {
-    let shared = index();
-    let original = shared.header().expect("base");
+fn amcn_epoch_shadow_rollback_fork_and_malformed_owner_transitions_fail_closed() {
+    let original = header();
     let successor = source_withdrawal_successor(&original);
-
     let mut wrong_previous = successor.clone();
     wrong_previous.predecessor_event_digest = d("not-original-head");
-    assert_eq!(
-        shared.observe_committed_owner_change(&original, wrong_previous, [], []),
-        Err(NeuronModelError::Rejected)
-    );
     let mut fake_source = successor.clone();
     fake_source.source_epoch = original.source_epoch;
-    assert_eq!(
-        shared.observe_committed_owner_change(&original, fake_source, [], []),
-        Err(NeuronModelError::Rejected)
-    );
-    let mut old_generation = successor.clone();
-    old_generation.generation = Generation::new(8).expect("new generation");
-    assert_eq!(
-        shared.observe_committed_owner_change(&original, old_generation, [], []),
-        Err(NeuronModelError::Rejected)
-    );
+    let mut wrong_generation = successor.clone();
+    wrong_generation.generation = Generation::new(8).expect("new generation");
+
+    // An indeterminate attempted owner update is a durable *fence*, not an
+    // excuse to clear pending and continue serving prior parameters.
+    for wrong in [wrong_previous, fake_source, wrong_generation] {
+        let shared = index();
+        assert_eq!(
+            shared.observe_committed_owner_change(&original, wrong, [], []),
+            Err(NeuronModelError::Rejected)
+        );
+        assert!(shared.owner_change_pending());
+        assert_eq!(shared.header(), Err(NeuronModelError::Indeterminate));
+        let req = request();
+        let original_binding = binding(&req, &original, d("artifact.a"));
+        let called = AtomicUsize::new(0);
+        let mut fence = shared.candidate_fence(original.clone());
+        assert_eq!(
+            fence.with_fenced_candidate(&original_binding, &req, || {
+                called.fetch_add(1, Ordering::SeqCst);
+                Ok::<_, NeuronModelError>(())
+            }),
+            Err(NeuronModelError::Rejected)
+        );
+        assert_eq!(called.load(Ordering::SeqCst), 0);
+    }
+
+    let shared = index();
     shared.observe_committed_owner_change(
         &original, successor.clone(), [], [d("artifact.a")],
-    ).expect("first withdrawal");
+    ).expect("first current withdrawal");
+    assert!(!shared.owner_change_pending());
     assert_eq!(
         shared.observe_committed_owner_change(&original, successor.clone(), [], []),
         Err(NeuronModelError::Rejected)
     );
-    // Restoring internally valid older bytes cannot satisfy an independent
-    // floor retained at the LATEST version.
+    assert!(shared.owner_change_pending());
+
+    // A restored older index cannot authenticate a newer independent floor.
     assert!(matches!(
         AmcnShadowEpochIndex::from_external_floor(
             original, &successor, [d("artifact.a")], [],
-        ), Err(NeuronModelError::Rejected)
+        ),
+        Err(NeuronModelError::Rejected)
     ));
+}
+
+#[test]
+fn amcn_epoch_shadow_writer_pending_refuses_second_head_without_waiting_for_model() {
+    let shared = index();
+    let base = shared.header().expect("research floor");
+    let req = request();
+    let bound = binding(&req, &base, d("artifact.b"));
+    let (entered_tx, entered_rx) = channel::<()>();
+    let (release_tx, release_rx) = channel::<()>();
+    let first = shared.clone();
+    let original = base.clone();
+
+    let thread = thread::spawn(move || {
+        let mut lease = first.candidate_fence(original);
+        lease.with_fenced_candidate(&bound, &req, || {
+            entered_tx.send(()).expect("held read lease");
+            release_rx.recv_timeout(Duration::from_secs(5))
+                .map_err(|_| NeuronModelError::Indeterminate)?;
+            Ok::<_, NeuronModelError>(())
+        })
+    });
+    entered_rx.recv_timeout(Duration::from_secs(5)).expect("first Cell inside lease");
+    let write = shared.clone();
+    let base_for_writer = base.clone();
+    let writer = thread::spawn(move || {
+        write.observe_committed_owner_change(
+            &base_for_writer, source_withdrawal_successor(&base_for_writer),
+            [], [d("artifact.a")],
+        )
+    });
+    for _ in 0..500 {
+        if shared.owner_change_pending() {
+            break;
+        }
+        thread::sleep(Duration::from_millis(1));
+    }
+    assert!(shared.owner_change_pending(), "withdrawal pending reaches all Cells");
+    // New work must be rejected. We cannot acquire a second reader on every
+    // RwLock implementation while a writer is queued, so run it on another
+    // thread rather than deadlocking the first model's release signal.
+    let next = shared.clone();
+    let request_second = request();
+    let expected_second = base.clone();
+    let second = thread::spawn(move || {
+        let new_bound = binding(&request_second, &expected_second, d("artifact.b"));
+        let counter = AtomicUsize::new(0);
+        let mut lease = next.candidate_fence(expected_second);
+        let reply = lease.with_fenced_candidate(&new_bound, &request_second, || {
+            counter.fetch_add(1, Ordering::SeqCst);
+            Ok::<_, NeuronModelError>(())
+        });
+        (reply, counter.load(Ordering::SeqCst))
+    });
+    release_tx.send(()).expect("release first reader");
+    thread.join().expect("first model").expect("started before withdrawal pending");
+    writer.join().expect("writer").expect("withdrawal completed");
+    let (second_reply, new_calls) = second.join().expect("second reader");
+    assert_eq!(second_reply, Err(NeuronModelError::Rejected));
+    assert_eq!(new_calls, 0);
 }
 
 #[test]

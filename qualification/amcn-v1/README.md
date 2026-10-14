@@ -455,7 +455,12 @@ re-scan all historical Artifact/Source lineage on every inference.
 Changes are accepted only under the writer side of the SAME lock, using exact
 compare-and-swap of the old header, a single subsequent sequence, nondecreasing
 component epochs, matched digest changes and a chained predecessor event
-digest. Quarantined manifest digests never disappear. A restored old snapshot
+digest. Quarantined manifest digests never disappear. A write-side source
+withdrawal marks an atomic pending flag BEFORE competing for the exclusive
+lock, so new readers fail closed instead of starving that revocation under a
+large population of hot Cells. A malformed, stale or ambiguous update keeps
+the index fenced pending explicit independently witnessed re-bootstrap; this
+may interrupt availability but never silently authorizes old weights. A restored old snapshot
 is rejected if the independently retained current floor is newer. The index
 limits the current enrolled set to 65,536 manifests and revocations to 16,384;
 these are mechanism bounds, not Cell capacity recommendations. The feature
