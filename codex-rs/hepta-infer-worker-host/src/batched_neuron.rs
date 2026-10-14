@@ -230,9 +230,33 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         })
     }
 
+    /// A compatibility builder for source-only callers. Refusing a late
+    /// replacement permanently poisons production readiness, rather than
+    /// silently accepting a fresh journal as historical Evidence.
     pub fn with_metric_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
-        self.metric_sink = Some(sink);
+        let _ = self.bind_metric_sink(sink);
         self
+    }
+
+    /// Bind one Evidence-owned sink before any request admission or poll.
+    /// Replacing the original sink would lose the correlation between the
+    /// model effects and their emitted Admission/terminal metric history.
+    /// The original sink is retained and a rebinding attempt poisons further
+    /// effects, even when the caller presents a healthy replacement.
+    pub fn bind_metric_sink(
+        &mut self,
+        sink: Arc<dyn PhaseMetricSinkV1>,
+    ) -> Result<(), BatchWorkerErrorV1> {
+        if self.metric_sink.is_some()
+            || self.frontier_binding_frozen
+            || self.unmetered_activity
+            || self.failed_metrics.load(Ordering::Acquire) != 0
+        {
+            self.failed_metrics.fetch_add(1, Ordering::Release);
+            return Err(BatchWorkerErrorV1::MetricsUnavailable);
+        }
+        self.metric_sink = Some(sink);
+        Ok(())
     }
 
     /// Bind exactly one original Control-owned live frontier at startup.

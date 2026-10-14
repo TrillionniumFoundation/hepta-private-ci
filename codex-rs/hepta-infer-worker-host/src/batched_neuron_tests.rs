@@ -474,8 +474,121 @@ fn late_metrics_sink_cannot_certify_previously_unmetered_model_execution() {
     let mut worker = worker.with_metric_sink(Arc::new(CapturedMetrics::default()));
     assert!(!worker.production_metrics_ready());
     assert!(!worker.flush_production_metrics());
-    assert!(worker.poll_and_execute(107).unwrap().outcomes.is_empty());
+    // The attempted late attachment is a permanent readiness violation:
+    // there is no safe way to backfill the already executed model effect.
+    assert!(matches!(
+        worker.poll_and_execute(107),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    ));
     assert!(!worker.production_metrics_ready());
+}
+
+#[test]
+fn evidence_sink_is_write_once_and_rebinding_cannot_rehabilitate_or_dispatch() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[95; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let original = Arc::new(CapturedMetrics::default());
+    let replacement = Arc::new(CapturedMetrics::default());
+    let mut worker = runner(&signer, dir.path(), model);
+    assert_eq!(worker.bind_metric_sink(original.clone()), Ok(()));
+    assert!(worker.production_metrics_ready());
+    worker
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    assert_eq!(worker.pending(), 1);
+    assert_eq!(original.0.lock().unwrap().len(), 1);
+    assert_eq!(
+        worker.bind_metric_sink(replacement.clone()),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    );
+    assert!(!worker.production_metrics_ready());
+    assert_eq!(worker.pending(), 1);
+    assert_eq!(original.0.lock().unwrap().len(), 1);
+    assert!(replacement.0.lock().unwrap().is_empty());
+    assert!(matches!(
+        worker.poll_and_execute(106),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    ));
+    assert_eq!(worker.pending(), 1);
+    assert!(!worker.flush_production_metrics());
+    assert!(!worker.production_metrics_ready());
+}
+
+#[test]
+fn evidence_sink_builder_replacement_also_poisoned_before_first_effect() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[96; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let original = Arc::new(CapturedMetrics::default());
+    let replacement = Arc::new(CapturedMetrics::default());
+    let mut worker = runner(&signer, dir.path(), model)
+        .with_metric_sink(original.clone())
+        .with_metric_sink(replacement.clone());
+    assert!(!worker.production_metrics_ready());
+    assert_eq!(
+        worker.enqueue(100, "model".into(), request, key, signed(&signer, binding)),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    );
+    assert_eq!(worker.pending(), 0);
+    assert!(!worker.flush_production_metrics());
+    assert!(!worker.production_metrics_ready());
+    let original_identity: Arc<dyn PhaseMetricSinkV1> = original;
+    assert!(Arc::ptr_eq(
+        worker.metric_sink.as_ref().unwrap(),
+        &original_identity
+    ));
+}
+
+#[test]
+fn completed_signed_effect_cannot_switch_to_a_fresh_evidence_writer() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[97; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let first_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    let original = Arc::new(CapturedMetrics::default());
+    let replacement = Arc::new(CapturedMetrics::default());
+    let mut worker = runner(&signer, dir.path(), model).with_metric_sink(original.clone());
+    assert!(worker.production_metrics_ready());
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            first,
+            key.clone(),
+            signed(&signer, first_binding),
+        )
+        .unwrap();
+    let completed = worker.poll_and_execute(106).unwrap();
+    assert_eq!(completed.outcomes.len(), 1);
+    assert!(completed.outcomes[0].result.is_ok());
+    assert_eq!(original.0.lock().unwrap().len(), 3);
+    assert_eq!(worker.pending(), 0);
+
+    // Replacing the Evidence journal cannot erase a completed effect's
+    // provenance. No second signed nonce may be claimed after this violation.
+    assert_eq!(
+        worker.bind_metric_sink(replacement.clone()),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    );
+    assert!(!worker.production_metrics_ready());
+    let second_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
+    assert_eq!(
+        worker.enqueue(
+            107,
+            "model".into(),
+            second,
+            key,
+            signed_member(&signer, second_binding, "denied-after-writer-swap", 98),
+        ),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    );
+    assert_eq!(worker.pending(), 0);
+    assert_eq!(original.0.lock().unwrap().len(), 3);
+    assert!(replacement.0.lock().unwrap().is_empty());
 }
 
 #[derive(Debug)]
