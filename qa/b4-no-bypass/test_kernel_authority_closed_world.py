@@ -178,6 +178,125 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             f"kernel.authority privileged boundaries missing from privileged_inventory: {sorted(canonical - required)}",
         )
 
+    def test_cell_split_current_ingress_and_reconciliation_api_are_closed_world(self) -> None:
+        # Match THIS stack's actual exported methods, not later Metrics/recovery
+        # versions on sibling Draft branches. New public entrypoints or callers
+        # require independent review before they can dispatch a physical effect.
+        expected = {
+            "run_pinned_cell_split_execution_v1": {
+                "codex-rs/hepta-operator-acceptance/src/lib.rs",
+                "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs",
+            },
+            "run_pinned_cell_split_execution_with_admission_v1": {
+                "codex-rs/hepta-operator-acceptance/src/lib.rs",
+                "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs",
+                "codex-rs/hepta-agentd/src/cell_split_execution.rs",
+            },
+        }
+        observed: dict[str, set[str]] = {name: set() for name in expected}
+        for path in self.rust_sources():
+            relative = path.relative_to(ROOT).as_posix()
+            if "/tests/" in f"/{relative}" or relative.endswith("_tests.rs"):
+                continue
+            raw = path.read_text(encoding="utf-8")
+            active = [name for name in expected if name in raw]
+            if not active:
+                continue
+            code = self.lexical_code(relative)
+            for name in active:
+                if re.search(rf"\b{re.escape(name)}\b", code):
+                    observed[name].add(relative)
+        for name, required in expected.items():
+            with self.subTest(api=name):
+                self.assertEqual(observed[name], required,
+                                 "unreviewed CellSplit executing caller")
+        self.assertEqual(
+            self.public_free_functions(
+                "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"
+            ),
+            {"run_pinned_cell_split_execution_v1",
+             "run_pinned_cell_split_execution_with_admission_v1"},
+            "Operator mutation surface changed without security review",
+        )
+        self.assertEqual(
+            self.public_free_functions("codex-rs/hepta-agentd/src/cell_split_execution.rs"),
+            {"advance_selected_cell_split_v1",
+             "advance_scope_bound_selected_cell_split_v1"},
+            "Agentd mutation ingress changed without security review",
+        )
+        owner = self.lexical_code(
+            "codex-rs/hepta-operator-acceptance/src/cell_split_execution_owner.rs"
+        )
+        self.assertRegex(owner, r"\bpub\(crate\)\s+fn\s+advance_with_admission\s*\(",
+                         "raw effect advancement must remain crate-private")
+        self.assertNotRegex(owner, r"\bpub\s+fn\s+advance_with_admission\s*\(",
+                            "raw CellSplit dispatch must not be exposed")
+
+    def test_cns_effect_owner_and_observer_remain_fail_closed(self) -> None:
+        invocation = re.compile(r"(?:\.|::)\s*apply_governed_topology\s*\(")
+        expected = {
+            "codex-rs/hepta-runtime/src/lib.rs",
+            "codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs",
+        }
+        seen: set[str] = set()
+        for path in self.rust_sources():
+            relative = path.relative_to(ROOT).as_posix()
+            if "/tests/" in f"/{relative}" or relative.endswith("_tests.rs"):
+                continue
+            if "apply_governed_topology" not in path.read_text(encoding="utf-8"):
+                continue
+            if invocation.search(self.lexical_code(relative)):
+                seen.add(relative)
+        self.assertEqual(seen, expected, "unreviewed physical CNS writer")
+
+        port = self.lexical_code(
+            "codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs"
+        )
+        self.assertRegex(
+            port,
+            r"atomic_control_cutover_owner:\s*Option\s*<\s*Arc\s*<\s*NduPublicationOwnerV1\s*>\s*>",
+            "CNS original Control owner field changed",
+        )
+        self.assertRegex(port, r"atomic_control_cutover_owner:\s*None",
+                         "public constructor may have installed a physical Control permit")
+        self.assertEqual(len(re.findall(r"\batomic_control_cutover_owner\b", port)), 3,
+                         "unexpected Control permit assignment or new physical ingress")
+        gate = re.search(
+            r"self\.atomic_control_cutover_owner\s*\.as_ref\(\)\s*\.ok_or\(", port
+        )
+        effect = re.search(r"\bapply_governed_topology\s*\(", port)
+        self.assertIsNotNone(gate, "physical CNS fail-closed preflight absent")
+        self.assertIsNotNone(effect, "physical CNS mutation path unavailable for review")
+        if gate is not None and effect is not None:
+            self.assertLess(gate.start(), effect.start(),
+                            "CNS Control denial must precede physical mutation")
+        self.assertIn("pub fn verify_original_cns_control_commit_v1", port)
+        observer = port.split("pub fn verify_original_cns_control_commit_v1", 1)[1]
+        observer = observer.split("fn live_runtime", 1)[0]
+        self.assertNotRegex(
+            observer, r"apply_governed_topology|take_admitted_successor|persist_actual_runtime_receipt",
+            "independent signed CNS/Control Observer must stay read-only",
+        )
+
+    def test_control_unsigned_cutover_api_remains_test_only(self) -> None:
+        path = ROOT / "codex-rs/hepta-control-plane/src/ndu_publication.rs"
+        raw = path.read_text(encoding="utf-8")
+        self.assertRegex(
+            raw,
+            r"#\[cfg\(test\)\]\s*pub\(crate\)\s+fn\s+publish_cutover_with_external_effect",
+            "unsigned callback would become a production write surface",
+        )
+        self.assertNotRegex(raw, r"\bpub\s+fn\s+publish_cutover_with_external_effect",
+                            "unsigned external effect callback cannot be publicly invoked")
+        control = self.lexical_code(
+            "codex-rs/hepta-control-plane/src/ndu_publication.rs"
+        )
+        self.assertRegex(
+            control,
+            r"(?s)\bpub\s+fn\s+publish_cutover\s*\([^}]*?\)\s*->\s*Result<[^}]*?\{\s*Err\(NduPublicationErrorV1::Unsupported\)\s*\}",
+            "deprecated direct CNS publication must always deny",
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
