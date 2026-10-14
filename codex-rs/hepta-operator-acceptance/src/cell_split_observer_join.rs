@@ -53,6 +53,10 @@ use crate::verify_cell_split_target_host_evidence;
 
 pub const CELL_SPLIT_OBSERVER_JOIN_SCHEMA_V1: &str =
     "hepta.learning.cell-split.observer-effect-join.v1";
+pub const CELL_SPLIT_EVIDENCE_RETENTION_SCHEMA_V1: &str =
+    "hepta.learning.cell-split.evidence-retained-frontier.v1";
+const EVIDENCE_RETENTION_DOMAIN: &[u8] =
+    b"hepta.learning.cell-split.evidence-retained-frontier.v1\0";
 
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -99,6 +103,80 @@ pub struct CellSplitObserverJoinReceiptV1 {
     pub joined_payload_digest: String,
     pub four_current_owner_readbacks: bool,
     pub independently_signed_host_and_observer: bool,
+    pub production_activation_authorized: bool,
+}
+
+/// A NON-AUTHORIZING mirror of the original Evidence Owner's typed
+/// operation-bound committed sample. Only a separately retained, online
+/// signed minimum can establish independent custody of these bytes.
+#[cfg(unix)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CellSplitEvidenceMetricBindingV1 {
+    pub split_id: String,
+    pub plan_digest: String,
+    pub scope_digest: String,
+    pub operation_digest: String,
+    pub phase: u8,
+    pub succeeded: bool,
+    pub matching_rows: u64,
+    pub first_group_sequence: u64,
+    pub last_group_sequence: u64,
+    pub last_group_head_digest: String,
+    pub terminal_group_sequence: u64,
+    pub terminal_head_digest: String,
+    pub terminal_committed_rows: u64,
+    pub terminal_journal_bytes: u64,
+    pub wal_device: u64,
+    pub wal_inode: u64,
+    pub marker_device: u64,
+    pub marker_inode: u64,
+}
+
+/// A fresh challenge read from an INDEPENDENTLY retained Evidence minimum.
+/// The request supplies only a pinned domain and fresh nonce, not the claimed
+/// local WAL/sample contents. The owner must never blindly sign input.
+#[cfg(unix)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CellSplitEvidenceRetentionReadbackV1 {
+    pub schema: String,
+    pub domain_id: String,
+    pub challenge_nonce: String,
+    pub retained_binding_digest: String,
+    pub retained_record_digest: String,
+    pub minimum_sequence: u64,
+    pub minimum_head_digest: String,
+    pub minimum_journal_bytes: u64,
+    pub retained_revision: u64,
+    pub signature: CellSplitTargetHostSignatureV1,
+}
+
+/// Existing independent Observer infrastructure can implement this narrow
+/// read-only port; it is NOT an extra signing or deployment service.
+#[cfg(unix)]
+pub trait CellSplitEvidenceRetentionReadPortV1 {
+    type Error: std::fmt::Display;
+
+    fn read_current(
+        &mut self,
+        independently_pinned_domain: &str,
+        challenge_nonce: &str,
+    ) -> Result<CellSplitEvidenceRetentionReadbackV1, Self::Error>;
+}
+
+/// The joined verdict is a read-only, non-activating qualification candidate.
+/// It is neither a permission nor a substitute for original Ledger frames.
+#[cfg(unix)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CellSplitEvidenceObserverReceiptV1 {
+    pub join: CellSplitObserverJoinReceiptV1,
+    pub effect_receipt_digest: String,
+    pub original_sample_binding_digest: String,
+    pub independently_retained_record_digest: String,
+    pub independently_retained_revision: u64,
+    pub online_retention_verified_twice: bool,
     pub production_activation_authorized: bool,
 }
 
@@ -405,6 +483,209 @@ fn verify_cell_split_observer_join_static_v1(
     verify_join_signature(&join.host_signature, host_key, &message)?;
     verify_join_signature(&join.observer_signature, observer_key, &message)?;
     Ok(())
+}
+
+/// Original Evidence WAL membership alone is untrusted telemetry: require
+/// a unique successful sample for the selected original signed effect step.
+#[cfg(unix)]
+fn validate_evidence_metric_binding_v1(
+    transcript: &CellSplitExecutionTranscriptV1,
+    step_index: usize,
+    candidate: &CellSplitEvidenceMetricBindingV1,
+) -> Result<(), CellSplitObserverJoinErrorV1> {
+    let plan = &transcript.plan;
+    let receipt = transcript
+        .receipts
+        .get(step_index)
+        .ok_or(CellSplitObserverJoinErrorV1::Invalid("Evidence effect index"))?;
+    let expected_phase = match receipt.intent.step {
+        crate::CellSplitExecutionStepV1::ArtifactCas => 3,
+        crate::CellSplitExecutionStepV1::ChildStateMigration => 4,
+        crate::CellSplitExecutionStepV1::CnsRouteCutover => 5,
+        crate::CellSplitExecutionStepV1::SupervisorGenerationFence => 4,
+    };
+    if receipt.intent.step.index() != step_index
+        || candidate.split_id != plan.split_id
+        || candidate.plan_digest
+            != plan
+                .digest()
+                .map_err(|_| CellSplitObserverJoinErrorV1::Invalid("Evidence plan"))?
+        || candidate.scope_digest != plan.scope_digest
+        || candidate.operation_digest != receipt.intent.idempotency_key
+        || candidate.phase != expected_phase
+        || !candidate.succeeded
+        || candidate.matching_rows != 1
+        || candidate.first_group_sequence == 0
+        || candidate.first_group_sequence != candidate.last_group_sequence
+        || candidate.last_group_sequence > candidate.terminal_group_sequence
+        || candidate.terminal_committed_rows < candidate.matching_rows
+        || candidate.terminal_journal_bytes == 0
+        || candidate.wal_inode == 0
+        || candidate.marker_inode == 0
+        || !evidence_digest_shape(&candidate.last_group_head_digest)
+        || !evidence_digest_shape(&candidate.terminal_head_digest)
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "original Evidence metric not uniquely bound to signed effect",
+        ));
+    }
+    Ok(())
+}
+
+#[cfg(unix)]
+fn evidence_digest_shape(value: &str) -> bool {
+    value.len() == 64
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+        && value.bytes().any(|byte| byte != b'0')
+}
+
+/// Domain-separated witness bytes. This function can never sign by itself.
+#[cfg(unix)]
+pub fn cell_split_evidence_retention_signing_payload_v1(
+    proof: &CellSplitEvidenceRetentionReadbackV1,
+) -> Result<Vec<u8>, CellSplitObserverJoinErrorV1> {
+    let mut unsigned = proof.clone();
+    unsigned.signature.signature_base64.clear();
+    let mut bytes = EVIDENCE_RETENTION_DOMAIN.to_vec();
+    bytes.extend_from_slice(&canonical_json(&unsigned)?);
+    Ok(bytes)
+}
+
+/// Authenticates an independent retained Evidence minimum under a fresh
+/// verifier challenge. There is NO accept-on-older, catch-up or auto-repair.
+#[cfg(unix)]
+fn verify_evidence_retention_readback_v1(
+    candidate: &CellSplitEvidenceMetricBindingV1,
+    domain_id: &str,
+    challenge: &str,
+    proof: &CellSplitEvidenceRetentionReadbackV1,
+    trusted_retention_key: &VerifyingKey,
+) -> Result<(), CellSplitObserverJoinErrorV1> {
+    if proof.schema != CELL_SPLIT_EVIDENCE_RETENTION_SCHEMA_V1
+        || proof.domain_id != domain_id
+        || proof.challenge_nonce != challenge
+        || challenge.len() != 64
+        || proof.retained_revision == 0
+        || proof.minimum_sequence != candidate.terminal_group_sequence
+        || proof.minimum_head_digest != candidate.terminal_head_digest
+        || proof.minimum_journal_bytes != candidate.terminal_journal_bytes
+        || !evidence_digest_shape(&proof.retained_record_digest)
+        || proof.retained_binding_digest != sha256(&canonical_json(candidate)?)
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "retained Evidence minimum does not match original WAL membership",
+        ));
+    }
+    verify_join_signature(
+        &proof.signature,
+        trusted_retention_key,
+        &cell_split_evidence_retention_signing_payload_v1(proof)?,
+    )
+}
+
+/// Verification-only integration with the EXISTING signed four-owner host
+/// and Observer Join. It never executes, advances, signs or mints Final-use.
+/// No generic fake original-effect port is exposed to production; only the
+/// pinned live Unix owner port can supply the four fresh readbacks.
+#[cfg(unix)]
+#[allow(clippy::too_many_arguments)]
+pub fn verify_cell_split_evidence_retention_join_v1<R: CellSplitEvidenceRetentionReadPortV1>(
+    join: &CellSplitSignedObserverJoinV1,
+    transcript: &CellSplitExecutionTranscriptV1,
+    owner_trust: &CellSplitOwnerTrustV1,
+    host_evidence: &CellSplitSignedTargetHostEvidenceV1,
+    evidence_policy: &CellSplitTargetHostEvidenceTrustPolicyV1,
+    live_owners: &mut CellSplitUnixEffectPortV1,
+    step_index: usize,
+    candidate: &CellSplitEvidenceMetricBindingV1,
+    trusted_retention_domain: &str,
+    trusted_retention_key: &VerifyingKey,
+    retention: &mut R,
+) -> Result<CellSplitEvidenceObserverReceiptV1, CellSplitObserverJoinErrorV1> {
+    // Invalid signed host joins or local metrics must not trigger remote reads.
+    verify_cell_split_observer_join_static_v1(
+        join,
+        transcript,
+        owner_trust,
+        host_evidence,
+        evidence_policy,
+    )?;
+    validate_evidence_metric_binding_v1(transcript, step_index, candidate)?;
+    if trusted_retention_domain.is_empty()
+        || trusted_retention_domain.len() > 256
+        || trusted_retention_key.is_weak()
+        || owner_trust.contains_owner_key(trusted_retention_key)
+        || evidence_policy
+            .host_keys
+            .values()
+            .any(|key| key == trusted_retention_key)
+        || evidence_policy
+            .observer_keys
+            .values()
+            .any(|key| key == trusted_retention_key)
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "Evidence retention authority is not independently pinned",
+        ));
+    }
+
+    // Two fresh observations bracket the actual four original owner RPC
+    // readbacks. Neither the candidate metric nor the frozen transcript
+    // is forwarded to the retention port for it to blindly notarize.
+    let first_nonce = rand::random::<[u8; 32]>()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    let first = retention
+        .read_current(trusted_retention_domain, &first_nonce)
+        .map_err(|error| CellSplitObserverJoinErrorV1::Owner(error.to_string()))?;
+    verify_evidence_retention_readback_v1(
+        candidate,
+        trusted_retention_domain,
+        &first_nonce,
+        &first,
+        trusted_retention_key,
+    )?;
+    let current = verify_cell_split_observer_join_v1(
+        join,
+        transcript,
+        owner_trust,
+        host_evidence,
+        evidence_policy,
+        live_owners,
+    )?;
+    let final_nonce = rand::random::<[u8; 32]>()
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    let final_read = retention
+        .read_current(trusted_retention_domain, &final_nonce)
+        .map_err(|error| CellSplitObserverJoinErrorV1::Owner(error.to_string()))?;
+    verify_evidence_retention_readback_v1(
+        candidate,
+        trusted_retention_domain,
+        &final_nonce,
+        &final_read,
+        trusted_retention_key,
+    )?;
+    if first.retained_record_digest != final_read.retained_record_digest
+        || first.retained_revision != final_read.retained_revision
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "retained Evidence minimum changed during four-owner readbacks",
+        ));
+    }
+    Ok(CellSplitEvidenceObserverReceiptV1 {
+        join: current,
+        effect_receipt_digest: transcript.receipts[step_index].receipt_digest.clone(),
+        original_sample_binding_digest: sha256(&canonical_json(candidate)?),
+        independently_retained_record_digest: first.retained_record_digest,
+        independently_retained_revision: first.retained_revision,
+        online_retention_verified_twice: true,
+        production_activation_authorized: false,
+    })
 }
 
 /// Crate-only generic verification permits deterministic failure injection in
