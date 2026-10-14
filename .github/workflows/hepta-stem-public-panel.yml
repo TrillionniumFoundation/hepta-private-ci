@@ -54,27 +54,19 @@ jobs:
         run: |
           set -euo pipefail
           "$RUNNER_TEMP/agnews-venv/bin/python" - <<'PY'
-          from huggingface_hub import HfApi, hf_hub_download
           from pathlib import Path
-          import json, os, shutil, sys
+          import json, os, sys
           sys.path.insert(0, "qualification/neuron-dynamic-learning")
-          from public_agnews_panel import REPOSITORY, REVISION_PREFIX, FILES, check_file
+          from public_agnews_panel import REPOSITORY, FILES
+          from public_agnews_source import DATASET_COMMIT, download_checked
           root = Path(os.environ["RUNNER_TEMP"]) / "public-agnews-pinned"
           root.mkdir(mode=0o700)
-          info = HfApi().repo_info(repo_id=REPOSITORY, repo_type="dataset",
-                                   revision=REVISION_PREFIX)
-          if not (isinstance(info.sha, str) and len(info.sha) == 40
-                  and info.sha.startswith(REVISION_PREFIX)):
-              raise ValueError("floating or mismatched dataset revision")
-          for role, (name, _) in FILES.items():
-              remote = Path(hf_hub_download(repo_id=REPOSITORY, repo_type="dataset",
-                                            filename=name, revision=info.sha))
-              output = root / (role + ".parquet")
-              with remote.open("rb") as source, output.open("xb") as dest:
-                  shutil.copyfileobj(source, dest)
-              check_file(output, role)
+          for role, (name, expected) in FILES.items():
+              result = download_checked(role, root / (role + ".parquet"))
+              assert result["dataset_commit"] == DATASET_COMMIT
+              assert result["source_sha256"] == expected
           (root / "revision.json").write_text(json.dumps({
-              "dataset_commit": info.sha,
+              "dataset_commit": DATASET_COMMIT,
               "dataset_id": REPOSITORY,
               "file_inventory": {key: item[1] for key, item in FILES.items()},
               "independently_signed_dataset_origin": False,
@@ -96,6 +88,8 @@ jobs:
           set -euo pipefail
           PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v \
             -s qualification/neuron-dynamic-learning -p 'test_public_agnews_panel.py'
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v \
+            -s qualification/neuron-dynamic-learning -p 'test_public_agnews_source.py'
           git diff --check
           git diff --exit-code
       - name: Upload public input panel and non-authorizing receipts only

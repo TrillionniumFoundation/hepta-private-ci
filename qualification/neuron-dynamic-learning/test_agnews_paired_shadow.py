@@ -5,7 +5,7 @@ from pathlib import Path
 import unittest
 
 sys.path.insert(0, str(Path(__file__).parent))
-from agnews_paired_shadow import CapabilityError, check_panel, compare, run_laya, _bound_report, _row
+from agnews_paired_shadow import CapabilityError, check_panel, compare, run_laya, _bound_report, _row, _attach_laya_parameters
 from public_agnews_panel import select_rows
 
 
@@ -79,6 +79,43 @@ class PairedCapability(unittest.TestCase):
                 rr[0]['rows'][0]['measured_serving_micros'] = 0
             with self.subTest(reason=reason), self.assertRaises(CapabilityError):
                 compare(p, rr)
+
+    def test_actual_laya_confirmatory_tuple_is_stamped_on_both_arms(self):
+        def report():
+            return {"arm_id": "laya421_frozen",
+                    "production_promotion": "DENY_ALL",
+                    "metadata": {"backend": "convaiinnovations/laya",
+                                 "trainable_parameters": 0}}
+        old, fresh = report(), report()
+        pair = (old, fresh)
+        self.assertIs(_attach_laya_parameters(pair, 421293827, include_fresh=True), pair)
+        self.assertEqual(old["metadata"]["model_parameter_count"], 421293827)
+        self.assertEqual(fresh["metadata"]["model_parameter_count"], 421293827)
+        single = report()
+        self.assertIs(_attach_laya_parameters(single, 421293827, include_fresh=False), single)
+        self.assertEqual(single["metadata"]["model_parameter_count"], 421293827)
+
+    def test_laya_invalid_tuple_must_fail_before_writing_metadata(self):
+        def report():
+            return {"arm_id": "laya421_frozen", "production_promotion": "DENY_ALL",
+                    "metadata": {"backend": "convaiinnovations/laya", "trainable_parameters": 0}}
+        for case in ("missing", "unpaired", "wrong_arm", "fake_parameters"):
+            old, fresh = report(), report()
+            if case == "missing":
+                payload = (old,)
+            elif case == "unpaired":
+                payload = old
+            elif case == "wrong_arm":
+                fresh["arm_id"] = "gemma2_trained_head"
+                payload = (old, fresh)
+            else:
+                payload = (old, fresh)
+            with self.subTest(case=case), self.assertRaises(CapabilityError):
+                _attach_laya_parameters(payload,
+                                        123 if case == "fake_parameters" else 421293827,
+                                        include_fresh=True)
+            self.assertNotIn("model_parameter_count", old["metadata"])
+            self.assertNotIn("model_parameter_count", fresh["metadata"])
 
     def test_laya_frozen_real_api_shape_fixture_is_not_claim_of_weights(self):
         p = panel()

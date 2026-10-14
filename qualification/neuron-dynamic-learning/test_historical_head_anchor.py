@@ -76,6 +76,16 @@ class HistoricalArtifactIdentity(unittest.TestCase):
                 check_reports(original_panel_digest=HISTORICAL['original_panel_digest'],
                               original_gemma=gemma,original_laya=laya)
 
+    def test_real_val2_retraining_drift_does_not_pass_exact_head_gate(self):
+        # An actual earlier val2 run produced a different Q24 candidate digest,
+        # despite the same Stem and frozen Head. Never silently relabel it as
+        # an exact historical checkpoint replay.
+        changed = matched_args()
+        changed["trained_head_digest"] = (
+            "bcebc80c25c36256199e72ac30b99a2907d55e18aed11950d10da720a61aab18")
+        with self.assertRaisesRegex(HistoricalIdentityError, "trained_head_digest"):
+            check_values(**changed)
+
     def test_historical_constant_identity_is_stable(self):
         self.assertEqual(HISTORICAL['source_commit'],
                          '1f231584124e62a11cf932d937ea4a7ad2437ab2')

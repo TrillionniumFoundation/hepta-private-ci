@@ -421,6 +421,36 @@ def compare(panel:dict,reports:list[dict]):
             "production_promotion":"DENY_ALL"}
 
 
+
+def _attach_laya_parameters(result, count: int, *, include_fresh: bool):
+    """Bind the physical 421M count to both old and new reports without tuple aliasing.
+
+    A confirmatory Laya run returns (original_report, val2_report); treating
+    that tuple as a dict crashed the real public study after completing 96
+    original model predictions. Reject malformed report pairs before mutation.
+    """
+    if type(count) is not int or not 400_000_000 <= count <= 450_000_000:
+        raise CapabilityError("unqualified frozen Laya model parameter count")
+    if include_fresh:
+        if type(result) is not tuple or len(result) != 2:
+            raise CapabilityError("missing paired original/new Laya reports")
+        targets = result
+    else:
+        if not isinstance(result, dict):
+            raise CapabilityError("expected one original frozen Laya report")
+        targets = (result,)
+    if any(not isinstance(row, dict) or row.get("arm_id") != "laya421_frozen"
+           or not isinstance(row.get("metadata"), dict)
+           or row["metadata"].get("backend") != "convaiinnovations/laya"
+           or row["metadata"].get("trainable_parameters") != 0
+           or row.get("production_promotion") != "DENY_ALL"
+           for row in targets):
+        raise CapabilityError("wrong or unbound frozen Laya arm payload")
+    for row in targets:
+        row["metadata"]["model_parameter_count"] = count
+    return result
+
+
 def main():
     p=argparse.ArgumentParser(description="Non-authorizing real model capability pair")
     p.add_argument("--mode",choices=("laya","gemma","compare"),required=True)
@@ -460,7 +490,7 @@ def main():
             raise CapabilityError("Laya baseline weight scale mismatch")
         result=run_laya(panel,agent,revision=args.revision,
                         confirmatory=confirmatory)
-        result["metadata"]["model_parameter_count"]=params
+        result = _attach_laya_parameters(result, params, include_fresh=confirmatory is not None)
     else:
         if args.gemma_report is None or args.laya_report is None:
             raise CapabilityError("both real weight reports required")

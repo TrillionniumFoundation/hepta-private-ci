@@ -66,22 +66,23 @@ jobs:
         run: |
           set -euo pipefail
           "$RUNNER_TEMP/stem-paired-venv/bin/python" - <<'PY'
-          from huggingface_hub import HfApi, hf_hub_download
           from pathlib import Path
-          import os, shutil, sys
+          import json, os, sys
           sys.path.insert(0, 'qualification/neuron-dynamic-learning')
-          from public_agnews_panel import REPOSITORY, REVISION_PREFIX, FILES, check_file
+          from public_agnews_panel import REPOSITORY, FILES
+          from public_agnews_source import DATASET_COMMIT, download_checked
           root = Path(os.environ['RUNNER_TEMP']) / 'stem-paired-data'
           root.mkdir(mode=0o700)
-          info = HfApi().repo_info(repo_id=REPOSITORY, repo_type='dataset', revision=REVISION_PREFIX)
-          assert info.sha.startswith(REVISION_PREFIX) and len(info.sha) == 40
           for role, (name, expected) in FILES.items():
-              path = Path(hf_hub_download(repo_id=REPOSITORY, repo_type='dataset',
-                                          filename=name, revision=info.sha))
-              destination = root / (role + '.parquet')
-              with path.open('rb') as source, destination.open('xb') as sink:
-                  shutil.copyfileobj(source, sink)
-              assert check_file(destination, role) == expected
+              receipt = download_checked(role, root / (role + '.parquet'))
+              assert receipt['source_sha256'] == expected
+              assert receipt['dataset_commit'] == DATASET_COMMIT
+          (root / 'dataset-commit-receipt.json').write_text(json.dumps({
+              'dataset_id': REPOSITORY, 'dataset_commit': DATASET_COMMIT,
+              'source_files_verified_with_exact_sha256': True,
+              'external_origin_signature_authenticated': False,
+              'production_promotion': 'DENY_ALL',
+          }, sort_keys=True))
           PY
           ROOT="$RUNNER_TEMP/stem-paired-data"
           "$RUNNER_TEMP/stem-paired-venv/bin/python" \
@@ -94,21 +95,15 @@ jobs:
         run: |
           set -euo pipefail
           "$RUNNER_TEMP/stem-paired-venv/bin/python" - <<'PY'
-          import os, shutil, sys
+          import os, sys
           from pathlib import Path
-          from huggingface_hub import HfApi, hf_hub_download
           sys.path.insert(0, 'qualification/neuron-dynamic-learning')
-          from public_agnews_panel import REPOSITORY, REVISION_PREFIX
-          from public_agnews_confirmatory import CONFIRM_SOURCE, check_new_source_file
-          info=HfApi().repo_info(repo_id=REPOSITORY, repo_type='dataset', revision=REVISION_PREFIX)
-          if not (isinstance(info.sha,str) and len(info.sha)==40 and info.sha.startswith(REVISION_PREFIX)):
-              raise ValueError('new source must use same exact upstream dataset commit')
-          frozen=Path(hf_hub_download(repo_id=REPOSITORY,repo_type='dataset',
-                  filename=CONFIRM_SOURCE[0],revision=info.sha))
+          from public_agnews_confirmatory import CONFIRM_SOURCE
+          from public_agnews_source import DATASET_COMMIT, download_checked
           target=Path(os.environ['RUNNER_TEMP'])/'stem-paired-data/new-val2.parquet'
-          with frozen.open('rb') as f, target.open('xb') as g:
-              shutil.copyfileobj(f,g)
-          assert check_new_source_file(target)==CONFIRM_SOURCE[1]
+          source=download_checked('new_val2', target)
+          assert source['source_sha256'] == CONFIRM_SOURCE[1]
+          assert source['dataset_commit'] == DATASET_COMMIT
           PY
           "$RUNNER_TEMP/stem-paired-venv/bin/python" \
             qualification/neuron-dynamic-learning/public_agnews_confirmatory.py \
@@ -288,6 +283,8 @@ jobs:
             -s qualification/neuron-dynamic-learning -p 'test_historical_head_anchor.py'
           PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-paired-venv/bin/python" -m unittest discover -v \
             -s qualification/neuron-dynamic-learning -p 'test_paired_process_resource.py'
+          PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-paired-venv/bin/python" -m unittest discover -v \
+            -s qualification/neuron-dynamic-learning -p 'test_public_agnews_source.py'
           git diff --check
           git diff --exit-code
       - name: Archive only public-case digests and non-authorizing statistics
@@ -298,6 +295,7 @@ jobs:
           path: |
             ${{ runner.temp }}/stem-paired-env.txt
             ${{ runner.temp }}/stem-agnews-source.json
+            ${{ runner.temp }}/stem-paired-data/dataset-commit-receipt.json
             ${{ runner.temp }}/stem-gemma-source.json
             ${{ runner.temp }}/stem-gemma-physical-arms.json
             ${{ runner.temp }}/stem-laya-physical-arm.json
