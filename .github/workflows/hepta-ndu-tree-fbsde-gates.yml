@@ -1,4 +1,4 @@
-name: Hepta NDU Tree FBSDE global obstruction research
+name: Hepta NDU Tree FBSDE research gates (DENY_ALL)
 on:
   pull_request:
     paths:
@@ -8,15 +8,44 @@ on:
 permissions:
   contents: read
 jobs:
-  exact-rational-oracle:
+  exact-math-and-mechanism:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
-      - name: Record exact checkout
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Pin physical Head-only NumPy dependency
+        run: python -m pip install --disable-pip-version-check numpy==2.3.5
+      - name: Record exact source and runtime
         run: |
           git rev-parse HEAD
-          python3 --version
+          python --version
+          python -m pip freeze
           sha256sum experiments/ndu_tree_fbsde_gates/*.py
-      - name: Exact rational obstruction and finite tree tests
-        run: python3 -m unittest discover -s experiments/ndu_tree_fbsde_gates -p 'test_*.py' -v
+      - name: Exact global field, numerical integrity and Head contract regressions
+        run: python -W error::ResourceWarning -m unittest discover -s experiments/ndu_tree_fbsde_gates -p 'test_*.py' -v
+      - name: Execute separate-process 64/256/1024/4096 actual CPU Head-only batches
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ndu-shadow-head-panel
+          for n in 64 256 1024 4096; do
+            python experiments/ndu_tree_fbsde_gates/head_only_physical.py \
+              --cells "$n" --trials 100 \
+              --output "/tmp/ndu-shadow-head-panel/head_${n}.json" \
+              > "/tmp/ndu-shadow-head-panel/stdout_${n}.txt"
+          done
+          python experiments/ndu_tree_fbsde_gates/head_panel_audit.py \
+            --inputs /tmp/ndu-shadow-head-panel/head_{64,256,1024,4096}.json \
+            --output /tmp/ndu-shadow-head-panel/panel_audit.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-tree-fbsde-shadow-head-only-evidence
+          path: /tmp/ndu-shadow-head-panel/
+          retention-days: 7
+          if-no-files-found: warn
