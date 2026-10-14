@@ -105,6 +105,14 @@ impl RuntimeOrgans {
         signed_grant: &SignedFinalUseGrant,
         request: RuntimeTopologyApplyRequestV1,
     ) -> Result<RuntimeTopologyApplyReceiptV1, RuntimeTopologyExecutionError> {
+        // Control's original signed Begin/Commit is not yet owned by this
+        // runtime mutation path. An Update/Replace/Merge/Rewire/Retire label
+        // cannot independently prove that a physical Split is absent.
+        // Deny ALL non-test mutations before acquiring a lock or Final-use.
+        // Crate-local cfg(test) keeps the reference-only unit path available.
+        if !cfg!(test) {
+            return Err(RuntimeTopologyExecutionError::Binding);
+        }
         let mut host = self
             .host
             .lock()
@@ -152,6 +160,14 @@ impl RuntimeOrgans {
         signed_grant: &SignedFinalUseGrant,
         request: RuntimeTopologyApplyRequestV1,
     ) -> Result<RuntimeTopologyApplyReceiptV1, RuntimeTopologyExecutionError> {
+        // Control's original signed Begin/Commit is not yet owned by this
+        // runtime mutation path. An Update/Replace/Merge/Rewire/Retire label
+        // cannot independently prove that a physical Split is absent.
+        // Deny ALL non-test mutations before acquiring a lock or Final-use.
+        // Crate-local cfg(test) keeps the reference-only unit path available.
+        if !cfg!(test) {
+            return Err(RuntimeTopologyExecutionError::Binding);
+        }
         let mut host = self
             .host
             .lock()
