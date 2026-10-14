@@ -178,6 +178,19 @@ def train(train_rows, predict_rows, *, budget, seed, steps, cutoff, now,
         nn.functional.cross_entropy(model(x), y).backward()
         optimizer.step()
     model.eval()
+    head_parameter_bytes = sum(
+        parameter.numel() * parameter.element_size()
+        for parameter in model.parameters()
+    )
+    optimizer_tensor_bytes = sum(
+        value.numel() * value.element_size()
+        for state in optimizer.state.values()
+        for value in state.values()
+        if isinstance(value, torch.Tensor)
+    )
+    # Shape-accounted tensor payload only. This is NOT a process RSS,
+    # Q24 state, tensor allocator, or GPU driver measurement.
+    assert head_parameter_bytes == actual_parameters * 4
 
     def model_hash(m):
         # A research-only SHA256, NOT a Hepta artifact CAS or authenticated receipt.
@@ -239,6 +252,13 @@ def train(train_rows, predict_rows, *, budget, seed, steps, cutoff, now,
         "resource_memory_verified": False,
         "head_rank": rank, "head_parameter_ceiling": budget,
         "trainable_head_parameters": actual_parameters,
+        "head_fp32_parameter_payload_bytes": head_parameter_bytes,
+        "adamw_optimizer_tensor_payload_bytes": optimizer_tensor_bytes,
+        "head_plus_optimizer_tensor_payload_bytes": (
+            head_parameter_bytes + optimizer_tensor_bytes
+        ),
+        "tensor_payload_excludes_runtime_and_q24_state": True,
+        "torch_version": str(torch.__version__),
         "trainable_encoder_parameters": 0,
         "seed": seed, "steps": steps,
         "train_sample_count": len(train_rows),
