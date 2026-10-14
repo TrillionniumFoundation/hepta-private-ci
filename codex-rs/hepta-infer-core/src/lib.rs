@@ -22,8 +22,10 @@ pub use stem_feature_binding::BoundStemNeuronRequestV1;
 pub use stem_feature_binding::StemAccessContextV1;
 pub use stem_feature_binding::StemFeatureBindingError;
 pub use stem_feature_binding::StemFeatureRefV1;
+pub use stem_feature_binding::StemFeatureRequestViewV1;
 pub use stem_feature_binding::StemHeadBindingV1;
 pub use stem_feature_binding::bind_stem_feature_request_v1;
+pub use stem_feature_binding::borrow_stem_feature_request_v1;
 pub use stem_feature_binding::stem_encoder_pipeline_digest_v1;
 pub use stem_feature_binding::stem_feature_vector_digest_v1;
 
