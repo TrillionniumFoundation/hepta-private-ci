@@ -119,26 +119,45 @@ jobs:
           set -euo pipefail
           test -n "$SOURCE_SHA" && test -n "$PR_NUMBER"
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
-          # Event base SHA is a historical snapshot. GitHub's live main,
-          # not an old webhook value, is the base we must actually qualify.
+          # Verify both GitHub PR-base and live-main merge trees. A stacked
+          # PR's GitHub pull/<id>/merge ref targets its actual parent branch,
+          # NOT main. Confusing those identities invalidates P0 qualification.
           current_main="$(gh api "repos/$REPO/branches/main" --jq '.commit.sha')"
           [[ "$current_main" =~ ^[0-9a-f]{40}$ ]]
-          if [[ "$BASE_SHA" != "$current_main" ]]; then
-            echo "::notice::PR event base SHA is stale; require a newly verified current-main merge"
+          live_pr="$(gh api "repos/$REPO/pulls/$PR_NUMBER")"
+          live_base="$(jq -er '.base.sha' <<<"$live_pr")"
+          live_head="$(jq -er '.head.sha' <<<"$live_pr")"
+          live_base_ref="$(jq -er '.base.ref' <<<"$live_pr")"
+          [[ "$live_base" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$live_head" =~ ^[0-9a-f]{40}$ ]]
+          test "$live_head" = "$SOURCE_SHA"
+          if [[ "$live_base" != "$BASE_SHA" ]]; then
+            echo "::error::PR base moved; requalify with a fresh event" >&2
+            exit 1
           fi
-          BASE_SHA="$current_main"
-          git cat-file -e "$BASE_SHA^{commit}"
+          git cat-file -e "$current_main^{commit}"
+          git cat-file -e "$live_base^{commit}"
           gh_ref="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
           merge_sha="$(jq -er '.object.sha' <<<"$gh_ref")"
           merge_commit="$(gh api "repos/$REPO/git/commits/$merge_sha")"
           mapfile -t parents < <(jq -r '.parents[].sha' <<<"$merge_commit")
           test "${#parents[@]}" -eq 2
-          test "${parents[0]}" = "$BASE_SHA"
+          test "${parents[0]}" = "$live_base"
           test "${parents[1]}" = "$SOURCE_SHA"
-          expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
-          test "$expected_tree" = "$(jq -er '.tree.sha' <<<"$merge_commit")"
-          # Carry forward the *proved current* parent, never the stale event
-          # SHA, into the synthetic merge action and post-test verification.
+          pr_tree="$(jq -er '.tree.sha' <<<"$merge_commit")"
+          expected_pr_tree="$(git merge-tree --write-tree "$live_base" "$SOURCE_SHA")"
+          test "$pr_tree" = "$expected_pr_tree"
+          expected_tree="$(git merge-tree --write-tree "$current_main" "$SOURCE_SHA")"
+          [[ "$expected_tree" =~ ^[0-9a-f]{40}$ ]]
+          if [[ "$live_base_ref" = main ]]; then
+            test "$live_base" = "$current_main"
+            test "$pr_tree" = "$expected_tree"
+          else
+            echo "::notice::Stacked PR base $live_base_ref independently checked; testing exact live-main merge"
+          fi
+          # Synthetic merge and all subsequent tests use current main even
+          # when this review PR is deliberately stacked on a Draft parent.
+          BASE_SHA="$current_main"
           printf 'BASE_SHA=%s\n' "$BASE_SHA" >> "$GITHUB_ENV"
           printf 'EXPECTED_MERGE_TREE=%s\n' "$expected_tree" >> "$GITHUB_ENV"
       - name: Construct locally verified exact prospective merge
@@ -174,10 +193,13 @@ jobs:
       - name: Verify tested source tree remains unchanged
         env:
           TESTED_SHA: ${{ steps.candidate.outputs.sha }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
           test "$(git rev-parse HEAD^{tree})" = "$EXPECTED_MERGE_TREE"
+          test "$(gh api "repos/$REPO/branches/main" --jq '.commit.sha')" = "$BASE_SHA"
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
