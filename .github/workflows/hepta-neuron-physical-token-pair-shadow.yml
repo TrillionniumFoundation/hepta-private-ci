@@ -56,8 +56,8 @@ jobs:
         run: |
           set -euo pipefail
           PY="$RUNNER_TEMP/hepta-token-real-env/bin/python"
-          "$PY" -m pytest -q -p no:cacheprovider tests/test_physical_token_pair_v1.py tests/test_stage_modernbert_public_v1.py tests/test_physical_token_reviewer_v1.py tests/test_physical_token_capture_profile_v1.py tests/test_tokenizer_length_preflight_v1.py
-          "$PY" -m compileall -q neuron_shared_encoder/physical_token_pair_v1.py neuron_shared_encoder/stage_modernbert_public_v1.py neuron_shared_encoder/physical_token_reviewer_v1.py neuron_shared_encoder/tokenizer_length_preflight_v1.py
+          "$PY" -m pytest -q -p no:cacheprovider tests/test_physical_token_pair_v1.py tests/test_stage_modernbert_public_v1.py tests/test_physical_token_reviewer_v1.py tests/test_physical_token_capture_profile_v1.py tests/test_tokenizer_length_preflight_v1.py tests/test_token_stream_binding_v2.py
+          "$PY" -m compileall -q neuron_shared_encoder/physical_token_pair_v1.py neuron_shared_encoder/stage_modernbert_public_v1.py neuron_shared_encoder/physical_token_reviewer_v1.py neuron_shared_encoder/tokenizer_length_preflight_v1.py neuron_shared_encoder/token_stream_binding_v2.py
 
       - name: Retrieve exact original public AG News source artifact
         shell: bash
@@ -85,7 +85,7 @@ jobs:
           import json, os
           from pathlib import Path
           r = json.loads((Path(os.environ['RUNNER_TEMP']) / 'hepta-token-budget-preflight.json').read_text())
-          assert r['schema'] == 'hepta.neuron.tokenizer-only-length-preflight.shadow.v1'
+          assert r['schema'] == 'hepta.neuron.tokenizer-only-length-preflight.shadow.v2'
           assert r['full_joint_untruncated_row_count'] == 128
           assert r['capture_max_length'] == int(os.environ['TOKEN_CAPTURE_MAX_LENGTH'])
           assert r['capture_batch'] == int(os.environ['TOKEN_CAPTURE_BATCH'])
@@ -122,6 +122,7 @@ jobs:
             --source-sha256 "$SOURCE_SHA256" \
             --checkpoint-dir "$RUNNER_TEMP/hepta-pinned-modernbert" \
             --bundle-sha256 "$HEPTA_BUNDLE_SHA256" \
+            --tokenizer-preflight "$RUNNER_TEMP/hepta-token-budget-preflight.json" \
             --output "$RUNNER_TEMP/hepta-real-token-pair" \
             --max-length "$TOKEN_CAPTURE_MAX_LENGTH" --encoder-batch "$TOKEN_CAPTURE_BATCH" --steps 20 --seeds 11 23 47
           "$PY" - <<'PY'
@@ -148,6 +149,7 @@ jobs:
             --source-sha256 "$SOURCE_SHA256" \
             --checkpoint-dir "$RUNNER_TEMP/hepta-pinned-modernbert" \
             --bundle-sha256 "$HEPTA_BUNDLE_SHA256" \
+            --tokenizer-preflight "$RUNNER_TEMP/hepta-token-budget-preflight.json" \
             --producer "$RUNNER_TEMP/hepta-real-token-pair" \
             --output "$RUNNER_TEMP/hepta-token-independent-review.json" \
             --max-length "$TOKEN_CAPTURE_MAX_LENGTH" --batch "$TOKEN_CAPTURE_BATCH"
