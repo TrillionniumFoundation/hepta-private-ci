@@ -1856,7 +1856,10 @@ fn post_effect_admission_cannot_hide_local_plan_or_original_owner_drift() {
             Ok(())
         });
         if tamper_original_owner {
-            assert!(matches!(result, Err(CellSplitExecutionErrorV1::External(_))));
+            assert!(matches!(
+                result,
+                Err(CellSplitExecutionErrorV1::External(_))
+            ));
             assert_eq!(checks, 3);
         } else {
             assert!(matches!(
@@ -1869,7 +1872,10 @@ fn post_effect_admission_cannot_hide_local_plan_or_original_owner_drift() {
         assert_eq!(state.borrow().executions, 1);
         assert!(root.path().join("cell-split-00-prepared.json").exists());
         assert!(!root.path().join("cell-split-00-committed.json").exists());
-        assert!(owner.advance().is_err(), "ambiguous effect is not redispatched");
+        assert!(
+            owner.advance().is_err(),
+            "ambiguous effect is not redispatched"
+        );
         assert_eq!(state.borrow().executions, 1);
     }
 }
