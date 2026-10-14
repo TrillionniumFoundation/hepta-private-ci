@@ -124,7 +124,8 @@ jobs:
             --destination "$RUNNER_TEMP/stem-gemma2-pinned" \
             --profile text --dimension 256 --precision float32 \
             > "$RUNNER_TEMP/stem-gemma-source.json"
-          "$PY" qualification/neuron-dynamic-learning/agnews_paired_shadow.py \
+          /usr/bin/time --verbose --output "$RUNNER_TEMP/stem-gemma-process-time.txt" \
+            "$PY" qualification/neuron-dynamic-learning/agnews_paired_shadow.py \
             --mode gemma --panel "$RUNNER_TEMP/stem-agnews-panel.json" \
             --manifest "$RUNNER_TEMP/stem-gemma2-pinned/manifest.json" \
             --output "$RUNNER_TEMP/stem-gemma-physical-arms.json" \
@@ -176,7 +177,8 @@ jobs:
       - name: Run pinned frozen 421M Laya typed decisions on same public cases
         run: |
           set -euo pipefail
-          "$RUNNER_TEMP/stem-paired-venv/bin/python" \
+          /usr/bin/time --verbose --output "$RUNNER_TEMP/stem-laya-process-time.txt" \
+            "$RUNNER_TEMP/stem-paired-venv/bin/python" \
             qualification/neuron-dynamic-learning/agnews_paired_shadow.py \
             --mode laya --panel "$RUNNER_TEMP/stem-agnews-panel.json" \
             --snapshot "$RUNNER_TEMP/stem-laya-verified" \
@@ -203,6 +205,16 @@ jobs:
           (root/'stem-historical-head-lock.json').write_text(json.dumps(attested,sort_keys=True))
           assert attested['production_promotion']=='DENY_ALL'
           PY
+      - name: Independently audit full model process memory/CPU and bind original output
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-paired-venv/bin/python" \
+            qualification/neuron-dynamic-learning/paired_process_resource.py \
+            --gemma-time "$RUNNER_TEMP/stem-gemma-process-time.txt" \
+            --laya-time "$RUNNER_TEMP/stem-laya-process-time.txt" \
+            --gemma-report "$RUNNER_TEMP/stem-gemma-physical-arms.json" \
+            --laya-report "$RUNNER_TEMP/stem-laya-physical-arm.json" \
+            --out "$RUNNER_TEMP/stem-process-resources.json"
       - name: Independent paired-case audit, no causal or equal-cost promotion
         run: |
           set -euo pipefail
@@ -274,6 +286,8 @@ jobs:
             -s qualification/neuron-dynamic-learning -p 'test_paired_confirmatory_audit.py'
           PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-paired-venv/bin/python" -m unittest discover -v \
             -s qualification/neuron-dynamic-learning -p 'test_historical_head_anchor.py'
+          PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-paired-venv/bin/python" -m unittest discover -v \
+            -s qualification/neuron-dynamic-learning -p 'test_paired_process_resource.py'
           git diff --check
           git diff --exit-code
       - name: Archive only public-case digests and non-authorizing statistics
@@ -295,5 +309,8 @@ jobs:
             ${{ runner.temp }}/stem-laya-fresh-arm.json
             ${{ runner.temp }}/stem-new-source-independent-review.json
             ${{ runner.temp }}/stem-historical-head-lock.json
+            ${{ runner.temp }}/stem-gemma-process-time.txt
+            ${{ runner.temp }}/stem-laya-process-time.txt
+            ${{ runner.temp }}/stem-process-resources.json
           if-no-files-found: warn
           retention-days: 7

@@ -429,3 +429,27 @@ research artifact, **not** a cryptographic model-origin signature, signed
 outcome, three chronological future learning generations or deployment
 approval. All evidence remains `DENY_ALL`; final exact-HEAD CI and external
 owner checks are still required.
+
+
+## Physical CPU/RSS resource evidence, without overstating total cost
+
+The paired physical workflow now uses **GNU `/usr/bin/time --verbose`** for
+the entire model Python process in the same hosted Ubuntu job. Gemma's phase
+includes its cold model load, val1 encoding, bounded Head SGD and fixed val2
+model evaluation; Laya's phase includes the frozen model load and its two
+typed-choice evaluation cohorts. The independent `paired_process_resource.py`
+rejects absent/replayed/invalid process resource output and cross-arm model
+substitution, verifies successful command exit, and reports real process
+wall-clock seconds, user/system CPU seconds and peak resident RSS bytes.
+The raw process logs' SHA-256 values and the exact Gemma/Laya report digests
+are preserved in an additive read-only resource artifact.
+
+This **does not** measure pretrained foundation-training cost, model weight
+download, GPU peak/energy, service queue/p95/p99, long-lived Worker fusing or
+independently signed host identity. Gemma includes SGD whereas frozen Laya
+does not; a one-run whole-process timing ratio cannot establish an equal
+lifecycle-budget win. No generated resource report grants FinalUse or
+production weight selection; all paths stay **DENY_ALL**. New 29/29 local
+non-model contract/adversarial tests include missing measurements, nonzero
+exit, altered model identity, malformed GNU time, symlinked logs and a
+real GNU time *synthetic workload* parser compatibility control.
