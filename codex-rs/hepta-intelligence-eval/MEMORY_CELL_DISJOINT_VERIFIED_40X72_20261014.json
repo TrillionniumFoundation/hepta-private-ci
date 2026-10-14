@@ -1,0 +1,289 @@
+{
+  "schema": "hepta.memory-cell.original-disjoint-40x72-verified-research-summary.v1",
+  "original_generation": {
+    "run_id": 38423223376,
+    "source_commit": "bc76ac57ba972bf105c71ddd997cd215cec5df2e",
+    "workflow_conclusion": "failure",
+    "original_calibration_raw_sha256": "6fcce2a017ebb2411a9d8fcd80fd929199fc003541101dfed8e183090f0f76c0",
+    "original_evaluation_raw_sha256": "3c96834694ba6a97e62c341f3208f0cf2061a66b4c35e6ae197d3b923585f814"
+  },
+  "independent_reverification": {
+    "run_id": 38590620658,
+    "source_commit": "73f282338cbed20edee6cf945fadeef9983de265",
+    "workflow_conclusion": "success",
+    "first_job": 115944202419,
+    "second_job": 115944520800,
+    "byte_identical_audit_reports": true,
+    "original_artifact_files_verified": 272,
+    "generated_model_calls": 0,
+    "historical_calibration_attempts": 40,
+    "historical_evaluation_attempts": 72
+  },
+  "reader_identity": "f9aa334d3a02cabececea367c283caf66ef9875132907ebc34dac1c8d3a7f225",
+  "original_plan_sha256": "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897",
+  "original_collection_sha256": "be47e85e87692fa0c5036ebf1aa6090e040334b70719a9103e880960e6a60da9",
+  "same_reader_author_controlled_development": {
+    "task_cases": 8,
+    "source_kinds": [
+      "new_fact",
+      "correction",
+      "composition",
+      "procedure"
+    ],
+    "arms": {
+      "selected_k": {
+        "attempts": 8,
+        "successful_calls": 8,
+        "strict_success": 5,
+        "required_support_in_selected_sources": 3,
+        "original_input_tokens": 3961,
+        "original_output_tokens": 101,
+        "original_inference_seconds": 96.37011318900014,
+        "full_declared_citation_chain_successes": 3
+      },
+      "hybrid_k4": {
+        "attempts": 8,
+        "successful_calls": 8,
+        "strict_success": 3,
+        "required_support_in_selected_sources": 8,
+        "original_input_tokens": 10806,
+        "original_output_tokens": 104,
+        "original_inference_seconds": 228.51735022000008,
+        "full_declared_citation_chain_successes": 1
+      },
+      "hybrid_k6": {
+        "attempts": 8,
+        "successful_calls": 8,
+        "strict_success": 2,
+        "required_support_in_selected_sources": 8,
+        "original_input_tokens": 15463,
+        "original_output_tokens": 105,
+        "original_inference_seconds": 272.90809871700003,
+        "full_declared_citation_chain_successes": 0
+      },
+      "hybrid_k4_reversed": {
+        "attempts": 8,
+        "successful_calls": 8,
+        "strict_success": 3,
+        "required_support_in_selected_sources": 8,
+        "original_input_tokens": 10806,
+        "original_output_tokens": 105,
+        "original_inference_seconds": 183.7309493940001,
+        "full_declared_citation_chain_successes": 1
+      },
+      "single_hop": {
+        "attempts": 8,
+        "successful_calls": 8,
+        "strict_success": 4,
+        "required_support_in_selected_sources": 4,
+        "original_input_tokens": 4575,
+        "original_output_tokens": 90,
+        "original_inference_seconds": 100.57649101200008,
+        "full_declared_citation_chain_successes": 4
+      },
+      "entity_time": {
+        "attempts": 8,
+        "successful_calls": 8,
+        "strict_success": 8,
+        "required_support_in_selected_sources": 8,
+        "original_input_tokens": 5752,
+        "original_output_tokens": 105,
+        "original_inference_seconds": 104.16300337499996,
+        "full_declared_citation_chain_successes": 4
+      },
+      "organized": {
+        "attempts": 8,
+        "successful_calls": 8,
+        "strict_success": 8,
+        "required_support_in_selected_sources": 8,
+        "original_input_tokens": 5179,
+        "original_output_tokens": 105,
+        "original_inference_seconds": 116.68624367900003,
+        "full_declared_citation_chain_successes": 4
+      },
+      "program_support": {
+        "attempts": 8,
+        "successful_calls": 8,
+        "strict_success": 8,
+        "required_support_in_selected_sources": 8,
+        "original_input_tokens": 5179,
+        "original_output_tokens": 105,
+        "original_inference_seconds": 96.58240710900014,
+        "full_declared_citation_chain_successes": 4
+      },
+      "empty": {
+        "attempts": 8,
+        "successful_calls": 8,
+        "strict_success": 0,
+        "required_support_in_selected_sources": 0,
+        "original_input_tokens": 1630,
+        "original_output_tokens": 60,
+        "original_inference_seconds": 52.31591994699994,
+        "full_declared_citation_chain_successes": 0
+      }
+    },
+    "paired_contrasts": {
+      "selected_minus_hybrid4": {
+        "wins": 2,
+        "losses": 0,
+        "ties": 6,
+        "unknown_pairs": 0,
+        "planned_delta_lower": 0.25,
+        "planned_delta_upper": 0.25,
+        "interval_is_statistical": false
+      },
+      "organized_minus_selected": {
+        "wins": 3,
+        "losses": 0,
+        "ties": 5,
+        "unknown_pairs": 0,
+        "planned_delta_lower": 0.375,
+        "planned_delta_upper": 0.375,
+        "interval_is_statistical": false
+      },
+      "single_hop_minus_hybrid4": {
+        "wins": 3,
+        "losses": 2,
+        "ties": 3,
+        "unknown_pairs": 0,
+        "planned_delta_lower": 0.125,
+        "planned_delta_upper": 0.125,
+        "interval_is_statistical": false
+      },
+      "entity_time_minus_single_hop": {
+        "wins": 4,
+        "losses": 0,
+        "ties": 4,
+        "unknown_pairs": 0,
+        "planned_delta_lower": 0.5,
+        "planned_delta_upper": 0.5,
+        "interval_is_statistical": false
+      },
+      "entity_time_minus_hybrid4": {
+        "wins": 5,
+        "losses": 0,
+        "ties": 3,
+        "unknown_pairs": 0,
+        "planned_delta_lower": 0.625,
+        "planned_delta_upper": 0.625,
+        "interval_is_statistical": false
+      },
+      "organized_minus_entity_time": {
+        "wins": 0,
+        "losses": 0,
+        "ties": 8,
+        "unknown_pairs": 0,
+        "planned_delta_lower": 0,
+        "planned_delta_upper": 0,
+        "interval_is_statistical": false
+      },
+      "organized_minus_hybrid4": {
+        "wins": 5,
+        "losses": 0,
+        "ties": 3,
+        "unknown_pairs": 0,
+        "planned_delta_lower": 0.625,
+        "planned_delta_upper": 0.625,
+        "interval_is_statistical": false
+      },
+      "reversed_minus_hybrid4": {
+        "wins": 0,
+        "losses": 0,
+        "ties": 8,
+        "unknown_pairs": 0,
+        "planned_delta_lower": 0,
+        "planned_delta_upper": 0,
+        "interval_is_statistical": false
+      },
+      "hybrid6_minus_hybrid4": {
+        "wins": 0,
+        "losses": 1,
+        "ties": 7,
+        "unknown_pairs": 0,
+        "planned_delta_lower": -0.125,
+        "planned_delta_upper": -0.125,
+        "interval_is_statistical": false
+      }
+    },
+    "same_prompt_consistency": {
+      "schema": "hepta.memory-strong-rag.prompt-equivalence.v1",
+      "planned_questions": 8,
+      "identical_ordered_evidence_pairs": 39,
+      "observed_identical_prompt_pairs": 39,
+      "unavailable_pairs": 0,
+      "answer_disagreements": [],
+      "output_token_disagreements": [],
+      "task_result_disagreements": [],
+      "by_kind": {
+        "composition": {
+          "planned": 7,
+          "observed": 7,
+          "divergent": 0
+        },
+        "correction": {
+          "planned": 6,
+          "observed": 6,
+          "divergent": 0
+        },
+        "new_fact": {
+          "planned": 20,
+          "observed": 20,
+          "divergent": 0
+        },
+        "procedure": {
+          "planned": 6,
+          "observed": 6,
+          "divergent": 0
+        }
+      },
+      "deterministic_repeatability_established": true,
+      "independent_statistical_significance": false,
+      "independent_semantic_adjudication": false,
+      "production_accepted": false
+    }
+  },
+  "qualification": {
+    "verified_historical_real_inference": true,
+    "retrospective_read_only_reexecution": true,
+    "independent_human_sufficiency_review": false,
+    "removed_necessary_premise_diagnostic_available": false,
+    "stronger_reference_reader_complete": false,
+    "independent_heldout_source_families": 0,
+    "source_before_future_task_learned_memory_gain": false,
+    "human_semantic_entailment_precision": null,
+    "parameter_memory_accepted": false,
+    "complete_deployed_lifecycle_cost": null,
+    "complete_revocation_recovery_evidence": false,
+    "blocking_ci_waived": false,
+    "production_accepted": false
+  },
+  "evidence_artifacts": {
+    "first_stage": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38590620658/job/115944202419",
+    "independent_stage": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38590620658/job/115944520800",
+    "archive_release_id": 11906888485,
+    "archive_release_sha256": "9305aa9c637601cc1efec844537ac4de57c52aaf83fbc1c6fb5a65aaa84defab",
+    "independent_replay_id": 11906918262,
+    "independent_replay_sha256": "ffb27c88fa665fd5a5f09d712d39a7552010090095c10b2550adeaa8420f85a8"
+  },
+  "cost_accounting": {
+    "unit": "original measured tokens and CPU inference seconds for this research census",
+    "retrieval_only_query_tokens": {
+      "hybrid_k4": 10806,
+      "organized": 5179
+    },
+    "original_retention_and_indexing_are_not_free": true,
+    "counted_training_updates": 0,
+    "historical_stage_and_future_maintenance_not_imputed_zero": true,
+    "missing_full_lifecycle_terms": [
+      "extraction",
+      "indexing",
+      "model_staging",
+      "production_retention",
+      "revocation",
+      "maintenance",
+      "recovery",
+      "independently_repeated_query_mix"
+    ],
+    "lifetime_economic_superiority_established": false
+  }
+}
