@@ -244,6 +244,48 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "Agentd Cell Split public ingress widened without security review",
         )
 
+    def test_cell_split_physical_cns_writers_are_closed_world(self) -> None:
+        # Generic governed topology remains a separately authorized runtime
+        # boundary. Do not quietly add a second physical Cell Split route
+        # writer that bypasses the frozen Control/NDU/CNS transaction.
+        invocation = re.compile(r"(?:\.|::)\s*apply_governed_topology\s*\(")
+        expected = {
+            "codex-rs/hepta-runtime/src/lib.rs",
+            "codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs",
+        }
+        observed: set[str] = set()
+        for path in self.rust_sources():
+            relative = path.relative_to(ROOT).as_posix()
+            if "/tests/" in f"/{relative}" or relative.endswith("_tests.rs"):
+                continue
+            if "apply_governed_topology" not in path.read_text(encoding="utf-8"):
+                continue
+            if invocation.search(self.lexical_code(relative)):
+                observed.add(relative)
+        self.assertEqual(
+            observed,
+            expected,
+            "an unreviewed physical topology writer bypasses the CNS Control fence",
+        )
+
+        # Until a durable same-owner Control Begin/Commit handoff is actually
+        # composed, the opt-in Cell Split port's permit is deliberately
+        # uninhabited. The source review protects this explicit denial but
+        # does not replace real owner-atomic Final-use or target-host evidence.
+        physical_port = self.lexical_code(
+            "codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs"
+        )
+        self.assertRegex(
+            physical_port,
+            r"atomic_control_cutover_prepared:\s*Option\s*<\s*std::convert::Infallible\s*>",
+            "physical Cell Split CNS permit must remain unconstructible",
+        )
+        self.assertRegex(
+            physical_port,
+            r"self\.atomic_control_cutover_prepared\.as_ref\(\)\.ok_or\(",
+            "physical CNS mutation must deny before runtime topology execution",
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
