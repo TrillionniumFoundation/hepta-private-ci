@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - "experiments/shared_stem_cell/e2_feature_residual_study.py"
+      - "experiments/shared_stem_cell/e1e2_q24_identity.py"
+      - "experiments/shared_stem_cell/test_e1e2_q24_identity.py"
       - "experiments/shared_stem_cell/e2_residual_review.py"
       - "experiments/shared_stem_cell/test_e2_feature_residual_study.py"
       - "experiments/shared_stem_cell/test_e2_residual_review.py"
@@ -35,3 +37,4 @@ jobs:
           set -euo pipefail
           python -m py_compile experiments/shared_stem_cell/e2_feature_residual_study.py experiments/shared_stem_cell/e2_residual_review.py
           python -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_*.py' -v
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e1e2_q24_identity.py' -v
