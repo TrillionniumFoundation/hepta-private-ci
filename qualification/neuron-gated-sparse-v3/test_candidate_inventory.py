@@ -2,6 +2,7 @@
 """Actual safetensors bytes; safety and corruption tests are synthetic research only."""
 from __future__ import annotations
 import hashlib
+import importlib.util
 import math
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -28,6 +29,11 @@ def make_model(path, arm='v3', width=16, rank=2):
     return tensors
 
 
+@unittest.skipUnless(
+    importlib.util.find_spec('torch') is not None and
+    importlib.util.find_spec('safetensors') is not None,
+    'physical safetensors tests require pinned PyTorch and safetensors; full coverage runs in physical research job',
+)
 class CandidatePhysicalInventoryTests(unittest.TestCase):
     def setUp(self):
         self.tmp=TemporaryDirectory()
