@@ -468,7 +468,12 @@ fn late_metrics_sink_cannot_certify_previously_unmetered_model_execution() {
     let mut worker = worker.with_metric_sink(Arc::new(CapturedMetrics::default()));
     assert!(!worker.production_metrics_ready());
     assert!(!worker.flush_production_metrics());
-    assert!(worker.poll_and_execute(107).unwrap().outcomes.is_empty());
+    // The attempted late attachment is a permanent readiness violation:
+    // there is no safe way to backfill the already executed model effect.
+    assert!(matches!(
+        worker.poll_and_execute(107),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    ));
     assert!(!worker.production_metrics_ready());
 }
 
