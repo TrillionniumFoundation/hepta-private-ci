@@ -63,7 +63,8 @@ pub enum BatchWorkerErrorV1 {
     /// than treating this error as proof that enqueue never happened.
     AdmissionTelemetryIndeterminate,
     /// The model effect MAY have executed and its original Final-use nonce
-    /// MAY be consumed, but terminal Evidence recording failed. The caller
+    /// MAY be consumed, but terminal Evidence recording or commit failed.
+    /// The caller
     /// must reconcile the exact request, never treat this as a safe retry.
     /// A single missing batch member also withholds all successful receipts
     /// for that one physical batch, without altering its real effects.
@@ -516,6 +517,26 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             .poll_physically_compatible(now_ms)
             .map_err(BatchWorkerErrorV1::Scheduler)?;
         self.last_caller_now_ms = Some(caller_now_ms);
+        // Carry only small immutable request identity/fence metadata across
+        // execution. No Q24 feature vector or model payload is copied.
+        // Final receipt publication rechecks every original member AFTER
+        // the Evidence writer has confirmed the durable flush.
+        let publication_checks: BTreeMap<StableId, (MicrobatchKeyV1, u64)> = poll
+            .batch
+            .as_ref()
+            .map(|batch| {
+                batch
+                    .requests
+                    .iter()
+                    .map(|intent| {
+                        (
+                            intent.request_id.clone(),
+                            (intent.key.clone(), intent.deadline_ms),
+                        )
+                    })
+                    .collect()
+            })
+            .unwrap_or_default();
         if let (Some(sink), Some(batch)) = (&self.metric_sink, &poll.batch) {
             self.metrics_flushed.store(false, Ordering::Release);
             // One phase sample per admitted request, not just the first
@@ -666,6 +687,42 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                         request_id: id,
                         result: outcome,
                     });
+                }
+            }
+        }
+        // An accepted async Evidence record is not an fsynced WAL row.
+        // Publish no successful signed effect while its terminal evidence
+        // remains in the writer queue. Flush outside all Final-use fences,
+        // after the original backend and its terminal records have settled.
+        if self.metric_sink.is_some() && outcomes.iter().any(|item| item.result.is_ok()) {
+            if !self.flush_production_metrics() {
+                // The physical effect has already happened. The original
+                // durable nonce/identity remains consumed; a failure to
+                // confirm the group commit can never authorize a retry.
+                for item in &mut outcomes {
+                    if item.result.is_ok() {
+                        item.result = Err(BatchWorkerErrorV1::TerminalTelemetryIndeterminate);
+                    }
+                }
+            } else {
+                // A real fsync may block while Control moves the CNS route
+                // or an individual member crosses its deadline. The batch
+                // is not partly publishable even after durable Evidence.
+                let after_commit_ms = dispatch_now_ms_v1(now_ms, started);
+                let stale = outcomes.iter().any(|item| {
+                    item.result.is_ok()
+                        && publication_checks
+                            .get(&item.request_id)
+                            .is_none_or(|(key, deadline)| {
+                                *deadline <= after_commit_ms || !self.binding_current(key)
+                            })
+                });
+                if stale {
+                    for item in &mut outcomes {
+                        if item.result.is_ok() {
+                            item.result = Err(BatchWorkerErrorV1::StaleAfterEffect);
+                        }
+                    }
                 }
             }
         }
