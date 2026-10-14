@@ -119,6 +119,33 @@ def rank_for_budget(width: int, cap: int) -> int:
     return rank
 
 
+
+def require_selected_owner_a0(args, cell_id: str, baseline_sha: str) -> dict:
+    """Never call a source-tree fixture a live selected V1 owner."""
+    if getattr(args, 'synthetic_canary', False):
+        return {'evidence_class': 'SYNTHETIC_FIXTURE_ONLY', 'a0_registry_sha256': None}
+    root = getattr(args, 'a0_evidence_root', None)
+    key = getattr(args, 'a0_trusted_public_key', None)
+    host = getattr(args, 'a0_expected_host_id', None)
+    require(bool(root and key and host), 'A0 signed live owner census is mandatory')
+    from a0_deployment_evidence import evaluate, load_public_key, verify_signed
+    attested = evaluate(Path(root), Path(key), expected_host_id=host,
+                        max_age_seconds=getattr(args, 'a0_max_age_seconds', 300))
+    selected = [x for x in attested['cells'] if x['cell_id'] == cell_id]
+    require(len(selected) == 1 and selected[0]['mechanism'] == 'sparse-v1',
+            'selected scoped V1 Cell missing from A0 registry')
+    public, fingerprint = load_public_key(Path(key))
+    evidence = verify_signed(Path(root) / 'cells' / (cell_id + '.json'),
+                             public, fingerprint, 'hepta.neuron.deployed-cell-evidence.a0.v1')
+    require(evidence['weights_sha256'] == baseline_sha,
+            'selected V1 artifact SHA differs from signed A0 model')
+    return {'evidence_class': 'SIGNED_A0_FORMAT_ONLY_NOT_HOST_EXECUTION',
+            'a0_registry_sha256': attested['registry_sha256'],
+            'a0_host_id': attested['host_id'],
+            'a0_checkpoint_digest_claimed': selected[0]['reopen_checkpoint_digest'],
+            'a0_generation_claimed': selected[0]['generation']}
+
+
 def make_model(kind: str, width: int, rank: int, torch):
     class Temporal(torch.nn.Module):
         def __init__(self):
@@ -188,6 +215,7 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
     baseline_sha = sha_file(baseline, args.selected_v1_sha256)
     spec = unique_json(train_path.read_bytes())
     width, sequences = training_input(spec)
+    a0_info = require_selected_owner_a0(args, spec['cell_id'], baseline_sha)
     require(1 <= args.steps <= 512 and 1 <= args.window <= 128, 'invalid training work budget')
     import torch
     from safetensors.torch import save_file, load_file
@@ -200,6 +228,7 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
     root.mkdir(parents=True, exist_ok=False)
     report: dict[str, Any] = {
         'schema': 'hepta.neuron.five-arm-differentiable-shadow-train.v1',
+        **a0_info,
         'source_train_sha256': train_sha, 'encoder_digest_claimed': spec['encoder_digest'],
         'cell_id': spec['cell_id'], 'training_cutoff_utc': spec['train_cutoff_utc'],
         'train_source_group_hashes': [sha_bytes(group[0]['source_group'].encode()) for group in sequences],
@@ -283,6 +312,12 @@ def main() -> int:
     p.add_argument('--selected-v1', required=True)
     p.add_argument('--selected-v1-sha256', required=True)
     p.add_argument('--output', required=True)
+    p.add_argument('--a0-evidence-root')
+    p.add_argument('--a0-trusted-public-key')
+    p.add_argument('--a0-expected-host-id')
+    p.add_argument('--a0-max-age-seconds', type=int, default=300)
+    p.add_argument('--synthetic-canary', action='store_true',
+                   help='unit-test fixture ONLY; denies real A0/model proof')
     p.add_argument('--steps', type=int, default=64)
     p.add_argument('--window', type=int, default=32)
     p.add_argument('--seed', type=int, default=7347)
