@@ -79,6 +79,56 @@ python -m experiments.shared_stem_cell.sequential_confirmation \
   --output /new/sequential-confirmation
 ```
 
+## Physical work census for the actual model path
+
+The real `sequential_confirmation.run` now fixes
+`physical_work_profile=hepta.sequential-physical-work.v1` and the immutable
+Stem digest before loading any model. The pure `stream` fixture API supports
+an explicitly absent profile for older synthetic mechanics only; unknown
+profiles reject before Encoder or label callbacks.
+
+For each full prediction batch, `sequential_work_audit.py` compares:
+
+- Exact Stem identity, frozen selected candidate, one bounded Scope, feature
+  digest, full input count and materialized float32 feature bytes.
+- Physical Encoder forwards and cached reuses against actually requested rows;
+  no fictitious zero-Encoder-cost batch in the real profile.
+- All four original frozen panel arms: `bank`, `shared`,
+  `linear_distilled`, `residual_corrected`. Check the exact routed row indices,
+  Head invocation count and processed rows; the corrected path MUST charge
+  both shared and per-Cell residual processing.
+- Nonzero recorded wall/process CPU time for each Head arm. Missing or
+  fabricated numeric FLOP/energy claims reject this profile rather than
+  becoming zero or an inferred measured saving.
+
+The batch receipt is sealed **before label access**. The final report sums
+Encoder requests/forwards and per-arm Head work/times once across the logical
+stream, including an authenticated reused prefix if resumed. A resumed
+invocation's genuinely *new* model/label callbacks are recorded separately;
+neither sum can be presented as new work when all evidence was replayed.
+
+These are producer-origin measurements and checked call traces, **not**
+independent attestation of CPU instruction counts or actual hardware energy.
+All four comparator Heads execute in the research experiment, so their
+combined work is not the cost of installing only one of them. Per-arm timings
+exclude their shared Encoder; they are serial diagnostics rather than a
+matched quality/cost, p99 total system, or migration result.
+
+When the model/dataset/source revisions, Scope or work profile differ,
+the replay source identity changes and the old prefix is not silently
+reinterpreted. The objective, independent evaluator, withdrawal/revocation,
+real source-family support and production `FinalUse` owners are unchanged.
+
+```bash
+python -m unittest -v experiments.shared_stem_cell.test_sequential_work_audit
+python -m unittest -v experiments.shared_stem_cell.test_sequential_confirmation
+```
+
+A green work-census test is **mechanical** evidence, not an accepted
+model-efficiency advantage. A verified independent task/outcome cohort,
+retention and true total-resource cost remain the decision gates before
+NDU learns to route Cell work or a shared Critic can be promoted.
+
 ## Interrupted-stream continuation (same evidence, no fresh restart)
 
 `sequential_replay.py` seals a **quiescent** output prefix into a new checkpoint
