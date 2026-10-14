@@ -143,6 +143,14 @@ pub fn run_pinned_cell_split_execution_with_admission_and_metrics_v1<F>(
 where
     F: FnMut(&CellSplitExecutionPlanV1) -> Result<(), String>,
 {
+    // A trait-object telemetry sink and caller-authored closure cannot prove
+    // current Selector/NDU membership or an independently issued Final-use.
+    // Until the original typed Agentd capability is non-bypassable, normal
+    // non-test builds refuse new split effects before reading any config,
+    // creating a frozen intent or invoking the arbitrary callback.
+    if !cfg!(test) && action == "advance" {
+        return Err("public metrics callback cannot authorize CellSplit advance".to_string());
+    }
     run_pinned_cell_split_execution_inner_v1(
         action,
         config_path,
