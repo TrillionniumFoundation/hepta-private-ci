@@ -92,7 +92,7 @@ jobs:
             --checkpoint-dir "$RUNNER_TEMP/hepta-pinned-modernbert" \
             --bundle-sha256 "$HEPTA_BUNDLE_SHA256" \
             --output "$RUNNER_TEMP/hepta-real-token-pair" \
-            --max-length 128 --encoder-batch 8 --steps 20 --seeds 11 23 47
+            --max-length 168 --encoder-batch 8 --steps 20 --seeds 11 23 47
           "$PY" - <<'PY'
           import json, os
           from pathlib import Path
