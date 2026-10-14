@@ -32,6 +32,7 @@ class Span:
     asset_sha256: str
     preprocessor_sha256: str
     encoder_sha256: str
+    feature_sha256: str
     start_ms: int
     end_ms: int
     revoked: bool = False
@@ -42,7 +43,7 @@ class Span:
                      self.scope, self.generation)), "span identity")
         require(self.modality in MODALITIES, "unknown modality")
         require(all(is_sha(x) for x in
-                    (self.asset_sha256, self.preprocessor_sha256, self.encoder_sha256)),
+                    (self.asset_sha256, self.preprocessor_sha256, self.encoder_sha256, self.feature_sha256)),
                 "external modality inventory")
         require(type(self.start_ms) is int and type(self.end_ms) is int
                 and 0 <= self.start_ms <= self.end_ms <= 2**53 - 1,
@@ -142,6 +143,10 @@ def train_connector(pairs, text_features, other_features, *,
             "cross-scope/generation training")
     x, z = _checked(text_features), _checked(other_features)
     require(len(x) == len(z) == len(pairs), "tensor/binding cardinality")
+    for idx, pair in enumerate(pairs):
+        require(tensor_digest(x[idx]) == pair.text_span.feature_sha256
+                and tensor_digest(z[idx]) == pair.other_span.feature_sha256,
+                "modal feature tensor/source mismatch")
     require({p.positive for p in pairs} == {False, True}, "matched and wrong-pair contrasts")
     y = torch.tensor([float(p.positive) for p in pairs], dtype=torch.float32)
     with torch.random.fork_rng(devices=[]):
