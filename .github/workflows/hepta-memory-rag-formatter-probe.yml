@@ -1,0 +1,70 @@
+name: MemoryCell isolated strong-RAG Ruff formatting diagnostic
+on:
+  push:
+    branches:
+      - "codex/memory-rag-format-diagnostic-20261014"
+    paths:
+      - ".github/workflows/hepta-memory-rag-formatter-probe.yml"
+permissions:
+  contents: read
+jobs:
+  verify-format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Freeze exact original AST and source identity
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/rag-format-evidence
+          cp scripts/memory_cell/actual_strong_rag_archive_audit.py /tmp/rag-format-evidence/before.py
+          python3 - <<'PY'
+          import ast, hashlib, json
+          from pathlib import Path
+          path = Path('/tmp/rag-format-evidence/before.py')
+          raw = path.read_bytes()
+          result = dict(
+              original_sha256=hashlib.sha256(raw).hexdigest(),
+              original_ast=ast.dump(ast.parse(raw.decode()), include_attributes=False),
+          )
+          Path('/tmp/rag-format-evidence/original-ast.json').write_text(json.dumps(result))
+          PY
+      - name: Apply exact repository-pinned Ruff formatting
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format scripts/memory_cell/actual_strong_rag_archive_audit.py
+          python3 - <<'PY'
+          import ast, hashlib, json
+          from pathlib import Path
+          before = json.loads(Path('/tmp/rag-format-evidence/original-ast.json').read_text())
+          path = Path('scripts/memory_cell/actual_strong_rag_archive_audit.py')
+          raw = path.read_bytes()
+          assert ast.dump(ast.parse(raw.decode()), include_attributes=False) == before['original_ast']
+          Path('/tmp/rag-format-evidence/ast-match.json').write_text(json.dumps(dict(
+              original_sha256=before['original_sha256'],
+              formatted_sha256=hashlib.sha256(raw).hexdigest(),
+              ast_identical=True,
+              original_test_answers_modified=False,
+          )))
+          PY
+          cp scripts/memory_cell/actual_strong_rag_archive_audit.py /tmp/rag-format-evidence/actual_strong_rag_archive_audit.py
+          diff -u /tmp/rag-format-evidence/before.py /tmp/rag-format-evidence/actual_strong_rag_archive_audit.py > /tmp/rag-format-evidence/pure-format.patch || test "$?" -eq 1
+      - name: Seal source, output, and workflow identity
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/rag-format-evidence/tested-commit.txt
+          cp .github/workflows/hepta-memory-rag-formatter-probe.yml /tmp/rag-format-evidence/workflow.yml
+          (cd /tmp/rag-format-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-strong-rag-pure-format-candidate
+          path: /tmp/rag-format-evidence
+          if-no-files-found: error
