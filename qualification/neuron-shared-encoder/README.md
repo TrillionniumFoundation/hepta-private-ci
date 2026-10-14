@@ -277,10 +277,14 @@ the real Encoder hidden width differs from the requested Head width.
 Such an experiment must not be read as quality-equivalent to a learned
 projection or to full Laya.
 
-The **descriptive** comparison uses mean validation Brier across paired seeds.
+The **descriptive** comparison uses paired validation Brier differences
+across source groups and training seeds. It returns INCONCLUSIVE if the
+95% grouped-and-seed Bootstrap interval crosses zero, or when fewer
+than eight independent validation groups or three seeds are present.
+This is an exploratory interval, not confirmatory inference or NDU.
 Future data are only reported post hoc and never used to choose the
 descriptive winner. Tests check that changing future labels leaves the
-chosen validation winner and training sample schedule unchanged.
+validation-only judgment and training sample schedule unchanged.
 The JSON has `production_admission=BLOCKED`, `ndu_verified=false` and
 `selection_authorized=false`; no signature, causal prequential commit,
 Final-use or live Encoder physical-call proof is conferred by its hashes.
@@ -302,3 +306,34 @@ gates, signed ties-to-even, type/dimension/range fail-closed behavior and
 the explicit one-LSB witness. A Python arithmetic model cannot replace
 an actual native Rust test against the real Worker, signed artifacts,
 generation fences or a target-host quantized end-to-end run.
+
+### E1/E2/E3 module-forward accounting — V6 research diagnostic
+
+`encoder_meter.py` scopes synchronous PyTorch pre/post hooks around the
+*actual top-level Encoder module*, separately from the experimental adapter
+invocation counter. E1, offline E2 and real E3 record completed forward calls,
+attempts, forwarded rows and **padded token slots** (shape-only, avoiding
+GPU synchronizations). E3 records this independently for joint input and
+public-input runs. A row-count or forward-count discrepancy fails closed.
+Synthetic-hash trials explicitly return a null model-forward observation.
+
+This is NOT a GPU kernel trace, active token count, throughput/RSS receipt,
+signature, source entitlement, true Rust Worker sharing or independent
+NDU evidence. The observer does not keep raw input or attention masks;
+it runs only in synchronous, offline qualification. Model calls that bypass
+the top-level module's `__call__` and asynchronous accelerator failures are
+outside this observer and require a separately verified backend profiler.
+All outputs retain `production_admission=BLOCKED`.
+
+Run isolated regression tests:
+
+```bash
+python -m pytest -q tests/test_encoder_meter.py tests/test_strict_e2.py
+```
+
+A synthetic Torch test deliberately performs multiple model forwards within
+one adapter call to ensure the reported counters cannot be conflated. Another
+injects an exception after a first successful forward and verifies the
+attempt/completion mismatch plus hook cleanup. A CPU floating-point
+reproducibility comparison tolerates numerical error up to 1e-6 while
+preserving exact model count, optimizer bytes and sample-draw identities.
