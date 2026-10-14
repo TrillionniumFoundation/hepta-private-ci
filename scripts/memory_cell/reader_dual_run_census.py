@@ -5,10 +5,11 @@ No model calls, answer scoring, human review, or production admission.
 """
 
 import argparse
+from collections import Counter
 import json
 from pathlib import Path
 
-from reader_external_artifact_audit import COHORTS
+from reader_external_artifact_audit import COHORTS, strict_json
 
 SCHEMA = "hepta.memory-cell.reader-dual-generating-run-census.v1"
 ORIGINAL = 38538369649
@@ -60,6 +61,24 @@ def checked_run(outer, bound, *, run_id):
         or outer.get("absent_artifact_count") != 16 - len(shards)
     ):
         raise ValueError("incorrect source-cohort artifact census")
+    permitted_outcomes = {
+        "hardware_ineligible",
+        "host_receipt_missing",
+        "no_model_journal",
+        "incomplete_original_journal",
+        "complete_original_journal_not_independently_scored",
+    }
+    if (
+        any(
+            not isinstance(item, dict)
+            or not isinstance(item.get("outcome"), str)
+            or item["outcome"] not in permitted_outcomes
+            for item in shards
+        )
+        or dict(sorted(Counter(item["outcome"] for item in shards).items()))
+        != outer.get("dispositions")
+    ):
+        raise ValueError("disposition census cannot differ from external original ZIPs")
     by_id = {}
     for item in source_rows:
         ident = item.get("artifact_id")
@@ -82,6 +101,12 @@ def checked_run(outer, bound, *, run_id):
             or linked.get("tier") != tier
             or linked.get("case_index") != index
             or linked.get("github_zip_sha256") != item.get("github_zip_sha256")
+            or type(item.get("raw_attempt_rows")) is not int
+            or type(item.get("raw_success_rows")) is not int
+            or type(item.get("full_original_journal")) is not bool
+            or type(linked.get("rows")) is not int
+            or type(linked.get("succeeded")) is not int
+            or type(linked.get("full_original_pair")) is not bool
             or linked.get("rows") != item.get("raw_attempt_rows")
             or linked.get("succeeded") != item.get("raw_success_rows")
             or linked.get("full_original_pair") != item.get("full_original_journal")
@@ -148,7 +173,10 @@ def read_json(path):
         or not 0 < path.stat().st_size <= 1024 * 1024
     ):
         raise ValueError("missing or oversized original audit file")
-    return json.loads(path.read_bytes())
+    value = strict_json(path.read_bytes())
+    if not isinstance(value, dict):
+        raise ValueError("original run audits must be JSON objects")
+    return value
 
 
 def main():

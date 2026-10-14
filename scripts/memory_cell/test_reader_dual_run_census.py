@@ -1,9 +1,11 @@
 """Negative controls: distinct generating commits cannot be pooled as one trial."""
 
 from copy import deepcopy
+from pathlib import Path
+import tempfile
 import unittest
 
-from reader_dual_run_census import ORIGINAL, REPAIRED, checked_run, reconcile
+from reader_dual_run_census import ORIGINAL, REPAIRED, checked_run, read_json, reconcile
 from reader_external_artifact_audit import COHORTS, checked_metadata
 
 PLAN = "9840a25487af444914dca24c818d98ff798ebc1610ea8dfdd827187c31ad1897"
@@ -63,6 +65,7 @@ def pair(run_id, *, partial=False):
                 raw_attempt_rows=1,
                 raw_success_rows=1,
                 full_original_journal=False,
+                outcome="incomplete_original_journal",
             )
         ]
         bound["source_bindings"] = [
@@ -179,6 +182,29 @@ class TwoRunCensusTests(unittest.TestCase):
                 original[field] = value
                 with self.assertRaisesRegex(ValueError, "unqualified"):
                     checked_run(original, bound, run_id=REPAIRED)
+
+
+    def test_forged_disposition_census_is_rejected(self):
+        outer, bound = pair(ORIGINAL, partial=True)
+        outer["dispositions"] = {"hardware_ineligible": 1}
+        with self.assertRaisesRegex(ValueError, "disposition census"):
+            checked_run(outer, bound, run_id=ORIGINAL)
+
+    def test_noninteger_call_counts_cannot_pass_as_boolean(self):
+        outer, bound = pair(ORIGINAL, partial=True)
+        outer["shards"][0]["raw_attempt_rows"] = True
+        bound["source_bindings"][0]["rows"] = True
+        with self.assertRaisesRegex(ValueError, "cross-run artifact"):
+            checked_run(outer, bound, run_id=ORIGINAL)
+
+    def test_duplicate_json_keys_and_nonfinite_source_receipts_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "original.json"
+            for raw in (b'{"run":1,"run":2}', b'{"runtime":NaN}', b"[]"):
+                with self.subTest(raw=raw):
+                    path.write_bytes(raw)
+                    with self.assertRaises(ValueError):
+                        read_json(path)
 
 
 if __name__ == "__main__":
