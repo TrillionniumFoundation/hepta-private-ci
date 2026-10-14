@@ -119,6 +119,44 @@ class PhysicalForecastCacheTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'SHA256 mismatch'):
             seal(self.args)
 
+    def test_physical_reuse_survives_independent_signed_future_review(self):
+        from datetime import timedelta
+        from matched_train import utc
+        from precommit_future import score
+        from dedup_prospective_gate import review
+        from test_dedup_prospective_gate import signed
+        sealed=self.seal_and_read()
+        sealed_sha=sha(Path(self.args.seal_output))
+        committed=utc(sealed['sealed_at_utc_untrusted_local_clock'])+timedelta(minutes=1)
+        disclosed=committed+timedelta(minutes=1)
+        def iso(value):
+            return value.isoformat().replace('+00:00','Z')
+        witness={'schema':'hepta.neuron.five-arm-precommit-witness.v1',
+                 'seal_sha256':sealed_sha,'committed_at_utc':iso(committed),
+                 'host_id':'synthetic-host-no-attestation',
+                 'operation_id':'synthetic-reuse-witness'}
+        outcomes={'schema':'hepta.neuron.five-arm-independent-outcomes.v1',
+                  'cell_id':sealed['cell_id'],'input_seal_sha256':sealed_sha,
+                  'rows':[{'case_id':row['case_id'], 'partition':row['partition'],
+                           'source_group_sha256':row['source_group_sha256'],
+                           'label':i%2, 'label_available_at_utc':iso(disclosed)}
+                          for i,row in enumerate(sealed['rows'])]}
+        signed_wit,pub_wit=signed(self.root,'witness',witness)
+        signed_out,pub_out=signed(self.root,'outcomes',outcomes)
+        arguments=argparse.Namespace(
+            seal_file=self.args.seal_output,seal_sha256=sealed_sha,
+            signed_witness=str(signed_wit),witness_pubkey=str(pub_wit),
+            signed_outcomes=str(signed_out),outcome_pubkey=str(pub_out),
+            synthetic_canary=True)
+        verified=score(arguments)
+        result=review(self.root,self.receipt_sha,Path(self.args.seal_output),
+                      sealed_sha,verified,synthetic_canary=True)
+        self.assertEqual(result['unique_physical_tensor_models_per_arm'],4)
+        self.assertEqual(result['nominal_candidate_slots'],20)
+        self.assertTrue(result['preoutcome_physical_forward_reuse_claim_verified'])
+        self.assertFalse(result['ndu_eligible'])
+        self.assertFalse(result['production_qualification'])
+
     def test_unlabelled_future_enforced_before_model_execution(self):
         data=json.loads(self.future.read_text());data['samples'][0]['label']=1
         self.future.write_text(json.dumps(data));self.args.future_sha256=sha(self.future)
