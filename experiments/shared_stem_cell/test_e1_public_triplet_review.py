@@ -9,6 +9,7 @@ def fixture():
  p=panel();reports={}
  for model,(_,revision,width) in trainer.MODELS.items():
   vectors={c['case_id']:[((int(c['case_id'][:4],16)%99)-50)/100]*width for c in p['cases']}
+  fitted=trainer.fit_heads(p,model,vectors)
   reports[model]={'schema':'hepta.e1-english-public-pretrained-head.v1','model':model,
    'model_revision':revision,'feature_width':width,'public_panel_sha256':trainer.sha(trainer.canonical(p)),
    'authority':'DENY_ALL','production_promotion_permitted':False,
@@ -17,7 +18,12 @@ def fixture():
    'model_origin_independently_authenticated':False,
    'tokens_per_case':{c['case_id']:20 for c in p['cases']},
    'features_q24_identity':{c['case_id']:'a'*64 for c in p['cases']},
-   'fitting':trainer.fit_heads(p,model,vectors)}
+   'fitting':fitted,
+   'physical_transformer_forward_count_attested':False,
+   'physical_observations':{'load_ms':1.0,'encode_ms_by_case':{c['case_id']:.01 for c in p['cases']},
+      'local_model_api_requests':224,'physical_transformer_forward_count_attested':False},
+   'wall_ms':fitted['train_time_ms']+10.,'cpu_process_ms':fitted['train_time_ms']+1.,
+   'process_lifetime_peak_rss_bytes':12345678}
  return p,reports
 class Checks(unittest.TestCase):
  @classmethod
@@ -40,5 +46,13 @@ class Checks(unittest.TestCase):
  def test_missing_prediction(self):self.deny(lambda p,a:a['granite_97m_r2']['fitting']['controls']['learned_head']['predictions'].pop())
  def test_swapped_input(self):self.deny(lambda p,a:a['granite_97m_r2']['fitting']['controls']['learned_head']['predictions'][0].update(joint_input_digest='f'*64))
  def test_nan_probability(self):self.deny(lambda p,a:a['granite_97m_r2']['fitting']['controls']['learned_head']['predictions'][0].update(positive_probability=float('nan')))
+ def test_missing_energy_or_compute_budget_not_recast_as_success(self):
+  p,arms=self.data();value=reviewer.evaluate(p,arms)
+  self.assertIsNone(value['resource_observations']['granite_97m_r2']['energy_joules'])
+  self.assertFalse(value['same_host_total_lifecycle_budget_and_energy_verified'])
+ def test_missing_encoder_latency(self):self.deny(lambda p,a:a['granite_97m_r2']['physical_observations']['encode_ms_by_case'].pop(next(iter(a['granite_97m_r2']['physical_observations']['encode_ms_by_case']))))
+ def test_missing_rss(self):self.deny(lambda p,a:a['mmbert_small'].pop('process_lifetime_peak_rss_bytes'))
+ def test_fabricated_physical_forward_attestation(self):self.deny(lambda p,a:a['mmbert_small'].update(physical_transformer_forward_count_attested=True))
+ def test_total_wall_undercount(self):self.deny(lambda p,a:a['embeddinggemma_2_text'].update(wall_ms=0.001))
  def test_false_future(self):self.deny(lambda p,a:a['granite_97m_r2'].update(public_dataset_is_chronological_future=True))
 if __name__=='__main__':unittest.main()
