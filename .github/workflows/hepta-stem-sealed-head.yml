@@ -1,0 +1,224 @@
+name: Hepta immutable Cell Head candidate (shadow)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/neuron-dynamic-learning/**'
+      - '.github/workflows/hepta-stem-sealed-head.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-sealed-head-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  frozen-train-and-seal:
+    name: Real pinned Stem training and exact Cell Float64 snapshot (not FinalUse)
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'research/embeddinggemma2-multimodal-cell-20261014'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_DISABLE_XET: '0'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      MODEL_COMMIT: '914f7f89142e33e77833254d9c9b90c3cef7303b'
+    steps:
+      - name: Exact pull-request source checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Bind immutable source
+        env:
+          EXPECTED: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED"
+          test -z "$(git status --porcelain)"
+          git diff --check
+      - name: Install fixed CPU-only inference and source readers
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/stem-snapshot-venv"
+          PY="$RUNNER_TEMP/stem-snapshot-venv/bin/python"
+          "$PY" -m pip install --only-binary=:all: \
+            --index-url https://download.pytorch.org/whl/cpu \
+            'torch==2.10.0' 'torchvision==0.25.0' 'torchcodec==0.10.0'
+          "$PY" -m pip install --only-binary=:all: \
+            'transformers==5.19.0' 'sentence-transformers==6.1.0' \
+            'numpy==2.2.6' 'safetensors==0.8.0' 'huggingface-hub==1.33.0' \
+            'pyarrow==21.0.0' 'pillow==11.3.0' 'soundfile==0.13.1'
+          "$PY" -m pip check
+          "$PY" -m pip freeze > "$RUNNER_TEMP/stem-sealed-runtime.txt"
+      - name: Verify exact full-revision public data and derive original train cohort
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/stem-sealed-data"
+          for source in train calibration_test; do
+            "$RUNNER_TEMP/stem-snapshot-venv/bin/python" \
+              qualification/neuron-dynamic-learning/public_agnews_source.py \
+              --role "$source" \
+              --destination "$RUNNER_TEMP/stem-sealed-data/$source.parquet"
+          done
+          "$RUNNER_TEMP/stem-snapshot-venv/bin/python" \
+            qualification/neuron-dynamic-learning/public_agnews_panel.py \
+            --train-parquet "$RUNNER_TEMP/stem-sealed-data/train.parquet" \
+            --holdout-parquet "$RUNNER_TEMP/stem-sealed-data/calibration_test.parquet" \
+            --output "$RUNNER_TEMP/stem-sealed-panel.json" \
+            --receipt "$RUNNER_TEMP/stem-sealed-source.json"
+      - name: Obtain pinned real Gemma 2 model and train-only bounded Cell
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-snapshot-venv/bin/python"
+          "$PY" qualification/neuron-dynamic-learning/prepare_gemma2_snapshot.py \
+            --revision "$MODEL_COMMIT" \
+            --destination "$RUNNER_TEMP/stem-sealed-model" \
+            --profile text --dimension 256 --precision float32 \
+            > "$RUNNER_TEMP/stem-sealed-model-source.json"
+          /usr/bin/time --verbose --output "$RUNNER_TEMP/stem-sealed-process-time.txt" \
+            "$PY" qualification/neuron-dynamic-learning/agnews_paired_shadow.py \
+            --mode gemma --panel "$RUNNER_TEMP/stem-sealed-panel.json" \
+            --manifest "$RUNNER_TEMP/stem-sealed-model/manifest.json" \
+            --output "$RUNNER_TEMP/stem-sealed-original-arms.json" \
+            --sealed-checkpoint "$RUNNER_TEMP/stem-cell-immutable-bundle.json" \
+            --sealed-receipt "$RUNNER_TEMP/stem-cell-immutable-receipt.json"
+      - name: Independently inspect full checkpoint and original outputs
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-snapshot-venv/bin/python" - <<'PY'
+          import hashlib, json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, 'qualification/neuron-dynamic-learning')
+          from public_agnews_panel import canonical, sha
+          from sealed_cell_checkpoint import load_checkpoint
+          root = Path(os.environ['RUNNER_TEMP'])
+          panel = json.loads((root/'stem-sealed-panel.json').read_text())
+          model = json.loads((root/'stem-sealed-model/manifest.json').read_text())
+          source = json.loads((root/'stem-sealed-model-source.json').read_text())
+          locked = load_checkpoint(
+              root/'stem-cell-immutable-bundle.json',
+              source_panel_digest=sha(canonical(panel)),
+              model_revision=model['revision'],
+              pipeline_digest=source['pipeline_digest'],
+              scope_id='public.agnews', purpose_id='capability.noeffects',
+              generation=1, authority_epoch=1)
+          expected = locked['receipt']
+          emitted = json.loads((root/'stem-cell-immutable-receipt.json').read_text())
+          assert emitted == expected
+          reports = json.loads((root/'stem-sealed-original-arms.json').read_text())
+          assert len(reports) == 2
+          by_id = {r['arm_id']:r for r in reports}
+          assert set(by_id) == {'gemma2_frozen_head','gemma2_trained_head'}
+          assert by_id['gemma2_frozen_head']['metadata']['head_artifact_digest'] == expected['frozen_head_digest']
+          assert by_id['gemma2_trained_head']['metadata']['head_artifact_digest'] == expected['trained_head_digest']
+          assert expected['production_promotion'] == 'DENY_ALL'
+          assert expected['historical_20261014_head_byte_identity_claimed'] is False
+          assert expected['trainable_parameters'] == 2018
+          (root/'stem-sealed-independent-review.json').write_text(json.dumps({
+              'schema':'hepta.stem.sealed-local-cell-independent-review.v1',
+              'report_digests': {key: sha(canonical(report)) for key, report in by_id.items()},
+              'sealed_bundle_sha256': expected['snapshot_file_sha256'],
+              'original_source_panel_digest': expected['training_source_panel_digest'],
+              'frozen_and_trained_float64_reloaded': True,
+              'historical_20261014_head_replay_claimed': False,
+              'future_val2_predictions_executed': False,
+              'independent_origin_authenticated': False,
+              'production_promotion':'DENY_ALL',
+          }, sort_keys=True))
+          PY
+      - name: Freeze distinct val2 source before any new-source inference
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-snapshot-venv/bin/python"
+          "$PY" qualification/neuron-dynamic-learning/public_agnews_source.py \
+            --role new_val2 \
+            --destination "$RUNNER_TEMP/stem-sealed-data/new-val2.parquet"
+          "$PY" qualification/neuron-dynamic-learning/public_agnews_confirmatory.py \
+            --original "$RUNNER_TEMP/stem-sealed-panel.json" \
+            --holdout-parquet "$RUNNER_TEMP/stem-sealed-data/new-val2.parquet" \
+            --out "$RUNNER_TEMP/stem-sealed-val2-panel.json"
+      - name: New CPU model process reloads unchanged Head tensors and tests val2
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/stem-snapshot-venv/bin/python"
+          /usr/bin/time --verbose --output "$RUNNER_TEMP/stem-sealed-replay-process-time.txt" \
+            "$PY" qualification/neuron-dynamic-learning/sealed_cell_replay.py \
+            --original "$RUNNER_TEMP/stem-sealed-panel.json" \
+            --val2 "$RUNNER_TEMP/stem-sealed-val2-panel.json" \
+            --bundle "$RUNNER_TEMP/stem-cell-immutable-bundle.json" \
+            --manifest "$RUNNER_TEMP/stem-sealed-model/manifest.json" \
+            --out "$RUNNER_TEMP/stem-sealed-val2-replay.json"
+      - name: Recheck val2 report boundaries and never accept a historical promotion
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-snapshot-venv/bin/python" - <<'PY'
+          import json, os
+          from pathlib import Path
+          root=Path(os.environ['RUNNER_TEMP'])
+          actual=json.loads((root/'stem-sealed-val2-replay.json').read_text())
+          bundle=json.loads((root/'stem-cell-immutable-receipt.json').read_text())
+          assert actual['case_count']==128
+          assert actual['snapshot_file_sha256']==bundle['snapshot_file_sha256']
+          assert actual['checkpoint_q24_head_digests_checked_after_reload'] is True
+          assert actual['full_float64_head_bytes_unchanged_during_replay'] is True
+          assert actual['head_optimizer_steps_during_val2_evaluation']==0
+          assert actual['historical_20261014_head_byte_identity_claimed'] is False
+          assert actual['independent_model_origin_authenticated'] is False
+          assert actual['three_chronological_future_windows'] is False
+          assert actual['production_promotion']=='DENY_ALL'
+          PY
+      - name: Recompute all 128 public labels and numeric predictions independently
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-snapshot-venv/bin/python" \
+            qualification/neuron-dynamic-learning/sealed_cell_numeric_review.py \
+            --original "$RUNNER_TEMP/stem-sealed-panel.json" \
+            --val2 "$RUNNER_TEMP/stem-sealed-val2-panel.json" \
+            --val2-parquet "$RUNNER_TEMP/stem-sealed-data/new-val2.parquet" \
+            --report "$RUNNER_TEMP/stem-sealed-val2-replay.json" \
+            --bundle "$RUNNER_TEMP/stem-cell-immutable-bundle.json" \
+            --receipt "$RUNNER_TEMP/stem-cell-immutable-receipt.json" \
+            --out "$RUNNER_TEMP/stem-sealed-val2-independent-review.json"
+      - name: Run isolated exact-tensor and corruption tests
+        run: |
+          set -euo pipefail
+          PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-snapshot-venv/bin/python" \
+            -m unittest discover -v -s qualification/neuron-dynamic-learning \
+            -p 'test_sealed_cell_checkpoint.py'
+          PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-snapshot-venv/bin/python" \
+            -m unittest discover -v -s qualification/neuron-dynamic-learning \
+            -p 'test_sealed_cell_replay.py'
+          PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-snapshot-venv/bin/python" \
+            -m unittest discover -v -s qualification/neuron-dynamic-learning \
+            -p 'test_sealed_cell_numeric_review.py'
+          git diff --check
+          git diff --exit-code
+      - name: Preserve only isolated public Head bytes and non-authorizing evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-shadow-sealed-head-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/stem-sealed-runtime.txt
+            ${{ runner.temp }}/stem-sealed-source.json
+            ${{ runner.temp }}/stem-sealed-model-source.json
+            ${{ runner.temp }}/stem-cell-immutable-bundle.json
+            ${{ runner.temp }}/stem-cell-immutable-receipt.json
+            ${{ runner.temp }}/stem-sealed-original-arms.json
+            ${{ runner.temp }}/stem-sealed-independent-review.json
+            ${{ runner.temp }}/stem-sealed-process-time.txt
+            ${{ runner.temp }}/stem-sealed-val2-panel.json
+            ${{ runner.temp }}/stem-sealed-val2-replay.json
+            ${{ runner.temp }}/stem-sealed-val2-independent-review.json
+            ${{ runner.temp }}/stem-sealed-replay-process-time.txt
+          if-no-files-found: warn
+          retention-days: 7

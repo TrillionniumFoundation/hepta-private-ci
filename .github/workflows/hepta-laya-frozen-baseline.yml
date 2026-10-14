@@ -1,0 +1,160 @@
+name: Hepta frozen Laya421 physical control (shadow)
+on:
+  pull_request:
+    paths:
+      - 'qualification/neuron-dynamic-learning/**'
+      - '.github/workflows/hepta-laya-frozen-baseline.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: laya421-frozen-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  laya-frozen:
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'research/embeddinggemma2-multimodal-cell-20261014'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      LAYA_MODEL_ID: 'convaiinnovations/laya'
+      LAYA_REVISION: '55cf4c4ebb4ebe31b2550e8bdf3bd21b99753851'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Check exact source
+        env:
+          EXPECTED: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED"
+          git diff --check
+          test -z "$(git status --porcelain)"
+      - name: Install pinned CPU runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/laya-venv"
+          PY="$RUNNER_TEMP/laya-venv/bin/python"
+          "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          "$PY" -m pip install --only-binary=:all: 'laya==0.4.6' \
+            'transformers==5.19.0' 'safetensors==0.8.0' \
+            'huggingface-hub==1.33.0' 'numpy==2.2.6'
+          "$PY" -m pip check
+          "$PY" - <<'PY'
+          from importlib.metadata import version
+          from packaging.version import Version
+          assert version("laya") == "0.4.6"
+          assert version("transformers") == "5.19.0"
+          assert version("safetensors") == "0.8.0"
+          assert Version(version("safetensors")) >= Version("0.8.0")
+          PY
+          "$PY" -m pip freeze > "$RUNNER_TEMP/laya-frozen-env.txt"
+      - name: Verify public checkpoint then run real typed decisions
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/laya-venv/bin/python"
+          "$PY" - <<'PY' > "$RUNNER_TEMP/laya421-observations.json"
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import time
+          from huggingface_hub import HfApi, snapshot_download
+          from laya import load
+
+          model_id = os.environ['LAYA_MODEL_ID']
+          revision = os.environ['LAYA_REVISION']
+          assert len(revision) == 40 and all(c in '0123456789abcdef' for c in revision)
+          info = HfApi().model_info(model_id, revision=revision, files_metadata=True)
+          assert info.sha == revision
+          names = {s.rfilename: s for s in info.siblings
+                   if s.rfilename in ('model.safetensors', 'rl_agent_config.json')
+                   or s.rfilename.startswith(('tokenizer/', 'encoder/'))}
+          assert 'model.safetensors' in names and 'rl_agent_config.json' in names
+          assert 2 <= len(names) <= 256
+          source = Path(snapshot_download(repo_id=model_id, revision=revision,
+              allow_patterns=['model.safetensors', 'rl_agent_config.json',
+                              'tokenizer/*', 'encoder/*']))
+          dest = Path(os.environ['RUNNER_TEMP']) / 'laya421-verified'
+          dest.mkdir(mode=0o700)
+          actual = {}
+          total = 0
+          for name, entry in sorted(names.items()):
+              rel = Path(name)
+              assert not rel.is_absolute() and '..' not in rel.parts and '\\' not in name
+              assert rel.suffix.lower() in ('.json', '.txt', '.safetensors', '.model', '.vocab')
+              path = source / rel
+              assert path.is_file()
+              out = dest / rel
+              out.parent.mkdir(parents=True, exist_ok=True)
+              h = hashlib.sha256()
+              with path.open('rb') as inp, out.open('xb') as dst:
+                  while block := inp.read(1048576):
+                      total += len(block)
+                      assert total <= 2 * 1024**3
+                      h.update(block)
+                      dst.write(block)
+              actual[name] = h.hexdigest()
+              meta = getattr(entry, 'lfs', None)
+              expected = meta.get('sha256') if isinstance(meta, dict) else getattr(meta, 'sha256', None)
+              assert not expected or actual[name] == expected
+          assert set(actual) == set(names)
+          os.environ['HF_HUB_OFFLINE'] = '1'
+          os.environ['TRANSFORMERS_OFFLINE'] = '1'
+          agent = load(str(dest), device='cpu', expected_sha256=actual)
+          parameters = sum(p.numel() for p in agent.model.parameters())
+          assert 400_000_000 <= parameters <= 450_000_000
+          choices = {'file_integrity': 'Checksum verification',
+                     'syntax_error': 'A parser error'}
+          questions = {'route': {'type': 'choice',
+                        'instructions': 'What kind of technical work is described?',
+                        'criteria': choices}}
+          inputs = ['Classify a checked file-content digest.',
+                    'Classify a checked file-content digest.',
+                    'Classify an observed syntax error.']
+          rows = []
+          for statement in inputs:
+              tic = time.perf_counter_ns()
+              result = agent.system_one({'text':statement}, questions)
+              elapsed = (time.perf_counter_ns() - tic)//1000
+              answer = result['answers']['route']
+              assert answer['choice'] in choices
+              probabilities = answer['probabilities']
+              assert set(probabilities) == set(choices)
+              assert abs(sum(probabilities.values())-1)<0.001
+              rows.append({'source_digest':hashlib.sha256(statement.encode()).hexdigest(),
+                           'probabilities':probabilities, 'choice':answer['choice'],
+                           'latency_micros_without_model_load':elapsed,
+                           'evidence':'unlabeled_forward_not_accuracy'})
+          print(json.dumps({'model':model_id,'revision':revision,
+                            'model_bytes_sha256_manifest': hashlib.sha256(
+                               json.dumps(actual, sort_keys=True).encode()).hexdigest(),
+                            'downloaded_bytes':total,'checked_files':len(actual),
+                            'actual_parameters':parameters,'physical_model_executed':True,
+                            'common_labeled_panel_executed':False,
+                            'independently_verified_outcomes':False,
+                            'production_promotion':'DENY_ALL', 'rows':rows},sort_keys=True))
+          PY
+      - name: Upload only redacted evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: laya421-frozen-smoke-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/laya-frozen-env.txt
+            ${{ runner.temp }}/laya421-observations.json
+          if-no-files-found: warn
+          retention-days: 7
+      - name: Working tree remains immutable
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
