@@ -15,6 +15,8 @@ use codex_hepta_neuron::DiagonalSsmConfigV1;
 use codex_hepta_neuron::GatedSparseCheckpointV3;
 use codex_hepta_neuron::GatedSparseConfigV3;
 use codex_hepta_neuron::InhibitoryEdge;
+use codex_hepta_neuron::LowRankMinGruCheckpointV1;
+use codex_hepta_neuron::LowRankMinGruConfigV1;
 use codex_hepta_neuron::PopulationSparseCheckpointV2;
 use codex_hepta_neuron::PopulationSparseConfigV2;
 use codex_hepta_neuron::PopulationSparseTickV2;
@@ -25,6 +27,7 @@ use codex_hepta_neuron::TemporalGateV3;
 use codex_hepta_neuron::TemporalProjectionEdgeV2;
 use codex_hepta_neuron::diagonal_ssm_tick_v1;
 use codex_hepta_neuron::gated_sparse_tick_v3;
+use codex_hepta_neuron::low_rank_min_gru_tick_v1;
 use codex_hepta_neuron::population_sparse_tick_v2;
 use codex_hepta_neuron::sparse_tick;
 use codex_hepta_types::Digest32;
@@ -59,6 +62,7 @@ struct Configs {
     v2: PopulationSparseConfigV2,
     v3: GatedSparseConfigV3,
     ssm: DiagonalSsmConfigV1,
+    min_gru: LowRankMinGruConfigV1,
 }
 
 enum ActiveState {
@@ -66,6 +70,7 @@ enum ActiveState {
     V2(Vec<Option<PopulationSparseCheckpointV2>>),
     V3(Vec<Option<GatedSparseCheckpointV3>>),
     Ssm(Vec<Option<DiagonalSsmCheckpointV1>>),
+    MinGru(Vec<Option<LowRankMinGruCheckpointV1>>),
 }
 
 impl ActiveState {
@@ -75,7 +80,8 @@ impl ActiveState {
             "v2" => Ok(Self::V2(vec![None; cells])),
             "v3" => Ok(Self::V3(vec![None; cells])),
             "ssm" => Ok(Self::Ssm(vec![None; cells])),
-            _ => Err("arm must be v1, v2, v3 or ssm".to_owned()),
+            "min_gru" => Ok(Self::MinGru(vec![None; cells])),
+            _ => Err("arm must be v1, v2, v3, ssm or min_gru".to_owned()),
         }
     }
 
@@ -121,6 +127,13 @@ impl ActiveState {
                 let (next, receipt) =
                     diagonal_ssm_tick_v1(&configs.ssm, input, states[cell].as_ref())
                         .map_err(|error| format!("SSM tick rejected: {error:?}"))?;
+                states[cell] = Some(next);
+                Ok(receipt.checkpoint_after)
+            }
+            Self::MinGru(states) => {
+                let (next, receipt) =
+                    low_rank_min_gru_tick_v1(&configs.min_gru, input, states[cell].as_ref())
+                        .map_err(|error| format!("minGRU tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
@@ -205,6 +218,16 @@ fn make_configs(width: usize) -> Result<Configs, String> {
         input_gain_q24: vec![Q / 2; width],
         time_quantum_micros: 100,
     };
+    let min_gru = LowRankMinGruConfigV1 {
+        base: v2.clone(),
+        rank: 1,
+        gate_input_q24: vec![0; width],
+        gate_output_q24: vec![0; width],
+        candidate_input_q24: vec![0; width],
+        candidate_output_q24: vec![0; width],
+        gate_bias_q24: vec![0; width],
+        candidate_bias_q24: vec![0; width],
+    };
     v1.digest()
         .map_err(|error| format!("V1 config: {error:?}"))?;
     v2.digest()
@@ -213,7 +236,9 @@ fn make_configs(width: usize) -> Result<Configs, String> {
         .map_err(|error| format!("V3 config: {error:?}"))?;
     ssm.digest()
         .map_err(|error| format!("SSM config: {error:?}"))?;
-    Ok(Configs { v1, v2, v3, ssm })
+    min_gru.digest()
+        .map_err(|error| format!("minGRU config: {error:?}"))?;
+    Ok(Configs { v1, v2, v3, ssm, min_gru })
 }
 
 fn parse_trace(bytes: &[u8]) -> Result<MechanismTraceV1, String> {
@@ -348,6 +373,10 @@ fn run() -> Result<(), String> {
         "production_qualification": false,
         "ndu_eligible": false,
         "trained_model": false,
+        "all_model_parameter_budgets_matched": false,
+        "temporal_parameter_count_only": if arm == "min_gru" {
+            Some(configs.min_gru.temporal_parameter_count().map_err(|error| format!("{error:?}"))?)
+        } else { None },
         "state_persistence_measured": false,
         "microbatch_and_gpu_measured": false,
         "artifact_provenance_verified": false,
@@ -436,7 +465,7 @@ mod tests {
         assert_ne!(v1, v2);
         assert_eq!(configs.v2.populations.len(), 2);
         assert_eq!(configs.v2.global_top_k, 3);
-        for arm in ["v1", "v2", "v3", "ssm"] {
+        for arm in ["v1", "v2", "v3", "ssm", "min_gru"] {
             let mut states = ActiveState::new(arm, 64).expect("valid arm");
             for row in &trace.events {
                 let input = request_for(row, 7);
