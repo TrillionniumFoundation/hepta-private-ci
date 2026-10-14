@@ -162,7 +162,17 @@ pub use cell_split_monotonic_rpc::CellSplitMonotonicRpcServiceV1;
 pub use cell_split_monotonic_rpc::CellSplitSupervisorMonotonicUnixPortV1;
 #[cfg(unix)]
 pub use cell_split_monotonic_rpc::cell_split_monotonic_custody_signing_payload_v1;
+#[cfg(unix)]
+pub use cell_split_observer_join::CELL_SPLIT_EVIDENCE_RETENTION_SCHEMA_V1;
 pub use cell_split_observer_join::CELL_SPLIT_OBSERVER_JOIN_SCHEMA_V1;
+#[cfg(unix)]
+pub use cell_split_observer_join::CellSplitEvidenceMetricBindingV1;
+#[cfg(unix)]
+pub use cell_split_observer_join::CellSplitEvidenceObserverReceiptV1;
+#[cfg(unix)]
+pub use cell_split_observer_join::CellSplitEvidenceRetentionReadPortV1;
+#[cfg(unix)]
+pub use cell_split_observer_join::CellSplitEvidenceRetentionReadbackV1;
 #[cfg(unix)]
 pub use cell_split_observer_join::CellSplitObserverDeepReceiptV1;
 pub use cell_split_observer_join::CellSplitObserverJoinErrorV1;
@@ -174,9 +184,13 @@ pub use cell_split_observer_join::CellSplitSignedObserverJoinV1;
 pub use cell_split_observer_join::cell_split_observer_join_payload_v1;
 pub use cell_split_observer_join::cell_split_observer_join_signing_payload_v1;
 #[cfg(unix)]
+pub use cell_split_observer_join::cell_split_evidence_retention_signing_payload_v1;
+#[cfg(unix)]
 pub use cell_split_observer_join::cell_split_supervisor_minimum_signing_payload_v1;
 #[cfg(unix)]
 pub use cell_split_observer_join::verify_cell_split_observer_join_deep_v1;
+#[cfg(unix)]
+pub use cell_split_observer_join::verify_cell_split_evidence_retention_join_v1;
 #[cfg(unix)]
 pub use cell_split_observer_join::verify_cell_split_observer_join_v1;
 #[cfg(unix)]
