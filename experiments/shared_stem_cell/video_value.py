@@ -279,6 +279,8 @@ def run(manifest_path, output, *, _tower_factory=media.LocalTowers, microbatch_s
         or config.get("classes") != 2 or config.get("temporal") is not False
         or set(config.get("models", {})) != {"clip"}):
         raise e.InputError("closed public video training profile required")
+    if type(microbatch_shadow) is not bool:
+        raise e.InputError("explicit batched shadow experiment switch required")
     root = manifest_path.parent
     output.mkdir(parents=True, exist_ok=False)
     e.write_once(output / "plan.json", {"schema": "hepta.video-value-plan.v1",
@@ -324,6 +326,10 @@ def run(manifest_path, output, *, _tower_factory=media.LocalTowers, microbatch_s
             calibration_exits = anytime.probabilities(model, cal)
             cal_keys = [[f["sha256"] for f in c.inputs["video"]] for c in by["calibration"]]
             policy_selection = select(calibration_exits, y(by["calibration"]), cal_keys, value_critic)
+            if microbatch_shadow:
+                from experiments.shared_stem_cell import video_batch_calibration
+                policy_selection["microbatch_calibration"] = video_batch_calibration.select(
+                    calibration_exits, y(by["calibration"]), cal_keys, value_critic)
         model_id = e.parameters(model)
         policy_selection.update({"model_sha256": model_id["sha256"],
             "manifest_sha256": e.sha(manifest_raw),
@@ -365,13 +371,12 @@ def run(manifest_path, output, *, _tower_factory=media.LocalTowers, microbatch_s
             "selection_sha256": seal, "case_ids": [c.case_id for c in by["holdout"]],
             "records": records, "physical_work": costs})
         batch_report = None
-        if type(microbatch_shadow) is not bool:
-            raise e.InputError("explicit batched shadow experiment switch required")
         if microbatch_shadow:
             from experiments.shared_stem_cell import video_batch
             batch_report = video_batch.run_shadow(model, by["holdout"], root, base,
                 selection["policies"], selection["critic"], records, costs,
-                output / "batch", selection_sha256=seal, serial_predictions_sha256=pred_seal)
+                output / "batch", selection_sha256=seal, serial_predictions_sha256=pred_seal,
+                batch_calibration=selection["microbatch_calibration"])
         base.close()
         media.read_cases(root, config["dataset"],2)
         temporal.cohort(root, config["cohort"])
@@ -388,6 +393,12 @@ def run(manifest_path, output, *, _tower_factory=media.LocalTowers, microbatch_s
                 probabilities = torch.tensor([row["probabilities"] for row in study["records"]],
                                              dtype=torch.float32)
                 batch_scores[batch_arm] = temporal.score(probabilities, holdout_y)
+            # Batched-native calibrated arms are likewise scored AFTER all predictions seal.
+            batch_native_scores = {}
+            for batch_arm, study in batch_saved.get("batch_native", {}).items():
+                probabilities = torch.tensor([row["probabilities"] for row in study["records"]],
+                                             dtype=torch.float32)
+                batch_native_scores[batch_arm] = temporal.score(probabilities, holdout_y)
             # Deliberately score only after BOTH serial and batched predictions are sealed;
             # heldout labels never influence policy, batching schedule, or model weights.
         scores, pairing, per_source = {}, {}, {}
@@ -440,6 +451,11 @@ def run(manifest_path, output, *, _tower_factory=media.LocalTowers, microbatch_s
             report.update({"microbatch_shadow": batch_report,
                 "microbatch_shadow_scores": batch_scores,
                 "microbatch_shadow_total_extra_calls":
+                    sum(x["batched_physical_calls"] for x in batch_report["comparison"].values()),
+                "microbatch_native_scores": batch_native_scores,
+                "microbatch_native_total_extra_calls": batch_report["batch_native_extra_calls"],
+                "all_batched_shadow_total_extra_calls":
+                    batch_report["batch_native_extra_calls"] +
                     sum(x["batched_physical_calls"] for x in batch_report["comparison"].values())})
         e.write_once(output / "report.json", report)
         return report

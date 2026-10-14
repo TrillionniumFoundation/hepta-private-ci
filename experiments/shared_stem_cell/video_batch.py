@@ -171,7 +171,7 @@ def stream_cases(model, cases, root, base, policy, critic, *, batch_size=MAX_CEL
 
 
 def run_shadow(model, cases, root, base, policies, critic, serial_records, serial_costs,
-               output, *, selection_sha256, serial_predictions_sha256):
+               output, *, selection_sha256, serial_predictions_sha256, batch_calibration=None):
     """Opt-in, separately charged evaluation; never chooses from held-out labels."""
     output = Path(output)
     output.mkdir(parents=True, exist_ok=False)
@@ -181,10 +181,22 @@ def run_shadow(model, cases, root, base, policies, critic, serial_records, seria
             or type(selection_sha256) is not str or len(selection_sha256) != 64
             or type(serial_predictions_sha256) is not str or len(serial_predictions_sha256) != 64):
         raise e.InputError("externally presealed scalar study required")
+    if batch_calibration is not None:
+        from experiments.shared_stem_cell import video_batch_calibration as bc
+        if (not isinstance(batch_calibration, dict)
+                or batch_calibration.get("schema") != "hepta.video-batch-calibration.v1"
+                or batch_calibration.get("batch_size") != MAX_CELLS_PER_BATCH
+                or set(batch_calibration.get("policies", {})) != set(bc.FAMILIES)):
+            raise e.InputError("presealed schedule-matched calibration required")
+        for policy in batch_calibration["policies"].values():
+            validate_policy(policy, critic)
     e.write_once(output / "plan.json", {"schema": "hepta.video-microbatch-plan.v1",
         "selection_sha256": selection_sha256, "scalar_predictions_sha256": serial_predictions_sha256,
         "source_sha256": e.sha(Path(__file__).read_bytes()), "batch_size": MAX_CELLS_PER_BATCH,
-        "arms": SHADOW_ARMS, "label_blind": True, "production_accepted": False})
+        "arms": SHADOW_ARMS, "batch_native": batch_calibration is not None,
+        "batch_calibration_sha256": (e.sha(e.canonical(batch_calibration))
+                                      if batch_calibration is not None else None),
+        "label_blind": True, "production_accepted": False})
     studies, comparisons = {}, {}
     try:
         for arm in SHADOW_ARMS:
@@ -211,12 +223,23 @@ def run_shadow(model, cases, root, base, policies, critic, serial_records, seria
                 "batched_decisions_not_claimed_equivalent_for_cache_value": arm == "cache_value"}
             studies[arm] = observed
             e.write_once(output / f"{arm}.json", observed)
+        native = {}
+        if batch_calibration is not None:
+            for family, policy in batch_calibration["policies"].items():
+                native[family] = stream_cases(model, cases, root, base, policy, critic)
+                if [r["case_id"] for r in native[family]["records"]] != [c.case_id for c in cases]:
+                    raise e.InputError("calibrated microbatch coverage mismatch")
+                e.write_once(output / f"batch-native-{family}.json", native[family])
         seal = e.write_once(output / "predictions.json", {"selection_sha256": selection_sha256,
             "scalar_predictions_sha256": serial_predictions_sha256,
             "case_ids": [c.case_id for c in cases], "arms": studies,
-            "comparisons": comparisons})
+            "comparisons": comparisons, "batch_native": native})
         return {"schema": "hepta.video-microbatch-executed.v1", "predictions_sha256": seal,
-            "comparison": comparisons, "shadow_charged_separately": True,
+            "comparison": comparisons,
+            "batch_native_extra_calls": sum(x["physical_work"]["physical_video_calls"]
+                                            for x in native.values()),
+            "batch_calibrated_before_holdout": batch_calibration is not None,
+            "shadow_charged_separately": True,
             "independent_quality_gain_established": False, "production_accepted": False}
     except Exception as error:
         e.write_once(output / "failure.json", {"exception": type(error).__name__,
