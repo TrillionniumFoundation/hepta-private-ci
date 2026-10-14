@@ -121,6 +121,7 @@ def aggregate(receipts):
             "batches": len(receipts),
             "scope": expected_scope, "model_digest": expected_model,
             "work_semantics": "whole_logical_stream_including_replayed_prefix",
+            "counter_scope": "all_four_comparator_arms_not_single_deployed_policy",
             "encoder_input_rows": sum(r["rows"] for r in receipts),
             "encoder_forward_calls": sum(r["encoder_forward_calls"] for r in receipts),
             "per_arm_head_forward_calls": {arm: sum(r["head_work"][arm]["head_forward_calls"]
