@@ -63,7 +63,7 @@ python3 experiments/shared_stem_cell/e1e2_public_receipt_audit.py \
   --output /sealed/real-public-review.json
 ```
 
-**Important:** The command above is a usage example; use the full 64-character hashes printed earlier in this document (and pinned in the workflow). The immutable machine-readable [completed local review](E1E2_PUBLIC_ACTUAL_RECEIPT_20261014.json) is authoritative for the precise values.
+The machine-readable [completed local review](E1E2_PUBLIC_ACTUAL_RECEIPT_20261014.json) records the precise numeric values and source ZIP identities.
 
 Observed new-file `val2` AG News accuracy/Brier (128 rows, binary world/sports): frozen Gemma .3828125/.25001948; trained Gemma .9375/.24881424; trained Gemma with previously explored 1024 logit multiplier .9375/.04932607; frozen Laya421 .96875/.02012669. Raw predictions agree exactly across paired and sealed runs, and canonical checkpoint digests match; 2,018 trainable Head parameters and 40 training steps are recorded. Discordance between Laya and trained Gemma is five cases in Laya's favor versus one in Gemma's favor (two-sided *unadjusted* exact McNemar p=.21875). This sample does not establish a statistically certain accuracy advantage for either model.
 
