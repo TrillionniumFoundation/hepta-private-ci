@@ -347,3 +347,140 @@ fn agentd_metrics_flush_failures_and_missing_sink_fail_closed() {
     ));
     assert!(!committed.load(Ordering::Acquire));
 }
+
+#[derive(Debug)]
+struct AcceptRecordButRefuseFsync;
+
+impl codex_hepta_types::PhaseMetricSinkV1 for AcceptRecordButRefuseFsync {
+    fn record(
+        &self,
+        _sample: codex_hepta_types::PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+    }
+}
+
+#[test]
+fn agentd_original_evidence_writer_cannot_be_rebound_or_rehabilitated() {
+    use std::sync::Arc;
+    use std::sync::atomic::AtomicBool;
+    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::Ordering;
+
+    use codex_hepta_types::PhaseMetricSinkV1;
+
+    let first: Arc<dyn PhaseMetricSinkV1> = Arc::new(RecordedNeuronPhases::default());
+    let replacement: Arc<dyn PhaseMetricSinkV1> = Arc::new(RecordedNeuronPhases::default());
+    let mut slot: Option<Arc<dyn PhaseMetricSinkV1>> = None;
+    let failed = AtomicU64::new(0);
+    let flushed = AtomicBool::new(false);
+    assert!(super::bind_metric_sink_once_v1(
+        &mut slot,
+        &failed,
+        &flushed,
+        first.clone(),
+    ));
+    assert!(super::flush_metrics_v1(
+        slot.as_deref(),
+        &failed,
+        &flushed,
+    ));
+    assert!(!super::bind_metric_sink_once_v1(
+        &mut slot,
+        &failed,
+        &flushed,
+        replacement,
+    ));
+    assert!(Arc::ptr_eq(slot.as_ref().unwrap(), &first));
+    assert_eq!(failed.load(Ordering::Acquire), 1);
+    assert!(!super::metrics_ready_v1(
+        slot.as_deref(),
+        &failed,
+        &flushed,
+    ));
+    assert!(!super::flush_metrics_v1(
+        slot.as_deref(),
+        &failed,
+        &flushed,
+    ));
+}
+
+#[test]
+fn agentd_signed_success_must_flush_original_terminal_metrics() {
+    use std::sync::atomic::AtomicBool;
+    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::Ordering;
+    use std::time::Duration;
+
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::PhaseMetricKindV1;
+
+    let sink = RecordedNeuronPhases::default();
+    let failures = AtomicU64::new(0);
+    let committed = AtomicBool::new(false);
+    assert!(super::flush_metrics_v1(
+        Some(&sink),
+        &failures,
+        &committed,
+    ));
+    super::begin_signed_tick_v1(Some(&sink), &failures, &committed).unwrap();
+    super::observe_phase_v1(
+        Some(&sink),
+        &failures,
+        Digest32::of_bytes(b"subject"),
+        Digest32::of_bytes(b"actual-signed-effect"),
+        PhaseMetricKindV1::NeuronFeature,
+        Duration::from_micros(12),
+        true,
+    );
+    assert!(!super::metrics_ready_v1(
+        Some(&sink),
+        &failures,
+        &committed,
+    ));
+    assert_eq!(
+        super::complete_signed_tick_metrics_v1(Some(&sink), &failures, &committed),
+        Ok(())
+    );
+    assert!(super::metrics_ready_v1(
+        Some(&sink),
+        &failures,
+        &committed,
+    ));
+    assert_eq!(sink.0.lock().unwrap().len(), 1);
+    assert_eq!(failures.load(Ordering::Acquire), 0);
+}
+
+#[test]
+fn agentd_queued_but_uncommitted_terminal_evidence_denies_success() {
+    use std::sync::atomic::AtomicBool;
+    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::Ordering;
+
+    let failed = AtomicU64::new(0);
+    let committed = AtomicBool::new(false);
+    let sink = AcceptRecordButRefuseFsync;
+    assert_eq!(
+        super::complete_signed_tick_metrics_v1(Some(&sink), &failed, &committed),
+        Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
+    );
+    assert_eq!(failed.load(Ordering::Acquire), 1);
+    assert!(!committed.load(Ordering::Acquire));
+    // A forged later healthy reporter cannot erase the missing fsync.
+    assert_eq!(
+        super::complete_signed_tick_metrics_v1(
+            Some(&RecordedNeuronPhases::default()),
+            &failed,
+            &committed,
+        ),
+        Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
+    );
+}

@@ -194,10 +194,15 @@ where
     /// Connect to the Evidence-owned durable sink. Telemetry is
     /// non-authorizing and must never replay an uncertain external effect.
     pub fn with_metric_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
-        // Rebinding an Evidence writer cannot reuse a previous writer's
-        // successfully acknowledged persistence frontier.
-        self.metrics_flushed.store(false, Ordering::Release);
-        self.metric_sink = Some(sink);
+        // The original Evidence writer identity is write-once. A later
+        // healthy replacement cannot erase old unflushed terminal history.
+        // Refusal poisons further signed effects without switching the sink.
+        let _ = bind_metric_sink_once_v1(
+            &mut self.metric_sink,
+            &self.failed_metrics,
+            &self.metrics_flushed,
+            sink,
+        );
         self
     }
 
@@ -283,6 +288,26 @@ where
             started.elapsed(),
             result.is_ok(),
         );
+        if result.is_ok() {
+            // The signed model call and its checkpoint publication have
+            // already completed. Never publish success solely because an
+            // asynchronous Evidence record entered the writer queue.
+            // No flush may run while the Final-use effect is executing.
+            complete_signed_tick_metrics_v1(
+                self.metric_sink.as_deref(),
+                &self.failed_metrics,
+                &self.metrics_flushed,
+            )?;
+            // An Evidence fsync may outlast the signed NDU/CNS route lease.
+            // Check independent issuer signature, expiration and live Scope
+            // again before returning success. The original durable intent
+            // and Final-use nonce may never be replayed on this denial.
+            self.ndu_read_verifier
+                .as_ref()
+                .ok_or(NeuronRuntimeError::PendingReconciliation)?
+                .verify(signed_read)
+                .map_err(|_| NeuronRuntimeError::NduStaleAfterEffect)?;
+        }
         result
     }
 
@@ -518,6 +543,25 @@ fn observe_phase_v1(
     }
 }
 
+/// A bound Evidence writer cannot be swapped out to backfill missing
+/// Admission, NDU or terminal records. Poison even a pre-effect attempted
+/// rebind: the original writer and its historical identity remain intact.
+fn bind_metric_sink_once_v1(
+    slot: &mut Option<Arc<dyn PhaseMetricSinkV1>>,
+    failed_metrics: &AtomicU64,
+    metrics_flushed: &AtomicBool,
+    sink: Arc<dyn PhaseMetricSinkV1>,
+) -> bool {
+    if slot.is_some() || failed_metrics.load(Ordering::Acquire) != 0 {
+        metrics_flushed.store(false, Ordering::Release);
+        failed_metrics.fetch_add(1, Ordering::Release);
+        return false;
+    }
+    *slot = Some(sink);
+    metrics_flushed.store(false, Ordering::Release);
+    true
+}
+
 /// Healthy queue != persisted Evidence. Only an explicit post-effect flush
 /// restores this non-authorizing acceptance gate.
 fn metrics_ready_v1(
@@ -542,6 +586,20 @@ fn begin_signed_tick_v1(
         return Err(NeuronRuntimeError::PendingReconciliation);
     }
     metrics_flushed.store(false, Ordering::Release);
+    Ok(())
+}
+
+/// A successful business tick requires the original Evidence writer's
+/// post-effect durable flush ACK. Failure is an indeterminate external
+/// effect, never authorization to replay the original signed tick.
+fn complete_signed_tick_metrics_v1(
+    sink: Option<&dyn PhaseMetricSinkV1>,
+    failed_metrics: &AtomicU64,
+    metrics_flushed: &AtomicBool,
+) -> Result<(), NeuronRuntimeError> {
+    if !flush_metrics_v1(sink, failed_metrics, metrics_flushed) {
+        return Err(NeuronRuntimeError::PendingReconciliation);
+    }
     Ok(())
 }
 
