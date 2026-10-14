@@ -19,7 +19,6 @@ from native import digest
 from strong_rag_trial import (
     HISTORIC_PLAN_SHA,
     _journal_answers,
-    _reader,
     _score,
     _stats,
     documents,
@@ -259,7 +258,9 @@ def collect(plan_dir, observations, shards, output, *, expected_commit):
         for index, case in enumerate(locked["cases"]):
             arms, _ = selection(case, originals)
             folder = shards / f"{tier}-{index}"
-            frozen = read(folder / "case-plan.json", file_sha(folder / "case-plan.json"))
+            frozen = read(
+                folder / "case-plan.json", file_sha(folder / "case-plan.json")
+            )
             _, _, _, expected = freeze_case(plan_dir, index)
             if frozen != expected:
                 raise ValueError("task or critical premise changed after freeze")
@@ -305,7 +306,10 @@ def collect(plan_dir, observations, shards, output, *, expected_commit):
     )
     labels = read(observations / "labels.json", collection["files"]["labels.json"])
     test_ids = {c["query"]["identity"] for c in locked["cases"]}
-    if len(labels) != 16 or {l["id"] for l in labels if l["id"] in test_ids} != test_ids:
+    if (
+        len(labels) != 16
+        or {l["id"] for l in labels if l["id"] in test_ids} != test_ids
+    ):
         raise ValueError("incomplete original test gold")
     targets = [l for l in labels if l["id"] in test_ids]
     stats, contrasts = {}, {}
@@ -325,7 +329,8 @@ def collect(plan_dir, observations, shards, output, *, expected_commit):
         cross[arm] = _paired(
             {
                 key[0]: {"smol": smol[key], "qwen": qwen[key]}
-                for key in smol if key[1] == arm
+                for key in smol
+                if key[1] == arm
             },
             "smol",
             "qwen",
@@ -381,12 +386,19 @@ def main():
     args = parser.parse_args()
     if args.command == "generate":
         generate(
-            args.plan_dir, args.model_dir, args.output,
-            index=args.case, tier=args.tier, stage_sha=args.stage_sha,
+            args.plan_dir,
+            args.model_dir,
+            args.output,
+            index=args.case,
+            tier=args.tier,
+            stage_sha=args.stage_sha,
         )
     else:
         collect(
-            args.plan_dir, args.observations, args.shards, args.output,
+            args.plan_dir,
+            args.observations,
+            args.shards,
+            args.output,
             expected_commit=args.generating_commit,
         )
 
