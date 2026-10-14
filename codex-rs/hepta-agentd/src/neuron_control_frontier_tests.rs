@@ -60,9 +60,15 @@ fn adapter_uses_same_durable_control_owner_for_reads_and_checkpoint_publication(
     // cannot publish a second checkpoint after the route has advanced.
     let mut successor = snapshot.clone();
     successor.route_fence += 1;
-    let cutover = owner
-        .publish_cutover(&snapshot, next, successor.clone(), next)
-        .expect("durable CNS cutover");
+    let (_, cutover) = owner
+        .publish_cutover_with_external_effect(
+            &snapshot,
+            next,
+            successor.clone(),
+            next,
+            || -> Result<(), &'static str> { Ok(()) },
+        )
+        .expect("durable CNS Begin and Commit");
     assert!(!cutover.is_zero());
     assert_eq!(adapter.latest(&scope).unwrap(), successor);
     assert_eq!(

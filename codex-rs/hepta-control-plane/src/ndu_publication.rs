@@ -420,50 +420,20 @@ impl NduPublicationOwnerV1 {
         Ok((state.snapshot.clone(), state.checkpoint))
     }
 
-    /// CNS must use this exclusive owner for cutover to linearize with Neuron
-    /// publication. Other CNS paths are not covered until explicitly wired.
+    /// Compatibility-only name. The old single-phase API could write a
+    /// successful route cutover without a durable pre-effect Prepare, which
+    /// left an ambiguous crash window and bypassed the Neuron Control lane.
+    /// It is permanently non-authorizing; callers must migrate to the
+    /// separately reviewed fsynced Begin/physical-effect/Commit protocol.
+    #[deprecated(note = "single-phase CNS publication is denied; use guarded durable handoff")]
     pub fn publish_cutover(
         &self,
-        expected: &NduSnapshotRefV1,
-        expected_checkpoint: Digest32,
-        next: NduSnapshotRefV1,
-        migrated_checkpoint: Digest32,
+        _expected: &NduSnapshotRefV1,
+        _expected_checkpoint: Digest32,
+        _next: NduSnapshotRefV1,
+        _migrated_checkpoint: Digest32,
     ) -> Result<Digest32, NduPublicationErrorV1> {
-        next.validate()
-            .map_err(|_| NduPublicationErrorV1::Invalid)?;
-        let mut state = self
-            .state
-            .lock()
-            .map_err(|_| NduPublicationErrorV1::Poisoned)?;
-        if state.poisoned {
-            return Err(NduPublicationErrorV1::Poisoned);
-        }
-        // The caller's frozen predecessor must match BOTH the current route
-        // and checkpoint. A model checkpoint CAS that wins first invalidates
-        // a stale migration; the same mutex alone is not sufficient.
-        if state.snapshot != *expected
-            || state.checkpoint != expected_checkpoint
-            || next.scope_id != expected.scope_id
-            || next.generation < expected.generation
-            || next.route_fence <= expected.route_fence
-            || next.revocation_epoch < expected.revocation_epoch
-        {
-            return Err(NduPublicationErrorV1::Stale);
-        }
-        let next_digest = next
-            .semantic_digest()
-            .map_err(|_| NduPublicationErrorV1::Invalid)?;
-        let previous = state.checkpoint;
-        let receipt = state.append(
-            'C',
-            next_digest,
-            previous,
-            migrated_checkpoint,
-            Digest32::ZERO,
-            Digest32::ZERO,
-        )?;
-        state.snapshot = next;
-        Ok(receipt)
+        Err(NduPublicationErrorV1::Unsupported)
     }
 
     /// Transactional adapter for a *real* external CNS owner. Write a

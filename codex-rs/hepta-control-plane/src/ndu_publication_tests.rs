@@ -2,6 +2,11 @@ use super::*;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+#[cfg(unix)]
+fn test_only_original_runtime_receipt() -> Result<(), &'static str> {
+    Ok(())
+}
+
 fn snapshot(fence: u64) -> NduSnapshotRefV1 {
     NduSnapshotRefV1 {
         scope_id: StableId::new("scope-1").unwrap(),
@@ -61,6 +66,29 @@ fn production_owner_replays_checkpoint_and_requires_single_writer() {
 
 #[cfg(unix)]
 #[test]
+#[allow(deprecated)]
+fn direct_single_phase_cns_publication_is_always_denied_and_never_appends() {
+    let dir = tempfile::tempdir().expect("private Control root");
+    let path = dir.path().join("legacy-cutover.wal");
+    let original = snapshot(3);
+    let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+        .expect("Control owner");
+    let before = std::fs::read(&path).expect("original WAL");
+    assert_eq!(
+        owner.publish_cutover(
+            &original,
+            Digest32::ZERO,
+            snapshot(4),
+            Digest32::of_bytes(b"fake-successor"),
+        ),
+        Err(NduPublicationErrorV1::Unsupported)
+    );
+    assert_eq!(owner.current().unwrap(), (original, Digest32::ZERO));
+    assert_eq!(std::fs::read(&path).expect("unchanged WAL"), before);
+}
+
+#[cfg(unix)]
+#[test]
 fn cutover_and_checkpoint_cas_use_same_exclusive_owner() {
     let dir = tempfile::tempdir().expect("private directory");
     let path = dir.path().join("frontier.wal");
@@ -69,9 +97,16 @@ fn cutover_and_checkpoint_cas_use_same_exclusive_owner() {
     {
         let owner = NduPublicationOwnerV1::open_production(&path, previous.clone(), Digest32::ZERO)
             .expect("owner");
-        owner
-            .publish_cutover(&previous, Digest32::ZERO, snapshot(4), migrated)
-            .expect("cutover fsync");
+        let (_, receipt) = owner
+            .publish_cutover_with_external_effect(
+                &previous,
+                Digest32::ZERO,
+                snapshot(4),
+                migrated,
+                test_only_original_runtime_receipt,
+            )
+            .expect("durable Begin / fixture effect / Commit");
+        assert!(!receipt.is_zero());
         assert!(matches!(
             owner.compare_and_publish_checkpoint(
                 &previous,
@@ -110,12 +145,24 @@ fn checkpoint_advance_invalidates_frozen_cutover_without_losing_new_state() {
         )
         .expect("model CAS must commit");
     assert_eq!(
-        owner.publish_cutover(&original, Digest32::ZERO, snapshot(4), migrated),
+        owner.publish_cutover_with_external_effect(
+            &original,
+            Digest32::ZERO,
+            snapshot(4),
+            migrated,
+            test_only_original_runtime_receipt,
+        ),
         Err(NduPublicationErrorV1::Stale)
     );
     assert_eq!(owner.current().unwrap(), (original.clone(), committed));
     owner
-        .publish_cutover(&original, committed, snapshot(4), migrated)
+        .publish_cutover_with_external_effect(
+            &original,
+            committed,
+            snapshot(4),
+            migrated,
+            test_only_original_runtime_receipt,
+        )
         .expect("refrozen migration may advance");
     assert_eq!(owner.current().unwrap(), (snapshot(4), migrated));
 }
@@ -155,7 +202,13 @@ fn concurrent_model_and_cns_cas_cannot_both_commit_one_predecessor() {
     let cns_old = old.clone();
     let cns = thread::spawn(move || {
         cns_barrier.wait();
-        cns_owner.publish_cutover(&cns_old, Digest32::ZERO, snapshot(4), migrated)
+        cns_owner.publish_cutover_with_external_effect(
+            &cns_old,
+            Digest32::ZERO,
+            snapshot(4),
+            migrated,
+            test_only_original_runtime_receipt,
+        )
     });
     barrier.wait();
     let model_ok = model.join().expect("model thread").is_ok();
