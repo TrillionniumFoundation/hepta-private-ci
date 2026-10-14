@@ -7,6 +7,7 @@ A copied source choice is not evidence that SGD improved an answer.
 
 import argparse
 import json
+import math
 from pathlib import Path
 
 from source_head_sgd_original import (
@@ -46,6 +47,7 @@ def compare(public, weights, predictions, *, public_sha, weights_sha, prediction
             item.get("gradient_updates") != STEPS
             or item.get("parameter_count") != len(FEATURES)
             or type(item.get("actual_update_squared_l2")) not in (int, float)
+            or not math.isfinite(item["actual_update_squared_l2"])
             or not item["actual_update_squared_l2"] > 0
             for item in weights["training"].values()
         )
