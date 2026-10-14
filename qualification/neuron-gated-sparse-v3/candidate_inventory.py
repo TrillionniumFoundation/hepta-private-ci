@@ -133,8 +133,9 @@ def verify_artifact(path: Path, expected_sha256: str, *, arm: str,
         counted += count
         payload = data[start:end]
         if dtype == 'F32':
-            require(all(math.isfinite(v[0]) for v in struct.iter_unpack('<f', payload)),
-                    name+': NaN or infinity is not a trained weight')
+            require(all(math.isfinite(v[0]) and -8.0 <= v[0] <= 8.0
+                        for v in struct.iter_unpack('<f', payload)),
+                    name+': nonfinite or out-of-range Q24-convertible F32 Head')
         else:
             values = (v[0] for v in struct.iter_unpack('<q', payload))
             if name == 'structure.projection':
