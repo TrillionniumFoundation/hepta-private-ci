@@ -390,6 +390,70 @@ fn split(
 }
 
 #[test]
+fn legacy_migration_api_denies_before_entering_any_state_owner_callback() {
+    struct RecordingMigration(usize);
+
+    impl crate::OrganStateMigrationV1 for RecordingMigration {
+        fn snapshot(
+            &mut self,
+            _predecessor: Generation,
+        ) -> Result<Vec<u8>, crate::OrganMigrationError> {
+            self.0 += 1;
+            Ok(vec![])
+        }
+
+        fn migrate(
+            &mut self,
+            _snapshot: &[u8],
+            _predecessor: Generation,
+            _candidate: Generation,
+        ) -> Result<(), crate::OrganMigrationError> {
+            self.0 += 1;
+            Ok(())
+        }
+
+        fn rollback(
+            &mut self,
+            _snapshot: &[u8],
+            _predecessor: Generation,
+            _candidate: Generation,
+        ) -> Result<(), crate::OrganMigrationError> {
+            self.0 += 1;
+            Ok(())
+        }
+    }
+
+    let predecessor = host(1, &[]);
+    let parent_route = predecessor
+        .route(&id("system"), &id("parent"), 0)
+        .expect("current parent route");
+    let successor = host(2, &[("child-a", "sink-a"), ("child-b", "sink-b")]);
+    let child_routes = vec![
+        successor.route(&id("system"), &id("child-a"), 0).unwrap(),
+        successor.route(&id("system"), &id("child-b"), 0).unwrap(),
+    ];
+    let split = split(&predecessor, &parent_route, &successor, &child_routes);
+    let mut controller =
+        CellSplitRouteControllerV1::new(predecessor, split, parent_route.clone()).unwrap();
+    let mut migration = RecordingMigration(0);
+    assert_eq!(
+        controller.activate_children_with_migration(
+            Generation::new(1).unwrap(),
+            successor,
+            child_routes,
+            &mut migration,
+        ),
+        Err(CellSplitRouteErrorV1::CutoverOwnerUnavailable)
+    );
+    assert_eq!(migration.0, 0, "no Snapshot, Migrate or Rollback callback");
+    assert_eq!(controller.phase(), CellSplitRoutePhaseV1::ParentActive);
+    assert_eq!(controller.generation(), Generation::new(1).unwrap());
+    assert_eq!(controller.parent_route(), &parent_route);
+    assert!(controller.route_fence_receipt().is_none());
+    assert!(controller.child_route(&id("child-a")).is_none());
+}
+
+#[test]
 fn legacy_public_activation_cannot_publish_even_fully_valid_child_routes() {
     let predecessor = host(1, &[]);
     let parent_route = predecessor
