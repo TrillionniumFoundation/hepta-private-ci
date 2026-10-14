@@ -467,7 +467,9 @@ fn single_split_coordinator_persists_real_cas_then_fences_missing_migration_owne
     // requests manufactured ECONNREFUSED instead of testing durable state.
     // Keep the original signer/owner alive until the coordinator explicitly
     // finishes, with a bounded nonblocking accept loop to avoid hanging CI.
-    listener.set_nonblocking(true).expect("bounded CAS listener");
+    listener
+        .set_nonblocking(true)
+        .expect("bounded CAS listener");
     let stop = Arc::new(AtomicBool::new(false));
     let stop_server = Arc::clone(&stop);
     let server = thread::spawn(move || {
