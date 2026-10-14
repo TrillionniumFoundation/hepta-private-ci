@@ -266,6 +266,14 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                 optimizer.step()
+                # Native Q24 config admission requires nonnegative V3 gate bias
+                # and stable SSM per-step decay. These are projected *during*
+                # research optimization rather than silently clipped on export.
+                with torch.no_grad():
+                    if arm == 'v3':
+                        model.gate_bias.clamp_(0, 1)
+                    elif arm == 'ssm':
+                        model.decay_per_step.clamp_(0, 1)
                 require(time.process_time()-cpu0 <= args.max_train_cpu_seconds,
                         'shared per-arm CPU training ceiling exceeded')
                 last_loss = float(loss.detach())
