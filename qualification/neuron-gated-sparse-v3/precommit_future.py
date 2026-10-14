@@ -16,6 +16,7 @@ import sys
 from typing import Any
 
 from a0_deployment_evidence import load_public_key, verify_signed
+from candidate_inventory import verify_artifact
 from matched_train import CAPS, ARMS, H, Q, sha_bytes, sha_file, unique_json, utc, require, make_model
 
 FORECAST_SCHEMA = 'hepta.neuron.unlabelled-future-q24.v1'
@@ -87,6 +88,11 @@ def physical_models(root: Path, receipt: dict) -> dict[tuple[int,str],dict]:
         sha_file(root / filename, row['weight_sha256'])
         require(type(row['parameter_count']) is int and row['parameter_count'] <= cap and
                 row['optimizer_steps'] == receipt['candidate_optimizer_steps'], 'budget/train steps drift')
+        # A signed hash and scalar parameter count do not prove the frozen
+        # weights have the trainable tensor geometry or native Q24 bounds.
+        verify_artifact(root / filename, row['weight_sha256'],
+                        arm=arm, width=row['width'], rank=row['rank'],
+                        expected_count=row['parameter_count'])
         seen[(cap,arm)] = row
     return seen
 
