@@ -1,0 +1,66 @@
+name: Hepta shared Stem temporal video execution (research only)
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/public_video.py"
+      - "experiments/shared_stem_cell/video_temporal.py"
+      - "experiments/shared_stem_cell/test_public_video.py"
+      - "experiments/shared_stem_cell/test_video_temporal.py"
+      - "experiments/shared_stem_cell/media_execution.py"
+      - "experiments/shared_stem_cell/execution.py"
+      - ".github/workflows/hepta-shared-stem-video.yml"
+permissions:
+  contents: read
+concurrency:
+  group: shared-stem-video-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  public-temporal-order:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Exact research source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Isolated video runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/hepta-video-env"
+          PY="$RUNNER_TEMP/hepta-video-env/bin/python"
+          "$PY" -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          "$PY" -m pip install transformers==4.57.1 numpy==2.2.6 safetensors==0.7.0 psutil==7.1.0 pillow==12.3.0 packaging==24.2 av==14.4.0 ruff==0.14.0
+      - name: Actual frozen CLIP temporal-order study
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          USE_TF: "0"
+          TOKENIZERS_PARALLELISM: "false"
+        shell: bash
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-video-env/bin/python"
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-video-source.txt"
+          "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-video-source.txt"
+          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{public_video,video_temporal,test_public_video,test_video_temporal}.py
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_public_video experiments.shared_stem_cell.test_video_temporal experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.hf_integration_checks 2>&1 | tee "$RUNNER_TEMP/hepta-video-tests.log"
+          "$PY" -m experiments.shared_stem_cell.public_video --output "$RUNNER_TEMP/hepta-video-study" 2>&1 | tee "$RUNNER_TEMP/hepta-video-execution.log"
+          git diff --exit-code
+      - name: Retain reports and failures, never source/derived media or weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-video-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-video-source.txt
+            ${{ runner.temp }}/hepta-video-tests.log
+            ${{ runner.temp }}/hepta-video-execution.log
+            ${{ runner.temp }}/hepta-video-study/*.json
+            ${{ runner.temp }}/hepta-video-study/*.jsonl
+            ${{ runner.temp }}/hepta-video-study/SOURCE-README.txt
+            ${{ runner.temp }}/hepta-video-study/execution
+            ${{ runner.temp }}/hepta-video-study/vision/model-source.json
+            ${{ runner.temp }}/hepta-video-study/vision/verified-publisher-files.json
+          if-no-files-found: warn
