@@ -6,6 +6,7 @@ import unittest
 
 from amcn_core import Evidence, Refused
 from amcn_native import build_inputs, run_train_once
+from experiments.shared_stem_cell.execution import InputError
 
 
 def sha(text):
@@ -39,7 +40,7 @@ class RealOwnerAdapterBoundary(unittest.TestCase):
         rows = [row("t1", "train"), row("t2", "train")]
         with tempfile.TemporaryDirectory() as temp:
             target = Path(temp) / "sealed"
-            with self.assertRaises(Exception):
+            with self.assertRaisesRegex(InputError, "snapshot must be a real local directory"):
                 run_train_once(Path(temp) / "missing_model",
                                {"kind": "encoder", "files": {}}, rows,
                                {"t1": 1, "t2": 0},
