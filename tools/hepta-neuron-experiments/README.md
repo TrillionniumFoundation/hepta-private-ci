@@ -204,3 +204,22 @@ local checkouts must be cleaned or reproduced into a fresh checkout and do
 **not** pass by ignoring dirty-source evidence. These are fail-closed source
 controls, **not** proof of authenticated pretrained weights, signed final use
 or a durable Neuron checkpoint.
+
+### E0 observed tail dependence: reject cancelled or Q24-rounded paths
+
+Previously, the shadow numeric oracle counted nonzero A/B low-rank paths
+from source coordinates beyond the projected Head width. That structural
+condition alone admitted paths that **cancel** after aggregation or quantize
+to an identical Q24 vector; it was not actual evidence against truncation.
+The versioned numeric-oracle result is now `hepta.neuron.e0-projection-numeric-result.v3`.
+For wide→narrow cases, it independently repeats the **full Q24 projection
+arithmetic** on the same frozen input with coordinates
+`[output_width, input_width)` replaced by zero, and fails closed unless the
+resulting *actual Q24 vector* differs from the original. The report field
+`observed_source_tail_q24_influence` is true only for that sampled pair;
+it is null when no tail exists. Tests include two legitimate nonzero rank
+paths that cancel to zero, an all-zero tail, and a sub-quantum float32
+input, alongside the positive last-coordinate fixture. These are synthetic
+mechanism tests, not real Model Worker receipts or guarantees of learned
+capacity. The selected task utility of a projection still requires
+independent held-out evaluation.

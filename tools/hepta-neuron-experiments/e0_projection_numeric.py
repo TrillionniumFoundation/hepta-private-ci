@@ -23,7 +23,7 @@ MAX_RANK = 64
 MAX_COEFF = 600_000
 P_SCHEMA = "hepta.stem.low-rank-projection.q24.v1"
 C_SCHEMA = "hepta.neuron.e0-projection-numeric-trial.v1"
-R_SCHEMA = "hepta.neuron.e0-projection-numeric-result.v2"
+R_SCHEMA = "hepta.neuron.e0-projection-numeric-result.v3"
 P_DOMAIN = b"hepta.stem.low-rank-projection.q24.v1"
 F_DOMAIN = b"hepta.stem.feature.f32.v1"
 B_DOMAIN = b"hepta.stem.projected-feature-bound.v1"
@@ -236,6 +236,30 @@ def calculate(contract_path: Path) -> dict:
          all(type(v) is int and -LIMIT <= v <= LIMIT for v in claimed),
          "invalid projected Q24 vector envelope")
     need(claimed == computed, "projected Q24 numerical mismatch (possible implicit slice)")
+    # A nonzero low-rank path is NOT evidence of actual tail dependence:
+    # rank paths can cancel each other or quantize below one Q24 quantum.
+    # Recompute the same full projector with all tail inputs masked to zero.
+    # Accept only when the observed output genuinely changes. This is a
+    # per-sample, post-Q24 witness, not a generalization/utility guarantee.
+    observed_tail_influence = None
+    if width > projector["output_width"]:
+        retained_width = projector["output_width"]
+        a = projector["a_q24"]
+        b = projector["b_q24"]
+        masked_hidden = [
+            round_q48(sum(original[j] * a[k * width + j]
+                          for j in range(retained_width)))
+            for k in range(projector["rank"])
+        ]
+        masked_output = [
+            round_q48(projector["bias_q24"][k] * Q +
+                      sum(masked_hidden[j] * b[k * projector["rank"] + j]
+                          for j in range(projector["rank"])))
+            for k in range(projector["output_width"])
+        ]
+        observed_tail_influence = masked_output != computed
+        need(observed_tail_influence,
+             "source tail has no observed Q24 influence (implicit slice/cancellation)")
     bound = hashlib.sha256(B_DOMAIN)
     for value in (con["scope_digest"], con["revocation_frontier_digest"],
                   projector["encoder_digest"], projector["preprocessor_digest"],
@@ -260,6 +284,7 @@ def calculate(contract_path: Path) -> dict:
         "projected_input_digest": con["projected_input_digest"],
         "input_width": width, "output_width": len(computed),
         "rank": projector["rank"], "active_source_tail_rank_paths": tail_paths,
+        "observed_source_tail_q24_influence": observed_tail_influence,
         "reference_multiply_add_terms": projector["rank"] * (
             width + projector["output_width"]),
         # Exact unmodified Rust canonical_feature_vector_digest_v1 framing.

@@ -108,6 +108,7 @@ class E0NumericOracleTests(unittest.TestCase):
         result = self.run_trial()
         self.assertEqual((result["input_width"], result["output_width"], result["rank"]), (768, 256, 1))
         self.assertTrue(result["numeric_oracle_agrees"])
+        self.assertTrue(result["observed_source_tail_q24_influence"])
         self.assertFalse(result["encoder_actually_invoked"])
         self.assertFalse(result["neuron_checkpoint_committed"])
         self.assertEqual(self.out[-1], 1 << 22)
@@ -161,6 +162,40 @@ class E0NumericOracleTests(unittest.TestCase):
         self.projector["b_q24"][-1] = 0
         self.freeze()
         with self.assertRaisesRegex(m.NumericGateError, "implicit slice"):
+            self.run_trial()
+
+    def test_structural_tail_paths_cancel_to_zero_after_q24(self):
+        # Two nonzero tail-to-output paths exactly cancel. Both source and
+        # projected-input digests are regenerated, so digest-only and
+        # nonzero-rank-path guards are insufficient.
+        self.projector["rank"] = 2
+        self.projector["a_q24"] = [0] * (768 * 2)
+        self.projector["a_q24"][767] = m.Q
+        self.projector["a_q24"][1535] = m.Q
+        self.projector["b_q24"] = [0] * (256 * 2)
+        self.projector["b_q24"][-2] = m.Q
+        self.projector["b_q24"][-1] = -m.Q
+        self.out = [0] * 256
+        self.contract["expected_output_q24"] = self.out[:]
+        self.freeze()
+        with self.assertRaisesRegex(m.NumericGateError, "no observed Q24 influence"):
+            self.run_trial()
+
+    def test_tail_weights_with_zero_tail_features_cannot_claim_observed_dependence(self):
+        self.f32[-1] = 0.0
+        self.out[-1] = 0
+        self.contract["expected_output_q24"] = self.out[:]
+        self.freeze()
+        with self.assertRaisesRegex(m.NumericGateError, "no observed Q24 influence"):
+            self.run_trial()
+
+    def test_subquantum_tail_signal_cannot_claim_observed_q24_dependence(self):
+        # Source bytes differ, but float32-to-Q24 conversion rounds to zero.
+        self.f32[-1] = 1.0e-10
+        self.out[-1] = 0
+        self.contract["expected_output_q24"] = self.out[:]
+        self.freeze()
+        with self.assertRaisesRegex(m.NumericGateError, "no observed Q24 influence"):
             self.run_trial()
 
     def test_wrong_head_width_is_rejected(self):
