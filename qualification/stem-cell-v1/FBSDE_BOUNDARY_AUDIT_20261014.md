@@ -36,3 +36,28 @@ Research extension of #1760, building on the numerical and nonanticipation
 semantics of #1550 and finite-tree controls of #1546. Existing System2
 callbacks, DecisionCell artifacts, utility.ndu owners, model selection and
 FinalUse remain unchanged.
+
+
+## Separate analytic globally admitted coupled-field reference
+
+\`fbsde_regular_field.examine\` adds the deterministic but **fully
+forward/backward coupled** scalar reference \`dX=Ydt\`, \`dY=-cXdt\`,
+\`X(0)=x0\`, \`Y(T)=gX(T)\`. Before changing the short-horizon mesh it checks
+the full horizon against the first regular decoupling-field pole and bounds
+the field slope and denominators. The exact harmonic flow and backward
+terminal-field transport verify each intermediate \`X,Y\` interface and
+the whole-interval terminal condition, not merely the last local boundary.
+
+The **wrong-reset** control independently reapplies the original terminal
+slope at every segment: each local terminal condition is satisfied, yet
+the stitched backward field jumps at intermediate interfaces. Near/beyond
+the first pole we reject the *regular-global-field profile* even when
+every short segment would look individually well-posed. This conservatively
+does not claim every nonregular boundary formulation is insoluble.
+
+This is a mathematically separate negative reference aligned with #1550's
+analytic study; it is NOT a replacement for its noisy Brownian reference or
+a certification of an arbitrary neural fully coupled stochastic FBSDE.
+
+Run: \`PYTHONPATH=qualification/stem-cell-v1 python -m unittest -v
+qualification/stem-cell-v1/test_fbsde_regular_field.py\`.
