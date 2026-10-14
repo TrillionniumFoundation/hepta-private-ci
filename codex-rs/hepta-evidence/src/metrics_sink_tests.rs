@@ -283,3 +283,42 @@ fn restarted_evidence_sink_cannot_claim_a_new_history_after_wal_loss() {
     );
     assert!(!path.exists(), "no replacement empty journal");
 }
+
+#[test]
+fn evidence_stop_ack_hands_off_original_wal_and_marker_lock_before_reopen() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("stop-handoff.log");
+    for round in 0..24_u64 {
+        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 2, 60_000)
+            .expect("one original writer");
+        sink.record(sample(PhaseMetricKindV1::Wal))
+            .expect("accepted metric");
+        sink.flush().expect("durably fsynced group and highwater");
+        drop(sink);
+
+        // This is an immediate original-owner reopen, not a sleep/poll test.
+        // A successful Stop ACK must follow release of both file locks.
+        let recovered = MetricsGroupCommitV1::open(&path)
+            .expect("no previous writer lock remains");
+        assert_eq!(recovered.committed_rows(), round + 1);
+        assert_eq!(recovered.committed_groups(), round + 1);
+    }
+}
+
+#[test]
+fn graceful_evidence_stop_persists_pending_sample_before_owner_lock_release() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("stop-unflushed.log");
+    for round in 0..12_u64 {
+        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000)
+            .expect("one original writer");
+        sink.record(sample(PhaseMetricKindV1::NduRead))
+            .expect("accepted pending metric");
+        drop(sink);
+
+        let reopened = MetricsGroupCommitV1::open(&path)
+            .expect("Stop ACK follows original owner drop");
+        assert_eq!(reopened.committed_rows(), round + 1);
+        assert_eq!(reopened.committed_groups(), round + 1);
+    }
+}
