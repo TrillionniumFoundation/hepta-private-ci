@@ -130,6 +130,10 @@ mod provider_effect_tests;
 mod execution_preparation_v1_tests;
 
 #[cfg(test)]
+#[path = "execution_complete_v1_tests.rs"]
+mod execution_complete_v1_tests;
+
+#[cfg(test)]
 #[path = "summary_tests.rs"]
 mod summary_tests;
 
