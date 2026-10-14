@@ -28,6 +28,8 @@ def fixture():
         "controls": {
             "hybrid": {"selected": ids[:4]},
             "program_support": {"selected": [ids[2], ids[3]]},
+            "without_prerequisite": {"selected": [ids[3]]},
+            "empty": {"selected": []},
         },
     }
     originals = {key: SimpleNamespace(scope="q1") for key in ids}
@@ -69,6 +71,7 @@ class BottleneckAblationTests(unittest.TestCase):
     def test_one_source_ablation_becomes_empty(self):
         case, docs = fixture()
         case["controls"]["program_support"]["selected"] = ["event_4"]
+        case["controls"]["without_prerequisite"]["selected"] = []
         arms, critical = selection(case, docs)
         self.assertEqual(critical, "event_4")
         self.assertEqual(arms["minus_one"], ())
@@ -137,6 +140,29 @@ class BottleneckAblationTests(unittest.TestCase):
                 changed["receipt"][field] = value
                 with self.assertRaisesRegex(ValueError, "identity"):
                     validate_row(changed, case, arms, QWEN_INVENTORY)
+
+
+    def test_uses_original_registered_prerequisite_deletion(self):
+        case, docs = fixture()
+        case["controls"]["without_prerequisite"]["selected"] = ["event_2"]
+        with self.assertRaisesRegex(ValueError, "declared support"):
+            selection(case, docs)
+
+    def test_rejects_authored_empty_control_with_hidden_source(self):
+        case, docs = fixture()
+        case["controls"]["empty"]["selected"] = ["event_0"]
+        with self.assertRaisesRegex(ValueError, "declared support"):
+            selection(case, docs)
+
+    def test_real_frozen_reader_receipt_does_not_supply_human_review_flag(self):
+        case, docs = fixture()
+        arms, _ = selection(case, docs)
+        row = answer("declared_support", arms["declared_support"])
+        row["receipt"].pop("independent_semantic_review")
+        validate_row(row, case, arms, QWEN_INVENTORY)
+        row["receipt"]["independent_semantic_review"] = True
+        with self.assertRaisesRegex(ValueError, "identity"):
+            validate_row(row, case, arms, QWEN_INVENTORY)
 
     def test_delivered_ids_must_match_actual_selection_and_order(self):
         case, docs = fixture()

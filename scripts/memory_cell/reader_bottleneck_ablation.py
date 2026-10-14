@@ -79,6 +79,8 @@ def selection(case, originals):
         not 1 <= len(declared) <= 8
         or len(set(declared)) != len(declared)
         or tuple(controls["hybrid"]["selected"]) != hybrid
+        or tuple(controls["without_prerequisite"]["selected"]) != declared[1:]
+        or tuple(controls["empty"]["selected"]) != ()
         or any(key not in originals for key in set(ids) | set(declared))
         or any(originals[key].scope != case["query"]["scope"] for key in declared)
     ):
@@ -216,7 +218,7 @@ def validate_row(row, case, arms, identity):
         or receipt.get("trainable_parameters") != 0
         or receipt.get("answer_postprocessed") is not False
         or receipt.get("semantic_citation_precision") is not None
-        or receipt.get("independent_semantic_review") is not False
+        or receipt.get("independent_semantic_review", False) is not False
         or [item["original_id"] for item in receipt["delivered_evidence"]]
         != row["selected"]
         or type(receipt["input_tokens"]) is not int
