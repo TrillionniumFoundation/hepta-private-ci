@@ -363,6 +363,7 @@ impl NduPublicationOwnerV1 {
     pub fn publish_cutover(
         &self,
         expected: &NduSnapshotRefV1,
+        expected_checkpoint: Digest32,
         next: NduSnapshotRefV1,
         migrated_checkpoint: Digest32,
     ) -> Result<Digest32, NduPublicationErrorV1> {
@@ -375,7 +376,11 @@ impl NduPublicationOwnerV1 {
         if state.poisoned {
             return Err(NduPublicationErrorV1::Poisoned);
         }
+        // The caller's frozen predecessor must match BOTH the current route
+        // and checkpoint. A model checkpoint CAS that wins first invalidates
+        // a stale migration; the same mutex alone is not sufficient.
         if state.snapshot != *expected
+            || state.checkpoint != expected_checkpoint
             || next.scope_id != expected.scope_id
             || next.generation < expected.generation
             || next.route_fence <= expected.route_fence
