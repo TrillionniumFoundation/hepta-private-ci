@@ -1,7 +1,7 @@
 """Bounded local CPU-FP32 autoregressive proposer for existing System2 callbacks.
 
-Weights are shared, but every proposal reconstructs its whole prefix without KV
-state. This deliberately simple reference trades speed for explicit state scope.
+Weights are shared. The default recomputes the prefix; opt-in V2 uses bounded
+request-local KV, released on success/failure and never shared across proposals.
 It is not a tokenizer/architecture converter, sandbox, verifier or model trainer.
 """
 from __future__ import annotations
@@ -57,7 +57,7 @@ def tokenizer_digest(tokenizer) -> str:
 
 
 def freeze_generation(*, model_sha256, tokenizer_sha256, vocab_size, eos_token_id,
-                      context_tokens=1024, max_new_tokens=64, max_output_bytes=16384):
+                      context_tokens=1024, max_new_tokens=64, max_output_bytes=16384, cache_policy=None):
     for value in (model_sha256, tokenizer_sha256):
         _sha(value, "generation material identity")
     for name, value, limit in (("vocabulary", vocab_size, 262144), ("context", context_tokens, 8192),
@@ -75,6 +75,9 @@ def freeze_generation(*, model_sha256, tokenizer_sha256, vocab_size, eos_token_i
                 max_new_tokens=max_new_tokens, max_output_bytes=max_output_bytes,
                 prompt_profile=PROMPT_PROFILE, precision="cpu_fp32", decoding="greedy_first_index",
                 persistent_kv_cache=False, require_eos=True)
+    if cache_policy is not None:
+        from causal_cache import validate_cache_policy
+        body.update(schema="hepta.local-causal-proposer.v2", cache_policy=validate_cache_policy(cache_policy))
     return {**body, "profile_id": _digest(body)}
 
 
@@ -93,7 +96,7 @@ class LocalCausalProposer:
         names = ("model_sha256", "tokenizer_sha256", "vocab_size", "eos_token_id",
                  "context_tokens", "max_new_tokens", "max_output_bytes")
         try:
-            expected = freeze_generation(**{k: policy[k] for k in names})
+            expected = freeze_generation(**{k: policy[k] for k in names}, cache_policy=policy.get("cache_policy"))
         except (KeyError, TypeError) as exc:
             raise ValueError("complete generation policy required") from exc
         if _digest(policy) != _digest(expected) or not isinstance(model, torch.nn.Module):
@@ -129,7 +132,7 @@ class LocalCausalProposer:
         record = dict(schema="hepta.local-causal-generation.v1", profile_id=self._policy["profile_id"],
                       status="failed", forward_attempts=0, token_steps=[], generated_tokens=0,
                       eos_observed=False, prompt_sha256=None, prompt_tokens=None, output_sha256=None)
-        generated = []
+        generated, session = [], None
         try:
             self.verify_integrity()
             text = render_prompt(task, previous, feedback)
@@ -142,19 +145,30 @@ class LocalCausalProposer:
             record["prompt_tokens"] = len(ids)
             if len(ids) + p["max_new_tokens"] > p["context_tokens"]:
                 raise GenerationIncomplete("context envelope exceeded; no silent truncation")
+            if "cache_policy" in p:
+                from causal_cache import RequestKV
+                session = RequestKV(self._model, p["cache_policy"], prompt_tokens=len(ids),
+                                    max_new_tokens=p["max_new_tokens"])
+                record["schema"] = "hepta.local-causal-generation.v2"
             tokens = torch.tensor([ids], dtype=torch.long)
             with torch.inference_mode():
                 for _ in range(p["max_new_tokens"]):
                     record["forward_attempts"] += 1
-                    result = self._model(input_ids=tokens, attention_mask=torch.ones_like(tokens),
-                                         past_key_values=None, use_cache=False, return_dict=True)
-                    logits = result.logits
-                    if (logits.shape != (1, tokens.shape[1], p["vocab_size"])
+                    if session is None:
+                        result = self._model(input_ids=tokens, attention_mask=torch.ones_like(tokens),
+                                             past_key_values=None, use_cache=False, return_dict=True)
+                        logits, query_length = result.logits, tokens.shape[1]
+                        if getattr(result, "past_key_values", None) is not None:
+                            raise ValueError("unexpected KV state in uncached profile")
+                        del result
+                    else:
+                        logits, query_length = session.forward(tokens)
+                    if (logits.shape != (1, query_length, p["vocab_size"])
                             or logits.device.type != "cpu" or logits.dtype != torch.float32
-                            or not torch.isfinite(logits).all().item()
-                            or getattr(result, "past_key_values", None) is not None):
-                        raise ValueError("invalid full-prefix causal output or leaked KV state")
+                            or not torch.isfinite(logits).all().item()):
+                        raise ValueError("invalid causal output")
                     token = int(logits[0, -1].argmax().item())
+                    del logits
                     record["token_steps"].append(dict(prefix_tokens=tokens.shape[1], selected_token=token))
                     if token == p["eos_token_id"]:
                         record["eos_observed"] = True
@@ -176,8 +190,12 @@ class LocalCausalProposer:
             record["error_type"] = type(exc).__name__
             raise
         finally:
+            if session is not None:
+                session.close()
+                record["cache"] = session.receipt()
             record.update(generated_tokens=len(generated), generated_ids_sha256=_digest(generated),
                           elapsed_ns=time.perf_counter_ns() - start,
-                          state_scope="public_prefix_no_persistent_kv", full_cost_qualification=False)
+                          state_scope="request_local_kv" if session is not None else "public_prefix_no_persistent_kv",
+                          full_cost_qualification=False)
             self._last = copy.deepcopy(record)
             self._lock.release()
