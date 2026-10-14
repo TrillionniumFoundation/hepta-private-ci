@@ -238,44 +238,71 @@ impl HeptaEvidenceStore {
 pub(crate) async fn verify_execution_prepared_rows(
     pool: &SqlitePool,
 ) -> Result<(), EvidenceError> {
-    let rows = sqlx::query(
-        "SELECT e.effect_key, e.schema_version, e.intent_json,
-                e.intent_sha256, e.request_sha256, e.recorded_at_ms,
-                p.payload_json AS original_payload_json,
-                p.record_sha256 AS original_record_sha256
-         FROM execution_prepared_envelopes AS e
-         JOIN provider_effect_intents AS p ON e.effect_key = p.effect_key
-         ORDER BY e.effect_key",
-    )
-    .fetch_all(pool)
-    .await
-    .map_err(classify_sqlx_error)?;
+    // A single read snapshot and a bounded keyset cursor prevent a 4096+ Cell
+    // installation from materializing every verified envelope at startup.
+    // The primary key orders this scan without OFFSET's quadratic traversal.
+    let mut transaction = pool.begin().await.map_err(classify_sqlx_error)?;
     let expected_count: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM execution_prepared_envelopes",
     )
-    .fetch_one(pool)
+    .fetch_one(&mut *transaction)
     .await
     .map_err(classify_sqlx_error)?;
-    if i64::try_from(rows.len()).ok() != Some(expected_count) {
+    let mut verified_count = 0_i64;
+    let mut last_key = String::new();
+    loop {
+        let rows = sqlx::query(
+            "SELECT e.effect_key, e.schema_version, e.intent_json,
+                    e.intent_sha256, e.request_sha256, e.recorded_at_ms,
+                    p.payload_json AS original_payload_json,
+                    p.record_sha256 AS original_record_sha256
+             FROM execution_prepared_envelopes AS e
+             JOIN provider_effect_intents AS p ON e.effect_key = p.effect_key
+             WHERE e.effect_key > ?
+             ORDER BY e.effect_key LIMIT 256",
+        )
+        .bind(&last_key)
+        .fetch_all(&mut *transaction)
+        .await
+        .map_err(classify_sqlx_error)?;
+        if rows.is_empty() {
+            break;
+        }
+        for row in &rows {
+            let key: String = row.try_get("effect_key").map_err(classify_sqlx_error)?;
+            if key <= last_key {
+                return Err(EvidenceError::Corrupt(
+                    "execution snapshot key cursor regressed".to_owned(),
+                ));
+            }
+            let original_json: String = row
+                .try_get("original_payload_json")
+                .map_err(classify_sqlx_error)?;
+            let sha: String = row
+                .try_get("original_record_sha256")
+                .map_err(classify_sqlx_error)?;
+            if sha != Sha256Digest::for_bytes(original_json.as_bytes()).as_str() {
+                return Err(EvidenceError::Corrupt(
+                    "original execution effect row was tampered".to_owned(),
+                ));
+            }
+            let original: ProviderEffectIntent = serde_json::from_str(&original_json)
+                .map_err(|error| EvidenceError::Corrupt(format!("effect decode: {error}")))?;
+            original.validate().map_err(|error| {
+                EvidenceError::Corrupt(format!("effect original validation: {error:?}"))
+            })?;
+            decode_complete_row(row, &original)?;
+            last_key = key;
+            verified_count = verified_count.checked_add(1).ok_or_else(|| {
+                EvidenceError::Corrupt("execution row count overflow".to_owned())
+            })?;
+        }
+    }
+    if verified_count != expected_count {
         return Err(EvidenceError::Corrupt(
-            "orphan complete execution envelope escaped original foreign key".to_owned(),
+            "complete execution envelope has a missing original foreign key".to_owned(),
         ));
     }
-    for row in &rows {
-        let original_json: String = row.try_get("original_payload_json")
-            .map_err(classify_sqlx_error)?;
-        let sha: String = row.try_get("original_record_sha256").map_err(classify_sqlx_error)?;
-        if sha != Sha256Digest::for_bytes(original_json.as_bytes()).as_str() {
-            return Err(EvidenceError::Corrupt(
-                "original execution effect row was tampered".to_owned(),
-            ));
-        }
-        let original: ProviderEffectIntent = serde_json::from_str(&original_json)
-            .map_err(|error| EvidenceError::Corrupt(format!("effect decode: {error}")))?;
-        original.validate().map_err(|error| {
-            EvidenceError::Corrupt(format!("effect original validation: {error:?}"))
-        })?;
-        decode_complete_row(row, &original)?;
-    }
+    transaction.commit().await.map_err(classify_sqlx_error)?;
     Ok(())
 }
