@@ -97,7 +97,12 @@ future feature stream is **unlabelled** and must use source groups excluded
 from training. 'precommit_future.py seal' accepts no label/outcome argument.
 It physically hashes all 20 candidate artifacts, reloads the weights,
 runs the frozen surrogate, pairs every candidate with the owner V1 prediction,
-and publishes an exclusive, fsynced forecast file. A local clock value is
+and publishes an exclusive, fsynced forecast file. Real 'seal' execution
+refuses training receipts missing the signed-format A0 V1 current-owner
+census. A test fixture requires an explicit '--synthetic-canary' flag, which
+remains unqualified and can never become owner evidence. This extra A0
+requirement changes the research seal profile to
+'hepta.neuron.five-arm-research-forecast-seal.v2'; older v1 seals are refused. A local clock value is
 recorded but is NOT a trusted timestamp.
 
     python qualification/neuron-gated-sparse-v3/precommit_future.py seal \
@@ -133,7 +138,9 @@ The separate witness independently signs canonical JSON 'payload' with
       --outcome-pubkey /independent/trusted-evaluator.pem \
       --report /new/research-only-future-report.json
 
-Score fails closed on tampering, signature/key mismatch, missing paired rows,
+'score' also refuses any synthetic A0 seal unless given the explicit
+'--synthetic-canary' test-only flag. Score fails closed on tampering,
+signature/key mismatch, missing paired rows,
 training/future group leakage, chronology reversal and missing OOD. It reports
 binary Brier/ECE and an explicit confidence-threshold false-acceptance
 diagnostic. A signed historical timestamp or same-sha comparison still does
