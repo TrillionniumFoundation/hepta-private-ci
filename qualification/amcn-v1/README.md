@@ -359,6 +359,39 @@ authoritative SQLite source writer and its withdrawn flag is not a durable
 quarantine registry. Only actual source/withdrawal/Artifacts owner integration
 could prove atomicity, fleet crash-recovery and zero deletion resurrection.
 
+## Original CognitiveStore SQLite write fence — opt-in research API
+
+To close the source-side check/use race without bypassing the existing owner,
+the upstream Rust CognitiveStore gains one **feature-gated** method,
+with_amcn_shadow_cognitive_cut, in
+codex-rs/hepta-memory/src/cognitive_store_recovery_amcn_fence.rs.
+It reuses the exact full-state CognitiveRecoveryAnchor and the store's existing
+BEGIN IMMEDIATE writer transaction. A separately supplied, still-current
+CognitiveRecoveryAnchor must match the ACTUAL captured owner state before any
+model-like callback is invoked. The SQLite transaction remains alive until
+the callback completes and is then explicitly rolled back. Concurrent source
+writers using this SAME cognitive SQLite database cannot commit in that
+interval.
+
+Feature-on Rust tests use the **original CognitiveStore**, not a fake Store,
+with two distinct connections/owners to the same underlying database.
+They check agent scope, stale source revisions, exclusion of a competing
+source writer during a bounded callback, and lock release after an error.
+A dedicated CI uses the repository's pinned Rust toolchain with
+cargo test --locked -p codex-hepta-memory --features amcn-shadow.
+The default product hepta-memory crate remains feature-off.
+
+This closes only one transaction domain. It does NOT automatically hold the
+separate Learning Artifacts/quarantine CAS or Neuron Runtime's durable Witness.
+The callback is synchronous and blocks its Tokio executor while SQLite owns
+the write lock; it is neither a latency-qualified production inference host
+nor an invitation to invoke other CognitiveStore writers reentrantly.
+A product-quality bridge must link the SQLite owner, persistent parameter
+quarantine, Neuron full-Tick fence and external witness in a fixed owner
+ordering, with real crash/restart and source-withdrawal tests. An anchor SHA is
+not a reviewer signature or a capability token. NO model selection, Head
+promotion, FinalUse or source effect authority is generated here.
+
 ## No-go and required production evidence
 
 Still missing: sufficient-evidence Reader certification, strong cached hybrid

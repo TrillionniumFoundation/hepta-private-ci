@@ -9,6 +9,10 @@ name = "codex_hepta_memory"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+# Source-only SQLite research lease; NOT a production model grant.
+amcn-shadow = []
+
 [lints]
 workspace = true
 
