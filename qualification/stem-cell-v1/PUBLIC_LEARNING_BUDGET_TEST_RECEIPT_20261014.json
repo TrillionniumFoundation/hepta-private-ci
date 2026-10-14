@@ -1,0 +1,164 @@
+{
+  "branch": "research/shared-stem-public-learning-budget-20261014",
+  "checks": {
+    "compileall": "passed",
+    "rust_fmt": "failed: codex-rs directory absent",
+    "yaml": "passed"
+  },
+  "code": "43fb3b11965a29b18210295bc0c79bce2f074298",
+  "complete_code_hosted_run": {
+    "id": 38526911727,
+    "last_observed_status": "queued",
+    "success_claimed": false
+  },
+  "detailed_receipt_sha256": "124da57159db050cf79da6712069ea730d5a5510a59de3ec27c968233d8ef822",
+  "diagnostic": {
+    "actual_parameters": [
+      864,
+      864,
+      864
+    ],
+    "actual_pretrained_execution": false,
+    "budget": 2000000,
+    "budget_results": [
+      {
+        "examples_seen": 197,
+        "formula_flops": 1954973,
+        "remaining": 45027,
+        "status": "completed",
+        "steps": 50,
+        "stop_reason": "insufficient_room_for_complete_update",
+        "topology": "dense16",
+        "utilization": 0.9774865
+      },
+      {
+        "examples_seen": 772,
+        "formula_flops": 1951506,
+        "remaining": 48494,
+        "status": "completed",
+        "steps": 193,
+        "stop_reason": "insufficient_room_for_complete_update",
+        "topology": "sparse16",
+        "utilization": 0.975753
+      },
+      {
+        "examples_seen": 857,
+        "formula_flops": 1943631,
+        "remaining": 56369,
+        "status": "completed",
+        "steps": 215,
+        "stop_reason": "insufficient_room_for_complete_update",
+        "topology": "direct32",
+        "utilization": 0.9718155
+      }
+    ],
+    "kind": "synthetic_one_hot_features_real_pytorch_adamw",
+    "model_capability_evidence": false,
+    "observed_train_work_matched_1pct": true
+  },
+  "full_system_cost": false,
+  "hf_attempt": {
+    "exit_code": 1,
+    "included_in_passing_count": false,
+    "real_checks_defined": 6,
+    "real_checks_executed": 0
+  },
+  "parent": "805ffeae04db9c0d7d3386cb2a2644dd29f39b07",
+  "pr": 1833,
+  "pretrained_learning_executed": false,
+  "production_authorized": false,
+  "raw_evidence_sha256": {
+    "baseline.log": "b70eb24591c78c20860883472e34f74d41c17357a617079ccf39c1afe21e0149",
+    "budget-focused.log": "79b29dbadb46a60df649102453d9e4c6b65ebb2be1ef8ea0f50886cb0f7cd660",
+    "budget-focused2.log": "40d225b9985391b72e4fd455ebac1d8a98efdd93c5cd67501ab41293a03042d6",
+    "diagnostic/summary.json": "7b478605b83c3dae8bc8c13f0cba2d27979fc47db00f768f1e652811c4f72ee4",
+    "final1.json": "25686eaa971a0c85dce1b254081363fe8e4d2d199bb8f4762914355c82ba0b62",
+    "final1.log": "d096b1b49d9be6522dfe91d581620fac30e46bff2174c7f23e1f194ec82a9153",
+    "final2.json": "25686eaa971a0c85dce1b254081363fe8e4d2d199bb8f4762914355c82ba0b62",
+    "final2.log": "bc66dce9b0c080905d7b661102a0ecaa23ce2f73a323836004a935aa00e4fe98",
+    "hf-attempt.log": "0a499c6269f26622ab9cf67547e7f31c4922c3aa3b989b48bc8709f4eab3cb58"
+  },
+  "recovered_archive_sha256": "b1f200d6cc0b072faeae3db8e55bef0cb2ac356222d8b8847b4df2f7683f9a24",
+  "recovered_code": "2892b82ca5c4da66c2d16ca2e861c8e9df89886c",
+  "runtime": {
+    "numpy": "2.3.5",
+    "packaging": "25.0",
+    "python": "3.13.5",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0+cpu"
+  },
+  "schema": "hepta.public-learning-budget-verification.v1",
+  "source_files": {
+    ".github/workflows/hepta-neuron-next-round-matrix.yml": {
+      "git_blob_sha1": "525d445367794c77352840ee3ff48d8b967a0d8f",
+      "sha256": "96210ee604949905ff9ce23df4360a040602802156059916ad9cd1ebfafe90bf"
+    },
+    "qualification/stem-cell-v1/budgeted_learning.py": {
+      "git_blob_sha1": "b1065f0e76f09da882971cddc41ca8d87163f1ba",
+      "sha256": "15523a2cd51c22713b7de7c53e34ac9267d42868cfb29932688e3eecd95dce95"
+    },
+    "qualification/stem-cell-v1/hf_profile_checks.py": {
+      "git_blob_sha1": "32a2f9269b6a7de14cefa538df5966e56e8e4011",
+      "sha256": "3045e2c789ba348dac56b336e0cb52a3c3fb1842c492fab2fe4a0c5a8ba08205"
+    },
+    "qualification/stem-cell-v1/public_news_materials.py": {
+      "git_blob_sha1": "16cda859cc93f8d03ebf5f95a711bf9d70fc0d32",
+      "sha256": "56e178db297507b1e9fe1660cc088d17537e057dff92bd5ff99cf49d7466d50d"
+    },
+    "qualification/stem-cell-v1/shared_learning_probe.py": {
+      "git_blob_sha1": "b3892e940ad05802b95b5d0b1c3ebf3cbd59e6c8",
+      "sha256": "7b99dedd9d252133c784bf54f9186d2e364e8516465596995e439aa593de794e"
+    },
+    "qualification/stem-cell-v1/test_budgeted_learning.py": {
+      "git_blob_sha1": "f27ca3e66190f37da736da48af92755f77614015",
+      "sha256": "c38ea86e6f3a4cc761749ff26d119658baddedf0addfa7a1b5a9900cd0db8c49"
+    },
+    "qualification/stem-cell-v1/test_public_news_materials.py": {
+      "git_blob_sha1": "76c837277bc49c81973099add8a708e9792c4065",
+      "sha256": "b6764cb42323fc7c2ac17ec98215319b25db6d8cb6342b434faab89e75366f1e"
+    },
+    "qualification/stem-cell-v1/test_shared_learning_probe.py": {
+      "git_blob_sha1": "e2730ec4c4c507d733531e9849a9a086d44d7994",
+      "sha256": "11fd4877a8485b0e4ccd57358a64dea0a1bb1fb64f05b6a3defb95f10589ba9a"
+    }
+  },
+  "source_slice_not_full_repository": true,
+  "tests": {
+    "baseline": {
+      "complete": true,
+      "distinct_ids": 441,
+      "errors": 0,
+      "executed": 441,
+      "exit_code": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "planned": 441,
+      "skips": 0
+    },
+    "final1": {
+      "complete": true,
+      "distinct_ids": 457,
+      "errors": 0,
+      "executed": 457,
+      "exit_code": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "planned": 457,
+      "skips": 0
+    },
+    "final2": {
+      "complete": true,
+      "distinct_ids": 457,
+      "errors": 0,
+      "executed": 457,
+      "exit_code": 0,
+      "expected_failures": 0,
+      "failures": 0,
+      "passed": true,
+      "planned": 457,
+      "skips": 0
+    }
+  }
+}
