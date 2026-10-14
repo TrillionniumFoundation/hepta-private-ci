@@ -146,7 +146,7 @@ class ActualTorchMechanicsTests(unittest.TestCase):
         with self.assertRaises(Refused):
             FeatureMatrix(data.rows, data.x, encoder_sha256=s("x"),
                           scope="lab", generation="g1",
-                          backend_profile="local_hf_verified_externally")
+                          backend_profile="local_hf_snapshot_checked_unreviewed")
 
     def test_real_relation_learning_and_no_topology_change(self):
         g = graph()
