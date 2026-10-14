@@ -246,6 +246,10 @@ jobs:
           # These tests must run; unrelated fixture-only tests cannot pass
           # the physical persistence boundary by themselves.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-worker-original-evidence-wal.json" --minimum-tests 2 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib original_evidence_wal_ -- --nocapture
+          # Original Evidence owner exact committed Scope/operation/phase/
+          # success membership tests and poisoned read-only actor regression.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/evidence-exact-operation-membership.json" --minimum-tests 5 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --lib bound_ -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/evidence-exact-sample-timeout.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --lib bounded_exact_sample_observer_timeout_poisoned_without_successful_ack -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/model-worker-index.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib model_worker -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-ndu-reader.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib neuron_ndu_read -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-agentd-neuron.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib neuron_runtime -- --nocapture

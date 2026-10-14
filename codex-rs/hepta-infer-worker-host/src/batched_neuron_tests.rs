@@ -2232,6 +2232,8 @@ fn native_batch_reordered_backend_results_are_denied_without_partial_receipts() 
 #[test]
 fn original_evidence_wal_scalar_success_has_fsynced_three_phase_rows_after_reopen() {
     use codex_hepta_agentd::DurablePhaseMetricSinkV1;
+    use codex_hepta_agentd::MetricPhaseV1;
+    use codex_hepta_agentd::MetricsCommittedSampleQueryV1;
     use std::os::unix::fs::PermissionsExt;
 
     let dir = tempfile::tempdir().unwrap();
@@ -2239,6 +2241,8 @@ fn original_evidence_wal_scalar_success_has_fsynced_three_phase_rows_after_reope
     let path = dir.path().join("signed-scalar-original-evidence.wal");
     let signer = SigningKey::from_bytes(&[113; 32]);
     let (model, request, key) = fixture_request();
+    let scope_digest = Digest32::of_bytes(key.scope_id.as_str().as_bytes());
+    let operation_digest = Digest32::of_bytes(request.authorization.request_id.as_bytes());
     let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
     let evidence = Arc::new(
         DurablePhaseMetricSinkV1::open(&path, 128, 64, 60_000)
@@ -2261,6 +2265,18 @@ fn original_evidence_wal_scalar_success_has_fsynced_three_phase_rows_after_reope
         .read_local_frontier()
         .expect("read original WAL without implicitly flushing staged admission");
     assert_eq!(staged.committed_rows, 0);
+    let staged_admission = MetricsCommittedSampleQueryV1 {
+        scope_digest,
+        operation_digest,
+        phase: MetricPhaseV1::Admission,
+        succeeded: true,
+    };
+    assert_eq!(
+        evidence
+            .read_committed_sample(staged_admission)
+            .expect("staged Admission is not committed"),
+        None
+    );
     assert!(!worker.production_metrics_ready());
 
     let outcome = worker.poll_and_execute(106).unwrap();
@@ -2279,6 +2295,47 @@ fn original_evidence_wal_scalar_success_has_fsynced_three_phase_rows_after_reope
     assert_ne!(durable.wal_inode, 0);
     assert_ne!(durable.marker_inode, 0);
     assert!(durable.journal_bytes > 0);
+    // A global count is insufficient: every distinct phase must belong to
+    // the EXACT original signed request, not another Scope or request.
+    for phase in [
+        MetricPhaseV1::Admission,
+        MetricPhaseV1::Microbatch,
+        MetricPhaseV1::NeuronFeature,
+    ] {
+        let query = MetricsCommittedSampleQueryV1 {
+            scope_digest,
+            operation_digest,
+            phase,
+            succeeded: true,
+        };
+        let original = evidence
+            .read_committed_sample(query)
+            .expect("original Evidence actor query")
+            .expect("signed operation phase committed");
+        assert_eq!(original.query, query);
+        assert_eq!(original.matching_rows, 1);
+        assert_eq!(original.first_group_sequence, 1);
+        assert_eq!(original.last_group_sequence, 1);
+        assert_eq!(original.last_group_head, durable.head_digest);
+        assert_eq!(original.frontier, durable);
+    }
+    let other_request = MetricsCommittedSampleQueryV1 {
+        operation_digest: Digest32::of_bytes(b"another signed request"),
+        ..staged_admission
+    };
+    assert_eq!(
+        evidence.read_committed_sample(other_request).unwrap(),
+        None
+    );
+    assert_eq!(
+        evidence
+            .read_committed_sample(MetricsCommittedSampleQueryV1 {
+                succeeded: false,
+                ..staged_admission
+            })
+            .unwrap(),
+        None
+    );
 
     // The real Evidence actor releases both original file locks before
     // cold reopen. This checks its entire fsynced WAL/marker replay, not
@@ -2289,12 +2346,23 @@ fn original_evidence_wal_scalar_success_has_fsynced_three_phase_rows_after_reope
         .expect("verified reopen of original Evidence WAL + marker");
     let cold_frontier = recovered.read_local_frontier().expect("cold frontier");
     assert_eq!(cold_frontier, durable);
+    let committed_terminal = recovered
+        .read_committed_sample(MetricsCommittedSampleQueryV1 {
+            phase: MetricPhaseV1::NeuronFeature,
+            ..staged_admission
+        })
+        .expect("cold original membership read")
+        .expect("original terminal row after cold reopen");
+    assert_eq!(committed_terminal.matching_rows, 1);
+    assert_eq!(committed_terminal.frontier, durable);
 }
 
 #[cfg(unix)]
 #[test]
 fn original_evidence_wal_native_batch_commits_all_six_rows_before_success() {
     use codex_hepta_agentd::DurablePhaseMetricSinkV1;
+    use codex_hepta_agentd::MetricPhaseV1;
+    use codex_hepta_agentd::MetricsCommittedSampleQueryV1;
     use std::os::unix::fs::PermissionsExt;
 
     let dir = tempfile::tempdir().unwrap();
@@ -2303,6 +2371,11 @@ fn original_evidence_wal_native_batch_commits_all_six_rows_before_success() {
     let signer = SigningKey::from_bytes(&[114; 32]);
     let (model, first, key) = fixture_request();
     let second = second_request(&first);
+    let scope_digest = Digest32::of_bytes(key.scope_id.as_str().as_bytes());
+    let operations = [
+        Digest32::of_bytes(first.authorization.request_id.as_bytes()),
+        Digest32::of_bytes(second.authorization.request_id.as_bytes()),
+    ];
     let invocations = Arc::new(std::sync::atomic::AtomicUsize::new(0));
     let driver = NativeTestDriver {
         invocations: invocations.clone(),
@@ -2338,6 +2411,17 @@ fn original_evidence_wal_native_batch_commits_all_six_rows_before_success() {
         .read_local_frontier()
         .expect("staged admitted requests must not be committed");
     assert_eq!(pending_original.committed_rows, 0);
+    for operation_digest in operations {
+        assert_eq!(
+            evidence.read_committed_sample(MetricsCommittedSampleQueryV1 {
+                scope_digest,
+                operation_digest,
+                phase: MetricPhaseV1::Admission,
+                succeeded: true,
+            }).expect("uncommitted Admission is not a signed effect receipt"),
+            None
+        );
+    }
 
     let completed = worker.poll_and_execute(101).unwrap();
     assert_eq!(completed.outcomes.len(), 2);
@@ -2353,6 +2437,38 @@ fn original_evidence_wal_native_batch_commits_all_six_rows_before_success() {
     assert_eq!(fsynced.sequence, 1);
     assert_ne!(fsynced.head_digest, Digest32::ZERO);
     assert!(worker.production_metrics_ready());
+    // Two signed grants with distinct IDs must each have all three actual
+    // committed phases. No row from a sibling request may satisfy a query.
+    for operation_digest in operations {
+        for phase in [
+            MetricPhaseV1::Admission,
+            MetricPhaseV1::Microbatch,
+            MetricPhaseV1::NeuronFeature,
+        ] {
+            let query = MetricsCommittedSampleQueryV1 {
+                scope_digest,
+                operation_digest,
+                phase,
+                succeeded: true,
+            };
+            let row = evidence
+                .read_committed_sample(query)
+                .expect("verified original WAL history")
+                .expect("exact signed batch member phase");
+            assert_eq!(row.query, query);
+            assert_eq!(row.matching_rows, 1);
+            assert_eq!(row.frontier, fsynced);
+        }
+    }
+    assert_eq!(
+        evidence.read_committed_sample(MetricsCommittedSampleQueryV1 {
+            scope_digest: Digest32::of_bytes(b"other-scope"),
+            operation_digest: operations[0],
+            phase: MetricPhaseV1::NeuronFeature,
+            succeeded: true,
+        }).unwrap(),
+        None
+    );
 
     drop(worker);
     drop(evidence);
@@ -2362,5 +2478,18 @@ fn original_evidence_wal_native_batch_commits_all_six_rows_before_success() {
         .read_local_frontier()
         .expect("cold native frontier");
     assert_eq!(cold_frontier, fsynced);
+    for operation_digest in operations {
+        let row = reopened
+            .read_committed_sample(MetricsCommittedSampleQueryV1 {
+                scope_digest,
+                operation_digest,
+                phase: MetricPhaseV1::NeuronFeature,
+                succeeded: true,
+            })
+            .expect("cold original row read")
+            .expect("signed member terminal after recovery");
+        assert_eq!(row.matching_rows, 1);
+        assert_eq!(row.frontier, fsynced);
+    }
     assert_eq!(invocations.load(std::sync::atomic::Ordering::SeqCst), 1);
 }

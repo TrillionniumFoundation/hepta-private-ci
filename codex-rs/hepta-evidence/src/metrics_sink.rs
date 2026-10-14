@@ -3,6 +3,8 @@
 
 use super::metrics_group_commit::MetricPhaseV1;
 use super::metrics_group_commit::MetricSampleV1;
+use super::metrics_group_commit::MetricsCommittedSampleQueryV1;
+use super::metrics_group_commit::MetricsCommittedSampleReadbackV1;
 use super::metrics_group_commit::MetricsLocalFrontierV1;
 use super::metrics_group_commit::MetricsGroupCommitV1;
 use super::metrics_group_commit::MetricsJournalErrorV1;
@@ -37,6 +39,10 @@ enum WriterCommandV1 {
     // Read-only, self-verifying original WAL+marker history. The response is
     // deliberately unsigned and cannot be used as an effect authorization.
     Observe(SyncSender<Result<MetricsLocalFrontierV1, MetricsJournalErrorV1>>),
+    ObserveSample(
+        MetricsCommittedSampleQueryV1,
+        SyncSender<Result<Option<MetricsCommittedSampleReadbackV1>, MetricsJournalErrorV1>>,
+    ),
     Stop(SyncSender<bool>),
 }
 
@@ -179,6 +185,55 @@ impl DurablePhaseMetricSinkV1 {
         }
         match rx.recv_timeout(deadline.saturating_duration_since(std::time::Instant::now())) {
             Ok(Ok(frontier)) if self.healthy() => Ok(frontier),
+            _ => {
+                self.health.healthy.store(false, Ordering::Release);
+                Err(PhaseMetricSinkErrorV1::Unavailable)
+            }
+        }
+    }
+
+    /// An exact committed sample, if present, in the original WAL history.
+    /// No snapshot, scope digest or local query result can grant a Split effect.
+    pub fn read_committed_sample(
+        &self,
+        query: MetricsCommittedSampleQueryV1,
+    ) -> Result<Option<MetricsCommittedSampleReadbackV1>, PhaseMetricSinkErrorV1> {
+        self.read_committed_sample_with_timeout(query, MAX_FLUSH_WAIT)
+    }
+
+    fn read_committed_sample_with_timeout(
+        &self,
+        query: MetricsCommittedSampleQueryV1,
+        timeout: Duration,
+    ) -> Result<Option<MetricsCommittedSampleReadbackV1>, PhaseMetricSinkErrorV1> {
+        if !self.healthy() || query.scope_digest.is_zero() || query.operation_digest.is_zero() {
+            return Err(PhaseMetricSinkErrorV1::Unavailable);
+        }
+        let deadline = std::time::Instant::now() + timeout;
+        let (reply, rx) = sync_channel(1);
+        let mut command = WriterCommandV1::ObserveSample(query, reply);
+        loop {
+            match self.channel.try_send(command) {
+                Ok(()) => break,
+                Err(TrySendError::Disconnected(_)) => {
+                    self.health.healthy.store(false, Ordering::Release);
+                    return Err(PhaseMetricSinkErrorV1::Unavailable);
+                }
+                Err(TrySendError::Full(pending)) => {
+                    command = pending;
+                    if !self.healthy() || std::time::Instant::now() >= deadline {
+                        self.health.healthy.store(false, Ordering::Release);
+                        return Err(PhaseMetricSinkErrorV1::Unavailable);
+                    }
+                    std::thread::sleep(
+                        Duration::from_millis(1)
+                            .min(deadline.saturating_duration_since(std::time::Instant::now())),
+                    );
+                }
+            }
+        }
+        match rx.recv_timeout(deadline.saturating_duration_since(std::time::Instant::now())) {
+            Ok(Ok(readback)) if self.healthy() => Ok(readback),
             _ => {
                 self.health.healthy.store(false, Ordering::Release);
                 Err(PhaseMetricSinkErrorV1::Unavailable)
@@ -384,6 +439,17 @@ fn writer_loop(
                     health.healthy.store(false, Ordering::Release);
                 }
                 let _ = reply.send(frontier);
+                if !success {
+                    break;
+                }
+            }
+            Ok(WriterCommandV1::ObserveSample(query, reply)) => {
+                let readback = writer.read_committed_sample(query);
+                let success = readback.is_ok();
+                if !success {
+                    health.healthy.store(false, Ordering::Release);
+                }
+                let _ = reply.send(readback);
                 if !success {
                     break;
                 }
