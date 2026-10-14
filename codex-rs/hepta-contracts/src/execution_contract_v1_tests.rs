@@ -298,6 +298,28 @@ fn unknown_intent_and_observation_fields_fail_deserialization() {
 }
 
 #[test]
+fn duplicated_json_identity_fields_are_rejected_before_validation() {
+    let canonical = serde_json::to_string(&intent()).expect("serialize");
+    let duplicated = canonical.replacen(
+        "\"operation_id\":",
+        "\"operation_id\":\"forged\",\"operation_id\":",
+        1,
+    );
+    assert_ne!(canonical, duplicated);
+    assert!(serde_json::from_str::<ExecutionIntentV1>(&duplicated).is_err());
+
+    let original = observation(&intent(), ExecutionTransportObservationV1::Indeterminate);
+    let canonical = serde_json::to_string(&original).expect("serialize");
+    let duplicated = canonical.replacen(
+        "\"request_sha256\":",
+        "\"request_sha256\":[0],\"request_sha256\":",
+        1,
+    );
+    assert_ne!(canonical, duplicated);
+    assert!(serde_json::from_str::<ExecutionObservationV1>(&duplicated).is_err());
+}
+
+#[test]
 fn unknown_enum_profile_does_not_fallback_to_process() {
     let mut value = serde_json::to_value(intent()).expect("intent");
     value["target"] = json!("unknown_future_provider");
