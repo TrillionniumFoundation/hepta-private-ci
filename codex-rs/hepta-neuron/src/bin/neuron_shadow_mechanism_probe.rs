@@ -119,10 +119,10 @@ impl ActiveState {
         &mut self,
         cell: usize,
         input: &PopulationSparseTickV2,
-        configs: &Configs,
+        config: &Configs,
     ) -> Result<Digest32, String> {
-        match self {
-            Self::V1(states) => {
+        match (self, config) {
+            (Self::V1(states), Configs::V1(cfg)) => {
                 let tick = SparseTick {
                     scope_digest: input.scope_digest,
                     objective_digest: input.objective_digest,
@@ -134,51 +134,64 @@ impl ActiveState {
                     drive_q24: input.temporal_drive_q24.clone(),
                     prediction_q24: input.prediction_q24.clone(),
                 };
-                let (next, receipt) = sparse_tick(&configs.v1, &tick, states[cell].as_ref())
+                let (next, receipt) = sparse_tick(cfg, &tick, states[cell].as_ref())
                     .map_err(|error| format!("V1 tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
-            Self::V2(states) => {
-                let (next, receipt) = if configs.prepared_mode {
-                    configs.ready_v2.tick(input, states[cell].as_ref())
-                } else {
-                    population_sparse_tick_v2(&configs.v2, input, states[cell].as_ref())
-                }
-                .map_err(|error| format!("V2 tick rejected: {error:?}"))?;
+            (Self::V2(states), Configs::V2Legacy(cfg)) => {
+                let (next, receipt) = population_sparse_tick_v2(cfg, input, states[cell].as_ref())
+                    .map_err(|error| format!("V2 legacy tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
-            Self::V3(states) => {
-                let (next, receipt) = if configs.prepared_mode {
-                    configs.ready_v3.tick(input, states[cell].as_ref())
-                } else {
-                    gated_sparse_tick_v3(&configs.v3, input, states[cell].as_ref())
-                }
-                .map_err(|error| format!("V3 tick rejected: {error:?}"))?;
+            (Self::V2(states), Configs::V2Prepared(cfg)) => {
+                let (next, receipt) = cfg
+                    .tick(input, states[cell].as_ref())
+                    .map_err(|error| format!("V2 prepared tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
-            Self::Ssm(states) => {
-                let (next, receipt) = if configs.prepared_mode {
-                    configs.ready_ssm.tick(input, states[cell].as_ref())
-                } else {
-                    diagonal_ssm_tick_v1(&configs.ssm, input, states[cell].as_ref())
-                }
-                .map_err(|error| format!("SSM tick rejected: {error:?}"))?;
+            (Self::V3(states), Configs::V3Legacy(cfg)) => {
+                let (next, receipt) = gated_sparse_tick_v3(cfg, input, states[cell].as_ref())
+                    .map_err(|error| format!("V3 legacy tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
-            Self::MinGru(states) => {
-                let (next, receipt) = if configs.prepared_mode {
-                    configs.ready_min_gru.tick(input, states[cell].as_ref())
-                } else {
-                    low_rank_min_gru_tick_v1(&configs.min_gru, input, states[cell].as_ref())
-                }
-                .map_err(|error| format!("minGRU tick rejected: {error:?}"))?;
+            (Self::V3(states), Configs::V3Prepared(cfg)) => {
+                let (next, receipt) = cfg
+                    .tick(input, states[cell].as_ref())
+                    .map_err(|error| format!("V3 prepared tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
+            (Self::Ssm(states), Configs::SsmLegacy(cfg)) => {
+                let (next, receipt) = diagonal_ssm_tick_v1(cfg, input, states[cell].as_ref())
+                    .map_err(|error| format!("SSM legacy tick rejected: {error:?}"))?;
+                states[cell] = Some(next);
+                Ok(receipt.checkpoint_after)
+            }
+            (Self::Ssm(states), Configs::SsmPrepared(cfg)) => {
+                let (next, receipt) = cfg
+                    .tick(input, states[cell].as_ref())
+                    .map_err(|error| format!("SSM prepared tick rejected: {error:?}"))?;
+                states[cell] = Some(next);
+                Ok(receipt.checkpoint_after)
+            }
+            (Self::MinGru(states), Configs::MinGruLegacy(cfg, _)) => {
+                let (next, receipt) = low_rank_min_gru_tick_v1(cfg, input, states[cell].as_ref())
+                    .map_err(|error| format!("minGRU legacy tick rejected: {error:?}"))?;
+                states[cell] = Some(next);
+                Ok(receipt.checkpoint_after)
+            }
+            (Self::MinGru(states), Configs::MinGruPrepared(cfg, _)) => {
+                let (next, receipt) = cfg
+                    .tick(input, states[cell].as_ref())
+                    .map_err(|error| format!("minGRU prepared tick rejected: {error:?}"))?;
+                states[cell] = Some(next);
+                Ok(receipt.checkpoint_after)
+            }
+            _ => Err("model configuration does not match this Cell state".to_owned()),
         }
     }
 }
