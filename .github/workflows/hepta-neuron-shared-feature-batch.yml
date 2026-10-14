@@ -135,6 +135,16 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib runtime::tests:: -- --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prove Windows vanished UDS rendezvous is idempotent
+        shell: pwsh
+        run: |
+          $listed = cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-uds --lib -- --list
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not ($listed -match '^lib_tests::absent_rendezvous_is_not_stale_socket_path: test$')) {
+            throw "Windows vanished-rendezvous test must be discoverable"
+          }
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-uds --lib lib_tests::absent_rendezvous_is_not_stale_socket_path -- --exact --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Guard Windows Agentd exclusive control rendezvous
         shell: pwsh
         run: |
@@ -267,6 +277,14 @@ jobs:
           set -euo pipefail
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --lib
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib
+      - name: Prove Unix missing-path normalization and UDS regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          uds_tests="$(cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-uds --lib -- --list)"
+          grep -Fx "lib_tests::absent_rendezvous_is_not_stale_socket_path: test" <<< "$uds_tests"
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-uds --lib
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-uds --all-targets -- -D clippy::correctness
       - name: Assert Linux socket regressions exist before filtered Cargo tests
         shell: bash
         run: |
@@ -300,7 +318,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-agentd --package codex-hepta-matrixd --package codex-hepta-contracts --package codex-hepta-bao-adapter -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-agentd --package codex-hepta-matrixd --package codex-uds --package codex-hepta-contracts --package codex-hepta-bao-adapter -- --check
       - name: Verify no test checkout mutation
         if: always()
         shell: bash
