@@ -4,6 +4,8 @@ on:
     paths:
       - "experiments/shared_stem_cell/e1e5_causal_gate.py"
       - "experiments/shared_stem_cell/test_e1e5_causal_gate.py"
+      - "experiments/shared_stem_cell/e1e5_confirmatory_review.py"
+      - "experiments/shared_stem_cell/test_e1e5_confirmatory_review.py"
       - "experiments/shared_stem_cell/E1E5_CAUSAL_FRONTIER.md"
       - ".github/workflows/hepta-e1e5-causal-gate.yml"
   workflow_dispatch:
@@ -22,5 +24,5 @@ jobs:
           python-version: "3.11"
       - name: Model-free mechanism tests
         run: |
-          python -m py_compile experiments/shared_stem_cell/e1e5_causal_gate.py
-          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e1e5_causal_gate.py' -v
+          python -m py_compile experiments/shared_stem_cell/e1e5_causal_gate.py experiments/shared_stem_cell/e1e5_confirmatory_review.py
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e1e5_*.py' -v
