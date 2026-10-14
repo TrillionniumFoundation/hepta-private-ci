@@ -30,6 +30,7 @@ jobs:
           /tmp/hepta-amcn-python/bin/pip install numpy==1.26.4
           /tmp/hepta-amcn-python/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
           /tmp/hepta-amcn-python/bin/pip install safetensors==0.6.2
+          /tmp/hepta-amcn-python/bin/pip install packaging==25.0
           /tmp/hepta-amcn-python/bin/pip install cryptography==46.0.4
           /tmp/hepta-amcn-python/bin/pip install ruff==0.15.8
       - name: Check source and execute actual trainable Head tests
