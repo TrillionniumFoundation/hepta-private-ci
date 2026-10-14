@@ -1,0 +1,111 @@
+name: MemoryCell Matrix SDK 0.19 SQLite compatibility candidate
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - ".github/workflows/hepta-memory-matrix-sdk-019-sqlite-compat.yml"
+      - "scripts/memory_cell/matrix_sdk_sqlite_vendor.py"
+      - "scripts/memory_cell/test_matrix_sdk_sqlite_vendor.py"
+permissions:
+  contents: read
+concurrency:
+  group: hepta-sdk-019-sqlite-compat-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  isolated-compatibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 65
+    env:
+      PYTHONPATH: scripts/memory_cell
+      PYTHONDONTWRITEBYTECODE: "1"
+      CARGO_TERM_COLOR: never
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Verify source SHA and six fail-closed archive tests
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/sdk019-compat
+          git rev-parse HEAD > /tmp/sdk019-compat/commit.txt
+          git rev-parse HEAD^{tree} > /tmp/sdk019-compat/tree.txt
+          cp codex-rs/Cargo.lock /tmp/sdk019-compat/original-Cargo.lock
+          cp codex-rs/Cargo.toml /tmp/sdk019-compat/original-Cargo.toml
+          cp codex-rs/deny.toml /tmp/sdk019-compat/original-deny.toml
+          python3 -m unittest -v test_matrix_sdk_sqlite_vendor 2>&1 | tee /tmp/sdk019-compat/tests.log
+      - name: Pin released Matrix SDK SQLite crate and prepare disposable research patch
+        run: |
+          set -euo pipefail
+          curl --fail --show-error --silent --location --retry 3 \
+            'https://crates.io/api/v1/crates/matrix-sdk-sqlite/0.19.0' \
+            > /tmp/sdk019-compat/registry-metadata.json
+          curl --fail --show-error --silent --location --retry 3 \
+            'https://static.crates.io/crates/matrix-sdk-sqlite/matrix-sdk-sqlite-0.19.0.crate' \
+            > /tmp/sdk019-compat/published-0.19.0.crate
+          python3 scripts/memory_cell/matrix_sdk_sqlite_vendor.py \
+            --crate /tmp/sdk019-compat/published-0.19.0.crate \
+            --metadata /tmp/sdk019-compat/registry-metadata.json \
+            --destination codex-rs/third_party/matrix-sdk-sqlite-0.19.0 \
+            --report /tmp/sdk019-compat/verified-local-compat-edit.json \
+            2>&1 | tee /tmp/sdk019-compat/vendor.log
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path('codex-rs/Cargo.toml')
+          original = root.read_text()
+          sdk = 'matrix-sdk = { version = "0.18.0",'
+          sqlite = 'matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.18.0" }'
+          if original.count(sdk) != 1 or original.count(sqlite) != 1:
+              raise ValueError('previous, pinned Matrix SDK/SQLite contract moved')
+          updated = original.replace(sdk, 'matrix-sdk = { version = "=0.19.0",')
+          updated = updated.replace(sqlite,
+              'matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.19.0" }')
+          root.write_text(updated)
+          PY
+      - name: Resolve the patched 0.19 release and compile actual Hepta Matrix owners
+        id: build
+        run: |
+          set -euo pipefail
+          cargo update --manifest-path codex-rs/Cargo.toml \
+            -p matrix-sdk --precise 0.19.0 \
+            2>&1 | tee /tmp/sdk019-compat/resolver.log
+          python3 scripts/memory_cell/matrix_sdk_security_probe.py \
+            --baseline /tmp/sdk019-compat/original-Cargo.lock \
+            --candidate codex-rs/Cargo.lock \
+            --output /tmp/sdk019-compat/known-advisory-delta.json \
+            2>&1 | tee /tmp/sdk019-compat/advisory-delta.log
+          cargo check --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-matrix-sdk -p codex-hepta-matrixd \
+            2>&1 | tee /tmp/sdk019-compat/cargo-check.log
+      - name: Run the UNCHANGED cargo-deny security policy on candidate
+        if: steps.build.outcome == 'success'
+        uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246
+        with:
+          rust-version: 1.95.0
+          manifest-path: ./codex-rs/Cargo.toml
+      - name: Retain every original and candidate receipt even on failure
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/sdk019-compat/source
+          cp codex-rs/Cargo.toml /tmp/sdk019-compat/attempted-Cargo.toml
+          cp codex-rs/Cargo.lock /tmp/sdk019-compat/attempted-Cargo.lock
+          git diff -- codex-rs/Cargo.toml codex-rs/Cargo.lock \
+            > /tmp/sdk019-compat/disposable-only.patch
+          git status --short > /tmp/sdk019-compat/worktree-status.txt
+          if [ -f codex-rs/third_party/matrix-sdk-sqlite-0.19.0/Cargo.toml ]; then
+            cp codex-rs/third_party/matrix-sdk-sqlite-0.19.0/Cargo.toml \
+              /tmp/sdk019-compat/experimental-sqlite-Cargo.toml
+          fi
+          cp scripts/memory_cell/matrix_sdk_sqlite_vendor.py /tmp/sdk019-compat/source/
+          cp scripts/memory_cell/test_matrix_sdk_sqlite_vendor.py /tmp/sdk019-compat/source/
+          cp scripts/memory_cell/matrix_sdk_security_probe.py /tmp/sdk019-compat/source/
+          cp .github/workflows/hepta-memory-matrix-sdk-019-sqlite-compat.yml /tmp/sdk019-compat/source/
+          (cd /tmp/sdk019-compat && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-sdk-019-sqlite-compat-research
+          path: /tmp/sdk019-compat
+          if-no-files-found: error
