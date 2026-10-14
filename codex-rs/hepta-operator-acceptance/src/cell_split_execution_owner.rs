@@ -928,6 +928,22 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // the external operation may already have committed and MUST NOT be
         // dispatched a second time.
         self.verify_committed_prefix()?;
+        // A signed original-owner effect can complete after Selector/NDU
+        // withdraws this split. Keep its prepared intent reconcile-only until
+        // current independent admission is rechecked after the real effect.
+        revalidate().map_err(CellSplitExecutionErrorV1::External)?;
+        // The external admission callback is not atomic with durable owner
+        // readback. Recheck all committed predecessors and this effect, then
+        // fence any local write-once ledger drift after the final admission.
+        self.verify_committed_prefix()?;
+        self.port
+            .verify_committed(&intent, &receipt)
+            .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+        self.read_verified_prefix(false, false)?;
+        // Owner readback itself may be slow: a later revocation must not be
+        // acknowledged as a successful coordinator ledger transition.
+        revalidate().map_err(CellSplitExecutionErrorV1::External)?;
+        self.read_verified_prefix(false, false)?;
         write_private_new(
             &frame_path(&self.root, self.cursor, "committed"),
             &canonical_json(&receipt)?,
