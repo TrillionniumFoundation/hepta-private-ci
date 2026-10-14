@@ -17,7 +17,10 @@ from experiments.shared_stem_cell import video_temporal as temporal
 COSTS = (0.0, 0.005, 0.02, 0.05, 0.10, 0.20)
 RIDGE = 0.5
 DEPTHS = anytime.DEPTHS
-ARMS = ("value", "confidence", "fixed_2", "fixed_4", "fixed_6", "fixed_8")
+ARMS = ("value", "cache_value", "confidence", "fixed_2", "fixed_4", "fixed_6", "fixed_8")
+# Accuracy-equivalent penalty for two extra recurrent steps even on cache hits.
+# Experimental units, NOT measured seconds, joules, or calibrated hardware price.
+STEP_PRICE = 0.005
 
 
 def observable(p, depth):
@@ -93,6 +96,56 @@ def route_value(exits, critic, cost):
     return selected
 
 
+
+def next_pair_marginal(known, row, depth):
+    """Known content identities only; never reads unseen frame pixels or labels.
+
+    FrameCacheTowers calls one physical vision forward for any missing member
+    of the next two-frame chunk. Existing vision features make the call free,
+    though two GRU updates and all metadata handling still incur work.
+    """
+    if (not isinstance(known, set) or not isinstance(row, list) or len(row) != 8
+            or depth not in DEPTHS[:-1]
+            or any(not isinstance(k, str) or len(k) != 64 or
+                   any(ch not in "0123456789abcdef" for ch in k) for k in row)):
+        raise e.InputError("exact bounded SHA identities required for marginal vision cost")
+    next_pair = row[depth:depth+2]
+    return int(any(k not in known for k in next_pair))
+
+
+def cache_price(price, calls):
+    if type(price) is not float or price not in COSTS or type(calls) is not int or calls not in (0, 1):
+        raise e.InputError("declared bounded next-pair cost required")
+    return STEP_PRICE + price*calls
+
+
+def route_cache_value(exits, critic, price, frame_ids):
+    """Replay an actual across-request SHA cache and only use current outputs.
+
+    The next-frame *identity* is observable workload metadata but neither its
+    visual content nor the next Reader state is available to the critic.
+    """
+    if type(price) is not float or price not in COSTS or set(exits) != set(DEPTHS):
+        raise e.InputError("registered cache-value price/depths required")
+    n = len(exits[2])
+    if (not isinstance(frame_ids, list) or len(frame_ids) != n or not 1 <= n <= 256):
+        raise e.InputError("complete cache-bound case rows required")
+    for depth in DEPTHS:
+        temporal.score(exits[depth], torch.zeros(n, dtype=torch.long))
+    estimates = {d: estimate(exits[d], d, critic) for d in DEPTHS[:-1]}
+    known, selected = set(), []
+    for i, row in enumerate(frame_ids):
+        # Validate ALL identity metadata before simulating any cache update.
+        next_pair_marginal(set(), row, 2)
+        for depth in DEPTHS:
+            known.update(row[depth-2:depth])
+            if (depth == 8 or float(estimates[depth][i]) <=
+                    cache_price(price, next_pair_marginal(known, row, depth))):
+                selected.append((depth, int(exits[depth][i].argmax())))
+                break
+    return selected
+
+
 def _profile(frame_ids, picks, labels):
     cost = anytime.simulated_cache_work(frame_ids, picks)
     return {"correct": sum(int(guess == int(y)) for (_depth, guess), y in zip(picks, labels)),
@@ -122,10 +175,12 @@ def select(exits, labels, frame_ids, critic):
     policies = {f"fixed_{d}": {"kind": "fixed", "depth": d} for d in DEPTHS}
     records = {f"fixed_{d}": fixed[d] for d in DEPTHS}
     grids = {}
-    for family, values in (("confidence", anytime.THRESHOLDS), ("value", COSTS)):
+    for family, values in (("confidence", anytime.THRESHOLDS), ("value", COSTS),
+                           ("cache_value", COSTS)):
         grid = []
         for x in values:
             picks = (anytime.route(exits, float(x)) if family == "confidence" else
+                     route_cache_value(exits, critic, float(x), frame_ids) if family == "cache_value" else
                      route_value(exits, critic, float(x)))
             grid.append({"setting": float(x), **_profile(frame_ids, picks, labels)})
         eligible = [i for i, row in enumerate(grid) if row["correct"] >= floor]
@@ -149,6 +204,9 @@ def select(exits, labels, frame_ids, critic):
             "best_calibration_arm": selected, "selection_basis":
             "max_fixed_quality_floor_then_unique_frames_physical_calls_requested_rows",
             "calibration_source_independence_not_certified": True,
+            "cache_value_step_price_accuracy_units": STEP_PRICE,
+            "cache_value_vision_price_basis": "one marginal physical CLIP forward per next pair",
+            "cache_value_cost_is_not_empirical_wall_or_energy": True,
             "value_critic_and_reader_train_on_separate_sources": True,
             "production_accepted": False}
 
@@ -156,7 +214,7 @@ def select(exits, labels, frame_ids, critic):
 @torch.no_grad()
 def stream_one(model, frames, root, tower, policy, critic):
     """Incremental input: decision at 2,4,6 only observes earlier acquired frames."""
-    if not isinstance(policy, dict) or policy.get("kind") not in ("fixed", "confidence", "value"):
+    if not isinstance(policy, dict) or policy.get("kind") not in ("fixed", "confidence", "value", "cache_value"):
         raise e.InputError("sealed bounded policy required")
     kind = policy["kind"]
     depth_limit = policy.get("depth") if kind == "fixed" else 8
@@ -165,13 +223,15 @@ def stream_one(model, frames, root, tower, policy, critic):
     if kind == "confidence" and (type(policy.get("threshold")) is not float
                                   or policy["threshold"] not in anytime.THRESHOLDS):
         raise e.InputError("registered confidence threshold required")
-    if kind == "value" and (type(policy.get("price")) is not float
+    if kind in ("value", "cache_value") and (type(policy.get("price")) is not float
                              or policy["price"] not in COSTS):
         raise e.InputError("registered value price required")
     if model.training or any(p.requires_grad for p in model.parameters()):
         raise e.InputError("frozen Reader required")
     if not isinstance(frames, list) or len(frames) != 8:
         raise e.InputError("closed eight-frame reference list required")
+    if kind == "cache_value":
+        next_pair_marginal(set(), [f["sha256"] for f in frames], 2)
     state, exits = None, []
     with e.measured() as timing:
         for depth in DEPTHS:
@@ -186,15 +246,24 @@ def stream_one(model, frames, root, tower, policy, critic):
             state, logits = model.step_pair(data, state)
             prob = logits.softmax(-1).float()
             temporal.score(prob, torch.zeros(1, dtype=torch.long))
-            if depth == 8 or kind == "fixed" and depth == depth_limit or (kind == "confidence" and
-                float(prob.max()) >= policy["threshold"]) or (kind == "value" and
-                float(estimate(prob, depth, critic)[0]) <= policy["price"]):
-                stop = True
-            else: stop = False
+            marginal = (next_pair_marginal(set(tower.cache),
+                [f["sha256"] for f in frames], depth)
+                if kind == "cache_value" and depth < 8 else None)
+            critic_estimate = (float(estimate(prob, depth, critic)[0])
+                if kind in ("value", "cache_value") and depth < 8 else None)
+            stop = (depth == 8 or kind == "fixed" and depth == depth_limit or
+                    kind == "confidence" and float(prob.max()) >= policy["threshold"] or
+                    kind == "value" and critic_estimate is not None and
+                        critic_estimate <= policy["price"] or
+                    kind == "cache_value" and critic_estimate is not None and
+                        critic_estimate <= cache_price(policy["price"], marginal))
             exits.append({"depth": depth, "probabilities": prob[0].tolist(),
                           "physical_pair_call_delta": tower.physical_video_calls - before,
-                          "critic_value_estimate": float(estimate(prob, depth, critic)[0])
-                              if kind == "value" and depth < 8 else None})
+                          "critic_value_estimate": critic_estimate,
+                          "next_pair_physical_calls_if_continued": marginal,
+                          "next_pair_price_accuracy_units":
+                              cache_price(policy["price"], marginal)
+                              if marginal is not None else None})
             if stop: break
     return {"depth": depth, "prediction": int(prob.argmax()),
             "probabilities": prob[0].tolist(), "exits_seen": exits, "wall": timing,
@@ -213,7 +282,7 @@ def run(manifest_path, output, *, _tower_factory=media.LocalTowers):
     root = manifest_path.parent
     output.mkdir(parents=True, exist_ok=False)
     e.write_once(output / "plan.json", {"schema": "hepta.video-value-plan.v1",
-        "manifest_sha256": e.sha(manifest_raw), "critic_prices": COSTS,
+        "manifest_sha256": e.sha(manifest_raw), "critic_prices": COSTS, "cache_step_price": STEP_PRICE,
         "reader_exits": DEPTHS, "ridge": RIDGE, "holdout_control_arms": ARMS,
         "split": "first four of six training sources for reader, final two for critic",
         "source_sha256": e.sha(Path(__file__).read_bytes()),
@@ -334,8 +403,11 @@ def run(manifest_path, output, *, _tower_factory=media.LocalTowers):
             "full_clip_resident_parameters": sum(p.numel() for p in base.models["clip"].parameters())
                 if "clip" in base.models else None,
             "reader_parameters": model_id["parameters"],
-            "critic_linear_coefficients": 15, "value_family_actual_selection": selection["policies"]["value"],
+            "critic_linear_coefficients": 15,
+            "cache_aware_marginal_calls_simulated_and_replayed": True,
+            "cache_step_cost_not_measured_hardware": True, "value_family_actual_selection": selection["policies"]["value"],
             "confidence_family_actual_selection": selection["policies"]["confidence"],
+            "cache_value_family_actual_selection": selection["policies"]["cache_value"],
             "calibration_best_family": selection["best_calibration_arm"],
             "simulated_towers": base.simulated,
             "energy_joules": None, "active_flops": None, "peak_process_rss_bytes": None,

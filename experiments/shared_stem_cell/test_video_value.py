@@ -61,6 +61,70 @@ class ValueMechanics(unittest.TestCase):
         self.assertEqual(len(selection["grids"]["value"]), len(value.COSTS))
         self.assertEqual(len(selection["grids"]["confidence"]), len(anytime.THRESHOLDS))
 
+    def test_cache_value_uses_only_next_pair_identity_not_future_content(self):
+        """Same critic, price and current outputs; saved features change price."""
+        sha = lambda n: f"{n:02x}" + "0" * 62
+        refs = [[sha(i) for i in range(8)],
+                [sha(8),sha(9),sha(0),sha(1),sha(10),sha(11),sha(12),sha(13)]]
+        wrong = torch.tensor([[.8,.2],[.8,.2]],dtype=torch.float32)
+        corrected = torch.tensor([[.8,.2],[.2,.8]],dtype=torch.float32)
+        exits = {2:wrong,4:corrected,6:corrected,8:corrected}
+        critic = {"schema":"hepta.video-value-critic.v1", "coefficients":{
+            str(d):[0.1,0.,0.,0.,0.] for d in value.DEPTHS[:-1]}}
+        same_price = value.route_value(exits,critic,0.2)
+        cache = value.route_cache_value(exits,critic,0.2,refs)
+        self.assertEqual([d for d,_ in same_price],[2,2])
+        self.assertEqual([d for d,_ in cache],[2,4])
+        # One more correct answer, without an extra physical CLIP call in this
+        # deliberately constructed cache-hit fixture; GRU work is NOT free.
+        self.assertEqual(sum(pred==y for (_,pred),y in zip(same_price,[0,1])),1)
+        self.assertEqual(sum(pred==y for (_,pred),y in zip(cache,[0,1])),2)
+        self.assertEqual(anytime.simulated_cache_work(refs,cache)["physical_video_calls"],2)
+        self.assertEqual(anytime.simulated_cache_work(refs,same_price)["physical_video_calls"],2)
+        self.assertEqual(anytime.simulated_cache_work(refs,cache)["requested_frame_rows"],6)
+        self.assertEqual(value.next_pair_marginal({sha(0),sha(1)},refs[1],2),0)
+        self.assertEqual(value.next_pair_marginal(set(),refs[1],2),1)
+
+    def test_cache_value_live_encoder_follows_sealed_simulated_marginal(self):
+        model=anytime.AnytimeCell(3).eval().requires_grad_(False)
+        known={"schema":"hepta.video-value-critic.v1", "coefficients":{
+            str(d):[0.1,0.,0.,0.,0.] for d in value.DEPTHS[:-1]}}
+        sha=lambda n:f"{n:02x}"+"0"*62
+        ids=[[sha(i) for i in range(8)],
+             [sha(8),sha(9),sha(0),sha(1),sha(10),sha(11),sha(12),sha(13)]]
+        refs=lambda row:[{"path":str(i)+".png","sha256":key,"timestamp_us":i*40000}
+                          for i,key in enumerate(row)]
+        base=FakeBase();tower=temporal.FrameCacheTowers(base)
+        rows=[value.stream_one(model,refs(item),Path("."),tower,
+                {"kind":"cache_value","price":0.2},known) for item in ids]
+        self.assertEqual([r["depth"] for r in rows],[2,4])
+        self.assertEqual(tower.physical_video_calls,2)
+        self.assertEqual(rows[1]["exits_seen"][0]["next_pair_physical_calls_if_continued"],0)
+        self.assertEqual(rows[1]["exits_seen"][0]["next_pair_price_accuracy_units"],value.STEP_PRICE)
+        self.assertEqual(rows[1]["exits_seen"][1]["next_pair_physical_calls_if_continued"],1)
+        self.assertNotIn(ids[1][4],tower.cache)
+        observed=value.route_cache_value({d:torch.stack([
+            torch.tensor(next(t["probabilities"] for t in row["exits_seen"] if t["depth"]==d))
+            if d<=row["depth"] else torch.tensor([.5,.5]) for row in rows])
+            for d in value.DEPTHS},known,0.2,ids)
+        # Above full future-depth placeholders may differ from model's true
+        # path but stop uses only observed exits, so depths must agree.
+        self.assertEqual([d for d,_ in observed],[2,4])
+
+    def test_cache_value_rejects_corrupt_price_and_identity_before_encoding(self):
+        model=anytime.AnytimeCell(3).eval().requires_grad_(False)
+        critic={"schema":"hepta.video-value-critic.v1", "coefficients":{
+            str(d):[.1,0.,0.,0.,0.] for d in value.DEPTHS[:-1]}}
+        refs=[{"path":str(i)+".png","sha256":f"{i:02x}"+"0"*62,
+               "timestamp_us":i*40000} for i in range(8)]
+        base=FakeBase();tower=temporal.FrameCacheTowers(base)
+        with self.assertRaises(e.InputError):
+            value.stream_one(model,refs,Path("."),tower,{"kind":"cache_value","price":0.022},critic)
+        with self.assertRaises(e.InputError):
+            value.route_cache_value({d:torch.tensor([[.5,.5]]) for d in value.DEPTHS},
+                critic,0.2,[["not-a-digest"]*8])
+        self.assertEqual(base.calls["clip"],0)
+
     def test_value_fallback_when_critic_never_matches_best_fixed(self):
         y = torch.tensor([0, 1], dtype=torch.long)
         wrong = torch.tensor([[.01, .99], [.99, .01]], dtype=torch.float32)
@@ -140,6 +204,8 @@ class ValueEndToEnd(unittest.TestCase):
         self.assertEqual(len(set(selection["reader_ids"] + selection["critic_ids"] +
                                  selection["calibration_ids"])),64)
         self.assertEqual(set(report["scores"]),set(value.ARMS))
+        self.assertIn("cache_value",e.decode((self.root/"value/selection.json").read_bytes())["policies"])
+        self.assertIn("cache_value_family_actual_selection",report)
         self.assertEqual({s["cases"] for s in report["scores"].values()}, {16})
         for arm in value.ARMS:
             self.assertTrue(0 < report["scores"][arm]["latency_ns"]["p50"]
@@ -175,6 +241,22 @@ class ValueEndToEnd(unittest.TestCase):
         report["physical_work"]["value"]["physical_video_calls"] += 1
         report_path.write_bytes(e.canonical(report))
         with self.assertRaisesRegex(ValueError,"physical frame cache cost drift"):
+            audit_video_value.audit(self.root)
+
+    def test_independent_auditor_refuses_forged_cached_marginal_trace(self):
+        value.run(self.root/"manifest.json",self.root/"value",_tower_factory=FakeTower)
+        summary=audit_video_value.audit(self.root)
+        self.assertEqual(summary["holdout"]["cache_value"]["cases"],16)
+        path=self.root/"value/predictions.json"
+        report_path=self.root/"value/report.json"
+        payload=json.loads(path.read_bytes())
+        target=next(r for r in payload["records"]["cache_value"] if r["depth"] >= 2)
+        target["exits_seen"][0]["next_pair_physical_calls_if_continued"]=99
+        modified=e.canonical(payload);path.write_bytes(modified)
+        report=json.loads(report_path.read_bytes())
+        report["prediction_sha256"]=hashlib.sha256(modified).hexdigest()
+        report_path.write_bytes(e.canonical(report))
+        with self.assertRaisesRegex(ValueError,"cache marginal call drift"):
             audit_video_value.audit(self.root)
 
     def test_changed_heldout_labels_do_not_change_presealed_selection_or_route(self):

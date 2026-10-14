@@ -14,7 +14,8 @@ from pathlib import Path
 DEPTHS = (2, 4, 6, 8)
 COSTS = (0., .005, .02, .05, .1, .2)
 THRESHOLDS = (0., .55, .65, .75, .85, .95, 1.01)
-ARMS = ("value", "confidence", "fixed_2", "fixed_4", "fixed_6", "fixed_8")
+ARMS = ("value", "cache_value", "confidence", "fixed_2", "fixed_4", "fixed_6", "fixed_8")
+STEP_PRICE = .005
 RIDGE = .5
 
 
@@ -88,14 +89,25 @@ def value_est(p,d,coef):
     return max(-1.,min(1.,sum(a*b for a,b in zip(vector(p,d),coef[d]))))
 
 
-def picks(exits,kind,setting,coef):
-    n=len(exits[2]); out=[]
+def picks(exits,kind,setting,coef, frame_ids=None):
+    n=len(exits[2]); out=[]; cache=set()
+    if kind=="cache_value":
+        need(isinstance(frame_ids,list) and len(frame_ids)==n,"cache-value frame ids")
     for i in range(n):
         for d in DEPTHS:
             p=exits[d][i]
+            if kind=="cache_value":
+                row=frame_ids[i]
+                need(len(row)==8 and all(isinstance(k,str) and len(k)==64
+                    and all(ch in "0123456789abcdef" for ch in k) for k in row),
+                    "cache-value bounded frame IDs")
+                cache.update(row[d-2:d])
+                marginal=int(any(k not in cache for k in row[d:d+2])) if d<8 else None
             decision=(d==8 or kind=="fixed" and d==setting
                       or kind=="confidence" and max(p)>=setting
-                      or kind=="value" and value_est(p,d,coef)<=setting)
+                      or kind=="value" and value_est(p,d,coef)<=setting
+                      or kind=="cache_value" and
+                         value_est(p,d,coef)<=STEP_PRICE+setting*marginal)
             if decision:
                 out.append((d,argmax(p)));break
     return out
@@ -163,8 +175,9 @@ def audit(root):
     need(best==selection["best_fixed_depth"],"best fixed choice")
     policies={f"fixed_{d}":{"kind":"fixed","depth":d} for d in DEPTHS}
     profiles={f"fixed_{d}":fixed[d] for d in DEPTHS}
-    for family, settings in (("confidence",THRESHOLDS),("value",COSTS)):
-        cal=[{"setting":s,**quality(ids,picks(exits,family,s,coef),labels)} for s in settings]
+    for family, settings in (("confidence",THRESHOLDS),("value",COSTS),
+                             ("cache_value",COSTS)):
+        cal=[{"setting":s,**quality(ids,picks(exits,family,s,coef,ids),labels)} for s in settings]
         need(selection["grids"][family]==cal,"calibration grid drift "+family)
         eligible=[i for i,p in enumerate(cal) if p["correct"]>=floor]
         if eligible:
@@ -188,8 +201,8 @@ def audit(root):
     for arm in ARMS:
         rows=saved["records"][arm]; policy=policies[arm]
         need([r["case_id"] for r in rows]==saved["case_ids"],"row order")
-        seen=[]
-        for r in rows:
+        seen=[]; consumed=set()
+        for r,case in zip(rows,holdout):
             visits=r["exits_seen"]
             need(r["depth"] in DEPTHS and len(visits)*2==r["depth"]
                 and [v["depth"] for v in visits]==list(range(2,r["depth"]+1,2)),"invalid reader depth trace")
@@ -197,23 +210,46 @@ def audit(root):
                 argmax(v["probabilities"])
             need(r["probabilities"]==visits[-1]["probabilities"]
                  and r["prediction"]==argmax(r["probabilities"]),"invalid final reader prediction")
-            for v in visits[:-1]:
+            row_ids=[f["sha256"] for f in case["inputs"]["video"]]
+            def allowed_continue(v):
                 d=v["depth"];p=v["probabilities"]
-                need(policy["kind"]=="fixed" and d<policy["depth"]
-                     or policy["kind"]=="confidence" and max(p)<policy["threshold"]
-                     or policy["kind"]=="value" and value_est(p,d,coef)>policy["price"],
-                     "stopped policy should have continued")
-            d=r["depth"];p=r["probabilities"]
-            need(d==8 or policy["kind"]=="fixed" and d==policy["depth"]
-                 or policy["kind"]=="confidence" and max(p)>=policy["threshold"]
-                 or policy["kind"]=="value" and value_est(p,d,coef)<=policy["price"],
-                 "bad stop decision")
-            if policy["kind"]=="value":
-                for v in visits:
-                    expected=value_est(v["probabilities"],v["depth"],coef) if v["depth"]<8 else None
-                    need(expected is None and v["critic_value_estimate"] is None
-                         or expected is not None and abs(expected-v["critic_value_estimate"])<1e-6,
-                         "per-step critic estimate drift")
+                if d==8: return False
+                if policy["kind"]=="fixed": return d<policy["depth"]
+                if policy["kind"]=="confidence": return max(p)<policy["threshold"]
+                if policy["kind"]=="value": return value_est(p,d,coef)>policy["price"]
+                if policy["kind"]=="cache_value":
+                    fresh=int(any(k not in consumed for k in row_ids[d:d+2]))
+                    return value_est(p,d,coef)>STEP_PRICE+policy["price"]*fresh
+                need(False,"unknown policy family")
+            for index,v in enumerate(visits):
+                d=v["depth"]
+                chunk=row_ids[d-2:d]
+                additional=int(any(k not in consumed for k in chunk))
+                need(v["physical_pair_call_delta"]==additional,"per-pair CLIP call delta drift")
+                consumed.update(chunk)
+                if policy["kind"]=="cache_value":
+                    expected_calls=int(any(k not in consumed for k in row_ids[d:d+2])) if d<8 else None
+                    expected_price=STEP_PRICE+policy["price"]*expected_calls if d<8 else None
+                    need(v["next_pair_physical_calls_if_continued"]==expected_calls,
+                         "cache marginal call drift")
+                    need(v["next_pair_price_accuracy_units"]==expected_price,
+                         "cache marginal price drift")
+                else:
+                    need(v.get("next_pair_physical_calls_if_continued") is None
+                         and v.get("next_pair_price_accuracy_units") is None,
+                         "unexpected cache-aware trace")
+                if policy["kind"] in ("value","cache_value"):
+                    expected=value_est(v["probabilities"],d,coef) if d<8 else None
+                    saved_est=v["critic_value_estimate"]
+                    need(expected is None and saved_est is None or
+                         expected is not None and abs(expected-saved_est)<1e-6,
+                         "critic estimate trace drift")
+                else:
+                    need(v["critic_value_estimate"] is None,"non-critic trace drift")
+                if index<len(visits)-1:
+                    need(allowed_continue(v),"stopped policy should have continued")
+                else:
+                    need(d==8 or not allowed_continue(v),"bad stop decision")
             seen.append((d,r["prediction"]))
         keys=[[f["sha256"] for f in c["inputs"]["video"]] for c in holdout]
         calc=work(keys,seen)
