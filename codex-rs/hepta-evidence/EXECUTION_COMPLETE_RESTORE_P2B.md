@@ -48,7 +48,7 @@ source-free durable recovery protocol.
    envelope against its original provider-effect intent and canonical digest.
    Missing originals, altered bytes and corrupted request binding fail closed.
    This local hash check is not an external anti-rollback oracle or signer.
-5. Seven additional actual-SQLite adversarial tests cover source-free read-only
+5. Eight additional actual-SQLite adversarial tests cover source-free read-only
    reopen, partial-transaction fault injection and rollback, digest-only orphan
    rejection, immutable update/delete triggers, forged content with restored
    schema, quarantine survival and default denial. P2a's ten earlier tests must
