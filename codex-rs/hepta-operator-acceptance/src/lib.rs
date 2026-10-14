@@ -126,8 +126,6 @@ pub use cell_split_execution_cli::run_pinned_cell_split_execution_v1;
 #[cfg(unix)]
 pub use cell_split_execution_cli::run_pinned_cell_split_execution_with_admission_and_metrics_v1;
 #[cfg(unix)]
-pub use cell_split_execution_cli::run_pinned_cell_split_execution_with_admission_v1;
-#[cfg(unix)]
 pub use cell_split_execution_cli::run_pinned_cell_split_reconcile_only_v1;
 pub use cell_split_execution_owner::CellSplitExecutionErrorV1;
 pub use cell_split_execution_owner::CellSplitExecutionIntentV1;
