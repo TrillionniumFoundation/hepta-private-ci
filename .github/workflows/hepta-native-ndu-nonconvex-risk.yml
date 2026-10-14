@@ -1,0 +1,29 @@
+name: Native NDU nonconvex positive-risk certificate
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-ndu/research/native_stem_abcd/risk_nonconvex/**'
+      - '.github/workflows/hepta-native-ndu-nonconvex-risk.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.13'
+      - name: Numerical dependencies
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0
+      - name: Exact certificate and all 14 mathematical tests
+        run: |
+          cd codex-rs/hepta-ndu/research/native_stem_abcd/risk_nonconvex
+          python -m unittest -v test_math
+          python certificate.py
+          python run.py sweep --protocol archived-R16-on-host --out /tmp/ndu-risk-r16-runs
+          python audit/verify.py --source . --runs /tmp/ndu-risk-r16-runs --out /tmp/ndu-risk-r16-audit
