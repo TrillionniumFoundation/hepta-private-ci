@@ -1,0 +1,89 @@
+{
+  "certificate_digest": "df44b719b25a93f843fa843768e397620dfc3e6dc06d5b275d19e8723699c1d0",
+  "complete_raw_archive_location": "conversation ZIP, not a Git binary upload",
+  "core": {
+    "audit_development_errors": "source-scope assumption and numpy.int64 JSON serialization corrected without refitting",
+    "checkpoint_count": 3820,
+    "complete_flops": null,
+    "energy_joules": null,
+    "failed_execution": 0,
+    "fit_executed_source_sha256": {
+      "certificate.py": "85dd4596aa8c37e023a472f1067c9d829094742524bb07b10a95c6b45a16d56e",
+      "problem.py": "d3acc866c80844fee4bfb548df5bec757a5176f3e6e4b4e3f18597afd1202507",
+      "run.py": "350579a0ddd000462b907f9d0fa399956007b3cb210aef4e4a9cb007b4424914",
+      "solver.py": "e539d2bc2c783e02b142acbdfab925e7b6b80b07f2d0c71afcc93e7e483bac48",
+      "test_math.py": "63f5668873d8e119ceddd4deb2a3611a2bed6a94e707a0e9571e9793ebb5c0b0"
+    },
+    "fitted_models": 64,
+    "generic_nonconvex_multistep_certificate": false,
+    "gpu_memory_peak_bytes": null,
+    "initial_failed_sweep": "existing target directory; started no efficacy fit",
+    "max_checkpoint_replay_error": 0.0,
+    "max_independent_leaf_error": 3.3306690738754696e-16,
+    "native_chip_run": false,
+    "new_artifact_tamper_tests": 7,
+    "new_math_tests": 18,
+    "parent": "3c83e6546b5650a36a9a114fa15a92a4b98eb369",
+    "project_cloud": false,
+    "remote_protocol": "52b4160c009c10d55b059c2fddb5af71ba5c5c81",
+    "retained_negative_results": true,
+    "risk_neutral": false,
+    "schema": "hepta.ndu.nonproduct-symmetry.evidence-core.r17",
+    "scientific_success_counts": {
+      "nonproduct/adam": 0,
+      "nonproduct/bfgs": 5,
+      "nonproduct/lbfgs": 5,
+      "nonproduct/trust-exact": 7,
+      "product_only/adam": 1,
+      "product_only/bfgs": 5,
+      "product_only/lbfgs": 5,
+      "product_only/trust-exact": 7
+    },
+    "source_freeze_note": "all 64 fits bound five executed source files; audit/reference/tamper helpers were added after completion and separately hashed",
+    "source_sha1": {
+      "audit.py": "fef807441d1f30f9b9b48ed8d5b3e1a366bdc69c",
+      "certificate.py": "38ba319088c5e3c0f6f5ed2b57ce21fbd3b2d623",
+      "problem.py": "082da515ef966ef67ebde98cc9038f3d5121a632",
+      "reference.py": "a4f8a870808a83e0a1bd8f26af98d47e6b854cc3",
+      "run.py": "e6822087cb01b503347e3d1a63e91505f2c0cec0",
+      "solver.py": "68d0ca76bc67306379b4ab0021776e956d89ba21",
+      "test_math.py": "d2c6a31184c013c8f74687e4c142fc5542ca7731",
+      "test_tamper.py": "8ddfaa67f2d2af517aaaffd2190cd705add5c8bf"
+    },
+    "strict_certificate": true,
+    "unchanged_historical_regressions": 74
+  },
+  "global_weight_candidate": [
+    "52149225068747/62500000000000",
+    "52149225068747/62500000000000"
+  ],
+  "hosted_ci_status_at_publication": "not verified",
+  "legacy_research_gates_unchanged": true,
+  "receipt": {
+    "archive_bytes": 470371,
+    "archive_name": "hepta_native_ndu_nonproduct_round17_20261014.zip",
+    "archive_sha256": "bba2d43dc32720761d92e76896e98c9bd3b0be77b32ad5eca71c95eeab7f0e75",
+    "exact_source_hashes_checked_locally": true,
+    "full_hosted_ci_verified": false,
+    "manifest_members": 558,
+    "no_main_merge": true,
+    "production_authorized": false,
+    "research_only": true,
+    "schema": "hepta.ndu.nonproduct-symmetry.archive-receipt.r17",
+    "scientific_results": {
+      "nonproduct/adam": 0,
+      "nonproduct/bfgs": 5,
+      "nonproduct/lbfgs": 5,
+      "nonproduct/trust-exact": 7,
+      "product_only/adam": 1,
+      "product_only/bfgs": 5,
+      "product_only/lbfgs": 5,
+      "product_only/trust-exact": 7
+    },
+    "total_checkpoints": 3820,
+    "verified_content_members": 557
+  },
+  "rigorous_component_error": "112889324839668733807014110929256878038211508247499/135170791378192224000000000000000000000000000000000000000000000000",
+  "rigorous_population_excess": "12743999662756248191863121415603963293621212736861264680035029519083628138724463458792684098239755001/32400000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+  "schema": "hepta.ndu.nonproduct-symmetry.github-evidence.r17"
+}
