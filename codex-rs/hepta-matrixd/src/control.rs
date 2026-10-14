@@ -436,8 +436,15 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), MatrixdControlError> {
         Err(_) if !socket_path.exists() => return Ok(()),
         Err(error) => return Err(error.into()),
     }
+    // A refused Windows rendezvous can disappear before the stale-path check.
+    // Only a truly missing path may proceed to the exclusive listener bind.
     if codex_uds::is_stale_socket_path(socket_path).await? {
-        tokio::fs::remove_file(socket_path).await?;
+        match tokio::fs::remove_file(socket_path).await {
+            Ok(()) => Ok(()),
+            Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
+            Err(error) => Err(error.into()),
+        }
+    } else if !tokio::fs::try_exists(socket_path).await? {
         Ok(())
     } else {
         Err(MatrixdControlError::Io(std::io::Error::new(
@@ -903,6 +910,35 @@ mod tests {
         assert_eq!(connections.health().lifecycle, MatrixdLifecycle::Fenced);
         cancel.cancel();
         task.await??;
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn control_socket_preflight_preserves_existing_regular_files() -> TestResult {
+        let temp = tempfile::tempdir()?;
+        let path = temp.path().join("reserved-control-path");
+        fs::write(&path, b"not a socket")?;
+        let result = prepare_socket(&path).await;
+        assert!(
+            matches!(result, Err(MatrixdControlError::Io(_))),
+            "a non-socket path must never be treated as an abandoned socket"
+        );
+        assert_eq!(fs::read(&path)?, b"not a socket");
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn control_socket_preflight_does_not_steal_live_listener() -> TestResult {
+        let temp = tempfile::tempdir()?;
+        let path = temp.path().join("live-control-path");
+        let _live = UnixListener::bind(&path).await?;
+        assert!(
+            matches!(prepare_socket(&path).await, Err(MatrixdControlError::Io(_))),
+            "an active control rendezvous must remain exclusively owned"
+        );
+        assert!(path.exists());
         Ok(())
     }
 }

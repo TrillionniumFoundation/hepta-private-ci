@@ -195,9 +195,16 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
         .await
         .map_err(|error| io_context("inspect stale agentd control socket", socket_path, error))?
     {
-        tokio::fs::remove_file(socket_path).await.map_err(|error| {
-            io_context("remove stale agentd control socket", socket_path, error)
-        })?;
+        match tokio::fs::remove_file(socket_path).await {
+            Ok(()) => Ok(()),
+            Err(error) if error.kind() == ErrorKind::NotFound => Ok(()),
+            Err(error) => Err(io_context("remove stale agentd control socket", socket_path, error)),
+        }
+    } else if !tokio::fs::try_exists(socket_path)
+        .await
+        .map_err(|error| io_context("recheck agentd control socket", socket_path, error))?
+    {
+        // A disappeared rendezvous cannot be stolen; the next bind is exclusive.
         Ok(())
     } else {
         Err(AgentdError::Io(std::io::Error::new(
