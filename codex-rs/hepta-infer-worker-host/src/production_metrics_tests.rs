@@ -251,7 +251,10 @@ fn recovered_business_wal_refuses_deleted_metrics_history() {
     let prior_wal = std::fs::read(&journal).expect("WAL bytes");
     std::fs::remove_file(&metrics).expect("simulate evidence loss");
     assert!(open_metrics_bound_native_control_v1(&journal, 32).is_err());
-    assert!(!metrics.exists(), "a failed recovery must not invent new history");
+    assert!(
+        !metrics.exists(),
+        "a failed recovery must not invent new history"
+    );
     assert_eq!(std::fs::read(&journal).expect("unchanged WAL"), prior_wal);
     let repair = DurableInferenceControl::open(&journal, 32).expect("repair-only WAL");
     assert!(repair.native_record("request.1").is_some());
@@ -277,5 +280,10 @@ fn recovered_business_wal_refuses_truncated_metrics_history() {
         .set_len(0)
         .expect("simulate evidence truncation");
     assert!(open_metrics_bound_native_control_v1(&journal, 32).is_err());
-    assert_eq!(std::fs::metadata(&metrics).expect("truncated journal").len(), 0);
+    assert_eq!(
+        std::fs::metadata(&metrics)
+            .expect("truncated journal")
+            .len(),
+        0
+    );
 }

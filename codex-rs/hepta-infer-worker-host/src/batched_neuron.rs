@@ -351,11 +351,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             .poll(now_ms)
             .map_err(BatchWorkerErrorV1::Scheduler)?;
         if let Some(batch) = &poll.batch {
-            if let Some(first) = batch.requests.first() {
-                // Planning latency does not represent physical backend latency.
+            // One scheduling sample per dequeued request. Emitting only the
+            // first member undercounts throughput and hides per-Scope queue
+            // latency once native batches become physically coalesced.
+            // This does not represent physical backend execution latency.
+            for intent in &batch.requests {
                 self.emit_metric(
-                    &batch.key.scope_id,
-                    &first.request_id,
+                    &intent.key.scope_id,
+                    &intent.request_id,
                     PhaseMetricKindV1::Microbatch,
                     scheduled_at.elapsed(),
                     true,

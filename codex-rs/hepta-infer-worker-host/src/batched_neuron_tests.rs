@@ -6,6 +6,7 @@ use crate::model_worker::Error;
 use crate::model_worker::ModelManifest;
 use crate::model_worker::ResourceGrant;
 use crate::model_worker::WorkerRequest;
+use crate::model_worker::canonical_neuron_feature_payload_digest;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
@@ -14,6 +15,7 @@ use codex_hepta_types::PhaseMetricSinkErrorV1;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use std::collections::BTreeSet;
+use std::os::unix::fs::PermissionsExt;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -203,6 +205,11 @@ fn runner_with_scope_frontier<D: ModelDriver + NeuronFeatureDriver>(
         revision: 1,
         revoked_grant_ids: BTreeSet::new(),
     };
+    // Hosted runners may create a tempfile root with group/other access.
+    // The production issuer deliberately rejects that directory: provision
+    // an owner-only test fixture instead of weakening Final-use checks.
+    std::fs::set_permissions(directory, std::fs::Permissions::from_mode(0o700))
+        .expect("private signed Worker test authority");
     let authority = FinalUseAuthority::open_state_dir(
         directory,
         "security-owner".into(),
@@ -235,6 +242,28 @@ fn runner_with_scope_frontier<D: ModelDriver + NeuronFeatureDriver>(
         },
     )
     .unwrap()
+}
+
+#[test]
+fn world_accessible_final_use_directory_remains_explicitly_denied() {
+    let dir = tempfile::tempdir().expect("fixture root");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o755))
+        .expect("unsafe fixture directory");
+    let signer = SigningKey::from_bytes(&[93; 32]);
+    let head = FinalUseRevocations {
+        authority_epoch: 9,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    assert!(matches!(
+        FinalUseAuthority::open_state_dir(
+            dir.path(),
+            "security-owner".to_string(),
+            signer.verifying_key().to_bytes(),
+            head,
+        ),
+        Err(codex_hepta_contracts::FinalUseError::UnsafeStateDirectory)
+    ));
 }
 
 fn signed(signing_key: &SigningKey, binding: FinalUseBinding) -> SignedFinalUseGrant {
@@ -304,6 +333,68 @@ fn signed_batch_executes_driver_once_then_rejects_duplicate() {
             (PhaseMetricKindV1::Admission, false),
         ]
     );
+}
+
+#[test]
+fn multi_request_batch_records_each_member_in_all_three_metric_phases() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[81; 32]);
+    let (model, original, key) = fixture_request();
+    let metrics = std::sync::Arc::new(RecordedSink::default());
+    let mut worker =
+        runner_with_batch_size(&signer, dir.path(), model, 2).with_metric_sink(metrics.clone());
+    let mut request_digests = Vec::new();
+    for index in 0_u8..2 {
+        let mut request = original.clone();
+        request.authorization.request_id = format!("metric-member-{index}");
+        request.authorization.reservation_id = format!("metric-reservation-{index}");
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("metric-grant-{index}");
+        grant.grant.nonce = [index + 1; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        request_digests.push(Digest32::of_bytes(
+            request.authorization.request_id.as_bytes(),
+        ));
+        worker
+            .enqueue(100, "model".into(), request, key.clone(), grant)
+            .unwrap();
+    }
+    let polled = worker.poll_and_execute(101).unwrap();
+    assert_eq!(polled.outcomes.len(), 2);
+    assert!(polled.outcomes.iter().all(|outcome| matches!(
+        &outcome.result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    )));
+    assert!(worker.production_metrics_ready());
+
+    let events = metrics.0.lock().unwrap();
+    assert_eq!(events.len(), 6);
+    for phase in [
+        PhaseMetricKindV1::Admission,
+        PhaseMetricKindV1::Microbatch,
+        PhaseMetricKindV1::NeuronFeature,
+    ] {
+        assert_eq!(
+            events.iter().filter(|event| event.phase == phase).count(),
+            2
+        );
+    }
+    for request in request_digests {
+        assert_eq!(
+            events
+                .iter()
+                .filter(|event| event.operation_digest == request)
+                .count(),
+            3,
+        );
+    }
 }
 
 fn completed_signed_dummy(signer: &SigningKey) -> SignedFinalUseGrant {
@@ -592,7 +683,9 @@ fn three_authorized_neuron_items_enter_one_physical_batch_driver_invocation() {
         backend_calls: backend_calls.clone(),
         scalar_calls: scalar_calls.clone(),
     };
-    let mut execution = runner_with_batch_size_and_driver(&signer, dir.path(), model, 3, driver);
+    let metrics = std::sync::Arc::new(RecordedSink::default());
+    let mut execution = runner_with_batch_size_and_driver(&signer, dir.path(), model, 3, driver)
+        .with_metric_sink(metrics.clone());
     for i in 0_u8..3 {
         let mut request = fixture.clone();
         request.authorization.request_id = format!("batch-request-{i}");
@@ -623,6 +716,21 @@ fn three_authorized_neuron_items_enter_one_physical_batch_driver_invocation() {
     assert_eq!(backend_calls.load(std::sync::atomic::Ordering::Relaxed), 1);
     assert_eq!(scalar_calls.load(std::sync::atomic::Ordering::Relaxed), 0);
     assert_eq!(execution.pending(), 0);
+    let samples = metrics.0.lock().unwrap();
+    assert_eq!(samples.len(), 9);
+    for phase in [
+        PhaseMetricKindV1::Admission,
+        PhaseMetricKindV1::Microbatch,
+        PhaseMetricKindV1::NeuronFeature,
+    ] {
+        assert_eq!(
+            samples
+                .iter()
+                .filter(|sample| sample.phase == phase)
+                .count(),
+            3,
+        );
+    }
 }
 
 #[test]
