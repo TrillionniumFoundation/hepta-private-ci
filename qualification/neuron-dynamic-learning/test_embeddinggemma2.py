@@ -115,7 +115,8 @@ class SnapshotAndModality(unittest.TestCase):
             validate_sample(sample(input={**a["input"], "sha256": "0" * 64}), "text", None)
         with tempfile.TemporaryDirectory() as temp:
             folder = Path(temp)
-            (folder / "media.png").write_bytes(b"image fixture bytes not a decoded image")
+            from PIL import Image
+            Image.new("RGB", (4, 4), (100, 20, 30)).save(folder / "media.png")
             media = sample(input={"modality": "image", "role": "document", "value": "media.png",
                                   "sha256": sha256((folder / "media.png").read_bytes())})
             self.assertIsInstance(validate_sample(media, "vision", folder)[1], dict)
@@ -184,6 +185,32 @@ class SnapshotAndModality(unittest.TestCase):
             stem.encode_cells([sample("cell.a"), sample("cell.b", scope_id="different")])
         with self.assertRaises(QualificationError):
             stem.encode_cells([sample("cell.a"), sample("cell.a")])
+
+    def test_media_decode_limits_precede_any_model_call(self):
+        from PIL import Image
+        import numpy as np
+        import soundfile
+        from embeddinggemma2_shadow import inspect_media_budget
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            Image.new("RGB", (64, 64)).save(root / "ok.png")
+            self.assertEqual(inspect_media_budget("image", root / "ok.png")
+                             ["bounded_default_token_estimate"], 280)
+            (root / "corrupt.png").write_bytes(b"not a decoded PNG")
+            with self.assertRaises(QualificationError):
+                inspect_media_budget("image", root / "corrupt.png")
+            soundfile.write(root / "short.wav", np.zeros(16000), 16000, subtype="PCM_16")
+            self.assertEqual(inspect_media_budget("audio", root / "short.wav")
+                             ["bounded_default_token_estimate"], 25)
+            soundfile.write(root / "stereo.wav", np.zeros((16000, 2)), 16000, subtype="PCM_16")
+            with self.assertRaises(QualificationError):
+                inspect_media_budget("audio", root / "stereo.wav")
+            soundfile.write(root / "wrong_rate.wav", np.zeros(8000), 8000, subtype="PCM_16")
+            with self.assertRaises(QualificationError):
+                inspect_media_budget("audio", root / "wrong_rate.wav")
+            (root / "broken.mp4").write_bytes(b"not a video container")
+            with self.assertRaises(QualificationError):
+                inspect_media_budget("video", root / "broken.mp4")
 
 
 class PairedEvidence(unittest.TestCase):
