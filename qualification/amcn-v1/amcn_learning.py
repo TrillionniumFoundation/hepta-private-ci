@@ -48,7 +48,7 @@ class FeatureMatrix:
     def __init__(self, rows, features, *, encoder_sha256, scope, generation,
                  backend_profile, encoder_execution_receipt=None):
         require(is_sha(encoder_sha256), "encoder identity")
-        require(backend_profile in ("local_hf_verified_externally", "mechanics_fixture"),
+        require(backend_profile in ("local_hf_snapshot_checked_unreviewed", "mechanics_fixture"),
                 "unregistered Encoder backend")
         require(isinstance(rows, (list, tuple)) and 2 <= len(rows) <= MAX_ROWS,
                 "bounded feature rows")
@@ -62,7 +62,7 @@ class FeatureMatrix:
         require(bool(torch.isfinite(features).all()), "nonfinite features")
         # "verified_externally" is a declared provenance class, not an assertion
         # that this constructor independently authenticated the provider.
-        if backend_profile == "local_hf_verified_externally":
+        if backend_profile == "local_hf_snapshot_checked_unreviewed":
             require(is_sha(encoder_execution_receipt), "missing original HF execution receipt")
         else:
             require(encoder_execution_receipt is None, "fixture cannot mint HF receipt")
