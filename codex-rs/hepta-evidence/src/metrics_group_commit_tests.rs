@@ -729,7 +729,9 @@ fn cold_replay_rejects_tampered_first_marker_row_with_valid_last_frontier() {
             MetricPhaseV1::Signature,
             MetricPhaseV1::Cns,
         ] {
-            owner.stage(sample(phase)).expect("stage original event");
+            owner
+                .stage(sample(phase))
+                .expect("stage original event");
             owner.flush().expect("committed original group");
         }
     }
@@ -738,8 +740,8 @@ fn cold_replay_rejects_tampered_first_marker_row_with_valid_last_frontier() {
     // Change the first (not the last) F1 sequence field. Length, inode,
     // final tuple and original WAL bytes are all left unchanged.
     let first_hex_digit = identity_len + 3;
-    marker_bytes[first_hex_digit] =
-        if marker_bytes[first_hex_digit] == b'0' { b'1' } else { b'0' };
+    assert_eq!(marker_bytes[first_hex_digit], b'0');
+    marker_bytes[first_hex_digit] = b'1';
     assert_eq!(
         &marker_bytes[marker_bytes.len() - OWNER_FRONTIER_ROW_BYTES..],
         saved_final.as_slice()
@@ -795,9 +797,13 @@ fn local_observer_frontier_is_read_only_and_never_counts_unflushed_staging() {
     let path = dir.path().join("journal");
     let marker = dir.path().join("journal.owner-lock");
     let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
-    owner.stage(sample(MetricPhaseV1::Cas)).expect("first");
+    owner
+        .stage(sample(MetricPhaseV1::Cas))
+        .expect("first");
     owner.flush().expect("first group");
-    owner.stage(sample(MetricPhaseV1::Cns)).expect("pending only");
+    owner
+        .stage(sample(MetricPhaseV1::Cns))
+        .expect("pending only");
     let original_wal = fs::read(&path).expect("committed group");
     let original_marker = fs::read(&marker).expect("original highwater");
     let snapshot = owner.read_local_frontier().expect("local observer read");

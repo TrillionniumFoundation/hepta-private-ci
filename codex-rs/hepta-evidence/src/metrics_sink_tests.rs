@@ -331,14 +331,16 @@ fn evidence_actor_returns_read_only_original_frontier_without_flushing_pending()
     let marker = dir.path().join("observer.log.owner-lock");
     let sink = DurablePhaseMetricSinkV1::open(&path, 16, 8, 60_000)
         .expect("original Evidence writer");
-    sink.record(sample(PhaseMetricKindV1::Cas)).expect("committed");
+    sink.record(sample(PhaseMetricKindV1::Cas))
+        .expect("committed");
     sink.flush().expect("original durable group");
     let first = sink.read_local_frontier().expect("read original Evidence");
     assert_eq!(first.sequence, 1);
     assert_eq!(first.committed_rows, 1);
     assert_eq!(first.journal_bytes, std::fs::metadata(&path).unwrap().len());
 
-    sink.record(sample(PhaseMetricKindV1::Cns)).expect("staged only");
+    sink.record(sample(PhaseMetricKindV1::Cns))
+        .expect("staged only");
     let before_wal = std::fs::read(&path).expect("original WAL bytes");
     let before_marker = std::fs::read(&marker).expect("original frontier rows");
     let second = sink.read_local_frontier().expect("local observer read");
@@ -369,7 +371,9 @@ fn actor_observer_rejects_corrupt_prior_marker_with_intact_last_row() {
     assert_eq!(sink.read_local_frontier().unwrap().sequence, 3);
     let mut bytes = std::fs::read(&marker).expect("three frontier rows");
     let original_last = bytes[bytes.len() - 102..].to_vec();
-    let first_row = bytes.windows(3).position(|segment| segment == b"F1|")
+    let first_row = bytes
+        .windows(3)
+        .position(|segment| segment == b"F1|")
         .expect("marker highwater format");
     bytes[first_row + 3] = b'f';
     assert_eq!(&bytes[bytes.len() - 102..], original_last.as_slice());
