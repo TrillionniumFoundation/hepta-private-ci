@@ -136,6 +136,35 @@ def review(root: Path, training_sha: str, seal_path: Path, seal_sha: str,
             'ood_brier_ppm_signed_claim':scored['partitions']['ood'][
                 'candidates'][aliases[0]]['brier_ppm'],
         })
+    # Newly sealed studies pin the exact executed tensor groups *before*
+    # independent future outcomes exist. This reviewer recomputes them
+    # from physical bytes instead of trusting caller-supplied reuse counts.
+    reuse = seal.get('physical_tensor_reuse_observation')
+    if reuse is not None:
+        require(type(reuse) is dict and set(reuse) == {
+            'schema','nominal_candidate_slots',
+            'actual_per_group_surrogate_forward_executions',
+            'redundant_surrogate_model_forwards_eliminated',
+            'alias_groups','native_q24_parity_verified','ndu_eligible',
+            'production_qualification',
+        } and
+            reuse['schema'] == 'hepta.neuron.forecast-physical-reuse.v1' and
+            reuse['native_q24_parity_verified'] is False and
+            reuse['ndu_eligible'] is False and
+            reuse['production_qualification'] is False,
+            'untrusted physical forecast reuse evidence schema/authority')
+        expected_aliases = [{
+            'arm':item['arm'],
+            'canonical_tensor_sha256':item['canonical_tensor_sha256'],
+            'canonical_model_key':item['canonical_candidate_id'],
+            'alias_candidate_keys':item['nominal_budget_aliases'],
+        } for item in groups]
+        require(
+            reuse['nominal_candidate_slots'] == len(models) and
+            reuse['actual_per_group_surrogate_forward_executions'] == len(groups) and
+            reuse['redundant_surrogate_model_forwards_eliminated'] == len(models)-len(groups) and
+            reuse['alias_groups'] == expected_aliases,
+            'sealed physical tensor reuse claims differ from real weight bytes')
     # Descriptive Pareto only: minimizing physical private parameter count,
     # future Brier and OOD Brier. These are not independently proven causal
     # utilities or measured inference CPU/GPU latency and cannot select a Cell.
@@ -168,6 +197,8 @@ def review(root: Path, training_sha: str, seal_path: Path, seal_sha: str,
         'nominal_candidate_slots':len(models),
         'unique_physical_tensor_models_per_arm':len(groups),
         'redundant_ceiling_alias_count':len(models)-len(groups),
+        'preoutcome_physical_forward_reuse_claim_verified':reuse is not None,
+        'actual_distinct_physical_tensor_groups':len(groups),
         'unique_model_groups':groups,
         'descriptive_pareto_candidate_ids_only':frontier,
         'future_case_count':len(cases['future']),
