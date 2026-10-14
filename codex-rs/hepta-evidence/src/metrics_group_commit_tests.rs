@@ -331,7 +331,10 @@ fn evidence_wal_rejects_symlink_parent_replacement_with_unchanged_file_inode() {
     symlink(&parked, &parent).expect("replace original parent with a symlink");
     // The named journal still refers to the exact same file inode, so a
     // file-only identity check would falsely return an empty flush ACK.
-    assert_eq!(fs::read(&path).expect("same original file"), fs::read(parked.join("journal")).unwrap());
+    assert_eq!(
+        fs::read(&path).expect("same original file"),
+        fs::read(parked.join("journal")).expect("original parked file")
+    );
     assert!(matches!(owner.flush(), Err(MetricsJournalErrorV1::UnsafePath)));
     assert!(matches!(owner.flush(), Err(MetricsJournalErrorV1::Poisoned)));
 }
