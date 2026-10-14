@@ -751,6 +751,88 @@ mod tests {
     }
 
     #[test]
+    fn signed_owner_rollback_or_effect_disappearance_is_fenced_by_live_ratchet() {
+        // A genuine pinned key can still sign a previously valid snapshot
+        // after its durable storage regresses. Fresh nonces alone cannot
+        // detect this: the client must retain its own bounded high-water.
+        for disappeared in [false, true] {
+            let root = tempfile::tempdir().expect("socket fixture");
+            let cas_socket = root.path().join("cas.sock");
+            let listener = UnixListener::bind(&cas_socket).expect("owner socket");
+            let signer = SigningKey::from_bytes(&[1_u8; 32]);
+            let keys = [1_u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
+            let server = thread::spawn(move || {
+                for attempt in 0..2 {
+                    let (mut socket, _) = listener.accept().expect("owner readback socket");
+                    let request: CellSplitEffectRpcRequestV1 =
+                        receive_frame(&mut socket).expect("fresh readback request");
+                    assert_eq!(request.action, CellSplitEffectRpcActionV1::ReadBack);
+                    let receipt = if disappeared && attempt == 1 {
+                        None
+                    } else {
+                        Some(committed(&request.intent, &signer))
+                    };
+                    let mut proof = CellSplitEffectReadbackV1 {
+                        schema: CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1.into(),
+                        intent: request.intent,
+                        challenge_nonce: request.challenge_nonce.expect("new nonce"),
+                        committed_receipt_digest: receipt
+                            .as_ref()
+                            .map(|row| row.receipt_digest.clone()),
+                        state_digest: receipt.as_ref().map(|row| row.output_digest.clone()),
+                        read_sequence: if attempt == 0 {
+                            8
+                        } else if disappeared {
+                            9
+                        } else {
+                            7
+                        },
+                        owner_signature_bytes: Vec::new(),
+                    };
+                    proof.owner_signature_bytes = signer
+                        .sign(
+                            &cell_split_effect_readback_signing_payload_v1(&proof)
+                                .expect("signed live sample"),
+                        )
+                        .to_bytes()
+                        .to_vec();
+                    send_frame(
+                        &mut socket,
+                        &CellSplitEffectRpcResponseV1 {
+                            schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+                            action: CellSplitEffectRpcActionV1::ReadBack,
+                            receipt,
+                            readback: Some(proof),
+                            error: None,
+                        },
+                    )
+                    .expect("owner response");
+                }
+            });
+            let mut client = CellSplitUnixEffectPortV1::new(
+                [
+                    cas_socket,
+                    root.path().join("migration.sock"),
+                    root.path().join("cns.sock"),
+                    root.path().join("supervisor.sock"),
+                ],
+                keys,
+                Duration::from_secs(3),
+            )
+            .expect("four independently pinned keys");
+            let operation = intent();
+            assert!(client.reconcile(&operation).expect("initial signed effect").is_some());
+            assert!(matches!(
+                client.reconcile(&operation),
+                Err(CellSplitEffectRpcErrorV1::Invalid(
+                    "original owner signed readback regressed"
+                ))
+            ));
+            server.join().expect("server completed");
+        }
+    }
+
+    #[test]
     fn refuse_missing_owner_without_synthesizing_an_effect() {
         let root = tempfile::tempdir().expect("root");
         let keys = [1u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
