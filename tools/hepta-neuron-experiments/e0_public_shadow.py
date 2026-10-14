@@ -49,8 +49,14 @@ def git_sha(folder: Path) -> str:
 
 
 def require_research_roots(research: Path, audited: Path) -> None:
-    if git_sha(research) != STEM_RESEARCH_SHA or git_sha(audited) != STEM_AUDIT_SHA:
-        raise ValueError("research/audited source not at frozen exact commits")
+    for root, expected in ((research, STEM_RESEARCH_SHA), (audited, STEM_AUDIT_SHA)):
+        if git_sha(root) != expected:
+            raise ValueError("research/audited source not at frozen exact commits")
+        dirty = subprocess.run(
+            ["git", "-C", str(root), "status", "--porcelain", "--untracked-files=no"],
+            check=True, capture_output=True, text=True).stdout.strip()
+        if dirty:
+            raise ValueError("research/audited source has tracked file drift")
 
 
 def freeze_public_snapshot(root: Path, *, acquire: bool) -> Path:
@@ -114,6 +120,22 @@ def main() -> int:
         require_research_roots(args.research_root, args.audited_root)
         sys.path.insert(0, str(args.research_root / "qualification/stem-cell-v1"))
         sys.path.insert(0, str(args.audited_root / "qualification/stem-cell-v1"))
+        import hf_complete_checkpoint
+        import hf_encoder_kernel
+        import stem_projection
+        import native_bridge
+        # The project intentionally uses TWO separately pinned source trees.
+        # Resolve every imported implementation to its reviewed owner; sys.path
+        # order or a same-named module may not silently substitute another tree.
+        expected_modules = (
+            (hf_complete_checkpoint, args.research_root / "qualification/stem-cell-v1/hf_complete_checkpoint.py"),
+            (hf_encoder_kernel, args.research_root / "qualification/stem-cell-v1/hf_encoder_kernel.py"),
+            (stem_projection, args.audited_root / "qualification/stem-cell-v1/stem_projection.py"),
+            (native_bridge, args.audited_root / "qualification/stem-cell-v1/native_bridge.py"),
+        )
+        for module, expected in expected_modules:
+            if Path(module.__file__).resolve() != expected.resolve():
+                raise ValueError("unqualified model/projection module import")
         from hf_complete_checkpoint import load_complete_mlm
         from hf_encoder_kernel import vectorize_case, snapshot_digest
         from stem_projection import LowRankProjectionQ24, project_ref, save_shadow_projection, Q
