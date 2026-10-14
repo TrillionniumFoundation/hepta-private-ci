@@ -394,3 +394,11 @@ def test_c_requires_actual_differentiation_and_recovery_identity(mutation):
     else:
         scale['run_id'] = ''
     assert multimodal_cost_audit(m)['status'] == 'BLOCKED'
+
+
+def test_c_malformed_queue_metric_is_blocked_not_crash():
+    m = c_fixture()
+    m['stages'][1]['scales'][0]['queue_peak_depth'] = 'unknown'
+    report = multimodal_cost_audit(m)
+    assert report['status'] == 'BLOCKED'
+    assert any('queue_peak_depth' in issue for issue in report['issues'])

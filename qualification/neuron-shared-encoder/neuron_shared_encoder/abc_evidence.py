@@ -417,7 +417,9 @@ def multimodal_cost_audit(manifest: dict) -> dict:
             if (not _finite(scale.get('head_resident_bytes'), positive=True)
                     or not _finite(scale.get('wal_fsync_count'), positive=True)):
                 problems.append(f'{name}/{cells}: active Heads or durable WAL not observed')
-            if scale.get('queue_peak_depth', 0) > scale.get('requests', 0):
+            if (_finite(scale.get('queue_peak_depth'))
+                    and _finite(scale.get('requests'))
+                    and scale['queue_peak_depth'] > scale['requests']):
                 problems.append(f'{name}/{cells}: queue depth exceeds request cohort')
         if previous is not None and all(
             _finite(stage.get(k)) and _finite(previous.get(k))
