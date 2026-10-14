@@ -223,3 +223,18 @@ row, source digest, Cell identity, purpose, generation, epoch, Q24 content
 digest and pipeline matches its corresponding labelled case before training.
 Reordered or mixed Worker rows hard-fail. These local binding checks are not
 independent source or inference authorization.
+
+## 2026-10-14 exact-source public-labelled capability panel
+
+The additive `public_agnews_panel.py` checks two preregistered public Apache
+2.0 AG News parquet SHA256 values at fixed dataset revision. It selects a
+deterministic, source-deduplicated 128-train / 32-calibration / 64-test binary
+world/sports panel. Every arm can consume the same canonical question/options/
+state and source digest, without synthetic answer labels.
+
+The read-only `hepta-stem-public-panel.yml` retrieves and rehashes actual
+public dataset bytes and retains only a bounded sample/receipt. This is
+**cross-sectional capability data**: it is NOT a future time window,
+production outcome receipt, model-execution claim, or Laya/Gemma proof.
+Real matched model inference and independent future learning evaluation
+remain mandatory. No selected artifact, FinalUse, main merge or release.

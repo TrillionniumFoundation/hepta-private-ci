@@ -1,0 +1,112 @@
+name: Hepta public labelled Stem capability panel (read-only)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/neuron-dynamic-learning/**'
+      - '.github/workflows/hepta-stem-public-panel.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stem-agnews-panel-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  source-bound-panel:
+    name: Real pinned AG News train/calibration/test (not future learning)
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'research/embeddinggemma2-multimodal-cell-20261014'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_DISABLE_XET: '0'
+    steps:
+      - name: Checkout exact head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Source and clean tree
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          test -z "$(git status --porcelain)"
+          git diff --check
+      - name: Install fixed public dataset readers
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/agnews-venv"
+          "$RUNNER_TEMP/agnews-venv/bin/python" -m pip install --only-binary=:all: \
+            'pyarrow==21.0.0' 'huggingface-hub==1.33.0'
+          "$RUNNER_TEMP/agnews-venv/bin/python" -m pip freeze > "$RUNNER_TEMP/agnews-env.txt"
+      - name: Resolve dataset commit and independently rehash exact files
+        shell: bash
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/agnews-venv/bin/python" - <<'PY'
+          from huggingface_hub import HfApi, hf_hub_download
+          from pathlib import Path
+          import json, os, shutil, sys
+          sys.path.insert(0, "qualification/neuron-dynamic-learning")
+          from public_agnews_panel import REPOSITORY, REVISION_PREFIX, FILES, check_file
+          root = Path(os.environ["RUNNER_TEMP"]) / "public-agnews-pinned"
+          root.mkdir(mode=0o700)
+          info = HfApi().repo_info(repo_id=REPOSITORY, repo_type="dataset",
+                                   revision=REVISION_PREFIX)
+          if not (isinstance(info.sha, str) and len(info.sha) == 40
+                  and info.sha.startswith(REVISION_PREFIX)):
+              raise ValueError("floating or mismatched dataset revision")
+          for role, (name, _) in FILES.items():
+              remote = Path(hf_hub_download(repo_id=REPOSITORY, repo_type="dataset",
+                                            filename=name, revision=info.sha))
+              output = root / (role + ".parquet")
+              with remote.open("rb") as source, output.open("xb") as dest:
+                  shutil.copyfileobj(source, dest)
+              check_file(output, role)
+          (root / "revision.json").write_text(json.dumps({
+              "dataset_commit": info.sha,
+              "dataset_id": REPOSITORY,
+              "file_inventory": {key: item[1] for key, item in FILES.items()},
+              "independently_signed_dataset_origin": False,
+              "production_promotion": "DENY_ALL",
+          }, sort_keys=True))
+          PY
+      - name: Emit actual public labelled same-input panel, never temporal future
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/public-agnews-pinned"
+          "$RUNNER_TEMP/agnews-venv/bin/python" \
+            qualification/neuron-dynamic-learning/public_agnews_panel.py \
+            --train-parquet "$ROOT/train.parquet" \
+            --holdout-parquet "$ROOT/calibration_test.parquet" \
+            --output "$RUNNER_TEMP/agnews-panel.json" \
+            --receipt "$RUNNER_TEMP/agnews-source-receipt.json"
+      - name: Deterministic data splitting and leakage regression
+        run: |
+          set -euo pipefail
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v \
+            -s qualification/neuron-dynamic-learning -p 'test_public_agnews_panel.py'
+          git diff --check
+          git diff --exit-code
+      - name: Upload public input panel and non-authorizing receipts only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: public-agnews-stem-panel-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/agnews-panel.json
+            ${{ runner.temp }}/agnews-source-receipt.json
+            ${{ runner.temp }}/agnews-env.txt
+            ${{ runner.temp }}/public-agnews-pinned/revision.json
+          if-no-files-found: warn
+          retention-days: 7
