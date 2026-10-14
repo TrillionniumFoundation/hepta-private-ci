@@ -204,5 +204,49 @@ class SplitLearningTests(unittest.TestCase):
             self.assertIn("inherited_unsplit", report["control_scores"]["split"]["scores"])
 
 
+    def test_public_pilot_768d_routes_through_real_control_pipeline(self):
+        class OfflineEncoder:
+            identity = "b" * 64
+            simulated = True
+            forward_calls = 0
+
+            def __init__(self, *args):
+                pass
+
+            def encode(self, texts):
+                values = torch.zeros(len(texts), 768, dtype=torch.float32)
+                values[:, 0] = torch.tensor([float(t.rsplit("-", 1)[-1]) for t in texts])
+                values[:, 1] = 1.
+                return values
+
+            def close(self):
+                pass
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            parts = ("train", "train", "train", "train",
+                     "calibration", "calibration", "holdout", "holdout")
+            rows = [{"case_id": str(i), "group": f"case-{i}", "split": split,
+                     "observed_at": None, "cell": i % 2, "scope": "shadow-only",
+                     "text": f"item-{i}", "label": i % 2}
+                    for i, split in enumerate(parts)]
+            raw = b"".join(e.canonical(row) for row in rows)
+            (root / "dataset.jsonl").write_bytes(raw)
+            e.write_once(root / "manifest.json", {
+                "schema": "hepta.shared-stem-execution.v1",
+                "classes": 2, "cells": 2, "steps": 2, "run_controls": True,
+                "split_routing": "train_two_means",
+                "dataset": {"path": "dataset.jsonl", "sha256": e.sha(raw)},
+                "model": {"path": "shadow-only-no-weights"}})
+            with patch.object(e, "LocalEncoder", OfflineEncoder):
+                report = e.run(root / "manifest.json", root / "execution")
+            self.assertTrue(report["controls_executed"])
+            self.assertFalse(report["production_accepted"])
+            routing = e.decode((root / "execution/controls.json").read_bytes())["split"]["routing"]
+            self.assertEqual(routing["centroid_bytes"], 2 * 768 * 4)
+            self.assertEqual(sum(routing["training_route_counts"]), 4)
+            self.assertFalse(routing["labels_consumed"])
+
+
 if __name__ == "__main__":
     unittest.main()
