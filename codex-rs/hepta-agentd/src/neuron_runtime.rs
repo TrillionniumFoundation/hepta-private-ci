@@ -267,12 +267,11 @@ where
         // No model effect may enter the product-serving path without a
         // durable and healthy Evidence sink. This is a startup/readiness gate,
         // never an authority grant or an excuse to replay an external effect.
-        if !self.production_metrics_ready() {
-            return Err(NeuronRuntimeError::PendingReconciliation);
-        }
-        // Invalidate the previous commit ACK before any attempted signed
-        // tick or queued phase. A later attempt needs a new explicit flush.
-        self.metrics_flushed.store(false, Ordering::Release);
+        begin_signed_tick_v1(
+            self.metric_sink.as_deref(),
+            &self.failed_metrics,
+            &self.metrics_flushed,
+        )?;
         let started = Instant::now();
         let scope = input.subject_id.clone();
         let operation = input.semantic_digest()?;
@@ -529,6 +528,21 @@ fn metrics_ready_v1(
     metrics_flushed.load(Ordering::Acquire)
         && failed_metrics.load(Ordering::Acquire) == 0
         && sink.is_some_and(|writer| writer.healthy())
+}
+
+/// Consume one observed flush frontier before a signed attempt, even when
+/// later NDU/Final-use admission refuses the effect. Requires a new flush
+/// between attempts; no execution proceeds through an unacknowledged queue.
+fn begin_signed_tick_v1(
+    sink: Option<&dyn PhaseMetricSinkV1>,
+    failed_metrics: &AtomicU64,
+    metrics_flushed: &AtomicBool,
+) -> Result<(), NeuronRuntimeError> {
+    if !metrics_ready_v1(sink, failed_metrics, metrics_flushed) {
+        return Err(NeuronRuntimeError::PendingReconciliation);
+    }
+    metrics_flushed.store(false, Ordering::Release);
+    Ok(())
 }
 
 fn flush_metrics_v1(

@@ -305,9 +305,16 @@ fn agentd_metrics_readiness_needs_explicit_flush_and_is_invalidated_by_new_tick(
     assert!(!super::metrics_ready_v1(Some(&sink), &failures, &committed));
     assert!(super::flush_metrics_v1(Some(&sink), &failures, &committed));
     assert!(super::metrics_ready_v1(Some(&sink), &failures, &committed));
-    // A signed tick clears the persisted frontier before entering the model.
-    committed.store(false, Ordering::Release);
+    // Exercise the exact admission helper called by the real signed tick.
+    super::begin_signed_tick_v1(Some(&sink), &failures, &committed).unwrap();
     assert!(!super::metrics_ready_v1(Some(&sink), &failures, &committed));
+    assert!(matches!(
+        super::begin_signed_tick_v1(Some(&sink), &failures, &committed),
+        Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
+    ));
+    assert!(super::flush_metrics_v1(Some(&sink), &failures, &committed));
+    super::begin_signed_tick_v1(Some(&sink), &failures, &committed).unwrap();
+    assert!(!committed.load(Ordering::Acquire));
     assert!(super::flush_metrics_v1(Some(&sink), &failures, &committed));
 
     // Once observation is lost, a later apparently healthy flush cannot cure
