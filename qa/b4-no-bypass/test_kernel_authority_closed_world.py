@@ -278,6 +278,66 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "independent signed CNS/Control Observer must stay read-only",
         )
 
+    def test_legacy_cell_split_route_activation_cannot_bypass_control(self) -> None:
+        # The older CnsOrganHost reference controller replaces a generation
+        # and makes children dispatchable. Signed Final-use on a different
+        # runtime path is not evidence of Control's durable Begin/Commit.
+        source_path = "codex-rs/hepta-control-plane/src/cell_split_route.rs"
+        code = self.lexical_code(source_path)
+        self.assertIn("ControlHandoffRequired", code)
+        # A newly named public mutation entrypoint could evade checks for
+        # the two historic activation method names. The entire public
+        # controller surface is reviewed as a closed set.
+        self.assertEqual(
+            self.public_methods(source_path, "CellSplitRouteControllerV1"),
+            {
+                "new",
+                "generation",
+                "phase",
+                "with_metrics_sink",
+                "production_metrics_ready",
+                "flush_production_metrics",
+                "cns_latency_observations",
+                "parent_route",
+                "host",
+                "route_fence_receipt",
+                "child_route",
+                "start_all",
+                "dispatch_parent_once",
+                "activate_children",
+                "activate_children_with_migration",
+                "dispatch_child_once",
+            },
+            "unreviewed CellSplit controller method may bypass Control handoff",
+        )
+        for method in ("activate_children", "activate_children_with_migration"):
+            with self.subTest(entrypoint=method):
+                entrypoint = re.search(
+                    rf"\bpub\s+fn\s+{method}\b", code
+                )
+                self.assertIsNotNone(
+                    entrypoint, f"{method} public compatibility API disappeared"
+                )
+                assert entrypoint is not None
+                opening = code.find("{", entrypoint.end())
+                ending = CALLER_PROOF._matching_delimiter(code, opening, "{", "}")
+                self.assertIsNotNone(
+                    ending, f"{method}: cannot parse the complete activation body"
+                )
+                assert ending is not None
+                body = code[opening + 1 : ending]
+                self.assertRegex(
+                    body,
+                    r"^\s*if\s+!\s*cfg!\s*\(\s*test\s*\)\s*\{\s*"
+                    r"return\s+Err\s*\(\s*"
+                    r"CellSplitRouteErrorV1::ControlHandoffRequired\s*\)\s*;\s*\}",
+                    f"{method}: the first production action must deny physical cutover",
+                )
+                self.assertTrue(
+                    "replace_read_only_generation" in body,
+                    f"{method}: keep the positive reference-host tests isolated",
+                )
+
     def test_control_unsigned_cutover_api_remains_test_only(self) -> None:
         path = ROOT / "codex-rs/hepta-control-plane/src/ndu_publication.rs"
         raw = path.read_text(encoding="utf-8")
