@@ -145,6 +145,8 @@ pub use codex_hepta_automation::AutomationTaskDraft;
 pub use codex_hepta_automation::AutomationTaskId;
 pub use codex_hepta_automation::AutomationTimeZoneProfileV1;
 pub use codex_hepta_automation::AutomationTimezoneTransitionV1;
+/// Evidence-owned durable telemetry writer for the single product-serving owner.
+pub use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
 pub use codex_hepta_memory::RetrievalExecutionContextV1;
 pub use cognitive_ranker::CurrentCognitiveRegistry;
 pub use cognitive_ranker::PinnedCognitiveRanker;
@@ -194,8 +196,6 @@ pub use lane_b_runtime::RunReceipt;
 pub use lane_b_runtime::RunRecovery;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
-/// Evidence-owned durable telemetry writer for the single product-serving owner.
-pub use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
 pub use neuron_effect_bootstrap::NeuronEffectBootstrapErrorV1;
 pub use neuron_effect_bootstrap::bootstrap_durable_neuron_effect_intent_v1;
 pub use neuron_runtime::AgentdNeuronOwner;
