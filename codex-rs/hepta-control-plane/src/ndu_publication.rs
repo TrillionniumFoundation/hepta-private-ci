@@ -333,9 +333,7 @@ impl State {
         if self.poisoned {
             return Err(NduPublicationErrorV1::Poisoned);
         }
-        if let Err(error) =
-            self.verify_original_paths(self.bytes, self.sequence, self.head)
-        {
+        if let Err(error) = self.verify_original_paths(self.bytes, self.sequence, self.head) {
             self.poisoned = true;
             return Err(error);
         }
