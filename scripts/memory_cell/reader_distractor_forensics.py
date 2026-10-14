@@ -33,8 +33,12 @@ ARMS = (
     "empty",
 )
 SCORER_ONLY = frozenset(
-    ("parsed_identifier", "strict_task_success", "required_sources_covered",
-     "procedure_verification")
+    (
+        "parsed_identifier",
+        "strict_task_success",
+        "required_sources_covered",
+        "procedure_verification",
+    )
 )
 VALUE = re.compile(r"(?<![a-zA-Z0-9_])(?:site|mode)_[0-9a-f]{8}(?![a-zA-Z0-9_])")
 
@@ -118,18 +122,21 @@ def reversal_control(by_task):
         ):
             raise ValueError("not a matched original four-source order intervention")
         one, two = direct["receipt"], reverse["receipt"]
-        if any(
-            one[key] != two[key]
-            for key in (
-                "reader_identity",
-                "reader_profile",
-                "token_limit",
-                "input_tokens",
-                "trainable_parameters",
-                "answer_postprocessed",
-                "independent_semantic_review",
+        if (
+            any(
+                one[key] != two[key]
+                for key in (
+                    "reader_identity",
+                    "reader_profile",
+                    "token_limit",
+                    "input_tokens",
+                    "trainable_parameters",
+                    "answer_postprocessed",
+                    "independent_semantic_review",
+                )
             )
-        ) or one["answer_postprocessed"] is not False:
+            or one["answer_postprocessed"] is not False
+        ):
             raise ValueError("order-only intervention changed Reader or budget")
         pairs.append(
             dict(
@@ -146,20 +153,16 @@ def reversal_control(by_task):
     return dict(
         paired_tasks=len(pairs),
         same_success_status=sum(
-            p["direct_task_success"] == p["reverse_task_success"]
-            for p in pairs
+            p["direct_task_success"] == p["reverse_task_success"] for p in pairs
         ),
         source_order_reversal_changes_task_success=sum(
-            p["direct_task_success"] != p["reverse_task_success"]
-            for p in pairs
+            p["direct_task_success"] != p["reverse_task_success"] for p in pairs
         ),
         same_parsed_literal=sum(
-            p["direct_parsed_literal"] == p["reverse_parsed_literal"]
-            for p in pairs
+            p["direct_parsed_literal"] == p["reverse_parsed_literal"] for p in pairs
         ),
         changed_parsed_literal=sum(
-            p["direct_parsed_literal"] != p["reverse_parsed_literal"]
-            for p in pairs
+            p["direct_parsed_literal"] != p["reverse_parsed_literal"] for p in pairs
         ),
         source_ids_exactly_reversed=True,
         matched_input_token_counts=True,
@@ -193,13 +196,9 @@ def audit(source_zip, model_zip):
     ):
         raise ValueError("source/label/raw answer pin drift")
     cases = {c["query"]["identity"]: c for c in plan["cases"]}
-    labels = {
-        row["id"]: row
-        for row in strict_json(source["observations/labels.json"])
-    }
+    labels = {row["id"]: row for row in strict_json(source["observations/labels.json"])}
     documents = {
-        row["identity"]: row
-        for row in strict_json(source["plan/source-view.json"])
+        row["identity"]: row for row in strict_json(source["plan/source-view.json"])
     }
     original = rows(model, "evaluation/raw-answers.jsonl", 72)
     scored = strict_json(model["evaluation/scored-answers.json"])
@@ -207,10 +206,9 @@ def audit(source_zip, model_zip):
         raise ValueError("incomplete exact Qwen answer census")
     observed, by_task = set(), {}
     for before, after in zip(original, scored, strict=True):
-        if (
-            {key: value for key, value in after.items() if key not in SCORER_ONLY}
-            != before
-        ):
+        if {
+            key: value for key, value in after.items() if key not in SCORER_ONLY
+        } != before:
             raise ValueError("original model answer changed in scored replay")
         qid, arm = after["question_id"], after["arm"]
         if (qid, arm) in observed or qid not in cases or arm not in ARMS:
@@ -253,9 +251,10 @@ def audit(source_zip, model_zip):
                 raise ValueError("nonprogram original scoring is inconsistent")
         else:
             executed = after.get("procedure_verification")
-            if not isinstance(executed, dict) or (
-                executed["exit_code"] == 0
-            ) is not after["strict_task_success"]:
+            if (
+                not isinstance(executed, dict)
+                or (executed["exit_code"] == 0) is not after["strict_task_success"]
+            ):
                 raise ValueError("program score detached from original worker")
         if arm == "hybrid_k4" and after["selected"] != list(
             task["controls"]["hybrid"]["selected"]
@@ -283,9 +282,7 @@ def audit(source_zip, model_zip):
                     original_answer_sha256=sha(left["answer"].encode("utf-8")),
                     input_tokens_hybrid=left["receipt"]["input_tokens"],
                     input_tokens_organized=right["receipt"]["input_tokens"],
-                    declared_sources_all_delivered=left[
-                        "required_sources_covered"
-                    ],
+                    declared_sources_all_delivered=left["required_sources_covered"],
                     **classification,
                 )
             )
@@ -299,12 +296,10 @@ def audit(source_zip, model_zip):
         original_model_answer_count=len(original),
         analyzed_unique_authored_tasks=len(cases),
         hybrid_success=sum(
-            group["hybrid_k4"]["strict_task_success"]
-            for group in by_task.values()
+            group["hybrid_k4"]["strict_task_success"] for group in by_task.values()
         ),
         organized_success=sum(
-            group["organized"]["strict_task_success"]
-            for group in by_task.values()
+            group["organized"]["strict_task_success"] for group in by_task.values()
         ),
         hybrid_losses_to_organized=len(losses),
         loss_mechanism_counts=dict(sorted(causes.items())),

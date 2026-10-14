@@ -68,17 +68,13 @@ class OriginalReaderForensicsTests(unittest.TestCase):
     def test_correct_value_in_wrong_bracket_grammar_is_not_task_success(self):
         row = case("[site_00000001]")
         finding = classify_loss(row, GOLD)
-        self.assertEqual(
-            finding["cause"], "correct_literal_invalid_output_grammar"
-        )
+        self.assertEqual(finding["cause"], "correct_literal_invalid_output_grammar")
         self.assertIsNone(row["parsed_identifier"])
 
     def test_absent_source_match_is_not_invented(self):
         row = case("site_abcdef01 [E1]")
         finding = classify_loss(row, GOLD)
-        self.assertEqual(
-            finding["cause"], "other_observed_or_unresolved_failure"
-        )
+        self.assertEqual(finding["cause"], "other_observed_or_unresolved_failure")
         self.assertEqual(finding["matching_original_sources"], [])
 
     def test_other_entity_does_not_imply_human_semantic_review(self):
@@ -183,9 +179,7 @@ class OriginalReaderForensicsTests(unittest.TestCase):
         ids = ["e0", "e1", "e2", "e3"]
         return {
             "hybrid_k4": row("hybrid_k4", ids),
-            "hybrid_k4_reversed": row(
-                "hybrid_k4_reversed", list(reversed(ids))
-            ),
+            "hybrid_k4_reversed": row("hybrid_k4_reversed", list(reversed(ids))),
         }
 
 
