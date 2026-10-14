@@ -27,7 +27,7 @@ SCOPE = "amcn.historical.locomo.shadow"
 CORPUS = "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
 GENERATION = "locomo-archive-" + CORPUS[:12]
 PROFILE = "hepta.amcn.actual-archived-encoder-evidence.v1"
-MAX_SOURCE_BYTES = 32768
+MAX_SOURCE_BYTES = 1200
 
 
 def write_once(path, record):
@@ -85,6 +85,10 @@ def stage_from_historical_artifact(archive, output):
     for fam in families:
         accepted = 0
         for q in sorted(query_groups.get(fam, ()), key=lambda q: digest(q.identity)):
+            # Do not silently truncate original evidence to fit the frozen 512-token model.
+            # Fixed source-agnostic byte admission runs before reference scoring.
+            if len(q.content.encode("utf-8")) > 512:
+                continue
             target = benchmark.targets[q.identity]
             history = benchmark.history(q)
             indexed = {d.identity: d for d in history}
