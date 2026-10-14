@@ -299,6 +299,10 @@ def multimodal_cost_audit(manifest: dict) -> dict:
     for name in ('dataset_sha256', 'protocol_sha256', 'paired_text_workload_sha256'):
         if not is_digest(manifest.get(name)):
             problems.append(f'missing study identity {name}')
+    for field in ('scope_id', 'principal_id'):
+        value = manifest.get(field)
+        if not isinstance(value, str) or not 1 <= len(value) <= 128:
+            problems.append(f'missing exact C experiment scope: {field}')
     if not is_commit_ref(manifest.get('source_commit')) or not isinstance(manifest.get('host_id'), str) or not manifest['host_id']:
         problems.append('missing exact source commit or target host')
     allowed_drop = manifest.get('max_retained_task_score_drop')
@@ -380,6 +384,8 @@ def multimodal_cost_audit(manifest: dict) -> dict:
             cells = scale['cell_count']
             if (scale.get('host_id') != manifest.get('host_id') or
                     scale.get('source_commit') != manifest.get('source_commit') or
+                    scale.get('scope_id') != manifest.get('scope_id') or
+                    scale.get('principal_id') != manifest.get('principal_id') or
                     scale.get('paired_text_workload_sha256') != manifest.get('paired_text_workload_sha256')):
                 problems.append(f'{name}/{cells}: unmatched host/source/text workload')
             if (scale.get('active_cell_count') != cells or
@@ -456,6 +462,7 @@ def multimodal_cost_audit(manifest: dict) -> dict:
         previous = stage
     return {
         'experiment': 'C-stages', 'dataset_sha256': manifest.get('dataset_sha256'),
+        'scope_id': manifest.get('scope_id'), 'principal_id': manifest.get('principal_id'),
         'protocol_sha256': manifest.get('protocol_sha256'),
         'final_multimodal_model_sha256': stages[-1].get('artifact_sha256') if stages else None,
         'final_media_source_sha256': stages[-1].get('paired_media_dataset_sha256') if stages else None,
@@ -483,6 +490,7 @@ def paired_media_necessity_audit(
     expected_model_sha256: str | None = None,
     expected_media_source_sha256: str | None = None,
     expected_preprocessor_sha256: str | None = None,
+    expected_scope_id: str | None = None,
 ) -> dict:
     """Audit PR #1774's *self-reported* truth-flip output, never source authority.
 
@@ -534,6 +542,8 @@ def paired_media_necessity_audit(
                 or type(raw_predictions.get('classes')) is not int
                 or not 2 <= raw_predictions['classes'] <= 16):
             issues.append('invalid raw media inference scope/classes')
+        if expected_scope_id is not None and raw_predictions.get('scope') != expected_scope_id:
+            issues.append('media input scope does not match the C benchmark owner scope')
         pairs = raw_predictions.get('pairs')
         if not isinstance(pairs, list) or not 1 <= len(pairs) <= 2048:
             issues.append('invalid raw paired media cohort')
@@ -635,7 +645,8 @@ def joint_abc_evidence_gate(bundle: dict) -> dict:
         expected_protocol_sha256=c.get('protocol_sha256') if isinstance(c, dict) else None,
         expected_model_sha256=c.get('final_multimodal_model_sha256') if isinstance(c, dict) else None,
         expected_media_source_sha256=c.get('final_media_source_sha256') if isinstance(c, dict) else None,
-        expected_preprocessor_sha256=c.get('final_media_preprocessor_sha256') if isinstance(c, dict) else None)
+        expected_preprocessor_sha256=c.get('final_media_preprocessor_sha256') if isinstance(c, dict) else None,
+        expected_scope_id=c.get('scope_id') if isinstance(c, dict) else None)
     if media['status'] != 'SCHEMA_COMPLETE_UNVERIFIED':
         issues.append('multimodal counterfactual semantic necessity not established')
     if not all(isinstance(x, dict) for x in (a, b, c)):

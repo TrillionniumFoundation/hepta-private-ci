@@ -502,3 +502,16 @@ entire scorer, independent media truth verification, or signed owner
 attestation. The real C final stage and paired scorer must actually
 use the same complete multimodal model/pipeline; otherwise the honest
 result is BLOCKED, not a guessed projection/identity mapping.
+
+
+### Principal and Scope identity across C resource and semantic evidence
+
+The C resource manifest must carry nonempty `principal_id` and
+`scope_id` bound to every 64/256/1024/4096 Cell run. This is a
+research comparison cohort identity, not a reusable grant. The
+PR #1774 raw paired-media payload's `scope` must equal C's
+`scope_id`, in addition to its exact model, preprocessor and media
+source SHA-256. Cross-principal/cross-scope numbers cannot be
+combined to manufacture an apparently improved shared Stem. Actual
+data-use permission and revocation checks remain the responsibility
+of the independent product owner.

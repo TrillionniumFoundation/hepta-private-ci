@@ -138,6 +138,7 @@ def c_fixture():
                 'recovery_trace_sha256': format(n + index + 1, '064x'),
                 'encoder_forward_rows': n*2, 'encoder_batch_calls': n//2,
                 'host_id': 'host-1', 'source_commit': 'f'*40,
+                'scope_id': 'synthetic-scope', 'principal_id': 'researcher-synthetic',
                 'paired_text_workload_sha256': D('c'),
                 'device': 'cpu', 'gpu_peak_bytes': None,
                 'throughput_rps': 10, 'cpu_seconds': 1, 'rss_peak_bytes': 10000000 + n,
@@ -156,6 +157,7 @@ def c_fixture():
         'dataset_sha256': D('d'), 'protocol_sha256': D('b'),
         'paired_text_workload_sha256': D('c'),
         'source_commit': 'f'*40, 'host_id': 'host-1',
+        'scope_id': 'synthetic-scope', 'principal_id': 'researcher-synthetic',
         'max_retained_task_score_drop': 0.01,
         'stages': stages,
     }
@@ -631,3 +633,34 @@ def test_c_unverified_model_linkage_rejects_otherwise_complete_joint_review():
     result = joint_abc_evidence_gate(evidence)
     assert result['status'] == 'BLOCKED'
     assert result['candidate_stem_selected'] is None
+
+
+@pytest.mark.parametrize('where', ['root_scope', 'root_principal', 'row_scope', 'row_principal'])
+def test_c_cross_scope_data_cannot_enter_resource_comparison(where):
+    m = c_fixture()
+    if where == 'root_scope':
+        m['scope_id'] = 'other-scope'
+    elif where == 'root_principal':
+        m['principal_id'] = 'another-principal'
+    elif where == 'row_scope':
+        m['stages'][2]['scales'][3]['scope_id'] = 'other-scope'
+    else:
+        m['stages'][0]['scales'][0]['principal_id'] = 'another-principal'
+    assert multimodal_cost_audit(m)['status'] == 'BLOCKED'
+
+
+def test_c_counterfactual_must_match_exact_resource_scope():
+    c = multimodal_cost_audit(c_fixture())
+    payload = media_prediction_payload()
+    payload['scope'] = 'different-tenant'
+    result = paired_media_necessity_audit(
+        media_truth_flip_report(), media_policy(),
+        raw_predictions=payload,
+        expected_scope_id=c['scope_id'],
+        expected_protocol_sha256=c['protocol_sha256'],
+        expected_model_sha256=c['final_multimodal_model_sha256'],
+        expected_media_source_sha256=c['final_media_source_sha256'],
+        expected_preprocessor_sha256=c['final_media_preprocessor_sha256'],
+    )
+    assert result['status'] == 'BLOCKED'
+    assert any('scope' in reason for reason in result['issues'])
