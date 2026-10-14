@@ -138,6 +138,53 @@ class FrozenSourceBindingTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,"complete run receipt"):
             bind_shard(files,tier="smol-1.7b",index=0,plan={"cases":[case]},docs=docs)
 
+    def test_five_original_attempts_one_failed_are_not_complete_success(self):
+        from reader_original_case_binding import h
+
+        case, docs, files = fixture()
+        original = json.loads(files["raw-answers.jsonl"])
+        expected = json.loads(files["case-plan.json"])
+        rows = []
+        for arm in ARMS:
+            row = deepcopy(original)
+            row["arm"] = arm
+            row["selected"] = expected["arms"][arm]
+            row["receipt"]["delivered_evidence"] = [
+                dict(original_id=source, excerpt=docs[source]["content"])
+                for source in row["selected"]
+            ]
+            rows.append(row)
+        rows[-1] = dict(
+            question_id="task1",
+            kind="correction",
+            arm=ARMS[-1],
+            selected=expected["arms"][ARMS[-1]],
+            candidate_digest=case["candidate_digest"],
+            status="failed",
+            error_type="ReaderTimeout",
+        )
+        raw = ("\\n".join(json.dumps(row) for row in rows) + "\\n").encode()
+        files["raw-answers.jsonl"] = raw
+        files["run.json"] = json.dumps(
+            dict(
+                schema=SCHEMA,
+                case_index=0,
+                tier="smol-1.7b",
+                reader_identity=IDENTITIES["smol-1.7b"],
+                raw_sha256=h(raw),
+                attempts=5,
+                actual_successes=4,
+                case_plan_sha256=h(files["case-plan.json"]),
+                production_accepted=False,
+            )
+        ).encode()
+        result = bind_shard(
+            files, tier="smol-1.7b", index=0, plan={"cases": [case]}, docs=docs
+        )
+        self.assertEqual(result["rows"], 5)
+        self.assertEqual(result["succeeded"], 4)
+        self.assertFalse(result["full_original_pair"])
+
     def test_external_source_checksum_must_match_exact_archived_bytes(self):
         with tempfile.TemporaryDirectory() as temp:
             bad=Path(temp)/"source.zip"
