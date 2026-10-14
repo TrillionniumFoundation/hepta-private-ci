@@ -1,0 +1,103 @@
+{
+  "schema": "hepta.complete-aten-coverage-verification.v1",
+  "date": "2026-10-14",
+  "observed_at_utc": "2026-10-14T05:58:45.878468+00:00",
+  "pr": 1804,
+  "branch": "research/shared-stem-complete-aten-coverage-20261014",
+  "remote_parent": "be511bd63aaae8813c415a116d50f01fe54baba5",
+  "remote_code": "ac445d2ccf082af92ccd2c6af9fd825bc5147192",
+  "local_source_slice_commit": "ff44467108e539744671b667dbe74934dbb3a630",
+  "local_full_repository_ancestry": false,
+  "recovered_source_archive_sha256": "93dfe073e8be51efcef3facce34f2131b8a6b216c5f6cf727905d7565bb88016",
+  "tests": {
+    "predecessor_test_count": 398,
+    "new_formula_tests": 16,
+    "new_integration_tests": 7,
+    "final_distinct_tests": 421,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "expected_failures": 0,
+    "complete_runs": [
+      {"report": "full-final.json", "raw_log": "full-final.log", "planned": 421, "executed": 421, "distinct_ids": 421, "exit_code": 0, "seconds": 143.042},
+      {"report": "full-second.json", "raw_log": "full-second.log", "planned": 421, "executed": 421, "distinct_ids": 421, "exit_code": 0, "seconds": 146.675}
+    ]
+  },
+  "checks": {
+    "compileall": "passed",
+    "git_diff_check": "passed",
+    "workflow_yaml_parse": "passed",
+    "same_test_ids_between_local_runs": true,
+    "uploaded_blobs_match_local": 10,
+    "full_repository_rust_native_gpu": "not_run"
+  },
+  "geometry": {
+    "tested_pairs": 14400,
+    "tensor_shapes": 120,
+    "ranks": [1, 2, 3, 4],
+    "dimension_values": [0, 1, 2],
+    "legal_pairs": 3558,
+    "illegal_pairs": 10842,
+    "legal_zero_work_pairs": 3108,
+    "legal_positive_work_pairs": 450,
+    "formula_matches_actual_output_geometry": true,
+    "complete_arbitrary_dispatch_coverage": false,
+    "pretrained_execution": false
+  },
+  "hosted_observations": [
+    {
+      "head": "56a575947b781618d249809eeb74d721f4e72a3a",
+      "run_id": 38517732944,
+      "checkout": "b7875e39fc5c06feac280a44716805ec13dfb7b6",
+      "source_regressions": {"job_id": 115700218421, "passed": true, "planned": 414, "executed": 414, "seconds": 31.936, "matching_test_file_hashes": 39, "ids_equal_local_excluding_seven_new_binding_tests": true},
+      "stock_hf": {"job_id": 115700218385, "encoder_passed": 4, "generator_passed": 2, "random_architectures_not_pretrained": true},
+      "public_pretrained_comparison": {"job_id": 115703635905, "last_observed_status": "queued", "result_observed": false}
+    },
+    {"head": "ac445d2ccf082af92ccd2c6af9fd825bc5147192", "run_id": 38518475547, "last_observed_status": "queued", "result_observed": false}
+  ],
+  "local_hf": {
+    "encoder_checks_defined": 4,
+    "causal_checks_defined": 2,
+    "real_checks_executed": 0,
+    "included_in_421": false,
+    "failures": ["missing transformers", "missing tokenizers"],
+    "local_network": "DNS resolution failed for pypi.org and huggingface.co"
+  },
+  "limitations": {
+    "full_system_cost_certified": false,
+    "hardware_instruction_count": false,
+    "energy_measured": false,
+    "pretrained_comparison_observed_this_increment": false,
+    "independent_task_gain": false,
+    "matrix_ndu_activated": false,
+    "native_1024_4096_cells": false,
+    "production_authorized": false
+  },
+  "runtime": {"python": "3.13.5", "torch": "2.10.0+cpu", "numpy": "2.3.5", "safetensors": "0.7.0", "packaging": "25.0"},
+  "source_blobs": {
+    ".github/workflows/hepta-neuron-next-round-matrix.yml": {"git_blob_sha1": "5e21ae1daf7e602ca785f10f99b8ef8056fc4933", "sha256": "5baf13adac0e6197ccaba4db9b4f348489fba4084b9e460d0cbcc7bc704599aa"},
+    "qualification/stem-cell-v1/execution_meter.py": {"git_blob_sha1": "2f8a0f0190017dce9422c4e1589de3001e0b8c51", "sha256": "415979973ab6d6bef4891f547bbcff96cc63e3ae492d65fcda6802a812604412"},
+    "qualification/stem-cell-v1/hf_profile_checks.py": {"git_blob_sha1": "09739e20100e3fc69ba6654015fa97f89572876b", "sha256": "1deb2caec7812247a243bed3394f2a87e8442af7c2ed48d5edb58b8e7f068f80"},
+    "qualification/stem-cell-v1/matrix_runtime.py": {"git_blob_sha1": "1f0595b13a091ca5d9c6a21489fb8ecdf2f042f9", "sha256": "679f635ada180b6fc9d9f830a1f53e4bdef5c98134924f32c56a76c13efd964b"},
+    "qualification/stem-cell-v1/paired_capture.py": {"git_blob_sha1": "b627bec330bdc9a6dbc05ed7664d5152881f6c6e", "sha256": "f245f09a9a06a2496a1ec6ddefa1dbc1ef2fce150668dda95213ef9379215252"},
+    "qualification/stem-cell-v1/paired_critic.py": {"git_blob_sha1": "6aced9574fa9a2d0f949905cd8e9732372994f89", "sha256": "79f33f989aa68c84ac338b13bfb3d535933ec9f5df4c64f70026e1912da0fb3a"},
+    "qualification/stem-cell-v1/public_encoder_probe.py": {"git_blob_sha1": "38753089fd5e39fa6336763715b4d9d6f12383dc", "sha256": "bf967b8eb4c0b9cf1a71823356fd144284c82a6b504e290391269bdcdc0de43e"},
+    "qualification/stem-cell-v1/test_expanded_probe.py": {"git_blob_sha1": "bf165910a8d7333dcc4c648d998b746fad43a88c", "sha256": "c2333c3a595cdfccaf513f69e676d0ec812032665762d4be418667adcc05493e"},
+    "qualification/stem-cell-v1/test_transformer_work_v3.py": {"git_blob_sha1": "c1553949f2105a0c04930b47badceb96cd7673a5", "sha256": "4ce4d8f917a89b301e53bf55096b559c624ac6ca272f98698f70598c97378234"},
+    "qualification/stem-cell-v1/transformer_work_v3.py": {"git_blob_sha1": "7a7fe10d2938cc58bb669ab15a1e9dfdbe3b85fe", "sha256": "35fc73a5ed13c6e77dbf7dc7f3820a3f0df41289156946b50b8847197ca4b493"}
+  },
+  "evidence_sha256": {
+    "full-final.json": "1be06c650868dd4180aa0c268ebaeefc4003508ce4bc431258af11876d9fd6de",
+    "full-final.log": "42e4e006d09addca1162a669f86501f6d8ef6f852a62d70e6aa47e48fbb2e337",
+    "full-second.json": "1be06c650868dd4180aa0c268ebaeefc4003508ce4bc431258af11876d9fd6de",
+    "full-second.log": "6344ade309dd07ba5577afb21843b0237406a093247bdd9d6500a647a044515f",
+    "geometry_diagnostic.json": "ab6de27c3d221d6fb3a4a7cc5bdc5bde32490f2813aa00212410e396e4181b14",
+    "hosted/pr1804-stage2-hf-conformance.zip": "734e06682717fbdc45d8bbd42bae8963b6d18ab0f28ef801346ee892b999ac79",
+    "hosted/pr1804-stage2-regressions.zip": "e3251bd0ac08807ff83c7c00dfc9e1798e7f568cb78b842fd0d74633dcb27daa",
+    "hf-encoder-attempt.log": "0007f2937c89de3a76721e53dbbce350fa64836177ddcc649542ecfeef40ada6",
+    "hf-causal-attempt.log": "67e75aea64ae841666e75d26a508745786781898e5b1dd1f75f0fadfea4b500a"
+  },
+  "interrupted_attempts_not_counted_as_passes": ["baseline.log", "retained-2.log"],
+  "full_local_record_in_package": "evidence/receipt.json",
+  "patch_replay": {"all_equal": true, "changed_paths": 12, "final_hash_record": "evidence/patch-replay.json (outside this self-containing receipt)"}
+}
