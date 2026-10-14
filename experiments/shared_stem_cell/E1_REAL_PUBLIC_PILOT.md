@@ -44,3 +44,8 @@ The same-job research workflow now downloads previously completed public Laya re
 **This historical Laya checkpoint is not the authorized/current production no-change policy.** It was run at a different time with its own model API/prompt realization, host cost profile, and checkpoint exposure. The independent report keeps `historical_reference_is_production_no_change=false`, no equal-cost claims and `production_promotion_permitted=false` even if a candidate seems better.
 
 The historical ZIP is never published again and the 1.5 GB+ pretrained weights stay out of Actions artifacts. Only case-bound sanitized research reports and explicit failure markers are uploaded.
+
+
+## E1 resource parity hardening
+
+The independent scorer now rejects all three-arm experiments unless every actual `case_id` has a positive finite reported encode duration and model-specific token count, exactly 224 model API requests are recorded, and the declared model load, encoder, and Head training durations fit within the total measured process wall time (allowing a 1 microsecond reporting tolerance). It requires nonzero process CPU, runtime RSS, and Head training time for every candidate. It records these **observed/self-reported** values side by side with the actual total Head parameter counts, but keeps `energy_joules=null`, `request_p99_verified=false`, `backend_batch_physical_count_verified=false`, and `same_host_total_lifecycle_budget_and_energy_verified=false`. Failure to supply a resource column is a *failure*, never free zero-cost evidence.
