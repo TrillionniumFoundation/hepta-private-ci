@@ -15,6 +15,9 @@ on:
       - "codex-rs/hepta-agentd/src/prompt_runtime.rs"
       - "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs"
       - "codex-rs/hepta-agentd/src/runtime.rs"
+      - "codex-rs/hepta-agentd/src/control.rs"
+      - "codex-rs/hepta-matrixd/src/control.rs"
+      - "codex-rs/uds/src/**"
       - "codex-rs/hepta-agentd/src/runtime_tests.rs"
       - "codex-rs/hepta-agentd/src/state.rs"
       - "codex-rs/hepta-agentd/src/state_isolation_tests.rs"
@@ -131,6 +134,11 @@ jobs:
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host -- --exact --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib runtime::tests:: -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Guard Windows Agentd exclusive control rendezvous
+        shell: pwsh
+        run: |
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib control::tests::preflight_rejects_live_control_listener -- --exact --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Exercise actual Windows durable parent handles and append/recovery
         shell: pwsh
@@ -254,6 +262,12 @@ jobs:
           set -euo pipefail
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --lib
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib
+      - name: Exercise real Agentd and Matrixd UDS preflight regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib control::tests:: -- --test-threads=1
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-matrixd --lib control::tests::control_socket_preflight_ -- --test-threads=1
       - name: Strict owner safety lint
         shell: bash
         run: |
@@ -264,7 +278,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-agentd --package codex-hepta-contracts --package codex-hepta-bao-adapter -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-agentd --package codex-hepta-matrixd --package codex-hepta-contracts --package codex-hepta-bao-adapter -- --check
       - name: Verify no test checkout mutation
         if: always()
         shell: bash
