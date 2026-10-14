@@ -142,13 +142,22 @@ fn validate_replay(
         'C' => {
             current.is_some_and(|prev| prev != e.snapshot)
                 && e.before == checkpoint
-                && e.read.is_zero()
+                && !e.after.is_zero()
                 && e.tick.is_zero()
-                && pending.is_none_or(|prepared| {
-                    prepared.successor == e.snapshot
-                        && prepared.previous_checkpoint == e.before
-                        && prepared.migrated_checkpoint == e.after
-                })
+                && match pending {
+                    // Every new guarded Commit must identify the exact original
+                    // runtime receipt bytes witnessed after durable Begin.
+                    Some(prepared) => {
+                        !e.read.is_zero()
+                            && prepared.successor == e.snapshot
+                            && prepared.previous_checkpoint == e.before
+                            && prepared.migrated_checkpoint == e.after
+                    }
+                    // Existing pre-B journals may contain historical C events.
+                    // Retain their old representation for honest replay, not
+                    // as a new, publicly writable single-phase cutover path.
+                    None => e.read.is_zero(),
+                }
         }
         'P' => {
             pending.is_none()
@@ -449,8 +458,13 @@ impl NduPublicationOwnerV1 {
     /// used by Neuron checkpoint CAS. A sticky pending fence then allows
     /// releasing that mutex before slow external I/O; all competing Neuron
     /// CAS and Control reads return Indeterminate until Commit is durable.
-    /// The trusted caller must execute the real runtime cutover and persist
-    /// its original receipt in the closure before this owner acknowledges C.
+    /// The trusted caller must execute the real runtime cutover, verify
+    /// its ORIGINAL signed receipt against independently pinned runtime
+    /// authority, perform a fresh durable readback and return the exact original
+    /// receipt bytes in the closure. Control records their domain-separated
+    /// digest in C to bind the WAL to that external evidence; this hash is
+    /// NOT itself proof of signature validity or production authorization.
+    /// An empty, truncated or oversized receipt leaves Begin unresolved.
     ///
     /// Any failure or crash after Begin permanently quarantines this owner
     /// until an independently witnessed reconciliation; neither route nor
@@ -461,7 +475,7 @@ impl NduPublicationOwnerV1 {
         expected_checkpoint: Digest32,
         next: NduSnapshotRefV1,
         migrated_checkpoint: Digest32,
-        apply_original_runtime_once: impl FnOnce() -> Result<T, E>,
+        apply_original_runtime_once: impl FnOnce() -> Result<(T, Vec<u8>), E>,
     ) -> Result<(T, Digest32), NduPublicationErrorV1> {
         next.validate()
             .map_err(|_| NduPublicationErrorV1::Invalid)?;
@@ -518,13 +532,24 @@ impl NduPublicationOwnerV1 {
             state.poisoned = true;
             return Err(NduPublicationErrorV1::Indeterminate);
         }
-        let actual = match actual_result {
+        let (actual, original_receipt_bytes) = match actual_result {
             Ok(receipt) => receipt,
             Err(_) => {
                 state.poisoned = true;
                 return Err(NduPublicationErrorV1::Indeterminate);
             }
         };
+        // Original CNS attestations include authenticated operation bindings
+        // and a runtime signature. Control never treats a short opaque OK or a
+        // caller-supplied digest as a physical completion receipt.
+        if !(64..=32 * 1024).contains(&original_receipt_bytes.len()) {
+            state.poisoned = true;
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        let mut bound = b"hepta.control.ndu-publication.cns-original-receipt.v1\0".to_vec();
+        bound.extend_from_slice(&(original_receipt_bytes.len() as u64).to_be_bytes());
+        bound.extend_from_slice(&original_receipt_bytes);
+        let original_receipt_digest = Digest32::of_bytes(&bound);
         // A rejected Commit is indeterminate even if the external runtime
         // succeeded. Never let another model tick or cutover enter this lane.
         let committed = match state.append(
@@ -532,7 +557,7 @@ impl NduPublicationOwnerV1 {
             successor,
             expected_checkpoint,
             migrated_checkpoint,
-            Digest32::ZERO,
+            original_receipt_digest,
             Digest32::ZERO,
         ) {
             Ok(receipt) => receipt,
