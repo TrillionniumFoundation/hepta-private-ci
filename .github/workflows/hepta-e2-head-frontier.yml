@@ -1,0 +1,36 @@
+name: Hepta E2 residual Head contract and actual SGD smoke
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e2_feature_residual_study.py"
+      - "experiments/shared_stem_cell/test_e2_feature_residual_study.py"
+      - "experiments/shared_stem_cell/e2_residual_review.py"
+      - "experiments/shared_stem_cell/test_e2_residual_review.py"
+      - "experiments/shared_stem_cell/E2_PUBLIC_RESIDUAL_STUDY.md"
+      - ".github/workflows/hepta-e2-head-frontier.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  e2-head-optimizer-and-independent-review:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Review exact checkout and install pinned CPU tensors
+        run: |
+          set -euo pipefail
+          git diff --check
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu "torch==2.10.0"
+          python -c 'import torch; assert torch.__version__.startswith("2.10.0")'
+      - name: Train and independently re-score synthetic controls
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/shared_stem_cell/e2_feature_residual_study.py experiments/shared_stem_cell/e2_residual_review.py
+          python -m unittest discover -s experiments/shared_stem_cell -p "test_e2_*.py" -v
