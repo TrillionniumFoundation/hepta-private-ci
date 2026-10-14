@@ -16,7 +16,7 @@ import numpy as np
 
 from experiments.shared_stem_cell.e2_budget_review import review_sweep
 from experiments.shared_stem_cell.preflight_review import checked_bytes, require
-from experiments.shared_stem_cell.wire import decode, sha, write_once
+from experiments.shared_stem_cell.wire import canonical, decode, sha, write_once
 
 SCHEMA = "hepta.stem.e2-paired-source-uncertainty.v1"
 BUDGETS = (2048, 8192, 16384, 65536, 262144)
@@ -107,7 +107,8 @@ def audit(manifest_path: Path, producer: Path, report_sha256: str, sweep: Path):
     correct = case_correctness(packet["predictions"], labels)
     return {"schema": SCHEMA, "e2_run_sha256": sha(checked_bytes(sweep / "run.json")),
             "original_dataset_sha256": plan["dataset"]["sha256"],
-            "physical_review_sha256": sha(checked_bytes(producer / "report.json", report_sha256)),
+            "producer_report_sha256": report_sha256,
+            "independent_physical_review_sha256": sha(canonical(physical)),
             "observed_original_holdout_cases": len(labels),
             "distinct_reported_source_group_labels": len(set(groups.values())),
             "independent_source_group_samples_verified": False,
