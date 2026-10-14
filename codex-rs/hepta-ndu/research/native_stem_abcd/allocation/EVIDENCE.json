@@ -1,0 +1,82 @@
+{
+  "after_cap_qualifications_not_admitted": 1,
+  "all_large_width_qualifications": "0/48",
+  "all_weights_sha256": "3b8f7d3dbb065183b36c42757129d8ad51730f2c257822ca362fb77540a9dd8d",
+  "archive": {
+    "bytes": 165389055,
+    "filename": "hepta_native_ndu_allocation_round9_20261014.zip",
+    "location": "conversation attachment; full raw ZIP not a Git binary upload",
+    "sha256": "294d4e33af00754568b00397f8b74be90c3c4ebfab8adb14795acd31c5bc2f56",
+    "verified_content_members": 1305
+  },
+  "audit": {
+    "cc17_panels": 96,
+    "checkpoints": 1589,
+    "cpu": 467.32463817,
+    "independent_action_checks": 192,
+    "independent_action_error": 3.885780586188048e-16,
+    "initial_groups": 6,
+    "max_replay_error": 0.0,
+    "panels": 1056,
+    "production_authorized": false,
+    "runs": 96,
+    "scalar_entries": 3619584,
+    "skipped_fine_recomputed": 625,
+    "timing_externally_authenticated": false,
+    "wall": 467.4016230729999
+  },
+  "audit_binding": {
+    "blobs": {
+      "test_tamper.py": "567679782b20ac038325938b80aa22e661ee1eb6",
+      "verify.py": "f83e6c56e444289e85bb6657908428ac0d2e8692"
+    },
+    "commit": "882b8488afa8f555006bec3896c04d8325c8d898"
+  },
+  "audit_commit": "882b8488afa8f555006bec3896c04d8325c8d898",
+  "censored": 73,
+  "changed_tensors": 96,
+  "complete_flops": null,
+  "completed_runs": 96,
+  "core_commit": "b18d53921eed6c8f2db4fadd9e7caebe745a006e",
+  "cost_only_within_cap": 49,
+  "distinct_tests_passed": 169,
+  "energy_joules": null,
+  "failed_execution_runs": 0,
+  "fixed_gate": "max(J_CC5,J_CC9)<=0.04850 and abs(J_CC9-J_CC5)<=1e-6",
+  "full_ci_verified": false,
+  "medium_width_cc5": "7/24",
+  "medium_width_gl5": "16/24",
+  "parent_commit": "bce81311faf7f7295c4c41bd25eef2c8a49e66c8",
+  "primary_denominator_each": 12,
+  "primary_large_width_full": 0,
+  "primary_large_width_lazy": 0,
+  "production_authorized": false,
+  "project_cloud_execution": false,
+  "protocol_commit": "7e233ce92a8e984aa68ff217fc8b1730aee7689b",
+  "schema": "hepta.native.ndu.allocation.evidence.core.r9",
+  "source_binding": {
+    "blobs": {
+      "core.py": "3a4be6d76a39f22810e5b87d0c93144a164160dc",
+      "run.py": "640de576e36fe349ed761a9da0036a5c8f451f65",
+      "test_allocation.py": "0a5c123600214d86e75db224ec3fa17d88ed94e4"
+    },
+    "commit": "b18d53921eed6c8f2db4fadd9e7caebe745a006e"
+  },
+  "test_counts": {
+    "allocation": 12,
+    "continuous": 22,
+    "matrix_free": 17,
+    "nonquadratic": 18,
+    "population": 18,
+    "root": 64,
+    "scaling": 12,
+    "tamper": 6
+  },
+  "tests_skipped": 0,
+  "total_child_cpu_seconds": 1403.9252250000002,
+  "total_sweep_wall_seconds": 1406.723265013,
+  "wall_cap_seconds": 12,
+  "weight_delivery": "all 96 tensors and all monitor checkpoints in conversation archive; Git indexes are hashes only",
+  "weight_index_sha256": "26242d92725dd14e9b6576784b4f6a3dd107a0b1cf2ee0c8d59c3b8b34f5901c",
+  "within_cap_joint_successes": 23
+}
