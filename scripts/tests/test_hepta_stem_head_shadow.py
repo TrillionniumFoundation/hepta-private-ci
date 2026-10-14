@@ -179,6 +179,12 @@ class HeadTests(unittest.TestCase):
                 (root / "exp.learned.jsonl").read_text().splitlines()
             ]
             self.assertEqual(len(learned), 2)
+            self.assertTrue(all(
+                row["resident_bytes"] is None
+                and row["transient_bytes"] is None
+                and row["resource_observation"] == "HEAD_ONLY_LATENCY_NO_RSS"
+                for row in learned
+            ))
             self.assertEqual(MOD.main(args), 2)
 
 
