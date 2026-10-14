@@ -1,0 +1,26 @@
+name: Hepta E1-E5 causal research contracts
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e1e5_causal_gate.py"
+      - "experiments/shared_stem_cell/test_e1e5_causal_gate.py"
+      - "experiments/shared_stem_cell/E1E5_CAUSAL_FRONTIER.md"
+      - ".github/workflows/hepta-e1e5-causal-gate.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  causal-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Model-free mechanism tests
+        run: |
+          python -m py_compile experiments/shared_stem_cell/e1e5_causal_gate.py
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e1e5_causal_gate.py' -v
