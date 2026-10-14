@@ -24,6 +24,7 @@ H = 8 * Q
 CAPS = (2048, 8192, 16384, 65536, 262144)
 ARMS = ('v2', 'v3', 'ssm', 'min_gru')
 SCHEMA = 'hepta.neuron.frozen-q24-train-input.v1'
+TIME_QUANTUM_MICROS = 1_000_000
 
 
 def require(ok: bool, reason: str) -> None:
@@ -132,9 +133,9 @@ def make_model(kind: str, width: int, rank: int, torch):
                 self.decay_per_step = torch.nn.Parameter(torch.full((width,), .8))
                 self.input_gain = torch.nn.Parameter(torch.full((width,), .5))
             elif kind == 'min_gru':
-                self.gate_input = torch.nn.Parameter(torch.zeros((rank, width)))
+                self.gate_input = torch.nn.Parameter(torch.randn((rank, width)) * .01)
                 self.gate_output = torch.nn.Parameter(torch.zeros((width, rank)))
-                self.candidate_input = torch.nn.Parameter(torch.zeros((rank, width)))
+                self.candidate_input = torch.nn.Parameter(torch.randn((rank, width)) * .01)
                 self.candidate_output = torch.nn.Parameter(torch.zeros((width, rank)))
                 self.gate_bias = torch.nn.Parameter(torch.zeros(width))
                 self.candidate_bias = torch.nn.Parameter(torch.zeros(width))
@@ -152,7 +153,7 @@ def make_model(kind: str, width: int, rank: int, torch):
                             self.change_gain * (value-h).abs() / 16).clamp(0, 1)
                     h = ((1-gate) * h + gate * value).clamp(-8, 8)
                 elif kind == 'ssm':
-                    dt = 1 if prior_time is None else min(65535, max(1, (event_micros[i]-prior_time)//100))
+                    dt = 1 if prior_time is None else min(65535, max(1, (event_micros[i]-prior_time)//TIME_QUANTUM_MICROS))
                     h = (self.decay_per_step.clamp(0, 1).pow(dt) * h +
                          self.input_gain.clamp(-1, 1) * value).clamp(-8, 8)
                 else:
