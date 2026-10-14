@@ -338,9 +338,8 @@ command = "enabled-server"
 
 #[test]
 fn subagent_yaml_scalar_contract_is_frozen_before_security_parser_migration() {
-    let scalar = parse_document_content(
-        "---\nname: 42\ndescription: true\n---\nReview carefully.\n",
-    );
+    let scalar =
+        parse_document_content("---\nname: 42\ndescription: true\n---\nReview carefully.\n");
     let metadata = agent_metadata(&scalar).expect("YAML numeric and bool scalars are supported");
     let rendered = render_agent_toml(&scalar.body, &metadata, TEST_REWRITE_PROFILE)
         .expect("render scalar metadata");
@@ -349,9 +348,7 @@ fn subagent_yaml_scalar_contract_is_frozen_before_security_parser_migration() {
     assert_eq!(rendered["description"].as_str(), Some("true"));
 
     for value in ["[read, write]", "{nested: text}", "!secret value"] {
-        let source = format!(
-            "---\nname: reviewer\ndescription: {value}\n---\nReview carefully.\n"
-        );
+        let source = format!("---\nname: reviewer\ndescription: {value}\n---\nReview carefully.\n");
         let document = parse_document_content(&source);
         assert!(agent_metadata(&document).is_none(), "{value}");
     }
