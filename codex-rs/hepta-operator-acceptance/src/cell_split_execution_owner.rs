@@ -455,7 +455,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         trust: CellSplitOwnerTrustV1,
         port: P,
     ) -> Result<Self, CellSplitExecutionErrorV1> {
-        Self::open_inner(root, plan, trust, port, CellSplitOwnerOpenModeV1::NewOrResume)
+        Self::open_inner(
+            root,
+            plan,
+            trust,
+            port,
+            CellSplitOwnerOpenModeV1::NewOrResume,
+        )
     }
 
     /// Read-only re-open for transcript inspection. Never creates a lock or
