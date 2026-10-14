@@ -1054,6 +1054,17 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         &mut self,
         mut revalidate: impl FnMut() -> Result<(), String>,
     ) -> Result<Option<CellSplitExecutionReceiptV1>, CellSplitExecutionErrorV1> {
+        // The public telemetry/callback ingress is already denied in a
+        // non-test build. Fence the original coordinator as a second,
+        // independent authority boundary: neither an internal module nor a
+        // future caller may prepare a NEW CAS/CNS/Supervisor effect through
+        // this callback seam. An existing, frozen PENDING intent can only be
+        // read back via open_pending_reconciliation and never reexecuted.
+        if !cfg!(test) && !self.reconcile_only {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "new CellSplit effects require the original verified Control owner",
+            ));
+        }
         // Inspection handles may authenticate existing evidence but must never
         // prepare an intent or invoke an external CAS/CNS/Supervisor effect.
         if self.read_only {

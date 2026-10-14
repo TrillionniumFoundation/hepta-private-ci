@@ -165,7 +165,7 @@ jobs:
       - name: CellSplit physical Control handoff no-bypass
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/physical-cns-no-bypass.json" --minimum-tests 8 -- python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/physical-cns-no-bypass.json" --minimum-tests 9 -- python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py
       - name: Prepare native prerequisites
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         run: |
