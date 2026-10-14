@@ -71,8 +71,8 @@ enum Configs {
     V3Prepared(PreparedGatedSparseConfigV3),
     SsmLegacy(DiagonalSsmConfigV1),
     SsmPrepared(PreparedDiagonalSsmConfigV1),
-    MinGruLegacy(LowRankMinGruConfigV1, usize),
-    MinGruPrepared(PreparedLowRankMinGruConfigV1, usize),
+    MinGruLegacy(Box<LowRankMinGruConfigV1>, usize),
+    MinGruPrepared(Box<PreparedLowRankMinGruConfigV1>, usize),
 }
 
 impl Configs {
@@ -339,14 +339,16 @@ fn make_configs(width: usize, arm: &str, prepared: bool) -> Result<Configs, Stri
                 .map_err(|error| format!("minGRU count: {error:?}"))?;
             if prepared {
                 Ok(Configs::MinGruPrepared(
-                    PreparedLowRankMinGruConfigV1::new(cfg)
-                        .map_err(|error| format!("prepared minGRU: {error:?}"))?,
+                    Box::new(
+                        PreparedLowRankMinGruConfigV1::new(cfg)
+                            .map_err(|error| format!("prepared minGRU: {error:?}"))?,
+                    ),
                     params,
                 ))
             } else {
                 cfg.digest()
                     .map_err(|error| format!("minGRU config: {error:?}"))?;
-                Ok(Configs::MinGruLegacy(cfg, params))
+                Ok(Configs::MinGruLegacy(Box::new(cfg), params))
             }
         }
         _ => Err("unknown fixture mechanism arm".to_owned()),
