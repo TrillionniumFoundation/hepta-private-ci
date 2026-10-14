@@ -20,6 +20,7 @@ codex-app-server-protocol = { workspace = true }
 codex-hepta-agentd = { workspace = true }
 codex-hepta-codex-adapter = { path = "../hepta-codex-adapter" }
 codex-hepta-contracts = { workspace = true }
+codex-hepta-evidence = { path = "../hepta-evidence" }
 codex-utils-absolute-path = { workspace = true }
 libc = { workspace = true }
 rustix = { workspace = true, features = ["process"] }
@@ -32,7 +33,6 @@ sha2 = { workspace = true }
 
 [dev-dependencies]
 core_test_support = { workspace = true }
-codex-hepta-evidence = { path = "../hepta-evidence" }
 
 ed25519-dalek = { workspace = true }
 tempfile = { workspace = true }

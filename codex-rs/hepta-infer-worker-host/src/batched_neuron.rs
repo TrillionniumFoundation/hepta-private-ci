@@ -14,6 +14,7 @@ use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
 
+use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
@@ -151,6 +152,11 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
+    // Only this crate's typed original Evidence WAL binder can set the bit.
+    // A caller-provided generic sink cannot attest an fsynced original journal.
+    original_evidence_bound: bool,
+    #[cfg(test)]
+    research_test_effects_allowed: bool,
     failed_metrics: AtomicU64,
     // healthy() alone does not mean Evidence has fsynced the asynchronous
     // Record queue. Only an explicit successful post-record flush can
@@ -247,6 +253,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
+            original_evidence_bound: false,
+            #[cfg(test)]
+            research_test_effects_allowed: false,
             failed_metrics: AtomicU64::new(0),
             metrics_flushed: AtomicBool::new(false),
             maximum_pending: limits.max_pending,
@@ -280,6 +289,17 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         }
         self.metric_sink = Some(sink);
         self.metrics_flushed.store(false, Ordering::Release);
+        Ok(())
+    }
+
+    /// Only the original local Evidence actor can attest the sink identity.
+    /// Generic public PhaseMetricSinkV1 binding remains non-authorizing.
+    pub(crate) fn bind_original_evidence_sink(
+        &mut self,
+        sink: Arc<DurablePhaseMetricSinkV1>,
+    ) -> Result<(), BatchWorkerErrorV1> {
+        self.bind_metric_sink(sink)?;
+        self.original_evidence_bound = true;
         Ok(())
     }
 
@@ -328,11 +348,23 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         observed_ms.max(dispatch_now_ms_v1(anchored_ms, anchored_at))
     }
 
-    /// Research-only runs may omit a sink, but such runs can never satisfy
-    /// production_metrics_ready. Once a sink is configured, any failure is a
-    /// permanent rejection gate for new effects in this Worker lifetime.
+    /// The test-only research exception is never included in a compiled
+    /// product library. No generic sink or historical signed nonce can
+    /// authorize a physical model effect without typed original Evidence.
+    fn original_evidence_or_test_fixture_ready(&self) -> bool {
+        #[cfg(test)]
+        {
+            self.original_evidence_bound || self.research_test_effects_allowed
+        }
+        #[cfg(not(test))]
+        {
+            self.original_evidence_bound
+        }
+    }
+
     fn metrics_available_for_effect(&self) -> bool {
-        self.failed_metrics.load(Ordering::Acquire) == 0
+        self.original_evidence_or_test_fixture_ready()
+            && self.failed_metrics.load(Ordering::Acquire) == 0
             && self.metric_sink.as_ref().is_none_or(|sink| sink.healthy())
     }
 
@@ -340,7 +372,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
     /// authorization from one successful model execution. A failed write
     /// remains latched even if the current metric sink later reports healthy.
     pub fn production_metrics_ready(&self) -> bool {
-        self.scope_frontier.is_some()
+        self.original_evidence_or_test_fixture_ready()
+            && self.scope_frontier.is_some()
             && !self.unmetered_activity
             && self.metrics_flushed.load(Ordering::Acquire)
             && self.metric_sink.as_ref().is_some_and(|sink| sink.healthy())

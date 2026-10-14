@@ -227,6 +227,9 @@ fn runner_with_driver_using_frontier<D: ModelDriver + NeuronFeatureDriver>(
     )
     .unwrap();
     owner.bind_live_scope_frontier(frontier).unwrap();
+    // Explicit, unit-test-only research allowance; cannot compile into
+    // non-test product libraries or mint original WAL provenance.
+    owner.research_test_effects_allowed = true;
     owner
 }
 
@@ -1751,6 +1754,126 @@ fn real_wal_truncation_after_signed_scalar_effect_withholds_followup_success() {
     assert_eq!(worker.pending(), 0);
     assert!(!sink.healthy());
     assert!(!worker.production_metrics_ready());
+}
+
+#[cfg(unix)]
+#[test]
+fn original_wal_bound_worker_fsyncs_signed_scalar_and_blocks_unreconciled_cold_restart() {
+    use crate::original_evidence_neuron::OriginalEvidenceBoundNeuronWorkerV1;
+    use crate::original_evidence_neuron::OriginalEvidenceWorkerBootstrapErrorV1;
+    use crate::original_evidence_neuron::OriginalEvidenceWriterConfigV1;
+    use std::os::unix::fs::PermissionsExt;
+
+    let original_dir = tempfile::tempdir().unwrap();
+    std::fs::set_permissions(original_dir.path(), std::fs::Permissions::from_mode(0o700))
+        .unwrap();
+    let wal = original_dir.path().join("strict-original-evidence.wal");
+    let signer = SigningKey::from_bytes(&[126; 32]);
+    let (model, request, key) = fixture_request();
+    let original_binding =
+        neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let initial = runner_with_driver(
+        &signer,
+        original_dir.path(),
+        model.clone(),
+        CountingScalarDriver(calls.clone()),
+        1,
+    );
+    let scope_frontier = initial.scope_frontier.clone().unwrap();
+    let limits = MicrobatchLimitsV1 {
+        max_pending: 10,
+        max_batch_size: 1,
+        max_lanes_per_poll: 4,
+        max_wait_ms: 5,
+    };
+    let config = OriginalEvidenceWriterConfigV1 {
+        wal_path: wal.clone(),
+        queue_capacity: 32,
+        group_size: 32,
+        flush_interval_ms: 60_000,
+    };
+    let mut strict = OriginalEvidenceBoundNeuronWorkerV1::open(
+        initial.worker,
+        initial.authority,
+        limits,
+        scope_frontier.clone(),
+        config.clone(),
+    )
+    .unwrap();
+    assert_eq!(strict.observe_original_frontier().unwrap().committed_rows, 0);
+    strict
+        .enqueue(
+            100,
+            "model".into(),
+            request,
+            key,
+            signed_member(&signer, original_binding, "provenance-strict-first", 127),
+        )
+        .unwrap();
+    let outcome = strict.poll_and_execute(106).unwrap();
+    assert_eq!(outcome.outcomes.len(), 1);
+    assert!(outcome.outcomes[0].result.is_ok());
+    assert_eq!(strict.pending(), 0);
+    assert_eq!(strict.observe_original_frontier().unwrap().committed_rows, 3);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    drop(strict);
+
+    // A new FinalUse owner can issue a new nonce. This MUST NOT relaunch a
+    // previously executed logical identity with an empty in-memory queue.
+    let restart_dir = tempfile::tempdir().unwrap();
+    let restarted = runner_with_driver(
+        &signer,
+        restart_dir.path(),
+        model,
+        CountingScalarDriver(calls.clone()),
+        1,
+    );
+    let reopen = OriginalEvidenceBoundNeuronWorkerV1::open(
+        restarted.worker,
+        restarted.authority,
+        limits,
+        scope_frontier,
+        config,
+    );
+    assert!(matches!(
+        reopen,
+        Err(OriginalEvidenceWorkerBootstrapErrorV1::PriorHistoryNeedsReconciliation)
+    ));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
+
+#[test]
+fn generic_untrusted_metric_sink_cannot_enter_signed_neuron_effect() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[125; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let invocations = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut worker = runner_with_driver(
+        &signer,
+        dir.path(),
+        model,
+        CountingScalarDriver(invocations.clone()),
+        1,
+    );
+    worker.research_test_effects_allowed = false;
+    worker
+        .bind_metric_sink(Arc::new(CapturedMetrics::default()))
+        .unwrap();
+    assert!(!worker.original_evidence_bound);
+    assert!(!worker.production_metrics_ready());
+    assert_eq!(
+        worker.enqueue(100, "model".into(), request, key, signed(&signer, binding)),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    );
+    assert_eq!(worker.pending(), 0);
+    assert!(!worker.flush_production_metrics());
+    assert!(matches!(
+        worker.poll_and_execute(101),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    ));
+    assert_eq!(invocations.load(std::sync::atomic::Ordering::SeqCst), 0);
 }
 
 #[test]
