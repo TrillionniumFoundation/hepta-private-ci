@@ -1,0 +1,125 @@
+{
+  "schema": "hepta.request-kv-source-verification.v1",
+  "remote_parent": "999fbfd74bdb64f83dabce8430e80569c0b78d23",
+  "upstream_pr": 1760,
+  "code_candidate": "67efeb296a4af714919522ce55cad4719a487d60",
+  "branch": "research/shared-stem-request-kv-cache-20261014",
+  "recovered_source_archive_sha256": "f5ac25f452cc59d16bd6a5660237657f6abbae0b5360725623f9e405ada4aad5",
+  "source_blobs": {
+    "causal_cache.py": {
+      "git_blob_sha1": "dd5ce543424a993519afbb2b04c56558bb69aadd",
+      "sha256": "7229c61b8eb787517a099b7ff9b400ecb92d0b7c857f70fd1416a873d0d4eae8",
+      "bytes": 7510
+    },
+    "causal_generation.py": {
+      "git_blob_sha1": "5b439825a2d3cb5d49cb3f289f9db98e2d02d26f",
+      "sha256": "80cec8196c421809f7059245beed059561f911cee350b0cf563bfc4cd1d4889a",
+      "bytes": 11083
+    },
+    "causal_snapshot.py": {
+      "git_blob_sha1": "59bc8c2a2ee7687f971ec9ce0ba1e0afbd76ce18",
+      "sha256": "e1d45007886b575826d774887be24b8efa862f9a3d0b9e2530cd672dfc49de29",
+      "bytes": 6048
+    },
+    "paired_capture.py": {
+      "git_blob_sha1": "55318f9f6580b76f62d0a1ccabb90e2f365b4547",
+      "sha256": "5b5e3d66991c86351bd1874fdf70c78708425de98a39b6d0681d37de63c98990",
+      "bytes": 11944
+    },
+    "cache_test_support.py": {
+      "git_blob_sha1": "6b0d62f1384aa341a0de8c52f2e833e99698ae87",
+      "sha256": "e0465b28a25a0c354108d2a175638a48b2fb60c780df2e02316237bd673fa284",
+      "bytes": 4931
+    },
+    "test_causal_cache.py": {
+      "git_blob_sha1": "c931be95fcb45a3113c9cd00ae0fd08dd031f52c",
+      "sha256": "c55239c19c206dead00e4073177ec6aa0fba5c5f71261f943df422c6470b1974",
+      "bytes": 9119
+    },
+    "test_cached_system2.py": {
+      "git_blob_sha1": "d98e47578624a255e6ad2f7d71653b359c98fea3",
+      "sha256": "7d2f35c1e43e24983f42bc86e3ae5a8ff733ca85e5f93aa2d1059405dea5e46f",
+      "bytes": 7725
+    },
+    "hf_generation_checks.py": {
+      "git_blob_sha1": "c4ddb6213e35f327d474625e4089db286b155547",
+      "sha256": "e17a59a6f475324aa540e0b469e64310b8e90633ff84355042980df8d8622953",
+      "bytes": 4307
+    }
+  },
+  "tests": {
+    "distinct": 393,
+    "retained": 375,
+    "cache_tests": 12,
+    "integration_tests": 6,
+    "complete_coverage_runs": 2,
+    "shards_per_run": [
+      99,
+      98,
+      98,
+      98
+    ],
+    "process_exit_codes": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "exact_test_inventory_sha256": "9d958b7c527d16d2bd6ac5925a11f185ee46b5ec29173b395cd670e8610e71aa",
+  "final_log_sha256": {
+    "final-1-0.log": "bb306754fec067c92a07fc7384c721a56a0f043665c525bda322d52bc539d351",
+    "final-1-1.log": "cb96ec8a94bf1f74204bc8ff34005359929c3c5a4c1cfdaeada69e2130df185c",
+    "final-1-2.log": "266ab698a98f9cf1a09297b9e3688aa453bb6400d7f4ebe3157d3d799a82e122",
+    "final-1-3.log": "eb5c756ab88de2331329352866baec131f668d0ea60c254b06fd2664cf4653c8",
+    "final-2-0.log": "71bf0563694b11718ad1a27f181650bfee78c389a86f782af8015e58b72143da",
+    "final-2-1.log": "610caef2c9f3db0ded9dfc4552683561ae34879e0cfadb0692ce8fa8da781c7b",
+    "final-2-2.log": "0a7c00de7dd801a47cff13d26799cc439587f22e3b8235cfb522a318a3b60eeb",
+    "final-2-3.log": "73c6f21124dee650d9a6e9e24ecba71fb2fa76bb02e91798311324629e6cb17e"
+  },
+  "diagnostic_summary_sha256": "babced418562fa6654126a6505a5b7d546c9942cb924f782bc1af11f5ad15f18",
+  "diagnostic_script_sha256": "91085daab8403b9b5b6f79d83307c48265eb1980498b73e98dd68c8bf5641657",
+  "runtime": {
+    "python": "3.13.5",
+    "torch": "2.10.0+cpu",
+    "numpy": "2.3.5",
+    "safetensors": "0.7.0",
+    "surface": "bounded Linux CPU source slice, not full repository/target host"
+  },
+  "separate_checks": {
+    "stock_causal": {
+      "defined": 2,
+      "executed": 0,
+      "failure": "ModuleNotFoundError: tokenizers",
+      "exit_code": 1
+    },
+    "encoder": {
+      "defined": 3,
+      "executed": 0,
+      "failure": "ModuleNotFoundError: transformers",
+      "exit_code": 1
+    }
+  },
+  "checks": {
+    "compileall": "passed",
+    "git_diff_check": "passed",
+    "remote_source_blob_matches": 8,
+    "rust_fmt": "not_run: codex-rs and just absent",
+    "full_repository_native_gpu": "not_run",
+    "hosted_ci": "not_claimed"
+  },
+  "pretrained_execution": false,
+  "trained_tiny_attention_executed": true,
+  "stock_hf_cache_execution": false,
+  "independent_generalization_established": false,
+  "full_cost_efficiency_established": false,
+  "matrix_ndu_arm_enabled": false,
+  "production_authorized": false
+}

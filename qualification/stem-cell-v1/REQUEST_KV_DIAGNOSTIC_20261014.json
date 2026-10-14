@@ -1,0 +1,71 @@
+{
+  "closed_set_training_tasks": 3,
+  "direct_proposals": 12,
+  "full_cost_efficiency_established": false,
+  "independent_generalization_established": false,
+  "logits_max_abs_error": 3.5762786865234375e-07,
+  "memory_note": "Cache backing-storage union at boundaries is not instantaneous allocator/RSS peak.",
+  "parity_seed_count": 10,
+  "parity_step_count": 60,
+  "pretrained_execution": false,
+  "production_authorized": false,
+  "runs": {
+    "cached-fixed_depth": {
+      "cache_boundary_storage_union_bytes": 2256,
+      "calls": 4,
+      "elapsed_ns_instrumented": 10715624,
+      "formula_work": 53871,
+      "forwarded_tokens": 17,
+      "forwards": 5,
+      "output": "red done",
+      "status": "verifier_accepted_not_independent_eval"
+    },
+    "cached-no_search": {
+      "cache_boundary_storage_union_bytes": 1296,
+      "calls": 2,
+      "elapsed_ns_instrumented": 5582329,
+      "formula_work": 18009,
+      "forwarded_tokens": 6,
+      "forwards": 2,
+      "output": "unsure",
+      "status": "depth_exhausted"
+    },
+    "uncached-fixed_depth": {
+      "cache_boundary_storage_union_bytes": 0,
+      "calls": 4,
+      "elapsed_ns_instrumented": 9867410,
+      "formula_work": 132585,
+      "forwarded_tokens": 41,
+      "forwards": 5,
+      "output": "red done",
+      "status": "verifier_accepted_not_independent_eval"
+    },
+    "uncached-no_search": {
+      "cache_boundary_storage_union_bytes": 0,
+      "calls": 2,
+      "elapsed_ns_instrumented": 6406058,
+      "formula_work": 33279,
+      "forwarded_tokens": 11,
+      "forwards": 2,
+      "output": "unsure",
+      "status": "depth_exhausted"
+    }
+  },
+  "schema": "hepta.request-local-kv-diagnostic.v1",
+  "synthetic_positive_critic": {
+    "calls": 5,
+    "candidate": "red done",
+    "independent_calibration": false
+  },
+  "timing_note": "Sequential instrumented same-process diagnostics; not matched performance trials.",
+  "training": {
+    "examples": 15,
+    "generalization_tested": false,
+    "initial_sha256": "a9992d5ea43edf0d78029d2b864f10a99a584c8b6cf5512ab1ebb5f1c24c16bd",
+    "loss": 3.496798797186784e-07,
+    "parameters": 2259,
+    "pretrained": false,
+    "steps": 180,
+    "trained_sha256": "db472c8473a05616636875cff2162f7ce886d385270f0c9df9a78ddb94997738"
+  }
+}
