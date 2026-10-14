@@ -188,6 +188,10 @@ struct State {
     // Durable B is fsynced, physical effect and original receipt are unresolved.
     // This is a sticky publication fence even while the mutex is released.
     pending_cutover: bool,
+    // The most recent fsynced C's original-runtime receipt binding. Observers
+    // must independently authenticate its original signed bytes and current
+    // serving state; this digest by itself grants no route/Final-use authority.
+    last_cns_original_receipt_binding: Option<Digest32>,
 }
 impl State {
     fn append(
@@ -244,6 +248,9 @@ impl State {
         // executed and a separate final Commit is fsynced.
         if kind != 'B' {
             self.checkpoint = after;
+        }
+        if kind == 'C' {
+            self.last_cns_original_receipt_binding = (!read.is_zero()).then_some(read);
         }
         self.bytes = bytes;
         Ok(e.head)
@@ -323,6 +330,7 @@ impl NduPublicationOwnerV1 {
         let mut latest = None;
         let mut checkpoint = Digest32::ZERO;
         let mut pending = None;
+        let mut last_cns_original_receipt_binding = None;
         let mut bytes = 0u64;
         loop {
             row.clear();
@@ -364,6 +372,8 @@ impl NduPublicationOwnerV1 {
                     pending = None;
                     latest = Some(e.snapshot);
                     checkpoint = e.after;
+                    last_cns_original_receipt_binding =
+                        (!e.read.is_zero()).then_some(e.read);
                 }
                 _ => {
                     latest = Some(e.snapshot);
@@ -397,6 +407,7 @@ impl NduPublicationOwnerV1 {
             bytes,
             poisoned: false,
             pending_cutover: false,
+            last_cns_original_receipt_binding,
         };
         if latest.is_none() {
             state.append(
@@ -435,6 +446,26 @@ impl NduPublicationOwnerV1 {
             return Err(NduPublicationErrorV1::Indeterminate);
         }
         Ok((state.snapshot.clone(), state.checkpoint))
+    }
+
+    /// Read-only reference for independent Observer verification of the
+    /// original signed CNS commit. This is a digest of exact runtime-owner
+    /// receipt bytes, NOT an attestation, capability, or physical state proof.
+    /// The Observer still needs original pinned signature and live readback.
+    pub fn last_cns_original_receipt_binding(
+        &self,
+    ) -> Result<Option<Digest32>, NduPublicationErrorV1> {
+        let state = self
+            .state
+            .lock()
+            .map_err(|_| NduPublicationErrorV1::Poisoned)?;
+        if state.poisoned {
+            return Err(NduPublicationErrorV1::Poisoned);
+        }
+        if state.pending_cutover {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        Ok(state.last_cns_original_receipt_binding)
     }
 
     /// Compatibility-only name. The old single-phase API could write a
