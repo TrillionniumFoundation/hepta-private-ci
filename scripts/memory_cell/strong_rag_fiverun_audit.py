@@ -424,8 +424,12 @@ def compare_five(runs):
         new_variations[phase] = []
         for key in sorted(runs["E"][phase]["rows"]):
             prior = {
-                (runs[name][phase]["rows"][key]["answer"],
-                 runs[name][phase]["rows"][key]["receipt"]["generated_ids_digest"])
+                (
+                    runs[name][phase]["rows"][key]["answer"],
+                    runs[name][phase]["rows"][key]["receipt"][
+                        "generated_ids_digest"
+                    ],
+                )
                 for name in original
             }
             current = (

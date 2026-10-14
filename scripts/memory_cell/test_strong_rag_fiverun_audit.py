@@ -131,7 +131,10 @@ class FiveRunAuditTests(unittest.TestCase):
                 for x in result["causal_differences"].values()
             )
         )
-        self.assertEqual(result["new_variants_only_in_fifth_run"], {"calibration": [], "evaluation": []})
+        self.assertEqual(
+            result["new_variants_only_in_fifth_run"],
+            {"calibration": [], "evaluation": []},
+        )
         self.assertFalse(result["production_accepted"])
 
 
