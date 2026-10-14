@@ -67,3 +67,35 @@ statistics as model or production results.
 
 Run from repository root. Missing metrics do not become zeros, missing arms do
 not become competitors, and this CLI cannot access production routes.
+
+## Real pretrained physical-study preflight (non-authorizing)
+
+The separately executed `preflight_review.py` consumes one existing
+`execution.py` producer's canonical manifest, original dataset, pre-sealed
+predictions and producer report. It **does not** turn an AG News publisher
+holdout into an artificial `future_1/future_2` window and **does not** make
+the synthetic E1–E6 coverage map appear complete.
+
+The review independently recomputes the four actual Head arms' class
+predictions, Brier, same-initialization frozen-Head comparisons, exact source
+input identities and case census; it verifies the producer report and data
+file hashes and rejects rehashed contradictory scores. This verifies internal
+prediction arithmetic and sample pairing, **not** physical model provenance,
+external outcome authenticity, source-group independence, the native Worker,
+signed NDU or production no-change. Every receipt therefore retains
+`ready_for_e1_e6_selection=false` and `production_accepted=false`.
+
+```sh
+REPORT_SHA=$(sha256sum /real-study/execution/report.json | cut -d' ' -f1)
+python3 -m experiments.shared_stem_cell.preflight_review \
+  --manifest /real-study/manifest.json \
+  --producer /real-study/execution \
+  --report-sha256 "$REPORT_SHA" \
+  --output /new-evidence/preflight.json
+python3 -m unittest -v experiments.shared_stem_cell.test_preflight_review
+```
+
+The dedicated public-pretrained GitHub lane runs this check on actually
+executed, pinned public weights and original publisher records, retaining
+the report as a separate CI artifact. No signed future observations or
+real 64–4,096 Cell native owner measurements are inferred or filled in.
