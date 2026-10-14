@@ -554,3 +554,25 @@ The base's historical exact-SHA CI audit and cargo-deny/Windows/format
 blockers are not erased by this merge; the source must be qualified
 again after reconciliation. No advisory ignores or security bypasses
 are introduced.
+
+
+### C actual paired-label replay — beyond digest-only truth-flip claims
+
+A/B/C now also requires the **separately supplied PR #1774
+hepta.stem.paired-modality-labels.v1 truth manifest** in the
+media_labels field (or raw_labels for the standalone media-pairs command).
+The new purely offline media_truth_replay.py rechecks each original
+and changed prediction against its labeled answer, verifies genuine
+answer flips and canonical pair IDs, enforces exact video frame
+multisets and ordered timestamps, rejects source-family leakage,
+bounds per-pair probability vectors, and recomputes every metric in
+the PR #1774 scored group summary. It also verifies cohort coverage,
+wall-time and nullable exact-formula FLOP accounting. Merely rewriting
+the SHA-256 after inflating a both-correct score is not sufficient.
+
+Results explicitly report a SELF_REPORTED_OFFLINE_REPLAY_ONLY
+classification, independent_truth_verified=false and
+production_admission=BLOCKED. Raw media bytes, model execution,
+third-party reviewer identity, signatures and real source permissions
+are still outside this evaluator. The same C final model,
+preprocessor, media dataset and Scope binding remains mandatory.

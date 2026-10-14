@@ -280,6 +280,18 @@ def media_prediction_digest():
     return hashlib.sha256(raw).hexdigest()
 
 
+def media_truth_labels():
+    return {
+        'schema': 'hepta.stem.paired-modality-labels.v1',
+        'prediction_sha256': media_prediction_digest(),
+        'observer_receipt_sha256': D('e'),
+        'labels': [
+            {'pair_id': f'pair-{i}', 'original_label': 0, 'changed_label': 1}
+            for i in range(3)
+        ],
+    }
+
+
 def media_policy():
     return {
         'schema': 'hepta.stem.media-review-policy.v1',
@@ -303,6 +315,9 @@ def media_truth_flip_report():
             'changed_correct': 1, 'prediction_changed': 1,
             'unresponsive_to_truth_flip': 0,
             'distinct_source_groups': 1,
+            'flop_coverage_complete': True,
+            'pair_wall_ns': 1000,
+            'pair_formula_flops': 200,
         } for name in (
             'holdout/image/media_substitution',
             'holdout/audio/media_substitution',
@@ -323,6 +338,7 @@ def test_abc_even_self_reported_complete_never_grants_permission():
         'C': multimodal_cost_audit(c_fixture()),
         'media_counterfactual': media_truth_flip_report(),
         'media_predictions': media_prediction_payload(),
+        'media_labels': media_truth_labels(),
         'media_policy': media_policy(),
     })
     assert observed['status'] == 'RESEARCH_REVIEW_CANDIDATE_UNVERIFIED'
@@ -527,6 +543,7 @@ def test_c_media_semantic_shadow_pass_still_no_authority():
     result = paired_media_necessity_audit(
         media_truth_flip_report(), media_policy(),
         raw_predictions=media_prediction_payload(),
+        raw_labels=media_truth_labels(),
         expected_protocol_sha256=D('b'),
         expected_model_sha256=D('d'),
         expected_preprocessor_sha256=format(33, '064x'),
@@ -571,6 +588,7 @@ def test_c_semantic_necessity_rejects_mocked_media_success(mutation):
         report['prediction_sha256'] = 'unbound'
     result = paired_media_necessity_audit(
         report, policy, raw_predictions=media_prediction_payload(),
+        raw_labels=media_truth_labels(),
         expected_protocol_sha256=D('b'))
     assert result['status'] == 'BLOCKED'
 
@@ -606,6 +624,7 @@ def test_c_media_must_match_exact_final_multimodal_source(mutation):
         report['groups']['holdout/image/media_substitution']['pairs'] = 2
     outcome = paired_media_necessity_audit(
         report, media_policy(), raw_predictions=raw,
+        raw_labels=media_truth_labels(),
         expected_protocol_sha256=c['protocol_sha256'],
         expected_model_sha256=c['final_multimodal_model_sha256'],
         expected_media_source_sha256=c['final_media_source_sha256'],
@@ -628,6 +647,7 @@ def test_c_unverified_model_linkage_rejects_otherwise_complete_joint_review():
         'C': multimodal_cost_audit(c_fixture()),
         'media_counterfactual': media_truth_flip_report(),
         'media_predictions': raw,
+        'media_labels': media_truth_labels(),
         'media_policy': media_policy(),
     }
     result = joint_abc_evidence_gate(evidence)
@@ -656,6 +676,7 @@ def test_c_counterfactual_must_match_exact_resource_scope():
     result = paired_media_necessity_audit(
         media_truth_flip_report(), media_policy(),
         raw_predictions=payload,
+        raw_labels=media_truth_labels(),
         expected_scope_id=c['scope_id'],
         expected_protocol_sha256=c['protocol_sha256'],
         expected_model_sha256=c['final_multimodal_model_sha256'],
@@ -664,3 +685,77 @@ def test_c_counterfactual_must_match_exact_resource_scope():
     )
     assert result['status'] == 'BLOCKED'
     assert any('scope' in reason for reason in result['issues'])
+
+
+def test_c_exact_pr1774_pair_scores_are_recomputed_not_trusted():
+    result = paired_media_necessity_audit(
+        media_truth_flip_report(), media_policy(),
+        raw_predictions=media_prediction_payload(),
+        raw_labels=media_truth_labels(),
+        expected_protocol_sha256=D('b'))
+    assert result['status'] == 'SCHEMA_COMPLETE_UNVERIFIED'
+    assert result['per_pair_truth_replay']['pair_count'] == 3
+    assert result['per_pair_truth_replay']['group_count'] == 3
+    assert result['per_pair_truth_replay']['independent_truth_verified'] is False
+    assert result['production_admission'] == 'BLOCKED'
+
+
+def test_c_unchanged_prediction_with_forged_positive_summary_now_rejected():
+    # Old A/B/C validated only the hash and score count. A misleading
+    # positive report could be paired with a media-ignoring prediction,
+    # provided all SHA links were recomputed. Actual truth replay blocks it.
+    raw = media_prediction_payload()
+    raw['pairs'][0]['changed_probabilities'] = [.9, .1]
+    digest = hashlib.sha256(json.dumps(raw, sort_keys=True, separators=(',', ':'),
+                                       allow_nan=False).encode()).hexdigest()
+    report = media_truth_flip_report()
+    report['prediction_sha256'] = digest
+    labels = media_truth_labels()
+    labels['prediction_sha256'] = digest
+    result = paired_media_necessity_audit(
+        report, media_policy(), raw_predictions=raw, raw_labels=labels,
+        expected_protocol_sha256=D('b'))
+    assert result['status'] == 'BLOCKED'
+    assert any('paired-media label/score replay' in x for x in result['issues'])
+
+
+@pytest.mark.parametrize('mutation', [
+    'false_video_reordering', 'duplicate_pair', 'incomplete_truth',
+    'same_truth', 'wrong_truth_observer', 'retention_group_leak',
+    'extra_score_group', 'changed_label', 'invalid_probabilities',
+])
+def test_c_replay_rejects_inconsistent_or_fabricated_media_truth(mutation):
+    raw = media_prediction_payload()
+    labels = media_truth_labels()
+    report = media_truth_flip_report()
+    if mutation == 'false_video_reordering':
+        raw['pairs'][2]['changed_frames'] = [D('9'), D('1')]
+    elif mutation == 'duplicate_pair':
+        raw['pairs'][1]['pair_id'] = 'pair-0'
+    elif mutation == 'incomplete_truth':
+        labels['labels'].pop()
+    elif mutation == 'same_truth':
+        labels['labels'][1]['changed_label'] = 0
+    elif mutation == 'wrong_truth_observer':
+        labels['observer_receipt_sha256'] = D('f')
+    elif mutation == 'retention_group_leak':
+        raw['pairs'][1]['source_group'] = raw['pairs'][0]['source_group']
+        raw['pairs'][1]['split'] = 'retention'
+    elif mutation == 'extra_score_group':
+        report['groups']['holdout/image/something-else'] = dict(
+            report['groups']['holdout/image/media_substitution'])
+    elif mutation == 'changed_label':
+        labels['labels'][1]['original_label'] = 1
+    else:
+        raw['pairs'][0]['original_probabilities'] = [.5, .7]
+    # Rehash manipulated predictions in BOTH locations: a SHA mismatch
+    # alone would mask the more important internal replay failure.
+    digest = hashlib.sha256(json.dumps(raw, sort_keys=True, separators=(',', ':'),
+                                       allow_nan=False).encode()).hexdigest()
+    labels['prediction_sha256'] = digest
+    report['prediction_sha256'] = digest
+    result = paired_media_necessity_audit(
+        report, media_policy(), raw_predictions=raw, raw_labels=labels,
+        expected_protocol_sha256=D('b'))
+    assert result['status'] == 'BLOCKED'
+    assert result['production_admission'] == 'BLOCKED'
