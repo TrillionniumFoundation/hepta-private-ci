@@ -34,8 +34,10 @@ future_1, with 30+ reported source groups in each window by default.
 
 For each candidate, form within-source-group mean differences against no-change
 on **external** future net decision utility. Resample reported source groups with
-replacement and compute one-sided LCB at alpha=0.05/(number of preregistered
-candidates). It is a conservative **exploratory cluster bootstrap**, not a
+replacement separately within future_1 and future_2. Each window must have a
+positive one-sided LCB at alpha=0.05/(2 × number of preregistered candidates),
+and the candidate is ranked by its worse-window LCB. Worst-window old-task
+negative transfer also must pass. It is a conservative **exploratory cluster bootstrap**, not a
 finite-sample proof: independent source identities are not authenticated by this
 reader. The screen also rejects negative transfer, Brier/ECE/OOD/old-task
 regression and any breached p99/RSS/GPU/recovery hard threshold.
