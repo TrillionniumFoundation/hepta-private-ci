@@ -182,3 +182,89 @@ the ModernBERT publisher hashes, bounded dataset, Head weights, sealed
 predictions and paired-review receipt, **never any downloaded base-model
 weights**. A failed provision or execution retains the job log and does
 not synthesize a paired review.
+
+## E2 physical frozen-feature budget sweep (research only)
+
+\`e2_budget_sweep.py\` takes the PREEXISTING physical mmBERT-small public
+\`execution.py\` report and the immutable scoped \`frozen-features\` safetensors.
+It first replays all existing 16 pretrained-study frozen/learned Head
+checkpoints using the existing independent NumPy arithmetic check. It does
+not load an Encoder, download new data or regenerate feature rows.
+
+The experiment preregisters five maximum **per-Cell trainable parameter**
+ceilings: 2,048 / 8,192 / 16,384 / 65,536 / 262,144. It trains a
+**new factorized two-layer tanh Head with no full dense base**, so even
+a 768-dimensional input would permit a 2K-parameter Head. This family
+is deliberately distinct from the earlier linear/Gated/post-Encoder
+Low-rank/sparse-expert controls. For 384d and four target classes,
+the exact formula is \`r*(384+4+1)+4\`; ranks are derived from the
+precommitted ceiling, never selected on held-out results. Actual parameter
+counts are recorded separately from ceilings.
+
+The physical 384d AG News pilot uses the same source-authorized 64 train /
+32 calibration / 32 retrospective holdout cases, 2 logical Cells,
+20 optimizer steps, batch 16, seeds 11/23/47 and an identical
+per-Cell minibatch index stream across all seeds and budgets. Each of
+the 5 × 3 × 2 trials saves both original frozen and learned weights
+(create-only safetensors), sealed probabilities, physical train work and
+parameter counts. Held-out labels are NOT an argument to the optimizer.
+
+\`e2_budget_review.py\` never imports Torch or the training module.
+It independently reloads and checks all 60 real safetensors checkpoints
+and recomputes 1,920 probability vectors on the original frozen features
+(including calibration and publisher holdout), enforcing paired case/Scope,
+fixed shape, exact train-step and minibatch accounting, weights and
+prediction parity. It scores the 32 retrospective publisher holdout
+cases separately. The original pretrained study's trained linear Head
+is a descriptive strong control, **not** the production no-change baseline.
+\`e2_budget_integrity.py\` exercises physical artifact tampering and
+failure/abstention paths, including rehashed altered weights, removed
+predictions, redirected checkpoint paths and invalid authority claims.
+
+A successful execution can measure **learning within this frozen
+Encoder/Head family on one retrospective data distribution only**.
+It cannot establish an optimal universal Head, model capacity superiority,
+statistical independence of data source families, a causal future NDU
+gain, negative-transfer safety, Q24/native deployment, Laya comparison
+or actual target-host 4,096-Cell performance. Outputs explicitly retain
+\`e2_full_selection_qualified=false\` and \`production_accepted=false\`.
+All historical producer records remain byte-for-byte unchanged.
+
+Reproduction with a preexisting physical source:
+\`\`\`sh
+REPORT_SHA=$(sha256sum /real-study/execution/report.json | cut -d' ' -f1)
+python3 -m experiments.shared_stem_cell.e2_budget_sweep \
+  --manifest /real-study/manifest.json --producer /real-study/execution \
+  --report-sha256 "$REPORT_SHA" --output /fresh/e2-budget
+python3 -m experiments.shared_stem_cell.e2_budget_review \
+  --manifest /real-study/manifest.json --producer /real-study/execution \
+  --report-sha256 "$REPORT_SHA" --sweep /fresh/e2-budget \
+  --output /fresh/e2-review.json
+python3 -m experiments.shared_stem_cell.e2_budget_integrity \
+  --manifest /real-study/manifest.json --producer /real-study/execution \
+  --report-sha256 "$REPORT_SHA" --sweep /fresh/e2-budget \
+  --output /fresh/e2-integrity.json
+\`\`\`
+
+## Exact hosted ModernBERT failure and bounded correction
+
+The real E1 public-pretrained job on parent PR #1835, workflow run
+`38525780446`, performed an actual pinned ModernBERT forward and then
+failed in `split_learning.checked_features`: the research-only train-fitted
+centroid router admitted only 512-dimensional FP32 features, while the
+candidate Encoder emitted 768d features. This was a **post-Encoder control
+pipeline incompatibility**, not evidence of task-model inferiority.
+
+This continuation increases ONLY the offline FP32 **training-only routing**
+width to 768, keeping the existing 32 MiB input tensor cap, CPU/finite/
+amplitude checks, two owned centroids, label-free training, 16-iteration
+default bound and immutable inference routing. Tests verify actual
+768-dimensional training and owner-level model flow, and reject 769d inputs
+and cross-width application. It does not change signed Q24 semantics,
+native Neuron `d_z<=512` pilot constraints, persistent checkpoint
+format, NDU acceptance, production weights or Cell routing.
+
+The failed exact-SHA run and failure artifact remain historical evidence.
+Only a new completed hosted job on the corrected SHA can close this
+specific blocker. Do not relabel the old workflow as passed or infer a
+ModernBERT task accuracy before it actually completes.

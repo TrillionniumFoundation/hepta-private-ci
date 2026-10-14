@@ -54,11 +54,31 @@ class SplitLearningTests(unittest.TestCase):
 
     def test_invalid_router_inputs_rejected(self):
         for x in (self.x.double(), self.x[:0], torch.full_like(self.x, float("nan")),
-                  torch.full_like(self.x, 1e10), torch.zeros(2, 513)):
+                  torch.full_like(self.x, 1e10), torch.zeros(2, 769)):
             with self.assertRaises(e.InputError):
                 TrainingPartition.fit(x)
         with self.assertRaises(e.InputError):
             self.partition.assign(torch.ones(2, 3))
+
+    def test_modernbert_768d_offline_routing_does_not_relax_native_profile(self):
+        # Offline FP32 training-only centroid owner may consume 768d features.
+        # It neither emits Q24 native ticks nor authorizes a production model.
+        torch.manual_seed(73)
+        features = torch.randn(16, 768, dtype=torch.float32)
+        snapshot = features.clone()
+        state = torch.get_rng_state().clone()
+        route, cost = TrainingPartition.fit(features)
+        self.assertTrue(torch.equal(state, torch.get_rng_state()))
+        self.assertTrue(torch.equal(snapshot, features))
+        self.assertEqual(route.centers.shape, (2, 768))
+        self.assertEqual(cost["centroid_bytes"], 2 * 768 * 4)
+        self.assertEqual(sum(cost["training_route_counts"]), len(features))
+        self.assertFalse(cost["labels_consumed"])
+        self.assertEqual(route.append_route(features).shape, (16, 769))
+        with self.assertRaises(e.InputError):
+            TrainingPartition.fit(torch.zeros(2, 769, dtype=torch.float32))
+        with self.assertRaises(e.InputError):
+            route.assign(torch.zeros(2, 512, dtype=torch.float32))
 
     def test_unsplit_capacity_preserves_parent_function_and_capped_parameters(self):
         count = e.parameters(self.parent)["parameters"]
@@ -182,6 +202,50 @@ class SplitLearningTests(unittest.TestCase):
             self.assertEqual(Encoder.calls, 1)
             self.assertEqual(saved["split"]["routing"]["train_rows"], 4)
             self.assertIn("inherited_unsplit", report["control_scores"]["split"]["scores"])
+
+
+    def test_public_pilot_768d_routes_through_real_control_pipeline(self):
+        class OfflineEncoder:
+            identity = "b" * 64
+            simulated = True
+            forward_calls = 0
+
+            def __init__(self, *args):
+                pass
+
+            def encode(self, texts):
+                values = torch.zeros(len(texts), 768, dtype=torch.float32)
+                values[:, 0] = torch.tensor([float(t.rsplit("-", 1)[-1]) for t in texts])
+                values[:, 1] = 1.
+                return values
+
+            def close(self):
+                pass
+
+        with tempfile.TemporaryDirectory() as td:
+            root = Path(td)
+            parts = ("train", "train", "train", "train",
+                     "calibration", "calibration", "holdout", "holdout")
+            rows = [{"case_id": str(i), "group": f"case-{i}", "split": split,
+                     "observed_at": None, "cell": i % 2, "scope": "shadow-only",
+                     "text": f"item-{i}", "label": i % 2}
+                    for i, split in enumerate(parts)]
+            raw = b"".join(e.canonical(row) for row in rows)
+            (root / "dataset.jsonl").write_bytes(raw)
+            e.write_once(root / "manifest.json", {
+                "schema": "hepta.shared-stem-execution.v1",
+                "classes": 2, "cells": 2, "steps": 2, "run_controls": True,
+                "split_routing": "train_two_means",
+                "dataset": {"path": "dataset.jsonl", "sha256": e.sha(raw)},
+                "model": {"path": "shadow-only-no-weights"}})
+            with patch.object(e, "LocalEncoder", OfflineEncoder):
+                report = e.run(root / "manifest.json", root / "execution")
+            self.assertTrue(report["controls_executed"])
+            self.assertFalse(report["production_accepted"])
+            routing = e.decode((root / "execution/controls.json").read_bytes())["split"]["routing"]
+            self.assertEqual(routing["centroid_bytes"], 2 * 768 * 4)
+            self.assertEqual(sum(routing["training_route_counts"]), 4)
+            self.assertFalse(routing["labels_consumed"])
 
 
 if __name__ == "__main__":

@@ -10,10 +10,15 @@ from torch import nn
 
 from experiments.shared_stem_cell.execution import Head, InputError, integer, measured, tensor_digest
 
+# Offline FP32 train-only centroid routing, NOT the native Q24 Neuron z<=512 profile.
+# 768 is the largest preregistered E1 candidate hidden width. Allocation remains
+# independently capped to 32 MiB and route centroids to two copies.
+MAX_OFFLINE_ROUTING_WIDTH = 768
+
 
 def checked_features(x, width=None):
     if (not isinstance(x, torch.Tensor) or x.device.type != "cpu" or x.dtype != torch.float32
-            or x.ndim != 2 or not 1 <= len(x) <= 16384 or not 1 <= x.shape[1] <= 512
+            or x.ndim != 2 or not 1 <= len(x) <= 16384 or not 1 <= x.shape[1] <= MAX_OFFLINE_ROUTING_WIDTH
             or x.numel() * x.element_size() > 32 * 1024**2
             or (width is not None and x.shape[1] != width) or not bool(torch.isfinite(x).all())
             or bool((x.abs() > 1e6).any())):
