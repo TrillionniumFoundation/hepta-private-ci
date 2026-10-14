@@ -47,14 +47,22 @@ pub fn parse_skill_frontmatter_metadata(
 ) -> Result<ParsedSkillFrontmatter, SkillParseError> {
     let frontmatter = extract_frontmatter(contents).ok_or(SkillParseError::MissingFrontmatter)?;
 
-    let parsed: SkillFrontmatter = match serde_saphyr::from_str(&frontmatter) {
+    // Explicit application tags must never be silently coerced into trusted skill metadata.
+    let parsed: SkillFrontmatter = match serde_saphyr::from_str_with_options(
+        &frontmatter,
+        serde_saphyr::options! { reject_unsupported_tags: true },
+    ) {
         Ok(parsed) => Ok(parsed),
         Err(original_error) => match repair_frontmatter_scalar_fields(&frontmatter) {
             // Some third-party skills use prose like `description: Build for AWS: ECS`
             // or `argument-hint: <duration: e.g. 7d>`. Keep the repair line-oriented
             // so unrelated invalid YAML still surfaces.
             Some(repaired_frontmatter) => {
-                serde_saphyr::from_str(&repaired_frontmatter).map_err(|_| original_error)
+                serde_saphyr::from_str_with_options(
+                    &repaired_frontmatter,
+                    serde_saphyr::options! { reject_unsupported_tags: true },
+                )
+                .map_err(|_| original_error)
             }
             None => Err(original_error),
         },

@@ -268,7 +268,10 @@ pub fn load_environment_skills_from_discovery(
             .metadata
             .as_ref()
             .and_then(|metadata| {
-                serde_saphyr::from_str::<SkillMetadataFile>(&metadata.contents)
+                serde_saphyr::from_str_with_options::<SkillMetadataFile>(
+                    &metadata.contents,
+                    serde_saphyr::options! { reject_unsupported_tags: true },
+                )
                     .map_err(|error| {
                         tracing::warn!(
                             path = %metadata.path,
@@ -378,7 +381,10 @@ async fn read_skill_metadata(
             return (None, None);
         }
     };
-    let parsed: SkillMetadataFile = match serde_saphyr::from_str(&contents) {
+    let parsed: SkillMetadataFile = match serde_saphyr::from_str_with_options(
+        &contents,
+        serde_saphyr::options! { reject_unsupported_tags: true },
+    ) {
         Ok(parsed) => parsed,
         Err(error) => {
             tracing::warn!("ignoring {metadata_path}: invalid metadata: {error}");

@@ -117,3 +117,19 @@ fn preserves_overlong_descriptions_and_short_descriptions() {
         }
     );
 }
+
+#[test]
+fn rejects_unsupported_yaml_tags_in_skill_frontmatter() {
+    for source in [
+        "---\nname: !secret delegated\ndescription: Review\n---\n",
+        "---\nname: reviewer\ndescription: !secret instructions\n---\n",
+        "---\nname: reviewer\ndescription: Review\nmetadata:\n  short-description: !secret hidden\n---\n",
+    ] {
+        let error = parse_skill_frontmatter_metadata(source, || "fallback".to_string())
+            .expect_err("custom YAML tags must not become trusted skill metadata");
+        assert!(
+            matches!(error, super::SkillParseError::InvalidYaml(_)),
+            "{source}"
+        );
+    }
+}
