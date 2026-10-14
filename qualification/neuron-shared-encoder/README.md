@@ -247,3 +247,172 @@ future labels; independent NDU Evaluator/Selector; real signed
 Artifact CAS + Final-use + generation fences; true physical batch;
 64/256/1024/4096 Cell target-host CPU/RSS/GPU/WAL/restart receipts.
 Keep this PR Draft/shadow until every independent owner gate passes.
+
+### E2-V4 — matched actual parameter-count nonlinear ablation
+
+The isolated `strict_e2.py` runner compares `dynamic_gate` (sigmoid
+input-dependent gate, SiLU drive) with `swiglu`. They share the exact same
+linear tensor geometry, actual trainable parameter count, tensor
+initialization, CPU sample order and train-only feature normalization.
+The upper budgets 2K/16K/64K/262K remain ceilings, **not** arbitrary claims
+that different Head architectures have identical parameter counts.
+
+From this qualification directory after generating a synthetic dataset
+with `experiment synth-data`:
+
+```bash
+DATA_SHA="$(sha256sum smoke_dataset.jsonl | cut -d' ' -f1)"
+python -m neuron_shared_encoder.strict_e2 \
+  --allow-synthetic --dataset smoke_dataset.jsonl \
+  --dataset-sha256 "$DATA_SHA" --output e2_equal_shadow.json \
+  --dimension 128 --budget 16384 --steps 32 --seeds 11 29 47
+python -m pytest -q tests/test_strict_e2.py
+```
+
+Actual offline Encoder runs require local, complete pinned checkpoint files
+and exact `--weights-sha256` plus `--bundle-sha256`; they do not fetch
+models from the network or fall back to synthetic features. A frozen
+`frozen_projection` is deterministic but **random and untrained** whenever
+the real Encoder hidden width differs from the requested Head width.
+Such an experiment must not be read as quality-equivalent to a learned
+projection or to full Laya.
+
+The **descriptive** comparison uses paired validation Brier differences
+across source groups and training seeds. It returns INCONCLUSIVE if the
+95% grouped-and-seed Bootstrap interval crosses zero, or when fewer
+than eight independent validation groups or three seeds are present.
+This is an exploratory interval, not confirmatory inference or NDU.
+Future data are only reported post hoc and never used to choose the
+descriptive winner. Tests check that changing future labels leaves the
+validation-only judgment and training sample schedule unchanged.
+The JSON has `production_admission=BLOCKED`, `ndu_verified=false` and
+`selection_authorized=false`; no signature, causal prequential commit,
+Final-use or live Encoder physical-call proof is conferred by its hashes.
+
+### Fixed Gate folding: real algebra vs Rust Q24 rounding
+
+For the existing Rust reference driver, folding a fixed gate is exact in
+real-valued algebra but **not necessarily bit-identical** in Q24.
+The original computes `round(weight * round(feature * gate))`; a
+folded implementation computes `round(round(weight * gate) * feature)`.
+Their rounding orders differ. The non-authorizing regression
+`q24_fold_ablation.py` duplicates the published Rust
+round-to-nearest/ties-to-even convention and proves one deterministic
+counterexample: original -2,980,555 versus folded -2,980,556 Q24 units
+(one least-significant bit difference).
+
+`python -m pytest -q tests/test_q24_fold_ablation.py` verifies identity
+gates, signed ties-to-even, type/dimension/range fail-closed behavior and
+the explicit one-LSB witness. A Python arithmetic model cannot replace
+an actual native Rust test against the real Worker, signed artifacts,
+generation fences or a target-host quantized end-to-end run.
+
+### E1/E2/E3 module-forward accounting — V6 research diagnostic
+
+`encoder_meter.py` scopes synchronous PyTorch pre/post hooks around the
+*actual top-level Encoder module*, separately from the experimental adapter
+invocation counter. E1, offline E2 and real E3 record completed forward calls,
+attempts, forwarded rows and **padded token slots** (shape-only, avoiding
+GPU synchronizations). E3 records this independently for joint input and
+public-input runs. A row-count or forward-count discrepancy fails closed.
+Synthetic-hash trials explicitly return a null model-forward observation.
+
+This is NOT a GPU kernel trace, active token count, throughput/RSS receipt,
+signature, source entitlement, true Rust Worker sharing or independent
+NDU evidence. The observer does not keep raw input or attention masks;
+it runs only in synchronous, offline qualification. Model calls that bypass
+the top-level module's `__call__` and asynchronous accelerator failures are
+outside this observer and require a separately verified backend profiler.
+All outputs retain `production_admission=BLOCKED`.
+
+Run isolated regression tests:
+
+```bash
+python -m pytest -q tests/test_encoder_meter.py tests/test_strict_e2.py
+```
+
+A synthetic Torch test deliberately performs multiple model forwards within
+one adapter call to ensure the reported counters cannot be conflated. Another
+injects an exception after a first successful forward and verifies the
+attempt/completion mismatch plus hook cleanup. A CPU floating-point
+reproducibility comparison tolerates numerical error up to 1e-6 while
+preserving exact model count, optimizer bytes and sample-draw identities.
+
+## E4 prequential hash-chain shadow audit
+
+The optional `e4-future --prequential-event-log ... --prequential-event-log-sha256 ...`
+mode checks a *separately supplied, SHA256-pinned* JSON event log before
+reporting future-window Brier statistics. It does not replace the original
+frozen no-change and candidate probability snapshots or existing safety gates.
+
+The log has `dataset_sha256`, `cell_scope = [principal, organ_id, cell_id]`,
+and `events`. Each canonical event contains its zero-indexed `seq`,
+`previous_digest` (64 zeros for genesis), `event_digest`,
+`dataset_sha256`, `cell_scope`, `row_id`, `source_group`,
+`input_digest` (pre-outcome row question/options/state fingerprint),
+`generation`, `authority_epoch`, `recorded_at` (timezone-aware) and
+`kind`. Forecast events additionally contain `role` (either
+`frozen_no_change` or `candidate`), exact `artifact_digest`, and the
+matching probability row. Outcome events instead contain the observed integer
+`label`. The hash is SHA256 of the fixed domain separator followed by
+canonical JSON of the event excluding its own `event_digest`; see
+`neuron_shared_encoder.prequential_receipts.event_digest` for the exact
+algorithm and `input_digest` for the full pre-outcome input identity.
+
+The audit requires two distinct forecasts for each future row *before* its
+outcome, checks source/Cell/model/epoch and row-specific option semantics,
+requires nondecreasing claimed append timestamps, and rejects digest-chain
+tampering or forecast/snapshot mismatches. Passing returns only
+`HASH_CHAIN_CONSISTENT_UNVERIFIED`: anyone can rebuild the unsigned chain,
+forge timestamps, or backfill after seeing future labels. No causal learning,
+NDU verification, trusted witness, production Final-use or Cell promotion is
+ever granted. The true independent Evaluator must consume owner-signed
+pre-outcome writes and verified later outcomes.
+
+
+## E4 detached forecast signature probe (V8, non-authorizing)
+
+An **optional** companion to the E4 prequential event chain verifies
+per-future-row **Ed25519 signatures** over the two pre-outcome forecast events.
+It verifies cryptographic integrity relative to an externally supplied **32-byte
+raw Ed25519 public key**, not the identity or trustworthiness of its holder.
+This runs in shadow qualification only and needs \`cryptography==46.0.4\`.
+Never embed a private signing key in the dataset, repository or test artifacts.
+
+When calling \`e4-future\`, keep all existing pinned dataset, frozen no-change,
+candidate snapshot and prequential event-log arguments, and additionally pass:
+
+- \`--detached-witnesses <witness.json>\`
+- \`--detached-witnesses-sha256 <sha256 of witness.json>\`
+- \`--detached-witness-public-key <separately staged raw 32-byte public-key file>\`
+- \`--detached-witness-public-key-sha256 <sha256 of raw public-key bytes>\`
+
+All four flags are mandatory together, and an E4 event log is mandatory.
+The key file must be a real, non-symlink, 32-byte file. Its SHA256 is an
+integrity pin, **not** proof of who controls the key.
+
+The JSON witness bundle has schema \`hepta.neuron.forecast-witness.v1\` and
+exactly one receipt per future row. Each receipt binds the dataset SHA,
+principal/organ/Cell scope, source group, full pre-outcome input digest,
+generation, authority epoch, two forecast sequence numbers and event digests,
+the purported witness time, and SHA256 of the out-of-band public key.
+The signature is \`signature_ed25519_hex\` (64 raw signature bytes in lower-case
+hex). The signed message is the ASCII domain separator
+\`hepta.neuron.forecast-witness.v1\\x00\` followed by UTF-8, sorted-key,
+compact JSON (without the signature field, with no NaN). See
+\`forecast_witness_v1.canonical_witness_message\` for exact bytes.
+Extra fields, in-band self-proclaimed authorization flags, missing/duplicate
+receipts, replay to another row or chain, and wrong-key signatures fail closed.
+
+Even a valid signature can have a *backdated* timestamp if the key holder
+signs an untrue statement. Consequently a passing probe returns
+\`SIGNATURES_VALID_CLOCK_AND_ISSUER_UNVERIFIED\`, plus explicit false flags
+for independent signer authority, independent timestamp and causal learning.
+The E4 Selector remains \`NOT_AUTHORIZED\` and production remains
+\`BLOCKED\`. Genuine deployment requires independently reviewed key registry,
+protected clock/append owner, live source rights, revoked-key checks, signed
+pre-outcome proofs, independent NDU Evaluator, and final-use authorization.
+
+The adversarial offline test includes a **disposable, deterministic test key**
+solely for reproducibility. It is not an authority key and must never be used
+for production signatures.

@@ -349,7 +349,10 @@ def prequential_order_audit(rows: list[dict], frozen_no_change: dict,
 
 def evaluate_shadow(rows: list[dict], dataset_digest: str,
                     frozen_no_change: dict, candidate: dict, *,
-                    bootstrap_repeats: int = 500, seed: int = 42) -> dict:
+                    bootstrap_repeats: int = 500, seed: int = 42,
+                    prequential_event_log: dict | None = None,
+                    detached_forecast_witnesses: dict | None = None,
+                    detached_witness_public_key: bytes | None = None) -> dict:
     """E4: future grouped bootstrap against a file-frozen no-change prediction set.
 
     Statistical evidence alone does not establish independent NDU or permit a
@@ -392,12 +395,35 @@ def evaluate_shadow(rows: list[dict], dataset_digest: str,
     # Retrospective statistics alone cannot certify precommitted predictions.
     strong_signal = len(future_groups) >= 30 and lower > 0 and negative == 0
     ordering = prequential_order_audit(rows, frozen_no_change, candidate)
+    if prequential_event_log is None:
+        event_chain = {'status': 'NOT_PROVIDED',
+                       'independent_timestamp_witness_verified': False,
+                       'production_admission': 'BLOCKED'}
+    else:
+        from .prequential_receipts import prequential_chain_audit
+        event_chain = prequential_chain_audit(
+            rows, dataset_digest, frozen_no_change, candidate, prequential_event_log)
+    if (detached_forecast_witnesses is None) != (detached_witness_public_key is None):
+        raise ValueError('E4 witness bundle and separately pinned key must be supplied together')
+    if detached_forecast_witnesses is None:
+        signature_probe = {'status': 'NOT_PROVIDED',
+                           'independent_timestamp_witness_verified': False,
+                           'production_admission': 'BLOCKED'}
+    else:
+        if prequential_event_log is None:
+            raise ValueError('E4 detached signatures require a pinned prequential event log')
+        from .forecast_witness_v1 import verify_forecast_witnesses
+        signature_probe = verify_forecast_witnesses(
+            rows, dataset_digest, frozen_no_change, candidate, prequential_event_log,
+            detached_forecast_witnesses, detached_witness_public_key)
     return {'experiment': 'E4', 'production_admission': 'BLOCKED',
             'independent_evaluator_verified': False, 'ndu_receipt_verified': False,
             'selection': 'NOT_AUTHORIZED',
             'shadow_signal': ('RETROSPECTIVE_POSITIVE_UNVERIFIED' if strong_signal else 'INCONCLUSIVE_OR_NEGATIVE'),
             'causal_learning_verified': False,
             'prequential_order_audit': ordering,
+            'prequential_event_chain_audit': event_chain,
+            'detached_forecast_witness_probe': signature_probe,
             'baseline_artifact_digest': frozen_no_change['artifact_digest'],
             'candidate_artifact_digest': candidate['artifact_digest'],
             'future_groups': len(future_groups), 'negative_transfer_group_count': negative,
@@ -479,13 +505,21 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
         if not tokenizer_file.is_file() or sha256_file(tokenizer_file) != entry['tokenizer_sha256']:
             raise ValueError(f'E1 tokenizer file digest mismatch: {kind}')
     from .models import OfflineEncoder, frozen_projection
+    from .encoder_meter import EncoderModuleForwardMeter
     for kind in ENCODERS:
         entry = matrix['encoders'][kind]
         backend = OfflineEncoder(kind, entry['local_path'], entry['weights_sha256'],
                                  max_length=max_length,
                                  expected_bundle_sha256=entry['bundle_sha256'])
         start = time.perf_counter()
-        features = backend.encode(rows, batch=spec['batch'])
+        with EncoderModuleForwardMeter(backend.model) as meter:
+            features = backend.encode(rows, batch=spec['batch'])
+        module_forwards = meter.receipt()
+        if (module_forwards['module_forward_failures_or_incomplete']
+                or module_forwards['rows_completed'] != len(rows)
+                or module_forwards['module_forward_completions']
+                != math.ceil(len(rows) / spec['batch'])):
+            raise ValueError('E1 incomplete real module forward accounting')
         encoder_seconds = time.perf_counter() - start
         features = frozen_projection(features.float().cpu(), dimension, int(spec['seed']))
         mu, std = features[masks['train']].mean(0), features[masks['train']].std(0).clamp_min(1e-4)
@@ -498,6 +532,7 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
                   'tokenizer_sha256_claimed': entry['tokenizer_sha256'],
                   'hidden_size': backend.dimension, 'projected_width': dimension,
                   'input_rows': len(rows), 'encoder_seconds': encoder_seconds,
+                  'model_forward_observation': module_forwards,
                   'trained_head_matrix': trained,
                   'normalized_from': 'train_only',
                   'joint_format': 'laya-native-markers' if kind == 'laya-joint'
@@ -594,6 +629,12 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument('--baseline-sha256', default='')
     parser.add_argument('--candidate', default='')
     parser.add_argument('--candidate-sha256', default='')
+    parser.add_argument('--prequential-event-log', default='')
+    parser.add_argument('--prequential-event-log-sha256', default='')
+    parser.add_argument('--detached-witnesses', default='')
+    parser.add_argument('--detached-witnesses-sha256', default='')
+    parser.add_argument('--detached-witness-public-key', default='')
+    parser.add_argument('--detached-witness-public-key-sha256', default='')
     parser.add_argument('--encoder', choices=('synthetic-hash',) + ENCODERS, default='synthetic-hash')
     parser.add_argument('--allow-synthetic', action='store_true')
     parser.add_argument('--checkpoint-dir', default='')
@@ -635,7 +676,35 @@ def main() -> None:
         elif args.command == 'e4-future':
             baseline = _read_pinned_json(args.baseline, args.baseline_sha256)
             candidate = _read_pinned_json(args.candidate, args.candidate_sha256)
-            result = evaluate_shadow(rows, data['dataset_sha256'], baseline, candidate, seed=args.seed)
+            if bool(args.prequential_event_log) != bool(args.prequential_event_log_sha256):
+                raise ValueError('E4 event-chain file and SHA256 must be supplied together')
+            chain = (_read_pinned_json(args.prequential_event_log, args.prequential_event_log_sha256)
+                     if args.prequential_event_log else None)
+            witness_flags = (args.detached_witnesses, args.detached_witnesses_sha256,
+                             args.detached_witness_public_key,
+                             args.detached_witness_public_key_sha256)
+            if any(witness_flags) and not all(witness_flags):
+                raise ValueError('E4 detached witness bundle/key and both SHA256 pins are required')
+            witness_bundle = None
+            public_key = None
+            if all(witness_flags):
+                if chain is None:
+                    raise ValueError('E4 detached witness requires pinned event chain')
+                witness_bundle = _read_pinned_json(
+                    args.detached_witnesses, args.detached_witnesses_sha256)
+                key_path = Path(args.detached_witness_public_key)
+                if key_path.is_symlink() or not key_path.is_file() or key_path.stat().st_size != 32:
+                    raise ValueError('E4 detached witness requires a 32-byte regular public key')
+                public_key = key_path.read_bytes()
+                if (not is_digest(args.detached_witness_public_key_sha256)
+                        or hashlib.sha256(public_key).hexdigest()
+                           != args.detached_witness_public_key_sha256):
+                    raise ValueError('E4 detached witness public key SHA256 mismatch')
+            result = evaluate_shadow(
+                rows, data['dataset_sha256'], baseline, candidate, seed=args.seed,
+                prequential_event_log=chain,
+                detached_forecast_witnesses=witness_bundle,
+                detached_witness_public_key=public_key)
             result['snapshot_file_sha256'] = {'baseline': args.baseline_sha256,
                                               'candidate': args.candidate_sha256}
         else:
@@ -658,15 +727,37 @@ def main() -> None:
                 norm = args.normalizer_sha256 or digest_bytes(b'joint-format-v3')
                 if args.encoder != 'synthetic-hash' and (not is_digest(args.tokenizer_sha256) or not is_digest(args.normalizer_sha256)):
                     raise ValueError('real reuse requires pinned tokenizer and normalizer digests')
-                _j, joint = reuse_trial(rows, encode, encoder_digest=encoder_digest,
-                                        tokenizer_digest=tok, normalizer_digest=norm,
-                                        mode='joint', batch_size=args.batch,
-                                        generation=args.generation, authority_epoch=args.authority_epoch)
-                _p, public = reuse_trial(rows, encode, encoder_digest=encoder_digest,
-                                         tokenizer_digest=tok, normalizer_digest=norm,
-                                         mode='public', batch_size=args.batch,
-                                         generation=args.generation, authority_epoch=args.authority_epoch,
-                                         research_synthetic_cross_source=(args.encoder == 'synthetic-hash' and args.allow_synthetic))
+                from contextlib import nullcontext
+                from .encoder_meter import EncoderModuleForwardMeter
+
+                def metered_reuse(mode: str, **extra):
+                    # Synthetic adapter calls are counted in reuse_trial but
+                    # are NOT actual Transformer module forwards.
+                    meter_context = (EncoderModuleForwardMeter(backend.model)
+                                     if args.encoder != 'synthetic-hash' else nullcontext())
+                    with meter_context as actual_meter:
+                        features, report = reuse_trial(
+                            rows, encode, encoder_digest=encoder_digest,
+                            tokenizer_digest=tok, normalizer_digest=norm,
+                            mode=mode, batch_size=args.batch,
+                            generation=args.generation,
+                            authority_epoch=args.authority_epoch, **extra)
+                    if actual_meter is None:
+                        report['model_forward_observation'] = None
+                    else:
+                        measured = actual_meter.receipt()
+                        if (measured['module_forward_failures_or_incomplete']
+                                or measured['module_forward_completions'] != report['encoder_forward_invocations']
+                                or measured['rows_completed'] != report['encoder_forward_rows']):
+                            raise ValueError('E3 real model forwards differ from adapter accounting')
+                        report['model_forward_observation'] = measured
+                    report['model_forward_attestation_verified'] = False
+                    return features, report
+
+                _j, joint = metered_reuse('joint')
+                _p, public = metered_reuse(
+                    'public', research_synthetic_cross_source=(
+                        args.encoder == 'synthetic-hash' and args.allow_synthetic))
                 from .models import frozen_projection
                 if args.dimension < 4 or args.dimension > 512:
                     raise ValueError('E3 requires a bounded projected dimension 4..512')

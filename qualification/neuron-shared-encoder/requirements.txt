@@ -1,4 +1,6 @@
 # Install a platform-appropriate torch wheel separately (CPU/CUDA/MPS)
 torch>=2.0
 pytest>=8
+# Isolated shadow Ed25519 witness verification; no production signing authority.
+cryptography==46.0.4
 # Real Laya requires its own pinned package and compatible transformers release.

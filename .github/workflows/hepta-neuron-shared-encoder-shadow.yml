@@ -39,7 +39,7 @@ jobs:
           set -euo pipefail
           python3 -m venv "$RUNNER_TEMP/neuron-shadow-venv"
           "$RUNNER_TEMP/neuron-shadow-venv/bin/python" -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
-          "$RUNNER_TEMP/neuron-shadow-venv/bin/python" -m pip install --disable-pip-version-check 'pytest==9.0.2'
+          "$RUNNER_TEMP/neuron-shadow-venv/bin/python" -m pip install --disable-pip-version-check 'pytest==9.0.2' 'cryptography==46.0.4'
           echo "$RUNNER_TEMP/neuron-shadow-venv/bin" >> "$GITHUB_PATH"
 
       - name: Run fail-closed regression tests
@@ -78,6 +78,7 @@ jobs:
           set -euo pipefail
           DATA_SHA="$(sha256sum smoke_dataset.jsonl | cut -d' ' -f1)"
           python3 -m neuron_shared_encoder.validation_v3 e2-heads --allow-synthetic --dataset smoke_dataset.jsonl --dataset-sha256 "$DATA_SHA" --output e2_dynamic_heads.json --steps 2 --budgets 2048 16384
+          python3 -m neuron_shared_encoder.strict_e2 --allow-synthetic --dataset smoke_dataset.jsonl --dataset-sha256 "$DATA_SHA" --output e2_equal_shadow.json --dimension 128 --budget 16384 --steps 2 --seeds 7 19
           python3 -m neuron_shared_encoder.validation_v3 e3-reuse --allow-synthetic --dataset smoke_dataset.jsonl --dataset-sha256 "$DATA_SHA" --output e3_input_reuse.json --batch 32 --steps 2 --budgets 2048 16384
           echo '{}' > absent_host_and_model_receipts.json
           INPUT_SHA="$(sha256sum absent_host_and_model_receipts.json | cut -d' ' -f1)"
@@ -87,19 +88,30 @@ jobs:
           import json
           e1 = json.load(open('e1_missing_real_models.json'))
           e2 = json.load(open('e2_dynamic_heads.json'))
+          e2_equal = json.load(open('e2_equal_shadow.json'))
           e3 = json.load(open('e3_input_reuse.json'))
           e5 = json.load(open('e5_missing_host_receipts.json'))
           assert e1['status'] == 'BLOCKED' and not e1['real_encoder_runs_completed']
           assert e2['production_admission'] == 'BLOCKED'
           assert e2['evidence_class'] == 'SYNTHETIC_SMOKE'
+          assert e2_equal['production_admission'] == 'BLOCKED'
+          assert e2_equal['evidence_class'] == 'SYNTHETIC_SMOKE'
+          assert e2_equal['future_used_to_select_winner'] is False
+          assert e2_equal['encoder_model_forward_observation'] is None
+          assert len(e2_equal['runs']) == 2
+          assert all(row['candidates']['dynamic_gate']['parameter_count'] == row['candidates']['swiglu']['parameter_count'] for row in e2_equal['runs'])
           assert {'static_gate', 'dynamic_gate'} <= {x['kind'] for x in e2['candidates']}
           assert all(x['production_admission'] == 'BLOCKED' for x in (e2, e3, e5))
           assert e3['public']['encoder_forward_rows'] < e3['joint']['encoder_forward_rows']
           assert 'quality_shadow' in e3 and e3['state_adapter'] == 'SYNTHETIC_HASH_NOT_DEPLOYABLE'
           assert e3['public_vs_joint_quality_not_established']
+          assert e3['joint']['model_forward_observation'] is None
+          assert e3['public']['model_forward_observation'] is None
+          assert not e3['joint']['model_forward_attestation_verified']
+          assert not e3['public']['model_forward_attestation_verified']
           assert e5['schema_status'] == 'BLOCKED'
           PY
-          sha256sum e1_missing_real_models.json e2_dynamic_heads.json e3_input_reuse.json e5_missing_host_receipts.json >> result_hashes.txt
+          sha256sum e1_missing_real_models.json e2_dynamic_heads.json e2_equal_shadow.json e3_input_reuse.json e5_missing_host_receipts.json >> result_hashes.txt
 
       - name: Enforce pinned Prettier YAML formatting (show diff on failure)
         shell: bash
@@ -123,6 +135,7 @@ jobs:
             qualification/neuron-shared-encoder/result_hashes.txt
             qualification/neuron-shared-encoder/e1_missing_real_models.json
             qualification/neuron-shared-encoder/e2_dynamic_heads.json
+            qualification/neuron-shared-encoder/e2_equal_shadow.json
             qualification/neuron-shared-encoder/e3_input_reuse.json
             qualification/neuron-shared-encoder/e5_missing_host_receipts.json
           if-no-files-found: warn
