@@ -219,6 +219,7 @@ fn plan() -> CellSplitExecutionPlanV1 {
 struct CapturedPhaseMetrics {
     events: Mutex<Vec<PhaseMetricEventV1>>,
     refuse_records: AtomicBool,
+    unhealthy: AtomicBool,
 }
 
 impl PhaseMetricSinkV1 for CapturedPhaseMetrics {
@@ -231,7 +232,7 @@ impl PhaseMetricSinkV1 for CapturedPhaseMetrics {
     }
 
     fn healthy(&self) -> bool {
-        true
+        !self.unhealthy.load(Ordering::Acquire)
     }
 
     fn flush(&self) -> Result<(), PhaseMetricSinkErrorV1> {
@@ -314,6 +315,84 @@ fn failed_telemetry_cannot_replay_effect_or_hide_pending_owner_reconciliation() 
         ))
     ));
     assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
+fn unhealthy_telemetry_before_admission_never_prepares_or_dispatches_an_effect() {
+    let root = private_tempdir();
+    let observed = Rc::new(RefCell::new(Observed::default()));
+    let metrics = Arc::new(CapturedPhaseMetrics::default());
+    metrics.unhealthy.store(true, Ordering::Release);
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(observed.clone()),
+    )
+    .expect("single split owner")
+    .with_metric_sink(metrics.clone());
+
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "cell split telemetry unavailable for new effects"
+        ))
+    ));
+    assert!(owner.metrics_poisoned);
+    assert_eq!(owner.completed_steps(), 0);
+    assert_eq!(observed.borrow().executions, 0);
+    assert!(!root.path().join("cell-split-00-prepared.json").exists());
+    assert!(metrics.events.lock().expect("telemetry").is_empty());
+
+    // An observed loss must not be erased by a later optimistic healthy flag.
+    metrics.unhealthy.store(false, Ordering::Release);
+    assert!(owner.advance().is_err());
+    assert_eq!(observed.borrow().executions, 0);
+}
+
+#[test]
+fn telemetry_withdrawal_during_final_selector_admission_blocks_new_intent() {
+    let root = private_tempdir();
+    let observed = Rc::new(RefCell::new(Observed::default()));
+    let metrics = Arc::new(CapturedPhaseMetrics::default());
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(observed.clone()),
+    )
+    .expect("single split owner")
+    .with_metric_sink(metrics.clone());
+
+    let mut admission_reads = 0_usize;
+    let result = owner.advance_with_admission(|| {
+        admission_reads += 1;
+        if admission_reads == 2 {
+            // The sink was healthy during the first preflight but failed
+            // during the last potentially slow Selector/NDU callback.
+            metrics.unhealthy.store(true, Ordering::Release);
+        }
+        Ok(())
+    });
+    assert!(matches!(
+        result,
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "cell split telemetry unavailable for new effects"
+        ))
+    ));
+    assert_eq!(admission_reads, 2);
+    assert!(owner.metrics_poisoned);
+    assert_eq!(owner.completed_steps(), 0);
+    assert_eq!(observed.borrow().executions, 0);
+    assert!(!root.path().join("cell-split-00-prepared.json").exists());
+    assert!(!root.path().join("cell-split-00-committed.json").exists());
+    assert!(metrics.events.lock().expect("telemetry").is_empty());
+
+    // The current owner must keep refusing, even if an untrusted sink claims
+    // recovery. Restart qualification is still an independent host concern.
+    metrics.unhealthy.store(false, Ordering::Release);
+    assert!(owner.advance().is_err());
+    assert_eq!(observed.borrow().executions, 0);
 }
 
 #[test]
