@@ -136,6 +136,12 @@ def audit(path, expected_zip_sha256=None):
                 "source hash not bound to recorded original bytes: " + key)
     require(confirmation.get("candidate_lock_sha256") ==
             digest(raw["candidate-lock.json"]) and
+            confirmation.get("predictions_sha256") ==
+            digest(raw["predictions.json"]) and
+            confirmation.get("proposed") == lock.get("selected") and
+            confirmation.get("chosen") == report.get("chosen") and
+            confirmation.get("new_model_selected_on_confirmation") is False and
+            confirmation.get("production_accepted") is False and
             report.get("schema") == "hepta.fresh-confirmation-executed.v1" and
             report.get("cohort_sha256") == predictions.get("cohort_sha256") and
             report.get("proposed") == lock.get("selected") ==
