@@ -46,3 +46,9 @@ Local Python/Torch CPU: `test_e2_feature_residual_study.py` **11/11** passed; `t
 Incomplete acceptance: independent future1/2/3 outcome labels, language/code source families, a real production no-change baseline, Reader four-condition qualification, OOD, target hardware p99/RSS/energy, independent model origin, security blocking-ci and signed Worker/FinalUse/WAL/CAS. These cannot be substituted by this English-only retrospective panel.
 
 **Every experiment remains `production_promotion_permitted=false` and `authority=DENY_ALL`.**
+
+## Physical sharing correction (2026-10-14)
+
+The first implementation accidentally made a separate deep copy of the frozen base linear Head inside each E2 residual arm. This would have made memory-advantage claims too optimistic. The corrected `FeatureGatedResidual` now refers to the **same frozen base module and weight tensor** for residual_2k, residual_8k and residual_16k during the single E2 study. It checks PyTorch `data_ptr()` identity before training and verifies the base tensor digest remains unchanged afterward. The independent reviewer requires the corresponding storage-sharing claim. The per-arm trainable parameter ceilings still apply only to genuinely updated residual weights; the shared frozen base is charged separately. This proves only same-process research tensor sharing, **not native multi-Worker zero-copy or actual 4,096 Cell storage**.
+
+The corrected E2 module and reviewer Git blobs were both executed locally with pinned CPU Torch. Full selected E1/E2/E3/E4 local contract suite: 107/107 passing; the hosted exact-HEAD full pipeline and global blocking-ci remain mandatory.
