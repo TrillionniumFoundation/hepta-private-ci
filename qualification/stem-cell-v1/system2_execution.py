@@ -51,7 +51,7 @@ def _text(text):
 def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
                   continue_values: Callable, value_profile: str,
                   max_rounds: int = 8, max_calls: int = 24,
-                  ndu_policy=None, meter=None, clock=time.time_ns):
+                  ndu_policy=None, meter=None, clock=time.time_ns, paired_start=None):
     """Actually call proposer/verifier, then revise using returned feedback.
 
     continue_values(task, candidate, feedback, rounds_left) returns
@@ -69,7 +69,17 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
     """
     task.validate()
     policy = copy.deepcopy(ndu_policy)
-    task = copy.deepcopy(task) if policy is not None else task
+    if policy is not None and paired_start is not None:
+        raise ValueError("paired collection cannot be selected by an NDU critic")
+    if paired_start is not None:
+        from paired_capture import PairedStart
+        if type(paired_start) is not PairedStart:
+            raise ValueError("typed registered pair start required")
+        paired_start = copy.deepcopy(paired_start)
+        paired_start.validate(task, meter, max_rounds, max_calls, value_profile, continue_values)
+    bounded = policy is not None or paired_start is not None
+    expiry = policy["expires_at_ns"] if policy is not None else (paired_start.expires_at_ns if paired_start else None)
+    task = copy.deepcopy(task) if bounded else task
     fixed_task_id = _digest(asdict(task))
     if policy is not None:
         from ndu_continuation import validate_policy, PROFILE
@@ -83,7 +93,7 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
         now = clock()
         if type(now) is not int or not task.as_of_ns <= now < policy["expires_at_ns"]:
             raise ValueError("reasoning policy is not valid at the current task boundary")
-    elif meter is not None:
+    elif meter is not None and paired_start is None:
         raise ValueError("metered reasoning requires a bound NDU policy")
     _text(value_profile)
     if type(max_rounds) is not int or not 1 <= max_rounds <= 64:
@@ -96,6 +106,8 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
             raise ValueError("empirical policy requires the fitted frozen critic adapter")
         continue_values.validate_binding(policy, propose, verify)
     trace, candidate, feedback, calls = [], None, None, 0
+    if paired_start is not None:
+        candidate, feedback = paired_start.candidate, paired_start.feedback
     decisions, pending_context, segment_start = [], None, None
     scope = meter.scope if meter is not None else lambda *args: contextlib.nullcontext()
     started = time.perf_counter_ns()
@@ -117,6 +129,10 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
                           full_cost_qualification=False)
         if policy is not None and policy.get("empirical_protocol_id") is not None:
             result["empirical_critic"] = continue_values.receipt()
+        if paired_start is not None:
+            result.update(schema="hepta.stem.paired-segment-execution.v1", capture_id=paired_start.capture_id,
+                          task_sha256=fixed_task_id, work_observation=meter.report(),
+                          full_cost_qualification=False, utility_labels_loaded=False)
         return result
 
     def invoke(kind, function, *args):
@@ -128,12 +144,12 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
         try:
             component = {"propose": "proposer", "verify": "verifier", "value": "value"}[kind]
             with scope("search", component):
-                if policy is not None:
+                if bounded:
                     boundary = clock()
-                    if type(boundary) is not int or not task.as_of_ns <= boundary < policy["expires_at_ns"]:
+                    if type(boundary) is not int or not task.as_of_ns <= boundary < expiry:
                         raise ValueError("reasoning policy expired before callback")
                 result = function(*args)
-                if policy is not None and _digest(asdict(task)) != fixed_task_id:
+                if bounded and _digest(asdict(task)) != fixed_task_id:
                     raise ValueError("callback mutated the fixed public task")
                 if kind == "propose":
                     _text(result)
@@ -223,7 +239,7 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
                 if not decision["continue_computation"]:
                     return finish("ndu_stop:" + decision["reason"])
         except Exception as exc:
-            if policy is not None:
+            if bounded:
                 from execution_meter import BudgetStop
                 if isinstance(exc, BudgetStop):
                     return finish("resource_budget_stop")

@@ -1,0 +1,211 @@
+{
+  "checks": {
+    "compileall": "passed",
+    "full_repository": "not_run",
+    "git_diff_check": "passed",
+    "hosted_ci": "not_observed",
+    "native_target": "not_run",
+    "rust_fmt": "not_run: no full codex-rs checkout or just"
+  },
+  "code_candidate": "72c64d8d2bb9daa101a87d11af98b43baf2666f5",
+  "date": "2026-10-14",
+  "delivery_branch": "research/shared-stem-paired-trajectory-capture-20261014",
+  "diagnostic": {
+    "capture_callback_calls": 114,
+    "case_results": [
+      {
+        "external_utility_sum": 42,
+        "failed": 0,
+        "fitted": true,
+        "missing_complete_costs": 0,
+        "name": "supported",
+        "pairs": 42
+      },
+      {
+        "external_utility_sum": 0,
+        "failed": 0,
+        "fitted": true,
+        "missing_complete_costs": 0,
+        "name": "verifier_wrong",
+        "pairs": 6
+      },
+      {
+        "external_utility_sum": 0,
+        "failed": 6,
+        "fitted": false,
+        "missing_complete_costs": 6,
+        "name": "provider_failure",
+        "pairs": 6
+      },
+      {
+        "external_utility_sum": 6,
+        "failed": 0,
+        "fitted": false,
+        "missing_complete_costs": 0,
+        "name": "envelope_violation",
+        "pairs": 6
+      }
+    ],
+    "kind": "procedural_arithmetic_and_actual_CPU_tensor_capture",
+    "oracle": "test-only separate arithmetic scoring",
+    "pairs": 60,
+    "pretrained": false
+  },
+  "evidence_files": {
+    "baseline-complete.log": {
+      "bytes": 49828,
+      "sha256": "051fdb69e5e85e83c17ba71c1b4c12c3ea7257ac8e0ab039186ace893e11b2d4"
+    },
+    "baseline-full.log": {
+      "bytes": 41879,
+      "sha256": "a7ccbff51ef50f0cc9ae3f6f7d048ed3ee45f852f3d37453a23effe319f9ac48"
+    },
+    "baseline-worker.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "baseline.log": {
+      "bytes": 41541,
+      "sha256": "86f4f97cafd3b75b4f9bc6a72f25c11629f26c76576bc0efa40cf8addfa98ddc"
+    },
+    "capture-final.log": {
+      "bytes": 4514,
+      "sha256": "2b0f08c7acf0b057466dc227192b7693520c75a0308c7d240ecfc7169f889621"
+    },
+    "capture-first.log": {
+      "bytes": 2011,
+      "sha256": "65212951fd720e806eb75ee1ef274440b10c48898c4cac45f43d51c643de2ddd"
+    },
+    "capture-integration1.log": {
+      "bytes": 4002,
+      "sha256": "237a4c35e1637646b4ccc59c03670b6cdf12ed4bff455d98e8f150b47f3640ca"
+    },
+    "capture-integration2.log": {
+      "bytes": 4894,
+      "sha256": "0d6af89b1b6c35a9ed0c43dbe69a938da17eae4d79b9dacb7661b404546ba07e"
+    },
+    "diagnostic.log": {
+      "bytes": 428,
+      "sha256": "59db706711a3b4d083f7cc040fb144f0f680bd7eb002b989eb1617c4b76a8fe0"
+    },
+    "diagnostic.py": {
+      "bytes": 4104,
+      "sha256": "85455c8269bfbb66a596ca9fbe5757fa70b3e1633a14376d4aff25249736f110"
+    },
+    "full1-worker.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "full1.log": {
+      "bytes": 54242,
+      "sha256": "ab18e0c8d5511cb405c32f0bc242b8b17c2c7f1b8d47f471107c7f9df494d01d"
+    },
+    "full2-worker.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "full2.log": {
+      "bytes": 54242,
+      "sha256": "b3fe7bd42b58f5ac6c1157d67e9c8490feb5f6fbe11d88906b1d49a68a5e5434"
+    },
+    "hf-attempt.log": {
+      "bytes": 300,
+      "sha256": "a758ee820571c6626155d3b1407a8144a3a8fc6e372be6440ecdc071b4b17b2b"
+    },
+    "raw-captures/summary.json": {
+      "bytes": 11261,
+      "sha256": "64be4ddf2ab82bb864402ad6dc03b1eba80aadb363095d861c5a6d36681e5f5c"
+    }
+  },
+  "full_resource_efficiency": false,
+  "independent_final_efficacy": false,
+  "installed_hf_attempt": {
+    "defined": 3,
+    "executed": 0,
+    "failure": "ModuleNotFoundError: transformers",
+    "included_in_passes": false
+  },
+  "native_ndu_owner_integrated": false,
+  "observed_test_runs": [
+    {
+      "distinct_test_ids": 314,
+      "log": "baseline-complete.log",
+      "seconds": 38.575,
+      "tests": 314
+    },
+    {
+      "distinct_test_ids": 342,
+      "log": "full1.log",
+      "seconds": 50.685,
+      "tests": 342
+    },
+    {
+      "distinct_test_ids": 342,
+      "log": "full2.log",
+      "seconds": 51.841,
+      "tests": 342
+    }
+  ],
+  "owner_authentication": false,
+  "pretrained_execution": false,
+  "production_authorized": false,
+  "remote_python_blob_matches_verified": 7,
+  "runtime": {
+    "cuda_available": false,
+    "numpy": "2.3.5",
+    "python": "3.13.5",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0+cpu"
+  },
+  "schema": "hepta.paired-capture-local-verification.v1",
+  "source_baseline": "7cdd5380000051ce7f3ba9917a0092fbe7290e7d",
+  "source_blobs": {
+    "empirical_continuation.py": {
+      "bytes": 9736,
+      "git_blob_sha1": "021616d1f9a2c7272c65a2cfde879ff543c61b82",
+      "sha256": "ad29c8cb33bfe2944c5212ebdd0677d4cb01121b691f2198b49d21dced6fca6e"
+    },
+    "paired_capture.py": {
+      "bytes": 11853,
+      "git_blob_sha1": "2bff345f4f84a8853a66a65f1181271754019d9e",
+      "sha256": "df47154dd8e89d73bb0b3ed4e4882e76465727ac201fe11dbc8b3ac67ab0b1d3"
+    },
+    "paired_capture_export.py": {
+      "bytes": 13192,
+      "git_blob_sha1": "a25c29a0fe756f8e045824c2de0c6bbd6f9a7840",
+      "sha256": "532eeb19b6544034ebd56181faef1ff78ad16cbd10e9194fa5104c3ea129912e"
+    },
+    "paired_critic.py": {
+      "bytes": 17447,
+      "git_blob_sha1": "9b87b0ba93de4b87c2f019f021b8cb243666d078",
+      "sha256": "55ef140e21190145c72008087f7e6d016a4e4175ed6f853fbd6e1ae49b38b7af"
+    },
+    "system2_execution.py": {
+      "bytes": 15748,
+      "git_blob_sha1": "874aa677837bd0ccac438896af9a4c0c24a09abf",
+      "sha256": "65b6670a626ffbdde4e0a4af8622240256ff4e90f3bc912903dc609c62a707a8"
+    },
+    "test_paired_capture.py": {
+      "bytes": 11211,
+      "git_blob_sha1": "cfd5c38fca4f5fb14fb1222edd414b6b761b5cf7",
+      "sha256": "99063265cc1ee7bf9520bb1bbe03573ee03645ef7b086adeab74f6cd29d9b42d"
+    },
+    "test_paired_capture_export.py": {
+      "bytes": 13529,
+      "git_blob_sha1": "9cc4788effa875a91ad41a6b84bb05c0362ff578",
+      "sha256": "7e1e4ba8e97e1b2904c96ccc0ab34f4cfc48c36dce874087b8812e72370f4482"
+    }
+  },
+  "surface": "session CPU source slice; not full repository or project cloud",
+  "test_command": "OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python -m unittest discover -s qualification/stem-cell-v1 -p 'test_*.py' -v",
+  "tests": {
+    "errors": 0,
+    "failures": 0,
+    "final_runs": 2,
+    "new_capture": 12,
+    "new_export": 16,
+    "passed": 342,
+    "retained": 314,
+    "skips": 0
+  }
+}

@@ -78,6 +78,11 @@ class FrozenPairedCritic:
                 or _digest({k:policy[k] for k in COEFFICIENTS}) != _digest(p['coefficients'])
                 or policy['execution']['max_rounds'] != 2 or policy['execution']['max_calls'] != 5):
             raise ValueError('empirical critic requires its fixed objective, units and two-round policy')
+        if self._artifact.get('capture_binding') is not None:
+            from aten_work import PROFILE as base_profile
+            profile = policy['execution']['meter_policy'].get('arithmetic_profile', base_profile)
+            if profile != self._artifact['capture_binding']['arithmetic_profile']:
+                raise ValueError('runtime arithmetic profile differs from measured critic data')
         self._policy_id = policy['policy_id']
 
     def __call__(self, task, candidate, feedback, context):
@@ -104,13 +109,16 @@ class FrozenPairedCritic:
 
     def receipt(self):
         p = self._artifact['protocol']
-        return dict(artifact_id=self._id,protocol_id=p['protocol_id'],dataset_sha256=self._artifact['dataset_sha256'],
+        result = dict(artifact_id=self._id,protocol_id=p['protocol_id'],dataset_sha256=self._artifact['dataset_sha256'],
                     callback_profile_sha256=p['callback_profile_sha256'],observer_sha256=p['observer_sha256'],
                     estimator='frozen_group_mean_table',paired_attempts=len(p['pairs']),
                     failed_attempts=self._artifact['failed_attempts'],family_alpha=p['alpha'],
                     pointwise_confidence_established=False,owner_authenticity_verified=False,
                     cohort_exchangeability_verified=False,neural_critic_trained=False,
                     empirical_critic_fitted=True,final_efficacy_established=False)
+        if 'capture_binding' in self._artifact:
+            result['capture_binding'] = copy.deepcopy(self._artifact['capture_binding'])
+        return result
 
 
 def decide_empirical(policy, context, estimate, *, now_ns, resources):

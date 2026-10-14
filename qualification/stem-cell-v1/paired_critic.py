@@ -19,6 +19,7 @@ from paired_execution import _integer, _sha
 
 PROTOCOL = 'hepta.ndu.paired-critic-protocol.v1'
 ARTIFACT = 'hepta.ndu.frozen-paired-critic.v1'
+CAPTURED_ARTIFACT = 'hepta.ndu.frozen-paired-critic.v2'
 MAX_PAIRS = 8192
 COEFFICIENTS = ('discount_rate_per_second', 'cost_per_formula_flop', 'cost_per_latency_ns')
 
@@ -194,17 +195,42 @@ def _table(p, groups):
     return result
 
 
+def bind_capture(artifact, binding):
+    """Attach checked capture linkage; never certify the external observer."""
+    validate_artifact(artifact, artifact['artifact_id'])
+    result = {k: copy.deepcopy(v) for k, v in artifact.items() if k != 'artifact_id'}
+    result.update(schema=CAPTURED_ARTIFACT, capture_binding=copy.deepcopy(binding))
+    result['artifact_id'] = _digest(result)
+    validate_artifact(result, result['artifact_id'])
+    return result
+
+
 def validate_artifact(artifact, expected_id):
     _sha(expected_id, 'externally retained frozen critic')
     expected_fields = {'schema','protocol','dataset_sha256','failed_attempts','groups','table','observer_authenticity_verified',
                        'conditional_exchangeability_verified','final_efficacy_established','artifact_id'}
-    if not isinstance(artifact, dict) or set(artifact) != expected_fields or artifact.get('schema') != ARTIFACT:
+    if isinstance(artifact, dict) and artifact.get('schema') == CAPTURED_ARTIFACT:
+        expected_fields.add('capture_binding')
+    if not isinstance(artifact, dict) or set(artifact) != expected_fields or artifact.get('schema') not in (ARTIFACT, CAPTURED_ARTIFACT):
         raise ValueError('frozen critic artifact required')
     body = {k:v for k,v in artifact.items() if k != 'artifact_id'}
     if artifact.get('artifact_id') != expected_id or _digest(body) != expected_id:
         raise ValueError('frozen critic bytes changed')
     p = artifact['protocol']; validate_protocol(p, p['protocol_id'])
     _sha(artifact['dataset_sha256'], 'dataset identity')
+    if artifact['schema'] == CAPTURED_ARTIFACT:
+        binding = artifact['capture_binding']
+        keys = {'capture_id', 'protocol_id', 'dataset_sha256', 'observer_receipt_sha256',
+                'terminal_inventory_sha256', 'source_inventory_sha256', 'arithmetic_profile'}
+        if not isinstance(binding, dict) or set(binding) != keys:
+            raise ValueError('complete paired capture lineage required')
+        for key in keys - {'arithmetic_profile'}:
+            _sha(binding[key], 'capture linkage ' + key)
+        from aten_work import PROFILE as base_profile
+        from transformer_work import PROFILE as transformer_profile
+        if (binding['protocol_id'] != p['protocol_id'] or binding['dataset_sha256'] != artifact['dataset_sha256']
+                or binding['arithmetic_profile'] not in (base_profile, transformer_profile)):
+            raise ValueError('capture linkage or arithmetic units do not match fitted data')
     expected = defaultdict(int)
     for pair in p['pairs']:
         expected[bucket(p, pair['candidate_bytes'], pair['feedback_bytes']), pair['group_id']] += 1
