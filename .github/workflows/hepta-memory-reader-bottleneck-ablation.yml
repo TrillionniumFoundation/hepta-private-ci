@@ -70,13 +70,14 @@ jobs:
           if-no-files-found: warn
   generate:
     needs: source-gate
+    if: github.event_name == 'push'
     strategy:
       fail-fast: false
       max-parallel: 4
       matrix:
         tier: [smol-1.7b, qwen-3b]
         case: [0, 1, 2, 3, 4, 5, 6, 7]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 360
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
@@ -91,6 +92,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/reader-host.json
           gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11827287296/zip > /tmp/original-reader-source.zip
           echo '31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a  /tmp/original-reader-source.zip' | sha256sum --check --strict
           mkdir -p /tmp/reader-public
@@ -108,7 +110,6 @@ jobs:
           /tmp/reader-py/bin/pip install -r /tmp/reader-environment.txt
           /tmp/reader-py/bin/pip freeze > /tmp/reader-installed.txt
           diff -u /tmp/reader-environment.txt /tmp/reader-installed.txt
-          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/reader-host.json
           /tmp/reader-py/bin/python scripts/memory_cell/reader_reference.py stage ${{ matrix.tier }} /tmp/reader-model
       - name: Generate five raw answers, no scoring labels in reader workspace
         env:
@@ -129,6 +130,7 @@ jobs:
           folder=/tmp/reader-shards/${{ matrix.tier }}-${{ matrix.case }}
           mkdir -p "$folder"
           git rev-parse HEAD > "$folder/checkout-commit.txt"
+          if test -f /tmp/reader-host.json; then cp /tmp/reader-host.json "$folder/host-gate.json"; fi
           (cd "$folder" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
