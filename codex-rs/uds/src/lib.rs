@@ -238,10 +238,14 @@ mod platform {
     }
 
     pub(super) async fn is_stale_socket_path(socket_path: &Path) -> IoResult<bool> {
-        Ok(fs::symlink_metadata(socket_path)
-            .await?
-            .file_type()
-            .is_socket())
+        // The rendezvous can disappear between a refused connect and this
+        // metadata probe. Match the Windows backend: absence is not a stale
+        // socket, and the caller's subsequent exclusive bind remains decisive.
+        match fs::symlink_metadata(socket_path).await {
+            Ok(metadata) => Ok(metadata.file_type().is_socket()),
+            Err(error) if error.kind() == ErrorKind::NotFound => Ok(false),
+            Err(error) => Err(error),
+        }
     }
 
     #[cfg(test)]
