@@ -73,7 +73,10 @@ class RegistryIndexTests(unittest.TestCase):
             b"{}\n",
         )
         for raw in samples:
-            with self.subTest(raw=raw[:16]), self.assertRaises((ValueError, UnicodeError)):
+            with (
+                self.subTest(raw=raw[:16]),
+                self.assertRaises((ValueError, UnicodeError)),
+            ):
                 envelope(raw)
 
     def test_bounded_index_and_zero_length_reject(self):
