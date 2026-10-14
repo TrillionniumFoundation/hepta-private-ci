@@ -69,12 +69,12 @@ class HeadTests(unittest.TestCase):
                 self.assertEqual(a["trainable_head_parameters"], count)
                 self.assertEqual(a["head_fp32_parameter_payload_bytes"], count * 4)
                 self.assertGreater(
-                    a["adamw_optimizer_tensor_payload_bytes"], count * 8
+                    a["optimizer_tensor_payload_bytes"], count * 8
                 )
                 self.assertEqual(
                     a["head_plus_optimizer_tensor_payload_bytes"],
                     a["head_fp32_parameter_payload_bytes"]
-                    + a["adamw_optimizer_tensor_payload_bytes"],
+                    + a["optimizer_tensor_payload_bytes"],
                 )
                 self.assertEqual(a["trained_head_sha256"], b["trained_head_sha256"])
                 self.assertEqual(a["frozen_head_sha256"], b["frozen_head_sha256"])
@@ -110,6 +110,25 @@ class HeadTests(unittest.TestCase):
         train[0]["label_available_at"] = now_plus(300)
         with self.assertRaisesRegex(ValueError, "train label after cutoff"):
             MOD.validate_packets(train, predict, self.cutoff, self.now)
+
+    def test_no_momentum_sgd_can_omit_adamw_optimizer_state(self):
+        train, predict = cases()
+        adam, _, _ = MOD.train(
+            train, predict, budget=8192, seed=3, steps=2,
+            cutoff=self.cutoff, now=self.now, optimizer_kind="adamw",
+        )
+        sgd, _, _ = MOD.train(
+            train, predict, budget=8192, seed=3, steps=2,
+            cutoff=self.cutoff, now=self.now, optimizer_kind="sgd",
+        )
+        self.assertGreater(adam["optimizer_tensor_payload_bytes"], 0)
+        self.assertEqual(sgd["optimizer_tensor_payload_bytes"], 0)
+        self.assertEqual(
+            adam["trainable_head_parameters"],
+            sgd["trainable_head_parameters"],
+        )
+        self.assertEqual(sgd["optimizer_kind"], "sgd")
+        self.assertFalse(sgd["production_promotion_permitted"])
 
     def test_bad_json_and_oversized_cohorts_rejected(self):
         train, predict = cases()
