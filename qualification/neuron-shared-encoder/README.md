@@ -200,3 +200,50 @@ unverified fields before interpreting any values. CI intentionally exercises
 missing real Encoder and target-host receipts and requires both to remain
 blocked. The E4 frozen baseline is **not generated from random/untrained
 Heads**, and all V3 claims are research/shadow only.
+
+
+### Exact-head CI and fair-comparison acceptance ledger (2026-10-14)
+
+The 2026-10-14 source HEAD `b7cdeba1db215ee30418b2269ddd147dee064410`
+has a completed, successful shadow workflow
+[38513414552](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38513414552).
+That result covers isolated Python research checks, **not** a production
+release. Architecture source-head and base-merge checks succeeded but
+their aggregate required check must independently complete. Whole-tree
+[blocking-ci 38513414635](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38513414635)
+is not green: actual job logs show `cargo-deny` reporting Matrix SDK
+0.18 dependency advisories and unmaintained `unsafe-libyaml`;
+`repo-checks/build-test` failed at `pnpm run format:check`; macOS
+Bazel Clippy also failed. None can be overridden, ignored or relabeled
+as a successful scoped E1–E5 receipt.
+
+**Fairness requirements before comparing E2 as scientific evidence:**
+- The 2K / 16K / 64K / 262K values are **ceilings**, not equal parameter
+  counts. Compare each candidate's *actual* trainable parameters, peak
+  optimizer memory, wall-clock training time and measured inference cost.
+- Within each task and Encoder, hold frozen feature bytes, source splits,
+  seed set, update steps, batch schedule, tuning/search opportunity and
+  evaluation window fixed. Run several seeds and paired group-level
+  intervals; never infer a winner from a single two-step smoke.
+- Compare static Gate to its **post-training** folded Linear equivalent
+  at identical frozen weights before any efficiency claim; independently
+  compare ordinary Linear trained from scratch at a matched actual
+  parameter budget. Report the fixed-gate parameter overhead separately.
+- Gate on future Brier/NLL, task utility, OOD rejection, calibration,
+  negative transfer and cost rather than selecting by accuracy alone.
+  The research runner cannot act as the independent NDU Evaluator.
+
+**E3 physical reuse requirements:** Record logical requests, admitted
+distinct full-input digests, encoder invocations, forwarded rows,
+tokenized lengths, cache hits/misses, feature materialization bytes,
+queue latency and end-to-end p95/p99 on the same hardware. Deduplicate
+only after live source entitlement and final-use checks. Do not equate
+shared weights, number of logical Cells, or an instrumented mock
+callback with a physically shared Transformer forward.
+
+**Production-blocking evidence:** genuine pinned four-Encoder weights
+and approved data; frozen no-change predictions collected before
+future labels; independent NDU Evaluator/Selector; real signed
+Artifact CAS + Final-use + generation fences; true physical batch;
+64/256/1024/4096 Cell target-host CPU/RSS/GPU/WAL/restart receipts.
+Keep this PR Draft/shadow until every independent owner gate passes.
