@@ -149,6 +149,30 @@ jobs:
           python qualification/stem-cell-v1/public_encoder_probe.py \
             --acquire-public --upstream-revision 8949b909ec900327062f0ebf497f51aef5e6f0c8 \
             --compare-arithmetic --output "$RUNNER_TEMP/public-encoder" 2>&1 | tee "$RUNNER_TEMP/public-encoder.log"
+      - name: Train real Cell banks on fixed public natural-language data
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/public_cell_learning.py \
+            --public-probe "$RUNNER_TEMP/public-encoder" --acquire-banking77 \
+            --output "$RUNNER_TEMP/public-cell-learning" 2>&1 | tee "$RUNNER_TEMP/public-cell-learning.log"
+      - name: Retain public learning terminals and small Head weights, not base weights
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-public-cell-learning
+          path: |
+            ${{ runner.temp }}/public-cell-learning.log
+            ${{ runner.temp }}/public-cell-learning/selection.json
+            ${{ runner.temp }}/public-cell-learning/pre-execution-plan.json
+            ${{ runner.temp }}/public-cell-learning/scores.json
+            ${{ runner.temp }}/public-cell-learning/FAILED.json
+            ${{ runner.temp }}/public-cell-learning/data/SOURCE.json
+            ${{ runner.temp }}/public-cell-learning/data/MATERIAL.json
+            ${{ runner.temp }}/public-cell-learning/data/LICENSE
+            ${{ runner.temp }}/public-cell-learning/data/FAILED.json
+            ${{ runner.temp }}/public-cell-learning/trial
+          if-no-files-found: warn
       - name: Retain observations, never upload model weights
         if: always()
         uses: actions/upload-artifact@v4

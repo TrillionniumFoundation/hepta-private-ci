@@ -1,0 +1,156 @@
+{
+  "schema": "hepta.public-cell-learning-verification.v1",
+  "observed_at_utc": "2026-10-14T06:33:55.004746+00:00",
+  "pr": 1825,
+  "branch": "research/shared-stem-public-cell-learning-20261014",
+  "remote_parent": "805ffeae04db9c0d7d3386cb2a2644dd29f39b07",
+  "code_commit": "4b093b9c3399e463ff02d8d52f6b6b72d7bcc8b1",
+  "full_local_repository_checkout": false,
+  "source_archive_sha256": "27e2f0533fb9f3215a9df93ed412c74ab1bef8621a7a9ea063fb127a2829ed01",
+  "tests": {
+    "runs": [
+      {
+        "name": "run1",
+        "planned": 436,
+        "executed": 436,
+        "unique_ids": 436,
+        "shard_counts": [
+          56,
+          56,
+          54,
+          55,
+          54,
+          54,
+          54,
+          53
+        ],
+        "exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      },
+      {
+        "name": "run2",
+        "planned": 436,
+        "executed": 436,
+        "unique_ids": 436,
+        "shard_counts": [
+          56,
+          56,
+          54,
+          55,
+          54,
+          54,
+          54,
+          53
+        ],
+        "exit_codes": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ]
+      }
+    ],
+    "new_standard_tests": 15,
+    "retained_standard_tests": 421,
+    "distinct_total": 436,
+    "errors": 0,
+    "failures": 0,
+    "skips": 0
+  },
+  "checks": {
+    "compileall": "passed",
+    "git_diff_check": "passed",
+    "workflow_yaml": "parsed",
+    "remote_source_blobs_match": 5
+  },
+  "prior_hosted": {
+    "head": "ac445d2ccf082af92ccd2c6af9fd825bc5147192",
+    "run_id": 38518475547,
+    "source_job_id": 115702526181,
+    "checkout": "8b6961ea1012428dd8e83bb00110b0b16cd8c9ff",
+    "planned": 421,
+    "executed": 421,
+    "complete": true,
+    "source_test_hashes_matched": 40,
+    "artifact_sha256": "f5ad4899d39a5f09ab26769aefb8143e229ed1b54f69299406f413bd53f94167"
+  },
+  "current_hosted": {
+    "run_id": 38522305228,
+    "last_observed_status": "queued",
+    "public_learning_result_observed": false
+  },
+  "local_hf": {
+    "checks_defined": 5,
+    "checks_executed": 0,
+    "exit_code": 1,
+    "reason": "missing transformers",
+    "included_in_standard_count": false
+  },
+  "source_blobs": {
+    "qualification/stem-cell-v1/banking77_material.py": {
+      "git_blob_sha1": "a0fae27437c4dd2a3cc6e02bcf3f123c3a04e86b",
+      "sha256": "7fc8aa598d7621e3365c8c1d0a17d479bcd43a0d2252219e21a62a22f4964aef"
+    },
+    "qualification/stem-cell-v1/public_cell_learning.py": {
+      "git_blob_sha1": "55ccb21ca37b6a3d0379c2dd9c712d572b983567",
+      "sha256": "416d49630f2347441fe9193f93c5400fb687c058eab9ed10efb459461fbd0e77"
+    },
+    "qualification/stem-cell-v1/test_public_cell_learning.py": {
+      "git_blob_sha1": "4a6871d435949feefdea7013ba2be57024913e72",
+      "sha256": "a16a1a096ce762dd9e5c456ed5f1b5f4554e2772148944b1c788e71b5d06f939"
+    },
+    "qualification/stem-cell-v1/hf_profile_checks.py": {
+      "git_blob_sha1": "9da2e45183a357c66c6449788ea5642c0b376cd3",
+      "sha256": "767af027d17127e686649228f08f007d2715b484706a9345ba17744e93907ef4"
+    },
+    ".github/workflows/hepta-neuron-next-round-matrix.yml": {
+      "git_blob_sha1": "acc8eda64851e8db1521a2e8268c4fca15c32b25",
+      "sha256": "41bff91d537370144e5f58ebc58b8eb9de2a478b742942242c5104f7b14a9356"
+    }
+  },
+  "runtime": {
+    "python": "3.13.5",
+    "torch": "2.10.0+cpu"
+  },
+  "public_protocol": {
+    "dataset_revision": "57ec275d8078af65b7731c2a98be812d844a6d6b",
+    "intents": 4,
+    "fit": 64,
+    "heldout": 32,
+    "steps": 64,
+    "width_units": 16,
+    "batch_size": 16,
+    "seed": 7347
+  },
+  "limitations": {
+    "real_pretrained_learning_observed_this_increment": false,
+    "independent_efficacy_established": false,
+    "full_banking77_benchmark": false,
+    "full_system_cost_measured": false,
+    "production_authorized": false,
+    "matrix_ndu_activated": false
+  },
+  "interrupted_not_counted": [
+    "baseline.log (whole-suite timeout; no successful exit or completed JSON)"
+  ],
+  "evidence_package_files": {
+    "run1-all-ids.json": "02516b304b83b3cd9fdff5e9148411171347e15abc69e3267bdf573b08cd19dd",
+    "run2-all-ids.json": "02516b304b83b3cd9fdff5e9148411171347e15abc69e3267bdf573b08cd19dd",
+    "shard_runner.py": "f47e19d8dd636c35a75fc67469d98778a3b8621f919cf6c9f7756a7487887a22",
+    "receipt.json": "5dd91dedd1bbbfc7c9e089f2c84bd74a7a451bd26e4c1c73e18b2a7af0433d8b",
+    "local-hf.log": "2673aca06acd9dd1bbd10af6fc0541af2a0ea6c0a9960a85f9d79f73dfac4d72",
+    "baseline.log": "33545626fe136dc382805f74cab6a2e6f39b700e50cc50f8443b1b566ce251b5"
+  }
+}

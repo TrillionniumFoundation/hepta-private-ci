@@ -43,6 +43,25 @@ class InstalledHFTests(unittest.TestCase):
         fast.model_input_names = ['input_ids', 'attention_mask']
         fast.save_pretrained(self.root)
 
+    def test_two_learning_banks_share_one_stock_encoder(self):
+        from public_cell_learning import freeze_plan, execute_learning, score_sealed
+        from test_public_cell_learning import fixture_inputs
+        inputs, labels = fixture_inputs()
+        identity = snapshot_digest(self.root)
+        plan = freeze_plan(inputs, identity, steps=2, width_units=2, batch_size=4)
+        config = dict(snapshot_sha256=identity, context_tokens=256,
+                      encoder_profile=ENCODER_PROFILE, upstream_revision="a"*40,
+                      material_approval_sha256=None)
+        backend = LocalHFEncoder(self.root, config, {"stem": "smaller_control"})
+        output = self.root / "learning"
+        # Do not put run artifacts inside the content-pinned snapshot.
+        with tempfile.TemporaryDirectory() as work:
+            terminal = execute_learning(inputs, plan, backend, Path(work)/"learning")
+            scores = score_sealed(Path(work)/"learning", terminal["run_id"], inputs, labels)
+        self.assertTrue(scores["all_arms_completed"])
+        self.assertEqual(backend.calls, len(inputs["fit"])+len(inputs["heldout"]))
+        self.assertFalse(scores["efficacy_established"])
+
     def test_full_stock_architecture_roundtrip_and_physical_tie(self):
         full, base, receipt = load_complete_mlm(self.root)
         self.assertIs(full.decoder.weight, base.embeddings.tok_embeddings.weight)
