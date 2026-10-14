@@ -10,7 +10,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from matched_train import training_input, rank_for_budget, Q, SCHEMA, sha_bytes
+from matched_train import training_input, rank_for_budget, require_selected_owner_a0, Q, SCHEMA, sha_bytes
 from precommit_future import future_data, binary_metrics, score
 
 
@@ -53,6 +53,14 @@ class TestInputAndBudgets(unittest.TestCase):
         x=train_fixture();x['samples'][0]['label']=True
         with self.assertRaisesRegex(ValueError,'label'):
             training_input(x)
+
+    def test_live_selected_v1_a0_required_outside_fixture(self):
+        with self.assertRaisesRegex(ValueError, 'A0 signed live owner'):
+            require_selected_owner_a0(argparse.Namespace(synthetic_canary=False),
+                                      'fixture', '1'*64)
+        result=require_selected_owner_a0(argparse.Namespace(synthetic_canary=True),
+                                         'fixture', '1'*64)
+        self.assertEqual(result['evidence_class'],'SYNTHETIC_FIXTURE_ONLY')
 
     def test_min_gru_budget_counts_entire_private_profile(self):
         self.assertEqual(rank_for_budget(128,2048), 2)
@@ -195,7 +203,7 @@ class TestPhysicalTorchCanary(unittest.TestCase):
                     train_sha256=hashlib.sha256(src.read_bytes()).hexdigest(),
                     selected_v1=str(baseline),
                     selected_v1_sha256=hashlib.sha256(baseline.read_bytes()).hexdigest(),
-                    output=str(out),steps=1,window=2,seed=12,lr=.01)
+                    output=str(out),steps=1,window=2,seed=12,lr=.01,synthetic_canary=True)
             receipt=train(args)
             self.assertEqual(len(receipt['models']),20)
             self.assertFalse(receipt['native_q24_parity_verified'])
