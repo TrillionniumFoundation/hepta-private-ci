@@ -203,7 +203,7 @@ class TestPhysicalTorchCanary(unittest.TestCase):
                     train_sha256=hashlib.sha256(src.read_bytes()).hexdigest(),
                     selected_v1=str(baseline),
                     selected_v1_sha256=hashlib.sha256(baseline.read_bytes()).hexdigest(),
-                    output=str(out),steps=1,window=2,seed=12,lr=.01,synthetic_canary=True)
+                    output=str(out),steps=1,window=2,seed=12,lr=.01,synthetic_canary=True,max_train_cpu_seconds=300.0)
             receipt=train(args)
             self.assertEqual(len(receipt['models']),20)
             self.assertFalse(receipt['native_q24_parity_verified'])
