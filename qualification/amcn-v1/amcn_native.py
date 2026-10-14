@@ -77,7 +77,7 @@ def encode_native(root: Path, model_manifest, records, *, scope, generation,
     receipt_digest = digest(observed)
     matrix = FeatureMatrix(prepared, tensor, encoder_sha256=encoder_identity,
                            scope=scope, generation=generation,
-                           backend_profile="local_hf_verified_externally",
+                           backend_profile="local_hf_snapshot_checked_unreviewed",
                            encoder_execution_receipt=receipt_digest)
     return matrix, observed
 
