@@ -473,6 +473,46 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         self.assertNotIn("publish_once(", body)
         self.assertNotIn("authority.claim(", body)
 
+    def test_control_highwater_unix_rpc_has_no_echoback_or_mutation_surface(self) -> None:
+        path = "codex-rs/hepta-runtime/src/cell_split_control_highwater_unix.rs"
+        code = self.lexical_code(path)
+        root = self.lexical_code("codex-rs/hepta-runtime/src/lib.rs")
+        self.assertIn("mod cell_split_control_highwater_unix;", root)
+        self.assertIn("CellSplitControlHighwaterUnixPortV1", root)
+        self.assertIn("CELL_SPLIT_CONTROL_HIGHWATER_RPC_SCHEMA_V1", root)
+        self.assertIn("CellSplitIndependentControlObserverV1 for", code)
+        self.assertIn("fn read_signed_highwater(", code)
+        self.assertIn("fs::symlink_metadata(", code)
+        self.assertIn(".file_type()", code)
+        self.assertIn(".is_socket()", code)
+        self.assertIn("remaining(started, budget)?", code)
+        self.assertIn("MAX_FRAME_BYTES", code)
+        self.assertIn("MAX_TRACKED_SCOPES", code)
+        self.assertIn("verify_strict(", code)
+        self.assertIn("proof.challenge_nonce != nonce", code)
+        self.assertIn("proof.sequence < previous.sequence", code)
+        self.assertIn("proof.wal_inode != previous.wal_inode", code)
+        self.assertIn("read_control_highwater", code)
+        # An RPC read may send identity and freshness only, never the original
+        # local WAL frontier for an untrusted service to echo-sign.
+        self.assertNotRegex(code, r"pub\s+fn\s+sign_|SigningKey")
+        self.assertNotIn("apply_governed_topology(", code)
+        self.assertNotIn("publish_cutover(", code)
+        self.assertNotIn("publish_once(", code)
+        test_path = (
+            "codex-rs/hepta-runtime/src/cell_split_control_highwater_unix_tests.rs"
+        )
+        tests = (ROOT / test_path).read_text(encoding="utf-8")
+        for named in (
+            "signed_unix_observer_requests_only_scope_split_and_fresh_challenge",
+            "mismatched_signer_or_signed_replayed_nonce_never_returns_evidence",
+            "even_a_validly_signed_remote_rollback_is_denied_by_client_ratchet",
+            "malformed_denial_and_oversized_frame_are_rejected_before_positive_proof",
+            "missing_or_symlinked_socket_and_unbounded_timeout_fail_closed",
+            "truncated_frame_times_out_within_bounded_read_budget",
+        ):
+            self.assertIn(f"fn {named}(", tests)
+
     def test_generic_cns_generation_writer_callers_are_closed_world(self) -> None:
         # The generic CNS host is shared beyond Cell Split and cannot be
         # arbitrarily disabled. Freeze the concrete non-test callsites for

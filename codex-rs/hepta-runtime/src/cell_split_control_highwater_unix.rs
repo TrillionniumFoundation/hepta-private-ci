@@ -172,6 +172,14 @@ impl CellSplitControlHighwaterUnixPortV1 {
             || proof.revocation_epoch == 0
             || proof.wal_bytes == 0
             || proof.observer_signature_bytes.len() != 64
+            || !canonical_digest(&proof.plan_digest)
+            || !canonical_digest(&proof.ndu_snapshot_digest)
+            || !canonical_digest(&proof.wal_head)
+            || !canonical_digest(&proof.checkpoint_digest)
+            || proof
+                .original_cns_receipt_binding
+                .as_deref()
+                .is_some_and(|value| !canonical_digest(value))
         {
             return Err("independent signed Control proof has wrong source or challenge".into());
         }
@@ -232,6 +240,13 @@ fn valid_id(id: &str) -> bool {
     !id.is_empty() && id.len() <= 256 && StableId::new(id.to_owned()).is_ok()
 }
 
+fn canonical_digest(value: &str) -> bool {
+    value.len() == 64
+        && value
+            .bytes()
+            .all(|byte| byte.is_ascii_hexdigit() && !byte.is_ascii_uppercase())
+}
+
 fn remaining(started: Instant, timeout: Duration) -> Result<Duration, String> {
     timeout
         .checked_sub(started.elapsed())
@@ -273,7 +288,10 @@ fn read_exact_until(
             .map_err(|error| error.to_string())?;
         match stream.read(data) {
             Ok(0) => return Err("independent Control RPC ended before full frame".into()),
-            Ok(count) => data = &mut data[count..],
+            Ok(count) => {
+                let (_, unread) = data.split_at_mut(count);
+                data = unread;
+            },
             Err(error) if error.kind() == std::io::ErrorKind::Interrupted => continue,
             Err(error) => return Err(error.to_string()),
         }

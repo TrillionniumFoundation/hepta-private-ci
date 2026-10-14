@@ -252,9 +252,9 @@ fn missing_or_symlinked_socket_and_unbounded_timeout_fail_closed() {
     let (path, _listener) = socket(dir.path());
     let alias = dir.path().join("forged-observer.sock");
     std::os::unix::fs::symlink(&path, &alias).expect("malicious symlink");
-    let mut client = client(alias, Duration::from_millis(25));
+    let mut symlink_client = client(alias, Duration::from_millis(25));
     assert!(
-        client
+        symlink_client
             .read_signed_highwater(SPLIT, SCOPE, &"44".repeat(32))
             .is_err(),
         "socket symlink must not redirect high-water trust"
