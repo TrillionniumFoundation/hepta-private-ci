@@ -67,3 +67,100 @@ Native integration still required after successful real model experiments:
 4. Train and evaluate full Laya, pooled Laya Head, ModernBERT-base, Organ Expert Bank on the same approved, grouped future-window protocol. Add independent NDU and negative-transfer evidence; only then propose promotion.
 
 _No change in this harness alters any Hepta production contracts, grants or model versions._
+
+## E1–E5 strict research qualification (V3, no deployment)
+
+The independently versioned shadow module is `neuron_shared_encoder.validation_v3`.
+It does not replace the immutable Rust inference owner, sign model receipts, apply
+NDU decisions, change CNS routes or enable model final-use. The existing native
+`GatedHeadCpuDriverV2` is a fixed Q24 elementwise multiplier; V3 introduces
+`static_gate` and a genuinely input-dependent `dynamic_gate` **in PyTorch
+research only**, not in the Rust production worker.
+
+### E1 — same-task, same-budget real Encoder matrix
+
+Require one SHA-256-pinned dataset/split manifest and persisted no-change
+baseline, a common train seed, steps, optimizer, batch and learning rate, plus
+pinned weight/bundle/tokenizer SHA-256 for all four candidates:
+`laya-joint`, `mmbert-joint` (140M candidate), `granite-joint` (97M),
+`modernbert-joint` (149M candidate). The E1 contract scanner accepts a
+**complete schema** as `SCHEMA_COMPLETE_UNVERIFIED`, never `PASSED`.
+Separate offline `representation` runs and operator-verified artifact/dataset
+receipts are still required for any scientific comparison; genuine Laya
+`system_one` requires its original model/checkpoint and cannot be replaced
+by pooled CLS logits. Generic Hugging Face mean pooling for
+mmBERT/Granite/ModernBERT is an explicitly separate control; it does not
+assert equivalence to an official model-specific pooling or teacher policy.
+No implicit download, remote-code trust, fake checkpoint or synthetic
+Encoder is allowed for E1 real claims.
+
+### E2 — capacity and fixed-Gate folding
+
+`e2-heads` trains Linear, static Gate, input-conditional sigmoid/SiLU Gate,
+FiLM, rank-8/16, MLP and SwiGLU using the same frozen features, source splits,
+optimizer and update budget. Budgets 2K, 16K, 64K, 262K are *upper bounds*;
+actual parameters and optimizer bytes are recorded. After training, the
+static Gate is folded to a Linear weight matrix and its maximum absolute
+logit difference is recorded. This proves mathematical redundancy to
+floating-point tolerance, not bitwise Q24 equivalence. Q24 rounding and
+hardware parity require independent native tests.
+
+### E3 — full-joint input versus public-input / Cell-state fusion
+
+`e3-reuse` collects both `encoder_forward_invocations` and
+`encoder_forward_rows` from actual calls to the adapter; counts are not
+inferred from the logical Cell count. The public-input key excludes Cell
+state but includes principal, purpose, generation, authority epoch,
+Encoder/tokenizer/normalizer digests and evaluation split. It cannot
+bypass a real source-entitlement or signed final-use check. The local
+Cell-state branch in this V3 control uses a **synthetic hash**, explicitly
+labelled `SYNTHETIC_HASH_NOT_DEPLOYABLE`. Both variants undergo equal-budget
+linear/dynamic Head training and future-set scoring, but even when the
+Encoder itself is real, this hybrid is not a qualified production
+state-fusion model. Replace the state hash with a pinned, trained and
+independently validated local adapter before claiming E3 quality parity.
+
+### E4 — frozen no-change versus candidate; never promotion
+
+`e4-future` requires a *real, externally prepared* frozen no-change
+probability snapshot and a distinct candidate snapshot, each with an
+operator-supplied exact file SHA-256. They must contain the ordered
+`row_ids`, probabilities for all dataset rows, `dataset_sha256`,
+`cell_scope` [principal, organ_id, cell_id], `source_commit`,
+`artifact_digest` and `role` (`frozen_no_change` or `candidate`).
+It fails closed on scope/dataset/row/order mismatch, invalid probabilities
+or identical artifacts. It reports grouped future-window bootstrap 95%
+intervals for Brier improvement, 15-bin ECE, NLL, OOD detection AUROC and
+future source-group negative-transfer fraction. The optional positive
+*shadow signal* requires at least 30 future groups, positive lower CI and
+zero materially degraded groups; it is **not** an NDU decision. The
+independent Evaluator must still verify causal improvement and receipt
+authenticity; Selector and Executor remain separate owners.
+
+### E5 — complete host telemetry schema, no fabricated measurements
+
+`e5-host` requires one record for each of 64 / 256 / 1,024 / 4,096
+Cells, with exact host/run/commit, encoder physical call/row/input
+counts, requests, throughput, CPU, peak RSS, GPU peak if applicable,
+per-request and per-batch p95/p99, WAL bytes, crash recovery, lost-replay
+counts, CAS/signature/CNS latency. A complete operator-submitted JSON
+is `COMPLETE_UNVERIFIED` until independent signed source, target-host
+measurements, generation-fence tests and operator authorization are proven.
+Synthetic `stress` does not fill in missing worker/host fields.
+
+### Example isolated smoke
+
+```bash
+cd qualification/neuron-shared-encoder
+python -m pytest -q tests/
+python -m neuron_shared_encoder.experiment synth-data --allow-synthetic --output smoke_dataset.jsonl --data-count 32
+DATA_SHA="$(sha256sum smoke_dataset.jsonl | cut -d' ' -f1)"
+python -m neuron_shared_encoder.validation_v3 e2-heads --allow-synthetic --dataset smoke_dataset.jsonl --dataset-sha256 "$DATA_SHA" --output e2.json --steps 2 --budgets 2048 16384
+python -m neuron_shared_encoder.validation_v3 e3-reuse --allow-synthetic --dataset smoke_dataset.jsonl --dataset-sha256 "$DATA_SHA" --output e3.json --steps 2 --budgets 2048 16384
+```
+
+Read the generated JSON `evidence_class`, `production_admission`, and
+unverified fields before interpreting any values. CI intentionally exercises
+missing real Encoder and target-host receipts and requires both to remain
+blocked. The E4 frozen baseline is **not generated from random/untrained
+Heads**, and all V3 claims are research/shadow only.
