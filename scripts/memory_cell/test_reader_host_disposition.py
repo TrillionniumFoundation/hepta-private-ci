@@ -197,5 +197,44 @@ class HostDispositionTests(unittest.TestCase):
                 census(Path(tmp), expected_commit="not-a-git-sha")
 
 
+    def test_pr_source_check_cannot_run_host_disposition_without_model_shards(self):
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-memory-reader-bottleneck-ablation.yml"
+        ).read_text()
+        host = workflow.split("\n  host-disposition:\n", 1)[1].split(
+            "\n  collect:\n", 1
+        )[0]
+        self.assertIn(
+            "if: always() && github.event_name == 'push' "
+            "&& needs.source-gate.result == 'success'",
+            host,
+        )
+        self.assertIn("needs: [source-gate, generate]", host)
+        self.assertIn("if: github.event_name == 'push'", workflow)
+
+    def test_only_named_source_model_shards_match_artifact_download_glob(self):
+        from fnmatch import fnmatchcase
+
+        workflow = (
+            Path(__file__).resolve().parents[2]
+            / ".github/workflows/hepta-memory-reader-bottleneck-ablation.yml"
+        ).read_text()
+        pattern = "memory-reader-bottleneck-[sq]*"
+        self.assertEqual(workflow.count(f"pattern: {pattern}"), 2)
+        self.assertNotIn("pattern: memory-reader-bottleneck-*\n", workflow)
+        for tier in ("smol-1.7b", "qwen-3b"):
+            for case in range(8):
+                self.assertTrue(
+                    fnmatchcase(f"memory-reader-bottleneck-{tier}-{case}", pattern)
+                )
+        for unrelated in (
+            "memory-reader-bottleneck-original-80-call-report",
+            "memory-reader-bottleneck-source-diagnostics",
+            "memory-reader-original-host-disposition",
+        ):
+            self.assertFalse(fnmatchcase(unrelated, pattern))
+
+
 if __name__ == "__main__":
     unittest.main()

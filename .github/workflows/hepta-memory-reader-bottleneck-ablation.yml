@@ -149,7 +149,7 @@ jobs:
           if-no-files-found: warn
 
   host-disposition:
-    if: always() && needs.source-gate.result == 'success'
+    if: always() && github.event_name == 'push' && needs.source-gate.result == 'success'
     needs: [source-gate, generate]
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -164,7 +164,7 @@ jobs:
       - name: Retrieve every existing original shard, even from failed jobs
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          pattern: memory-reader-bottleneck-*
+          pattern: memory-reader-bottleneck-[sq]*
           path: /tmp/reader-downloaded
       - name: Separate BF16 host rejection from completed original inference
         run: |
@@ -195,7 +195,7 @@ jobs:
           python-version: "3.12"
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          pattern: memory-reader-bottleneck-*
+          pattern: memory-reader-bottleneck-[sq]*
           path: /tmp/reader-downloaded
       - name: Reopen immutable original source and complete original answers
         env:
