@@ -42,7 +42,7 @@ independently controlled NDU evaluator**.
 ### Test procedure
 
 From `qualification/neuron-shared-encoder`, in an environment with PyTorch,
-pytest and pinned `safetensors==0.7.0`:
+pytest, `safetensors==0.7.0` and `numpy==2.2.6`:
 
 ```sh
 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
@@ -51,6 +51,10 @@ OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 \
   python -m pytest -q tests/
 python -m compileall -q neuron_shared_encoder tests
 ```
+
+The Torch safetensors writer internally imports NumPy; the Python-only
+shadow CI pins both packages explicitly. Without NumPy, checkpoint writes
+fail even though the surrounding Head/hash code does not import it.
 
 New adversarial tests include create-once recovery semantics, safetensors
 corruption with both unchanged and recalculated self-reported hashes, wrong
