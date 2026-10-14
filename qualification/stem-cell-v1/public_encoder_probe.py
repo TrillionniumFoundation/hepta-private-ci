@@ -16,13 +16,16 @@ from matrix_runtime import write_json_exclusive
 from paired_execution import PHASES, _sha
 
 MODEL_ID = 'answerdotai/ModernBERT-base'
+PUBLIC_MODEL_IDS = frozenset((MODEL_ID, 'HuggingFaceTB/SmolLM2-135M-Instruct'))
 ALLOWED_FILES = frozenset(('config.json', 'model.safetensors', 'tokenizer.json',
                            'tokenizer_config.json', 'special_tokens_map.json'))
 REQUIRED_FILES = ALLOWED_FILES - {'special_tokens_map.json'}
 MAX_DOWNLOAD_BYTES = 800_000_000
 
 
-def freeze_public_source(info):
+def freeze_public_source(info, *, model_id=MODEL_ID):
+    if model_id not in PUBLIC_MODEL_IDS:
+        raise ValueError('unregistered public model')
     _sha(info.sha, 'Hub commit', 40)
     files = {}
     for item in info.siblings:
@@ -32,18 +35,21 @@ def freeze_public_source(info):
             files[item.rfilename] = item.size
     if not REQUIRED_FILES.issubset(files) or sum(files.values()) > MAX_DOWNLOAD_BYTES:
         raise ValueError('missing safetensors/tokenizer or excessive public download')
-    return dict(schema='hepta.public-encoder-source-lock.v1', model_id=MODEL_ID,
+    return dict(schema=('hepta.public-encoder-source-lock.v1' if model_id == MODEL_ID
+                        else 'hepta.public-causal-source-lock.v1'), model_id=model_id,
                 upstream_revision=info.sha, files=dict(sorted(files.items())),
                 public_diagnostic_only=True, independent_material_approval=False)
 
 
-def acquire_public(root):
+def acquire_public(root, *, model_id=MODEL_ID):
+    if model_id not in PUBLIC_MODEL_IDS:
+        raise ValueError('unregistered public model')
     from huggingface_hub import HfApi, snapshot_download
-    info = HfApi(token=False).model_info(MODEL_ID, revision='main', files_metadata=True)
-    lock = freeze_public_source(info)
+    info = HfApi(token=False).model_info(model_id, revision='main', files_metadata=True)
+    lock = freeze_public_source(info, model_id=model_id)
     write_json_exclusive(root / 'source-lock.json', lock)
     cache = root / 'download-cache'
-    snapshot_download(MODEL_ID, revision=lock['upstream_revision'], token=False,
+    snapshot_download(model_id, revision=lock['upstream_revision'], token=False,
                       local_dir=str(cache), allow_patterns=list(lock['files']))
     target = root / 'snapshot'; target.mkdir()
     for name, size in lock['files'].items():
