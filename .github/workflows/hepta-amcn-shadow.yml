@@ -1,11 +1,6 @@
 name: Hepta AMCN five-stage research (non-authorizing)
 
 on:
-  push:
-    branches: ["research/amcn-five-stage-20261014"]
-    paths:
-      - "qualification/amcn-v1/**"
-      - ".github/workflows/hepta-amcn-shadow.yml"
   pull_request:
     branches: ["research/five-causal-experiments-20261013"]
     paths:
@@ -16,8 +11,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: amcn-shadow-${{ github.sha }}
-  cancel-in-progress: false
+  group: amcn-shadow-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   actual-cpu-mechanisms:
