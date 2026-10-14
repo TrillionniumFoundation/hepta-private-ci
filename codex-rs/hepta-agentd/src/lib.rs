@@ -14,6 +14,8 @@ mod automation_effect_host;
 mod automation_recovery;
 mod browser_servo;
 #[cfg(all(unix, feature = "cell-split-operator-bridge"))]
+mod cell_split_evidence_observer;
+#[cfg(all(unix, feature = "cell-split-operator-bridge"))]
 mod cell_split_execution;
 mod client;
 mod cognitive_context;
@@ -65,6 +67,8 @@ pub use browser_servo::BrowserServoPort;
 pub use browser_servo::BrowserServoProcessConfig;
 pub use browser_servo::BrowserServoTransport;
 pub use browser_servo::ChildBrowserTransport;
+#[cfg(all(unix, feature = "cell-split-operator-bridge"))]
+pub use cell_split_evidence_observer::AgentdOriginalEvidenceWalReadV1;
 #[cfg(all(unix, feature = "cell-split-operator-bridge"))]
 pub use cell_split_execution::CellSplitCurrentControlSnapshotV1;
 #[cfg(all(unix, feature = "cell-split-operator-bridge"))]
