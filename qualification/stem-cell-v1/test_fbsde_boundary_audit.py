@@ -1,5 +1,4 @@
 """Negative controls for finite-tree FBSDE research boundary."""
-import copy
 import unittest
 
 from fbsde_boundary_audit import InvalidTree, exact_control, solve
