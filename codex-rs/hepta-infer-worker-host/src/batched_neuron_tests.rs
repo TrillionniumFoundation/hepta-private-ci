@@ -227,6 +227,9 @@ fn runner_with_driver_using_frontier<D: ModelDriver + NeuronFeatureDriver>(
     )
     .unwrap();
     owner.bind_live_scope_frontier(frontier).unwrap();
+    // Explicit, unit-test-only research allowance; cannot compile into
+    // non-test product libraries or mint original WAL provenance.
+    owner.research_test_effects_allowed = true;
     owner
 }
 
@@ -1740,6 +1743,39 @@ fn real_wal_truncation_after_signed_scalar_effect_withholds_followup_success() {
     assert_eq!(worker.pending(), 0);
     assert!(!sink.healthy());
     assert!(!worker.production_metrics_ready());
+}
+
+#[test]
+fn generic_untrusted_metric_sink_cannot_enter_signed_neuron_effect() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[125; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let invocations = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut worker = runner_with_driver(
+        &signer,
+        dir.path(),
+        model,
+        CountingScalarDriver(invocations.clone()),
+        1,
+    );
+    worker.research_test_effects_allowed = false;
+    worker
+        .bind_metric_sink(Arc::new(CapturedMetrics::default()))
+        .unwrap();
+    assert!(!worker.original_evidence_bound);
+    assert!(!worker.production_metrics_ready());
+    assert_eq!(
+        worker.enqueue(100, "model".into(), request, key, signed(&signer, binding)),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    );
+    assert_eq!(worker.pending(), 0);
+    assert!(!worker.flush_production_metrics());
+    assert!(matches!(
+        worker.poll_and_execute(101),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    ));
+    assert_eq!(invocations.load(std::sync::atomic::Ordering::SeqCst), 0);
 }
 
 #[test]
