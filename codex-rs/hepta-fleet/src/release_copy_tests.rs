@@ -27,10 +27,14 @@ fn readonly_source_is_copied_synced_and_preserved_on_duplicate_install()
     }
     let reopened = FleetRegistry::open_existing(root)?;
     assert!(matches!(
-        reopened.install_release(release_id, &source, Vec::new()),
+        reopened.install_release(release_id.clone(), &source, Vec::new()),
         Err(FleetRegistryError::Invalid(_))
     ));
     assert_eq!(std::fs::read(&installed.program)?, content);
+    assert_eq!(
+        resolve_catalog_release(reopened.layout().releases_root(), &release_id)?,
+        installed
+    );
     // Windows read-only attributes also affect cleanup; restore only fixtures.
     make_tree_removable(
         installed

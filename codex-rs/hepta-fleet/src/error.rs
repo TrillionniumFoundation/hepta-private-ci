@@ -13,6 +13,12 @@ pub enum FleetRegistryError {
     AlreadyRegistered(AgentId),
     #[error("unknown fleet release {0}")]
     UnknownRelease(String),
+    #[error("release {release_id} was published, but its commit durability is uncertain: {source}")]
+    ReleasePublicationDurabilityUncertain {
+        release_id: String,
+        #[source]
+        source: std::io::Error,
+    },
     #[error("release {release_id} is not allowed for agent {agent_id}")]
     ReleaseNotAllowed {
         agent_id: AgentId,

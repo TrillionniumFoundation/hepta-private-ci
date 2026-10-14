@@ -97,6 +97,8 @@ PRESENTATION_INPUTS = frozenset(
     {
         "README.md",
         "CONTRIBUTING.md",
+        ".github/workflows/README.md",
+        "scripts/ENTRYPOINTS.md",
         "docs/modules/SOURCE_BINDINGS.json",
         "docs/modules/MODULE_DOCS.json",
     }
@@ -483,12 +485,12 @@ def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
         if path in SHARED or path in {f"{WORKSPACE}/{p}" for p in SHARED}:
             reasons.add(f"shared build input: {path}")
             continue
-        if path.startswith((".cargo/", f"{WORKSPACE}/.cargo/", ".github/", "scripts/")):
-            reasons.add(f"shared CI input: {path}")
-            continue
         consumers = input_owners.get(path, set())
         changed.update(consumers)
         if presentation_input(path):
+            continue
+        if path.startswith((".cargo/", f"{WORKSPACE}/.cargo/", ".github/", "scripts/")):
+            reasons.add(f"shared CI input: {path}")
             continue
         owned = bool(consumers)
         for mapping in (before.owners, after.owners):
@@ -595,7 +597,9 @@ def plan(
     )
 
 
-def execution_command(selected: dict, action: str) -> list[str] | None:
+def execution_command(
+    selected: dict, action: str, *, fail_fast: bool = False
+) -> list[str] | None:
     """Apply one exact-revision impact plan to each native check."""
     if action == "plan" or not selected["packages"]:
         return None
@@ -608,6 +612,7 @@ def execution_command(selected: dict, action: str) -> list[str] | None:
             "just",
             "test",
             "--locked",
+            *(["--fail-fast"] if fail_fast else []),
             *(["--workspace"] if selected["full_workspace"] else packages),
         ]
     if action == "fmt":
@@ -647,6 +652,11 @@ def main() -> None:
     parser.add_argument(
         "--full", action="store_true", help="explicitly qualify the entire workspace"
     )
+    parser.add_argument(
+        "--fail-fast",
+        action="store_true",
+        help="stop a failing test run after normal cleanup",
+    )
     parser.add_argument("--github-output", type=Path)
     parser.add_argument(
         "--record-output",
@@ -656,6 +666,8 @@ def main() -> None:
     args = parser.parse_args()
     if args.run and args.action != "plan":
         parser.error("--run is the compatibility alias for --action test")
+    if args.fail_fast and not args.run and args.action != "test":
+        parser.error("--fail-fast requires --run or --action test")
     if args.record_output and not args.run and args.action == "plan":
         parser.error("--record-output requires a native execution action")
     if not OID.fullmatch(args.tested):
@@ -673,7 +685,9 @@ def main() -> None:
     if args.github_output:
         with args.github_output.open("a", encoding="utf-8") as stream:
             stream.write(f"has_packages={str(bool(selected['packages'])).lower()}\n")
-    command = execution_command(selected, "test" if args.run else args.action)
+    command = execution_command(
+        selected, "test" if args.run else args.action, fail_fast=args.fail_fast
+    )
     if command is not None:
         if args.record_output:
             command = [

@@ -137,7 +137,21 @@ await inventory(output);
 const expectedResources=JSON.parse(await readFile(join(workspace,'robrix-ui/patches/web-asset-paths.json'),'utf8'));
 const expectedPaths=[...expectedResources.files,wasmName].sort();
 if(JSON.stringify(Object.keys(files).sort())!==JSON.stringify(expectedPaths))throw new Error('Generated package resource set differs from the reviewed SDK/resource catalog');
-await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,artAssets:art,cjkFonts:{manifestSha256:cjkFonts.manifestSha256,bytes:cjkFonts.bytes,assets:cjkFonts.assets.map(({inputPath,...asset})=>asset)},nightly,platformPatch:overlay.identity,instanceLayoutPatch:overlay.layoutIdentity,webImePatch:overlay.imeIdentity,drawPatch:overlay.drawIdentity,drawManifestSha256:overlay.drawManifestSha256,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerToolchainPatch:toolchainPatch,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,webglContext:{preserveDrawingBuffer:true,reason:'verified-visible-resize-loss-with-discarded-buffer'},automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
+// Independent URL -> compiler resource-path mapping, never copied from runtime observations.
+const fontConsumerResources={};
+for(const [logical,pin]of Object.entries(files).filter(([name])=>/\.(ttf|otf)$/.test(name))){
+ const widget=/^makepad_widgets\/resources\/[^/]+\.(ttf|otf)$/.test(logical);
+ const cjk=cjkFonts.assets.find(asset=>asset.logical===logical);
+ if(!widget&&!cjk)throw new Error('Unreviewed font consumer resource owner: '+logical);
+ const relativePath=logical.slice(logical.indexOf('/')+1);
+ const absolutePath=join(widget?dirname(widgets.manifest_path):join(overlay.workspace,'robrix-ui'),relativePath).replaceAll('\\','/');
+ // CJK served bytes deliberately come from the independently verified cache;
+ // its compiler resource path is the generated app root, not that cache path.
+ const bytes=await readFile(widget?absolutePath:cjk.inputPath);
+ if(bytes.length!==pin.bytes||sha(bytes)!==pin.sha256)throw new Error('Consumer resource/source digest mismatch');
+ fontConsumerResources['/'+logical]={absolutePath,dependencyPath:logical,bytes:pin.bytes,sha256:pin.sha256};
+}
+await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,artAssets:art,cjkFonts:{manifestSha256:cjkFonts.manifestSha256,bytes:cjkFonts.bytes,assets:cjkFonts.assets.map(({inputPath,...asset})=>asset)},nightly,platformPatch:overlay.identity,instanceLayoutPatch:overlay.layoutIdentity,webImePatch:overlay.imeIdentity,drawPatch:overlay.drawIdentity,fontConsumerPatch:overlay.consumerIdentity,fontConsumerResources,drawManifestSha256:overlay.drawManifestSha256,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerToolchainPatch:toolchainPatch,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,webglContext:{preserveDrawingBuffer:true,reason:'verified-visible-resize-loss-with-discarded-buffer'},automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
 console.log(`Packaged Robrix-derived Rust UI (${Object.keys(files).length} assets); rendering still requires host acceptance`);
 
 }));

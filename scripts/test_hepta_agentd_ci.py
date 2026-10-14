@@ -186,6 +186,7 @@ class WorkflowDependencyTests(unittest.TestCase):
             ("--test", "supervised_two_agents"),
             ("--test", "supervisord_product_e2e"),
             ("--test", "queue_capacity_product"),
+            ("--test", "five_agent_rolling_upgrade"),
         ):
             with self.subTest(option=option, value=value):
                 self.assertTrue(

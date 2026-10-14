@@ -36,13 +36,16 @@ impl ReconcileSchedule {
         // or the caller cancels, a later call begins at the next destination.
         // Advance one start position, not the whole reserved batch: an error
         // must not repeatedly skip the same unattempted tail.
-        let start = self
+        let previous = self
             .next
             .fetch_update(Ordering::Relaxed, Ordering::Relaxed, |next| {
                 Some((next % destination_count + 1) % destination_count)
-            })
-            .expect("reconciliation rotation always advances")
-            % destination_count;
+            });
+        // The closure always returns Some; extract the observed value without
+        // introducing a panic path into the production scheduler.
+        let start = match previous {
+            Ok(previous) | Err(previous) => previous % destination_count,
+        };
         let selected = destination_count.min(limit);
         let per_destination = limit / selected;
         let extra = limit % selected;

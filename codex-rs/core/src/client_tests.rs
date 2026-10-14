@@ -17,6 +17,7 @@ use crate::GenerateAttestationFuture;
 use crate::config::Config;
 use crate::model_provider_policy::ModelProviderPolicyContext;
 use crate::responses_metadata::CodexResponsesMetadata;
+use crate::responses_metadata::CodexResponsesRequestKind;
 use crate::test_support::TestCodexResponsesRequestKind;
 use crate::test_support::responses_metadata as test_responses_metadata;
 use codex_api::AgentIdentityTelemetry;
@@ -349,11 +350,61 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         "thread-a".to_string(),
         "window-a".to_string(),
     );
+    metadata_a.request_kind = Some(CodexResponsesRequestKind::Turn);
     metadata_a.sandbox_mode = Some("workspace-write".to_string());
     metadata_a.turn_started_at_unix_ms = Some(1);
     let identity_a =
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata_a)
             .expect("identity a");
+
+    let mut default_metadata = metadata_a.clone();
+    default_metadata.request_kind = None;
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &default_metadata,
+        )
+        .expect("default transport identity")
+    );
+
+    let mut prewarm_metadata = metadata_a.clone();
+    prewarm_metadata.request_kind = Some(CodexResponsesRequestKind::Prewarm);
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &prewarm_metadata,
+        )
+        .expect("prewarm transport identity")
+    );
+    // Reusing a socket must not make a prewarm equivalent to a turn for
+    // recovery, or mutate the caller's wire metadata.
+    assert_ne!(
+        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
+            .expect("turn recovery identity"),
+        serde_json::to_value(prewarm_metadata.turn_recovery_compatibility_projection())
+            .expect("prewarm recovery identity"),
+    );
+    prewarm_metadata.sandbox_mode = Some("danger-full-access".to_string());
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &prewarm_metadata,
+        )
+        .expect("changed prewarm sandbox identity")
+    );
+    let mut memory_metadata = metadata_a.clone();
+    memory_metadata.request_kind = Some(CodexResponsesRequestKind::Memory);
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &memory_metadata,)
+            .expect("memory transport identity")
+    );
 
     let mut volatile_metadata = metadata_a.clone();
     volatile_metadata.session_id = "session-after-restart".to_string();

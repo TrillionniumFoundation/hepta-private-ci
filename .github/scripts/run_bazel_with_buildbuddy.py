@@ -39,6 +39,51 @@ REMOTE_REPO_CONTENTS_CACHE_STARTUP_OPTIONS = {
 }
 
 
+# Unary startup flags accepted by the pinned Bazel 9 client. Values may follow
+# the flag as a separate argument, including values that look like commands.
+# See src/main/cpp/{startup_options,bazel_startup_options}.cc in bazelbuild/bazel.
+STARTUP_OPTIONS_WITH_VALUES = {
+    "--bazelrc",
+    "--command_port",
+    "--connect_timeout_secs",
+    "--digest_function",
+    "--experimental_cgroup_parent",
+    "--extra_classpath",
+    "--failure_detail_out",
+    "--host_jvm_args",
+    "--host_jvm_profile",
+    "--install_base",
+    "--invocation_policy",
+    "--io_nice_level",
+    "--local_startup_timeout_secs",
+    "--macos_qos_class",
+    "--max_idle_secs",
+    "--output_base",
+    "--output_user_root",
+    "--server_javabase",
+    "--server_jvm_out",
+    "--unix_digest_hash_attribute_name",
+}
+
+
+def bazel_command_index(args: Sequence[str]) -> int | None:
+    """Locate the command without interpreting startup values or run payloads."""
+    idx = 0
+    while idx < len(args):
+        arg = args[idx]
+        if arg == "--":
+            return None
+        if not arg.startswith("-"):
+            return idx
+        if arg in STARTUP_OPTIONS_WITH_VALUES:
+            if idx + 1 == len(args):
+                raise ValueError(f"missing value for Bazel startup option {arg}")
+            idx += 2
+        else:
+            idx += 1
+    return None
+
+
 def startup_args(args: Sequence[str], env: Mapping[str, str]) -> list[str]:
     """Return shared startup options that are missing from a Bazel invocation.
 
@@ -47,16 +92,16 @@ def startup_args(args: Sequence[str], env: Mapping[str, str]) -> list[str]:
     through several helpers, so normalize their startup options here while
     preserving any explicit choice made by the caller.
     """
-    command_idx = next(
-        (idx for idx, arg in enumerate(args) if not arg.startswith("-")),
-        len(args),
-    )
+    command_idx = bazel_command_index(args)
+    if command_idx is None:
+        command_idx = len(args)
     configured_startup_args = args[:command_idx]
     injected_args = []
 
     output_user_root = env.get("BAZEL_OUTPUT_USER_ROOT")
     if output_user_root and not any(
-        arg.startswith("--output_user_root=") for arg in configured_startup_args
+        arg == "--output_user_root" or arg.startswith("--output_user_root=")
+        for arg in configured_startup_args
     ):
         injected_args.append(f"--output_user_root={output_user_root}")
 
@@ -173,10 +218,7 @@ def bazel_args_without_remote_execution(
             )
             and "--config=ci" not in prefix
         ):
-            command_idx = next(
-                (idx for idx, arg in enumerate(prefix) if not arg.startswith("-")),
-                None,
-            )
+            command_idx = bazel_command_index(prefix)
             if command_idx is not None and prefix[command_idx] in {
                 "build",
                 "test",
@@ -189,10 +231,7 @@ def bazel_args_without_remote_execution(
                 prefix.insert(command_idx + 1, "--config=ci")
         return [*prefix, *suffix]
 
-    command_idx = next(
-        (idx for idx, arg in enumerate(prefix) if not arg.startswith("-")),
-        None,
-    )
+    command_idx = bazel_command_index(prefix)
     # Queries and administrative commands do not configure build actions.
     # Do not inject CI build options or runtime skip filters into those calls.
     if command_idx is None or prefix[command_idx] not in {
@@ -251,10 +290,7 @@ def bazel_args_without_remote_execution(
 def bazel_args_with_remote_config(
     args: Sequence[str], env: Mapping[str, str]
 ) -> list[str]:
-    command_idx = next(
-        (idx for idx, arg in enumerate(args) if not arg.startswith("-")),
-        None,
-    )
+    command_idx = bazel_command_index(args)
     if command_idx is None:
         raise ValueError("expected a Bazel command")
 
@@ -322,7 +358,8 @@ def invocation_args(args: Sequence[str]) -> list[str]:
 @contextmanager
 def windows_target_patterns(args: Sequence[str], env: Mapping[str, str]):
     """Keep a complete target roster out of the native Bazel command line."""
-    command = next((arg for arg in args[1:] if not arg.startswith("-")), None)
+    command_idx = bazel_command_index(args[1:])
+    command = None if command_idx is None else args[command_idx + 1]
     if (
         (os.name != "nt" and env.get("RUNNER_OS") != "Windows")
         or command not in {"build", "test", "coverage"}

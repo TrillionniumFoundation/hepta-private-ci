@@ -133,3 +133,15 @@ test('pixel-aligned full-pass overscan cannot masquerade as a wholly visible act
  assert.deepEqual(observedAreaCenter([33,12,44,44],viewport),{x:55,y:34});
  assert.deepEqual(observedAreaCenter([1176,10,104,44],viewport),{x:1228,y:32});
 });
+
+
+test('Console requires explicit unrequested read-only status, refresh and authority limits',async()=>{
+ const {hasUnrequestedReadOnlyObservation}=await import('../tools/verify-robrix-evidence.mjs');
+ const lines=['Refresh observations','No owner observation has been requested for this view.',
+  'This is not current write authority.','Chat and commands remain unavailable.',
+  'Read-only runtime unavailable (NotConnected).'];
+ assert.equal(hasUnrequestedReadOnlyObservation(lines.join('\n')),true);
+ for(let index=0;index<lines.length;index++)assert.equal(hasUnrequestedReadOnlyObservation(lines.filter((_,i)=>i!==index).join(' ')),false);
+ assert.equal(hasUnrequestedReadOnlyObservation('Console is unavailable because owner services have not been composed.'),false);
+ assert.equal(hasUnrequestedReadOnlyObservation('Refresh observations. Runtime active and writable.'),false);
+});

@@ -10,6 +10,12 @@ use super::query_agent_health_once;
 
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
+fn fixture_io<T>(stage: &str, result: std::io::Result<T>) -> std::io::Result<T> {
+    result.map_err(|error| {
+        std::io::Error::new(error.kind(), format!("peer fixture {stage}: {error}"))
+    })
+}
+
 enum AgentProbe {
     Health,
     Drain,
@@ -20,7 +26,7 @@ fn reject_wrong_live_peer(probe: AgentProbe) -> TestResult {
         .prefix("hpeer-")
         .tempdir_in("/tmp")?;
     let socket = temp.path().join("agent.sock");
-    let listener = UnixListener::bind(&socket)?;
+    let listener = fixture_io("bind listener", UnixListener::bind(&socket))?;
     let mut identity = AgentHealthProbeIdentity {
         agent_id: AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?,
         spawn_generation: 7,
@@ -30,22 +36,31 @@ fn reject_wrong_live_peer(probe: AgentProbe) -> TestResult {
         run_root: temp.path().join("run"),
         control_socket: socket,
     };
-    let mut unrelated = std::process::Command::new("/bin/sleep").arg("30").spawn()?;
+    let mut unrelated = fixture_io(
+        "spawn unrelated process",
+        std::process::Command::new("/bin/sleep").arg("30").spawn(),
+    )?;
     identity.process_id = unrelated.id();
     let worker = std::thread::spawn(move || -> std::io::Result<Vec<u8>> {
-        let (mut stream, _) = listener.accept()?;
-        stream.set_read_timeout(Some(super::HEALTH_PROBE_IO_TIMEOUT))?;
+        let (mut stream, _) = fixture_io("accept rejected peer", listener.accept())?;
+        fixture_io(
+            "set rejected peer read timeout",
+            stream.set_read_timeout(Some(super::HEALTH_PROBE_IO_TIMEOUT)),
+        )?;
         let mut request = Vec::new();
-        stream.read_to_end(&mut request)?;
+        fixture_io(
+            "read rejected peer to EOF",
+            stream.read_to_end(&mut request),
+        )?;
         Ok(request)
     });
     let result = match probe {
         AgentProbe::Health => query_agent_health_once(&identity, /*request_id*/ 19).map(|_| ()),
         AgentProbe::Drain => query_agent_drain_once(&identity, /*request_id*/ 19).map(|_| ()),
     };
-    let still_running = unrelated.try_wait()?.is_none();
-    unrelated.kill()?;
-    unrelated.wait()?;
+    let still_running = fixture_io("observe unrelated process", unrelated.try_wait())?.is_none();
+    fixture_io("stop unrelated fixture process", unrelated.kill())?;
+    fixture_io("reap unrelated fixture process", unrelated.wait())?;
     let request = worker
         .join()
         .map_err(|_| std::io::Error::other("peer fixture thread panicked"))??;

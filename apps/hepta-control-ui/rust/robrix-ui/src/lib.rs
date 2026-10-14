@@ -6,6 +6,8 @@ pub mod app;
 mod native_status;
 #[cfg(feature = "ui")]
 pub mod robrix;
+#[cfg(feature = "ui")]
+mod runtime_status;
 
 #[cfg(any(feature = "ui", test))]
 mod ime_pointer_gate;
