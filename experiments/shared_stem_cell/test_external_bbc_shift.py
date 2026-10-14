@@ -23,6 +23,32 @@ class ShiftTests(unittest.TestCase):
         self.assertNotIn("synthetic", json.dumps(b.public_cohort(first)).lower())
         self.assertEqual(len({r["source_index"] for r in first}), 128)
 
+    def test_hf_column_view_is_materialized_without_reading_gold(self):
+        data = self.texts()
+        class Column:
+            def __len__(self):
+                return len(data)
+            def __iter__(self):
+                yield from data
+        class Dataset:
+            column_names = ["text", "label", "label_text"]
+            label_reads = 0
+            def __getitem__(self, key):
+                if key != "text":
+                    self.label_reads += 1
+                    raise AssertionError("model preparation touched protected answers")
+                return Column()
+        ds = Dataset()
+        texts = b.public_text_column(ds)
+        self.assertEqual(texts, data)
+        self.assertIs(type(texts), list)
+        self.assertEqual(ds.label_reads, 0)
+        self.assertEqual(b.sample(texts), b.sample(data))
+        class Wrong(Dataset):
+            column_names = ["text", "label"]
+        with self.assertRaises(b.SourceError):
+            b.public_text_column(Wrong())
+
     def test_unknown_label_never_mapped_to_one_of_four_ag_classes(self):
         rows = b.public_cohort(b.sample(self.texts()))
         labels = ["business", "sport", "politics", "tech", "entertainment"] * 25 + ["business"] * 3

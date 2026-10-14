@@ -47,6 +47,27 @@ def normalized(text):
     return " ".join(text.casefold().split())
 
 
+def public_text_column(dataset):
+    """Materialize only the bounded publisher TEXT column, never labels.
+
+    datasets==4.2.0 can return a lazy datasets.arrow_dataset.Column from
+    dataset["text"].  sample() intentionally accepts owned list/tuple only.
+    Explicit conversion is necessary; otherwise the real CI fails before the
+    first Encoder call even though the synthetic list fixtures pass.
+    """
+    names = getattr(dataset, "column_names", None)
+    require(isinstance(names, (tuple, list)) and
+            {"text", "label_text"} <= set(names), "fixed BBC text/label schema required")
+    column = dataset["text"]
+    require(hasattr(column, "__len__") and 1 <= len(column) <= 10000,
+            "unbounded publisher text column")
+    texts = list(column)
+    require(len(texts) == len(column) and
+            all(type(x) is str and 1 <= len(x.encode("utf-8")) <= 65536
+                for x in texts), "invalid publisher text column values")
+    return texts
+
+
 def sample(texts, excluded=(), count=COUNT):
     """Label-free selection; never see category or classifier probabilities."""
     require(type(texts) in (tuple, list) and 1 <= len(texts) <= 10000
@@ -254,7 +275,7 @@ def run(study: Path, consolidation: Path, producer_sha: str,
         with e.measured() as acquire:
             ds = load_dataset(SOURCE, revision=REVISION, split="test",
                               cache_dir=str(study / "bbc-dataset-cache"))
-            texts = ds["text"]  # label-free; no label_text extraction here
+            texts = public_text_column(ds)  # materialize only text, never gold
             rows = sample(texts, excluded)
         safe = public_cohort(rows)
         cohort_sha = e.write_once(output / "cohort.json", safe)
