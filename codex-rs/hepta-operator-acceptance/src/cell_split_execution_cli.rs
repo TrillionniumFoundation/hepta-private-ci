@@ -332,6 +332,28 @@ fn read_private_config(path: &Path) -> Result<Vec<u8>, String> {
 mod tests {
     use super::*;
 
+    /// Negative-only telemetry fixture: production Agentd accepts the
+    /// concrete Evidence-owned durable writer, never this trait stub.
+    #[derive(Debug)]
+    struct UnhealthyMetricSink;
+
+    impl PhaseMetricSinkV1 for UnhealthyMetricSink {
+        fn record(
+            &self,
+            _event: codex_hepta_types::PhaseMetricEventV1,
+        ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+            Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+        }
+
+        fn healthy(&self) -> bool {
+            false
+        }
+
+        fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+            Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+        }
+    }
+
     #[test]
     fn requires_external_config_pin_before_opening_any_owner() {
         let dir = tempfile::tempdir().expect("tempdir");
@@ -481,6 +503,35 @@ mod tests {
         assert!(!read_only.complete);
         assert!(read_only.transcript.is_none());
         assert!(!read_only.production_activation_authorized);
+
+        // The telemetry-bound endpoint must not prepare a new CAS intent
+        // while its writer is unhealthy, even with an allow-all fixture
+        // admission. Its read-only original-owner transcript must remain
+        // independently accessible under the very same outage.
+        let stopped_sink = Arc::new(UnhealthyMetricSink);
+        let metrics_rejection = run_pinned_cell_split_execution_with_admission_and_metrics_v1(
+            "advance",
+            &config_path,
+            &pin,
+            stopped_sink.clone(),
+            |_| Ok(()),
+        )
+        .expect_err("unhealthy Evidence writer must deny new effects");
+        assert!(metrics_rejection.contains("telemetry unavailable for new effects"));
+        assert!(!pending.exists());
+        assert!(!committed.exists());
+
+        let read_only_during_outage =
+            run_pinned_cell_split_execution_with_admission_and_metrics_v1(
+                "transcript",
+                &config_path,
+                &pin,
+                stopped_sink,
+                |_| Ok(()),
+            )
+            .expect("a failed telemetry writer never prevents owner readback");
+        assert_eq!(read_only_during_outage.completed_steps, 0);
+        assert!(!read_only_during_outage.production_activation_authorized);
 
         // A retry also performs only the signed readiness preflight. It may
         // later execute once a real service is deployed, without an orphaned
