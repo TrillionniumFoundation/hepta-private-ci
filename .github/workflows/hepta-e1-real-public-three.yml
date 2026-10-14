@@ -7,6 +7,8 @@ on:
       - "experiments/shared_stem_cell/test_e1_public_triplet_real_cpu.py"
       - "experiments/shared_stem_cell/e1_public_triplet_review.py"
       - "experiments/shared_stem_cell/test_e1_public_triplet_review.py"
+      - "experiments/shared_stem_cell/e1_public_laya_reference.py"
+      - "experiments/shared_stem_cell/test_e1_public_laya_reference.py"
       - "experiments/shared_stem_cell/E1_REAL_PUBLIC_PILOT.md"
       - ".github/workflows/hepta-e1-real-public-three.yml"
   workflow_dispatch:
@@ -25,6 +27,7 @@ jobs:
     timeout-minutes: 120
     permissions:
       contents: read
+      actions: read
     env:
       HF_HUB_DISABLE_TELEMETRY: "1"
       HF_HUB_DISABLE_XET: "0"
@@ -163,6 +166,24 @@ jobs:
             --embeddinggemma-2-text "$ROOT/embeddinggemma_2_text.json" \
             --output "$ROOT/three-public-numeric-only.json"
           "$RUNNER_TEMP/e1-real-venv/bin/python" -m json.tool "$ROOT/three-public-numeric-only.json" > /dev/null
+      - name: Retrieve original frozen Laya421 public historical run
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11886761368/zip" > "$RUNNER_TEMP/e1-public/laya-historical.zip"
+          printf '%s  %s\n' 'e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d' "$RUNNER_TEMP/e1-public/laya-historical.zip" | sha256sum -c -
+      - name: Independent source-bound historical Laya vs all new Heads
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/e1-public"
+          "$RUNNER_TEMP/e1-real-venv/bin/python" experiments/shared_stem_cell/e1_public_laya_reference.py \
+            --panel "$ROOT/panel.json" \
+            --historical-laya-zip "$ROOT/laya-historical.zip" \
+            --granite-97m-r2 "$ROOT/granite_97m_r2.json" \
+            --mmbert-small "$ROOT/mmbert_small.json" \
+            --embeddinggemma-2-text "$ROOT/embeddinggemma_2_text.json" \
+            --output "$ROOT/laya-historical-comparison.json"
       - name: Preserve existing observations including failed arms
         uses: actions/upload-artifact@v4
         if: always()
