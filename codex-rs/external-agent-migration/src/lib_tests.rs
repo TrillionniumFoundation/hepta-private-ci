@@ -357,6 +357,18 @@ fn subagent_yaml_scalar_contract_is_frozen_before_security_parser_migration() {
         "---\nname: !!str reviewer\ndescription: Inspect\n---\nReview carefully.\n",
     );
     assert!(agent_metadata(&tagged_name).is_none());
+
+    // Neither duplicate YAML mapping entries, merged aliases, nor tags
+    // hidden behind an anchor can become trusted agent metadata.
+    for raw in [
+        "---\nname: reviewer\ndescription: first\ndescription: second\n---\nReview carefully.\n",
+        "---\ndefaults: &defaults {name: reviewer, description: hidden}\n<<: *defaults\n---\nReview carefully.\n",
+        "---\nname: reviewer\nhidden: &tagged !secret hidden\ndescription: *tagged\n---\nReview carefully.\n",
+        "---\nname: reviewer\ndescription: !!binary dGV4dA==\n---\nReview carefully.\n",
+    ] {
+        let document = parse_document_content(raw);
+        assert!(agent_metadata(&document).is_none(), "{raw}");
+    }
 }
 
 #[test]
