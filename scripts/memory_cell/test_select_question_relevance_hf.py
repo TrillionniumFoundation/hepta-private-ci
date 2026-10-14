@@ -60,6 +60,14 @@ class OfficialTests(unittest.TestCase):
                 return [4] * 800 + super().apply_chat_template(messages, **kwargs)
         with self.assertRaises(c.Invalid): q.compile_unit(Long(), self.unit(), position_cap=2048)
 
+    def test_successful_blank_output_remains_observed_but_not_selective(self):
+        for text in ("", "  \n\t"):
+            row = q.behavior({"status": "succeeded", "answer": text},
+                             {"status": "succeeded", "answer": q.REFUSAL})
+            self.assertTrue(row["jointly_observed"])
+            self.assertFalse(row["weak_selective_behavior"])
+            self.assertIsNone(row["semantic_accuracy"])
+
 
 if __name__ == "__main__":
     unittest.main()

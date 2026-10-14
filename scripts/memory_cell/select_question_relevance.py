@@ -157,14 +157,15 @@ def preference(scores):
 
 
 def behavior(matched, mismatched):
-    """Nonrefusal is not a correct answer; always-refuse cannot pass this proxy."""
+    """Nonrefusal is not a correct answer; blank outputs remain observed failures."""
     valid = all(r.get("status") == "succeeded" and isinstance(r.get("answer"), str) for r in (matched, mismatched))
     if not valid:
         return {"jointly_observed": False, "matched_refusal": None, "mismatched_refusal": None,
                 "weak_selective_behavior": None, "semantic_accuracy": None}
     mr, xr = (r["answer"].strip() == REFUSAL for r in (matched, mismatched))
     return {"jointly_observed": True, "matched_refusal": mr, "mismatched_refusal": xr,
-            "weak_selective_behavior": not mr and xr, "semantic_accuracy": None}
+            "weak_selective_behavior": bool(matched["answer"].strip()) and not mr and xr,
+            "semantic_accuracy": None}
 
 
 def summarize(rows):
