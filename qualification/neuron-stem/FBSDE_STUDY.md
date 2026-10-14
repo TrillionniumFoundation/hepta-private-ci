@@ -39,6 +39,49 @@ the SAME noise. We report path-coupled terminal RMSE and the global BSDE defect
 for the left-point stochastic-integral rule. This is a finite seeded numerical
 experiment, not a universal strong-convergence proof.
 
+### Exact counterexample to local-uniqueness → global-solution inference
+
+\`fbsde_global_obstruction.py\` and \`test_fbsde_global_obstruction.py\`
+use a separate exact-rational degenerate coupled boundary-value case:
+
+\`\`\`text
+dX_t = Y_t dt,  dY_t = 0,  X_0 = x0,  Y_T = g X_T
+(1 - g T) Y_0 = g x0.
+\`\`\`
+
+Every short interval of width \`h\` with \`0 < g*h < 1\` has a uniquely
+solvable local terminal-field problem. Yet with \`T=1, g=1, x0=1\`
+the global boundary has **no solution**; with \`x0=0\` it has
+**infinitely many** solutions. In the no-solution case, independently
+resetting two half-interval fields yields \`(X,Y): (1,2)→(2,2)\`
+and \`(2,4)→(4,4)\`: both local terminal residuals and the last
+terminal residual are exactly **zero**, but the interface \`Y\` jump
+is **2**. Thus good local residuals, a matching leaf and a final
+boundary residual do **not** certify a global solution.
+
+A regular \`T=4/5,g=1,x0=1\` case carries the SAME global terminal
+decoupling field backwards: \`Y_0=5\`, and exact forward stitching
+retains zero \`X\` and \`Y\` interface jumps. With \`T=3/2\`, the
+algebraic boundary value is unique (\`Y_0=-2\`) yet the regular
+decoupling field crosses a pole, so the registered global-field
+admission remains **false**. These are different mathematical
+dispositions and should not be conflated.
+
+Reproduce under the existing \`fbsde_study.py\` dispatcher:
+
+\`\`\`bash
+PYTHONPATH=qualification/neuron-stem \
+  python3 -m unittest -v test_fbsde_global_obstruction
+PYTHONPATH=qualification/neuron-stem \
+  python3 qualification/neuron-stem/fbsde_study.py \
+    --profile global_obstruction_v1 --output /new/global-obstruction
+\`\`\`
+
+The new exact-mechanisms research CI lane retains the complete
+\`report.json\` as raw study evidence. This is a deterministic
+counterexample and admission check, **not** stochastic numerical
+convergence, independently learned capability or production authorization.
+
 ## 2. Complete information-set policy enumeration and local BSDE sweep
 
 The finite task asks for the conjunction of two hidden bits. Choices include
