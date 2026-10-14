@@ -27,6 +27,8 @@ HF_REV = "8949b909ec900327062f0ebf497f51aef5e6f0c8"
 WEIGHT_SHA256 = "340ac08b74eef0d7bdec2d7981a6a3d4249bf0e6aab60634b72ad02c2b8023a9"
 SNAPSHOT_SHA256 = "43138a5545ce4e7996d91735f2330519a8913304d3abf257f6cfdfbe0541283d"
 HF_MODEL = "answerdotai/ModernBERT-base"
+TORCH_CPU_VERSION = "2.10.0+cpu"
+TRANSFORMERS_VERSION = "4.57.1"
 MODEL_FILES = ("config.json", "model.safetensors", "tokenizer.json",
                "tokenizer_config.json", "special_tokens_map.json")
 
@@ -46,6 +48,12 @@ def file_sha(path: Path) -> str:
 def git_sha(folder: Path) -> str:
     return subprocess.run(["git", "-C", str(folder), "rev-parse", "HEAD"],
                           check=True, capture_output=True, text=True).stdout.strip()
+
+
+def require_runtime_versions(torch_version: str, transformers_version: str) -> None:
+    """Fail closed rather than silently changing the measured CPU numerical stack."""
+    if torch_version != TORCH_CPU_VERSION or transformers_version != TRANSFORMERS_VERSION:
+        raise ValueError("unreviewed pretrained CPU execution dependency revision")
 
 
 def require_research_roots(research: Path, audited: Path) -> None:
@@ -124,6 +132,7 @@ def main() -> int:
         import hf_encoder_kernel
         import stem_projection
         import native_bridge
+        import matrix_materials
         # The project intentionally uses TWO separately pinned source trees.
         # Resolve every imported implementation to its reviewed owner; sys.path
         # order or a same-named module may not silently substitute another tree.
@@ -131,6 +140,7 @@ def main() -> int:
             (hf_complete_checkpoint, args.research_root / "qualification/stem-cell-v1/hf_complete_checkpoint.py"),
             (hf_encoder_kernel, args.research_root / "qualification/stem-cell-v1/hf_encoder_kernel.py"),
             (stem_projection, args.audited_root / "qualification/stem-cell-v1/stem_projection.py"),
+            (matrix_materials, args.research_root / "qualification/stem-cell-v1/matrix_materials.py"),
             (native_bridge, args.audited_root / "qualification/stem-cell-v1/native_bridge.py"),
         )
         for module, expected in expected_modules:
@@ -141,7 +151,9 @@ def main() -> int:
         from stem_projection import LowRankProjectionQ24, project_ref, save_shadow_projection, Q
         from native_bridge import native_logits
         import torch
+        import transformers
         from transformers import AutoTokenizer
+        require_runtime_versions(torch.__version__, transformers.__version__)
         torch.set_num_threads(1)
         snapshot = freeze_public_snapshot(root if args.acquire_public else args.snapshot,
                                           acquire=args.acquire_public)
@@ -223,6 +235,7 @@ def main() -> int:
             raise AssertionError("native shadow 256-wide Q24 Head mismatched projection")
         if snapshot_digest(snapshot) != SNAPSHOT_SHA256:
             raise ValueError("public Encoder bytes drift after inference")
+        require_research_roots(args.research_root, args.audited_root)
         report = dict(schema="hepta.neuron.e0-public-pretrained-projection-shadow.v1",
                       base_research_sha=STEM_RESEARCH_SHA, audited_projection_sha=STEM_AUDIT_SHA,
                       public_model_id=HF_MODEL, upstream_revision=HF_REV,
@@ -238,6 +251,9 @@ def main() -> int:
                       diagnostic_head_drive_q24_sha256=sha(
                           b"".join(i64(round(x * Q)) for x in logits)),
                       diagnostic_head_prediction_policy="all_zero_untrained",
+                      execution_stack=dict(python=sys.version.split()[0], torch=torch.__version__,
+                                           transformers=transformers.__version__,
+                                           cpu_threads=1),
                       loading_and_forward_wall_ns=elapsed_ns,
                       forward_wall_ns=forward_wall_ns,
                       process_cpu_ns=process_cpu_ns,
