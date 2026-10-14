@@ -39,7 +39,7 @@ jobs:
           set -euo pipefail
           python3 -m venv "$RUNNER_TEMP/neuron-shadow-venv"
           "$RUNNER_TEMP/neuron-shadow-venv/bin/python" -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
-          "$RUNNER_TEMP/neuron-shadow-venv/bin/python" -m pip install --disable-pip-version-check 'pytest==9.0.2'
+          "$RUNNER_TEMP/neuron-shadow-venv/bin/python" -m pip install --disable-pip-version-check 'pytest==9.0.2' 'cryptography==46.0.4'
           echo "$RUNNER_TEMP/neuron-shadow-venv/bin" >> "$GITHUB_PATH"
 
       - name: Run fail-closed regression tests
