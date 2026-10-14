@@ -1,0 +1,78 @@
+name: Hepta public Stem artifact audit (research only)
+
+on:
+  pull_request:
+    paths:
+      - "scripts/hepta-stem-public-artifact-audit.py"
+      - "scripts/tests/test_hepta_stem_public_artifact_audit.py"
+      - "docs/learning/SHARED_ENCODER_PUBLIC_MMBERT_RECEIPT_20261014.md"
+      - ".github/workflows/hepta-stem-public-artifact-audit.yml"
+  workflow_dispatch:
+    inputs:
+      verify_public_archive:
+        description: "Re-check the pinned public Actions archive (never E0)"
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  offline-contracts:
+    name: Offline research audit tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - name: Exact source checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Test fail-closed public ZIP and score contracts
+        run: python3 -m unittest discover -s scripts/tests -p 'test_hepta_stem_public_artifact_audit.py' -v
+
+  public-archive-replay:
+    name: Pinned mmBERT public ZIP re-check (research only)
+    if: github.event_name == 'workflow_dispatch' && inputs.verify_public_archive
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Download only previously published research artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-public"
+          gh run download 38546717991 -R "$GH_REPO" \
+            -n hepta-public-pretrained-38546717991 \
+            -D "$RUNNER_TEMP/hepta-public"
+          test -f "$RUNNER_TEMP/hepta-public/hepta-public-pretrained-38546717991.zip"
+      - name: Recompute complete archive identities and public scores
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-stem-public-artifact-audit.py \
+            --zip "$RUNNER_TEMP/hepta-public/hepta-public-pretrained-38546717991.zip" \
+            --zip-sha256 0f3c8c2ceb22b61cabb8a08ca06d2fb0a9a7f4681e9f1af45138cf7979a0e1c7 \
+            --model jhu-clsp/mmBERT-small \
+            --revision abc32620dd4f6ab06f5fbe905dc25f310618e09f \
+            --out "$RUNNER_TEMP/hepta-public/audit.json"
+          python3 - "$RUNNER_TEMP/hepta-public/audit.json" <<'PY'
+          import json
+          import sys
+          report = json.load(open(sys.argv[1], encoding="utf-8"))
+          assert report["status"] == "PUBLIC_RESEARCH_ARCHIVE_SELF_CONSISTENT_NOT_E0"
+          assert report["production_promotion_permitted"] is False
+          assert report["authority"] == "DENY_ALL"
+          assert report["scores_recomputed"]["gated"]["correct"] == 22
+          assert report["research_split_controls_recomputed"]["parent_no_change"]["correct"] == 26
+          assert report["paired_to_public_parent_no_change_research_only"]["gated"]["losses"] == 6
+          PY
