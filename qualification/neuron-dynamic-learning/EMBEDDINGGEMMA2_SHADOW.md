@@ -273,3 +273,31 @@ This is a diagnostic between model families, not a decision to replace Laya.
 The original physical smoke workflows and existing native owners remain
 unchanged; PR remains **Draft / Shadow / DENY_ALL** until full independent
 acceptance and `blocking-ci` are demonstrably complete.
+
+
+## Independently recomputed public three-arm numerical audit
+
+The optional `paired_independent_audit.py` is a **separate read-only
+consumer**, not the encoder, Head trainer or Laya interpreter. It ingests
+the original SHA-256-bound AG News panel and source receipt plus all three
+raw per-case model arm reports and the combined report. It independently
+recomputes every calibration/test accuracy, Brier, eight-bin descriptive
+ECE and measured serving-time sum, rather than trusting the model
+runner's summary. It rejects recycled/missing cases, changed input
+hashes/labels, unexpected model revisions, frozen/learned Head lineage
+mismatch, and any claim of independent origin/equal total cost/true future
+windows or production authority without separate owner evidence.
+
+The three arms are Laya421 Frozen, Gemma2 Frozen Head and Gemma2
+Trained Head. This verifier retains the exact source/output/report SHA256
+identities, explicitly distinguishes allocated shared-batch wall time
+from an independently measured per-request latency, and reports test-only
+descriptive pairwise deltas. It does **not** authenticate the upstream
+dataset signer, native Worker, physical Transformer forward counts,
+Foundation pretraining cost, causal effect or three future windows.
+It never grants production promotion; its only disposition is `DENY_ALL`.
+
+The paired physical workflow now runs this independently implemented
+post-hoc review and retains its result as a distinct artifact next to
+the original raw model reports. This is an integrity gate, not an
+independent future-time learning claim.

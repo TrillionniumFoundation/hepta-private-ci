@@ -176,11 +176,24 @@ jobs:
           assert not report['matched_full_lifecycle_cost']
           assert len(report['arms']) == 3
           PY
+      - name: Independent source/arm/metric recomputation (not model origin attestation)
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/stem-paired-venv/bin/python" \
+            qualification/neuron-dynamic-learning/paired_independent_audit.py \
+            --panel "$RUNNER_TEMP/stem-agnews-panel.json" \
+            --source "$RUNNER_TEMP/stem-agnews-source.json" \
+            --gemma "$RUNNER_TEMP/stem-gemma-physical-arms.json" \
+            --laya "$RUNNER_TEMP/stem-laya-physical-arm.json" \
+            --comparison "$RUNNER_TEMP/stem-agnews-comparison.json" \
+            --out "$RUNNER_TEMP/stem-paired-independent-review.json"
       - name: Offline schema and adversarial regression tests
         run: |
           set -euo pipefail
           PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v \
             -s qualification/neuron-dynamic-learning -p 'test_agnews_paired_shadow.py'
+          PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -v \
+            -s qualification/neuron-dynamic-learning -p 'test_paired_independent_audit.py'
           git diff --check
           git diff --exit-code
       - name: Archive only public-case digests and non-authorizing statistics
@@ -195,5 +208,6 @@ jobs:
             ${{ runner.temp }}/stem-gemma-physical-arms.json
             ${{ runner.temp }}/stem-laya-physical-arm.json
             ${{ runner.temp }}/stem-agnews-comparison.json
+            ${{ runner.temp }}/stem-paired-independent-review.json
           if-no-files-found: warn
           retention-days: 7
