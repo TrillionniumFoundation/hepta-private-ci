@@ -142,6 +142,7 @@ def train_relation_router(graph, training_examples, *, steps=50, seed=17):
     """
     from amcn_core import FrozenGraph
     require(isinstance(graph, FrozenGraph), "frozen HNMF projection required")
+    require(type(steps) is int and 1 <= steps <= 1000, "router training budget")
     require(isinstance(training_examples, list) and 4 <= len(training_examples) <= 4096,
             "bounded TRAIN edge examples")
     edge_set = {e.relation for e in graph.edges}
