@@ -13,6 +13,7 @@ import math
 from typing import Any
 
 DOMAIN = b'hepta.neuron.prequential-shadow.v1\x00'
+INPUT_DOMAIN = b'hepta.neuron.prequential-input.v1\x00'
 GENESIS = '0' * 64
 MAX_EVENTS = 12288
 
@@ -33,6 +34,16 @@ def _time(value: Any) -> datetime:
     if parsed.tzinfo is None or parsed.utcoffset() is None:
         raise ValueError('timezone-aware timestamps required')
     return parsed.astimezone(timezone.utc)
+
+
+def input_digest(row: dict) -> str:
+    """Bind a forecast to admitted *pre-outcome* question/options/state bytes."""
+    payload = {k: row[k] for k in (
+        'row_id', 'source_group', 'principal', 'organ_id', 'cell_id',
+        'state', 'question', 'options')}
+    raw = json.dumps(payload, sort_keys=True, separators=(',', ':'),
+                     ensure_ascii=False, allow_nan=False).encode('utf-8')
+    return hashlib.sha256(INPUT_DOMAIN + raw).hexdigest()
 
 
 def event_digest(event: dict) -> str:
@@ -88,6 +99,7 @@ def prequential_chain_audit(rows: list[dict], dataset_digest: str,
     observed: dict[str, dict[str, tuple[int, datetime]]] = {}
     generation = None
     epoch = None
+    previous_recorded_at = None
     for idx, event in enumerate(events):
         if not isinstance(event, dict):
             raise ValueError('event object required')
@@ -111,7 +123,13 @@ def prequential_chain_audit(rows: list[dict], dataset_digest: str,
         if row_id not in futures:
             raise ValueError('unexpected or cross-split row')
         row_index, row = futures[row_id]
+        if (raw.get('source_group') != row.get('source_group')
+                or raw.get('input_digest') != input_digest(row)):
+            raise ValueError('forecast/outcome source and admitted input identity mismatch')
         stamp = _time(raw.get('recorded_at'))
+        if previous_recorded_at is not None and stamp < previous_recorded_at:
+            raise ValueError('event log clock moved backwards')
+        previous_recorded_at = stamp
         per_row = observed.setdefault(row_id, {})
         kind = raw.get('kind')
         if kind == 'forecast':
