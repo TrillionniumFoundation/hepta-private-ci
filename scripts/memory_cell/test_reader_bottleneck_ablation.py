@@ -166,10 +166,12 @@ class BottleneckAblationTests(unittest.TestCase):
         row = answer("selected_k", arms["selected_k"])
         row["status"] = "failed"
         validate_row(row, case, arms, QWEN_INVENTORY)
-        group = {"q1": {
-            "left": {"status": "failed", "strict_task_success": False},
-            "right": {"status": "succeeded", "strict_task_success": True},
-        }}
+        group = {
+            "q1": {
+                "left": {"status": "failed", "strict_task_success": False},
+                "right": {"status": "succeeded", "strict_task_success": True},
+            }
+        }
         self.assertEqual(_paired(group, "left", "right")["missing"], 1)
 
     def test_paired_direction_and_unknown_denominator(self):
@@ -195,7 +197,9 @@ class BottleneckAblationTests(unittest.TestCase):
     def test_freeze_has_no_targets_and_no_review_attestation(self):
         case, originals = fixture()
         locked = {"cases": [case] * 8}
-        with patch("reader_bottleneck_ablation._plan", return_value=(locked, originals)):
+        with patch(
+            "reader_bottleneck_ablation._plan", return_value=(locked, originals)
+        ):
             _, _, _, frozen = freeze_case("does-not-open", 0)
         self.assertFalse(frozen["target_labels_exposed"])
         self.assertFalse(frozen["independent_semantic_review"])
