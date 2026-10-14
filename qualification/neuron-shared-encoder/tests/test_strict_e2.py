@@ -93,3 +93,32 @@ def test_bad_seeds_and_budget_refused():
     with pytest.raises(ValueError, match='finite CPU'):
         z = x.clone(); z[0,0] = float('nan')
         equal_parameter_nonlinear_trial(z, y, rows, steps=1)
+
+
+def test_cli_synthetic_and_actual_jsonl_identity(tmp_path):
+    import json
+    pytest.importorskip('neuron_shared_encoder.contracts')
+    pytest.importorskip('neuron_shared_encoder.models')
+    pytest.importorskip('neuron_shared_encoder.experiment')
+    from neuron_shared_encoder.strict_e2 import main
+    from neuron_shared_encoder.contracts import sha256_file
+    _x, _y, records = sample(12)
+    for row in records:
+        row['question'] = 'Which option?'
+        row['state'] = 'synthetic research input'
+    dataset = tmp_path / 'records.jsonl'
+    dataset.write_text(''.join(json.dumps(row) + '\n' for row in records))
+    dest = tmp_path / 'out.json'
+    args = ['--dataset', str(dataset), '--dataset-sha256', sha256_file(dataset),
+            '--output', str(dest), '--dimension', '16', '--steps', '2',
+            '--budget', '2048', '--seeds', '7', '19']
+    main([*args, '--allow-synthetic'])
+    result = json.loads(dest.read_text())
+    assert result['production_admission'] == 'BLOCKED'
+    assert result['encoder_kind'] == 'synthetic-hash'
+    assert result['evidence_class'] == 'SYNTHETIC_SMOKE'
+    assert result['physical_encoder_kernel_count_verified'] is False
+    with pytest.raises(ValueError, match='synthetic test requires'):
+        main(args)
+    with pytest.raises(ValueError, match='pinned offline real'):
+        main([*args, '--encoder', 'mmbert-joint'])
