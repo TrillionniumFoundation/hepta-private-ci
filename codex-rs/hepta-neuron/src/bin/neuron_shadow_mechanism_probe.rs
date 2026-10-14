@@ -19,16 +19,16 @@ use codex_hepta_neuron::LowRankMinGruCheckpointV1;
 use codex_hepta_neuron::LowRankMinGruConfigV1;
 use codex_hepta_neuron::PopulationSparseCheckpointV2;
 use codex_hepta_neuron::PopulationSparseConfigV2;
+use codex_hepta_neuron::PreparedDiagonalSsmConfigV1;
+use codex_hepta_neuron::PreparedGatedSparseConfigV3;
+use codex_hepta_neuron::PreparedLowRankMinGruConfigV1;
+use codex_hepta_neuron::PreparedPopulationSparseConfigV2;
 use codex_hepta_neuron::PopulationSparseTickV2;
 use codex_hepta_neuron::SparseCheckpoint;
 use codex_hepta_neuron::SparseConfig;
 use codex_hepta_neuron::SparseTick;
 use codex_hepta_neuron::TemporalGateV3;
 use codex_hepta_neuron::TemporalProjectionEdgeV2;
-use codex_hepta_neuron::diagonal_ssm_tick_v1;
-use codex_hepta_neuron::gated_sparse_tick_v3;
-use codex_hepta_neuron::low_rank_min_gru_tick_v1;
-use codex_hepta_neuron::population_sparse_tick_v2;
 use codex_hepta_neuron::sparse_tick;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -63,6 +63,10 @@ struct Configs {
     v3: GatedSparseConfigV3,
     ssm: DiagonalSsmConfigV1,
     min_gru: LowRankMinGruConfigV1,
+    ready_v2: PreparedPopulationSparseConfigV2,
+    ready_v3: PreparedGatedSparseConfigV3,
+    ready_ssm: PreparedDiagonalSsmConfigV1,
+    ready_min_gru: PreparedLowRankMinGruConfigV1,
 }
 
 enum ActiveState {
@@ -111,28 +115,28 @@ impl ActiveState {
             }
             Self::V2(states) => {
                 let (next, receipt) =
-                    population_sparse_tick_v2(&configs.v2, input, states[cell].as_ref())
+                    configs.ready_v2.tick(input, states[cell].as_ref())
                         .map_err(|error| format!("V2 tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
             Self::V3(states) => {
                 let (next, receipt) =
-                    gated_sparse_tick_v3(&configs.v3, input, states[cell].as_ref())
+                    configs.ready_v3.tick(input, states[cell].as_ref())
                         .map_err(|error| format!("V3 tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
             Self::Ssm(states) => {
                 let (next, receipt) =
-                    diagonal_ssm_tick_v1(&configs.ssm, input, states[cell].as_ref())
+                    configs.ready_ssm.tick(input, states[cell].as_ref())
                         .map_err(|error| format!("SSM tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
             Self::MinGru(states) => {
                 let (next, receipt) =
-                    low_rank_min_gru_tick_v1(&configs.min_gru, input, states[cell].as_ref())
+                    configs.ready_min_gru.tick(input, states[cell].as_ref())
                         .map_err(|error| format!("minGRU tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
@@ -239,12 +243,27 @@ fn make_configs(width: usize) -> Result<Configs, String> {
     min_gru
         .digest()
         .map_err(|error| format!("minGRU config: {error:?}"))?;
+    // Compile the selected, immutable model tuples exactly once per runner.
+    // Reusing a compiled model across many scoped Cells does not share or
+    // mutate their individual temporal checkpoints.
+    let ready_v2 = PreparedPopulationSparseConfigV2::new(v2.clone())
+        .map_err(|error| format!("prepared V2: {error:?}"))?;
+    let ready_v3 = PreparedGatedSparseConfigV3::new(v3.clone())
+        .map_err(|error| format!("prepared V3: {error:?}"))?;
+    let ready_ssm = PreparedDiagonalSsmConfigV1::new(ssm.clone())
+        .map_err(|error| format!("prepared SSM: {error:?}"))?;
+    let ready_min_gru = PreparedLowRankMinGruConfigV1::new(min_gru.clone())
+        .map_err(|error| format!("prepared minGRU: {error:?}"))?;
     Ok(Configs {
         v1,
         v2,
         v3,
         ssm,
         min_gru,
+        ready_v2,
+        ready_v3,
+        ready_ssm,
+        ready_min_gru,
     })
 }
 
