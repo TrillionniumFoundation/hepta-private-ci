@@ -253,14 +253,11 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
       - name: Fixed CPU numerical microbenchmark dependencies
         shell: bash
         run: |
           set -euo pipefail
-          python -m venv "$RUNNER_TEMP/fbsde-fused-env"
+          python3 -m venv "$RUNNER_TEMP/fbsde-fused-env"
           "$RUNNER_TEMP/fbsde-fused-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
           "$RUNNER_TEMP/fbsde-fused-env/bin/pip" install numpy==2.2.6 ruff==0.14.0
       - name: Recheck exact historical failed material and run both bounded profiles
