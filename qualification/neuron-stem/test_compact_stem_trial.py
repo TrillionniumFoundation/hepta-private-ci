@@ -1,5 +1,6 @@
 """Offline, model-weight-free contract tests for strict compact Stem trial."""
 import copy
+import importlib.util
 import unittest
 from types import SimpleNamespace
 
@@ -73,6 +74,7 @@ class ContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "requires all five"):
             choose_task_rows(rows, "classify-v1", 1, 11, "foreign-scope")
 
+    @unittest.skipUnless(importlib.util.find_spec("torch") is not None, "torch unavailable in offline CI")
     def test_published_cls_is_not_accidental_mean(self):
         import torch
         x = torch.zeros((1, 3, 384), dtype=torch.float32)
@@ -91,6 +93,7 @@ class ContractTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "unregistered pooling"):
             pool_states(torch, model_output, mask, "raw_mean")
 
+    @unittest.skipUnless(importlib.util.find_spec("torch") is not None, "torch unavailable in offline CI")
     def test_reject_invalid_feature_and_mask(self):
         import torch
         state = torch.ones((1, 3, 384))
@@ -108,6 +111,7 @@ class ContractTests(unittest.TestCase):
             pool_states(torch, SimpleNamespace(last_hidden_state=state),
                         torch.ones((1, 3)), "cls_l2")
 
+    @unittest.skipUnless(importlib.util.find_spec("torch") is not None, "torch unavailable in offline CI")
     def test_all_trainable_parameters_fit_complete_budget(self):
         import torch
         from torch import nn
