@@ -282,7 +282,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "physical CNS permit must remain uninhabited until durable Control",
         )
         gate = re.search(
-            r"self\.atomic_control_cutover_prepared\.as_ref\(\)\.ok_or\(",
+            r"self\.atomic_control_cutover_prepared\s*\.as_ref\(\)\s*\.ok_or\(",
             port,
         )
         actual_effect = re.search(r"\bapply_governed_topology\s*\(", port)
