@@ -46,6 +46,39 @@ PYTHONPATH=qualification/neuron-stem python3 qualification/neuron-stem/fbsde_hea
   --threads 2 --output /new/fusion-two
 \`\`\`
 
+## Same original failing request, not only synthetic features
+
+The new \`fbsde_failed_view_fusion.py\` reconstructs the actual source
+\`test:2872\` / view \`0\` from the original failed ZIP. Before use, it verifies
+ALL **1,786** chained test-view attempts against the preserved
+\`last_attempt_sha256\`, then checks the source/view text fingerprints.
+It invokes the original *declared hashing-reference* Encoder (not mmBERT),
+verifies the raw 384-dimensional feature vector against the independently
+retained replay SHA-256
+\`ec410720bec0173fe0b631553d7e37925a3b4a647aa059a8e24402697df2eb39\`,
+and reapplies the original saved mean/scale/clamp.
+
+On that **actual rejected input**, local Torch float32 source-head diagnostics
+found maximum logits difference \`0\` and argmax changes \`0\` between original
+and fused kernels. This check alone does not certify all potential finite
+inputs or end-to-end request budgets. No raw source text, copied Head tensors,
+gold answer, retrained model or revised production gate enters the report.
+
+New separate CPU research jobs run 513 alternating measurements at 1 and
+2 threads, and retain **every sample** plus head-only process CPU
+p50/p95/p99/max and over-100-ms counts. Even if no new overrun is observed,
+the historical original **108,513,446 ns** request remains rejected:
+the causal explanation for that long tail, reproducibility of a rare
+scheduler/runtime event and a full-system budget-qualified replacement
+are not established. The original CPU cap stays exactly 100,000,000 ns.
+
+\`\`\`bash
+PYTHONPATH=qualification/neuron-stem python3 -m unittest -v fbsde_failed_view_tensor_checks
+PYTHONPATH=qualification/neuron-stem python3 qualification/neuron-stem/fbsde_failed_view_fusion.py \
+  --archive /path/to/original-failed-artifact.zip --threads 1 \
+  --output /new/failed-view-one
+\`\`\`
+
 Do not alter the original pre-registered FBSDE, model selector, objective,
 budget gates, blocking-ci or FinalUse. Any actual adoption would require
 prospective independent task quality, end-to-end per-request CPU/FLOPs/p95/p99,
