@@ -9,7 +9,6 @@ require independent external attestations. NEVER auto-select or promote.
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 from pathlib import Path
 import sys
@@ -19,65 +18,9 @@ from matched_train import sha_file, unique_json
 from realized_budget_audit import CAPS, ARMS, audit as physical_audit, require
 from precommit_future import SEAL_SCHEMA, score as signed_future_score
 
+from physical_tensor_identity import canonical_tensor_sha
+
 SCHEMA = 'hepta.neuron.deduplicated-future-model-review.v1'
-MAX_MODEL_BYTES = 8 << 20
-
-
-def _frame(part: bytes) -> bytes:
-    return len(part).to_bytes(8, 'big') + part
-
-
-def canonical_tensor_sha(path: Path, expected_sha256: str | None = None) -> str:
-    """Hash exact tensor names, dtypes, geometries and payloads, not metadata.
-
-    Caller first independently verifies the pinned physical weight file through
-    realized_budget_audit.audit. Metadata/order cannot turn one model into two.
-    This is an *exact physical tensor* identity, not mathematical equivalence
-    of differently encoded floating weights or of differently configured arms.
-    """
-    require(not path.is_symlink() and not path.parent.is_symlink(),
-            'symlinked physical model in tensor identity')
-    before = path.stat()
-    data = path.read_bytes()
-    after = path.stat()
-    require((before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns,before.st_ctime_ns) ==
-            (after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns,after.st_ctime_ns),
-            'physical model changed during tensor fingerprint read')
-    require(10 <= len(data) <= MAX_MODEL_BYTES, 'invalid physical model size')
-    if expected_sha256 is not None:
-        require(hashlib.sha256(data).hexdigest() == expected_sha256,
-                'physical model changed after pinned receipt audit')
-    header_len = int.from_bytes(data[:8], 'little')
-    require(2 <= header_len <= (1 << 20) and 8+header_len <= len(data),
-            'invalid safetensors header length')
-    header = unique_json(data[8:8+header_len])
-    require(type(header) is dict, 'invalid safetensors tensor dictionary')
-    header.pop('__metadata__', None)
-    require(header, 'missing physical tensors')
-    payload = memoryview(data)[8+header_len:]
-    h = hashlib.sha256(b'hepta.neuron.canonical-physical-tensors.v1\x00')
-    spans = []
-    for name in sorted(header):
-        row = header[name]
-        require(type(row) is dict and set(row) == {'dtype','shape','data_offsets'},
-                'invalid exact physical tensor metadata')
-        dtype, shape, offsets = row['dtype'],row['shape'],row['data_offsets']
-        require(type(name) is str and type(dtype) is str and
-                type(shape) is list and type(offsets) is list and len(offsets)==2 and
-                all(type(v) is int and v >= 0 for v in shape+offsets),
-                'invalid exact physical tensor descriptor')
-        a,b = offsets
-        require(a < b <= len(payload), 'physical tensor byte offsets out of bounds')
-        spans.append((a,b))
-        for token in (name.encode(),dtype.encode(),
-                      json.dumps(shape,separators=(',',':')).encode(),bytes(payload[a:b])):
-            h.update(_frame(token))
-    end = 0
-    for a,b in sorted(spans):
-        require(a == end, 'physical tensor byte overlap or gap')
-        end = b
-    require(end == len(payload), 'unclaimed physical tensor bytes')
-    return h.hexdigest()
 
 
 def review(root: Path, training_sha: str, seal_path: Path, seal_sha: str,
@@ -193,6 +136,44 @@ def review(root: Path, training_sha: str, seal_path: Path, seal_sha: str,
             'ood_brier_ppm_signed_claim':scored['partitions']['ood'][
                 'candidates'][aliases[0]]['brier_ppm'],
         })
+    # Newly sealed studies pin the exact executed tensor groups *before*
+    # independent future outcomes exist. This reviewer recomputes them
+    # from physical bytes instead of trusting caller-supplied reuse counts.
+    reuse = seal.get('physical_tensor_reuse_observation')
+    if reuse is not None:
+        require(type(reuse) is dict and set(reuse) == {
+            'schema','nominal_candidate_slots',
+            'actual_distinct_models_executed_per_sequence_group',
+            'source_sequence_group_count',
+            'actual_surrogate_forward_calls_total',
+            'redundant_surrogate_forward_calls_avoided',
+            'redundant_model_graph_loads_avoided',
+            'alias_groups','native_q24_parity_verified','ndu_eligible',
+            'production_qualification',
+        } and
+            reuse['schema'] == 'hepta.neuron.forecast-physical-reuse.v2' and
+            reuse['native_q24_parity_verified'] is False and
+            reuse['ndu_eligible'] is False and
+            reuse['production_qualification'] is False,
+            'untrusted physical forecast reuse evidence schema/authority')
+        expected_aliases = [{
+            'arm':item['arm'],
+            'canonical_tensor_sha256':item['canonical_tensor_sha256'],
+            'canonical_model_key':item['canonical_candidate_id'],
+            'alias_candidate_keys':item['nominal_budget_aliases'],
+        } for item in groups]
+        require(
+            reuse['nominal_candidate_slots'] == len(models) and
+            reuse['actual_distinct_models_executed_per_sequence_group'] == len(groups) and
+            reuse['source_sequence_group_count'] ==
+                len({row['source_group_sha256'] for row in seal['rows']}) and
+            reuse['actual_surrogate_forward_calls_total'] ==
+                len(groups)*reuse['source_sequence_group_count'] and
+            reuse['redundant_surrogate_forward_calls_avoided'] ==
+                (len(models)-len(groups))*reuse['source_sequence_group_count'] and
+            reuse['redundant_model_graph_loads_avoided'] == len(models)-len(groups) and
+            reuse['alias_groups'] == expected_aliases,
+            'sealed physical tensor reuse claims differ from real weight bytes')
     # Descriptive Pareto only: minimizing physical private parameter count,
     # future Brier and OOD Brier. These are not independently proven causal
     # utilities or measured inference CPU/GPU latency and cannot select a Cell.
@@ -225,6 +206,8 @@ def review(root: Path, training_sha: str, seal_path: Path, seal_sha: str,
         'nominal_candidate_slots':len(models),
         'unique_physical_tensor_models_per_arm':len(groups),
         'redundant_ceiling_alias_count':len(models)-len(groups),
+        'preoutcome_physical_forward_reuse_claim_verified':reuse is not None,
+        'actual_distinct_physical_tensor_groups':len(groups),
         'unique_model_groups':groups,
         'descriptive_pareto_candidate_ids_only':frontier,
         'future_case_count':len(cases['future']),

@@ -211,6 +211,43 @@ class PhysicalDedupFutureTests(unittest.TestCase):
         self.assertEqual(len({v['arm'] for v in out['unique_model_groups']}),4)
         self.assertEqual(out['unique_physical_tensor_models_per_arm'],4)
 
+    def test_preoutcome_physical_forward_reuse_claim_checked_against_real_tensors(self):
+        baseline=self.check()
+        aliases=[{
+            'arm':g['arm'],
+            'canonical_tensor_sha256':g['canonical_tensor_sha256'],
+            'canonical_model_key':g['canonical_candidate_id'],
+            'alias_candidate_keys':g['nominal_budget_aliases'],
+        } for g in baseline['unique_model_groups']]
+        self.seal['physical_tensor_reuse_observation']={
+            'schema':'hepta.neuron.forecast-physical-reuse.v2',
+            'nominal_candidate_slots':20,
+            'actual_distinct_models_executed_per_sequence_group':4,
+            'source_sequence_group_count':6,
+            'actual_surrogate_forward_calls_total':24,
+            'redundant_surrogate_forward_calls_avoided':96,
+            'redundant_model_graph_loads_avoided':16,
+            'alias_groups':aliases,
+            'native_q24_parity_verified':False,
+            'ndu_eligible':False,'production_qualification':False,
+        }
+        self.seal_sha=self.save_seal()
+        checked=self.check()
+        self.assertTrue(checked['preoutcome_physical_forward_reuse_claim_verified'])
+        self.assertEqual(checked['actual_distinct_physical_tensor_groups'],4)
+        self.seal['physical_tensor_reuse_observation'][
+            'actual_distinct_models_executed_per_sequence_group']=5
+        self.seal_sha=self.save_seal()
+        with self.assertRaisesRegex(ValueError,'reuse claims differ'):
+            self.check()
+        self.seal['physical_tensor_reuse_observation'][
+            'actual_distinct_models_executed_per_sequence_group']=4
+        self.seal['physical_tensor_reuse_observation'][
+            'head_margin_authorized_for_final_use']=True
+        self.seal_sha=self.save_seal()
+        with self.assertRaisesRegex(ValueError,'reuse evidence schema/authority'):
+            self.check()
+
     def test_real_signed_witness_outcomes_through_score_and_review(self):
         from precommit_future import score
         wit={'schema':'hepta.neuron.five-arm-precommit-witness.v1',
