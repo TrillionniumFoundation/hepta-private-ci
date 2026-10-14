@@ -668,6 +668,24 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         self
     }
 
+    /// Existing prepared effects remain reconcile-only even after a telemetry
+    /// outage. A new write-ahead intent must instead observe a healthy Evidence
+    /// sink on both sides of potentially slow original-owner readbacks.
+    fn ensure_metrics_ready_for_new_effect(&mut self) -> Result<(), CellSplitExecutionErrorV1> {
+        if self.metrics_poisoned
+            || self
+                .metric_sink
+                .as_ref()
+                .is_some_and(|sink| !sink.healthy())
+        {
+            self.metrics_poisoned = true;
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "cell split telemetry unavailable for new effects",
+            ));
+        }
+        Ok(())
+    }
+
     /// Never let a failed telemetry write convert a committed external effect
     /// into a retry. Poison only future NEW effects; pending original-owner
     /// readback remains available to resolve a lost acknowledgment.
@@ -906,16 +924,8 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         }
         // A telemetry failure does not suppress reconciliation of an already
         // attempted external effect; it does deny any *new* effect dispatch.
-        if !self.pending
-            && (self.metrics_poisoned
-                || self
-                    .metric_sink
-                    .as_ref()
-                    .is_some_and(|sink| !sink.healthy()))
-        {
-            return Err(CellSplitExecutionErrorV1::Invalid(
-                "cell split telemetry unavailable for new effects",
-            ));
+        if !self.pending {
+            self.ensure_metrics_ready_for_new_effect()?;
         }
         self.verify_committed_prefix()?;
         let Some(step) = CellSplitExecutionStepV1::at(self.cursor) else {
@@ -965,6 +975,10 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             // external readback (which would reopen the admission window).
             // The physical effect owner still independently enforces Final-use.
             self.read_verified_prefix(false, false)?;
+            // The final Selector/NDU callback may be slow. Its success does
+            // not attest that the independent Evidence sink is still healthy.
+            // This final check must precede durable preparation and Execute.
+            self.ensure_metrics_ready_for_new_effect()?;
             write_private_new(
                 &frame_path(&self.root, self.cursor, "prepared"),
                 &canonical_json(&intent)?,
