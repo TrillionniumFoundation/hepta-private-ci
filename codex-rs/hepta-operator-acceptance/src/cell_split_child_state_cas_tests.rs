@@ -98,7 +98,7 @@ fn contract() -> CellSplitV1 {
             compatibility_digest: digest(&format!("port-compat-{index}")),
         })
         .collect();
-    let partitions = vec![vec![0, 2], vec![1, 3]];
+    let partitions = vec![vec![0, 2, 4, 6, 8], vec![1, 3, 5, 7, 9]];
     let value = CellSplitV1 {
         split_id: id("split.integration"),
         proposer_id: id("proposer"),
@@ -177,8 +177,8 @@ fn parent_checkpoint() -> codex_hepta_neuron::SparseCheckpoint {
         model_digest: digest("model"),
         normalization_digest: digest("normalization"),
         generation: g(7),
-        width: 4,
-        top_k: 1,
+        width: 10,
+        top_k: 2,
         temporal_decay_q24: Q / 2,
         inhibition_gain_q24: Q,
         inhibition: vec![],
@@ -197,9 +197,13 @@ fn parent_checkpoint() -> codex_hepta_neuron::SparseCheckpoint {
         input_digest: digest("input"),
         sequence: 1,
         monotonic_micros: 100,
-        drive_q24: vec![Q, Q / 2, Q / 4, 0],
-        prediction_q24: vec![0; 4],
+        drive_q24: vec![Q, Q / 2, Q / 4, 0, Q / 8, Q / 8, Q / 16, 0, 0, 0],
+        prediction_q24: vec![0; 10],
     };
+    // Production SparseConfig requires width >= 5 and Top-K <= width / 5.
+    // Ten parent dimensions yield two five-dimensional runnable child states.
+    // Match the real kernel invariant; do not weaken it for a small fixture.
+    configuration.digest().expect("admitted parent mechanism");
     sparse_tick(&configuration, &input, None)
         .expect("parent state")
         .0
@@ -214,8 +218,8 @@ fn prepared() -> (CellStateMigrationV1, JournalAnchor) {
     };
     let plan = NeuronSplitPlan::from_contract(
         &contract,
-        vec![vec![0, 2], vec![1, 3]],
-        vec![vec![0, 2], vec![1, 3]],
+        vec![vec![0, 2, 4, 6, 8], vec![1, 3, 5, 7, 9]],
+        vec![vec![0, 2, 4, 6, 8], vec![1, 3, 5, 7, 9]],
     )
     .expect("typed projection plan");
     let migration = CellStateMigrationV1::begin(
@@ -226,6 +230,14 @@ fn prepared() -> (CellStateMigrationV1, JournalAnchor) {
         &plan,
     )
     .expect("verified migration from parent");
+    // Both children must remain valid candidates for the real Sparse
+    // mechanism's minimum five-dimensional state; no parent index is lost.
+    assert_eq!(migration.children().len(), 2);
+    for child in migration.children() {
+        assert_eq!(child.temporal_q24.len(), 5);
+        assert_eq!(child.activation_q24.len(), 5);
+        assert_eq!(child.eligibility_q24.len(), 5);
+    }
     (migration, anchor)
 }
 
