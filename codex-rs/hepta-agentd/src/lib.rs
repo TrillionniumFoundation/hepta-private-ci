@@ -72,6 +72,8 @@ pub use cell_split_execution::CellSplitScopeSelectionAdmissionV1;
 #[cfg(all(unix, feature = "cell-split-operator-bridge"))]
 pub use cell_split_execution::advance_scope_bound_selected_cell_split_v1;
 #[cfg(all(unix, feature = "cell-split-operator-bridge"))]
+pub use cell_split_execution::advance_scope_bound_selected_cell_split_with_metrics_v1;
+#[cfg(all(unix, feature = "cell-split-operator-bridge"))]
 pub use cell_split_execution::advance_selected_cell_split_v1;
 pub use client::AgentdClient;
 pub use codex_hepta_agent_protocol::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
