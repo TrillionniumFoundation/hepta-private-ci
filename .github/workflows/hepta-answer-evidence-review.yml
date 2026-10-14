@@ -1,0 +1,92 @@
+name: Hepta frozen answer evidence review
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/answer_evidence_review.py"
+      - "scripts/memory_cell/test_answer_evidence_review.py"
+      - ".github/workflows/hepta-answer-evidence-review.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: answer-evidence-review-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  sealed-answers-no-model-calls:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Require new review integrity and inherited input contracts
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-answer-review-checks/source
+          failed=0
+          for pattern in test_answer_evidence_review.py test_select_content_inventory.py 'test_source_time_evidence*.py'; do
+            name=$(printf '%s' "$pattern" | tr '*' '_')
+            if python3 -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/hepta-answer-review-checks/$name.log"; then
+              printf '%s\tpassed\n' "$pattern" >> /tmp/hepta-answer-review-checks/suites.tsv
+            else
+              failed=1
+              printf '%s\tfailed\n' "$pattern" >> /tmp/hepta-answer-review-checks/suites.tsv
+            fi
+          done
+          python3 -m py_compile scripts/memory_cell/answer_evidence_review.py scripts/memory_cell/test_answer_evidence_review.py
+          test "$failed" -eq 0
+      - name: Retrieve only the pinned completed SELECT result
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11863981474/zip > /tmp/answer-review-input.zip
+          printf '%s  %s\n' aeb4113b6d2baace0a042f960876861c78b5449b6d9dac404dee2e5c041e46fa /tmp/answer-review-input.zip | sha256sum -c -
+      - name: Prepare two masked review passes and decompose existing scores
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/hepta-answer-review-checks/process-resources.txt python3 scripts/memory_cell/answer_evidence_review.py prepare /tmp/answer-review-input.zip --work /tmp/hepta-review-original --output /tmp/hepta-answer-review 2>&1 | tee /tmp/hepta-answer-review-checks/execution.log
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/hepta-answer-review/custodian/raw-inspection.json')
+          for row in json.loads(p.read_bytes()):
+              print('CUSTODIAN_RAW_INSPECTION', json.dumps(row, ensure_ascii=False, sort_keys=True))
+          PY
+      - name: Retain source and hash separate outputs including failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-answer-review-checks/source
+          git rev-parse HEAD > /tmp/hepta-answer-review-checks/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-answer-review-checks/source/tested-tree.txt
+          python3 --version > /tmp/hepta-answer-review-checks/source/python.txt
+          cp scripts/memory_cell/answer_evidence_review.py scripts/memory_cell/test_answer_evidence_review.py scripts/memory_cell/five_causal_experiments.py scripts/memory_cell/reader_content_swap.py scripts/memory_cell/reader_content_swap_trial.py .github/workflows/hepta-answer-evidence-review.yml /tmp/hepta-answer-review-checks/source/
+          for d in /tmp/hepta-answer-review-checks /tmp/hepta-answer-review/evidence-first /tmp/hepta-answer-review/answer-second /tmp/hepta-answer-review/custodian; do
+            if test -d "$d"; then
+              (cd "$d" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+            fi
+          done
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-answer-review-custodian-and-checks
+          path: |
+            /tmp/hepta-answer-review-checks
+            /tmp/hepta-answer-review/custodian
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: hepta-answer-review-1-evidence-first
+          path: /tmp/hepta-answer-review/evidence-first
+          if-no-files-found: error
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: hepta-answer-review-2-answer-second
+          path: /tmp/hepta-answer-review/answer-second
+          if-no-files-found: error
