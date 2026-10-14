@@ -30,6 +30,25 @@ learnable parameter total:
 | 8,192 | 8 | 7,299 |
 | 16,384 | 16 | 13,443 |
 
+The script also records the tensor payload **actually allocated** by the
+FP32 Head parameters and AdamW optimizer after its first update. A two-step
+CPU fixture run reported:
+
+| Budget ceiling | Head FP32 tensor bytes | AdamW tensor bytes | Combined bytes |
+| ---: | ---: | ---: | ---: |
+| 2K | 7,692 | 15,408 | 23,100 |
+| 8K | 29,196 | 58,416 | 87,612 |
+| 16K | 53,772 | 107,568 | 161,340 |
+
+These values are **test fixture measurements of tensor shapes/dtypes**, not
+production RSS, and exclude activation buffers, Python/PyTorch allocator
+overhead, Encoder cache, Q24 temporal states, checkpoints, feature snapshots,
+WAL, and device runtime. Multiplying the 16K combined tensor payload by
+4,096 gives 660,848,640 bytes (about 630 MiB) of private Head/optimizer
+tensor storage alone, if all 4,096 Cells keep independent FP32 AdamW state.
+Production online learning may need lazy/frozen optimizer state or CPU
+offloading rather than assuming that all Cells can simultaneously train.
+
 The Encoder receives no gradient. The script measures **Head-only training**
 on supplied Q24 data; published Encoder capabilities or weight revisions are
 not evidence that the precomputed features were produced by those weights.
