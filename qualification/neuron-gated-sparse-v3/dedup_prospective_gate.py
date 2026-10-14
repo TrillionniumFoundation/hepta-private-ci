@@ -27,7 +27,7 @@ def _frame(part: bytes) -> bytes:
     return len(part).to_bytes(8, 'big') + part
 
 
-def canonical_tensor_sha(path: Path) -> str:
+def canonical_tensor_sha(path: Path, expected_sha256: str | None = None) -> str:
     """Hash exact tensor names, dtypes, geometries and payloads, not metadata.
 
     Caller first independently verifies the pinned physical weight file through
@@ -37,8 +37,16 @@ def canonical_tensor_sha(path: Path) -> str:
     """
     require(not path.is_symlink() and not path.parent.is_symlink(),
             'symlinked physical model in tensor identity')
+    before = path.stat()
     data = path.read_bytes()
+    after = path.stat()
+    require((before.st_dev,before.st_ino,before.st_size,before.st_mtime_ns,before.st_ctime_ns) ==
+            (after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns,after.st_ctime_ns),
+            'physical model changed during tensor fingerprint read')
     require(10 <= len(data) <= MAX_MODEL_BYTES, 'invalid physical model size')
+    if expected_sha256 is not None:
+        require(hashlib.sha256(data).hexdigest() == expected_sha256,
+                'physical model changed after pinned receipt audit')
     header_len = int.from_bytes(data[:8], 'little')
     require(2 <= header_len <= (1 << 20) and 8+header_len <= len(data),
             'invalid safetensors header length')
@@ -155,7 +163,8 @@ def review(root: Path, training_sha: str, seal_path: Path, seal_sha: str,
 
     group_by_tensor = {}
     for key,model in models.items():
-        tensor_digest = canonical_tensor_sha(root/model['weight_file'])
+        tensor_digest = canonical_tensor_sha(
+            root/model['weight_file'], model['weight_sha256'])
         group = (model['arm'],tensor_digest)
         group_by_tensor.setdefault(group,[]).append(key)
     groups = []
@@ -204,6 +213,10 @@ def review(root: Path, training_sha: str, seal_path: Path, seal_sha: str,
             for peer in groups if peer is not item)
         if not dominated:
             frontier.append(item['canonical_candidate_id'])
+    # Validate bytes again after all identity and metric comparisons. No
+    # research output should bind mutable model files via stale SHA claims.
+    for model in models.values():
+        sha_file(root/model['weight_file'], model['weight_sha256'])
     return {
         'schema':SCHEMA,
         'evidence_class':'SYNTHETIC_SIGNED_CLAIM_ONLY' if synthetic_canary
