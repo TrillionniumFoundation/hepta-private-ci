@@ -1,0 +1,92 @@
+{
+  "schema": "hepta.conditional-evidence-source-verification.v1",
+  "date": "2026-10-14",
+  "upstream_pr": 1903,
+  "upstream_source": "a301a9f4b8185509868a5538dfe39e1e3fce784e",
+  "code_commit": "50efbdb26f442f06e0941ef793a3d14ffa8823bd",
+  "new_pr": 1925,
+  "local_python": "3.13.5",
+  "local_transformers_installed": false,
+  "stock_hf_and_pretrained_run_status": "queued_no_result",
+  "production_authorized": false,
+  "completed_source_tests": {
+    "runs": 2,
+    "passed_each": 526,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "same_ids": true
+  },
+  "new_source_tests": 19,
+  "synthetic_reader": {
+    "training_parameters": 42,
+    "heldout_correct": 80,
+    "heldout_total": 80,
+    "independent_real_language_qualification": false
+  },
+  "synthetic_query_pair": {
+    "shared_formula_flops": 378,
+    "repeated_formula_flops": 450,
+    "saved_formula_flops": 72,
+    "saved_fraction": 0.16,
+    "shared_encoder_calls": 1,
+    "repeated_encoder_calls": 2,
+    "query_calls_per_arm": 2,
+    "max_logit_difference": 0.0,
+    "latency_gain_established": false
+  },
+  "known_prior_family_failure": {
+    "source_pr": 1861,
+    "decision": "not_triggered",
+    "training_residual": 0.0017405797261744738,
+    "registered_threshold": 0.05,
+    "competing_direct32_correct": 47,
+    "test_size": 64
+  },
+  "source_files": {
+    "qualification/stem-cell-v1/conditional_evidence.py": {
+      "sha256": "10a80e3bd3ab6edc45eb9438e803b2a88350162a2d2952aa86c02aadca4f5ac8",
+      "git_blob_sha1": "102b99ca2f540fcfe0395634c6e880f72342ca2f"
+    },
+    "qualification/stem-cell-v1/test_conditional_evidence.py": {
+      "sha256": "28725701168c19e8cd3c52184dadaeccb1796121b8ff4eb127a2100a8687b314",
+      "git_blob_sha1": "5dec43baf106b263985a47bf5815b8a2f8040a49"
+    },
+    "qualification/stem-cell-v1/reader_work_v1.py": {
+      "sha256": "e1635f0fb3f2e2d80ed00cbaa12ebb5a90ff1dba1d06ef2c46e971402c64d201",
+      "git_blob_sha1": "8872e513d198c4f9533105bc0f7a395169cc940f"
+    },
+    "qualification/stem-cell-v1/test_reader_work_v1.py": {
+      "sha256": "889592b8f579e24a959375f14a519f2ee24b3e3d1e0c9ac91f9f12ffebbe1812",
+      "git_blob_sha1": "a6ce2079b4a5bb3907087eb643911a15b7a5be92"
+    },
+    "qualification/stem-cell-v1/public_conditional_probe.py": {
+      "sha256": "60911e1c2da16b1f5b8b0d8f5fa6e1d9f84d8436c4daac63f096e97fead87a63",
+      "git_blob_sha1": "4a754b84c2764887bebe15a71c8a415365042876"
+    },
+    "qualification/stem-cell-v1/hf_conditional_evidence_checks.py": {
+      "sha256": "c4b6b25bda4fd7c1f1a6e718b1880e751bce2771c267477e5e1f18cf6ca57d00",
+      "git_blob_sha1": "469b66ecb1791075029d3ffa18fe583b6e0dd6d6"
+    },
+    "qualification/stem-cell-v1/execution_meter.py": {
+      "sha256": "863387d98f1a3a620953b668db8a8a35c15295ebd361d5457ebb5d2d2e2cb6fd",
+      "git_blob_sha1": "c5c55bb70681cd806e2dc4c64bf5a57627855e4f"
+    },
+    ".github/workflows/hepta-shared-fanout-research.yml": {
+      "sha256": "86a077947cbb60622a413e6834a9c2139ad6eda0549b482123ae30f6c755f60a",
+      "git_blob_sha1": "d9cfd39624c9b9bf4c62764f78f4b87a88c71142"
+    }
+  },
+  "source_test_receipts": {
+    "round1": {
+      "sha256": "ee8656252955b087cbc2e270e3ea1f51de81440fe2e0be835d76bda70d2140dd",
+      "log_sha256": "1b451b044875cc5cf94a1c424e43ea155afe84e14b0e54c6a72f9b1ffcd4da1d",
+      "exit": "0"
+    },
+    "round2": {
+      "sha256": "ee8656252955b087cbc2e270e3ea1f51de81440fe2e0be835d76bda70d2140dd",
+      "log_sha256": "a19ae1bc772d5d942e671dce1e77e8f370751938433e9cc86b989009d6014c93",
+      "exit": "0"
+    }
+  }
+}

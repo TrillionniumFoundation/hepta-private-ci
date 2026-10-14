@@ -35,6 +35,12 @@ jobs:
           python qualification/stem-cell-v1/run_checked_tests.py \
             --pattern test_shared_fanout.py --output "$RUNNER_TEMP/fanout-tests.json" \
             2>&1 | tee "$RUNNER_TEMP/fanout-tests.log"
+          python qualification/stem-cell-v1/run_checked_tests.py \
+            --pattern test_conditional_evidence.py --output "$RUNNER_TEMP/conditional-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/conditional-tests.log"
+          python qualification/stem-cell-v1/run_checked_tests.py \
+            --pattern test_reader_work_v1.py --output "$RUNNER_TEMP/reader-work-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/reader-work-tests.log"
           python -m compileall -q qualification/stem-cell-v1
       - uses: actions/upload-artifact@v4
         if: always()
@@ -44,6 +50,10 @@ jobs:
             ${{ runner.temp }}/fanout-source.txt
             ${{ runner.temp }}/fanout-tests.json
             ${{ runner.temp }}/fanout-tests.log
+            ${{ runner.temp }}/conditional-tests.json
+            ${{ runner.temp }}/conditional-tests.log
+            ${{ runner.temp }}/reader-work-tests.json
+            ${{ runner.temp }}/reader-work-tests.log
           if-no-files-found: error
 
   fanout-stock-hf:
@@ -71,6 +81,9 @@ jobs:
           python qualification/stem-cell-v1/run_checked_tests.py \
             --pattern hf_fanout_checks.py --output "$RUNNER_TEMP/fanout-hf-tests.json" \
             2>&1 | tee "$RUNNER_TEMP/fanout-hf-tests.log"
+          python qualification/stem-cell-v1/run_checked_tests.py \
+            --pattern hf_conditional_evidence_checks.py --output "$RUNNER_TEMP/conditional-hf-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/conditional-hf-tests.log"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -79,6 +92,8 @@ jobs:
             ${{ runner.temp }}/fanout-hf-source.txt
             ${{ runner.temp }}/fanout-hf-tests.json
             ${{ runner.temp }}/fanout-hf-tests.log
+            ${{ runner.temp }}/conditional-hf-tests.json
+            ${{ runner.temp }}/conditional-hf-tests.log
           if-no-files-found: error
 
   fanout-public-pretrained:
@@ -119,6 +134,14 @@ jobs:
             --snapshot "$RUNNER_TEMP/public-encoder/snapshot" \
             --tasks 7 --output "$RUNNER_TEMP/public-fanout" \
             2>&1 | tee "$RUNNER_TEMP/public-fanout.log"
+      - name: Share exact evidence while issuing three distinct questions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/public_conditional_probe.py \
+            --snapshot "$RUNNER_TEMP/public-encoder/snapshot" \
+            --output "$RUNNER_TEMP/public-conditional" \
+            2>&1 | tee "$RUNNER_TEMP/public-conditional.log"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -134,4 +157,8 @@ jobs:
             ${{ runner.temp }}/public-fanout/observation.json
             ${{ runner.temp }}/public-fanout/COMMITTED.json
             ${{ runner.temp }}/public-fanout/FAILED.json
+            ${{ runner.temp }}/public-conditional.log
+            ${{ runner.temp }}/public-conditional/observation.json
+            ${{ runner.temp }}/public-conditional/COMMITTED.json
+            ${{ runner.temp }}/public-conditional/FAILED.json
           if-no-files-found: error
