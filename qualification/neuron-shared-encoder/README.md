@@ -67,3 +67,183 @@ Native integration still required after successful real model experiments:
 4. Train and evaluate full Laya, pooled Laya Head, ModernBERT-base, Organ Expert Bank on the same approved, grouped future-window protocol. Add independent NDU and negative-transfer evidence; only then propose promotion.
 
 _No change in this harness alters any Hepta production contracts, grants or model versions._
+
+## E1–E5 strict research qualification (V3, no deployment)
+
+The independently versioned shadow module is `neuron_shared_encoder.validation_v3`.
+It does not replace the immutable Rust inference owner, sign model receipts, apply
+NDU decisions, change CNS routes or enable model final-use. The existing native
+`GatedHeadCpuDriverV2` is a fixed Q24 elementwise multiplier; V3 introduces
+`static_gate` and a genuinely input-dependent `dynamic_gate` **in PyTorch
+research only**, not in the Rust production worker.
+
+### E1 — same-task, same-budget real Encoder matrix
+
+Require one SHA-256-pinned dataset/split manifest and persisted no-change
+baseline, a common train seed, steps, optimizer, batch and learning rate, plus
+pinned weight/bundle/tokenizer SHA-256 for all four candidates:
+`laya-joint`, `mmbert-joint` (140M candidate), `granite-joint` (97M),
+`modernbert-joint` (149M candidate). The E1 contract scanner accepts a
+**complete schema** as `SCHEMA_COMPLETE_UNVERIFIED`, never `PASSED`.
+Separate offline `representation` runs and operator-verified artifact/dataset
+receipts are still required for any scientific comparison; genuine Laya
+`system_one` requires its original model/checkpoint and cannot be replaced
+by pooled CLS logits. Generic Hugging Face mean pooling for
+mmBERT/Granite/ModernBERT is an explicitly separate control; it does not
+assert equivalence to an official model-specific pooling or teacher policy.
+No implicit download, remote-code trust, fake checkpoint or synthetic
+Encoder is allowed for E1 real claims.
+
+To run all four **genuine** offline E1 model candidates after every pinned
+checkpoint is available, supply a JSON matrix with each Encoder's
+`local_path`, `weights_sha256`, `tokenizer_sha256`, `bundle_sha256`,
+and the common dataset/split/no-change/training pins. Then use:
+
+```bash
+PLAN_SHA="$(sha256sum e1_matrix.json | cut -d' ' -f1)"
+DATA_SHA="$(sha256sum approved.jsonl | cut -d' ' -f1)"
+python -m neuron_shared_encoder.validation_v3 e1-run --input-json e1_matrix.json --input-sha256 "$PLAN_SHA" --dataset approved.jsonl --dataset-sha256 "$DATA_SHA" --output e1_real_shadow.json --dimension 128
+```
+
+The runner preflights all four local paths and tokenizer bytes, verifies
+the bundled/weight hashes via the existing offline adapter and never substitutes
+a synthetic checkpoint. A missing model blocks the entire matrix. It trains
+the same Head candidates on each frozen Encoder output, with train-only
+normalization, and separately records the original full Laya policy.
+The model bundle pin and local results are not independent operator signatures
+or proof that an external no-change baseline was genuinely frozen.
+
+### E2 — capacity and fixed-Gate folding
+
+`e2-heads` trains Linear, static Gate, input-conditional sigmoid/SiLU Gate,
+FiLM, rank-8/16, MLP and SwiGLU using the same frozen features, source splits,
+optimizer and update budget. Budgets 2K, 16K, 64K, 262K are *upper bounds*;
+actual parameters and optimizer bytes are recorded. After training, the
+static Gate is folded to a Linear weight matrix and its maximum absolute
+logit difference is recorded. This proves mathematical redundancy to
+floating-point tolerance, not bitwise Q24 equivalence. Q24 rounding and
+hardware parity require independent native tests.
+
+### E3 — full-joint input versus public-input / Cell-state fusion
+
+`e3-reuse` collects both `encoder_forward_invocations` and
+`encoder_forward_rows` from actual calls to the adapter; counts are not
+inferred from the logical Cell count. The public-input key excludes Cell
+state but includes principal, purpose, generation, authority epoch,
+Encoder/tokenizer/normalizer digests, evaluation split, **and source-group
+partition by default**. Identical public questions across independent
+source groups are not automatically entitled to share an Encoder result.
+The opt-in `research_synthetic_cross_source=True` ablation deliberately
+drops this partition only in the non-authorizing synthetic-hash CLI path,
+and reports `SYNTHETIC_UNVERIFIED_UPPER_BOUND`. A real model without
+independently verified cross-source entitlement conservatively retains
+source-group isolation, even if this eliminates all such reuse. It cannot
+bypass a real source-entitlement or signed final-use check. The local
+Cell-state branch in this V3 control uses a **synthetic hash**, explicitly
+labelled `SYNTHETIC_HASH_NOT_DEPLOYABLE`. Both variants undergo equal-budget
+linear/dynamic Head training and future-set scoring, but even when the
+Encoder itself is real, this hybrid is not a qualified production
+state-fusion model. Replace the state hash with a pinned, trained and
+independently validated local adapter before claiming E3 quality parity.
+
+### E4 — frozen no-change versus candidate; never promotion
+
+`e4-future` requires a *real, externally prepared* frozen no-change
+probability snapshot and a distinct candidate snapshot, each with an
+operator-supplied exact file SHA-256. They must contain the ordered
+`row_ids`, probabilities for all dataset rows, `dataset_sha256`,
+`cell_scope` [principal, organ_id, cell_id], `source_commit`,
+`artifact_digest` and `role` (`frozen_no_change` or `candidate`).
+It fails closed on scope/dataset/row/order mismatch, invalid probabilities
+or identical artifacts. It reports grouped future-window bootstrap 95%
+intervals for Brier improvement, 15-bin ECE, NLL, OOD detection AUROC and
+future source-group negative-transfer fraction. The optional positive
+*retrospective statistical signal* requires at least 30 future groups,
+positive lower CI and zero materially degraded groups. It is reported as
+`RETROSPECTIVE_POSITIVE_UNVERIFIED`, **not** an NDU decision or a
+causal learning claim. V3 now inspects optional per-future-row
+`prediction_committed_at_by_row` maps in both snapshots and checks each
+declared prediction timestamp precedes the outcome's timezone-aware
+`event_time`. Missing, partial, naive or late timestamps are reported
+as `MISSING_OR_INVALID`. Even complete ordered claims remain
+`TEMPORAL_ORDER_CONSISTENT_UNVERIFIED`; untrusted JSON timestamps and
+SHA-256 pins cannot prove independent precommit or absence of
+future-label leakage. `causal_learning_verified` and final-use stay false.
+The independent Evaluator must still verify actual precommitted predictions,
+causal improvement and receipt authenticity; Selector and Executor remain
+separate owners.
+
+### E5 — complete host telemetry schema, no fabricated measurements
+
+`e5-host` requires one record for each of 64 / 256 / 1,024 / 4,096
+Cells, with exact host/run/commit, encoder physical call/row/input
+counts, requests, throughput, CPU, peak RSS, GPU peak if applicable,
+per-request and per-batch p95/p99, WAL bytes, crash recovery, lost-replay
+counts, CAS/signature/CNS latency. A complete operator-submitted JSON
+is `COMPLETE_UNVERIFIED` until independent signed source, target-host
+measurements, generation-fence tests and operator authorization are proven.
+Synthetic `stress` does not fill in missing worker/host fields.
+
+### Example isolated smoke
+
+```bash
+cd qualification/neuron-shared-encoder
+python -m pytest -q tests/
+python -m neuron_shared_encoder.experiment synth-data --allow-synthetic --output smoke_dataset.jsonl --data-count 32
+DATA_SHA="$(sha256sum smoke_dataset.jsonl | cut -d' ' -f1)"
+python -m neuron_shared_encoder.validation_v3 e2-heads --allow-synthetic --dataset smoke_dataset.jsonl --dataset-sha256 "$DATA_SHA" --output e2.json --steps 2 --budgets 2048 16384
+python -m neuron_shared_encoder.validation_v3 e3-reuse --allow-synthetic --dataset smoke_dataset.jsonl --dataset-sha256 "$DATA_SHA" --output e3.json --steps 2 --budgets 2048 16384
+```
+
+Read the generated JSON `evidence_class`, `production_admission`, and
+unverified fields before interpreting any values. CI intentionally exercises
+missing real Encoder and target-host receipts and requires both to remain
+blocked. The E4 frozen baseline is **not generated from random/untrained
+Heads**, and all V3 claims are research/shadow only.
+
+
+### Exact-head CI and fair-comparison acceptance ledger (2026-10-14)
+
+The 2026-10-14 source HEAD `b7cdeba1db215ee30418b2269ddd147dee064410`
+has a completed, successful shadow workflow
+[38513414552](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38513414552).
+That result covers isolated Python research checks, **not** a production
+release. Architecture source-head and base-merge checks succeeded but
+their aggregate required check must independently complete. Whole-tree
+[blocking-ci 38513414635](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38513414635)
+is not green: actual job logs show `cargo-deny` reporting Matrix SDK
+0.18 dependency advisories and unmaintained `unsafe-libyaml`;
+`repo-checks/build-test` failed at `pnpm run format:check`; macOS
+Bazel Clippy also failed. None can be overridden, ignored or relabeled
+as a successful scoped E1–E5 receipt.
+
+**Fairness requirements before comparing E2 as scientific evidence:**
+- The 2K / 16K / 64K / 262K values are **ceilings**, not equal parameter
+  counts. Compare each candidate's *actual* trainable parameters, peak
+  optimizer memory, wall-clock training time and measured inference cost.
+- Within each task and Encoder, hold frozen feature bytes, source splits,
+  seed set, update steps, batch schedule, tuning/search opportunity and
+  evaluation window fixed. Run several seeds and paired group-level
+  intervals; never infer a winner from a single two-step smoke.
+- Compare static Gate to its **post-training** folded Linear equivalent
+  at identical frozen weights before any efficiency claim; independently
+  compare ordinary Linear trained from scratch at a matched actual
+  parameter budget. Report the fixed-gate parameter overhead separately.
+- Gate on future Brier/NLL, task utility, OOD rejection, calibration,
+  negative transfer and cost rather than selecting by accuracy alone.
+  The research runner cannot act as the independent NDU Evaluator.
+
+**E3 physical reuse requirements:** Record logical requests, admitted
+distinct full-input digests, encoder invocations, forwarded rows,
+tokenized lengths, cache hits/misses, feature materialization bytes,
+queue latency and end-to-end p95/p99 on the same hardware. Deduplicate
+only after live source entitlement and final-use checks. Do not equate
+shared weights, number of logical Cells, or an instrumented mock
+callback with a physically shared Transformer forward.
+
+**Production-blocking evidence:** genuine pinned four-Encoder weights
+and approved data; frozen no-change predictions collected before
+future labels; independent NDU Evaluator/Selector; real signed
+Artifact CAS + Final-use + generation fences; true physical batch;
+64/256/1024/4096 Cell target-host CPU/RSS/GPU/WAL/restart receipts.
+Keep this PR Draft/shadow until every independent owner gate passes.

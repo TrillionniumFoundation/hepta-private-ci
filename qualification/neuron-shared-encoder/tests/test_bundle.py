@@ -7,7 +7,7 @@ from neuron_shared_encoder.bundle import checkpoint_bundle_sha256, verify_checkp
 
 def make_bundle(root: Path, kind='modernbert-joint'):
     root.mkdir()
-    required = ['model.safetensors', 'config.json', 'tokenizer.json'] if kind == 'modernbert-joint' else [
+    required = ['model.safetensors', 'config.json', 'tokenizer.json'] if kind != 'laya-joint' else [
         'model.safetensors', 'rl_agent_config.json', 'encoder/config.json', 'tokenizer/tokenizer.json']
     for name in required:
         path = root / name
@@ -46,3 +46,13 @@ def test_bundle_directory_member_change_is_detected(tmp_path):
     a = checkpoint_bundle_sha256(root, 'modernbert-joint')
     (root / 'preprocessing.json').write_text('{}')
     assert checkpoint_bundle_sha256(root, 'modernbert-joint') != a
+
+
+@pytest.mark.parametrize('kind', ['mmbert-joint', 'granite-joint'])
+def test_new_offline_checkpoint_kinds_are_bundle_pinned(tmp_path, kind):
+    root = make_bundle(tmp_path / kind, kind)
+    pinned = checkpoint_bundle_sha256(root, kind)
+    assert verify_checkpoint_bundle(root, kind, pinned) == pinned
+    (root / 'tokenizer.json').write_bytes(b'changed-tokenizer')
+    with pytest.raises(ValueError, match='mismatch'):
+        verify_checkpoint_bundle(root, kind, pinned)

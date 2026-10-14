@@ -18,6 +18,8 @@ _KINDS = {
     'modernbert-joint': frozenset({
         'model.safetensors', 'config.json', 'tokenizer.json',
     }),
+    'mmbert-joint': frozenset({'model.safetensors', 'config.json', 'tokenizer.json'}),
+    'granite-joint': frozenset({'model.safetensors', 'config.json', 'tokenizer.json'}),
 }
 
 
