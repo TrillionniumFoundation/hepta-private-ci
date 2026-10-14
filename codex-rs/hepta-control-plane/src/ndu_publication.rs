@@ -387,8 +387,7 @@ impl NduPublicationOwnerV1 {
                     pending = None;
                     latest = Some(e.snapshot);
                     checkpoint = e.after;
-                    last_cns_original_receipt_binding =
-                        (!e.read.is_zero()).then_some(e.read);
+                    last_cns_original_receipt_binding = (!e.read.is_zero()).then_some(e.read);
                 }
                 _ => {
                     latest = Some(e.snapshot);
