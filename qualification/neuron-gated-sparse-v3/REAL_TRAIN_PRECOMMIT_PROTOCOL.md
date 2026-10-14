@@ -246,6 +246,58 @@ Run the focused physical artifact suite on an isolated researcher host:
 negative cases; it is required (not silently skipped) in the read-only pinned
 CPU canary workflow. No real host or selected Cell artifacts are shipped.
 
+## Native Rust execution over physical shadow weights (2026-10-14)
+
+The new **additive research binary** at
+\`codex-rs/hepta-neuron/src/bin/neuron_trained_q24_shadow.rs\` is not the
+runtime Owner. It reads original \`.safetensors\` bytes (not a claimed digest),
+checks their pinned SHA-256, complete tensor names/shapes/data offsets,
+private parameter ceiling, native Q24 value ranges and finite floating Head
+parameters. It *does not use* the F32 Head for production inference. It
+constructs a frozen, versioned identity-projection multi-population **research**
+profile and calls the existing, unmodified **native Rust** V2, V3, diagonal
+SSM or low-rank minGRU Q24 tick implementation with the actual tensor values.
+
+Given the same pinned original, label-free Q24 event stream, the binary
+reopens the physical model and independently reconstructs an empty state.
+It compares every resulting checkpoint digest, predecessor, output activation
+and prediction residual. This establishes at most **deterministic in-process
+empty-state reconstruction**; it is NOT durable journal reopen, fault-injected
+crash recovery, signed Artifact CAS, generation-fenced final use, actual
+Encoder inference, or complete Head parity.
+
+Run the new 20-weight matrix (after a *real* pinned weights+input snapshot):
+
+    cd codex-rs
+    cargo build --locked -p codex-hepta-neuron --bin neuron_trained_q24_shadow
+    cd ..
+    python qualification/neuron-gated-sparse-v3/run_native_physical_matrix.py \
+      --binary codex-rs/target/debug/neuron_trained_q24_shadow \
+      --binary-sha256 "$BINARY_SHA" \
+      --trained-root "$TRAINED_ROOT" --receipt-sha256 "$RECEIPT_SHA" \
+      --trace "$Q24_TRACE" --trace-sha256 "$TRACE_SHA" \
+      --report "$NEW_NON_PRODUCTION_REPORT"
+
+\`--synthetic-canary\` is required for synthetic training receipts. The
+pinned read-only CI executes **20 synthetic-trained physically saved weight
+files** through this real Rust binary and also submits five corrupt/mismatched
+weight/trace cases that must be rejected by the Rust process.
+
+\`native_float_gap.py\` applies the same physically loaded float32 Head
+**in Python** to (a) the original floating surrogate activations and
+(b) the Q24 sparse activations reported by Rust. It records a measured
+probability/logit gap on identical original input rows. Neither path is a
+native full-model Head inference: its report always sets
+\`bitwise_float_to_q24_prediction_parity_proven=false\`. Improvement, negative
+transfer, calibration/OOD and prospective NDU utility require independent
+labelled outcome and selected-Owner observations.
+
+**Hard stop:** The new source and workflow must pass exact-head Rustfmt,
+Cargo compilation, Python tests and physically executed Q24 canary on the
+declared Git SHA. Code publication/CI queue presence alone is not a pass.
+A0 target-Owner census and A4 true 100-slot target-host receipts remain
+missing. No model selection, Cell Split or CNS route changes are authorized.
+
 ## Testing
 
     python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
