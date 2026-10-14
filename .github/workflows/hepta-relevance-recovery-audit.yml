@@ -1,0 +1,73 @@
+name: Hepta cancelled relevance recovery inventory
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths: [".github/workflows/hepta-relevance-recovery-audit.yml"]
+permissions:
+  contents: read
+  actions: read
+jobs:
+  inspect-before-restart:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Check retained patch against canonical source
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/recovery-audit
+          python3 -m unittest discover -s scripts/memory_cell -p test_select_question_relevance_supplement.py -v 2>&1 | tee /tmp/recovery-audit/supplement-tests.log
+      - name: Retrieve only the exact cancelled output
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11872208169/zip > /tmp/relevance-cancelled.zip
+          printf '%s  %s\n' 601cd09ae82cc6915121aaf8bb0eac5c1fe7c8b370c9d4a832bc6e5d54b91bac /tmp/relevance-cancelled.zip | sha256sum -c -
+      - name: Inventory verified state without loading any model
+        run: |
+          set -euo pipefail
+          PYTHONPATH=scripts/memory_cell python3 - <<'PY' 2>&1 | tee /tmp/recovery-audit/inventory.log
+          import json
+          from pathlib import Path
+          import five_causal_experiments as c
+          from reader_content_swap_trial import extract_verified
+          root, verified = extract_verified(Path('/tmp/relevance-cancelled.zip'), Path('/tmp/recovery-input'), '601cd09ae82cc6915121aaf8bb0eac5c1fe7c8b370c9d4a832bc6e5d54b91bac')
+          c.require((root/'source/tested-commit.txt').read_text().strip()=='644799a3ec45e18e77ce4ad772029f67fee55db7','cancelled source mismatch')
+          def journal(path):
+              previous='0'*64; rows=[]
+              if not path.is_file(): return []
+              for line in path.read_bytes().splitlines():
+                  entry=json.loads(line)
+                  c.require(entry['previous_sha256']==previous,'journal chain mismatch')
+                  previous=c.digest(entry); rows.append(entry['record'])
+              return rows
+          study=root/'study'
+          result={'input':verified,'original_run':38512395172,'original_conclusion':'cancelled','model_calls':0,'optimizer_updates':0,'arms':{},'study_files':sorted(p.relative_to(study).as_posix() for p in study.rglob('*') if p.is_file())}
+          for arm in ('frozen_reader','repeat_empty','nonempty_aligned','nonempty_reversed'):
+              rows=journal(study/arm/'optimizer-journal.jsonl')
+              finishes=[r for r in rows if r['event']=='optimizer_finished']
+              starts=[r for r in rows if r['event']=='optimizer_started']
+              receipt=study/arm/'training-receipt.json'
+              result['arms'][arm]={'started':len(starts),'finished':len(finishes),'known_completed_forwards':sum(r['observed_decoder_forwards'] for r in finishes),'last_events':rows[-2:],'receipt':c.load(receipt) if receipt.is_file() else None,'raw_seal':c.load(study/(arm+'-raw-seal.json')) if (study/(arm+'-raw-seal.json')).is_file() else None}
+          events=journal(study/'events.jsonl')
+          result['last_study_events']=events[-3:]
+          c.write_new(Path('/tmp/recovery-audit/inventory.json'),result)
+          print('CANCELLED_INVENTORY',c.canonical(result).decode(),flush=True)
+          PY
+      - name: Preserve exact source and failures
+        if: always()
+        run: |
+          mkdir -p /tmp/recovery-audit
+          git rev-parse HEAD > /tmp/recovery-audit/tested-commit.txt
+          cp .github/workflows/hepta-relevance-recovery-audit.yml /tmp/recovery-audit/
+          (cd /tmp/recovery-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-cancelled-relevance-inventory
+          path: /tmp/recovery-audit
+          if-no-files-found: error

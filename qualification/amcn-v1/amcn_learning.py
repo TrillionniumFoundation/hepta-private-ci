@@ -66,6 +66,19 @@ class FeatureMatrix:
             require(is_sha(encoder_execution_receipt), "missing original HF execution receipt")
         else:
             require(encoder_execution_receipt is None, "fixture cannot mint HF receipt")
+        # Do not count correlated or repeated source roots across prospective
+        # partitions as independent tasks. Old-task retention may intentionally
+        # revisit TRAIN families, but never a future/SELECT lineage.
+        groups_by_root = {}
+        groups_by_family = {}
+        for row in rows:
+            groups_by_root.setdefault(row.source_root, set()).add(row.split)
+            groups_by_family.setdefault(row.family, set()).add(row.split)
+        for mapping in (groups_by_root, groups_by_family):
+            for positions in mapping.values():
+                require(not (positions & {"select", "future_a", "future_b"}
+                             and len(positions) != 1),
+                        "cross-partition source lineage or family leakage")
         self.rows = tuple(rows)
         self.x = features.detach().clone().contiguous()
         self.encoder_sha256, self.scope, self.generation = encoder_sha256, scope, generation

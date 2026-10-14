@@ -9,6 +9,7 @@ import sys
 import tempfile
 import types
 import unittest
+from dataclasses import replace
 
 import torch
 
@@ -147,6 +148,18 @@ class ActualTorchMechanicsTests(unittest.TestCase):
             FeatureMatrix(data.rows, data.x, encoder_sha256=s("x"),
                           scope="lab", generation="g1",
                           backend_profile="local_hf_snapshot_checked_unreviewed")
+        with self.assertRaises(Refused):
+            conflict = list(data.rows)
+            conflict[8] = replace(conflict[8], family="train-family")
+            FeatureMatrix(conflict, data.x, encoder_sha256=s("x"),
+                          scope="lab", generation="g1",
+                          backend_profile="mechanics_fixture")
+        with self.assertRaises(Refused):
+            conflict = list(data.rows)
+            conflict[8] = replace(conflict[8], source_root="source-train-0")
+            FeatureMatrix(conflict, data.x, encoder_sha256=s("x"),
+                          scope="lab", generation="g1",
+                          backend_profile="mechanics_fixture")
 
     def test_real_relation_learning_and_no_topology_change(self):
         g = graph()

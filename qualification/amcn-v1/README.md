@@ -20,6 +20,33 @@ until the full repository CI and independent review are complete.
 | 04 Split/merge | Two genuinely trained child Heads from a detached parent and a genuinely distilled student. Initialization preserves parent output; actual per-stage parameters and training work recorded. | Same-budget unsplit control, future outcomes, old-task retention, error-free owner migration and production Selector. Refer to #1726/#1733/#1742. |
 | 05 LongMemEval-V2 | Text-only lexical control matching official Memory.insert/query and persistence interface, provenance labels, checksum verification, query-only input and explicit screenshot limitation. | Actual 451-question run, trained AMCN backend, multimodal encoder, official judged scores and full end-to-end resource measurements. |
 
+## Next-stage evidence correction: source-first v2
+
+The archived LoCoMo study previously selected one publisher-annotated positive
+and one negative document *before* model prediction. That is an
+answer-conditioned shortlist and would overstate retrieval effectiveness.
+The stricter, versioned source-first v2 procedure separates two uses:
+
+- **TRAIN:** weak publisher references may select supervised positives/negatives.
+  This is supervised development data, not an independent retrieval oracle.
+- **SELECT / FUTURE_A / FUTURE_B / RETENTION:** an immutable lexical scorer ranks
+  up to 16 source candidates from the complete bounded eligible history using
+  question/source bytes only. Publisher support annotations are sealed
+  separately *after* the public candidate list. Zero-support shortlist cases
+  remain in every evaluation denominator.
+- **Scoring:** consumes original Head predictions, the pinned safetensors SHA
+  and frozen candidate plan, then opens separate publisher-label inventory.
+  Reports *weak support* hit@1 and shortlist coverage for the frozen Head,
+  trained Head and lexical ranker; not Reader answers or semantic entailment.
+- FeatureMatrix rejects correlated source roots or family crossings into
+  SELECT, FUTURE_A or FUTURE_B; old-task RETENTION may revisit TRAIN only.
+
+The heldout labels are kept outside the input tree passed to the training
+command, but both jobs run on the same host as the same OS principal. This
+is NOT a secure enclave or proof of independent reviewer decisions.
+Simulated splits and previously published sources are NOT real future
+calendar windows; no superiority claim is established.
+
 ## Additional executed research interfaces
 
 - amcn_native.py calls the existing physically loaded, locally tensor-verified

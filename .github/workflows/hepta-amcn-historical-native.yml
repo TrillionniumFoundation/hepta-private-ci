@@ -58,6 +58,12 @@ jobs:
           "$P" qualification/amcn-v1/amcn_historical_trial.py prepare \
             /tmp/hepta-amcn-original.zip /tmp/hepta-amcn-private-stage \
             > /tmp/hepta-amcn-real-results/preparation.stdout.json
+      - name: Move scorer-only labels outside model-material input tree
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-amcn-evaluator-holdout
+          mv /tmp/hepta-amcn-private-stage/withheld-labels.json /tmp/hepta-amcn-evaluator-holdout/withheld-labels.json
+          test ! -e /tmp/hepta-amcn-private-stage/withheld-labels.json
       - name: Actually execute frozen Encoder and TRAIN-only SemanticMemoryCell
         run: |
           set -euo pipefail
@@ -75,7 +81,7 @@ jobs:
           P=/tmp/hepta-amcn-real-venv/bin/python
           "$P" qualification/amcn-v1/amcn_historical_trial.py score \
             /tmp/hepta-amcn-private-stage/public-input.json \
-            /tmp/hepta-amcn-private-stage/withheld-labels.json \
+            /tmp/hepta-amcn-evaluator-holdout/withheld-labels.json \
             /tmp/hepta-amcn-private-stage/sealed-head \
             /tmp/hepta-amcn-real-results/score.json \
             > /tmp/hepta-amcn-real-results/score.stdout.json
@@ -88,7 +94,8 @@ jobs:
           assert report["metrics"]["full_Reader_responses"] == 0
           assert report["metrics"]["true_future_calendar_windows"] == 0
           assert report["metrics"]["independent_evaluator_accepted"] is False
-          assert report["metrics"]["score_unit"] == "source-selection-pair-not-reader-answer"
+          assert report["metrics"]["score_unit"] == "publisher-weak-support-at-source-first-shortlist-not-reader-answer"
+          assert report["metrics"]["supports_selected_without_labels"] is True
           PY
       - name: Retain source identity, status and failure, never copied source/model bytes
         if: always()
