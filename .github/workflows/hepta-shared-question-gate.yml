@@ -1,0 +1,87 @@
+name: Hepta shared Encoder small question gate
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/shared_question_gate.py"
+      - "scripts/memory_cell/shared_question_gate_trial.py"
+      - "scripts/memory_cell/test_shared_question_gate.py"
+      - ".github/workflows/hepta-shared-question-gate.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: shared-question-gate-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  real-encoder-small-heads:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install existing pinned worker
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-shared-gate/checks
+          python3 -m venv /tmp/shared-gate-env
+          /tmp/shared-gate-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/hepta-shared-gate/checks/install-torch.log 2>&1
+          /tmp/shared-gate-env/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/hepta-shared-gate/checks/install-worker.log 2>&1
+          /tmp/shared-gate-env/bin/pip check
+          /tmp/shared-gate-env/bin/pip freeze > /tmp/hepta-shared-gate/checks/environment.txt
+      - name: Require new mechanism and inherited input/model regressions
+        run: |
+          set -euo pipefail
+          failed=0
+          for pattern in test_shared_question_gate.py test_five_causal_experiments.py test_full_cell_matrix.py test_five_causal_native.py test_five_encoder_snapshot.py test_select_question_relevance.py test_select_question_relevance_supplement.py test_question_evidence_relevance.py; do
+            if /tmp/shared-gate-env/bin/python -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/hepta-shared-gate/checks/$pattern.log"; then
+              printf '%s\tpassed\n' "$pattern" >> /tmp/hepta-shared-gate/checks/suites.tsv
+            else
+              failed=1
+              printf '%s\tfailed\n' "$pattern" >> /tmp/hepta-shared-gate/checks/suites.tsv
+            fi
+          done
+          /tmp/shared-gate-env/bin/python -m py_compile scripts/memory_cell/shared_question_gate.py scripts/memory_cell/shared_question_gate_trial.py scripts/memory_cell/test_shared_question_gate.py
+          test "$failed" -eq 0
+      - name: Retrieve fixed original weights and already chosen pair manifests
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/gate-original.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11872208169/zip > /tmp/gate-pairs.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11863981474/zip > /tmp/gate-select.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/gate-original.zip | sha256sum -c -
+          printf '%s  %s\n' 601cd09ae82cc6915121aaf8bb0eac5c1fe7c8b370c9d4a832bc6e5d54b91bac /tmp/gate-pairs.zip | sha256sum -c -
+          printf '%s  %s\n' aeb4113b6d2baace0a042f960876861c78b5449b6d9dac404dee2e5c041e46fa /tmp/gate-select.zip | sha256sum -c -
+      - name: Encode once then fit frozen-feature small Heads
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/hepta-shared-gate/checks/process-resources.txt /tmp/shared-gate-env/bin/python scripts/memory_cell/shared_question_gate_trial.py --original-archive /tmp/gate-original.zip --cancelled-archive /tmp/gate-pairs.zip --select-archive /tmp/gate-select.zip --work /tmp/shared-gate-materials --output /tmp/hepta-shared-gate/study 2>&1 | tee /tmp/hepta-shared-gate/checks/execution.log
+      - name: Preserve exact source and all observed failures
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-shared-gate/source/memory_cell
+          git rev-parse HEAD > /tmp/hepta-shared-gate/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-shared-gate/source/tested-tree.txt
+          cp scripts/memory_cell/*.py scripts/memory_cell/requirements.txt /tmp/hepta-shared-gate/source/memory_cell/
+          cp experiments/shared_stem_cell/execution.py .github/workflows/hepta-shared-question-gate.yml /tmp/hepta-shared-gate/source/
+          (cd /tmp/hepta-shared-gate && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-shared-question-gate-development
+          path: /tmp/hepta-shared-gate
+          if-no-files-found: error
