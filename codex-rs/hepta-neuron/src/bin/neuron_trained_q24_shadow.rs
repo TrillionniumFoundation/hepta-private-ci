@@ -3,23 +3,36 @@
 //! Does not execute the original F32 Head, grant final-use authority, commit a
 //! checkpoint, or assert Torch/F32-to-Q24 numerical parity.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::env;
 use std::fs;
 use std::path::Path;
 use std::str::FromStr;
 
-use codex_hepta_neuron::{
-    ActivationPopulationV2, DiagonalSsmCheckpointV1, DiagonalSsmConfigV1,
-    GatedSparseCheckpointV3, GatedSparseConfigV3, LowRankMinGruCheckpointV1,
-    LowRankMinGruConfigV1, PopulationSparseCheckpointV2, PopulationSparseConfigV2,
-    PopulationSparseTickV2, TemporalGateV3, TemporalProjectionEdgeV2,
-    diagonal_ssm_tick_v1, gated_sparse_tick_v3, low_rank_min_gru_tick_v1,
-    population_sparse_tick_v2,
-};
-use codex_hepta_types::{Digest32, Generation};
-use serde::de::{MapAccess, Visitor};
-use serde::{Deserialize, Deserializer, Serialize};
+use codex_hepta_neuron::ActivationPopulationV2;
+use codex_hepta_neuron::DiagonalSsmCheckpointV1;
+use codex_hepta_neuron::DiagonalSsmConfigV1;
+use codex_hepta_neuron::GatedSparseCheckpointV3;
+use codex_hepta_neuron::GatedSparseConfigV3;
+use codex_hepta_neuron::LowRankMinGruCheckpointV1;
+use codex_hepta_neuron::LowRankMinGruConfigV1;
+use codex_hepta_neuron::PopulationSparseCheckpointV2;
+use codex_hepta_neuron::PopulationSparseConfigV2;
+use codex_hepta_neuron::PopulationSparseTickV2;
+use codex_hepta_neuron::TemporalGateV3;
+use codex_hepta_neuron::TemporalProjectionEdgeV2;
+use codex_hepta_neuron::diagonal_ssm_tick_v1;
+use codex_hepta_neuron::gated_sparse_tick_v3;
+use codex_hepta_neuron::low_rank_min_gru_tick_v1;
+use codex_hepta_neuron::population_sparse_tick_v2;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use serde::Deserialize;
+use serde::Deserializer;
+use serde::Serialize;
+use serde::de::MapAccess;
+use serde::de::Visitor;
 use serde_json::json;
 
 const Q: i64 = 1 << 24;
@@ -120,25 +133,35 @@ fn expected(arm: &str, width: usize, rank: Option<usize>) -> Result<Vec<ShapeSpe
     ];
     match arm {
         "v2" => {
-            if rank.is_some() { return Err(fail("unexpected V2 rank")); }
+            if rank.is_some() {
+                return Err(fail("unexpected V2 rank"));
+            }
         }
         "v3" => {
-            if rank.is_some() { return Err(fail("unexpected V3 rank")); }
+            if rank.is_some() {
+                return Err(fail("unexpected V3 rank"));
+            }
             for name in [
-                "temporal.gate_bias", "temporal.input_gain", "temporal.change_gain"
+                "temporal.gate_bias",
+                "temporal.input_gain",
+                "temporal.change_gain",
             ] {
                 tensors.push((name, "I64", vec![width]));
             }
         }
         "ssm" => {
-            if rank.is_some() { return Err(fail("unexpected SSM rank")); }
+            if rank.is_some() {
+                return Err(fail("unexpected SSM rank"));
+            }
             for name in ["temporal.decay_per_step", "temporal.input_gain"] {
                 tensors.push((name, "I64", vec![width]));
             }
         }
         "min_gru" => {
             let r = rank.ok_or_else(|| fail("minGRU rank missing"))?;
-            if r == 0 || r > width { return Err(fail("minGRU rank invalid")); }
+            if r == 0 || r > width {
+                return Err(fail("minGRU rank invalid"));
+            }
             tensors.extend([
                 ("temporal.gate_input", "I64", vec![r, width]),
                 ("temporal.gate_output", "I64", vec![width, r]),
@@ -189,8 +212,8 @@ fn q24_mul_round_ties_even(left: i64, right: i64) -> Result<i64, String> {
     let denominator = i128::from(Q);
     let quotient = absolute / denominator;
     let remainder = absolute % denominator;
-    let round_up = remainder * 2 > denominator
-        || (remainder * 2 == denominator && quotient % 2 != 0);
+    let round_up =
+        remainder * 2 > denominator || (remainder * 2 == denominator && quotient % 2 != 0);
     let rounded = (quotient + i128::from(round_up)) * product.signum();
     i64::try_from(rounded).map_err(|_| fail("native Q24 Head multiplication overflow"))
 }
@@ -198,7 +221,9 @@ fn q24_mul_round_ties_even(left: i64, right: i64) -> Result<i64, String> {
 /// The quantized research Head consumes **native sparse Q24 activation**, not
 /// the floating surrogate's pre-competition state. It is not calibrated.
 fn quantized_head_logit(
-    activation_q24: &[i64], head_q24: &[i64], bias_q24: i64,
+    activation_q24: &[i64],
+    head_q24: &[i64],
+    bias_q24: i64,
 ) -> Result<i64, String> {
     if activation_q24.len() != head_q24.len() || activation_q24.is_empty() {
         return Err(fail("native Q24 Head activation/weight dimension mismatch"));
@@ -206,7 +231,9 @@ fn quantized_head_logit(
     let mut sum = bias_q24;
     for (&activation, &weight) in activation_q24.iter().zip(head_q24) {
         let product = q24_mul_round_ties_even(activation, weight)?;
-        sum = sum.checked_add(product).ok_or_else(|| fail("native Q24 Head sum overflow"))?;
+        sum = sum
+            .checked_add(product)
+            .ok_or_else(|| fail("native Q24 Head sum overflow"))?;
     }
     Ok(sum)
 }
@@ -246,22 +273,31 @@ fn research_q24_head_sign_margin(
 }
 
 fn physical_weights(
-    bytes: &[u8], arm: &str, width: usize, rank: Option<usize>, cap: usize,
+    bytes: &[u8],
+    arm: &str,
+    width: usize,
+    rank: Option<usize>,
+    cap: usize,
 ) -> Result<WeightBank, String> {
-    if bytes.len() < 10 { return Err(fail("truncated safetensors")); }
+    if bytes.len() < 10 {
+        return Err(fail("truncated safetensors"));
+    }
     let header_len = u64::from_le_bytes(
-        bytes[..8].try_into().map_err(|_| fail("bad header length"))?
+        bytes[..8]
+            .try_into()
+            .map_err(|_| fail("bad header length"))?,
     );
     let header_len = usize::try_from(header_len).map_err(|_| fail("huge header"))?;
     if !(2..=MAX_HEADER).contains(&header_len) || header_len > bytes.len() - 8 {
         return Err(fail("invalid safetensors header length"));
     }
-    let UniqueTensorHeader(entries) = serde_json::from_slice::<UniqueTensorHeader>(
-        &bytes[8..8 + header_len]
-    ).map_err(|e| format!("invalid or duplicate physical tensor header: {e}"))?;
+    let UniqueTensorHeader(entries) =
+        serde_json::from_slice::<UniqueTensorHeader>(&bytes[8..8 + header_len])
+            .map_err(|e| format!("invalid or duplicate physical tensor header: {e}"))?;
     let schema = expected(arm, width, rank)?;
     let expected_names: BTreeSet<&str> = schema.iter().map(|x| x.0).collect();
-    if entries.len() != schema.len() || entries.keys().any(|x| !expected_names.contains(x.as_str())) {
+    if entries.len() != schema.len() || entries.keys().any(|x| !expected_names.contains(x.as_str()))
+    {
         return Err(fail("missing or unexpected physical tensor"));
     }
     let data = &bytes[8 + header_len..];
@@ -273,16 +309,21 @@ fn physical_weights(
         if entry.dtype != dtype || entry.shape != shape {
             return Err(format!("{name}: wrong dtype or shape"));
         }
-        let elements = shape.iter().try_fold(1usize, |n, d| n.checked_mul(*d))
+        let elements = shape
+            .iter()
+            .try_fold(1usize, |n, d| n.checked_mul(*d))
             .ok_or_else(|| fail("tensor dimension overflow"))?;
-        let size = elements.checked_mul(if dtype == "I64" { 8 } else { 4 })
+        let size = elements
+            .checked_mul(if dtype == "I64" { 8 } else { 4 })
             .ok_or_else(|| fail("tensor byte overflow"))?;
         let [start, end] = entry.data_offsets;
         if start >= end || end > data.len() || end - start != size {
             return Err(fail("tensor data offsets invalid"));
         }
         ranges.push((start, end));
-        count = count.checked_add(elements).ok_or_else(|| fail("parameter count overflow"))?;
+        count = count
+            .checked_add(elements)
+            .ok_or_else(|| fail("parameter count overflow"))?;
         let payload = &data[start..end];
         if dtype == "F32" {
             let mut out = Vec::with_capacity(elements);
@@ -297,13 +338,16 @@ fn physical_weights(
                 let value = i64::from_le_bytes(chunk.try_into().map_err(|_| fail("bad Q24"))?);
                 let admitted = if name == "structure.projection" {
                     value == Q
-                } else if name == "temporal.gate_bias" && arm == "v3" ||
-                          name == "temporal.decay_per_step" && arm == "ssm" {
+                } else if name == "temporal.gate_bias" && arm == "v3"
+                    || name == "temporal.decay_per_step" && arm == "ssm"
+                {
                     (0..=Q).contains(&value)
                 } else {
                     (-Q..=Q).contains(&value)
                 };
-                if !admitted { return Err(format!("{name}: incompatible native Q24 value")); }
+                if !admitted {
+                    return Err(format!("{name}: incompatible native Q24 value"));
+                }
                 out.push(value);
             }
             weights.insert(name.to_owned(), out);
@@ -312,39 +356,65 @@ fn physical_weights(
     ranges.sort_unstable();
     let mut next = 0usize;
     for (start, end) in ranges {
-        if start != next { return Err(fail("overlap or unclaimed safetensors bytes")); }
+        if start != next {
+            return Err(fail("overlap or unclaimed safetensors bytes"));
+        }
         next = end;
     }
     if next != data.len() || count > cap {
         return Err(fail("unclaimed data or exceeded private-parameter cap"));
     }
-    Ok(WeightBank { q24: weights, parameter_count: count, tensor_count: entries.len() })
+    Ok(WeightBank {
+        q24: weights,
+        parameter_count: count,
+        tensor_count: entries.len(),
+    })
 }
 
 fn weights<'a>(bank: &'a WeightBank, name: &str) -> Result<&'a Vec<i64>, String> {
-    bank.q24.get(name).ok_or_else(|| format!("missing native parameter {name}"))
+    bank.q24
+        .get(name)
+        .ok_or_else(|| format!("missing native parameter {name}"))
 }
-fn base_config(model_sha: Digest32, trace_sha: Digest32, width: usize)
-    -> Result<PopulationSparseConfigV2, String>
-{
+fn base_config(
+    model_sha: Digest32,
+    trace_sha: Digest32,
+    width: usize,
+) -> Result<PopulationSparseConfigV2, String> {
     let generation = Generation::new(1).map_err(|e| format!("generation: {e:?}"))?;
     let k = (width / 10).max(1);
     let split = width / 2;
     let config = PopulationSparseConfigV2 {
         model_digest: model_sha,
         normalization_digest: Digest32::of_parts(&[
-            b"hepta.neuron.trained-shadow-norm.v1", trace_sha.as_array(),
+            b"hepta.neuron.trained-shadow-norm.v1",
+            trace_sha.as_array(),
         ]),
-        generation, temporal_width: width, activation_width: width, global_top_k: k,
+        generation,
+        temporal_width: width,
+        activation_width: width,
+        global_top_k: k,
         temporal_decay_q24: Q / 2,
-        projection: (0..width).map(|i| TemporalProjectionEdgeV2 {
-            source_temporal: i, target_activation: i, weight_q24: Q,
-        }).collect(),
+        projection: (0..width)
+            .map(|i| TemporalProjectionEdgeV2 {
+                source_temporal: i,
+                target_activation: i,
+                weight_q24: Q,
+            })
+            .collect(),
         inhibition_gain_q24: Q / 2,
         inhibition: Vec::new(),
         populations: vec![
-            ActivationPopulationV2 { start: 0, len: split, top_k: k.div_ceil(2) },
-            ActivationPopulationV2 { start: split, len: width - split, top_k: (k / 2).max(1) },
+            ActivationPopulationV2 {
+                start: 0,
+                len: split,
+                top_k: k.div_ceil(2),
+            },
+            ActivationPopulationV2 {
+                start: split,
+                len: width - split,
+                top_k: (k / 2).max(1),
+            },
         ],
         activity_decay_q24: Q / 2,
         target_activity_q24: Q / 2,
@@ -353,19 +423,30 @@ fn base_config(model_sha: Digest32, trace_sha: Digest32, width: usize)
         threshold_max_q24: Q,
         eligibility_decay_q24: Q / 2,
     };
-    config.digest().map_err(|e| format!("native V2 admission: {e:?}"))?;
+    config
+        .digest()
+        .map_err(|e| format!("native V2 admission: {e:?}"))?;
     Ok(config)
 }
 
 enum NativeModel {
-    V2(PopulationSparseConfigV2, Option<PopulationSparseCheckpointV2>),
+    V2(
+        PopulationSparseConfigV2,
+        Option<PopulationSparseCheckpointV2>,
+    ),
     V3(GatedSparseConfigV3, Option<GatedSparseCheckpointV3>),
     Ssm(DiagonalSsmConfigV1, Option<DiagonalSsmCheckpointV1>),
     MinGru(LowRankMinGruConfigV1, Option<LowRankMinGruCheckpointV1>),
 }
 impl NativeModel {
-    fn new(arm: &str, bank: &WeightBank, model_sha: Digest32, trace_sha: Digest32,
-           width: usize, rank: Option<usize>) -> Result<Self, String> {
+    fn new(
+        arm: &str,
+        bank: &WeightBank,
+        model_sha: Digest32,
+        trace_sha: Digest32,
+        width: usize,
+        rank: Option<usize>,
+    ) -> Result<Self, String> {
         let base = base_config(model_sha, trace_sha, width)?;
         let model = match arm {
             "v2" => Self::V2(base, None),
@@ -373,27 +454,37 @@ impl NativeModel {
                 let bias = weights(bank, "temporal.gate_bias")?;
                 let input = weights(bank, "temporal.input_gain")?;
                 let change = weights(bank, "temporal.change_gain")?;
-                let gates = (0..width).map(|i| TemporalGateV3 {
-                    bias_q24: bias[i], input_gain_q24: input[i], change_gain_q24: change[i],
-                }).collect();
+                let gates = (0..width)
+                    .map(|i| TemporalGateV3 {
+                        bias_q24: bias[i],
+                        input_gain_q24: input[i],
+                        change_gain_q24: change[i],
+                    })
+                    .collect();
                 Self::V3(GatedSparseConfigV3 { base, gates }, None)
             }
-            "ssm" => Self::Ssm(DiagonalSsmConfigV1 {
-                base,
-                decay_per_step_q24: weights(bank, "temporal.decay_per_step")?.clone(),
-                input_gain_q24: weights(bank, "temporal.input_gain")?.clone(),
-                time_quantum_micros: 1_000_000,
-            }, None),
-            "min_gru" => Self::MinGru(LowRankMinGruConfigV1 {
-                base,
-                rank: rank.ok_or_else(|| fail("minGRU rank required"))?,
-                gate_input_q24: weights(bank, "temporal.gate_input")?.clone(),
-                gate_output_q24: weights(bank, "temporal.gate_output")?.clone(),
-                candidate_input_q24: weights(bank, "temporal.candidate_input")?.clone(),
-                candidate_output_q24: weights(bank, "temporal.candidate_output")?.clone(),
-                gate_bias_q24: weights(bank, "temporal.gate_bias")?.clone(),
-                candidate_bias_q24: weights(bank, "temporal.candidate_bias")?.clone(),
-            }, None),
+            "ssm" => Self::Ssm(
+                DiagonalSsmConfigV1 {
+                    base,
+                    decay_per_step_q24: weights(bank, "temporal.decay_per_step")?.clone(),
+                    input_gain_q24: weights(bank, "temporal.input_gain")?.clone(),
+                    time_quantum_micros: 1_000_000,
+                },
+                None,
+            ),
+            "min_gru" => Self::MinGru(
+                LowRankMinGruConfigV1 {
+                    base,
+                    rank: rank.ok_or_else(|| fail("minGRU rank required"))?,
+                    gate_input_q24: weights(bank, "temporal.gate_input")?.clone(),
+                    gate_output_q24: weights(bank, "temporal.gate_output")?.clone(),
+                    candidate_input_q24: weights(bank, "temporal.candidate_input")?.clone(),
+                    candidate_output_q24: weights(bank, "temporal.candidate_output")?.clone(),
+                    gate_bias_q24: weights(bank, "temporal.gate_bias")?.clone(),
+                    candidate_bias_q24: weights(bank, "temporal.candidate_bias")?.clone(),
+                },
+                None,
+            ),
             _ => return Err(fail("invalid arm")),
         };
         match &model {
@@ -406,12 +497,17 @@ impl NativeModel {
     }
 
     fn tick(
-        &mut self, event: &PopulationSparseTickV2, head_q24: &[i64], bias_q24: i64,
+        &mut self,
+        event: &PopulationSparseTickV2,
+        head_q24: &[i64],
+        bias_q24: i64,
     ) -> Result<StepOutcome, String> {
-        let make = |before: Digest32, after: Digest32, activation: Vec<i64>,
-                    prediction_error_q24: i64| -> Result<StepOutcome, String> {
-            let quantized_head_logit_q24 =
-                quantized_head_logit(&activation, head_q24, bias_q24)?;
+        let make = |before: Digest32,
+                    after: Digest32,
+                    activation: Vec<i64>,
+                    prediction_error_q24: i64|
+         -> Result<StepOutcome, String> {
+            let quantized_head_logit_q24 = quantized_head_logit(&activation, head_q24, bias_q24)?;
             let (head_sign_margin_status, head_sign_margin_twice_q24_lsb) =
                 research_q24_head_sign_margin(quantized_head_logit_q24, &activation)?;
             Ok(StepOutcome {
@@ -429,32 +525,48 @@ impl NativeModel {
             Self::V2(cfg, prior) => {
                 let (next, receipt) = population_sparse_tick_v2(cfg, event, prior.as_ref())
                     .map_err(|e| format!("V2 native tick: {e:?}"))?;
-                let out = make(receipt.checkpoint_before, receipt.checkpoint_after,
-                               receipt.activation_q24, receipt.prediction_error_q24)?;
+                let out = make(
+                    receipt.checkpoint_before,
+                    receipt.checkpoint_after,
+                    receipt.activation_q24,
+                    receipt.prediction_error_q24,
+                )?;
                 *prior = Some(next);
                 Ok(out)
             }
             Self::V3(cfg, prior) => {
                 let (next, receipt) = gated_sparse_tick_v3(cfg, event, prior.as_ref())
                     .map_err(|e| format!("V3 native tick: {e:?}"))?;
-                let out = make(receipt.checkpoint_before, receipt.checkpoint_after,
-                               receipt.activation_q24, receipt.prediction_error_q24)?;
+                let out = make(
+                    receipt.checkpoint_before,
+                    receipt.checkpoint_after,
+                    receipt.activation_q24,
+                    receipt.prediction_error_q24,
+                )?;
                 *prior = Some(next);
                 Ok(out)
             }
             Self::Ssm(cfg, prior) => {
                 let (next, receipt) = diagonal_ssm_tick_v1(cfg, event, prior.as_ref())
                     .map_err(|e| format!("SSM native tick: {e:?}"))?;
-                let out = make(receipt.checkpoint_before, receipt.checkpoint_after,
-                               receipt.activation_q24, receipt.prediction_error_q24)?;
+                let out = make(
+                    receipt.checkpoint_before,
+                    receipt.checkpoint_after,
+                    receipt.activation_q24,
+                    receipt.prediction_error_q24,
+                )?;
                 *prior = Some(next);
                 Ok(out)
             }
             Self::MinGru(cfg, prior) => {
                 let (next, receipt) = low_rank_min_gru_tick_v1(cfg, event, prior.as_ref())
                     .map_err(|e| format!("minGRU native tick: {e:?}"))?;
-                let out = make(receipt.checkpoint_before, receipt.checkpoint_after,
-                               receipt.activation_q24, receipt.prediction_error_q24)?;
+                let out = make(
+                    receipt.checkpoint_before,
+                    receipt.checkpoint_after,
+                    receipt.activation_q24,
+                    receipt.prediction_error_q24,
+                )?;
                 *prior = Some(next);
                 Ok(out)
             }
@@ -464,7 +576,9 @@ impl NativeModel {
 
 fn trace_input(trace: &Trace, trace_sha: Digest32) -> Result<Vec<PopulationSparseTickV2>, String> {
     if trace.schema != "hepta.neuron.physical-q24-shadow-trace.v1"
-        || trace.events.is_empty() || trace.events.len() > 1024 {
+        || trace.events.is_empty()
+        || trace.events.len() > 1024
+    {
         return Err(fail("bad or unbounded native trace"));
     }
     let scope = digest(&trace.scope_digest)?;
@@ -472,14 +586,22 @@ fn trace_input(trace: &Trace, trace_sha: Digest32) -> Result<Vec<PopulationSpars
     let ndu = digest(&trace.ndu_digest)?;
     let body = digest(&trace.body_digest)?;
     let width = trace.events[0].temporal_drive_q24.len();
-    if !(5..=256).contains(&width) { return Err(fail("invalid trace width")); }
+    if !(5..=256).contains(&width) {
+        return Err(fail("invalid trace width"));
+    }
     let mut prev_time = 0;
     let mut out = Vec::new();
     for (index, row) in trace.events.iter().enumerate() {
-        if row.sequence != (index + 1) as u64 || row.monotonic_micros <= prev_time
-            || row.temporal_drive_q24.len() != width || row.prediction_q24.len() != width
-            || row.temporal_drive_q24.iter().chain(&row.prediction_q24)
-                .any(|v| !(-H..=H).contains(v)) {
+        if row.sequence != (index + 1) as u64
+            || row.monotonic_micros <= prev_time
+            || row.temporal_drive_q24.len() != width
+            || row.prediction_q24.len() != width
+            || row
+                .temporal_drive_q24
+                .iter()
+                .chain(&row.prediction_q24)
+                .any(|v| !(-H..=H).contains(v))
+        {
             return Err(fail("invalid sequence, clock, prediction, or input width"));
         }
         prev_time = row.monotonic_micros;
@@ -491,9 +613,13 @@ fn trace_input(trace: &Trace, trace_sha: Digest32) -> Result<Vec<PopulationSpars
             bytes.extend_from_slice(&x.to_be_bytes());
         }
         out.push(PopulationSparseTickV2 {
-            scope_digest: scope, objective_digest: objective, ndu_digest: ndu,
-            body_digest: body, input_digest: Digest32::of_bytes(&bytes),
-            sequence: row.sequence, monotonic_micros: row.monotonic_micros,
+            scope_digest: scope,
+            objective_digest: objective,
+            ndu_digest: ndu,
+            body_digest: body,
+            input_digest: Digest32::of_bytes(&bytes),
+            sequence: row.sequence,
+            monotonic_micros: row.monotonic_micros,
             temporal_drive_q24: row.temporal_drive_q24.clone(),
             prediction_q24: row.prediction_q24.clone(),
         });
@@ -504,20 +630,37 @@ fn args() -> Result<BTreeMap<String, String>, String> {
     let mut map = BTreeMap::new();
     let mut it = env::args().skip(1);
     while let Some(name) = it.next() {
-        if !name.starts_with("--") { return Err(fail("expected named arguments")); }
+        if !name.starts_with("--") {
+            return Err(fail("expected named arguments"));
+        }
         let value = it.next().ok_or_else(|| fail("missing argument value"))?;
-        if map.insert(name, value).is_some() { return Err(fail("duplicate CLI key")); }
+        if map.insert(name, value).is_some() {
+            return Err(fail("duplicate CLI key"));
+        }
     }
-    let allowed = ["--arm", "--model", "--model-sha256", "--trace", "--trace-sha256",
-                   "--cap", "--rank"];
-    if map.len() < 6 || map.keys().any(|x| !allowed.contains(&x.as_str()))
-       || allowed[..6].iter().any(|x| !map.contains_key(*x)) {
-        return Err(fail("required: --arm --model --model-sha256 --trace --trace-sha256 --cap"));
+    let allowed = [
+        "--arm",
+        "--model",
+        "--model-sha256",
+        "--trace",
+        "--trace-sha256",
+        "--cap",
+        "--rank",
+    ];
+    if map.len() < 6
+        || map.keys().any(|x| !allowed.contains(&x.as_str()))
+        || allowed[..6].iter().any(|x| !map.contains_key(*x))
+    {
+        return Err(fail(
+            "required: --arm --model --model-sha256 --trace --trace-sha256 --cap",
+        ));
     }
     Ok(map)
 }
 fn arg<'a>(map: &'a BTreeMap<String, String>, name: &str) -> Result<&'a str, String> {
-    map.get(name).map(String::as_str).ok_or_else(|| fail("missing CLI field"))
+    map.get(name)
+        .map(String::as_str)
+        .ok_or_else(|| fail("missing CLI field"))
 }
 
 fn execute() -> Result<serde_json::Value, String> {
@@ -527,7 +670,9 @@ fn execute() -> Result<serde_json::Value, String> {
     if ![2048, 8192, 16384, 65536, 262144].contains(&cap) {
         return Err(fail("unsupported budget cap"));
     }
-    let rank = opts.get("--rank").map(|s| s.parse::<usize>().map_err(|_| fail("bad rank")))
+    let rank = opts
+        .get("--rank")
+        .map(|s| s.parse::<usize>().map_err(|_| fail("bad rank")))
         .transpose()?;
     let model_sha = digest(arg(&opts, "--model-sha256")?)?;
     let trace_sha = digest(arg(&opts, "--trace-sha256")?)?;
@@ -541,7 +686,8 @@ fn execute() -> Result<serde_json::Value, String> {
 
     let head_q24 = weights(&bank, "head.weight")?;
     let head_bias_q24 = *weights(&bank, "head.bias")?
-        .first().ok_or_else(|| fail("missing quantized Head bias"))?;
+        .first()
+        .ok_or_else(|| fail("missing quantized Head bias"))?;
     let mut first = NativeModel::new(arm, &bank, model_sha, trace_sha, width, rank)?;
     let mut a = Vec::with_capacity(inputs.len());
     for input in &inputs {
@@ -551,17 +697,22 @@ fn execute() -> Result<serde_json::Value, String> {
     // Reopen the physical artifact, construct an independent empty state and
     // replay the original exact ordered input bytes. This is NOT a crash test.
     let again = load_file(model_path, model_sha, MAX_MODEL)?;
-    if again != bytes { return Err(fail("same-sha reloaded artifact changed")); }
+    if again != bytes {
+        return Err(fail("same-sha reloaded artifact changed"));
+    }
     let bank2 = physical_weights(&again, arm, width, rank, cap)?;
     let head_q24_reload = weights(&bank2, "head.weight")?;
     let bias_q24_reload = *weights(&bank2, "head.bias")?
-        .first().ok_or_else(|| fail("missing reloaded Q24 Head bias"))?;
+        .first()
+        .ok_or_else(|| fail("missing reloaded Q24 Head bias"))?;
     let mut second = NativeModel::new(arm, &bank2, model_sha, trace_sha, width, rank)?;
     let mut b = Vec::with_capacity(inputs.len());
     for input in &inputs {
         b.push(second.tick(input, head_q24_reload, bias_q24_reload)?);
     }
-    if a != b { return Err(fail("native Q24 replay frontier mismatch")); }
+    if a != b {
+        return Err(fail("native Q24 replay frontier mismatch"));
+    }
 
     Ok(json!({
         "schema":"hepta.neuron.physical-trained-q24-mechanism-replay.v3",
@@ -590,7 +741,6 @@ fn execute() -> Result<serde_json::Value, String> {
     }))
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -615,7 +765,10 @@ mod tests {
         assert_eq!(q24_mul_round_ties_even(3, Q / 2)?, 2);
         assert_eq!(q24_mul_round_ties_even(-3, Q / 2)?, -2);
         assert_eq!(q24_mul_round_ties_even(-5, Q / 2)?, -2);
-        assert_eq!(quantized_head_logit(&[Q, Q], &[Q / 2, -(Q / 2)], Q / 4)?, Q / 4);
+        assert_eq!(
+            quantized_head_logit(&[Q, Q], &[Q / 2, -(Q / 2)], Q / 4)?,
+            Q / 4
+        );
         assert_eq!(quantized_head_logit(&[Q / 2, Q / 2], &[3, 3], 0)?, 4);
         assert!(quantized_head_logit(&[1, 1], &[Q, Q], i64::MAX).is_err());
         assert!(quantized_head_logit(&[Q], &[], 0).is_err());
@@ -681,12 +834,15 @@ mod tests {
 
 fn main() {
     match execute() {
-        Ok(result) => println!("{}", result),
+        Ok(result) => println!("{result}"),
         Err(reason) => {
-            eprintln!("{}", json!({
-                "status":"BLOCKED_PHYSICAL_NATIVE_Q24_SHADOW",
-                "reason":reason, "production_qualification":false
-            }));
+            eprintln!(
+                "{}",
+                json!({
+                    "status":"BLOCKED_PHYSICAL_NATIVE_Q24_SHADOW",
+                    "reason":reason, "production_qualification":false
+                })
+            );
             std::process::exit(2);
         }
     }
