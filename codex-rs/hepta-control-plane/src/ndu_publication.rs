@@ -15,6 +15,8 @@ use std::io::BufReader;
 use std::io::Read;
 use std::io::Write;
 #[cfg(unix)]
+use std::os::unix::fs::FileExt;
+#[cfg(unix)]
 use std::path::Component;
 use std::path::Path;
 use std::path::PathBuf;
@@ -239,20 +241,79 @@ struct State {
 }
 impl State {
     #[cfg(unix)]
-    fn verify_original_paths(&self) -> Result<(), NduPublicationErrorV1> {
+    fn verify_original_paths(
+        &self,
+        expected_bytes: u64,
+        expected_sequence: u64,
+        expected_head: Digest32,
+    ) -> Result<(), NduPublicationErrorV1> {
         let (device, inode) = control_owner_file_identity(&self.file, &self.journal_path)?;
         control_owner_file_identity(&self.owner_lock, &self.lock_path)?;
         let expected = format!("NDUW1|{device}|{inode}\n");
         let recorded =
             fs::read(&self.lock_path).map_err(|_| NduPublicationErrorV1::Indeterminate)?;
-        if recorded != expected.as_bytes() {
+        if recorded != expected.as_bytes()
+            || self
+                .file
+                .metadata()
+                .map_err(|_| NduPublicationErrorV1::Indeterminate)?
+                .len()
+                != expected_bytes
+        {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+
+        // Same-inode truncation or rewrite can evade an inode-only fence.
+        // Check only the fsynced last hash-chain row (at most MAX_ROW bytes).
+        if expected_sequence == 0 {
+            if expected_bytes != 0 || !expected_head.is_zero() {
+                return Err(NduPublicationErrorV1::Indeterminate);
+            }
+        } else {
+            if expected_bytes == 0 || expected_head.is_zero() {
+                return Err(NduPublicationErrorV1::Indeterminate);
+            }
+            let tail_bytes = expected_bytes.min(MAX_ROW as u64) as usize;
+            let mut tail = vec![0_u8; tail_bytes];
+            self.file
+                .read_exact_at(&mut tail, expected_bytes - tail_bytes as u64)
+                .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+            if tail.last() != Some(&b'\n') {
+                return Err(NduPublicationErrorV1::Indeterminate);
+            }
+            let start = tail[..tail_bytes - 1]
+                .iter()
+                .rposition(|byte| *byte == b'\n')
+                .map_or(0, |position| position + 1);
+            let row = std::str::from_utf8(&tail[start..tail_bytes - 1])
+                .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+            let last = decode(row).map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+            if last.sequence != expected_sequence
+                || last.head != expected_head
+                || last.head != event_hash(&last)
+            {
+                return Err(NduPublicationErrorV1::Indeterminate);
+            }
+        }
+        if self
+            .file
+            .metadata()
+            .map_err(|_| NduPublicationErrorV1::Indeterminate)?
+            .len()
+            != expected_bytes
+        {
             return Err(NduPublicationErrorV1::Indeterminate);
         }
         Ok(())
     }
 
     #[cfg(not(unix))]
-    fn verify_original_paths(&self) -> Result<(), NduPublicationErrorV1> {
+    fn verify_original_paths(
+        &self,
+        _expected_bytes: u64,
+        _expected_sequence: u64,
+        _expected_head: Digest32,
+    ) -> Result<(), NduPublicationErrorV1> {
         Err(NduPublicationErrorV1::Unsupported)
     }
 
@@ -268,7 +329,7 @@ impl State {
         if self.poisoned {
             return Err(NduPublicationErrorV1::Poisoned);
         }
-        if let Err(error) = self.verify_original_paths() {
+        if let Err(error) = self.verify_original_paths(self.bytes, self.sequence, self.head) {
             self.poisoned = true;
             return Err(error);
         }
@@ -307,7 +368,7 @@ impl State {
             self.poisoned = true;
             return Err(error.into());
         }
-        if let Err(error) = self.verify_original_paths() {
+        if let Err(error) = self.verify_original_paths(bytes, sequence, e.head) {
             self.poisoned = true;
             return Err(error);
         }
@@ -521,6 +582,7 @@ impl NduPublicationOwnerV1 {
             pending_cutover: false,
             last_cns_original_receipt_binding,
         };
+        state.verify_original_paths(state.bytes, state.sequence, state.head)?;
         if latest.is_none() {
             state.append(
                 'G',
@@ -554,7 +616,7 @@ impl NduPublicationOwnerV1 {
         if state.poisoned {
             return Err(NduPublicationErrorV1::Poisoned);
         }
-        if let Err(error) = state.verify_original_paths() {
+        if let Err(error) = state.verify_original_paths(state.bytes, state.sequence, state.head) {
             state.poisoned = true;
             return Err(error);
         }
@@ -578,7 +640,7 @@ impl NduPublicationOwnerV1 {
         if state.poisoned {
             return Err(NduPublicationErrorV1::Poisoned);
         }
-        if let Err(error) = state.verify_original_paths() {
+        if let Err(error) = state.verify_original_paths(state.bytes, state.sequence, state.head) {
             state.poisoned = true;
             return Err(error);
         }
