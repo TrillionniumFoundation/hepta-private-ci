@@ -243,7 +243,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 # sole live RuntimeOrgans owner, not a second mutation route.
                 self.assertRegex(
                     public,
-                    rf"\bself\.organs\.{operation}\s*\(",
+                    rf"\bself\.organs\s*\.\s*{operation}\s*\(",
                     "public HeptaRuntime mutation bypassed original organs owner",
                 )
                 method = re.search(
