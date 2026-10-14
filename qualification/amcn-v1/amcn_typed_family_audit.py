@@ -25,9 +25,14 @@ def _components(rows):
 
     def find(key):
         parent.setdefault(key, key)
-        if parent[key] != key:
-            parent[key] = find(parent[key])
-        return parent[key]
+        node = key
+        while parent[node] != node:
+            node = parent[node]
+        while key != node:
+            next_key = parent[key]
+            parent[key] = node
+            key = next_key
+        return node
 
     def join(left, right):
         left, right = find(left), find(right)

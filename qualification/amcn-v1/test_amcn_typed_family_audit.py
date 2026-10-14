@@ -95,6 +95,19 @@ class FamilyPairedAuditTest(unittest.TestCase):
         with self.assertRaises(Refused):
             self.audit(predictions=output)
 
+    def test_large_transitive_alias_chain_cannot_overflow_python_stack(self):
+        from types import SimpleNamespace
+        from amcn_typed_family_audit import _components
+        rows = []
+        for i in range(1300):
+            rows.append(SimpleNamespace(row_id=f"a-{i}", source_root=f"r-{i}",
+                                        family=f"f-{1301-i:04d}"))
+            rows.append(SimpleNamespace(row_id=f"b-{i}", source_root=f"r-{i}",
+                                        family=f"f-{1300-i:04d}"))
+        components = _components(rows)
+        self.assertEqual(len(components), 1)
+        self.assertEqual(len(components[0]), 2600)
+
     def test_contradictory_cross_panel_root_cannot_fake_independence(self):
         rows = list(self.matrix.rows)
         i = next(i for i, r in enumerate(rows) if r.split == "future_a")
