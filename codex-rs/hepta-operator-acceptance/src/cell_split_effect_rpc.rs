@@ -1042,12 +1042,9 @@ mod tests {
         let attempt_path = path.clone();
         let worker = thread::spawn(move || {
             let started_at = Instant::now();
-            let denied = connect_owner_with_deadline(
-                &attempt_path,
-                started_at,
-                Duration::from_millis(100),
-            )
-            .is_err();
+            let denied =
+                connect_owner_with_deadline(&attempt_path, started_at, Duration::from_millis(100))
+                    .is_err();
             let _ = sender.send((denied, started_at.elapsed()));
         });
 
@@ -1057,7 +1054,10 @@ mod tests {
             .recv_timeout(Duration::from_secs(3))
             .expect("saturated Unix connect must resolve within the watchdog");
         worker.join().expect("bounded connection thread");
-        assert!(denied, "full listener backlog must not admit a third connection");
+        assert!(
+            denied,
+            "full listener backlog must not admit a third connection"
+        );
         assert!(
             elapsed < Duration::from_secs(2),
             "connect must respect the bounded transport budget"
