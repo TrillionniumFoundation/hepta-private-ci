@@ -1,0 +1,88 @@
+name: Hepta E1 historical-source selection lock
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e1_source_archive_lock.py"
+      - "experiments/shared_stem_cell/test_e1_source_archive_lock.py"
+      - "experiments/shared_stem_cell/E1_HISTORICAL_SOURCE_LOCK.md"
+      - "experiments/shared_stem_cell/E1_HISTORICAL_SOURCE_RECEIPT_20261014.json"
+      - ".github/workflows/hepta-e1-source-archive-lock.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-invariants:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check exact immutable source and run no-model 20-case tamper suite
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/shared_stem_cell/e1_source_archive_lock.py
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e1_source_archive_lock.py' -v
+  original-archive-integrity:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Recover the exact old successful Laya/Gemma source artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11886761368/zip" > "$RUNNER_TEMP/e1-source-original.zip"
+          printf '%s  %s\n' 'e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d' "$RUNNER_TEMP/e1-source-original.zip" | sha256sum -c -
+      - name: Verify original actual public source receipt and 96 Laya paired rows
+        env:
+          ARTIFACT_PATH: ${{ runner.temp }}/e1-source-original.zip
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,hashlib
+          from zipfile import ZipFile
+          from pathlib import Path
+          from sys import path
+          path.insert(0,"experiments/shared_stem_cell")
+          import e1_source_archive_lock as audit
+          archive=Path(os.environ["ARTIFACT_PATH"]).read_bytes()
+          assert audit.digest(archive)==audit.SOURCE_ZIP_SHA
+          with ZipFile(os.environ["ARTIFACT_PATH"]) as z:
+              source=audit.strict_json(z.read("stem-agnews-source.json"))
+              control=audit.strict_json(z.read("stem-agnews-comparison.json"))
+              rows=audit.strict_json(z.read("stem-laya-physical-arm.json"))["rows"]
+          assert source["panel_digest"]==audit.PUBLIC_PANEL_SHA
+          assert source["source_sha256"]==audit.DATASET_BYTES
+          assert control["panel_digest"]==audit.PUBLIC_PANEL_SHA
+          assert control["three_future_windows_present"] is False
+          assert len(rows)==96 and len({r["case_id"] for r in rows})==96
+          assert sum(r["split"]=="calibration" for r in rows)==32
+          assert sum(r["split"]=="test" for r in rows)==64
+          record={"source_archive_sha256":audit.SOURCE_ZIP_SHA,
+                  "exact_registered_panel_sha256":audit.PUBLIC_PANEL_SHA,
+                  "archived_matched_laya_predictions":96,
+                  "model_origin_independently_authenticated":False,
+                  "original_public_task_is_chronological_future":False,
+                  "production_promotion_permitted":False,"authority":"DENY_ALL"}
+          Path(os.environ["RUNNER_TEMP"],"e1-source-integrity.json").write_text(
+              json.dumps(record,sort_keys=True,indent=2)+"\n",encoding="utf8")
+          PY
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: hepta-e1-historical-source-lock
+          path: ${{ runner.temp }}/e1-source-integrity.json
+          retention-days: 7
