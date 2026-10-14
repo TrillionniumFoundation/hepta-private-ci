@@ -10,6 +10,7 @@ on:
       - 'qualification/neuron-gated-sparse-v3/test_candidate_inventory.py'
       - 'qualification/neuron-gated-sparse-v3/run_native_physical_matrix.py'
       - 'qualification/neuron-gated-sparse-v3/native_physical_canary.py'
+      - 'qualification/neuron-gated-sparse-v3/native_float_gap.py'
       - 'codex-rs/hepta-neuron/src/bin/neuron_trained_q24_shadow.rs'
       - 'qualification/neuron-gated-sparse-v3/test_real_pipeline.py'
       - 'qualification/neuron-gated-sparse-v3/test_a4_host_gate.py'
@@ -118,6 +119,14 @@ jobs:
               result=json.load(src)
           assert result['twenty_native_physical_model_executions']==20
           assert result['native_q24_temporal_replay_executed'] is True
+          assert result['diagnostic_native_vs_float_gap_rows']==20
+          for row in result['results']:
+              gap=row['float_surrogate_vs_native_q24_state_gap']
+              assert gap['compared_event_count']>=1
+              assert gap['native_q24_state_provided_by_real_rust_kernel'] is True
+              assert gap['bitwise_float_to_q24_prediction_parity_proven'] is False
+              assert gap['production_qualification'] is False
+          assert result['native_negative_cases_rejected']==5
           assert result['full_selected_model_head_executed'] is False
           assert result['floating_torch_native_q24_prediction_parity_verified'] is False
           assert result['production_qualification'] is False
