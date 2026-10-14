@@ -395,6 +395,27 @@ def _read_common(args) -> tuple[dict, str, dict, object, dict]:
     return plan, args.plan_sha256, raw_profile, candidate["profile"], host
 
 
+def _v6_material_gate(args, plan: dict, plan_sha: str, profile: dict) -> dict | None:
+    """Force independent operator material admission for every non-fixture CLI arm.
+
+    Research-only helper: no publisher or production authorization is implied.
+    """
+    trust_args = (args.operator_trust, args.operator_trust_sha256,
+                  args.signed_claim, args.signed_claim_sha256)
+    if args.candidate == "tiny_random":
+        if any(x is not None for x in trust_args):
+            raise ContractError("random-fixture profile may not claim operator-reviewed material")
+        return None
+    if any(x is None for x in trust_args):
+        raise ContractError("non-fixture model requires independent V6 operator material admission")
+    from multimodal_material_admission import admission
+    trust = load_pinned_document(args.operator_trust, args.operator_trust_sha256)
+    claim = load_pinned_document(args.signed_claim, args.signed_claim_sha256)
+    return admission(plan, plan_sha, profile, args.profile_sha256,
+                     args.model_snapshot, trust, args.operator_trust_sha256,
+                     claim, args.signed_claim_sha256, now_seconds=int(time.time()))
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Research-only frozen real Encoder / Cell Head producer")
     sub = parser.add_subparsers(dest="operation", required=True)
@@ -407,6 +428,12 @@ def main() -> None:
         p.add_argument("--profile", type=Path, required=True)
         p.add_argument("--profile-sha256", required=True)
         p.add_argument("--model-snapshot", type=Path, required=True)
+        # Non-fixture model execution requires an operator-reviewed, separately
+        # pinned key and a real file-inventory check before either phase.
+        p.add_argument("--operator-trust", type=Path)
+        p.add_argument("--operator-trust-sha256")
+        p.add_argument("--signed-claim", type=Path)
+        p.add_argument("--signed-claim-sha256")
         if name == "train":
             p.add_argument("--train", type=Path, required=True)
             p.add_argument("--train-sha256", required=True)
@@ -425,6 +452,7 @@ def main() -> None:
         sys.stdout.buffer.write(canonical(host_identity()))
         return
     plan, plan_sha, profile, parsed, host = _read_common(args)
+    material_receipt = _v6_material_gate(args, plan, plan_sha, profile)
     if args.operation == "train":
         rows, _ = load_pinned_jsonl(args.train, args.train_sha256)
         if args.train_sha256 != plan["train_sha256"]:
@@ -435,10 +463,17 @@ def main() -> None:
         backend = _offline_model(args.model_snapshot, parsed)
         head_raw, receipt = train(plan, plan_sha, profile, args.profile_sha256, args.candidate,
                                   rows, args.train_sha256, backend, host)
-        _save_dir(args.output_dir, {"head.safetensors": head_raw,
-                                    "train_receipt.json": canonical(receipt)})
+        if material_receipt is not None:
+            receipt["operator_material_assertion_sha256"] = args.signed_claim_sha256
+        files = {"head.safetensors": head_raw, "train_receipt.json": canonical(receipt)}
+        if material_receipt is not None:
+            files["operator_material_admission.json"] = canonical(material_receipt)
+        _save_dir(args.output_dir, files)
     else:
         receipt = load_pinned_document(args.train_receipt, args.train_receipt_sha256)
+        if material_receipt is not None and (receipt.get("operator_material_assertion_sha256")
+                                            != args.signed_claim_sha256):
+            raise ContractError("training receipt not linked to V6 operator assertion")
         head_path = args.head
         if head_path.is_symlink() or not head_path.is_file() or head_path.stat().st_size > MAX_HEAD_BYTES:
             raise ContractError("invalid Head artifact file")
@@ -452,8 +487,13 @@ def main() -> None:
         backend = _offline_model(args.model_snapshot, parsed)
         result, evidence = predict(plan, plan_sha, profile, args.profile_sha256, args.candidate,
                                    receipt, args.train_receipt_sha256, raw, rows, backend, host)
-        _save_dir(args.output_dir, {"candidate_result.json": canonical(result),
-                                    "predict_evidence.json": canonical(evidence)})
+        files = {"candidate_result.json": canonical(result),
+                 "predict_evidence.json": canonical(evidence)}
+        if material_receipt is not None:
+            evidence["operator_material_assertion_sha256"] = args.signed_claim_sha256
+            files["predict_evidence.json"] = canonical(evidence)
+            files["operator_material_admission.json"] = canonical(material_receipt)
+        _save_dir(args.output_dir, files)
 
 
 if __name__ == "__main__":
