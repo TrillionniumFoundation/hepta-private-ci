@@ -51,7 +51,7 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/gemma2-venv"
           PY="$RUNNER_TEMP/gemma2-venv/bin/python"
           "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu \
-            'torch==2.10.0' 'torchvision==0.25.0'
+            'torch==2.10.0' 'torchvision==0.25.0' 'torchcodec==0.10.0'
           "$PY" -m pip install --only-binary=:all: \
             'sentence-transformers==6.1.0' 'transformers==5.19.0' \
             'pillow==11.3.0' 'soundfile==0.13.1' 'numpy==2.2.6'
@@ -107,6 +107,69 @@ jobs:
           assert all(row['feature_digest'] for row in report['rows'])
           print(json.dumps(report, sort_keys=True))
           PY
+      - name: Real synthetic PNG/WAV image and audio model execution
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/gemma2-venv/bin/python"
+          "$PY" - <<'PY' > "$RUNNER_TEMP/gemma2-real-media.json"
+          import gc
+          import hashlib
+          from importlib import metadata
+          import json
+          import os
+          from pathlib import Path
+          import sys
+          import wave
+          from PIL import Image
+          sys.path.insert(0, 'qualification/neuron-dynamic-learning')
+          from embeddinggemma2_shadow import FrozenGemmaShadow
+
+          root = Path(os.environ['RUNNER_TEMP'])
+          assets = root / 'gemma2-synthetic-decoder-inputs'
+          assets.mkdir()
+          Image.new('RGB', (32, 32), (80, 120, 140)).save(assets / 'fixture.png')
+          with wave.open(str(assets / 'fixture.wav'), 'wb') as output:
+              output.setnchannels(1)
+              output.setsampwidth(2)
+              output.setframerate(16000)
+              output.writeframes(b'\x00\x00' * 16000)
+          manifest = json.loads((root / 'gemma2-pinned/manifest.json').read_text())
+          reports = []
+          for profile, modality, path in (
+                  ('vision', 'image', assets / 'fixture.png'),
+                  ('audio', 'audio', assets / 'fixture.wav')):
+              selected = dict(manifest)
+              selected['profile'] = profile
+              selected['runtime'] = dict(manifest['runtime'])
+              for name in ('pillow', 'soundfile', 'torchcodec'):
+                  selected['runtime'][name] = metadata.version(name)
+              config_path = root / 'gemma2-pinned' / f'manifest-{profile}.json'
+              config_path.write_text(json.dumps(selected, sort_keys=True))
+              digest = hashlib.sha256(path.read_bytes()).hexdigest()
+              runner = FrozenGemmaShadow(config_path, device='cpu')
+              result = runner.encode_cells([{
+                  'scope_id': 'public.shadow', 'principal_id': 'physical.cpu',
+                  'purpose_id': 'synthetic.decoder.smoke', 'cell_id': f'cell.{profile}',
+                  'generation': 1, 'authority_epoch': 1,
+                  'input': {'modality': modality, 'role': 'document',
+                            'value': path.name, 'sha256': digest},
+              }], media_root=assets)
+              assert result['physical_local_model_execution']
+              assert result['physical_transformer_forward_calls'] is None
+              assert result['production_promotion'] == 'DENY_ALL'
+              assert len(result['rows'][0]['features_q24']) == 256
+              reports.append({
+                  'profile': profile, 'modality': modality,
+                  'input_kind': 'synthetic_decoder_smoke_not_evaluation_data',
+                  'feature_digest': result['rows'][0]['feature_digest'],
+                  'wall_micros_excluding_model_load': result['measured_wall_micros'],
+                  'pipeline_digest': result['rows'][0]['pipeline_digest'],
+                  'production_promotion': 'DENY_ALL',
+              })
+              del runner
+              gc.collect()
+          print(json.dumps(reports, sort_keys=True))
+          PY
       - name: Redacted qualification receipts (never model bytes)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -116,6 +179,7 @@ jobs:
             ${{ runner.temp }}/gemma2-environment.freeze
             ${{ runner.temp }}/gemma2-snapshot-receipt.json
             ${{ runner.temp }}/gemma2-real-forward.json
+            ${{ runner.temp }}/gemma2-real-media.json
           if-no-files-found: warn
           retention-days: 7
       - name: No source-tree mutation
