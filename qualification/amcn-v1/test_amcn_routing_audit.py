@@ -54,14 +54,16 @@ class RoutingComparison(unittest.TestCase):
 
     def test_failure_is_charged_without_success_imputation(self):
         runs, scored = material()
-        runs[0]["status"] = "failed"
-        runs[0]["raw_answer_sha256"] = None
-        scored[0]["raw_answer_sha256"] = None
+        # Target the originally successful fixed-graph arm (score=1), not
+        # the independent arm whose frozen fixture already scores zero.
+        runs[1]["status"] = "failed"
+        runs[1]["raw_answer_sha256"] = None
+        scored[1]["raw_answer_sha256"] = None
         with self.assertRaises(Refused):
             compare_routing(runs, scored, scorer_pin=s("scorer"))
-        scored[0]["score"] = 0
+        scored[1]["score"] = 0
         r = compare_routing(runs, scored, scorer_pin=s("scorer"))
-        self.assertEqual(r["metrics"]["cost"]["cell_independent"]["failed"], 1)
+        self.assertEqual(r["metrics"]["cost"]["cell_fixed_graph"]["failed"], 1)
 
 
 if __name__ == "__main__":
