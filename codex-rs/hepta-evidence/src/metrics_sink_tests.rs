@@ -231,3 +231,30 @@ fn metrics_sink_drop_never_waits_on_saturated_unserved_channel() {
     drop(sink);
     drop(rx);
 }
+
+#[cfg(unix)]
+#[test]
+fn evidence_writer_flush_refuses_ack_after_original_wal_inode_replacement() {
+    use std::fs;
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let removed = dir.path().join("old-journal");
+    let sink = DurablePhaseMetricSinkV1::open(&path, 8, 2, 60_000).expect("live writer");
+    sink.record(sample(PhaseMetricKindV1::Cas)).expect("sample");
+    sink.flush().expect("original durable ACK");
+    let original = fs::read(&path).expect("original group");
+    fs::rename(&path, &removed).expect("replace while original owner is alive");
+    fs::write(&path, &original).expect("inject same-looking WAL");
+    fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).expect("private replacement");
+
+    // No new samples are staged: the flush would previously have returned
+    // Ok(None), letting a downstream Split mark telemetry as safely durable.
+    assert_eq!(sink.flush(), Err(PhaseMetricSinkErrorV1::Unavailable));
+    assert!(!sink.healthy());
+    assert_eq!(
+        sink.record(sample(PhaseMetricKindV1::Cns)),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+}

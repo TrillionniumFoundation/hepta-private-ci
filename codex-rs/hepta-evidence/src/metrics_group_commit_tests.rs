@@ -251,3 +251,65 @@ fn journal_open_does_not_create_an_unprovisioned_storage_directory() {
     assert!(!unknown_parent.exists());
     assert!(!journal.exists());
 }
+
+#[cfg(unix)]
+#[test]
+fn live_evidence_wal_rejects_same_inode_truncate_and_equal_length_tail_rewrite() {
+    use std::os::unix::fs::MetadataExt as _;
+
+    for fault in ["truncate", "equal_length_rewrite"] {
+        let dir = tempfile::tempdir().expect("private Evidence directory");
+        let path = dir.path().join("journal");
+        let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
+        owner.stage(sample(MetricPhaseV1::Cas)).expect("first group");
+        owner.flush().expect("first durable row").expect("first group ACK");
+        let original = fs::read(&path).expect("durable WAL");
+        let original_inode = fs::metadata(&path).expect("original file").ino();
+        match fault {
+            "truncate" => {
+                let file = OpenOptions::new().write(true).open(&path).expect("open original inode");
+                file.set_len(0).expect("truncate SAME inode");
+                file.sync_all().expect("persist corruption");
+            }
+            "equal_length_rewrite" => {
+                let mut corrupt = original.clone();
+                let pos = corrupt.len() - 2;
+                corrupt[pos] = if corrupt[pos] == b'0' { b'1' } else { b'0' };
+                let mut file = OpenOptions::new().write(true).open(&path).expect("same inode");
+                file.write_all(&corrupt).expect("rewrite identical length");
+                file.sync_all().expect("persist changed tail");
+                assert_eq!(fs::metadata(&path).expect("same size").len(), original.len() as u64);
+            }
+            _ => unreachable!("fixed faults"),
+        }
+        assert_eq!(fs::metadata(&path).expect("same inode").ino(), original_inode);
+        owner.stage(sample(MetricPhaseV1::Cns)).expect("stage a second group");
+        assert!(matches!(owner.flush(), Err(MetricsJournalErrorV1::Corrupt)));
+        assert!(matches!(owner.flush(), Err(MetricsJournalErrorV1::Poisoned)));
+    }
+}
+
+#[cfg(unix)]
+#[test]
+fn original_evidence_wal_replacement_invalidates_even_empty_flush_barrier() {
+    use std::os::unix::fs::MetadataExt as _;
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let dir = tempfile::tempdir().expect("private Evidence directory");
+    let path = dir.path().join("journal");
+    let removed = dir.path().join("displaced-original-journal");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
+    owner.stage(sample(MetricPhaseV1::Wal)).expect("stage first group");
+    owner.flush().expect("original fsynced group");
+    let original = fs::read(&path).expect("old bytes");
+    let inode = fs::metadata(&path).expect("old inode").ino();
+
+    fs::rename(&path, &removed).expect("displace while original FD lives");
+    fs::write(&path, &original).expect("replacement with identical bytes");
+    fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).expect("private replacement");
+    assert_ne!(fs::metadata(&path).expect("replacement").ino(), inode);
+    assert_eq!(fs::read(&path).expect("replacement bytes"), original);
+    assert!(matches!(owner.flush(), Err(MetricsJournalErrorV1::UnsafePath)));
+    assert!(matches!(owner.flush(), Err(MetricsJournalErrorV1::Poisoned)));
+    assert_eq!(fs::read(&path).expect("no orphan ACK writes"), original);
+}
