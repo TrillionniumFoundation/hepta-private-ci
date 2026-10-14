@@ -209,7 +209,7 @@ fn scope_fence_cutover_preserves_unrelated_4096_cell_lanes() {
 }
 
 #[test]
-fn cutover_only_churn_bounds_lazy_round_robin_tickets() {
+fn cutover_only_churn_removes_ticket_without_global_queue_scan() {
     let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
     for round in 0..512_u64 {
         let scope = format!("retired-scope-{round}");
@@ -226,8 +226,8 @@ fn cutover_only_churn_bounds_lazy_round_robin_tickets() {
         assert_eq!(q.pending(), 0);
         assert!(q.scope_lanes.is_empty());
         assert!(q.physical_lanes.is_empty());
-        assert!(q.round_robin.len() <= q.limits.max_batch_size);
-        assert_eq!(q.round_robin.len(), q.round_robin_members.len());
+        assert!(q.round_robin.is_empty());
+        assert!(q.lane_tickets.is_empty());
     }
 
     q.enqueue(522, intent("healthy", "active-scope", 1, 1, 600))
@@ -373,7 +373,8 @@ fn stale_coalesced_slots_do_not_defer_a_ready_scope_behind_a_cold_scope() {
     let first = q.poll_physically_compatible(11).unwrap();
     assert_eq!(first.batch.unwrap().requests.len(), 4);
     assert_eq!(q.pending(), 0);
-    assert_eq!(q.round_robin.len(), 3);
+    assert!(q.round_robin.is_empty());
+    assert!(q.lane_tickets.is_empty());
 
     // The first live scope is not ready; the second is deadline-due.
     q.enqueue(12, intent("not-due", "scope-e", 1, 1, 500))
@@ -389,7 +390,7 @@ fn stale_coalesced_slots_do_not_defer_a_ready_scope_behind_a_cold_scope() {
 }
 
 #[test]
-fn coalesced_scope_reuses_its_stale_round_robin_slot_on_readmission() {
+fn coalesced_scope_creates_one_fresh_ticket_on_readmission() {
     let mut config = limits();
     config.max_batch_size = 2;
     config.max_lanes_per_poll = 2;
@@ -401,21 +402,20 @@ fn coalesced_scope_reuses_its_stale_round_robin_slot_on_readmission() {
     let first = q.poll_physically_compatible(11).unwrap().batch.unwrap();
     assert_eq!(first.requests.len(), 2);
     assert_eq!(q.pending(), 0);
-    // scope-b was consumed by the affinity index, so it still has exactly
-    // one unvisited round-robin slot until the next ordinary poll.
-    assert_eq!(q.round_robin.len(), 1);
-    assert_eq!(q.round_robin_members.len(), 1);
+    // Physical coalescing retires the scope-b ticket immediately.
+    assert!(q.round_robin.is_empty());
+    assert!(q.lane_tickets.is_empty());
 
     q.enqueue(12, intent("readmitted", "scope-b", 1, 2, 100))
         .unwrap();
     assert_eq!(q.active_lanes(), 1);
     assert_eq!(q.round_robin.len(), 1);
-    assert_eq!(q.round_robin_members.len(), 1);
+    assert_eq!(q.lane_tickets.len(), 1);
     let second = q.poll_physically_compatible(22).unwrap().batch.unwrap();
     assert_eq!(second.requests.len(), 1);
     assert_eq!(second.requests[0].request_id, id("readmitted"));
     assert_eq!(q.pending(), 0);
-    assert!(q.round_robin_members.is_empty());
+    assert!(q.lane_tickets.is_empty());
 }
 
 #[test]
@@ -440,10 +440,57 @@ fn repeated_cross_scope_coalescing_never_accumulates_duplicate_queue_slots() {
         let result = q.poll_physically_compatible(now + 10).unwrap();
         assert_eq!(result.batch.unwrap().requests.len(), 2);
         assert_eq!(q.pending(), 0);
-        assert!(q.round_robin.len() <= 1);
-        assert_eq!(q.round_robin_members.len(), q.round_robin.len());
+        assert!(q.round_robin.is_empty());
+        assert!(q.lane_tickets.is_empty());
         assert!(q.scope_lanes.is_empty());
     }
+}
+
+#[test]
+fn ticketed_scope_cutover_keeps_unrelated_4096_lanes_and_fifo_position() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    for cell in 0..4096 {
+        let scope = format!("unrelated-{cell}");
+        q.enqueue(1, intent(&format!("request-{cell}"), &scope, 1, 1, 1000))
+            .unwrap();
+    }
+    let untouched = intent("unused", "unrelated-2048", 1, 1, 1000).key;
+    let original_ticket = *q.lane_tickets.get(&untouched).unwrap();
+    let scope = id("retiring");
+    for cycle in 0..512_u64 {
+        let now = cycle + 2;
+        q.enqueue(
+            now,
+            intent(&format!("retire-{cycle}"), "retiring", 1, 1, now + 100),
+        )
+        .unwrap();
+        assert_eq!(
+            q.retain_scope_binding(&scope, Generation::new(2).unwrap(), 2, 1),
+            vec![id(&format!("retire-{cycle}"))]
+        );
+        assert_eq!(q.lane_tickets.get(&untouched), Some(&original_ticket));
+        assert_eq!(q.round_robin.len(), 4096);
+        assert_eq!(q.lane_tickets.len(), 4096);
+        assert_eq!(q.scope_lanes.len(), 4096);
+    }
+}
+
+#[test]
+fn ticket_counter_rollover_keeps_live_lane_fifo_order() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    for (request, scope) in [("a", "scope-a"), ("b", "scope-b"), ("c", "scope-c")] {
+        q.enqueue(1, intent(request, scope, 1, 1, 100)).unwrap();
+    }
+    q.next_ticket = u128::MAX;
+    q.enqueue(1, intent("d", "scope-d", 1, 1, 100)).unwrap();
+    assert_eq!(q.round_robin.len(), 4);
+    assert_eq!(q.lane_tickets.len(), 4);
+    for expected in ["a", "b", "c", "d"] {
+        let poll = q.poll(11).unwrap();
+        assert_eq!(poll.batch.unwrap().requests[0].request_id, id(expected));
+    }
+    assert!(q.round_robin.is_empty());
+    assert!(q.lane_tickets.is_empty());
 }
 
 // Opt-in source benchmark: not hardware acceptance, report raw durations.
