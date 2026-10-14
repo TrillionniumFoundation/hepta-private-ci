@@ -1,8 +1,8 @@
 //! Additive PREPARE-ONLY bridge into the original Evidence SQLite owner.
 //!
-//! The HeptaEvidenceStore persists a complete, digest-bound execution request
-//! envelope in its existing provider-effect intent table and existing SQLite
-//! writer. It does not authorize, dispatch, reconcile or complete an effect.
+//! The original Evidence SQLite owner now commits both the ProviderEffect
+//! digest record and a full immutable typed execution envelope in one
+//! transaction. Cold recovery no longer depends on a caller-supplied intent. It does not authorize, dispatch, reconcile or complete an effect.
 //! An independent Final-use token and original owner effect journal remain
 //! mandatory for any later tool execution. No new database or writer exists.
 
@@ -46,12 +46,14 @@ pub struct ExecutionPreparationReceiptV1 {
     pub disposition: AppendDisposition,
 }
 
-struct PreparedEnvelope {
-    original: ProviderEffectIntent,
-    request_sha256: [u8; 32],
+pub(crate) struct PreparedEnvelope {
+    pub(crate) original: ProviderEffectIntent,
+    pub(crate) request_sha256: [u8; 32],
 }
 
-fn validate_preparation(intent: &ExecutionIntentV1) -> Result<PreparedEnvelope, EvidenceError> {
+pub(crate) fn validate_preparation(
+    intent: &ExecutionIntentV1,
+) -> Result<PreparedEnvelope, EvidenceError> {
     let proposal = intent
         .binding_proposal()
         .map_err(|error| EvidenceError::InvalidRecord(format!("execution intent: {error}")))?;
@@ -96,10 +98,7 @@ impl HeptaEvidenceStore {
             EvidenceError::InvalidRecord(format!("execution payload: {error}"))
         })?;
 
-        let prepared = validate_preparation(intent)?;
-        let disposition = self
-            .append_provider_effect_intent(&prepared.original)
-            .await?;
+        let disposition = self.append_complete_execution_preparation_v1(intent).await?;
         let readback = self.read_execution_preparation_v1(intent).await?;
         if readback.status != ExecutionPreparationReadbackStatusV1::RecordedOnly {
             return Err(EvidenceError::Corrupt(
@@ -121,20 +120,18 @@ impl HeptaEvidenceStore {
     ) -> Result<ExecutionPreparationReadbackV1, EvidenceError> {
         let prepared = validate_preparation(intent)?;
         let expected = &prepared.original;
-        let observed = self.get_provider_effect(&expected.key).await?;
-        let status = match observed {
+        let recovered = self
+            .recover_execution_preparation_by_key_v1(&expected.key)
+            .await?;
+        let status = match recovered {
             None => ExecutionPreparationReadbackStatusV1::Absent,
-            Some(record) => {
-                if &record.intent.intent != expected {
+            Some(recovered) => {
+                if recovered.intent != *intent {
                     return Err(EvidenceError::IdempotencyConflict {
                         record_id: expected.key.as_str().to_owned(),
                     });
                 }
-                if record.acknowledgements.is_empty() && record.uncertainties.is_empty() {
-                    ExecutionPreparationReadbackStatusV1::RecordedOnly
-                } else {
-                    ExecutionPreparationReadbackStatusV1::OriginalOwnerReconciliationRequired
-                }
+                recovered.readback.status
             }
         };
         Ok(ExecutionPreparationReadbackV1 {
