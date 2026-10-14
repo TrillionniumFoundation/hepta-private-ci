@@ -250,7 +250,8 @@ fn quantized_head_logit(
 /// Q24 activation, not Torch FP32 accumulation, different temporal states,
 /// calibration, binary action authorization or production final-use.
 fn research_q24_head_sign_margin(
-    logit_q24: i64, activation_q24: &[i64],
+    logit_q24: i64,
+    activation_q24: &[i64],
 ) -> Result<(&'static str, u64), String> {
     if !(5..=256).contains(&activation_q24.len())
         || activation_q24.iter().any(|v| !(-H..=H).contains(v))
@@ -829,7 +830,6 @@ mod tests {
         );
         Ok(())
     }
-
 }
 
 fn main() {
