@@ -23,14 +23,10 @@ def paired_features(sources, width=4):
 
 class FakeBase:
     simulated = True
-
     def __init__(self):
         self.calls = {"clip": 0}
         self.identities = {"clip": "fixture"}
-        self.models = {}
-        self.processors = {}
-        self.materializations = {}
-
+        self.models = {}; self.processors = {}; self.materializations = {}
     def encode(self, name, item, root):
         self.calls["clip"] += 1
         values = []
@@ -38,9 +34,7 @@ class FakeBase:
             n = int(frame["sha256"][:2], 16)
             values.append(torch.tensor([n, n*n % 17, 1.0], dtype=torch.float32))
         return torch.stack(values), torch.tensor([f["timestamp_us"] for f in item], dtype=torch.long)
-
-    def close(self):
-        pass
+    def close(self): pass
 
 
 class TemporalTests(unittest.TestCase):
@@ -68,8 +62,7 @@ class TemporalTests(unittest.TestCase):
         self.assertEqual(int((blind.argmax(-1) == holdout_y).sum()), 3)
 
     def test_cache_reuses_exact_frames_and_preserves_requested_order(self):
-        base = FakeBase()
-        cache = v.FrameCacheTowers(base)
+        base = FakeBase(); cache = v.FrameCacheTowers(base)
         refs = [{"path": f"{i}.png", "sha256": f"{i:02x}" + "0"*62,
                  "timestamp_us": i*40000} for i in range(8)]
         forward, _ = cache.encode("video", refs, Path("."))
@@ -82,12 +75,9 @@ class TemporalTests(unittest.TestCase):
     def test_invalid_video_rejected_before_model_math(self):
         item, labels = paired_features(2)
         x, mask, times = item
-        with self.assertRaises(e.InputError):
-            v.validate_video((x[:, :7], mask[:, :7], times[:, :7]), labels)
-        bad = x.clone()
-        bad[0, 0, 0] = float("nan")
-        with self.assertRaises(e.InputError):
-            v.validate_video((bad, mask, times), labels)
+        with self.assertRaises(e.InputError): v.validate_video((x[:, :7], mask[:, :7], times[:, :7]), labels)
+        bad = x.clone(); bad[0,0,0] = float("nan")
+        with self.assertRaises(e.InputError): v.validate_video((bad, mask, times), labels)
 
     def test_cohort_requires_exact_reverse_pairs(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -98,11 +88,9 @@ class TemporalTests(unittest.TestCase):
                 rows.append({"case_id": direction, "pair_id": "p", "source_id": "s",
                              "split": "train", "direction": direction,
                              "frame_sha256s": frames})
-            raw = e.canonical(rows)
-            (root / "cohort.json").write_bytes(raw)
+            raw = e.canonical(rows); (root/"cohort.json").write_bytes(raw)
             with self.assertRaises(e.InputError):
-                v.cohort(root, {"path": "cohort.json", "sha256": e.sha(raw)})
+                v.cohort(root, {"path":"cohort.json", "sha256":e.sha(raw)})
 
 
-if __name__ == "__main__":
-    unittest.main()
+if __name__ == "__main__": unittest.main()
