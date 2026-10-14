@@ -35,6 +35,9 @@ jobs:
           python qualification/stem-cell-v1/run_checked_tests.py \
             --pattern test_multirc_real_study.py --output "$RUNNER_TEMP/multirc-tests.json" \
             2>&1 | tee "$RUNNER_TEMP/multirc-tests.log"
+          python qualification/stem-cell-v1/run_checked_tests.py \
+            --pattern test_multirc_evidence_stress.py --output "$RUNNER_TEMP/multirc-stress-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-stress-tests.log"
           python -m compileall -q qualification/stem-cell-v1
       - uses: actions/upload-artifact@v4
         if: always()
@@ -45,6 +48,8 @@ jobs:
             ${{ runner.temp }}/multirc-source-sha.txt
             ${{ runner.temp }}/multirc-tests.json
             ${{ runner.temp }}/multirc-tests.log
+            ${{ runner.temp }}/multirc-stress-tests.json
+            ${{ runner.temp }}/multirc-stress-tests.log
 
   multirc-stock-hf:
     runs-on: ubuntu-24.04
@@ -154,6 +159,18 @@ jobs:
             --snapshot "$RUNNER_TEMP/public-encoder/snapshot" --steps 64 \
             --output "$RUNNER_TEMP/multirc-run" \
             2>&1 | tee "$RUNNER_TEMP/multirc-train.log"
+      - name: Replay frozen Reader on original and blinded evidence interventions
+        shell: bash
+        run: |
+          set -euo pipefail
+          SEAL=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/multirc-run/COMMITTED.json"))["seal_id"])')
+          python qualification/stem-cell-v1/multirc_evidence_stress.py \
+            --train-bundle "$RUNNER_TEMP/multirc-material/train-bundle.json" \
+            --blind-eval-bundle "$RUNNER_TEMP/multirc-material/blind-eval-bundle.json" \
+            --run-dir "$RUNNER_TEMP/multirc-run" --expected-seal-id "$SEAL" \
+            --snapshot "$RUNNER_TEMP/public-encoder/snapshot" \
+            --output "$RUNNER_TEMP/multirc-blind-stress" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-blind-stress.log"
       - name: Join human-annotated dev labels only after prediction seal exists
         shell: bash
         run: |
@@ -179,6 +196,10 @@ jobs:
             ${{ runner.temp }}/multirc-prepare.log
             ${{ runner.temp }}/multirc-material/MATERIAL.json
             ${{ runner.temp }}/multirc-train.log
+            ${{ runner.temp }}/multirc-blind-stress.log
+            ${{ runner.temp }}/multirc-blind-stress/stress.json
+            ${{ runner.temp }}/multirc-blind-stress/COMMITTED.json
+            ${{ runner.temp }}/multirc-blind-stress/FAILED.json
             ${{ runner.temp }}/multirc-run/predictions.json
             ${{ runner.temp }}/multirc-run/COMMITTED.json
             ${{ runner.temp }}/multirc-run/FAILED.json

@@ -27,4 +27,30 @@ class StockHFMultiRCTest(unittest.TestCase):
         self.assertFalse(score['resource_efficiency_established'])
 
 
+class StockHFBlindEvidenceStressTests(unittest.TestCase):
+    def test_real_architecture_sealed_reader_evidence_interventions(self):
+        # Randomly initialized stock ModernBERT: compatibility, NOT public
+        # pretrained model accuracy or answer grounding.
+        from multirc_evidence_stress import audit_evidence
+        from matrix_bank import state_digest
+        sample=InstalledHFTests(methodName='test_full_stock_architecture_roundtrip_and_physical_tie')
+        sample.setUp()
+        self.addCleanup(sample.tmp.cleanup)
+        evidence,query,verify,ckpt,full,loading=safe_encoder(sample.root)
+        tr,ev,labels=prepare_panels(fixture_rows(5),fixture_rows(4,'val'),
+            dataset_sha256_train='a'*64,dataset_sha256_val='b'*64,train_passages=3,val_passages=2)
+        obs,readers=train_then_predict(tr,lambda:ev,encoder=evidence,
+            question_encoder=query,checkpoint_sha256=ckpt,steps=2)
+        owner=state_digest(readers['conditioned'])
+        report=audit_evidence(tr,ev,obs,readers['conditioned'],encoder=evidence,
+            question_encoder=query,checkpoint_sha256=ckpt)
+        verify()
+        self.assertEqual(report['passage_count'],2)
+        self.assertEqual(report['encoder_calls'],3)
+        self.assertEqual(report['conditioned_reader_calls'],16)
+        self.assertEqual(report['stress_work']['unknown_operators'],{})
+        self.assertEqual(state_digest(readers['conditioned']),owner)
+        self.assertFalse(report['missing_premise_correctness_certified'])
+
+
 if __name__=='__main__':unittest.main()
