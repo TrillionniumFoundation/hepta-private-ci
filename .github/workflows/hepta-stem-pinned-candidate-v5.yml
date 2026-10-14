@@ -1,0 +1,114 @@
+name: Hepta V5 pinned Encoder / Cell Head train-predict physical contract
+on:
+  push:
+    branches: ["research/multimodal-stem-bridge-20261014"]
+    paths:
+      - "experiments/shared_stem_cell/multimodal_pinned_candidate.py"
+      - "experiments/shared_stem_cell/test_multimodal_pinned_candidate*.py"
+      - "experiments/shared_stem_cell/PINNED_CANDIDATE_EXECUTION_V5.md"
+      - ".github/workflows/hepta-stem-pinned-candidate-v5.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/multimodal_pinned_candidate.py"
+      - "experiments/shared_stem_cell/test_multimodal_pinned_candidate*.py"
+      - "experiments/shared_stem_cell/PINNED_CANDIDATE_EXECUTION_V5.md"
+      - ".github/workflows/hepta-stem-pinned-candidate-v5.yml"
+permissions:
+  contents: read
+concurrency:
+  group: pinned-stem-v5-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  physically-execute-random-local-BERT-only:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install pinned CPU and HF physical loader runtime
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-stem-v5
+          python3 -m venv /tmp/hepta-stem-v5-venv
+          /tmp/hepta-stem-v5-venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu \
+            2>&1 | tee /tmp/hepta-stem-v5/install-torch.log
+          /tmp/hepta-stem-v5-venv/bin/pip install numpy==1.26.4 transformers==4.57.1 \
+            safetensors==0.6.2 huggingface-hub==0.35.3 tokenizers==0.22.1 psutil==7.0.0 \
+            2>&1 | tee /tmp/hepta-stem-v5/install-hf.log
+          /tmp/hepta-stem-v5-venv/bin/pip check
+          /tmp/hepta-stem-v5-venv/bin/pip freeze > /tmp/hepta-stem-v5/environment.txt
+          /tmp/hepta-stem-v5-venv/bin/python - <<'PY'
+          from transformers import BertConfig, BertModel, BertTokenizerFast
+          from safetensors.torch import save, load
+          from multimodal_pinned_candidate import host_identity
+          print('PINNED_REAL_LOCAL_HF_LOADER_IMPORT_OK')
+          print('HOST_FINGERPRINT',host_identity())
+          PY
+        env:
+          PYTHONPATH: experiments/shared_stem_cell
+      - name: Run V5 contract tests without preprocessing or real-world efficacy claims
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell /tmp/hepta-stem-v5-venv/bin/python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_multimodal_pinned_candidate.py' -v \
+            2>&1 | tee /tmp/hepta-stem-v5/contract.log
+          /tmp/hepta-stem-v5-venv/bin/python -m py_compile \
+            experiments/shared_stem_cell/multimodal_pinned_candidate.py \
+            experiments/shared_stem_cell/test_multimodal_pinned_candidate.py \
+            experiments/shared_stem_cell/test_multimodal_pinned_candidate_material.py
+      - name: Require actual safetensors forward, new-process train and prediction, no skips
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell /tmp/hepta-stem-v5-venv/bin/python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_multimodal_pinned_candidate_material.py' -v \
+            2>&1 | tee /tmp/hepta-stem-v5/physical.log
+          if grep -Ei 'skipped[=: ]|skipped .+ requires' /tmp/hepta-stem-v5/physical.log; then
+            echo 'Skipped physical test is NOT admissible' >&2
+            exit 1
+          fi
+          grep -q 'Ran 2 tests' /tmp/hepta-stem-v5/physical.log
+          grep -q '^OK$' /tmp/hepta-stem-v5/physical.log
+      - name: Retain source identity and explicit research-only disposition
+        if: always()
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > /tmp/hepta-stem-v5/exact-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-stem-v5/exact-tree.txt
+          sha256sum experiments/shared_stem_cell/multimodal_pinned_candidate.py \
+            experiments/shared_stem_cell/test_multimodal_pinned_candidate.py \
+            experiments/shared_stem_cell/test_multimodal_pinned_candidate_material.py \
+            experiments/shared_stem_cell/PINNED_CANDIDATE_EXECUTION_V5.md \
+            .github/workflows/hepta-stem-pinned-candidate-v5.yml \
+            > /tmp/hepta-stem-v5/source-SHA256SUMS
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          disposition = {
+              'schema':'hepta.stem-v5-physical-smoke-disposition.v1',
+              'model_used':'random-initialized-local-small-stock-BERT',
+              'real_mmbert_or_granite_used': False,
+              'pretrained_model_authenticated': False,
+              'real_world_efficacy_measured': False,
+              'baseline_no_change_from_product_observed': False,
+              'independent_ndu_verified': False,
+              'target_host_scale_measured': False,
+              'production_accepted': False,
+          }
+          Path('/tmp/hepta-stem-v5/disposition.json').write_text(json.dumps(disposition,sort_keys=True)+'\n')
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-stem-v5-local-random-bert-physical-not-pretrained
+          path: /tmp/hepta-stem-v5
+          if-no-files-found: error
