@@ -504,3 +504,168 @@ fn partial_or_legacy_evidence_owner_cannot_be_adopted_as_new_genesis() {
         assert!(!missing.exists(), "missing half must not be created");
     }
 }
+
+#[cfg(unix)]
+#[test]
+fn evidence_wal_highwater_survives_cold_reopen_and_original_owner_append() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let marker = dir.path().join("journal.owner-lock");
+    {
+        let mut first = MetricsGroupCommitV1::open(&path).expect("original writer");
+        first.stage(sample(MetricPhaseV1::Cas)).expect("first");
+        assert_eq!(first.flush().expect("first durable group").unwrap().sequence, 1);
+        first.stage(sample(MetricPhaseV1::Cns)).expect("second");
+        assert_eq!(first.flush().expect("second durable group").unwrap().sequence, 2);
+    }
+    {
+        let mut recovered = MetricsGroupCommitV1::open(&path).expect("recover two groups");
+        assert_eq!(recovered.committed_groups(), 2);
+        assert_eq!(recovered.committed_rows(), 2);
+        recovered
+            .stage(sample(MetricPhaseV1::Signature))
+            .expect("post-restart third group");
+        assert_eq!(recovered.flush().expect("third durable group").unwrap().sequence, 3);
+    }
+    let final_view = MetricsGroupCommitV1::open(&path).expect("recover all three groups");
+    assert_eq!(final_view.committed_groups(), 3);
+    assert_eq!(final_view.committed_rows(), 3);
+    assert_eq!(
+        fs::metadata(&marker).expect("separate high-water file").len(),
+        final_view.owner_marker_bytes.len() as u64 + 3 * OWNER_FRONTIER_ROW_BYTES as u64
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn valid_older_wal_prefix_cannot_be_adopted_after_cold_same_inode_truncate() {
+    use std::os::unix::fs::MetadataExt as _;
+
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let earlier;
+    {
+        let mut writer = MetricsGroupCommitV1::open(&path).expect("original owner");
+        writer.stage(sample(MetricPhaseV1::Cas)).expect("first sample");
+        writer.flush().expect("durable first group");
+        earlier = fs::read(&path).expect("valid committed prefix");
+        writer.stage(sample(MetricPhaseV1::Cns)).expect("second sample");
+        writer.flush().expect("durable second group");
+    }
+    let inode = fs::metadata(&path).expect("original inode").ino();
+    let opened = OpenOptions::new().write(true).open(&path).expect("same inode");
+    opened.set_len(earlier.len() as u64).expect("roll back to VALID prefix");
+    opened.sync_all().expect("persist truncated prefix");
+    assert_eq!(fs::read(&path).expect("remaining bytes"), earlier);
+    assert_eq!(fs::metadata(&path).expect("inode unchanged").ino(), inode);
+    assert!(matches!(
+        MetricsGroupCommitV1::open(&path),
+        Err(MetricsJournalErrorV1::Corrupt)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
+fn marker_highwater_truncation_is_not_accepted_after_restart() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let marker = dir.path().join("journal.owner-lock");
+    {
+        let mut writer = MetricsGroupCommitV1::open(&path).expect("original writer");
+        writer.stage(sample(MetricPhaseV1::Cas)).expect("first");
+        writer.flush().expect("first fsync");
+        writer.stage(sample(MetricPhaseV1::Signature)).expect("second");
+        writer.flush().expect("second fsync");
+    }
+    let original_len = fs::metadata(&marker).expect("two frontiers").len();
+    let marker_file = OpenOptions::new()
+        .write(true)
+        .open(&marker)
+        .expect("same high-water inode");
+    marker_file
+        .set_len(original_len - OWNER_FRONTIER_ROW_BYTES as u64)
+        .expect("drop most recent high-water record");
+    marker_file.sync_all().expect("persist marker truncation");
+    assert!(matches!(
+        MetricsGroupCommitV1::open(&path),
+        Err(MetricsJournalErrorV1::Corrupt)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
+fn valid_wal_group_fsynced_without_marker_highwater_remains_quarantined() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let old_head;
+    {
+        let mut first = MetricsGroupCommitV1::open(&path).expect("owner");
+        first.stage(sample(MetricPhaseV1::Wal)).expect("first");
+        first.flush().expect("first fully committed group");
+        old_head = first.committed_head();
+    }
+    // Fault injection: simulate a crash between the physical WAL fsync and
+    // append/fsync of its separate high-water row, using a valid WAL record.
+    let payload = encode_sample(&sample(MetricPhaseV1::FinalUse));
+    let head = digest_group(2, old_head, &payload);
+    let second = format!("M1|{}|{}|{}|{}|{}\n", 2, old_head, head, 1, payload);
+    let mut raw = OpenOptions::new().append(true).open(&path).expect("original WAL");
+    raw.write_all(second.as_bytes()).expect("second group bytes");
+    raw.sync_all().expect("durable WAL without separate marker ACK");
+    assert!(matches!(
+        MetricsGroupCommitV1::open(&path),
+        Err(MetricsJournalErrorV1::Corrupt)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
+fn tampered_same_inode_marker_last_frontier_denies_live_empty_flush() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let marker = dir.path().join("journal.owner-lock");
+    let mut writer = MetricsGroupCommitV1::open(&path).expect("writer");
+    writer.stage(sample(MetricPhaseV1::Cas)).expect("first");
+    writer.flush().expect("durable original group");
+    let mut bytes = fs::read(&marker).expect("original marker highwater");
+    let index = bytes.len() - 2;
+    bytes[index] = if bytes[index] == b'0' { b'1' } else { b'0' };
+    let mut file = OpenOptions::new().write(true).open(&marker).expect("same marker inode");
+    file.write_all(&bytes).expect("alter final head byte");
+    file.sync_all().expect("persist tampering");
+    assert!(matches!(
+        writer.flush(),
+        Err(MetricsJournalErrorV1::Corrupt)
+    ));
+    assert!(matches!(
+        writer.flush(),
+        Err(MetricsJournalErrorV1::Poisoned)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
+fn pre_highwater_marker_cannot_claim_old_nonempty_wal_without_migration() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let marker = dir.path().join("journal.owner-lock");
+    let old_header_len;
+    {
+        let mut writer = MetricsGroupCommitV1::open(&path).expect("writer");
+        old_header_len = writer.owner_marker_bytes.len() as u64;
+        writer.stage(sample(MetricPhaseV1::Cas)).expect("sample");
+        writer.flush().expect("fsynced WAL and marker");
+    }
+    let owner_file = OpenOptions::new()
+        .write(true)
+        .open(&marker)
+        .expect("original marker inode");
+    owner_file
+        .set_len(old_header_len)
+        .expect("drop all new frontier rows");
+    owner_file.sync_all().expect("legacy marker-only layout");
+    assert!(matches!(
+        MetricsGroupCommitV1::open(&path),
+        Err(MetricsJournalErrorV1::Corrupt)
+    ));
+}
