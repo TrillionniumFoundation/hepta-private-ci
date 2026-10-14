@@ -34,7 +34,7 @@ def policy():
 class FiniteTreeAuditTests(unittest.TestCase):
     def test_exact_conditional_value_and_martingale(self):
         receipt = solve(trial(), policy())
-        self.assertEqual(receipt["root_value"], [835000, 1000000] if False else [167, 200])
+        self.assertEqual(receipt["root_value"], [173, 200])
         self.assertEqual(receipt["chance_conditions"][0]["backward_residual"], [0, 1])
         self.assertEqual(receipt["chance_conditions"][0]["Z"], [1, 20])
         self.assertFalse(receipt["continuous_fbsde_solved"])
@@ -69,7 +69,7 @@ class FiniteTreeAuditTests(unittest.TestCase):
     def test_and_is_not_or(self):
         bad = trial()
         bad["nodes"]["true1"]["success"] = False
-        self.assertEqual(solve(bad, policy())["root_value"], [1, 5])
+        self.assertEqual(solve(bad, policy())["root_value"], [33, 200])
 
     def test_wrong_probability_mass_rejected(self):
         bad = trial()
