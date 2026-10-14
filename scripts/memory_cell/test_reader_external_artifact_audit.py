@@ -38,6 +38,7 @@ def run():
 def sealed_zip(*, eligible=False, inference=False):
     host = dict(
         schema="hepta.memory-strong-rag.bf16-host-gate.v1",
+        policy="x86_64-original-qwen-torch2.5.1-cpu-bfloat16-eager",
         new_model_calls=0,
         production_accepted=False,
         host_eligible=eligible,
