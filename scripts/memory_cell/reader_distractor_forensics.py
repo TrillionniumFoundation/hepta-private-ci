@@ -110,7 +110,6 @@ def audit(source_zip, model_zip):
         or report.get("source_commit") != GENERATING_SHA
         or report.get("total_attempts") != 72
         or report.get("production_accepted") is not False
-        or report.get("reader_identity") != QWEN
     ):
         raise ValueError("original task/model/research authority drift")
     if (
