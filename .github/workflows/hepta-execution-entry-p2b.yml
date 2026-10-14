@@ -1,0 +1,33 @@
+name: Hepta P2b deny-only execution audit
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-evidence/**'
+      - '.github/workflows/hepta-execution-entry-p2b.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  original-owner-denial:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Source identity
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --quiet
+          git diff --cached --quiet
+      - name: Locked original-owner regression
+        working-directory: codex-rs
+        run: |
+          cargo fmt -p codex-hepta-evidence -- --check
+          cargo check --locked -p codex-hepta-evidence --all-targets
+          cargo test --locked -p codex-hepta-evidence --lib execution_entry_deny_v1
+          cargo clippy --locked -p codex-hepta-evidence --all-targets -- -D warnings
