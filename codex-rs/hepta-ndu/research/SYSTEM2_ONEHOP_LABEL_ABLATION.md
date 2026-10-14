@@ -27,6 +27,41 @@ target mentions; no-evidence outputs were not the mandated refusal.
 This is one synthetic 20-question corpus repeatedly interrogated, NOT
 140 independent queries or a natural-language competence benchmark.
 
+## Completed frozen-Reader outcome and strict decision (October 14, 2026)
+
+The registered test **has completed** on GitHub Actions
+[38273406637](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38273406637):
+**140/140** real frozen-Reader calls, **zero execution failures**, full
+MemoryCell regression and scoped lint passed. GitHub artifact **11760345185**
+has external ZIP SHA256
+`a278014bae564336fc4d63335154cadbf14febc73620d958f45648b17ca0622a`.
+The separate exact-source, model-free
+[qualification run 38492538441](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38492538441)
+also completed successfully; its artifact **11862283420** has GitHub ZIP
+SHA256 `ca22a3147f79d0d89f0e98df506fdae7301c3498e46e4872638d9b40cb64328a`.
+These receipts do **not** make the synthetic results independent.
+
+The observed per-arm results are:
+
+| Same 20 exposed questions | Labeled exact answers | Labeled label echoes | Unlabeled exact answers | Unlabeled label echoes |
+| --- | ---: | ---: | ---: | ---: |
+| Single correct fact | 0/20 | 12/20 | **0/20** | 0/20 |
+| Correct fact plus competing Token | 0/20 | 12/20 | **0/20** | 0/20 |
+| One irrelevant Token fact | 0/20 | 10/20 | **0/20** | 0/20 |
+
+The separate no-evidence control also produced **0/20** exact registered
+refusals. All **60/60** new *unlabeled, nonempty* responses used the entire
+64-token decoder allowance, rather than recovering answer-only behavior.
+For the three paired groups, removing labels reduced input tokens by five,
+ten and five tokens **per question**, respectively. The prompt/input compute
+is therefore not exactly matched.
+
+**Disposition: `reader_label_removal_not_qualified`.** Removing visible
+`E1/E2` fields cures one surface symptom (label-list echo), **not** grounded
+answer extraction, safe abstention, or supported citations. Do not promote
+the Reader or attribute an NDU/FBSDE improvement. Original raw model
+responses and proof-carrying *external system* answers remain separate.
+
 ## What this experiment isolates
 
 Hypothesis: the original explicit `E1`/`E2` evidence labels interact with

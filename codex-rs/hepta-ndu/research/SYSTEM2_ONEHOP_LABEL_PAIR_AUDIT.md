@@ -36,4 +36,15 @@ PYTHONPATH=scripts/memory_cell python scripts/memory_cell/system2_onehop_label_p
   /path/to/paired-audit.json --source-commit "$(git rev-parse HEAD)"
 ```
 
-Current state before the new label trial completes: **protocol and integrity tests only**; no observed label effect is reported.
+**Completed evidence (not a new model trial):** hosted source run
+[38273406637](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38273406637)
+successfully recorded 140/140 frozen Reader outputs, and sealed archive
+qualification [38492538441](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38492538441)
+succeeded. No labeled or unlabeled one-hop source condition produced an
+exact single-token answer (0/20 each). Label-list echoes occurred in
+12/20, 12/20 and 10/20 labeled conditions, versus zero in all three
+unlabeled counterparts. All 60 unlabeled source presentations exhausted
+64 decoder tokens; no-evidence correctly abstained 0/20. Paired
+prompt lengths differ, and these are the same 20 previously exposed
+synthetic questions, not independent evidence. The original admission
+condition **failed** and is not amended by this retrospective report.
