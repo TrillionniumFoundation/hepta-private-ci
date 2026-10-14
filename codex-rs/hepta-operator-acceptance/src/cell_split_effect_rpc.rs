@@ -301,7 +301,8 @@ pub(crate) fn connect_owner_with_deadline(
     let address = SockAddr::unix(path)?;
     let socket = Socket::new(Domain::UNIX, Type::STREAM, None)?;
     socket.connect_timeout(&address, remaining_effect_rpc_budget(started_at, total)?)?;
-    Ok(socket.into())
+    let owned_fd: std::os::fd::OwnedFd = socket.into();
+    Ok(UnixStream::from(owned_fd))
 }
 
 /// The caller, not each frame, owns the RPC deadline. A sub-millisecond
