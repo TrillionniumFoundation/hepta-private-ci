@@ -62,9 +62,18 @@ fn adapter_uses_same_durable_control_owner_for_reads_and_checkpoint_publication(
     // denied until a separately reviewed authenticated handoff is wired.
     let mut successor = snapshot.clone();
     successor.route_fence += 1;
+    let original_control_bytes =
+        std::fs::read(dir.path().join("ndu-control.wal")).expect("original durable Control WAL");
     #[allow(deprecated)]
     let denied = owner.publish_cutover(&snapshot, next, successor, next);
-    assert_eq!(denied, Err(codex_hepta_control_plane::NduPublicationErrorV1::Unsupported));
+    assert_eq!(
+        denied,
+        Err(codex_hepta_control_plane::NduPublicationErrorV1::Unsupported)
+    );
+    assert_eq!(
+        std::fs::read(dir.path().join("ndu-control.wal")).expect("denied direct C leaves WAL"),
+        original_control_bytes
+    );
     assert_eq!(adapter.latest(&scope).unwrap(), snapshot);
     assert_eq!(adapter.check_checkpoint_publisher(&snapshot, next), Ok(()));
     let subsequent = Digest32::of_bytes(b"second-model-checkpoint");
