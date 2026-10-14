@@ -100,8 +100,17 @@ def validate(host: Any, training: Any, *, host_id: str, train_sha: str,
             training['no_change_v1_selected_sha256'] == selected_v1_sha,
             'A0 host or frozen baseline drift')
     sha_file(selected_v1, selected_v1_sha)
+    digest(training['a0_checkpoint_digest_claimed'], 'A0 committed checkpoint')
+    positive_int(training['a0_generation_claimed'], 'A0 generation')
     expected = {}
+    common_cell_width = None
     for row in training['models']:
+        require(type(row['width']) is int and 5 <= row['width'] <= 256,
+                'invalid per-model input/state width')
+        if common_cell_width is None:
+            common_cell_width = row['width']
+        require(row['width'] == common_cell_width,
+                'different Cell width across five-arm matched study')
         key = (row['cap'], row['arm'])
         require(key not in expected and key[0] in CAPS and key[1] in ARMS,
                 'duplicate or unknown trained model')
@@ -142,6 +151,8 @@ def validate(host: Any, training: Any, *, host_id: str, train_sha: str,
             'unknown source commit')
     require(utc(host['measurement_started_at_utc']) <
             utc(host['measurement_ended_at_utc']), 'invalid target-host measurement window')
+    require(utc(host['measurement_started_at_utc']) > utc(training['training_cutoff_utc']),
+            'target-host measurements cannot predate frozen training cutoff')
     rows = host['measurements']
     require(type(rows) is list and len(rows) == len(CAPS)*len(ALL_ARMS)*len(SCALES),
             '100 end-to-end arm/tier/scale receipts required')
