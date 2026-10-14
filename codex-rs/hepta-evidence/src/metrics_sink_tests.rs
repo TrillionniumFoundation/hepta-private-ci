@@ -11,6 +11,65 @@ fn sample(phase: PhaseMetricKindV1) -> PhaseMetricEventV1 {
     }
 }
 
+// A held receiver stands in for an Evidence writer blocked in an I/O call.
+// No fake successful fsync receipt or external effect is produced.
+fn unresponsive_writer_fixture(
+    capacity: usize,
+) -> (DurablePhaseMetricSinkV1, Receiver<WriterCommandV1>) {
+    let (channel, receiver) = sync_channel(capacity);
+    let health = Arc::new(WriterHealthV1 {
+        healthy: AtomicBool::new(true),
+        dropped: AtomicU64::new(0),
+        persisted_batches: AtomicU64::new(0),
+        persisted_rows: AtomicU64::new(0),
+    });
+    (
+        DurablePhaseMetricSinkV1 {
+            channel,
+            health,
+            worker: Mutex::new(None),
+        },
+        receiver,
+    )
+}
+
+#[test]
+fn saturated_writer_rejects_flush_and_drop_without_waiting_for_queue_space() {
+    let (sink, held_receiver) = unresponsive_writer_fixture(1);
+    let admitted = sink
+        .channel
+        .try_send(WriterCommandV1::Record(MetricSampleV1 {
+            scope_digest: Digest32::of_bytes(b"scope"),
+            operation_digest: Digest32::of_bytes(b"operation"),
+            phase: MetricPhaseV1::Cas,
+            latency_micros: 1,
+            succeeded: true,
+        }));
+    assert!(admitted.is_ok());
+    assert_eq!(
+        sink.flush_with_timeout(Duration::from_millis(5)),
+        Err(PhaseMetricSinkErrorV1::Backpressure)
+    );
+    assert!(!sink.healthy());
+    assert_eq!(sink.status().persisted_rows, 0);
+    drop(sink);
+    drop(held_receiver);
+}
+
+#[test]
+fn missing_fsync_ack_poison_writer_and_never_invents_commit() {
+    let (sink, receiver) = unresponsive_writer_fixture(1);
+    assert_eq!(
+        sink.flush_with_timeout(Duration::from_millis(5)),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+    assert!(!sink.healthy());
+    assert_eq!(sink.status().persisted_batches, 0);
+    assert!(matches!(receiver.try_recv(), Ok(WriterCommandV1::Flush(_))));
+    drop(receiver);
+    drop(sink);
+}
+
 #[test]
 fn producer_records_and_worker_durably_commits_group() {
     let dir = tempfile::tempdir().unwrap();
@@ -69,6 +128,51 @@ fn metrics_flush_barrier_and_restart_preserve_exact_committed_sample_counts() {
     let reopened = MetricsGroupCommitV1::open(&path).unwrap();
     assert_eq!(reopened.committed_rows(), 3);
     assert_eq!(reopened.committed_groups(), 2);
+}
+
+/// An acknowledged Stop is a writer-lock handoff, not merely a report
+/// that flush() has returned. The next owner must be able to reopen the same
+/// fsynced journal immediately, without sleeps, polling or a second writer.
+#[test]
+fn acknowledged_stop_releases_original_metrics_lock_before_reopen() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("stop-handoff.log");
+    for round in 0..32_u64 {
+        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 2, 60_000)
+            .expect("one current Evidence writer");
+        sink.record(sample(PhaseMetricKindV1::Wal))
+            .expect("bounded phase sample");
+        sink.flush().expect("real durable flush before Stop");
+        drop(sink);
+
+        // The public writer Drop already received its Stop ACK. Reopen
+        // immediately to prove ACK cannot race the original OS lock release.
+        let recovered = MetricsGroupCommitV1::open(&path)
+            .expect("Stop ACK must follow writer lock release");
+        assert_eq!(recovered.committed_rows(), round + 1);
+        assert_eq!(recovered.committed_groups(), round + 1);
+    }
+}
+
+/// Stop itself must fsync queued samples before releasing the original
+/// writer lock and acknowledging a clean shutdown. No explicit flush,
+/// sleeps or fabricated journal counters are permitted in this regression.
+#[test]
+fn graceful_stop_commits_queued_samples_before_lock_handoff() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("stop-commits.log");
+    for round in 0..16_u64 {
+        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000)
+            .expect("one original Evidence writer");
+        sink.record(sample(PhaseMetricKindV1::NduRead))
+            .expect("queued sample");
+        drop(sink);
+
+        let committed = MetricsGroupCommitV1::open(&path)
+            .expect("Stop must fsync and release the original lock before ACK");
+        assert_eq!(committed.committed_rows(), round + 1);
+        assert_eq!(committed.committed_groups(), round + 1);
+    }
 }
 
 #[test]
