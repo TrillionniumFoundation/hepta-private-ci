@@ -79,6 +79,7 @@ class HeadTests(unittest.TestCase):
                 self.assertEqual(a["trained_head_sha256"], b["trained_head_sha256"])
                 self.assertEqual(a["frozen_head_sha256"], b["frozen_head_sha256"])
                 self.assertFalse(a["production_promotion_permitted"])
+                self.assertFalse(a["frozen_head_is_production_no_change"])
                 self.assertFalse(a["runtime_worker_receipts_verified"])
                 self.assertEqual(len(ap), 2)
                 self.assertTrue(all("label" not in row for row in ap))
