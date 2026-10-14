@@ -11,11 +11,14 @@
 //! or release authority and is not included in default Agentd startup.
 
 use std::path::Path;
+use std::sync::Arc;
+
+use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
 
 use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
 use codex_hepta_operator_acceptance::CellSplitExecutionCliOutcomeV1;
 use codex_hepta_operator_acceptance::CellSplitExecutionPlanV1;
-use codex_hepta_operator_acceptance::run_pinned_cell_split_execution_with_admission_v1;
+use codex_hepta_operator_acceptance::run_pinned_cell_split_execution_with_admission_and_metrics_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
@@ -81,15 +84,35 @@ pub fn advance_selected_cell_split_v1(
     Err("CellSplit advancement requires independent live scope and Selector admission".into())
 }
 
-/// Opt-in admission-bound Agentd ingress. The external caller supplies the
-/// selected scope identity from the trusted runtime context; the independently
-/// backed Control registry supplies its digest. No cross-scope NDU token or
-/// stale Selector result can prepare the first coordinator intent.
-///
-/// Real Artifact/CNS/Supervisor owners still independently enforce final-use
-/// for each effect. This entry never activates a physical split or promotion.
+/// Compatibility entry without an Evidence-owned durable writer is denied.
+/// Even independently valid Selector/NDU membership is not enough for a
+/// production CellSplit mutation without auditable phase observations.
+/// Transcript recovery remains available through the read-only CLI path.
 #[allow(clippy::too_many_arguments)]
 pub fn advance_scope_bound_selected_cell_split_v1<A: CellSplitScopeSelectionAdmissionV1>(
+    _config_path: &Path,
+    _externally_pinned_config_sha256: &str,
+    _selected_scope_id: &StableId,
+    _selected_split_id: &StableId,
+    _selection: &VerifiedSelfEvolutionSelectionV1,
+    _signed_ndu_read: &SignedNduSnapshotReadV1,
+    _ndu_read_verifier: &NduReadVerifierV1,
+    _admission: &A,
+) -> Result<CellSplitExecutionCliOutcomeV1, String> {
+    Err("CellSplit advancement requires an Evidence-owned durable phase metric sink".into())
+}
+
+/// Opt-in product ingress with an actual Evidence-owned durable writer,
+/// independently admitted live Scope/Selector/NDU and four original effect
+/// owners. No caller-implemented always-healthy metric trait may substitute
+/// for DurablePhaseMetricSinkV1 at this Agentd boundary.
+///
+/// The Evidence sink does not authorize anything: each original CAS, child
+/// migration, CNS and Supervisor owner must still verify fresh Final-use.
+#[allow(clippy::too_many_arguments)]
+pub fn advance_scope_bound_selected_cell_split_with_metrics_v1<
+    A: CellSplitScopeSelectionAdmissionV1,
+>(
     config_path: &Path,
     externally_pinned_config_sha256: &str,
     selected_scope_id: &StableId,
@@ -98,11 +121,19 @@ pub fn advance_scope_bound_selected_cell_split_v1<A: CellSplitScopeSelectionAdmi
     signed_ndu_read: &SignedNduSnapshotReadV1,
     ndu_read_verifier: &NduReadVerifierV1,
     admission: &A,
+    metric_sink: Arc<DurablePhaseMetricSinkV1>,
 ) -> Result<CellSplitExecutionCliOutcomeV1, String> {
-    run_pinned_cell_split_execution_with_admission_v1(
+    // Fail *before* opening the coordinator or reading candidate config:
+    // a saturated writer or lost fsync acknowledgment cannot authorize a
+    // new effect; current prepared intents remain reconcile-only.
+    if !metric_sink.healthy() {
+        return Err("CellSplit Evidence phase metric sink unavailable".to_string());
+    }
+    run_pinned_cell_split_execution_with_admission_and_metrics_v1(
         "advance",
         config_path,
         externally_pinned_config_sha256,
+        metric_sink,
         |plan| {
             let selected = selection.receipt();
             validate_selected_plan_lineage(
@@ -135,8 +166,7 @@ pub fn advance_scope_bound_selected_cell_split_v1<A: CellSplitScopeSelectionAdmi
             // Independent signature verification may span a Control revision.
             // An ABA replacement is still a new revision even if all digests
             // happen to match. Recheck independent Selector membership and
-            // the selected successor route without turning either into
-            // physical cutover authority.
+            // the selected successor route without minting cutover authority.
             let after = validate_current_control_binding(
                 plan,
                 selected_scope_id,
