@@ -208,3 +208,18 @@ multiple comparisons use a Bonferroni-corrected one-sided cluster bootstrap
 lower bound before a cost screen can pass. Original per-arm 95% bounds remain
 descriptive only. These inputs are still externally supplied and **unsigned**:
 positive screens cannot authenticate real model outcomes or enable FinalUse.
+
+## 2026-10-14 empirical pairing repair (incremental)
+
+The equal-budget screen now counts all model predictions including `test`
+(and future1/future2/future3), not just the future test windows. The report
+explicitly excludes inherited foundation-model pretraining and marks opaque
+cost units and shared overhead as not independently authenticated. A favorable
+study-observed cost ratio is **not** a model lifetime-cost conclusion.
+
+`embeddinggemma2_cell_study.py` now uses source/Cell/case-bound IDs rather
+than a reused per-microbatch ordinal. It checks that every real-weight feature
+row, source digest, Cell identity, purpose, generation, epoch, Q24 content
+digest and pipeline matches its corresponding labelled case before training.
+Reordered or mixed Worker rows hard-fail. These local binding checks are not
+independent source or inference authorization.

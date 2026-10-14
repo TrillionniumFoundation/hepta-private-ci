@@ -145,6 +145,36 @@ class PairedAudit(unittest.TestCase):
                                  arm["future_group_gain_lcb95"])
             self.assertEqual(arm["selection_authority"], "DENY_ALL")
 
+
+    def test_test_window_inference_cost_is_not_free(self):
+        panel = fixture()
+        for row in panel["cases"]:
+            if row["split"] == "test":
+                row["predictions"][1]["observed_cost_units"] = 20.0
+        result = evaluate_panel(panel)
+        comparison = result["comparisons"][0]
+        self.assertGreater(comparison["future_group_gain_familywise_lcb"], 0)
+        self.assertGreater(comparison["matched_lifecycle_cost_ratio"], 1)
+        self.assertFalse(comparison["passes_statistical_cost_screen"])
+
+    def test_cost_boundary_excludes_unobserved_pretraining_and_unsigned_units(self):
+        coverage = evaluate_panel(fixture())["cost_coverage"]
+        self.assertEqual(coverage["scored_inference_windows"],
+                         ["test", "future1", "future2", "future3"])
+        self.assertEqual(coverage["inherited_pretraining_cost"],
+                         "not_measured_or_included")
+        self.assertFalse(coverage["cost_units_independently_verified"])
+        self.assertFalse(coverage["shared_overhead_allocation_independently_verified"])
+
+    def test_a_cheap_test_does_not_hide_future_excess_cost(self):
+        panel = fixture()
+        for row in panel["cases"]:
+            row["predictions"][1]["observed_cost_units"] = (
+                0.001 if row["split"] == "test" else 1.5)
+        comparison = evaluate_panel(panel)["comparisons"][0]
+        self.assertGreater(comparison["matched_lifecycle_cost_ratio"], 1)
+        self.assertFalse(comparison["passes_statistical_cost_screen"])
+
     def test_no_promotion_even_for_green_self_claims(self):
         r = evaluate_panel(fixture())
         self.assertFalse(r['comparisons'][0]['model_execution_independently_verified'])

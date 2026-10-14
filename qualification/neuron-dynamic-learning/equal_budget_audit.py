@@ -217,11 +217,15 @@ def evaluate_panel(panel: dict) -> dict:
         if arm == baseline:
             continue
         gains = {key: sum(values) / len(values) for key, values in group_values[arm].items()}
-        future_cost_arm = sum(windows[sp][arm]["cost_units"] for sp in SPLITS[1:])
-        future_cost_base = sum(windows[sp][baseline]["cost_units"] for sp in SPLITS[1:])
-        # Count training, evaluation, storage, migration and source reread as well.
-        cost_arm = future_cost_arm + sum(float(x) for x in panel["lifecycle_cost_units"][arm].values())
-        cost_base = future_cost_base + sum(float(x) for x in panel["lifecycle_cost_units"][baseline].values())
+        # The TEST window also consumes real inference resources. Omitting it
+        # allowed a candidate with expensive exploratory scoring to pass a
+        # future-only cost screen under an apparently matched budget.
+        measured_arm = sum(windows[sp][arm]["cost_units"] for sp in SPLITS)
+        measured_base = sum(windows[sp][baseline]["cost_units"] for sp in SPLITS)
+        # Pretraining inherited by either model is not in this panel. Runtime
+        # cost units and shared-Encoder overhead still require owner attestation.
+        cost_arm = measured_arm + sum(float(x) for x in panel["lifecycle_cost_units"][arm].values())
+        cost_base = measured_base + sum(float(x) for x in panel["lifecycle_cost_units"][baseline].values())
         cost_ratio = cost_arm / cost_base
         per_future_gain = {
             sp: windows[sp][baseline]["brier"] - windows[sp][arm]["brier"]
@@ -248,6 +252,13 @@ def evaluate_panel(panel: dict) -> dict:
             "one_sided_familywise_alpha": FAMILYWISE_ALPHA,
             "one_sided_per_arm_alpha": per_arm_alpha,
             "familywise_correction": "bonferroni_over_declared_alternatives",
+            "cost_coverage": {
+                "scored_inference_windows": list(SPLITS),
+                "measured_lifecycle_categories": sorted(panel["lifecycle_cost_units"][baseline]),
+                "inherited_pretraining_cost": "not_measured_or_included",
+                "cost_units_independently_verified": False,
+                "shared_overhead_allocation_independently_verified": False,
+            },
             "windows": windows, "comparisons": scored,
             "production_promotion": "DENY_ALL"}
 

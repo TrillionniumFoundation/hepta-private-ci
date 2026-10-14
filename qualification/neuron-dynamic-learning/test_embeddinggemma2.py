@@ -311,6 +311,37 @@ class StemHeadStudy(unittest.TestCase):
         with self.assertRaises(QualificationError):
             validate_study(ds)
 
+
+    def test_real_stem_study_rejects_reordered_and_mixed_feature_rows(self):
+        from embeddinggemma2_shadow import rust_feature_digest_q24
+
+        class ReorderingRunner:
+            _verified_local_weights = True  # deliberately fraudulent test double
+            manifest = {"dimension": 256, "profile": "text", "revision": "a" * 40}
+            profile_digest = "b" * 64
+
+            def encode_cells(self, batch):
+                values = [1 << 24] + [0] * 255
+                rows = [{**{field: row[field] for field in (
+                    "cell_id", "scope_id", "principal_id", "purpose_id",
+                    "generation", "authority_epoch")},
+                    "input_digest": row["input"]["sha256"],
+                    "pipeline_digest": self.profile_digest,
+                    "features_q24": values,
+                    "feature_digest": rust_feature_digest_q24(values),
+                    "authority": "DENY_ALL", "modality": "text",
+                    "role": "classification", "requires_new_neuron_profile": False}
+                    for row in batch]
+                rows.reverse()
+                return {"physical_local_model_execution": True,
+                        "evidence_type": "local_weight_execution_unverified_origin",
+                        "model_revision": self.manifest["revision"],
+                        "profile": "text", "feature_dimension": 256,
+                        "sentence_transformer_encode_calls": 1, "rows": rows}
+
+        with self.assertRaisesRegex(QualificationError, "reordered or cross-scope"):
+            run_study(ReorderingRunner(), self.dataset())
+
     def test_stub_cannot_claim_real_stem_head_training(self):
         class StubRunner:
             _verified_local_weights = False

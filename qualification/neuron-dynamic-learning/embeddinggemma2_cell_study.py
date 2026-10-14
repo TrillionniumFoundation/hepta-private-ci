@@ -18,6 +18,7 @@ import numpy as np
 from cell_learning import budgeted_cell, paired_future_score, rust_candidate_digest
 from embeddinggemma2_shadow import (
     FrozenGemmaShadow, QualificationError, canonical_bytes, is_sha, sha256,
+    rust_feature_digest_q24,
 )
 
 SPLITS = ("train", "calibration", "test", "future1", "future2", "future3")
@@ -139,14 +140,49 @@ def run_study(runner: FrozenGemmaShadow, study: dict, *, head_budget: int = 2048
         for offset in range(0, len(records), MAX_BATCH):
             chunk = records[offset:offset + MAX_BATCH]
             batch = []
-            for i, case in enumerate(chunk):
+            for case in chunk:
                 request = case["request"]
-                batch.append({**request, "cell_id": f"shadow.study.{i:03d}"})
+                # Ordinal aliases reused at every microbatch/window let a
+                # reordered Worker result attach to the wrong labelled case.
+                identity = sha256(canonical_bytes((
+                    case["case_id"], request["cell_id"],
+                    request["input"]["sha256"],
+                )))
+                batch.append({**request, "cell_id": f"shadow.study.{identity[:40]}"})
             block = runner.encode_cells(batch)
-            if not block["physical_local_model_execution"] or block["evidence_type"] != "local_weight_execution_unverified_origin":
-                raise QualificationError("unsigned numeric stub substituted for pretrained features")
+            if (block.get("physical_local_model_execution") is not True
+                    or block.get("evidence_type") != "local_weight_execution_unverified_origin"
+                    or block.get("model_revision") != runner.manifest["revision"]
+                    or block.get("feature_dimension") != 256
+                    or block.get("profile") != runner.manifest["profile"]
+                    or not isinstance(block.get("rows"), list)
+                    or len(block["rows"]) != len(batch)
+                    or type(block.get("sentence_transformer_encode_calls")) is not int
+                    or block["sentence_transformer_encode_calls"] < 1):
+                raise QualificationError("unbound, unverified or incomplete model batch")
+            for expected, output in zip(batch, block["rows"]):
+                if not isinstance(output, dict) or any(
+                    output.get(field) != expected[field] for field in (
+                        "cell_id", "scope_id", "principal_id", "purpose_id",
+                        "generation", "authority_epoch"
+                    )
+                ):
+                    raise QualificationError("Cell feature rows reordered or cross-scope")
+                values = output.get("features_q24")
+                try:
+                    observed_digest = rust_feature_digest_q24(values)
+                except (TypeError, ValueError, OverflowError) as exc:
+                    raise QualificationError("malformed Q24 feature receipt") from exc
+                if (output.get("input_digest") != expected["input"]["sha256"]
+                        or output.get("pipeline_digest") != runner.profile_digest
+                        or output.get("feature_digest") != observed_digest
+                        or output.get("authority") != "DENY_ALL"
+                        or output.get("modality") != "text"
+                        or output.get("role") != "classification"
+                        or output.get("requires_new_neuron_profile") is not False):
+                    raise QualificationError("source/feature/bundle identity mismatch")
+                vectors.append(values)
             api_calls += block["sentence_transformer_encode_calls"]
-            vectors.extend(item["features_q24"] for item in block["rows"])
         if any(not isinstance(x, list) or len(x) != 256 for x in vectors):
             raise QualificationError("missing complete Q24 Stem output")
         x = np.asarray(vectors, dtype=np.float64) / Q24
@@ -184,6 +220,8 @@ def run_study(runner: FrozenGemmaShadow, study: dict, *, head_budget: int = 2048
         "head_train_nanos": head_train_nanos,
         "model_encode_api_calls": api_calls,
         "physical_transformer_forward_calls": None,
+        "feature_row_identity_verified_locally": True,
+        "feature_row_identity_independently_attested": False,
         "wall_excluding_model_initialization_nanos": time.perf_counter_ns() - start,
         "held_out": metrics,
         "source_tensor_mutated": False,
