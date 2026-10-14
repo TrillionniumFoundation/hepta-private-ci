@@ -199,7 +199,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             if symbol not in path.read_text(encoding="utf-8"):
                 continue
             code = self.lexical_code(relative)
-            if re.search(rf"\\b{re.escape(symbol)}\\b", code):
+            if re.search(rf"\b{re.escape(symbol)}\b", code):
                 observed.add(relative)
         self.assertEqual(
             observed,
@@ -212,12 +212,12 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         )
         self.assertRegex(
             owner_source,
-            r"\\bpub\\(crate\\)\\s+fn\\s+advance_with_admission\\s*\\(",
+            r"\bpub\(crate\)\s+fn\s+advance_with_admission\s*\(",
             "Cell Split's raw effect coordinator must remain crate-private",
         )
         self.assertNotRegex(
             owner_source,
-            r"\\bpub\\s+fn\\s+advance_with_admission\\s*\\(",
+            r"\bpub\s+fn\s+advance_with_admission\s*\(",
             "no public raw Cell Split effect dispatch without Agentd admission",
         )
 
