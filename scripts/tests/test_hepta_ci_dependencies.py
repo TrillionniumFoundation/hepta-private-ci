@@ -221,6 +221,10 @@ class DocumentInputTests(unittest.TestCase):
         self.addCleanup(self.tmp.cleanup)
         self.root = Path(self.tmp.name)
         self.git("init", "-q")
+        # Match the exact-revision GitGraph fixture: prevent optional Git
+        # housekeeping from racing this second temporary repository cleanup.
+        self.git("config", "maintenance.auto", "false")
+        self.git("config", "gc.auto", "0")
         self.git("config", "user.name", "Regression")
         self.git("config", "user.email", "regression@example.invalid")
         self.write(
