@@ -219,6 +219,7 @@ fn plan() -> CellSplitExecutionPlanV1 {
 struct CapturedPhaseMetrics {
     events: Mutex<Vec<PhaseMetricEventV1>>,
     refuse_records: AtomicBool,
+    refuse_flush: AtomicBool,
     unhealthy: AtomicBool,
 }
 
@@ -236,6 +237,9 @@ impl PhaseMetricSinkV1 for CapturedPhaseMetrics {
     }
 
     fn flush(&self) -> Result<(), PhaseMetricSinkErrorV1> {
+        if self.refuse_flush.load(Ordering::SeqCst) {
+            return Err(PhaseMetricSinkErrorV1::Unavailable);
+        }
         Ok(())
     }
 }
@@ -393,6 +397,217 @@ fn telemetry_withdrawal_during_final_selector_admission_blocks_new_intent() {
     metrics.unhealthy.store(false, Ordering::Release);
     assert!(owner.advance().is_err());
     assert_eq!(observed.borrow().executions, 0);
+}
+
+#[test]
+fn successful_metrics_fsync_barrier_binds_each_signed_step_across_restarts() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let writer = Arc::new(CapturedPhaseMetrics::default());
+    {
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("signed frozen owner")
+        .with_metric_sink(writer.clone());
+        assert!(owner.advance().expect("one original CAS").is_some());
+        let accepted = root.path().join("cell-split-00-metrics-acked.json");
+        assert!(accepted.exists(), "Evidence flush barrier must be durable");
+        assert!(!owner.metrics_poisoned);
+    }
+    {
+        let mut recovered = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("read exact original signed receipt")
+        .with_metric_sink(writer);
+        assert_eq!(recovered.completed_steps(), 1);
+        assert!(recovered.advance().expect("next original step").is_some());
+        assert!(root.path().join("cell-split-01-metrics-acked.json").exists());
+        assert_eq!(state.borrow().executions, 2);
+    }
+}
+
+#[test]
+fn tampered_or_missing_metrics_barrier_stays_denied_after_coordinator_restart() {
+    for tampered in [false, true] {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        let writer = Arc::new(CapturedPhaseMetrics::default());
+        {
+            let mut first = CellSplitExecutionOwnerV1::open(
+                root.path(),
+                plan(),
+                trust(),
+                FixturePort::new(state.clone()),
+            )
+            .expect("frozen owner")
+            .with_metric_sink(writer.clone());
+            assert!(first.advance().expect("real signed owner effect").is_some());
+        }
+        let marker = root.path().join("cell-split-00-metrics-acked.json");
+        if tampered {
+            fs::write(&marker, b"tampered metrics acknowledgment")
+                .expect("simulate out-of-band altered evidence");
+        } else {
+            fs::remove_file(&marker).expect("simulate lost Evidence barrier");
+        }
+        let mut recovered = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("original signed effect remains authentic")
+        .with_metric_sink(writer);
+        assert!(matches!(
+            recovered.advance(),
+            Err(CellSplitExecutionErrorV1::Invalid(
+                "cell split metrics acknowledgment missing or changed"
+            ))
+        ));
+        assert_eq!(recovered.completed_steps(), 1);
+        assert_eq!(state.borrow().executions, 1);
+        assert!(!root.path().join("cell-split-01-prepared.json").exists());
+    }
+}
+
+#[test]
+fn missing_evidence_fsync_ack_never_grants_new_effect_even_after_restart() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let unreliable = Arc::new(CapturedPhaseMetrics::default());
+    unreliable.refuse_flush.store(true, Ordering::Release);
+    {
+        let mut first = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("frozen owner")
+        .with_metric_sink(unreliable);
+        let committed = first
+            .advance()
+            .expect("telemetry loss must not convert committed CAS into retry")
+            .expect("real original owner receipt");
+        assert_eq!(committed.intent.step.index(), 0);
+        assert!(first.metrics_poisoned);
+        assert!(matches!(
+            first.advance(),
+            Err(CellSplitExecutionErrorV1::Invalid(
+                "cell split telemetry unavailable for new effects"
+            ))
+        ));
+    }
+    assert!(root.path().join("cell-split-00-committed.json").exists());
+    assert!(!root.path().join("cell-split-00-metrics-acked.json").exists());
+    let mut restarted = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("real signed receipt survives")
+    .with_metric_sink(Arc::new(CapturedPhaseMetrics::default()));
+    assert!(matches!(
+        restarted.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "cell split metrics acknowledgment missing or changed"
+        ))
+    ));
+    assert_eq!(state.borrow().executions, 1);
+    assert!(!root.path().join("cell-split-01-prepared.json").exists());
+}
+
+#[test]
+fn lost_ack_reconciliation_cannot_invent_missing_physical_metrics_after_restart() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let metrics = Arc::new(CapturedPhaseMetrics::default());
+    {
+        let mut port = FixturePort::new(state.clone());
+        port.drop_ack = true;
+        let mut original = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            port,
+        )
+        .expect("single original owner")
+        .with_metric_sink(metrics.clone());
+        assert!(matches!(
+            original.advance(),
+            Err(CellSplitExecutionErrorV1::External(_))
+        ));
+        assert_eq!(state.borrow().executions, 1);
+        assert!(original.pending);
+        assert!(!root.path().join("cell-split-00-metrics-acked.json").exists());
+    }
+    {
+        let mut recovery = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("frozen original signed history")
+        .with_metric_sink(metrics);
+        assert!(
+            recovery.advance().expect("original signed readback").is_some(),
+            "lost ACK can reconcile, never repeat the physical effect"
+        );
+        assert_eq!(recovery.completed_steps(), 1);
+        assert_eq!(state.borrow().executions, 1);
+        assert!(!root.path().join("cell-split-00-metrics-acked.json").exists());
+    }
+    let mut later = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("recover the signed original commit")
+    .with_metric_sink(Arc::new(CapturedPhaseMetrics::default()));
+    assert!(matches!(
+        later.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "cell split metrics acknowledgment missing or changed"
+        ))
+    ));
+    assert_eq!(state.borrow().executions, 1);
+    assert!(!root.path().join("cell-split-01-prepared.json").exists());
+}
+
+#[test]
+fn injected_future_metrics_acceptance_never_prepares_any_original_effect() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("frozen owner")
+    .with_metric_sink(Arc::new(CapturedPhaseMetrics::default()));
+
+    // A future metrics frame without its original signed committed effect
+    // is non-prefix history, even when it has a well-formed known filename.
+    fs::write(root.path().join("cell-split-02-metrics-acked.json"), b"{}")
+        .expect("simulate injected later-step telemetry");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+    assert_eq!(state.borrow().executions, 0);
+    assert!(!root.path().join("cell-split-00-prepared.json").exists());
 }
 
 #[test]
