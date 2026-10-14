@@ -92,6 +92,13 @@ python3 -m unittest discover -s scripts/tests -p 'test_hepta_stem_head_shadow.py
 ```
 
 Outputs: `.manifest.json`, `.learned.jsonl`, `.frozen.jsonl`.
+The runner writes learned/frozen JSONL first, flushes/fsyncs each, then writes
+the manifest as the **last completion marker**. The manifest includes
+`learned_predictions_sha256_unverified` and
+`frozen_predictions_sha256_unverified`; consumers should verify those file
+hashes before interpreting any rows. A failed or interrupted run missing
+its final manifest is **incomplete**, even if one JSONL exists. Neither
+fsync nor SHA256 authenticates a source runtime or provides Hepta CAS authority.
 The prediction files use the declared schema of the independent E1
 retrospective reviewer; the future labels must become available **after**
 the output commitment, then come from an independent outcomes owner.
