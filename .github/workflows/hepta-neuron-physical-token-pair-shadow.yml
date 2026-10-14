@@ -56,8 +56,8 @@ jobs:
         run: |
           set -euo pipefail
           PY="$RUNNER_TEMP/hepta-token-real-env/bin/python"
-          "$PY" -m pytest -q -p no:cacheprovider tests/test_physical_token_pair_v1.py tests/test_stage_modernbert_public_v1.py tests/test_physical_token_reviewer_v1.py tests/test_physical_token_capture_profile_v1.py
-          "$PY" -m compileall -q neuron_shared_encoder/physical_token_pair_v1.py neuron_shared_encoder/stage_modernbert_public_v1.py neuron_shared_encoder/physical_token_reviewer_v1.py
+          "$PY" -m pytest -q -p no:cacheprovider tests/test_physical_token_pair_v1.py tests/test_stage_modernbert_public_v1.py tests/test_physical_token_reviewer_v1.py tests/test_physical_token_capture_profile_v1.py tests/test_tokenizer_length_preflight_v1.py
+          "$PY" -m compileall -q neuron_shared_encoder/physical_token_pair_v1.py neuron_shared_encoder/stage_modernbert_public_v1.py neuron_shared_encoder/physical_token_reviewer_v1.py neuron_shared_encoder/tokenizer_length_preflight_v1.py
 
       - name: Retrieve exact original public AG News source artifact
         shell: bash
@@ -69,6 +69,35 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${SOURCE_ARTIFACT_ID}/zip" \
             --output "$RUNNER_TEMP/hepta-original-public.zip"
           echo "${SOURCE_SHA256}  $RUNNER_TEMP/hepta-original-public.zip" | sha256sum --check
+
+      - name: Preflight original full-token inputs with pinned small tokenizer before large weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-token-real-env/bin/python"
+          "$PY" -m neuron_shared_encoder.tokenizer_length_preflight_v1 \
+            --source-zip "$RUNNER_TEMP/hepta-original-public.zip" \
+            --source-sha256 "$SOURCE_SHA256" \
+            --tokenizer-destination "$RUNNER_TEMP/hepta-pinned-tokenizer-only" \
+            --receipt "$RUNNER_TEMP/hepta-token-budget-preflight.json" \
+            --max-length "${TOKEN_CAPTURE_MAX_LENGTH}" --batch "${TOKEN_CAPTURE_BATCH}"
+          "$PY" - <<'PYGATE'
+          import json, os
+          from pathlib import Path
+          r = json.loads((Path(os.environ['RUNNER_TEMP']) / 'hepta-token-budget-preflight.json').read_text())
+          assert r['schema'] == 'hepta.neuron.tokenizer-only-length-preflight.shadow.v1'
+          assert r['full_joint_untruncated_row_count'] == 128
+          assert r['capture_max_length'] == int(os.environ['TOKEN_CAPTURE_MAX_LENGTH'])
+          assert r['capture_batch'] == int(os.environ['TOKEN_CAPTURE_BATCH'])
+          assert len(r['per_cell']) == 2
+          assert all(c['input_rows'] == 64 and
+                     c['maximum_untruncated_tokens'] <= r['capture_max_length']
+                     for c in r['per_cell'])
+          assert r['model_weights_downloaded_by_this_step'] is False
+          assert r['pretrained_encoder_forward_verified'] is False
+          assert r['production_admission'] == 'BLOCKED'
+          print('TOKENIZER_BUDGET_ONLY_NO_MODEL_FORWARD_OR_PRODUCTION')
+          PYGATE
 
       - name: Explicitly download and SHA-pin immutable ModernBERT assets
         shell: bash
@@ -146,6 +175,7 @@ jobs:
           name: hepta-real-token-research-${{ github.run_id }}
           path: |
             ${{ runner.temp }}/hepta-modernbert-acquisition.json
+            ${{ runner.temp }}/hepta-token-budget-preflight.json
             ${{ runner.temp }}/hepta-token-independent-review.json
             ${{ runner.temp }}/hepta-real-token-pair
           if-no-files-found: warn
