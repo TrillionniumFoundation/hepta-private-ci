@@ -57,6 +57,10 @@ jobs:
             /tmp/amcn-rust-owner-fence/read-mostly-epoch-tests.log
           grep -Fq 'amcn_epoch_shadow_steady_state_1024_calls_are_bounded_header_checks_not_store_scans' \
             /tmp/amcn-rust-owner-fence/read-mostly-epoch-tests.log
+          grep -Fq 'amcn_epoch_shadow_exact_signed_floor_cannot_restore_omitted_quarantine_member' \
+            /tmp/amcn-rust-owner-fence/read-mostly-epoch-tests.log
+          grep -Fq 'amcn_epoch_shadow_owner_update_must_commit_complete_candidate_sets' \
+            /tmp/amcn-rust-owner-fence/read-mostly-epoch-tests.log
           grep -Fq 'amcn_shadow_fence_runtime_pending_witness_reconciles_only_after_new_source_lease'             /tmp/amcn-rust-owner-fence/feature-tests.log
           grep -Fq 'amcn_shadow_fence_concurrent_source_writer_waits_for_actual_feature_completion'             /tmp/amcn-rust-owner-fence/feature-tests.log
       - name: Ensure default Neuron crate still passes without shadow feature

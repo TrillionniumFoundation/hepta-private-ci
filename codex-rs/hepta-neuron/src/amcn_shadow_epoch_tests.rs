@@ -34,6 +34,13 @@ fn header() -> AmcnEpochHeaderV1 {
         source_frontier_digest: d("source.cut.1"),
         withdrawal_head_digest: d("withdrawal.1"),
         quarantine_head_digest: d("quarantine.1"),
+        enrolled_manifest_set_digest: digest_manifest_set(
+            ENROLLED_DOMAIN,
+            &HashSet::from([d("artifact.a"), d("artifact.b")]),
+        ),
+        quarantined_manifest_set_digest: digest_manifest_set(
+            QUARANTINED_DOMAIN, &HashSet::new(),
+        ),
         runtime_anchor_digest: d("runtime.anchor.1"),
         event_digest: d("event.1"),
         predecessor_event_digest: Digest32::ZERO,
@@ -89,6 +96,9 @@ fn source_withdrawal_successor(prev: &AmcnEpochHeaderV1) -> AmcnEpochHeaderV1 {
         source_frontier_digest: d("source.cut.2"),
         withdrawal_head_digest: d("withdrawal.2"),
         quarantine_head_digest: d("quarantine.2"),
+        quarantined_manifest_set_digest: digest_manifest_set(
+            QUARANTINED_DOMAIN, &HashSet::from([d("artifact.a")]),
+        ),
         event_digest: d("event.2"),
         predecessor_event_digest: prev.event_digest,
         ..prev.clone()
@@ -357,6 +367,79 @@ fn amcn_epoch_shadow_writer_pending_refuses_second_head_without_waiting_for_mode
 }
 
 #[test]
+fn amcn_epoch_shadow_exact_signed_floor_cannot_restore_omitted_quarantine_member() {
+    let old = header();
+    let committed = source_withdrawal_successor(&old);
+    // Same current header and correct enrolled population. The restored
+    // payload deliberately hides a withdrawn Head: its commitment differs.
+    assert!(matches!(
+        AmcnShadowEpochIndex::from_external_floor(
+            committed.clone(), &committed,
+            [d("artifact.a"), d("artifact.b")], [],
+        ),
+        Err(NeuronModelError::Rejected)
+    ));
+    // Deleting a registered candidate while claiming the exact current
+    // floor is equally invalid.
+    assert!(matches!(
+        AmcnShadowEpochIndex::from_external_floor(
+            old.clone(), &old, [d("artifact.b")], [],
+        ),
+        Err(NeuronModelError::Rejected)
+    ));
+    let valid = AmcnShadowEpochIndex::from_external_floor(
+        committed.clone(), &committed,
+        [d("artifact.a"), d("artifact.b")], [d("artifact.a")],
+    ).expect("exactly signed-set-bound restore");
+    let req = request();
+    let b = binding(&req, &committed, d("artifact.a"));
+    let mut fence = valid.candidate_fence(committed);
+    assert_eq!(
+        fence.with_fenced_candidate(&b, &req, || Ok::<_, NeuronModelError>(())),
+        Err(NeuronModelError::Rejected)
+    );
+}
+
+#[test]
+fn amcn_epoch_shadow_owner_update_must_commit_complete_candidate_sets() {
+    let original = header();
+    let successor = source_withdrawal_successor(&original);
+    let mut wrong = successor.clone();
+    wrong.quarantined_manifest_set_digest = d("omitted-single-revoked-head");
+    let epoch = index();
+    assert_eq!(
+        epoch.observe_committed_owner_change(&original, wrong, [], [d("artifact.a")]),
+        Err(NeuronModelError::Rejected)
+    );
+    assert!(epoch.owner_change_pending());
+    assert_eq!(epoch.header(), Err(NeuronModelError::Indeterminate));
+
+    // Exact same candidate membership; only a proper owner mutation may
+    // enlarge the index. A newly admitted cell must be reflected in the
+    // enrollment commitment and monotonic Artifact epoch.
+    let epoch = index();
+    let mut next = original.clone();
+    next.sequence += 1;
+    next.predecessor_event_digest = original.event_digest;
+    next.event_digest = d("event.new-Cell");
+    next.artifacts_epoch += 1;
+    next.quarantine_head_digest = d("quarantine.new-Cell");
+    next.enrolled_manifest_set_digest = digest_manifest_set(
+        ENROLLED_DOMAIN,
+        &HashSet::from([d("artifact.a"), d("artifact.b"), d("artifact.c")]),
+    );
+    epoch.observe_committed_owner_change(
+        &original, next.clone(), [d("artifact.c")], [],
+    ).expect("exactly committed enrollment");
+    let req = request();
+    let bound = binding(&req, &next, d("artifact.c"));
+    let mut lease = epoch.candidate_fence(next);
+    lease.with_fenced_candidate(&bound, &req, || Ok::<_, NeuronModelError>(()))
+        .expect("new enrolled candidate exists, without any production grant");
+    assert!(!AMCN_EPOCH_SHADOW_PRODUCTION_ACCEPTED);
+}
+
+#[test]
 fn amcn_epoch_shadow_unregistered_head_is_never_a_grant() {
     let shared = index();
     let req = request();
@@ -378,15 +461,19 @@ fn amcn_epoch_shadow_2048_distinct_cells_share_one_bounded_encoder_epoch() {
     let manifests: Vec<Digest32> = (0..2048)
         .map(|n| d(&format!("shared-stem-cell:{n}")))
         .collect();
+    let mut current = h.clone();
+    current.enrolled_manifest_set_digest = digest_manifest_set(
+        ENROLLED_DOMAIN, &manifests.iter().copied().collect(),
+    );
     let index = AmcnShadowEpochIndex::from_external_floor(
-        h.clone(), &h, manifests.iter().copied(), [],
+        current.clone(), &current, manifests.iter().copied(), [],
     ).expect("source/Artifact owner snapshot enrolled research population");
     let req = request();
     let called = AtomicUsize::new(0);
     let started = Instant::now();
     for manifest in manifests {
-        let b = binding(&req, &h, manifest);
-        let mut reader = index.candidate_fence(h.clone());
+        let b = binding(&req, &current, manifest);
+        let mut reader = index.candidate_fence(current.clone());
         reader.with_fenced_candidate(&b, &req, || {
             called.fetch_add(1, Ordering::Relaxed);
             Ok::<_, NeuronModelError>(())

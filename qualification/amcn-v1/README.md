@@ -447,6 +447,14 @@ current epoch floor: scope, Runtime Generation, sequence, source epoch,
 withdrawal epoch, Artifact epoch, respective head digests, current runtime
 witness and predecessor event digest. The model registry materializes its
 bounded enrolled-manifest and monotonically quarantined-manifest sets ONCE.
+An additional fail-closed integrity fix binds the COMPLETE enrolled set and
+COMPLETE quarantined set to separate domain-separated, count-framed SHA-256
+commitments inside the externally witnessed Epoch Header. The same header
+with an omitted tombstoned Head is now rejected during recovery. A new Cell
+or quarantine requires recomputing exactly matching commitments and a
+monotonic Artifacts epoch BEFORE publishing the successor event. This catches
+local index truncation and omission; the cache still cannot SIGN or otherwise
+authenticate the externally supplied Epoch Header.
 Each subsequent Cell access acquires a shared in-process lock across the
 whole callback and performs fixed-field equality comparisons plus expected
 O(1) HashSet membership; it does NOT re-read the complete CognitiveStore or

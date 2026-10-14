@@ -23,6 +23,22 @@ use crate::{
 pub const AMCN_EPOCH_SHADOW_PRODUCTION_ACCEPTED: bool = false;
 pub const AMCN_EPOCH_QUARANTINE_LIMIT: usize = 16_384;
 pub const AMCN_EPOCH_MANIFEST_LIMIT: usize = 65_536;
+const ENROLLED_DOMAIN: &[u8] = b"hepta.amcn.epoch.enrolled-manifests.v1";
+const QUARANTINED_DOMAIN: &[u8] = b"hepta.amcn.epoch.quarantined-manifests.v1";
+
+/// Canonical, count-framed and order-independent COMPLETE set commitment.
+/// This is recomputed only on enrollment or owner updates, never per inference.
+fn digest_manifest_set(domain: &[u8], members: &HashSet<Digest32>) -> Digest32 {
+    let mut sorted: Vec<_> = members.iter().copied().collect();
+    sorted.sort_unstable();
+    let mut bytes = Vec::with_capacity(domain.len() + 8 + sorted.len() * 32);
+    bytes.extend_from_slice(domain);
+    bytes.extend_from_slice(&(sorted.len() as u64).to_be_bytes());
+    for digest in sorted {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    Digest32::of_bytes(&bytes)
+}
 
 /// Small immutable witness needed by every candidate. This is not a signature.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -36,6 +52,11 @@ pub struct AmcnEpochHeaderV1 {
     pub source_frontier_digest: Digest32,
     pub withdrawal_head_digest: Digest32,
     pub quarantine_head_digest: Digest32,
+    /// Commit the COMPLETE enrolled and quarantine populations to this epoch.
+    /// Without these fields, a legitimate signed header could be paired with
+    /// a forged restored index omitting one revoked Cell, resurrecting it.
+    pub enrolled_manifest_set_digest: Digest32,
+    pub quarantined_manifest_set_digest: Digest32,
     pub runtime_anchor_digest: Digest32,
     pub event_digest: Digest32,
     pub predecessor_event_digest: Digest32,
@@ -45,10 +66,13 @@ impl AmcnEpochHeaderV1 {
     fn validate(&self) -> Result<(), NeuronModelError> {
         if self.sequence == 0 || self.source_epoch == 0
             || self.withdrawal_epoch == 0 || self.artifacts_epoch == 0
+            || (self.sequence > 1 && self.predecessor_event_digest.is_zero())
             || [
                 self.source_frontier_digest,
                 self.withdrawal_head_digest,
                 self.quarantine_head_digest,
+                self.enrolled_manifest_set_digest,
+                self.quarantined_manifest_set_digest,
                 self.runtime_anchor_digest,
                 self.event_digest,
             ].iter().any(|x| x.is_zero())
@@ -110,6 +134,10 @@ impl AmcnShadowEpochIndex {
             || !blocked.is_subset(&enrolled)
             || blocked.len() > AMCN_EPOCH_QUARANTINE_LIMIT
             || blocked.contains(&Digest32::ZERO)
+            || current.enrolled_manifest_set_digest
+                != digest_manifest_set(ENROLLED_DOMAIN, &enrolled)
+            || current.quarantined_manifest_set_digest
+                != digest_manifest_set(QUARANTINED_DOMAIN, &blocked)
         {
             return Err(NeuronModelError::Rejected);
         }
@@ -195,11 +223,28 @@ impl AmcnShadowEpochIndex {
             || !enrolled.is_disjoint(&guard.enrolled_manifests)
             || !additional.iter().all(|id| guard.enrolled_manifests.contains(id)
                                       || enrolled.contains(id))
+            || (!enrolled.is_empty() || !additional.is_empty())
+                && next.artifacts_epoch == old.artifacts_epoch
         {
             return Err(NeuronModelError::Rejected);
         }
-        guard.enrolled_manifests.extend(enrolled);
-        guard.quarantined_manifests.extend(additional);
+        let mut next_enrolled = guard.enrolled_manifests.clone();
+        next_enrolled.extend(enrolled);
+        let mut next_quarantined = guard.quarantined_manifests.clone();
+        next_quarantined.extend(additional);
+        // Verify EVERY returned set element is committed to the CURRENT
+        // header, not just the quarantine log head or a caller's asserted
+        // total. This prevents an exact-header cold restore from omitting
+        // a previously withdrawn Head while preserving O(1) hot reads.
+        if next.enrolled_manifest_set_digest
+                != digest_manifest_set(ENROLLED_DOMAIN, &next_enrolled)
+            || next.quarantined_manifest_set_digest
+                != digest_manifest_set(QUARANTINED_DOMAIN, &next_quarantined)
+        {
+            return Err(NeuronModelError::Rejected);
+        }
+        guard.enrolled_manifests = next_enrolled;
+        guard.quarantined_manifests = next_quarantined;
         guard.header = next;
         self.pending_owner_change.store(false, Ordering::Release);
         Ok(())
