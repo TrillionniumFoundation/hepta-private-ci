@@ -252,3 +252,33 @@ fn cold_replay_is_bounded_and_reconstructs_the_same_checkpoint() {
         ))
     );
 }
+
+#[test]
+fn prepared_min_gru_matches_unprepared_replay_and_denies_parameter_retargeting() {
+    let cfg = config(2, 1);
+    let prepared = checked(PreparedLowRankMinGruConfigV1::new(cfg.clone()));
+    assert_eq!(prepared.digest(), checked(cfg.digest()));
+    let mut old = None;
+    let mut ready = None;
+    for sequence in 1..=64_u64 {
+        let mut input = tick(2, sequence, sequence * 100);
+        input.temporal_drive_q24 = if sequence % 2 == 0 {
+            vec![Q, -Q / 4]
+        } else {
+            vec![-Q / 2, Q]
+        };
+        let a = checked(low_rank_min_gru_tick_v1(&cfg, &input, old.as_ref()));
+        let b = checked(prepared.tick(&input, ready.as_ref()));
+        assert_eq!(a, b);
+        old = Some(a.0);
+        ready = Some(b.0);
+    }
+    let mut changed = cfg;
+    changed.candidate_input_q24[0] = Q / 2;
+    let different = checked(PreparedLowRankMinGruConfigV1::new(changed));
+    assert_ne!(different.digest(), prepared.digest());
+    assert_eq!(
+        different.tick(&tick(2, 65, 6_500), ready.as_ref()).err(),
+        Some(LowRankMinGruErrorV1::ConfigDrift)
+    );
+}
