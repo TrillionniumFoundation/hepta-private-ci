@@ -193,6 +193,9 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
         {
             return Err("signed CNS successor changed during Control join".into());
         }
+        control
+            .verify_original_cns_receipt_binding(&original_bytes)
+            .map_err(|error| format!("Control CNS binding changed during join: {error}"))?;
         Ok(())
     }
 
