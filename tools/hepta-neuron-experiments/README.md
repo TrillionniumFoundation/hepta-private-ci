@@ -120,3 +120,15 @@ not become E0 acceptance even if every native process exits successfully.
 ```sh
 python3 -m unittest discover -v -s tools/hepta-neuron-experiments -p 'test_*.py'
 ```
+
+## 768-D public Encoder to Neuron V1 projection preflight
+
+ModernBERT-base's observed output is **768-D**, while the native Neuron V1 feature contract permits at most **512 Q24 elements**. Reuse the existing shadow `qualification/stem-cell-v1/stem_projection.py` from the approved, exact-source research candidate; do not silently truncate features or rewrite the native V1 format. The additive `e0_projection_gate.py` checks only an *externally supplied* output contract: original width, projected width, Head width, actual projection-file bytes, and Q24 output range. It refuses oversize widths, wrong-length vectors, mismatched Head widths, malformed Q24 values and changed projection files.
+
+```sh
+python3 tools/hepta-neuron-experiments/e0_projection_gate.py --contract /secure/e0-projected-feature.json
+```
+
+The JSON contract must contain exactly `schema="hepta.neuron.e0-projection-preflight.v1"`, `encoder_width`, `projection_width`, `head_input_width`, absolute `projection_artifact`, its `projection_sha256`, `projected_features_q24` as a matching-length signed-Q24 integer list, `feature_source_sha256`, and `source_kind="externally_observed_not_authenticated"`. The output is **diagnostic only**, never an E0 acceptance receipt. It **does not execute** the projection, prove that the reported vector arose from the actual 768-D pretrained model, detect a deliberately substituted 256-D slice masquerading as a projection, verify an independent signature, or establish model quality. The real owner must run the pinned original projection against an authenticated Encoder output and prove Head/Worker/Neuron binding and checkpoint CAS separately.
+
+The new eight unit tests use only a synthetic file/vector to verify rejection behavior. Their success does not count as pretrained-model, Q24-Head, or Neuron-runtime execution.
