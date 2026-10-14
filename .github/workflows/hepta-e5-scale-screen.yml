@@ -1,0 +1,21 @@
+name: Hepta E5 scale consistency
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e5_cross_cohort.py"
+      - "experiments/shared_stem_cell/test_e5_cross_cohort.py"
+      - ".github/workflows/hepta-e5-scale-screen.yml"
+permissions:
+  contents: read
+jobs:
+  e5-screen:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: python -m unittest discover -s experiments/shared_stem_cell -p 'test_e5_cross_cohort.py' -v
