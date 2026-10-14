@@ -154,7 +154,7 @@ original text, prove real-world reviewer identity or publish parameters.
 
 Run a useful no-review negative admission in the repository root:
 
-    PYTHONPATH=qualification/amcn-v1 python qualification/amcn-v1/amcn_reader_prerequisite_cli.py /tmp/new-amcn-reader-blocked.json
+    PYTHONPATH=.:qualification/amcn-v1 python qualification/amcn-v1/amcn_reader_prerequisite_cli.py /tmp/new-amcn-reader-blocked.json
 
 The dedicated CPU CI repeats the missing-trust negative case and runs
 a hermetic dual-Ed25519-fixture test against the ORIGINAL Reader gate. The
