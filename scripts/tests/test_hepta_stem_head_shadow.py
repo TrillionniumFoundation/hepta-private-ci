@@ -102,6 +102,21 @@ class HeadTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "train label after cutoff"):
             MOD.validate_packets(train, predict, self.cutoff, self.now)
 
+    def test_bad_json_and_oversized_cohorts_rejected(self):
+        train, predict = cases()
+        with self.assertRaisesRegex(ValueError, "bounded experimental limit"):
+            MOD.validate_packets(
+                train * 4097, predict, self.cutoff, self.now,
+            )
+        with tempfile.TemporaryDirectory() as folder:
+            malformed = Path(folder) / "bad.jsonl"
+            malformed.write_text(
+                '{"case_id":"one","case_id":"two"}\\n'.replace('\\\\n', '\\n'),
+                encoding="utf-8",
+            )
+            with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
+                MOD.read_rows(malformed)
+
     def test_cli_outputs_and_refuses_overwrite(self):
         train, predict = cases()
         with tempfile.TemporaryDirectory() as folder:
