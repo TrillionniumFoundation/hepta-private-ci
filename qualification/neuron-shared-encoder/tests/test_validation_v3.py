@@ -287,3 +287,52 @@ def test_private_state_cache_does_not_cross_cell_scope_or_question_identity():
     assert original != reuse_keys({**row, 'principal': 'other'}, **opts)
     with pytest.raises(ValueError, match='scope'):
         reuse_keys({**row, 'cell_id': ''}, **opts)
+
+
+def five_arm_plan():
+    from neuron_shared_encoder.validation_v3 import FIVE_ARM_CANDIDATES
+    return {
+        'dataset_sha256': D('a'), 'split_manifest_sha256': D('b'),
+        'frozen_no_change_sha256': D('c'), 'data_use_approved': True,
+        'question_option_layout': 'common-state-question-options-v1',
+        'training': {'seed': 42, 'steps': 100, 'batch': 16,
+                     'optimizer': 'AdamW', 'learning_rate': 1e-3},
+        'encoders': {
+            name: {'backend_kind': backend, 'repository': repo or 'reviewed-laya-package',
+                   'revision': 'd' * 40, 'bundle_sha256': D('e'),
+                   'weights_sha256': D('f'), 'tokenizer_sha256': D('a'),
+                   'license_approved': True, 'local_code_reviewed': True,
+                   'local_path': '/models/not-provisioned'}
+            for name, backend, repo, _ in FIVE_ARM_CANDIDATES
+        },
+    }
+
+
+def test_a5_exact_five_model_pins_are_required_without_claiming_load():
+    from neuron_shared_encoder.validation_v3 import five_arm_matrix_contract
+    manifest = five_arm_plan()
+    audit = five_arm_matrix_contract(manifest)
+    assert audit['status'] == 'SCHEMA_COMPLETE_UNVERIFIED'
+    assert not audit['real_encoder_runs_completed']
+    assert audit['production_admission'] == 'BLOCKED'
+    assert len(manifest['encoders']) == 5
+    for dropped in manifest['encoders']:
+        bad = deepcopy(manifest)
+        bad['encoders'].pop(dropped)
+        assert five_arm_matrix_contract(bad)['status'] == 'BLOCKED'
+
+
+def test_a5_wrong_gte_identity_revision_or_license_blocks():
+    from neuron_shared_encoder.validation_v3 import five_arm_matrix_contract
+    for field, invalid in [('repository', 'answerdotai/ModernBERT-base'),
+                           ('revision', 'floating-main'), ('license_approved', False),
+                           ('weights_sha256', None), ('backend_kind', 'mmbert-joint')]:
+        bad = deepcopy(five_arm_plan())
+        bad['encoders']['gte-modernbert-base'][field] = invalid
+        assert five_arm_matrix_contract(bad)['status'] == 'BLOCKED', field
+
+
+def test_a5_no_checkpoint_refuses_to_run_before_mock_substitution():
+    from neuron_shared_encoder.validation_v3 import run_real_encoder_matrix
+    with pytest.raises(FileNotFoundError, match='missing local'):
+        run_real_encoder_matrix(dataset(4), D('a'), five_arm_plan(), five_arm=True)

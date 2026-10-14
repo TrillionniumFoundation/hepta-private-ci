@@ -20,6 +20,15 @@ from torch import nn
 from torch.nn import functional as F
 
 ENCODERS = ('laya-joint', 'mmbert-joint', 'granite-joint', 'modernbert-joint')
+# The user-requested A5 is a separate, exactly identified model grid. Its
+# generic mean-pooling controls are NOT official embedding API equivalents.
+FIVE_ARM_CANDIDATES = (
+    ('mmbert-small', 'mmbert-joint', 'jhu-clsp/mmBERT-small', 384),
+    ('modernbert-base', 'modernbert-joint', 'answerdotai/ModernBERT-base', 768),
+    ('gte-modernbert-base', 'modernbert-joint', 'Alibaba-NLP/gte-modernbert-base', 768),
+    ('mmbert-base', 'mmbert-joint', 'jhu-clsp/mmBERT-base', 768),
+    ('laya-421m', 'laya-joint', None, None),
+)
 KINDS = ('linear', 'static_gate', 'dynamic_gate', 'film', 'lowrank8', 'lowrank16', 'mlp', 'swiglu')
 BUDGETS = (2048, 16384, 65536, 262144)
 HEX = frozenset('0123456789abcdef')
@@ -391,17 +400,83 @@ def encoder_matrix_contract(matrix: dict) -> dict:
 
 
 
+def five_arm_matrix_contract(matrix: dict) -> dict:
+    """A5: enforce all five named candidates, exact source pins and fair budgets.
+
+    Passing this schema is never proof of a real model run or a source signature.
+    GTE's generic Transformer mean-pooling control is not its official retrieval
+    embedding pipeline; the two must not be silently equated.
+    """
+    errors = []
+    if not isinstance(matrix, dict):
+        return {'experiment': 'A5', 'status': 'BLOCKED',
+                'missing_or_invalid': ['manifest must be an object'],
+                'production_admission': 'BLOCKED', 'real_encoder_runs_completed': False}
+    for key in ('dataset_sha256', 'split_manifest_sha256', 'frozen_no_change_sha256'):
+        if not is_digest(matrix.get(key)):
+            errors.append(f'missing dataset/protocol pin: {key}')
+    if matrix.get('data_use_approved') is not True:
+        errors.append('approved training/evaluation data use required')
+    training = matrix.get('training')
+    if (not isinstance(training, dict)
+            or type(training.get('seed')) is not int
+            or type(training.get('steps')) is not int or training['steps'] <= 0
+            or type(training.get('batch')) is not int or training['batch'] <= 0
+            or training.get('optimizer', '').lower() != 'adamw'
+            or type(training.get('learning_rate')) not in (int, float)
+            or not math.isfinite(training['learning_rate'])
+            or training['learning_rate'] <= 0):
+        errors.append('same finite AdamW training budget required')
+    if not isinstance(matrix.get('question_option_layout'), str) or not matrix['question_option_layout']:
+        errors.append('fixed common question/option layout missing')
+    arms = matrix.get('encoders')
+    if not isinstance(arms, dict):
+        arms = {}
+    expected = {name for name, _, _, _ in FIVE_ARM_CANDIDATES}
+    if set(arms) != expected:
+        errors.append('exact five candidate names required (no omissions or extras)')
+    for name, backend, expected_repo, _ in FIVE_ARM_CANDIDATES:
+        entry = arms.get(name)
+        if not isinstance(entry, dict):
+            errors.append(f'{name}: missing candidate manifest')
+            continue
+        if entry.get('backend_kind') != backend:
+            errors.append(f'{name}: mismatched backend kind')
+        if (entry.get('repository') != expected_repo if expected_repo else
+                not isinstance(entry.get('repository'), str) or not entry['repository']):
+            errors.append(f'{name}: incorrect upstream repository')
+        if not is_commit_ref(entry.get('revision')) or len(entry['revision']) != 40:
+            errors.append(f'{name}: exact 40-hex model revision required')
+        if not all(is_digest(entry.get(key)) for key in
+                   ('bundle_sha256', 'weights_sha256', 'tokenizer_sha256')):
+            errors.append(f'{name}: missing weights/bundle/tokenizer pins')
+        if entry.get('license_approved') is not True:
+            errors.append(f'{name}: license approval required')
+        if name == 'laya-421m' and entry.get('local_code_reviewed') is not True:
+            errors.append('Laya local package source review required')
+    return {'experiment': 'A5',
+            'status': 'SCHEMA_COMPLETE_UNVERIFIED' if not errors else 'BLOCKED',
+            'missing_or_invalid': errors, 'real_encoder_runs_completed': False,
+            'production_admission': 'BLOCKED',
+            'pooling_caveat': 'GTE/ModernBERT/mmBERT use generic masked mean pooling controls',
+            'warning': 'Manifest SHA/revision and license flags are untrusted operator claims, not independent validation.'}
+
+
 def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
                             matrix: dict, *, dimension: int = 128,
-                            max_length: int = 512) -> dict:
-    """E1: run four separate *actual* pinned offline encoders, never synthetic.
+                            max_length: int = 512,
+                            five_arm: bool = False) -> dict:
+    """E1/A5: run exact offline checkpoint set, never a synthetic encoder.
 
     The same approved ordered records, held-out split and Head optimization
     budget are used for each Encoder. This cannot validate operator authority
     and does not claim official retrieval-pooling or Laya teacher equivalence.
     """
-    if encoder_matrix_contract(matrix)['status'] != 'SCHEMA_COMPLETE_UNVERIFIED':
-        raise ValueError('E1 common real-model manifest is incomplete')
+    audit = five_arm_matrix_contract(matrix) if five_arm else encoder_matrix_contract(matrix)
+    if audit['status'] != 'SCHEMA_COMPLETE_UNVERIFIED':
+        raise ValueError('E1/A5 common real-model manifest is incomplete')
+    arms = (FIVE_ARM_CANDIDATES if five_arm else
+            tuple((kind, kind, None, None) for kind in ENCODERS))
     if not is_digest(dataset_sha256) or dataset_sha256 != matrix['dataset_sha256']:
         raise ValueError('E1 real run dataset identity mismatch')
     if not 1 <= dimension <= 512 or not 1 <= max_length <= 8192:
@@ -419,24 +494,25 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
     if any(len(indices) == 0 for indices in masks.values()):
         raise ValueError('all four splits required')
     results = {}
-    # Preflight all four paths before any model is loaded; no silent missing
-    # candidate, substituting mocks, or accidentally letting HF fetch online.
-    for kind in ENCODERS:
+    # Preflight ALL candidate paths before loading any model. No mock fallback.
+    for kind, _, _, _ in arms:
         entry = matrix['encoders'][kind]
         if not isinstance(entry.get('local_path'), str) or not Path(entry['local_path']).is_dir():
             raise FileNotFoundError(f'E1 missing local {kind} checkpoint')
     from .contracts import sha256_file
-    for kind in ENCODERS:
+    for kind, backend_kind, _, _ in arms:
         entry = matrix['encoders'][kind]
-        tokenizer_file = Path(entry['local_path']) / ('tokenizer/tokenizer.json' if kind == 'laya-joint' else 'tokenizer.json')
+        tokenizer_file = Path(entry['local_path']) / ('tokenizer/tokenizer.json' if backend_kind == 'laya-joint' else 'tokenizer.json')
         if not tokenizer_file.is_file() or sha256_file(tokenizer_file) != entry['tokenizer_sha256']:
             raise ValueError(f'E1 tokenizer file digest mismatch: {kind}')
     from .models import OfflineEncoder, frozen_projection
-    for kind in ENCODERS:
+    for kind, backend_kind, _, expected_hidden in arms:
         entry = matrix['encoders'][kind]
-        backend = OfflineEncoder(kind, entry['local_path'], entry['weights_sha256'],
+        backend = OfflineEncoder(backend_kind, entry['local_path'], entry['weights_sha256'],
                                  max_length=max_length,
                                  expected_bundle_sha256=entry['bundle_sha256'])
+        if expected_hidden is not None and backend.dimension != expected_hidden:
+            raise ValueError(f'{kind}: wrong model hidden width')
         start = time.perf_counter()
         features = backend.encode(rows, batch=spec['batch'])
         encoder_seconds = time.perf_counter() - start
@@ -453,9 +529,16 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
                   'input_rows': len(rows), 'encoder_seconds': encoder_seconds,
                   'trained_head_matrix': trained,
                   'normalized_from': 'train_only',
-                  'joint_format': 'laya-native-markers' if kind == 'laya-joint'
+                  'backend_kind': backend_kind,
+                  'upstream_repository': entry.get('repository') if five_arm else None,
+                  'upstream_revision': entry.get('revision') if five_arm else None,
+                  'embedding_contract': (
+                      'generic-masked-mean-NOT-official-GTE' if kind == 'gte-modernbert-base'
+                      else 'laya-original-plus-lossy-pooled-control' if backend_kind == 'laya-joint'
+                      else 'generic-masked-mean-control'),
+                  'joint_format': 'laya-native-markers' if backend_kind == 'laya-joint'
                                   else 'generic-question-options-state-string'}
-        if kind == 'laya-joint':
+        if backend_kind == 'laya-joint':
             # True original Laya policy; never replace with pooled CLS.
             with torch.inference_mode():
                 original = backend.laya_baseline_probabilities(rows)
@@ -466,7 +549,8 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
                 1-original[masks['ood']].max(1).values,
                 1-original[masks['validation']].max(1).values)
         results[kind] = result
-    return {'experiment': 'E1', 'evidence_class': 'REAL_MODEL_LOCAL_SHADOW',
+    return {'experiment': 'A5' if five_arm else 'E1',
+            'evidence_class': 'REAL_MODEL_LOCAL_SHADOW',
             'production_admission': 'BLOCKED', 'independent_artifact_signatures_verified': False,
             'dataset_sha256': dataset_sha256, 'same_training': dict(spec),
             'same_projected_width': dimension, 'encoders': results,
@@ -537,7 +621,8 @@ def _read_pinned_json(path: str, sha: str) -> dict:
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['e1-plan', 'e1-run', 'e2-heads', 'e3-reuse', 'e4-future', 'e5-host'])
+    parser.add_argument('command', choices=['e1-plan', 'e1-run', 'e1-five-plan', 'e1-five-run',
+                                            'e2-heads', 'e3-reuse', 'e4-future', 'e5-host'])
     parser.add_argument('--output', required=True)
     parser.add_argument('--input-json', default='')
     parser.add_argument('--input-sha256', default='')
@@ -569,9 +654,11 @@ def _parser() -> argparse.ArgumentParser:
 def main() -> None:
     args = _parser().parse_args()
     torch.set_num_threads(args.threads)
-    if args.command in ('e1-plan', 'e5-host'):
+    if args.command in ('e1-plan', 'e1-five-plan', 'e5-host'):
         obj = _read_pinned_json(args.input_json, args.input_sha256)
-        result = encoder_matrix_contract(obj) if args.command == 'e1-plan' else scale_receipt_audit(obj)
+        result = (encoder_matrix_contract(obj) if args.command == 'e1-plan'
+                  else five_arm_matrix_contract(obj) if args.command == 'e1-five-plan'
+                  else scale_receipt_audit(obj))
     else:
         from .contracts import load_dataset, sha256_file
         from .models import OfflineEncoder
@@ -581,10 +668,11 @@ def main() -> None:
         rows, data = load_dataset(args.dataset, expected_sha256=args.dataset_sha256)
         if len({(r['principal'], r['organ_id'], r['cell_id']) for r in rows}) != 1:
             raise ValueError('one scoped Cell required; no cross-scope learning aggregation')
-        if args.command == 'e1-run':
+        if args.command in ('e1-run', 'e1-five-run'):
             matrix = _read_pinned_json(args.input_json, args.input_sha256)
-            result = run_real_encoder_matrix(rows, args.dataset_sha256, matrix,
-                                             dimension=args.dimension, max_length=args.max_length)
+            result = run_real_encoder_matrix(
+                rows, args.dataset_sha256, matrix, dimension=args.dimension,
+                max_length=args.max_length, five_arm=args.command == 'e1-five-run')
         elif args.command == 'e4-future':
             baseline = _read_pinned_json(args.baseline, args.baseline_sha256)
             candidate = _read_pinned_json(args.candidate, args.candidate_sha256)

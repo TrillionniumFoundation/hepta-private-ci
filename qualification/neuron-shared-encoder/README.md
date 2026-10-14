@@ -187,3 +187,30 @@ unverified fields before interpreting any values. CI intentionally exercises
 missing real Encoder and target-host receipts and requires both to remain
 blocked. The E4 frozen baseline is **not generated from random/untrained
 Heads**, and all V3 claims are research/shadow only.
+
+
+### A5 — exact five-arm Stem selection (non-authorizing)
+
+The requested five-model grid is available separately from the original
+four-model E1/Granite control. `e1-five-plan` requires the exact
+`mmbert-small`, `modernbert-base`, `gte-modernbert-base`,
+`mmbert-base` and `laya-421m` arms. Each entry binds `repository`,
+40-hex upstream `revision`, local SHA-256 weight/bundle/tokenizer digests,
+`backend_kind`, license approval, and a common frozen dataset/split/baseline
+and AdamW training protocol. Laya additionally requires local package review.
+A matrix with any omitted, extra or swapped model fails closed.
+
+Use `e1-five-plan` on a hash-pinned manifest first; once all **real offline**
+weights and an approved dataset exist, run `e1-five-run` with that same
+manifest, `--dataset-sha256` and `--dimension 128` or other registered
+1–512 width. The runner preflights all five paths before loading, verifies
+the tokenizer and bundle hashes, and checks the published mmBERT/ModernBERT
+hidden width. It records actual forward timings, original Laya System One
+and separate trained Heads. In particular, the GTE arm here uses a
+**generic masked-mean Transformer control, not the official model-specific
+GTE Embedding API**; do not report it as an official GTE leaderboard score.
+Official GTE pooling/task adapters need a separately pinned run.
+
+The complete five-arm schema is `SCHEMA_COMPLETE_UNVERIFIED`, not proof that
+all five models ran. All outputs remain shadow-only; no real weights or
+qualified approved data are supplied by this PR.
