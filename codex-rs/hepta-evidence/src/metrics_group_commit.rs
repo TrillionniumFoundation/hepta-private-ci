@@ -11,8 +11,12 @@ use std::fs::{self};
 use std::io::BufRead;
 use std::io::BufReader;
 use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::io::Write;
 use std::path::Path;
+use std::path::PathBuf;
+use std::str::FromStr;
 use std::time::Instant;
 
 use codex_hepta_types::Digest32;
@@ -79,6 +83,7 @@ impl std::error::Error for MetricsJournalErrorV1 {}
 /// the instance until inspection/reopen, never silently skipping a record.
 pub struct MetricsGroupCommitV1 {
     file: File,
+    original_path: PathBuf,
     staged: Vec<MetricSampleV1>,
     sequence: u64,
     head: Digest32,
@@ -150,6 +155,7 @@ impl MetricsGroupCommitV1 {
         }
         Ok(Self {
             file,
+            original_path: path.to_path_buf(),
             staged: Vec::new(),
             sequence,
             head,
@@ -157,6 +163,72 @@ impl MetricsGroupCommitV1 {
             bytes: total,
             poisoned: false,
         })
+    }
+
+    /// Match the ORIGINAL fsynced Evidence WAL, not just an open handle.
+    /// A renamed/replaced file, same-inode truncation or same-size modified
+    /// final record must never be acknowledged by an empty or real flush.
+    /// Bounded to the final MAX_LINE_BYTES record; a separate independent
+    /// storage/custody witness remains necessary against coordinated rollback.
+    fn verify_live_frontier(
+        &self,
+        expected_bytes: u64,
+        expected_sequence: u64,
+        expected_head: Digest32,
+    ) -> Result<(), MetricsJournalErrorV1> {
+        // Filesystem directory ownership is a live trust boundary. A parent
+        // becoming peer-writable after startup must stop positive ACKs too.
+        check_journal_path(&self.original_path)?;
+        check_open_file(&self.original_path, &self.file)?;
+        if self.file.metadata()?.len() != expected_bytes {
+            return Err(MetricsJournalErrorV1::Corrupt);
+        }
+        if expected_sequence == 0 {
+            if expected_bytes != 0 || !expected_head.is_zero() {
+                return Err(MetricsJournalErrorV1::Corrupt);
+            }
+        } else {
+            if expected_bytes == 0 || expected_head.is_zero() {
+                return Err(MetricsJournalErrorV1::Corrupt);
+            }
+            let tail_len = expected_bytes.min(MAX_LINE_BYTES as u64) as usize;
+            let mut tail = vec![0_u8; tail_len];
+            // The single locked metrics worker owns the file. Cloned handle
+            // seek does not change append's guaranteed end-of-file writes.
+            let mut reader = self.file.try_clone()?;
+            reader.seek(SeekFrom::Start(expected_bytes - tail_len as u64))?;
+            reader.read_exact(&mut tail)?;
+            if tail.last() != Some(&b'\n') {
+                return Err(MetricsJournalErrorV1::Corrupt);
+            }
+            let start = tail[..tail_len - 1]
+                .iter()
+                .rposition(|byte| *byte == b'\n')
+                .map_or(0, |offset| offset + 1);
+            let last = std::str::from_utf8(&tail[start..tail_len - 1])
+                .map_err(|_| MetricsJournalErrorV1::Corrupt)?;
+            let predecessor = last
+                .split('|')
+                .nth(2)
+                .and_then(|value| Digest32::from_str(value).ok())
+                .ok_or(MetricsJournalErrorV1::Corrupt)?;
+            let previous_sequence = expected_sequence
+                .checked_sub(1)
+                .ok_or(MetricsJournalErrorV1::Corrupt)?;
+            let (actual_sequence, actual_head, _) =
+                parse_group(last, previous_sequence, predecessor)?;
+            if actual_sequence != expected_sequence || actual_head != expected_head {
+                return Err(MetricsJournalErrorV1::Corrupt);
+            }
+        }
+        // Refuse any identity/size drift that raced the bounded last-row
+        // inspection. Neither hash nor metric ACK alone grants Final-use.
+        check_journal_path(&self.original_path)?;
+        check_open_file(&self.original_path, &self.file)?;
+        if self.file.metadata()?.len() != expected_bytes {
+            return Err(MetricsJournalErrorV1::Corrupt);
+        }
+        Ok(())
     }
 
     pub fn stage(&mut self, sample: MetricSampleV1) -> Result<(), MetricsJournalErrorV1> {
@@ -195,6 +267,10 @@ impl MetricsGroupCommitV1 {
     pub fn flush(&mut self) -> Result<Option<MetricsCommitReceiptV1>, MetricsJournalErrorV1> {
         if self.poisoned {
             return Err(MetricsJournalErrorV1::Poisoned);
+        }
+        if let Err(error) = self.verify_live_frontier(self.bytes, self.sequence, self.head) {
+            self.poisoned = true;
+            return Err(error);
         }
         if self.staged.is_empty() {
             return Ok(None);
@@ -237,6 +313,13 @@ impl MetricsGroupCommitV1 {
         {
             self.poisoned = true;
             return Err(MetricsJournalErrorV1::Io(error));
+        }
+        // A successful fsync is not proof that the *named* journal still
+        // contains this record. Reject path replacement and in-place damage
+        // before publishing the group receipt to the asynchronous worker.
+        if let Err(error) = self.verify_live_frontier(next_bytes, sequence, next_head) {
+            self.poisoned = true;
+            return Err(error);
         }
         self.bytes = next_bytes;
         self.sequence = sequence;

@@ -251,3 +251,105 @@ fn journal_open_does_not_create_an_unprovisioned_storage_directory() {
     assert!(!unknown_parent.exists());
     assert!(!journal.exists());
 }
+
+
+#[test]
+fn live_empty_evidence_barrier_refuses_replaced_journal_inode() {
+    let root = tempfile::tempdir().expect("private Evidence directory");
+    let path = root.path().join("journal.log");
+    let former = root.path().join("old-journal.log");
+    let mut writer = MetricsGroupCommitV1::open(&path).expect("original Evidence writer");
+    writer
+        .stage(sample(MetricPhaseV1::Cas))
+        .expect("signed operation observation");
+    writer.flush().expect("first group fsync");
+    std::fs::rename(&path, &former).expect("replace original Evidence pathname");
+    std::fs::copy(&former, &path).expect("copy apparently valid bytes");
+    assert!(matches!(
+        writer.flush(),
+        Err(MetricsJournalErrorV1::UnsafePath)
+    ));
+    assert!(matches!(
+        writer.stage(sample(MetricPhaseV1::Cns)),
+        Err(MetricsJournalErrorV1::Poisoned)
+    ));
+    drop(writer);
+    // A second writer cannot adopt a healthy in-memory continuation from
+    // the original writer's stale descriptor. This test is not host custody.
+    assert!(std::fs::read(&path).is_ok());
+}
+
+#[test]
+fn evidence_same_inode_truncate_and_equal_length_tail_rewrite_poison_barrier() {
+    for case in ["truncate", "tail_rewrite"] {
+        let root = tempfile::tempdir().expect("private metrics directory");
+        let path = root.path().join("journal.log");
+        let mut writer = MetricsGroupCommitV1::open(&path).expect("original Evidence WAL");
+        writer
+            .stage(sample(MetricPhaseV1::Signature))
+            .expect("phase sample");
+        writer.flush().expect("original group committed");
+        let original = std::fs::read(&path).expect("fsynced original bytes");
+        match case {
+            "truncate" => {
+                std::fs::OpenOptions::new()
+                    .write(true)
+                    .open(&path)
+                    .expect("same file inode")
+                    .set_len(0)
+                    .expect("truncate original WAL");
+            }
+            "tail_rewrite" => {
+                let mut bytes = original.clone();
+                let pipes = bytes
+                    .iter()
+                    .enumerate()
+                    .filter_map(|(index, byte)| (*byte == b'|').then_some(index))
+                    .collect::<Vec<_>>();
+                assert!(pipes.len() >= 4);
+                let byte = &mut bytes[pipes[2] + 1];
+                *byte = if *byte == b'0' { b'1' } else { b'0' };
+                std::fs::write(&path, &bytes).expect("rewrite same original inode");
+                assert_eq!(bytes.len(), original.len());
+            }
+            _ => unreachable!("fixed corruption cases"),
+        }
+        // No staged samples: the metrics ACK still must validate the original
+        // WAL rather than silently treating empty flush as acknowledged.
+        assert!(matches!(
+            writer.flush(),
+            Err(MetricsJournalErrorV1::Corrupt)
+        ));
+        assert!(matches!(
+            writer.stage(sample(MetricPhaseV1::Cas)),
+            Err(MetricsJournalErrorV1::Poisoned)
+        ));
+    }
+}
+
+
+#[cfg(unix)]
+#[test]
+fn live_evidence_barrier_denies_parent_directory_became_peer_writable() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let root = tempfile::tempdir().expect("initial owner-private Evidence path");
+    let path = root.path().join("journal.log");
+    let mut writer = MetricsGroupCommitV1::open(&path).expect("safe original writer");
+    writer
+        .stage(sample(MetricPhaseV1::Admission))
+        .expect("real phase sample");
+    writer.flush().expect("first durable original group");
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o777))
+        .expect("external permission relaxation");
+    assert!(matches!(
+        writer.flush(),
+        Err(MetricsJournalErrorV1::UnsafePath)
+    ));
+    assert!(matches!(
+        writer.stage(sample(MetricPhaseV1::Cas)),
+        Err(MetricsJournalErrorV1::Poisoned)
+    ));
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("restore permissions only for test cleanup");
+}
