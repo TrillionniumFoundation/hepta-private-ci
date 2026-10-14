@@ -78,7 +78,10 @@ fn decode_complete_row(
         .map_err(|error| EvidenceError::Corrupt(format!("execution envelope binding: {error}")))?;
     let serialized = serialize_complete_intent(&intent)
         .map_err(|error| EvidenceError::Corrupt(format!("execution serialization: {error}")))?;
-    if serialized != json || prepared.original != *original || request != prepared.request_sha256 {
+    if serialized != json
+        || prepared.original != *original
+        || request.as_slice() != prepared.request_sha256.as_slice()
+    {
         return Err(EvidenceError::Corrupt(
             "execution complete envelope does not match original binding".to_owned(),
         ));
