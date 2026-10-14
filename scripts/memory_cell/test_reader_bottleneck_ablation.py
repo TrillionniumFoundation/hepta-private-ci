@@ -10,6 +10,8 @@ from reader_bottleneck_ablation import (
     ARMS,
     QWEN_INVENTORY,
     _commit,
+    _journal_with_guard,
+    MAX_SECONDS,
     _paired,
     freeze_case,
     selection,
@@ -234,6 +236,48 @@ class BottleneckAblationTests(unittest.TestCase):
         self.assertTrue(frozen["declared_support_not_human_reviewed"])
         self.assertFalse(frozen["production_accepted"])
         self.assertNotIn("expected_answer", frozen)
+
+    def test_real_inference_guard_captures_unpatched_callable(self):
+        import strong_rag_trial as trial
+
+        original = trial.fail_if_unviable_reader
+        recorded = []
+
+        def journal(*args, **kwargs):
+            self.assertIsNot(trial.fail_if_unviable_reader, original)
+            trial.fail_if_unviable_reader(
+                {"status": "succeeded", "receipt": {"seconds": 181.0}}
+            )
+            recorded.append((args, kwargs))
+            return [{"status": "succeeded"}]
+
+        with patch("reader_bottleneck_ablation._journal_answers", journal):
+            result = _journal_with_guard(
+                None, [], {}, (), lambda case, arm: (), "fake-journal", seed="fixed"
+            )
+        self.assertEqual(result, [{"status": "succeeded"}])
+        self.assertEqual(len(recorded), 1)
+        self.assertIs(trial.fail_if_unviable_reader, original)
+
+    def test_slow_real_inference_restores_canonical_guard_on_error(self):
+        import strong_rag_trial as trial
+
+        original = trial.fail_if_unviable_reader
+
+        def journal(*args, **kwargs):
+            trial.fail_if_unviable_reader(
+                {
+                    "status": "succeeded",
+                    "receipt": {"seconds": MAX_SECONDS + 1.0},
+                }
+            )
+
+        with patch("reader_bottleneck_ablation._journal_answers", journal):
+            with self.assertRaisesRegex(RuntimeError, "slow frozen reader"):
+                _journal_with_guard(
+                    None, [], {}, (), lambda case, arm: (), "fake", seed="locked"
+                )
+        self.assertIs(trial.fail_if_unviable_reader, original)
 
     def test_commit_must_be_exact_git_sha(self):
         with patch.dict("os.environ", {"HEPTA_MEMORY_TESTED_COMMIT": "fake"}):
