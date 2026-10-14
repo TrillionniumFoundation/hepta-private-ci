@@ -78,13 +78,14 @@ pub fn run_pinned_cell_split_execution_v1(
     )
 }
 
-/// Product composition seam: validate the independently admitted, frozen split
-/// against the operator's externally pinned configuration *before* opening the
-/// coordinator, preparing an intent, or contacting any effect owner.
+/// Legacy callback admission reference seam. Its only production action is
+/// read-only transcript verification; any new effect is denied before reading
+/// the configuration or contacting an owner. A future product caller must use
+/// an independently verified, typed NDU/Selector and durable Evidence writer.
 ///
-/// This callback is not an issuer or a substitute for each durable effect
-/// backend's fresh final-use check. Its caller must validate real signed
-/// NDU/Selector evidence rather than accept self-asserted digests.
+/// This arbitrary callback is not an issuer or a substitute for any durable
+/// effect backend's current Final-use check. Unit tests retain positive fixture
+/// advancement strictly to exercise the existing one-owner state machine.
 pub fn run_pinned_cell_split_execution_with_admission_v1<F>(
     action: &str,
     config_path: &Path,
