@@ -137,7 +137,10 @@ impl FixtureScopeFrontier {
     }
 
     fn install(&self, key: MicrobatchKeyV1) {
-        self.current.lock().unwrap().insert(key.scope_id.clone(), key);
+        self.current
+            .lock()
+            .unwrap()
+            .insert(key.scope_id.clone(), key);
     }
 }
 
@@ -993,10 +996,16 @@ fn missing_or_stale_live_scope_frontier_fails_closed() {
     assert!(!scope_binding_current(None, &key));
 
     let frontier = Arc::new(FixtureScopeFrontier::new(key.model_digest));
-    assert!(scope_binding_current(Some(&(frontier.clone() as Arc<dyn MicrobatchScopeFrontierV1>)), &key));
+    assert!(scope_binding_current(
+        Some(&(frontier.clone() as Arc<dyn MicrobatchScopeFrontierV1>)),
+        &key
+    ));
     let mut old_key = key.clone();
     old_key.route_fence = 1;
-    assert!(!scope_binding_current(Some(&(frontier as Arc<dyn MicrobatchScopeFrontierV1>)), &old_key));
+    assert!(!scope_binding_current(
+        Some(&(frontier as Arc<dyn MicrobatchScopeFrontierV1>)),
+        &old_key
+    ));
 
     // The request itself is correctly bound, so this is only a live
     // currentness rejection, not an invalid feature or signature fixture.
@@ -1044,10 +1053,12 @@ fn coalesced_batch_denies_stale_other_scope_without_claiming_either_nonce() {
 
     let result = worker.poll_and_execute(106).unwrap();
     assert_eq!(result.outcomes.len(), 2);
-    assert!(result.outcomes.iter().all(|item| matches!(
-        item.result,
-        Err(BatchWorkerErrorV1::InvalidBinding)
-    )));
+    assert!(
+        result
+            .outcomes
+            .iter()
+            .all(|item| matches!(item.result, Err(BatchWorkerErrorV1::InvalidBinding)))
+    );
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
     assert_eq!(worker.pending(), 0);
 }

@@ -427,7 +427,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                             if !self.metrics_available_for_effect() {
                                 Err(BatchWorkerErrorV1::MetricsUnavailable)
                             } else if pending.feature.digest() != intent.feature_digest
-                                || pending.signed.grant.authority_epoch != intent.key.authority_epoch
+                                || pending.signed.grant.authority_epoch
+                                    != intent.key.authority_epoch
                                 || !self.binding_current(&intent.key)
                             {
                                 Err(BatchWorkerErrorV1::InvalidBinding)
@@ -605,10 +606,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 .collect::<Vec<_>>();
             let mut stale_before_effect = false;
             let mut stale_after_effect = false;
-            let executed = FinalUseAuthority::with_verified_effect_batch(
-                &self.authority,
-                claimed,
-                || {
+            let executed =
+                FinalUseAuthority::with_verified_effect_batch(&self.authority, claimed, || {
                     if scope_keys
                         .iter()
                         .any(|key| !scope_binding_current(frontier.as_ref(), key))
@@ -616,11 +615,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                         stale_before_effect = true;
                         return Err(crate::model_worker::Error::FeatureContract);
                     }
-                    let result = self.worker.run_neuron_features_batch_receipts(
-                        now_ms,
-                        &model_id,
-                        requests,
-                    );
+                    let result = self
+                        .worker
+                        .run_neuron_features_batch_receipts(now_ms, &model_id, requests);
                     if scope_keys
                         .iter()
                         .any(|key| !scope_binding_current(frontier.as_ref(), key))
@@ -628,8 +625,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                         stale_after_effect = true;
                     }
                     result
-                },
-            );
+                });
             if stale_after_effect {
                 return Err(BatchWorkerErrorV1::StaleAfterEffect);
             }
