@@ -273,7 +273,9 @@ pub(crate) async fn verify_execution_prepared_rows(pool: &SqlitePool) -> Result<
                     "execution snapshot key cursor regressed".to_owned(),
                 ));
             }
-            let original_json: String = row.try_get("original_payload_json").map_err(classify_sqlx_error)?;
+            let original_json: String = row
+                .try_get("original_payload_json")
+                .map_err(classify_sqlx_error)?;
             let sha: String = row.try_get("original_record_sha256").map_err(classify_sqlx_error)?;
             if sha != Sha256Digest::for_bytes(original_json.as_bytes()).as_str() {
                 return Err(EvidenceError::Corrupt(
