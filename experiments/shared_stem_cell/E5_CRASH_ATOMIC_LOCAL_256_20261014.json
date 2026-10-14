@@ -1,0 +1,65 @@
+{
+  "active_cells": 25,
+  "authority": "DENY_ALL",
+  "cut_points_checked": [
+    "blob_partial",
+    "manifest_published",
+    "head_replaced",
+    "head_dirsynced"
+  ],
+  "independent_model_origin_verified": false,
+  "logical_cells": 256,
+  "power_loss_durability_verified": false,
+  "process_peak_rss_bytes": 544141312,
+  "process_wall_ms": 9151.252336,
+  "production_WAL_CAS_or_FinalUse_verified": false,
+  "production_promotion_permitted": false,
+  "real_child_sigkill_count": 4,
+  "real_future_ndu_verified": false,
+  "real_pretrained_encoder_forward_executed": false,
+  "reference_training_loss_sequence_sha256": "823782ea91deb45b61c78d866b99c99ca45e561e66c5f4cb8d343b816d7462c9",
+  "same_seed_four_step_reference_momentum_and_weights_bit_exact": true,
+  "schema": "hepta.e5.actual-sigkill-atomic-checkpoint.v1",
+  "stage_observations": [
+    {
+      "child_exit_signal": "SIGKILL",
+      "child_returncode": -9,
+      "failpoint": "blob_partial",
+      "final_step": 4,
+      "observed_step_after_crash": 2,
+      "prelabel_or_production_outcome_authenticated": false,
+      "replay_bit_exact": true,
+      "stage_manifest_sha256": "92bef38a33bb881506345a96c44fe25faf43b341abf7817f9b016f1167320a00"
+    },
+    {
+      "child_exit_signal": "SIGKILL",
+      "child_returncode": -9,
+      "failpoint": "manifest_published",
+      "final_step": 4,
+      "observed_step_after_crash": 2,
+      "prelabel_or_production_outcome_authenticated": false,
+      "replay_bit_exact": true,
+      "stage_manifest_sha256": "92bef38a33bb881506345a96c44fe25faf43b341abf7817f9b016f1167320a00"
+    },
+    {
+      "child_exit_signal": "SIGKILL",
+      "child_returncode": -9,
+      "failpoint": "head_replaced",
+      "final_step": 4,
+      "observed_step_after_crash": 4,
+      "prelabel_or_production_outcome_authenticated": false,
+      "replay_bit_exact": true,
+      "stage_manifest_sha256": "92bef38a33bb881506345a96c44fe25faf43b341abf7817f9b016f1167320a00"
+    },
+    {
+      "child_exit_signal": "SIGKILL",
+      "child_returncode": -9,
+      "failpoint": "head_dirsynced",
+      "final_step": 4,
+      "observed_step_after_crash": 4,
+      "prelabel_or_production_outcome_authenticated": false,
+      "replay_bit_exact": true,
+      "stage_manifest_sha256": "92bef38a33bb881506345a96c44fe25faf43b341abf7817f9b016f1167320a00"
+    }
+  ]
+}
