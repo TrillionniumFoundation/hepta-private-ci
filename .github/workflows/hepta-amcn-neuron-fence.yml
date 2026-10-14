@@ -1,6 +1,12 @@
 name: Hepta AMCN Neuron source-fenced model port (research only)
 
 on:
+  push:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "codex-rs/hepta-neuron/src/runtime_tests.rs"
+      - "codex-rs/hepta-neuron/src/amcn_shadow_epoch_tests.rs"
+      - ".github/workflows/hepta-amcn-neuron-fence.yml"
   pull_request:
     branches: ["research/five-causal-experiments-20261013"]
     paths:
