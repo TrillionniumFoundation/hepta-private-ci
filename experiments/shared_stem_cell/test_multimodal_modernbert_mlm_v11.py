@@ -37,8 +37,8 @@ class PhysicalModernBertTiedCheckpointTests(unittest.TestCase):
                 original = ModernBertForMaskedLM(cfg).eval().requires_grad_(False)
             original.save_pretrained(root, safe_serialization=True)
             (root / "vocab.txt").write_text(
-                "[PAD]\\n[UNK]\\n[CLS]\\n[SEP]\\n[MASK]\\n"
-                "birds\\nmigrate\\nin\\nwinter\\nsmall\\nmodels\\n"
+                "[PAD]\n[UNK]\n[CLS]\n[SEP]\n[MASK]\n"
+                "birds\nmigrate\nin\nwinter\nsmall\nmodels\n"
             )
             BertTokenizerFast(vocab_file=str(root / "vocab.txt"), do_lower_case=True).save_pretrained(root)
             checksums = {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
