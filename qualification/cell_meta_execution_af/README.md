@@ -38,6 +38,20 @@ while requiring distinct route/depth policies and observed route traces.
 Experiment D requires explicit held-out task-family inventories disjoint from the
 frozen training family inventory and across both future windows. These are
 identity/conformance checks, not independent proof of task-family provenance.
+Each A–D arm now binds a **single unchanged model bundle** across both future windows
+and reports `model_bundle_frozen_at` not later than the globally registered
+`frozen_at`. This prevents comparing a model retrospectively replaced after
+`future_1` as though it were the original frozen candidate. For D this bundle
+identifies the *outer initialization/adaptation rule*; task-local within-episode
+adapted state must be separately recorded and never silently overwrite that
+identity. Timestamps and hashes are still declarative until independently
+observed; no test JSON can certify freezing by itself.
+E and F also bind the same host **and device profile**, including a device
+digest for every individual measurement row, not just the panel header.
+F rejects a failed/indeterminate turn with an unauthorized but observed external
+effect, an orphan original-owner receipt without an observed effect, or a
+truthy non-boolean authorization/observation flag. An authorized tool effect is
+not inferred from an App Server turn status.
 The reported interval allocation must be no more than Bonferroni
 0.05/(two future windows × registered comparisons); one protected
 slice degrading by more than 2% vetoes a provisional improvement even
