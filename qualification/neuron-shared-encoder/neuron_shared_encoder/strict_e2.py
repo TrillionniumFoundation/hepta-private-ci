@@ -274,6 +274,7 @@ def main(argv: list[str] | None = None) -> None:
     from .contracts import load_dataset
     from .experiment import _mock_embedding
     from .models import OfflineEncoder, frozen_projection
+    from .encoder_meter import EncoderModuleForwardMeter
     from .validation_v3 import ENCODERS, is_digest
 
     parser = argparse.ArgumentParser(description=__doc__)
@@ -308,6 +309,7 @@ def main(argv: list[str] | None = None) -> None:
         features = torch.stack([_mock_embedding(r, args.dimension) for r in rows])
         real_bundle = None
         evidence_class = 'SYNTHETIC_SMOKE'
+        model_forwards = None
     else:
         if args.allow_synthetic or not args.checkpoint_dir or not all(
             is_digest(x) for x in (args.weights_sha256, args.bundle_sha256)
@@ -315,7 +317,14 @@ def main(argv: list[str] | None = None) -> None:
             raise ValueError('pinned offline real assets required; no synthetic fallback')
         backend = OfflineEncoder(args.encoder, args.checkpoint_dir, args.weights_sha256,
                                  expected_bundle_sha256=args.bundle_sha256)
-        features = backend.encode(rows, batch=args.encoder_batch)
+        with EncoderModuleForwardMeter(backend.model) as meter:
+            features = backend.encode(rows, batch=args.encoder_batch)
+        model_forwards = meter.receipt()
+        if (model_forwards['module_forward_failures_or_incomplete']
+                or model_forwards['rows_completed'] != len(rows)
+                or model_forwards['module_forward_completions']
+                != math.ceil(len(rows) / args.encoder_batch)):
+            raise ValueError('E2 incomplete real model forward accounting')
         real_bundle = args.bundle_sha256
         evidence_class = 'REAL_MODEL_OFFLINE_RESEARCH_UNVERIFIED'
     original_dimension = features.shape[1]
@@ -333,6 +342,7 @@ def main(argv: list[str] | None = None) -> None:
                    'random_untrained_projection': original_dimension != projected.shape[1],
                    'encoder_adapter_call_count': 1,
                    'encoder_rows_submitted': len(rows),
+                   'encoder_model_forward_observation': model_forwards,
                    'physical_encoder_kernel_count_verified': False,
                    'approved_data_use_verified': False})
     destination = Path(args.output)
