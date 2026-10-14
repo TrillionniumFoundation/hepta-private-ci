@@ -86,8 +86,7 @@ impl CellSplitExecutionPlanV1 {
             || self.parent_generation == 0
             || self.parent_generation.checked_add(1) != Some(self.child_generation)
             || self.owner_ids.iter().any(|id| {
-                codex_hepta_types::StableId::new(id.clone()).is_err()
-                    || !distinct_owners.insert(id)
+                codex_hepta_types::StableId::new(id.clone()).is_err() || !distinct_owners.insert(id)
             })
         {
             return Err(CellSplitExecutionErrorV1::Invalid(
@@ -679,7 +678,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // This same readback validates the frozen plan, complete receipt chain,
         // pinned signatures and the current real owner state. Do not repeat
         // the four potentially remote owner reads just to export the bytes.
-        let receipts = self.read_verified_prefix(true)?;
+        let receipts = self.read_verified_prefix(true, true)?;
         if !self.is_complete() {
             return Ok(None);
         }
@@ -698,15 +697,18 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
     /// rollback, stale route or post-open sidecar tamper must fence execution,
     /// even when the coordinator previously opened successfully.
     pub fn verify_committed_prefix(&mut self) -> Result<(), CellSplitExecutionErrorV1> {
-        self.read_verified_prefix(false).map(|_| ())
+        self.read_verified_prefix(false, true).map(|_| ())
     }
 
-    /// One canonical pass for execution preflight and transcript export.
-    /// Retain real-owner readback on every invocation, but never perform it
-    /// twice within the same export. None of these receipts grants authority.
+    /// Canonical local prefix verification with optional original-owner readback.
+    /// Live effect reads are mandatory for public verification and preflight.
+    /// A local-only pass is used only after an already verified preflight and
+    /// the last admission callback, immediately before a new prepared intent.
+    /// Neither form is an authorization grant.
     fn read_verified_prefix(
         &mut self,
         collect_receipts: bool,
+        verify_original_owner: bool,
     ) -> Result<Vec<CellSplitExecutionReceiptV1>, CellSplitExecutionErrorV1> {
         self._lock.verify_current(&self.root)?;
         verify_split_frame_namespace(&self.root)?;
@@ -749,9 +751,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             let receipt = decode_committed_receipt(&bytes)?;
             validate_receipt(&intent, &receipt)?;
             self.trust.verify(&intent, &receipt)?;
-            self.port
-                .verify_committed(&intent, &receipt)
-                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            if verify_original_owner {
+                self.port
+                    .verify_committed(&intent, &receipt)
+                    .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
+            }
             local_frames.push((prepared, bytes));
             if collect_receipts {
                 predecessor = receipt.receipt_digest.clone();
@@ -889,6 +893,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             // remains only a read-only guard; actual effect owners enforce
             // independent final-use at the physical commit boundary.
             revalidate().map_err(CellSplitExecutionErrorV1::External)?;
+            // The final independent admission callback may be slow. A concurrent
+            // or compromised writer could replace local frozen pins or ledger
+            // frames during that callback. Reread the full local prefix before
+            // preparing an effect without repeating the already performed
+            // external readback (which would reopen the admission window).
+            // The physical effect owner still independently enforces Final-use.
+            self.read_verified_prefix(false, false)?;
             write_private_new(
                 &frame_path(&self.root, self.cursor, "prepared"),
                 &canonical_json(&intent)?,
