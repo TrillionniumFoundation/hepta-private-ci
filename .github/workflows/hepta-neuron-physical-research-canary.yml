@@ -6,6 +6,8 @@ on:
       - 'qualification/neuron-gated-sparse-v3/matched_train.py'
       - 'qualification/neuron-gated-sparse-v3/precommit_future.py'
       - 'qualification/neuron-gated-sparse-v3/a4_end_to_end_gate.py'
+      - 'qualification/neuron-gated-sparse-v3/candidate_inventory.py'
+      - 'qualification/neuron-gated-sparse-v3/test_candidate_inventory.py'
       - 'qualification/neuron-gated-sparse-v3/test_real_pipeline.py'
       - 'qualification/neuron-gated-sparse-v3/test_a4_host_gate.py'
       - '.github/workflows/hepta-neuron-physical-research-canary.yml'
@@ -62,6 +64,9 @@ jobs:
           python -m unittest discover \
             -s qualification/neuron-gated-sparse-v3 \
             -p 'test_a4_host_gate.py' -v
+          python -m unittest discover \
+            -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_candidate_inventory.py' -v
       - name: Never qualify model or NDU from source fixture CI
         run: |
           echo "No real selected Cell, production Encoder, future utility, signed target-host A4, NDU, or promotion is established."
