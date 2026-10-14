@@ -327,8 +327,8 @@ fn evidence_actor_returns_read_only_original_frontier_without_flushing_pending()
     let dir = tempfile::tempdir().expect("private Evidence root");
     let path = dir.path().join("observer.log");
     let marker = dir.path().join("observer.log.owner-lock");
-    let sink = DurablePhaseMetricSinkV1::open(&path, 16, 8, 60_000)
-        .expect("original Evidence writer");
+    let sink =
+        DurablePhaseMetricSinkV1::open(&path, 16, 8, 60_000).expect("original Evidence writer");
     sink.record(sample(PhaseMetricKindV1::Cas))
         .expect("committed");
     sink.flush().expect("original durable group");
@@ -342,7 +342,10 @@ fn evidence_actor_returns_read_only_original_frontier_without_flushing_pending()
     let before_wal = std::fs::read(&path).expect("original WAL bytes");
     let before_marker = std::fs::read(&marker).expect("original frontier rows");
     let second = sink.read_local_frontier().expect("local observer read");
-    assert_eq!(second, first, "read-only query cannot commit staged metrics");
+    assert_eq!(
+        second, first,
+        "read-only query cannot commit staged metrics"
+    );
     assert_eq!(std::fs::read(&path).expect("WAL unchanged"), before_wal);
     assert_eq!(
         std::fs::read(&marker).expect("marker unchanged"),
@@ -356,8 +359,8 @@ fn actor_observer_rejects_corrupt_prior_marker_with_intact_last_row() {
     let dir = tempfile::tempdir().expect("private Evidence root");
     let path = dir.path().join("observer.log");
     let marker = dir.path().join("observer.log.owner-lock");
-    let sink = DurablePhaseMetricSinkV1::open(&path, 16, 1, 60_000)
-        .expect("original Evidence writer");
+    let sink =
+        DurablePhaseMetricSinkV1::open(&path, 16, 1, 60_000).expect("original Evidence writer");
     for phase in [
         PhaseMetricKindV1::Cas,
         PhaseMetricKindV1::Signature,
@@ -431,9 +434,17 @@ fn poisoned_evidence_writer_drops_prequeued_events_without_flush_ack() {
     });
     // The single original writer starts running only after its caller has
     // timed out and poisoned it. Never consume the queued success path.
-    writer_loop(writer, rx, Arc::clone(&health), 2, Duration::from_millis(25));
+    writer_loop(
+        writer,
+        rx,
+        Arc::clone(&health),
+        2,
+        Duration::from_millis(25),
+    );
     assert!(
-        acknowledged.recv_timeout(Duration::from_millis(25)).is_err(),
+        acknowledged
+            .recv_timeout(Duration::from_millis(25))
+            .is_err(),
         "timeout must not yield a late positive durable ACK"
     );
     assert!(!health.healthy.load(Ordering::Acquire));
@@ -450,17 +461,18 @@ fn actor_bound_sample_readback_is_committed_only_and_never_publishes_a_grant() {
     let dir = tempfile::tempdir().expect("private Evidence root");
     let path = dir.path().join("exact-bound.log");
     let marker = dir.path().join("exact-bound.log.owner-lock");
-    let sink = DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000)
-        .expect("one original WAL owner");
+    let sink = DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000).expect("one original WAL owner");
     let query = MetricsCommittedSampleQueryV1 {
         scope_digest: Digest32::of_bytes(b"scope"),
         operation_digest: Digest32::of_bytes(b"operation"),
         phase: MetricPhaseV1::Cns,
         succeeded: true,
     };
-    sink.record(sample(PhaseMetricKindV1::Cns)).expect("accepted sample");
+    sink.record(sample(PhaseMetricKindV1::Cns))
+        .expect("accepted sample");
     assert_eq!(
-        sink.read_committed_sample(query).expect("read unflushed original"),
+        sink.read_committed_sample(query)
+            .expect("read unflushed original"),
         None
     );
     sink.flush().expect("two physical fsync barriers");
