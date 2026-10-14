@@ -1,0 +1,51 @@
+{
+  "schema": "hepta.e3-public-clip-holdout-summary.v1",
+  "source": {
+    "run_id": 38532887290,
+    "run_head_sha": "0694e6b7f3882ff5823ce6a90bdb3c30aaf604de",
+    "run_conclusion": "failure",
+    "successful_job_id": 115749269718,
+    "successful_job_name": "public-image-text",
+    "successful_job_conclusion": "success",
+    "artifact_id": 11881821872,
+    "zip_sha256": "1836173b1f92f21bb26296ccf06e929646ff60ff933e3880716dcce62faf3f53"
+  },
+  "cohorts": {
+    "hepta-public-media": {
+      "holdout": 32,
+      "image_text_correct": 8,
+      "image_text_frozen_correct": 11,
+      "mask_image_correct": 3,
+      "mask_text_correct": 12
+    },
+    "hepta-calibrated-media": {
+      "holdout": 64,
+      "image_text_correct": 20,
+      "image_text_frozen_correct": 22,
+      "mask_image_correct": 23,
+      "mask_text_correct": 10,
+      "mask_text_gains": 3,
+      "mask_text_losses": 13,
+      "mask_image_gains": 8,
+      "mask_image_losses": 5
+    },
+    "hepta-choice-media": {
+      "holdout": 64,
+      "text_only_frozen_correct": 12,
+      "visual_prior_trained_correct": 16
+    }
+  },
+  "evidence": {
+    "pinned_real_archival_bytes_recomputed_locally": true,
+    "local_model_free_fault_tests_passed": 15,
+    "actual_model_origin_independently_attested": false,
+    "externally_authenticated_task_labels": false,
+    "granite_dinov2_gemma_comparison_performed": false,
+    "causal_multimodal_skill_gain_established": false,
+    "temporal_future_outcomes": false,
+    "matched_lifecycle_cost": false,
+    "target_host_production_accepted": false
+  },
+  "authority": "DENY_ALL",
+  "production_promotion_permitted": false
+}
