@@ -6,7 +6,7 @@ on:
     paths:
       - ".github/workflows/hepta-memory-rag-formatter-probe.yml"
 permissions:
-  contents: read
+  contents: write
 jobs:
   verify-format:
     runs-on: ubuntu-latest
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           ref: ${{ github.sha }}
-          persist-credentials: false
+          persist-credentials: true
       - name: Freeze exact original AST and source identity
         run: |
           set -euo pipefail
@@ -55,6 +55,17 @@ jobs:
           PY
           cp scripts/memory_cell/actual_strong_rag_archive_audit.py /tmp/rag-format-evidence/actual_strong_rag_archive_audit.py
           diff -u /tmp/rag-format-evidence/before.py /tmp/rag-format-evidence/actual_strong_rag_archive_audit.py > /tmp/rag-format-evidence/pure-format.patch || test "$?" -eq 1
+      - name: Commit only AST-identical formatted audit on this isolated branch
+        run: |
+          set -euo pipefail
+          test "$(git branch --show-current)" = ""
+          test "$GITHUB_REF" = "refs/heads/codex/memory-rag-format-diagnostic-20261014"
+          git diff --check
+          test "$(git diff --name-only)" = "scripts/memory_cell/actual_strong_rag_archive_audit.py"
+          test "$(python3 -c "import json; print(json.load(open('/tmp/rag-format-evidence/ast-match.json'))['ast_identical'])")" = "True"
+          git add -- scripts/memory_cell/actual_strong_rag_archive_audit.py
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'style(memory-cell): AST-identical Ruff formatting of original RAG auditor'
+          git push origin HEAD:refs/heads/codex/memory-rag-format-diagnostic-20261014
       - name: Seal source, output, and workflow identity
         if: always()
         run: |
