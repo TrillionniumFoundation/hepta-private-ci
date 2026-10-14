@@ -256,6 +256,12 @@ def extract(towers, cases, root):
                     or stamps.shape != value.shape[:1] or bool((stamps < 0).any())
                     or (len(stamps) > 1 and not bool((stamps[1:] > stamps[:-1]).all()))):
                 raise e.InputError("invalid exact tower shape/time")
+            if name == "video":
+                # The source manifest fixes EVERY frame and its observation time.
+                # A tower may not drop/reorder frames or invent later timestamps.
+                expected = torch.tensor([frame["timestamp_us"] for frame in item], dtype=torch.int64)
+                if len(value) != len(item) or not torch.equal(stamps, expected):
+                    raise e.InputError("video tower timestamps/frames differ from bound source")
             if name in widths and widths[name] != value.shape[1]:
                 raise e.InputError("tower width drift")
             widths[name] = value.shape[1]
