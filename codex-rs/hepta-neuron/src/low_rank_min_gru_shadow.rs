@@ -116,12 +116,19 @@ impl LowRankMinGruConfigV1 {
             &self.candidate_input_q24,
             &self.candidate_output_q24,
         ];
-        if factors.iter().any(|values| {
-            values.len() != n || values.iter().any(|value| !(-Q..=Q).contains(value))
-        }) || self.gate_bias_q24.len() != width
+        if factors
+            .iter()
+            .any(|values| values.len() != n || values.iter().any(|value| !(-Q..=Q).contains(value)))
+            || self.gate_bias_q24.len() != width
             || self.candidate_bias_q24.len() != width
-            || self.gate_bias_q24.iter().any(|value| !(-Q..=Q).contains(value))
-            || self.candidate_bias_q24.iter().any(|value| !(-Q..=Q).contains(value))
+            || self
+                .gate_bias_q24
+                .iter()
+                .any(|value| !(-Q..=Q).contains(value))
+            || self
+                .candidate_bias_q24
+                .iter()
+                .any(|value| !(-Q..=Q).contains(value))
         {
             return Err(LowRankMinGruErrorV1::InvalidConfig);
         }
@@ -264,9 +271,16 @@ pub fn low_rank_min_gru_tick_v1(
             return Err(LowRankMinGruErrorV1::ConfigDrift);
         }
     }
-    let gate_latent = rank_projection(&config.gate_input_q24, &input.temporal_drive_q24, config.rank)?;
-    let candidate_latent =
-        rank_projection(&config.candidate_input_q24, &input.temporal_drive_q24, config.rank)?;
+    let gate_latent = rank_projection(
+        &config.gate_input_q24,
+        &input.temporal_drive_q24,
+        config.rank,
+    )?;
+    let candidate_latent = rank_projection(
+        &config.candidate_input_q24,
+        &input.temporal_drive_q24,
+        config.rank,
+    )?;
     let mut gates = Vec::with_capacity(width);
     let mut successor = Vec::with_capacity(width);
     let mut clamps = 0_u32;
