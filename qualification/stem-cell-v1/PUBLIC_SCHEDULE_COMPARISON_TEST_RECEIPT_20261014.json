@@ -1,0 +1,152 @@
+{
+  "branch": "research/shared-stem-public-schedule-comparison-20261014",
+  "checks": {
+    "compileall": "passed",
+    "trailing_whitespace": "passed",
+    "workflow_yaml_parse": "passed"
+  },
+  "code_head": "14decc2e575264efa4a51d07110b9017c11c7133",
+  "date": "2026-10-14",
+  "hosted_observation": {
+    "actual_checkout": "2a2ca5dfac440018a598ff509bd28d0db2b7aa5e",
+    "artifact": 11881136088,
+    "artifact_sha256": "7b27b0e781da31ba932168b27012e68cf90ece69408c197cfdd15e22da2ee49e",
+    "job": 115746324658,
+    "observation_sha256": "36c26e69075a650ef8c778b69a684975710203c9fc261d62f185925728fd70b3",
+    "source_head": "3b3077c3a7e17ac0c7c9ad99c9e456ca0e31f91d",
+    "workflow_run": 38527514995
+  },
+  "limits": {
+    "causal_topology_effect_identified": false,
+    "exact_paired_historical_row_transitions_reconstructed": false,
+    "full_system_efficiency_established": false,
+    "independent_replication": false,
+    "production_authorized": false,
+    "statistical_superiority_established": false
+  },
+  "remote_parent": "c67a589d936be7d060d56220c9c2921087da6bd0",
+  "runtime": {
+    "python": "3.13.5",
+    "torch": "2.10.0+cpu",
+    "transformers_local": false
+  },
+  "schema": "hepta.public-schedule-comparison-source-verification.v1",
+  "source_blobs": {
+    ".github/workflows/hepta-neuron-next-round-matrix.yml": {
+      "git_blob_sha1": "0cb7c4384e9ab31f1532ff5c61ecb68f05deacaf",
+      "sha256": "8ad53b7cfdc57280398ef5734c89b8106f4ff494cf1ce91d51c568b9d220a4fc"
+    },
+    "public_schedule_comparison.py": {
+      "git_blob_sha1": "1e58abe147bbc11f5c6e45c778b5c0b1e341c5ac",
+      "sha256": "e18bad198b3aba03002f2ba55c81b3ec47ee3785f17ee3e92d6714bbbea84793"
+    },
+    "test_public_schedule_comparison.py": {
+      "git_blob_sha1": "045691015cfd0fe51441f3dda3cee62f4b0b2599",
+      "sha256": "cc95eb6d59f144c0597b3c7be8a67b399ec442b0298218c62439fca9a9ef0d7f"
+    }
+  },
+  "tests": {
+    "distinct_per_full_run": 494,
+    "exact_remote_byte_focused_runs": [
+      {
+        "exit_code": 0,
+        "file": "schedule-focused-exact-1.log",
+        "sha256": "963b540b1817027bdb10e8f6784f0fa502862bcf9d1402b3c51987539f13b15f",
+        "tests": 7
+      },
+      {
+        "exit_code": 0,
+        "file": "schedule-focused-exact-2.log",
+        "sha256": "b86fbabc032d00a4081ccb21d797f6767480dfb6814bc3b6b97dddd099465f5c",
+        "tests": 7
+      }
+    ],
+    "executed_per_full_run": 494,
+    "full_runs": 2,
+    "implementation_equivalent_full_partitioned_runs": [
+      {
+        "all_exit_zero": true,
+        "distinct_test_ids": 494,
+        "executed": 494,
+        "parts": [
+          {
+            "complete": true,
+            "executed": 188,
+            "file": "sched-part-0.json",
+            "passed": true,
+            "planned": 188,
+            "sha256": "612690235e85b19342096a1ec47f5b92bc313d19b363ff5baa7e51c51ca1a70d"
+          },
+          {
+            "complete": true,
+            "executed": 69,
+            "file": "sched-part-1.json",
+            "passed": true,
+            "planned": 69,
+            "sha256": "51a585c3baae05dd75c15039d1c835f91c7431b4adb62bf8be51921f2adfcec0"
+          },
+          {
+            "complete": true,
+            "executed": 197,
+            "file": "sched-part-2.json",
+            "passed": true,
+            "planned": 197,
+            "sha256": "5ab0a7094d2c5b61ffb059659242d6997a976d4a5f08e217e5e158ba242dbc87"
+          },
+          {
+            "complete": true,
+            "executed": 40,
+            "file": "sched-part-3.json",
+            "passed": true,
+            "planned": 40,
+            "sha256": "6340b95027756882ba8452693de1206d82d284766a3dbc33431ea70060c46c99"
+          }
+        ],
+        "zero_failures_errors_skips": true
+      },
+      {
+        "all_exit_zero": true,
+        "distinct_test_ids": 494,
+        "executed": 494,
+        "parts": [
+          {
+            "complete": true,
+            "executed": 188,
+            "file": "sched2-part-0.json",
+            "passed": true,
+            "planned": 188,
+            "sha256": "612690235e85b19342096a1ec47f5b92bc313d19b363ff5baa7e51c51ca1a70d"
+          },
+          {
+            "complete": true,
+            "executed": 69,
+            "file": "sched2-part-1.json",
+            "passed": true,
+            "planned": 69,
+            "sha256": "51a585c3baae05dd75c15039d1c835f91c7431b4adb62bf8be51921f2adfcec0"
+          },
+          {
+            "complete": true,
+            "executed": 197,
+            "file": "sched2-part-2.json",
+            "passed": true,
+            "planned": 197,
+            "sha256": "5ab0a7094d2c5b61ffb059659242d6997a976d4a5f08e217e5e158ba242dbc87"
+          },
+          {
+            "complete": true,
+            "executed": 40,
+            "file": "sched2-part-3.json",
+            "passed": true,
+            "planned": 40,
+            "sha256": "6340b95027756882ba8452693de1206d82d284766a3dbc33431ea70060c46c99"
+          }
+        ],
+        "zero_failures_errors_skips": true
+      }
+    ],
+    "interrupted_attempts_counted_as_passes": 0,
+    "new_tests": 7,
+    "whole_suite_exact_remote_bytes_hosted_result": "pending_at_receipt_preparation"
+  }
+}

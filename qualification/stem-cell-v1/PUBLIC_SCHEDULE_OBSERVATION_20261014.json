@@ -1,0 +1,133 @@
+{
+  "actual_checkout": "2a2ca5dfac440018a598ff509bd28d0db2b7aa5e",
+  "arms": [
+    {
+      "aggregate_change": {
+        "accuracy_delta": 0.078125,
+        "brier_delta": -0.039903854169969444,
+        "correct_delta": 5,
+        "examples_delta": 700,
+        "per_class_correct_delta": [3, 0, 3, -1],
+        "step_delta": 45,
+        "train_formula_work_delta": 2899926014
+      },
+      "fixed_budget": {
+        "accuracy": 0.6875,
+        "brier": 0.4764842561846636,
+        "correct": 44,
+        "examples_seen": 1212,
+        "per_class_correct": [11, 16, 8, 9],
+        "remaining": 32949954,
+        "steps": 77,
+        "stop_reason": "insufficient_room_for_complete_update",
+        "train_formula_work": 4967050046
+      },
+      "fixed_update": {
+        "accuracy": 0.609375,
+        "brier": 0.5163881103546331,
+        "correct": 39,
+        "examples_seen": 512,
+        "per_class_correct": [8, 16, 5, 10],
+        "steps": 32,
+        "train_formula_work": 2067124032
+      },
+      "topology": "dense16"
+    },
+    {
+      "aggregate_change": {
+        "accuracy_delta": 0.0625,
+        "brier_delta": 0.05585459634134571,
+        "correct_delta": 4,
+        "examples_delta": 6705,
+        "per_class_correct_delta": [1, 0, -5, 8],
+        "step_delta": 420,
+        "train_formula_work_delta": 4649933981
+      },
+      "fixed_budget": {
+        "accuracy": 0.65625,
+        "brier": 0.57179039859968,
+        "correct": 42,
+        "examples_seen": 7217,
+        "per_class_correct": [9, 16, 6, 11],
+        "remaining": 35696443,
+        "steps": 452,
+        "stop_reason": "insufficient_room_for_complete_update",
+        "train_formula_work": 4964303557
+      },
+      "fixed_update": {
+        "accuracy": 0.59375,
+        "brier": 0.5159358022583342,
+        "correct": 38,
+        "examples_seen": 512,
+        "per_class_correct": [8, 16, 11, 3],
+        "steps": 32,
+        "train_formula_work": 314369576
+      },
+      "topology": "sparse16"
+    },
+    {
+      "aggregate_change": {
+        "accuracy_delta": 0.203125,
+        "brier_delta": -0.15252967154852903,
+        "correct_delta": 13,
+        "examples_delta": 10362,
+        "per_class_correct_delta": [0, 0, 3, 10],
+        "step_delta": 649,
+        "train_formula_work_delta": 4752256956
+      },
+      "fixed_budget": {
+        "accuracy": 0.796875,
+        "brier": 0.3944205920800541,
+        "correct": 51,
+        "examples_seen": 10874,
+        "per_class_correct": [9, 16, 13, 13],
+        "remaining": 35807572,
+        "steps": 681,
+        "stop_reason": "insufficient_room_for_complete_update",
+        "train_formula_work": 4964192428
+      },
+      "fixed_update": {
+        "accuracy": 0.59375,
+        "brier": 0.5469502636285831,
+        "correct": 38,
+        "examples_seen": 512,
+        "per_class_correct": [9, 16, 10, 3],
+        "steps": 32,
+        "train_formula_work": 211935472
+      },
+      "topology": "direct32"
+    }
+  ],
+  "artifact": 11881136088,
+  "artifact_sha256": "7b27b0e781da31ba932168b27012e68cf90ece69408c197cfdd15e22da2ee49e",
+  "budget_limit": 5000000000,
+  "budget_observed_work_relative_spread": 0.0005753149200301011,
+  "budget_observed_work_spread": 2857618,
+  "budget_seal_id": "157f708f7e738026fa4a5e8add64cd00c161ce1d754a2bb19ed3d5fbe1595b2c",
+  "budget_study_id": "9be4c57e5a5724e079ca51f2320f4d354f48eeeca812d3962822dffadd75670a",
+  "date": "2026-10-14",
+  "fixed_seal_id": "1ada79834cccaed2b7fd23ae7e1d7d726cc325f6cfc2218e544b8a0f5c105bb4",
+  "fixed_study_id": "cd2f6c889e23bf514aa2b01083b3b3f11814c976175afebd383316e5b8f78065",
+  "interpretation": {
+    "aggregate_class_deltas_are_not_paired_transitions": true,
+    "causal_topology_effect_identified": false,
+    "fixed_budget": "training formula work matched within one percent; unequal updates and sample exposure",
+    "fixed_updates": "same nominal updates and examples; unequal training formula work",
+    "full_system_efficiency_established": false,
+    "independent_replication": false,
+    "pretraining_contamination_ruled_out": false,
+    "production_authorized": false,
+    "statistical_superiority_established": false
+  },
+  "job": 115746324658,
+  "labels_sha256": "369cabc3e2756b8cb1db046f0d35addaea5b69445f404a11cbdbe8384b69c016",
+  "model_snapshot_sha256": "43138a5545ce4e7996d91735f2330519a8913304d3abf257f6cfdfbe0541283d",
+  "retained_checkpoint_parameters": 149655232,
+  "schema": "hepta.public-fixed-vs-budget-observation.v1",
+  "seed": 7347,
+  "selected_material_id": "9a4c9eea9a0c4443ddee4415b865d6c6a30f6ff76ddbe06f98106260181e2284",
+  "source_head": "3b3077c3a7e17ac0c7c9ad99c9e456ca0e31f91d",
+  "test_rows": 64,
+  "train_rows": 64,
+  "workflow_run": 38527514995
+}
