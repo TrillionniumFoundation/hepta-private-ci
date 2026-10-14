@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-matrix*/**"
+      - "codex-rs/hepta-infer-core/**"
+      - "codex-rs/hepta-infer-worker-host/**"
       - "codex-rs/third_party/**"
       - "codex-rs/Cargo.*"
       - "codex-rs/rust-toolchain.toml"
