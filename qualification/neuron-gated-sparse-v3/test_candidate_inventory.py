@@ -75,7 +75,15 @@ class CandidatePhysicalInventoryTests(unittest.TestCase):
         weights=make_model(self.file)
         weights['head.weight'][0,0]=float('nan')
         save_file(weights,str(self.file))
-        with self.assertRaisesRegex(ValueError,'NaN'):
+        with self.assertRaisesRegex(ValueError,'nonfinite'):
+            self.call()
+
+    def test_f32_head_exceeds_native_q24_conversion_bound(self):
+        from safetensors.torch import save_file
+        weights=make_model(self.file)
+        weights['head.weight'][0,0]=8.5
+        save_file(weights,str(self.file))
+        with self.assertRaisesRegex(ValueError,'out-of-range'):
             self.call()
 
     def test_native_q24_v3_bias_negative(self):
