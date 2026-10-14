@@ -56,3 +56,11 @@ must not skip any material-integration test.
 - Do not merge the V3 hermetic smoke into activation or mark real models as
   qualified because its tests or CI pass. Rust Worker/zero-copy, NDU owner and
   production final-use authorization remain unchanged and unqualified here.
+
+## Mandatory disposition labels
+
+The CI artifact may report a passed *physical loader contract* only if all six
+random-BERT integration cases complete without skips. It must continue to set
+`checkpoint_pretrained=false`, `real_mmbert_or_granite_executed=false`,
+`real_world_capability_established=false`, and `production_accepted=false`.
+A queued or skipped workflow provides no loader-execution receipt.
