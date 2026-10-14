@@ -318,6 +318,66 @@ fn signed_live_route_and_positive_preflight_cannot_bypass_unbound_control_cutove
 }
 
 #[test]
+fn signed_cns_and_control_commit_join_cannot_accept_opaque_wal_without_original_owner() {
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::Generation;
+    use codex_hepta_types::NduSnapshotRefV1;
+    use codex_hepta_types::StableId;
+
+    let signer = SigningKey::from_bytes(&[57; 32]);
+    let (runtime, _plan, _binding, _intent, mut port) =
+        fixture(false, false, signer.clone(), signer);
+    let before = runtime.topology_snapshot().expect("serving predecessor");
+
+    let root = tempfile::tempdir().expect("independent Control state");
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("private Control directory");
+    let frozen = NduSnapshotRefV1 {
+        scope_id: StableId::new("scope-cns-control").expect("scope"),
+        owner_id: StableId::new("ndu-owner").expect("owner"),
+        generation: Generation::new(1).expect("generation"),
+        route_fence: 1,
+        revocation_epoch: 1,
+        policy_digest: Digest32::of_bytes(b"policy"),
+        snapshot_digest: Digest32::of_bytes(b"snapshot"),
+        projection_head_digest: Digest32::of_bytes(b"projection"),
+    };
+    let path = root.path().join("control-ledger.wal");
+    let control = NduPublicationOwnerV1::open_production(&path, frozen.clone(), Digest32::ZERO)
+        .expect("durable Control owner");
+    assert!(
+        port.verify_original_cns_control_commit_v1(&control)
+            .expect_err("no independently signed CNS receipt")
+            .contains("original durable effect receipt is missing")
+    );
+
+    // Deliberately inject an unauthenticated fixture into the Control-only
+    // primitive. Its hash-linked C proves neither an original CNS commit nor
+    // a live cutover. The independent joined reader must still deny.
+    let mut next = frozen.clone();
+    next.route_fence += 1;
+    control
+        .publish_cutover_with_external_effect(
+            &frozen,
+            Digest32::ZERO,
+            next,
+            Digest32::of_bytes(b"fixture-migrated"),
+            || -> Result<((), Vec<u8>), &'static str> { Ok(((), vec![0x6f; 96])) },
+        )
+        .expect("isolated Control fixture only");
+    assert!(control.last_cns_original_receipt_binding().unwrap().is_some());
+    assert!(
+        port.verify_original_cns_control_commit_v1(&control)
+            .expect_err("opaque Control bytes cannot mint an original CNS effect")
+            .contains("original durable effect receipt is missing")
+    );
+    assert_eq!(
+        runtime.topology_snapshot().expect("unchanged serving predecessor"),
+        before
+    );
+}
+
+#[test]
 fn typed_cell_split_cutover_rejects_generic_non_split_mutations() {
     use codex_hepta_plasticity::TopologyCandidateKindV2;
     use codex_hepta_plasticity::TopologyCandidateV2;
