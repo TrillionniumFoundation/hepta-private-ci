@@ -2,7 +2,8 @@
 //!
 //! The original Evidence SQLite owner now commits both the ProviderEffect
 //! digest record and a full immutable typed execution envelope in one
-//! transaction. Cold recovery no longer depends on a caller-supplied intent. It does not authorize, dispatch, reconcile or complete an effect.
+//! transaction. Cold recovery no longer depends on caller-supplied intent.
+//! This does not authorize, dispatch, reconcile or complete an effect.
 //! An independent Final-use token and original owner effect journal remain
 //! mandatory for any later tool execution. No new database or writer exists.
 
