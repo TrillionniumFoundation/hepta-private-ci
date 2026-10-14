@@ -13,11 +13,16 @@
 use std::path::Path;
 use std::sync::Arc;
 
+use codex_hepta_evidence::metrics_group_commit::MetricPhaseV1;
+use codex_hepta_evidence::metrics_group_commit::MetricsCommittedSampleQueryV1;
 use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
 
 use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
+use codex_hepta_operator_acceptance::CellSplitEvidenceMetricBindingV1;
 use codex_hepta_operator_acceptance::CellSplitExecutionCliOutcomeV1;
 use codex_hepta_operator_acceptance::CellSplitExecutionPlanV1;
+use codex_hepta_operator_acceptance::CellSplitExecutionStepV1;
+use codex_hepta_operator_acceptance::CellSplitExecutionTranscriptV1;
 use codex_hepta_operator_acceptance::run_pinned_cell_split_execution_with_admission_and_metrics_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
@@ -180,6 +185,95 @@ pub fn advance_scope_bound_selected_cell_split_with_metrics_v1<
             Ok(())
         },
     )
+}
+
+/// Adapter from the REAL Evidence-owned durable writer into the existing
+/// independent Observer verifier's lightweight typed candidate.
+///
+/// This READ-ONLY function never signs, flushes, reconciles or dispatches a
+/// Split effect. The transcript and local sample are NOT trusted on their own:
+/// the external independent Observer retention + real four-owner Deep Join
+/// must still validate them under separately pinned keys.
+pub fn read_original_cell_split_metric_candidate_v1(
+    original_evidence: &DurablePhaseMetricSinkV1,
+    transcript: &CellSplitExecutionTranscriptV1,
+    step_index: usize,
+) -> Result<Option<CellSplitEvidenceMetricBindingV1>, String> {
+    if transcript.receipts.len() != 4 {
+        return Err("Evidence readback requires four frozen owner receipts".into());
+    }
+    let receipt = transcript
+        .receipts
+        .get(step_index)
+        .ok_or_else(|| "invalid original CellSplit metric step".to_string())?;
+    let plan_digest = transcript
+        .plan
+        .digest()
+        .map_err(|error| format!("unverified Evidence plan identity: {error}"))?;
+    if receipt.intent.step.index() != step_index
+        || receipt.intent.plan_digest != plan_digest
+        || receipt.intent.owner_id != transcript.plan.owner_ids[step_index]
+    {
+        return Err("Evidence original owner receipt is cross-bound".into());
+    }
+    let scope_digest: Digest32 = transcript
+        .plan
+        .scope_digest
+        .parse()
+        .map_err(|_| "Evidence Scope digest is not canonical")?;
+    let operation_digest: Digest32 = receipt
+        .intent
+        .idempotency_key
+        .parse()
+        .map_err(|_| "Evidence idempotency key is not canonical")?;
+    if scope_digest.is_zero() || operation_digest.is_zero() {
+        return Err("Evidence original operation digest is missing".into());
+    }
+    let phase = match receipt.intent.step {
+        CellSplitExecutionStepV1::ArtifactCas => MetricPhaseV1::Cas,
+        CellSplitExecutionStepV1::ChildStateMigration => MetricPhaseV1::Signature,
+        CellSplitExecutionStepV1::CnsRouteCutover => MetricPhaseV1::Cns,
+        CellSplitExecutionStepV1::SupervisorGenerationFence => MetricPhaseV1::Signature,
+    };
+    let query = MetricsCommittedSampleQueryV1 {
+        scope_digest,
+        operation_digest,
+        phase,
+        succeeded: true,
+    };
+    let found = original_evidence
+        .read_committed_sample(query)
+        .map_err(|error| format!("original Evidence owner readback unavailable: {error:?}"))?;
+    let Some(readback) = found else {
+        return Ok(None);
+    };
+    if readback.query != query
+        || readback.matching_rows != 1
+        || readback.first_group_sequence == 0
+        || readback.first_group_sequence != readback.last_group_sequence
+    {
+        return Err("Evidence sample is not unique and committed".into());
+    }
+    Ok(Some(CellSplitEvidenceMetricBindingV1 {
+        split_id: transcript.plan.split_id.clone(),
+        plan_digest,
+        scope_digest: readback.query.scope_digest.to_string(),
+        operation_digest: readback.query.operation_digest.to_string(),
+        phase: readback.query.phase as u8,
+        succeeded: readback.query.succeeded,
+        matching_rows: readback.matching_rows,
+        first_group_sequence: readback.first_group_sequence,
+        last_group_sequence: readback.last_group_sequence,
+        last_group_head_digest: readback.last_group_head.to_string(),
+        terminal_group_sequence: readback.frontier.sequence,
+        terminal_head_digest: readback.frontier.head_digest.to_string(),
+        terminal_committed_rows: readback.frontier.committed_rows,
+        terminal_journal_bytes: readback.frontier.journal_bytes,
+        wal_device: readback.frontier.wal_device,
+        wal_inode: readback.frontier.wal_inode,
+        marker_device: readback.frontier.marker_device,
+        marker_inode: readback.frontier.marker_inode,
+    }))
 }
 
 fn validate_current_control_binding<A: CellSplitScopeSelectionAdmissionV1>(
