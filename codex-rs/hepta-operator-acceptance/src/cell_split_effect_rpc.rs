@@ -7,6 +7,7 @@
 //! The transport never manufactures a receipt, advances a missing effect,
 //! treats a timeout as a negative acknowledgement, or grants split authority.
 
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::io;
 use std::io::Read;
@@ -35,6 +36,16 @@ pub const CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1: &str =
     "hepta.learning.cell-split.effect-readback.v1";
 const MAX_FRAME_BYTES: usize = 256 * 1024;
 const OWNER_COUNT: usize = 4;
+const MAX_RETAINED_READBACK_IDENTITIES: usize = 4_096;
+
+/// Process-lifetime monotonic observation only. This is never independent
+/// external anti-rollback custody and cannot survive a coordinator restart.
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct SignedReadbackFloorV1 {
+    sequence: u64,
+    committed_receipt_digest: Option<String>,
+    state_digest: Option<String>,
+}
 
 /// Execute is permitted only for a newly prepared intent. ReadBack must
 /// always be side-effect free: ambiguous/crash recovery is lookup only.
@@ -116,6 +127,9 @@ pub struct CellSplitUnixEffectPortV1 {
     endpoints: [PathBuf; OWNER_COUNT],
     verifying_keys: [VerifyingKey; OWNER_COUNT],
     timeout: Duration,
+    // A signer must not walk backward or replace a committed identity between
+    // two fresh, signed lookups made through this one live transport client.
+    readback_floors: BTreeMap<String, SignedReadbackFloorV1>,
 }
 
 impl CellSplitUnixEffectPortV1 {
@@ -147,6 +161,7 @@ impl CellSplitUnixEffectPortV1 {
             endpoints,
             verifying_keys,
             timeout,
+            readback_floors: BTreeMap::new(),
         })
     }
 
@@ -233,7 +248,7 @@ impl CellSplitUnixEffectPortV1 {
     /// A lookup is a fresh, nonce-bound, separately signed read from the
     /// authority currently owning the durable artifact/state/route/generation.
     fn lookup(
-        &self,
+        &mut self,
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<Option<CellSplitExecutionReceiptV1>, CellSplitEffectRpcErrorV1> {
         let nonce = rand::random::<[u8; 32]>()
@@ -278,6 +293,36 @@ impl CellSplitUnixEffectPortV1 {
         if let Some(receipt) = response.receipt.as_ref() {
             self.verify_original_receipt(intent, receipt)?;
         }
+
+        let floor = SignedReadbackFloorV1 {
+            sequence: readback.read_sequence,
+            committed_receipt_digest: readback.committed_receipt_digest,
+            state_digest: readback.state_digest,
+        };
+        if let Some(previous) = self.readback_floors.get(&intent.idempotency_key) {
+            if floor.sequence < previous.sequence
+                || (floor.sequence == previous.sequence
+                    && (floor.committed_receipt_digest != previous.committed_receipt_digest
+                        || floor.state_digest != previous.state_digest))
+                || (previous.committed_receipt_digest.is_some()
+                    && (floor.committed_receipt_digest != previous.committed_receipt_digest
+                        || floor.state_digest != previous.state_digest))
+            {
+                // A positive effect cannot become absent or change identity,
+                // even if a rolled-back owner re-signs the stale readback.
+                return Err(CellSplitEffectRpcErrorV1::Invalid(
+                    "original owner signed readback regressed",
+                ));
+            }
+        } else if self.readback_floors.len() >= MAX_RETAINED_READBACK_IDENTITIES {
+            // Never silently evict trusted high-water marks for untrusted
+            // incoming identities. A fresh externally fenced client is needed.
+            return Err(CellSplitEffectRpcErrorV1::Invalid(
+                "original owner readback ratchet capacity",
+            ));
+        }
+        self.readback_floors
+            .insert(intent.idempotency_key.clone(), floor);
         Ok(response.receipt)
     }
 }
