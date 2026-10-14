@@ -342,8 +342,11 @@ fn subagent_yaml_scalar_contract_is_frozen_before_security_parser_migration() {
         "---\nname: 42\ndescription: true\n---\nReview carefully.\n",
     );
     let metadata = agent_metadata(&scalar).expect("YAML numeric and bool scalars are supported");
-    assert_eq!(metadata.name, "42");
-    assert_eq!(metadata.description, "true");
+    let rendered = render_agent_toml(&scalar.body, &metadata, TEST_REWRITE_PROFILE)
+        .expect("render scalar metadata");
+    let rendered: TomlValue = toml::from_str(&rendered).expect("parse scalar metadata");
+    assert_eq!(rendered["name"].as_str(), Some("42"));
+    assert_eq!(rendered["description"].as_str(), Some("true"));
 
     for value in ["[read, write]", "{nested: text}", "!secret value"] {
         let source = format!(
