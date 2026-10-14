@@ -125,6 +125,11 @@ fn run_cell_split_execution_command(arguments: &[OsString]) -> Result<(), String
     let pin = arguments[4]
         .to_str()
         .ok_or_else(|| "cell-split external pin must be UTF-8".to_string())?;
+    // This operator binary is an inspection client, not the admitted Agentd
+    // execution owner. Refuse every effectful or future action at ingress.
+    if action != "transcript" {
+        return Err("operator CellSplit CLI is transcript-only".to_string());
+    }
     let result = run_pinned_cell_split_execution_v1(action, &PathBuf::from(&arguments[3]), pin)?;
     println!(
         "{}",

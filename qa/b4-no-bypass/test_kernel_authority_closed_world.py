@@ -186,6 +186,8 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "run_pinned_cell_split_execution_v1": {
                 "codex-rs/hepta-operator-acceptance/src/lib.rs",
                 "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs",
+                # This reviewed CLI caller is transcript-only; guard proof below.
+                "codex-rs/hepta-operator-acceptance/src/main.rs",
             },
             "run_pinned_cell_split_execution_with_admission_v1": {
                 "codex-rs/hepta-operator-acceptance/src/lib.rs",
@@ -231,6 +233,44 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                          "raw effect advancement must remain crate-private")
         self.assertNotRegex(owner, r"\bpub\s+fn\s+advance_with_admission\s*\(",
                             "raw CellSplit dispatch must not be exposed")
+
+    def test_operator_cli_transcript_only_and_legacy_advance_denial(self) -> None:
+        # Adding a known caller must never relax the actual physical-effect guard.
+        cli = self.lexical_code("codex-rs/hepta-operator-acceptance/src/main.rs")
+        cli_entry = cli.split("fn run_cell_split_execution_command", 1)
+        self.assertEqual(len(cli_entry), 2, "Unix operator CLI entrypoint missing")
+        cli_body = cli_entry[1].split("fn run_cell_split_execution_command", 1)[0]
+        cli_deny = re.search(
+            r'if\s+action\s*!=\s*"transcript"\s*\{\s*return\s+Err\s*\(',
+            cli_body,
+        )
+        cli_call = re.search(r'\brun_pinned_cell_split_execution_v1\s*\(', cli_body)
+        self.assertTrue(
+            cli_deny is not None and cli_call is not None
+            and cli_deny.start() < cli_call.start(),
+            "Operator CLI must deny all effectful actions before its legacy call",
+        )
+        owner = self.lexical_code(
+            "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"
+        )
+        legacy = owner.split("pub fn run_pinned_cell_split_execution_v1", 1)
+        self.assertEqual(len(legacy), 2, "legacy API disappeared")
+        legacy_body = legacy[1].split(
+            "pub fn run_pinned_cell_split_execution_with_admission_v1", 1
+        )[0]
+        legacy_deny = re.search(
+            r'if\s+action\s*==\s*"advance"\s*\{\s*return\s+Err\s*\(',
+            legacy_body,
+        )
+        legacy_delegate = re.search(
+            r'\brun_pinned_cell_split_execution_with_admission_v1\s*\(',
+            legacy_body,
+        )
+        self.assertTrue(
+            legacy_deny is not None and legacy_delegate is not None
+            and legacy_deny.start() < legacy_delegate.start(),
+            "legacy API must deny advance before admission-effect delegation",
+        )
 
     def test_cns_effect_owner_and_observer_remain_fail_closed(self) -> None:
         invocation = re.compile(r"(?:\.|::)\s*apply_governed_topology\s*\(")
