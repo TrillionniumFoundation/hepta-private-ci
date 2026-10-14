@@ -330,3 +330,26 @@ input layouts, or output heads masquerading as online plasticity.
 Subsequent Head changes require the separately chained post-label
 journal. The independent production no-change arm is NOT forced to
 share these artifacts.
+
+
+### C: same Stem, measurable active modality and recovery
+
+All four modality stages bind the exact same
+`shared_text_stem_sha256`, while each added sensory tower has its own
+`modality_adapter_sha256` and paired, source-approved
+`paired_media_dataset_sha256`. A shared text-probe digest by itself
+was not sufficient: a different underlying text model could be passed
+off as a new sensory differentiation.
+
+Every full-active 64/256/1024/4096 Cell row now requires an observed
+`run_id`, `active_modality_peak_bytes`,
+`head_resident_bytes`, `queue_peak_depth`, `wal_fsync_count`,
+and `recovery_trace_sha256`. A non-text stage without measured active
+modality memory, a full-active cohort without Head memory, a
+non-durable WAL, or a missing crash trace is blocked. Intermediate
+stage deltas retain both total RSS and active-modality peak
+differences. These are **operator-supplied, unverified** measurements
+until independent target-host/owner receipts establish their origin.
+The separate counterfactual truth-flip executor in PR #1774 remains a
+distinct required evidence producer; C's scalar task scores alone
+cannot demonstrate that the model actually used images/audio/video.

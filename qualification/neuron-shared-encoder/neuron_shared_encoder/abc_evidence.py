@@ -309,6 +309,7 @@ def multimodal_cost_audit(manifest: dict) -> dict:
     deltas = []
     previous = None
     text_probe = None
+    shared_text_stem = None
     seen_tasks: dict[str, tuple[str, int, float]] = {}
     for stage in stages:
         name = stage['stage']
@@ -321,6 +322,20 @@ def multimodal_cost_audit(manifest: dict) -> dict:
             problems.append(f'{name}: original text embedding changed without migration')
         if text_probe is None:
             text_probe = probe
+        candidate_stem = stage.get('shared_text_stem_sha256')
+        if not is_digest(candidate_stem):
+            problems.append(f'{name}: unpinned shared text Stem weights')
+        elif shared_text_stem is not None and candidate_stem != shared_text_stem:
+            problems.append(f'{name}: text Stem weights changed during modality differentiation')
+        if shared_text_stem is None:
+            shared_text_stem = candidate_stem
+        modality_adapter = stage.get('modality_adapter_sha256')
+        if (name == 'text' and modality_adapter is not None) or (
+            name != 'text' and not is_digest(modality_adapter)
+        ):
+            problems.append(f'{name}: invalid or missing modality adapter version')
+        if name != 'text' and not is_digest(stage.get('paired_media_dataset_sha256')):
+            problems.append(f'{name}: source-bound paired media cohort missing')
         for field in ('total_parameters', 'trainable_parameters', 'projection_parameters',
                       'resident_weights_bytes', 'peak_training_memory_bytes', 'training_seconds'):
             if not _finite(stage.get(field)):
@@ -366,9 +381,15 @@ def multimodal_cost_audit(manifest: dict) -> dict:
                     scale.get('actually_executed_cell_count') != cells or
                     not _finite(scale.get('requests'), positive=True) or scale['requests'] < cells):
                 problems.append(f'{name}/{cells}: logical-only or missing Cell execution coverage')
+            if not isinstance(scale.get('run_id'), str) or not scale['run_id']:
+                problems.append(f'{name}/{cells}: exact observed run identity required')
+            if not is_digest(scale.get('recovery_trace_sha256')):
+                problems.append(f'{name}/{cells}: independent reviewable recovery trace required')
             for field in ('encoder_forward_rows', 'encoder_batch_calls', 'throughput_rps',
                           'cpu_seconds', 'rss_peak_bytes', 'request_p95_ms', 'request_p99_ms',
                           'batch_p95_ms', 'batch_p99_ms',
+                          'active_modality_peak_bytes', 'head_resident_bytes',
+                          'queue_peak_depth', 'wal_fsync_count',
                           'wal_written_bytes', 'recovery_seconds', 'failed_replay_count',
                           'latency_cas_p99_ms', 'latency_signature_p99_ms', 'latency_cns_p99_ms'):
                 if not _finite(scale.get(field)):
@@ -390,6 +411,14 @@ def multimodal_cost_audit(manifest: dict) -> dict:
             if (scale.get('device') != 'cpu' and not _finite(scale.get('gpu_peak_bytes'))
                     or scale.get('unclean_crash_recovered') is not True):
                 problems.append(f'{name}/{cells}: missing GPU/crash-recovery observation')
+            if (name != 'text' and not _finite(
+                    scale.get('active_modality_peak_bytes'), positive=True)):
+                problems.append(f'{name}/{cells}: active modality physical memory missing')
+            if (not _finite(scale.get('head_resident_bytes'), positive=True)
+                    or not _finite(scale.get('wal_fsync_count'), positive=True)):
+                problems.append(f'{name}/{cells}: active Heads or durable WAL not observed')
+            if scale.get('queue_peak_depth', 0) > scale.get('requests', 0):
+                problems.append(f'{name}/{cells}: queue depth exceeds request cohort')
         if previous is not None and all(
             _finite(stage.get(k)) and _finite(previous.get(k))
             for k in ('total_parameters', 'resident_weights_bytes')
@@ -400,6 +429,12 @@ def multimodal_cost_audit(manifest: dict) -> dict:
                 'additional_parameters': stage['total_parameters'] - prior['total_parameters'],
                 'additional_resident_weights_bytes':
                     stage['resident_weights_bytes'] - prior['resident_weights_bytes'],
+                'additional_4096_active_modality_peak_bytes': (
+                    cohort[-1]['active_modality_peak_bytes']
+                    - prior['scales'][-1]['active_modality_peak_bytes']
+                    if _finite(cohort[-1].get('active_modality_peak_bytes'))
+                    and _finite(prior['scales'][-1].get('active_modality_peak_bytes'))
+                    else None),
                 'additional_4096_cell_peak_rss_bytes':
                     cohort[-1]['rss_peak_bytes'] - prior['scales'][-1]['rss_peak_bytes']
                     if _finite(cohort[-1].get('rss_peak_bytes')) and

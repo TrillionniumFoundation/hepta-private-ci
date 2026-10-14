@@ -114,6 +114,9 @@ def c_fixture():
             'stage': name, 'artifact_sha256': D(chr(97 + index)),
             'model_revision': 'f'*40,
             'frozen_text_probe_sha256': D('a'),
+            'shared_text_stem_sha256': D('4'),
+            'modality_adapter_sha256': None if index == 0 else format(index+10, '064x'),
+            'paired_media_dataset_sha256': None if index == 0 else format(index+20, '064x'),
             'total_parameters': 140000000 + index*1000000,
             'trainable_parameters': index*5000,
             'projection_parameters': index*1000,
@@ -128,6 +131,8 @@ def c_fixture():
             stage['scales'].append({
                 'cell_count': n, 'active_cell_count': n,
                 'actually_executed_cell_count': n, 'requests': n,
+                'run_id': f'{name}-{n}-actual-run',
+                'recovery_trace_sha256': format(n + index + 1, '064x'),
                 'encoder_forward_rows': n*2, 'encoder_batch_calls': n//2,
                 'host_id': 'host-1', 'source_commit': 'f'*40,
                 'paired_text_workload_sha256': D('c'),
@@ -135,6 +140,9 @@ def c_fixture():
                 'throughput_rps': 10, 'cpu_seconds': 1, 'rss_peak_bytes': 10000000 + n,
                 'request_p95_ms': 1, 'request_p99_ms': 2,
                 'batch_p95_ms': 2, 'batch_p99_ms': 3,
+                'active_modality_peak_bytes': index*1000000,
+                'head_resident_bytes': n*4096, 'queue_peak_depth': n//2,
+                'wal_fsync_count': 1,
                 'wal_written_bytes': 500, 'recovery_seconds': 2,
                 'failed_replay_count': 0, 'latency_cas_p99_ms': 0.5,
                 'latency_signature_p99_ms': .5, 'latency_cns_p99_ms': .5,
@@ -356,3 +364,33 @@ def test_b_refuses_changed_feature_pipeline_or_runtime(field):
     with pytest.raises(ValueError, match='feature-runtime mismatch'):
         threeway_prequential_audit(
             rows, D('d'), evidence, bootstrap=100, min_future_groups=2)
+
+
+@pytest.mark.parametrize('mutation', [
+    'shared_stem', 'missing_adapter', 'missing_media_source',
+    'missing_active_modality_memory', 'zero_head', 'missing_wal_fsync',
+    'missing_recovery_trace', 'bad_queue', 'missing_run_id',
+])
+def test_c_requires_actual_differentiation_and_recovery_identity(mutation):
+    m = c_fixture()
+    stage = m['stages'][1]
+    scale = stage['scales'][0]
+    if mutation == 'shared_stem':
+        stage['shared_text_stem_sha256'] = D('e')
+    elif mutation == 'missing_adapter':
+        stage['modality_adapter_sha256'] = None
+    elif mutation == 'missing_media_source':
+        stage['paired_media_dataset_sha256'] = None
+    elif mutation == 'missing_active_modality_memory':
+        scale['active_modality_peak_bytes'] = 0
+    elif mutation == 'zero_head':
+        scale['head_resident_bytes'] = 0
+    elif mutation == 'missing_wal_fsync':
+        scale['wal_fsync_count'] = 0
+    elif mutation == 'missing_recovery_trace':
+        scale['recovery_trace_sha256'] = None
+    elif mutation == 'bad_queue':
+        scale['queue_peak_depth'] = scale['requests'] + 1
+    else:
+        scale['run_id'] = ''
+    assert multimodal_cost_audit(m)['status'] == 'BLOCKED'
