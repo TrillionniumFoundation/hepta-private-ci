@@ -235,6 +235,64 @@ def test_abc_missing_real_models_never_selects_winner():
 
 
 
+
+def complete_a5_schema_fixture():
+    """All numeric values are synthetic schema controls, never model results."""
+    from neuron_shared_encoder.validation_v3 import FIVE_ARM_CANDIDATES, BUDGETS, KINDS
+    def metrics():
+        return {'n': 4, 'accuracy': .5, 'brier': .5, 'ece_15': .1, 'nll': .69}
+    encoders = {}
+    for i, (name, backend, upstream, width) in enumerate(FIVE_ARM_CANDIDATES):
+        heads = []
+        for budget in BUDGETS:
+            for kind in KINDS:
+                if kind != 'linear':
+                    heads.append({'kind': kind, 'budget': budget,
+                                  'status': 'OVER_BUDGET'})
+                else:
+                    heads.append({'kind': kind, 'budget': budget,
+                                  'status': 'EVALUATED_SHADOW',
+                                  'parameters': 258, 'parameter_bytes_fp32': 1032,
+                                  'optimizer_state_bytes': 2064,
+                                  'train_seconds': .001,
+                                  'validation': metrics(), 'future': metrics(),
+                                  'ood_auroc_msp': .5})
+        encoders[name] = {
+            'backend_kind': backend,
+            'upstream_repository': upstream or 'approved/laya-421m',
+            'upstream_revision': 'a'*40,
+            'weights_sha256': format(i+1, '064x'),
+            'checkpoint_bundle_sha256': format(i+11, '064x'),
+            'tokenizer_sha256_claimed': format(i+21, '064x'),
+            'hidden_size': width or 1024,
+            'projected_width': 128,
+            'input_rows': 20,
+            'encoder_seconds': .25,
+            'trained_head_matrix': {
+                'experiment': 'E2',
+                'evidence_class': 'TRAINED_SHADOW',
+                'production_admission': 'BLOCKED',
+                'same_train_steps': 100, 'same_train_batch': 16,
+                'same_train_lr': .001,
+                'frozen_output_class_count': 2,
+                'class_count_source': 'frozen_registered_option_width',
+                'candidates': heads,
+            },
+        }
+        if backend == 'laya-joint':
+            encoders[name]['original_laya_system_one'] = {
+                'validation': metrics(), 'future': metrics(), 'ood': metrics(),
+                'ood_auroc_msp': .5,
+            }
+    return {'experiment': 'A5', 'evidence_class': 'REAL_MODEL_LOCAL_SHADOW',
+            'production_admission': 'BLOCKED',
+            'independent_artifact_signatures_verified': False,
+            'dataset_sha256': D('d'), 'same_projected_width': 128,
+            'same_training': {'seed': 42, 'steps': 100, 'batch': 16,
+                              'learning_rate': .001, 'optimizer': 'AdamW'},
+            'encoders': encoders}
+
+
 def media_prediction_payload():
     # A minimal public, synthetic PR1774 raw prediction schema. Not actual
     # weights, media bytes, or independently adjudicated observations.
@@ -315,9 +373,7 @@ def test_abc_even_self_reported_complete_never_grants_permission():
     from neuron_shared_encoder.validation_v3 import FIVE_ARM_CANDIDATES
     b_rows, b = b_fixture()
     observed = joint_abc_evidence_gate({
-        'A': {'experiment': 'A5', 'dataset_sha256': D('d'),
-              'evidence_class': 'REAL_MODEL_LOCAL_SHADOW',
-              'encoders': {name: {} for name, _, _, _ in FIVE_ARM_CANDIDATES}},
+        'A': complete_a5_schema_fixture(),
         'B': threeway_prequential_audit(b_rows, D('d'), b,
                                         bootstrap=100, min_future_groups=2),
         'C': multimodal_cost_audit(c_fixture()),

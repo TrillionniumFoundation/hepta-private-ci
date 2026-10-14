@@ -639,6 +639,10 @@ def joint_abc_evidence_gate(bundle: dict) -> dict:
     if not isinstance(bundle, dict):
         bundle = {}
     a, b, c = (bundle.get(k) for k in ('A', 'B', 'C'))
+    from .a5_evidence import review_a5_execution
+    a5 = review_a5_execution(a)
+    if a5['status'] != 'SCHEMA_COMPLETE_UNVERIFIED':
+        issues.append('five physically measured A5 model/Head result arms missing')
     media = paired_media_necessity_audit(
         bundle.get('media_counterfactual'), bundle.get('media_policy'),
         raw_predictions=bundle.get('media_predictions'),
@@ -667,7 +671,8 @@ def joint_abc_evidence_gate(bundle: dict) -> dict:
     return {
         'experiment': 'ABC-joint',
         'status': 'RESEARCH_REVIEW_CANDIDATE_UNVERIFIED' if not issues else 'BLOCKED',
-        'issues': issues, 'media_necessity': media,
+        'issues': issues, 'a5_execution_integrity': a5,
+        'media_necessity': media,
         'candidate_stem_selected': None, 'production_admission': 'BLOCKED',
         'independent_ndu_and_final_use_verified': False,
         'warning': 'Even complete A/B/C files are self-reported. Only independent evaluator, selector and executor may authorize a production change.',

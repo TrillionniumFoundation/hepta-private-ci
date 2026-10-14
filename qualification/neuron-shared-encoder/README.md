@@ -554,3 +554,27 @@ The base's historical exact-SHA CI audit and cargo-deny/Windows/format
 blockers are not erased by this merge; the source must be qualified
 again after reconciliation. No advisory ignores or security bypasses
 are introduced.
+
+
+### A5 measured-run completeness: five names are not five experiments
+
+`abc_evidence.abc-joint` now invokes
+`a5_evidence.review_a5_execution` before accepting an A5 research
+review candidate. Its strict **offline-only** schema requires the
+five exact source/model identities and distinct full bundle/weight
+digests; unchanged dataset bytes, input row counts, projected width
+and optimizer contract; positive observed Encoder work; the complete
+8-Head × 4-budget matrix with recorded actual Head weights/AdamW
+footprint and validation/future/OOD metrics; and the original full
+Laya System One policy control. A five-name dictionary containing
+`{}` model entries is **BLOCKED**, not a valid measured study.
+
+Even when all fields are complete, the result is only
+`SCHEMA_COMPLETE_UNVERIFIED`. Model file hashes, local timing and
+self-authored quality scores cannot prove the pretrained model was
+actually loaded, labels were unavailable during training, licenses
+or permissions were approved, or an independent NDU evaluator signed
+a causal gain. Selector, Executor, Artifact CAS, FinalUse and
+production model/Cell routes remain strictly unchanged. This
+standalone follow-up is stacked on frozen PR #1779 and should not
+merge/activate until the original exact-HEAD CI finishes.
