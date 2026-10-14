@@ -344,7 +344,17 @@ fn writer_loop(
     interval: Duration,
 ) {
     loop {
-        match rx.recv_timeout(interval) {
+        let received = rx.recv_timeout(interval);
+        // A timed-out Observe/Flush request poisons the shared sink even
+        // while the original writer is occupied in a previous disk read.
+        // Do not subsequently persist previously queued Records, idle-flush
+        // staged rows, or positively acknowledge an old queued barrier.
+        // An already in-flight fsync is not cancellable, and its outcome
+        // remains uncertain to the coordinator.
+        if !health.healthy.load(Ordering::Acquire) {
+            break;
+        }
+        match received {
             Ok(WriterCommandV1::Record(sample)) => {
                 let result = writer.stage(sample).and_then(|()| {
                     if writer.pending() >= group_size {
