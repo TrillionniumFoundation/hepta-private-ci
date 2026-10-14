@@ -99,6 +99,14 @@ the manifest as the **last completion marker**. The manifest includes
 hashes before interpreting any rows. A failed or interrupted run missing
 its final manifest is **incomplete**, even if one JSONL exists. Neither
 fsync nor SHA256 authenticates a source runtime or provides Hepta CAS authority.
+**Important control distinction:** `.frozen.jsonl` represents an
+untrained, randomly initialized Head frozen before this local training run.
+It is **not** the real deployed Hepta `no-change` baseline and must **not**
+be supplied as production `--no-change` evidence for E1/NDU selection.
+The manifest explicitly sets `frozen_head_is_production_no_change=false`.
+Actual deployed baseline predictions must be obtained from the independently
+frozen real owner with matching task/time/Scope and runtime receipts.
+
 The prediction files use the declared schema of the independent E1
 retrospective reviewer; the future labels must become available **after**
 the output commitment, then come from an independent outcomes owner.
