@@ -210,6 +210,39 @@ A genuinely independent operator must verify the host signer, time/order,
 actual inference and recovery, causality and NDU before any production cutover.
 No target-host receipts are included in the source or CI.
 
+## A3/A4 physical artifact geometry and Q24 admissibility (2026-10-14)
+
+The additive `candidate_inventory.py` independently opens each of the 20
+private physical safetensors files. At A4 and immediately before forecast
+sealing, it enforces a closed-world tensor inventory and exact tensor geometry
+for all four trained arms, including the frozen identity projection, private
+binary Head, and the arm-specific temporal parameters. It refuses altered SHA,
+unexpected or missing tensors even if the **total parameter count stays
+identical**, overlapping/unclaimed file bytes, symlinked artifact paths, wrong
+dtype, floating non-finite Head weights, and Q24 values outside each native
+parameter's validity range. In particular, V3 gate bias and SSM decay must be
+nonnegative and at most Q24 unity. The training surrogate now projects these
+two parameter families into that range after each optimization step rather
+than exporting silently incompatible parameters.
+
+The file reader holds one bounded physical file descriptor and validates the
+same loaded bytes against the separately supplied SHA. This does **not**
+authenticate the source of the training, validate an independently trusted
+model-load receipt, or prove equality between Torch surrogate predictions and
+Rust Q24 nonlinear/top-k/state-replay outputs. The study remains fail-closed
+until exact native Q24 replay against physically selected trained weights
+and independent outcome evidence are available.
+
+Run the focused physical artifact suite on an isolated researcher host:
+
+    cd qualification/neuron-gated-sparse-v3
+    PYTHONDONTWRITEBYTECODE=1 python -m unittest \
+        test_candidate_inventory test_real_pipeline test_a4_host_gate -v
+
+`test_candidate_inventory.py` exercises actual saved safetensors bytes and
+negative cases; it is required (not silently skipped) in the read-only pinned
+CPU canary workflow. No real host or selected Cell artifacts are shipped.
+
 ## Testing
 
     python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
