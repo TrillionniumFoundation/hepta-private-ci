@@ -4,6 +4,8 @@ on:
     paths:
       - "scripts/memory_cell/reader_reference_receipt.py"
       - "scripts/memory_cell/test_reader_reference_receipt.py"
+      - "scripts/memory_cell/reader_reference_run_gate.py"
+      - "scripts/memory_cell/test_reader_reference_run_gate.py"
       - ".github/workflows/hepta-memory-reader-reference-receipt.yml"
 permissions:
   contents: read
@@ -32,32 +34,17 @@ jobs:
           mkdir /tmp/reader-receipt
           gh api repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38046364381 > /tmp/reader-receipt/generating-run.json
           gh api 'repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38046364381/artifacts?per_page=100' > /tmp/reader-receipt/artifact-metadata.json
-          python3 - <<'PY'
-          import json, re
-          from pathlib import Path
-          root = Path('/tmp/reader-receipt')
-          run = json.loads((root / 'generating-run.json').read_text())
-          assert run['head_sha'] == '1879c0c52748e29739a12e4d4217a17dd7ac24c6'
-          assert run['run_attempt'] == 1
-          if run['status'] != 'completed' or run['conclusion'] != 'success':
-              raise SystemExit('Pinned model run is not completed successfully; no receipt is issued')
-          data = json.loads((root / 'artifact-metadata.json').read_text())
-          assert data['total_count'] <= 100
-          specs = {'inputs': {'id': 11666570882, 'sha': '88b9be8d5be4c9935d60e05105df61130ea4e7caeaa961b313f6f25f656a3170'}}
-          for short, name in [('smol', 'memory-reader-reference-smol-1.7b'), ('qwen', 'memory-reader-reference-qwen-3b')]:
-              found = [a for a in data['artifacts'] if a['name'] == name]
-              assert len(found) == 1
-              a = found[0]
-              assert not a['expired'] and 0 < a['size_in_bytes'] <= 64 * 1024 * 1024
-              assert a['workflow_run']['head_sha'] == run['head_sha']
-              assert re.fullmatch(r'sha256:[0-9a-f]{64}', a['digest'])
-              specs[short] = {'id': a['id'], 'sha': a['digest'][7:]}
-          (root / 'external-pins.json').write_text(json.dumps(specs, indent=2) + '\n')
-          with (root / 'downloads.tsv').open('w') as out:
-              for name, spec in specs.items():
-                  assert type(spec['id']) is int and spec['id'] > 0
-                  out.write(f"{name}\t{spec['id']}\t{spec['sha']}\n")
-          PY
+          python3 -m unittest -v test_reader_reference_run_gate 2>&1 | tee /tmp/reader-receipt/gate-tests.log
+          python3 scripts/memory_cell/reader_reference_run_gate.py \
+            --run /tmp/reader-receipt/generating-run.json \
+            --artifacts /tmp/reader-receipt/artifact-metadata.json \
+            --report /tmp/reader-receipt/model-run-admission.json \
+            --downloads /tmp/reader-receipt/downloads.tsv \
+            --pins /tmp/reader-receipt/external-pins.json \
+            --expected-id 38046364381 \
+            --expected-source 1879c0c52748e29739a12e4d4217a17dd7ac24c6 \
+            --inputs-id 11666570882 \
+            --inputs-sha256 88b9be8d5be4c9935d60e05105df61130ea4e7caeaa961b313f6f25f656a3170
           while IFS=$'\t' read -r name id sha; do
             gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/$id/zip" > "/tmp/reader-receipt/$name.zip"
           done < /tmp/reader-receipt/downloads.tsv
@@ -114,6 +101,9 @@ jobs:
           mkdir -p /tmp/reader-receipt/source
           git show HEAD:scripts/memory_cell/reader_reference_receipt.py > /tmp/reader-receipt/source/reader_reference_receipt.py
           git show HEAD:scripts/memory_cell/test_reader_reference_receipt.py > /tmp/reader-receipt/source/test_reader_reference_receipt.py
+          git show HEAD:scripts/memory_cell/reader_reference_run_gate.py > /tmp/reader-receipt/source/reader_reference_run_gate.py
+          git show HEAD:scripts/memory_cell/test_reader_reference_run_gate.py > /tmp/reader-receipt/source/test_reader_reference_run_gate.py
+          git show HEAD:.github/workflows/hepta-memory-reader-reference-receipt.yml > /tmp/reader-receipt/source/hepta-memory-reader-reference-receipt.yml
           git rev-parse HEAD > /tmp/reader-receipt/verification-source.txt
           (cd /tmp/reader-receipt && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
