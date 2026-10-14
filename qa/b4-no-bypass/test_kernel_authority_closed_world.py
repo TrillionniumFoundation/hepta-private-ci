@@ -178,6 +178,123 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             f"kernel.authority privileged boundaries missing from privileged_inventory: {sorted(canonical - required)}",
         )
 
+    def test_cell_split_mutation_and_reconciliation_are_closed_world(self) -> None:
+        # A public callback alone does not confer independent NDU/Selector,
+        # Evidence durability, or owner-atomic Final-use. Freeze every source
+        # caller of the legacy/metrics-bound/reconcile APIs; new callers require
+        # explicit security review, never an automatically expanded whitelist.
+        expected = {
+            "run_pinned_cell_split_execution_with_admission_v1": {
+                "codex-rs/hepta-operator-acceptance/src/lib.rs",
+                "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs",
+            },
+            "run_pinned_cell_split_execution_with_admission_and_metrics_v1": {
+                "codex-rs/hepta-operator-acceptance/src/lib.rs",
+                "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs",
+                "codex-rs/hepta-agentd/src/cell_split_execution.rs",
+            },
+            "run_pinned_cell_split_reconcile_only_v1": {
+                "codex-rs/hepta-operator-acceptance/src/lib.rs",
+                "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs",
+            },
+        }
+        observed: dict[str, set[str]] = {symbol: set() for symbol in expected}
+        for path in self.rust_sources():
+            relative = path.relative_to(ROOT).as_posix()
+            if "/tests/" in f"/{relative}" or relative.endswith("_tests.rs"):
+                continue
+            raw = path.read_text(encoding="utf-8")
+            relevant = [symbol for symbol in expected if symbol in raw]
+            if not relevant:
+                continue
+            code = self.lexical_code(relative)
+            for symbol in relevant:
+                if re.search(rf"\b{re.escape(symbol)}\b", code):
+                    observed[symbol].add(relative)
+        for symbol, callers in expected.items():
+            with self.subTest(symbol=symbol):
+                self.assertEqual(
+                    observed[symbol],
+                    callers,
+                    "unreviewed Cell Split mutation or pending-recovery caller",
+                )
+
+        self.assertEqual(
+            self.public_free_functions(
+                "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"
+            ),
+            {
+                "run_pinned_cell_split_execution_v1",
+                "run_pinned_cell_split_execution_with_admission_v1",
+                "run_pinned_cell_split_execution_with_admission_and_metrics_v1",
+                "run_pinned_cell_split_reconcile_only_v1",
+            },
+            "Operator Cell Split public API widened without security review",
+        )
+        self.assertEqual(
+            self.public_free_functions("codex-rs/hepta-agentd/src/cell_split_execution.rs"),
+            {
+                "advance_selected_cell_split_v1",
+                "advance_scope_bound_selected_cell_split_v1",
+                "advance_scope_bound_selected_cell_split_with_metrics_v1",
+            },
+            "Agentd Cell Split public ingress widened without security review",
+        )
+        owner = self.lexical_code(
+            "codex-rs/hepta-operator-acceptance/src/cell_split_execution_owner.rs"
+        )
+        self.assertRegex(
+            owner,
+            r"\bpub\(crate\)\s+fn\s+advance_with_admission\s*\(",
+            "raw effect advancement must remain crate-private",
+        )
+        self.assertNotRegex(
+            owner,
+            r"\bpub\s+fn\s+advance_with_admission\s*\(",
+            "public raw Cell Split dispatch would bypass approved Agentd ingress",
+        )
+
+    def test_cell_split_physical_cns_runtime_writers_are_closed_world(self) -> None:
+        # Signed route and independent Final-use alone must never become a
+        # second physical writer outside the same-owner Control transaction.
+        invocation = re.compile(r"(?:\.|::)\s*apply_governed_topology\s*\(")
+        expected = {
+            "codex-rs/hepta-runtime/src/lib.rs",
+            "codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs",
+        }
+        observed: set[str] = set()
+        for path in self.rust_sources():
+            relative = path.relative_to(ROOT).as_posix()
+            if "/tests/" in f"/{relative}" or relative.endswith("_tests.rs"):
+                continue
+            if "apply_governed_topology" not in path.read_text(encoding="utf-8"):
+                continue
+            if invocation.search(self.lexical_code(relative)):
+                observed.add(relative)
+        self.assertEqual(observed, expected, "unreviewed CNS topology writer")
+
+        port = self.lexical_code(
+            "codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs"
+        )
+        self.assertRegex(
+            port,
+            r"atomic_control_cutover_prepared:\s*Option\s*<\s*std::convert::Infallible\s*>",
+            "physical CNS permit must remain uninhabited until durable Control",
+        )
+        gate = re.search(
+            r"self\.atomic_control_cutover_prepared\.as_ref\(\)\.ok_or\(",
+            port,
+        )
+        actual_effect = re.search(r"\bapply_governed_topology\s*\(", port)
+        self.assertIsNotNone(gate, "CNS Control-prepared denial missing")
+        self.assertIsNotNone(actual_effect, "physical CNS caller not found")
+        if gate is not None and actual_effect is not None:
+            self.assertLess(
+                gate.start(),
+                actual_effect.start(),
+                "Control transaction denial must precede physical topology mutation",
+            )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
