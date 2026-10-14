@@ -3,12 +3,12 @@ use std::sync::Arc;
 use std::time::Duration;
 
 use codex_hepta_contracts::AgentId;
-use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_worker_host::final_use_authorizer::UnixFinalUseAuthorizer;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
 use codex_hepta_infer_worker_host::native_app_server::NativeAdmission;
 use codex_hepta_infer_worker_host::native_app_server::NativeIntelligenceRunBinding;
 use codex_hepta_infer_worker_host::native_app_server::NativeWorkerConfig;
+use codex_hepta_infer_worker_host::production_metrics::open_metrics_bound_native_control_v1;
 use tokio::io::AsyncReadExt;
 use tokio_util::sync::CancellationToken;
 
@@ -33,7 +33,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     while let Some(flag) = args.next() {
         if flag == "--help" {
             println!(
-                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch."
+                "hepta-infer-worker --profile native-app-server --agentd-socket PATH --agent-id ID --generation N --model MODEL --journal PATH --request-id ID --maximum-in-flight N --final-use-authority-config ABSOLUTE_JSON [--intelligence-run-id ID --intelligence-revision N --intelligence-context-digest HEX --intelligence-envelope-digest HEX] [--context-query TEXT] [--timeout-ms N]\nReads one prompt from stdin; an independent final-use authority must sign the exact turn/start binding before model dispatch. The journal directory must be pre-provisioned as owner-only; WAL and metrics files must remain private."
             );
             return Ok(());
         }
@@ -78,7 +78,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     if !journal.is_absolute() {
         return Err("--journal must be absolute".into());
     }
-    let mut control = DurableInferenceControl::open(journal, /*capacity*/ 16_384)?;
+    let mut control = open_metrics_bound_native_control_v1(&journal, /*capacity*/ 16_384)?;
     let admission = NativeAdmission {
         request_id: request_id.ok_or("--request-id is required")?,
         maximum_in_flight: maximum_in_flight.ok_or("--maximum-in-flight is required")?,
@@ -140,8 +140,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
         }
     };
     signal_task.abort();
+    // The external effect may already have occurred. Never replay it on a
+    // failed Metrics flush; retain the terminal receipt for reconciliation.
+    let metrics_committed = control.flush_production_metrics();
     let output = result?;
     println!("{}", serde_json::to_string(&output)?);
+    if !metrics_committed {
+        return Err(
+            "native metrics are not durable; terminal outcome was emitted: reconcile, never replay"
+                .into(),
+        );
+    }
     if !output.terminal_observed {
         return Err("model outcome is indeterminate; this request was not replayed".into());
     }

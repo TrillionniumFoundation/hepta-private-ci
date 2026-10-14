@@ -145,6 +145,8 @@ pub use codex_hepta_automation::AutomationTaskDraft;
 pub use codex_hepta_automation::AutomationTaskId;
 pub use codex_hepta_automation::AutomationTimeZoneProfileV1;
 pub use codex_hepta_automation::AutomationTimezoneTransitionV1;
+/// Evidence-owned durable telemetry writer for the single product-serving owner.
+pub use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
 pub use codex_hepta_memory::RetrievalExecutionContextV1;
 pub use cognitive_ranker::CurrentCognitiveRegistry;
 pub use cognitive_ranker::PinnedCognitiveRanker;
