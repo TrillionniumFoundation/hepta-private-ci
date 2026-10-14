@@ -10,7 +10,10 @@ use std::fs::OpenOptions;
 use std::io::Read;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 use std::time::Duration;
+
+use codex_hepta_types::PhaseMetricSinkV1;
 
 use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
@@ -89,6 +92,49 @@ pub fn run_pinned_cell_split_execution_with_admission_v1<F>(
     action: &str,
     config_path: &Path,
     externally_pinned_config_sha256: &str,
+    admit_selected_plan: F,
+) -> Result<CellSplitExecutionCliOutcomeV1, String>
+where
+    F: FnMut(&CellSplitExecutionPlanV1) -> Result<(), String>,
+{
+    run_pinned_cell_split_execution_inner_v1(
+        action,
+        config_path,
+        externally_pinned_config_sha256,
+        None,
+        admit_selected_plan,
+    )
+}
+
+/// Explicitly telemetry-bound product seam. The Evidence sink is injected by
+/// the trusted Agentd composition, never minted by a CLI config or callback.
+/// It must be healthy before *any* new effect; the underlying coordinator
+/// rechecks health at dispatch and latches a failed record without replaying
+/// an already committed CAS/CNS/Supervisor effect.
+pub fn run_pinned_cell_split_execution_with_admission_and_metrics_v1<F>(
+    action: &str,
+    config_path: &Path,
+    externally_pinned_config_sha256: &str,
+    metric_sink: Arc<dyn PhaseMetricSinkV1>,
+    admit_selected_plan: F,
+) -> Result<CellSplitExecutionCliOutcomeV1, String>
+where
+    F: FnMut(&CellSplitExecutionPlanV1) -> Result<(), String>,
+{
+    run_pinned_cell_split_execution_inner_v1(
+        action,
+        config_path,
+        externally_pinned_config_sha256,
+        Some(metric_sink),
+        admit_selected_plan,
+    )
+}
+
+fn run_pinned_cell_split_execution_inner_v1<F>(
+    action: &str,
+    config_path: &Path,
+    externally_pinned_config_sha256: &str,
+    metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
     mut admit_selected_plan: F,
 ) -> Result<CellSplitExecutionCliOutcomeV1, String>
 where
@@ -99,6 +145,14 @@ where
         "transcript" => "transcript",
         _ => return Err("expected advance or transcript".to_string()),
     };
+    // A missing fsync acknowledgment or saturated bounded queue removes
+    // readiness. Fail before opening even a new execution-owner directory.
+    // Read-only transcript recovery remains usable when telemetry is down.
+    if selected_action == "advance"
+        && metric_sink.as_ref().is_some_and(|sink| !sink.healthy())
+    {
+        return Err("CellSplit Evidence phase metric sink unavailable".to_string());
+    }
 
     let config_bytes = read_private_config(config_path)?;
     if !canonical_hex(externally_pinned_config_sha256)
@@ -138,12 +192,17 @@ where
         Duration::from_millis(config.timeout_millis),
     )
     .map_err(|error| error.to_string())?;
-    let mut owner = if selected_action == "transcript" {
+    let owner = if selected_action == "transcript" {
         CellSplitExecutionOwnerV1::open_existing(&config.execution_root, config.plan, trust, port)
     } else {
         CellSplitExecutionOwnerV1::open(&config.execution_root, config.plan, trust, port)
     }
     .map_err(|error| error.to_string())?;
+    let mut owner = if let Some(sink) = metric_sink {
+        owner.with_metric_sink(sink)
+    } else {
+        owner
+    };
     if let Some(plan) = recheck_plan.as_ref() {
         // The callback is only an admission check, never a grant: each real
         // effect backend must still revalidate its own final-use frontier.
