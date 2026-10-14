@@ -15,7 +15,7 @@ from typing import Any
 
 from a0_deployment_evidence import load_public_key, verify_signed
 from matched_train import CAPS, ARMS, sha_file, unique_json, require, utc
-from five_arm_budget_gate import actual_safetensors, verify_architecture
+from candidate_inventory import verify_artifact
 
 SCHEMA = 'hepta.neuron.a4-end-to-end-host-100-slot.v1'
 SCALES = (64, 256, 1024, 4096)
@@ -110,10 +110,13 @@ def validate(host: Any, training: Any, *, host_id: str, train_sha: str,
         path = physical_weights_root / row['weight_file']
         require(path.is_relative_to(physical_weights_root) and
                 row['weight_file'] == f'{key[0]}/{key[1]}.safetensors', 'model traversal/path mismatch')
-        count, tensors = actual_safetensors(path, row['weight_sha256'])
-        require(count == row['parameter_count'], 'real safetensors/private parameter count drift')
-        if row['arm'] == 'min_gru':
-            verify_architecture('min_gru', {'width':row['width'], 'rank':row['rank']}, tensors)
+        require(path.resolve(strict=True).is_relative_to(physical_weights_root),
+                'candidate artifact escaped frozen study root')
+        physical = verify_artifact(
+            path, row['weight_sha256'], arm=row['arm'], width=row['width'],
+            rank=row['rank'], expected_count=row['parameter_count'])
+        require(physical['private_parameter_count'] == row['parameter_count'],
+                'real safetensors/private parameter count drift')
         expected[key] = row['weight_sha256']
     require(set(expected) == {(cap,arm) for cap in CAPS for arm in ARMS},
             'incomplete 20 physical trained candidates')
