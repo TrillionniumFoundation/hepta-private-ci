@@ -134,7 +134,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
                 .map_err(|_| OriginalEvidenceWorkerBootstrapErrorV1::OriginalEvidenceUnavailable)?,
             );
             owner
-                .bind_metric_sink(original_evidence.clone())
+                .bind_original_evidence_sink(original_evidence.clone())
                 .map_err(OriginalEvidenceWorkerBootstrapErrorV1::Worker)?;
             if !owner.flush_production_metrics() {
                 return Err(OriginalEvidenceWorkerBootstrapErrorV1::OriginalEvidenceUnavailable);

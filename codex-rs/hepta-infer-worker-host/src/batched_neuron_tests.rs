@@ -227,6 +227,10 @@ fn runner_with_driver_using_frontier<D: ModelDriver + NeuronFeatureDriver>(
     )
     .unwrap();
     owner.bind_live_scope_frontier(frontier).unwrap();
+    // The research fixture permission exists only in this unit-test build.
+    // Real product libraries have no such switch and must bind the concrete
+    // original Evidence WAL through the same-crate typed owner.
+    owner.research_test_effects_allowed = true;
     owner
 }
 
@@ -2909,5 +2913,41 @@ fn original_evidence_bound_empty_preprovisioned_marker_does_not_fake_prior_effec
     );
     assert_eq!(reopened.pending(), 0);
     assert_eq!(reopened.observe_original_frontier().unwrap().committed_rows, 0);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+}
+
+#[test]
+fn generic_unattested_metrics_sink_denies_original_evidence_effect_provenance() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[125; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut untrusted = runner_with_driver(
+        &signer,
+        dir.path(),
+        model,
+        CountingScalarDriver(calls.clone()),
+        1,
+    );
+    // Simulate the non-test compiled product provenance bit exactly:
+    // an arbitrary accepted sink cannot impersonate the original Actor.
+    untrusted.research_test_effects_allowed = false;
+    untrusted
+        .bind_metric_sink(Arc::new(CapturedMetrics::default()))
+        .unwrap();
+    assert!(!untrusted.original_evidence_bound);
+    assert!(!untrusted.production_metrics_ready());
+    assert_eq!(
+        untrusted.enqueue(100, "model".into(), request, key, signed(&signer, binding)),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    );
+    assert_eq!(untrusted.pending(), 0);
+    assert!(!untrusted.flush_production_metrics());
+    assert!(matches!(
+        untrusted.poll_and_execute(101),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    ));
+    // Neither the original driver nor the durable signed nonce is touched.
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
 }
