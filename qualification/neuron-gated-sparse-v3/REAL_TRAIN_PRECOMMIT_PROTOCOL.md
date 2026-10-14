@@ -172,7 +172,10 @@ Git commit, Encoder bundle SHA, host-profile SHA, current signed-format A0
 training receipt, 20 physical private candidate files and selected V1 blob.
 The signed payload schema is 'hepta.neuron.a4-end-to-end-host-100-slot.v1',
 with 5 parameter caps x (frozen V1 + 4 candidates) x 4 requested
-Cell scales = **100 distinct receipts**.
+Cell scales = **100 distinct receipts**. Each scale receipt reports the
+**actually measured distinct Cell identity count** (exactly 64/256/1024/4096,
+not just a claimed configured count), with a corresponding bounded Cell scope
+coverage assertion from the host Owner.
 
 Each target-host sample must report the *complete request*, not just the Q24
 tick: actual source model-load/worker/CAS/WAL/final-use/signature/CNS/fence/
