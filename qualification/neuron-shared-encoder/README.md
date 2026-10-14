@@ -284,3 +284,21 @@ chosen validation winner and training sample schedule unchanged.
 The JSON has `production_admission=BLOCKED`, `ndu_verified=false` and
 `selection_authorized=false`; no signature, causal prequential commit,
 Final-use or live Encoder physical-call proof is conferred by its hashes.
+
+### Fixed Gate folding: real algebra vs Rust Q24 rounding
+
+For the existing Rust reference driver, folding a fixed gate is exact in
+real-valued algebra but **not necessarily bit-identical** in Q24.
+The original computes `round(weight * round(feature * gate))`; a
+folded implementation computes `round(round(weight * gate) * feature)`.
+Their rounding orders differ. The non-authorizing regression
+`q24_fold_ablation.py` duplicates the published Rust
+round-to-nearest/ties-to-even convention and proves one deterministic
+counterexample: original -2,980,555 versus folded -2,980,556 Q24 units
+(one least-significant bit difference).
+
+`python -m pytest -q tests/test_q24_fold_ablation.py` verifies identity
+gates, signed ties-to-even, type/dimension/range fail-closed behavior and
+the explicit one-LSB witness. A Python arithmetic model cannot replace
+an actual native Rust test against the real Worker, signed artifacts,
+generation fences or a target-host quantized end-to-end run.
