@@ -1,0 +1,172 @@
+name: MemoryCell actual source-only tiny SGD head before-gold trial
+on:
+  push:
+    branches:
+      - codex/memorycell-source-head-sgd-original-20261014
+    paths:
+      - "scripts/memory_cell/source_head_sgd_original.py"
+      - "scripts/memory_cell/test_source_head_sgd_original.py"
+      - ".github/workflows/hepta-memory-source-head-sgd-original.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/source_head_sgd_original.py"
+      - "scripts/memory_cell/test_source_head_sgd_original.py"
+      - ".github/workflows/hepta-memory-source-head-sgd-original.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-source-head-actual-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+env:
+  PYTHONPATH: scripts/memory_cell
+
+jobs:
+  source-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Compile strict no-answer-leak development mechanism
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/memory_cell/source_head_sgd_original.py \
+            scripts/memory_cell/test_source_head_sgd_original.py
+      - name: Mandatory repository Ruff formatting
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/source_head_sgd_original.py \
+            scripts/memory_cell/test_source_head_sgd_original.py
+      - name: Preserve exact Ruff correction without weakening gate
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-head-format
+          git rev-parse HEAD > /tmp/source-head-format/checkout-commit.txt
+          if command -v uv >/dev/null; then
+            uv run --frozen --project scripts ruff format --diff \
+              scripts/memory_cell/source_head_sgd_original.py \
+              scripts/memory_cell/test_source_head_sgd_original.py \
+              > /tmp/source-head-format/ruff.diff || true
+            cat /tmp/source-head-format/ruff.diff
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: memory-source-head-sgd-ruff-repair
+          path: /tmp/source-head-format
+          if-no-files-found: warn
+
+  real-torch-training-and-blind-selection:
+    needs: source-gate
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Acquire and verify externally immutable source ZIP
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-head-sgd
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11827287296/zip" > /tmp/source-head-sgd/source-with-gold.zip
+          printf '%s  %s\n' '31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a' /tmp/source-head-sgd/source-with-gold.zip | sha256sum --check --strict
+      - name: Export source-only TRAIN and public held-out features, no label parsing
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/source_head_sgd_original.py prepare \
+            /tmp/source-head-sgd/source-with-gold.zip \
+            /tmp/source-head-sgd/prepared
+          test -s /tmp/source-head-sgd/prepared/calibration-source-only.json
+          test -s /tmp/source-head-sgd/prepared/heldout-public-input.json
+          rm /tmp/source-head-sgd/source-with-gold.zip
+          test ! -e /tmp/source-head-sgd/source-with-gold.zip
+      - name: Install unchanged CPU torch training runtime
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/source-head-sgd/venv
+          /tmp/source-head-sgd/venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/source-head-sgd/venv/bin/pip freeze > /tmp/source-head-sgd/installed-environment.txt
+          /tmp/source-head-sgd/venv/bin/python -c 'import torch; assert torch.__version__ == "2.5.1+cpu"'
+      - name: Execute two actual SGD controls and freeze learned weights BEFORE test labels
+        run: |
+          set -euo pipefail
+          test ! -e /tmp/source-head-sgd/source-with-gold.zip
+          /tmp/source-head-sgd/venv/bin/python scripts/memory_cell/source_head_sgd_original.py fit \
+            /tmp/source-head-sgd/prepared/calibration-source-only.json \
+            /tmp/source-head-sgd/frozen-weights.json \
+            --input-sha "$(sha256sum /tmp/source-head-sgd/prepared/calibration-source-only.json | cut -d ' ' -f1)"
+          /tmp/source-head-sgd/venv/bin/python scripts/memory_cell/source_head_sgd_original.py predict \
+            /tmp/source-head-sgd/prepared/heldout-public-input.json \
+            /tmp/source-head-sgd/frozen-weights.json \
+            /tmp/source-head-sgd/pre-gold-predictions.json \
+            --public-sha "$(sha256sum /tmp/source-head-sgd/prepared/heldout-public-input.json | cut -d ' ' -f1)" \
+            --model-sha "$(sha256sum /tmp/source-head-sgd/frozen-weights.json | cut -d ' ' -f1)"
+          test ! -e /tmp/source-head-sgd/source-with-gold.zip
+          (cd /tmp/source-head-sgd && sha256sum ./prepared/calibration-source-only.json ./prepared/heldout-public-input.json ./prepared/split-manifest.json ./frozen-weights.json ./pre-gold-predictions.json > pre-gold-seal.sha256)
+          git rev-parse HEAD > /tmp/source-head-sgd/original-experiment-code-sha.txt
+      - name: Reacquire original gold only AFTER sealing all 32 held-out predictions
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          (cd /tmp/source-head-sgd && sha256sum --check --strict pre-gold-seal.sha256)
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11827287296/zip" > /tmp/source-head-sgd/source-with-gold.zip
+          printf '%s  %s\n' '31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a' /tmp/source-head-sgd/source-with-gold.zip | sha256sum --check --strict
+      - name: Independent after-seal author-gold evidence-selector score and adversarial tests
+        env:
+          HEPTA_ORIGINAL_EVENT_ZIP: /tmp/source-head-sgd/source-with-gold.zip
+        run: |
+          set -euo pipefail
+          /tmp/source-head-sgd/venv/bin/python scripts/memory_cell/source_head_sgd_original.py score \
+            "$HEPTA_ORIGINAL_EVENT_ZIP" \
+            /tmp/source-head-sgd/pre-gold-predictions.json \
+            /tmp/source-head-sgd/frozen-weights.json \
+            /tmp/source-head-sgd/read-only-source-support-score.json \
+            --predictions-sha "$(sha256sum /tmp/source-head-sgd/pre-gold-predictions.json | cut -d ' ' -f1)" \
+            --policy-sha "$(sha256sum /tmp/source-head-sgd/frozen-weights.json | cut -d ' ' -f1)"
+          /tmp/source-head-sgd/venv/bin/python -m unittest discover -s scripts/memory_cell \
+            -p test_source_head_sgd_original.py -v
+          /tmp/source-head-sgd/venv/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('/tmp/source-head-sgd')
+          report = json.loads((root/'read-only-source-support-score.json').read_text())
+          assert {k: v['support_exact'] for k,v in report['arms'].items()} == {
+              'frozen_rank_only':3, 'teacher_sgd':8,
+              'shuffled_sgd':0, 'frozen_organized':8,
+          }
+          assert report['actual_new_model_generations'] == 0
+          assert report['actual_torch_parameter_updates_verified_from_frozen_policy'] is True
+          assert report['model_output_quality_measured'] is False
+          assert report['independent_future_project_families'] == 0
+          assert report['production_accepted'] is False
+          PY
+          (cd /tmp/source-head-sgd && sha256sum --check --strict pre-gold-seal.sha256)
+          rm /tmp/source-head-sgd/source-with-gold.zip
+          mkdir -p /tmp/source-head-sgd/artifact
+          cp /tmp/source-head-sgd/{original-experiment-code-sha.txt,installed-environment.txt,pre-gold-seal.sha256,frozen-weights.json,pre-gold-predictions.json,read-only-source-support-score.json} /tmp/source-head-sgd/artifact/
+          cp /tmp/source-head-sgd/prepared/split-manifest.json /tmp/source-head-sgd/artifact/
+          (cd /tmp/source-head-sgd/artifact && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memory-actual-sgd-tiny-head-frozen-before-author-gold
+          path: /tmp/source-head-sgd/artifact
+          if-no-files-found: error
