@@ -1,0 +1,94 @@
+name: MemoryCell Matrix SDK security upgrade candidate (unqualified)
+on:
+  push:
+    branches: ["codex/memory-cell-evidence-20261008"]
+    paths:
+      - ".github/workflows/hepta-memory-matrix-sdk-security-probe.yml"
+      - "scripts/memory_cell/matrix_sdk_security_probe.py"
+      - "scripts/memory_cell/test_matrix_sdk_security_probe.py"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+permissions:
+  contents: read
+concurrency:
+  group: hepta-matrix-sdk-security-candidate-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  sdk-019-research-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+      CARGO_TERM_COLOR: never
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+      - name: Read-only source admission, unit regressions and original pins
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/matrix-security-candidate/source
+          git rev-parse HEAD > /tmp/matrix-security-candidate/exact-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/matrix-security-candidate/exact-tree.txt
+          cp codex-rs/Cargo.lock /tmp/matrix-security-candidate/baseline.lock
+          cp codex-rs/Cargo.toml /tmp/matrix-security-candidate/original-workspace.toml
+          cp codex-rs/deny.toml /tmp/matrix-security-candidate/original-deny.toml
+          python3 -m unittest -v test_matrix_sdk_security_probe 2>&1 | tee /tmp/matrix-security-candidate/synthetic-tests.log
+          python3 - <<'PY'
+          from pathlib import Path
+          root = Path("codex-rs/Cargo.toml")
+          source = root.read_text()
+          old = 'matrix-sdk = { version = "0.18.0",'
+          old_patch = 'matrix-sdk-sqlite = { path = "third_party/matrix-sdk-sqlite-0.18.0" }'
+          if source.count(old) != 1 or source.count(old_patch) != 1:
+              raise ValueError("original Matrix SDK and SQLite conflict pins moved")
+          # Modify this disposable Actions checkout ONLY. The original branch
+          # and original cargo-deny configuration are never written or waived.
+          updated = source.replace(old, 'matrix-sdk = { version = "0.19.0",')
+          updated = updated.replace(
+              old_patch,
+              '# temporary candidate: use published matrix-sdk-sqlite 0.19.0',
+          )
+          root.write_text(updated)
+          PY
+      - name: Resolve published SDK 0.19 and compile the two Hepta owners
+        id: resolve
+        run: |
+          set -euo pipefail
+          cargo update --manifest-path codex-rs/Cargo.toml -p matrix-sdk --precise 0.19.0 2>&1 | tee /tmp/matrix-security-candidate/resolve.log
+          python3 scripts/memory_cell/matrix_sdk_security_probe.py \
+            --baseline /tmp/matrix-security-candidate/baseline.lock \
+            --candidate codex-rs/Cargo.lock \
+            --output /tmp/matrix-security-candidate/risk-delta.json \
+            2>&1 | tee /tmp/matrix-security-candidate/risk-delta.log
+          cargo check --manifest-path codex-rs/Cargo.toml \
+            -p codex-hepta-matrix-sdk -p codex-hepta-matrixd --locked \
+            2>&1 | tee /tmp/matrix-security-candidate/cargo-check.log
+      - name: Run unchanged cargo-deny advisory policy on the candidate
+        if: steps.resolve.outcome == 'success'
+        uses: EmbarkStudios/cargo-deny-action@82eb9f621fbc699dd0918f3ea06864c14cc84246
+        with:
+          rust-version: 1.95.0
+          manifest-path: ./codex-rs/Cargo.toml
+      - name: Preserve tested candidate, historical pins, and every error
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/matrix-security-candidate/source
+          cp codex-rs/Cargo.toml /tmp/matrix-security-candidate/candidate-workspace.toml
+          cp codex-rs/Cargo.lock /tmp/matrix-security-candidate/candidate.lock
+          cp scripts/memory_cell/matrix_sdk_security_probe.py /tmp/matrix-security-candidate/source/
+          cp scripts/memory_cell/test_matrix_sdk_security_probe.py /tmp/matrix-security-candidate/source/
+          cp .github/workflows/hepta-memory-matrix-sdk-security-probe.yml /tmp/matrix-security-candidate/source/
+          git diff -- codex-rs/Cargo.toml codex-rs/Cargo.lock > /tmp/matrix-security-candidate/disposable-only.patch
+          git status --short > /tmp/matrix-security-candidate/ephemeral-worktree-status.txt
+          (cd /tmp/matrix-security-candidate && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-matrix-sdk-019-security-research
+          path: /tmp/matrix-security-candidate
+          if-no-files-found: error
