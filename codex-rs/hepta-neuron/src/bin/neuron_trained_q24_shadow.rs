@@ -1,0 +1,499 @@
+//! Research-only: physically load learned Cell temporal parameters and invoke
+//! the **real** existing Rust Q24 kernels. Does not load a production Head,
+//! grant final-use authority, commit a checkpoint, or assert Torch/Q24 parity.
+
+use std::collections::{BTreeMap, BTreeSet};
+use std::env;
+use std::fs;
+use std::path::Path;
+use std::str::FromStr;
+
+use codex_hepta_neuron::{
+    ActivationPopulationV2, DiagonalSsmCheckpointV1, DiagonalSsmConfigV1,
+    GatedSparseCheckpointV3, GatedSparseConfigV3, LowRankMinGruCheckpointV1,
+    LowRankMinGruConfigV1, PopulationSparseCheckpointV2, PopulationSparseConfigV2,
+    PopulationSparseTickV2, TemporalGateV3, TemporalProjectionEdgeV2,
+    diagonal_ssm_tick_v1, gated_sparse_tick_v3, low_rank_min_gru_tick_v1,
+    population_sparse_tick_v2,
+};
+use codex_hepta_types::{Digest32, Generation};
+use serde::de::{MapAccess, Visitor};
+use serde::{Deserialize, Deserializer, Serialize};
+use serde_json::json;
+
+const Q: i64 = 1 << 24;
+const H: i64 = 8 * Q;
+const MAX_MODEL: usize = 8 * 1024 * 1024;
+const MAX_TRACE: usize = 4 * 1024 * 1024;
+const MAX_HEADER: usize = 1024 * 1024;
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct TensorEntry {
+    dtype: String,
+    shape: Vec<usize>,
+    data_offsets: [usize; 2],
+}
+
+/// Reject duplicate tensor names; TensorEntry's derived deserializer rejects
+/// duplicate fields, unlike reading a safetensors header as a generic JSON map.
+struct UniqueTensorHeader(BTreeMap<String, TensorEntry>);
+impl<'de> Deserialize<'de> for UniqueTensorHeader {
+    fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
+        struct HeaderVisitor;
+        impl<'de> Visitor<'de> for HeaderVisitor {
+            type Value = UniqueTensorHeader;
+            fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+                f.write_str("unique physical safetensors tensor names")
+            }
+            fn visit_map<A: MapAccess<'de>>(self, mut map: A) -> Result<Self::Value, A::Error> {
+                let mut entries = BTreeMap::new();
+                while let Some((name, tensor)) = map.next_entry::<String, TensorEntry>()? {
+                    if entries.insert(name, tensor).is_some() {
+                        return Err(serde::de::Error::custom("duplicate tensor name"));
+                    }
+                }
+                Ok(UniqueTensorHeader(entries))
+            }
+        }
+        d.deserialize_map(HeaderVisitor)
+    }
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Trace {
+    schema: String,
+    scope_digest: String,
+    objective_digest: String,
+    ndu_digest: String,
+    body_digest: String,
+    events: Vec<Event>,
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Event {
+    sequence: u64,
+    monotonic_micros: u64,
+    temporal_drive_q24: Vec<i64>,
+    prediction_q24: Vec<i64>,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+struct StepOutcome {
+    sequence: u64,
+    predecessor_sha256: String,
+    checkpoint_sha256: String,
+    activation_q24: Vec<i64>,
+    prediction_error_q24: i64,
+}
+
+struct WeightBank {
+    q24: BTreeMap<String, Vec<i64>>,
+    parameter_count: usize,
+    tensor_count: usize,
+}
+type ShapeSpec = (&'static str, &'static str, Vec<usize>);
+
+fn fail(what: &str) -> String {
+    what.to_owned()
+}
+fn digest(s: &str) -> Result<Digest32, String> {
+    let parsed = Digest32::from_str(s).map_err(|_| fail("invalid lowercase digest"))?;
+    if parsed.is_zero() {
+        return Err(fail("zero digest"));
+    }
+    Ok(parsed)
+}
+fn expected(arm: &str, width: usize, rank: Option<usize>) -> Result<Vec<ShapeSpec>, String> {
+    if !(5..=256).contains(&width) {
+        return Err(fail("invalid native width"));
+    }
+    let mut tensors = vec![
+        ("head.weight", "F32", vec![1, width]),
+        ("head.bias", "F32", vec![1]),
+        ("structure.projection", "I64", vec![width]),
+    ];
+    match arm {
+        "v2" => {
+            if rank.is_some() { return Err(fail("unexpected V2 rank")); }
+        }
+        "v3" => {
+            if rank.is_some() { return Err(fail("unexpected V3 rank")); }
+            for name in [
+                "temporal.gate_bias", "temporal.input_gain", "temporal.change_gain"
+            ] {
+                tensors.push((name, "I64", vec![width]));
+            }
+        }
+        "ssm" => {
+            if rank.is_some() { return Err(fail("unexpected SSM rank")); }
+            for name in ["temporal.decay_per_step", "temporal.input_gain"] {
+                tensors.push((name, "I64", vec![width]));
+            }
+        }
+        "min_gru" => {
+            let r = rank.ok_or_else(|| fail("minGRU rank missing"))?;
+            if r == 0 || r > width { return Err(fail("minGRU rank invalid")); }
+            tensors.extend([
+                ("temporal.gate_input", "I64", vec![r, width]),
+                ("temporal.gate_output", "I64", vec![width, r]),
+                ("temporal.candidate_input", "I64", vec![r, width]),
+                ("temporal.candidate_output", "I64", vec![width, r]),
+                ("temporal.gate_bias", "I64", vec![width]),
+                ("temporal.candidate_bias", "I64", vec![width]),
+            ]);
+        }
+        _ => return Err(fail("unknown experimental arm")),
+    }
+    Ok(tensors)
+}
+
+fn load_file(path: &Path, expected_hash: Digest32, maximum: usize) -> Result<Vec<u8>, String> {
+    if path.is_symlink() || path.parent().is_some_and(Path::is_symlink) {
+        return Err(fail("symlinked research artifact"));
+    }
+    let meta = fs::metadata(path).map_err(|e| e.to_string())?;
+    if !meta.is_file() || meta.len() == 0 || meta.len() > maximum as u64 {
+        return Err(fail("physical file size or type rejected"));
+    }
+    let bytes = fs::read(path).map_err(|e| e.to_string())?;
+    if bytes.len() as u64 != meta.len() || Digest32::of_bytes(&bytes) != expected_hash {
+        return Err(fail("physical artifact or trace SHA mismatch"));
+    }
+    let after = fs::metadata(path).map_err(|e| e.to_string())?;
+    if after.len() != meta.len() || after.modified().ok() != meta.modified().ok() {
+        return Err(fail("source changed while reading"));
+    }
+    Ok(bytes)
+}
+
+fn physical_weights(
+    bytes: &[u8], arm: &str, width: usize, rank: Option<usize>, cap: usize,
+) -> Result<WeightBank, String> {
+    if bytes.len() < 10 { return Err(fail("truncated safetensors")); }
+    let header_len = u64::from_le_bytes(
+        bytes[..8].try_into().map_err(|_| fail("bad header length"))?
+    );
+    let header_len = usize::try_from(header_len).map_err(|_| fail("huge header"))?;
+    if !(2..=MAX_HEADER).contains(&header_len) || header_len > bytes.len() - 8 {
+        return Err(fail("invalid safetensors header length"));
+    }
+    let UniqueTensorHeader(entries) = serde_json::from_slice::<UniqueTensorHeader>(
+        &bytes[8..8 + header_len]
+    ).map_err(|e| format!("invalid or duplicate physical tensor header: {e}"))?;
+    let schema = expected(arm, width, rank)?;
+    let expected_names: BTreeSet<&str> = schema.iter().map(|x| x.0).collect();
+    if entries.len() != schema.len() || entries.keys().any(|x| !expected_names.contains(x.as_str())) {
+        return Err(fail("missing or unexpected physical tensor"));
+    }
+    let data = &bytes[8 + header_len..];
+    let mut ranges = Vec::new();
+    let mut weights = BTreeMap::new();
+    let mut count = 0usize;
+    for (name, dtype, shape) in schema {
+        let entry = entries.get(name).ok_or_else(|| fail("missing tensor"))?;
+        if entry.dtype != dtype || entry.shape != shape {
+            return Err(format!("{name}: wrong dtype or shape"));
+        }
+        let elements = shape.iter().try_fold(1usize, |n, d| n.checked_mul(*d))
+            .ok_or_else(|| fail("tensor dimension overflow"))?;
+        let size = elements.checked_mul(if dtype == "I64" { 8 } else { 4 })
+            .ok_or_else(|| fail("tensor byte overflow"))?;
+        let [start, end] = entry.data_offsets;
+        if start >= end || end > data.len() || end - start != size {
+            return Err(fail("tensor data offsets invalid"));
+        }
+        ranges.push((start, end));
+        count = count.checked_add(elements).ok_or_else(|| fail("parameter count overflow"))?;
+        let payload = &data[start..end];
+        if dtype == "F32" {
+            for chunk in payload.chunks_exact(4) {
+                let value = f32::from_le_bytes(chunk.try_into().map_err(|_| fail("bad float"))?);
+                if !value.is_finite() { return Err(fail("nonfinite learned Head weight")); }
+            }
+        } else {
+            let mut out = Vec::with_capacity(elements);
+            for chunk in payload.chunks_exact(8) {
+                let value = i64::from_le_bytes(chunk.try_into().map_err(|_| fail("bad Q24"))?);
+                let admitted = if name == "structure.projection" {
+                    value == Q
+                } else if name == "temporal.gate_bias" && arm == "v3" ||
+                          name == "temporal.decay_per_step" && arm == "ssm" {
+                    (0..=Q).contains(&value)
+                } else {
+                    (-Q..=Q).contains(&value)
+                };
+                if !admitted { return Err(format!("{name}: incompatible native Q24 value")); }
+                out.push(value);
+            }
+            weights.insert(name.to_owned(), out);
+        }
+    }
+    ranges.sort_unstable();
+    let mut next = 0usize;
+    for (start, end) in ranges {
+        if start != next { return Err(fail("overlap or unclaimed safetensors bytes")); }
+        next = end;
+    }
+    if next != data.len() || count > cap {
+        return Err(fail("unclaimed data or exceeded private-parameter cap"));
+    }
+    Ok(WeightBank { q24: weights, parameter_count: count, tensor_count: entries.len() })
+}
+
+fn weights<'a>(bank: &'a WeightBank, name: &str) -> Result<&'a Vec<i64>, String> {
+    bank.q24.get(name).ok_or_else(|| format!("missing native parameter {name}"))
+}
+fn base_config(model_sha: Digest32, trace_sha: Digest32, width: usize)
+    -> Result<PopulationSparseConfigV2, String>
+{
+    let generation = Generation::new(1).map_err(|e| format!("generation: {e:?}"))?;
+    let k = (width / 10).max(1);
+    let split = width / 2;
+    let config = PopulationSparseConfigV2 {
+        model_digest: model_sha,
+        normalization_digest: Digest32::of_parts(&[
+            b"hepta.neuron.trained-shadow-norm.v1", trace_sha.as_array(),
+        ]),
+        generation, temporal_width: width, activation_width: width, global_top_k: k,
+        temporal_decay_q24: Q / 2,
+        projection: (0..width).map(|i| TemporalProjectionEdgeV2 {
+            source_temporal: i, target_activation: i, weight_q24: Q,
+        }).collect(),
+        inhibition_gain_q24: Q / 2,
+        inhibition: Vec::new(),
+        populations: vec![
+            ActivationPopulationV2 { start: 0, len: split, top_k: k.div_ceil(2) },
+            ActivationPopulationV2 { start: split, len: width - split, top_k: (k / 2).max(1) },
+        ],
+        activity_decay_q24: Q / 2,
+        target_activity_q24: Q / 2,
+        threshold_rate_q24: Q / 16,
+        threshold_min_q24: -Q,
+        threshold_max_q24: Q,
+        eligibility_decay_q24: Q / 2,
+    };
+    config.digest().map_err(|e| format!("native V2 admission: {e:?}"))?;
+    Ok(config)
+}
+
+enum NativeModel {
+    V2(PopulationSparseConfigV2, Option<PopulationSparseCheckpointV2>),
+    V3(GatedSparseConfigV3, Option<GatedSparseCheckpointV3>),
+    Ssm(DiagonalSsmConfigV1, Option<DiagonalSsmCheckpointV1>),
+    MinGru(LowRankMinGruConfigV1, Option<LowRankMinGruCheckpointV1>),
+}
+impl NativeModel {
+    fn new(arm: &str, bank: &WeightBank, model_sha: Digest32, trace_sha: Digest32,
+           width: usize, rank: Option<usize>) -> Result<Self, String> {
+        let base = base_config(model_sha, trace_sha, width)?;
+        let model = match arm {
+            "v2" => Self::V2(base, None),
+            "v3" => {
+                let bias = weights(bank, "temporal.gate_bias")?;
+                let input = weights(bank, "temporal.input_gain")?;
+                let change = weights(bank, "temporal.change_gain")?;
+                let gates = (0..width).map(|i| TemporalGateV3 {
+                    bias_q24: bias[i], input_gain_q24: input[i], change_gain_q24: change[i],
+                }).collect();
+                Self::V3(GatedSparseConfigV3 { base, gates }, None)
+            }
+            "ssm" => Self::Ssm(DiagonalSsmConfigV1 {
+                base,
+                decay_per_step_q24: weights(bank, "temporal.decay_per_step")?.clone(),
+                input_gain_q24: weights(bank, "temporal.input_gain")?.clone(),
+                time_quantum_micros: 1_000_000,
+            }, None),
+            "min_gru" => Self::MinGru(LowRankMinGruConfigV1 {
+                base,
+                rank: rank.ok_or_else(|| fail("minGRU rank required"))?,
+                gate_input_q24: weights(bank, "temporal.gate_input")?.clone(),
+                gate_output_q24: weights(bank, "temporal.gate_output")?.clone(),
+                candidate_input_q24: weights(bank, "temporal.candidate_input")?.clone(),
+                candidate_output_q24: weights(bank, "temporal.candidate_output")?.clone(),
+                gate_bias_q24: weights(bank, "temporal.gate_bias")?.clone(),
+                candidate_bias_q24: weights(bank, "temporal.candidate_bias")?.clone(),
+            }, None),
+            _ => return Err(fail("invalid arm")),
+        };
+        match &model {
+            Self::V2(c, _) => c.digest().map_err(|e| format!("config: {e:?}"))?,
+            Self::V3(c, _) => c.digest().map_err(|e| format!("config: {e:?}"))?,
+            Self::Ssm(c, _) => c.digest().map_err(|e| format!("config: {e:?}"))?,
+            Self::MinGru(c, _) => c.digest().map_err(|e| format!("config: {e:?}"))?,
+        };
+        Ok(model)
+    }
+
+    fn tick(&mut self, event: &PopulationSparseTickV2) -> Result<StepOutcome, String> {
+        let make = |before: Digest32, after: Digest32, activation: Vec<i64>,
+                    prediction_error_q24: i64| StepOutcome {
+            sequence: event.sequence,
+            predecessor_sha256: before.to_string(),
+            checkpoint_sha256: after.to_string(),
+            activation_q24: activation,
+            prediction_error_q24,
+        };
+        match self {
+            Self::V2(cfg, prior) => {
+                let (next, receipt) = population_sparse_tick_v2(cfg, event, prior.as_ref())
+                    .map_err(|e| format!("V2 native tick: {e:?}"))?;
+                let out = make(receipt.checkpoint_before, receipt.checkpoint_after,
+                               receipt.activation_q24, receipt.prediction_error_q24);
+                *prior = Some(next);
+                Ok(out)
+            }
+            Self::V3(cfg, prior) => {
+                let (next, receipt) = gated_sparse_tick_v3(cfg, event, prior.as_ref())
+                    .map_err(|e| format!("V3 native tick: {e:?}"))?;
+                let out = make(receipt.checkpoint_before, receipt.checkpoint_after,
+                               receipt.activation_q24, receipt.prediction_error_q24);
+                *prior = Some(next);
+                Ok(out)
+            }
+            Self::Ssm(cfg, prior) => {
+                let (next, receipt) = diagonal_ssm_tick_v1(cfg, event, prior.as_ref())
+                    .map_err(|e| format!("SSM native tick: {e:?}"))?;
+                let out = make(receipt.checkpoint_before, receipt.checkpoint_after,
+                               receipt.activation_q24, receipt.prediction_error_q24);
+                *prior = Some(next);
+                Ok(out)
+            }
+            Self::MinGru(cfg, prior) => {
+                let (next, receipt) = low_rank_min_gru_tick_v1(cfg, event, prior.as_ref())
+                    .map_err(|e| format!("minGRU native tick: {e:?}"))?;
+                let out = make(receipt.checkpoint_before, receipt.checkpoint_after,
+                               receipt.activation_q24, receipt.prediction_error_q24);
+                *prior = Some(next);
+                Ok(out)
+            }
+        }
+    }
+}
+
+fn trace_input(trace: &Trace, trace_sha: Digest32) -> Result<Vec<PopulationSparseTickV2>, String> {
+    if trace.schema != "hepta.neuron.physical-q24-shadow-trace.v1"
+        || trace.events.is_empty() || trace.events.len() > 1024 {
+        return Err(fail("bad or unbounded native trace"));
+    }
+    let scope = digest(&trace.scope_digest)?;
+    let objective = digest(&trace.objective_digest)?;
+    let ndu = digest(&trace.ndu_digest)?;
+    let body = digest(&trace.body_digest)?;
+    let width = trace.events[0].temporal_drive_q24.len();
+    if !(5..=256).contains(&width) { return Err(fail("invalid trace width")); }
+    let mut prev_time = 0;
+    let mut out = Vec::new();
+    for (index, row) in trace.events.iter().enumerate() {
+        if row.sequence != (index + 1) as u64 || row.monotonic_micros <= prev_time
+            || row.temporal_drive_q24.len() != width || row.prediction_q24.len() != width
+            || row.temporal_drive_q24.iter().chain(&row.prediction_q24)
+                .any(|v| !(-H..=H).contains(v)) {
+            return Err(fail("invalid sequence, clock, prediction, or input width"));
+        }
+        prev_time = row.monotonic_micros;
+        let mut bytes = b"hepta.neuron.physical-trained-q24-input.v1".to_vec();
+        bytes.extend_from_slice(trace_sha.as_array());
+        bytes.extend_from_slice(&row.sequence.to_be_bytes());
+        bytes.extend_from_slice(&row.monotonic_micros.to_be_bytes());
+        for x in row.temporal_drive_q24.iter().chain(&row.prediction_q24) {
+            bytes.extend_from_slice(&x.to_be_bytes());
+        }
+        out.push(PopulationSparseTickV2 {
+            scope_digest: scope, objective_digest: objective, ndu_digest: ndu,
+            body_digest: body, input_digest: Digest32::of_bytes(&bytes),
+            sequence: row.sequence, monotonic_micros: row.monotonic_micros,
+            temporal_drive_q24: row.temporal_drive_q24.clone(),
+            prediction_q24: row.prediction_q24.clone(),
+        });
+    }
+    Ok(out)
+}
+fn args() -> Result<BTreeMap<String, String>, String> {
+    let mut map = BTreeMap::new();
+    let mut it = env::args().skip(1);
+    while let Some(name) = it.next() {
+        if !name.starts_with("--") { return Err(fail("expected named arguments")); }
+        let value = it.next().ok_or_else(|| fail("missing argument value"))?;
+        if map.insert(name, value).is_some() { return Err(fail("duplicate CLI key")); }
+    }
+    let allowed = ["--arm", "--model", "--model-sha256", "--trace", "--trace-sha256",
+                   "--cap", "--rank"];
+    if map.len() < 6 || map.keys().any(|x| !allowed.contains(&x.as_str()))
+       || allowed[..6].iter().any(|x| !map.contains_key(*x)) {
+        return Err(fail("required: --arm --model --model-sha256 --trace --trace-sha256 --cap"));
+    }
+    Ok(map)
+}
+fn arg<'a>(map: &'a BTreeMap<String, String>, name: &str) -> Result<&'a str, String> {
+    map.get(name).map(String::as_str).ok_or_else(|| fail("missing CLI field"))
+}
+
+fn execute() -> Result<serde_json::Value, String> {
+    let opts = args()?;
+    let arm = arg(&opts, "--arm")?;
+    let cap: usize = arg(&opts, "--cap")?.parse().map_err(|_| fail("bad cap"))?;
+    if ![2048, 8192, 16384, 65536, 262144].contains(&cap) {
+        return Err(fail("unsupported budget cap"));
+    }
+    let rank = opts.get("--rank").map(|s| s.parse::<usize>().map_err(|_| fail("bad rank")))
+        .transpose()?;
+    let model_sha = digest(arg(&opts, "--model-sha256")?)?;
+    let trace_sha = digest(arg(&opts, "--trace-sha256")?)?;
+    let trace_bytes = load_file(Path::new(arg(&opts, "--trace")?), trace_sha, MAX_TRACE)?;
+    let trace: Trace = serde_json::from_slice(&trace_bytes).map_err(|e| format!("trace: {e}"))?;
+    let inputs = trace_input(&trace, trace_sha)?;
+    let width = inputs[0].temporal_drive_q24.len();
+    let model_path = Path::new(arg(&opts, "--model")?);
+    let bytes = load_file(model_path, model_sha, MAX_MODEL)?;
+    let bank = physical_weights(&bytes, arm, width, rank, cap)?;
+
+    let mut first = NativeModel::new(arm, &bank, model_sha, trace_sha, width, rank)?;
+    let mut a = Vec::with_capacity(inputs.len());
+    for input in &inputs { a.push(first.tick(input)?); }
+
+    // Reopen the physical artifact, construct an independent empty state and
+    // replay the original exact ordered input bytes. This is NOT a crash test.
+    let again = load_file(model_path, model_sha, MAX_MODEL)?;
+    if again != bytes { return Err(fail("same-sha reloaded artifact changed")); }
+    let bank2 = physical_weights(&again, arm, width, rank, cap)?;
+    let mut second = NativeModel::new(arm, &bank2, model_sha, trace_sha, width, rank)?;
+    let mut b = Vec::with_capacity(inputs.len());
+    for input in &inputs { b.push(second.tick(input)?); }
+    if a != b { return Err(fail("native Q24 replay frontier mismatch")); }
+
+    Ok(json!({
+        "schema":"hepta.neuron.physical-trained-q24-mechanism-replay.v1",
+        "arm":arm, "private_parameter_cap":cap, "private_parameter_count":bank.parameter_count,
+        "physical_tensor_count":bank.tensor_count,
+        "selected_private_weight_sha256":model_sha.to_string(),
+        "trace_sha256":trace_sha.to_string(),
+        "original_tick_count":inputs.len(),
+        "width":width,
+        "native_q24_kernel_invoked":true,
+        "independent_empty_state_replay_equal":true,
+        "frontier":a,
+        "f32_head_executed":false,
+        "torch_f32_native_q24_prediction_parity_verified":false,
+        "trusted_target_host_attested":false,
+        "durable_checkpoint_cas_verified":false,
+        "crash_recovery_verified":false,
+        "ndu_eligible":false,
+        "production_qualification":false,
+        "decision":"NO_PROMOTION"
+    }))
+}
+
+fn main() {
+    match execute() {
+        Ok(result) => println!("{}", result),
+        Err(reason) => {
+            eprintln!("{}", json!({
+                "status":"BLOCKED_PHYSICAL_NATIVE_Q24_SHADOW",
+                "reason":reason, "production_qualification":false
+            }));
+            std::process::exit(2);
+        }
+    }
+}
