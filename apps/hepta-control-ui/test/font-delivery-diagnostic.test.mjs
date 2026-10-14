@@ -1,4 +1,5 @@
 import './font-consumer-diagnostic.test.mjs';
+import './font-breakpoint-diagnostic.test.mjs';
 import {test} from 'node:test';
 import './font-diagnostic-browser-identity.test.mjs';
 import assert from 'node:assert/strict';
