@@ -162,6 +162,17 @@ class HostA4GateTests(unittest.TestCase):
             self.check()
 
 
+    def test_different_candidate_width_even_at_same_budget_blocked(self):
+        self.training['models'][1]['width']=8
+        with self.assertRaisesRegex(ValueError,'different Cell width'):
+            self.check()
+
+    def test_host_measurement_cannot_predate_training_cutoff(self):
+        self.host['measurement_started_at_utc']='2026-09-30T12:00:00Z'
+        with self.assertRaisesRegex(ValueError,'predate frozen training cutoff'):
+            self.check()
+
+
 @unittest.skipUnless(importlib.util.find_spec('torch') is not None and
                      importlib.util.find_spec('safetensors') is not None,
                      'requires pinned CPU Torch + safetensors')
