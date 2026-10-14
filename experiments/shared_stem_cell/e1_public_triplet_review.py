@@ -130,6 +130,9 @@ def main():
  for model in MODELS:p.add_argument('--'+model.replace('_','-'),type=Path,required=True)
  p.add_argument('--output',type=Path,required=True);args=p.parse_args()
  reports={name:read(getattr(args,name)) for name in MODELS}
- result=evaluate(read(args.panel),reports)
+ panel=read(args.panel)
+ if sha(canonical(panel))!='2f7a013648e16b60c74614b0fcf1496aa06475f7285f215adddaa51fe29e01a4':
+  raise Invalid('not the preregistered archived 224-case source selection')
+ result=evaluate(panel,reports)
  with args.output.open('x',encoding='utf8') as h:json.dump(result,h,sort_keys=True,indent=2,allow_nan=False);h.write('\n')
 if __name__=='__main__':main()
