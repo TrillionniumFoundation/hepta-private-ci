@@ -138,6 +138,11 @@ jobs:
       - name: Guard Windows Agentd exclusive control rendezvous
         shell: pwsh
         run: |
+          $listed = cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib -- --list
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not ($listed -match '^control::tests::preflight_rejects_live_control_listener: test$')) {
+            throw "Windows live-owner test must exist; filtered zero-test pass is invalid"
+          }
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib control::tests::preflight_rejects_live_control_listener -- --exact --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Exercise actual Windows durable parent handles and append/recovery
@@ -262,6 +267,23 @@ jobs:
           set -euo pipefail
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --lib
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib
+      - name: Assert Linux socket regressions exist before filtered Cargo tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          agentd_tests="$(cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib -- --list)"
+          for test in \
+            preflight_rejects_live_control_listener \
+            preflight_preserves_unrelated_regular_file \
+            preflight_reclaims_only_stale_socket_and_permits_exclusive_rebind; do
+            grep -Fx "control::tests::$test: test" <<< "$agentd_tests"
+          done
+          matrixd_tests="$(cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-matrixd --lib -- --list)"
+          for test in \
+            control_socket_preflight_preserves_existing_regular_files \
+            control_socket_preflight_does_not_steal_live_listener; do
+            grep -Fx "control::tests::$test: test" <<< "$matrixd_tests"
+          done
       - name: Exercise real Agentd and Matrixd UDS preflight regressions
         shell: bash
         run: |
