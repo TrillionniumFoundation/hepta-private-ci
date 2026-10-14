@@ -1,0 +1,95 @@
+from __future__ import annotations
+from copy import deepcopy
+from datetime import datetime, timedelta, timezone
+import pytest
+import torch
+from neuron_shared_encoder.strict_e2 import equal_parameter_nonlinear_trial
+
+
+def sample(n: int = 12):
+    records, labels = [], []
+    anchor = datetime(2026, 1, 1, tzinfo=timezone.utc)
+    for split, offset in [('train', 0), ('validation', 100), ('future', 200), ('ood', 300)]:
+        for j in range(n):
+            y = j % 2
+            records.append({'principal': 'principal-A', 'organ_id': 'organ-A', 'cell_id': 'cell-A',
+                            'row_id': f'{split}-{j}', 'source_group': f'{split}-source-{j}',
+                            'event_time': (anchor + timedelta(days=offset + j)).isoformat(),
+                            'split': split, 'label': y, 'options': ['no', 'yes']})
+            labels.append(y)
+    torch.manual_seed(987)
+    return torch.randn(len(records), 12), torch.tensor(labels, dtype=torch.long), records
+
+
+def test_equal_parameter_training_and_report_is_not_authorizing():
+    x, y, rows = sample()
+    report = equal_parameter_nonlinear_trial(x, y, rows, seeds=(7, 19), steps=2, batch=8)
+    assert report['production_admission'] == 'BLOCKED'
+    assert report['selection_authorized'] is False
+    assert report['causal_learning_verified'] is False
+    assert report['future_used_to_select_winner'] is False
+    assert report['parameter_count'] <= 16384
+    assert report['validation_only_descriptive_winner'] in ('dynamic_gate', 'swiglu')
+    for run in report['runs']:
+        a, b = run['candidates']['dynamic_gate'], run['candidates']['swiglu']
+        assert a['parameter_count'] == b['parameter_count'] == report['parameter_count']
+        assert len(run['train_sampling_sha256']) == 64
+    again = equal_parameter_nonlinear_trial(x, y, rows, seeds=(7, 19), steps=2, batch=8)
+    assert [r['candidates'] for r in report['runs']] == [r['candidates'] for r in again['runs']]
+    assert [r['train_sampling_sha256'] for r in report['runs']] == [r['train_sampling_sha256'] for r in again['runs']]
+
+
+def test_future_labels_do_not_change_training_or_validation_winner():
+    x, y, rows = sample()
+    a = equal_parameter_nonlinear_trial(x, y, rows, seeds=(2,), steps=2)
+    changed = y.clone()
+    modified = deepcopy(rows)
+    for i, row in enumerate(modified):
+        if row['split'] == 'future':
+            changed[i] = 1 - changed[i]
+            row['label'] = int(changed[i])
+    b = equal_parameter_nonlinear_trial(x, changed, modified, seeds=(2,), steps=2)
+    assert a['validation_only_descriptive_winner'] == b['validation_only_descriptive_winner']
+    assert a['validation_mean_brier'] == b['validation_mean_brier']
+    assert a['runs'][0]['train_sampling_sha256'] == b['runs'][0]['train_sampling_sha256']
+
+
+@pytest.mark.parametrize('corrupt,match', [
+    ('source_split', 'source group leakage'),
+    ('principal', 'cross-Cell'),
+    ('naive_future', 'timezone-aware'),
+    ('future_before', 'future must begin'),
+    ('validation_before', 'validation must begin'),
+    ('option_width', 'option geometry'),
+    ('class_mismatch', 'tensor labels differ'),
+    ('duplicate_row', 'duplicate row'),
+    ('no_train_class', 'all classes'),
+])
+def test_fail_closed_dataset_invariants(corrupt, match):
+    x, y, records = sample()
+    rows = deepcopy(records)
+    if corrupt == 'source_split': rows[-2]['source_group'] = rows[1]['source_group']
+    if corrupt == 'principal': rows[-2]['principal'] = 'principal-B'
+    if corrupt == 'naive_future': rows[24]['event_time'] = '2026-03-01T00:00:00'
+    if corrupt == 'future_before': rows[24]['event_time'] = '2026-01-01T00:00:00+00:00'
+    if corrupt == 'validation_before': rows[12]['event_time'] = '2026-01-01T00:00:00+00:00'
+    if corrupt == 'option_width': rows[5]['options'] = ['no', 'yes', 'maybe']
+    if corrupt == 'class_mismatch': rows[3]['label'] = 1 - rows[3]['label']
+    if corrupt == 'duplicate_row': rows[-1]['row_id'] = rows[0]['row_id']
+    if corrupt == 'no_train_class':
+        for i in range(12): y[i] = 0; rows[i]['label'] = 0
+    with pytest.raises(ValueError, match=match):
+        equal_parameter_nonlinear_trial(x, y, rows, seeds=(2,), steps=1)
+
+
+def test_bad_seeds_and_budget_refused():
+    x, y, rows = sample()
+    with pytest.raises(ValueError, match='seeds'):
+        equal_parameter_nonlinear_trial(x, y, rows, seeds=(1, 1), steps=1)
+    with pytest.raises(ValueError, match='budget'):
+        equal_parameter_nonlinear_trial(x, y, rows, budget=3000, steps=1)
+    with pytest.raises(ValueError, match='training budget'):
+        equal_parameter_nonlinear_trial(x, y, rows, steps=0)
+    with pytest.raises(ValueError, match='finite CPU'):
+        z = x.clone(); z[0,0] = float('nan')
+        equal_parameter_nonlinear_trial(z, y, rows, steps=1)
