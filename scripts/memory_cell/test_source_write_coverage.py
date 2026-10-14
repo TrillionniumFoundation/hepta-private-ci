@@ -168,6 +168,34 @@ class SourceCoverageTests(unittest.TestCase):
             with self.subTest(mode=mode), self.assertRaises(ValueError):
                 audit_coverage(ex, pr, sp, curriculum="source_two_hop")
 
+    def test_equal_cost_and_counts_cannot_hide_reordered_optimizer_exposure(self):
+        examples, prepared, plan = fixture()
+        altered = deepcopy(plan)
+        altered["entries"][0], altered["entries"][2] = (
+            altered["entries"][2],
+            altered["entries"][0],
+        )
+        self.assertNotEqual(altered["entries"], plan["entries"])
+        self.assertEqual(sorted(altered["entries"]), sorted(plan["entries"]))
+        self.assertEqual(altered["visits_per_example"], plan["visits_per_example"])
+        self.assertEqual(altered["planned_input_tokens"], plan["planned_input_tokens"])
+        with self.assertRaises(ValueError):
+            audit_coverage(examples, prepared, altered, curriculum="source_two_hop")
+
+    def test_budget_identical_but_false_stop_reason_and_extra_fields_reject(self):
+        for changed in (
+            {"stop_reason": "token_ceiling_before_next_example"},
+            {"unregistered_source_order": "manually selected"},
+        ):
+            examples, prepared, plan = fixture()
+            altered = deepcopy(plan)
+            altered.update(changed)
+            with self.subTest(changed=changed), self.assertRaises(ValueError):
+                audit_coverage(
+                    examples, prepared, altered, curriculum="source_two_hop"
+                )
+
+
 
 if __name__ == "__main__":
     unittest.main()
