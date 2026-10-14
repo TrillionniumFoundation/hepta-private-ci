@@ -686,9 +686,9 @@ fn real_signed_artifact_cas_lost_ack_reconciles_only_after_selector_revocation()
         b"real child artifact bytes"
     );
 
-    // Withdraw Final-use after the durable physical operation. Recovery
-    // cannot regain mutation permission and must still authenticate the
-    // original signed owner readback without any second Execute RPC.
+    // Withdraw Final-use after the durable physical operation. The original
+    // CAS owner checks authority even on READBACK: pending-only recovery may
+    // never ignore that independent current restriction. No second execute.
     authority.store(false, Ordering::Release);
     let normal_transport = CellSplitUnixEffectPortV1::new(
         endpoints.clone(),
@@ -704,6 +704,17 @@ fn real_signed_artifact_cas_lost_ack_reconciles_only_after_selector_revocation()
             normal_transport,
         )
         .expect("only existing pending intent may reopen");
+        assert!(
+            recover.reconcile_pending_only().is_err(),
+            "revoked original-owner authority must not authenticate CAS readback"
+        );
+        assert!(!ledger.join("cell-split-00-committed.json").exists());
+        assert_eq!(recover.completed_steps(), 0);
+
+        // Reauthorize the actual original owner to inspect its durable CAS
+        // result. The coordinator may only reconcile the prepared effect,
+        // never issue a new Execute regardless of the admission callback.
+        authority.store(true, Ordering::Release);
         let receipt = recover
             .reconcile_pending_only()
             .expect("current original signed CAS receipt");
@@ -718,23 +729,38 @@ fn real_signed_artifact_cas_lost_ack_reconciles_only_after_selector_revocation()
         ));
         assert_eq!(recover.completed_steps(), 1);
     }
+    // Revoking the original CAS owner after its receipt was committed must
+    // also prevent *reopening* the historical prefix as a live admission.
+    authority.store(false, Ordering::Release);
+    let denied_client = CellSplitUnixEffectPortV1::new(
+        endpoints.clone(),
+        keys.clone(),
+        Duration::from_secs(3),
+    )
+    .expect("denied verifier");
+    assert!(
+        CellSplitExecutionOwnerV1::open(
+            &ledger,
+            plan.clone(),
+            trust.clone(),
+            denied_client,
+        )
+        .is_err(),
+        "reopening an invalid original signed owner must fail closed"
+    );
+    authority.store(true, Ordering::Release);
     let client = CellSplitUnixEffectPortV1::new(
         endpoints,
         keys,
         Duration::from_secs(3),
     )
     .expect("reopened verifier");
-    let mut recovered = CellSplitExecutionOwnerV1::open(
-        &ledger,
-        plan,
-        trust,
-        client,
-    )
-    .expect("read original frozen effect after restart");
+    let mut recovered = CellSplitExecutionOwnerV1::open(&ledger, plan, trust, client)
+        .expect("read original frozen effect after restart");
     assert_eq!(recovered.completed_steps(), 1);
     assert!(
         recovered.advance().is_err(),
-        "missing migration and revoked final-use never become a new effect"
+        "missing real migration owner cannot become an inferred effect"
     );
     stop.store(true, Ordering::Release);
     server.join().expect("original CAS server joined");
