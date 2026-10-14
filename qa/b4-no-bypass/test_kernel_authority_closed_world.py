@@ -281,6 +281,47 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "caller-owned metrics sink must deny physical advance before forwarding",
         )
 
+    def test_original_split_owner_never_prepares_new_production_effect(self) -> None:
+        # Even a future crate-local invocation cannot bypass the denied public
+        # Agentd metric callback seam. Reconciliation of a durable original
+        # intent remains the only permitted non-test owner transition.
+        path = "codex-rs/hepta-operator-acceptance/src/cell_split_execution_owner.rs"
+        code = self.lexical_code(path)
+        method = re.search(
+            r"\bpub\(crate\)\s+fn\s+advance_with_admission\s*\(", code
+        )
+        self.assertIsNotNone(method)
+        assert method is not None
+        opening = code.find("{", method.end())
+        closing = CALLER_PROOF._matching_delimiter(code, opening, "{", "}")
+        self.assertIsNotNone(closing)
+        assert closing is not None
+        body = code[opening + 1:closing]
+        self.assertRegex(
+            body,
+            r"^\s*if\s+!\s*cfg!\s*\(\s*test\s*\)\s*&&\s*"
+            r"!\s*self\.reconcile_only\s*\{\s*return\s+Err\s*\(\s*"
+            r"CellSplitExecutionErrorV1::Invalid\s*\(",
+            "a fresh physical effect must be denied before any I/O or callback",
+        )
+        self.assertLess(
+            body.index("!self.reconcile_only"),
+            body.index("self.verify_committed_prefix()"),
+            "new effect denial must precede original owner readback",
+        )
+        reconcile = re.search(r"\bpub\s+fn\s+reconcile_pending_only\s*\(", code)
+        self.assertIsNotNone(reconcile)
+        assert reconcile is not None
+        reconcile_start = code.find("{", reconcile.end())
+        reconcile_end = CALLER_PROOF._matching_delimiter(
+            code, reconcile_start, "{", "}"
+        )
+        self.assertIsNotNone(reconcile_end)
+        assert reconcile_end is not None
+        reconcile_body = code[reconcile_start + 1:reconcile_end]
+        self.assertIn("if !self.reconcile_only || !self.pending", reconcile_body)
+        self.assertIn("self.advance_with_admission(", reconcile_body)
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
