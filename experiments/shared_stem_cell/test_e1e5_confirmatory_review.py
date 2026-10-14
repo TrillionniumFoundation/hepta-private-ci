@@ -73,6 +73,20 @@ class ReviewTest(unittest.TestCase):
                 self.assertFalse(ans['model_weights_and_forwards_independently_verified'])
     def test_independent_producer_separation(self):
         self.deny(lambda o,out,r:out.update(producer_id='model_pipeline'))
+    def test_missing_energy(self):
+        self.deny(lambda o,out,r:o['arms'][0]['resources'].pop('energy_joules'))
+    def test_p99_below_p95(self):
+        self.deny(lambda o,out,r:o['arms'][0]['resources'].update(p99_ms=0.5))
+    def test_e2_encoder_drift(self):
+        self.deny(lambda o,out,r:o['arms'][0].update(model_sha256='b'*64),'E2')
+    def test_e1_pooling_profile(self):
+        self.deny(lambda o,out,r:o.update(pooling_profile='mean_l2'),'E1')
+    def test_e2_head_budget(self):
+        def change(o,out,r):
+            next(a for a in o['arms'] if a['name']=='residual_2k')['trainable_parameters']=2049
+        self.deny(change,'E2')
+    def test_unbound_reader_task(self):
+        self.deny(lambda o,out,r:[t.update(task_input_sha256='b'*64) for t in r['trials'][:4]])
     def test_tampered_label(self):
         self.deny(lambda o,out,r:out['rows'][0].update(label=1-out['rows'][0]['label']))
     def test_missing_outcome(self):
