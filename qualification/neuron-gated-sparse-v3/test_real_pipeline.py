@@ -107,7 +107,8 @@ class TestIndependentlySignedChronology(unittest.TestCase):
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory()
         self.root=Path(self.temp.name)
-        self.payload={'schema':'hepta.neuron.five-arm-research-forecast-seal.v1',
+        self.payload={'schema':'hepta.neuron.five-arm-research-forecast-seal.v2',
+                      'a0_evidence_class':'SYNTHETIC_FIXTURE_ONLY',
                       'cell_id':'fixture','training_cutoff_utc':at(1),
                       'sealed_at_utc_untrusted_local_clock':at(3,2),
                       'model_sha256':{'2048:v3':'3'*64},
@@ -149,7 +150,14 @@ class TestIndependentlySignedChronology(unittest.TestCase):
                                   witness_pubkey=str(self.root/'witness.pem'),
                                   signed_witness=str(self.root/'signed-witness.json'),
                                   outcome_pubkey=str(self.root/'outcomes.pem'),
-                                  signed_outcomes=str(self.root/'signed-outcomes.json'))
+                                  signed_outcomes=str(self.root/'signed-outcomes.json'),
+                                  synthetic_canary=True)
+
+    def test_synthetic_future_seal_rejected_without_explicit_flag(self):
+        args=self.args()
+        args.synthetic_canary=False
+        with self.assertRaisesRegex(ValueError,'untrusted seal schema|authority'):
+            score(args)
 
     def test_frozen_seal_score_never_promotes(self):
         r=score(self.args())
