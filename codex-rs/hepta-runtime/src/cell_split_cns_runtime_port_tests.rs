@@ -3,6 +3,12 @@ use std::os::unix::fs::PermissionsExt as _;
 use std::sync::Arc;
 
 use codex_hepta_contracts::FinalUseRevocations;
+use codex_hepta_control_plane::NduPublicationOwnerV1;
+use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
+use codex_hepta_types::NduSnapshotRefV1;
+use codex_hepta_types::StableId;
+use std::str::FromStr as _;
 use codex_hepta_operator_acceptance::CellSplitCnsRuntimePortV1;
 use codex_hepta_paths::HeptaStateRoot;
 use ed25519_dalek::Signer as _;
@@ -215,6 +221,237 @@ fn fixture(
     )
     .expect("CNS runtime bridge");
     (runtime, plan, binding, intent, port)
+}
+
+#[derive(Clone, Copy)]
+enum IndependentControlWitnessFault {
+    None,
+    ReplayedChallenge,
+    WrongStoredSequence,
+    WrongScope,
+    WrongPlan,
+    CorruptedSignature,
+}
+
+/// This mock signs a privately retained test snapshot. Crucially its runtime
+/// port receives ONLY split/scope/challenge, never the local WAL contents.
+struct IndependentControlWitnessFixture {
+    stored: NduPublicationLocalFrontierV1,
+    signer: SigningKey,
+    plan_digest: String,
+    observer_id: String,
+    fault: IndependentControlWitnessFault,
+}
+
+impl CellSplitIndependentControlObserverV1 for IndependentControlWitnessFixture {
+    type Error = &'static str;
+
+    fn read_signed_highwater(
+        &mut self,
+        split_id: &str,
+        _scope_id: &str,
+        challenge_nonce: &str,
+    ) -> Result<CellSplitSignedControlHighwaterV1, Self::Error> {
+        let s = &self.stored.snapshot;
+        let mut proof = CellSplitSignedControlHighwaterV1 {
+            schema: CELL_SPLIT_SIGNED_CONTROL_HIGHWATER_SCHEMA_V1.into(),
+            observer_id: self.observer_id.clone(),
+            plan_digest: self.plan_digest.clone(),
+            split_id: split_id.into(),
+            scope_id: s.scope_id.to_string(),
+            ndu_owner_id: s.owner_id.to_string(),
+            ndu_snapshot_digest: s.snapshot_digest.to_string(),
+            generation: s.generation.get(),
+            route_fence: s.route_fence,
+            revocation_epoch: s.revocation_epoch,
+            sequence: self.stored.sequence,
+            wal_head: self.stored.head.to_string(),
+            checkpoint_digest: self.stored.checkpoint.to_string(),
+            wal_bytes: self.stored.wal_bytes,
+            wal_device: self.stored.wal_device,
+            wal_inode: self.stored.wal_inode,
+            marker_device: self.stored.marker_device,
+            marker_inode: self.stored.marker_inode,
+            original_cns_receipt_binding: self
+                .stored
+                .original_cns_receipt_binding
+                .map(|digest| digest.to_string()),
+            challenge_nonce: challenge_nonce.to_owned(),
+            observer_signature_bytes: Vec::new(),
+        };
+        match self.fault {
+            IndependentControlWitnessFault::None
+            | IndependentControlWitnessFault::CorruptedSignature => {}
+            IndependentControlWitnessFault::ReplayedChallenge => {
+                proof.challenge_nonce = "00".repeat(32);
+            }
+            IndependentControlWitnessFault::WrongStoredSequence => {
+                proof.sequence += 1;
+            }
+            IndependentControlWitnessFault::WrongScope => {
+                proof.scope_id = "another-unrelated-scope".into();
+            }
+            IndependentControlWitnessFault::WrongPlan => {
+                proof.plan_digest = "ee".repeat(32);
+            }
+        }
+        proof.observer_signature_bytes = self
+            .signer
+            .sign(
+                &cell_split_control_highwater_signing_bytes_v1(&proof)
+                    .expect("canonical external Observer payload"),
+            )
+            .to_bytes()
+            .to_vec();
+        if matches!(
+            self.fault,
+            IndependentControlWitnessFault::CorruptedSignature
+        ) {
+            proof.observer_signature_bytes[0] ^= 1;
+        }
+        Ok(proof)
+    }
+}
+
+fn independent_control_snapshot(plan: &CellSplitExecutionPlanV1) -> NduSnapshotRefV1 {
+    NduSnapshotRefV1 {
+        scope_id: StableId::new("observed-scope").expect("stable scope"),
+        owner_id: StableId::new("original-control-owner").expect("stable owner"),
+        generation: Generation::new(3).expect("generation"),
+        route_fence: 7,
+        revocation_epoch: 9,
+        policy_digest: Digest32::of_bytes(b"control-observer-policy"),
+        snapshot_digest: Digest32::from_str(&plan.ndu_snapshot_digest)
+            .expect("frozen plan has canonical NDU digest"),
+        projection_head_digest: Digest32::of_bytes(b"control-observer-projection"),
+    }
+}
+
+#[test]
+fn independent_control_observer_uses_fresh_signed_original_highwater_without_mutation() {
+    let runtime_signer = SigningKey::from_bytes(&[42; 32]);
+    let (_runtime, plan, _binding, _intent, mut port) =
+        fixture(false, true, runtime_signer.clone(), runtime_signer.clone());
+    let root = tempfile::tempdir().expect("private Control test directory");
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("private test Control root");
+    let path = root.path().join("original-control.wal");
+    let snapshot = independent_control_snapshot(&plan);
+    let checkpoint = Digest32::of_bytes(b"initial-verified-model-checkpoint");
+    let control = NduPublicationOwnerV1::open_production(&path, snapshot.clone(), checkpoint)
+        .expect("actual original signed Control journal");
+    let original_wal = std::fs::read(&path).expect("fsynced original WAL");
+    let signed_owner = SigningKey::from_bytes(&[77; 32]);
+    let observer_key = signed_owner.verifying_key();
+    let mut observer = IndependentControlWitnessFixture {
+        stored: control
+            .read_original_local_frontier_v1()
+            .expect("real original WAL replay"),
+        signer: signed_owner,
+        plan_digest: plan.digest().unwrap(),
+        observer_id: "separate-control-observer".into(),
+        fault: IndependentControlWitnessFault::None,
+    };
+    assert_eq!(
+        port.verify_independent_control_highwater_v1(
+            &control,
+            &mut observer,
+            &observer_key,
+            "separate-control-observer",
+        ),
+        Ok(()),
+        "matching independent signed high-water qualifies read-only evidence"
+    );
+    assert_eq!(std::fs::read(&path).unwrap(), original_wal);
+
+    // Two independently fsynced Control frontiers may carry the SAME NDU
+    // snapshot while model checkpoint CAS advances the original WAL.
+    control
+        .compare_and_publish_checkpoint(
+            &snapshot,
+            Digest32::of_bytes(b"fresh-read"),
+            Digest32::of_bytes(b"verified-tick"),
+            checkpoint,
+            Digest32::of_bytes(b"new-checkpoint"),
+        )
+        .expect("real original journal commit");
+    assert!(
+        port.verify_independent_control_highwater_v1(
+            &control,
+            &mut observer,
+            &observer_key,
+            "separate-control-observer",
+        )
+        .is_err(),
+        "an old signed high-water must not bless newer/rolled-back Control state"
+    );
+    assert!(control.current().is_ok(), "Observer denial cannot mutate Control");
+}
+
+#[test]
+fn independent_control_observer_rejects_replayed_nonce_wrong_scope_or_forged_signer() {
+    let runtime_signer = SigningKey::from_bytes(&[42; 32]);
+    let (_runtime, plan, _binding, _intent, mut port) =
+        fixture(false, true, runtime_signer.clone(), runtime_signer.clone());
+    let root = tempfile::tempdir().expect("private Control test directory");
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("private Control fixture");
+    let path = root.path().join("observer-negative.wal");
+    let control = NduPublicationOwnerV1::open_production(
+        &path,
+        independent_control_snapshot(&plan),
+        Digest32::of_bytes(b"verified-checkpoint"),
+    )
+    .expect("original Control fixture");
+    let observer_signer = SigningKey::from_bytes(&[77; 32]);
+    let pin = observer_signer.verifying_key();
+    let mut observer = IndependentControlWitnessFixture {
+        stored: control.read_original_local_frontier_v1().unwrap(),
+        signer: observer_signer,
+        plan_digest: plan.digest().unwrap(),
+        observer_id: "separate-control-observer".into(),
+        fault: IndependentControlWitnessFault::None,
+    };
+    assert!(
+        port.verify_independent_control_highwater_v1(
+            &control,
+            &mut observer,
+            &runtime_signer.verifying_key(),
+            "separate-control-observer"
+        )
+        .is_err(),
+        "CNS signer must never double as independent Observer"
+    );
+    assert!(
+        port.verify_independent_control_highwater_v1(
+            &control,
+            &mut observer,
+            &SigningKey::from_bytes(&[99; 32]).verifying_key(),
+            "separate-control-observer"
+        )
+        .is_err(),
+        "untrusted signer must never qualify original Control WAL"
+    );
+    for fault in [
+        IndependentControlWitnessFault::ReplayedChallenge,
+        IndependentControlWitnessFault::WrongStoredSequence,
+        IndependentControlWitnessFault::WrongScope,
+        IndependentControlWitnessFault::WrongPlan,
+        IndependentControlWitnessFault::CorruptedSignature,
+    ] {
+        observer.fault = fault;
+        assert!(
+            port.verify_independent_control_highwater_v1(
+                &control,
+                &mut observer,
+                &pin,
+                "separate-control-observer"
+            )
+            .is_err(),
+            "signed but stale, replayed or malformed external high-water denied"
+        );
+    }
+    assert!(control.current().is_ok());
 }
 
 #[test]
