@@ -299,7 +299,8 @@ jobs:
           matrixd_tests="$(cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-matrixd --lib -- --list)"
           for test in \
             control_socket_preflight_preserves_existing_regular_files \
-            control_socket_preflight_does_not_steal_live_listener; do
+            control_socket_preflight_does_not_steal_live_listener \
+            control_socket_preflight_retired_server_cannot_unlink_successor; do
             grep -Fx "control::tests::$test: test" <<< "$matrixd_tests"
           done
       - name: Exercise real Agentd and Matrixd UDS preflight regressions
