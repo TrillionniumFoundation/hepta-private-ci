@@ -14,7 +14,7 @@ use crate::population_v2::PopulationSparseCheckpointV2;
 use crate::population_v2::PopulationSparseConfigV2;
 use crate::population_v2::PopulationSparseError;
 use crate::population_v2::PopulationSparseTickV2;
-use crate::population_v2::PreparedPopulationSparseConfigV2;
+use crate::population_v2::PreparedPopulationSparseDigestV2;
 #[cfg(test)]
 use crate::population_v2::population_sparse_tick_v2;
 use crate::population_v2::population_sparse_tick_v2_from_temporal_override;
@@ -127,14 +127,14 @@ impl GatedSparseConfigV3 {
 #[derive(Clone, Debug)]
 pub struct PreparedGatedSparseConfigV3 {
     config: GatedSparseConfigV3,
-    prepared_base: PreparedPopulationSparseConfigV2,
+    prepared_base: PreparedPopulationSparseDigestV2,
     config_digest: Digest32,
 }
 
 impl PreparedGatedSparseConfigV3 {
     pub fn new(config: GatedSparseConfigV3) -> Result<Self, GatedSparseErrorV3> {
         let config_digest = config.digest()?;
-        let prepared_base = PreparedPopulationSparseConfigV2::new(config.base.clone())?;
+        let prepared_base = PreparedPopulationSparseDigestV2::new(&config.base)?;
         Ok(Self {
             config,
             prepared_base,
@@ -269,6 +269,7 @@ fn gated_sparse_tick_v3_inner(
 
     let (inner, v2_receipt) = match prepared {
         Some((base, _)) => base.tick_from_temporal_override(
+            &config.base,
             input,
             &gated_temporal,
             previous.map(|prior| &prior.inner),

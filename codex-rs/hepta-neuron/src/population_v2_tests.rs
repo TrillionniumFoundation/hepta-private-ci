@@ -357,3 +357,48 @@ fn prepared_configuration_owns_immutable_parameters() {
         Some(PopulationSparseError::Clock)
     );
 }
+
+#[test]
+fn compact_validated_v2_shadow_digest_is_one_digest_and_exact_64_tick_parity() {
+    // A specialized wrapper owns the only complete base config and retains
+    // only the digest token, never a second V2 graph/edge Vec.
+    assert_eq!(
+        std::mem::size_of::<PreparedPopulationSparseDigestV2>(),
+        std::mem::size_of::<Digest32>()
+    );
+    let base = config();
+    let digest_only = checked(PreparedPopulationSparseDigestV2::new(&base));
+    let mut copied = base.clone();
+    copied.temporal_decay_q24 = 0;
+    let mut old = None;
+    let mut compact = None;
+    for sequence in 1..=64_u64 {
+        let input = tick(sequence, sequence * 100);
+        let temporal = if sequence % 2 == 0 {
+            vec![-Q / 2, Q]
+        } else {
+            vec![Q, -Q / 3]
+        };
+        let mut copied_tick = input.clone();
+        copied_tick.temporal_drive_q24 = temporal.clone();
+        let a = checked(population_sparse_tick_v2(&copied, &copied_tick, old.as_ref()));
+        let b = checked(digest_only.tick_from_temporal_override(
+            &base, &input, &temporal, compact.as_ref()
+        ));
+        assert_eq!(a, b);
+        old = Some(a.0);
+        compact = Some(b.0);
+    }
+    let mut different = base.clone();
+    different.generation = generation(9);
+    let rotated = checked(PreparedPopulationSparseDigestV2::new(&different));
+    assert_eq!(
+        rotated.tick_from_temporal_override(
+            &different,
+            &tick(65, 6_500),
+            &[Q, Q],
+            compact.as_ref()
+        ).err(),
+        Some(PopulationSparseError::ConfigDrift)
+    );
+}

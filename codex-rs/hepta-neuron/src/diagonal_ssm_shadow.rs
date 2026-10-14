@@ -14,7 +14,7 @@ use crate::population_v2::PopulationSparseCheckpointV2;
 use crate::population_v2::PopulationSparseConfigV2;
 use crate::population_v2::PopulationSparseError;
 use crate::population_v2::PopulationSparseTickV2;
-use crate::population_v2::PreparedPopulationSparseConfigV2;
+use crate::population_v2::PreparedPopulationSparseDigestV2;
 #[cfg(test)]
 use crate::population_v2::population_sparse_tick_v2;
 use crate::population_v2::population_sparse_tick_v2_from_temporal_override;
@@ -122,14 +122,14 @@ impl DiagonalSsmConfigV1 {
 #[derive(Clone, Debug)]
 pub struct PreparedDiagonalSsmConfigV1 {
     config: DiagonalSsmConfigV1,
-    prepared_base: PreparedPopulationSparseConfigV2,
+    prepared_base: PreparedPopulationSparseDigestV2,
     config_digest: Digest32,
 }
 
 impl PreparedDiagonalSsmConfigV1 {
     pub fn new(config: DiagonalSsmConfigV1) -> Result<Self, DiagonalSsmErrorV1> {
         let config_digest = config.digest()?;
-        let prepared_base = PreparedPopulationSparseConfigV2::new(config.base.clone())?;
+        let prepared_base = PreparedPopulationSparseDigestV2::new(&config.base)?;
         Ok(Self {
             config,
             prepared_base,
@@ -262,7 +262,7 @@ fn diagonal_ssm_tick_v1_inner(
 
     let (inner, receipt) = match prepared {
         Some((base, _)) => {
-            base.tick_from_temporal_override(input, &effective, previous.map(|prior| &prior.inner))?
+            base.tick_from_temporal_override(&config.base, input, &effective, previous.map(|prior| &prior.inner))?
         }
         None => population_sparse_tick_v2_from_temporal_override(
             &config.base,
