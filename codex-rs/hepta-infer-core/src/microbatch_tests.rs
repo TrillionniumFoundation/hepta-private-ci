@@ -157,6 +157,87 @@ fn cutover_drops_only_stale_scope() {
 }
 
 #[test]
+fn scope_fence_cutover_preserves_unrelated_4096_cell_lanes() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    for cell in 0..4096 {
+        q.enqueue(
+            1,
+            intent(
+                &format!("other-request-{cell}"),
+                &format!("other-scope-{cell}"),
+                1,
+                1,
+                100,
+            ),
+        )
+        .unwrap();
+    }
+    q.enqueue(1, intent("target-old", "target-scope", 1, 1, 100))
+        .unwrap();
+    q.enqueue(1, intent("target-new", "target-scope", 2, 2, 100))
+        .unwrap();
+
+    assert_eq!(q.scope_lanes.len(), 4097);
+    assert_eq!(q.scope_lanes.get(&id("target-scope")).unwrap().len(), 2);
+    assert_eq!(
+        q.retain_scope_binding(&id("target-scope"), Generation::new(2).unwrap(), 2, 1),
+        vec![id("target-old")]
+    );
+    assert_eq!(q.scope_lanes.get(&id("target-scope")).unwrap().len(), 1);
+    assert_eq!(q.scope_lanes.len(), 4097);
+    assert_eq!(q.pending(), 4097);
+    assert_eq!(q.active_lanes(), 4097);
+    assert!(q.queued_ids.contains(&id("target-new")));
+    assert!(!q.queued_ids.contains(&id("target-old")));
+
+    // No inherited authority: the replacement lane retains its own key.
+    let mut found_replacement = false;
+    while q.pending() != 0 {
+        let batch = q.poll(11).unwrap().batch.unwrap();
+        for request in batch.requests {
+            if request.request_id == id("target-new") {
+                assert_eq!(request.key.generation, Generation::new(2).unwrap());
+                assert_eq!(request.key.route_fence, 2);
+                found_replacement = true;
+            }
+            assert_ne!(request.request_id, id("target-old"));
+        }
+    }
+    assert!(found_replacement);
+    assert!(q.scope_lanes.is_empty());
+    assert!(q.physical_lanes.is_empty());
+}
+
+#[test]
+fn cutover_only_churn_bounds_lazy_round_robin_tickets() {
+    let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
+    for round in 0..512_u64 {
+        let scope = format!("retired-scope-{round}");
+        let now = 10 + round;
+        q.enqueue(
+            now,
+            intent(&format!("retired-request-{round}"), &scope, 1, 1, now + 100),
+        )
+        .unwrap();
+        assert_eq!(
+            q.retain_scope_binding(&id(&scope), Generation::new(2).unwrap(), 2, 1),
+            vec![id(&format!("retired-request-{round}"))]
+        );
+        assert_eq!(q.pending(), 0);
+        assert!(q.scope_lanes.is_empty());
+        assert!(q.physical_lanes.is_empty());
+        assert!(q.round_robin.len() <= q.limits.max_batch_size);
+        assert_eq!(q.round_robin.len(), q.round_robin_members.len());
+    }
+
+    q.enqueue(522, intent("healthy", "active-scope", 1, 1, 600))
+        .unwrap();
+    let result = q.poll(532).unwrap();
+    assert_eq!(result.batch.unwrap().requests[0].request_id, id("healthy"));
+    assert_eq!(q.pending(), 0);
+}
+
+#[test]
 fn compatible_scope_lanes_coalesce_without_erasing_original_authority() {
     let mut q = BoundedMicrobatchSchedulerV1::new(limits()).unwrap();
     q.enqueue(1, intent("a", "scopeA", 1, 1, 100)).unwrap();
