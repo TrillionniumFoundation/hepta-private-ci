@@ -311,9 +311,9 @@ impl CellSplitRouteControllerV1 {
     /// The candidate is started and the predecessor is stopped by
     /// `CnsOrganHostV1`.  Child routes are stored only after that method
     /// succeeds, so a failed candidate can never receive dispatch.
-    /// Product builds deny direct CNS generation mutation. An independent
-    /// Control Begin / original signed runtime effect / Commit is required.
-    #[cfg(not(test))]
+    /// A direct legacy CNS route call never grants a physical generation
+    /// replacement, including in tests. Only the separately authorized live
+    /// Control handoff (not yet wired) may publish the successor.
     pub fn activate_children(
         &mut self,
         _expected: Generation,
@@ -325,7 +325,7 @@ impl CellSplitRouteControllerV1 {
 
     /// Deterministic route mechanism only; never a production cutover grant.
     #[cfg(test)]
-    pub fn activate_children(
+    pub(crate) fn activate_children_for_qualification(
         &mut self,
         expected: Generation,
         next: CnsOrganHostV1,
@@ -355,8 +355,7 @@ impl CellSplitRouteControllerV1 {
     /// Variant used when the authoritative state owner must migrate state
     /// before CNS publishes the successor generation.
     /// A migrating physical cutover also needs the external durable Control
-    /// owner; the legacy route-controller API has no such binding.
-    #[cfg(not(test))]
+    /// owner; this legacy API never owns that authority, even in tests.
     pub fn activate_children_with_migration<M: OrganStateMigrationV1 + ?Sized>(
         &mut self,
         _expected: Generation,
@@ -369,7 +368,8 @@ impl CellSplitRouteControllerV1 {
 
     /// Deterministic internal migration qualification only.
     #[cfg(test)]
-    pub fn activate_children_with_migration<M: OrganStateMigrationV1 + ?Sized>(
+    #[allow(dead_code)]
+    pub(crate) fn activate_children_with_migration_for_qualification<M: OrganStateMigrationV1 + ?Sized>(
         &mut self,
         expected: Generation,
         next: CnsOrganHostV1,
