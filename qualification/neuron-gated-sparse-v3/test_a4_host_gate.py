@@ -74,6 +74,7 @@ class HostA4GateTests(unittest.TestCase):
                     p={field:100 for field in PERF_FIELDS}
                     p.update(measurement_kind='target-host-real-end-to-end',
                              device_kind='cpu',request_count=scale,
+                             measured_distinct_cell_count=scale,
                              gpu_peak_alloc_bytes=0,gpu_peak_total_bytes=0,
                              lost_replay_count=0,
                              encoder_forward_invocations=scale,
@@ -132,6 +133,11 @@ class HostA4GateTests(unittest.TestCase):
     def test_preregistered_encoder_commit_host_binding(self):
         self.host['source_commit_sha']='b'*40
         with self.assertRaisesRegex(ValueError,'preregistration'):
+            self.check()
+
+    def test_declared_scale_requires_distinct_executed_cell_coverage(self):
+        self.host['measurements'][0]['performance']['measured_distinct_cell_count'] = 1
+        with self.assertRaisesRegex(ValueError, 'distinct Cell coverage'):
             self.check()
 
     def test_request_percentile_and_encoder_execution_required(self):
