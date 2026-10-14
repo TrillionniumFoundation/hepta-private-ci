@@ -94,6 +94,11 @@ pub struct CellSplitCnsKernelRuntimePortV1<W: CellSplitCnsKernelWitnessV1> {
     intent: CellSplitExecutionIntentV1,
     runtime_key: VerifyingKey,
     witness: W,
+    // This branch does not have the same-owner durable Control Prepare/Commit
+    // protocol. Infallible has no values, so no client can manufacture a
+    // permit or turn a valid signed route into a physical topology cutover.
+    // Replace this only with a separately audited durable handoff capability.
+    atomic_control_cutover_prepared: Option<std::convert::Infallible>,
 }
 
 impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
@@ -142,6 +147,7 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
             intent,
             runtime_key,
             witness,
+            atomic_control_cutover_prepared: None,
         })
     }
 
@@ -271,6 +277,15 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         binding: &CellSplitCnsRouteBindingV1,
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<(), Self::Error> {
+        // No live CNS mutation without a reviewed SAME-owner durable Control
+        // Prepare before the effect and Commit after the original signed
+        // runtime receipt. A signed route/Final-use grant alone is not an
+        // atomic transaction against concurrently published Neuron state.
+        // The current permit is deliberately uninhabited: fail closed even
+        // if preflight and original owner signatures would otherwise pass.
+        self.atomic_control_cutover_prepared.as_ref().ok_or(
+            "CNS mutation denied: no shared durable Control/Neuron cutover transaction",
+        )?;
         self.verify_pin(plan, intent)?;
         if binding != &self.binding {
             return Err("CNS cutover binding changed".into());
