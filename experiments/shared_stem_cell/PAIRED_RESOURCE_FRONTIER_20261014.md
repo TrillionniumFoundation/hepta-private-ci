@@ -26,3 +26,15 @@ fill absent 421M replicated-model or complete hardware/energy observations
 with synthetic guesses. All tests use unmistakable fixtures only.
 
 Run \`python -m unittest -v experiments.shared_stem_cell.test_paired_frontier\`.
+
+## Actual process-lifetime peak visibility
+
+On Linux, `execution.run`, `media_execution.run` and `consolidation_study.study`
+now report `process_lifetime_peak_rss_bytes` from the kernel `ru_maxrss`
+high-water value (KiB converted to bytes), or null when unavailable. This
+includes model loads, candidates, import overhead and the process history;
+`peak_is_isolated_per_*_arm` stays false. An isolated **per-arm** RSS number
+still requires a fresh, one-arm-per-process run; it cannot be inferred by
+subtracting endpoints or assigning the whole-run peak to each Head. Sensor
+energy remains null absent a real sensor. The `process_peak.py` unit tests
+check Linux units and unknown-platform/failure handling.
