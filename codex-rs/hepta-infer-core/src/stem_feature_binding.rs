@@ -84,6 +84,10 @@ pub struct BoundStemNeuronRequestV1 {
 pub struct SharedStemQ24BufferV1 {
     source: StemFeatureRefV1,
     values: Arc<[i64]>,
+    // Cached immutable source IDs are *not* an access grant. Every borrow
+    // still checks current principal, scope, epoch, lease and Head identity.
+    pipeline_digest: Digest32,
+    feature_ref_digest: Digest32,
 }
 
 impl SharedStemQ24BufferV1 {
@@ -102,9 +106,13 @@ impl SharedStemQ24BufferV1 {
         if stem_feature_vector_digest_v1(&values)? != source.feature_digest {
             return Err(StemFeatureBindingError::FeatureDigestMismatch);
         }
+        let pipeline_digest = stem_encoder_pipeline_digest_v1(&source);
+        let feature_ref_digest = stem_feature_ref_digest_v1(&source);
         Ok(Self {
             source,
             values: Arc::from(values.into_boxed_slice()),
+            pipeline_digest,
+            feature_ref_digest,
         })
     }
 
@@ -126,7 +134,10 @@ impl SharedStemQ24BufferV1 {
             current_access_claim,
             selected_head,
             self.values.as_ref(),
-            FeatureDigestVerification::ImmutableBufferVerified,
+            FeatureDigestVerification::ImmutableBufferVerified {
+                pipeline_digest: self.pipeline_digest,
+                feature_ref_digest: self.feature_ref_digest,
+            },
         )
     }
 
@@ -347,7 +358,12 @@ pub fn borrow_stem_feature_request_v1<'a>(
 #[derive(Clone, Copy)]
 enum FeatureDigestVerification {
     RecomputeOnEveryUse,
-    ImmutableBufferVerified,
+    // Only the private immutable-storage API can construct this value.
+    // The digest identities were computed against the same private source.
+    ImmutableBufferVerified {
+        pipeline_digest: Digest32,
+        feature_ref_digest: Digest32,
+    },
 }
 
 fn borrow_stem_feature_request_checked_v1<'a>(
@@ -407,7 +423,12 @@ fn borrow_stem_feature_request_checked_v1<'a>(
     if selected_head.expected_output_width == 0 || selected_head.expected_output_width > 512 {
         return Err(StemFeatureBindingError::InvalidHead);
     }
-    let pipeline_digest = stem_encoder_pipeline_digest_v1(source);
+    let pipeline_digest = match feature_verification {
+        FeatureDigestVerification::RecomputeOnEveryUse => stem_encoder_pipeline_digest_v1(source),
+        FeatureDigestVerification::ImmutableBufferVerified { pipeline_digest, .. } => {
+            pipeline_digest
+        }
+    };
     if selected_head.required_stem_model_id != source.stem_model_id
         || selected_head.required_stem_generation != source.stem_generation
         || selected_head.required_encoder_digest != pipeline_digest
@@ -418,6 +439,31 @@ fn borrow_stem_feature_request_checked_v1<'a>(
     {
         return Err(StemFeatureBindingError::IncompatibleHead);
     }
+    let feature_ref_digest = match feature_verification {
+        FeatureDigestVerification::RecomputeOnEveryUse => stem_feature_ref_digest_v1(source),
+        FeatureDigestVerification::ImmutableBufferVerified { feature_ref_digest, .. } => {
+            feature_ref_digest
+        }
+    };
+    Ok(StemFeatureRequestViewV1 {
+        request_id: &selected_head.request_id,
+        generation: source.stem_generation,
+        model_id: &selected_head.head_model_id,
+        encoder_digest: pipeline_digest,
+        head_digest: selected_head.head_digest,
+        weights_digest: selected_head.head_weights_digest,
+        input_digest: source.input_digest,
+        feature_vector_q24: vector_q24,
+        expected_output_width: selected_head.expected_output_width,
+        feature_ref_digest,
+        authority: AuthorityPosture::DENY_ALL,
+    })
+}
+
+/// Stable V1 source reference identity. It contains immutable source
+/// metadata, never caller-supplied current access claims. This digest is an
+/// identity marker, NOT a verified signature or authorization capability.
+fn stem_feature_ref_digest_v1(source: &StemFeatureRefV1) -> Digest32 {
     let mut bytes = b"hepta.inference.stem-feature-ref.v1".to_vec();
     for id in [
         &source.scope_id,
@@ -442,19 +488,7 @@ fn borrow_stem_feature_request_checked_v1<'a>(
     ] {
         bytes.extend_from_slice(digest.as_array());
     }
-    Ok(StemFeatureRequestViewV1 {
-        request_id: &selected_head.request_id,
-        generation: source.stem_generation,
-        model_id: &selected_head.head_model_id,
-        encoder_digest: pipeline_digest,
-        head_digest: selected_head.head_digest,
-        weights_digest: selected_head.head_weights_digest,
-        input_digest: source.input_digest,
-        feature_vector_q24: vector_q24,
-        expected_output_width: selected_head.expected_output_width,
-        feature_ref_digest: Digest32::of_bytes(&bytes),
-        authority: AuthorityPosture::DENY_ALL,
-    })
+    Digest32::of_bytes(&bytes)
 }
 
 #[cfg(test)]
