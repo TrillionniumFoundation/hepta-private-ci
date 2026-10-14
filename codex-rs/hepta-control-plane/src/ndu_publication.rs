@@ -105,6 +105,7 @@ fn decode(line: &str) -> Result<Event, NduPublicationErrorV1> {
 }
 /// Durable but unresolved CNS handoff. A process crash after Begin is an
 /// ambiguous external effect, regardless of which route is currently visible.
+#[cfg(unix)]
 #[derive(Clone, Copy)]
 struct PendingCutover {
     successor: Digest32,
@@ -445,9 +446,11 @@ impl NduPublicationOwnerV1 {
 
     /// Transactional adapter for a *real* external CNS owner. Write a
     /// durable, fsynced Begin first, while holding the SAME Control mutex
-    /// used by Neuron checkpoint CAS. The trusted caller must execute the
-    /// real runtime cutover and persist its original receipt in the closure.
-    /// Only after that succeeds may this owner append/acknowledge Commit.
+    /// used by Neuron checkpoint CAS. A sticky pending fence then allows
+    /// releasing that mutex before slow external I/O; all competing Neuron
+    /// CAS and Control reads return Indeterminate until Commit is durable.
+    /// The trusted caller must execute the real runtime cutover and persist
+    /// its original receipt in the closure before this owner acknowledges C.
     ///
     /// Any failure or crash after Begin permanently quarantines this owner
     /// until an independently witnessed reconciliation; neither route nor
