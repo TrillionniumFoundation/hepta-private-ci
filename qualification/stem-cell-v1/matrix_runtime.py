@@ -24,7 +24,7 @@ from paired_execution import PHASES
 SOURCE_FILES = ("next_round_matrix.py", "paired_execution.py", "head_surgery.py",
                 "hf_encoder_kernel.py", "matrix_materials.py", "matrix_bank.py",
                 "matrix_runtime.py", "matrix_export.py", "aten_work.py",
-                "host_counters.py", "execution_meter.py", "matrix_growth.py", "family_routing.py", "hf_complete_checkpoint.py", "transformer_work.py", "retention_training.py", "consolidation_training.py", "consolidation_record.py", "final_panels.py", "final_campaign.py", "work_record.py")
+                "host_counters.py", "execution_meter.py", "matrix_growth.py", "family_routing.py", "hf_complete_checkpoint.py", "transformer_work.py", "transformer_work_v3.py", "retention_training.py", "consolidation_training.py", "consolidation_record.py", "final_panels.py", "final_campaign.py", "work_record.py")
 
 
 def verify_source(source_sha):
