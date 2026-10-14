@@ -94,7 +94,7 @@ def study(panel, model_id, vectors, *, seed=20261014, steps=40, learning_rate=.1
     class FeatureGatedResidual(torch.nn.Module):
         def __init__(self, frozen_base, rank):
             super().__init__()
-            self.base = copy.deepcopy(frozen_base)
+            self.base = frozen_base
             self.base.requires_grad_(False)
             self.down = torch.nn.Linear(width, rank, bias=False)
             self.gate = torch.nn.Linear(width, rank)
@@ -123,6 +123,8 @@ def study(panel, model_id, vectors, *, seed=20261014, steps=40, learning_rate=.1
             init_equal[name] = bool(torch.equal(mod(train_x), baseline(train_x)))
         if not init_equal[name]:
             raise Invalid('residual does not preserve unmodified baseline logits')
+        if mod.base.weight.data_ptr() != baseline.weight.data_ptr():
+            raise Invalid('frozen base weight was unexpectedly copied')
         modules[name] = mod
         params[name] = trainable
     frozen_after_init = _digest(baseline)
@@ -178,6 +180,7 @@ def study(panel, model_id, vectors, *, seed=20261014, steps=40, learning_rate=.1
             'head_kind':'post_encoder_feature_gated_residual_not_cell_state_film',
             'head_parameter_ceiling_by_arm':{'residual_2k':2048,'residual_8k':8192,'residual_16k':16384},
             'frozen_base_parameters_counted_as_shared_storage':params['frozen_head'],
+            'frozen_base_weight_storage_shared_among_residual_arms':True,
             'cosine_uses_train_labels_not_no_fit':True,
             'optimizer':'SGD_full_train_batch', 'seed':seed, 'steps':steps, 'learning_rate':learning_rate,
             'training':measurements,'arms':outputs,
