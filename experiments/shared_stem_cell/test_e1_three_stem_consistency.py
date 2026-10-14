@@ -11,10 +11,14 @@ import e1_three_stem_consistency as m
 H='a'*64
 
 def fixture():
-    cases=[{'case_id':f'c{i}','source_group':f'g{i}','input_sha256':f'{i+1:064x}',
-        'scope':'s','split':part,'modality':'text','observed_at':i+1,
-        'reader_condition':'sufficient','reader_correct':True,'answer_label':i%2}
-        for i,part in enumerate(SPLITS)]
+    cases=[]
+    for i,part in enumerate(SPLITS):
+        for j,(language,family) in enumerate((('zh','chinese_semantics'),('en','english_semantics'),('code','code_diagnostics'))):
+            k=len(cases)
+            cases.append({'case_id':f'c{k}','source_group':f'g{k}','input_sha256':f'{k+1:064x}',
+                'scope':'s','split':part,'modality':'code' if language=='code' else 'text','observed_at':i+1+j/10,
+                'reader_condition':'sufficient','reader_correct':True,'answer_label':k%2,
+                'language':language,'task_family':family})
     resources={k:1 for k in RESOURCE_FIELDS}
     record={'schema':m.SCHEMA,'authority':'DENY_ALL','production_promotion_permitted':False,
        'plan_sha256':H,'dataset_sha256':H,'no_change_producer_sha256':H,'scope':'s','candidates':[]}
@@ -44,7 +48,7 @@ class Tests(unittest.TestCase):
     with self.assertRaises((ValueError,KeyError,TypeError)):
         m.review(x)
  def test_synthetic_mechanism_never_promotes(self):
-    ans=m.review(fixture());self.assertEqual(ans['matched_source_cases'],7)
+    ans=m.review(fixture());self.assertEqual(ans['matched_source_cases'],21)
     self.assertFalse(ans['stem_winner_selected']);self.assertFalse(ans['model_weight_origin_and_physical_execution_verified'])
  def test_missing_stem(self):self.deny(lambda x:x['candidates'].pop())
  def test_duplicate_stem(self):self.deny(lambda x:x['candidates'][2].update(model='mmbert_small'))
@@ -60,6 +64,9 @@ class Tests(unittest.TestCase):
  def test_no_encoder_duplication(self):self.deny(lambda x:[a.update(model_sha256=f'{2:064x}') for a in x['candidates'][1]['study']['arms'][1:]])
  def test_bad_feature_width(self):self.deny(lambda x:x['candidates'][2]['study'].update(feature_width=384))
  def test_wrong_pooling(self):self.deny(lambda x:x['candidates'][0]['study'].update(pooling_profile='mean_l2'))
+ def test_missing_code_family(self):self.deny(lambda x:x['candidates'][0]['study']['cases'][2].pop('task_family'))
+ def test_language_drift(self):self.deny(lambda x:x['candidates'][0]['study']['cases'][0].update(language='en'))
+ def test_missing_family_in_future(self):self.deny(lambda x:x['candidates'][0]['study']['cases'][11].update(language='zh',task_family='chinese_semantics'))
  def test_tokens_incomplete(self):self.deny(lambda x:x['candidates'][0]['tokens'].pop('c1'))
  def test_tokens_truncated(self):self.deny(lambda x:x['candidates'][0]['tokens'].update(c1=513))
  def test_head_ceiling(self):self.deny(lambda x:x['candidates'][0]['training'].update(trainable_head_parameters=3000))
