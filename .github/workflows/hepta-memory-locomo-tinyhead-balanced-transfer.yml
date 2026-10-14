@@ -1,0 +1,235 @@
+name: MemoryCell real LoCoMo six-family SGD versus frozen retrieval
+on:
+  push:
+    branches:
+      - codex/memorycell-locomo-sixfamily-tinyhead-20261014
+    paths:
+      - "scripts/memory_cell/locomo_tiny_source_head_transfer.py"
+      - "scripts/memory_cell/locomo_tiny_source_head_transfer_score.py"
+      - "scripts/memory_cell/locomo_tiny_source_head_balanced.py"
+      - "scripts/memory_cell/locomo_tiny_source_head_balanced_score.py"
+      - "scripts/memory_cell/test_locomo_tiny_source_head_transfer.py"
+      - ".github/workflows/hepta-memory-locomo-tinyhead-balanced-transfer.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/locomo_tiny_source_head_transfer.py"
+      - "scripts/memory_cell/locomo_tiny_source_head_transfer_score.py"
+      - "scripts/memory_cell/locomo_tiny_source_head_balanced.py"
+      - "scripts/memory_cell/locomo_tiny_source_head_balanced_score.py"
+      - "scripts/memory_cell/test_locomo_tiny_source_head_transfer.py"
+      - ".github/workflows/hepta-memory-locomo-tinyhead-balanced-transfer.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: locomo-sixfam-head-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+env:
+  PYTHONPATH: scripts/memory_cell
+  PUBLIC_ZIP_SHA: "51e18514c68f31220f4dcd072914f6e015aa9733b6c5b4a4d4e3b14dac25ec37"
+  DECISIONS_ZIP_SHA: "3fb1c32723114d31b42ece1c74aa0250e2ecb06c6060cb011071d4654fef6f097"
+  SELECTION_GOLD_ZIP_SHA: "ba8e2282034c5bb51fe319e8909e11d028619f85dfbbce5a6fff78284f9f220c"
+  ORIGINAL_POLICY_ZIP_SHA: "3913c112ff417a1d9e6aa5c0f11e61286a98815fc32b4eb5df9da8bac59b690d"
+
+jobs:
+  source-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Reject forged original and held-out source journals
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/memory_cell/locomo_tiny_source_head_transfer.py \
+            scripts/memory_cell/locomo_tiny_source_head_transfer_score.py \
+            scripts/memory_cell/locomo_tiny_source_head_balanced.py \
+            scripts/memory_cell/locomo_tiny_source_head_balanced_score.py \
+            scripts/memory_cell/test_locomo_tiny_source_head_transfer.py
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p test_locomo_tiny_source_head_transfer.py -v
+      - name: Mandatory Ruff scoped lint and formatting (no waiver)
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff check --select F401,F821,F841 \
+            scripts/memory_cell/locomo_tiny_source_head_transfer.py \
+            scripts/memory_cell/locomo_tiny_source_head_transfer_score.py \
+            scripts/memory_cell/locomo_tiny_source_head_balanced.py \
+            scripts/memory_cell/locomo_tiny_source_head_balanced_score.py \
+            scripts/memory_cell/test_locomo_tiny_source_head_transfer.py
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/locomo_tiny_source_head_transfer.py \
+            scripts/memory_cell/locomo_tiny_source_head_transfer_score.py \
+            scripts/memory_cell/locomo_tiny_source_head_balanced.py \
+            scripts/memory_cell/locomo_tiny_source_head_balanced_score.py \
+            scripts/memory_cell/test_locomo_tiny_source_head_transfer.py
+      - name: Retain exact lint and format diff if source gate fails
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/locomo-source-diagnosis
+          git rev-parse HEAD > /tmp/locomo-source-diagnosis/tested-commit.txt
+          if command -v uv >/dev/null; then
+            uv run --frozen --project scripts ruff check --select F401,F821,F841 \
+              scripts/memory_cell/locomo_tiny_source_head_*.py \
+              scripts/memory_cell/test_locomo_tiny_source_head_transfer.py \
+              > /tmp/locomo-source-diagnosis/lint.txt 2>&1 || true
+            uv run --frozen --project scripts ruff format --diff \
+              scripts/memory_cell/locomo_tiny_source_head_*.py \
+              scripts/memory_cell/test_locomo_tiny_source_head_transfer.py \
+              > /tmp/locomo-source-diagnosis/ruff.diff || true
+            cat /tmp/locomo-source-diagnosis/lint.txt
+            cat /tmp/locomo-source-diagnosis/ruff.diff
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: memory-locomo-tiny-head-source-failure
+          path: /tmp/locomo-source-diagnosis
+          if-no-files-found: warn
+
+  train-six-families-before-target:
+    needs: source-gate
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Download only immutable public conversation and source-only retrieval
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/locomo-original-public /tmp/locomo-pretarg
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11728164433/zip" \
+            > /tmp/locomo-original-public/public.zip
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11729394703/zip" \
+            > /tmp/locomo-original-public/decisions.zip
+          printf '%s  %s\n' "$PUBLIC_ZIP_SHA" /tmp/locomo-original-public/public.zip | sha256sum --check --strict
+          printf '%s  %s\n' "$DECISIONS_ZIP_SHA" /tmp/locomo-original-public/decisions.zip | sha256sum --check --strict
+          test ! -e /tmp/locomo-original-public/evaluation-targets.zip
+          test ! -e /tmp/locomo-original-public/selection-targets.zip
+          HEPTA_LOCOMO_SOURCE_ZIP=/tmp/locomo-original-public/public.zip \
+          HEPTA_LOCOMO_DECISIONS_ZIP=/tmp/locomo-original-public/decisions.zip \
+            python3 -m unittest discover -s scripts/memory_cell \
+            -p test_locomo_tiny_source_head_transfer.py -v
+      - name: Install exactly pinned CPU torch 2.5.1; run source-only real AdamW
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/locomo-torch
+          /tmp/locomo-torch/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/locomo-torch/bin/python scripts/memory_cell/locomo_tiny_source_head_balanced.py train \
+            /tmp/locomo-original-public/public.zip \
+            /tmp/locomo-original-public/decisions.zip \
+            /tmp/locomo-pretarg/weights.json
+      - name: Predict for two original published selection families BEFORE gold
+        run: |
+          set -euo pipefail
+          /tmp/locomo-torch/bin/python scripts/memory_cell/locomo_tiny_source_head_balanced.py predict \
+            /tmp/locomo-original-public/public.zip \
+            /tmp/locomo-original-public/decisions.zip \
+            /tmp/locomo-pretarg/weights.json \
+            /tmp/locomo-pretarg/predictions.json
+          python3 scripts/memory_cell/locomo_tiny_source_head_balanced.py seal \
+            /tmp/locomo-pretarg/weights.json \
+            /tmp/locomo-pretarg/predictions.json \
+            /tmp/locomo-pretarg/pre-target-seal.json
+          git rev-parse HEAD > /tmp/locomo-pretarg/auditor-commit.txt
+          (cd /tmp/locomo-pretarg && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path('/tmp/locomo-pretarg')
+          w=json.loads((root/'weights.json').read_bytes())
+          p=json.loads((root/'predictions.json').read_bytes())
+          assert w['actual_optimizer_source_family_count']==6
+          assert w['total_gradient_updates']==384
+          assert len(p['predictions'])==64
+          assert p['source_only_before_annotated_target'] is True
+          assert p['model_answer_calls']==0
+          assert w['original_benchmark_QA_labels_read'] is False
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-locomo-balanced-pre-gold-${{ github.sha }}
+          path: /tmp/locomo-pretarg
+          if-no-files-found: error
+
+  score-only-after-frozen-artifact-upload:
+    needs: train-six-families-before-target
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: memory-locomo-balanced-pre-gold-${{ github.sha }}
+          path: /tmp/locomo-pretarg
+      - name: Reopen exact original pre-target seal BEFORE downloading any answer
+        run: |
+          set -euo pipefail
+          (cd /tmp/locomo-pretarg && sha256sum --check --strict SHA256SUMS)
+          test "$(cat /tmp/locomo-pretarg/auditor-commit.txt)" = "$GITHUB_SHA"
+          mkdir -p /tmp/locomo-scoring /tmp/locomo-original
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11728164433/zip" > /tmp/locomo-original/public.zip
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11729394703/zip" > /tmp/locomo-original/decisions.zip
+          printf '%s  %s\n' "$PUBLIC_ZIP_SHA" /tmp/locomo-original/public.zip | sha256sum --check --strict
+          printf '%s  %s\n' "$DECISIONS_ZIP_SHA" /tmp/locomo-original/decisions.zip | sha256sum --check --strict
+      - name: FIRST evaluation-target download, only after immutable Head weights and predictions uploaded
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11728632417/zip" > /tmp/locomo-original/selection-targets.zip
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11732100501/zip" > /tmp/locomo-original/original-selection-policy.zip
+          printf '%s  %s\n' "$SELECTION_GOLD_ZIP_SHA" /tmp/locomo-original/selection-targets.zip | sha256sum --check --strict
+          printf '%s  %s\n' "$ORIGINAL_POLICY_ZIP_SHA" /tmp/locomo-original/original-selection-policy.zip | sha256sum --check --strict
+          python3 scripts/memory_cell/locomo_tiny_source_head_balanced_score.py \
+            /tmp/locomo-original/public.zip \
+            /tmp/locomo-original/decisions.zip \
+            /tmp/locomo-pretarg/weights.json \
+            /tmp/locomo-pretarg/predictions.json \
+            /tmp/locomo-pretarg/pre-target-seal.json \
+            /tmp/locomo-original/selection-targets.zip \
+            /tmp/locomo-original/original-selection-policy.zip \
+            /tmp/locomo-scoring/report.json \
+            --sealed-sha256 "$(sha256sum /tmp/locomo-pretarg/pre-target-seal.json | cut -d ' ' -f1)"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path('/tmp/locomo-scoring/report.json').read_bytes())
+          frozen=r['scores']['frozen_lexical_k8']
+          assert frozen['eligible']==10 and frozen['covered']==4
+          assert r['original_frozen_lexical_report_reproduced'] is True
+          assert r['actual_pre_gold_torch_gradient_updates']==384
+          assert r['full_reader_task_success_evaluated'] is False
+          assert r['language_model_generations']==0
+          assert r['production_accepted'] is False
+          PY
+          git rev-parse HEAD > /tmp/locomo-scoring/auditor-commit.txt
+          (cd /tmp/locomo-scoring && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-locomo-balanced-source-support-no-promotion-${{ github.sha }}
+          path: /tmp/locomo-scoring
+          if-no-files-found: error
