@@ -221,9 +221,12 @@ unexpected or missing tensors even if the **total parameter count stays
 identical**, overlapping/unclaimed file bytes, symlinked artifact paths, wrong
 dtype, floating non-finite Head weights, and Q24 values outside each native
 parameter's validity range. In particular, V3 gate bias and SSM decay must be
-nonnegative and at most Q24 unity. The training surrogate now projects these
-two parameter families into that range after each optimization step rather
-than exporting silently incompatible parameters.
+nonnegative and at most Q24 unity. The training surrogate projects **every temporal parameter** into
+the signed Q24 range after each optimizer step and additionally enforces
+nonnegative V3 gate bias and SSM decay, rather than exporting silently
+incompatible parameters. It refuses any subsequent implicit export clamp.
+A4 also rejects cross-arm state-width drift, invalid A0 checkpoint identities,
+and target-host measurement windows starting before the frozen train cutoff.
 
 The file reader holds one bounded physical file descriptor and validates the
 same loaded bytes against the separately supplied SHA. This does **not**
