@@ -27,7 +27,9 @@ if torch is not None:
 class FullCellHeadsProbeTests(unittest.TestCase):
     def test_all_heads_train_with_actual_parameters_and_controls(self):
         rows, cut = fixture()
-        before = [(r.features.paired.clone(), r.features.frozen_scores.clone()) for r in rows]
+        before = [
+            (r.features.paired.clone(), r.features.frozen_scores.clone()) for r in rows
+        ]
         result = run_probe(rows, cut, steps=5, rank=3)
         self.assertEqual(result["schema"], "hepta.full-cell-heads-probe.v1")
         self.assertEqual(result["rows"], result["denominator"])
@@ -35,7 +37,9 @@ class FullCellHeadsProbeTests(unittest.TestCase):
         self.assertEqual({r["kind"] for r in result["reports"]}, set(HEAD_KINDS))
         for report in result["reports"]:
             self.assertGreater(report["param_counts"]["total"], 0)
-            self.assertEqual(report["param_counts"]["trainable"], report["param_counts"]["total"])
+            self.assertEqual(
+                report["param_counts"]["trainable"], report["param_counts"]["total"]
+            )
             self.assertEqual(report["training"]["steps"], 5)
             self.assertFalse(report["training"]["shuffled_labels"])
             self.assertGreaterEqual(report["frozen_control_accuracy"], 0)
@@ -53,7 +57,9 @@ class FullCellHeadsProbeTests(unittest.TestCase):
         original = source_digest(rows)
         self.assertEqual(original, source_digest(rows))
         rows[0].features.paired = rows[0].features.paired.to(torch.bfloat16)
-        rows[0].features.frozen_scores = rows[0].features.frozen_scores.to(torch.bfloat16)
+        rows[0].features.frozen_scores = rows[0].features.frozen_scores.to(
+            torch.bfloat16
+        )
         changed_dtype = source_digest(rows)
         self.assertNotEqual(original, changed_dtype)
         self.assertEqual(changed_dtype, source_digest(rows))
@@ -81,7 +87,12 @@ class FullCellHeadsProbeTests(unittest.TestCase):
         bad[-1].positive_indices = (99,)
         with self.assertRaises(ValueError):
             train_head(head, bad, cut, steps=4)
-        self.assertTrue(all(torch.equal(value, state[name]) for name, value in head.state_dict().items()))
+        self.assertTrue(
+            all(
+                torch.equal(value, state[name])
+                for name, value in head.state_dict().items()
+            )
+        )
 
 
 if __name__ == "__main__":

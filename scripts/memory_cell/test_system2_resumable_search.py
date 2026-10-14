@@ -1,4 +1,5 @@
 """Pause boundaries are execution boundaries, not new reasoning or training."""
+
 import hashlib
 import json
 from pathlib import Path
@@ -9,7 +10,13 @@ from unittest.mock import patch
 import torch
 
 from system2_ablation import model_digest
-from system2_budget_control import ARMS as BUDGET_ARMS, LIMITS, UNIT_COST, episode, make_head
+from system2_budget_control import (
+    ARMS as BUDGET_ARMS,
+    LIMITS,
+    UNIT_COST,
+    episode,
+    make_head,
+)
 from system2_resumable_search import SearchSession
 from system2_resume_trial import restart_ceiling, run
 from system2_verified_search import ARMS, ExactLabels, digest, search, verify
@@ -50,10 +57,28 @@ class ResumeTests(unittest.TestCase):
             for arm in ARMS:
                 critic = model()
                 for limit in (32, 256, 1024):
-                    old = search(numbers, 24, arm, 8192, critic, terminal_policy="eager", successor_limit=limit)
+                    old = search(
+                        numbers,
+                        24,
+                        arm,
+                        8192,
+                        critic,
+                        terminal_policy="eager",
+                        successor_limit=limit,
+                    )
                     new = SearchSession(numbers, 24, arm, critic).advance(limit)
-                    self.assertEqual((old["found"], old["proof"], old["costs"]["generated_successors"]),
-                                     (new["found"], new["proof"], new["costs"]["generated_successors"]))
+                    self.assertEqual(
+                        (
+                            old["found"],
+                            old["proof"],
+                            old["costs"]["generated_successors"],
+                        ),
+                        (
+                            new["found"],
+                            new["proof"],
+                            new["costs"]["generated_successors"],
+                        ),
+                    )
 
     def test_partial_node_cursor_is_reused(self):
         session = SearchSession((1, 3, 4, 6), 24, "heuristic_search")
@@ -66,7 +91,9 @@ class ResumeTests(unittest.TestCase):
         self.assertEqual(second["costs"]["popped_states"], 1)
 
     def test_search_does_not_call_reachability_oracle(self):
-        with patch.object(ExactLabels, "_solve", side_effect=AssertionError("oracle leakage")):
+        with patch.object(
+            ExactLabels, "_solve", side_effect=AssertionError("oracle leakage")
+        ):
             result = SearchSession((1, 3, 4, 6), 24, "heuristic_search").advance(1024)
         self.assertTrue(result["found"])
         self.assertTrue(verify((1, 3, 4, 6), 24, result["proof"]))
@@ -76,7 +103,14 @@ class ResumeTests(unittest.TestCase):
         session = SearchSession(numbers, 24, "heuristic_search")
         self.assertFalse(session.advance(256)["found"])
         resumed = session.advance(1024)
-        restarted = search(numbers, 24, "heuristic_search", 8192, terminal_policy="eager", successor_limit=768)
+        restarted = search(
+            numbers,
+            24,
+            "heuristic_search",
+            8192,
+            terminal_policy="eager",
+            successor_limit=768,
+        )
         self.assertTrue(resumed["found"])
         self.assertFalse(restarted["found"])
         self.assertEqual(resumed["costs"]["generated_successors"], 934)
@@ -121,6 +155,7 @@ class ResumeTests(unittest.TestCase):
         class Bad(torch.nn.Module):
             def forward(self, x):
                 return torch.full((len(x), 1), float("nan"))
+
         session = SearchSession((1, 3, 4, 6), 24, "value_search", Bad().eval())
         with self.assertRaises(ValueError):
             session.advance(128)
@@ -147,15 +182,31 @@ class ResumeTests(unittest.TestCase):
         self.assertFalse(result["certified_impossible"])
 
     def test_menu_ceiling_keeps_missing_outcomes_unknown(self):
-        rows = [dict(group="fixture", query_id="q", budget=1024, numbers=[1, 3, 4, 6],
-                arm=a, status="completed", found=a=="direct_heuristic", utility=float(a=="direct_heuristic"))
-                for a in ("direct_heuristic", "learned", "probe_stop", "probe_heuristic", "probe_value")]
+        rows = [
+            dict(
+                group="fixture",
+                query_id="q",
+                budget=1024,
+                numbers=[1, 3, 4, 6],
+                arm=a,
+                status="completed",
+                found=a == "direct_heuristic",
+                utility=float(a == "direct_heuristic"),
+            )
+            for a in (
+                "direct_heuristic",
+                "learned",
+                "probe_stop",
+                "probe_heuristic",
+                "probe_value",
+            )
+        ]
         result = restart_ceiling(rows)[0]
         self.assertEqual(result["restart_menu_proofs"], 0)
         self.assertEqual(len(result["structurally_lost"]), 1)
         self.assertEqual(restart_ceiling(rows[:-1])[0]["unknown"], 1)
         with self.assertRaises(ValueError):
-            restart_ceiling(rows+rows[:1])
+            restart_ceiling(rows + rows[:1])
 
     def test_actual_runner_census_seal_and_failure_preservation(self):
         critic = model()
@@ -163,27 +214,71 @@ class ResumeTests(unittest.TestCase):
         numbers = (1, 3, 4, 6)
         groups = {"fixture": [numbers]}
         with tempfile.TemporaryDirectory() as tmp:
-            old = Path(tmp)/"budget"
+            old = Path(tmp) / "budget"
             old.mkdir()
-            rows = [episode(numbers, b, a, critic, head) | dict(group="fixture", query_id=digest(numbers))
-                    for b in LIMITS for a in BUDGET_ARMS]
-            raw = "".join(json.dumps(r)+"\n" for r in rows).encode()
-            (old/"predictions.jsonl").write_bytes(raw)
-            (old/"prediction-seal.json").write_text(json.dumps(dict(sha256=hashlib.sha256(raw).hexdigest(), rows=len(rows), scoring_started=False)))
-            (old/"plan.json").write_text(json.dumps(dict(groups=groups, frozen_child_model=model_digest(critic),
-                objective=dict(cost_per_generated_successor=UNIT_COST), source_commit="a"*40)))
-            with patch("system2_resume_trial.read_parent", return_value=({}, {"value": critic}, [], {})), \
-                 patch("system2_resume_trial.cohort", return_value=([], groups)):
-                result = run(Path("fixture.zip"), old, Path(tmp)/"success", source_commit="a"*40)
+            rows = [
+                episode(numbers, b, a, critic, head)
+                | dict(group="fixture", query_id=digest(numbers))
+                for b in LIMITS
+                for a in BUDGET_ARMS
+            ]
+            raw = "".join(json.dumps(r) + "\n" for r in rows).encode()
+            (old / "predictions.jsonl").write_bytes(raw)
+            (old / "prediction-seal.json").write_text(
+                json.dumps(
+                    dict(
+                        sha256=hashlib.sha256(raw).hexdigest(),
+                        rows=len(rows),
+                        scoring_started=False,
+                    )
+                )
+            )
+            (old / "plan.json").write_text(
+                json.dumps(
+                    dict(
+                        groups=groups,
+                        frozen_child_model=model_digest(critic),
+                        objective=dict(cost_per_generated_successor=UNIT_COST),
+                        source_commit="a" * 40,
+                    )
+                )
+            )
+            with (
+                patch(
+                    "system2_resume_trial.read_parent",
+                    return_value=({}, {"value": critic}, [], {}),
+                ),
+                patch("system2_resume_trial.cohort", return_value=([], groups)),
+            ):
+                result = run(
+                    Path("fixture.zip"),
+                    old,
+                    Path(tmp) / "success",
+                    source_commit="a" * 40,
+                )
                 self.assertEqual((result["recorded"], result["failed"]), (4, 0))
-                with patch.object(SearchSession, "advance", side_effect=RuntimeError("execution failure")):
+                with patch.object(
+                    SearchSession,
+                    "advance",
+                    side_effect=RuntimeError("execution failure"),
+                ):
                     with self.assertRaises(RuntimeError):
-                        run(Path("fixture.zip"), old, Path(tmp)/"failed", source_commit="a"*40)
-                    failed = json.loads((Path(tmp)/"failed/summary.json").read_text())
+                        run(
+                            Path("fixture.zip"),
+                            old,
+                            Path(tmp) / "failed",
+                            source_commit="a" * 40,
+                        )
+                    failed = json.loads((Path(tmp) / "failed/summary.json").read_text())
                     self.assertEqual((failed["recorded"], failed["failed"]), (4, 4))
-                (old/"predictions.jsonl").write_bytes(raw+b"\n")
+                (old / "predictions.jsonl").write_bytes(raw + b"\n")
                 with self.assertRaisesRegex(ValueError, "seal"):
-                    run(Path("fixture.zip"), old, Path(tmp)/"tampered", source_commit="a"*40)
+                    run(
+                        Path("fixture.zip"),
+                        old,
+                        Path(tmp) / "tampered",
+                        source_commit="a" * 40,
+                    )
 
 
 if __name__ == "__main__":

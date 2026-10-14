@@ -1,4 +1,5 @@
 """Synthetic fixture tests: no real private review or reviewer approval."""
+
 import copy
 import hashlib
 import json
@@ -15,8 +16,9 @@ from test_reader_originals_attestation import example
 
 
 def dump_lines(path, rows):
-    raw = "".join(json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n"
-                  for row in rows).encode()
+    raw = "".join(
+        json.dumps(row, sort_keys=True, separators=(",", ":")) + "\n" for row in rows
+    ).encode()
     path.write_bytes(raw)
     path.chmod(0o600)
     return hashlib.sha256(raw).hexdigest()
@@ -33,18 +35,27 @@ class ReviewIntakeTests(unittest.TestCase):
         self.root = Path(self.temp.name)
         _, _, _, originals = example()
         self.handoff = self.root / "handoff"
-        prepare_handoff(originals, source_file_sha256="a" * 64,
-                        output=self.handoff, salt=b"\x07" * 32)
+        prepare_handoff(
+            originals,
+            source_file_sha256="a" * 64,
+            output=self.handoff,
+            salt=b"\x07" * 32,
+        )
         self.receipt_pin = hashlib.sha256(
-            (self.handoff / "handoff-receipt.json").read_bytes()).hexdigest()
-        operator = {r["ticket"]: r for r in read_lines(
-            self.handoff / "operator-private-map.jsonl")}
+            (self.handoff / "handoff-receipt.json").read_bytes()
+        ).hexdigest()
+        operator = {
+            r["ticket"]: r
+            for r in read_lines(self.handoff / "operator-private-map.jsonl")
+        }
         rows = read_lines(self.handoff / "reviewer-blank-form.jsonl")
         for row in rows:
             condition = operator[row["ticket"]]["condition"]
             row["grounded_and_cited"] = condition == "human_sufficient"
             row["exact_refusal"] = condition in (
-                "no_evidence", "critical_premise_removed")
+                "no_evidence",
+                "critical_premise_removed",
+            )
             row["cited_semantically_supported"] = condition == "human_sufficient"
         self.first = self.root / "review-one.jsonl"
         self.second = self.root / "review-two.jsonl"
@@ -54,20 +65,39 @@ class ReviewIntakeTests(unittest.TestCase):
         self.map = operator
         self.output = self.root / "review-comparison"
 
-    def run_intake(self, *, first_pin=None, second_pin=None, receipt_pin=None,
-                   first_id="reviewer-a", second_id="reviewer-b", out=None):
+    def run_intake(
+        self,
+        *,
+        first_pin=None,
+        second_pin=None,
+        receipt_pin=None,
+        first_id="reviewer-a",
+        second_id="reviewer-b",
+        out=None,
+    ):
         return reconcile_handoff(
-            self.handoff, self.first, self.second,
+            self.handoff,
+            self.first,
+            self.second,
             out or self.output,
             receipt_pin=receipt_pin or self.receipt_pin,
             first_pin=first_pin or self.first_pin,
             second_pin=second_pin or self.second_pin,
-            first_id=first_id, second_id=second_id)
+            first_id=first_id,
+            second_id=second_id,
+        )
 
     def test_all_agreement_does_not_sign_or_approve(self):
         result = self.run_intake()
-        self.assertEqual((result["positions"], result["agreed"],
-                          result["disputed"], result["incomplete"]), (8, 8, 0, 0))
+        self.assertEqual(
+            (
+                result["positions"],
+                result["agreed"],
+                result["disputed"],
+                result["incomplete"],
+            ),
+            (8, 8, 0, 0),
+        )
         self.assertFalse(result["review_approval_produced"])
         receipt = json.loads((self.output / "reconciliation-receipt.json").read_text())
         self.assertFalse(receipt["independent_human_judgment_established"])
@@ -112,9 +142,14 @@ class ReviewIntakeTests(unittest.TestCase):
         self.assertFalse(self.output.exists())
 
     def test_missing_or_duplicate_or_extra_ticket_rejected(self):
-        for rows in (self.rows[:-1], self.rows + self.rows[:1],
-                     [dict(r, ticket="a" * 32) if i == 0 else r
-                      for i, r in enumerate(self.rows)]):
+        for rows in (
+            self.rows[:-1],
+            self.rows + self.rows[:1],
+            [
+                dict(r, ticket="a" * 32) if i == 0 else r
+                for i, r in enumerate(self.rows)
+            ],
+        ):
             with self.subTest(rows=len(rows)):
                 self.second_pin = dump_lines(self.second, rows)
                 with self.assertRaises(ValueError):
@@ -170,18 +205,26 @@ class ReviewIntakeTests(unittest.TestCase):
         for verdict in (None, False):
             with self.subTest(cited_support=verdict):
                 rows = copy.deepcopy(self.rows)
-                row = next(row for row in rows
-                           if self.map[row["ticket"]]["condition"] == "human_sufficient")
+                row = next(
+                    row
+                    for row in rows
+                    if self.map[row["ticket"]]["condition"] == "human_sufficient"
+                )
                 row["cited_semantically_supported"] = verdict
                 self.second_pin = dump_lines(self.second, rows)
-                with self.assertRaisesRegex(ValueError, "affirmative cited-source support"):
+                with self.assertRaisesRegex(
+                    ValueError, "affirmative cited-source support"
+                ):
                     self.run_intake()
                 self.assertFalse(self.output.exists())
 
     def test_positive_grounded_claim_requires_explicit_non_refusal(self):
         rows = copy.deepcopy(self.rows)
-        row = next(row for row in rows
-                   if self.map[row["ticket"]]["condition"] == "human_sufficient")
+        row = next(
+            row
+            for row in rows
+            if self.map[row["ticket"]]["condition"] == "human_sufficient"
+        )
         row["exact_refusal"] = None
         self.second_pin = dump_lines(self.second, rows)
         with self.assertRaisesRegex(ValueError, "explicit non-refusal review"):
@@ -192,8 +235,11 @@ class ReviewIntakeTests(unittest.TestCase):
         # Unknown source support on a NON-positive answer is a legitimate
         # unfinished review. It must not be converted into agreement.
         rows = copy.deepcopy(self.rows)
-        row = next(row for row in rows
-                   if self.map[row["ticket"]]["condition"] == "ordinary_retrieval")
+        row = next(
+            row
+            for row in rows
+            if self.map[row["ticket"]]["condition"] == "ordinary_retrieval"
+        )
         row["cited_semantically_supported"] = None
         self.second_pin = dump_lines(self.second, rows)
         result = self.run_intake()
@@ -236,11 +282,13 @@ class ReviewIntakeTests(unittest.TestCase):
                 item["raw_answer"] += " "
                 break
         modified = self.root / "modified-refusal-handoff"
-        prepare_handoff(originals, source_file_sha256="a" * 64,
-                        output=modified, salt=b"\x07" * 32)
+        prepare_handoff(
+            originals, source_file_sha256="a" * 64, output=modified, salt=b"\x07" * 32
+        )
         self.handoff = modified
         self.receipt_pin = hashlib.sha256(
-            (modified / "handoff-receipt.json").read_bytes()).hexdigest()
+            (modified / "handoff-receipt.json").read_bytes()
+        ).hexdigest()
         with self.assertRaisesRegex(ValueError, "exact-refusal verdict"):
             self.run_intake()
         self.assertFalse(self.output.exists())
@@ -253,11 +301,13 @@ class ReviewIntakeTests(unittest.TestCase):
                 item["raw_answer"] = "[E1]"
                 break
         modified = self.root / "modified-label-only-handoff"
-        prepare_handoff(originals, source_file_sha256="a" * 64,
-                        output=modified, salt=b"\x07" * 32)
+        prepare_handoff(
+            originals, source_file_sha256="a" * 64, output=modified, salt=b"\x07" * 32
+        )
         self.handoff = modified
         self.receipt_pin = hashlib.sha256(
-            (modified / "handoff-receipt.json").read_bytes()).hexdigest()
+            (modified / "handoff-receipt.json").read_bytes()
+        ).hexdigest()
         with self.assertRaisesRegex(ValueError, "only source labels"):
             self.run_intake()
         self.assertFalse(self.output.exists())
@@ -273,7 +323,9 @@ class ReviewIntakeTests(unittest.TestCase):
         receipt = self.handoff / "handoff-receipt.json"
         body = json.loads(receipt.read_text())
         body["written_file_sha256"]["review-questions.jsonl"] = new_pin
-        receipt.write_text(json.dumps(body, sort_keys=True, separators=(",", ":")) + "\n")
+        receipt.write_text(
+            json.dumps(body, sort_keys=True, separators=(",", ":")) + "\n"
+        )
         receipt.chmod(0o600)
         self.receipt_pin = hashlib.sha256(receipt.read_bytes()).hexdigest()
 
@@ -284,62 +336,82 @@ class ReviewIntakeTests(unittest.TestCase):
         mappings = self.handoff / "operator-private-map.jsonl"
         views = read_lines(questions)
         links = read_lines(mappings)
-        link = next(r for r in links
-                    if r["item_id"] == qid and r["condition"] == condition)
+        link = next(
+            r for r in links if r["item_id"] == qid and r["condition"] == condition
+        )
         view = next(r for r in views if r["ticket"] == link["ticket"])
         edit(view["evidence"])
         link["exact_provenance"]["delivered_source_sha256"] = [
-            e["source_fingerprint"] for e in view["evidence"]]
+            e["source_fingerprint"] for e in view["evidence"]
+        ]
         receipt_path = self.handoff / "handoff-receipt.json"
         receipt = json.loads(receipt_path.read_text())
         receipt["written_file_sha256"]["review-questions.jsonl"] = dump_lines(
-            questions, views)
+            questions, views
+        )
         receipt["written_file_sha256"]["operator-private-map.jsonl"] = dump_lines(
-            mappings, links)
-        receipt_path.write_text(json.dumps(
-            receipt, sort_keys=True, separators=(",", ":")) + "\n")
+            mappings, links
+        )
+        receipt_path.write_text(
+            json.dumps(receipt, sort_keys=True, separators=(",", ":")) + "\n"
+        )
         receipt_path.chmod(0o600)
         self.receipt_pin = hashlib.sha256(receipt_path.read_bytes()).hexdigest()
 
     def test_re_pinned_no_evidence_cannot_display_a_source(self):
         views = read_lines(self.handoff / "review-questions.jsonl")
-        ordinary = next(r for r in views
-                        if self.map[r["ticket"]]["item_id"] == "q1"
-                        and self.map[r["ticket"]]["condition"] == "ordinary_retrieval")
+        ordinary = next(
+            r
+            for r in views
+            if self.map[r["ticket"]]["item_id"] == "q1"
+            and self.map[r["ticket"]]["condition"] == "ordinary_retrieval"
+        )
         source = copy.deepcopy(ordinary["evidence"][0])
         self._rewrite_pinned_reviewer_evidence(
-            "q1", "no_evidence", lambda evidence: evidence.append(source))
-        with self.assertRaisesRegex(ValueError, "evidence intervention not strictly nested"):
+            "q1", "no_evidence", lambda evidence: evidence.append(source)
+        )
+        with self.assertRaisesRegex(
+            ValueError, "evidence intervention not strictly nested"
+        ):
             self.run_intake()
         self.assertFalse(self.output.exists())
 
     def test_re_pinned_removed_condition_cannot_introduce_new_source(self):
-        novel = dict(label="E2", excerpt="Synthetic substituted premise.",
-                     observed_at="2026-01-01T00:00:00+00:00",
-                     source_fingerprint="f" * 64)
+        novel = dict(
+            label="E2",
+            excerpt="Synthetic substituted premise.",
+            observed_at="2026-01-01T00:00:00+00:00",
+            source_fingerprint="f" * 64,
+        )
         self._rewrite_pinned_reviewer_evidence(
-            "q1", "critical_premise_removed",
-            lambda evidence: evidence.append(novel))
-        with self.assertRaisesRegex(ValueError, "evidence intervention not strictly nested"):
+            "q1", "critical_premise_removed", lambda evidence: evidence.append(novel)
+        )
+        with self.assertRaisesRegex(
+            ValueError, "evidence intervention not strictly nested"
+        ):
             self.run_intake()
         self.assertFalse(self.output.exists())
 
     def test_re_pinned_same_evidence_fingerprint_twice_is_invalid(self):
         def duplicate(evidence):
             evidence[1] = dict(evidence[0], label="E2")
-        self._rewrite_pinned_reviewer_evidence(
-            "q1", "human_sufficient", duplicate)
-        with self.assertRaisesRegex(ValueError, "duplicate reviewer-visible source fingerprint"):
+
+        self._rewrite_pinned_reviewer_evidence("q1", "human_sufficient", duplicate)
+        with self.assertRaisesRegex(
+            ValueError, "duplicate reviewer-visible source fingerprint"
+        ):
             self.run_intake()
         self.assertFalse(self.output.exists())
 
     def test_reviewer_visible_question_cannot_change_across_blinded_conditions(self):
         def change(rows):
-            row = next(r for r in rows
-                       if self.map[r["ticket"]]["item_id"] == "q1")
+            row = next(r for r in rows if self.map[r["ticket"]]["item_id"] == "q1")
             row["question"] += " Unrelated altered request."
+
         self._rewrite_pinned_reviewer_view(change)
-        with self.assertRaisesRegex(ValueError, "question changed across blinded conditions"):
+        with self.assertRaisesRegex(
+            ValueError, "question changed across blinded conditions"
+        ):
             self.run_intake()
         self.assertFalse(self.output.exists())
 
@@ -348,11 +420,13 @@ class ReviewIntakeTests(unittest.TestCase):
         # This isolates cross-condition question drift from the independent
         # fail-closed future-source check.
         def change(rows):
-            row = next(r for r in rows
-                       if self.map[r["ticket"]]["item_id"] == "q1")
+            row = next(r for r in rows if self.map[r["ticket"]]["item_id"] == "q1")
             row["question_observed_at"] = "2026-01-02T01:00:00+00:00"
+
         self._rewrite_pinned_reviewer_view(change)
-        with self.assertRaisesRegex(ValueError, "question changed across blinded conditions"):
+        with self.assertRaisesRegex(
+            ValueError, "question changed across blinded conditions"
+        ):
             self.run_intake()
         self.assertFalse(self.output.exists())
 
@@ -363,6 +437,7 @@ class ReviewIntakeTests(unittest.TestCase):
             for row in rows:
                 if self.map[row["ticket"]]["item_id"] == "q1":
                     row["question_observed_at"] = "2025-12-31T23:00:00+00:00"
+
         self._rewrite_pinned_reviewer_view(change)
         with self.assertRaisesRegex(ValueError, "future reviewer-visible source time"):
             self.run_intake()
@@ -372,33 +447,52 @@ class ReviewIntakeTests(unittest.TestCase):
         # Source q1-b occurs in three conditions. Tamper just the review view,
         # while retaining its operator-map/source-fingerprint binding.
         def change(rows):
-            ordinary = next(r for r in rows if self.map[r["ticket"]]["item_id"] == "q1"
-                            and self.map[r["ticket"]]["condition"] == "ordinary_retrieval")
+            ordinary = next(
+                r
+                for r in rows
+                if self.map[r["ticket"]]["item_id"] == "q1"
+                and self.map[r["ticket"]]["condition"] == "ordinary_retrieval"
+            )
             ordinary["evidence"][0]["excerpt"] += " fabricated reviewer-visible fact"
+
         self._rewrite_pinned_reviewer_view(change)
-        with self.assertRaisesRegex(ValueError, "same source fingerprint displays inconsistent evidence"):
+        with self.assertRaisesRegex(
+            ValueError, "same source fingerprint displays inconsistent evidence"
+        ):
             self.run_intake()
         self.assertFalse(self.output.exists())
 
     def test_reviewer_visible_question_and_excerpts_require_bounded_strings(self):
-        for edit in (lambda r: r.update(question={"not": "text"}),
-                     lambda r: r["evidence"][0].update(excerpt="")):
+        for edit in (
+            lambda r: r.update(question={"not": "text"}),
+            lambda r: r["evidence"][0].update(excerpt=""),
+        ):
             with self.subTest(edit=edit):
                 # The original fixture is restored between subcases so the
                 # receipt pin does not hide a later type-check failure.
                 _, _, _, originals = example()
-                other = self.root / ("handoff-" + str(len(list(self.root.glob("handoff-*")))))
-                prepare_handoff(originals, source_file_sha256="a" * 64,
-                                output=other, salt=b"\x07" * 32)
+                other = self.root / (
+                    "handoff-" + str(len(list(self.root.glob("handoff-*"))))
+                )
+                prepare_handoff(
+                    originals,
+                    source_file_sha256="a" * 64,
+                    output=other,
+                    salt=b"\x07" * 32,
+                )
                 self.handoff = other
                 self.receipt_pin = hashlib.sha256(
-                    (other / "handoff-receipt.json").read_bytes()).hexdigest()
+                    (other / "handoff-receipt.json").read_bytes()
+                ).hexdigest()
+
                 def change(rows):
                     row = next(r for r in rows if r["evidence"])
                     edit(row)
+
                 self._rewrite_pinned_reviewer_view(change)
-                with self.assertRaisesRegex(ValueError,
-                       "invalid reviewer-visible (question|source excerpt)"):
+                with self.assertRaisesRegex(
+                    ValueError, "invalid reviewer-visible (question|source excerpt)"
+                ):
                     self.run_intake()
                 self.assertFalse(self.output.exists())
 
@@ -408,6 +502,7 @@ class ReviewIntakeTests(unittest.TestCase):
         def change(rows):
             row = next(r for r in rows if r["evidence"])
             row["evidence"][0]["observed_at"] = "2099-01-01T00:00:00+00:00"
+
         self._rewrite_pinned_reviewer_view(change)
         with self.assertRaisesRegex(ValueError, "future reviewer-visible source time"):
             self.run_intake()
@@ -417,6 +512,7 @@ class ReviewIntakeTests(unittest.TestCase):
         def change(rows):
             row = next(r for r in rows if r["evidence"])
             row["evidence"][0]["observed_at"] = "2026-01-01T00:00:00"
+
         self._rewrite_pinned_reviewer_view(change)
         with self.assertRaisesRegex(ValueError, "invalid reviewer-visible source time"):
             self.run_intake()
@@ -427,8 +523,11 @@ class ReviewIntakeTests(unittest.TestCase):
         def change(rows):
             for row in rows:
                 row["question_observed_at"] = "2026-01-02T00:00:00"
+
         self._rewrite_pinned_reviewer_view(change)
-        with self.assertRaisesRegex(ValueError, "invalid reviewer-visible question time"):
+        with self.assertRaisesRegex(
+            ValueError, "invalid reviewer-visible question time"
+        ):
             self.run_intake()
         self.assertFalse(self.output.exists())
 
@@ -440,11 +539,13 @@ class ReviewIntakeTests(unittest.TestCase):
             for source in item["delivered_sources"]:
                 source["observed_at"] = "2026-01-02T01:00:00+02:00"
         valid = self.root / "offset-time-original-handoff"
-        prepare_handoff(originals, source_file_sha256="a" * 64,
-                        output=valid, salt=b"\x07" * 32)
+        prepare_handoff(
+            originals, source_file_sha256="a" * 64, output=valid, salt=b"\x07" * 32
+        )
         self.handoff = valid
         self.receipt_pin = hashlib.sha256(
-            (valid / "handoff-receipt.json").read_bytes()).hexdigest()
+            (valid / "handoff-receipt.json").read_bytes()
+        ).hexdigest()
         result = self.run_intake()
         self.assertEqual(result["agreed"], 8)
         self.assertFalse(result["review_approval_produced"])
@@ -454,8 +555,9 @@ class ReviewIntakeTests(unittest.TestCase):
         raw = (self.output / "reconciliation-receipt.json").read_bytes()
         with self.assertRaises(FileExistsError):
             self.run_intake()
-        self.assertEqual((self.output / "reconciliation-receipt.json").read_bytes(), raw)
-
+        self.assertEqual(
+            (self.output / "reconciliation-receipt.json").read_bytes(), raw
+        )
 
     def test_hardlinked_review_form_paths_are_not_two_independent_files(self):
         # Distinct file *names* and operator-claimed identities do not prove
@@ -474,29 +576,36 @@ class ReviewIntakeTests(unittest.TestCase):
         questions = self.handoff / "review-questions.jsonl"
         maps = self.handoff / "operator-private-map.jsonl"
         views, links = read_lines(questions), read_lines(maps)
-        link = next(row for row in links if row["item_id"] == "q1"
-                    and row["condition"] == "human_sufficient")
+        link = next(
+            row
+            for row in links
+            if row["item_id"] == "q1" and row["condition"] == "human_sufficient"
+        )
         view = next(row for row in views if row["ticket"] == link["ticket"])
         view["raw_reader_answer"] = "synthetic answer [E01]"
         view["cited_labels"] = ["E01"]
         link["exact_provenance"]["raw_answer_sha256"] = canonical_sha(
-            view["raw_reader_answer"])
+            view["raw_reader_answer"]
+        )
         link["exact_provenance"]["cited_source_sha256"] = [
-            view["evidence"][0]["source_fingerprint"]]
+            view["evidence"][0]["source_fingerprint"]
+        ]
         receipt_file = self.handoff / "handoff-receipt.json"
         receipt = json.loads(receipt_file.read_text())
         receipt["written_file_sha256"]["review-questions.jsonl"] = dump_lines(
-            questions, views)
+            questions, views
+        )
         receipt["written_file_sha256"]["operator-private-map.jsonl"] = dump_lines(
-            maps, links)
-        receipt_file.write_text(json.dumps(
-            receipt, sort_keys=True, separators=(",", ":")) + "\n")
+            maps, links
+        )
+        receipt_file.write_text(
+            json.dumps(receipt, sort_keys=True, separators=(",", ":")) + "\n"
+        )
         receipt_file.chmod(0o600)
         self.receipt_pin = hashlib.sha256(receipt_file.read_bytes()).hexdigest()
         with self.assertRaisesRegex(ValueError, "noncanonical reviewer-visible"):
             self.run_intake()
         self.assertFalse(self.output.exists())
-
 
     def test_reviewer_form_file_symlink_swap_cannot_pass_pinned_input(self):
         # Same content and out-of-band hash are insufficient if the input
@@ -513,8 +622,7 @@ class ReviewIntakeTests(unittest.TestCase):
                 swaps.append(True)
             return real_open(name, flags, **kwargs)
 
-        with patch("reader_originals_attestation.os.open",
-                   side_effect=swap_file):
+        with patch("reader_originals_attestation.os.open", side_effect=swap_file):
             with self.assertRaisesRegex(ValueError, "symlink"):
                 self.run_intake()
         self.assertEqual(swaps, [True])
@@ -531,13 +639,11 @@ class ReviewIntakeTests(unittest.TestCase):
                 swaps.append(True)
             return real_open(name, flags, **kwargs)
 
-        with patch("reader_originals_attestation.os.open",
-                   side_effect=change_mode):
+        with patch("reader_originals_attestation.os.open", side_effect=change_mode):
             with self.assertRaisesRegex(ValueError, "owner-only"):
                 self.run_intake()
         self.assertEqual(swaps, [True])
         self.assertFalse(self.output.exists())
-
 
     def test_output_directory_swapped_during_write_stays_inode_bound(self):
         # The comparison and receipt must never follow a replacement alias.
@@ -547,8 +653,11 @@ class ReviewIntakeTests(unittest.TestCase):
         real_open, swapped = os.open, []
 
         def swap_at_first_write(name, flags, *args, **kwargs):
-            if (name == "operator-private-comparison.jsonl"
-                    and "dir_fd" in kwargs and not swapped):
+            if (
+                name == "operator-private-comparison.jsonl"
+                and "dir_fd" in kwargs
+                and not swapped
+            ):
                 self.output.rename(relocated)
                 self.output.symlink_to(decoy, target_is_directory=True)
                 swapped.append(True)
@@ -559,8 +668,10 @@ class ReviewIntakeTests(unittest.TestCase):
         self.assertEqual(swapped, [True])
         self.assertFalse(result["production_accepted"])
         self.assertFalse(list(decoy.iterdir()))
-        for filename in ("operator-private-comparison.jsonl",
-                         "reconciliation-receipt.json"):
+        for filename in (
+            "operator-private-comparison.jsonl",
+            "reconciliation-receipt.json",
+        ):
             file = relocated / filename
             self.assertTrue(file.is_file())
             self.assertEqual(file.stat().st_mode & 0o077, 0)
@@ -572,8 +683,12 @@ class ReviewIntakeTests(unittest.TestCase):
         real_open, swapped = os.open, []
 
         def swap_at_fd_open(name, flags, *args, **kwargs):
-            if (name == self.output.name and "dir_fd" in kwargs
-                    and flags & os.O_DIRECTORY and not swapped):
+            if (
+                name == self.output.name
+                and "dir_fd" in kwargs
+                and flags & os.O_DIRECTORY
+                and not swapped
+            ):
                 self.output.rename(relocated)
                 self.output.symlink_to(decoy, target_is_directory=True)
                 swapped.append(True)

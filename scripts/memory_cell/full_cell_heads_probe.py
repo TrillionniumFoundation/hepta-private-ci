@@ -26,8 +26,10 @@ try:
     from torch import nn
 except ImportError:  # pragma: no cover - CI installs pinned torch
     torch = None
+
     class _MissingNN:
         Module = object
+
     nn = _MissingNN()
 
 
@@ -64,7 +66,8 @@ def source_digest(rows: Sequence[Any]) -> str:
             contiguous = tensor.detach().cpu().contiguous()
             descriptor = json.dumps(
                 {"dtype": str(contiguous.dtype), "shape": list(contiguous.shape)},
-                sort_keys=True, separators=(",", ":"),
+                sort_keys=True,
+                separators=(",", ":"),
             ).encode()
             raw = bytes(contiguous.view(torch.uint8).reshape(-1).tolist())
             h.update(len(descriptor).to_bytes(4, "big"))
@@ -75,7 +78,9 @@ def source_digest(rows: Sequence[Any]) -> str:
     return h.hexdigest()
 
 
-def _validate_rows(rows: Sequence[Any], cut: Any, dimension: int, encoder_identity: str) -> None:
+def _validate_rows(
+    rows: Sequence[Any], cut: Any, dimension: int, encoder_identity: str
+) -> None:
     if not rows or len(rows) > 256:
         raise ValueError("bounded admitted rows required")
     seen: set[str] = set()
@@ -101,7 +106,9 @@ def _validate_rows(rows: Sequence[Any], cut: Any, dimension: int, encoder_identi
         ):
             raise ValueError("invalid, held-out, withdrawn or incompatible feature row")
         positives = tuple(row.positive_indices)
-        if len(set(positives)) != len(positives) or any(type(i) is not int or not 0 <= i < n for i in positives):
+        if len(set(positives)) != len(positives) or any(
+            type(i) is not int or not 0 <= i < n for i in positives
+        ):
             raise ValueError("invalid support indices")
         seen.add(f.question_id)
     if not getattr(cut, "admission_digest", ""):
@@ -181,7 +188,12 @@ class Top1SparseExpert(_Head):
 
     def __init__(self, dimension: int, experts: int = 2, hidden: int = 16) -> None:
         super().__init__(dimension)
-        if type(experts) is not int or not 2 <= experts <= 8 or type(hidden) is not int or not 1 <= hidden <= 256:
+        if (
+            type(experts) is not int
+            or not 2 <= experts <= 8
+            or type(hidden) is not int
+            or not 1 <= hidden <= 256
+        ):
             raise ValueError("bounded sparse expert shape required")
         self.experts = nn.ModuleList(
             nn.Sequential(nn.Linear(dimension, hidden), nn.GELU(), nn.Linear(hidden, 1))
@@ -222,19 +234,39 @@ def actual_param_counts(head: "nn.Module") -> dict[str, int]:
     return {"total": total, "trainable": trainable, "frozen": total - trainable}
 
 
-def _loss(head: _Head, row: Any, positives: tuple[int, ...] | None = None) -> "torch.Tensor":
+def _loss(
+    head: _Head, row: Any, positives: tuple[int, ...] | None = None
+) -> "torch.Tensor":
     logits = head.scores(row.features)
     positives = tuple(row.positive_indices) if positives is None else positives
     selected = list(positives) or [len(logits) - 1]
     return torch.logsumexp(logits, 0) - torch.logsumexp(logits[selected], 0)
 
 
-def train_head(head: _Head, rows: Sequence[Any], cut: Any, *, steps: int = 32, lr: float = 0.03,
-               shuffle_labels: bool = False, seed: int = 1837) -> dict[str, Any]:
+def train_head(
+    head: _Head,
+    rows: Sequence[Any],
+    cut: Any,
+    *,
+    steps: int = 32,
+    lr: float = 0.03,
+    shuffle_labels: bool = False,
+    seed: int = 1837,
+) -> dict[str, Any]:
     """Train only head parameters after validating every row."""
     _require_torch()
-    _validate_rows(rows, cut, head.dimension, getattr(cut, "encoder_identity", "") or rows[0].features.encoder_identity)
-    if type(steps) is not int or not 1 <= steps <= 2048 or not math.isfinite(lr) or not 0 < lr <= 1:
+    _validate_rows(
+        rows,
+        cut,
+        head.dimension,
+        getattr(cut, "encoder_identity", "") or rows[0].features.encoder_identity,
+    )
+    if (
+        type(steps) is not int
+        or not 1 <= steps <= 2048
+        or not math.isfinite(lr)
+        or not 0 < lr <= 1
+    ):
         raise ValueError("bounded finite training budget required")
     for p in head.parameters():
         p.requires_grad_(True)
@@ -246,25 +278,37 @@ def train_head(head: _Head, rows: Sequence[Any], cut: Any, *, steps: int = 32, l
         row = rows[step % len(rows)]
         positives = tuple(row.positive_indices)
         if shuffle_labels:
-            positives = tuple(torch.randperm(len(row.features.candidate_ids), generator=generator)[:len(positives)].tolist())
+            positives = tuple(
+                torch.randperm(len(row.features.candidate_ids), generator=generator)[
+                    : len(positives)
+                ].tolist()
+            )
         optimizer.zero_grad(set_to_none=True)
         loss = _loss(head, row, positives)
         if not torch.isfinite(loss):
             raise ValueError("nonfinite head loss")
         loss.backward()
-        torch.nn.utils.clip_grad_norm_(list(head.parameters()), 1.0, error_if_nonfinite=True)
+        torch.nn.utils.clip_grad_norm_(
+            list(head.parameters()), 1.0, error_if_nonfinite=True
+        )
         optimizer.step()
         losses.append(float(loss.detach()))
     assert before_ids == {id(p) for p in head.parameters()}
-    return {"steps": len(losses), "mean_loss": statistics.fmean(losses), "shuffled_labels": shuffle_labels,
-            "trainable_params": actual_param_counts(head)["trainable"]}
+    return {
+        "steps": len(losses),
+        "mean_loss": statistics.fmean(losses),
+        "shuffled_labels": shuffle_labels,
+        "trainable_params": actual_param_counts(head)["trainable"],
+    }
 
 
 @torch.no_grad() if torch is not None else (lambda fn: fn)
 def accuracy(head: _Head, rows: Sequence[Any], *, frozen: bool = False) -> float:
     correct = 0
     for row in rows:
-        scores = row.features.frozen_scores if frozen else head.scores(row.features)[:-1]
+        scores = (
+            row.features.frozen_scores if frozen else head.scores(row.features)[:-1]
+        )
         best = int(scores.argmax()) if len(scores) else -1
         correct += int(best in tuple(row.positive_indices))
     return correct / len(rows) if rows else 0.0
@@ -276,9 +320,13 @@ def profile_flops(head: _Head, features: Any) -> int | None:
     if not hasattr(torch, "profiler"):
         return None
     try:
-        with torch.profiler.profile(activities=[torch.profiler.ProfilerActivity.CPU], with_flops=True) as prof:
+        with torch.profiler.profile(
+            activities=[torch.profiler.ProfilerActivity.CPU], with_flops=True
+        ) as prof:
             head.scores(features)
-        flops = sum(int(getattr(event, "flops", 0) or 0) for event in prof.key_averages())
+        flops = sum(
+            int(getattr(event, "flops", 0) or 0) for event in prof.key_averages()
+        )
         return flops or None
     except (RuntimeError, TypeError, AttributeError):
         return None
@@ -296,7 +344,9 @@ def latency_ms(head: _Head, features: Any, *, repeats: int = 20) -> float:
     return statistics.median(measurements)
 
 
-def run_probe(rows: Sequence[Any], cut: Any, *, steps: int = 32, rank: int = 16, seed: int = 1837) -> dict[str, Any]:
+def run_probe(
+    rows: Sequence[Any], cut: Any, *, steps: int = 32, rank: int = 16, seed: int = 1837
+) -> dict[str, Any]:
     """Run all heads on one shared tensor fixture and preserve every denominator."""
     _require_torch()
     dimension = rows[0].features.paired.shape[1]
@@ -308,11 +358,19 @@ def run_probe(rows: Sequence[Any], cut: Any, *, steps: int = 32, rank: int = 16,
     for kind in HEAD_KINDS:
         torch.manual_seed(seed)
         head = make_head(kind, dimension, rank=rank)
-        report = {"kind": kind, "param_counts": actual_param_counts(head),
-                  "frozen_control_accuracy": frozen_accuracy, "accuracy": None,
-                  "shuffled_control_accuracy": None, "median_latency_ms": None,
-                  "profiler_flops": None, "training": None, "status": "failed",
-                  "error": None, "efficacy_claim": False}
+        report = {
+            "kind": kind,
+            "param_counts": actual_param_counts(head),
+            "frozen_control_accuracy": frozen_accuracy,
+            "accuracy": None,
+            "shuffled_control_accuracy": None,
+            "median_latency_ms": None,
+            "profiler_flops": None,
+            "training": None,
+            "status": "failed",
+            "error": None,
+            "efficacy_claim": False,
+        }
         try:
             report["training"] = train_head(head, rows, cut, steps=steps, seed=seed)
             report["accuracy"] = accuracy(head, rows)
@@ -327,15 +385,25 @@ def run_probe(rows: Sequence[Any], cut: Any, *, steps: int = 32, rank: int = 16,
         except (RuntimeError, ValueError, TypeError) as exc:
             report["error"] = str(exc)
         reports.append(report)
-    return {"schema": "hepta.full-cell-heads-probe.v1", "source_digest": digest,
-            "rows": len(rows), "denominator": len(rows), "reports": reports,
-            "completed_heads": sum(r["status"] == "completed" for r in reports),
-            "failed_heads": sum(r["status"] == "failed" for r in reports),
-            "shared_inputs_frozen": True, "encoder_updates": 0,
-            "mechanism_smoke_only": True, "reader_gate_checked": False, "production_accepted": False}
+    return {
+        "schema": "hepta.full-cell-heads-probe.v1",
+        "source_digest": digest,
+        "rows": len(rows),
+        "denominator": len(rows),
+        "reports": reports,
+        "completed_heads": sum(r["status"] == "completed" for r in reports),
+        "failed_heads": sum(r["status"] == "failed" for r in reports),
+        "shared_inputs_frozen": True,
+        "encoder_updates": 0,
+        "mechanism_smoke_only": True,
+        "reader_gate_checked": False,
+        "production_accepted": False,
+    }
 
 
-def _shuffle_trained(kind: str, rows: Sequence[Any], cut: Any, steps: int, rank: int, seed: int) -> _Head:
+def _shuffle_trained(
+    kind: str, rows: Sequence[Any], cut: Any, steps: int, rank: int, seed: int
+) -> _Head:
     head = make_head(kind, rows[0].features.paired.shape[1], rank=rank)
     train_head(head, rows, cut, steps=steps, shuffle_labels=True, seed=seed)
     return head
@@ -353,7 +421,10 @@ class _FixtureFeatures:
     frozen_scores: object
 
     def validate(self, dimension: int) -> None:
-        if self.paired.shape != (len(self.candidate_ids), dimension) or self.frozen_scores.shape != (len(self.candidate_ids),):
+        if self.paired.shape != (
+            len(self.candidate_ids),
+            dimension,
+        ) or self.frozen_scores.shape != (len(self.candidate_ids),):
             raise ValueError("fixture shape")
 
 
@@ -369,18 +440,27 @@ def fixture() -> tuple[list[_FixtureRow], Any]:
     torch.manual_seed(7)
     rows = []
     for i in range(6):
-        rows.append(_FixtureRow(
-            _FixtureFeatures(
-                f"q{i}", "fixture", "enc-fixture", f"pool-{i}",
-                (f"c{i}-0", f"c{i}-1", f"c{i}-2"), frozenset({"root-fixture"}),
-                torch.randn(3, 8), torch.tensor([0.0, 0.1, 0.0]),
-            ),
-            (i % 2,),
-        ))
+        rows.append(
+            _FixtureRow(
+                _FixtureFeatures(
+                    f"q{i}",
+                    "fixture",
+                    "enc-fixture",
+                    f"pool-{i}",
+                    (f"c{i}-0", f"c{i}-1", f"c{i}-2"),
+                    frozenset({"root-fixture"}),
+                    torch.randn(3, 8),
+                    torch.tensor([0.0, 0.1, 0.0]),
+                ),
+                (i % 2,),
+            )
+        )
     cut = SimpleNamespace(
         question_ids=frozenset(row.features.question_id for row in rows),
-        families=frozenset({"fixture"}), allowed_roots=frozenset({"root-fixture"}),
-        forbidden_roots=frozenset(), admission_digest="fixture-cut",
+        families=frozenset({"fixture"}),
+        allowed_roots=frozenset({"root-fixture"}),
+        forbidden_roots=frozenset(),
+        admission_digest="fixture-cut",
     )
     return rows, cut
 
@@ -397,7 +477,9 @@ def main(argv: list[str]) -> int:
     actual_rank = min(16, rows[0].features.paired.shape[1])
     result = run_probe(rows, cut, rank=actual_rank)
     result["actual_probe_rank"] = actual_rank
-    Path(argv[1]).write_text(json.dumps(result, sort_keys=True, allow_nan=False, indent=2) + "\n")
+    Path(argv[1]).write_text(
+        json.dumps(result, sort_keys=True, allow_nan=False, indent=2) + "\n"
+    )
     return 0
 
 

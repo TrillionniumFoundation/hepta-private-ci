@@ -1,4 +1,5 @@
 """Hermetic mechanics, not pretrained-model or independent human evidence."""
+
 from dataclasses import replace
 from types import SimpleNamespace
 import unittest
@@ -12,22 +13,34 @@ from test_system2_ablation import fixture
 
 
 def inputs(count=4):
-    rows = tuple(SimpleNamespace(features=fixture(seed=719+i, qid=f"train-{i}", family="train"),
-                                 positive_indices=(0,)) for i in range(count))
-    cut = SimpleNamespace(question_ids={r.features.question_id for r in rows},
-        families={"train"}, allowed_roots=frozenset({"fixture-root"}),
-        forbidden_roots=frozenset(), admission_digest="fixture-cut")
+    rows = tuple(
+        SimpleNamespace(
+            features=fixture(seed=719 + i, qid=f"train-{i}", family="train"),
+            positive_indices=(0,),
+        )
+        for i in range(count)
+    )
+    cut = SimpleNamespace(
+        question_ids={r.features.question_id for r in rows},
+        families={"train"},
+        allowed_roots=frozenset({"fixture-root"}),
+        forbidden_roots=frozenset(),
+        admission_digest="fixture-cut",
+    )
     return rows, cut
 
 
 class PairedOpportunityTests(unittest.TestCase):
     def test_whole_cut_validated_before_any_annotation(self):
         rows, cut = inputs()
+
         class NoLabelAccess:
             features = rows[0].features
+
             @property
             def positive_indices(self):
                 raise AssertionError("annotation accessed before admission")
+
         cut.question_ids.remove(rows[-1].features.question_id)
         with self.assertRaises(ValueError):
             prepare((NoLabelAccess(), *rows[1:]), cut, 4)
@@ -43,15 +56,28 @@ class PairedOpportunityTests(unittest.TestCase):
         self.assertEqual(result["costs"]["attempted_operations"]["critic_forward"], 32)
         for qid in cut.question_ids:
             events = [e for e in result["records"] if e["question_id"] == qid]
-            self.assertTrue(all(0 in e["positive_indices"] and 0 not in e["negative_indices"] for e in events))
+            self.assertTrue(
+                all(
+                    0 in e["positive_indices"] and 0 not in e["negative_indices"]
+                    for e in events
+                )
+            )
             self.assertGreater(len({len(e["positive_indices"]) for e in events}), 1)
             self.assertTrue(any(not e["negative_indices"] for e in events))
 
     def test_random_control_matches_each_path_length_and_updates(self):
         rows, cut = inputs()
         a = fit_paired(Continuation(4, hidden=4), rows, cut, steps=16)
-        b = fit_paired(Continuation(4, hidden=4), rows, cut, steps=16, sampling="shape_matched_random")
-        self.assertEqual(a["costs"]["attempted_operations"], b["costs"]["attempted_operations"])
+        b = fit_paired(
+            Continuation(4, hidden=4),
+            rows,
+            cut,
+            steps=16,
+            sampling="shape_matched_random",
+        )
+        self.assertEqual(
+            a["costs"]["attempted_operations"], b["costs"]["attempted_operations"]
+        )
         for x, y in zip(a["records"], b["records"], strict=True):
             self.assertEqual(x["question_id"], y["question_id"])
             self.assertEqual([len(p) for p in x["paths"]], [len(p) for p in y["paths"]])
@@ -59,12 +85,16 @@ class PairedOpportunityTests(unittest.TestCase):
 
     def test_cardinality_cycles_with_local_visits(self):
         paths = ((), (1,), (2,), (1, 2))
-        self.assertEqual([len(cycle_path(paths, v)) for v in range(6)], [0, 1, 2, 0, 1, 2])
+        self.assertEqual(
+            [len(cycle_path(paths, v)) for v in range(6)], [0, 1, 2, 0, 1, 2]
+        )
         self.assertNotEqual(cycle_path(paths, 1), cycle_path(paths, 4))
 
     def test_no_positive_is_unavailable_not_null_supervision(self):
         rows, cut = inputs()
-        rows = tuple(SimpleNamespace(features=r.features, positive_indices=()) for r in rows)
+        rows = tuple(
+            SimpleNamespace(features=r.features, positive_indices=()) for r in rows
+        )
         m = Continuation(4, hidden=4)
         before = model_digest(m)
         report = fit_paired(m, rows, cut)
@@ -91,7 +121,9 @@ class PairedOpportunityTests(unittest.TestCase):
         self.assertTrue(m.quarantined)
         self.assertEqual(m.last_probe_failure["completed_updates"], 0)
         self.assertEqual(len(m.last_probe_failure["records"]), 1)
-        self.assertGreater(sum(m.last_probe_failure["costs"]["attempted_operations"].values()), 1)
+        self.assertGreater(
+            sum(m.last_probe_failure["costs"]["attempted_operations"].values()), 1
+        )
 
     def test_invalid_second_label_rejects_without_updates(self):
         rows, cut = inputs()
@@ -130,11 +162,22 @@ class PairedOpportunityTests(unittest.TestCase):
     def test_gate_does_not_advance_when_random_control_wins(self):
         rows, cut = inputs()
         initial = dict(model_digest=model_digest(Continuation(4)), weak_support_hits=0)
-        learned = dict(status="succeeded", costs=dict(attempted_operations={"critic_forward": 32}))
-        with patch("system2_learning_probe.inspect", side_effect=[
-                initial, dict(weak_support_hits=0), dict(weak_support_hits=4), dict(weak_support_hits=2)]), \
-             patch("system2_learning_probe.train_continuation", return_value={}), \
-             patch("system2_learning_probe.fit_paired", return_value=learned):
+        learned = dict(
+            status="succeeded", costs=dict(attempted_operations={"critic_forward": 32})
+        )
+        with (
+            patch(
+                "system2_learning_probe.inspect",
+                side_effect=[
+                    initial,
+                    dict(weak_support_hits=0),
+                    dict(weak_support_hits=4),
+                    dict(weak_support_hits=2),
+                ],
+            ),
+            patch("system2_learning_probe.train_continuation", return_value={}),
+            patch("system2_learning_probe.fit_paired", return_value=learned),
+        ):
             report = run_probe(rows, cut, 4, steps=16)
         self.assertTrue(report["observed_training_decision_gain"])
         self.assertFalse(report["paired_over_random_training_decision_gain"])

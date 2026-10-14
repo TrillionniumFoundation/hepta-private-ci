@@ -1,4 +1,5 @@
 """Pinned content-study tensor replay. No archive code, Encoder, or Reader."""
+
 from pathlib import Path
 
 from safetensors.torch import load
@@ -30,43 +31,69 @@ def restore_rows(files, checkpoint, *, revoked=frozenset()):
             raise ValueError("duplicate tensor prefix")
         seen.add(base)
         expected.update(names)
-        f = Features(item["question_id"], item["family"], item["encoder_identity"],
-                     item["pool_digest"], tuple(item["candidate_ids"]),
-                     frozenset(item["roots"]), tensors[names[0]], tensors[names[1]])
+        f = Features(
+            item["question_id"],
+            item["family"],
+            item["encoder_identity"],
+            item["pool_digest"],
+            tuple(item["candidate_ids"]),
+            frozenset(item["roots"]),
+            tensors[names[0]],
+            tensors[names[1]],
+        )
         f.validate(384)
         if f.seal() != item["feature_digest"]:
             raise ValueError("feature content/source identity changed")
         rows.append(Supervision(f, tuple(item["positive_indices"])))
     if set(tensors) != expected:
         raise ValueError("unexpected or missing tensor")
-    cut = TrainingCut(*(frozenset(meta[key]) for key in
-                        ("allowed_questions", "allowed_families", "allowed_roots", "forbidden_roots")),
-                      meta["admission_digest"])
+    cut = TrainingCut(
+        *(
+            frozenset(meta[key])
+            for key in (
+                "allowed_questions",
+                "allowed_families",
+                "allowed_roots",
+                "forbidden_roots",
+            )
+        ),
+        meta["admission_digest"],
+    )
     prepare(rows, cut, 384, revoked=revoked)
     return tuple(rows), cut
 
 
 def audit_content(path, *, revoked=frozenset()):
     files = verified_archive(Path(path), ARCHIVE)
-    if (files["tested-commit.txt"].decode().strip() != SOURCE
-            or files["tested-tree.txt"].decode().strip() != TREE):
+    if (
+        files["tested-commit.txt"].decode().strip() != SOURCE
+        or files["tested-tree.txt"].decode().strip() != TREE
+    ):
         raise ValueError("original generating source drift")
     plan = strict_json(files["native/plan.json"])
     summary = strict_json(files["native/run-summary.json"])
-    if (plan["source_commit"] != SOURCE or summary["source_commit"] != SOURCE
-            or summary["reader_model_loaded"] is not False
-            or summary["actual_reader_calls"] != 0 or summary["actual_policy_attempts"] != 0
-            or summary["failed_probe_checkpoints"] != 0):
+    if (
+        plan["source_commit"] != SOURCE
+        or summary["source_commit"] != SOURCE
+        or summary["reader_model_loaded"] is not False
+        or summary["actual_reader_calls"] != 0
+        or summary["actual_policy_attempts"] != 0
+        or summary["failed_probe_checkpoints"] != 0
+    ):
         raise ValueError("original content mode changed")
     datasets, receipt, preceding = {}, [], {}
     for checkpoint in (16, 32, 48):
         rows, cut = restore_rows(files, checkpoint, revoked=revoked)
         current = {r.features.question_id: r.features.seal() for r in rows}
-        if (not set(current).issubset(plan["question_ids"]["train"][:checkpoint])
-                or not preceding.items() <= current.items()):
+        if (
+            not set(current).issubset(plan["question_ids"]["train"][:checkpoint])
+            or not preceding.items() <= current.items()
+        ):
             raise ValueError("curriculum/feature drift across cuts")
         preceding = current
-        opportunities, disposition = matched_opportunities(rows, cut, 384, revoked=revoked)
+        opportunities, disposition = matched_opportunities(
+            rows, cut, 384, revoked=revoked
+        )
         report = strict_json(files[f"native/content-probe-{checkpoint}/report.json"])
         if disposition != report["disposition"]:
             raise ValueError("source-membership pairing changed")
@@ -75,46 +102,77 @@ def audit_content(path, *, revoked=frozenset()):
         for method in ("content", "content_erased"):
             model = Continuation(384)
             snap = report["snapshots"][method]
-            model.load_state_dict(load(files[f"native/content-probe-{checkpoint}/{method}.safetensors"]), strict=True)
+            model.load_state_dict(
+                load(files[f"native/content-probe-{checkpoint}/{method}.safetensors"]),
+                strict=True,
+            )
             if model_digest(model) != snap["model_digest"]:
                 raise ValueError("saved model digest mismatch")
             model.encoder_identity = snap["encoder_identity"]
             model.roots = frozenset(snap["roots"])
             actual = evaluate(model, opportunities, method, revoked=revoked)
             recorded = report["methods"][method]["after"]
-            if (len(actual["records"]) != len(recorded["records"])
-                    or actual["model_digest"] != recorded["model_digest"]):
+            if (
+                len(actual["records"]) != len(recorded["records"])
+                or actual["model_digest"] != recorded["model_digest"]
+            ):
                 raise ValueError("model/inspection census drift")
-            error = 0.
+            error = 0.0
             for a, b in zip(actual["records"], recorded["records"], strict=True):
-                if any(a[key] != b[key] for key in
-                       ("question_id", "feature_digest", "selected", "weak_support_hit", "matched_pairs")):
+                if any(
+                    a[key] != b[key]
+                    for key in (
+                        "question_id",
+                        "feature_digest",
+                        "selected",
+                        "weak_support_hit",
+                        "matched_pairs",
+                    )
+                ):
                     raise ValueError("replayed decision differs from original")
                 for x, y in zip(a["scores"], b["scores"], strict=True):
                     if x["path"] != y["path"]:
                         raise ValueError("replayed path changed")
                     error = max(error, abs(x["value"] - y["value"]))
             if error > 1e-6:
-                raise ValueError("replayed score exceeds declared cross-version tolerance")
+                raise ValueError(
+                    "replayed score exceeds declared cross-version tolerance"
+                )
             if method == "content_erased" and any(
-                    r["matched_pairs"] and r["max_absolute_pair_margin"] != 0 for r in actual["records"]):
+                r["matched_pairs"] and r["max_absolute_pair_margin"] != 0
+                for r in actual["records"]
+            ):
                 raise ValueError("erased input acquired content")
             events = report["methods"][method]["training"]["records"]
-            if len(events) != 96 or any(e["step"] != i or e["status"] != "completed"
-                                       for i, e in enumerate(events)):
+            if len(events) != 96 or any(
+                e["step"] != i or e["status"] != "completed"
+                for i, e in enumerate(events)
+            ):
                 raise ValueError("incomplete original optimizer trace")
-            traces.append([(e["question_id"], e["paths"], e["targets"]) for e in events])
+            traces.append(
+                [(e["question_id"], e["paths"], e["targets"]) for e in events]
+            )
             row_receipt["methods"][method] = dict(
-                model_digest=model_digest(model), max_score_error=error,
-                empty=actual["empty_choices"], hits=actual["weak_support_hits"],
+                model_digest=model_digest(model),
+                max_score_error=error,
+                empty=actual["empty_choices"],
+                hits=actual["weak_support_hits"],
                 pair_question_macro=actual["matched_pair_question_macro"],
-                frozen_set_max_macro=actual["frozen_max_score_question_macro"])
+                frozen_set_max_macro=actual["frozen_max_score_question_macro"],
+            )
         if traces[0] != traces[1]:
             raise ValueError("unmatched original intervention trace")
         receipt.append(row_receipt)
         datasets[checkpoint] = rows, cut
     return datasets, dict(
-        archive_sha256=ARCHIVE, original_source=SOURCE, manifest_entries=len(files)-1,
-        original_summary=summary, replayed_checkpoints=receipt,
-        tolerance=1e-6, replay_is_not_new_independent_evidence=True,
-        archive_code_executed=False, new_encoder_calls=0, new_reader_calls=0)
+        archive_sha256=ARCHIVE,
+        original_source=SOURCE,
+        manifest_entries=len(files) - 1,
+        original_summary=summary,
+        replayed_checkpoints=receipt,
+        tolerance=1e-6,
+        replay_is_not_new_independent_evidence=True,
+        archive_code_executed=False,
+        new_encoder_calls=0,
+        new_reader_calls=0,
+    )

@@ -1,4 +1,5 @@
 """Hermetic interventions, not native model or independent human observations."""
+
 from pathlib import Path
 import tempfile
 import unittest
@@ -8,8 +9,14 @@ import torch
 from torch import nn
 
 from system2_ablation import Continuation, BudgetExceeded, model_digest
-from system2_content_probe import (evaluate, fit, gate, matched_opportunities,
-                                   pair_at, run_content_probe)
+from system2_content_probe import (
+    evaluate,
+    fit,
+    gate,
+    matched_opportunities,
+    pair_at,
+    run_content_probe,
+)
 from test_system2_learning_probe import inputs
 
 
@@ -35,11 +42,14 @@ class ContentTests(unittest.TestCase):
 
     def test_late_unadmitted_row_precedes_label_access(self):
         rows, cut = inputs()
+
         class ForbiddenLabel:
             features = rows[0].features
+
             @property
             def positive_indices(self):
                 raise AssertionError("early label access")
+
         cut.question_ids.remove(rows[-1].features.question_id)
         with self.assertRaises(ValueError):
             matched_opportunities((ForbiddenLabel(), *rows[1:]), cut, 4)
@@ -60,9 +70,13 @@ class ContentTests(unittest.TestCase):
         for r in rows:
             r.positive_indices = ()
         report = run_content_probe(rows, cut, 4, steps=4)
-        self.assertTrue(all(m["status"] == "unavailable" for m in report["methods"].values()))
+        self.assertTrue(
+            all(m["status"] == "unavailable" for m in report["methods"].values())
+        )
         self.assertFalse(report["paired_shapes_calls_updates_matched"])
-        self.assertEqual(report["next_gate"], "stop_incomplete_or_no_matched_opportunity")
+        self.assertEqual(
+            report["next_gate"], "stop_incomplete_or_no_matched_opportunity"
+        )
 
     def test_actual_updates_exact_work_and_labels_matched(self):
         rows, cut = inputs()
@@ -70,7 +84,9 @@ class ContentTests(unittest.TestCase):
         b = fit(Continuation(4, hidden=4), rows, cut, method="content_erased", steps=16)
         self.assertNotEqual(a["before"], a["after"])
         self.assertEqual(a["before"], b["before"])
-        self.assertEqual(a["costs"]["attempted_operations"], b["costs"]["attempted_operations"])
+        self.assertEqual(
+            a["costs"]["attempted_operations"], b["costs"]["attempted_operations"]
+        )
         for x, y in zip(a["records"], b["records"], strict=True):
             self.assertEqual(x["paths"], y["paths"])
             self.assertEqual(x["targets"], y["targets"])
@@ -82,29 +98,37 @@ class ContentTests(unittest.TestCase):
         fit(model, rows, cut, method="content_erased", steps=16)
         items, _ = matched_opportunities(rows, cut, 4)
         result = evaluate(model, items, "content_erased")
-        self.assertEqual(result["matched_pair_question_macro"], .5)
-        self.assertTrue(all(r["max_absolute_pair_margin"] == 0 for r in result["records"]))
+        self.assertEqual(result["matched_pair_question_macro"], 0.5)
+        self.assertTrue(
+            all(r["max_absolute_pair_margin"] == 0 for r in result["records"])
+        )
 
     def test_length_only_predictor_cannot_win_matched_pairs(self):
         rows, cut = inputs()
         items, _ = matched_opportunities(rows, cut, 4)
+
         class CountOnly(nn.Module):
             dimension = 4
             quarantined = False
             encoder_identity = None
             roots = frozenset()
+
             def forward(self, paired):
-                return torch.tensor(.1 + .2 * len(paired))
+                return torch.tensor(0.1 + 0.2 * len(paired))
+
         result = evaluate(CountOnly(), items, "content")
-        self.assertEqual(result["matched_pair_question_macro"], .5)
-        self.assertTrue(all(r["max_absolute_pair_margin"] == 0 for r in result["records"]))
+        self.assertEqual(result["matched_pair_question_macro"], 0.5)
+        self.assertTrue(
+            all(r["max_absolute_pair_margin"] == 0 for r in result["records"])
+        )
 
     def test_collapsed_model_free_argmax_still_selects_empty(self):
         rows, cut = inputs()
         items, _ = matched_opportunities(rows, cut, 4)
         model = Continuation(4, hidden=4)
         with torch.no_grad():
-            for p in model.parameters(): p.zero_()
+            for p in model.parameters():
+                p.zero_()
         result = evaluate(model, items, "content")
         self.assertEqual(result["empty_choices"], len(rows))
         self.assertEqual(result["weak_support_hits"], 0)
@@ -132,8 +156,10 @@ class ContentTests(unittest.TestCase):
         rows, cut = inputs()
         for case in ("root", "encoder"):
             model = Continuation(4, hidden=4)
-            if case == "root": model.roots = frozenset({"withdrawn"})
-            else: model.encoder_identity = "different"
+            if case == "root":
+                model.roots = frozenset({"withdrawn"})
+            else:
+                model.encoder_identity = "different"
             before = model_digest(model)
             with self.assertRaises(ValueError):
                 fit(model, rows, cut, revoked=frozenset({"withdrawn"}))
@@ -142,9 +168,11 @@ class ContentTests(unittest.TestCase):
     def test_invalid_method_label_or_steps_rejects(self):
         rows, cut = inputs()
         for kw in (dict(method="unknown"), dict(steps=True), dict(steps=0)):
-            with self.assertRaises(ValueError): fit(Continuation(4), rows, cut, **kw)
+            with self.assertRaises(ValueError):
+                fit(Continuation(4), rows, cut, **kw)
         rows[-1].positive_indices = (True,)
-        with self.assertRaises(ValueError): fit(Continuation(4), rows, cut)
+        with self.assertRaises(ValueError):
+            fit(Continuation(4), rows, cut)
 
     def test_local_grad_enable_and_inference_rejection(self):
         rows, cut = inputs()
@@ -168,7 +196,9 @@ class ContentTests(unittest.TestCase):
             out = Path(tmp) / "probe"
             r = run_content_probe(rows, cut, 4, steps=4, output=out)
             self.assertEqual(set(r["snapshots"]), {"content", "content_erased"})
-            self.assertTrue(all(s["reload_tensor_parity"] for s in r["snapshots"].values()))
+            self.assertTrue(
+                all(s["reload_tensor_parity"] for s in r["snapshots"].values())
+            )
             self.assertTrue((out / "train-features.safetensors").is_file())
             self.assertEqual(r["actual_reader_calls"], 0)
             self.assertFalse(r["reader_adequacy_established"])
@@ -176,14 +206,29 @@ class ContentTests(unittest.TestCase):
             self.assertFalse(r["production_accepted"])
 
     def test_gate_requires_beating_frozen_and_erased_not_only_initial(self):
-        initial = dict(content=dict(matched_pair_question_macro=.25, weak_support_hits=0))
+        initial = dict(
+            content=dict(matched_pair_question_macro=0.25, weak_support_hits=0)
+        )
         results = {
-            "content": dict(status="succeeded", after=dict(matched_pair_question_macro=.6,
-                frozen_max_score_question_macro=.7, weak_support_hits=1)),
-            "content_erased": dict(status="succeeded", after=dict(matched_pair_question_macro=.5))}
-        self.assertEqual(gate(initial, results), "stop_no_content_gain_over_all_train_controls")
-        results["content"]["after"]["matched_pair_question_macro"] = .8
-        self.assertEqual(gate(initial, results), "fresh_confirmation_and_reader_controls_required")
+            "content": dict(
+                status="succeeded",
+                after=dict(
+                    matched_pair_question_macro=0.6,
+                    frozen_max_score_question_macro=0.7,
+                    weak_support_hits=1,
+                ),
+            ),
+            "content_erased": dict(
+                status="succeeded", after=dict(matched_pair_question_macro=0.5)
+            ),
+        }
+        self.assertEqual(
+            gate(initial, results), "stop_no_content_gain_over_all_train_controls"
+        )
+        results["content"]["after"]["matched_pair_question_macro"] = 0.8
+        self.assertEqual(
+            gate(initial, results), "fresh_confirmation_and_reader_controls_required"
+        )
         results["content"]["after"]["weak_support_hits"] = 0
         self.assertEqual(gate(initial, results), "stop_no_free_choice_training_gain")
 
