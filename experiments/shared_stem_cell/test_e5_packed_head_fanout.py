@@ -30,6 +30,40 @@ class Tests(unittest.TestCase):
         expected=torch.cat([h(feature,state[i:i+1]) for i,h in enumerate(heads)],0)
         actual=m.packed_forward(torch,w,feature.expand(3,-1),state)
         self.assertTrue(torch.allclose(expected,actual,rtol=1e-5,atol=1e-6),torch.max(abs(expected-actual)))
+    def test_packed_sgd_equals_isolated_per_cell_sgd(self):
+        torch.manual_seed(38)
+        heads=[seq.make_head(torch) for _ in range(3)]
+        packed={key:torch.stack([h.state_dict()[key].detach().clone() for h in heads]).requires_grad_(True)
+                for key in heads[0].state_dict()}
+        feature=torch.randn((3,384))
+        states=torch.randn((3,64));labels=torch.tensor([1,2,3])
+        before={key:val.detach().clone() for key,val in packed.items()}
+        loss=torch.nn.functional.cross_entropy(m.packed_forward(torch,packed,feature,states),labels,reduction='sum')
+        loss.backward()
+        with torch.no_grad():
+            for value in packed.values():
+                self.assertTrue(bool(torch.isfinite(value.grad).all()))
+                value.add_(value.grad,alpha=-0.01)
+        for i,head in enumerate(heads):
+            head.zero_grad(set_to_none=True)
+            alone=torch.nn.functional.cross_entropy(head(feature[i:i+1],states[i:i+1]),labels[i:i+1])
+            alone.backward()
+            with torch.no_grad():
+                for value in head.parameters():value.add_(value.grad,alpha=-0.01)
+            for key,val in head.state_dict().items():
+                self.assertTrue(torch.allclose(val,packed[key][i],rtol=1e-5,atol=1e-6),key)
+        self.assertFalse(torch.equal(before['output.weight'],packed['output.weight'].detach()))
+
+    def test_shared_encoder_gradient_never_receives_packed_head_update(self):
+        weights={name:t.requires_grad_(True) for name,t in m.parameterize(torch,3,4).items()}
+        feature=torch.randn((3,384),requires_grad=True)
+        states=torch.randn((3,64),requires_grad=True)
+        logits=m.packed_forward(torch,weights,feature,states)
+        torch.nn.functional.cross_entropy(logits,torch.tensor([0,1,2])).backward()
+        self.assertIsNone(feature.grad)
+        self.assertIsNone(states.grad)
+        self.assertIsNotNone(weights['output.weight'].grad)
+
     def test_shape_tampering_denied(self):
         w=m.parameterize(torch,3,7);w['gate.bias']=w['gate.bias'][:2]
         with self.assertRaises(m.Invalid):m.packed_forward(torch,w,torch.ones((3,384)),torch.ones((3,64)))
