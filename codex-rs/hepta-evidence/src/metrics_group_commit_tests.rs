@@ -919,3 +919,145 @@ fn observer_replay_does_not_mutate_original_writer_file_offset() {
         3
     );
 }
+
+#[cfg(unix)]
+#[test]
+fn bound_committed_metric_query_requires_exact_scope_operation_phase_and_success() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("bound-metrics.log");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
+    let query = MetricsCommittedSampleQueryV1 {
+        scope_digest: Digest32::of_bytes(b"scope"),
+        operation_digest: Digest32::of_bytes(b"operation"),
+        phase: MetricPhaseV1::Cas,
+        succeeded: true,
+    };
+    owner.stage(sample(MetricPhaseV1::Cas)).expect("unflushed sample");
+    assert_eq!(
+        owner.read_committed_sample(query).expect("read staged-only prefix"),
+        None,
+        "staged rows cannot become a false Split operation acknowledgment"
+    );
+    let original = owner.flush().expect("durable original group").unwrap();
+    let readback = owner
+        .read_committed_sample(query)
+        .expect("fully validated WAL")
+        .expect("exact committed operation phase");
+    assert_eq!(readback.query, query);
+    assert_eq!(readback.matching_rows, 1);
+    assert_eq!(readback.first_group_sequence, 1);
+    assert_eq!(readback.last_group_sequence, 1);
+    assert_eq!(readback.last_group_head, original.head_digest);
+    assert_eq!(readback.frontier.sequence, 1);
+    assert_eq!(readback.frontier.committed_rows, 1);
+
+    for wrong in [
+        MetricsCommittedSampleQueryV1 {
+            scope_digest: Digest32::of_bytes(b"other scope"),
+            ..query
+        },
+        MetricsCommittedSampleQueryV1 {
+            operation_digest: Digest32::of_bytes(b"other operation"),
+            ..query
+        },
+        MetricsCommittedSampleQueryV1 {
+            phase: MetricPhaseV1::Cns,
+            ..query
+        },
+        MetricsCommittedSampleQueryV1 {
+            succeeded: false,
+            ..query
+        },
+    ] {
+        assert_eq!(owner.read_committed_sample(wrong).unwrap(), None);
+        assert_eq!(owner.committed_groups(), 1, "query is read-only");
+    }
+    assert!(!owner.poisoned);
+}
+
+#[cfg(unix)]
+#[test]
+fn bound_metric_readback_counts_exact_repeated_durable_rows_and_ignores_staging() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("repeated-metric.log");
+    let query = MetricsCommittedSampleQueryV1 {
+        scope_digest: Digest32::of_bytes(b"scope"),
+        operation_digest: Digest32::of_bytes(b"operation"),
+        phase: MetricPhaseV1::Signature,
+        succeeded: true,
+    };
+    {
+        let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
+        owner.stage(sample(MetricPhaseV1::Signature)).unwrap();
+        owner.flush().expect("first group");
+        owner.stage(sample(MetricPhaseV1::Cas)).unwrap();
+        owner.stage(sample(MetricPhaseV1::Signature)).unwrap();
+        let last = owner.flush().expect("second group").unwrap();
+        owner.stage(sample(MetricPhaseV1::Signature)).unwrap();
+        let proof = owner.read_committed_sample(query).unwrap().unwrap();
+        assert_eq!(proof.matching_rows, 2, "no synthetic third staged row");
+        assert_eq!(proof.first_group_sequence, 1);
+        assert_eq!(proof.last_group_sequence, 2);
+        assert_eq!(proof.last_group_head, last.head_digest);
+        assert_eq!(proof.frontier.committed_rows, 3);
+        assert_eq!(owner.pending(), 1);
+    }
+    let mut recovery = MetricsGroupCommitV1::open(&path).expect("real cold recovery");
+    let proof = recovery.read_committed_sample(query).unwrap().unwrap();
+    assert_eq!(proof.matching_rows, 2);
+    assert_eq!(proof.frontier.sequence, 2);
+}
+
+#[cfg(unix)]
+#[test]
+fn bound_metric_corrupt_old_frontier_cannot_claim_latest_matching_sample() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("tampered-metric.log");
+    let marker = dir.path().join("tampered-metric.log.owner-lock");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
+    let header_bytes = owner.owner_marker_bytes.len();
+    owner.stage(sample(MetricPhaseV1::Admission)).unwrap();
+    owner.flush().unwrap();
+    owner.stage(sample(MetricPhaseV1::Cas)).unwrap();
+    owner.flush().unwrap();
+    let query = MetricsCommittedSampleQueryV1 {
+        scope_digest: Digest32::of_bytes(b"scope"),
+        operation_digest: Digest32::of_bytes(b"operation"),
+        phase: MetricPhaseV1::Cas,
+        succeeded: true,
+    };
+    assert!(owner.read_committed_sample(query).unwrap().is_some());
+    // Retain the final marker row intact. A local last-head-only check
+    // cannot detect this earlier committed high-water corruption.
+    let mut bytes = fs::read(&marker).expect("original marker");
+    bytes[header_bytes + 3] = b'f';
+    fs::write(&marker, bytes).expect("tamper same marker inode");
+    assert!(matches!(
+        owner.read_committed_sample(query),
+        Err(MetricsJournalErrorV1::Corrupt)
+    ));
+    assert!(matches!(
+        owner.flush(),
+        Err(MetricsJournalErrorV1::Poisoned)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
+fn invalid_bound_sample_query_never_disables_original_evidence_owner() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("invalid-bound-query.log");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
+    assert!(matches!(
+        owner.read_committed_sample(MetricsCommittedSampleQueryV1 {
+            scope_digest: Digest32::ZERO,
+            operation_digest: Digest32::of_bytes(b"operation"),
+            phase: MetricPhaseV1::Cas,
+            succeeded: true,
+        }),
+        Err(MetricsJournalErrorV1::EmptyDigest)
+    ));
+    assert!(!owner.poisoned);
+    owner.stage(sample(MetricPhaseV1::Cas)).unwrap();
+    assert!(owner.flush().expect("legitimate metric still works").is_some());
+}

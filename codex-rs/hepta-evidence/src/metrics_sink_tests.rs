@@ -443,3 +443,72 @@ fn poisoned_evidence_writer_drops_prequeued_events_without_flush_ack() {
     assert_eq!(recovered.committed_rows(), 0);
     assert_eq!(recovered.committed_groups(), 0);
 }
+
+#[cfg(unix)]
+#[test]
+fn actor_bound_sample_readback_is_committed_only_and_never_publishes_a_grant() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("exact-bound.log");
+    let marker = dir.path().join("exact-bound.log.owner-lock");
+    let sink = DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000)
+        .expect("one original WAL owner");
+    let query = MetricsCommittedSampleQueryV1 {
+        scope_digest: Digest32::of_bytes(b"scope"),
+        operation_digest: Digest32::of_bytes(b"operation"),
+        phase: MetricPhaseV1::Cns,
+        succeeded: true,
+    };
+    sink.record(sample(PhaseMetricKindV1::Cns)).expect("accepted sample");
+    assert_eq!(
+        sink.read_committed_sample(query).expect("read unflushed original"),
+        None
+    );
+    sink.flush().expect("two physical fsync barriers");
+    let before_wal = std::fs::read(&path).expect("original WAL");
+    let before_marker = std::fs::read(&marker).expect("original marker");
+    let bound = sink
+        .read_committed_sample(query)
+        .expect("verified bound query")
+        .expect("committed exact operation");
+    assert_eq!(bound.matching_rows, 1);
+    assert_eq!(bound.frontier.committed_rows, 1);
+    assert_eq!(bound.first_group_sequence, 1);
+    assert_eq!(std::fs::read(&path).unwrap(), before_wal);
+    assert_eq!(std::fs::read(&marker).unwrap(), before_marker);
+    assert!(sink.healthy());
+    let forged = MetricsCommittedSampleQueryV1 {
+        operation_digest: Digest32::of_bytes(b"wrong operation"),
+        ..query
+    };
+    assert_eq!(sink.read_committed_sample(forged).unwrap(), None);
+    assert!(sink.healthy());
+}
+
+#[test]
+fn bounded_exact_sample_observer_timeout_poisoned_without_successful_ack() {
+    let (tx, rx) = sync_channel(1);
+    let sink = DurablePhaseMetricSinkV1 {
+        channel: tx,
+        health: Arc::new(WriterHealthV1 {
+            healthy: AtomicBool::new(true),
+            dropped: AtomicU64::new(0),
+            persisted_batches: AtomicU64::new(0),
+            persisted_rows: AtomicU64::new(0),
+        }),
+        worker: Mutex::new(None),
+    };
+    let query = MetricsCommittedSampleQueryV1 {
+        scope_digest: Digest32::of_bytes(b"scope"),
+        operation_digest: Digest32::of_bytes(b"operation"),
+        phase: MetricPhaseV1::Cas,
+        succeeded: true,
+    };
+    assert_eq!(
+        sink.read_committed_sample_with_timeout(query, Duration::from_millis(20)),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+    assert!(!sink.healthy());
+    assert_eq!(sink.flush(), Err(PhaseMetricSinkErrorV1::Unavailable));
+    drop(rx);
+    drop(sink);
+}

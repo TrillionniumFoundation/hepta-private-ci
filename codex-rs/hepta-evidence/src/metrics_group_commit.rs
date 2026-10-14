@@ -74,6 +74,28 @@ pub struct MetricsLocalFrontierV1 {
     pub marker_inode: u64,
 }
 
+/// Query identity for ONE metric belonging to an exact frozen operation.
+/// Neither a query nor a matching local row is an effect receipt or grant.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct MetricsCommittedSampleQueryV1 {
+    pub scope_digest: Digest32,
+    pub operation_digest: Digest32,
+    pub phase: MetricPhaseV1,
+    pub succeeded: bool,
+}
+
+/// Read-only proof of a locally fsynced sample's membership in a fully
+/// checked original WAL/marker history. It has no independent signature.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct MetricsCommittedSampleReadbackV1 {
+    pub query: MetricsCommittedSampleQueryV1,
+    pub matching_rows: u64,
+    pub first_group_sequence: u64,
+    pub last_group_sequence: u64,
+    pub last_group_head: Digest32,
+    pub frontier: MetricsLocalFrontierV1,
+}
+
 #[derive(Debug)]
 pub enum MetricsJournalErrorV1 {
     Io(std::io::Error),
@@ -405,7 +427,10 @@ impl MetricsGroupCommitV1 {
     /// never during a Neuron inference tick or a normal metrics group fsync.
     /// A forged earlier marker row with a correct final tail must be rejected.
     #[cfg(unix)]
-    fn verify_complete_marker_history(&self) -> Result<(), MetricsJournalErrorV1> {
+    fn verify_complete_marker_history(
+        &self,
+        mut inspect_group: impl FnMut(u64, Digest32, &str) -> Result<(), MetricsJournalErrorV1>,
+    ) -> Result<(), MetricsJournalErrorV1> {
         // Positional reads remain on the ORIGINAL locked WAL inode. They
         // preserve its shared OS file offset and stop at the frozen committed
         // byte frontier. The final live checks still deny drift or replacement.
@@ -446,6 +471,7 @@ impl MetricsGroupCommitV1 {
                 bytes,
                 next_head,
             )?;
+            inspect_group(next_sequence, next_head, text)?;
             sequence = next_sequence;
             head = next_head;
             committed_rows = committed_rows
@@ -482,7 +508,7 @@ impl MetricsGroupCommitV1 {
         #[cfg(unix)]
         {
             use std::os::unix::fs::MetadataExt as _;
-            self.verify_complete_marker_history()?;
+            self.verify_complete_marker_history(|_, _, _| Ok(()))?;
             self.verify_original_frontier()?;
             let wal = self.file.metadata()?;
             let marker = self.owner_marker.metadata()?;
@@ -499,6 +525,109 @@ impl MetricsGroupCommitV1 {
         }
         #[cfg(not(unix))]
         {
+            Err(MetricsJournalErrorV1::UnsafePath)
+        }
+    }
+
+    /// Find only exact matching *committed* rows after verifying every
+    /// original WAL group and its separately fsynced high-water record.
+    /// Missing metrics are represented by None, not a synthesized receipt.
+    /// This local result requires independent Observer signature and live
+    /// four-owner readbacks before it can contribute to Split acceptance.
+    pub fn read_committed_sample(
+        &mut self,
+        query: MetricsCommittedSampleQueryV1,
+    ) -> Result<Option<MetricsCommittedSampleReadbackV1>, MetricsJournalErrorV1> {
+        if self.poisoned {
+            return Err(MetricsJournalErrorV1::Poisoned);
+        }
+        if query.scope_digest.is_zero() || query.operation_digest.is_zero() {
+            return Err(MetricsJournalErrorV1::EmptyDigest);
+        }
+        let read = self.read_committed_sample_checked(query);
+        if read.is_err() {
+            self.poisoned = true;
+        }
+        read
+    }
+
+    fn read_committed_sample_checked(
+        &self,
+        query: MetricsCommittedSampleQueryV1,
+    ) -> Result<Option<MetricsCommittedSampleReadbackV1>, MetricsJournalErrorV1> {
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt as _;
+
+            let scope = query.scope_digest.to_string();
+            let operation = query.operation_digest.to_string();
+            let phase = (query.phase as u8).to_string();
+            let success = u8::from(query.succeeded).to_string();
+            let mut matching_rows = 0_u64;
+            let mut first_group_sequence = 0_u64;
+            let mut last_group_sequence = 0_u64;
+            let mut last_group_head = Digest32::ZERO;
+            self.verify_original_frontier()?;
+            self.verify_complete_marker_history(|sequence, head, line| {
+                // parse_group was verified first, so exactly six M1 fields
+                // and five sample columns are present. Never trust a
+                // substring match or staged in-memory samples as evidence.
+                let payload = line
+                    .split('|')
+                    .nth(5)
+                    .ok_or(MetricsJournalErrorV1::Corrupt)?;
+                for encoded in payload.split(';') {
+                    let mut columns = encoded.split(':');
+                    let original_scope = columns.next();
+                    let original_operation = columns.next();
+                    let original_phase = columns.next();
+                    let _original_latency = columns.next();
+                    let original_success = columns.next();
+                    if original_scope != Some(scope.as_str())
+                        || original_operation != Some(operation.as_str())
+                        || original_phase != Some(phase.as_str())
+                        || original_success != Some(success.as_str())
+                    {
+                        continue;
+                    }
+                    matching_rows = matching_rows
+                        .checked_add(1)
+                        .ok_or(MetricsJournalErrorV1::Capacity)?;
+                    if first_group_sequence == 0 {
+                        first_group_sequence = sequence;
+                    }
+                    last_group_sequence = sequence;
+                    last_group_head = head;
+                }
+                Ok(())
+            })?;
+            self.verify_original_frontier()?;
+            if matching_rows == 0 {
+                return Ok(None);
+            }
+            let wal = self.file.metadata()?;
+            let marker = self.owner_marker.metadata()?;
+            Ok(Some(MetricsCommittedSampleReadbackV1 {
+                query,
+                matching_rows,
+                first_group_sequence,
+                last_group_sequence,
+                last_group_head,
+                frontier: MetricsLocalFrontierV1 {
+                    sequence: self.sequence,
+                    head_digest: self.head,
+                    committed_rows: self.committed_rows,
+                    journal_bytes: self.bytes,
+                    wal_device: wal.dev(),
+                    wal_inode: wal.ino(),
+                    marker_device: marker.dev(),
+                    marker_inode: marker.ino(),
+                },
+            }))
+        }
+        #[cfg(not(unix))]
+        {
+            let _ = query;
             Err(MetricsJournalErrorV1::UnsafePath)
         }
     }
