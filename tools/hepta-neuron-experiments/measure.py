@@ -8,10 +8,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import os
 import platform
-import math
-import resource
 import shutil
 import signal
 import subprocess
@@ -32,6 +31,7 @@ SHARED = ("encoder", "tokenizer", "dataset", "objective", "runtime")
 E0_MODEL = ("model_manifest", "preprocessor", "quantization", "normalizer",
             "calibration", "device_manifest", "license_sbom")
 MAX_LOG_BYTES = 50_000_000
+MAX_JSON_BYTES = 8_000_000
 MAX_REPETITIONS = 1000
 PERFORMANCE_ENV = (
     "OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS", "RAYON_NUM_THREADS",
@@ -93,6 +93,8 @@ def performance_environment() -> dict[str, str | None]:
 
 
 def load_json(path: Path) -> dict:
+    require(path.is_file() and not path.is_symlink() and path.stat().st_size <= MAX_JSON_BYTES,
+            "missing, linked or oversized JSON evidence")
     obj = json.loads(path.read_text(encoding="utf-8"))
     require(isinstance(obj, dict), "expected JSON object")
     return obj
@@ -173,8 +175,11 @@ def verify_plan(path: Path, repo: Path) -> dict:
     require(plan.get("source") == source(repo), "source commit/tree drift")
     require(plan.get("host") == host(), "different target host/environment")
     require(plan.get("performance_environment") == performance_environment(), "performance environment drift")
-    require(set(plan.get("shared", {})) == set(SHARED) and set(plan.get("arms", {})) == set(ARMS[stage]), "plan is missing arms/artifacts")
-    require(isinstance(plan.get("commands"), dict) and set(plan["commands"]) == set(ARMS[stage]), "plan frozen commands missing")
+    require(isinstance(plan.get("shared"), dict) and isinstance(plan.get("arms"), dict) and
+            set(plan["shared"]) == set(SHARED) and set(plan["arms"]) == set(ARMS[stage]),
+            "plan is missing arms/artifacts")
+    require(isinstance(plan.get("commands"), dict) and set(plan["commands"]) == set(ARMS[stage]) and
+            all(isinstance(x, dict) for x in plan["commands"].values()), "plan frozen commands missing")
     require((isinstance(plan.get("e0_model"), dict) and set(plan["e0_model"]) == set(E0_MODEL))
             if stage == "E0" else plan.get("e0_model") is None, "plan E0 model binding missing")
     for binding in [*plan["shared"].values(), *plan["arms"].values(),
@@ -240,7 +245,9 @@ def run(repo: Path, plan_file: Path, arm: str, output: Path, timeout: float,
     with stdout_path.open("xb") as stdout, stderr_path.open("xb") as stderr:
         child_environment = os.environ.copy()
         child_environment["HEPTA_NEURON_EXPERIMENT_TRIAL"] = str(trial)
-        process = subprocess.Popen(command, cwd=repo, stdout=stdout, stderr=stderr,
+        # Never re-resolve argv[0] through a mutable PATH after frozen identity checks.
+        exact_command = [str(executable), *command[1:]]
+        process = subprocess.Popen(exact_command, cwd=repo, stdout=stdout, stderr=stderr,
                                    start_new_session=True, env=child_environment)
         deadline = time.monotonic() + timeout
         next_group_sample = 0.0
