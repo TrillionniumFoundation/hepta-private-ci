@@ -1,0 +1,340 @@
+{
+  "schema": "hepta.causal-generation-source-verification.v1",
+  "remote_base": "08cb87a6df5fb0c68b9db3f1bb00d67579bf68c4",
+  "upstream_pr": 1757,
+  "local_slice_base": "36c3a7062f63806dd8585095614afa0b68f76f2b",
+  "local_code_commit": "77384a65d1f778cf140afd4b0793c85ee2263542",
+  "published_to_remote": false,
+  "new_remote_pr": null,
+  "local_branch": "research/shared-stem-causal-generation-controls-20261014",
+  "source_blobs": {
+    ".github/workflows/hepta-neuron-next-round-matrix.yml": {
+      "bytes": 5968,
+      "sha256": "5c50bfa05773613a5dfe01a07932212b324959c97ef3e197c361a03df942fe26",
+      "git_blob_sha1": "df8c3f6989adfb321e240e00359b4d4a40bd3df3"
+    },
+    "qualification/stem-cell-v1/causal_generation.py": {
+      "bytes": 10000,
+      "sha256": "366846419658acb71f2e3c3f306323e29d23de114b266f151cf29ddae60774ce",
+      "git_blob_sha1": "e0b6fe6836320da0a746c8165f0151f184f11594"
+    },
+    "qualification/stem-cell-v1/causal_snapshot.py": {
+      "bytes": 5495,
+      "sha256": "68318603f2fd69c0a6070eae9ae12bbe1ec3bdf92db3c55b5d74a3cd6cd1d445",
+      "git_blob_sha1": "d81f094ab74faa5562c9f8f59d09a4e90a5a4136"
+    },
+    "qualification/stem-cell-v1/generation_test_support.py": {
+      "bytes": 5300,
+      "sha256": "1b12613c6f850d9b37c8fa1d53ee2cdc2753c9fe0138bbab523467524c832d03",
+      "git_blob_sha1": "426805342f35a0fb02aa08ac9f9483fa816cf4d7"
+    },
+    "qualification/stem-cell-v1/hf_generation_checks.py": {
+      "bytes": 2471,
+      "sha256": "205cff0e77002b31a67cf30dfa4a52b15df2cb5d271ad5df86e194520d9cb02f",
+      "git_blob_sha1": "48f245b35b1f1d3572882d2045a3a123f4399fb0"
+    },
+    "qualification/stem-cell-v1/paired_capture.py": {
+      "bytes": 11925,
+      "sha256": "5d9995ed951cb3ecea3b7c72cdd6acf7cbe9c5889d951a2a32c4a832adc2b6d3",
+      "git_blob_sha1": "8ae56acdf390cc2a5ee0446e8f418fcd18953707"
+    },
+    "qualification/stem-cell-v1/reasoning_baselines.py": {
+      "bytes": 2789,
+      "sha256": "d61634f9f61e5e030fa95dba631ca4c29cf46fe477f4fcc45cd37520d540753d",
+      "git_blob_sha1": "4ae132db96037c0b247a327dfce7101fb382dfc0"
+    },
+    "qualification/stem-cell-v1/system2_execution.py": {
+      "bytes": 17309,
+      "sha256": "186a4d16e80e476b7e9811c895cd748ad001f1365a520d9ec21d9e96bba32861",
+      "git_blob_sha1": "f2e011179ef001654c68bf2982b887741dc88b2e"
+    },
+    "qualification/stem-cell-v1/test_causal_generation.py": {
+      "bytes": 7997,
+      "sha256": "a22de61c0970eed06a28507c812a14922fc601031c5e5cf71adc3dd2966814bc",
+      "git_blob_sha1": "18527c4215ac6df24e5a3ad1e1d643cc91bb14b9"
+    },
+    "qualification/stem-cell-v1/test_causal_snapshot.py": {
+      "bytes": 5020,
+      "sha256": "d477f27820bdde2181fa9172fd2c041d7064db336dde7523d5c6994d66416c0a",
+      "git_blob_sha1": "b345b28617a52260555b7115998dc6061d88491e"
+    },
+    "qualification/stem-cell-v1/test_neural_capture.py": {
+      "bytes": 8588,
+      "sha256": "ab5b067d638894ba120faa180f4f1ec9f19b10a821db44dcacb8d1cf7c49e30c",
+      "git_blob_sha1": "dba0b2e984f536a44e2a876fb3b6cd9cd8edae72"
+    },
+    "qualification/stem-cell-v1/test_reasoning_baselines.py": {
+      "bytes": 7584,
+      "sha256": "4f207845eb421faff82892a0176e8a99d5decd3b783cb89783ffc532ee48d71f",
+      "git_blob_sha1": "2033ba931cf5471d8f772d81f7114421535c1297"
+    }
+  },
+  "input_archive": {
+    "archive_sha256": "f0254d4e0b1610c7955d4239d34df58582a85f246877cfde5d03729e844fe629",
+    "members_verified": 320
+  },
+  "verification": {
+    "total_distinct_tests": 375,
+    "retained": 342,
+    "added": 33,
+    "errors": 0,
+    "failures": 0,
+    "skips": 0,
+    "partition_test_counts": [
+      100,
+      75,
+      109,
+      91
+    ],
+    "partition_exit_codes": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "standard_full_logs": [
+      "final1.log",
+      "final2.log"
+    ],
+    "standard_full_logs_reported_tests": 375,
+    "standard_full_tool_calls_timed_out": true,
+    "standard_full_process_exit_codes": null,
+    "incomplete_worker_log": "worker-final.log",
+    "compileall": "passed",
+    "diff_whitespace": "passed",
+    "workflow_yaml_parse": "passed"
+  },
+  "separate_hf_attempts": {
+    "existing_encoder": {
+      "defined": 3,
+      "executed": 0,
+      "exit_code": 1,
+      "missing": "transformers"
+    },
+    "new_causal": {
+      "defined": 1,
+      "executed": 0,
+      "exit_code": 1,
+      "missing": "tokenizers"
+    }
+  },
+  "runtime": {
+    "python": "3.13.5",
+    "torch": "2.10.0+cpu",
+    "numpy": "2.3.5",
+    "safetensors": "0.7.0",
+    "cuda_available": false
+  },
+  "scope": "bounded local source slice, not full repository or target cloud",
+  "pretrained_model_executed": false,
+  "learned_toy_generator_executed": true,
+  "matched_compute_efficacy_established": false,
+  "independent_generalization_established": false,
+  "matrix_ndu_arm_enabled": false,
+  "production_authorized": false,
+  "remote_write_status": "No create/write actions exposed this turn; direct Git DNS resolution failed.",
+  "hosted_ci": "not_run_for_unpublished_code",
+  "rust_fmt": "not_run_no_codex_rs_or_just",
+  "evidence_files": {
+    "hf-generation-attempt.log": {
+      "bytes": 243,
+      "sha256": "902829aec368b2c0b3a046b7458c1fbf86fe8b5490a4e22807423eed8f546e62"
+    },
+    "full1.log": {
+      "bytes": 59572,
+      "sha256": "54d956d6649e6baf1a8f11cf7c103d04b31be474b2e1c41ba9e087c3d3427ed4"
+    },
+    "partition-0.json": {
+      "bytes": 348,
+      "sha256": "978ab976dfb45c5b6a5f902bb01ad33b9276a1672da283ac011d19a77110b4ca"
+    },
+    "generation-first.log": {
+      "bytes": 3525,
+      "sha256": "a4ca721bb35832983300daebee304edfbda628fff658baa3c698614f42227086"
+    },
+    "input-archive-verification.json": {
+      "bytes": 118,
+      "sha256": "cea9d44f7f953de33946200f9c1c28c99c099c9247a6910e85e8d3c0c6b89140"
+    },
+    "partition-0.log": {
+      "bytes": 16069,
+      "sha256": "2505aff24cae5280efd2e1fcadd743a7074feb0c3fa5be5ef0e89e97466afbf6"
+    },
+    "worker-final.log": {
+      "bytes": 54249,
+      "sha256": "e1f881f3523c6d7ccd7d50ba6d4583f4abc3f141e875a1ece67ed57c80b3f2dd"
+    },
+    "partition-2.log": {
+      "bytes": 17598,
+      "sha256": "8c5545fcd3834e9254c72be8277ee0afc2fe7802289ca1b024a9331838879e4b"
+    },
+    "causal-graph-tests.log": {
+      "bytes": 4591,
+      "sha256": "932b0ae7792bf8d87bdad835a0b2da6f5ac11ef8e79e327922cdafc0262f1173"
+    },
+    "hf-encoder-attempt.exit": {
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    "neural-capture.log": {
+      "bytes": 992,
+      "sha256": "c610112a372c916621f0f10de37f6a7b98dd09c9bdf5b7faa46632467cae9ff6"
+    },
+    "final1.log": {
+      "bytes": 59744,
+      "sha256": "cbaf4f807d5131e4346dc7208a46e398abf4008f68788d9ac1a7051182fcb19a"
+    },
+    "full-first.log": {
+      "bytes": 57289,
+      "sha256": "9bd62059708837627af902c1c446da25f563fe30742b4a4fa4b47e933845ec41"
+    },
+    "partition-3.log": {
+      "bytes": 14336,
+      "sha256": "4c61b9f8c1fffad98ae7e9381f7473518bd80320d657d2742cf90242896bf515"
+    },
+    "remote-access.log": {
+      "bytes": 126,
+      "sha256": "2fc4316031d8f5ccfc0805956b5fd5127bcde41d08f0602c5d711b13c4d57a15"
+    },
+    "verify_worker.py": {
+      "bytes": 1744,
+      "sha256": "452ddd5563c0c1919fdf88583d3f1c30560b7994eda2ad1a94189f110ca3a4af"
+    },
+    "partition-3.json": {
+      "bytes": 303,
+      "sha256": "b89caa7ba0421fcc18f098d83a962e213e176dbfb2a3de7f0a6c87a1c2640c60"
+    },
+    "hf-encoder-attempt.log": {
+      "bytes": 299,
+      "sha256": "a917b248c7f07c93a82912cb0a640f6e0c397e810c4ba92a663995b5867ae7f7"
+    },
+    "remote-access.exit": {
+      "bytes": 4,
+      "sha256": "56292515f7d3a7110811eb8de26b3f75f82a0766aa5a1fd66ebcfcb84fe6d5ff"
+    },
+    "baseline.log": {
+      "bytes": 54242,
+      "sha256": "523a0934d32dea118513996735272183341e8f3cd0c76971983bd566c957f3fd"
+    },
+    "diagnostic.py": {
+      "bytes": 4411,
+      "sha256": "91f6533391f14220fc05df4a6ac279fdbccfb1a0d299595e22b49cb9d6d0ae64"
+    },
+    "partition-2.json": {
+      "bytes": 344,
+      "sha256": "bf372b1538a995bbea95d19bb19564d71c45536b17b1591740262d5937ef9ea4"
+    },
+    "partition-1.json": {
+      "bytes": 329,
+      "sha256": "0112434eb8c91cee298b60f2341e0e0f1bdcb8438f1f385f558cbba9ddaafb56"
+    },
+    "verify_partition.py": {
+      "bytes": 1022,
+      "sha256": "dff4666aa327dbc870d911dc7285decfa515b9e868d5ea91848dfa7312bc0266"
+    },
+    "hf-generation-attempt.exit": {
+      "bytes": 2,
+      "sha256": "4355a46b19d348dc2f57c046f8ef63d4538ebb936000f3c9ee954a27460dd865"
+    },
+    "snapshot-tests.log": {
+      "bytes": 1108,
+      "sha256": "4dd69e3e822c4eb83e20c70ac1ac40d64e87c12ed933122a3ee6dfdec2b44759"
+    },
+    "partition-1.log": {
+      "bytes": 12040,
+      "sha256": "ba21f26ff73542e3c65e8f142d5de3694cbbc2957de100dec7ad928f5a5d7cd8"
+    },
+    "final2.log": {
+      "bytes": 59744,
+      "sha256": "e356034657c56ac31afa9f4ffd800c1a0ad483a4d071dedf749657f970dbd07b"
+    },
+    "diagnostic.log": {
+      "bytes": 2033,
+      "sha256": "aefa50981f03d71eed51c98058667ac9e27eef81042ff6829c69da14a50caa50"
+    },
+    "learned-diagnostic/fixed_depth.json": {
+      "bytes": 6653,
+      "sha256": "d6e0c1bcad7502d409a00bef5bb0720898ba761d1028c44224907e5ee09948f7"
+    },
+    "learned-diagnostic/ndu.json": {
+      "bytes": 9322,
+      "sha256": "cd37eee7afa046b507ab3f597dd0f30007bbf9185d5bed2e628d40e6f0a57639"
+    },
+    "learned-diagnostic/no_search.json": {
+      "bytes": 5172,
+      "sha256": "574f7605eedb581cc5551fed3aecc61e875613e7800314d4c44b22969e96c7a8"
+    },
+    "learned-diagnostic/training.json": {
+      "bytes": 543,
+      "sha256": "e30c8ebd6219be7d47db6d659e34ddc97c817a4de51f597c02804c3820394097"
+    },
+    "learned-diagnostic/summary.json": {
+      "bytes": 2033,
+      "sha256": "899c76d7555bc0db2e5169c4e349cdc38fd984b3d8790b6419d7ae0f580319c2"
+    },
+    "learned-diagnostic/tokenizer.json": {
+      "bytes": 270,
+      "sha256": "8a9ccca62e10439691d9cfa6cb9156936b68b878f4961667dedc6645be56ec4f"
+    },
+    "learned-diagnostic/fit-work.json": {
+      "bytes": 227,
+      "sha256": "ad0ee5b5141f977a1e13a0ccc41a0219cfae370f61b73393d8a6121da3a8abf6"
+    },
+    "learned-diagnostic/capture/critic.json": {
+      "bytes": 4029,
+      "sha256": "01a4402598220089a7cdbca233db08d8dcdbf97c2ffa88e80ed77de4baa19130"
+    },
+    "learned-diagnostic/capture/REGISTRATION.json": {
+      "bytes": 5401,
+      "sha256": "dfe3acfe5871e6f0e84059680dd49c524211c7a86e36d7b927292af657f39dc4"
+    },
+    "learned-diagnostic/capture/test-only-objective.json": {
+      "bytes": 1703,
+      "sha256": "9067737c2b74fe8ca3a26a283ad6343903b25ff866f57794bf14fac272669cf6"
+    },
+    "learned-diagnostic/capture/normalized-rows.json": {
+      "bytes": 1267,
+      "sha256": "81c1386aa1e4b5a5ee8556d0fd519f2675422e4204ba32bc10cb846dbe154482"
+    },
+    "learned-diagnostic/capture/initial-generation-observations.json": {
+      "bytes": 2524,
+      "sha256": "f1eef0a4584c08467abf5486a160e7c931f32a41707da82c32c53a9b47febc7f"
+    },
+    "learned-diagnostic/capture/pairs/00000/TERMINAL.json": {
+      "bytes": 459,
+      "sha256": "19d82f0f6d2c98156efa7ce53dd1b6b65d250928b71a58fc012b19a893fade41"
+    },
+    "learned-diagnostic/capture/pairs/00000/pair.json": {
+      "bytes": 7045,
+      "sha256": "c741d6d5f09c9374d972b92db6bd5516ed3d3d93649f00ffb11581e6bba434e4"
+    },
+    "learned-diagnostic/capture/pairs/00000/STARTED.json": {
+      "bytes": 230,
+      "sha256": "c541dfd487f4e3dac55cf588d52fa1d7b692c4de4bc8a7b71ac8e1509c31cf6f"
+    },
+    "learned-diagnostic/capture/pairs/00002/TERMINAL.json": {
+      "bytes": 461,
+      "sha256": "64db3be7e34f2b7a201469e365ca352a1b483ee72364393d592c3d1d90137d97"
+    },
+    "learned-diagnostic/capture/pairs/00002/pair.json": {
+      "bytes": 7051,
+      "sha256": "11458dc2c8d2c3225959f08d0231bc63477a1401a3afa00530548a286eaf04c3"
+    },
+    "learned-diagnostic/capture/pairs/00002/STARTED.json": {
+      "bytes": 232,
+      "sha256": "309f0e40404164fac2304b5e57b9dcd3ba43d44ab5fa92e8f8a11cde6d1c2d16"
+    },
+    "learned-diagnostic/capture/pairs/00001/TERMINAL.json": {
+      "bytes": 462,
+      "sha256": "bbdade5077644b4b947a0eaa51b7f1f8bb4118fb2afd3949a20dbd26b191a9e9"
+    },
+    "learned-diagnostic/capture/pairs/00001/pair.json": {
+      "bytes": 7051,
+      "sha256": "e2a5ee68abb7a53fdb8373b9de4f06c1b5f709cb8d708c0cdf5796ccbfcd6664"
+    },
+    "learned-diagnostic/capture/pairs/00001/STARTED.json": {
+      "bytes": 232,
+      "sha256": "ea3f6b1d9c9bb842fe0313dfcafa19aeb7c4fc4761710786992e34b70274d7ce"
+    }
+  }
+}
