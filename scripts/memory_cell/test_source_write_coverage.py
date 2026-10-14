@@ -191,10 +191,7 @@ class SourceCoverageTests(unittest.TestCase):
             altered = deepcopy(plan)
             altered.update(changed)
             with self.subTest(changed=changed), self.assertRaises(ValueError):
-                audit_coverage(
-                    examples, prepared, altered, curriculum="source_two_hop"
-                )
-
+                audit_coverage(examples, prepared, altered, curriculum="source_two_hop")
 
 
 if __name__ == "__main__":
