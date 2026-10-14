@@ -15,6 +15,7 @@ use codex_hepta_types::PhaseMetricSinkErrorV1;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use std::collections::BTreeSet;
+use std::os::unix::fs::PermissionsExt;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -204,6 +205,11 @@ fn runner_with_scope_frontier<D: ModelDriver + NeuronFeatureDriver>(
         revision: 1,
         revoked_grant_ids: BTreeSet::new(),
     };
+    // Hosted runners may create a tempfile root with group/other access.
+    // The production issuer deliberately rejects that directory: provision
+    // an owner-only test fixture instead of weakening Final-use checks.
+    std::fs::set_permissions(directory, std::fs::Permissions::from_mode(0o700))
+        .expect("private signed Worker test authority");
     let authority = FinalUseAuthority::open_state_dir(
         directory,
         "security-owner".into(),
@@ -236,6 +242,28 @@ fn runner_with_scope_frontier<D: ModelDriver + NeuronFeatureDriver>(
         },
     )
     .unwrap()
+}
+
+#[test]
+fn world_accessible_final_use_directory_remains_explicitly_denied() {
+    let dir = tempfile::tempdir().expect("fixture root");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o755))
+        .expect("unsafe fixture directory");
+    let signer = SigningKey::from_bytes(&[93; 32]);
+    let head = FinalUseRevocations {
+        authority_epoch: 9,
+        revision: 1,
+        revoked_grant_ids: BTreeSet::new(),
+    };
+    assert!(matches!(
+        FinalUseAuthority::open_state_dir(
+            dir.path(),
+            "security-owner".to_string(),
+            signer.verifying_key().to_bytes(),
+            head,
+        ),
+        Err(codex_hepta_contracts::FinalUseError::UnsafeStateDirectory)
+    ));
 }
 
 fn signed(signing_key: &SigningKey, binding: FinalUseBinding) -> SignedFinalUseGrant {
