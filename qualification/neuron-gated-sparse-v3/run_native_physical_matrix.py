@@ -30,6 +30,16 @@ def sha(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def require_two_fresh_processes_identical(first: dict, second: dict, *,
+                                          arm: str, cap: int) -> None:
+    require(type(first) is dict and type(second) is dict,
+            f'{cap}/{arm}: missing JSON native process receipt')
+    # Compare every evidence field, including every signed-Q24 activation
+    # coordinate, checkpoint predecessor, Head logit and anti-promotion bit.
+    require(first == second,
+            f'{cap}/{arm}: independent-process native Q24 receipt/frontier mismatch')
+
+
 def independently_recheck_a0_for_native_use(
         receipt: dict, *, synthetic_canary: bool,
         selected_v1: Path | None = None, selected_v1_sha256: str | None = None,
@@ -211,8 +221,8 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
                     len(second.stderr) <= (1 << 16),
                     f'{cap}/{arm}: second native process failed or produced oversized output')
             second_receipt = unique_json(second.stdout)
-            require(second_receipt == parsed,
-                    f'{cap}/{arm}: independent-process native Q24 receipt/frontier mismatch')
+            require_two_fresh_processes_identical(
+                parsed, second_receipt, arm=arm, cap=cap)
             sha_file(path, m['weight_sha256'])
             sha_file(binary, binary_sha)
             sha_file(trace, trace_sha)
