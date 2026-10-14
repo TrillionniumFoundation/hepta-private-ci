@@ -18,6 +18,7 @@ import time
 from candidate_inventory import verify_artifact
 from native_float_gap import compare as floating_gap
 from head_q24_oracle import verify_native_head
+from realized_budget_audit import audit as audit_realized_budget
 from matched_train import (CAPS, ARMS, sha_file, unique_json, require,
                            require_selected_owner_a0)
 
@@ -122,6 +123,12 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
         a0_trusted_public_key=a0_trusted_public_key,
         a0_expected_host_id=a0_expected_host_id,
         a0_max_age_seconds=a0_max_age_seconds)
+    physical_budget = audit_realized_budget(
+        root, receipt_sha, synthetic_fixture_only=synthetic_canary)
+    require(physical_budget['ndu_eligible'] is False
+            and physical_budget['production_qualification'] is False
+            and physical_budget['same_size_head_to_head_quality_claim_admissible'] is False,
+            'realized budget audit improperly granted model selection authority')
     models = receipt.get('models')
     require(type(models) is list and len(models) == 20, '20 physical trained arms required')
     bound = {}
@@ -260,6 +267,16 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
         'selected_executable_sha256': binary_sha,
         'same_frozen_trace_sha256': trace_sha,
         'training_receipt_sha256': receipt_sha,
+        'realized_budget_audit': {
+            'schema':physical_budget['schema'],
+            'physical_candidate_artifact_slots':physical_budget['physical_candidate_artifact_slots'],
+            'effective_independent_physical_model_comparisons':physical_budget[
+                'effective_independent_physical_model_comparisons'],
+            'five_tier_exact_realized_parameter_design_valid':physical_budget[
+                'five_tier_exact_realized_parameter_design_valid'],
+            'five_tier_design_blockers':physical_budget['five_tier_design_blockers'],
+            'ndu_eligible':False, 'production_qualification':False,
+        },
         'frozen_a0_owner_revalidation': current_a0,
         'twenty_native_physical_model_executions': len(results),
         'forty_fresh_native_process_invocations': len(results)*2,
