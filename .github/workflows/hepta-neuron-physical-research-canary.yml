@@ -1,0 +1,67 @@
+name: Hepta Neuron physical research canary
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/neuron-gated-sparse-v3/matched_train.py'
+      - 'qualification/neuron-gated-sparse-v3/precommit_future.py'
+      - 'qualification/neuron-gated-sparse-v3/a4_end_to_end_gate.py'
+      - 'qualification/neuron-gated-sparse-v3/test_real_pipeline.py'
+      - 'qualification/neuron-gated-sparse-v3/test_a4_host_gate.py'
+      - '.github/workflows/hepta-neuron-physical-research-canary.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neuron-physical-research-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pinned-physical-cpu-test:
+    name: Physically reload 20 trained shadow weights; verify A0/A4 rejections
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.11'
+      - name: Install physically exercised pinned CPU training dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install 'safetensors==0.7.0' 'cryptography==46.0.4'
+      - name: Require pinned Torch, safetensors and independent Ed25519 verifier
+        shell: bash
+        run: |
+          python - <<'PY'
+          import torch, safetensors, cryptography
+          assert torch.__version__.split("+")[0] == '2.10.0'
+          assert safetensors.__version__ == '0.7.0'
+          assert cryptography.__version__ == '46.0.4'
+          assert not torch.cuda.is_available()
+          print('research CPU physical canary only; no production data')
+          PY
+      - name: Run physical 20-file learning canary and negative A0/future/A4 tests
+        env:
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+          PYTHONDONTWRITEBYTECODE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover \
+            -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_real_pipeline.py' -v
+          python -m unittest discover \
+            -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_a4_host_gate.py' -v
+      - name: Never qualify model or NDU from source fixture CI
+        run: |
+          echo "No real selected Cell, production Encoder, future utility, signed target-host A4, NDU, or promotion is established."
