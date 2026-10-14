@@ -75,4 +75,20 @@ fn adapter_uses_same_durable_control_owner_for_reads_and_checkpoint_publication(
     assert_eq!(adapter.latest(&scope).unwrap(), snapshot);
     assert_eq!(adapter.check_checkpoint_publisher(&snapshot, next), Ok(()));
     assert_eq!(owner.current().unwrap().1, next);
+
+    // A denied legacy CNS route write must not poison the valid predecessor
+    // or block a later independently admitted model checkpoint CAS.
+    let subsequent = Digest32::of_bytes(b"second-model-checkpoint");
+    assert!(
+        adapter
+            .compare_and_publish_checkpoint(
+                &snapshot,
+                Digest32::of_bytes(b"another-authenticated-read"),
+                Digest32::of_bytes(b"second-tick"),
+                next,
+                subsequent,
+            )
+            .is_ok()
+    );
+    assert_eq!(owner.current().unwrap().1, subsequent);
 }
