@@ -163,7 +163,7 @@ class FrozenSourceBindingTests(unittest.TestCase):
             status="failed",
             error_type="ReaderTimeout",
         )
-        raw = ("\\n".join(json.dumps(row) for row in rows) + "\\n").encode()
+        raw = ("\n".join(json.dumps(row) for row in rows) + "\n").encode()
         files["raw-answers.jsonl"] = raw
         files["run.json"] = json.dumps(
             dict(
