@@ -33,6 +33,17 @@ jobs:
           python3 -m pip install uv==0.8.22
           git fetch --no-tags --depth=1 origin "$BASE"
           just fmt --check --base "$BASE" 2>&1 | tee /tmp/write-preflight-format/format.log
+      - name: Preserve exact Python format diff when the required gate fails
+        if: failure()
+        run: |
+          set -euo pipefail
+          uv run --frozen --project scripts ruff format --diff \
+            scripts/memory_cell/source_write_coverage.py \
+            scripts/memory_cell/test_source_write_coverage.py \
+            scripts/memory_cell/test_pretrained.py \
+            scripts/memory_cell/stem_two_window_reader_trial.py \
+            > /tmp/write-preflight-format/exact-ruff.diff 2>&1 || true
+          cat /tmp/write-preflight-format/exact-ruff.diff
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
