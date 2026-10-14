@@ -323,6 +323,20 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
         dest.write('\n')
         dest.flush()
         os.fsync(dest.fileno())
+    # Audit the actual saved private tensors. A nominal cap is not a new
+    # capacity tier. Never infer an independent efficacy comparison from it.
+    from realized_budget_audit import audit as audit_realized_budget
+    audited = audit_realized_budget(
+        root, sha_bytes(receipt.read_bytes()),
+        synthetic_fixture_only=bool(getattr(args, 'synthetic_canary', False)))
+    require(audited['ndu_eligible'] is False
+            and audited['same_size_head_to_head_quality_claim_admissible'] is False,
+            'physical budget audit cannot grant independent learning authority')
+    with (root / 'realized-budget-audit.json').open('x', encoding='utf-8') as dest:
+        json.dump(audited, dest, sort_keys=True, indent=2)
+        dest.write('\n')
+        dest.flush()
+        os.fsync(dest.fileno())
     return report
 
 
