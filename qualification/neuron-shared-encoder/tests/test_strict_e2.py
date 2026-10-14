@@ -32,6 +32,7 @@ def test_equal_parameter_training_and_report_is_not_authorizing():
     assert report['validation_only_descriptive_winner'] == 'INCONCLUSIVE_INSUFFICIENT_REPLICATION'
     assert report['paired_validation_diagnostic']['training_seed_replicates'] == 2
     assert report['actual_parameters_equal_but_compute_cost_not_verified']
+    assert report['joint_question_option_feature_binding_independently_verified'] is False
     for run in report['runs']:
         a, b = run['candidates']['dynamic_gate'], run['candidates']['swiglu']
         assert a['parameter_count'] == b['parameter_count'] == report['parameter_count']
@@ -126,12 +127,15 @@ def test_cli_synthetic_and_actual_jsonl_identity(tmp_path):
         main([*args, '--encoder', 'mmbert-joint'])
 
 
-def test_option_permutation_same_width_rejected():
+def test_position_labels_allow_per_question_option_text_but_reject_duplicates():
+    from neuron_shared_encoder.strict_e2 import _audit_dataset
     x, y, rows = sample()
     modified = deepcopy(rows)
     modified[1]['options'] = ['yes', 'no']
-    with pytest.raises(ValueError, match='option order/content'):
-        equal_parameter_nonlinear_trial(x, y, modified, seeds=(2,), steps=1)
+    assert _audit_dataset(x, y, modified)['train'].numel() == 12
+    modified[1]['options'] = ['same', 'same']
+    with pytest.raises(ValueError, match='invalid per-question options'):
+        _audit_dataset(x, y, modified)
 
 
 def test_paired_group_bootstrap_two_axis_determinism():
