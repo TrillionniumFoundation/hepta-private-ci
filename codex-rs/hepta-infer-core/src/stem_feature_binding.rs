@@ -91,7 +91,7 @@ pub struct StemFeatureRequestViewV1<'a> {
     pub authority: AuthorityPosture,
 }
 
-impl StemFeatureRequestViewV1<'_> {
+impl<'a> StemFeatureRequestViewV1<'a> {
     /// Explicit owned-wire boundary: one feature allocation is intentionally
     /// made ONLY when a legacy V1 consumer actually requires an owned request.
     /// The exact original V1 request digest is retained and checked.
@@ -495,4 +495,92 @@ mod tests {
             Err(StemFeatureBindingError::InvalidFeatureValue)
         );
     }
+    #[test]
+    fn borrowed_views_reuse_exact_q24_allocation_and_preserve_owned_v1_digest() {
+        let (source, access, first_head, vector) = fixture();
+        let first = borrow_stem_feature_request_v1(
+            &source,
+            &access,
+            &first_head,
+            &vector,
+        )
+        .expect("borrowed, non-authorizing view");
+        let mut second_head = first_head.clone();
+        second_head.request_id = id("req-2");
+        second_head.head_model_id = id("cell-head-2");
+        let second = borrow_stem_feature_request_v1(
+            &source,
+            &access,
+            &second_head,
+            &vector,
+        )
+        .expect("second Cell reuses exact feature vector");
+        assert_eq!(first.feature_vector_q24.as_ptr(), vector.as_ptr());
+        assert_eq!(second.feature_vector_q24.as_ptr(), vector.as_ptr());
+        assert_eq!(first.feature_ref_digest, second.feature_ref_digest);
+        assert!(!first.authority.grants_any());
+        assert!(!second.authority.grants_any());
+
+        let owned = first.materialize_owned_v1().expect("owned replay boundary");
+        let old_contract = bind_stem_feature_request_v1(
+            &source,
+            &access,
+            first_head,
+            &vector,
+        )
+        .expect("same existing V1 output");
+        assert_eq!(owned, old_contract);
+        assert_eq!(
+            neuron_feature_request_digest_v1(&owned.request)
+                .expect("existing V1 semantic digest"),
+            neuron_feature_request_digest_v1(&old_contract.request)
+                .expect("legacy semantic digest")
+        );
+        assert!(!owned.authority.grants_any());
+    }
+
+    #[test]
+    fn borrowed_view_still_rejects_principal_epoch_lease_and_revoke_mismatch() {
+        let (source, mut access, head, vector) = fixture();
+        access.principal_id = id("principal-B");
+        assert_eq!(
+            borrow_stem_feature_request_v1(&source, &access, &head, &vector),
+            Err(StemFeatureBindingError::PrincipalMismatch)
+        );
+        access.principal_id = id("principal-A");
+        access.authority_epoch += 1;
+        assert_eq!(
+            borrow_stem_feature_request_v1(&source, &access, &head, &vector),
+            Err(StemFeatureBindingError::AuthorityEpochMismatch)
+        );
+        access.authority_epoch = 15;
+        access.now_ms = source.lease_expires_at_ms;
+        assert_eq!(
+            borrow_stem_feature_request_v1(&source, &access, &head, &vector),
+            Err(StemFeatureBindingError::LeaseExpired)
+        );
+        access.now_ms = 900;
+        access.revocation_observed = true;
+        assert_eq!(
+            borrow_stem_feature_request_v1(&source, &access, &head, &vector),
+            Err(StemFeatureBindingError::Revoked)
+        );
+    }
+
+    #[test]
+    fn borrowed_view_fails_closed_on_payload_or_selected_head_drift() {
+        let (source, access, mut head, vector) = fixture();
+        let mut tampered = vector.clone();
+        tampered[0] += 1;
+        assert_eq!(
+            borrow_stem_feature_request_v1(&source, &access, &head, &tampered),
+            Err(StemFeatureBindingError::FeatureDigestMismatch)
+        );
+        head.required_projection_digest = digest(b"changed-projection");
+        assert_eq!(
+            borrow_stem_feature_request_v1(&source, &access, &head, &vector),
+            Err(StemFeatureBindingError::IncompatibleHead)
+        );
+    }
+
 }
