@@ -91,9 +91,7 @@ def checked_metadata(run, listing, *, run_id, source):
             raise ValueError("unsigned, duplicate or cross-run artifact")
         names.add(name)
         ids.add(ident)
-        result.append(
-            dict(name=name, id=ident, sha256=digest[7:], bytes=size)
-        )
+        result.append(dict(name=name, id=ident, sha256=digest[7:], bytes=size))
     return sorted(result, key=lambda item: item["name"])
 
 
@@ -164,9 +162,7 @@ def audit(run, listing, archives, *, run_id, source):
             folder.mkdir()
             for name, data in files.items():
                 (folder / name).write_bytes(data)
-            result = inspect(
-                folder, tier, index, expected_commit=source
-            )
+            result = inspect(folder, tier, index, expected_commit=source)
             results.append(
                 dict(
                     artifact_id=item["id"],
@@ -184,9 +180,7 @@ def audit(run, listing, archives, *, run_id, source):
         github_artifact_count=len(results),
         absent_artifact_count=16 - len(results),
         original_attempt_rows=sum(r["raw_attempt_rows"] for r in results),
-        original_succeeded_generation_rows=sum(
-            r["raw_success_rows"] for r in results
-        ),
+        original_succeeded_generation_rows=sum(r["raw_success_rows"] for r in results),
         completed_original_journal_shards=sum(
             r["full_original_journal"] for r in results
         ),
@@ -237,8 +231,11 @@ def main():
                 output.write(f"{item['id']}\t{item['sha256']}\n")
         return
     result = audit(
-        run, listing, args.zip_dir,
-        run_id=args.expected_run_id, source=args.expected_source
+        run,
+        listing,
+        args.zip_dir,
+        run_id=args.expected_run_id,
+        source=args.expected_source,
     )
     with args.result.open("x", encoding="utf-8") as output:
         json.dump(result, output, indent=2, sort_keys=True, allow_nan=False)

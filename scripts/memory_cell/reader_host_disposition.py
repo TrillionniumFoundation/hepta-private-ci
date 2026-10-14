@@ -164,20 +164,25 @@ def inspect(folder, tier, index, *, expected_commit):
         or run.get("case_index") != index
         or run.get("raw_sha256") != sha(raw)
         or run.get("attempts") != len(ARMS)
-        or run.get("actual_successes") != len(ARMS)
+        or run.get("actual_successes") != result["raw_success_rows"]
         or run.get("arms") != list(ARMS)
         or run.get("learned_parameters") != 0
         or run.get("target_labels_exposed") is not False
         or run.get("production_accepted") is not False
         or result["raw_attempt_rows"] != len(ARMS)
-        or result["raw_success_rows"] != len(ARMS)
         or any(
-            r["receipt"].get("reader_identity") != run["reader_identity"] for r in rows
+            r["receipt"].get("reader_identity") != run["reader_identity"]
+            for r in rows
+            if r["status"] == "succeeded"
         )
     ):
         raise ValueError("invalid or mixed original model run receipt")
-    result["full_original_journal"] = True
-    result["outcome"] = "complete_original_journal_not_independently_scored"
+    result["full_original_journal"] = result["raw_success_rows"] == len(ARMS)
+    result["outcome"] = (
+        "complete_original_journal_not_independently_scored"
+        if result["full_original_journal"]
+        else "complete_attempts_with_failed_generation"
+    )
     return result
 
 
