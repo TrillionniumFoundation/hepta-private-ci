@@ -594,8 +594,7 @@ fn real_signed_artifact_cas_lost_ack_respects_independent_final_use_on_recovery(
     let fixture = Fixture::new();
     let ledger = fixture.root.path().join("pending-reconcile-ledger");
     fs::create_dir(&ledger).expect("coordinator ledger");
-    fs::set_permissions(&ledger, fs::Permissions::from_mode(0o700))
-        .expect("private coordinator");
+    fs::set_permissions(&ledger, fs::Permissions::from_mode(0o700)).expect("private coordinator");
     let plan = plan();
     let signer = SigningKey::from_bytes(&[1; 32]);
     let original_plan_digest = plan.digest().expect("original split plan");
@@ -648,10 +647,8 @@ fn real_signed_artifact_cas_lost_ack_respects_independent_final_use_on_recovery(
         }
     });
 
-    let keys =
-        [1_u8, 2, 3, 4].map(|value| SigningKey::from_bytes(&[value; 32]).verifying_key());
-    let trust = CellSplitOwnerTrustV1::new(&plan, keys.clone())
-        .expect("four distinct owner keys");
+    let keys = [1_u8, 2, 3, 4].map(|value| SigningKey::from_bytes(&[value; 32]).verifying_key());
+    let trust = CellSplitOwnerTrustV1::new(&plan, keys.clone()).expect("four distinct owner keys");
     let endpoints = [
         socket,
         fixture.root.path().join("unavailable-migration.sock"),
@@ -659,17 +656,16 @@ fn real_signed_artifact_cas_lost_ack_respects_independent_final_use_on_recovery(
         fixture.root.path().join("unavailable-supervisor.sock"),
     ];
     {
-        let transport = CellSplitUnixEffectPortV1::new(
-            endpoints.clone(),
-            keys.clone(),
-            Duration::from_secs(3),
-        )
-        .expect("real Unix effect client");
+        let transport =
+            CellSplitUnixEffectPortV1::new(endpoints.clone(), keys.clone(), Duration::from_secs(3))
+                .expect("real Unix effect client");
         let mut coordinator = CellSplitExecutionOwnerV1::open(
             &ledger,
             plan.clone(),
             trust.clone(),
-            DropAckAfterRealCasRpc { original: transport },
+            DropAckAfterRealCasRpc {
+                original: transport,
+            },
         )
         .expect("initialize single durable split owner");
         assert!(matches!(
@@ -694,12 +690,9 @@ fn real_signed_artifact_cas_lost_ack_respects_independent_final_use_on_recovery(
     // CAS owner checks authority even on READBACK: pending-only recovery may
     // never ignore that independent current restriction. No second execute.
     authority.store(false, Ordering::Release);
-    let normal_transport = CellSplitUnixEffectPortV1::new(
-        endpoints.clone(),
-        keys.clone(),
-        Duration::from_secs(3),
-    )
-    .expect("recovery transport");
+    let normal_transport =
+        CellSplitUnixEffectPortV1::new(endpoints.clone(), keys.clone(), Duration::from_secs(3))
+            .expect("recovery transport");
     {
         let mut recover = CellSplitExecutionOwnerV1::open_pending_reconciliation(
             &ledger,
@@ -736,29 +729,17 @@ fn real_signed_artifact_cas_lost_ack_respects_independent_final_use_on_recovery(
     // Revoking the original CAS owner after its receipt was committed must
     // also prevent *reopening* the historical prefix as a live admission.
     authority.store(false, Ordering::Release);
-    let denied_client = CellSplitUnixEffectPortV1::new(
-        endpoints.clone(),
-        keys.clone(),
-        Duration::from_secs(3),
-    )
-    .expect("denied verifier");
+    let denied_client =
+        CellSplitUnixEffectPortV1::new(endpoints.clone(), keys.clone(), Duration::from_secs(3))
+            .expect("denied verifier");
     assert!(
-        CellSplitExecutionOwnerV1::open(
-            &ledger,
-            plan.clone(),
-            trust.clone(),
-            denied_client,
-        )
-        .is_err(),
+        CellSplitExecutionOwnerV1::open(&ledger, plan.clone(), trust.clone(), denied_client,)
+            .is_err(),
         "reopening an invalid original signed owner must fail closed"
     );
     authority.store(true, Ordering::Release);
-    let client = CellSplitUnixEffectPortV1::new(
-        endpoints,
-        keys,
-        Duration::from_secs(3),
-    )
-    .expect("reopened verifier");
+    let client = CellSplitUnixEffectPortV1::new(endpoints, keys, Duration::from_secs(3))
+        .expect("reopened verifier");
     let mut recovered = CellSplitExecutionOwnerV1::open(&ledger, plan, trust, client)
         .expect("read original frozen effect after restart");
     assert_eq!(recovered.completed_steps(), 1);
