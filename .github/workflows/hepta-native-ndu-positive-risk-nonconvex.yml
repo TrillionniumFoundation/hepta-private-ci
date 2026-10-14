@@ -1,0 +1,52 @@
+name: Native NDU positive-risk nonconvex global certificate
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-ndu/research/native_stem_abcd/nonconvex_positive_risk/**'
+      - '.github/workflows/hepta-native-ndu-positive-risk-nonconvex.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-certificate-and-solvers:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      OMP_NUM_THREADS: '1'
+      MKL_NUM_THREADS: '1'
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - name: Check out exact HEAD
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: \${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Python 3.13
+        uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1
+        with:
+          python-version: '3.13'
+      - name: Pin numerical environment
+        run: python -m pip install numpy==2.3.5 scipy==1.17.0
+      - name: All math checks and byte-exact rational certificate
+        shell: bash
+        run: |
+          set -euo pipefail
+          SRC="$GITHUB_WORKSPACE/codex-rs/hepta-ndu/research/native_stem_abcd/nonconvex_positive_risk"
+          OUT="$RUNNER_TEMP/ndu-positive-risk"
+          mkdir -p "$OUT/evidence"
+          git rev-parse HEAD > "$OUT/HEAD.txt"
+          python -m pip freeze > "$OUT/ENVIRONMENT.txt"
+          cd "$SRC"
+          python -m unittest -v test_math 2>&1 | tee "$OUT/evidence/TESTS.log"
+          python certificate.py > "$OUT/evidence/CERTIFICATE.json"
+          echo "59c78f537d64dea5a03206fbb41343c7c9cef35a18f1deb248b4212ed7f3bf74  $OUT/evidence/CERTIFICATE.json" | sha256sum -c -
+          python run.py sweep --out "$OUT/runs" --protocol b9bd87177fc25587c972c7c60dd03074b7dc2cd2 2>&1 | tee "$OUT/evidence/SWEEP.log"
+          python audit/verify.py --source "$SRC" --runs "$OUT/runs" --out "$OUT/verified" 2>&1 | tee "$OUT/evidence/AUDIT.log"
+      - name: Preserve raw outcomes and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ndu-positive-risk-nonconvex-\${{ github.run_id }}-\${{ github.run_attempt }}
+          path: \${{ runner.temp }}/ndu-positive-risk
+          retention-days: 14
+          if-no-files-found: error
