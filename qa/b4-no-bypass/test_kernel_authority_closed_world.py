@@ -282,7 +282,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         )
         self.assertRegex(
             physical_port,
-            r"self\.atomic_control_cutover_prepared\.as_ref\(\)\.ok_or\(",
+            r"self\.atomic_control_cutover_prepared\s*\.as_ref\(\)\s*\.ok_or\(",
             "physical CNS mutation must deny before runtime topology execution",
         )
 
