@@ -121,6 +121,10 @@ class GitGraphTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.git("init", "-q")
+        # Git can spawn auto-maintenance after fixture commits. Keep its
+        # temporary exact-object directory stable until unittest cleanup.
+        self.git("config", "maintenance.auto", "false")
+        self.git("config", "gc.auto", "0")
         self.git("config", "user.name", "CI regression")
         self.git("config", "user.email", "ci@example.invalid")
         self.write(
