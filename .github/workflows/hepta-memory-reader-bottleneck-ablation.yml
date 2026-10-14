@@ -1,7 +1,9 @@
 name: MemoryCell real Reader capacity and one-premise ablation
 on:
   push:
-    branches: [codex/memorycell-reader-bottleneck-ablation-20261014]
+    branches:
+      - codex/memorycell-reader-bottleneck-ablation-20261014
+      - codex/memorycell-reader-real-generator-fix-20261014
     paths:
       - "scripts/memory_cell/reader_bottleneck_ablation.py"
       - "scripts/memory_cell/test_reader_bottleneck_ablation.py"

@@ -154,19 +154,15 @@ def generate(plan_dir, model_dir, output, *, index, tier, stage_sha):
         model_dir / "reader", expected_inventory=model["inventory_digest"]
     )
     dump(output / "runtime-preflight.json", capture_runtime(torch, bounded=False))
-    with patch(
-        "strong_rag_trial.fail_if_unviable_reader",
-        lambda row: _bounded(row),
-    ):
-        rows = _journal_answers(
-            reader,
-            [case],
-            originals,
-            ARMS,
-            lambda _case, arm: arms[arm],
-            output / "raw-answers.jsonl",
-            seed=digest((HISTORIC_PLAN_SHA, tier, SCHEMA)),
-        )
+    rows = _journal_with_guard(
+        reader,
+        [case],
+        originals,
+        ARMS,
+        lambda _case, arm: arms[arm],
+        output / "raw-answers.jsonl",
+        seed=digest((HISTORIC_PLAN_SHA, tier, SCHEMA)),
+    )
     dump(
         output / "run.json",
         dict(
@@ -194,10 +190,21 @@ def generate(plan_dir, model_dir, output, *, index, tier, stage_sha):
     return len(rows)
 
 
-def _bounded(row):
-    from strong_rag_trial import fail_if_unviable_reader
+def _journal_with_guard(reader, cases, originals, arms, selections, journal, *, seed):
+    """Capture the ORIGINAL guard before patching its call site.
 
-    fail_if_unviable_reader(row, max_seconds=MAX_SECONDS)
+    Original answers are fsynced before the guard checks elapsed time.
+    Only the CPU latency bound changes; Reader, prompt, evidence and decoder do not.
+    """
+    from strong_rag_trial import fail_if_unviable_reader as original_guard
+
+    def bounded(row):
+        return original_guard(row, max_seconds=MAX_SECONDS)
+
+    with patch("strong_rag_trial.fail_if_unviable_reader", bounded):
+        return _journal_answers(
+            reader, cases, originals, arms, selections, journal, seed=seed
+        )
 
 
 def validate_row(row, case, arms, identity):
