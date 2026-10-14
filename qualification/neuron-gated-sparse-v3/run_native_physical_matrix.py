@@ -16,6 +16,7 @@ import sys
 import time
 
 from candidate_inventory import verify_artifact
+from native_float_gap import compare as floating_gap
 from matched_train import CAPS, ARMS, sha_file, unique_json, require
 
 SCHEMA = 'hepta.neuron.twenty-physical-q24-mechanism-matrix.v1'
@@ -33,6 +34,11 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
             'symlinked benchmark input is not a frozen source')
     sha_file(binary, binary_sha)
     sha_file(trace, trace_sha)
+    frozen_trace = unique_json(trace.read_bytes())
+    require(type(frozen_trace) is dict and
+            frozen_trace.get('schema') == 'hepta.neuron.physical-q24-shadow-trace.v1'
+            and type(frozen_trace.get('events')) is list,
+            'unknown original Q24 test trace')
     source = root / 'training-receipt.json'
     sha_file(source, receipt_sha)
     receipt = unique_json(source.read_bytes())
@@ -129,7 +135,13 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
             sha_file(path, m['weight_sha256'])
             sha_file(binary, binary_sha)
             sha_file(trace, trace_sha)
+            gap = floating_gap(path, arm=arm, width=m['width'], rank=m['rank'],
+                               native_trace=frozen_trace, native_result=parsed)
+            require(gap['bitwise_float_to_q24_prediction_parity_proven'] is False and
+                    gap['production_qualification'] is False,
+                    'float/native gap analyzer forged model qualification')
             results.append({
+                'float_surrogate_vs_native_q24_state_gap':gap,
                 'arm': arm, 'private_parameter_cap': cap,
                 'native_process_wall_micros_not_target_host_slo': elapsed_us,
                 'physical_artifact_sha256': m['weight_sha256'],
@@ -146,6 +158,7 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
         'training_receipt_sha256': receipt_sha,
         'twenty_native_physical_model_executions': len(results),
         'native_q24_temporal_replay_executed': True,
+        'diagnostic_native_vs_float_gap_rows': len(results),
         'full_selected_model_head_executed': False,
         'floating_torch_native_q24_prediction_parity_verified': False,
         'real_target_host_attested': False, 'crash_durable_recovery_verified': False,
