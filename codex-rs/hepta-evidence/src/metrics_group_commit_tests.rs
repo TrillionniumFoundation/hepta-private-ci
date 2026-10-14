@@ -326,3 +326,30 @@ fn evidence_same_inode_truncate_and_equal_length_tail_rewrite_poison_barrier() {
         ));
     }
 }
+
+
+#[cfg(unix)]
+#[test]
+fn live_evidence_barrier_denies_parent_directory_became_peer_writable() {
+    use std::os::unix::fs::PermissionsExt;
+
+    let root = tempfile::tempdir().expect("initial owner-private Evidence path");
+    let path = root.path().join("journal.log");
+    let mut writer = MetricsGroupCommitV1::open(&path).expect("safe original writer");
+    writer
+        .stage(sample(MetricPhaseV1::Admission))
+        .expect("real phase sample");
+    writer.flush().expect("first durable original group");
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o777))
+        .expect("external permission relaxation");
+    assert!(matches!(
+        writer.flush(),
+        Err(MetricsJournalErrorV1::UnsafePath)
+    ));
+    assert!(matches!(
+        writer.stage(sample(MetricPhaseV1::Cas)),
+        Err(MetricsJournalErrorV1::Poisoned)
+    ));
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("restore permissions only for test cleanup");
+}

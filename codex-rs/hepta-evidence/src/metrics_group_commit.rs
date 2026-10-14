@@ -176,6 +176,9 @@ impl MetricsGroupCommitV1 {
         expected_sequence: u64,
         expected_head: Digest32,
     ) -> Result<(), MetricsJournalErrorV1> {
+        // Filesystem directory ownership is a live trust boundary. A parent
+        // becoming peer-writable after startup must stop positive ACKs too.
+        check_journal_path(&self.original_path)?;
         check_open_file(&self.original_path, &self.file)?;
         if self.file.metadata()?.len() != expected_bytes {
             return Err(MetricsJournalErrorV1::Corrupt);
@@ -220,6 +223,7 @@ impl MetricsGroupCommitV1 {
         }
         // Refuse any identity/size drift that raced the bounded last-row
         // inspection. Neither hash nor metric ACK alone grants Final-use.
+        check_journal_path(&self.original_path)?;
         check_open_file(&self.original_path, &self.file)?;
         if self.file.metadata()?.len() != expected_bytes {
             return Err(MetricsJournalErrorV1::Corrupt);
