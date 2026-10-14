@@ -3,14 +3,19 @@ on:
   push:
     branches:
       - codex/memorycell-reader-external-artifact-admission-20261014
+      - codex/memorycell-reader-public-source-binding-20261014
     paths:
       - "scripts/memory_cell/reader_external_artifact_audit.py"
       - "scripts/memory_cell/test_reader_external_artifact_audit.py"
+      - "scripts/memory_cell/reader_original_case_binding.py"
+      - "scripts/memory_cell/test_reader_original_case_binding.py"
       - ".github/workflows/hepta-memory-reader-external-artifact-audit.yml"
   pull_request:
     paths:
       - "scripts/memory_cell/reader_external_artifact_audit.py"
       - "scripts/memory_cell/test_reader_external_artifact_audit.py"
+      - "scripts/memory_cell/reader_original_case_binding.py"
+      - "scripts/memory_cell/test_reader_original_case_binding.py"
       - ".github/workflows/hepta-memory-reader-external-artifact-audit.yml"
 permissions:
   contents: read
@@ -40,16 +45,22 @@ jobs:
           set -euo pipefail
           python3 -m py_compile \
             scripts/memory_cell/reader_external_artifact_audit.py \
-            scripts/memory_cell/test_reader_external_artifact_audit.py
+            scripts/memory_cell/test_reader_external_artifact_audit.py \
+            scripts/memory_cell/reader_original_case_binding.py \
+            scripts/memory_cell/test_reader_original_case_binding.py
           python3 -m unittest discover -s scripts/memory_cell \
             -p test_reader_external_artifact_audit.py -v
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p test_reader_original_case_binding.py -v
       - name: Required scoped Ruff format; no waiver
         run: |
           set -euo pipefail
           python3 -m pip install uv==0.8.22
           uv run --frozen --project scripts ruff format --check \
             scripts/memory_cell/reader_external_artifact_audit.py \
-            scripts/memory_cell/test_reader_external_artifact_audit.py
+            scripts/memory_cell/test_reader_external_artifact_audit.py \
+            scripts/memory_cell/reader_original_case_binding.py \
+            scripts/memory_cell/test_reader_original_case_binding.py
       - name: Preserve exact format diagnostics on source failure
         if: failure()
         run: |
@@ -60,6 +71,8 @@ jobs:
             uv run --frozen --project scripts ruff format --diff \
               scripts/memory_cell/reader_external_artifact_audit.py \
               scripts/memory_cell/test_reader_external_artifact_audit.py \
+              scripts/memory_cell/reader_original_case_binding.py \
+              scripts/memory_cell/test_reader_original_case_binding.py \
               > /tmp/reader-archive-format/ruff.diff || true
             cat /tmp/reader-archive-format/ruff.diff
           fi
@@ -109,6 +122,11 @@ jobs:
             gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" > "$archive"
             printf '%s  %s\n' "$expected_sha" "$archive" | sha256sum --check --strict
           done < /tmp/external-audit/download-pins.tsv
+      - name: Download original frozen public task/source ZIP with external SHA
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11827287296/zip" > /tmp/external-audit/original-public-source.zip
+          printf '%s  %s\n' '31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a' /tmp/external-audit/original-public-source.zip | sha256sum --check --strict
       - name: Verify complete inner manifests and classify actual host/model attempts
         run: |
           set -euo pipefail
@@ -118,6 +136,24 @@ jobs:
             /tmp/external-audit/partial-run-disposition.json \
             --zip-dir /tmp/original-reader-artifacts \
             --expected-run-id "$SOURCE_RUN_ID" --expected-source "$ORIGINAL_SOURCE"
+          python3 scripts/memory_cell/reader_original_case_binding.py \
+            /tmp/external-audit/original-public-source.zip \
+            /tmp/external-audit/partial-run-disposition.json \
+            /tmp/original-reader-artifacts \
+            /tmp/external-audit/source-bound-disposition.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("/tmp/external-audit")
+          outer = json.loads((root / "partial-run-disposition.json").read_text())
+          bound = json.loads((root / "source-bound-disposition.json").read_text())
+          assert bound["source_bound_successful_generations"] == outer["original_succeeded_generation_rows"]
+          assert bound["original_attempt_rows"] == outer["original_attempt_rows"]
+          assert bound["complete_five_arm_shards"] == outer["completed_original_journal_shards"]
+          assert bound["original_ground_truth_parsed"] is False
+          assert bound["new_model_calls"] == 0
+          assert bound["production_accepted"] is False
+          PY
           git rev-parse HEAD > /tmp/external-audit/auditor-commit.txt
           printf '%s\n' "$ORIGINAL_SOURCE" > /tmp/external-audit/original-generation-commit.txt
           (cd /tmp/external-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
