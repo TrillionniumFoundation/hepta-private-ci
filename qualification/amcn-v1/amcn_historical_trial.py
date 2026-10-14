@@ -16,8 +16,11 @@ from hashlib import sha256
 import json
 from pathlib import Path
 
-from amcn_core import Evidence, canonical, digest, require, shadow_disposition
+from amcn_core import Evidence, bm25, canonical, digest, require, shadow_disposition
 from amcn_native import run_train_once
+from amcn_fission_match import matched_fission
+from amcn_learning import FeatureMatrix, train_semantic
+from experiments.shared_stem_cell.execution import LocalEncoder, parameters, tensor_digest
 
 
 SCOPE = "amcn.historical.locomo.shadow"
@@ -75,74 +78,173 @@ def stage_from_historical_artifact(archive, output):
                        else "future_a" if i == select_end
                        else "future_b")
                    for i, f in enumerate(families)}
+    from amcn_source_first import lexical_shortlist
+
     query_groups = {}
     for q in benchmark.questions:
         query_groups.setdefault(benchmark.families[q.family], []).append(q)
-    train_labels, blind_scores, public, skipped = {}, {}, [], []
-    for fam in families:
-        accepted = 0
-        for q in sorted(query_groups.get(fam, ()), key=lambda q: digest(q.identity)):
-            # Do not silently truncate original evidence to fit the frozen 512-token model.
-            # Fixed source-agnostic byte admission runs before reference scoring.
-            if len(q.content.encode("utf-8")) > 512:
+
+    train_labels, blind_scores, public, excluded = {}, {}, [], []
+    source_first_plans, support_by_question = {}, {}
+    seen_row_ids = set()
+
+    def eligible_inventory(question):
+        # Admission is fixed from the source alone, before any question targets.
+        history = benchmark.history(question)
+        items = []
+        for doc in history:
+            raw = doc.content.encode("utf-8")
+            if not 1 <= len(raw) <= MAX_SOURCE_BYTES:
                 continue
-            target = benchmark.targets[q.identity]
-            history = benchmark.history(q)
-            indexed = {d.identity: d for d in history}
-            supports = sorted((indexed[e] for e in target.evidence
-                               if e in indexed and 1 <= len(indexed[e].content.encode()) <= MAX_SOURCE_BYTES),
-                              key=lambda d: digest(d.identity))
-            negatives = sorted((d for d in history
-                                if d.identity not in set(target.evidence)
-                                and 1 <= len(d.content.encode()) <= MAX_SOURCE_BYTES),
-                               key=lambda d: digest(d.identity))
-            if target.unanswerable or not supports or not negatives:
+            items.append(Evidence(
+                evidence_id=doc.identity, source_root=doc.root, scope=SCOPE,
+                revision=1, text=doc.content,
+                content_sha256=sha256(raw).hexdigest(),
+                generation=GENERATION, revoked=False))
+        require(len(items) <= 8192, "too many eligible source records")
+        return items
+
+    def append_row(question, family, split, evidence, label=None):
+        rid = digest([question.identity, evidence.evidence_id, split])
+        require(rid not in seen_row_ids, "duplicate candidate identity")
+        seen_row_ids.add(rid)
+        public.append({
+            "row_id": rid, "question_id": question.identity,
+            "question": question.content, "family": family, "split": split,
+            "evidence": asdict(evidence),
+        })
+        if split == "train":
+            require(type(label) is int and label in (0, 1), "TRAIN-only support label")
+            train_labels[rid] = label
+        else:
+            require(label is None, "no heldout labels in public row")
+
+    def freeze_query(question, family, split, inventory):
+        # Deterministic across source permutations; no target/evidence-label
+        # is supplied to the shortlist constructor.
+        plan = lexical_shortlist(
+            question.content, inventory, scope=SCOPE,
+            generation=GENERATION, top_k=16)
+        require(question.identity not in source_first_plans, "duplicate heldout question")
+        source_first_plans[question.identity] = plan
+        index = {ev.evidence_id: ev for ev in inventory}
+        for sid in plan["ranked_source_ids"]:
+            append_row(question, family, split, index[sid])
+
+    for family in families:
+        queries = sorted(query_groups.get(family, ()),
+                         key=lambda q: digest(q.identity))
+        available = []
+        for question in queries:
+            # The query and source admission are independent of publisher gold.
+            if len(question.content.encode("utf-8")) > 512:
                 continue
-            split = assignments[fam]
-            # TRAIN family second question is a genuine old-source retention
-            # probe, not a second independent test source family.
-            if split == "train" and accepted == 1:
-                split = "retention"
-            elif accepted >= (2 if split == "train" else 1):
+            inventory = eligible_inventory(question)
+            if not inventory:
+                continue
+            available.append((question, inventory))
+        if not available:
+            excluded.append({"family_sha256":digest(family),
+                             "reason":"no_admitted_question_or_source"})
+            continue
+        split = assignments[family]
+        if split != "train":
+            question, inventory = available[0]
+            freeze_query(question, family, split, inventory)
+            # Reveal reference IDs only to a separately persisted *withheld*
+            # label/score payload, never to Encoder/Head Candidate inputs.
+            target = benchmark.targets[question.identity]
+            support_by_question[question.identity] = sorted(set(target.evidence))
+            continue
+
+        # TRAIN is the only partition allowed to use publisher weak support
+        # annotations to construct supervised positive/negative examples.
+        training_choice = None
+        for question, inventory in available:
+            support = set(benchmark.targets[question.identity].evidence)
+            positive = [x for x in inventory if x.evidence_id in support]
+            negative = [x for x in inventory if x.evidence_id not in support]
+            if positive and negative:
+                training_choice = (question, positive[0], negative[0])
                 break
-            for label, doc in ((1, supports[0]), (0, negatives[0])):
-                rid = digest([q.identity, doc.identity, split])
-                source = Evidence(
-                    evidence_id=doc.identity, source_root=doc.root, scope=SCOPE,
-                    revision=1, text=doc.content,
-                    content_sha256=sha256(doc.content.encode()).hexdigest(),
-                    generation=GENERATION, revoked=False)
-                public.append({"row_id": rid, "question_id": q.identity,
-                               "question": q.content, "family": fam, "split": split,
-                               "evidence": asdict(source)})
-                (train_labels if split == "train" else blind_scores)[rid] = label
-            accepted += 1
-        if accepted < (2 if assignments[fam] == "train" else 1):
-            skipped.append(fam)
-    require(not skipped, "source family missing precommitted positive/negative pair")
-    require(set(train_labels) and blind_scores, "no split data")
-    # These are two distinct files. Future labels never appear in TRAIN input.
-    inputs = {"schema": PROFILE + ".public", "scope": SCOPE,
-              "generation": GENERATION, "rows": public,
-              "model_manifest": model, "family_plan": assignments,
-              "archive_sha256": ARCHIVE_SHA256,
-              "dataset_sha256": CORPUS, "independent_future_observation": False}
+        if training_choice is None:
+            excluded.append({"family_sha256":digest(family),
+                             "reason":"no_train_weak_positive_and_negative"})
+            continue
+        training_question, positive, negative = training_choice
+        append_row(training_question, family, "train", positive, 1)
+        append_row(training_question, family, "train", negative, 0)
+        # Old-task retention shares the TRAIN family by design, but is a
+        # different question, selected *without* looking at its annotation.
+        retention = next(((q, items) for q, items in available
+                          if q.identity != training_question.identity), None)
+        if retention is not None:
+            freeze_query(retention[0], family, "retention", retention[1])
+            support_by_question[retention[0].identity] = sorted(
+                set(benchmark.targets[retention[0].identity].evidence))
+        else:
+            excluded.append({"family_sha256":digest(family),
+                             "reason":"no_distinct_old_question_for_retention"})
+
+    require(len(train_labels) >= 8 and {x for x in train_labels.values()} == {0, 1},
+            "insufficient original supervised training examples")
+    require(source_first_plans and all(sum(
+        x["split"] == split for x in public) > 0
+        for split in ("select", "future_a", "future_b", "retention")),
+        "missing full fixed source-first evaluation split")
+    require(all(x["split"] != "train" for x in public if x["row_id"] in blind_scores),
+            "heldout truth leaked into TRAIN")
+    for record in public:
+        if record["split"] == "train":
+            continue
+        weak_support = set(support_by_question[record["question_id"]])
+        blind_scores[record["row_id"]] = int(
+            record["evidence"]["evidence_id"] in weak_support)
+
+    inputs = {
+        "schema": PROFILE + ".public.v2",
+        "scope": SCOPE, "generation": GENERATION,
+        "rows": public, "model_manifest": model,
+        "family_plan": assignments,
+        "source_first_shortlists": source_first_plans,
+        "archive_sha256": ARCHIVE_SHA256,
+        "dataset_sha256": CORPUS,
+        "independent_future_observation": False,
+    }
+    withheld = {
+        "schema": PROFILE + ".withheld.v2",
+        "row_labels": blind_scores,
+        "publisher_support": support_by_question,
+        "source_first_plan_sha256": digest(source_first_plans),
+    }
     write_once(output / "public-input.json", inputs)
     write_once(output / "train-labels.json", train_labels)
-    # Scorer-only label file; NEVER provided to trainer process.
-    write_once(output / "withheld-labels.json", blind_scores)
+    # The TRAIN-only process cannot see this separate score-only file.
+    write_once(output / "withheld-labels.json", withheld)
     write_once(output / "preparation-receipt.json", shadow_disposition(
-        phase="prepare", cohort_sha256=digest(public),
+        phase="prepare_source_first_v2",
+        cohort_sha256=digest(public),
+        shortlist_sha256=digest(source_first_plans),
         originally_published_question_families=len(families),
-        counts_by_split={split:sum(x["split"]==split for x in public)
-                         for split in ("train", "select", "future_a", "future_b", "retention")},
+        excluded_families=excluded,
+        counts_by_split={split:sum(x["split"] == split for x in public)
+                         for split in ("train","select","future_a",
+                                       "future_b","retention")},
         labels_are_publisher_weak_support=True,
-        source_group_not_independently_reviewer_qualified=True,
+        heldout_candidate_selection_reads_labels=False,
+        source_groups_not_independently_reviewer_qualified=True,
         real_future_windows=0,
         material_staging_sha256=digest(staging),
         physical_pretrained_encoder_execution=False))
-    return {"public_rows": len(public), "train_labels": len(train_labels),
-            "withheld_labels": len(blind_scores), "families": len(families)}
+    return {
+        "public_rows": len(public),
+        "train_labels": len(train_labels),
+        "withheld_labels": len(blind_scores),
+        "heldout_queries": len(source_first_plans),
+        "families": len(families),
+        "excluded_families": len(excluded),
+        "label_blind_candidates": True,
+    }
 
 
 def train_from_only_public_and_train_labels(root, public_path, labels_path, output):

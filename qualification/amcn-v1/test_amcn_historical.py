@@ -24,9 +24,10 @@ def fixture(root):
     a = evidence("ev-a", "Database transaction deadlock rollback.")
     b = evidence("ev-b", "Weather sunshine lake.")
     c = evidence("ev-c", "Database connection pooling.")
-    evidences = (a, b, c)
+    d = evidence("ev-d", "Private unrelated household note.")
+    evidences = (a, b, c, d)
     candidates = lexical_shortlist(question, list(evidences),
-                                   scope=SCOPE, generation=GENERATION, top_k=3)
+                                   scope=SCOPE, generation=GENERATION, top_k=4)
     srcmap = {x.evidence_id: x for x in evidences}
     rows = [{
         "row_id": digest(["fixture-q", sid, "future_a"]),

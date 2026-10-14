@@ -40,6 +40,7 @@ jobs:
           git -C hepta rev-parse HEAD > /tmp/hepta-amcn-official-api/hepta-sha.txt
           python3 -m venv /tmp/hepta-amcn-official-python
           /tmp/hepta-amcn-official-python/bin/pip install -e ./upstream-v2 > /tmp/hepta-amcn-official-api/install.log 2>&1
+          /tmp/hepta-amcn-official-python/bin/pip install httpx==0.28.1 >> /tmp/hepta-amcn-official-api/install.log 2>&1
           /tmp/hepta-amcn-official-python/bin/pip check
           /tmp/hepta-amcn-official-python/bin/pip freeze > /tmp/hepta-amcn-official-api/environment.txt
       - name: Execute real published Memory registry and persistence ABI
