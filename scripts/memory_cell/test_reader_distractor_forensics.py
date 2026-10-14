@@ -4,7 +4,12 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from reader_distractor_forensics import classify_loss, strict_identifier, audit
+from reader_distractor_forensics import (
+    audit,
+    classify_loss,
+    reversal_control,
+    strict_identifier,
+)
 
 
 def case(answer, *, kind="new_fact"):
@@ -114,6 +119,75 @@ class OriginalReaderForensicsTests(unittest.TestCase):
             model.write_bytes(b"not-a-zip")
             with self.assertRaises(ValueError):
                 audit(source, model)
+
+
+    def test_order_reversal_pair_is_not_a_new_model_call(self):
+        pair = self._reversal_pair()
+        report = reversal_control({"one": pair})
+        self.assertEqual(report["paired_tasks"], 1)
+        self.assertEqual(report["same_success_status"], 1)
+        self.assertEqual(report["same_parsed_literal"], 1)
+        self.assertFalse(report["semantic_review"])
+
+    def test_reversal_requires_exact_four_evidence_ids_and_equal_token_budget(self):
+        for mutation in ("selected", "input_tokens", "reader_identity"):
+            with self.subTest(mutation=mutation):
+                pair = self._reversal_pair()
+                if mutation == "selected":
+                    pair["hybrid_k4_reversed"]["selected"].reverse()
+                elif mutation == "input_tokens":
+                    pair["hybrid_k4_reversed"]["receipt"]["input_tokens"] += 1
+                else:
+                    pair["hybrid_k4_reversed"]["receipt"]["reader_identity"] = "changed"
+                with self.assertRaises(ValueError):
+                    reversal_control({"one": pair})
+
+    def test_failed_or_unauthorized_reversal_cannot_claim_reader_gain(self):
+        for mutation in ("direct_failed", "reverse_failed", "semantic_claim"):
+            with self.subTest(mutation=mutation):
+                pair = self._reversal_pair()
+                if mutation == "direct_failed":
+                    pair["hybrid_k4"]["status"] = "failed"
+                elif mutation == "reverse_failed":
+                    pair["hybrid_k4_reversed"]["status"] = "failed"
+                else:
+                    pair["hybrid_k4_reversed"]["receipt"][
+                        "independent_semantic_review"
+                    ] = True
+                with self.assertRaises(ValueError):
+                    reversal_control({"one": pair})
+
+    @staticmethod
+    def _reversal_pair():
+        def row(arm, ids):
+            return dict(
+                question_id="one",
+                arm=arm,
+                kind="new_fact",
+                candidate_digest="fixed",
+                status="succeeded",
+                selected=ids,
+                strict_task_success=False,
+                answer="site_00000002 [E1]",
+                parsed_identifier="site_00000002",
+                receipt=dict(
+                    reader_identity="model",
+                    reader_profile="profile",
+                    token_limit=2048,
+                    input_tokens=100,
+                    trainable_parameters=0,
+                    answer_postprocessed=False,
+                    independent_semantic_review=False,
+                ),
+            )
+
+        ids = ["e0", "e1", "e2", "e3"]
+        return {
+            "hybrid_k4": row("hybrid_k4", ids),
+            "hybrid_k4_reversed": row(
+                "hybrid_k4_reversed", list(reversed(ids))
+            ),
+        }
 
 
 if __name__ == "__main__":

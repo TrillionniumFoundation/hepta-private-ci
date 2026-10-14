@@ -95,6 +95,80 @@ def classify_loss(row, label):
     )
 
 
+def reversal_control(by_task):
+    """Verify matched Qwen Top-4 source-order reversal without new inference."""
+    if not isinstance(by_task, dict) or not by_task:
+        raise ValueError("nonempty complete paired task map required")
+    pairs = []
+    for qid, group in sorted(by_task.items()):
+        direct, reverse = group["hybrid_k4"], group["hybrid_k4_reversed"]
+        if (
+            direct["question_id"] != qid
+            or reverse["question_id"] != qid
+            or direct["kind"] != reverse["kind"]
+            or direct["status"] != "succeeded"
+            or reverse["status"] != "succeeded"
+            or direct["candidate_digest"] != reverse["candidate_digest"]
+            or len(direct["selected"]) != 4
+            or direct["selected"] != list(reversed(reverse["selected"]))
+            or type(direct["strict_task_success"]) is not bool
+            or type(reverse["strict_task_success"]) is not bool
+            or not isinstance(direct["answer"], str)
+            or not isinstance(reverse["answer"], str)
+        ):
+            raise ValueError("not a matched original four-source order intervention")
+        one, two = direct["receipt"], reverse["receipt"]
+        if any(
+            one[key] != two[key]
+            for key in (
+                "reader_identity",
+                "reader_profile",
+                "token_limit",
+                "input_tokens",
+                "trainable_parameters",
+                "answer_postprocessed",
+                "independent_semantic_review",
+            )
+        ) or one["answer_postprocessed"] is not False:
+            raise ValueError("order-only intervention changed Reader or budget")
+        pairs.append(
+            dict(
+                question_id=qid,
+                kind=direct["kind"],
+                direct_task_success=direct["strict_task_success"],
+                reverse_task_success=reverse["strict_task_success"],
+                direct_parsed_literal=direct["parsed_identifier"],
+                reverse_parsed_literal=reverse["parsed_identifier"],
+                input_tokens=one["input_tokens"],
+                original_source_count=4,
+            )
+        )
+    return dict(
+        paired_tasks=len(pairs),
+        same_success_status=sum(
+            p["direct_task_success"] == p["reverse_task_success"]
+            for p in pairs
+        ),
+        source_order_reversal_changes_task_success=sum(
+            p["direct_task_success"] != p["reverse_task_success"]
+            for p in pairs
+        ),
+        same_parsed_literal=sum(
+            p["direct_parsed_literal"] == p["reverse_parsed_literal"]
+            for p in pairs
+        ),
+        changed_parsed_literal=sum(
+            p["direct_parsed_literal"] != p["reverse_parsed_literal"]
+            for p in pairs
+        ),
+        source_ids_exactly_reversed=True,
+        matched_input_token_counts=True,
+        prospective_generalization=False,
+        semantic_review=False,
+        per_task=pairs,
+    )
+
+
 def audit(source_zip, model_zip):
     source = checked_zip(source_zip, SOURCE_SHA, count=35)
     model = checked_zip(model_zip, MODEL_SHA, count=272)
@@ -216,6 +290,7 @@ def audit(source_zip, model_zip):
                 )
             )
     causes = Counter(item["cause"] for item in losses)
+    reversed_hybrid_order = reversal_control(by_task)
     return dict(
         schema=SCHEMA,
         original_generating_commit=GENERATING_SHA,
@@ -233,6 +308,7 @@ def audit(source_zip, model_zip):
         ),
         hybrid_losses_to_organized=len(losses),
         loss_mechanism_counts=dict(sorted(causes.items())),
+        reversed_hybrid_order_control=reversed_hybrid_order,
         losses=losses,
         independent_semantic_adjudication=False,
         writer_or_parameter_training_executed=False,

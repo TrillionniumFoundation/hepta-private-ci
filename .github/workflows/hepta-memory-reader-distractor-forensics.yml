@@ -94,6 +94,14 @@ jobs:
               "correct_literal_invalid_output_grammar": 1,
               "wrong_literal_copied_from_other_entity": 4,
           }
+          reversal = report["reversed_hybrid_order_control"]
+          assert reversal["paired_tasks"] == 8
+          assert reversal["same_success_status"] == 8
+          assert reversal["source_order_reversal_changes_task_success"] == 0
+          assert reversal["same_parsed_literal"] == 7
+          assert reversal["changed_parsed_literal"] == 1
+          assert reversal["source_ids_exactly_reversed"] is True
+          assert reversal["matched_input_token_counts"] is True
           assert report["new_model_calls"] == 0
           assert report["independent_semantic_adjudication"] is False
           assert report["production_accepted"] is False
