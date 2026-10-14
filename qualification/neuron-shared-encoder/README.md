@@ -353,3 +353,28 @@ until independent target-host/owner receipts establish their origin.
 The separate counterfactual truth-flip executor in PR #1774 remains a
 distinct required evidence producer; C's scalar task scores alone
 cannot demonstrate that the model actually used images/audio/video.
+
+
+### E3 fourth arm: *learned* lightweight state, not an extra Transformer
+
+E3 retains **three different cost paths**: (i) frozen joint
+state+question+options Encoder, (ii) public-question Encoder + frozen
+state-only Encoder and ordinary Head (which may consume MORE forwards
+than joint), and (iii) public-question Encoder + real trainable
+Cell-local byte n-gram State Adapter + light Gated/Linear Head.
+Path (iii), `quality_shadow.public_plus_trainable_lightweight_state_adapter`,
+uses train-only gradients for the State Adapter and Head. All parameters
+are counted together under the same 2K/16K/... total Cell ceiling,
+including an AdamW optimizer memory report. Private state processing
+uses deterministic, explicitly lossy byte 1–3-gram counts, without
+another full Transformer call. It also reports actual raw bytes
+processed and elapsed featurization time; this cost is **not zero**.
+Fixed public projections and input normalizers are fitted or frozen
+without using future labels; no production feature sharing is claimed.
+
+This fourth arm lets research compare *true cheap state adaptation*
+against full-joint accuracy and frozen double-Encoder input decomposition.
+It is an experimentally trainable control, not evidence that byte hashing
+preserves all decision signals. If image/audio/video, binary state, huge
+states or privacy permissions are not supported by this local text
+featurizer, E3 must use a separately qualified state adapter.

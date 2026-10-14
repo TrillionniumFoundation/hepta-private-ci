@@ -758,6 +758,12 @@ def main() -> None:
                     torch.cat([public_features, state_features], dim=1))
                 label_tensor = torch.tensor([r['label'] for r in rows], dtype=torch.long)
                 split_names = [r['split'] for r in rows]
+                from .state_fusion import learned_state_fusion_trials
+                lightweight_state = learned_state_fusion_trials(
+                    _p.float().cpu(), rows, label_tensor, split_names,
+                    total_dim=args.dimension, budgets=tuple(args.budgets),
+                    kinds=('linear', 'dynamic_gate'), steps=args.steps,
+                    batch=args.batch, seed=args.seed)
                 compared = {
                     'joint': head_trials(joint_features, label_tensor, split_names,
                                          kinds=('linear', 'dynamic_gate'), budgets=tuple(args.budgets),
@@ -765,6 +771,7 @@ def main() -> None:
                     'public_plus_private_state': head_trials(fused_features, label_tensor, split_names,
                                          kinds=('linear', 'dynamic_gate'), budgets=tuple(args.budgets),
                                          steps=args.steps, batch=args.batch, seed=args.seed),
+                    'public_plus_trainable_lightweight_state_adapter': lightweight_state,
                 }
                 result = {'experiment': 'E3', 'evidence_class': evidence_class,
                           'production_admission': 'BLOCKED', 'joint': joint,
@@ -780,6 +787,11 @@ def main() -> None:
                               joint['encoder_forward_rows']
                               - public['encoder_forward_rows']
                               - state['encoder_forward_rows']),
+                          'lightweight_state_additional_encoder_rows': 0,
+                          'lightweight_state_estimated_transformer_rows_saved': (
+                              joint['encoder_forward_rows'] -
+                              public['encoder_forward_rows']),
+                          'lightweight_state_trainable': True,
                           'quality_shadow': compared,
                           'state_adapter': (
                               'SYNTHETIC_STEM_SMOKE' if args.encoder == 'synthetic-hash'
