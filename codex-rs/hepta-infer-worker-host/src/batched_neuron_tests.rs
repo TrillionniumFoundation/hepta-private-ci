@@ -484,6 +484,39 @@ fn late_metrics_sink_cannot_certify_previously_unmetered_model_execution() {
 }
 
 #[test]
+fn evidence_readiness_requires_flush_after_each_recorded_batch() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[99; 32]);
+    let (model, first, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    let metrics = Arc::new(CapturedMetrics::default());
+    let mut worker = runner(&signer, dir.path(), model).with_metric_sink(metrics.clone());
+
+    // An initially healthy writer is not evidence of a durability barrier.
+    assert!(!worker.production_metrics_ready());
+    assert!(worker.flush_production_metrics());
+    assert!(worker.production_metrics_ready());
+
+    worker
+        .enqueue(100, "model".into(), first, key, signed(&signer, binding))
+        .unwrap();
+    assert_eq!(metrics.0.lock().unwrap().len(), 1);
+    assert!(!worker.production_metrics_ready());
+
+    let outcome = worker.poll_and_execute(106).unwrap();
+    assert_eq!(outcome.outcomes.len(), 1);
+    assert!(outcome.outcomes[0].result.is_ok());
+    assert_eq!(worker.pending(), 0);
+    assert_eq!(metrics.0.lock().unwrap().len(), 3);
+    assert!(!worker.production_metrics_ready());
+
+    // Only an explicit group-commit flush of the post-effect telemetry
+    // restores the non-authorizing Evidence readiness barrier.
+    assert!(worker.flush_production_metrics());
+    assert!(worker.production_metrics_ready());
+}
+
+#[test]
 fn evidence_sink_is_write_once_and_rebinding_cannot_rehabilitate_or_dispatch() {
     let dir = tempfile::tempdir().unwrap();
     let signer = SigningKey::from_bytes(&[95; 32]);
@@ -493,6 +526,8 @@ fn evidence_sink_is_write_once_and_rebinding_cannot_rehabilitate_or_dispatch() {
     let replacement = Arc::new(CapturedMetrics::default());
     let mut worker = runner(&signer, dir.path(), model);
     assert_eq!(worker.bind_metric_sink(original.clone()), Ok(()));
+    assert!(!worker.production_metrics_ready());
+    assert!(worker.flush_production_metrics());
     assert!(worker.production_metrics_ready());
     worker
         .enqueue(100, "model".into(), request, key, signed(&signer, binding))
@@ -552,6 +587,8 @@ fn completed_signed_effect_cannot_switch_to_a_fresh_evidence_writer() {
     let original = Arc::new(CapturedMetrics::default());
     let replacement = Arc::new(CapturedMetrics::default());
     let mut worker = runner(&signer, dir.path(), model).with_metric_sink(original.clone());
+    assert!(!worker.production_metrics_ready());
+    assert!(worker.flush_production_metrics());
     assert!(worker.production_metrics_ready());
     worker
         .enqueue(
@@ -668,7 +705,7 @@ fn failed_metrics_latch_readiness_without_replaying_an_authorized_request() {
     assert!(!execution.production_metrics_ready());
     assert!(!execution.flush_production_metrics());
     execution = execution.with_metric_sink(Arc::new(UnavailableMetricSink));
-    assert!(execution.production_metrics_ready());
+    assert!(!execution.production_metrics_ready());
     assert_eq!(
         execution.enqueue(100, "model".into(), request, key, signed(&signer, binding)),
         Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate)
