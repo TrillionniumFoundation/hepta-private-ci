@@ -20,6 +20,7 @@ SCHEMA = 'hepta.stem-e1-three-candidate-panel.v1'
 OUT_SCHEMA = 'hepta.stem-e1-three-candidate-parity.v1'
 CANDIDATES = ('granite_97m_r2', 'mmbert_small', 'embeddinggemma_2_text')
 MAX_CASES = 50000
+FAMILIES = ('zh', 'en', 'code')
 
 
 def d256(v):
@@ -45,7 +46,7 @@ def finite(v):
 def _case_fingerprint(row):
     return tuple(row[k] for k in ('case_id', 'source_group', 'input_sha256',
               'split', 'scope', 'observed_at', 'modality', 'reader_condition',
-              'reader_correct', 'answer_label'))
+              'reader_correct', 'answer_label', 'language', 'task_family'))
 
 
 def review(panel):
@@ -79,8 +80,14 @@ def review(panel):
         cases,arms=_cases(study)
         if not 3 <= len(cases) <= MAX_CASES or set(c['split'] for c in cases.values()) != set(SPLITS):
             raise Invalid('full cross-sectional + future/OOD cohort required')
-        if any(c.get('modality') not in ('text','code') for c in cases.values()):
-            raise Invalid('E1 must be text/code-only')
+        if any(c.get('modality') not in ('text','code') or c.get('language') not in FAMILIES or
+               c.get('task_family') not in ('chinese_semantics','english_semantics','code_diagnostics') or
+               (c['language'],c['task_family']) not in (('zh','chinese_semantics'),('en','english_semantics'),('code','code_diagnostics'))
+               for c in cases.values()):
+            raise Invalid('missing or incoherent Chinese/English/code task family')
+        for split in SPLITS:
+            if {c['language'] for c in cases.values() if c['split']==split} != set(FAMILIES):
+                raise Invalid('every split needs independent Chinese, English and code cases')
         records={id:_case_fingerprint(c) for id,c in cases.items()}
         if canonical_cases is None:canonical_cases=records
         elif canonical_cases != records:raise Invalid('cross-model sample/label/time/source drift')
@@ -128,19 +135,20 @@ def review(panel):
     if seen != set(CANDIDATES):raise Invalid('three Stem candidates incomplete')
     rows_by_split=defaultdict(list)
     for case_id,fingerprint in canonical_cases.items():
-        rows_by_split[fingerprint[3]].append((case_id,fingerprint[-1],fingerprint[1]))
+        rows_by_split[fingerprint[3]].append((case_id,fingerprint[-3],fingerprint[1],fingerprint[-2]))
     descriptive={}
     for split in ('test',*FUTURES,'ood'):
         rows=rows_by_split[split];descriptive[split]={}
         for model in CANDIDATES:
             desc={}
             for label,pred in predictions[model].items():
-                correct=sum(int((pred[k]>=.5)==bool(y)) for k,y,_ in rows)
-                brier=sum((pred[k]-y)**2 for k,y,_ in rows)/len(rows)
-                desc[label]={'n':len(rows),'source_groups':len({g for _,_,g in rows}),
+                correct=sum(int((pred[k]>=.5)==bool(y)) for k,y,_,_ in rows)
+                brier=sum((pred[k]-y)**2 for k,y,_,_ in rows)/len(rows)
+                desc[label]={'n':len(rows),'source_groups':len({g for _,_,g,_ in rows}),
                              'accuracy':correct/len(rows),'brier':brier}
             desc['learned_minus_frozen_accuracy']=desc['learned_head']['accuracy']-desc['frozen_head']['accuracy']
             desc['learned_minus_no_change_accuracy']=desc['learned_head']['accuracy']-desc['no_change']['accuracy']
+            desc['family_case_counts']={f:sum(row[3]==f for row in rows) for f in FAMILIES}
             descriptive[split][model]=desc
     return {'schema':OUT_SCHEMA,'models':evidence,'matched_source_cases':len(canonical_cases),
             'matched_training_ceiling_and_schedule':True,
