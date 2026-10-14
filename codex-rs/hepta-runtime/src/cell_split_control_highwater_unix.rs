@@ -57,14 +57,48 @@ pub struct CellSplitControlHighwaterRpcResponseV1 {
 /// A process-local, non-authorizing defense against a still-signed rollback.
 /// The independent remote service must separately persist a stronger high-water
 /// through process restart, power loss and disaster recovery.
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 struct ObservedControlHighwater {
+    // A single committed original WAL sequence must correspond to exactly
+    // one complete signed state. Comparing only the terminal hash lets the
+    // remote signer equivocate on checkpoint/plan/fence without a new commit.
+    plan_digest: String,
+    ndu_owner_id: String,
+    ndu_snapshot_digest: String,
+    generation: u64,
+    route_fence: u64,
+    revocation_epoch: u64,
     sequence: u64,
     head: String,
+    checkpoint_digest: String,
+    wal_bytes: u64,
     wal_device: u64,
     wal_inode: u64,
     marker_device: u64,
     marker_inode: u64,
+    original_cns_receipt_binding: Option<String>,
+}
+
+impl From<&CellSplitSignedControlHighwaterV1> for ObservedControlHighwater {
+    fn from(proof: &CellSplitSignedControlHighwaterV1) -> Self {
+        Self {
+            plan_digest: proof.plan_digest.clone(),
+            ndu_owner_id: proof.ndu_owner_id.clone(),
+            ndu_snapshot_digest: proof.ndu_snapshot_digest.clone(),
+            generation: proof.generation,
+            route_fence: proof.route_fence,
+            revocation_epoch: proof.revocation_epoch,
+            sequence: proof.sequence,
+            head: proof.wal_head.clone(),
+            checkpoint_digest: proof.checkpoint_digest.clone(),
+            wal_bytes: proof.wal_bytes,
+            wal_device: proof.wal_device,
+            wal_inode: proof.wal_inode,
+            marker_device: proof.marker_device,
+            marker_inode: proof.marker_inode,
+            original_cns_receipt_binding: proof.original_cns_receipt_binding.clone(),
+        }
+    }
 }
 
 /// Genuine read-only network client; NEVER a Control writer or signer.
@@ -194,10 +228,23 @@ impl CellSplitControlHighwaterUnixPortV1 {
         // Never evict a previously verified original domain to fit a new one.
         // A signed old or forked WAL proof is a refusal, not a new baseline.
         let key = (split_id.to_owned(), scope_id.to_owned());
+        let observed = ObservedControlHighwater::from(&proof);
         if let Some(previous) = self.seen.get(&key) {
+            // A new challenge may lawfully attest the same unchanged WAL
+            // sequence, but EVERY original Control field must then agree.
+            // An advanced sequence requires a physically longer WAL, a new
+            // terminal head and nondecreasing owner fences.
             if proof.sequence < previous.sequence
-                || (proof.sequence == previous.sequence && proof.wal_head != previous.head)
-                || (proof.sequence > previous.sequence && proof.wal_head == previous.head)
+                || (proof.sequence == previous.sequence && observed != *previous)
+                || (proof.sequence > previous.sequence
+                    && (proof.wal_head == previous.head
+                        || proof.wal_bytes <= previous.wal_bytes
+                        || proof.generation < previous.generation
+                        || proof.route_fence < previous.route_fence
+                        || proof.revocation_epoch < previous.revocation_epoch
+                        || proof.plan_digest != previous.plan_digest
+                        || proof.ndu_owner_id != previous.ndu_owner_id
+                        || proof.ndu_snapshot_digest != previous.ndu_snapshot_digest))
                 || proof.wal_device != previous.wal_device
                 || proof.wal_inode != previous.wal_inode
                 || proof.marker_device != previous.marker_device
@@ -208,17 +255,7 @@ impl CellSplitControlHighwaterUnixPortV1 {
         } else if self.seen.len() >= MAX_TRACKED_SCOPES {
             return Err("bounded Control high-water ratchet capacity exhausted".into());
         }
-        self.seen.insert(
-            key,
-            ObservedControlHighwater {
-                sequence: proof.sequence,
-                head: proof.wal_head.clone(),
-                wal_device: proof.wal_device,
-                wal_inode: proof.wal_inode,
-                marker_device: proof.marker_device,
-                marker_inode: proof.marker_inode,
-            },
-        );
+        self.seen.insert(key, observed);
         Ok(proof)
     }
 }
