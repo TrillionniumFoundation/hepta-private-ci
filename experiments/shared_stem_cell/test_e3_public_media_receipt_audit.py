@@ -33,7 +33,8 @@ def fixture():
             named={key:prob for key in ('text_only:final','text_only:frozen','visual_prior:final','visual_prior:frozen','visual_zero:final','visual_zero:frozen')}
             pred={'case_ids':ids,'probabilities':named,'selected_key':'text_only:frozen'}
             report={'scores':{k:{z:v for z,v in a.scores(matrix,[row['label'] for row in test]).items() if z!='correct_by_case'} for k,matrix in named.items()},
-                    'selected_key':'text_only:frozen','heldout_option_permutation_passed':True}
+                    'selected_key':'text_only:frozen','heldout_option_permutation_passed':True,
+                    'production_accepted':False,'simulated_towers':False,'independent_evaluation':False}
         else:
             named={key:prob for key in ('image','image+text','text')}
             n=len(test)
@@ -46,7 +47,9 @@ def fixture():
             pred={'case_ids':ids,'predictions':named,'frozen_predictions':named,
                   'modality_interventions':{'predictions':op,'causal_semantics_established':False,
                                             'source_rows':meta,'partitions':['holdout']*n}}
-            report={'modality_intervention_scores':{'holdout':{'paired':{k:same for k in a.REQUIRED_OPERATORS}}}}
+            report={'modality_intervention_scores':{'holdout':{'paired':{k:same for k in a.REQUIRED_OPERATORS}}},
+                    'scores':[{'arm':k,'split':'holdout','cases':n,'accuracy':1.0} for k in named],
+                    'production_accepted':False,'simulated_towers':False,'independent_evaluation':False}
         path=f'{root}/'+('choice-execution' if 'choice' in root else 'media-execution')
         pred_bytes=canonical(pred);files[path+'/predictions.json']=pred_bytes
         report['prediction_sha256']=a.sha(pred_bytes)
@@ -98,6 +101,15 @@ class E3AuditTests(unittest.TestCase):
         self.run_case(lambda files:self.change(files,'hepta-choice-media/choice-execution/predictions.json',lambda o:o['case_ids'].reverse()))
     def test_fake_published_score(self):
         self.run_case(lambda files:self.change(files,'hepta-choice-media/choice-execution/report.json',lambda o:o['scores']['visual_prior:final'].update(correct=0)))
+    def test_forged_published_media_score(self):
+        self.run_case(lambda files:self.change(files,'hepta-public-media/media-execution/report.json',
+                 lambda o:o['scores'][0].update(accuracy=0.0)))
+    def test_missing_frozen_media_control(self):
+        self.run_case(lambda files:self.change(files,'hepta-public-media/media-execution/predictions.json',
+                 lambda o:o.update(frozen_predictions={})))
+    def test_false_model_execution_claim(self):
+        self.run_case(lambda files:self.change(files,'hepta-public-media/media-execution/report.json',
+                 lambda o:o.update(simulated_towers=True)))
     def test_forged_prediction_checksum(self):
         self.run_case(lambda files:self.change(files,'hepta-choice-media/choice-execution/report.json',lambda o:o.update(prediction_sha256='f'*64)))
     def test_duplicate_cross_cohort_group(self):
