@@ -155,6 +155,12 @@ pub fn run_pinned_cell_split_execution_with_admission_and_metrics_v1<F>(
 where
     F: FnMut(&CellSplitExecutionPlanV1) -> Result<(), String>,
 {
+    // A caller-supplied metrics trait object and arbitrary admission callback
+    // cannot authorize a physical split. Ordinary library builds must deny
+    // BEFORE config reads or even a candidate ledger is created.
+    if !cfg!(test) && action == "advance" {
+        return Err("public metrics callback cannot authorize CellSplit advance".to_string());
+    }
     if action == "reconcile" {
         return Err(
             "CellSplit recovery requires the explicit pending-only reconciliation API".into(),

@@ -353,6 +353,45 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "original CNS bytes must be bound to the durable Control C record",
         )
 
+    def test_split_metrics_callback_cannot_authorize_production_advance(self) -> None:
+        path = "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"
+        raw = (ROOT / path).read_text(encoding="utf-8")
+        symbol = "pub fn run_pinned_cell_split_execution_with_admission_and_metrics_v1"
+        self.assertEqual(raw.count(symbol), 1)
+        opening = raw.index("{", raw.index(symbol))
+        # Only the first executable statement matters; raw strings later in
+        # the Rust method may contain braces unrelated to code nesting.
+        body = raw[opening + 1 :]
+        self.assertRegex(
+            body,
+            r'^\s*(?://[^\n]*\n\s*)*if\s+!cfg!\(test\)\s*&&\s*'
+            r'action\s*==\s*"advance"\s*\{\s*return\s+Err\s*\(',
+            "forged Evidence and Selector callbacks must be denied before config IO",
+        )
+
+    def test_split_coordinator_rejects_new_effects_in_release(self) -> None:
+        path = "codex-rs/hepta-operator-acceptance/src/cell_split_execution_owner.rs"
+        code = self.lexical_code(path)
+        method = re.search(r"\bpub\(crate\)\s+fn\s+advance_with_admission\s*\(", code)
+        self.assertIsNotNone(method)
+        assert method is not None
+        opening = code.find("{", method.end())
+        closing = CALLER_PROOF._matching_delimiter(code, opening, "{", "}")
+        self.assertIsNotNone(closing)
+        assert closing is not None
+        body = code[opening + 1 : closing]
+        self.assertRegex(
+            body,
+            r"^\s*if\s+!cfg!\(test\)\s*&&\s*!self\.reconcile_only\s*"
+            r"\{\s*return\s+Err\s*\(",
+            "original coordinator must reject before prepared intent or external I/O",
+        )
+        self.assertIn("self.verify_committed_prefix()", body)
+        self.assertLess(
+            body.index("!self.reconcile_only"),
+            body.index("self.verify_committed_prefix()"),
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
