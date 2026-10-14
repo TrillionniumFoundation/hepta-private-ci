@@ -12,6 +12,7 @@ use std::collections::BTreeSet;
 use std::io;
 use std::io::Read;
 use std::io::Write;
+use std::os::fd::OwnedFd;
 use std::os::unix::fs::FileTypeExt;
 use std::os::unix::net::UnixStream;
 use std::path::Component;
@@ -345,7 +346,10 @@ pub(crate) fn connect_owner_with_deadline(
     let address = SockAddr::unix(path)?;
     let socket = Socket::new(Domain::UNIX, Type::STREAM, None)?;
     socket.connect_timeout(&address, remaining_effect_rpc_budget(started_at, total)?)?;
-    Ok(socket.into())
+    // socket2 0.6's direct Socket -> UnixStream impl is feature-gated.
+    // The safe OwnedFd conversions are available on every Unix target.
+    let owned_fd: OwnedFd = socket.into();
+    Ok(UnixStream::from(owned_fd))
 }
 
 /// The caller, not each frame, owns the RPC deadline. A sub-millisecond
