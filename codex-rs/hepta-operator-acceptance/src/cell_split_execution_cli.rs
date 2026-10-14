@@ -215,9 +215,12 @@ where
     )
     .map_err(|error| error.to_string())?;
     let owner = match selected_action {
-        "transcript" => {
-            CellSplitExecutionOwnerV1::open_existing(&config.execution_root, config.plan, trust, port)
-        }
+        "transcript" => CellSplitExecutionOwnerV1::open_existing(
+            &config.execution_root,
+            config.plan,
+            trust,
+            port,
+        ),
         "reconcile" => CellSplitExecutionOwnerV1::open_pending_reconciliation(
             &config.execution_root,
             config.plan,
@@ -607,12 +610,8 @@ mod tests {
         let error = run_pinned_cell_split_execution_v1("advance", &missing, &"00".repeat(32))
             .expect_err("a configuration hash is not an NDU/Selector grant");
         assert!(error.contains("independently admitted NDU/Selector"));
-        let recovery = run_pinned_cell_split_execution_v1(
-            "reconcile",
-            &missing,
-            &"00".repeat(32),
-        )
-        .expect_err("the legacy command cannot disguise mutation as recovery");
+        let recovery = run_pinned_cell_split_execution_v1("reconcile", &missing, &"00".repeat(32))
+            .expect_err("the legacy command cannot disguise mutation as recovery");
         assert!(recovery.contains("explicit pending-only reconciliation API"));
         assert!(!missing.exists());
         assert_eq!(
