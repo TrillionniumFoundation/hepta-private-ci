@@ -11,6 +11,7 @@ import json
 import os
 import platform
 import resource
+import shutil
 import signal
 import subprocess
 import sys
@@ -139,6 +140,15 @@ def run(repo: Path, plan_file: Path, arm: str, output: Path, timeout: float, com
     stdout_path = output.with_suffix(output.suffix + ".stdout")
     stderr_path = output.with_suffix(output.suffix + ".stderr")
     require(not stdout_path.exists() and not stderr_path.exists(), "run logs already exist")
+    executable = Path(command[0])
+    if not executable.is_absolute() and "/" in command[0]:
+        executable = repo / executable
+    elif "/" not in command[0]:
+        found = shutil.which(command[0])
+        require(found is not None, "executable is not on PATH")
+        executable = Path(found)
+    executable = executable.resolve(strict=True)
+    executable_digest = sha256_file(executable)
     t0 = time.monotonic_ns()
     status = "completed"
     return_code = None
@@ -153,8 +163,8 @@ def run(repo: Path, plan_file: Path, arm: str, output: Path, timeout: float, com
                 if return_code != 0:
                     status = "failed"
                 break
-            if time.monotonic() >= deadline:
-                status = "timed_out"
+            if time.monotonic() >= deadline or stdout_path.stat().st_size > MAX_LOG_BYTES or stderr_path.stat().st_size > MAX_LOG_BYTES:
+                status = "timed_out" if time.monotonic() >= deadline else "output_limit"
                 try:
                     os.killpg(process.pid, signal.SIGKILL)
                 except ProcessLookupError:
@@ -173,7 +183,8 @@ def run(repo: Path, plan_file: Path, arm: str, output: Path, timeout: float, com
         "schema": RUN_SCHEMA, "stage": plan["stage"], "arm": arm,
         "plan_digest": plan["plan_digest"], "source": plan["source"], "host": plan["host"],
         "artifact_sha256": plan["arms"][arm]["sha256"],
-        "command_sha256": digest(command), "status": status, "exit_code": return_code,
+        "command_sha256": digest(command), "executable_path": str(executable),
+        "executable_sha256": executable_digest, "status": status, "exit_code": return_code,
         "elapsed_wall_ns": elapsed,
         "child_user_cpu_ns": int(max(0, usage.ru_utime) * 1e9),
         "child_system_cpu_ns": int(max(0, usage.ru_stime) * 1e9),
@@ -181,6 +192,7 @@ def run(repo: Path, plan_file: Path, arm: str, output: Path, timeout: float, com
         "gpu_peak_bytes": None, "gpu_status": "not_measured",
         "stdout_sha256": hashlib.sha256(stdout_path.read_bytes()).hexdigest() if stdout_path.stat().st_size <= MAX_LOG_BYTES else None,
         "stderr_sha256": hashlib.sha256(stderr_path.read_bytes()).hexdigest() if stderr_path.stat().st_size <= MAX_LOG_BYTES else None,
+        "stdout_bytes": stdout_path.stat().st_size, "stderr_bytes": stderr_path.stat().st_size,
         "outputs_oversized": stdout_path.stat().st_size > MAX_LOG_BYTES or stderr_path.stat().st_size > MAX_LOG_BYTES,
         "outcomes": "not_independently_observed", "authority": "none", "qualification": "not_established",
     }
@@ -206,6 +218,7 @@ def audit(plan_file: Path, repo: Path, receipt_paths: list[Path]) -> dict:
         require(rec.get("stage") == plan["stage"] and arm in ARMS[plan["stage"]], "unregistered receipt arm")
         require(rec.get("artifact_sha256") == plan["arms"][arm]["sha256"], "receipt artifact mismatch")
         require(rec.get("status") == "completed" and rec.get("exit_code") == 0, "incomplete/failed model execution")
+        require(isinstance(rec.get("executable_path"), str) and sha256_file(Path(rec["executable_path"])) == rec.get("executable_sha256"), "executable byte drift")
         require(rec.get("authority") == "none" and rec.get("qualification") == "not_established" and rec.get("outcomes") == "not_independently_observed", "receipt invents qualification")
         require(type(rec.get("elapsed_wall_ns")) is int and rec["elapsed_wall_ns"] > 0, "missing measured wall time")
         require(type(rec.get("child_peak_rss_kib")) is int and rec["child_peak_rss_kib"] > 0, "missing RSS observation")
@@ -213,6 +226,7 @@ def audit(plan_file: Path, repo: Path, receipt_paths: list[Path]) -> dict:
         for kind in ("stdout", "stderr"):
             log = path.with_suffix(path.suffix + "." + kind)
             require(log.is_file() and not log.is_symlink() and log.stat().st_size <= MAX_LOG_BYTES, "missing/oversized raw log")
+            require(log.stat().st_size == rec[kind + "_bytes"], "raw log size drift")
             require(hashlib.sha256(log.read_bytes()).hexdigest() == rec[kind + "_sha256"], "raw log digest drift")
         found[arm] = found.get(arm, 0) + 1
     missing = sorted(set(ARMS[plan["stage"]]) - set(found))
