@@ -61,7 +61,7 @@ fn adapter_uses_same_durable_control_owner_for_reads_and_checkpoint_publication(
     let mut successor = snapshot.clone();
     successor.route_fence += 1;
     let cutover = owner
-        .publish_cutover(&snapshot, successor.clone(), next)
+        .publish_cutover(&snapshot, next, successor.clone(), next)
         .expect("durable CNS cutover");
     assert!(!cutover.is_zero());
     assert_eq!(adapter.latest(&scope).unwrap(), successor);
