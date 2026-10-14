@@ -519,7 +519,9 @@ impl NduPublicationOwnerV1 {
     }
 
     pub fn current(&self) -> Result<(NduSnapshotRefV1, Digest32), NduPublicationErrorV1> {
-        let state = self
+        // Path/inode loss permanently poisons this owner. The guard must be
+        // mutable so that a failed live identity check can latch the denial.
+        let mut state = self
             .state
             .lock()
             .map_err(|_| NduPublicationErrorV1::Poisoned)?;
