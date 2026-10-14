@@ -159,5 +159,70 @@ class HostA4GateTests(unittest.TestCase):
             self.check()
 
 
+@unittest.skipUnless(__import__('importlib').util.find_spec('torch') is not None and
+                     __import__('importlib').util.find_spec('safetensors') is not None,
+                     'requires pinned CPU Torch + safetensors')
+class PhysicalArtifactA4StructureTests(HostA4GateTests):
+    """Same 100-slot input fixture, but validate REAL on-disk safetensors bytes.
+
+    The target-host receipt contents remain synthetic and no deployment is proven.
+    """
+
+    def setUp(self):
+        super().setUp()
+        import torch
+        from safetensors.torch import save_file
+        torch.set_num_threads(1)
+        for cap in CAPS:
+            for arm in ALL_ARMS:
+                if arm == 'no-change-v1':
+                    continue
+                path = self.root/str(cap)/(arm+'.safetensors')
+                weights = {
+                    'head.weight':torch.zeros((1,16), dtype=torch.float32),
+                    'head.bias':torch.zeros(1, dtype=torch.float32),
+                    'structure.projection':torch.full((16,),1<<24,dtype=torch.int64),
+                }
+                if arm == 'v3':
+                    for name in ('gate_bias','input_gain','change_gain'):
+                        weights['temporal.'+name] = torch.zeros(16,dtype=torch.int64)
+                elif arm == 'ssm':
+                    for name in ('decay_per_step','input_gain'):
+                        weights['temporal.'+name] = torch.zeros(16,dtype=torch.int64)
+                elif arm == 'min_gru':
+                    weights.update({
+                        'temporal.gate_input':torch.zeros((1,16),dtype=torch.int64),
+                        'temporal.gate_output':torch.zeros((16,1),dtype=torch.int64),
+                        'temporal.candidate_input':torch.zeros((1,16),dtype=torch.int64),
+                        'temporal.candidate_output':torch.zeros((16,1),dtype=torch.int64),
+                        'temporal.gate_bias':torch.zeros(16,dtype=torch.int64),
+                        'temporal.candidate_bias':torch.zeros(16,dtype=torch.int64),
+                    })
+                save_file(weights,str(path))
+                observed_hash=digest(path.read_bytes())
+                for m in self.training['models']:
+                    if m['cap']==cap and m['arm']==arm:
+                        self.assertEqual(sum(t.numel() for t in weights.values()),
+                                         m['parameter_count'])
+                        m['weight_sha256']=observed_hash
+                for m in self.host['measurements']:
+                    if m['parameter_cap']==cap and m['arm']==arm:
+                        m['model_sha256']=observed_hash
+
+    def test_actual_twenty_safetensors_files_and_100_structural_claims(self):
+        from a4_end_to_end_gate import validate
+        r=validate(self.host,self.training,
+                host_id='host-research-fixture',train_sha='9'*64,
+                physical_weights_root=self.root,selected_v1=self.baseline,
+                selected_v1_sha=self.base_sha,
+                host_key_fingerprint='d'*64,expected_commit=self.commit,
+                expected_encoder_bundle_sha='8'*64,
+                expected_host_profile_sha='7'*64)
+        self.assertEqual(r['100_complete_end_to_end_signed_host_claim_slots'],100)
+        self.assertFalse(r['trusted_host_execution_independently_attested'])
+        self.assertFalse(r['production_qualification'])
+
+
+
 if __name__=='__main__':
     unittest.main()
