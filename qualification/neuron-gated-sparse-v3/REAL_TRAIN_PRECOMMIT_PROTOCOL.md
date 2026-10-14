@@ -37,7 +37,7 @@ independently justified cost profile instead of hiding parameters.
 Independent optimizer-state estimate and process-wide RSS are recorded
 separately and are NOT arm-isolated peak RSS or target-host measurements.
 
-The floating-point learning kernel is a **restricted differentiable surrogate**.
+The diagonal SSM research profile pins a 1,000,000-microsecond time quantum (one second); this is not the existing fixture's 100-microsecond quantum. The floating-point learning kernel is a **restricted differentiable surrogate**.
 It approximates V2 sparse local/global top-k with a fixed identity projection
 and has no native production inhibition/homeostasis/eligibility or exact Q24
 rounding. Candidate frozen gate/factor parameters are exported as int64 Q24;
