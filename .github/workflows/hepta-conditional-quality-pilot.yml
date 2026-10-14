@@ -1,0 +1,155 @@
+name: hepta-conditional-quality-pilot
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/**"
+      - ".github/workflows/hepta-conditional-quality-pilot.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  reader-quality-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install pinned CPU source profile
+        run: |
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Run exactly registered Reader pilot tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/reader-quality-source.txt"
+          python qualification/stem-cell-v1/run_checked_tests.py \
+            --pattern test_conditioned_panel_study.py --output "$RUNNER_TEMP/panel-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/panel-tests.log"
+          python qualification/stem-cell-v1/run_checked_tests.py \
+            --pattern test_public_conditional_quality_probe.py --output "$RUNNER_TEMP/score-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/score-tests.log"
+          python -m compileall -q qualification/stem-cell-v1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: conditional-quality-source-tests
+          path: |
+            ${{ runner.temp }}/reader-quality-source.txt
+            ${{ runner.temp }}/panel-tests.json
+            ${{ runner.temp }}/panel-tests.log
+            ${{ runner.temp }}/score-tests.json
+            ${{ runner.temp }}/score-tests.log
+          if-no-files-found: error
+
+  reader-quality-stock-hf:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install pinned real stock Transformers
+        run: |
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Exercise genuine stock Encoder and all four trained Readers
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/reader-quality-hf-source.txt"
+          python qualification/stem-cell-v1/run_checked_tests.py \
+            --pattern hf_conditional_quality_checks.py --output "$RUNNER_TEMP/hf-quality-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/hf-quality-tests.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: conditional-quality-stock-hf
+          path: |
+            ${{ runner.temp }}/reader-quality-hf-source.txt
+            ${{ runner.temp }}/hf-quality-tests.json
+            ${{ runner.temp }}/hf-quality-tests.log
+          if-no-files-found: error
+
+  reader-quality-public-pretrained:
+    needs: reader-quality-stock-hf
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      DO_NOT_TRACK: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install pinned safe pretrained CPU profile
+        run: |
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Acquire pinned public ModernBERT checkpoint and verify materialization
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/reader-quality-pretrained-source.txt"
+          python qualification/stem-cell-v1/public_encoder_probe.py \
+            --acquire-public --upstream-revision 8949b909ec900327062f0ebf497f51aef5e6f0c8 \
+            --compare-arithmetic --output "$RUNNER_TEMP/public-encoder" \
+            2>&1 | tee "$RUNNER_TEMP/reader-quality-acquisition.log"
+      - name: Train same-parameter conditional, pooled, no-evidence and no-query controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/public_conditional_quality_probe.py run \
+            --snapshot "$RUNNER_TEMP/public-encoder/snapshot" \
+            --seed 7347 --train-groups 4 --eval-groups 2 --steps 192 \
+            --output "$RUNNER_TEMP/reader-quality-train" \
+            2>&1 | tee "$RUNNER_TEMP/reader-quality-train.log"
+      - name: Score ONLY after prediction and weight sealing
+        shell: bash
+        run: |
+          set -euo pipefail
+          SEAL=$(python -c 'import json,os;print(json.load(open(os.path.join(os.environ["RUNNER_TEMP"],"reader-quality-train","COMMITTED.json")))["seal_id"])')
+          python qualification/stem-cell-v1/public_conditional_quality_probe.py score \
+            --run-dir "$RUNNER_TEMP/reader-quality-train" \
+            --expected-seal-id "$SEAL" \
+            --output "$RUNNER_TEMP/reader-quality-scores" \
+            2>&1 | tee "$RUNNER_TEMP/reader-quality-score.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: conditional-quality-public-observation
+          path: |
+            ${{ runner.temp }}/reader-quality-pretrained-source.txt
+            ${{ runner.temp }}/reader-quality-acquisition.log
+            ${{ runner.temp }}/public-encoder/source-lock.json
+            ${{ runner.temp }}/public-encoder/downloaded-material.json
+            ${{ runner.temp }}/public-encoder/probe.json
+            ${{ runner.temp }}/reader-quality-train.log
+            ${{ runner.temp }}/reader-quality-score.log
+            ${{ runner.temp }}/reader-quality-train/predictions.json
+            ${{ runner.temp }}/reader-quality-train/execution.json
+            ${{ runner.temp }}/reader-quality-train/COMMITTED.json
+            ${{ runner.temp }}/reader-quality-train/FAILED.json
+            ${{ runner.temp }}/reader-quality-scores/scores.json
+            ${{ runner.temp }}/reader-quality-scores/COMMITTED.json
+            ${{ runner.temp }}/reader-quality-scores/FAILED.json
+          if-no-files-found: error
