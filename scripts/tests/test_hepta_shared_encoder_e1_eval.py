@@ -108,6 +108,23 @@ class PairedTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.run_compare(dataset, baseline, candidate)
 
+    def test_pre_cutoff_label_and_calibration_group_leak_rejected(self):
+        dataset, baseline, candidate = fixtures()
+        late_train = dict(
+            dataset[0], case_id="training-future-label", split="train",
+            group_id="train-group", event_time="2026-10-13T00:00:00Z",
+            label_available_at="2026-10-15T00:00:00Z",
+        )
+        with self.assertRaisesRegex(ValueError, "label leaked"):
+            self.run_compare(dataset + [late_train], baseline, candidate)
+        calibration = dict(
+            dataset[0], case_id="calibration-overlap", split="calibration",
+            event_time="2026-10-13T00:00:00Z",
+            label_available_at="2026-10-13T01:00:00Z",
+        )
+        with self.assertRaisesRegex(ValueError, "cross-split group"):
+            self.run_compare(dataset + [calibration], baseline, candidate)
+
     def test_refuses_overwrite_and_duplicate_json_keys(self):
         dataset, baseline, candidate = fixtures()
         with tempfile.TemporaryDirectory() as folder:
