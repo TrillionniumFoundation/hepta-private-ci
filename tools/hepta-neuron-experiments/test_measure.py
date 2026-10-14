@@ -104,6 +104,25 @@ class ExperimentEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(m.EvidenceError, "invents qualification"):
             m.audit(self.plan, self.repo, [rec])
 
+    def test_raw_log_drift_rejected(self) -> None:
+        rec = self.root / "raw.json"
+        m.run(self.repo, self.plan, "multi_head", rec, 5, [sys.executable, "-c", "print('recorded')"])
+        rec.with_suffix(".json.stdout").write_text("tampered")
+        with self.assertRaisesRegex(m.EvidenceError, "raw log .* drift"):
+            m.audit(self.plan, self.repo, [rec])
+
+    def test_output_limit_kills_process_group_and_stays_failed(self) -> None:
+        before = m.MAX_LOG_BYTES
+        try:
+            m.MAX_LOG_BYTES = 4096
+            rec = self.root / "large.json"
+            with self.assertRaisesRegex(m.EvidenceError, "output_limit"):
+                m.run(self.repo, self.plan, "multi_head", rec, 5,
+                      [sys.executable, "-c", "import sys,time; sys.stdout.write('X'*100000); sys.stdout.flush(); time.sleep(1)"])
+            self.assertEqual(json.loads(rec.read_text())["status"], "output_limit")
+        finally:
+            m.MAX_LOG_BYTES = before
+
     def test_timeout_receipt_and_no_success_laundering(self) -> None:
         rec = self.root / "timeout.json"
         with self.assertRaisesRegex(m.EvidenceError, "timed_out"):
