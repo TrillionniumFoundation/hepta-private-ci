@@ -123,7 +123,8 @@ def compile_supervision(tokenizer, example, *, input_cap, response_cap, position
 
 
 def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=(), epochs=None,
-                         loss_profile="response-ce-v1", projection_profile="full-logits-v1"):
+                         loss_profile="response-ce-v1", projection_profile="full-logits-v1",
+                         relevance_profile=None):
     """Fit a disposable candidate and reload saved bytes, never publish it.
 
     response-ce-v1 retains the historical single-example schedule and loss.
@@ -135,6 +136,11 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
             "unregistered response objective")
     require(projection_profile in ("full-logits-v1", "assistant-logits-v1"), "unknown projection profile")
     paired = loss_profile != "response-ce-v1"
+    if relevance_profile is not None:
+        import question_evidence_relevance as relevance
+        require(relevance_profile in relevance.PROFILES and loss_profile == "paired-evidence-margin-v1"
+                and projection_profile == "full-logits-v1", "relevance requires explicit margin/full-logits profiles")
+        relevance_plan = relevance.build_plan(examples, forbidden_families)
     require(paired or projection_profile == "full-logits-v1", "projection optimization is paired-only")
     if projection_profile == "assistant-logits-v1":
         from assistant_projection import qualify_model
@@ -150,7 +156,9 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
         objective["vocabulary_projection"] = projection_profile
     if paired:
         import five_reader_evidence_pairs as pairs
-        batches = pairs.prepare(backend.tokenizer, examples, position_cap=position_cap)
+        batches = (pairs.prepare(backend.tokenizer, examples, position_cap=position_cap)
+                   if relevance_profile is None else relevance.prepare(backend.tokenizer, examples,
+                       position_cap=position_cap, profile=relevance_profile))
         objective.update(margin_nats_per_token=pairs.MARGIN_NATS_PER_TOKEN,
                          contrast_weight=pairs.CONTRAST_WEIGHT if loss_profile == pairs.MARGIN else 0.0,
                          likelihood_normalization="mean_assistant_token_logp_including_eos",
@@ -158,7 +166,14 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
     else:
         batches = [compile_supervision(backend.tokenizer, row, input_cap=TRAINING["maximum_input_tokens"],
                    response_cap=TRAINING["maximum_response_tokens"], position_cap=position_cap) for row in examples]
+    if relevance_profile is not None:
+        objective.update(question_relevance_profile=relevance_profile,
+                         relevance_plan_sha256=c.digest(relevance_plan),
+                         added_negative_semantics="weak_cross_family_question_swap",
+                         available_extra_pairs=relevance_plan["available_extra_pairs"])
     output.mkdir(parents=True, exist_ok=False)
+    if relevance_profile is not None:
+        c.write_new(output / "relevance-plan.json", relevance_plan)
     c.write_new(output / "training-plan.json", {"profile": PROFILE, "training": TRAINING,
         "actual_epochs": epochs, "examples_sha256": before_examples,
         "training_families": sorted({r["family"] for r in examples}),
@@ -200,7 +215,9 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
                         optimizer.zero_grad(set_to_none=True)
                         diagnostics = {}
                         try:
-                            if paired:
+                            if relevance_profile is not None:
+                                loss, diagnostics = relevance.backward(model, batch)
+                            elif paired:
                                 loss, diagnostics = pairs.backward_pair(model, batch, loss_profile,
                                                                         projection_profile=projection_profile)
                             else:
@@ -224,7 +241,9 @@ def fit_response_adapter(backend, examples, output: Path, *, forbidden_families=
                             "index": index, "loss": losses[-1], "wall_seconds": time.perf_counter()-start,
                             "pre_update_conditional_diagnostics": diagnostics,
                             "observed_decoder_forwards": forwards["model_calls"] - before_forwards}, previous)
-        require(forwards["model_calls"] == steps * (4 if paired else 1),
+        expected_forwards = (steps * (4 if paired else 1) if relevance_profile is None else
+                             epochs * sum(meta["expected_decoder_forwards"] for _, meta in batches))
+        require(forwards["model_calls"] == expected_forwards,
                 "decoder observations differ from fixed training execution")
         optimizer_bytes = sum(v.numel()*v.element_size() for s in optimizer.state.values()
                               for v in s.values() if isinstance(v, torch.Tensor))

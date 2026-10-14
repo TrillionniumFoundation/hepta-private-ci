@@ -1,0 +1,92 @@
+name: Hepta fixed question evidence relevance learning
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/question_evidence_relevance.py"
+      - "scripts/memory_cell/question_relevance_trial.py"
+      - "scripts/memory_cell/test_question*relevance*.py"
+      - ".github/workflows/hepta-question-relevance.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: question-relevance-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  matched-and-mismatched-questions:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Validate original cohort and extra relation assembly
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-relevance/source/memory_cell
+          python3 -m unittest discover -s scripts/memory_cell -p test_question_evidence_relevance.py -v 2>&1 | tee /tmp/hepta-relevance/pure-plan-tests.log
+          python3 -m unittest discover -s scripts/memory_cell -p test_question_relevance_trial.py -v 2>&1 | tee /tmp/hepta-relevance/pure-case-tests.log
+      - name: Install unchanged official worker dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/hepta-relevance-env
+          /tmp/hepta-relevance-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/hepta-relevance/install-torch.log 2>&1
+          /tmp/hepta-relevance-env/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/hepta-relevance/install-worker.log 2>&1
+          /tmp/hepta-relevance-env/bin/pip check
+          /tmp/hepta-relevance-env/bin/pip freeze > /tmp/hepta-relevance/environment.txt
+      - name: Require old contracts and actual new HF optimization regressions
+        run: |
+          set -euo pipefail
+          failed=0
+          for pattern in test_full_cell_matrix.py test_five_causal_experiments.py test_five_causal_native.py 'test_five_group*.py' test_five_reader_response.py 'test_five_reader_adapter*.py' test_five_encoder_snapshot.py test_five_reader_evidence_pairs.py 'test_source_time_evidence*.py' test_reader_fit_audit.py 'test_assistant_projection*.py' test_reader_content_swap.py test_select_content_inventory.py test_answer_evidence_review.py test_question_evidence_relevance_hf.py; do
+            name=$(printf '%s' "$pattern" | tr '*' '_')
+            if /tmp/hepta-relevance-env/bin/python -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/hepta-relevance/$name.log"; then
+              printf '%s\tpassed\n' "$pattern" >> /tmp/hepta-relevance/suites.tsv
+            else
+              failed=1
+              printf '%s\tfailed\n' "$pattern" >> /tmp/hepta-relevance/suites.tsv
+            fi
+          done
+          /tmp/hepta-relevance-env/bin/python -m py_compile scripts/memory_cell/question_evidence_relevance.py scripts/memory_cell/question_relevance_trial.py scripts/memory_cell/five_reader_response_learning.py
+          test "$failed" -eq 0
+      - name: Retrieve exact previous material without new pretrained downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/relevance-original.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11838105827/zip > /tmp/relevance-budget.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11863981474/zip > /tmp/relevance-select.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/relevance-original.zip | sha256sum -c -
+          printf '%s  %s\n' ce5178bf4bea0d45d65f22765e29a835b7a99a4b3a4fd1dc4fa0d248a6d5c151 /tmp/relevance-budget.zip | sha256sum -c -
+          printf '%s  %s\n' aeb4113b6d2baace0a042f960876861c78b5449b6d9dac404dee2e5c041e46fa /tmp/relevance-select.zip | sha256sum -c -
+      - name: Preflight all profiles then train and seal actual answers
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/hepta-relevance/process-resources.txt /tmp/hepta-relevance-env/bin/python scripts/memory_cell/question_relevance_trial.py --original-archive /tmp/relevance-original.zip --budget-archive /tmp/relevance-budget.zip --select-archive /tmp/relevance-select.zip --work /tmp/hepta-relevance-materials --output /tmp/hepta-relevance/study 2>&1 | tee /tmp/hepta-relevance/execution.log
+      - name: Preserve exact source and failures, not original weights or data
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-relevance/source/memory_cell
+          git rev-parse HEAD > /tmp/hepta-relevance/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-relevance/source/tested-tree.txt
+          cp scripts/memory_cell/*.py scripts/memory_cell/requirements.txt /tmp/hepta-relevance/source/memory_cell/
+          cp experiments/shared_stem_cell/execution.py .github/workflows/hepta-question-relevance.yml /tmp/hepta-relevance/source/
+          (cd /tmp/hepta-relevance && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-question-relevance-development-not-confirmation
+          path: /tmp/hepta-relevance
+          if-no-files-found: error
