@@ -92,22 +92,18 @@ class HostA4GateTests(unittest.TestCase):
     def tearDown(self):
         self.tmp.cleanup()
 
-    def fake_tensor_verification(self, path, sha):
-        cap=int(path.parent.name);arm=path.stem
-        if arm=='min_gru':
-            shapes={
-                'temporal.gate_input':(1,16),'temporal.gate_output':(16,1),
-                'temporal.candidate_input':(1,16),'temporal.candidate_output':(16,1),
-                'temporal.gate_bias':(16,), 'temporal.candidate_bias':(16,),
-                'head.weight':(1,16),'head.bias':(1,), 'structure.projection':(16,)
-            }
-        else:
-            shapes={'head.weight':(1,16),'head.bias':(1,)}
-        return self.expected[(cap,arm)], shapes
+    def fake_candidate_verification(self, path, sha, *, arm, width, rank, expected_count):
+        cap=int(path.parent.name)
+        self.assertEqual(width,16)
+        self.assertEqual(expected_count,self.expected[(cap,arm)])
+        self.assertEqual(rank,1 if arm=='min_gru' else None)
+        return {'private_parameter_count':expected_count,
+                'native_q24_parameter_constraints_verified':True,
+                'native_q24_prediction_parity_verified':False}
 
     def check(self):
-        with patch('a4_end_to_end_gate.actual_safetensors',
-                   side_effect=self.fake_tensor_verification):
+        with patch('a4_end_to_end_gate.verify_artifact',
+                   side_effect=self.fake_candidate_verification):
             return validate(self.host,self.training,
                 host_id='host-research-fixture',train_sha='9'*64,
                 physical_weights_root=self.root,selected_v1=self.baseline,
@@ -228,6 +224,54 @@ class PhysicalArtifactA4StructureTests(HostA4GateTests):
         self.assertEqual(r['100_complete_end_to_end_signed_host_claim_slots'],100)
         self.assertFalse(r['trusted_host_execution_independently_attested'])
         self.assertFalse(r['production_qualification'])
+
+
+    def test_v2_equal_count_wrong_head_shape_rejected(self):
+        import torch
+        from safetensors.torch import load_file, save_file
+        path=self.root/str(CAPS[0])/'v2.safetensors'
+        weights=load_file(str(path))
+        weights['head.weight']=torch.zeros((2,8),dtype=torch.float32)
+        save_file(weights,str(path))
+        bad_sha=digest(path.read_bytes())
+        for row in self.training['models']:
+            if row['cap']==CAPS[0] and row['arm']=='v2':
+                row['weight_sha256']=bad_sha
+        for row in self.host['measurements']:
+            if row['parameter_cap']==CAPS[0] and row['arm']=='v2':
+                row['model_sha256']=bad_sha
+        from a4_end_to_end_gate import validate
+        with self.assertRaisesRegex(ValueError,'tensor shape'):
+            validate(self.host,self.training,
+                host_id='host-research-fixture',train_sha='9'*64,
+                physical_weights_root=self.root,selected_v1=self.baseline,
+                selected_v1_sha=self.base_sha,
+                host_key_fingerprint='d'*64,expected_commit=self.commit,
+                expected_encoder_bundle_sha='8'*64,
+                expected_host_profile_sha='7'*64)
+
+    def test_v3_q24_identity_projection_tamper_rejected(self):
+        from safetensors.torch import load_file, save_file
+        path=self.root/str(CAPS[0])/'v3.safetensors'
+        weights=load_file(str(path))
+        weights['structure.projection'][0]-=1
+        save_file(weights,str(path))
+        bad_sha=digest(path.read_bytes())
+        for row in self.training['models']:
+            if row['cap']==CAPS[0] and row['arm']=='v3':
+                row['weight_sha256']=bad_sha
+        for row in self.host['measurements']:
+            if row['parameter_cap']==CAPS[0] and row['arm']=='v3':
+                row['model_sha256']=bad_sha
+        from a4_end_to_end_gate import validate
+        with self.assertRaisesRegex(ValueError,'frozen Q24 identity'):
+            validate(self.host,self.training,
+                host_id='host-research-fixture',train_sha='9'*64,
+                physical_weights_root=self.root,selected_v1=self.baseline,
+                selected_v1_sha=self.base_sha,
+                host_key_fingerprint='d'*64,expected_commit=self.commit,
+                expected_encoder_bundle_sha='8'*64,
+                expected_host_profile_sha='7'*64)
 
 
 
