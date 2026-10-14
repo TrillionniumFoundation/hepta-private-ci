@@ -147,7 +147,8 @@ jobs:
           git rev-parse HEAD > "$RUNNER_TEMP/public-encoder-source.txt"
           python -m pip freeze > "$RUNNER_TEMP/public-encoder-environment.txt"
           python qualification/stem-cell-v1/public_encoder_probe.py \
-            --acquire-public --output "$RUNNER_TEMP/public-encoder" 2>&1 | tee "$RUNNER_TEMP/public-encoder.log"
+            --acquire-public --upstream-revision 8949b909ec900327062f0ebf497f51aef5e6f0c8 \
+            --compare-arithmetic --output "$RUNNER_TEMP/public-encoder" 2>&1 | tee "$RUNNER_TEMP/public-encoder.log"
       - name: Retain observations, never upload model weights
         if: always()
         uses: actions/upload-artifact@v4

@@ -58,6 +58,16 @@ class InstalledHFTests(unittest.TestCase):
         self.assertFalse(result['efficacy_established'])
         self.assertGreater(len(result['observation']['operators']), 0)
 
+    def test_expanded_profile_counts_all_observed_work_without_changing_features(self):
+        result = probe(self.root, compare_arithmetic=True)
+        self.assertEqual(result['inference_calls'], 6)
+        self.assertEqual(result['observation']['unknown_operators'], {})
+        self.assertGreater(result['observation']['phase_flops']['inference'], 0)
+        comparison = result['arithmetic_comparison']
+        self.assertEqual(comparison['previous_feature_sha256'], comparison['current_feature_sha256'])
+        self.assertFalse(comparison['full_system_cost_measured'])
+        self.assertFalse(result['efficacy_established'])
+
     def test_bound_runtime_executes_stock_encoder_and_real_cell_bank(self):
         p,c,cfg,w = setup('small_stem_matched_head_no_ndu')
         values = {k:v for k,v in cfg.items() if k not in ('schema','config_id','contract_id')}
