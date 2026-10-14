@@ -25,7 +25,8 @@ from transformer_work_v3 import PROFILE
 TOPOLOGIES = (('dense16', 16, 16), ('sparse16', 16, 2), ('direct32', 32, 2))
 
 
-def freeze_study(*, seed=7347, train_steps=32, batch_size=16, width_units=32):
+def freeze_study(*, seed=7347, train_steps=32, batch_size=16, width_units=32,
+                 training_flops_budget=None, max_budget_steps=4096):
     for name, value, limit in (('seed', seed, 2**31-1), ('steps', train_steps, 128),
                                ('batch', batch_size, 64), ('width', width_units, 128)):
         if type(value) is not int or not 1 <= value <= limit:
@@ -39,6 +40,13 @@ def freeze_study(*, seed=7347, train_steps=32, batch_size=16, width_units=32):
             rapl_zone=None, rapl_max_power_watts=None),
         phase_caps=dict.fromkeys(PHASES, 5_000_000_000_000), classes=4, context_tokens=512,
         max_feature_bytes=4*1024*1024, schedule='fixed_updates_no_quality_selection')
+    if training_flops_budget is not None:
+        if (type(training_flops_budget) is not int or not 1 <= training_flops_budget <= body['phase_caps']['train']
+                or type(max_budget_steps) is not int or not 1 <= max_budget_steps <= 4096):
+            raise ValueError('invalid fixed training budget or step ceiling')
+        body.update(schema='hepta.public-shared-learning-config.v2',
+            schedule='formula_budget_whole_updates_v1', training_flops_budget=training_flops_budget,
+            max_budget_steps=max_budget_steps)
     return {**body, 'study_id': _digest(body)}
 
 
@@ -55,7 +63,10 @@ def fit_controls(encode, train, targets, evaluation, root, *, dimension, study):
     """
     import torch
     from safetensors.torch import save_file
-    expected = freeze_study(**{k: study[k] for k in ('seed', 'train_steps', 'batch_size', 'width_units')})
+    fields = ('seed', 'train_steps', 'batch_size', 'width_units')
+    if study.get('schema') == 'hepta.public-shared-learning-config.v2':
+        fields += ('training_flops_budget', 'max_budget_steps')
+    expected = freeze_study(**{k: study[k] for k in fields})
     if _digest(study) != _digest(expected):
         raise ValueError('study policy changed')
     validate_disjoint(train, evaluation)
@@ -101,7 +112,10 @@ def fit_controls(encode, train, targets, evaluation, root, *, dimension, study):
             resident_stem_copies=1, cell_head_budget_params=32_000_000//count,
             total_head_budget_params=32_000_000, active_cells_per_round_cap=active)
         arm = root / name; arm.mkdir()
-        meter = WorkLedger(study['measurement_policy'], study['phase_caps'])
+        caps = dict(study['phase_caps'])
+        if 'training_flops_budget' in study:
+            caps['train'] = study['training_flops_budget']
+        meter = WorkLedger(study['measurement_policy'], caps)
         bank = None
         record = dict(topology=name, cells=count, active_cells=active, status='failed',
                       initial_sha256=None, trained_sha256=None, training=None, inventory=None)
@@ -116,9 +130,14 @@ def fit_controls(encode, train, targets, evaluation, root, *, dimension, study):
                 record['initial_sha256'] = state_digest(bank)
             with meter.scope('evaluation', 'bank'), torch.inference_mode():
                 before = bank(heldout).tolist()
-            with meter.scope('train', 'bank'):
-                record['training'] = train_bank(bank, x, y, study, study['seed'])
+            if 'training_flops_budget' in study:
+                from budgeted_learning import train_to_budget
+                record['training'] = train_to_budget(bank, x, y, study, study['seed'], meter=meter)
                 record['trained_sha256'] = state_digest(bank)
+            else:
+                with meter.scope('train', 'bank'):
+                    record['training'] = train_bank(bank, x, y, study, study['seed'])
+                    record['trained_sha256'] = state_digest(bank)
             with meter.scope('inference', 'bank'), torch.inference_mode():
                 after = bank(heldout).tolist()
             if [_tensor_digest(x), _tensor_digest(heldout)] != feature_id:
@@ -197,7 +216,7 @@ def score_sealed(root, labels, *, expected_seal_id):
     params = [a['inventory']['parameters'] for a in completed]
     train_cost = [a['work']['phase_flops']['train'] for a in completed]
     matched = len(completed)==3 and all(v is not None for v in train_cost) and max(train_cost)-min(train_cost)<=.01*max(train_cost)
-    return dict(schema='hepta.public-learning-scores.v1', seal_id=expected_seal_id,
+    result = dict(schema='hepta.public-learning-scores.v1', seal_id=expected_seal_id,
         labels_sha256=_digest(labels), arms=results,
         all_arms_completed=len(completed)==3,
         parameter_matched=len(params)==3 and len(set(params))==1,
@@ -211,8 +230,19 @@ def score_sealed(root, labels, *, expected_seal_id):
         learning_superiority_established=False, full_system_efficiency_established=False,
         production_authorized=False)
 
+    from budgeted_learning import validate_budget_results
+    study = strict_json(root/'STUDY.json')
+    if _digest({k:v for k,v in study.items() if k!='study_id'}) != study['study_id'] or study['study_id'] != run['study_id']:
+        raise ValueError('sealed study identity mismatch')
+    if 'training_flops_budget' in study:
+        result['schema'] = 'hepta.public-learning-scores.v2'
+        result['fixed_update_schedule_not_compute_matching'] = False
+        result['training_budget_results'] = validate_budget_results(study, run['arms'])
+        result['shared_encoder_work'] = run['shared_encoder_work']['phase_flops']
+    return result
 
-def run_public_learning(snapshot, news, output):
+
+def run_public_learning(snapshot, news, output, *, training_flops_budget=None, max_budget_steps=4096):
     """Explicit real local-HF path; no randomly initialized fallback."""
     root = Path(output); root.mkdir(exist_ok=False)
     try:
@@ -225,7 +255,7 @@ def run_public_learning(snapshot, news, output):
         sources={p.name:file_sha256(p) for p in Path(__file__).parent.glob('*.py')}
         write_json_exclusive(root/'source_files.json', sources)
         train, targets, heldout, final_labels, material = prepare_news(news)
-        study = freeze_study()
+        study = freeze_study(training_flops_budget=training_flops_budget, max_budget_steps=max_budget_steps)
         write_json_exclusive(root/'selection.json', material)
         write_json_exclusive(root/'STUDY.json', study)
         torch.set_num_threads(1)
@@ -270,12 +300,15 @@ def main():
     parser.add_argument('--news-dir', required=True)
     parser.add_argument('--acquire-news', action='store_true')
     parser.add_argument('--output', required=True)
+    parser.add_argument('--training-flops-budget', type=int)
+    parser.add_argument('--max-budget-steps', type=int, default=4096)
     args=parser.parse_args()
     if Path(args.output).exists():
         raise FileExistsError('study output already exists')
     if args.acquire_news:
         acquire_news(args.news_dir)
-    report=run_public_learning(args.snapshot,args.news_dir,args.output)
+    report=run_public_learning(args.snapshot,args.news_dir,args.output,
+        training_flops_budget=args.training_flops_budget, max_budget_steps=args.max_budget_steps)
     print(json.dumps({'parameter_matched':report['parameter_matched'],
         'learning_superiority_established':False,'production_authorized':False}))
     return 0 if report['all_arms_completed'] else 2
