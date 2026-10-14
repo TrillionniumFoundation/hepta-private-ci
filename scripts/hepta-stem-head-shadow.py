@@ -140,7 +140,7 @@ def head_type(torch, nn, rank):
 
 
 def train(train_rows, predict_rows, *, budget, seed, steps, cutoff, now,
-          learning_rate=.005):
+          learning_rate=.005, optimizer_kind="adamw"):
     require(type(budget) is int and budget in RANKS,
             "budget must be 2048/8192/16384")
     require(type(seed) is int and 0 <= seed < 2**32,
@@ -150,6 +150,7 @@ def train(train_rows, predict_rows, *, budget, seed, steps, cutoff, now,
     require(type(learning_rate) in (int, float)
             and 0 < learning_rate <= .1 and math.isfinite(learning_rate),
             "invalid learning rate")
+    require(optimizer_kind in ("adamw", "sgd"), "invalid optimizer arm")
     identity = validate_packets(train_rows, predict_rows, cutoff, now)
     import torch
     from torch import nn
@@ -163,7 +164,11 @@ def train(train_rows, predict_rows, *, budget, seed, steps, cutoff, now,
     require(actual_parameters == 2 * WIDTH * rank + 3 * WIDTH + 3
             and actual_parameters <= budget,
             "unaccounted Head parameters")
-    optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
+    optimizer = (
+        torch.optim.AdamW(model.parameters(), lr=learning_rate)
+        if optimizer_kind == "adamw"
+        else torch.optim.SGD(model.parameters(), lr=learning_rate, momentum=0)
+    )
     x = torch.tensor(
         [[v / Q for v in r["feature_q24"]] for r in train_rows],
         dtype=torch.float32,
@@ -250,10 +255,11 @@ def train(train_rows, predict_rows, *, budget, seed, steps, cutoff, now,
         "original_feature_provenance_verified": False,
         "runtime_worker_receipts_verified": False,
         "resource_memory_verified": False,
+        "optimizer_kind": optimizer_kind,
         "head_rank": rank, "head_parameter_ceiling": budget,
         "trainable_head_parameters": actual_parameters,
         "head_fp32_parameter_payload_bytes": head_parameter_bytes,
-        "adamw_optimizer_tensor_payload_bytes": optimizer_tensor_bytes,
+        "optimizer_tensor_payload_bytes": optimizer_tensor_bytes,
         "head_plus_optimizer_tensor_payload_bytes": (
             head_parameter_bytes + optimizer_tensor_bytes
         ),
@@ -282,6 +288,7 @@ def main(argv=None):
     parser.add_argument("--budget", type=int, choices=sorted(RANKS), default=2048)
     parser.add_argument("--seed", type=int, default=17)
     parser.add_argument("--steps", type=int, default=30)
+    parser.add_argument("--optimizer", choices=("adamw", "sgd"), default="adamw")
     args = parser.parse_args(argv)
     now = datetime.now(timezone.utc).isoformat(
         timespec="microseconds"
@@ -297,7 +304,7 @@ def main(argv=None):
         manifest, learned, frozen = train(
             read_rows(args.train), read_rows(args.predict),
             budget=args.budget, seed=args.seed, steps=args.steps,
-            cutoff=args.train_cutoff, now=now,
+            cutoff=args.train_cutoff, now=now, optimizer_kind=args.optimizer,
         )
         for path, data in zip(paths, (manifest, learned, frozen)):
             with path.open("x", encoding="utf-8") as stream:
