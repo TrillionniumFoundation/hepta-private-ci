@@ -94,6 +94,25 @@ assert equivalence to an official model-specific pooling or teacher policy.
 No implicit download, remote-code trust, fake checkpoint or synthetic
 Encoder is allowed for E1 real claims.
 
+To run all four **genuine** offline E1 model candidates after every pinned
+checkpoint is available, supply a JSON matrix with each Encoder's
+`local_path`, `weights_sha256`, `tokenizer_sha256`, `bundle_sha256`,
+and the common dataset/split/no-change/training pins. Then use:
+
+```bash
+PLAN_SHA="$(sha256sum e1_matrix.json | cut -d' ' -f1)"
+DATA_SHA="$(sha256sum approved.jsonl | cut -d' ' -f1)"
+python -m neuron_shared_encoder.validation_v3 e1-run --input-json e1_matrix.json --input-sha256 "$PLAN_SHA" --dataset approved.jsonl --dataset-sha256 "$DATA_SHA" --output e1_real_shadow.json --dimension 128
+```
+
+The runner preflights all four local paths and tokenizer bytes, verifies
+the bundled/weight hashes via the existing offline adapter and never substitutes
+a synthetic checkpoint. A missing model blocks the entire matrix. It trains
+the same Head candidates on each frozen Encoder output, with train-only
+normalization, and separately records the original full Laya policy.
+The model bundle pin and local results are not independent operator signatures
+or proof that an external no-change baseline was genuinely frozen.
+
 ### E2 — capacity and fixed-Gate folding
 
 `e2-heads` trains Linear, static Gate, input-conditional sigmoid/SiLU Gate,
