@@ -61,8 +61,12 @@ pub enum BatchWorkerErrorV1 {
     /// failed. The original identity may remain pending; reconcile it rather
     /// than treating this error as proof that enqueue never happened.
     AdmissionTelemetryIndeterminate,
-    /// A live CNS scope frontier advanced while the external backend ran.
-    /// Treat the result as unresolved; never return it as successful or retry.
+    /// The monotonic observation crossed this request's execution deadline
+    /// before entering a model backend. No late request is executed.
+    DeadlineExpired,
+    /// A live CNS scope frontier advanced or a deadline elapsed while the
+    /// external backend ran. Treat its outcome as unresolved; never publish
+    /// the stale result as success or automatically replay the effect.
     StaleAfterEffect,
     Capacity,
 }
@@ -97,6 +101,12 @@ fn scope_binding_current(
         .and_then(|owner| owner.current(&key.scope_id).ok())
         .as_ref()
         == Some(key)
+}
+
+/// Account for time spent in telemetry, signature verification, prior requests
+/// and the actual device call. Caller time is the starting observation only.
+fn dispatch_now_ms_v1(observed_at_ms: u64, started: Instant) -> u64 {
+    observed_at_ms.saturating_add(u64::try_from(started.elapsed().as_millis()).unwrap_or(u64::MAX))
 }
 
 struct PendingV1 {
@@ -427,7 +437,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 });
             }
             if batch.requests.len() > 1 {
-                outcomes.extend(self.execute_native_batch(now_ms, &batch.key, batch.requests));
+                outcomes.extend(self.execute_native_batch(
+                    now_ms,
+                    started,
+                    &batch.key,
+                    batch.requests,
+                ));
             } else {
                 for intent in batch.requests {
                     let id = intent.request_id;
@@ -437,6 +452,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                         Some(mut pending) => {
                             if !self.metrics_available_for_effect() {
                                 Err(BatchWorkerErrorV1::MetricsUnavailable)
+                            } else if intent.deadline_ms <= dispatch_now_ms_v1(now_ms, started) {
+                                Err(BatchWorkerErrorV1::DeadlineExpired)
                             } else if pending.feature.digest() != intent.feature_digest
                                 || pending.signed.grant.authority_epoch
                                     != intent.key.authority_epoch
@@ -449,6 +466,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                 let start = Instant::now();
                                 let frontier = self.scope_frontier.clone();
                                 let key = intent.key;
+                                let deadline_ms = intent.deadline_ms;
                                 let result = FinalUseAuthority::claim(
                                     &self.authority,
                                     &pending.signed,
@@ -464,15 +482,22 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                             if !scope_binding_current(frontier.as_ref(), &key) {
                                                 return Err(BatchWorkerErrorV1::InvalidBinding);
                                             }
+                                            let effect_now_ms = dispatch_now_ms_v1(now_ms, started);
+                                            if effect_now_ms >= deadline_ms {
+                                                return Err(BatchWorkerErrorV1::DeadlineExpired);
+                                            }
                                             let result = self
                                                 .worker
                                                 .run_neuron_features_receipt(
-                                                    now_ms,
+                                                    effect_now_ms,
                                                     &pending.model_id,
                                                     pending.request,
                                                 )
                                                 .map_err(|_| BatchWorkerErrorV1::Worker);
-                                            if !scope_binding_current(frontier.as_ref(), &key) {
+                                            if !scope_binding_current(frontier.as_ref(), &key)
+                                                || dispatch_now_ms_v1(now_ms, started)
+                                                    >= deadline_ms
+                                            {
                                                 return Err(BatchWorkerErrorV1::StaleAfterEffect);
                                             }
                                             result
@@ -527,6 +552,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
     fn execute_native_batch(
         &mut self,
         now_ms: u64,
+        dispatch_started: Instant,
         key: &MicrobatchKeyV1,
         intents: Vec<InferenceIntentV1>,
     ) -> Vec<BatchWorkerItemOutcomeV1> {
@@ -542,6 +568,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             let mut model_id: Option<&str> = None;
             for (intent, pending) in &items {
                 let pending = pending.as_ref().ok_or(BatchWorkerErrorV1::NoAdmission)?;
+                if intent.deadline_ms <= dispatch_now_ms_v1(now_ms, dispatch_started) {
+                    return Err(BatchWorkerErrorV1::DeadlineExpired);
+                }
                 if pending.feature.digest() != intent.feature_digest
                     || !intent.key.physical_compatible_with(key)
                     || !self.binding_current(&intent.key)
@@ -615,7 +644,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 .iter()
                 .map(|(intent, _)| intent.key.clone())
                 .collect::<Vec<_>>();
+            let deadlines = items
+                .iter()
+                .map(|(intent, _)| intent.deadline_ms)
+                .collect::<Vec<_>>();
             let mut stale_before_effect = false;
+            let mut deadline_before_effect = false;
             let mut stale_after_effect = false;
             let executed =
                 FinalUseAuthority::with_verified_effect_batch(&self.authority, claimed, || {
@@ -626,12 +660,22 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                         stale_before_effect = true;
                         return Err(crate::model_worker::Error::FeatureContract);
                     }
-                    let result = self
-                        .worker
-                        .run_neuron_features_batch_receipts(now_ms, &model_id, requests);
+                    let effect_now_ms = dispatch_now_ms_v1(now_ms, dispatch_started);
+                    if deadlines.iter().any(|deadline| *deadline <= effect_now_ms) {
+                        deadline_before_effect = true;
+                        return Err(crate::model_worker::Error::DeadlineExpired);
+                    }
+                    let result = self.worker.run_neuron_features_batch_receipts(
+                        effect_now_ms,
+                        &model_id,
+                        requests,
+                    );
                     if scope_keys
                         .iter()
                         .any(|key| !scope_binding_current(frontier.as_ref(), key))
+                        || deadlines.iter().any(|deadline| {
+                            *deadline <= dispatch_now_ms_v1(now_ms, dispatch_started)
+                        })
                     {
                         stale_after_effect = true;
                     }
@@ -639,6 +683,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 });
             if stale_after_effect {
                 return Err(BatchWorkerErrorV1::StaleAfterEffect);
+            }
+            if deadline_before_effect {
+                return Err(BatchWorkerErrorV1::DeadlineExpired);
             }
             if stale_before_effect {
                 return Err(BatchWorkerErrorV1::InvalidBinding);
