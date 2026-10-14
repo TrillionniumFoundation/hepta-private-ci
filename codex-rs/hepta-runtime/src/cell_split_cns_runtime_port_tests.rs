@@ -365,7 +365,12 @@ fn signed_cns_and_control_commit_join_cannot_accept_opaque_wal_without_original_
             || -> Result<((), Vec<u8>), &'static str> { Ok(((), vec![0x6f; 96])) },
         )
         .expect("isolated Control fixture only");
-    assert!(control.last_cns_original_receipt_binding().unwrap().is_some());
+    assert!(
+        control
+            .last_cns_original_receipt_binding()
+            .expect("Control C receipt binding")
+            .is_some()
+    );
     assert!(
         port.verify_original_cns_control_commit_v1(&control)
             .expect_err("opaque Control bytes cannot mint an original CNS effect")
