@@ -46,6 +46,7 @@ def report() -> dict:
         "source_evidence_kind": audit.EVIDENCE_KIND,
         "target_host_qualified": False,
         "trained_artifacts_qualified": False,
+        "parameter_budgets_matched": False,
         "ndu_eligible": False,
         "trace_sha256": DIGEST,
         "arms": list(probe.ARMS),
@@ -97,6 +98,7 @@ class MechanismCostAuditTests(unittest.TestCase):
         for where, key in [
             ("root", "target_host_qualified"),
             ("root", "ndu_eligible"),
+            ("root", "parameter_budgets_matched"),
             ("sample", "trained_model"),
             ("sample", "all_model_parameter_budgets_matched"),
             ("sample", "production_qualification"),
