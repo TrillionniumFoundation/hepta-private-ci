@@ -1,0 +1,22 @@
+name: Hepta CI Python Format Diagnostic
+on:
+  push:
+    branches:
+      - fix/hepta-global-ci-rootcause-20261013
+permissions:
+  contents: read
+jobs:
+  exact-python-ruff-diff:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout exact diagnostics source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - name: Install source-locked Ruff
+        run: python3 -m pip install --disable-pip-version-check ruff==0.15.13
+      - name: Display formatter's exact non-mutating repair
+        run: |
+          ruff format --diff .github/scripts/test_run_bazel_ci.py
+          ruff format --check .github/scripts/test_run_bazel_ci.py
