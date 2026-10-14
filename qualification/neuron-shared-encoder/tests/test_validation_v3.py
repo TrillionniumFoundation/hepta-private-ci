@@ -9,7 +9,7 @@ import torch
 from neuron_shared_encoder.validation_v3 import (
     BUDGETS, ENCODERS, KINDS, SmallHead, canonical_digest, digest_bytes,
     encoder_matrix_contract, evaluate_shadow, head_trials, reuse_keys, reuse_trial,
-    scale_receipt_audit, _scores,
+    scale_receipt_audit, prequential_order_audit, _scores,
 )
 
 D = lambda c: c * 64
@@ -111,7 +111,8 @@ def test_reuse_counts_physical_encoder_calls_and_rows():
                                  mode='joint', batch_size=8)
     public_f, public = reuse_trial(rows, fake_encoder, encoder_digest=D('a'),
                                    tokenizer_digest=D('b'), normalizer_digest=D('c'),
-                                   mode='public', batch_size=8)
+                                   mode='public', batch_size=8,
+                                   research_synthetic_cross_source=True)
     assert joint_f.shape == public_f.shape == (32, 2)
     assert joint['distinct_input_keys'] == 32
     assert joint['encoder_forward_rows'] == 32
@@ -151,7 +152,9 @@ def test_e4_good_future_signal_never_promotes():
     baseline, candidate = make_snapshots(rows)
     result = evaluate_shadow(rows, D('d'), baseline, candidate, bootstrap_repeats=100)
     assert result['future_groups'] == 40
-    assert result['shadow_signal'] == 'POSITIVE'
+    assert result['shadow_signal'] == 'RETROSPECTIVE_POSITIVE_UNVERIFIED'
+    assert result['causal_learning_verified'] is False
+    assert result['prequential_order_audit']['status'] == 'MISSING_OR_INVALID'
     assert result['negative_transfer_group_fraction'] == 0
     assert result['bootstrap_95pct_group_mean_improvement'][0] > 0
     assert result['selection'] == 'NOT_AUTHORIZED'
@@ -261,7 +264,8 @@ def test_private_state_encoder_is_called_and_cost_is_counted():
     kw = dict(encoder_digest=D('a'), tokenizer_digest=D('b'),
               normalizer_digest=D('c'), batch_size=16)
     _, joint = reuse_trial(rows, frozen_encoder, mode='joint', **kw)
-    _, public = reuse_trial(rows, frozen_encoder, mode='public', **kw)
+    _, public = reuse_trial(rows, frozen_encoder, mode='public',
+                            research_synthetic_cross_source=True, **kw)
     _, state = reuse_trial(rows, frozen_encoder, mode='private_state', **kw)
     assert state['encoder_forward_rows'] == 16  # four states per split
     assert public['encoder_forward_rows'] == 4
@@ -417,3 +421,85 @@ def test_e1_manifest_nonfinite_exponent_rejected_before_qualification(tmp_path):
     path.write_text(content)
     with pytest.raises(ValueError, match='nonfinite JSON evidence float exponent'):
         _read_pinned_json(str(path), sha256(content.encode()).hexdigest())
+
+
+def test_e3_public_source_groups_do_not_share_by_default():
+    rows = dataset(8)
+    seen = []
+    def fake_encoder(batch):
+        seen.extend(batch)
+        return torch.ones((len(batch), 3))
+    _, receipt = reuse_trial(rows, fake_encoder, encoder_digest=D('a'),
+                             tokenizer_digest=D('b'), normalizer_digest=D('c'),
+                             mode='public', batch_size=8)
+    assert receipt['distinct_input_keys'] == len(rows)
+    assert receipt['cross_source_reuse_policy'] == 'STRICT_SOURCE_GROUP_ISOLATION'
+    assert receipt['encoder_forward_rows'] == len(rows)
+    _, upper = reuse_trial(rows, fake_encoder, encoder_digest=D('a'),
+                           tokenizer_digest=D('b'), normalizer_digest=D('c'),
+                           mode='public', batch_size=8,
+                           research_synthetic_cross_source=True)
+    assert upper['encoder_forward_rows'] < receipt['encoder_forward_rows']
+    assert upper['cross_source_reuse_policy'] == 'SYNTHETIC_UNVERIFIED_UPPER_BOUND'
+    assert upper['authorization_verified'] is False
+
+
+def test_e3_synthetic_cross_source_rejects_nonpublic_and_missing_group():
+    row = dataset(8)[0]
+    args = dict(encoder_digest=D('a'), tokenizer_digest=D('b'),
+                normalizer_digest=D('c'))
+    with pytest.raises(ValueError, match='synthetic cross-source'):
+        reuse_keys(row, mode='private_state',
+                   research_synthetic_cross_source=True, **args)
+    with pytest.raises(ValueError, match='synthetic cross-source'):
+        reuse_keys(row, mode='joint',
+                   research_synthetic_cross_source=True, **args)
+    with pytest.raises(ValueError, match='source group'):
+        reuse_keys({**row, 'source_group': ''}, mode='public', **args)
+
+
+def test_e4_retrospective_shadow_uses_explicit_label_arrival_not_event_time():
+    rows = dataset(8)
+    base, candidate = make_snapshots(rows)
+    future = [r for r in rows if r['split'] == 'future']
+    for row in future:
+        row['event_time'] = '2026-10-12T12:00:00Z'
+    commits = {r['row_id']: '2026-10-12T12:01:00Z' for r in future}
+    outcomes = {r['row_id']: '2026-10-12T13:00:00Z' for r in future}
+    for snapshot in (base, candidate):
+        snapshot['prediction_committed_at_by_row'] = dict(commits)
+        snapshot['outcome_available_at_by_row'] = dict(outcomes)
+    order = prequential_order_audit(rows, base, candidate)
+    assert order['status'] == 'TEMPORAL_ORDER_CONSISTENT_UNVERIFIED'
+    report = evaluate_shadow(rows, D('d'), base, candidate, bootstrap_repeats=100)
+    assert report['prequential_order_audit']['status'] == 'TEMPORAL_ORDER_CONSISTENT_UNVERIFIED'
+    assert report['causal_learning_verified'] is False
+    assert report['production_admission'] == 'BLOCKED'
+
+
+def test_e4_missing_late_or_disagreeing_label_arrivals_fail_temporal_check():
+    rows = dataset(8)
+    base, candidate = make_snapshots(rows)
+    future = [r for r in rows if r['split'] == 'future']
+    for row in future:
+        row['event_time'] = '2026-10-12T12:00:00Z'
+    commits = {r['row_id']: '2026-10-12T12:01:00Z' for r in future}
+    outcomes = {r['row_id']: '2026-10-12T13:00:00Z' for r in future}
+    base['prediction_committed_at_by_row'] = dict(commits)
+    base['outcome_available_at_by_row'] = dict(outcomes)
+    candidate['prediction_committed_at_by_row'] = dict(commits)
+    candidate['outcome_available_at_by_row'] = dict(outcomes)
+    candidate['prediction_committed_at_by_row'][future[0]['row_id']] = '2026-10-12T13:00:00Z'
+    candidate['outcome_available_at_by_row'][future[1]['row_id']] = '2026-10-12T14:00:00Z'
+    result = prequential_order_audit(rows, base, candidate)
+    assert result['status'] == 'MISSING_OR_INVALID'
+    assert any('not between' in issue for issue in result['issues'])
+    assert any('disagree' in issue for issue in result['issues'])
+
+
+def test_e4_changed_ordered_options_fail_before_retrospective_scoring():
+    rows = dataset(8)
+    base, candidate = make_snapshots(rows)
+    rows[0]['options'] = ['yes', 'no']
+    with pytest.raises(ValueError, match='identical ordered choices'):
+        evaluate_shadow(rows, D('d'), base, candidate, bootstrap_repeats=100)

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 from collections import defaultdict
+from datetime import datetime, timezone
 import hashlib
 import json
 import math
@@ -243,10 +244,21 @@ def head_trials(features: torch.Tensor, labels: torch.Tensor, splits: list[str],
 def reuse_keys(record: dict, *, encoder_digest: str, tokenizer_digest: str,
                normalizer_digest: str, principal: str | None = None,
                purpose: str = 'decision', generation: int = 1,
-               authority_epoch: int = 1, mode: str = 'joint') -> str:
-    """An experimental identity, NOT proof that a source reuse was authorized."""
+               authority_epoch: int = 1, mode: str = 'joint',
+               research_synthetic_cross_source: bool = False) -> str:
+    """Source-group-isolated identity; no cache/source entitlement implied.
+
+    Cross-source grouping is only an explicitly non-authorizing synthetic
+    upper bound, never a real model entitlement or production feature key.
+    """
     if mode not in ('joint', 'public', 'private_state') or generation <= 0 or authority_epoch <= 0 or not purpose:
         raise ValueError('invalid reuse contract')
+    if type(research_synthetic_cross_source) is not bool or (
+            research_synthetic_cross_source and mode != 'public'):
+        raise ValueError('synthetic cross-source control requires public mode')
+    source_group = record.get('source_group')
+    if not isinstance(source_group, str) or not source_group:
+        raise ValueError('source group required for isolated reuse')
     if any(not is_digest(d) for d in (encoder_digest, tokenizer_digest, normalizer_digest)):
         raise ValueError('exact encoder/tokenizer/normalizer digests required')
     if principal is not None and principal != record['principal']:
@@ -269,6 +281,9 @@ def reuse_keys(record: dict, *, encoder_digest: str, tokenizer_digest: str,
         scope.append(cell)
     return canonical_digest({'scope': scope,
                              'model': [encoder_digest, tokenizer_digest, normalizer_digest],
+                             'source_reuse_partition': (
+                                 'synthetic:cross-source-upper-bound'
+                                 if research_synthetic_cross_source else source_group),
                              'split': record['split'], 'mode': mode,
                              'format': 'hepta.e3.frozen-stem-input.v2',
                              'input': fields})
@@ -277,10 +292,12 @@ def reuse_keys(record: dict, *, encoder_digest: str, tokenizer_digest: str,
 def reuse_trial(rows: list[dict], encode: Callable[[list[dict]], torch.Tensor], *,
                 encoder_digest: str, tokenizer_digest: str, normalizer_digest: str,
                 mode: str, batch_size: int = 8, purpose: str = 'decision',
-                generation: int = 1, authority_epoch: int = 1) -> tuple[torch.Tensor, dict]:
+                generation: int = 1, authority_epoch: int = 1,
+                research_synthetic_cross_source: bool = False) -> tuple[torch.Tensor, dict]:
     """E3: count actual adapter invocations AND distinct rows forwarded.
 
-    Does not cache across principal, split, purpose, generation or authority epoch.
+    Does not cache across source group, principal, split, purpose,
+    generation or authority epoch by default.
     In public mode Cell-private state is excluded from the shared encoder input.
     In private_state mode task questions/options are fixed while the exact Cell
     state is retained. Both modes use the SAME actual pinned Encoder adapter;
@@ -294,7 +311,8 @@ def reuse_trial(rows: list[dict], encode: Callable[[list[dict]], torch.Tensor], 
     for row in rows:
         k = reuse_keys(row, encoder_digest=encoder_digest, tokenizer_digest=tokenizer_digest,
                        normalizer_digest=normalizer_digest, mode=mode, purpose=purpose,
-                       generation=generation, authority_epoch=authority_epoch)
+                       generation=generation, authority_epoch=authority_epoch,
+                       research_synthetic_cross_source=research_synthetic_cross_source)
         keys.append(k)
         if k not in seen:
             sent = dict(row)
@@ -327,13 +345,17 @@ def reuse_trial(rows: list[dict], encode: Callable[[list[dict]], torch.Tensor], 
                       'deduplicated_rows': len(rows) - rows_forwarded,
                       'forward_row_reuse_fraction': 1 - rows_forwarded / len(rows),
                       'production_admission': 'BLOCKED', 'authorization_verified': False,
-                      'warning': 'Exact source entitlement and final-use must be checked outside this harness.'}
+                      'cross_source_reuse_policy': (
+                          'SYNTHETIC_UNVERIFIED_UPPER_BOUND'
+                          if research_synthetic_cross_source else 'STRICT_SOURCE_GROUP_ISOLATION'),
+                      'warning': 'No cross-source feature reuse entitlement or final-use is established here.'}
 
 
 def _validated_snapshot(snapshot: dict, rows: list[dict], dataset_digest: str,
                         role: str) -> torch.Tensor:
     if snapshot.get('role') != role or snapshot.get('dataset_sha256') != dataset_digest:
         raise ValueError('baseline/candidate role or dataset identity mismatch')
+    frozen_option_count(rows)
     expected_cell = [rows[0][k] for k in ('principal', 'organ_id', 'cell_id')]
     if snapshot.get('cell_scope') != expected_cell or any(
         [row[k] for k in ('principal', 'organ_id', 'cell_id')] != expected_cell for row in rows
@@ -348,6 +370,66 @@ def _validated_snapshot(snapshot: dict, rows: list[dict], dataset_digest: str,
         raise ValueError('snapshot probability geometry mismatch')
     _scores(probs.float(), torch.tensor([r['label'] for r in rows], dtype=torch.long))
     return probs.float()
+
+
+def _utc_time(value: Any) -> datetime:
+    if not isinstance(value, str):
+        raise ValueError('timestamp must be ISO-8601 string')
+    try:
+        instant = datetime.fromisoformat(value.replace('Z', '+00:00'))
+    except ValueError as exc:
+        raise ValueError('invalid ISO-8601 timestamp') from exc
+    if instant.tzinfo is None or instant.utcoffset() is None:
+        raise ValueError('timezone-aware timestamp required')
+    return instant.astimezone(timezone.utc)
+
+
+def prequential_order_audit(rows: list[dict], frozen_no_change: dict,
+                            candidate: dict) -> dict:
+    """E4 source-order audit: event observed <= forecast < label arrival.
+
+    Unlike a hindsight comparison, this requires explicit post-event label
+    availability times. The E4 `event_time` is input observation time, NOT
+    outcome availability. All timestamps are still operator-authored claims
+    and cannot independently prove precommit or causal NDU.
+    """
+    issues = []
+    future = [row for row in rows if row.get('split') == 'future']
+    if not future:
+        issues.append('future rows missing')
+    ids = {row['row_id'] for row in future}
+    shared_outcomes = None
+    for role, snapshot in (('frozen_no_change', frozen_no_change),
+                           ('candidate', candidate)):
+        commits = snapshot.get('prediction_committed_at_by_row')
+        arrivals = snapshot.get('outcome_available_at_by_row')
+        if (not isinstance(commits, dict) or set(commits) != ids or
+                not isinstance(arrivals, dict) or set(arrivals) != ids):
+            issues.append(f'{role}: incomplete forecast/label arrival timestamp maps')
+            continue
+        if shared_outcomes is None:
+            shared_outcomes = arrivals
+        elif arrivals != shared_outcomes:
+            issues.append('baseline/candidate disagree on future outcome availability')
+        for row in future:
+            row_id = row['row_id']
+            try:
+                observed = _utc_time(row.get('event_time'))
+                forecast = _utc_time(commits[row_id])
+                outcome = _utc_time(arrivals[row_id])
+            except ValueError:
+                issues.append(f'{role}:{row_id}: invalid timezone-aware timestamp')
+                continue
+            if not observed <= forecast < outcome:
+                issues.append(f'{role}:{row_id}: prediction not between observation and outcome')
+    return {
+        'status': ('TEMPORAL_ORDER_CONSISTENT_UNVERIFIED' if not issues
+                   else 'MISSING_OR_INVALID'),
+        'issues': issues, 'commitment_signature_verified': False,
+        'independent_prequential_evaluator_verified': False,
+        'production_admission': 'BLOCKED',
+    }
+
 
 
 def evaluate_shadow(rows: list[dict], dataset_digest: str,
@@ -392,11 +474,16 @@ def evaluate_shadow(rows: list[dict], dataset_digest: str,
                      for _ in range(bootstrap_repeats))
     lower = samples[int(.025 * (len(samples) - 1))]
     upper = samples[int(.975 * (len(samples) - 1))]
-    # A report may suggest additional shadow comparison, not mutate active Head.
+    # Hindsight accuracy is not prequential learning nor independent NDU.
     strong_signal = len(future_groups) >= 30 and lower > 0 and negative == 0
+    ordering = prequential_order_audit(rows, frozen_no_change, candidate)
     return {'experiment': 'E4', 'production_admission': 'BLOCKED',
             'independent_evaluator_verified': False, 'ndu_receipt_verified': False,
-            'selection': 'NOT_AUTHORIZED', 'shadow_signal': 'POSITIVE' if strong_signal else 'INCONCLUSIVE_OR_NEGATIVE',
+            'selection': 'NOT_AUTHORIZED',
+            'shadow_signal': ('RETROSPECTIVE_POSITIVE_UNVERIFIED' if strong_signal
+                              else 'INCONCLUSIVE_OR_NEGATIVE'),
+            'causal_learning_verified': False,
+            'prequential_order_audit': ordering,
             'baseline_artifact_digest': frozen_no_change['artifact_digest'],
             'candidate_artifact_digest': candidate['artifact_digest'],
             'future_groups': len(future_groups), 'negative_transfer_group_count': negative,
@@ -779,7 +866,9 @@ def main() -> None:
                 _p, public = reuse_trial(rows, encode, encoder_digest=encoder_digest,
                                          tokenizer_digest=tok, normalizer_digest=norm,
                                          mode='public', batch_size=args.batch,
-                                         generation=args.generation, authority_epoch=args.authority_epoch)
+                                         generation=args.generation, authority_epoch=args.authority_epoch,
+                                         research_synthetic_cross_source=(
+                                             args.encoder == 'synthetic-hash' and args.allow_synthetic))
                 from .models import frozen_projection
                 if args.dimension < 4 or args.dimension > 512:
                     raise ValueError('E3 requires a bounded projected dimension 4..512')

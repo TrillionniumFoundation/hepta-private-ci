@@ -130,7 +130,11 @@ hardware parity require independent native tests.
 `encoder_forward_rows` from actual calls to the adapter; counts are not
 inferred from the logical Cell count. The public-input key excludes Cell
 state but includes principal, purpose, generation, authority epoch,
-Encoder/tokenizer/normalizer digests and evaluation split. It cannot
+Encoder/tokenizer/normalizer digests, evaluation split and **source-group**
+by default. Different source groups cannot automatically share an Encoder
+result merely because their questions match. Explicit
+`research_synthetic_cross_source=True` is an untrusted synthetic-only
+upper-bound ablation, never a real source entitlement. It cannot
 bypass a real source-entitlement or signed final-use check. The Cell-local branch now uses the **same frozen, SHA-pinned Encoder**
 with a fixed state-only prompt and options; it does not inject a synthetic
 hash when the Encoder is real. The decomposed execution explicitly counts
@@ -155,10 +159,19 @@ It fails closed on scope/dataset/row/order mismatch, invalid probabilities
 or identical artifacts. It reports grouped future-window bootstrap 95%
 intervals for Brier improvement, 15-bin ECE, NLL, OOD detection AUROC and
 future source-group negative-transfer fraction. The optional positive
-*shadow signal* requires at least 30 future groups, positive lower CI and
-zero materially degraded groups; it is **not** an NDU decision. The
-independent Evaluator must still verify causal improvement and receipt
-authenticity; Selector and Executor remain separate owners.
+*retrospective statistical signal* requires at least 30 future groups,
+positive lower CI and zero materially degraded groups. Its strongest
+possible label is `RETROSPECTIVE_POSITIVE_UNVERIFIED`, not causal
+learning. E4 optionally audits claimed prediction timestamps against
+a **separate label arrival timestamp** for each future row:
+`prediction_committed_at_by_row` and
+`outcome_available_at_by_row` must be complete in both snapshots,
+agree on the outcome arrival time, and obey
+`event_time <= prediction_time < outcome_available_at`.
+Incomplete or contradictory timing claims are `MISSING_OR_INVALID`.
+Even consistent operator-authored times remain unverified; E4 cannot
+authenticate independent pre-label capture, genuine NDU, or permission
+to select and execute a new model.
 
 ### E5 — complete host telemetry schema, no fabricated measurements
 
@@ -515,3 +528,29 @@ source SHA-256. Cross-principal/cross-scope numbers cannot be
 combined to manufacture an apparently improved shared Stem. Actual
 data-use permission and revocation checks remain the responsibility
 of the independent product owner.
+
+
+### Reconciliation of advanced E3/E4 work (2026-10-14)
+
+The latest #1772 base incorporated independent source-group fencing,
+time-order research checks and pinned YAML formatting; all of these are
+retained in this stacked A/B/C line. **E3 base and A/B/C tests differ
+only in their declared source-reuse policy:** default real inputs
+cannot cross a source group; `research_synthetic_cross_source=True`
+produces a deliberately non-authorizing optimistic reuse ceiling
+for synthetic experiments. Thus the original 4-physical-forward mock
+cannot be presented as true cross-source shared Encoder economics.
+
+The E4 base branch's temporal-intent check is strengthened to avoid a
+timestamp semantic mismatch with experiment B: a future row's
+`event_time` is its **observed input event**, not automatically
+the label availability. Independent future label availability must
+come from the disjoint `outcome_available_at_by_row` map. If these
+maps are absent, this is at most a retrospective quality report,
+never a causal learning claim. The signed independent Evaluator,
+actual Laya/MMBERT model execution, and production gates remain open.
+
+The base's historical exact-SHA CI audit and cargo-deny/Windows/format
+blockers are not erased by this merge; the source must be qualified
+again after reconciliation. No advisory ignores or security bypasses
+are introduced.
