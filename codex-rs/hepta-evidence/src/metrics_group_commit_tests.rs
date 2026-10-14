@@ -410,3 +410,156 @@ fn moved_same_evidence_wal_into_new_private_parent_cannot_earn_flush_ack() {
         Err(MetricsJournalErrorV1::Poisoned)
     ));
 }
+
+#[cfg(unix)]
+#[test]
+fn lost_evidence_wal_with_persistent_marker_never_bootstraps_new_history() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let missing = dir.path().join("displaced-original-journal");
+    {
+        let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
+        owner
+            .stage(sample(MetricPhaseV1::Cas))
+            .expect("original group");
+        owner.flush().expect("durable original group");
+    }
+    let marker = dir.path().join("journal.owner-lock");
+    assert!(marker.is_file(), "durable original marker exists");
+    fs::rename(&path, &missing).expect("remove original WAL path");
+    assert!(matches!(
+        MetricsGroupCommitV1::open(&path),
+        Err(MetricsJournalErrorV1::UnsafePath)
+    ));
+    assert!(!path.exists(), "never recreate a healthy empty WAL");
+    assert!(marker.exists(), "retain original marker for recovery");
+}
+
+#[cfg(unix)]
+#[test]
+fn missing_owner_marker_revokes_live_empty_flush_and_denies_reopen() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let marker = dir.path().join("journal.owner-lock");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
+    owner
+        .stage(sample(MetricPhaseV1::Cns))
+        .expect("first sample");
+    owner.flush().expect("original durable record");
+    fs::remove_file(&marker).expect("lose persistent marker");
+    assert!(matches!(
+        owner.flush(),
+        Err(MetricsJournalErrorV1::Io(_)) | Err(MetricsJournalErrorV1::UnsafePath)
+    ));
+    assert!(matches!(
+        owner.flush(),
+        Err(MetricsJournalErrorV1::Poisoned)
+    ));
+    drop(owner);
+    assert!(matches!(
+        MetricsGroupCommitV1::open(&path),
+        Err(MetricsJournalErrorV1::UnsafePath)
+    ));
+    assert!(!marker.exists(), "do not synthesize an identity");
+}
+
+#[cfg(unix)]
+#[test]
+fn replacement_owner_marker_inode_with_same_bytes_revokes_live_writer() {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let marker = dir.path().join("journal.owner-lock");
+    let removed = dir.path().join("previous-owner-marker");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
+    owner
+        .stage(sample(MetricPhaseV1::Admission))
+        .expect("first sample");
+    owner.flush().expect("original durable record");
+    let bytes = fs::read(&marker).expect("original marker bytes");
+    fs::rename(&marker, &removed).expect("move original marker inode");
+    fs::write(&marker, bytes).expect("replace with matching bytes");
+    fs::set_permissions(&marker, fs::Permissions::from_mode(0o600))
+        .expect("private replacement marker");
+    assert!(matches!(
+        owner.flush(),
+        Err(MetricsJournalErrorV1::UnsafePath)
+    ));
+    assert!(matches!(
+        owner.flush(),
+        Err(MetricsJournalErrorV1::Poisoned)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
+fn same_inode_marker_content_corruption_denies_live_and_recovered_owner() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let marker = dir.path().join("journal.owner-lock");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
+    owner
+        .stage(sample(MetricPhaseV1::Signature))
+        .expect("first sample");
+    owner.flush().expect("original durable record");
+    let mut bytes = fs::read(&marker).expect("original identity");
+    let last_digit = bytes.len() - 2;
+    bytes[last_digit] = if bytes[last_digit] == b'0' {
+        b'1'
+    } else {
+        b'0'
+    };
+    let mut opened = OpenOptions::new()
+        .write(true)
+        .open(&marker)
+        .expect("original inode");
+    opened
+        .write_all(&bytes)
+        .expect("overwrite marker with same size");
+    opened.sync_all().expect("persist marker corruption");
+    assert!(matches!(
+        owner.flush(),
+        Err(MetricsJournalErrorV1::UnsafePath)
+    ));
+    drop(owner);
+    assert!(matches!(
+        MetricsGroupCommitV1::open(&path),
+        Err(MetricsJournalErrorV1::UnsafePath)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
+fn partial_or_legacy_evidence_owner_cannot_be_adopted_as_new_genesis() {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    for state in ["marker_only", "wal_only"] {
+        let dir = tempfile::tempdir().expect("private Evidence root");
+        let path = dir.path().join("journal");
+        let marker = dir.path().join("journal.owner-lock");
+        let missing = match state {
+            "marker_only" => {
+                fs::write(&marker, b"incomplete").expect("partial bootstrap marker");
+                &path
+            }
+            "wal_only" => {
+                fs::write(&path, b"historical records without original marker")
+                    .expect("legacy WAL");
+                &marker
+            }
+            _ => unreachable!("known storage cases"),
+        };
+        if state == "marker_only" {
+            fs::set_permissions(&marker, fs::Permissions::from_mode(0o600))
+                .expect("private marker");
+        } else {
+            fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).expect("private old WAL");
+        }
+        assert!(matches!(
+            MetricsGroupCommitV1::open(&path),
+            Err(MetricsJournalErrorV1::UnsafePath)
+        ));
+        assert!(!missing.exists(), "missing half must not be created");
+    }
+}
