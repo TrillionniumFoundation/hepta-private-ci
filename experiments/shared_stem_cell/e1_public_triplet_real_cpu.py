@@ -134,8 +134,10 @@ def main():
  p.add_argument('--panel',type=Path,required=True);p.add_argument('--model',choices=sorted(MODELS),required=True)
  p.add_argument('--compact-checkout',type=Path);p.add_argument('--gemma-checkout',type=Path)
  p.add_argument('--gemma-manifest',type=Path);p.add_argument('--output',type=Path,required=True)
+ p.add_argument('--e2-output',type=Path,default=None)
  a=p.parse_args()
- if a.output.exists():raise FileExistsError('create-only evidence')
+ if a.output.exists() or (a.e2_output is not None and (a.e2_output.exists() or a.e2_output==a.output)):
+  raise FileExistsError('create-only evidence; E1 and E2 must have distinct unused paths')
  if a.model=='embeddinggemma_2_text' and (a.gemma_checkout is None or a.gemma_manifest is None):
   raise Invalid('reviewed Gemma source and complete verified snapshot required')
  if a.model!='embeddinggemma_2_text' and a.compact_checkout is None:raise Invalid('reviewed compact source required')
@@ -153,4 +155,24 @@ def main():
       'process_lifetime_peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
       'future_ndu_verified':False,'production_promotion_permitted':False,'authority':'DENY_ALL'}
  with a.output.open('x',encoding='utf8') as h:json.dump(out,h,sort_keys=True,allow_nan=False);h.write('\n')
+ if a.e2_output is not None:
+  from e2_feature_residual_study import study
+  e2=study(panel,a.model,vectors,seed=20261014,steps=40,learning_rate=.15)
+  for original,variant in (('frozen_head','frozen_head'),('learned_head','from_zero')):
+   e1_rows=fit['controls'][original]['predictions']
+   e2_rows=e2['arms'][variant]['predictions']
+   if len(e1_rows)!=len(e2_rows) or any(
+     x['case_id']!=y['case_id'] or
+     abs(x['positive_probability']-y['positive_probability'])>1e-6
+     for x,y in zip(e1_rows,e2_rows)
+   ):
+    raise Invalid('E2 repeated Head control disagrees with E1 original training')
+  e2['source_e1_report_sha256']=sha(a.output.read_bytes())
+  e2['public_panel_sha256']=panel_sha
+  e2['source_model_revision']=MODELS[a.model][1]
+  e2['existing_frozen_encoder_features_reused']=True
+  e2['additional_encoder_model_loads']=0
+  e2['additional_encoder_feature_forwards']=0
+  with a.e2_output.open('x',encoding='utf8') as h:
+   json.dump(e2,h,sort_keys=True,allow_nan=False);h.write('\n')
 if __name__=='__main__':main()
