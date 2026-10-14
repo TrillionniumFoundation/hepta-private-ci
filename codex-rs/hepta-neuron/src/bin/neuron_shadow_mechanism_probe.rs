@@ -179,8 +179,9 @@ impl ActiveState {
                 Ok(receipt.checkpoint_after)
             }
             (Self::MinGru(states), Configs::MinGruLegacy(cfg, _)) => {
-                let (next, receipt) = low_rank_min_gru_tick_v1(cfg, input, states[cell].as_ref())
-                    .map_err(|error| format!("minGRU legacy tick rejected: {error:?}"))?;
+                let (next, receipt) =
+                    low_rank_min_gru_tick_v1(cfg, input, states[cell].as_ref())
+                        .map_err(|error| format!("minGRU legacy tick rejected: {error:?}"))?;
                 states[cell] = Some(next);
                 Ok(receipt.checkpoint_after)
             }
@@ -221,7 +222,8 @@ fn make_configs(width: usize, arm: &str, prepared: bool) -> Result<Configs, Stri
             threshold_max_q24: Q,
             eligibility_decay_q24: Q / 2,
         };
-        cfg.digest().map_err(|error| format!("V1 config: {error:?}"))?;
+        cfg.digest()
+            .map_err(|error| format!("V1 config: {error:?}"))?;
         return Ok(Configs::V1(cfg));
     }
     if !["v2", "v3", "ssm", "min_gru"].contains(&arm) {
@@ -275,7 +277,8 @@ fn make_configs(width: usize, arm: &str, prepared: bool) -> Result<Configs, Stri
                         .map_err(|error| format!("prepared V2: {error:?}"))?,
                 ))
             } else {
-                base.digest().map_err(|error| format!("V2 config: {error:?}"))?;
+                base.digest()
+                    .map_err(|error| format!("V2 config: {error:?}"))?;
                 Ok(Configs::V2Legacy(base))
             }
         }
@@ -297,7 +300,8 @@ fn make_configs(width: usize, arm: &str, prepared: bool) -> Result<Configs, Stri
                         .map_err(|error| format!("prepared V3: {error:?}"))?,
                 ))
             } else {
-                cfg.digest().map_err(|error| format!("V3 config: {error:?}"))?;
+                cfg.digest()
+                    .map_err(|error| format!("V3 config: {error:?}"))?;
                 Ok(Configs::V3Legacy(cfg))
             }
         }
@@ -314,7 +318,8 @@ fn make_configs(width: usize, arm: &str, prepared: bool) -> Result<Configs, Stri
                         .map_err(|error| format!("prepared SSM: {error:?}"))?,
                 ))
             } else {
-                cfg.digest().map_err(|error| format!("SSM config: {error:?}"))?;
+                cfg.digest()
+                    .map_err(|error| format!("SSM config: {error:?}"))?;
                 Ok(Configs::SsmLegacy(cfg))
             }
         }
@@ -339,7 +344,8 @@ fn make_configs(width: usize, arm: &str, prepared: bool) -> Result<Configs, Stri
                     params,
                 ))
             } else {
-                cfg.digest().map_err(|error| format!("minGRU config: {error:?}"))?;
+                cfg.digest()
+                    .map_err(|error| format!("minGRU config: {error:?}"))?;
                 Ok(Configs::MinGruLegacy(cfg, params))
             }
         }
@@ -638,7 +644,10 @@ mod tests {
                 }
                 frontier.push(latest);
             }
-            assert_eq!(frontier[0], frontier[1], "{arm}: different checkpoint digest");
+            assert_eq!(
+                frontier[0], frontier[1],
+                "{arm}: different checkpoint digest"
+            );
         }
     }
 
