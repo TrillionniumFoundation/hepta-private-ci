@@ -259,6 +259,7 @@ def run(root,output,*,workloads=WORKLOADS,calibration_rounds=3,evaluation_rounds
             "source_groups":sources,"training_wall_ns":training_elapsed['wall_ns'],
             "training_work":training,"reader_training_only_from_train_sources":True})
         cal_runs,evaluations,selected,prediction_records={}, {}, {}, {}
+        source_guarded = {}
         all_arm_calls=0;all_arm_frames=0;all_arm_conv_ns=0;all_arm_preprocess_ns=0
         all_arm_source_bytes=0;all_arm_wall_ns=0;all_arm_runs=0
         warmup_wall=0;warmup_calls=0;warmup_frames=0
@@ -296,6 +297,8 @@ def run(root,output,*,workloads=WORKLOADS,calibration_rounds=3,evaluation_rounds
             cal=folds['calibration'][profile][:n]
             if len(cal)!=n:raise e.InputError('incomplete source-disjoint calibration requests')
             cal_runs[name],_=test_fold('calibration',cal,calibration_rounds,(profile,n,depth,gap))
+            from experiments.shared_stem_cell import video_cpu_source_guard
+            source_guarded[name] = video_cpu_source_guard.choose(cal_runs[name])
             selected[name]=choose({p:[{'first_response_ns':x['first_response_ns'],
                 'latency_p95_ns':x['latency_p95_ns'],'end_to_end_wall_ns':x['whole_run_wall_ns']}
                               for x in runs] for p,runs in cal_runs[name].items()})
@@ -305,9 +308,12 @@ def run(root,output,*,workloads=WORKLOADS,calibration_rounds=3,evaluation_rounds
             'schema':'hepta.video-arrival-aware-batch-choice.v1',
             'protocol_sha256':proto_sha,'calibration_sha256':cal_sha,
             'reader_sha256':before['sha256'],'by_workload':selected,
+            'source_guard_by_workload':source_guarded,
             'source_groups':sources,'holdout_labels_used':False,
             'production_accepted':False})
-        read_selection=e.decode(e.bound_file(output/'selection.json',selection_sha))['by_workload']
+        locked=e.decode(e.bound_file(output/'selection.json',selection_sha))
+        read_selection=locked['by_workload']
+        read_source_guard=locked['source_guard_by_workload']
         for profile,n,depth,gap in workloads:
             name=key((profile,n,depth,gap))
             holdout=folds['holdout'][profile][:n]
@@ -336,7 +342,11 @@ def run(root,output,*,workloads=WORKLOADS,calibration_rounds=3,evaluation_rounds
                 'physical_calls_per_run':[x['physical_forward_calls'] for x in runs]}
                      for pk,runs in evaluations[name].items()}
             s=read_selection[name]['policy_key']
+            guarded=read_source_guard[name]['selected_policy_key']
             summaries[name]={'selected_policy_key':s,'scalars':options['1:0'],'by_policy':options,
+                'source_guard_selected_policy_key':guarded,
+                'source_guard_selected_vs_scalar_p95_ratio':options['1:0']['p95_response_median_ns']/options[guarded]['p95_response_median_ns'],
+                'source_guard_selected_is_faster_p95':options[guarded]['p95_response_median_ns']<options['1:0']['p95_response_median_ns'],
                 'selected_vs_scalar_p95_ratio':options['1:0']['p95_response_median_ns']/options[s]['p95_response_median_ns'],
                 'selected_vs_scalar_full_wall_ratio':options['1:0']['whole_run_wall_median_ns']/options[s]['whole_run_wall_median_ns'],
                 'selected_is_faster_p95':options[s]['p95_response_median_ns']<options['1:0']['p95_response_median_ns']}
