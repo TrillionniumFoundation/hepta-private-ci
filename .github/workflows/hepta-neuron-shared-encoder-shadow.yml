@@ -97,6 +97,7 @@ jobs:
           assert e2_equal['production_admission'] == 'BLOCKED'
           assert e2_equal['evidence_class'] == 'SYNTHETIC_SMOKE'
           assert e2_equal['future_used_to_select_winner'] is False
+          assert e2_equal['encoder_model_forward_observation'] is None
           assert len(e2_equal['runs']) == 2
           assert all(row['candidates']['dynamic_gate']['parameter_count'] == row['candidates']['swiglu']['parameter_count'] for row in e2_equal['runs'])
           assert {'static_gate', 'dynamic_gate'} <= {x['kind'] for x in e2['candidates']}
@@ -104,6 +105,10 @@ jobs:
           assert e3['public']['encoder_forward_rows'] < e3['joint']['encoder_forward_rows']
           assert 'quality_shadow' in e3 and e3['state_adapter'] == 'SYNTHETIC_HASH_NOT_DEPLOYABLE'
           assert e3['public_vs_joint_quality_not_established']
+          assert e3['joint']['model_forward_observation'] is None
+          assert e3['public']['model_forward_observation'] is None
+          assert not e3['joint']['model_forward_attestation_verified']
+          assert not e3['public']['model_forward_attestation_verified']
           assert e5['schema_status'] == 'BLOCKED'
           PY
           sha256sum e1_missing_real_models.json e2_dynamic_heads.json e2_equal_shadow.json e3_input_reuse.json e5_missing_host_receipts.json >> result_hashes.txt
