@@ -22,6 +22,7 @@ ROOT = "hepta-public-study/"
 MAX_MEMBERS = 300
 MAX_MEMBER_BYTES = 8 * 1024 * 1024
 MAX_TOTAL_BYTES = 32 * 1024 * 1024
+MAX_ARCHIVE_BYTES = 32 * 1024 * 1024
 REQUIRED = {
     "model-source.json", "acquisition.json", "manifest.json", "dataset.jsonl",
     "execution/report.json", "execution/predictions.json",
@@ -112,7 +113,11 @@ def audit(zip_path, expected_sha256, expected_model, expected_revision):
     require(type(expected_model) is str and bool(expected_model),
             "model ID missing")
 
-    raw_zip = Path(zip_path).read_bytes()
+    archive_path = Path(zip_path)
+    require(archive_path.is_file()
+            and 0 < archive_path.stat().st_size <= MAX_ARCHIVE_BYTES,
+            "compressed ZIP byte size outside research bound")
+    raw_zip = archive_path.read_bytes()
     require(digest(raw_zip) == expected_sha256, "archive upload hash mismatch")
     with ZipFile(zip_path) as archive:
         infos = archive.infolist()
