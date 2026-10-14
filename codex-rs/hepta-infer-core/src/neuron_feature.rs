@@ -167,7 +167,20 @@ pub fn build_neuron_feature_receipt_v1(
     runtime_tuple: NeuronModelRuntimeTupleV1,
     observation: NeuronFeatureObservationV1,
 ) -> Result<NeuronFeatureReceiptV1, NeuronFeatureContractError> {
-    let request_digest = neuron_feature_request_digest_v1(request)?;
+    build_neuron_feature_receipt_view_v1(
+        &NeuronFeatureRequestViewV1::from(request),
+        runtime_tuple,
+        observation,
+    )
+}
+
+/// Build the exact V1 receipt from a borrow-only feature request.
+pub fn build_neuron_feature_receipt_view_v1(
+    request: &NeuronFeatureRequestViewV1<'_>,
+    runtime_tuple: NeuronModelRuntimeTupleV1,
+    observation: NeuronFeatureObservationV1,
+) -> Result<NeuronFeatureReceiptV1, NeuronFeatureContractError> {
+    let request_digest = neuron_feature_request_view_digest_v1(request)?;
     validate_runtime_tuple(request, &runtime_tuple)?;
     validate_observation(request, &observation)?;
     let runtime_tuple_digest = digest_runtime_tuple(&runtime_tuple)?;
@@ -190,7 +203,7 @@ pub fn build_neuron_feature_receipt_v1(
         authority: AuthorityPosture::DENY_ALL,
     };
     receipt.receipt_digest = digest_receipt(&receipt)?;
-    verify_neuron_feature_receipt_v1(request, &receipt)?;
+    verify_neuron_feature_receipt_view_v1(request, &receipt)?;
     Ok(receipt)
 }
 
@@ -198,10 +211,19 @@ pub fn verify_neuron_feature_receipt_v1(
     request: &NeuronFeatureRequestV1,
     receipt: &NeuronFeatureReceiptV1,
 ) -> Result<(), NeuronFeatureContractError> {
+    verify_neuron_feature_receipt_view_v1(&NeuronFeatureRequestViewV1::from(request), receipt)
+}
+
+/// Independently check a V1 receipt using a borrowed feature request. This
+/// checks identity and semantics but does not authenticate the remote worker.
+pub fn verify_neuron_feature_receipt_view_v1(
+    request: &NeuronFeatureRequestViewV1<'_>,
+    receipt: &NeuronFeatureReceiptV1,
+) -> Result<(), NeuronFeatureContractError> {
     if receipt.authority.grants_any() {
         return Err(NeuronFeatureContractError::AuthorityGranted);
     }
-    if receipt.request_digest != neuron_feature_request_digest_v1(request)? {
+    if receipt.request_digest != neuron_feature_request_view_digest_v1(request)? {
         return Err(NeuronFeatureContractError::RuntimeBindingMismatch);
     }
     validate_runtime_tuple(request, &receipt.runtime_tuple)?;
@@ -258,7 +280,7 @@ fn validate_request_view(
 }
 
 fn validate_runtime_tuple(
-    request: &NeuronFeatureRequestV1,
+    request: &NeuronFeatureRequestViewV1<'_>,
     runtime: &NeuronModelRuntimeTupleV1,
 ) -> Result<(), NeuronFeatureContractError> {
     if runtime.model_id != request.model_id || runtime.weights_digest != request.weights_digest {
@@ -281,7 +303,7 @@ fn validate_runtime_tuple(
 }
 
 fn validate_observation(
-    request: &NeuronFeatureRequestV1,
+    request: &NeuronFeatureRequestViewV1<'_>,
     observation: &NeuronFeatureObservationV1,
 ) -> Result<(), NeuronFeatureContractError> {
     match observation.status {
