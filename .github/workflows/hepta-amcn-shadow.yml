@@ -49,6 +49,14 @@ jobs:
           printf '%s\n' "${{ github.event.pull_request.head.sha }}" > /tmp/hepta-amcn-evidence/source/source-head.txt
           printf '%s\n' "${{ github.event.pull_request.base.sha }}" > /tmp/hepta-amcn-evidence/source/base-head.txt
           cp qualification/amcn-v1/*.py qualification/amcn-v1/README.md /tmp/hepta-amcn-evidence/source/
+          mkdir -p /tmp/hepta-amcn-evidence/source/experiments/shared_stem_cell
+          mkdir -p /tmp/hepta-amcn-evidence/source/scripts/memory_cell
+          cp experiments/shared_stem_cell/execution.py /tmp/hepta-amcn-evidence/source/experiments/shared_stem_cell/
+          cp scripts/memory_cell/native.py scripts/memory_cell/sessions.py scripts/memory_cell/five_native_historical_smoke.py /tmp/hepta-amcn-evidence/source/scripts/memory_cell/
+          mkdir -p /tmp/hepta-amcn-evidence/formatted-research-candidate
+          cp qualification/amcn-v1/*.py /tmp/hepta-amcn-evidence/formatted-research-candidate/
+          /tmp/hepta-amcn-python/bin/ruff format /tmp/hepta-amcn-evidence/formatted-research-candidate/             > /tmp/hepta-amcn-evidence/formatter-report.txt 2>&1
+          /tmp/hepta-amcn-python/bin/ruff format --check qualification/amcn-v1/             > /tmp/hepta-amcn-evidence/formatter-check-original.txt 2>&1 || true
           printf '%s\n' 'production_accepted=false' 'reader_semantic_review=null' \
              'future_window_evidence=false' 'full_longmemeval_v2=false' \
              'independent_evaluator=false' 'pretrained_encoder_loaded=false' \
