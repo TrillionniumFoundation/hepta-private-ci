@@ -18,6 +18,12 @@ use serde::Serialize;
 use thiserror::Error;
 
 #[cfg(unix)]
+use codex_hepta_evidence::metrics_group_commit::MetricPhaseV1;
+#[cfg(unix)]
+use codex_hepta_evidence::metrics_group_commit::MetricsCommittedSampleQueryV1;
+#[cfg(unix)]
+use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
+#[cfg(unix)]
 use crate::CellSplitCnsRuntimeAttestationV1;
 #[cfg(unix)]
 use crate::CellSplitCnsRuntimeCommitV1;
@@ -585,6 +591,69 @@ fn verify_evidence_retention_readback_v1(
     )
 }
 
+/// Re-read the EXACT committed operation from the original Evidence WAL
+/// owner under its own original file locks. Neither a stale locally copied
+/// binding nor the independently retained witness alone may prove that the
+/// original journal STILL contains this operation at the current frontier.
+#[cfg(unix)]
+fn verify_live_original_evidence_sample_v1(
+    original_evidence: &DurablePhaseMetricSinkV1,
+    candidate: &CellSplitEvidenceMetricBindingV1,
+) -> Result<(), CellSplitObserverJoinErrorV1> {
+    let scope_digest = candidate
+        .scope_digest
+        .parse::<codex_hepta_types::Digest32>()
+        .map_err(|_| CellSplitObserverJoinErrorV1::Invalid("noncanonical Evidence scope"))?;
+    let operation_digest = candidate
+        .operation_digest
+        .parse::<codex_hepta_types::Digest32>()
+        .map_err(|_| CellSplitObserverJoinErrorV1::Invalid("noncanonical Evidence operation"))?;
+    let phase = match candidate.phase {
+        3 => MetricPhaseV1::Cas,
+        4 => MetricPhaseV1::Signature,
+        5 => MetricPhaseV1::Cns,
+        _ => {
+            return Err(CellSplitObserverJoinErrorV1::Invalid(
+                "unsupported original operation metric phase",
+            ));
+        }
+    };
+    let query = MetricsCommittedSampleQueryV1 {
+        scope_digest,
+        operation_digest,
+        phase,
+        succeeded: candidate.succeeded,
+    };
+    let observed = original_evidence
+        .read_committed_sample(query)
+        .map_err(|error| CellSplitObserverJoinErrorV1::Owner(format!(
+            "original Evidence writer unavailable: {error:?}"
+        )))?
+        .ok_or(CellSplitObserverJoinErrorV1::Invalid(
+            "no committed original Evidence sample",
+        ))?;
+    let current = observed.frontier;
+    if observed.query != query
+        || observed.matching_rows != candidate.matching_rows
+        || observed.first_group_sequence != candidate.first_group_sequence
+        || observed.last_group_sequence != candidate.last_group_sequence
+        || observed.last_group_head.to_string() != candidate.last_group_head_digest
+        || current.sequence != candidate.terminal_group_sequence
+        || current.head_digest.to_string() != candidate.terminal_head_digest
+        || current.committed_rows != candidate.terminal_committed_rows
+        || current.journal_bytes != candidate.terminal_journal_bytes
+        || current.wal_device != candidate.wal_device
+        || current.wal_inode != candidate.wal_inode
+        || current.marker_device != candidate.marker_device
+        || current.marker_inode != candidate.marker_inode
+    {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "original Evidence WAL differs from externally retained operation",
+        ));
+    }
+    Ok(())
+}
+
 /// Verification-only integration with the EXISTING signed four-owner host
 /// and Observer Join. It never executes, advances, signs or mints Final-use.
 /// No generic fake original-effect port is exposed to production; only the
@@ -607,6 +676,7 @@ pub fn verify_cell_split_evidence_retention_join_v1<
     trusted_supervisor_monotonic_key: &VerifyingKey,
     supervisor_monotonic: &mut H,
     live_owners: &mut CellSplitUnixEffectPortV1,
+    original_evidence: &DurablePhaseMetricSinkV1,
     step_index: usize,
     candidate: &CellSplitEvidenceMetricBindingV1,
     trusted_retention_domain: &str,
@@ -622,6 +692,9 @@ pub fn verify_cell_split_evidence_retention_join_v1<
         evidence_policy,
     )?;
     validate_evidence_metric_binding_v1(transcript, step_index, candidate)?;
+    // Deny before contacting any retained minimum if the ORIGINAL locked
+    // Evidence owner no longer contains the exact committed sample.
+    verify_live_original_evidence_sample_v1(original_evidence, candidate)?;
     if trusted_retention_domain.is_empty()
         || trusted_retention_domain.len() > 256
         || trusted_retention_key.is_weak()
@@ -674,6 +747,10 @@ pub fn verify_cell_split_evidence_retention_join_v1<
         supervisor_monotonic,
         live_owners,
     )?;
+    // The four original Owner and Supervisor challenges can span a slow
+    // cutover/recovery. Recheck the local original WAL under its owner locks
+    // BEFORE accepting the second independently retained minimum.
+    verify_live_original_evidence_sample_v1(original_evidence, candidate)?;
     let final_nonce = rand::random::<[u8; 32]>()
         .iter()
         .map(|byte| format!("{byte:02x}"))
@@ -688,6 +765,10 @@ pub fn verify_cell_split_evidence_retention_join_v1<
         &final_read,
         trusted_retention_key,
     )?;
+    // A late WAL disappearance or substitution after the second retention
+    // response must not turn an older locally bound sample into current
+    // evidence. No effect is re-executed by this final read.
+    verify_live_original_evidence_sample_v1(original_evidence, candidate)?;
     if first.retained_record_digest != final_read.retained_record_digest
         || first.retained_revision != final_read.retained_revision
     {
