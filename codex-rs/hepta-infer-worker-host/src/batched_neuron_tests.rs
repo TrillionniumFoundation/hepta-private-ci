@@ -782,7 +782,7 @@ fn cutover_between_admission_and_poll_denies_every_scope_without_backend_effect(
     let observed = worker.poll_and_execute(101).unwrap();
     assert_eq!(observed.outcomes.len(), 2);
     assert!(observed.outcomes.iter().all(|item| {
-        matches!(item.result, Err(BatchWorkerErrorV1::StaleScope))
+        matches!(&item.result, Err(BatchWorkerErrorV1::StaleScope))
     }));
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
     assert_eq!(worker.pending(), 0);
@@ -892,7 +892,7 @@ fn native_backend_cutover_after_real_batch_denies_all_old_route_results() {
     assert_eq!(physical_batches.load(std::sync::atomic::Ordering::SeqCst), 1);
     assert_eq!(outcome.outcomes.len(), 2);
     assert!(outcome.outcomes.iter().all(|item| {
-        matches!(item.result, Err(BatchWorkerErrorV1::StaleAfterEffect))
+        matches!(&item.result, Err(BatchWorkerErrorV1::StaleAfterEffect))
     }));
     assert_eq!(worker.pending(), 0);
     assert!(worker.poll_and_execute(102).unwrap().outcomes.is_empty());
@@ -937,7 +937,7 @@ fn scalar_backend_cutover_after_model_call_never_publishes_old_route_receipt() {
     let outcome = worker.poll_and_execute(101).unwrap();
     assert_eq!(outcome.outcomes.len(), 1);
     assert!(matches!(
-        outcome.outcomes[0].result,
+        &outcome.outcomes[0].result,
         Err(BatchWorkerErrorV1::StaleAfterEffect)
     ));
     assert_eq!(worker.pending(), 0);
