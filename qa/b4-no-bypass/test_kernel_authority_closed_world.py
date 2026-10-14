@@ -297,6 +297,68 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "deprecated direct CNS publication must always deny",
         )
 
+    def test_legacy_cell_split_route_public_surface_denies_without_control(self) -> None:
+        # In a product build the legacy CnsOrganHost is not an authenticated
+        # Control/CNS route owner. All legacy public mutation calls deny,
+        # including test builds; positive host mechanics are crate-test only.
+        path = "codex-rs/hepta-control-plane/src/cell_split_route.rs"
+        code = self.lexical_code(path)
+        self.assertIn("ControlCutoverUnbound", code)
+        self.assertEqual(
+            self.public_methods(path, "CellSplitRouteControllerV1"),
+            {
+                "new", "generation", "phase", "with_metrics_sink",
+                "production_metrics_ready", "flush_production_metrics",
+                "cns_latency_observations", "parent_route", "host",
+                "route_fence_receipt", "child_route", "start_all",
+                "dispatch_parent_once", "activate_children",
+                "activate_children_with_migration", "dispatch_child_once",
+            },
+            "new unreviewed CellSplit public entrypoint",
+        )
+        for method in ("activate_children", "activate_children_with_migration"):
+            with self.subTest(entrypoint=method):
+                decl = re.search(rf"\bpub\s+fn\s+{method}\b", code)
+                self.assertIsNotNone(decl)
+                assert decl is not None
+                opening = code.find("{", decl.end())
+                ending = CALLER_PROOF._matching_delimiter(code, opening, "{", "}")
+                self.assertIsNotNone(ending)
+                assert ending is not None
+                body = code[opening + 1 : ending]
+                self.assertRegex(
+                    body,
+                    r"^\s*Err\(CellSplitRouteErrorV1::ControlCutoverUnbound\)\s*",
+                    f"{method}: direct physical CNS must be denied unconditionally",
+                )
+        raw = (ROOT / path).read_text(encoding="utf-8")
+        for name in ("activate_children_for_qualification",
+                     "qualify_children_with_migration"):
+            self.assertRegex(
+                raw, rf"#\[cfg\(test\)\](?:\s*#\[[^\]]+\])*\s*pub\(crate\)\s+fn\s+{name}",
+                "reference-only CNS activation must not be a production export",
+            )
+
+    def test_generic_topology_rejects_typed_split_before_final_use(self) -> None:
+        # Even a valid governance envelope and signed nonce cannot delegate a
+        # Split through generic HeptaRuntime topology execution.
+        src = self.lexical_code("codex-rs/hepta-runtime/src/topology_execution.rs")
+        start = src.index("fn validate_runtime_topology_transition_for_destination_v1")
+        end = src.index("pub fn runtime_topology_final_use_binding_v1", start)
+        validated = src[start:end]
+        self.assertIn("for change in &candidate.changes", validated)
+        self.assertIn("reject_ungoverned_split_operation_v1(change.operation)?", validated)
+        self.assertIn("TopologyOperationV2::Split", validated)
+        guard = validated.index("reject_ungoverned_split_operation_v1(change.operation)?")
+        final_use = validated.index("topology_execution_request_digest_v1")
+        self.assertLess(guard, final_use, "Split gate must precede Final-use binding")
+        self.assertRegex(
+            validated,
+            r"if\s+operation\s*==\s*TopologyOperationV2::Split\s*\{\s*"
+            r"return\s+Err\(RuntimeTopologyExecutionError::ControlCutoverUnbound\)",
+            "typed Split denial must not become a success-shaped return",
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
