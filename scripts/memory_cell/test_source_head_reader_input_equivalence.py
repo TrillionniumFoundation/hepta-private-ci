@@ -94,6 +94,17 @@ def check(args):
 
 
 class ReaderInputIdentityTests(unittest.TestCase):
+    def test_duplicate_or_nonfinite_original_event_json_is_rejected(self):
+        for raw in (
+            '{"id":"controlled_00000000-e0","id":"controlled_00000000-e0"}',
+            '{"id":"controlled_00000000-e0","value":NaN}',
+        ):
+            with self.subTest(raw=raw):
+                args = list(deepcopy(fixture()))
+                args[0]["cases"][0]["docs"][0]["content"] = raw
+                with self.assertRaisesRegex(ValueError, "invalid immutable source event"):
+                    check(args)
+
     def test_all_eight_matched_selectors_cannot_show_learning_lift(self):
         result = check(fixture())
         self.assertEqual(result["matched_choice_tasks"], 8)

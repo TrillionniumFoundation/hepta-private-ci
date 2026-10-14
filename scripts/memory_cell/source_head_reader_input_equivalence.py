@@ -90,8 +90,23 @@ def compare(public, weights, predictions, *, public_sha, weights_sha, prediction
                 or not event["observed_at"]
             ):
                 raise ValueError("unknown, duplicate or changed original source bytes")
+            def unique_event_fields(pairs):
+                value = {}
+                for key, field in pairs:
+                    if key in value:
+                        raise ValueError("duplicate original source event JSON field")
+                    value[key] = field
+                return value
+
+            def reject_nonfinite(value):
+                raise ValueError("nonfinite original source event JSON: " + value)
+
             try:
-                original = json.loads(event["content"])
+                original = json.loads(
+                    event["content"],
+                    object_pairs_hook=unique_event_fields,
+                    parse_constant=reject_nonfinite,
+                )
             except (TypeError, ValueError) as error:
                 raise ValueError("invalid immutable source event content") from error
             if not isinstance(original, dict) or original.get("id") != event["identity"]:
