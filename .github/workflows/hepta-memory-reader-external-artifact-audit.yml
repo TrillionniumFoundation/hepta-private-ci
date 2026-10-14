@@ -9,6 +9,8 @@ on:
       - "scripts/memory_cell/test_reader_external_artifact_audit.py"
       - "scripts/memory_cell/reader_original_case_binding.py"
       - "scripts/memory_cell/test_reader_original_case_binding.py"
+      - "scripts/memory_cell/reader_host_disposition.py"
+      - "scripts/memory_cell/test_reader_host_disposition.py"
       - ".github/workflows/hepta-memory-reader-external-artifact-audit.yml"
   pull_request:
     paths:
@@ -16,6 +18,8 @@ on:
       - "scripts/memory_cell/test_reader_external_artifact_audit.py"
       - "scripts/memory_cell/reader_original_case_binding.py"
       - "scripts/memory_cell/test_reader_original_case_binding.py"
+      - "scripts/memory_cell/reader_host_disposition.py"
+      - "scripts/memory_cell/test_reader_host_disposition.py"
       - ".github/workflows/hepta-memory-reader-external-artifact-audit.yml"
 permissions:
   contents: read
@@ -47,11 +51,15 @@ jobs:
             scripts/memory_cell/reader_external_artifact_audit.py \
             scripts/memory_cell/test_reader_external_artifact_audit.py \
             scripts/memory_cell/reader_original_case_binding.py \
-            scripts/memory_cell/test_reader_original_case_binding.py
+            scripts/memory_cell/test_reader_original_case_binding.py \
+            scripts/memory_cell/reader_host_disposition.py \
+            scripts/memory_cell/test_reader_host_disposition.py
           python3 -m unittest discover -s scripts/memory_cell \
             -p test_reader_external_artifact_audit.py -v
           python3 -m unittest discover -s scripts/memory_cell \
             -p test_reader_original_case_binding.py -v
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p test_reader_host_disposition.py -v
       - name: Required scoped Ruff format; no waiver
         run: |
           set -euo pipefail
@@ -60,7 +68,9 @@ jobs:
             scripts/memory_cell/reader_external_artifact_audit.py \
             scripts/memory_cell/test_reader_external_artifact_audit.py \
             scripts/memory_cell/reader_original_case_binding.py \
-            scripts/memory_cell/test_reader_original_case_binding.py
+            scripts/memory_cell/test_reader_original_case_binding.py \
+            scripts/memory_cell/reader_host_disposition.py \
+            scripts/memory_cell/test_reader_host_disposition.py
       - name: Preserve exact format diagnostics on source failure
         if: failure()
         run: |
@@ -73,6 +83,8 @@ jobs:
               scripts/memory_cell/test_reader_external_artifact_audit.py \
               scripts/memory_cell/reader_original_case_binding.py \
               scripts/memory_cell/test_reader_original_case_binding.py \
+              scripts/memory_cell/reader_host_disposition.py \
+              scripts/memory_cell/test_reader_host_disposition.py \
               > /tmp/reader-archive-format/ruff.diff || true
             cat /tmp/reader-archive-format/ruff.diff
           fi
