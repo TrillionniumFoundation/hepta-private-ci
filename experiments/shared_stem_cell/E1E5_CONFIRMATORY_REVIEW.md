@@ -46,4 +46,25 @@ Include per-arm reported lifecycle time, RSS, p99 and **unadjusted** OOD confide
 
 Until there are independently authenticated model snapshots and physical forwards, held-out Reader semantic reviews, signed external outcomes, prelabel journal authority, external future-window NDU, target-host hardware counters, actual Rust microbatches/WAL/fault recovery, current revocation and exact-head **blocking-ci**, no model selection or production promotion is permitted.
 
-The 47 local synthetic/model-free tests reported during authoring prove only the described mechanism. They are not the exact-head CI status, not external dataset/model outcomes and do not establish any advantage over Laya 421M or independent frozen controls.
+The 27 new confirmatory tests were validated locally on Python blobs matching GitHub; 20 additional earlier prototype tests are separate and not exact-parent CI. The separate real ZIP audit has 16 synthetic adversarial tests. Local checks are never a substitute for exact-HEAD CI or original source/model attestations.
+
+## Public E1/E2 physical-source reproduction
+
+Actual external research artifacts were downloaded from completed source PR #1775 runs [38541658096](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38541658096) and [38541658121](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38541658121). The new [public numeric ZIP audit](e1e2_public_receipt_audit.py) **reads only archived JSON**, never executes upstream code or imports model weights, and recomputes 128-case joint-input/source identity, four binary probability metrics, checkpoint payload SHA-256 and a separate-process Float64 Head replay.
+
+Pinned artifact IDs: `11886761368` and `11886807698`. Exact ZIP hashes: `e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d` and `7e244bb0994d7e086979e9f9743bb61474a7564fbec3476a20a4017700d4b469`. Download them only through an authenticated, read-only Actions artifacts API, then run:
+
+```bash
+python3 experiments/shared_stem_cell/e1e2_public_receipt_audit.py \
+  --paired-zip /approved/paired.zip \
+  --paired-sha256 e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d \
+  --sealed-zip /approved/sealed.zip \
+  --sealed-sha256 7e244bb0994d7e086979e9f9743bb61474a7564fbec3476a20a4017700d4b469 \
+  --output /sealed/real-public-review.json
+```
+
+**Important:** The command above is a usage example; use the full 64-character hashes printed earlier in this document (and pinned in the workflow). The immutable machine-readable [completed local review](E1E2_PUBLIC_ACTUAL_RECEIPT_20261014.json) is authoritative for the precise values.
+
+Observed new-file `val2` AG News accuracy/Brier (128 rows, binary world/sports): frozen Gemma .3828125/.25001948; trained Gemma .9375/.24881424; trained Gemma with previously explored 1024 logit multiplier .9375/.04932607; frozen Laya421 .96875/.02012669. Raw predictions agree exactly across paired and sealed runs, and canonical checkpoint digests match; 2,018 trainable Head parameters and 40 training steps are recorded. Discordance between Laya and trained Gemma is five cases in Laya's favor versus one in Gemma's favor (two-sided *unadjusted* exact McNemar p=.21875). This sample does not establish a statistically certain accuracy advantage for either model.
+
+No chronological future1/future2/future3, no independent model-origin signer, no physical-forward count attestation, no public-data pretraining contamination exclusion, no matched training+serving+energy cost, no adequate Reader/independent NDU, and no production authorization. The prior temperature exploration and public same-family source selection are explicit; do not present this as a new temporal future holdout or a Stem winner.
