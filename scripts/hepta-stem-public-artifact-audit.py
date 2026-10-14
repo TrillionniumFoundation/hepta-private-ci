@@ -76,10 +76,17 @@ def audit(zip_path, expected_sha256, expected_model, expected_revision):
         for info in infos:
             name = info.filename
             components = PurePosixPath(name).parts
+            # The official GitHub Actions ZIP also contains legitimate
+            # top-level replay/consolidation evidence and workflow logs.
+            # Validate ALL entries for path safety, but require only the
+            # canonical study members to be under ROOT. Avoid rejecting a
+            # real archive just because it contains unrelated safe files.
             require(
                 name not in seen and not name.startswith("/")
                 and "\\" not in name and ".." not in components
-                and bool(components) and components[0] == ROOT.rstrip("/"),
+                and bool(components) and
+                all(component not in ("", ".") for component in components)
+                and ":" not in components[0],
                 "unsafe or duplicate archive member",
             )
             seen.add(name)
