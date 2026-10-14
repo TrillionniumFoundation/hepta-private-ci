@@ -272,8 +272,8 @@ jobs:
           PY="$RUNNER_TEMP/fbsde-fused-env/bin/python"
           git rev-parse HEAD > "$RUNNER_TEMP/fbsde-fused-source.txt"
           "$PY" -m pip freeze >> "$RUNNER_TEMP/fbsde-fused-source.txt"
-          "$PY" -m ruff check --select F,E9 qualification/neuron-stem/fbsde_head_fusion_probe.py qualification/neuron-stem/fbsde_head_fusion_tensor_checks.py
-          PYTHONPATH=qualification/neuron-stem "$PY" -m unittest -v fbsde_head_fusion_tensor_checks 2>&1 | tee "$RUNNER_TEMP/fbsde-fused-tests.log"
+          "$PY" -m ruff check --select F,E9 qualification/neuron-stem/fbsde_head_fusion_probe.py qualification/neuron-stem/fbsde_head_fusion_tensor_checks.py qualification/neuron-stem/fbsde_failed_view_fusion.py qualification/neuron-stem/fbsde_failed_view_tensor_checks.py
+          PYTHONPATH=qualification/neuron-stem "$PY" -m unittest -v fbsde_head_fusion_tensor_checks fbsde_failed_view_tensor_checks 2>&1 | tee "$RUNNER_TEMP/fbsde-fused-tests.log"
           RAW="$RUNNER_TEMP/original-failed-fbsde.zip"
           gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11875899646/zip" > "$RAW"
           printf '%s  %s\n' cd9997b69e88b88f0817985fca00cb5b359936bcd5589fd49cc2c5ac78cb200a "$RAW" | sha256sum -c -
@@ -281,6 +281,13 @@ jobs:
             --archive "$RAW" --threads 1 --output "$RUNNER_TEMP/fbsde-fused-1" 2>&1 | tee "$RUNNER_TEMP/fbsde-fused-1.log"
           PYTHONPATH=qualification/neuron-stem "$PY" qualification/neuron-stem/fbsde_head_fusion_probe.py \
             --archive "$RAW" --threads 2 --output "$RUNNER_TEMP/fbsde-fused-2" 2>&1 | tee "$RUNNER_TEMP/fbsde-fused-2.log"
+          # Distinct follow-up: reconstruct the ORIGINAL failed view from the
+          # complete source journal, then measure the same actual input with
+          # both frozen kernels. Never rewrite the failed historical attempt.
+          PYTHONPATH=qualification/neuron-stem "$PY" qualification/neuron-stem/fbsde_failed_view_fusion.py \
+            --archive "$RAW" --threads 1 --output "$RUNNER_TEMP/fbsde-original-view-1" 2>&1 | tee "$RUNNER_TEMP/fbsde-original-view-1.log"
+          PYTHONPATH=qualification/neuron-stem "$PY" qualification/neuron-stem/fbsde_failed_view_fusion.py \
+            --archive "$RAW" --threads 2 --output "$RUNNER_TEMP/fbsde-original-view-2" 2>&1 | tee "$RUNNER_TEMP/fbsde-original-view-2.log"
           git diff --exit-code
       - name: Preserve numeric results and failures, never Head weights
         if: always()
@@ -294,4 +301,8 @@ jobs:
             ${{ runner.temp }}/fbsde-fused-2.log
             ${{ runner.temp }}/fbsde-fused-1/report.json
             ${{ runner.temp }}/fbsde-fused-2/report.json
+            ${{ runner.temp }}/fbsde-original-view-1.log
+            ${{ runner.temp }}/fbsde-original-view-2.log
+            ${{ runner.temp }}/fbsde-original-view-1/report.json
+            ${{ runner.temp }}/fbsde-original-view-2/report.json
           if-no-files-found: warn
