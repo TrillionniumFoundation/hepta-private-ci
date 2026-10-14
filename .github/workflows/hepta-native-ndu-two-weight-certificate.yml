@@ -40,6 +40,7 @@ jobs:
           python -m compileall -q .
           python -m unittest -v test_certificate 2>&1 | tee "$OUT/TESTS.log"
           python certificate.py > "$OUT/CERTIFICATE.json"
+          test "$(sha256sum "$OUT/CERTIFICATE.json" | awk '{print $1}')" = "51cd181afc813e43a80a160d3825a4652f377cefb93dfc5644efeff262adb271"
           python numerical_checks.py > "$OUT/NUMERICAL_CHECK.json"
           python quadrature_diagnostics.py > "$OUT/QUADRATURE_NUMERICAL.json"
           cp QUADRATURE_DIAGNOSTICS.csv "$OUT/QUADRATURE_DIAGNOSTICS.csv"
