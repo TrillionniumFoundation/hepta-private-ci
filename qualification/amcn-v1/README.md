@@ -130,6 +130,36 @@ AgentRunbook controls with the identical frozen Reader, question, source cut,
 effect permissions and resources. Preserve original evidence source IDs,
 citations, cost and omitted-source receipts.
 
+## Fixed temporal graph -> hard 16-source frontier (research only)
+
+The source-only graph budget protocol is now executable in
+amcn_graph_frontier.py and amcn_historical_graph_replay.py. It builds its
+immutable BM25 seed inventory without opening publisher reference IDs,
+allows only explicitly admitted reciprocal same-root temporal-neighbor edges,
+rejects a stale/revoked/cross-root snapshot, and exhausts its bounded
+expansion *before* choosing at most sixteen final source IDs. It never
+publishes a topology update, new fact, raw ContextCompiler payload or
+permission grant.
+
+The separately sealed historical, previously exposed public LoCoMo corpus
+(sha256 79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4)
+gives the source-only, weak publisher-reference diagnostic:
+lexical Top-16 any/all support 8/10 and 7/10; lexical Top-64 9/10
+and 8/10; raw fixed two-hop expansion 10/10 and 8/10; graph after the
+*actual* hard final Top-16 8/10 and 6/10. Candidate source text was
+106,880 bytes expanded, 26,654 bytes selected. The added module's five
+hermetic mechanism tests passed locally on 2026-10-14 and the source-only
+study reproduced these original observations. This is NOT HNMF Rust runtime
+performance, answer quality, independent semantic entailment, or a future
+calendar-window experiment. The original graph gain fails its final-output
+budget gate; do not promote it or optimize the coefficient against this
+already-exposed development cohort.
+
+Run the read-only replay with the originally pinned public LoCoMo file:
+
+    PYTHONPATH=qualification/amcn-v1 python qualification/amcn-v1/amcn_historical_graph_replay.py \
+      /path/to/exact/locomo.json /path/to/new/immutable/replay.json
+
 ## No-go and required production evidence
 
 Still missing: sufficient-evidence Reader certification, strong cached hybrid

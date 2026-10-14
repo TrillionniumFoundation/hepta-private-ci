@@ -1,9 +1,9 @@
 """Finish SELECT same-source/different-question measurement using saved Readers.
 
-No training, new donor search or outcome-conditioned replacement. The supplied
-training artifact MUST be the completed exact 644799a3 run with an externally
-provided SHA256. If unavailable, stop before model loading. Old mismatched
-answers are reused, not counted as new calls. This remains exposed development.
+Default: require the completed exact original training source. An explicitly
+pinned recovery source may instead provide a separately validated recovered
+artifact. Never relabel the cancelled original, refit, search new donors or
+regenerate old mismatched answers. All results remain exposed development.
 """
 from __future__ import annotations
 
@@ -58,7 +58,17 @@ def validate_training(root):
     return study, report, cases, joined
 
 
-def run(original_archive, training_archive, training_sha256, select_archive, work, output):
+def load_training_origin(root, recovery_source=None):
+    if recovery_source is None:
+        return validate_training(root)
+    from select_recovery_origin import validate_recovery_training
+    return validate_recovery_training(root, recovery_source)
+
+
+def run(original_archive, training_archive, training_sha256, select_archive, work, output, *, recovery_source=None):
+    if recovery_source is not None:
+        from select_recovery_origin import validate_source
+        validate_source(recovery_source)
     import torch
     from transformers import AutoTokenizer
     import five_reader_response_learning as learning
@@ -67,15 +77,18 @@ def run(original_archive, training_archive, training_sha256, select_archive, wor
     from five_causal_native import SCHEMA, reader_bindings, public_text, generate_exact, count_forwards
     from five_reader_adapter import compose, attach, verify_resident
     from experiments.shared_stem_cell.execution import LocalTextGenerator, measured
+    from select_recovery_origin import execution_plan, origin_receipt
 
     work, output = Path(work), Path(output)
     c.require(c.sha(training_sha256), "external training artifact SHA required")
     output.mkdir(parents=True, exist_ok=False)
-    config = PLAN | {"training_archive_sha256": training_sha256, "original_archive_sha256": ARCHIVE_SHA256}
+    config = execution_plan(PLAN, training_sha256, ARCHIVE_SHA256, recovery_source)
     c.write_new(output / "plan.json", config)
     with measured() as acquisition:
         root, training_verification = saved.extract_verified(training_archive, work / "completed-training", training_sha256)
-        study, prior, prior_cases, previous = validate_training(root)
+        study, prior, prior_cases, previous = load_training_origin(root, recovery_source)
+        if recovery_source is not None:
+            c.write_new(output / "upstream-recovery-origin.json", origin_receipt(root))
         select_root, select_verification = saved.extract_verified(select_archive, work / "select-result", SELECT_SHA)
         c.require((select_root / "source/tested-commit.txt").read_text().strip() == SELECT_SOURCE, "wrong SELECT source")
         selected = select_root / "study"
@@ -131,7 +144,7 @@ def run(original_archive, training_archive, training_sha256, select_archive, wor
             generated, arm_raw = {}, []
             for case in plan["public_requests"]:
                 key = case["request_id"]
-                row = {"arm": arm, "request_id": key, "trial_id": c.digest([PLAN["schema"], arm, key]),
+                row = {"arm": arm, "request_id": key, "trial_id": c.digest([config["schema"], arm, key]),
                        "status": "blocked_model" if arm_error else "not_executed", "answer": None,
                        "public_request_sha256": c.digest(case["request"]), "model_attempted": False}
                 if arm_error is None:
@@ -197,13 +210,16 @@ def run(original_archive, training_archive, training_sha256, select_archive, wor
     c.require(c.file_sha(output / "new-public-inputs.json") == input_seal and c.file_sha(output / "comparison-plan.json") == comparison_seal, "frozen inputs changed")
     c.require(len(all_raw) == len(protocol.ARMS) * len(plan["public_requests"]), "new call census changed")
     c.write_new(output / "new-raw-answers.json", all_raw)
-    report = {"schema": PLAN["schema"] + ".result", "plan_sha256": c.digest(config),
+    report = {"schema": config["schema"] + ".result", "plan_sha256": c.digest(config),
         "new_raw_sha256": c.file_sha(output / "new-raw-answers.json"), "arms": summaries, "errors": errors,
         "planned_new_generation_calls": len(all_raw), "successful_new_generation_calls": sum(x["status"] == "succeeded" for x in all_raw),
         "new_generation_forward_lower_bound": sum(x.get("observed_decoder_forwards", 0) for x in all_raw),
         "new_optimizer_updates": 0, "new_independent_tasks": 0, "old_mismatched_outputs_regenerated": False,
         "independent_semantic_reviews": 0, "reader_adequacy_established": False, "production_accepted": False,
         "compute_matched": False, "five_experiments_completed": False}
+    if recovery_source is not None:
+        report["upstream_recovery_origin_sha256"] = c.file_sha(output / "upstream-recovery-origin.json")
+        report["original_training_status"] = "cancelled"
     c.write_new(output / "report.json", report)
     print("SELECT_QUESTION_RESULT", c.canonical(report).decode(), flush=True)
     c.require(not errors, "saved SELECT question audit retains execution failures")
@@ -215,9 +231,11 @@ if __name__ == "__main__":
     for key in ("original-archive", "training-archive", "select-archive", "work", "output"):
         parser.add_argument("--" + key, type=Path, required=True)
     parser.add_argument("--training-sha256", required=True)
+    parser.add_argument("--recovery-source", default=None)
     args = parser.parse_args()
     try:
-        run(args.original_archive, args.training_archive, args.training_sha256, args.select_archive, args.work, args.output)
+        run(args.original_archive, args.training_archive, args.training_sha256, args.select_archive, args.work, args.output,
+            recovery_source=args.recovery_source)
     except Exception as error:
         if args.output.is_dir() and not (args.output / "failure.json").exists():
             c.write_new(args.output / "failure.json", {"error": str(error)[:2048], "completed": False, "production_accepted": False})

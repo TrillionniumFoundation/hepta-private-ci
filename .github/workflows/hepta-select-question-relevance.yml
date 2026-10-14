@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   saved-candidates-no-new-fitting:
-    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci' && !contains(github.event.head_commit.message, '[recovered-select-only]')
     runs-on: ubuntu-latest
     timeout-minutes: 35
     env:

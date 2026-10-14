@@ -58,6 +58,24 @@ jobs:
           "$P" qualification/amcn-v1/amcn_historical_trial.py prepare \
             /tmp/hepta-amcn-original.zip /tmp/hepta-amcn-private-stage \
             > /tmp/hepta-amcn-real-results/preparation.stdout.json
+      - name: Independently record label-blind fixed-graph hard Top-16 resource study
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-amcn-real-venv/bin/python
+          test "$(sha256sum /tmp/hepta-amcn-private-stage/staged/original/memory-inputs/locomo.json | cut -d' ' -f1)" = "79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
+          "$P" qualification/amcn-v1/amcn_historical_graph_replay.py \
+            /tmp/hepta-amcn-private-stage/staged/original/memory-inputs/locomo.json \
+            /tmp/hepta-amcn-real-results/source-first-final-frontier.json
+          "$P" - <<'PY'
+          import json
+          from pathlib import Path
+          r=json.loads(Path("/tmp/hepta-amcn-real-results/source-first-final-frontier.json").read_text())
+          assert r["source_sha256"]=="79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4"
+          assert r["production_accepted"] is False
+          assert r["no_natural_reader_outputs"] is True
+          assert r["independent_future_windows"] == 0
+          assert r["original_public_histories"] == 10
+          PY
       - name: Move scorer-only labels outside model-material input tree
         run: |
           set -euo pipefail
@@ -111,6 +129,8 @@ jobs:
           cp qualification/amcn-v1/amcn_historical_trial.py \
              qualification/amcn-v1/amcn_native.py \
              qualification/amcn-v1/amcn_learning.py \
+             qualification/amcn-v1/amcn_graph_frontier.py \
+             qualification/amcn-v1/amcn_historical_graph_replay.py \
              .github/workflows/hepta-amcn-historical-native.yml \
              /tmp/hepta-amcn-real-results/source/
           (cd /tmp/hepta-amcn-real-results && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)

@@ -1,0 +1,165 @@
+name: Hepta explicit recovered SELECT question followthrough
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/select_recovery_origin.py"
+      - "scripts/memory_cell/test_select_recovery_origin.py"
+      - ".github/workflows/hepta-select-recovered-question.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: select-recovered-question-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  contracts-and-dependency:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      ready: ${{ steps.dependency.outputs.ready }}
+      artifact_id: ${{ steps.dependency.outputs.artifact_id }}
+      artifact_sha256: ${{ steps.dependency.outputs.artifact_sha256 }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Require explicit origin and exact-source material contracts
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/recovered-select-contracts/source
+          for pattern in test_select_recovery_origin.py test_relevance_recovery.py test_select_question_relevance.py test_select_question_relevance_supplement.py test_select_content_inventory.py test_answer_evidence_review.py 'test_source_time_evidence*.py'; do
+            name=$(printf '%s' "$pattern" | tr '*' '_')
+            python3 -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/recovered-select-contracts/$name.log"
+          done
+          python3 -m py_compile scripts/memory_cell/select_recovery_origin.py scripts/memory_cell/select_question_relevance_trial.py scripts/memory_cell/test_select_recovery_origin.py
+      - name: Resolve exact recovery without polling or retraining
+        id: dependency
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38518485794 > /tmp/recovered-select-contracts/recovery-run.json
+          gh api 'repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38518485794/artifacts?per_page=100' > /tmp/recovered-select-contracts/recovery-artifacts.json
+          code=0
+          python3 scripts/memory_cell/select_recovery_origin.py --run-json /tmp/recovered-select-contracts/recovery-run.json --artifacts-json /tmp/recovered-select-contracts/recovery-artifacts.json --output /tmp/recovered-select-contracts/dependency.json || code=$?
+          if test "$code" -ne 0 && test "$code" -ne 3; then exit "$code"; fi
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          data=json.loads(Path('/tmp/recovered-select-contracts/dependency.json').read_bytes())
+          with open(os.environ['GITHUB_OUTPUT'],'a') as f:
+              f.write('ready='+str(data['ready']).lower()+'\n')
+              if data['ready']:
+                  f.write('artifact_id='+str(data['artifact_id'])+'\n')
+                  f.write('artifact_sha256='+data['artifact_sha256']+'\n')
+          if not data['ready']:
+              print('DEFERRED: contracts are not a completed model experiment; no pretrained model is loaded.')
+          PY
+      - name: Preserve exact contracts and dependency state
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/recovered-select-contracts/source
+          git rev-parse HEAD > /tmp/recovered-select-contracts/source/tested-commit.txt
+          cp scripts/memory_cell/select_recovery_origin.py scripts/memory_cell/test_select_recovery_origin.py scripts/memory_cell/select_question_relevance_trial.py .github/workflows/hepta-select-recovered-question.yml /tmp/recovered-select-contracts/source/
+          (cd /tmp/recovered-select-contracts && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-select-recovery-origin-contracts-not-model-results
+          path: /tmp/recovered-select-contracts
+          if-no-files-found: error
+  official-regression-and-conditional-followthrough:
+    needs: contracts-and-dependency
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install unchanged official worker for full inherited regression
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/select-recovered/source/memory_cell
+          python3 -m venv /tmp/select-recovered-env
+          /tmp/select-recovered-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/select-recovered/install-torch.log 2>&1
+          /tmp/select-recovered-env/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/select-recovered/install-worker.log 2>&1
+          /tmp/select-recovered-env/bin/pip check
+          /tmp/select-recovered-env/bin/pip freeze > /tmp/select-recovered/environment.txt
+      - name: Require original official-model and new origin regressions
+        run: |
+          set -euo pipefail
+          failed=0
+          for pattern in test_full_cell_matrix.py test_five_causal_experiments.py test_five_causal_native.py 'test_five_group*.py' test_five_reader_response.py 'test_five_reader_adapter*.py' test_five_encoder_snapshot.py test_five_reader_evidence_pairs.py 'test_source_time_evidence*.py' test_reader_fit_audit.py 'test_assistant_projection*.py' test_reader_content_swap.py test_select_content_inventory.py test_answer_evidence_review.py 'test_question*relevance*.py' 'test_select_question_relevance*.py' test_relevance_recovery.py test_select_recovery_origin.py; do
+            name=$(printf '%s' "$pattern" | tr '*' '_')
+            if /tmp/select-recovered-env/bin/python -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/select-recovered/$name.log"; then
+              printf '%s\tpassed\n' "$pattern" >> /tmp/select-recovered/suites.tsv
+            else
+              failed=1
+              printf '%s\tfailed\n' "$pattern" >> /tmp/select-recovered/suites.tsv
+            fi
+          done
+          test "$failed" -eq 0
+      - name: Retrieve only the verified successful recovery and fixed original inputs
+        if: needs.contracts-and-dependency.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RECOVERY_ARTIFACT: ${{ needs.contracts-and-dependency.outputs.artifact_id }}
+          RECOVERY_SHA: ${{ needs.contracts-and-dependency.outputs.artifact_sha256 }}
+        run: |
+          set -euo pipefail
+          gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/${RECOVERY_ARTIFACT}/zip" > /tmp/select-recovered-training.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/select-recovered-original.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11863981474/zip > /tmp/select-recovered-select.zip
+          printf '%s  %s\n' "$RECOVERY_SHA" /tmp/select-recovered-training.zip | sha256sum -c -
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/select-recovered-original.zip | sha256sum -c -
+          printf '%s  %s\n' aeb4113b6d2baace0a042f960876861c78b5449b6d9dac404dee2e5c041e46fa /tmp/select-recovered-select.zip | sha256sum -c -
+      - name: Invoke canonical read-only matched-question runner with explicit recovery origin
+        if: needs.contracts-and-dependency.outputs.ready == 'true'
+        env:
+          RECOVERY_SHA: ${{ needs.contracts-and-dependency.outputs.artifact_sha256 }}
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/select-recovered/process-resources.txt /tmp/select-recovered-env/bin/python scripts/memory_cell/select_question_relevance_trial.py --original-archive /tmp/select-recovered-original.zip --training-archive /tmp/select-recovered-training.zip --training-sha256 "$RECOVERY_SHA" --select-archive /tmp/select-recovered-select.zip --work /tmp/select-recovered-materials --output /tmp/select-recovered/study --recovery-source 61e909b2b413661a412aba5714afdbe36c4435b6 2>&1 | tee /tmp/select-recovered/execution.log
+      - name: Record whether actual model execution occurred and retain all costs
+        if: always()
+        env:
+          DEPENDENCY_READY: ${{ needs.contracts-and-dependency.outputs.ready }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/select-recovered/source/memory_cell
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          p=Path('/tmp/select-recovered/study/report.json')
+          report=json.loads(p.read_bytes()) if p.is_file() else None
+          outcome={'dependency_ready':os.environ.get('DEPENDENCY_READY')=='true',
+                   'model_report_exists':report is not None,
+                   'model_execution_completed':report is not None and report.get('errors')==[],
+                   'reader_adequacy_established':False,'production_accepted':False}
+          Path('/tmp/select-recovered/execution-disposition.json').write_text(json.dumps(outcome,sort_keys=True))
+          print('EXPLICIT_EXECUTION_DISPOSITION',json.dumps(outcome,sort_keys=True))
+          PY
+          git rev-parse HEAD > /tmp/select-recovered/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/select-recovered/source/tested-tree.txt
+          cp scripts/memory_cell/*.py scripts/memory_cell/requirements.txt /tmp/select-recovered/source/memory_cell/
+          cp experiments/shared_stem_cell/execution.py .github/workflows/hepta-select-recovered-question.yml /tmp/select-recovered/source/
+          (cd /tmp/select-recovered && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-select-recovered-followthrough-development-check-disposition
+          path: /tmp/select-recovered
+          if-no-files-found: error
