@@ -26,6 +26,13 @@ fn adapter_uses_same_durable_control_owner_for_reads_and_checkpoint_publication(
     );
     let adapter = ControlNduFrontierAdapterV1::new(owner.clone());
     assert_eq!(adapter.latest(&scope).unwrap(), snapshot);
+    assert_eq!(adapter.check_checkpoint_publisher(&snapshot), Ok(()));
+    let mut stale = snapshot.clone();
+    stale.route_fence += 1;
+    assert_eq!(
+        adapter.check_checkpoint_publisher(&stale),
+        Err(NduReadVerificationErrorV1::StaleFrontier)
+    );
     let next = Digest32::of_bytes(b"checkpoint");
     let head = adapter
         .compare_and_publish_checkpoint(
@@ -39,4 +46,29 @@ fn adapter_uses_same_durable_control_owner_for_reads_and_checkpoint_publication(
     assert!(!head.is_zero());
     assert_eq!(owner.current().unwrap().1, next);
     assert!(adapter.latest(&StableId::new("other").unwrap()).is_err());
+
+    // CNS uses the same exclusive Control lane; the earlier signed read
+    // cannot publish a second checkpoint after the route has advanced.
+    let mut successor = snapshot.clone();
+    successor.route_fence += 1;
+    let cutover = owner
+        .publish_cutover(&snapshot, successor.clone(), next)
+        .expect("durable CNS cutover");
+    assert!(!cutover.is_zero());
+    assert_eq!(adapter.latest(&scope).unwrap(), successor);
+    assert_eq!(
+        adapter.check_checkpoint_publisher(&snapshot),
+        Err(NduReadVerificationErrorV1::StaleFrontier)
+    );
+    assert_eq!(
+        adapter.compare_and_publish_checkpoint(
+            &snapshot,
+            Digest32::of_bytes(b"authenticated-read"),
+            Digest32::of_bytes(b"stale-tick"),
+            next,
+            Digest32::of_bytes(b"stale-checkpoint"),
+        ),
+        Err(NduReadVerificationErrorV1::CheckpointPublicationUnavailable)
+    );
+    assert_eq!(owner.current().unwrap().1, next);
 }
