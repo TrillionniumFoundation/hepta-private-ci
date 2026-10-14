@@ -318,10 +318,8 @@ impl MetricsGroupCommitV1 {
             #[cfg(unix)]
             {
                 use std::os::unix::fs::FileExt as _;
-                self.file.read_exact_at(
-                    &mut tail,
-                    self.bytes - self.last_row_len as u64,
-                )?;
+                self.file
+                    .read_exact_at(&mut tail, self.bytes - self.last_row_len as u64)?;
             }
             #[cfg(not(unix))]
             {
