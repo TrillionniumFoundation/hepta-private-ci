@@ -122,10 +122,24 @@ fn governed_topology_for_runtime(
     current: &crate::RuntimeTopologySnapshotV1,
     successor: &crate::RuntimeTopologySnapshotV1,
 ) -> (codex_hepta_plasticity::GovernedTopologyProposalV1, StableId) {
+    governed_topology_for_runtime_with_operation(
+        label,
+        current,
+        successor,
+        codex_hepta_plasticity::TopologyOperationV2::Replace,
+    )
+}
+
+#[cfg(unix)]
+fn governed_topology_for_runtime_with_operation(
+    label: &str,
+    current: &crate::RuntimeTopologySnapshotV1,
+    successor: &crate::RuntimeTopologySnapshotV1,
+    operation: codex_hepta_plasticity::TopologyOperationV2,
+) -> (codex_hepta_plasticity::GovernedTopologyProposalV1, StableId) {
     use codex_hepta_plasticity::ProposalWindowV2;
     use codex_hepta_plasticity::TopologyCandidateKindV2;
     use codex_hepta_plasticity::TopologyChangeV2;
-    use codex_hepta_plasticity::TopologyOperationV2;
     use codex_hepta_plasticity::TopologyProposalRequestV2;
     use codex_hepta_plasticity::admit_governed_topology_v1;
     use codex_hepta_plasticity::build_writer_handoff_plan_v1;
@@ -169,7 +183,7 @@ fn governed_topology_for_runtime(
         rollback_predecessor_digest: selected,
         changes: vec![TopologyChangeV2 {
             module_id: handoff.module_id.clone(),
-            operation: TopologyOperationV2::Replace,
+            operation,
             predecessor_digest: Some(current.hierarchy_digest()),
             candidate_digest: Some(successor.hierarchy_digest()),
             capability_typing_digest: Digest32::of_bytes(b"runtime-capability-typing"),
@@ -199,6 +213,52 @@ fn governed_topology_for_runtime(
     )
     .expect("governed topology");
     (governed, candidate_id)
+}
+
+#[cfg(unix)]
+#[test]
+fn generic_topology_final_use_and_recovery_refuse_unowned_split() -> Result<()> {
+    use codex_hepta_plasticity::TopologyOperationV2;
+
+    let calls = Arc::new(AtomicUsize::new(0));
+    let root = HeptaStateRoot::parse(
+        std::env::temp_dir().join("hepta-generic-split-control-denial"),
+    )?;
+    let state: Arc<dyn RuntimeStateAdapter> =
+        Arc::new(ObservedAdapter(Arc::clone(&calls)));
+    let runtime = crate::HeptaRuntime::from_adapter(root.clone(), Arc::clone(&state));
+    let before = runtime.topology_snapshot()?;
+    let candidate = build_host_generation(root, state, before.generation().next()?)?;
+    let successor = RuntimeTopologySuccessorV1::new(candidate.host, candidate.route)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let projected = successor.snapshot();
+    let (governed, candidate_id) = governed_topology_for_runtime_with_operation(
+        "generic-split-control-denial",
+        &before,
+        &projected,
+        TopologyOperationV2::Split,
+    );
+    let (migration, migrations, rollbacks) =
+        runtime_topology_migration_for(&governed, &candidate_id);
+    let request = RuntimeTopologyApplyRequestV1 {
+        governed,
+        candidate_id,
+        accepted_subject_id: StableId::new("operator:generic-split-control-denial")?,
+        migration,
+        successor,
+    };
+    assert!(matches!(
+        runtime_topology_final_use_binding_v1(&before, &request),
+        Err(RuntimeTopologyExecutionError::Binding)
+    ));
+    assert!(matches!(
+        runtime_topology_recovery_final_use_binding_v1(&before, &request),
+        Err(RuntimeTopologyExecutionError::Binding)
+    ));
+    assert_eq!(runtime.topology_snapshot()?, before);
+    assert_eq!(migrations.load(Ordering::SeqCst), 0);
+    assert_eq!(rollbacks.load(Ordering::SeqCst), 0);
+    Ok(())
 }
 
 #[cfg(unix)]
@@ -753,12 +813,12 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
     Ok(())
 }
 
-/// The first-party split CNS port must invoke the real runtime topology
-/// executor with a signed single-use grant, not mutate an imitation route
-/// map. This intentionally uses only test-owned keys, candidate and storage.
+/// Even the full test-owned signed Final-use grant, typed successor and real
+/// runtime cannot execute a CNS split before a durable same-Control-owner
+/// cutover Prepare. Retain the native fixture: do not skip an E2E regression.
 #[cfg(all(unix, feature = "cell-split-cns-port"))]
 #[test]
-fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
+fn cell_split_cns_runtime_port_denies_unprepared_real_governed_runtime() -> Result<()> {
     use std::fs;
     use std::io::Write as _;
     use std::os::unix::fs::OpenOptionsExt as _;
@@ -1013,30 +1073,31 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
         witness,
     )
     .map_err(|e| anyhow::anyhow!("{e}"))?;
-    port.publish_once(&plan, &binding, &intent)
-        .map_err(|e| anyhow::anyhow!("{e}"))?;
-    assert_eq!(runtime.topology_snapshot()?, expected);
-    assert_eq!(migration_calls.load(Ordering::SeqCst), 1);
-    assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
-    let original = port
-        .read_original_commit(&intent.idempotency_key)?
-        .expect("fsynced original runtime receipt");
-    port.verify_original_commit(&original)
-        .map_err(|e| anyhow::anyhow!("{e}"))?;
-    assert_eq!(
-        original.committed_sequence,
-        port.committed_sequence(&binding.cns_id)?
-    );
+    // Both live route signing and the separate witness preflight are valid,
+    // and a signed one-shot successor is available. None of these facts is
+    // equivalent to durable same-Control-owner Prepare.
     let live = port.inspect_live(&binding.cns_id, &plan.scope_digest, &"aa".repeat(32))?;
     port.verify_live(&live)
         .map_err(|e| anyhow::anyhow!("{e}"))?;
-    assert_eq!(live.generation, plan.child_generation);
+    port.verify_preconditions(&plan, &intent)
+        .map_err(|e| anyhow::anyhow!("{e}"))?;
+    let denied = port.publish_once(&plan, &binding, &intent)
+        .expect_err("unprepared CNS mutation must remain unavailable");
+    assert!(denied.contains("no shared durable Control/Neuron cutover transaction"));
+    assert_eq!(runtime.topology_snapshot()?, before);
+    assert_eq!(migration_calls.load(Ordering::SeqCst), 0);
+    assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
+    assert!(
+        port.read_original_commit(&intent.idempotency_key)?.is_none(),
+        "denial must never mint an original runtime commit"
+    );
+    assert!(!original_path.exists(), "no fsynced success on denied cutover");
+    assert_eq!(live.generation, plan.parent_generation);
     assert!(port.publish_once(&plan, &binding, &intent).is_err());
-    assert_eq!(migration_calls.load(Ordering::SeqCst), 1);
+    assert_eq!(migration_calls.load(Ordering::SeqCst), 0);
 
-    // Process-local CNS hosts are NOT a durable restart registry. A fresh
-    // default host must never be mistaken for the already-committed successor
-    // simply because the original signed runtime receipt survived on disk.
+    // An unrelated process restart must also retain the old generation.
+    // No original durable effect exists to reconcile into a positive commit.
     drop(port);
     let after_restart = crate::HeptaRuntime::from_adapter(root, state);
     assert_eq!(after_restart.topology_snapshot()?, before);
@@ -1066,8 +1127,8 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
     .map_err(|e| anyhow::anyhow!("{e}"))?;
     use codex_hepta_operator_acceptance::CellSplitDurableEffectBackendV1 as _;
     assert!(
-        owner.read_committed(&intent).is_err(),
-        "committed runtime receipt cannot activate a fresh old-generation host",
+        owner.read_committed(&intent)?.is_none(),
+        "no original runtime cutover may appear across restart after denial",
     );
     Ok(())
 }
