@@ -13,7 +13,9 @@ use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
 use codex_hepta_types::Generation;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
+use std::sync::Mutex;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
@@ -108,6 +110,48 @@ fn fixture_request() -> (ModelManifest, NeuronFeatureRequest, MicrobatchKeyV1) {
     (model, request, key)
 }
 
+#[derive(Debug)]
+struct FixtureScopeFrontier {
+    current: Mutex<BTreeMap<StableId, MicrobatchKeyV1>>,
+}
+
+impl FixtureScopeFrontier {
+    fn new(model_digest: Digest32) -> Self {
+        let scope = StableId::new("scope").unwrap();
+        let current = MicrobatchKeyV1 {
+            scope_id: scope.clone(),
+            model_digest,
+            generation: Generation::new(3).unwrap(),
+            route_fence: 2,
+            authority_epoch: 9,
+        };
+        let mut other = current.clone();
+        other.scope_id = StableId::new("different-scope").unwrap();
+        other.route_fence = 18;
+        Self {
+            current: Mutex::new(BTreeMap::from([
+                (scope, current),
+                (other.scope_id.clone(), other),
+            ])),
+        }
+    }
+
+    fn install(&self, key: MicrobatchKeyV1) {
+        self.current.lock().unwrap().insert(key.scope_id.clone(), key);
+    }
+}
+
+impl MicrobatchScopeFrontierV1 for FixtureScopeFrontier {
+    fn current(&self, scope: &StableId) -> Result<MicrobatchKeyV1, BatchWorkerErrorV1> {
+        self.current
+            .lock()
+            .unwrap()
+            .get(scope)
+            .cloned()
+            .ok_or(BatchWorkerErrorV1::InvalidBinding)
+    }
+}
+
 fn runner_with_driver<D: ModelDriver + NeuronFeatureDriver>(
     signing_key: &SigningKey,
     directory: &std::path::Path,
@@ -147,6 +191,7 @@ fn runner_with_driver<D: ModelDriver + NeuronFeatureDriver>(
         maximum_memory_bytes: 4096,
         semantic_digest: digest(b"resource-grant").to_string(),
     };
+    let model_digest = Digest32::from_str(&model.model_digest).unwrap();
     let mut worker = InferenceWorker::new(100, "worker-one".into(), 3, grant, driver).unwrap();
     worker.load_model(100, model).unwrap();
     AuthenticatedNeuronMicrobatchWorkerV1::new(
@@ -160,6 +205,7 @@ fn runner_with_driver<D: ModelDriver + NeuronFeatureDriver>(
         },
     )
     .unwrap()
+    .with_live_scope_frontier(Arc::new(FixtureScopeFrontier::new(model_digest)))
 }
 
 fn runner(
@@ -849,6 +895,71 @@ fn native_batch_coalesces_distinct_scopes_without_crossing_authority() {
         &item.result,
         Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
     )));
+}
+
+#[test]
+fn missing_or_stale_live_scope_frontier_fails_closed() {
+    let (_, request, key) = fixture_request();
+    assert!(!scope_binding_current(None, &key));
+
+    let frontier = Arc::new(FixtureScopeFrontier::new(key.model_digest));
+    assert!(scope_binding_current(Some(&(frontier.clone() as Arc<dyn MicrobatchScopeFrontierV1>)), &key));
+    let mut old_key = key.clone();
+    old_key.route_fence = 1;
+    assert!(!scope_binding_current(Some(&(frontier as Arc<dyn MicrobatchScopeFrontierV1>)), &old_key));
+
+    // The request itself is correctly bound, so this is only a live
+    // currentness rejection, not an invalid feature or signature fixture.
+    assert!(!request.authorization.payload_digest.is_empty());
+}
+
+#[test]
+fn coalesced_batch_denies_stale_other_scope_without_claiming_either_nonce() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[72; 32]);
+    let (model, first, first_key) = fixture_request();
+    let second = second_request(&first);
+    let mut other_key = first_key.clone();
+    other_key.scope_id = StableId::new("different-scope").unwrap();
+    other_key.route_fence = 18;
+    let frontier = Arc::new(FixtureScopeFrontier::new(first_key.model_digest));
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut worker = runner_with_driver(&signer, dir.path(), model, driver, 2)
+        .with_live_scope_frontier(frontier.clone());
+    let signed_a = signed_member(
+        &signer,
+        neuron_batch_final_use_binding_v1("worker-one", &first_key, &first).unwrap(),
+        "live-a",
+        73,
+    );
+    let signed_b = signed_member(
+        &signer,
+        neuron_batch_final_use_binding_v1("worker-one", &other_key, &second).unwrap(),
+        "stale-b",
+        74,
+    );
+    worker
+        .enqueue(100, "model".into(), first, first_key, signed_a)
+        .unwrap();
+    worker
+        .enqueue(100, "model".into(), second, other_key.clone(), signed_b)
+        .unwrap();
+    other_key.route_fence = 19;
+    frontier.install(other_key);
+
+    let result = worker.poll_and_execute(106).unwrap();
+    assert_eq!(result.outcomes.len(), 2);
+    assert!(result.outcomes.iter().all(|item| matches!(
+        item.result,
+        Err(BatchWorkerErrorV1::InvalidBinding)
+    )));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+    assert_eq!(worker.pending(), 0);
 }
 
 #[test]

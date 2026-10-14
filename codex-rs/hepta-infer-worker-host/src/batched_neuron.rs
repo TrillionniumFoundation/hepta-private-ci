@@ -54,6 +54,9 @@ pub enum BatchWorkerErrorV1 {
     Authority,
     Worker,
     BatchUnsupported,
+    /// A live CNS scope frontier advanced while the external backend ran.
+    /// Treat the result as unresolved; never return it as successful or retry.
+    StaleAfterEffect,
     Capacity,
 }
 
@@ -71,6 +74,24 @@ pub struct BatchWorkerPollV1 {
     pub pending: usize,
 }
 
+/// Read the authoritative, live Control/CNS route binding for a Scope.
+/// A consumer-provided key or a signed historical grant is not currentness.
+/// The production composition must inject its original Control-owned reader;
+/// this port alone does not establish atomic effect/cutover linearization.
+pub trait MicrobatchScopeFrontierV1: std::fmt::Debug + Send + Sync {
+    fn current(&self, scope: &StableId) -> Result<MicrobatchKeyV1, BatchWorkerErrorV1>;
+}
+
+fn scope_binding_current(
+    frontier: Option<&Arc<dyn MicrobatchScopeFrontierV1>>,
+    key: &MicrobatchKeyV1,
+) -> bool {
+    frontier
+        .and_then(|owner| owner.current(&key.scope_id).ok())
+        .as_ref()
+        == Some(key)
+}
+
 struct PendingV1 {
     model_id: String,
     request: NeuronFeatureRequest,
@@ -86,6 +107,9 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     scheduler: BoundedMicrobatchSchedulerV1,
     worker: InferenceWorker<D>,
     authority: FinalUseAuthority,
+    // Absent until independent Control composition installs a live reader.
+    // No new admission or backend effect may proceed while it is absent.
+    scope_frontier: Option<Arc<dyn MicrobatchScopeFrontierV1>>,
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
@@ -173,6 +197,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             scheduler,
             worker,
             authority,
+            scope_frontier: None,
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
@@ -184,6 +209,20 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
     pub fn with_metric_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
         self.metric_sink = Some(sink);
         self
+    }
+
+    /// Inject exactly one Control-owned live frontier before admission.
+    /// A simulator or mutable caller map is not production authority.
+    pub fn with_live_scope_frontier(
+        mut self,
+        frontier: Arc<dyn MicrobatchScopeFrontierV1>,
+    ) -> Self {
+        self.scope_frontier = Some(frontier);
+        self
+    }
+
+    fn binding_current(&self, key: &MicrobatchKeyV1) -> bool {
+        scope_binding_current(self.scope_frontier.as_ref(), key)
     }
 
     /// Production readiness is a separate Evidence barrier, never implicit
@@ -266,6 +305,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 .worker
                 .model_matches_digest(&model_id, key.model_digest)
             || request.authorization.cancelled
+            || !self.binding_current(&key)
         {
             return Err(BatchWorkerErrorV1::InvalidBinding);
         }
@@ -345,13 +385,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                         None => Err(BatchWorkerErrorV1::NoAdmission),
                         Some(mut pending) => {
                             if pending.feature.digest() != intent.feature_digest
-                                || pending.signed.grant.authority_epoch != batch.key.authority_epoch
+                                || pending.signed.grant.authority_epoch != intent.key.authority_epoch
+                                || !self.binding_current(&intent.key)
                             {
                                 Err(BatchWorkerErrorV1::InvalidBinding)
                             } else {
                                 pending.request.feature_vector_q24 =
                                     pending.feature.as_slice().to_vec();
                                 let start = Instant::now();
+                                let frontier = self.scope_frontier.clone();
+                                let key = intent.key;
                                 let result = FinalUseAuthority::claim(
                                     &self.authority,
                                     &pending.signed,
@@ -364,15 +407,24 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                         token,
                                         &pending.binding,
                                         || {
-                                            self.worker.run_neuron_features_receipt(
-                                                now_ms,
-                                                &pending.model_id,
-                                                pending.request,
-                                            )
+                                            if !scope_binding_current(frontier.as_ref(), &key) {
+                                                return Err(BatchWorkerErrorV1::InvalidBinding);
+                                            }
+                                            let result = self
+                                                .worker
+                                                .run_neuron_features_receipt(
+                                                    now_ms,
+                                                    &pending.model_id,
+                                                    pending.request,
+                                                )
+                                                .map_err(|_| BatchWorkerErrorV1::Worker);
+                                            if !scope_binding_current(frontier.as_ref(), &key) {
+                                                return Err(BatchWorkerErrorV1::StaleAfterEffect);
+                                            }
+                                            result
                                         },
                                     )
-                                    .map_err(|_| BatchWorkerErrorV1::Authority)
-                                    .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
+                                    .map_err(|_| BatchWorkerErrorV1::Authority)?
                                 });
                                 if let Some(sink) = &self.metric_sink {
                                     let metric_result = sink.record(PhaseMetricEventV1 {
@@ -438,6 +490,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 let pending = pending.as_ref().ok_or(BatchWorkerErrorV1::NoAdmission)?;
                 if pending.feature.digest() != intent.feature_digest
                     || !intent.key.physical_compatible_with(key)
+                    || !self.binding_current(&intent.key)
                     || pending.signed.grant.authority_epoch != intent.key.authority_epoch
                     || pending.request.authorization.request_id != intent.request_id.as_str()
                 {
@@ -500,17 +553,55 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                     Ok(request)
                 })
                 .collect::<Result<Vec<_>, BatchWorkerErrorV1>>()?;
-            FinalUseAuthority::with_verified_effect_batch(&self.authority, claimed, || {
-                self.worker
-                    .run_neuron_features_batch_receipts(now_ms, &model_id, requests)
-            })
-            .map_err(|_| BatchWorkerErrorV1::Authority)?
-            .map_err(|error| match error {
-                crate::model_worker::Error::BatchUnsupported => {
-                    BatchWorkerErrorV1::BatchUnsupported
-                }
-                _ => BatchWorkerErrorV1::Worker,
-            })
+            // Re-read every original Scope/fence before and after the single
+            // physical backend call; the representative batch key grants none
+            // of its other members authority. A raced effect is unresolved.
+            let frontier = self.scope_frontier.clone();
+            let scope_keys = items
+                .iter()
+                .map(|(intent, _)| intent.key.clone())
+                .collect::<Vec<_>>();
+            let mut stale_before_effect = false;
+            let mut stale_after_effect = false;
+            let executed = FinalUseAuthority::with_verified_effect_batch(
+                &self.authority,
+                claimed,
+                || {
+                    if scope_keys
+                        .iter()
+                        .any(|key| !scope_binding_current(frontier.as_ref(), key))
+                    {
+                        stale_before_effect = true;
+                        return Err(crate::model_worker::Error::FeatureContract);
+                    }
+                    let result = self.worker.run_neuron_features_batch_receipts(
+                        now_ms,
+                        &model_id,
+                        requests,
+                    );
+                    if scope_keys
+                        .iter()
+                        .any(|key| !scope_binding_current(frontier.as_ref(), key))
+                    {
+                        stale_after_effect = true;
+                    }
+                    result
+                },
+            );
+            if stale_after_effect {
+                return Err(BatchWorkerErrorV1::StaleAfterEffect);
+            }
+            if stale_before_effect {
+                return Err(BatchWorkerErrorV1::InvalidBinding);
+            }
+            executed
+                .map_err(|_| BatchWorkerErrorV1::Authority)?
+                .map_err(|error| match error {
+                    crate::model_worker::Error::BatchUnsupported => {
+                        BatchWorkerErrorV1::BatchUnsupported
+                    }
+                    _ => BatchWorkerErrorV1::Worker,
+                })
         })();
 
         let mut results = match executed {
