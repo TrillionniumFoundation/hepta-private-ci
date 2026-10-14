@@ -281,12 +281,65 @@ impl CellSplitLifecycleJournalV1 {
         self.transition(CellSplitLifecycleStateV1::Quarantined, evidence_digest)
     }
 
+    /// A durable, plan-bound one-shot retirement intent must be committed
+    /// before contacting the external tombstone owner. Retained -> Retained
+    /// records an uncertain effect boundary, NOT a successful retirement.
+    pub fn begin_retirement(
+        &mut self,
+        split: &CellSplitV1,
+    ) -> Result<(), CellSplitLifecycleErrorV1> {
+        if self.current_state != CellSplitLifecycleStateV1::Retained {
+            return Err(CellSplitLifecycleErrorV1::InvalidTransition);
+        }
+        if self.retirement_pending(split)? {
+            return Err(CellSplitLifecycleErrorV1::InvalidTransition);
+        }
+        self.transition(
+            CellSplitLifecycleStateV1::Retained,
+            retirement_intent_digest_v1(split)?,
+        )
+    }
+
+    /// Positive owner readback cannot mint retirement after an unprepared
+    /// canary, and a marker from a different frozen plan is never reusable.
+    pub fn retirement_pending(
+        &self,
+        split: &CellSplitV1,
+    ) -> Result<bool, CellSplitLifecycleErrorV1> {
+        if self.split_id != split.split_id
+            || split.retirement.disposition != CellParentDispositionV1::Retire
+            || split.retirement.tombstone_digest.is_zero()
+        {
+            return Err(CellSplitLifecycleErrorV1::Binding);
+        }
+        if self.current_state != CellSplitLifecycleStateV1::Retained {
+            return Ok(false);
+        }
+        let Some(last) = self.events.last() else {
+            return Ok(false);
+        };
+        if last.from != CellSplitLifecycleStateV1::Retained
+            || last.to != CellSplitLifecycleStateV1::Retained
+        {
+            return Ok(false);
+        }
+        if last.evidence_digest != retirement_intent_digest_v1(split)? {
+            return Err(CellSplitLifecycleErrorV1::Binding);
+        }
+        Ok(true)
+    }
+
+    /// A terminal retirement needs a plan-bound write-ahead intent and the
+    /// independent original owner's matching durable tombstone receipt.
     pub fn retire(&mut self, split: &CellSplitV1) -> Result<(), CellSplitLifecycleErrorV1> {
         if split.split_id != self.split_id {
             return Err(CellSplitLifecycleErrorV1::Binding);
         }
         if split.retirement.disposition != CellParentDispositionV1::Retire {
             return Err(CellSplitLifecycleErrorV1::Binding);
+        }
+        if !self.retirement_pending(split)? {
+            return Err(CellSplitLifecycleErrorV1::InvalidTransition);
         }
         self.transition(
             CellSplitLifecycleStateV1::Retired,
@@ -422,12 +475,27 @@ fn valid_transition(from: CellSplitLifecycleStateV1, to: CellSplitLifecycleState
             CellSplitLifecycleStateV1::RolledBack
         ) | (
             CellSplitLifecycleStateV1::Retained,
+            CellSplitLifecycleStateV1::Retained
+        ) | (
+            CellSplitLifecycleStateV1::Retained,
             CellSplitLifecycleStateV1::Retired
         ) | (
             CellSplitLifecycleStateV1::Retained,
             CellSplitLifecycleStateV1::RolledBack
         )
     )
+}
+
+fn retirement_intent_digest_v1(split: &CellSplitV1) -> Result<Digest32, CellSplitLifecycleErrorV1> {
+    // This covers the complete immutable subject and every frozen topology,
+    // resource, lineage, generation, rollback and retirement field.
+    let frozen = split
+        .evaluation_subject_digest()
+        .map_err(|_| CellSplitLifecycleErrorV1::Binding)?;
+    let mut bytes = b"hepta.learning.cell-split.retirement-intent.v1".to_vec();
+    bytes.extend_from_slice(frozen.as_array());
+    bytes.extend_from_slice(split.retirement.tombstone_digest.as_array());
+    Ok(Digest32::of_bytes(&bytes))
 }
 
 fn lifecycle_digest(
