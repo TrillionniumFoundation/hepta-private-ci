@@ -73,10 +73,33 @@ pub fn run_pinned_cell_split_execution_v1(
             "CellSplit advance requires independently admitted NDU/Selector selection".to_string(),
         );
     }
+    if action == "reconcile" {
+        return Err(
+            "CellSplit recovery requires the explicit pending-only reconciliation API".to_string(),
+        );
+    }
     run_pinned_cell_split_execution_with_admission_v1(
         action,
         config_path,
         externally_pinned_config_sha256,
+        |_| Ok(()),
+    )
+}
+
+/// Explicit crash/lost-ACK recovery against an existing prepared intent.
+/// It requires the same externally pinned config and four original owner keys,
+/// but cannot prepare any new effect or call `port.execute`. This is a narrow
+/// recovery operation, NOT a current Selector/NDU admission or permission to
+/// activate a successor. No file or lock is created for an absent split.
+pub fn run_pinned_cell_split_reconcile_only_v1(
+    config_path: &Path,
+    externally_pinned_config_sha256: &str,
+) -> Result<CellSplitExecutionCliOutcomeV1, String> {
+    run_pinned_cell_split_execution_inner_v1(
+        "reconcile",
+        config_path,
+        externally_pinned_config_sha256,
+        None,
         |_| Ok(()),
     )
 }
@@ -143,7 +166,8 @@ where
     let selected_action = match action {
         "advance" => "advance",
         "transcript" => "transcript",
-        _ => return Err("expected advance or transcript".to_string()),
+        "reconcile" => "reconcile",
+        _ => return Err("expected advance or transcript, or explicit reconcile".to_string()),
     };
     // The owner checks Evidence health only before dispatching a NEW effect.
     // A prepared effect whose acknowledgment was lost must still be allowed
@@ -164,7 +188,9 @@ where
     // No filesystem owner initialization and no prepared intent may precede
     // this independent selection check. The operator pin alone does not
     // establish the current NDU or Selector authorization.
-    admit_selected_plan(&config.plan)?;
+    if selected_action != "reconcile" {
+        admit_selected_plan(&config.plan)?;
+    }
     // Opening and recovering the coordinator may require disk and original
     // owner readbacks. Revalidate the independent selection after that work,
     // immediately before a new durable intent may be prepared.
@@ -188,10 +214,20 @@ where
         Duration::from_millis(config.timeout_millis),
     )
     .map_err(|error| error.to_string())?;
-    let owner = if selected_action == "transcript" {
-        CellSplitExecutionOwnerV1::open_existing(&config.execution_root, config.plan, trust, port)
-    } else {
-        CellSplitExecutionOwnerV1::open(&config.execution_root, config.plan, trust, port)
+    let owner = match selected_action {
+        "transcript" => CellSplitExecutionOwnerV1::open_existing(
+            &config.execution_root,
+            config.plan,
+            trust,
+            port,
+        ),
+        "reconcile" => CellSplitExecutionOwnerV1::open_pending_reconciliation(
+            &config.execution_root,
+            config.plan,
+            trust,
+            port,
+        ),
+        _ => CellSplitExecutionOwnerV1::open(&config.execution_root, config.plan, trust, port),
     }
     .map_err(|error| error.to_string())?;
     let mut owner = if let Some(sink) = metric_sink {
@@ -220,6 +256,14 @@ where
                 None,
             )
         }
+        "reconcile" => (
+            Some(
+                owner
+                    .reconcile_pending_only()
+                    .map_err(|error| error.to_string())?,
+            ),
+            None,
+        ),
         _ => (
             None,
             owner
@@ -231,12 +275,12 @@ where
     // original effect may have been revoked after the last advance.
     // Transcript mode has already performed its four-owner verification;
     // avoid a second remote pass while keeping the result fail-closed.
-    let verified_complete = if selected_action == "advance" {
+    let verified_complete = if selected_action == "transcript" {
+        transcript.is_some()
+    } else {
         owner
             .verified_complete()
             .map_err(|error| error.to_string())?
-    } else {
-        transcript.is_some()
     };
     Ok(CellSplitExecutionCliOutcomeV1 {
         schema: OUTCOME_SCHEMA,
@@ -504,6 +548,16 @@ mod tests {
         assert!(read_only.transcript.is_none());
         assert!(!read_only.production_activation_authorized);
 
+        // Pure reconciliation is not a hidden advance: with no previously
+        // prepared effect, it must not create an intent or call an owner.
+        let no_pending_recovery = run_pinned_cell_split_reconcile_only_v1(&config_path, &pin)
+            .expect_err("an empty prepared prefix cannot be reconciled");
+        assert!(
+            no_pending_recovery
+                .contains("reconciliation requires an existing uncommitted prepared intent")
+        );
+        assert!(!execution_root.join("cell-split-00-prepared.json").exists());
+
         // The telemetry-bound endpoint must not prepare a new CAS intent
         // while its writer is unhealthy, even with an allow-all fixture
         // admission. Its read-only original-owner transcript must remain
@@ -556,6 +610,9 @@ mod tests {
         let error = run_pinned_cell_split_execution_v1("advance", &missing, &"00".repeat(32))
             .expect_err("a configuration hash is not an NDU/Selector grant");
         assert!(error.contains("independently admitted NDU/Selector"));
+        let recovery = run_pinned_cell_split_execution_v1("reconcile", &missing, &"00".repeat(32))
+            .expect_err("the legacy command cannot disguise mutation as recovery");
+        assert!(recovery.contains("explicit pending-only reconciliation API"));
         assert!(!missing.exists());
         assert_eq!(
             std::fs::read_dir(dir.path())

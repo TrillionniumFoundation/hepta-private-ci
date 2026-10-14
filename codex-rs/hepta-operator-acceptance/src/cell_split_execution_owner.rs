@@ -415,6 +415,15 @@ pub enum CellSplitExecutionErrorV1 {
     Codec(#[from] serde_json::Error),
 }
 
+/// Whether this local coordinator may initialize, merely inspect, or only
+/// commit a read-back of an *existing* prepared original-owner effect.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum CellSplitOwnerOpenModeV1 {
+    NewOrResume,
+    ReadOnly,
+    PendingReconciliation,
+}
+
 /// Owns exactly one frozen split in an exclusively locked private directory.
 /// All transitions are write-once, fsync'd frames. A step is *never* invoked
 /// again after an intent frame exists: recovery instead queries the original
@@ -428,6 +437,7 @@ pub struct CellSplitExecutionOwnerV1<P: CellSplitExecutionPortV1> {
     cursor: usize,
     pending: bool,
     read_only: bool,
+    reconcile_only: bool,
     previous_receipt_digest: String,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
     metrics_poisoned: bool,
@@ -441,7 +451,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         trust: CellSplitOwnerTrustV1,
         port: P,
     ) -> Result<Self, CellSplitExecutionErrorV1> {
-        Self::open_inner(root, plan, trust, port, false)
+        Self::open_inner(
+            root,
+            plan,
+            trust,
+            port,
+            CellSplitOwnerOpenModeV1::NewOrResume,
+        )
     }
 
     /// Read-only re-open for transcript inspection. Never creates a lock or
@@ -452,7 +468,27 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         trust: CellSplitOwnerTrustV1,
         port: P,
     ) -> Result<Self, CellSplitExecutionErrorV1> {
-        Self::open_inner(root, plan, trust, port, true)
+        Self::open_inner(root, plan, trust, port, CellSplitOwnerOpenModeV1::ReadOnly)
+    }
+
+    /// Open ONLY an existing prepared intent for signed owner readback.
+    /// This does not initialize a new split, and cannot dispatch a fresh
+    /// CAS/CNS/Supervisor effect even if admission was withdrawn after the
+    /// original physical operation began. The original four signer pins and
+    /// existing sidecar lock must already exist.
+    pub fn open_pending_reconciliation(
+        root: &Path,
+        plan: CellSplitExecutionPlanV1,
+        trust: CellSplitOwnerTrustV1,
+        port: P,
+    ) -> Result<Self, CellSplitExecutionErrorV1> {
+        Self::open_inner(
+            root,
+            plan,
+            trust,
+            port,
+            CellSplitOwnerOpenModeV1::PendingReconciliation,
+        )
     }
 
     fn open_inner(
@@ -460,8 +496,9 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         plan: CellSplitExecutionPlanV1,
         trust: CellSplitOwnerTrustV1,
         mut port: P,
-        existing_only: bool,
+        mode: CellSplitOwnerOpenModeV1,
     ) -> Result<Self, CellSplitExecutionErrorV1> {
+        let existing_only = mode != CellSplitOwnerOpenModeV1::NewOrResume;
         plan.validate()?;
         let root = secure_root(root, "cell split owner root")?;
         verify_split_frame_namespace(&root)?;
@@ -644,6 +681,13 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             }
         }
         lock.verify_current(&root)?;
+        // A readback-only caller cannot initialize a state machine, nor
+        // recover a prior completed step into a fresh outward invocation.
+        if mode == CellSplitOwnerOpenModeV1::PendingReconciliation && !pending {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "reconciliation requires an existing uncommitted prepared intent",
+            ));
+        }
         Ok(Self {
             root,
             plan,
@@ -652,7 +696,8 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             trust,
             cursor,
             pending,
-            read_only: existing_only,
+            read_only: mode == CellSplitOwnerOpenModeV1::ReadOnly,
+            reconcile_only: mode == CellSplitOwnerOpenModeV1::PendingReconciliation,
             previous_receipt_digest,
             metric_sink: None,
             metrics_poisoned: false,
@@ -914,6 +959,28 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         self.advance_with_admission(|| Ok(()))
     }
 
+    /// Reconcile ONLY a previously prepared and uncommitted original effect.
+    /// No untrusted callback can turn this API into a new physical operation:
+    /// the dedicated open mode rejects an absent prepared intent, and the
+    /// admission callback here explicitly forbids the new-effect branch.
+    /// Reconciliation may append the original signed receipt to the local
+    /// coordinator ledger, but never invokes `port.execute`.
+    pub fn reconcile_pending_only(
+        &mut self,
+    ) -> Result<CellSplitExecutionReceiptV1, CellSplitExecutionErrorV1> {
+        if !self.reconcile_only || !self.pending {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "reconciliation requires existing-only pending owner mode",
+            ));
+        }
+        self.advance_with_admission(|| {
+            Err("reconciliation cannot admit a new external effect".to_string())
+        })?
+        .ok_or(CellSplitExecutionErrorV1::Invalid(
+            "missing original effect receipt during reconciliation",
+        ))
+    }
+
     /// Product admission seam: independently reread current NDU/Selector state
     /// after the original owner's potentially slow preflight, before writing
     /// the first prepared intent. This callback is advisory, not final-use;
@@ -927,6 +994,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         if self.read_only {
             return Err(CellSplitExecutionErrorV1::Invalid(
                 "read-only CellSplit owner cannot advance",
+            ));
+        }
+        if self.reconcile_only && !self.pending {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "reconcile-only owner cannot dispatch new effects",
             ));
         }
         // A telemetry failure does not suppress reconciliation of an already

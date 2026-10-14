@@ -573,6 +573,89 @@ fn lost_ack_reconciles_original_effect_without_duplicate_execution() {
 }
 
 #[test]
+fn pending_only_reconciliation_never_dispatches_a_new_effect_or_reseeds_an_empty_ledger() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let denied_empty = CellSplitExecutionOwnerV1::open_pending_reconciliation(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    );
+    assert!(
+        denied_empty.is_err(),
+        "missing old writer lock cannot be created"
+    );
+    assert!(!root.path().join("cell-split-frozen-plan.json").exists());
+    assert!(!root.path().join(crate::durable::SIDECAR_LOCK_FILE).exists());
+
+    {
+        let mut effect_port = FixturePort::new(state.clone());
+        effect_port.drop_ack = true;
+        let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), effect_port)
+            .expect("frozen new-effect owner");
+        assert!(owner.advance().is_err(), "effect committed but ACK lost");
+        assert_eq!(state.borrow().executions, 1);
+        assert!(root.path().join("cell-split-00-prepared.json").exists());
+        assert!(!root.path().join("cell-split-00-committed.json").exists());
+    }
+
+    {
+        let mut recovery = CellSplitExecutionOwnerV1::open_pending_reconciliation(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("existing-only reconciliation with original pinned signer");
+        assert!(recovery.reconcile_only);
+        assert_eq!(
+            recovery
+                .reconcile_pending_only()
+                .expect("signed original readback")
+                .intent
+                .step,
+            super::CellSplitExecutionStepV1::ArtifactCas
+        );
+        assert_eq!(state.borrow().executions, 1);
+        assert_eq!(recovery.completed_steps(), 1);
+        assert!(!recovery.pending);
+        assert!(matches!(
+            recovery.reconcile_pending_only(),
+            Err(CellSplitExecutionErrorV1::Invalid(_))
+        ));
+        assert!(matches!(
+            recovery.advance_with_admission(|| Ok(())),
+            Err(CellSplitExecutionErrorV1::Invalid(
+                "reconcile-only owner cannot dispatch new effects"
+            ))
+        ));
+        assert_eq!(state.borrow().executions, 1);
+    }
+
+    assert!(matches!(
+        CellSplitExecutionOwnerV1::open_pending_reconciliation(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone())
+        ),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "reconciliation requires an existing uncommitted prepared intent"
+        ))
+    ));
+    let mut inspector = CellSplitExecutionOwnerV1::open_existing(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("read-only signed transcript");
+    assert!(inspector.verified_transcript().expect("readback").is_none());
+    assert_eq!(state.borrow().executions, 1);
+}
+
+#[test]
 fn unknown_effect_must_fail_closed_and_frozen_plan_cannot_drift() {
     let root = private_tempdir();
     let state = Rc::new(RefCell::new(Observed::default()));

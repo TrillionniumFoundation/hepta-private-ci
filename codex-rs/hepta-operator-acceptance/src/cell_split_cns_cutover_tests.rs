@@ -672,18 +672,40 @@ fn replayed_signed_cns_snapshot_is_not_a_fresh_readback() {
     assert!(matches!(denied, Err(CellSplitCnsCutoverErrorV1::Invalid)));
     assert!(!root.path().join(FROZEN).exists());
 
-    // An independently admitted predecessor may freeze the plan. Every
-    // subsequent readback still needs a fresh, independently signed nonce.
-    let admitted = owner(root.path(), Arc::new(AtomicBool::new(true)));
+    // The denied first open still leaves a durable writer-lock inode. That
+    // history must not be silently reseeded with an allow-all live readback,
+    // even though the frozen binding was never written.
+    assert!(root.path().join(crate::durable::SIDECAR_LOCK_FILE).exists());
+    assert!(matches!(
+        CellSplitCnsCutoverOwnerV1::open(
+            root.path(),
+            plan(),
+            binding(),
+            DiskCns::open(
+                root.path().to_path_buf(),
+                SigningKey::from_bytes(&[9; 32]),
+                Arc::new(AtomicBool::new(true)),
+            ),
+        ),
+        Err(CellSplitCnsCutoverErrorV1::Invalid)
+    ));
+    assert!(!root.path().join(FROZEN).exists());
+
+    // A DIFFERENT, independently admitted predecessor can freeze its own
+    // plan. It must still reject a signed snapshot with a replayed nonce.
+    // The two roots cannot share lock history or recovery authority.
+    let admitted_root = private_root();
+    let admitted = owner(admitted_root.path(), Arc::new(AtomicBool::new(true)));
     drop(admitted);
     let stale = DiskCns::open(
-        root.path().to_path_buf(),
+        admitted_root.path().to_path_buf(),
         SigningKey::from_bytes(&[9; 32]),
         Arc::new(AtomicBool::new(true)),
     )
     .with_stale_readback();
-    let mut reopened = CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), stale)
-        .expect("preexisting frozen CNS binding");
+    let mut reopened =
+        CellSplitCnsCutoverOwnerV1::open(admitted_root.path(), plan(), binding(), stale)
+            .expect("independently frozen CNS binding");
     assert!(matches!(
         reopened.read_committed(&intent()),
         Err(CellSplitCnsCutoverErrorV1::Invalid)
