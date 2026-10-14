@@ -297,10 +297,29 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             r"atomic_control_cutover_owner:\s*None",
             "native physical CNS port must not invent a Control owner",
         )
-        self.assertRegex(
-            physical,
-            r"self\.atomic_control_cutover_owner\.as_ref\(\)\.ok_or\(",
-            "original runtime cutover must stay blocked without Control",
+        publish = re.search(r"\bfn\s+publish_once\s*\(", physical)
+        self.assertIsNotNone(publish, "physical CNS original owner effect method missing")
+        assert publish is not None
+        publish_start = physical.find("{", publish.end())
+        publish_end = CALLER_PROOF._matching_delimiter(
+            physical, publish_start, "{", "}"
+        )
+        self.assertIsNotNone(publish_end, "CNS effect method body must be complete")
+        assert publish_end is not None
+        publish_body = physical[publish_start + 1 : publish_end]
+        guard = re.search(
+            r"self\s*\.\s*atomic_control_cutover_owner\s*\.\s*"
+            r"as_ref\s*\(\s*\)\s*\.\s*ok_or\s*\(",
+            publish_body,
+        )
+        self.assertIsNotNone(
+            guard, "physical CNS cutover must deny a missing original Control owner"
+        )
+        assert guard is not None
+        self.assertLess(
+            guard.start(),
+            publish_body.index("apply_governed_topology("),
+            "Control-owner denial must occur before any physical CNS mutation",
         )
 
     def test_legacy_cell_split_route_activation_cannot_bypass_control(self) -> None:
