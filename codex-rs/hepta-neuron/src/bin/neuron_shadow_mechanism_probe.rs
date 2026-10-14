@@ -196,31 +196,42 @@ impl ActiveState {
     }
 }
 
-fn make_configs(width: usize) -> Result<Configs, String> {
+// Only construct a single selected arm and mode. In particular, never
+// allocate or validate other arms even during cold setup: VmHWM includes
+// discarded graph allocations and would misrepresent model residency.
+fn make_configs(width: usize, arm: &str, prepared: bool) -> Result<Configs, String> {
     let model_digest = Digest32::of_bytes(b"fixture-untrained-mechanism-model");
     let normalization_digest = Digest32::of_bytes(b"fixture-q24-normalization");
     let generation = Generation::new(1).map_err(|error| format!("{error:?}"))?;
     let global_top_k = (width / 10).max(1);
-    let v1 = SparseConfig {
-        model_digest,
-        normalization_digest,
-        generation,
-        width,
-        top_k: global_top_k,
-        temporal_decay_q24: Q / 2,
-        inhibition_gain_q24: Q / 2,
-        inhibition: Vec::<InhibitoryEdge>::new(),
-        activity_decay_q24: Q / 2,
-        target_activity_q24: Q / 2,
-        threshold_rate_q24: Q / 16,
-        threshold_min_q24: -Q,
-        threshold_max_q24: Q,
-        eligibility_decay_q24: Q / 2,
-    };
+    if arm == "v1" {
+        let cfg = SparseConfig {
+            model_digest,
+            normalization_digest,
+            generation,
+            width,
+            top_k: global_top_k,
+            temporal_decay_q24: Q / 2,
+            inhibition_gain_q24: Q / 2,
+            inhibition: Vec::<InhibitoryEdge>::new(),
+            activity_decay_q24: Q / 2,
+            target_activity_q24: Q / 2,
+            threshold_rate_q24: Q / 16,
+            threshold_min_q24: -Q,
+            threshold_max_q24: Q,
+            eligibility_decay_q24: Q / 2,
+        };
+        cfg.digest().map_err(|error| format!("V1 config: {error:?}"))?;
+        return Ok(Configs::V1(cfg));
+    }
+    if !["v2", "v3", "ssm", "min_gru"].contains(&arm) {
+        return Err("unknown fixture mechanism arm".to_owned());
+    }
+
     let split = width / 2;
     let first_k = global_top_k.div_ceil(2);
     let second_k = (global_top_k / 2).max(1);
-    let v2 = PopulationSparseConfigV2 {
+    let base = PopulationSparseConfigV2 {
         model_digest,
         normalization_digest,
         generation,
@@ -256,67 +267,84 @@ fn make_configs(width: usize) -> Result<Configs, String> {
         threshold_max_q24: Q,
         eligibility_decay_q24: Q / 2,
     };
-    let v3 = GatedSparseConfigV3 {
-        base: v2.clone(),
-        gates: vec![
-            TemporalGateV3 {
-                bias_q24: Q / 2,
-                input_gain_q24: Q / 4,
-                change_gain_q24: Q / 8,
+    match arm {
+        "v2" => {
+            if prepared {
+                Ok(Configs::V2Prepared(
+                    PreparedPopulationSparseConfigV2::new(base)
+                        .map_err(|error| format!("prepared V2: {error:?}"))?,
+                ))
+            } else {
+                base.digest().map_err(|error| format!("V2 config: {error:?}"))?;
+                Ok(Configs::V2Legacy(base))
+            }
+        }
+        "v3" => {
+            let cfg = GatedSparseConfigV3 {
+                base,
+                gates: vec![
+                    TemporalGateV3 {
+                        bias_q24: Q / 2,
+                        input_gain_q24: Q / 4,
+                        change_gain_q24: Q / 8,
+                    };
+                    width
+                ],
             };
-            width
-        ],
-    };
-    let ssm = DiagonalSsmConfigV1 {
-        base: v2.clone(),
-        decay_per_step_q24: vec![Q / 2; width],
-        input_gain_q24: vec![Q / 2; width],
-        time_quantum_micros: 100,
-    };
-    let min_gru = LowRankMinGruConfigV1 {
-        base: v2.clone(),
-        rank: 1,
-        gate_input_q24: vec![0; width],
-        gate_output_q24: vec![0; width],
-        candidate_input_q24: vec![0; width],
-        candidate_output_q24: vec![0; width],
-        gate_bias_q24: vec![0; width],
-        candidate_bias_q24: vec![0; width],
-    };
-    v1.digest()
-        .map_err(|error| format!("V1 config: {error:?}"))?;
-    v2.digest()
-        .map_err(|error| format!("V2 config: {error:?}"))?;
-    v3.digest()
-        .map_err(|error| format!("V3 config: {error:?}"))?;
-    ssm.digest()
-        .map_err(|error| format!("SSM config: {error:?}"))?;
-    min_gru
-        .digest()
-        .map_err(|error| format!("minGRU config: {error:?}"))?;
-    // Compile the selected, immutable model tuples exactly once per runner.
-    // Reusing a compiled model across many scoped Cells does not share or
-    // mutate their individual temporal checkpoints.
-    let ready_v2 = PreparedPopulationSparseConfigV2::new(v2.clone())
-        .map_err(|error| format!("prepared V2: {error:?}"))?;
-    let ready_v3 = PreparedGatedSparseConfigV3::new(v3.clone())
-        .map_err(|error| format!("prepared V3: {error:?}"))?;
-    let ready_ssm = PreparedDiagonalSsmConfigV1::new(ssm.clone())
-        .map_err(|error| format!("prepared SSM: {error:?}"))?;
-    let ready_min_gru = PreparedLowRankMinGruConfigV1::new(min_gru.clone())
-        .map_err(|error| format!("prepared minGRU: {error:?}"))?;
-    Ok(Configs {
-        v1,
-        v2,
-        v3,
-        ssm,
-        min_gru,
-        ready_v2,
-        ready_v3,
-        ready_ssm,
-        ready_min_gru,
-        prepared_mode: true,
-    })
+            if prepared {
+                Ok(Configs::V3Prepared(
+                    PreparedGatedSparseConfigV3::new(cfg)
+                        .map_err(|error| format!("prepared V3: {error:?}"))?,
+                ))
+            } else {
+                cfg.digest().map_err(|error| format!("V3 config: {error:?}"))?;
+                Ok(Configs::V3Legacy(cfg))
+            }
+        }
+        "ssm" => {
+            let cfg = DiagonalSsmConfigV1 {
+                base,
+                decay_per_step_q24: vec![Q / 2; width],
+                input_gain_q24: vec![Q / 2; width],
+                time_quantum_micros: 100,
+            };
+            if prepared {
+                Ok(Configs::SsmPrepared(
+                    PreparedDiagonalSsmConfigV1::new(cfg)
+                        .map_err(|error| format!("prepared SSM: {error:?}"))?,
+                ))
+            } else {
+                cfg.digest().map_err(|error| format!("SSM config: {error:?}"))?;
+                Ok(Configs::SsmLegacy(cfg))
+            }
+        }
+        "min_gru" => {
+            let cfg = LowRankMinGruConfigV1 {
+                base,
+                rank: 1,
+                gate_input_q24: vec![0; width],
+                gate_output_q24: vec![0; width],
+                candidate_input_q24: vec![0; width],
+                candidate_output_q24: vec![0; width],
+                gate_bias_q24: vec![0; width],
+                candidate_bias_q24: vec![0; width],
+            };
+            let params = cfg
+                .temporal_parameter_count()
+                .map_err(|error| format!("minGRU count: {error:?}"))?;
+            if prepared {
+                Ok(Configs::MinGruPrepared(
+                    PreparedLowRankMinGruConfigV1::new(cfg)
+                        .map_err(|error| format!("prepared minGRU: {error:?}"))?,
+                    params,
+                ))
+            } else {
+                cfg.digest().map_err(|error| format!("minGRU config: {error:?}"))?;
+                Ok(Configs::MinGruLegacy(cfg, params))
+            }
+        }
+        _ => Err("unknown fixture mechanism arm".to_owned()),
+    }
 }
 
 fn parse_trace(bytes: &[u8]) -> Result<MechanismTraceV1, String> {
