@@ -172,7 +172,10 @@ fn every_sensitive_request_field_is_in_request_hash() {
     for variant in variants {
         assert_ne!(
             original,
-            variant.binding_proposal().expect("valid variant").request_sha256
+            variant
+                .binding_proposal()
+                .expect("valid variant")
+                .request_sha256
         );
     }
 }
@@ -203,7 +206,10 @@ fn scope_hash_changes_with_principal_destination_generation_fence_and_epoch() {
     for variant in variants {
         assert_ne!(
             original,
-            variant.binding_proposal().expect("valid variant").scope_sha256
+            variant
+                .binding_proposal()
+                .expect("valid variant")
+                .scope_sha256
         );
     }
 }
@@ -211,13 +217,26 @@ fn scope_hash_changes_with_principal_destination_generation_fence_and_epoch() {
 #[test]
 fn identity_validation_rejects_path_escape_unicode_and_unbounded_strings() {
     let oversized = "x".repeat(129);
-    for bad in ["", "../escape", "a\nb", "scope space", "界", oversized.as_str()] {
+    for bad in [
+        "",
+        "../escape",
+        "a\nb",
+        "scope space",
+        "界",
+        oversized.as_str(),
+    ] {
         let mut value = intent();
         value.operation_id = bad.to_string();
-        assert_eq!(value.validate(), Err(ExecutionEnvelopeErrorV1::InvalidIdentity));
+        assert_eq!(
+            value.validate(),
+            Err(ExecutionEnvelopeErrorV1::InvalidIdentity)
+        );
         let mut value = intent();
         value.destination_id = bad.to_string();
-        assert_eq!(value.validate(), Err(ExecutionEnvelopeErrorV1::InvalidIdentity));
+        assert_eq!(
+            value.validate(),
+            Err(ExecutionEnvelopeErrorV1::InvalidIdentity)
+        );
     }
 }
 
@@ -247,7 +266,10 @@ fn zero_generation_fence_or_authority_epoch_fails_closed() {
 fn bounded_deadlines_payloads_and_versions_are_enforced() {
     let mut value = intent();
     value.schema_version = 2;
-    assert_eq!(value.validate(), Err(ExecutionEnvelopeErrorV1::InvalidVersion));
+    assert_eq!(
+        value.validate(),
+        Err(ExecutionEnvelopeErrorV1::InvalidVersion)
+    );
     for wall in [0, MAX_EXECUTION_WALL_MS_V1 + 1] {
         let mut value = intent();
         value.max_wall_ms = wall;
@@ -274,11 +296,19 @@ fn bounded_deadlines_payloads_and_versions_are_enforced() {
 
 #[test]
 fn malformed_or_zero_sha256_digest_is_not_admitted() {
-    for bad in ["0".repeat(64), "A".repeat(64), "x".repeat(64), "abc".to_string()] {
+    for bad in [
+        "0".repeat(64),
+        "A".repeat(64),
+        "x".repeat(64),
+        "abc".to_string(),
+    ] {
         let mut value = serde_json::to_value(intent()).expect("object");
         value["payload_sha256"] = json!(bad);
         let value: ExecutionIntentV1 = serde_json::from_value(value).expect("deserialize");
-        assert_eq!(value.validate(), Err(ExecutionEnvelopeErrorV1::InvalidDigest));
+        assert_eq!(
+            value.validate(),
+            Err(ExecutionEnvelopeErrorV1::InvalidDigest)
+        );
     }
 }
 
@@ -360,10 +390,7 @@ fn terminal_claim_can_only_request_original_receipt_verification() {
     );
     observed.claimed_original_receipt_sha256 = Some(Sha256Digest::for_bytes(b"claim-only"));
     let plan = plan_execution_reconciliation_v1(&value, &observed).expect("plan");
-    assert_eq!(
-        plan.action,
-        ExecutionReconcileOnlyV1::VerifyOriginalReceipt
-    );
+    assert_eq!(plan.action, ExecutionReconcileOnlyV1::VerifyOriginalReceipt);
     assert_eq!(plan.operation_id, value.operation_id);
 }
 
