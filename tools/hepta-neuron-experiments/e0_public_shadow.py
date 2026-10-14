@@ -188,15 +188,17 @@ def main() -> int:
         if not independent_oracle["numeric_oracle_agrees"]:
             raise AssertionError("independent numerical oracle did not agree")
         # Exercise the existing Q24 Head arithmetic using an untrained fixture.
-        # This is NOT the native Rust Neuron Worker or a trained policy.
-        weights = [0] * (2 * 256)
+        # Match native Neuron V1 state_width=256 without impersonating the
+        # actual NeuronModelPort / Worker or introducing a selected policy.
+        weights = [0] * (256 * 256)
         weights[-1] = Q
-        logits = native_logits(dict(input_width=256, output_width=2,
+        logits = native_logits(dict(input_width=256, output_width=256,
                                     drive_weights_q24=weights,
-                                    drive_bias_q24=[0, 0]),
+                                    drive_bias_q24=[0] * 256),
                                [int(x) / Q for x in ref.vector_q24])
-        if len(logits) != 2 or logits[0] != 0 or round(logits[-1] * Q) != ref.vector_q24[-1]:
-            raise AssertionError("native shadow Q24 Head did not match projection")
+        if (len(logits) != 256 or any(logits[:-1]) or
+                round(logits[-1] * Q) != ref.vector_q24[-1]):
+            raise AssertionError("native shadow 256-wide Q24 Head mismatched projection")
         if snapshot_digest(snapshot) != SNAPSHOT_SHA256:
             raise ValueError("public Encoder bytes drift after inference")
         report = dict(schema="hepta.neuron.e0-public-pretrained-projection-shadow.v1",
@@ -210,7 +212,10 @@ def main() -> int:
                       projection_sha256=projection_sha, projection_digest=projection.digest,
                       projected_input_digest=ref.projected_input_digest,
                       oracle_result=independent_oracle,
-                      diagnostic_head_logits_q24=[round(x * Q) for x in logits],
+                      diagnostic_head_width=256,
+                      diagnostic_head_drive_q24_sha256=sha(
+                          b"".join(i64(round(x * Q)) for x in logits)),
+                      diagnostic_head_prediction_policy="all_zero_untrained",
                       loading_and_forward_wall_ns=elapsed_ns,
                       forward_wall_ns=forward_wall_ns,
                       process_cpu_ns=process_cpu_ns,
