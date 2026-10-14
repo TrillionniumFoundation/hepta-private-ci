@@ -22,6 +22,17 @@ from reader_host_disposition import ARMS, TIERS, inspect, strict_json
 SCHEMA = "hepta.memory-cell.reader-external-artifact-audit.v1"
 REPO = "TrillionniumFoundation/hepta-private-ci"
 BRANCH = "codex/memorycell-reader-bottleneck-ablation-20261014"
+REPAIRED_BRANCH = "codex/memorycell-reader-real-generator-fix-20261014"
+COHORTS = {
+    38538369649: (
+        "45388fefac75b08f2715584abd7062699bd461c0",
+        BRANCH,
+    ),
+    38548446903: (
+        "5b0dead3b766bdc5e56c09e024a8f82c50ccbdd6",
+        REPAIRED_BRANCH,
+    ),
+}
 WORKFLOW = "MemoryCell real Reader capacity and one-premise ablation"
 SHA40 = re.compile(r"[0-9a-f]{40}\Z")
 SHA64 = re.compile(r"[0-9a-f]{64}\Z")
@@ -34,12 +45,15 @@ def sha(data):
 
 
 def checked_metadata(run, listing, *, run_id, source):
-    if type(run_id) is not int or run_id <= 0 or not SHA40.fullmatch(source):
-        raise ValueError("fixed original run/source required")
+    if type(run_id) is not int or run_id not in COHORTS:
+        raise ValueError("unknown immutable original Reader run")
+    bound_source, branch = COHORTS[run_id]
+    if not SHA40.fullmatch(source) or source != bound_source:
+        raise ValueError("generating run must match its independently pinned source")
     if (
         run.get("id") != run_id
         or run.get("head_sha") != source
-        or run.get("head_branch") != BRANCH
+        or run.get("head_branch") != branch
         or run.get("name") != WORKFLOW
         or run.get("event") != "push"
         or run.get("run_attempt") != 1
@@ -86,7 +100,7 @@ def checked_metadata(run, listing, *, run_id, source):
             or not isinstance(provenance, dict)
             or provenance.get("id") != run_id
             or provenance.get("head_sha") != source
-            or provenance.get("head_branch") != BRANCH
+            or provenance.get("head_branch") != branch
         ):
             raise ValueError("unsigned, duplicate or cross-run artifact")
         names.add(name)

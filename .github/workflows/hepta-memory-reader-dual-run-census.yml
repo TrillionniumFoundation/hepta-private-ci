@@ -1,0 +1,155 @@
+name: MemoryCell original and repaired Reader run provenance
+on:
+  push:
+    branches: [codex/memorycell-reader-dual-run-census-20261014]
+    paths:
+      - "scripts/memory_cell/reader_external_artifact_audit.py"
+      - "scripts/memory_cell/reader_dual_run_census.py"
+      - "scripts/memory_cell/test_reader_dual_run_census.py"
+      - ".github/workflows/hepta-memory-reader-dual-run-census.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/reader_external_artifact_audit.py"
+      - "scripts/memory_cell/reader_dual_run_census.py"
+      - "scripts/memory_cell/test_reader_dual_run_census.py"
+      - ".github/workflows/hepta-memory-reader-dual-run-census.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-reader-two-sources-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+env:
+  PYTHONPATH: scripts/memory_cell
+
+jobs:
+  source-gate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Compile and run negative controls without a model or target labels
+        run: |
+          set -euo pipefail
+          python3 -m py_compile \
+            scripts/memory_cell/reader_external_artifact_audit.py \
+            scripts/memory_cell/reader_dual_run_census.py \
+            scripts/memory_cell/test_reader_dual_run_census.py
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p test_reader_dual_run_census.py -v
+          python3 -m unittest discover -s scripts/memory_cell \
+            -p test_reader_external_artifact_audit.py -v
+      - name: Strict repository Ruff format
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/reader_external_artifact_audit.py \
+            scripts/memory_cell/reader_dual_run_census.py \
+            scripts/memory_cell/test_reader_dual_run_census.py
+      - name: Preserve exact Ruff correction on failure
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-two-run-source-failure
+          git rev-parse HEAD > /tmp/reader-two-run-source-failure/checkout-commit.txt
+          if command -v uv >/dev/null; then
+            uv run --frozen --project scripts ruff format --diff \
+              scripts/memory_cell/reader_external_artifact_audit.py \
+              scripts/memory_cell/reader_dual_run_census.py \
+              scripts/memory_cell/test_reader_dual_run_census.py \
+              > /tmp/reader-two-run-source-failure/ruff.diff || true
+            cat /tmp/reader-two-run-source-failure/ruff.diff
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: memory-reader-dual-run-source-failure
+          path: /tmp/reader-two-run-source-failure
+          if-no-files-found: warn
+
+  audit-two-original-generating-sources:
+    needs: source-gate
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Verify immutable source artifact bytes without exposing target labels
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-two-run
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11827287296/zip" > /tmp/reader-two-run/public-source.zip
+          printf '%s  %s\n' '31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a' /tmp/reader-two-run/public-source.zip | sha256sum --check --strict
+      - name: Independently verify each original generating run and all its ZIPs
+        run: |
+          set -euo pipefail
+          for entry in \
+            '38538369649 45388fefac75b08f2715584abd7062699bd461c0 original' \
+            '38548446903 5b0dead3b766bdc5e56c09e024a8f82c50ccbdd6 repaired'; do
+            read -r run source label <<< "$entry"
+            mkdir -p "/tmp/reader-two-run/$label/zips"
+            gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run" > "/tmp/reader-two-run/$label/run.json"
+            gh api "repos/$GITHUB_REPOSITORY/actions/runs/$run/artifacts?per_page=100" > "/tmp/reader-two-run/$label/artifacts.json"
+            python3 scripts/memory_cell/reader_external_artifact_audit.py plan \
+              "/tmp/reader-two-run/$label/run.json" \
+              "/tmp/reader-two-run/$label/artifacts.json" \
+              "/tmp/reader-two-run/$label/pins.tsv" \
+              --expected-run-id "$run" --expected-source "$source"
+            while IFS=$'\t' read -r artifact_id digest; do
+              test -n "$artifact_id"
+              archive="/tmp/reader-two-run/$label/zips/artifact-$artifact_id.zip"
+              gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/$artifact_id/zip" > "$archive"
+              printf '%s  %s\n' "$digest" "$archive" | sha256sum --check --strict
+            done < "/tmp/reader-two-run/$label/pins.tsv"
+            python3 scripts/memory_cell/reader_external_artifact_audit.py audit \
+              "/tmp/reader-two-run/$label/run.json" \
+              "/tmp/reader-two-run/$label/artifacts.json" \
+              "/tmp/reader-two-run/$label/outer.json" \
+              --zip-dir "/tmp/reader-two-run/$label/zips" \
+              --expected-run-id "$run" --expected-source "$source"
+            python3 scripts/memory_cell/reader_original_case_binding.py \
+              /tmp/reader-two-run/public-source.zip \
+              "/tmp/reader-two-run/$label/outer.json" \
+              "/tmp/reader-two-run/$label/zips" \
+              "/tmp/reader-two-run/$label/bound.json"
+          done
+      - name: Reject cross-source pooling and retain honest separate denominators
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-two-run/evidence
+          python3 scripts/memory_cell/reader_dual_run_census.py \
+            /tmp/reader-two-run/original/outer.json \
+            /tmp/reader-two-run/original/bound.json \
+            /tmp/reader-two-run/repaired/outer.json \
+            /tmp/reader-two-run/repaired/bound.json \
+            /tmp/reader-two-run/evidence/report.json
+          for label in original repaired; do
+            cp "/tmp/reader-two-run/$label/outer.json" "/tmp/reader-two-run/evidence/$label-outer.json"
+            cp "/tmp/reader-two-run/$label/bound.json" "/tmp/reader-two-run/evidence/$label-bound.json"
+            cp "/tmp/reader-two-run/$label/run.json" "/tmp/reader-two-run/evidence/$label-run.json"
+            cp "/tmp/reader-two-run/$label/artifacts.json" "/tmp/reader-two-run/evidence/$label-artifacts.json"
+            cp "/tmp/reader-two-run/$label/pins.tsv" "/tmp/reader-two-run/evidence/$label-pins.tsv"
+          done
+          git rev-parse HEAD > /tmp/reader-two-run/evidence/auditor-commit.txt
+          (cd /tmp/reader-two-run/evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memory-two-pinned-original-reader-run-censuses
+          path: /tmp/reader-two-run/evidence
+          if-no-files-found: error
