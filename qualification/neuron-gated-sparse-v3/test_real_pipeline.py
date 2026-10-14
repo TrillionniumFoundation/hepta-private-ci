@@ -76,6 +76,17 @@ class TestInputAndBudgets(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'crossed'):
             future_data(data,rc)
 
+    @unittest.skipUnless(importlib.util.find_spec('torch') is not None,
+                         'requires optional Torch CPU')
+    def test_low_rank_factors_get_nonzero_initial_projection(self):
+        import torch
+        from matched_train import make_model, TIME_QUANTUM_MICROS
+        torch.manual_seed(7)
+        model = make_model('min_gru', 16, 2, torch)
+        self.assertGreater(float(model.gate_input.abs().sum()), 0)
+        self.assertGreater(float(model.candidate_input.abs().sum()), 0)
+        self.assertEqual(TIME_QUANTUM_MICROS, 1000000)
+
     def test_metrics_are_only_descriptive(self):
         self.assertEqual(binary_metrics([(500000,0),(500000,1)])['brier_ppm'],250000)
         with self.assertRaisesRegex(ValueError,'empty'):
