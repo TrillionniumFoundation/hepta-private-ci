@@ -461,8 +461,10 @@ fn run() -> Result<(), String> {
     let bytes = fs::read(trace_path).map_err(|error| format!("trace file: {error}"))?;
     let trace_digest = Digest32::of_bytes(&bytes);
     let trace = parse_trace(&bytes)?;
-    let mut configs = make_configs(trace.width)?;
-    configs.prepared_mode = prepared_mode;
+    let preparation_started = Instant::now();
+    let configs = make_configs(trace.width, &arm, prepared_mode)?;
+    let model_config_setup_micros =
+        u64::try_from(preparation_started.elapsed().as_micros()).unwrap_or(u64::MAX);
     let mut states = ActiveState::new(&arm, cells)?;
     let mut frontiers = vec![Digest32::ZERO; cells];
     let mut samples = Vec::with_capacity(cells * trace.events.len());
@@ -492,9 +494,10 @@ fn run() -> Result<(), String> {
         "ndu_eligible": false,
         "trained_model": false,
         "all_model_parameter_budgets_matched": false,
-        "temporal_parameter_count_only": if arm == "min_gru" {
-            Some(configs.min_gru.temporal_parameter_count().map_err(|error| format!("{error:?}"))?)
-        } else { None },
+        "temporal_parameter_count_only": configs.temporal_parameter_count_only(),
+        "single_selected_config_resident": true,
+        "simultaneous_legacy_and_prepared_config_resident": false,
+        "model_config_setup_micros": model_config_setup_micros,
         "state_persistence_measured": false,
         "microbatch_and_gpu_measured": false,
         "artifact_provenance_verified": false,
@@ -576,23 +579,66 @@ mod tests {
     }
 
     #[test]
-    fn every_arm_accepts_the_exact_same_32_dimensional_trace() {
+    fn every_arm_accepts_same_trace_with_exactly_one_selected_mode() {
         let trace = parse_trace(&bytes(&sample_trace())).expect("valid 32D two-tick trace");
-        let configs = make_configs(trace.width).expect("valid mechanisms");
-        let v1 = configs.v1.digest().expect("v1 config digest");
-        let v2 = configs.v2.digest().expect("v2 config digest");
-        assert_ne!(v1, v2);
-        assert_eq!(configs.v2.populations.len(), 2);
-        assert_eq!(configs.v2.global_top_k, 3);
-        for arm in ["v1", "v2", "v3", "ssm", "min_gru"] {
-            let mut states = ActiveState::new(arm, 64).expect("valid arm");
-            for row in &trace.events {
-                let input = request_for(row, 7);
-                let frontier = states
-                    .apply(7, &input, &configs)
-                    .expect("arm must process same Q24 trace");
-                assert!(!frontier.is_zero());
+        let v1 = make_configs(trace.width, "v1", false).expect("V1");
+        let v2 = make_configs(trace.width, "v2", false).expect("V2");
+        match (&v1, &v2) {
+            (Configs::V1(a), Configs::V2Legacy(b)) => {
+                assert_ne!(a.digest().expect("V1"), b.digest().expect("V2"));
+                assert_eq!(b.populations.len(), 2);
+                assert_eq!(b.global_top_k, 3);
             }
+            _ => panic!("incorrect selected model"),
+        }
+        for arm in ["v1", "v2", "v3", "ssm", "min_gru"] {
+            for mode in [false, true] {
+                let config = make_configs(trace.width, arm, mode).expect("one selected model");
+                assert_eq!(config.is_prepared(), mode && arm != "v1");
+                let mut states = ActiveState::new(arm, 64).expect("valid arm");
+                for row in &trace.events {
+                    let input = request_for(row, 7);
+                    let frontier = states
+                        .apply(7, &input, &config)
+                        .expect("arm must process same Q24 trace");
+                    assert!(!frontier.is_zero());
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn mismatched_selected_model_and_checkpoint_state_reject() {
+        let sample = sample_trace();
+        let input = request_for(&sample.events[0], 7);
+        let v2_legacy = make_configs(32, "v2", false).expect("V2 legacy");
+        let v2_prepared = make_configs(32, "v2", true).expect("V2 prepared");
+        assert!(matches!(v2_legacy, Configs::V2Legacy(_)));
+        assert!(matches!(v2_prepared, Configs::V2Prepared(_)));
+        assert!(make_configs(32, "unknown", true).is_err());
+        let mut v3 = ActiveState::new("v3", 64).expect("V3");
+        assert!(v3.apply(7, &input, &v2_prepared).is_err());
+        let mut ssm = ActiveState::new("ssm", 64).expect("SSM");
+        assert!(ssm.apply(7, &input, &v2_legacy).is_err());
+    }
+
+    #[test]
+    fn isolated_legacy_and_prepared_modes_produce_identical_frontiers() {
+        let trace = parse_trace(&bytes(&sample_trace())).expect("valid input");
+        for arm in ["v1", "v2", "v3", "ssm", "min_gru"] {
+            let mut frontier = Vec::new();
+            for mode in [false, true] {
+                let config = make_configs(trace.width, arm, mode).expect("one selected model");
+                let mut state = ActiveState::new(arm, 64).expect("model state");
+                let mut latest = Digest32::ZERO;
+                for row in &trace.events {
+                    latest = state
+                        .apply(7, &request_for(row, 7), &config)
+                        .expect("same Q24 input");
+                }
+                frontier.push(latest);
+            }
+            assert_eq!(frontier[0], frontier[1], "{arm}: different checkpoint digest");
         }
     }
 
