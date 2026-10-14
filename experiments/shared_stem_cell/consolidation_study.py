@@ -15,8 +15,8 @@ from experiments.shared_stem_cell import consolidation as c, execution as e, fea
 from experiments.shared_stem_cell.head_artifacts import _digest, _path, _read, export_head, load_head
 
 
-def study(manifest_path, producer, report_sha256, output, *, partial=False, residual=False):
-    if type(partial) is not bool or type(residual) is not bool:
+def study(manifest_path, producer, report_sha256, output, *, partial=False, residual=False, ridge=False):
+    if any(type(v) is not bool for v in (partial, residual, ridge)):
         raise e.InputError("exact partial-consolidation option required")
     raw = _read(manifest_path, f.MAX_INDEX)
     config = e.decode(raw)
@@ -78,6 +78,8 @@ def study(manifest_path, producer, report_sha256, output, *, partial=False, resi
         origin["partial_policy_source_sha256"] = e.sha((Path(__file__).parent / "partial_consolidation.py").read_bytes())
     if residual:
         origin["residual_source_sha256"] = e.sha((Path(__file__).parent / "residual_consolidation.py").read_bytes())
+    if ridge:
+        origin["ridge_source_sha256"] = e.sha((Path(__file__).parent / "ridge_consolidation.py").read_bytes())
     e.write_once(output / "plan.json", origin)
     try:
         tr, cal = folds["train"], folds["calibration"]
@@ -118,6 +120,28 @@ def study(manifest_path, producer, report_sha256, output, *, partial=False, resi
             residual_seal = e.write_once(output / "residual-selection.json",
                 {"selection": residual_selection, "heads": residual_exports, "origin": origin})
             e.bound_file(output / "residual-selection.json", residual_seal, f.MAX_INDEX)
+        if ridge:
+            from experiments.shared_stem_cell import ridge_consolidation as rg, residual_consolidation as rc
+            ridge_heads, ridge_selection = rg.fit_ridge(teachers, models["supervised"],
+                x[tr], routes[tr], x[cal], routes[cal], y(cal))
+            ridge_exports = {}
+            with e.measured() as ridge_export_cost:
+                for mode, heads in ridge_heads.items():
+                    loaded, ridge_exports[mode] = [], []
+                    for cell, head in enumerate(heads):
+                        binding = {**teacher_receipts[cell]["binding"], "generation": base["generation"],
+                            "logical_cell": f"ridge-{mode}-cell-{cell}",
+                            "feature_profile_sha256": e.sha(e.canonical([archive["binding"]["feature_profile_sha256"],
+                                "centered_logit_ridge_v1", mode, ridge_selection["shared_identity"]])),
+                            "training_lineage_sha256": e.sha(e.canonical([origin, ridge_selection, mode, cell]))}
+                        path = output / "ridge-heads" / mode / f"cell-{cell}"
+                        item = export_head(path, head, binding)
+                        loaded.append(load_head(path, item["manifest_sha256"], binding))
+                        ridge_exports[mode].append({**item, "binding": binding})
+                    ridge_heads[mode] = tuple(loaded)
+            ridge_seal = e.write_once(output / "ridge-selection.json",
+                {"selection": ridge_selection, "heads": ridge_exports, "origin": origin})
+            e.bound_file(output / "ridge-selection.json", ridge_seal, f.MAX_INDEX)
         partial_result = None
         if partial:
             from experiments.shared_stem_cell import partial_consolidation as pc
@@ -153,6 +177,12 @@ def study(manifest_path, producer, report_sha256, output, *, partial=False, resi
             predicted["predictions"]["residual_selected"] = residual_result["predictions"][residual_selection["selected"]]
             predicted["residual_execution"] = residual_result
             predicted["residual_selection_sha256"] = residual_seal
+        if ridge:
+            ridge_result = rc.predict(teachers, models["supervised"], ridge_heads, ridge_selection, x[test], routes[test])
+            predicted["predictions"].update({f"ridge_{k}": ridge_result["predictions"][k] for k in rc.MODES})
+            predicted["predictions"]["ridge_selected"] = ridge_result["predictions"][ridge_selection["selected"]]
+            predicted["ridge_execution"] = ridge_result
+            predicted["ridge_selection_sha256"] = ridge_seal
         payload = {"case_ids": [cases[i].case_id for i in test],
                    "input_digests": [cases[i].input_digest for i in test],
                    "routes": routes[test].tolist(), "selection_sha256": seal, **predicted}
@@ -161,6 +191,8 @@ def study(manifest_path, producer, report_sha256, output, *, partial=False, resi
         expected_arms = set(c.ARMS) | ({"partial_selected"} if partial else set())
         if residual:
             expected_arms |= {*rc.MODES, "residual_selected"}
+        if ridge:
+            expected_arms |= {*(f"ridge_{k}" for k in rc.MODES), "ridge_selected"}
         if set(saved["predictions"]) != expected_arms or saved["case_ids"] != payload["case_ids"]:
             raise e.InputError("complete consolidation predictions required")
         scores = {}
@@ -203,6 +235,12 @@ def study(manifest_path, producer, report_sha256, output, *, partial=False, resi
                 "additional_optimizer_steps": residual_selection["executed_optimizer_steps"],
                 "export_and_reopen": residual_export_cost, "execution": residual_result["inference_costs"],
                 "retention_certified": False, "production_accepted": False}
+        if ridge:
+            result["ridge"] = {"selected": ridge_selection["selected"], "selection_sha256": ridge_seal,
+                "parameter_counts": ridge_selection["parameter_counts"], "additional_optimizer_steps": 0,
+                "svd_calls": ridge_selection["executed_svd_calls"], "rho": rg.RHO,
+                "export_and_reopen": ridge_export_cost, "execution": ridge_result["inference_costs"],
+                "same_objective_as_adamw_kl": False, "retention_certified": False, "production_accepted": False}
         e.write_once(output / "report.json", result)
         return result
     except Exception as error:
@@ -219,6 +257,7 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--partial", action="store_true")
     parser.add_argument("--residual", action="store_true")
+    parser.add_argument("--ridge", action="store_true")
     args = parser.parse_args()
     torch.set_num_threads(2)
-    study(args.manifest, args.producer, args.report_sha256, args.output, partial=args.partial, residual=args.residual)
+    study(args.manifest, args.producer, args.report_sha256, args.output, partial=args.partial, residual=args.residual, ridge=args.ridge)

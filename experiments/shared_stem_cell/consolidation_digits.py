@@ -9,8 +9,8 @@ import torch
 from sklearn.datasets import load_digits
 from experiments.shared_stem_cell import execution as e, consolidation as c
 
-def main(output, *, partial=False, residual=False):
-    if type(partial) is not bool or type(residual) is not bool:
+def main(output, *, partial=False, residual=False, ridge=False):
+    if any(type(v) is not bool for v in (partial, residual, ridge)):
         raise e.InputError("exact partial option required")
     output.mkdir(parents=True, exist_ok=False)
     torch.set_num_threads(1)
@@ -36,6 +36,10 @@ def main(output, *, partial=False, residual=False):
     if residual:
         e.write_once(output/'residual-plan.json', {'source_sha256': e.sha((Path(e.__file__).parent/'residual_consolidation.py').read_bytes()),
             'shared_source': 'fixed supervised student', 'steps_per_cell_per_arm': 80, 'production_accepted': False})
+    if ridge:
+        e.write_once(output/'ridge-plan.json', {'source_sha256': e.sha((Path(e.__file__).parent/'ridge_consolidation.py').read_bytes()),
+            'objective': 'centered-logit SSE + scaled L2; penalized bias', 'rho': 0.1,
+            'hyperparameter_search': False, 'production_accepted': False})
     tr,cal,hold=folds['train'],folds['calibration'],folds['holdout']
     target=lambda ids: torch.tensor([int(data.target[i]) for i in ids],dtype=torch.long)
     records=[]
@@ -57,6 +61,13 @@ def main(output, *, partial=False, residual=False):
             residual_meta = {"residual_selection_sha256": e.write_once(output/f'{seed}-residual-selection.json', residual_selection),
                              "residual_selected": residual_selection["selected"],
                              "residual_parameters": residual_selection["parameter_counts"]}
+        ridge_meta = {}
+        if ridge:
+            from experiments.shared_stem_cell import ridge_consolidation as rg, residual_consolidation as rc
+            ridge_heads, ridge_selection = rg.fit_ridge(tuple(teachers), models["supervised"],
+                x[tr], routes[tr], x[cal], routes[cal], target(cal))
+            ridge_meta = {"ridge_selection_sha256": e.write_once(output/f'{seed}-ridge-selection.json', ridge_selection),
+                          "ridge_selected": ridge_selection["selected"], "ridge_parameters": ridge_selection["parameter_counts"]}
         partial_meta = {}
         if partial:
             from experiments.shared_stem_cell import partial_consolidation as pc
@@ -76,9 +87,14 @@ def main(output, *, partial=False, residual=False):
             values["predictions"].update({k: result["predictions"][k] for k in rc.MODES})
             values["predictions"]["residual_selected"] = result["predictions"][residual_selection["selected"]]
             values["residual_execution"] = result
+        if ridge:
+            result = rc.predict(tuple(teachers), models["supervised"], ridge_heads, ridge_selection, x[hold], routes[hold])
+            values["predictions"].update({f"ridge_{k}": result["predictions"][k] for k in rc.MODES})
+            values["predictions"]["ridge_selected"] = result["predictions"][ridge_selection["selected"]]
+            values["ridge_execution"] = result
         prediction_sha=e.write_once(output/f'{seed}-predictions.json',{'row_ids':hold,'selection_sha256':selection_sha,**values})
         records.append({'seed':seed,'prediction_sha256':prediction_sha,'selection_sha256':selection_sha,
-                        'teacher_training':costs, **partial_meta, **residual_meta})
+                        'teacher_training':costs, **partial_meta, **residual_meta, **ridge_meta})
     # First holdout-label read happens after EVERY seed has sealed predictions.
     gold=target(hold)
     for rec in records:
@@ -93,4 +109,5 @@ if __name__=='__main__':
     p=argparse.ArgumentParser(); p.add_argument('--output',type=Path,required=True)
     p.add_argument('--partial', action='store_true')
     p.add_argument('--residual', action='store_true')
-    args=p.parse_args(); main(args.output, partial=args.partial, residual=args.residual)
+    p.add_argument("--ridge", action="store_true")
+    args=p.parse_args(); main(args.output, partial=args.partial, residual=args.residual, ridge=args.ridge)

@@ -142,3 +142,50 @@ features without another Encoder load. Digits and the previously exposed AG News
 cohort remain development material, not new independent holdouts. No NDU,
 generator consolidation, universal no-forgetting claim or product authority is
 added by the residual profile.
+
+## Fixed regularized direct solve (`--ridge`)
+
+The existing offline and digit entrypoints also accept `--ridge`. Keep
+`--partial --residual --ridge` to retain all original controls. This adds two
+linear candidates in the SAME model families as the AdamW/KL residual experiment:
+one frozen shared Head plus one linear correction per Cell, and an independently
+solved standalone linear Head per Cell. Existing Head serialization, source
+bindings, frozen prediction checks and per-Cell calibration floor are reused.
+The fitter accepts no training labels; calibration labels only choose among
+already fitted candidates. Every arm and the actual choice remain in the report.
+
+For each Cell, let `Z=[x,1]`, and center each teacher/shared logit row across
+classes. Fit both targets `[center(teacher-shared), center(teacher)]` together:
+
+```
+min_W ||Z W - Y||_F^2 + alpha ||W||_F^2
+alpha = 0.1 * ||Z||_F^2 / columns(Z)
+Z = U diag(s) V^T
+W = V diag(s/(s^2+alpha)) U^T Y
+```
+
+The relative coefficient 0.1 is fixed, not searched on calibration or holdout.
+Bias is penalized too; features are not standardized. One reduced float64 SVD
+per Cell serves both right-hand sides. Record numerical rank/nullity (diagnostic
+only), effective degrees of freedom, input hashes and training-fit error.
+Check the normal-equation residual in float64 (<=1e-10 normalized), then again
+on the actual float32 coefficients (<=2e-5). Failed numerics stop publication;
+no singular-vector truncation, fabricated zero solution or relaxed score gate.
+The bound covers explicitly estimated tensors, NOT LAPACK workspace/process RSS.
+
+**This changes the fitting objective as well as the solver.** It is conventional
+ridge logit distillation, not an equal-objective optimizer race, an NDU/FBSDE
+solution or a general learning/retention theorem. Zero new gradient updates does
+not mean zero work: SVD, teacher/shared targets, calibration, export and inference
+are all recorded. Inherited teacher/student training is unchanged and not free.
+Corrected inference still executes a shared and a linear Head per row. Original
+AdamW/KL candidates remain separately named; new scores use the `ridge_` prefix.
+
+The observed development data remain exposed: running the same digits/AG News
+again is not an independent future test. Rank deficiency or a smaller parameter
+count does not guarantee better heldout outcomes. Numerical stationarity verifies
+the declared optimization problem, not semantic correctness or production safety.
+
+Numerical references: PyTorch `torch.linalg.svd` (reduced SVD) and scikit-learn
+`Ridge` (SVD ridge solver). Runtime remains the existing pinned Torch; no new model,
+network acquisition, training service, serving owner or execution authority.
