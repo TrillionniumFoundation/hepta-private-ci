@@ -274,9 +274,65 @@ fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
         assert_eq!(owner.current().unwrap(), (successor.clone(), migrated));
     }
     assert_eq!(physical_calls, 1, "the external effect is not replayable");
+    // The fsynced Control C record must commit to the exact original-owner
+    // receipt bytes returned from the callback, not merely the next route
+    // digest, a bool success or a no-data OK. This fixture is not signed.
+    let mut receipt_binding = b"hepta.control.ndu-publication.cns-original-receipt.v1\0".to_vec();
+    receipt_binding.extend_from_slice(&(96_u64).to_be_bytes());
+    receipt_binding.extend_from_slice(&[0x53; 96]);
+    let expected_receipt_digest = Digest32::of_bytes(&receipt_binding).to_string();
+    let journal = std::fs::read_to_string(&path).expect("original Control WAL");
+    let commit_row = journal
+        .lines()
+        .find(|line| line.split('|').nth(4) == Some("C"))
+        .expect("new guarded cutover must fsync a C event");
+    assert_eq!(commit_row.split('|').nth(8), Some(expected_receipt_digest.as_str()));
     let reopened = NduPublicationOwnerV1::open_production(&path, successor.clone(), migrated)
         .expect("both durable journal phases replay");
     assert_eq!(reopened.current().unwrap(), (successor, migrated));
+}
+
+#[cfg(unix)]
+#[test]
+fn missing_or_unbounded_original_cns_receipt_never_commits_control_handoff() {
+    for receipt_bytes in [0_usize, 63, 32 * 1024 + 1] {
+        let root = tempfile::tempdir().expect("isolated private Control directory");
+        let path = root.path().join("ambiguous-original-receipt.wal");
+        let original = snapshot(3);
+        let mut calls = 0_usize;
+        let owner =
+            NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+                .expect("original Control owner");
+        let result = owner.publish_cutover_with_external_effect(
+            &original,
+            Digest32::ZERO,
+            snapshot(4),
+            Digest32::of_bytes(b"migrated-child-state"),
+            || -> Result<((), Vec<u8>), &'static str> {
+                calls += 1;
+                Ok(((), vec![0x55; receipt_bytes]))
+            },
+        );
+        assert_eq!(result, Err(NduPublicationErrorV1::Indeterminate));
+        assert_eq!(calls, 1, "unknown external effect cannot be retried");
+        assert_eq!(owner.current(), Err(NduPublicationErrorV1::Poisoned));
+        drop(owner);
+
+        let durable = std::fs::read_to_string(&path).expect("durable prepared WAL");
+        assert!(
+            durable.lines().any(|line| line.split('|').nth(4) == Some("B")),
+            "original Begin must remain for independent recovery"
+        );
+        assert!(
+            !durable.lines().any(|line| line.split('|').nth(4) == Some("C")),
+            "a fake original-owner acknowledgement cannot issue Control Commit"
+        );
+        assert_eq!(
+            NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO)
+                .expect_err("orphan Begin must quarantine restart"),
+            NduPublicationErrorV1::Indeterminate
+        );
+    }
 }
 
 #[cfg(unix)]
