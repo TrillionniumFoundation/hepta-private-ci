@@ -1623,6 +1623,9 @@ fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
         supervisor_minimum_observer_signature: &minimum_signature,
     };
     let mut current = CurrentEffectFixture::new(&transcript);
+    // The independently signed original must be the canonical terminal
+    // WriterHandoff checkpoint. A correctly re-signed nonterminal checkpoint
+    // is rejected before the Observer consults any live owner.
     assert!(matches!(
         crate::cell_split_observer_join::verify_cell_split_observer_join_deep_with_port_v1(
             &join,
@@ -1634,7 +1637,7 @@ fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
             &mut current,
         ),
         Err(crate::CellSplitObserverJoinErrorV1::Invalid(
-            "signed original Supervisor checkpoint is not a terminal handoff"
+            "signed original Supervisor checkpoint is not a canonical terminal journal record"
         ))
     ));
     assert_eq!(current.verification_count, 0);
