@@ -785,10 +785,7 @@ fn verify_original_owner_marker_frontier(
             return Err(MetricsJournalErrorV1::Corrupt);
         }
         let mut last = vec![0_u8; OWNER_FRONTIER_ROW_BYTES];
-        opened_marker.read_exact_at(
-            &mut last,
-            required - OWNER_FRONTIER_ROW_BYTES as u64,
-        )?;
+        opened_marker.read_exact_at(&mut last, required - OWNER_FRONTIER_ROW_BYTES as u64)?;
         if last != expected {
             return Err(MetricsJournalErrorV1::Corrupt);
         }
