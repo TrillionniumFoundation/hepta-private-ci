@@ -29,7 +29,7 @@ def checked_number(v):
 
 
 def checked_sha(v):
-    if type(v) is not str or len(v)!=64 or any(c not in '0123456789abcdef' for c in v):
+    if type(v) is not str or len(v)!=64 or v=='0'*64 or any(c not in '0123456789abcdef' for c in v):
         raise Invalid('invalid output SHA')
     return v
 
@@ -71,6 +71,8 @@ def evaluate(records):
                             'measured_end_to_end_process_wall_ms','measured_process_cpu_ms',
                             'measured_peak_rss_bytes','measured_current_rss_bytes'):
                     checked_number(r.get(key))
+                if r['measured_peak_rss_bytes'] < n*9744*4:
+                    raise Invalid('reported RSS smaller than resident FP32 Head weights')
                 if r['measured_end_to_end_process_wall_ms']+1e-5<r['measured_sgd_wall_ms']:
                     raise Invalid('impossible wall clock accounting')
                 if (r.get('dormant_weights_unchanged') is not True or
@@ -85,7 +87,7 @@ def evaluate(records):
                     raise Invalid('training loss trajectory missing')
                 if any(checked_number(x)>1000000 for x in losses):
                     raise Invalid('unbounded synthetic loss')
-                if abs(losses[-1]/active-r.get('last_step_training_loss_per_cell',float('nan')))>1e-5:
+                if abs(losses[-1]/active-checked_number(r.get('last_step_training_loss_per_cell')))>1e-5:
                     raise Invalid('loss normalization inconsistent')
             for field in ('active_cell_index_sha256','initial_active_weights_sha256'):
                 if a[field]!=b[field]:
