@@ -91,9 +91,3 @@ jobs:
           retention-days: 7
           if-no-files-found: warn
 
-  p0-real-compact:
-    name: Exact pretrained Granite/mmBERT paired study (research only)
-    uses: ./.github/workflows/hepta-p0-compact-physical.yml
-    permissions:
-      contents: read
-      actions: read
