@@ -17,6 +17,7 @@ from typing import Any
 
 from a0_deployment_evidence import load_public_key, verify_signed
 from candidate_inventory import verify_artifact
+from physical_tensor_identity import canonical_tensor_sha
 from matched_train import CAPS, ARMS, H, Q, sha_bytes, sha_file, unique_json, utc, require, make_model
 
 FORECAST_SCHEMA = 'hepta.neuron.unlabelled-future-q24.v1'
@@ -148,37 +149,73 @@ def seal(args: argparse.Namespace) -> dict:
                          'owner_v1_probability_ppm':predictions[r['case_id']]['probability_ppm'],
                          'owner_v1_invocation_digest':predictions[r['case_id']]['model_invocation_digest'],
                          'candidates':{}} for g in groups for r in g}
+    # Bind original physical bytes before the first *unlabelled* inference.
+    # File metadata changes do not create a different computational model.
+    # Never reuse across different temporal kernels, even if tensor SHA matches.
+    alias_groups = {}
     for cap in CAPS:
         for arm in ARMS:
             model_info = models[(cap,arm)]
-            model = make_model(arm, width, model_info['rank'] or 0, torch)
-            weights = load_file(str(root/model_info['weight_file']), device='cpu')
-            require(type(weights) is dict and set(weights) ==
-                    {'structure.projection','head.weight','head.bias'} |
-                    ({'temporal.gate_bias','temporal.input_gain','temporal.change_gain'} if arm=='v3' else
-                     {'temporal.decay_per_step','temporal.input_gain'} if arm=='ssm' else
-                     {'temporal.gate_input','temporal.gate_output','temporal.candidate_input',
-                      'temporal.candidate_output','temporal.gate_bias','temporal.candidate_bias'} if arm=='min_gru' else set()),
-                    'unexpected/missing trained tensors')
-            require(weights['structure.projection'].dtype == torch.int64 and
-                    bool((weights['structure.projection'] == Q).all()), 'native projection not identity')
-            with torch.no_grad():
-                for name,p in model.named_parameters():
-                    key = 'head.'+name.split('.',1)[1] if name.startswith('head.') else 'temporal.'+name
-                    raw = weights[key]
-                    require(raw.shape == p.shape and
-                            raw.dtype == (torch.float32 if name.startswith('head.') else torch.int64),
-                            'trained tensor geometry/dtype mismatch')
-                    p.copy_((raw if name.startswith('head.') else raw.float()/Q))
-                model.eval()
-                for group in groups:
-                    x = torch.tensor([r['feature_q24'] for r in group],dtype=torch.float32)/Q
-                    tm = [int(utc(r['event_time_utc']).timestamp()*1000000) for r in group]
-                    logits = model(x,tm)
-                    require(bool(torch.isfinite(logits).all()), 'nonfinite model prediction')
-                    p = torch.sigmoid(logits)
-                    for r,value in zip(group,p):
-                        out[r['case_id']]['candidates'][f'{cap}:{arm}'] = int(round(float(value)*1000000))
+            physical_path = root / model_info['weight_file']
+            tensor_digest = canonical_tensor_sha(
+                physical_path,model_info['weight_sha256'])
+            alias_groups.setdefault((arm,tensor_digest), []).append((cap,arm))
+    require(sum(len(slots) for slots in alias_groups.values()) ==
+            len(CAPS)*len(ARMS), 'incomplete physical forecast alias coverage')
+    alias_report = []
+    for (arm,tensor_digest),members in sorted(alias_groups.items()):
+        members = sorted(members)
+        cap,_ = members[0]
+        model_info = models[(cap,arm)]
+        model = make_model(arm, width, model_info['rank'] or 0, torch)
+        weights = load_file(str(root/model_info['weight_file']), device='cpu')
+        require(type(weights) is dict and set(weights) ==
+                {'structure.projection','head.weight','head.bias'} |
+                ({'temporal.gate_bias','temporal.input_gain','temporal.change_gain'} if arm=='v3' else
+                 {'temporal.decay_per_step','temporal.input_gain'} if arm=='ssm' else
+                 {'temporal.gate_input','temporal.gate_output','temporal.candidate_input',
+                  'temporal.candidate_output','temporal.gate_bias','temporal.candidate_bias'} if arm=='min_gru' else set()),
+                'unexpected/missing trained tensors')
+        require(weights['structure.projection'].dtype == torch.int64 and
+                bool((weights['structure.projection'] == Q).all()), 'native projection not identity')
+        with torch.no_grad():
+            for name,p in model.named_parameters():
+                key = 'head.'+name.split('.',1)[1] if name.startswith('head.') else 'temporal.'+name
+                raw = weights[key]
+                require(raw.shape == p.shape and
+                        raw.dtype == (torch.float32 if name.startswith('head.') else torch.int64),
+                        'trained tensor geometry/dtype mismatch')
+                p.copy_((raw if name.startswith('head.') else raw.float()/Q))
+            model.eval()
+            for group in groups:
+                x = torch.tensor([r['feature_q24'] for r in group],dtype=torch.float32)/Q
+                tm = [int(utc(r['event_time_utc']).timestamp()*1000000) for r in group]
+                logits = model(x,tm)
+                require(bool(torch.isfinite(logits).all()), 'nonfinite model prediction')
+                p = torch.sigmoid(logits)
+                for r,value in zip(group,p):
+                    ppm = int(round(float(value)*1000000))
+                    require(0 <= ppm <= 1000000, 'invalid candidate probability')
+                    for member_cap, member_arm in members:
+                        alias = f'{member_cap}:{member_arm}'
+                        require(alias not in out[r['case_id']]['candidates'],
+                                'duplicate sealed physical tensor alias')
+                        out[r['case_id']]['candidates'][alias] = ppm
+        for member_cap,member_arm in members:
+            alias_info = models[(member_cap,member_arm)]
+            alias_path = root / alias_info['weight_file']
+            sha_file(alias_path,alias_info['weight_sha256'])
+            require(canonical_tensor_sha(alias_path,alias_info['weight_sha256']) ==
+                    tensor_digest, 'physical model alias changed during forecast')
+        alias_report.append({
+            'arm':arm,'canonical_tensor_sha256':tensor_digest,
+            'canonical_model_key':f'{cap}:{arm}',
+            'alias_candidate_keys':[f'{c}:{a}' for c,a in members],
+        })
+    for sealed in out.values():
+        require(set(sealed['candidates']) ==
+                {f'{cap}:{arm}' for cap in CAPS for arm in ARMS},
+                'incomplete physical 20-candidate forecast seal')
     result = {'schema':SEAL_SCHEMA, 'a0_evidence_class':a0_class,
               'a0_registry_sha256_claimed':receipt.get('a0_registry_sha256'),
               'train_receipt_sha256':args.receipt_sha256,
@@ -188,6 +225,15 @@ def seal(args: argparse.Namespace) -> dict:
               'model_sha256':{f'{cap}:{arm}':models[(cap,arm)]['weight_sha256']
                               for cap in CAPS for arm in ARMS},
               'frozen_v1_artifact_sha256':receipt['no_change_v1_selected_sha256'],
+              'physical_tensor_reuse_observation':{
+                  'schema':'hepta.neuron.forecast-physical-reuse.v1',
+                  'nominal_candidate_slots':len(CAPS)*len(ARMS),
+                  'actual_per_group_surrogate_forward_executions':len(alias_groups),
+                  'redundant_surrogate_model_forwards_eliminated':len(CAPS)*len(ARMS)-len(alias_groups),
+                  'alias_groups':alias_report,
+                  'native_q24_parity_verified':False,
+                  'ndu_eligible':False,'production_qualification':False,
+              },
               'sealed_at_utc_untrusted_local_clock':now_utc(),
               'rows':[out[k] for k in sorted(out)],
               'native_q24_parity_verified':False,'trusted_owner_precommit_verified':False,
