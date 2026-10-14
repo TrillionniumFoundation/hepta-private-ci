@@ -9,6 +9,13 @@
   "gemma_scaled_minus_laya_brier": 0.029199384779376003,
   "independent_origin_signatures_verified": false,
   "independent_physical_transformer_forward_count_verified": false,
+  "laya_vs_gemma_mcnemar_exact_two_sided_unadjusted_p": 0.21875,
+  "laya_vs_gemma_paired_counts": {
+    "both_correct": 119,
+    "both_wrong": 3,
+    "only_gemma_correct": 1,
+    "only_laya_correct": 5
+  },
   "learning_gain_accuracy_vs_frozen": 0.5546875,
   "metrics": {
     "gemma2_frozen_head": {
@@ -48,6 +55,7 @@
   "reloaded_head_parameter_count": 2018,
   "reloaded_head_training_steps": 40,
   "same_dataset_family": true,
+  "scaled_logits_selected_in_prior_exploratory_work": true,
   "schema": "hepta.stem-e1e2-public-receipt-numeric-audit.v1",
   "sealed_archive_sha256": "7e244bb0994d7e086979e9f9743bb61474a7564fbec3476a20a4017700d4b469",
   "source_artifact_ids": [
