@@ -411,18 +411,26 @@ def _v6_material_gate(args, plan: dict, plan_sha: str, profile: dict) -> dict | 
         return None
     if any(x is None for x in trust_args):
         raise ContractError("non-fixture model requires independent V6 operator material admission")
-    # Granite R2 documents CLS pooling followed by unit-L2 normalization.
-    # A mean-pooled arm is an ablation and must not use the official arm name.
-    if args.candidate == "granite_97m" and (
-            profile["pooling"] != "cls-first-token"
-            or profile["normalization"] != "unit_l2"):
-        raise ContractError("granite_97m requires publisher-documented CLS pooling and unit L2")
+    # Reject incorrectly pooled official Granite *before* reading external
+    # material. Then verify every public alias and trusted source after V6
+    # signed admission, so the V10 hyphenated name cannot bypass this gate.
+    if args.candidate in ("granite_97m", "granite-97m-r2") and (
+            profile.get("pooling") != "cls-first-token"
+            or profile.get("normalization") != "unit_l2"):
+        raise ContractError("Granite 97M requires CLS pooling and unit L2")
     from multimodal_material_admission import admission
     trust = load_pinned_document(args.operator_trust, args.operator_trust_sha256)
     claim = load_pinned_document(args.signed_claim, args.signed_claim_sha256)
-    return admission(plan, plan_sha, profile, args.profile_sha256,
-                     args.model_snapshot, trust, args.operator_trust_sha256,
-                     claim, args.signed_claim_sha256, now_seconds=int(time.time()))
+    proof = admission(plan, plan_sha, profile, args.profile_sha256,
+                      args.model_snapshot, trust, args.operator_trust_sha256,
+                      claim, args.signed_claim_sha256, now_seconds=int(time.time()))
+    from multimodal_public_identity_v12 import require_public_native_profile
+    matched = next((item for item in trust["allowed_models"]
+                    if item["candidate"] == args.candidate), None)
+    if matched is None:
+        raise ContractError("trusted model policy missing after signature admission")
+    require_public_native_profile(args.candidate, profile, matched)
+    return proof
 
 
 def main() -> None:
