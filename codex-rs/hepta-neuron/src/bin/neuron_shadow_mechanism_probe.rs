@@ -61,17 +61,38 @@ struct TraceEvent {
     prediction_q24: Vec<i64>,
 }
 
-struct Configs {
-    v1: SparseConfig,
-    v2: PopulationSparseConfigV2,
-    v3: GatedSparseConfigV3,
-    ssm: DiagonalSsmConfigV1,
-    min_gru: LowRankMinGruConfigV1,
-    ready_v2: PreparedPopulationSparseConfigV2,
-    ready_v3: PreparedGatedSparseConfigV3,
-    ready_ssm: PreparedDiagonalSsmConfigV1,
-    ready_min_gru: PreparedLowRankMinGruConfigV1,
-    prepared_mode: bool,
+// The process owns exactly ONE selected model configuration and ONE mode.
+// Never materialize all five models or both legacy and prepared simultaneously.
+enum Configs {
+    V1(SparseConfig),
+    V2Legacy(PopulationSparseConfigV2),
+    V2Prepared(PreparedPopulationSparseConfigV2),
+    V3Legacy(GatedSparseConfigV3),
+    V3Prepared(PreparedGatedSparseConfigV3),
+    SsmLegacy(DiagonalSsmConfigV1),
+    SsmPrepared(PreparedDiagonalSsmConfigV1),
+    MinGruLegacy(LowRankMinGruConfigV1, usize),
+    MinGruPrepared(PreparedLowRankMinGruConfigV1, usize),
+}
+
+impl Configs {
+    fn temporal_parameter_count_only(&self) -> Option<usize> {
+        match self {
+            Self::MinGruLegacy(_, value) | Self::MinGruPrepared(_, value) => Some(*value),
+            _ => None,
+        }
+    }
+
+    #[cfg(test)]
+    fn is_prepared(&self) -> bool {
+        matches!(
+            self,
+            Self::V2Prepared(_)
+                | Self::V3Prepared(_)
+                | Self::SsmPrepared(_)
+                | Self::MinGruPrepared(_)
+        )
+    }
 }
 
 enum ActiveState {
