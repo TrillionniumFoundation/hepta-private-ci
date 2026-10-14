@@ -1,0 +1,90 @@
+{
+  "checks": {
+    "full_repo_rust_gpu": "not_run",
+    "local_stock_transformers": "missing_dependency",
+    "new_ci_status_last_verified": "queued",
+    "patch_applies_to_parent_source_slice": true,
+    "patch_replay_all_four_bytes_equal": true,
+    "source_python_compile": "passed",
+    "true_multirc_annotations_scored_this_increment": false,
+    "workflow_yaml_parse": "passed"
+  },
+  "code_commit": "0b49a4095c1fa5c1c604f366c4ac311a5ef115cb",
+  "date": "2026-10-14",
+  "new_focused": {
+    "earlier_test_fixture_failure_retained": true,
+    "executed": 10,
+    "fixture_change_only": "increase backing-store allocation to actually exceed pre-existing minimum cap",
+    "passed": true,
+    "planned": 10
+  },
+  "parent_commit": "9a4e3a286e6ff0f29787061aea895a2235339096",
+  "remote_branch": "research/shared-stem-multirc-query-answer-factorial-20261014",
+  "remote_exact_code_blobs": {
+    ".github/workflows/hepta-real-multirc-reader.yml": {
+      "git_blob_sha1": "04f88080b930b44f66bd37b4ed1c57e232ff36ce",
+      "sha256": "8474e8c287a522f2c283da7da8324d4d817430bf8567a58d71dbd01f82c06638"
+    },
+    "qualification/stem-cell-v1/hf_multirc_checks.py": {
+      "git_blob_sha1": "db4c88a5be4184c094efa72f6308fbaae57d3dcf",
+      "sha256": "549675d4c2c8342a399e6c58fd244f4399d7abf59474b303f8fc73494079f22e"
+    },
+    "qualification/stem-cell-v1/multirc_query_factorial.py": {
+      "git_blob_sha1": "e6b06f2d0e034551056ee0abc9e9e6fcd35184f5",
+      "sha256": "2ec78384ca531fd1d3a27069303b75af86ee2090195ad91f9a49225c557499be"
+    },
+    "qualification/stem-cell-v1/test_multirc_query_factorial.py": {
+      "git_blob_sha1": "c9bfb258df41247b6d08a0be65ff7c7311b2bfba",
+      "sha256": "5cb39f2b3aedd8cc370d54a551cabfbbe43bab50ee11e1fad66c2526f6b322c4"
+    }
+  },
+  "remote_pr": 1991,
+  "schema": "hepta.multirc.query-answer-factorial-verification.v1",
+  "scientific_limits": {
+    "confirmed_energy_savings": false,
+    "independent_learning_gain": false,
+    "modified_question_answer_counterfactual_labels_valid": false,
+    "production_authorized": false,
+    "real_pretrained_accuracy": false,
+    "real_pretrained_question_sensitivity": false
+  },
+  "source_tests": {
+    "discovery_errors": 0,
+    "distinct_ids": 597,
+    "errors": 0,
+    "executed": 597,
+    "failures": 0,
+    "planned": 597,
+    "runs": 2,
+    "same_ids": true,
+    "same_test_file_hashes": true,
+    "skips": 0,
+    "source_test_files": 55,
+    "unexpected_successes": 0
+  },
+  "synthetic_pytorch_diagnostic": {
+    "conditioned_reader_calls": 16,
+    "counterfactual_accuracy": null,
+    "independent_question_understanding_established": false,
+    "insensitive_epsilon": 0.001,
+    "insensitive_question_counts": {
+      "abs_change_answer_only": 8,
+      "abs_change_question_and_answer": 8,
+      "abs_change_question_only": 8
+    },
+    "known_inference_formula_flops": 3392,
+    "mean_absolute_positive_probability_change": {
+      "abs_change_answer_only": 0.0,
+      "abs_change_question_and_answer": 0.0,
+      "abs_change_question_only": 0.0
+    },
+    "newly_computed_question_embeddings": 16,
+    "passage_count": 4,
+    "physical_encoder_calls": 4,
+    "question_count": 8,
+    "related_blinded_stress_id": "eb87e9c77c0be545a0d5aeb61a3d1373486e411a4c339daef8632bb11a10ec8e",
+    "schema": "hepta.multirc.blind-question-answer-factorial.v1",
+    "unknown_operator_calls": {},
+    "work_separate_from_original_inference": true
+  }
+}

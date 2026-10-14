@@ -38,6 +38,9 @@ jobs:
           python qualification/stem-cell-v1/run_checked_tests.py \
             --pattern test_multirc_evidence_stress.py --output "$RUNNER_TEMP/multirc-stress-tests.json" \
             2>&1 | tee "$RUNNER_TEMP/multirc-stress-tests.log"
+          python qualification/stem-cell-v1/run_checked_tests.py \
+            --pattern test_multirc_query_factorial.py --output "$RUNNER_TEMP/multirc-factorial-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-factorial-tests.log"
           python -m compileall -q qualification/stem-cell-v1
       - uses: actions/upload-artifact@v4
         if: always()
@@ -50,6 +53,8 @@ jobs:
             ${{ runner.temp }}/multirc-tests.log
             ${{ runner.temp }}/multirc-stress-tests.json
             ${{ runner.temp }}/multirc-stress-tests.log
+            ${{ runner.temp }}/multirc-factorial-tests.json
+            ${{ runner.temp }}/multirc-factorial-tests.log
 
   multirc-stock-hf:
     runs-on: ubuntu-24.04
@@ -171,6 +176,21 @@ jobs:
             --snapshot "$RUNNER_TEMP/public-encoder/snapshot" \
             --output "$RUNNER_TEMP/multirc-blind-stress" \
             2>&1 | tee "$RUNNER_TEMP/multirc-blind-stress.log"
+      - name: Factor question text against candidate-answer text without labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          SEAL=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/multirc-run/COMMITTED.json"))["seal_id"])')
+          STRESS_SEAL=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/multirc-blind-stress/COMMITTED.json"))["seal_id"])')
+          python qualification/stem-cell-v1/multirc_query_factorial.py \
+            --train-bundle "$RUNNER_TEMP/multirc-material/train-bundle.json" \
+            --blind-eval-bundle "$RUNNER_TEMP/multirc-material/blind-eval-bundle.json" \
+            --run-dir "$RUNNER_TEMP/multirc-run" --expected-seal-id "$SEAL" \
+            --stress-dir "$RUNNER_TEMP/multirc-blind-stress" \
+            --expected-stress-seal-id "$STRESS_SEAL" \
+            --snapshot "$RUNNER_TEMP/public-encoder/snapshot" \
+            --output "$RUNNER_TEMP/multirc-query-factors" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-query-factors.log"
       - name: Join human-annotated dev labels only after prediction seal exists
         shell: bash
         run: |
@@ -203,6 +223,10 @@ jobs:
             ${{ runner.temp }}/multirc-run/predictions.json
             ${{ runner.temp }}/multirc-run/COMMITTED.json
             ${{ runner.temp }}/multirc-run/FAILED.json
+            ${{ runner.temp }}/multirc-query-factors.log
+            ${{ runner.temp }}/multirc-query-factors/factorial.json
+            ${{ runner.temp }}/multirc-query-factors/COMMITTED.json
+            ${{ runner.temp }}/multirc-query-factors/FAILED.json
             ${{ runner.temp }}/multirc-score.log
             ${{ runner.temp }}/multirc-scores/scores.json
             ${{ runner.temp }}/multirc-scores/COMMITTED.json
