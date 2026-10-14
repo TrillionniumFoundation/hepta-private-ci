@@ -94,6 +94,16 @@ pub fn run_pinned_cell_split_execution_with_admission_v1<F>(
 where
     F: FnMut(&CellSplitExecutionPlanV1) -> Result<(), String>,
 {
+    // This historical public seam accepts an arbitrary callback, including
+    // allow-all. It is NOT a production NDU/Selector capability or a durable
+    // Evidence writer. Deny before config parsing, owner lock, prepared WAL
+    // intent, or external RPC; retain unit-test reference execution only.
+    if action == "advance" && !cfg!(test) {
+        return Err(
+            "CellSplit callback-only advance is denied without independently verified NDU/Selector and durable Evidence binding"
+                .to_string(),
+        );
+    }
     let selected_action = match action {
         "advance" => "advance",
         "transcript" => "transcript",
