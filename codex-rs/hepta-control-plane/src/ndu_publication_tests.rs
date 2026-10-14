@@ -377,6 +377,74 @@ fn unsigned_ndu_owner_or_policy_change_is_denied_before_durable_begin() {
 
 #[cfg(unix)]
 #[test]
+fn insufficient_space_for_commit_denies_before_durable_begin_or_model() {
+    let dir = tempfile::tempdir().expect("private Control root");
+    let path = dir.path().join("bounded-control.wal");
+    let original = snapshot(3);
+    let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+        .expect("Control owner");
+    {
+        let mut state = owner.state.lock().expect("fixture owner");
+        // Simulate a nearly exhausted bounded WAL without writing 64 MiB of
+        // irrelevant records; test only the exact pre-effect admission check.
+        state.bytes = MAX_BYTES - MAX_ROW as u64;
+    }
+    let before = std::fs::read(&path).expect("authentic Control history");
+    let mut external_calls = 0;
+    assert!(matches!(
+        owner.publish_cutover_with_external_effect(
+            &original,
+            Digest32::ZERO,
+            snapshot(4),
+            Digest32::of_bytes(b"successor-state"),
+            || -> Result<(), &'static str> {
+                external_calls += 1;
+                Ok(())
+            },
+        ),
+        Err(NduPublicationErrorV1::Capacity)
+    ));
+    assert_eq!(external_calls, 0, "do not enter the external effect");
+    assert_eq!(std::fs::read(&path).unwrap(), before);
+    assert_eq!(owner.current().unwrap(), (original, Digest32::ZERO));
+}
+
+#[cfg(unix)]
+#[test]
+fn lost_wal_during_real_callback_never_publishes_success_or_recreates_history() {
+    let dir = tempfile::tempdir().expect("private Control root");
+    let path = dir.path().join("lost-mid-effect.wal");
+    let original = snapshot(3);
+    let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+        .expect("Control owner");
+    let mut external_calls = 0;
+    assert!(matches!(
+        owner.publish_cutover_with_external_effect(
+            &original,
+            Digest32::ZERO,
+            snapshot(4),
+            Digest32::of_bytes(b"successor-state"),
+            || -> Result<(), &'static str> {
+                external_calls += 1;
+                std::fs::remove_file(&path).expect("simulate physical WAL loss");
+                Ok(())
+            },
+        ),
+        Err(NduPublicationErrorV1::Indeterminate)
+    ));
+    assert_eq!(external_calls, 1, "an uncertain effect cannot be replayed");
+    assert_eq!(owner.current(), Err(NduPublicationErrorV1::Poisoned));
+    drop(owner);
+    assert!(!path.exists(), "no silent replacement of original WAL");
+    assert!(matches!(
+        NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO),
+        Err(NduPublicationErrorV1::Indeterminate)
+    ));
+    assert!(!path.exists(), "recovery does not invent replacement history");
+}
+
+#[cfg(unix)]
+#[test]
 fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
     let dir = tempfile::tempdir().expect("private Control root");
     let path = dir.path().join("unknown-physical-effect.wal");

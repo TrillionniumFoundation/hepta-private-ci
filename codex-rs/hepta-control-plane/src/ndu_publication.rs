@@ -611,6 +611,17 @@ impl NduPublicationOwnerV1 {
         let successor = next
             .semantic_digest()
             .map_err(|_| NduPublicationErrorV1::Invalid)?;
+        // Reserve the maximum space and two sequence numbers for BOTH B/C
+        // before any external effect enters. A valid Begin without room to
+        // durably Resolve would leave a preventable permanent quarantine.
+        if state.sequence.checked_add(2).is_none()
+            || state
+                .bytes
+                .checked_add(2 * MAX_ROW as u64)
+                .is_none_or(|total| total > MAX_BYTES)
+        {
+            return Err(NduPublicationErrorV1::Capacity);
+        }
         // A failed fsync makes the business effect inadmissible; do not run
         // the closure until Begin itself has been durably committed.
         state.append(
