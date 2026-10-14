@@ -47,6 +47,20 @@ jobs:
           cd codex-rs/hepta-ndu/research/native_stem_abcd
           python -m compileall -q .
           python -m unittest -v 2>&1 | tee "$RUNNER_TEMP/native-ndu-evidence/TESTS.log"
+      - name: Complete round-two structure and solver comparison
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE="$GITHUB_WORKSPACE/codex-rs/hepta-ndu/research/native_stem_abcd"
+          OUTPUT="$RUNNER_TEMP/native-ndu-evidence/structure"
+          python "$SOURCE/structure_sweep.py" --out "$OUTPUT" \
+            2>&1 | tee "$RUNNER_TEMP/native-ndu-evidence/STRUCTURE_SWEEP.log"
+          python "$SOURCE/audit/structure_audit.py" --source "$SOURCE" \
+            --runs "$OUTPUT" --out "$RUNNER_TEMP/native-ndu-evidence/structure-audit" \
+            2>&1 | tee "$RUNNER_TEMP/native-ndu-evidence/STRUCTURE_AUDIT.log"
+          NDU_R2_SOURCE="$SOURCE" NDU_R2_RUNS="$OUTPUT" \
+            python "$SOURCE/audit/test_tamper.py" \
+            2>&1 | tee "$RUNNER_TEMP/native-ndu-evidence/STRUCTURE_TAMPER.log"
       - name: Optional full numerical comparison
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.full_sweep }}
         shell: bash
