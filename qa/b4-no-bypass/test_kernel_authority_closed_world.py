@@ -471,6 +471,45 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 f"{method} bypasses the shared Split-denying validator",
             )
 
+    def test_live_runtime_rejects_split_before_claim_or_route_mutation(self) -> None:
+        # Final-use on a generic Update cannot compensate for a typed Split
+        # lacking the original durable Control/CNS transaction. Confirm the
+        # real live Runtime order, not only the stand-alone validation helper.
+        code = self.lexical_code("codex-rs/hepta-runtime/src/organs.rs")
+        for action, validation, mutation in (
+            (
+                "apply_governed_topology",
+                "validate_runtime_topology_transition_v1",
+                "replace_read_only_generation_with_migration",
+            ),
+            (
+                "recover_governed_topology",
+                "validate_runtime_topology_recovery_v1",
+                "recover_read_only_generation_with_migration",
+            ),
+        ):
+            with self.subTest(action=action):
+                entry = re.search(rf"\bfn\s+{action}\s*\(", code)
+                self.assertIsNotNone(entry, f"{action} Runtime API missing")
+                assert entry is not None
+                start = code.find("{", entry.end())
+                end = CALLER_PROOF._matching_delimiter(code, start, "{", "}")
+                self.assertIsNotNone(end, f"{action} has no complete body")
+                assert end is not None
+                body = code[start + 1 : end]
+                positions = [
+                    body.index(validation + "("),
+                    body.index("authority.claim("),
+                    body.index("authority.with_verified_use("),
+                    body.index(mutation + "("),
+                    body.index("host.route = successor.route"),
+                ]
+                self.assertEqual(
+                    positions,
+                    sorted(positions),
+                    f"{action} must validate before Final-use, effect and route publication",
+                )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
