@@ -11,6 +11,7 @@ import torch
 from torch import nn
 
 from matrix_bank import CellBank
+from family_routing import FamilyCellBank
 
 
 def step_upper_bound(bank, batch_size):
@@ -25,7 +26,7 @@ def step_upper_bound(bank, batch_size):
     Copies, comparisons, allocation and integer RNG have zero *floating arithmetic*
     under the pinned meter profile, not zero time/memory. Only CPU FP32 is supported.
     """
-    if type(bank) is not CellBank or type(batch_size) is not int or not 1 <= batch_size <= 128:
+    if type(bank) not in (CellBank, FamilyCellBank) or type(batch_size) is not int or not 1 <= batch_size <= 128:
         raise ValueError('registered CellBank and bounded batch required')
     d, c, n, k = bank.dimension, bank.classes, len(bank.heads), bank.top_k
     widths = []
@@ -51,7 +52,15 @@ def step_upper_bound(bank, batch_size):
     heads = b*k*(6*d*w + 6*c*w + 40*w + 16*c + 8)
     loss = 16*b*(c+1)
     optimizer = 48*p + 128*len(tensors)
-    return gate + heads + loss + optimizer
+    extra = 0
+    if type(bank) is FamilyCellBank:
+        if n != 32 or k != 2 or not 0 < bank.sibling_loss_weight <= 1:
+            raise ValueError('unregistered family routing')
+        # Four detached sibling Head/row probes, label losses, binary selector
+        # supervision and gathered gate gradients. No free counterfactual work.
+        extra = b * 2*k * (2*d*w + 2*c*w + 8*w + 32*c + 32)
+        extra += 64*b*n + 4*(d+1)*n
+    return gate + heads + loss + optimizer + extra
 
 
 def used_training_work(meter):
@@ -62,7 +71,7 @@ def used_training_work(meter):
     return sum(r['formula_flops'] for r in rows)
 
 
-def train_to_budget(bank, features, targets, study, seed, *, meter):
+def train_to_budget(bank, features, targets, study, seed, *, meter, stop_at_work=None):
     """Same AdamW/loss/clipping as train_bank, but admit whole steps by work.
 
     Batch sizes shrink geometrically only when the remaining budget cannot fund
@@ -80,6 +89,10 @@ def train_to_budget(bank, features, targets, study, seed, *, meter):
             or targets.shape != (len(features),)):
         raise ValueError('bounded frozen features and training labels required')
     budget = study['training_flops_budget']
+    if stop_at_work is not None:
+        if type(stop_at_work) is not int or not 0 < stop_at_work <= budget:
+            raise ValueError('stage boundary must fit the original phase budget')
+        budget = stop_at_work
     max_steps = study['max_budget_steps']
     if type(budget) is not int or budget < 1 or type(max_steps) is not int or not 1 <= max_steps <= 4096:
         raise ValueError('bounded budget and step ceiling required')
@@ -109,7 +122,8 @@ def train_to_budget(bank, features, targets, study, seed, *, meter):
         with meter.scope('train', 'bank'):
             ids = torch.randint(len(targets), (chosen_size,), generator=rng)
             optimizer.zero_grad(set_to_none=True)
-            loss = nn.functional.cross_entropy(bank(features[ids]), targets[ids])
+            loss = (bank.training_loss(features[ids], targets[ids]) if type(bank) is FamilyCellBank
+                    else nn.functional.cross_entropy(bank(features[ids]), targets[ids]))
             if not torch.isfinite(loss).item():
                 raise ValueError('nonfinite loss')
             loss.backward()

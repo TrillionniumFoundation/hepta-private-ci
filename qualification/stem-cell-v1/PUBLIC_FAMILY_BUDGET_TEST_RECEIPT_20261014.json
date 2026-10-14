@@ -1,0 +1,163 @@
+{
+  "schema": "hepta.public-family-budget-source-verification.v1",
+  "date": "2026-10-14",
+  "observed_at_utc": "2026-10-14T07:54:34.067544+00:00",
+  "remote_parent": "3b3077c3a7e17ac0c7c9ad99c9e456ca0e31f91d",
+  "remote_code": "61c031f40fde619d964d18bef2396a4ecab7436f",
+  "branch": "research/shared-stem-public-family-budget-20261014",
+  "source_surface": "session CPU source slice, not full GitHub ancestry",
+  "tests": {
+    "retained": 457,
+    "new": 16,
+    "total": 473,
+    "full_runs": [
+      {
+        "report": "baseline.json",
+        "log": "baseline.log",
+        "planned": 457,
+        "executed": 457,
+        "exit_code": 0,
+        "seconds": 53.482
+      },
+      {
+        "report": "full2.json",
+        "log": "full2.log",
+        "planned": 473,
+        "executed": 473,
+        "exit_code": 0,
+        "seconds": 79.05
+      },
+      {
+        "report": "full3.json",
+        "log": "full3.log",
+        "planned": 473,
+        "executed": 473,
+        "exit_code": 0,
+        "seconds": 74.604
+      }
+    ],
+    "failures": 0,
+    "errors": 0,
+    "skips": 0,
+    "expected_failures": 0,
+    "identical_final_ids": true,
+    "earlier_full_run": "full1: 473 passed; before a nonexecuting source-comment edit, retained separately"
+  },
+  "checks": {
+    "compileall": "passed",
+    "git_diff_check": "passed",
+    "workflow_yaml": "passed",
+    "remote_code_blob_matches": 6,
+    "rust_fmt": "not_run: codex-rs directory absent"
+  },
+  "runtime": {
+    "python": "3.13.5",
+    "torch": "2.10.0+cpu",
+    "numpy": "2.3.5",
+    "safetensors": "0.7.0",
+    "cuda": false
+  },
+  "installed_hf": {
+    "real_encoder_checks_defined": 7,
+    "real_checks_executed": 0,
+    "reason": "ModuleNotFoundError: transformers",
+    "included_in_473": false,
+    "dependency_install_exit": 1
+  },
+  "diagnostic": [
+    {
+      "topology": "family_direct32",
+      "status": "completed",
+      "initial_parameters": 1152,
+      "final_parameters": 1152,
+      "peak_live_model_parameters": 1152,
+      "steps": 150,
+      "examples_seen": 592,
+      "train": 1923441,
+      "migration": 2020,
+      "pooled": 1925461,
+      "remaining": 74539,
+      "transition_probe": null,
+      "unknown_operators": {}
+    },
+    {
+      "topology": "family_split16to32",
+      "status": "completed",
+      "initial_parameters": 576,
+      "final_parameters": 1152,
+      "peak_live_model_parameters": 1728,
+      "steps": 189,
+      "examples_seen": 751,
+      "train": 1916469,
+      "migration": 6876,
+      "pooled": 1923345,
+      "remaining": 76655,
+      "transition_probe": {
+        "atol": 1e-06,
+        "data_role": "training_only",
+        "examples": 4,
+        "global_float_parity_established": false,
+        "max_absolute_logit_error": 0.0,
+        "max_tolerance_ratio": 0.0,
+        "passed": true,
+        "rtol": 1e-05,
+        "schema": "hepta.family-transition-probe.v1"
+      },
+      "unknown_operators": {}
+    }
+  ],
+  "limits": {
+    "pretrained_learning_observed": false,
+    "hosted_current_code_result_observed": false,
+    "independent_gain_established": false,
+    "full_system_cost": false,
+    "nine_arm_ndu_enabled": false,
+    "production_authorized": false
+  },
+  "source_blobs": {
+    "qualification/stem-cell-v1/budgeted_learning.py": {
+      "git_blob_sha1": "fa5daa7a6106722706009d5dcc1b748ea96e98ae",
+      "sha256": "4b11de4a9d6a4895f0baeb13b91512802ce681eec0410767179e80a8688f2594"
+    },
+    "qualification/stem-cell-v1/public_family_budget.py": {
+      "git_blob_sha1": "874e11472d30a11cbba0dc279e5329135d75f99f",
+      "sha256": "117c87c6437ced96b10bcf871da5c774e9e79651b51f58faaef1f2a88fd58184"
+    },
+    "qualification/stem-cell-v1/shared_learning_probe.py": {
+      "git_blob_sha1": "7eef23a8aafb327a7952ca2b2fb38b4a6f35c23c",
+      "sha256": "f5129bd0af50b2d6ea3e5e3b4fe8e1c77ef9dd45fc25353cebc6bf00557e004c"
+    },
+    "qualification/stem-cell-v1/test_public_family_budget.py": {
+      "git_blob_sha1": "d55242cd2cc5466140cbe711678e5d1333afbca3",
+      "sha256": "e70d967a46867906e9425cf0b122bf2603d028dc2e2b1aa71186c253a0013def"
+    },
+    "qualification/stem-cell-v1/hf_profile_checks.py": {
+      "git_blob_sha1": "5ebdb88e95b411ae85621c6e7a8cf74151aa87f4",
+      "sha256": "b767b46bee44f2646a2adfa7f6639004bedf0ce867ee8102dfdf24decebf566c"
+    },
+    ".github/workflows/hepta-neuron-next-round-matrix.yml": {
+      "git_blob_sha1": "dd5c6374dfb2d25fdaca0bd26107d2836eac26b6",
+      "sha256": "83ab06981211a21e93fc7d78656871d97901b48e251ec478cbd25dff173b7590"
+    }
+  },
+  "evidence_hashes": {
+    "baseline.log": "36ea3d36ae603bb0e165f7a5aaccfe5221f9eea9e2260ae7df30aeeaf5b1d44f",
+    "hf-attempt.log": "7179ac2529c1f8619cdf415380f8e2a728f26cf8037ae71045d3389ea2d97706",
+    "family-second.log": "2335f016bd62e08d3103193b54fbf335bff3bf2d6d2b55d18c01abab5c12bb25",
+    "full2.log": "b421d09a7a321a43f7daede5510ffc16e801e50eff4bf49b188c6bd33878b41d",
+    "dependency-attempt.log": "e7d8f1ecf240694325f53da96347b87f7d2efce32b7f16c4036e620c25eca6da",
+    "diagnostic.py": "d3a83a45b72fe7e618417c8f2a844a5ec275c73d4da2020ebc5c1260d642d00d",
+    "full1.json": "e4e0e13d82fdd079604bcdfa623a4810b9e25743d8cdda75f206ffc7a642dfbd",
+    "diagnostic.log": "f8dbc96b3253775fbfc280d4d928c436910f40edfb39c8da11ec08233eef0ff6",
+    "full1.log": "1b28599083194ea948aa099e875d94763e7a67773c2c026f269e4ad9d24f6489",
+    "full2.json": "e4e0e13d82fdd079604bcdfa623a4810b9e25743d8cdda75f206ffc7a642dfbd",
+    "baseline.json": "25686eaa971a0c85dce1b254081363fe8e4d2d199bb8f4762914355c82ba0b62",
+    "hf-attempt.json": "af88e06b6f0088dc4cd77b6dea6d77a5710df8933f3e9449f10b72a87ef16447",
+    "family-first.log": "bcccecb7ecee60b72b7e57d3fff7f81d9d7261376cfd7fa757b433f365f60bb6",
+    "final-diagnostic/summary.json": "b343dd159fee082773617d8c9b865ddb341ef2f9cbf493c9a818db6204bcedbb",
+    "full3.json": "e4e0e13d82fdd079604bcdfa623a4810b9e25743d8cdda75f206ffc7a642dfbd",
+    "full3.log": "519e466a9f7327824e73d1de1b4f10f7e3d5adfba7188cb4ac8777a8d8b20280"
+  },
+  "initial_failure_retained": "family-first.log: test fixture overwrote unittest.run; fixed test fixture only",
+  "all_artifact_hashes": "FILE_MANIFEST.json in downloadable source package"
+}
