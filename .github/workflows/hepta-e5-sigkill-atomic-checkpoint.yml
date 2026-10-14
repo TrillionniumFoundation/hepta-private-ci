@@ -15,7 +15,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: hepta-e5-sigkill-\${{ github.event.pull_request.head.sha || github.sha }}
+  group: hepta-e5-sigkill-${{ github.event.pull_request.head.sha || github.sha }}
   cancel-in-progress: false
 jobs:
   real-child-sigkill-and-recovery:
@@ -31,11 +31,11 @@ jobs:
       - name: Exact immutable PR source checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: \${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Validate HEAD and clean read-only source
         env:
-          SOURCE_SHA: \${{ github.event.pull_request.head.sha || github.sha }}
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
@@ -94,8 +94,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: hepta-e5-sigkill-atomic-\${{ github.run_id }}
+          name: hepta-e5-sigkill-atomic-${{ github.run_id }}
           path: |
-            \${{ runner.temp }}/e5-crash-physical/*.json
-            \${{ runner.temp }}/e5-atomic-runtime.txt
+            ${{ runner.temp }}/e5-crash-physical/*.json
+            ${{ runner.temp }}/e5-atomic-runtime.txt
           retention-days: 7
