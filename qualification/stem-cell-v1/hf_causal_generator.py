@@ -195,6 +195,8 @@ class LocalCausalProposer:
             raise ValueError('selected causal model must remain frozen')
 
     def __call__(self, task, previous, feedback):
+        # A failed call must not expose a previous call's successful observation.
+        self.last_observation = None
         messages = public_messages(task, previous, feedback, self.limits)
         if self.model.training or any(p.requires_grad for p in self.model.parameters()):
             raise ValueError('causal model unexpectedly trainable')
