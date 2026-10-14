@@ -601,12 +601,36 @@ impl NduPublicationOwnerV1 {
         &self,
         externally_verified_original_receipt_bytes: &[u8],
     ) -> Result<(), NduPublicationErrorV1> {
-        let expected = self
-            .last_cns_original_receipt_binding()?
+        // A separate last_binding() call would release the Control mutex
+        // before comparing bytes, allowing a new fsynced C record between
+        // the two reads. Compare against exactly one locked live frontier.
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| NduPublicationErrorV1::Poisoned)?;
+        if state.poisoned {
+            return Err(NduPublicationErrorV1::Poisoned);
+        }
+        if let Err(error) = state.verify_original_paths() {
+            state.poisoned = true;
+            return Err(error);
+        }
+        if state.pending_cutover {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        let expected = state
+            .last_cns_original_receipt_binding
             .ok_or(NduPublicationErrorV1::Stale)?;
         let observed = original_cns_receipt_binding(externally_verified_original_receipt_bytes)?;
         if expected != observed {
             return Err(NduPublicationErrorV1::Stale);
+        }
+        // The checksum was computed while holding the Control mutex. A
+        // concurrent pathname replacement is still possible; recheck the
+        // original WAL and persistent writer lock before reporting equality.
+        if let Err(error) = state.verify_original_paths() {
+            state.poisoned = true;
+            return Err(error);
         }
         Ok(())
     }
