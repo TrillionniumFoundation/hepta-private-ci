@@ -254,6 +254,11 @@ fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
                         "the runtime callback must not see a publishable NDU frontier"
                     );
                     assert_eq!(
+                        owner.verify_original_cns_receipt_binding(&[0x53; 96]),
+                        Err(NduPublicationErrorV1::Indeterminate),
+                        "durable Begin must fence original CNS receipt joins until Commit"
+                    );
+                    assert_eq!(
                         owner.compare_and_publish_checkpoint(
                             &current,
                             Digest32::of_bytes(b"signed-read"),
