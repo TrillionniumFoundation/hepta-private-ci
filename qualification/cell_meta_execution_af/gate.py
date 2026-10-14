@@ -116,6 +116,16 @@ def common(input_data: dict[str, Any]) -> tuple[dict[str, Any], dict[str, tuple[
     ids = [identity(field(meta, name, "candidate"), name) for name in
            ("generator_id", "outcome_observer_id", "evaluator_id", "selector_id", "executor_id")]
     require(len(set(ids)) == len(ids), "generator / observer / evaluator / selector / executor must differ")
+    slices = sequence(field(meta, "protected_slices", "candidate"), "protected_slices")
+    require(len(slices) >= 1 and len(slices) == len(set(slices)),
+            "protected_slices: nonempty unique protected slices required")
+    for label in slices:
+        identity(label, "protected slice")
+    snapshots = sequence(field(meta, "independent_snapshots", "candidate"), "independent_snapshots")
+    require(len(snapshots) >= 3 and len(set(snapshots)) == len(snapshots),
+            "independent snapshots: at least three distinct evidence snapshots required")
+    for snapshot in snapshots:
+        digest(snapshot, "independent snapshot")
     cutoff = timestamp(field(meta, "train_cutoff", "candidate"), "train_cutoff")
     frozen = timestamp(field(meta, "frozen_at", "candidate"), "frozen_at")
     require(cutoff <= frozen, "baseline must be frozen after train cutoff")
@@ -140,6 +150,10 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
     require(obj["budget_sha256"] == meta["budget_sha256"], f"{letter}: unfair budget profile")
     digest(field(obj, "objective_sha256", letter), letter + ".objective_sha256")
     require(obj["objective_sha256"] == meta["objective_sha256"], f"{letter}: objective mismatch")
+    alpha = number(field(obj, "interval_alpha", letter), letter + ".interval_alpha")
+    contrasts = sum(len(controls) for controls in CONTRASTS[letter].values())
+    require(0 < alpha <= 0.05 / (2 * contrasts),
+            f"{letter}: missing conservative two-window multiple-testing allocation")
     records = sequence(field(obj, "records", letter), f"{letter}.records")
     parsed = exact_membership(
         [((record(r, letter + ".row").get("arm"), r.get("window")), r) for r in records],
@@ -152,6 +166,7 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
         task_sets[window].add(input_sha)
         digest(field(r, "prediction_sha256", name), name + ".prediction_sha256")
         digest(field(r, "outcome_receipt_sha256", name), name + ".outcome_receipt_sha256")
+        digest(field(r, "evaluation_receipt_sha256", name), name + ".evaluation_receipt_sha256")
         digest(field(r, "model_bundle_sha256", name), name + ".model_bundle_sha256")
         count(field(r, "independent_episodes", name), name + ".independent_episodes", positive=True)
         ess = number(field(r, "effective_sample_size", name), name + ".effective_sample_size", minimum=1)
@@ -163,6 +178,11 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
         require(windows[window][0] <= pred <= windows[window][1] and pred < observed,
                 f"{name}: post-label or out-of-window prediction")
         v = record(field(r, "metrics", name), name + ".metrics")
+        slices = record(field(v, "protected_slice_degradation", name), name + ".protected_slice_degradation")
+        require(set(slices) == set(meta["protected_slices"]),
+                f"{name}: missing or unregistered protected slices")
+        per_slice_max = max(number(value, name + "/slice/" + key, maximum=1)
+                            for key, value in slices.items())
         result[(arm, window)] = {
             "utility_lcb": number(field(v, "net_utility_lcb", name), name + ".net_utility_lcb", minimum=-1e12),
             "utility_ucb": number(field(v, "net_utility_ucb", name), name + ".net_utility_ucb", minimum=-1e12),
@@ -171,6 +191,7 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
             "ood": number(field(v, "ood_false_accept", name), name + ".ood_false_accept", maximum=1),
             "negative_transfer": number(field(v, "negative_transfer_rate", name), name + ".negative_transfer_rate", maximum=1),
             "old_drop": number(field(v, "old_task_degradation", name), name + ".old_task_degradation", maximum=1),
+            "worst_slice_drop": per_slice_max,
         }
         require(result[(arm, window)]["utility_lcb"] <= result[(arm, window)]["utility_ucb"],
                 f"{name}: inverted utility interval")
@@ -184,6 +205,7 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
         if all(
             result[(proposed, window)]["utility_lcb"] > result[(control, window)]["utility_ucb"]
             and result[(proposed, window)]["old_drop"] <= 0.02
+            and result[(proposed, window)]["worst_slice_drop"] <= 0.02
             and all(result[(proposed, window)][metric] <= result[(control, window)][metric]
                     for metric in ("brier", "ece", "ood", "negative_transfer"))
             for window in windows for control in comparators
