@@ -25,6 +25,8 @@ jobs:
       USE_TF: "0"
       OMP_NUM_THREADS: "2"
       MKL_NUM_THREADS: "2"
+      TOKEN_CAPTURE_MAX_LENGTH: "168"
+      TOKEN_CAPTURE_BATCH: "8"
       SOURCE_SHA256: "1f1a463eebd130288445f5b7bf39377c0775c7cfc00a9cca4da87637a19eeff2"
       SOURCE_ARTIFACT_ID: "11881847060"
       SOURCE_RUN_ID: "38534349397"
@@ -54,7 +56,7 @@ jobs:
         run: |
           set -euo pipefail
           PY="$RUNNER_TEMP/hepta-token-real-env/bin/python"
-          "$PY" -m pytest -q -p no:cacheprovider tests/test_physical_token_pair_v1.py tests/test_stage_modernbert_public_v1.py tests/test_physical_token_reviewer_v1.py
+          "$PY" -m pytest -q -p no:cacheprovider tests/test_physical_token_pair_v1.py tests/test_stage_modernbert_public_v1.py tests/test_physical_token_reviewer_v1.py tests/test_physical_token_capture_profile_v1.py
           "$PY" -m compileall -q neuron_shared_encoder/physical_token_pair_v1.py neuron_shared_encoder/stage_modernbert_public_v1.py neuron_shared_encoder/physical_token_reviewer_v1.py
 
       - name: Retrieve exact original public AG News source artifact
@@ -92,7 +94,7 @@ jobs:
             --checkpoint-dir "$RUNNER_TEMP/hepta-pinned-modernbert" \
             --bundle-sha256 "$HEPTA_BUNDLE_SHA256" \
             --output "$RUNNER_TEMP/hepta-real-token-pair" \
-            --max-length 168 --encoder-batch 8 --steps 20 --seeds 11 23 47
+            --max-length "$TOKEN_CAPTURE_MAX_LENGTH" --encoder-batch "$TOKEN_CAPTURE_BATCH" --steps 20 --seeds 11 23 47
           "$PY" - <<'PY'
           import json, os
           from pathlib import Path
@@ -119,7 +121,7 @@ jobs:
             --bundle-sha256 "$HEPTA_BUNDLE_SHA256" \
             --producer "$RUNNER_TEMP/hepta-real-token-pair" \
             --output "$RUNNER_TEMP/hepta-token-independent-review.json" \
-            --max-length 128 --batch 8
+            --max-length "$TOKEN_CAPTURE_MAX_LENGTH" --batch "$TOKEN_CAPTURE_BATCH"
           "$PY" - <<'PY'
           import json, os
           from pathlib import Path
