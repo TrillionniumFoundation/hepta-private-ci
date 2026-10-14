@@ -178,6 +178,37 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             f"kernel.authority privileged boundaries missing from privileged_inventory: {sorted(canonical - required)}",
         )
 
+    def test_public_cell_split_callback_only_advance_is_non_authorizing(self) -> None:
+        # This legacy function is still exported to existing Rust callers,
+        # including Agentd, but an arbitrary always-OK callback must not
+        # create any production prepared intent, CAS, or CNS RPC.
+        source_path = "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"
+        raw = (ROOT / source_path).read_text(encoding="utf-8")
+        self.assertIn('if action == "advance" && !cfg!(test)', raw)
+        code = self.lexical_code(source_path)
+        entrypoint = re.search(
+            r"\bpub\s+fn\s+run_pinned_cell_split_execution_with_admission_v1\s*<",
+            code,
+        )
+        self.assertIsNotNone(entrypoint, "legacy callback seam was renamed without review")
+        assert entrypoint is not None
+        opening = code.find("{", entrypoint.end())
+        ending = CALLER_PROOF._matching_delimiter(code, opening, "{", "}")
+        self.assertIsNotNone(ending, "legacy callback function is not a complete Rust item")
+        assert ending is not None
+        body = code[opening + 1 : ending]
+        self.assertRegex(
+            body,
+            r"^\s*if\s+action\s*==\s*&&\s*!\s*cfg!\s*\(\s*test\s*\)\s*\{\s*"
+            r"return\s+Err\s*\(",
+            "non-test callback-only advancement must deny as its first action",
+        )
+        self.assertLess(
+            body.index("if action"),
+            body.index("read_private_config"),
+            "public callback cannot access owner/config before production rejection",
+        )
+
     def test_control_cns_mutation_requires_an_original_owner_adapter(self) -> None:
         # A Control WAL digest alone is not a signed, current CNS receipt.
         # Until the original runtime owner and durable Control transaction
