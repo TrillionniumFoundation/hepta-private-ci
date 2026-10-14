@@ -181,6 +181,10 @@ impl MetricsGroupCommitV1 {
     /// Bounded to MAX_LINE_BYTES: older-prefix rewrite and coordinated full
     /// rollback still require independent external custody/Observer.
     fn verify_original_frontier(&self) -> Result<(), MetricsJournalErrorV1> {
+        // The parent directory must remain the original protected namespace.
+        // A symlinked parent can preserve the file inode while redirecting
+        // the journal through an untrusted replacement directory.
+        check_journal_path(&self.journal_path)?;
         check_open_file(&self.journal_path, &self.file)?;
         if self.file.metadata()?.len() != self.bytes {
             return Err(MetricsJournalErrorV1::Corrupt);
@@ -220,8 +224,9 @@ impl MetricsGroupCommitV1 {
                 return Err(MetricsJournalErrorV1::Corrupt);
             }
         }
-        // Reread name and size after the bounded tail read so a concurrent
-        // replacement cannot be interpreted as a successful flush.
+        // Reread both protected parent and exact opened inode after the
+        // tail check; neither directory drift nor WAL replacement may ACK.
+        check_journal_path(&self.journal_path)?;
         check_open_file(&self.journal_path, &self.file)?;
         if self.file.metadata()?.len() != self.bytes {
             return Err(MetricsJournalErrorV1::Corrupt);

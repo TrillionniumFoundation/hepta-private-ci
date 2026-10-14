@@ -313,3 +313,25 @@ fn original_evidence_wal_replacement_invalidates_even_empty_flush_barrier() {
     assert!(matches!(owner.flush(), Err(MetricsJournalErrorV1::Poisoned)));
     assert_eq!(fs::read(&path).expect("no orphan ACK writes"), original);
 }
+
+#[cfg(unix)]
+#[test]
+fn evidence_wal_rejects_symlink_parent_replacement_with_unchanged_file_inode() {
+    use std::os::unix::fs::symlink;
+
+    let root = tempfile::tempdir().expect("private root");
+    let parent = root.path().join("live");
+    fs::create_dir(&parent).expect("private live parent");
+    let path = parent.join("journal");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
+    owner.stage(sample(MetricPhaseV1::Admission)).expect("stage group");
+    owner.flush().expect("durable first group");
+    let parked = root.path().join("parked-original");
+    fs::rename(&parent, &parked).expect("move directory without changing file inode");
+    symlink(&parked, &parent).expect("replace original parent with a symlink");
+    // The named journal still refers to the exact same file inode, so a
+    // file-only identity check would falsely return an empty flush ACK.
+    assert_eq!(fs::read(&path).expect("same original file"), fs::read(parked.join("journal")).unwrap());
+    assert!(matches!(owner.flush(), Err(MetricsJournalErrorV1::UnsafePath)));
+    assert!(matches!(owner.flush(), Err(MetricsJournalErrorV1::Poisoned)));
+}
