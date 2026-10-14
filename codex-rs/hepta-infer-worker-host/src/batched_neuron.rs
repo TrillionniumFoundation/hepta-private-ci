@@ -375,6 +375,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             } else {
                 for intent in batch.requests {
                     let id = intent.request_id;
+                    let scope_binding = intent.key;
                     self.retired.insert(retired_identity(&id));
                     let outcome = match self.pending.remove(&id) {
                         None => Err(BatchWorkerErrorV1::NoAdmission),
@@ -387,6 +388,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                 pending.request.feature_vector_q24 =
                                     pending.feature.as_slice().to_vec();
                                 let start = Instant::now();
+                                let frontier = Arc::clone(&self.scope_frontier);
                                 let result = FinalUseAuthority::claim(
                                     &self.authority,
                                     &pending.signed,
@@ -399,15 +401,35 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                         token,
                                         &pending.binding,
                                         || {
-                                            self.worker.run_neuron_features_receipt(
-                                                now_ms,
-                                                &pending.model_id,
-                                                pending.request,
-                                            )
+                                            if frontier
+                                                .current(&scope_binding.scope_id)
+                                                .ok()
+                                                .as_ref()
+                                                != Some(&scope_binding)
+                                            {
+                                                return Err(BatchWorkerErrorV1::StaleScope);
+                                            }
+                                            let physical = self
+                                                .worker
+                                                .run_neuron_features_receipt(
+                                                    now_ms,
+                                                    &pending.model_id,
+                                                    pending.request,
+                                                )
+                                                .map_err(|_| BatchWorkerErrorV1::Worker);
+                                            if frontier
+                                                .current(&scope_binding.scope_id)
+                                                .ok()
+                                                .as_ref()
+                                                != Some(&scope_binding)
+                                            {
+                                                return Err(BatchWorkerErrorV1::StaleAfterEffect);
+                                            }
+                                            physical
                                         },
                                     )
                                     .map_err(|_| BatchWorkerErrorV1::Authority)
-                                    .and_then(|inner| inner.map_err(|_| BatchWorkerErrorV1::Worker))
+                                    .and_then(|inner| inner)
                                 });
                                 if let Some(sink) = &self.metric_sink {
                                     let metric_result = sink.record(PhaseMetricEventV1 {
@@ -535,17 +557,34 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                     Ok(request)
                 })
                 .collect::<Result<Vec<_>, BatchWorkerErrorV1>>()?;
+            let scopes = items
+                .iter()
+                .map(|(intent, _)| intent.key.clone())
+                .collect::<Vec<_>>();
+            let frontier = Arc::clone(&self.scope_frontier);
             FinalUseAuthority::with_verified_effect_batch(&self.authority, claimed, || {
-                self.worker
+                if scopes.iter().any(|key| {
+                    frontier.current(&key.scope_id).ok().as_ref() != Some(key)
+                }) {
+                    return Err(BatchWorkerErrorV1::StaleScope);
+                }
+                let physical = self
+                    .worker
                     .run_neuron_features_batch_receipts(now_ms, &model_id, requests)
+                    .map_err(|error| match error {
+                        crate::model_worker::Error::BatchUnsupported => {
+                            BatchWorkerErrorV1::BatchUnsupported
+                        }
+                        _ => BatchWorkerErrorV1::Worker,
+                    });
+                if scopes.iter().any(|key| {
+                    frontier.current(&key.scope_id).ok().as_ref() != Some(key)
+                }) {
+                    return Err(BatchWorkerErrorV1::StaleAfterEffect);
+                }
+                physical
             })
             .map_err(|_| BatchWorkerErrorV1::Authority)?
-            .map_err(|error| match error {
-                crate::model_worker::Error::BatchUnsupported => {
-                    BatchWorkerErrorV1::BatchUnsupported
-                }
-                _ => BatchWorkerErrorV1::Worker,
-            })
         })();
 
         let mut results = match executed {
