@@ -285,7 +285,7 @@ def train(plan: dict, plan_sha: str, profile: dict, profile_sha: str, name: str,
                "train_cases": len(rows), "training_group_sha256s": plan["train_group_sha256s"],
                "training_text_sha256s": sorted({sha(t.encode()) for t in texts}),
                "normalization": declaration["profile"].normalization,
-               "pooling": "attention-mask-mean", "model_forwards": calls,
+               "pooling": declaration["profile"].pooling, "model_forwards": calls,
                "observed_resources": usage, "learning": learning,
                "checkpoint_locally_verified": True, "publisher_authenticated": False,
                "actual_pretrained_model_proven": False, "independent_ndu_verified": False,
@@ -326,6 +326,8 @@ def predict(plan: dict, plan_sha: str, profile: dict, profile_sha: str,
             or train_receipt.get("train_steps") != plan["train_steps"]
             or train_receipt.get("feature_width") != declaration["profile"].expected_width
             or train_receipt.get("classes") != plan["classes"]
+            or train_receipt.get("pooling") != declaration["profile"].pooling
+            or train_receipt.get("normalization") != declaration["profile"].normalization
             or train_receipt.get("training_group_sha256s") != plan["train_group_sha256s"]
             or train_receipt.get("checkpoint_locally_verified") is not True):
         raise ContractError("unbound or unverified Head training receipt")

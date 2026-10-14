@@ -158,8 +158,20 @@ def validate_plan(plan: object) -> dict:
                  "invalid pinned file hash")
     _require(names == sorted(set(names)) and total <= MAX_BYTES,
              "duplicate, noncanonical or excessive material inventory")
-    _require(REQUIRED_META <= set(names) and any(WEIGHT.fullmatch(x) for x in names),
-             "essential model/tokenizer source absent")
+    _require(REQUIRED_META <= set(names), "essential model/tokenizer source absent")
+    weights = [n for n in names if WEIGHT.fullmatch(n)]
+    _require(0 < len(weights) <= 16, "missing or unbounded safe model weights")
+    direct = "model.safetensors" in weights
+    sharded = any(n.startswith("model-") for n in weights)
+    _require(not (direct and sharded), "mixed direct and sharded weights")
+    if sharded:
+        expected = {f"model-{i:05d}-of-{len(weights):05d}.safetensors"
+                    for i in range(1, len(weights) + 1)}
+        _require(set(weights) == expected and "model.safetensors.index.json" in names,
+                 "incomplete or inconsistent sharded model plan")
+    else:
+        _require(direct and "model.safetensors.index.json" not in names,
+                 "inconsistent unsharded model plan")
     return plan
 
 
@@ -216,6 +228,31 @@ def acquire(plan: dict, target: Path, *, model_info, downloader) -> dict:
             _require(item["hub_lfs_sha256"] is None or item["hub_lfs_sha256"] == digest,
                      "Hub file SHA-256 disagrees with previously declared LFS SHA")
             observed[name] = digest
+        if "model.safetensors.index.json" in observed:
+            # Verify the downloaded JSON declares precisely the pinned shard set.
+            # Counting filenames alone does not prove the index references them.
+            def unique_fields(pairs):
+                found = {}
+                for key, value in pairs:
+                    _require(key not in found, "duplicate sharded index key")
+                    found[key] = value
+                return found
+            try:
+                index = json.loads((stage / "model.safetensors.index.json").read_bytes(),
+                                   object_pairs_hook=unique_fields,
+                                   parse_constant=lambda _: _require(False,"nonfinite index"))
+            except (UnicodeError, json.JSONDecodeError) as exc:
+                raise AdmissionError("malformed safetensors shard index") from exc
+            _require(type(index) is dict and type(index.get("weight_map")) is dict
+                     and bool(index["weight_map"]), "missing safetensors shard weight_map")
+            used = set()
+            for tensor, filename in index["weight_map"].items():
+                _require(type(tensor) is str and bool(tensor)
+                         and type(filename) is str and bool(WEIGHT.fullmatch(filename)),
+                         "unsafe tensor or shard reference")
+                used.add(filename)
+            declared = {name for name in observed if WEIGHT.fullmatch(name)}
+            _require(used == declared, "shard index does not cover exact physical shards")
         shutil.move(tmp, target)
     return {"revision":plan["revision"], "file_sha256s":observed,
             "manifest": {"revision":plan["revision"],"kind":plan["profile"]["kind"],

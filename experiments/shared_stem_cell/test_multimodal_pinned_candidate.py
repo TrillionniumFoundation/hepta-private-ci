@@ -133,6 +133,42 @@ class FrozenCandidateContractTests(unittest.TestCase):
                                     FakeLocalEncoder(profile), self.host)
         return raw, receipt, result, proof
 
+    def test_cls_pooling_propagates_to_train_and_predict_receipts(self):
+        """Granite-style CLS must not be re-labelled masked-mean after fitting."""
+        profile = dict(self.profile, pooling="cls-first-token", normalization="unit_l2")
+        self.plan["candidates"] = [
+            ({**v, "profile_sha256": sha(canonical(profile))}
+             if v["name"] == "granite_97m" else v)
+            for v in self.plan["candidates"]
+        ]
+        self.p_sha = sha(canonical(self.plan))
+        profile_sha = sha(canonical(profile))
+
+        class CLSFixtureEncoder(FakeLocalEncoder):
+            def encode(self, texts, *, pooling="attention-mask-mean"):
+                if pooling != "cls-first-token":
+                    raise ContractError("CLS-only fixture received mean pooling")
+                return super().encode(texts)
+
+        with self.mock_owner():
+            raw, receipt = train(self.plan, self.p_sha, profile, profile_sha,
+                                 "granite_97m", self.train_rows,
+                                 self.plan["train_sha256"], CLSFixtureEncoder(profile), self.host)
+            self.assertEqual(receipt["pooling"], "cls-first-token")
+            self.assertEqual(receipt["normalization"], "unit_l2")
+            result, _ = predict(self.plan, self.p_sha, profile, profile_sha,
+                                "granite_97m", receipt, sha(canonical(receipt)),
+                                raw, self.future_rows, CLSFixtureEncoder(profile), self.host)
+            self.assertEqual(result["candidate"], "granite_97m")
+            for field, wrong in (("pooling", "attention-mask-mean"),
+                                 ("normalization", "none")):
+                tampered = {**receipt, field: wrong}
+                with self.subTest(field=field), self.assertRaisesRegex(
+                        ContractError, "Head training receipt"):
+                    predict(self.plan, self.p_sha, profile, profile_sha,
+                            "granite_97m", tampered, sha(canonical(tampered)),
+                            raw, self.future_rows, CLSFixtureEncoder(profile), self.host)
+
     def test_model_param_count_is_real_and_equal_to_frozen_plan(self):
         self.assertEqual(self.plan["head_parameters"], _head(self.plan, 16).parameter_count())
         with self.assertRaises(ContractError):

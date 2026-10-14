@@ -161,6 +161,57 @@ class PublicStemMaterialTests(unittest.TestCase):
                     downloader=lambda _,name,rev:root/name)
             self.assertFalse((root/"snapshot").exists())
 
+    def test_tampered_plan_rejects_missing_or_mixed_shards_without_remote(self):
+        info, _ = fixture()
+        info.siblings = [row for row in info.siblings
+                         if row.rfilename != "model.safetensors"]
+        info.siblings.extend([
+            NS(rfilename="model-00001-of-00002.safetensors", size=1, lfs={"sha256": "a"*64}),
+            NS(rfilename="model-00002-of-00002.safetensors", size=1, lfs={"sha256": "b"*64}),
+            NS(rfilename="model.safetensors.index.json", size=8, lfs=None),
+        ])
+        plan = make_plan("granite-97m-r2", info)
+        validate_plan(plan)
+        dropped = {**plan, "files": [row for row in plan["files"]
+                                    if row["name"] != "model-00002-of-00002.safetensors"]}
+        with self.assertRaisesRegex(AdmissionError, "incomplete or inconsistent"):
+            validate_plan(dropped)
+        mixed = {**plan, "files": [*plan["files"],
+                                  {"name": "model.safetensors", "size": 1,
+                                   "hub_lfs_sha256": "c"*64}]}
+        mixed["files"] = sorted(mixed["files"], key=lambda row: row["name"])
+        with self.assertRaisesRegex(AdmissionError, "mixed direct"):
+            validate_plan(mixed)
+
+    def test_acquire_verifies_exact_shard_index_semantics(self):
+        for bad in (False, True):
+            with self.subTest(bad=bad), tempfile.TemporaryDirectory() as tmp:
+                root=Path(tmp)
+                info, base=fixture()
+                base.pop("model.safetensors")
+                base["model-00001-of-00002.safetensors"] = b"shard-one"
+                base["model-00002-of-00002.safetensors"] = b"shard-two"
+                mapped=("model-00001-of-00002.safetensors" if bad
+                        else "model-00002-of-00002.safetensors")
+                base["model.safetensors.index.json"] = json.dumps({"metadata": {},
+                    "weight_map": {"layer.0": "model-00001-of-00002.safetensors",
+                                   "layer.1": mapped}}).encode()
+                info.siblings=[NS(rfilename=name,size=len(blob),
+                                  lfs={"sha256":hashlib.sha256(blob).hexdigest()})
+                               for name,blob in base.items()]
+                plan=make_plan("granite-97m-r2",info)
+                for name,blob in base.items():
+                    (root/name).write_bytes(blob)
+                if bad:
+                    with self.assertRaisesRegex(AdmissionError, "does not cover"):
+                        acquire(plan,root/"snapshot",model_info=info,
+                                downloader=lambda _r,name,_v:root/name)
+                    self.assertFalse((root/"snapshot").exists())
+                else:
+                    result=acquire(plan,root/"snapshot",model_info=info,
+                                   downloader=lambda _r,name,_v:root/name)
+                    self.assertEqual(len(result["manifest"]["files"]),len(base))
+
     def test_no_fallback_for_incomplete_sharded_model(self):
         info,_=fixture()
         info.siblings=[x for x in info.siblings if x.rfilename!='model.safetensors']
