@@ -49,7 +49,11 @@ def sealed(folder):
         raise ValueError("missing original shard SHA256SUMS")
     files = {}
     for file in folder.iterdir():
-        if file.is_symlink() or not file.is_file() or file.stat().st_size > 2 * 1024 * 1024:
+        if (
+            file.is_symlink()
+            or not file.is_file()
+            or file.stat().st_size > 2 * 1024 * 1024
+        ):
             raise ValueError("unsafe or oversized original shard member")
         files[file.name] = file.read_bytes()
     if not 2 <= len(files) <= 16:
@@ -168,7 +172,10 @@ def inspect(folder, tier, index, *, expected_commit):
         or run.get("production_accepted") is not False
         or result["raw_attempt_rows"] != len(ARMS)
         or result["raw_success_rows"] != len(ARMS)
-        or any(r["receipt"].get("reader_identity") != run["reader_identity"] for r in rows)
+        or any(
+            r["receipt"].get("reader_identity") != run["reader_identity"]
+            for r in rows
+        )
     ):
         raise ValueError("invalid or mixed original model run receipt")
     result["full_original_journal"] = True
@@ -210,8 +217,12 @@ def census(root, *, expected_commit):
         originally_planned_model_calls=len(TIERS) * 8 * len(ARMS),
         observed_raw_attempt_rows=sum(r["raw_attempt_rows"] for r in records),
         observed_raw_succeeded_rows=sum(r["raw_success_rows"] for r in records),
-        complete_original_journal_shards=sum(r["full_original_journal"] for r in records),
-        ineligible_hardware_shards=sum(r["outcome"] == "hardware_ineligible" for r in records),
+        complete_original_journal_shards=sum(
+            r["full_original_journal"] for r in records
+        ),
+        ineligible_hardware_shards=sum(
+            r["outcome"] == "hardware_ineligible" for r in records
+        ),
         missing_shard_artifacts=sum(not r["present"] for r in records),
         entire_generation_census_complete=all(
             r["full_original_journal"] for r in records

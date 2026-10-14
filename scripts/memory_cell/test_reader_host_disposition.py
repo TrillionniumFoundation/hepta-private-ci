@@ -147,7 +147,9 @@ class HostDispositionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             folder = root / "memory-reader-bottleneck-qwen-3b-0"
-            raw = b"".join(json.dumps(row, sort_keys=True).encode() + b"\n" for row in rows())
+            raw = b"".join(
+                json.dumps(row, sort_keys=True).encode() + b"\n" for row in rows()
+            )
             files = write_files(
                 folder,
                 gate=host(eligible=True),
