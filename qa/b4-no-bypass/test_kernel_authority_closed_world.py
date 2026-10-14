@@ -325,6 +325,62 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                     f"{method}: keep the positive reference-host tests isolated",
                 )
 
+    def test_generic_cns_generation_writer_callers_are_closed_world(self) -> None:
+        # The generic CNS host is shared beyond Cell Split and cannot be
+        # arbitrarily disabled. Freeze the concrete non-test callsites for
+        # generation replacement and recovery; any new route writer must
+        # undergo an explicit Control/Final-use owner review.
+        allowed: dict[str, set[str]] = {
+            "replace_read_only_generation": {
+                "codex-rs/hepta-control-plane/src/cell_split_route.rs",
+            },
+            "replace_read_only_generation_with_migration": {
+                "codex-rs/hepta-control-plane/src/cell_split_route.rs",
+                "codex-rs/hepta-runtime/src/organs.rs",
+            },
+            "recover_read_only_generation": set(),
+            "recover_read_only_generation_with_migration": {
+                "codex-rs/hepta-runtime/src/organs.rs",
+            },
+            "replace_admitted_read_only_generation": {
+                "codex-rs/hepta-control-plane/src/organ_hierarchy.rs",
+            },
+            "replace_admitted_read_only_generation_with_migration": {
+                "codex-rs/hepta-control-plane/src/organ_hierarchy.rs",
+            },
+            "recover_admitted_read_only_generation": {
+                "codex-rs/hepta-control-plane/src/organ_hierarchy.rs",
+            },
+            "recover_admitted_read_only_generation_with_migration": {
+                "codex-rs/hepta-control-plane/src/organ_hierarchy.rs",
+            },
+        }
+        names = tuple(allowed)
+        invocation = re.compile(
+            r"(?:\.|::)\s*(" + "|".join(re.escape(name) for name in names)
+            + r")\s*\("
+        )
+        observed: dict[str, set[str]] = {name: set() for name in names}
+        for path in self.rust_sources():
+            relative = path.relative_to(ROOT).as_posix()
+            if (
+                "/tests/" in f"/{relative}"
+                or "/examples/" in f"/{relative}"
+                or relative.endswith("_tests.rs")
+            ):
+                continue
+            raw = path.read_text(encoding="utf-8")
+            if not any(name in raw for name in names):
+                continue
+            code = self.lexical_code(relative)
+            for found in invocation.finditer(code):
+                observed[found.group(1)].add(relative)
+        self.assertEqual(
+            observed,
+            allowed,
+            "generic CNS generation writer callsites drifted; audit Control handoff",
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
