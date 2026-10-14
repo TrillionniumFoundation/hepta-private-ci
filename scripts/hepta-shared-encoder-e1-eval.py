@@ -111,7 +111,7 @@ def validate_arm(rows, cohort, scope, task, cutoff):
         require(row.get("abstain") is False,
                 "abstention not supported by this scoring profile")
         prob = row.get("probability_positive")
-        require(type(prob) in (int, float) and math.isfinite(prob) and 0 <= prob <= 1,
+        require(type(prob) in (int, float) and 0 <= prob <= 1 and math.isfinite(prob),
                 "invalid probability")
         for key in ("encoder_digest", "head_digest", "weights_digest"):
             require(type(row.get(key)) is str and bool(HEX64.fullmatch(row[key])),
@@ -134,8 +134,11 @@ def validate_arm(rows, cohort, scope, task, cutoff):
                     "missing/nonnegative resource measurement: " + key)
         result[case_id] = row
     require(set(result) == set(allowed), "prediction cohort incomplete")
-    require(len({(x["model_revision"], x["encoder_digest"]) for x in result.values()}) == 1,
-            "model revision/encoder drift within arm")
+    require(len({
+        (x["model_revision"], x["encoder_digest"], x["head_digest"],
+         x["weights_digest"], x["runtime_generation"])
+        for x in result.values()
+    }) == 1, "model/Head/generation drift within frozen evaluation arm")
     return result
 
 
