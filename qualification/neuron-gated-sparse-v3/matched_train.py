@@ -289,6 +289,8 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
                 raw = value.detach().cpu().contiguous()
                 require(bool(torch.isfinite(raw).all().item()), 'trained weight not finite')
                 if name.startswith('head.'):
+                    require(bool((raw.abs() <= 8).all().item()),
+                            'trained Head exceeds native F32-to-Q24 conversion bound')
                     saved[key] = raw.to(dtype=torch.float32)
                 else:
                     quant_saturations += int((raw.abs() > 1).sum())
