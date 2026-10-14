@@ -62,13 +62,6 @@ class SourceCoverageTests(unittest.TestCase):
         result = audit_coverage(only, prepared, plan, curriculum="single_hop")
         self.assertEqual(result["by_kind"]["two_hop"]["planned_updates"], 0)
         self.assertEqual(
-            result["source_exposure"]["unscheduled_source_scope_pairs"], 1
-        )
-        self.assertEqual(
-            result["source_exposure"]["scheduled_source_scope_pairs"], 2
-        )
-        self.assertEqual(result["source_exposure"]["eligible_source_scope_pairs"], 3)
-        self.assertEqual(
             result["by_kind"]["direct"]["planned_updates"],
             plan["planned_steps"],
         )
@@ -85,6 +78,13 @@ class SourceCoverageTests(unittest.TestCase):
         self.assertEqual(plan["entries"], [0, 2])
         self.assertEqual(result["by_kind"]["two_hop"]["source_examples_unvisited"], 1)
         self.assertEqual(result["by_kind"]["two_hop"]["planned_updates"], 0)
+        self.assertEqual(
+            result["source_exposure"]["unscheduled_source_scope_pairs"], 1
+        )
+        self.assertEqual(
+            result["source_exposure"]["scheduled_source_scope_pairs"], 2
+        )
+        self.assertEqual(result["source_exposure"]["eligible_source_scope_pairs"], 3)
 
     def test_shared_source_is_not_falsely_counted_as_new_knowledge(self):
         examples, prepared, plan = fixture()
@@ -117,7 +117,9 @@ class SourceCoverageTests(unittest.TestCase):
         self.assertEqual(census["source_scopes_with_scheduled_updates"], 1)
         self.assertEqual(census["source_scopes_without_scheduled_updates"], 1)
         self.assertEqual(census["unscheduled_source_scope_pairs"], 2)
-        self.assertTrue(census["only_planned_source_exposure_not_gradient_or_task_success"])
+        self.assertTrue(
+            census["only_planned_source_exposure_not_gradient_or_task_success"]
+        )
 
     def test_audit_does_not_modify_training_examples_or_budget(self):
         examples, prepared, plan = fixture()

@@ -130,9 +130,7 @@ def audit_coverage(examples, prepared, plan, *, curriculum):
     # Count (scope, original ID) once, but charge each planned repeat separately.
     # A scheduled optimizer step is not evidence of a successful model update.
     available_sources = {
-        (ex["query"]["scope"], source)
-        for ex in examples
-        for source in ex["sources"]
+        (ex["query"]["scope"], source) for ex in examples for source in ex["sources"]
     }
     scheduled_visits = Counter()
     for i, count in enumerate(visits):

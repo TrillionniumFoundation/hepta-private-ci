@@ -11,6 +11,23 @@ from tensor_contract import canonical_config
 
 
 class PretrainedConfigTests(unittest.TestCase):
+    def test_inventory_does_not_ignore_model_under_cache_parent(self):
+        from pretrained import file_inventory
+
+        with tempfile.TemporaryDirectory() as name:
+            directory = Path(name) / ".cache" / "pinned-model"
+            directory.mkdir(parents=True)
+            (directory / "config.json").write_text("original", encoding="utf-8")
+            ignored = directory / ".cache"
+            ignored.mkdir()
+            (ignored / "transient.json").write_text("ignore", encoding="utf-8")
+            original = file_inventory(directory)
+            self.assertEqual(set(original), {"config.json"})
+            (directory / "config.json").write_text("tampered", encoding="utf-8")
+            self.assertNotEqual(original, file_inventory(directory))
+            (directory / "extra.json").write_text("unauthorized", encoding="utf-8")
+            self.assertEqual(set(file_inventory(directory)), {"config.json", "extra.json"})
+
     def test_peft_save_auto_mapping_is_pinned_exactly(self):
         # RelevanceRanker deliberately leaves task_type unset so PEFT keeps the
         # existing classifier head frozen. PEFT 0.17.1 adds auto_mapping only

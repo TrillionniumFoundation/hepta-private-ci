@@ -42,9 +42,7 @@ PHASES = ("test", "transfer")
 INPUT_CEILING = 1024
 
 
-def verify_frozen_retrieval(
-    encoder, directory, *, inventory_digest, weights_digest
-):
+def verify_frozen_retrieval(encoder, directory, *, inventory_digest, weights_digest):
     """Reject both changed loaded weights and drift of the staged source bytes."""
     if (
         encoder.identity != inventory_digest

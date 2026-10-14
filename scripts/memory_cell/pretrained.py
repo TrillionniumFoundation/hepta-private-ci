@@ -32,7 +32,7 @@ from tensor_contract import (
 def file_inventory(directory: Path) -> dict:
     entries = {}
     for path in sorted(directory.rglob("*")):
-        if path.is_file() and ".cache" not in path.parts:
+        if path.is_file() and ".cache" not in path.relative_to(directory).parts:
             h = hashlib.sha256()
             with path.open("rb") as stream:
                 for block in iter(lambda: stream.read(1024 * 1024), b""):
