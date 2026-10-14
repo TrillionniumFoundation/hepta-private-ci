@@ -1,0 +1,170 @@
+name: Hepta Neuron physical research canary
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/neuron-gated-sparse-v3/matched_train.py'
+      - 'qualification/neuron-gated-sparse-v3/precommit_future.py'
+      - 'qualification/neuron-gated-sparse-v3/a4_end_to_end_gate.py'
+      - 'qualification/neuron-gated-sparse-v3/candidate_inventory.py'
+      - 'qualification/neuron-gated-sparse-v3/test_candidate_inventory.py'
+      - 'qualification/neuron-gated-sparse-v3/run_native_physical_matrix.py'
+      - 'qualification/neuron-gated-sparse-v3/native_physical_canary.py'
+      - 'qualification/neuron-gated-sparse-v3/native_float_gap.py'
+      - 'qualification/neuron-gated-sparse-v3/head_q24_oracle.py'
+      - 'qualification/neuron-gated-sparse-v3/test_head_q24_oracle.py'
+      - 'qualification/neuron-gated-sparse-v3/test_native_matrix_admission.py'
+      - 'codex-rs/hepta-neuron/src/bin/neuron_trained_q24_shadow.rs'
+      - 'qualification/neuron-gated-sparse-v3/test_real_pipeline.py'
+      - 'qualification/neuron-gated-sparse-v3/test_a4_host_gate.py'
+      - '.github/workflows/hepta-neuron-physical-research-canary.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: neuron-physical-research-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pinned-physical-cpu-test:
+    name: Physically reload 20 trained shadow weights; verify A0/A4 rejections
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.11'
+      - name: Install physically exercised pinned CPU training dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install 'safetensors==0.7.0' 'cryptography==46.0.4'
+      - name: Require pinned Torch, safetensors and independent Ed25519 verifier
+        shell: bash
+        run: |
+          python - <<'PY'
+          import torch, safetensors, cryptography
+          assert torch.__version__.split("+")[0] == '2.10.0'
+          assert safetensors.__version__ == '0.7.0'
+          assert cryptography.__version__ == '46.0.4'
+          assert not torch.cuda.is_available()
+          print('research CPU physical canary only; no production data')
+          PY
+      - name: Run physical 20-file learning canary and negative A0/future/A4 tests
+        env:
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+          PYTHONDONTWRITEBYTECODE: "1"
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m unittest discover \
+            -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_real_pipeline.py' -v
+          python -m unittest discover \
+            -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_a4_host_gate.py' -v
+          python -m unittest discover \
+            -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_candidate_inventory.py' -v
+          python -m unittest discover \
+            -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_head_q24_oracle.py' -v
+          python -m unittest discover \
+            -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_native_matrix_admission.py' -v
+      - name: Never qualify model or NDU from source fixture CI
+        run: |
+          echo "No real selected Cell, production Encoder, future utility, signed target-host A4, NDU, or promotion is established."
+
+  physical-native-q24:
+    name: Execute 20 physically trained temporal weights in real Rust Q24 (shadow)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: rustfmt,clippy
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.11'
+      - name: Install Rust prerequisites and pinned CPU weight libraries
+        shell: bash
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install 'safetensors==0.7.0' 'cryptography==46.0.4'
+      - name: Verify native trained-weight and quantized Head unit tests
+        working-directory: codex-rs
+        run: cargo test --locked -p codex-hepta-neuron --bin neuron_trained_q24_shadow
+      - name: Strict Clippy native trained-weight binary
+        working-directory: codex-rs
+        run: cargo clippy --locked -p codex-hepta-neuron --bin neuron_trained_q24_shadow -- -D warnings
+      - name: Build physical trained-weight native Q24 binary (no production host)
+        working-directory: codex-rs
+        run: cargo build --locked -p codex-hepta-neuron --bin neuron_trained_q24_shadow
+      - name: Run 20-model pinned physical-weight Q24 cold replay canary
+        shell: bash
+        env:
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+          PYTHONDONTWRITEBYTECODE: "1"
+          PHYSICAL_RECEIPT: ${{ runner.temp }}/twenty-physical-q24-native-shadow.json
+        run: |
+          set -euo pipefail
+          python qualification/neuron-gated-sparse-v3/native_physical_canary.py \
+            --binary codex-rs/target/debug/neuron_trained_q24_shadow \
+            --report "$PHYSICAL_RECEIPT"
+          python - "$PHYSICAL_RECEIPT" <<'PY'
+          import json, sys
+          with open(sys.argv[1], encoding='utf-8') as src:
+              result=json.load(src)
+          assert result['twenty_native_physical_model_executions']==20
+          assert result['native_q24_temporal_replay_executed'] is True
+          assert result['diagnostic_native_vs_float_gap_rows']==20
+          assert result['forty_fresh_native_process_invocations']==40
+          assert result['cross_process_q24_frontier_and_head_receipts_equal'] is True
+          assert result['frozen_a0_owner_revalidation']['a0_rechecked'] is False
+          assert result['quantized_native_head_integer_oracle_matches']==20
+          for row in result['results']:
+              gap=row['float_surrogate_vs_native_q24_state_gap']
+              assert gap['compared_event_count']>=1
+              assert gap['native_q24_state_provided_by_real_rust_kernel'] is True
+              assert gap['bitwise_float_to_q24_prediction_parity_proven'] is False
+              assert gap['production_qualification'] is False
+              oracle=row['q24_head_integer_oracle']
+              assert oracle['all_native_head_logits_match_independent_integer_oracle'] is True
+              assert row['fresh_process_count']==2
+              assert row['independent_rust_processes_bit_identical'] is True
+              assert oracle['full_original_f32_policy_execution_verified'] is False
+              native=row['native_receipt']
+              assert native['quantized_q24_head_executed_in_rust'] is True
+              assert native['f32_head_executed'] is False
+          assert result['native_negative_cases_rejected']==6
+          assert result['full_selected_model_head_executed'] is False
+          assert result['floating_torch_native_q24_prediction_parity_verified'] is False
+          assert result['production_qualification'] is False
+          assert result['ndu_eligible'] is False
+          assert result['decision']=='NO_MODEL_PROMOTION'
+          PY
+      - name: Retain explicit research-only raw native receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: neutron-20-physical-native-q24-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/twenty-physical-q24-native-shadow.json
+          if-no-files-found: warn
+          retention-days: 14
