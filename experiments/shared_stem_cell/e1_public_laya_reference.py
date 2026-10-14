@@ -84,6 +84,9 @@ def main():
  p.add_argument('--output',type=Path,required=True);args=p.parse_args()
  names=('granite_97m_r2','mmbert_small','embeddinggemma_2_text')
  report={name:parse(getattr(args,name).read_bytes()) for name in names}
- result=compare(parse(args.panel.read_bytes()),report,args.historical_laya_zip.read_bytes())
+ panel=parse(args.panel.read_bytes())
+ if digest(canonical(panel))!='2f7a013648e16b60c74614b0fcf1496aa06475f7285f215adddaa51fe29e01a4':
+  raise Invalid('changed source panel outside original frozen Laya evidence')
+ result=compare(panel,report,args.historical_laya_zip.read_bytes())
  with args.output.open('x',encoding='utf8') as out:json.dump(result,out,sort_keys=True,indent=2,allow_nan=False);out.write('\n')
 if __name__=='__main__':main()
