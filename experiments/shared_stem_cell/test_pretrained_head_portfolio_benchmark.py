@@ -42,7 +42,9 @@ class HeadPortfolioPhysicalTests(unittest.TestCase):
                                       shared[routes == 1] +
                                       models["correction"](x[routes == 1]),
                                       rtol=1e-6, atol=1e-6))
-        self.assertEqual(old, {name: dict(m.state_dict()) for name, m in models.items()})
+        for name, model in models.items():
+            for key, before in old[name].items():
+                self.assertTrue(torch.equal(before, model.state_dict()[key]))
 
     def test_missing_and_malformed_scope_features_refuse_before_forward(self):
         models = self.models()
