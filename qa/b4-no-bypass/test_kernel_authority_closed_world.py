@@ -209,6 +209,45 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "public callback cannot access owner/config before production rejection",
         )
 
+    def locked_original_cns_receipt_body(self, code: str) -> str:
+        """Follow the compatibility API to its sole locked Control owner."""
+
+        def method_body(name: str) -> str:
+            entry = re.search(rf"\bpub\s+fn\s+{name}\s*\(", code)
+            self.assertIsNotNone(entry, f"missing original Control {name}")
+            assert entry is not None
+            opening = code.find("{", entry.end())
+            closing = CALLER_PROOF._matching_delimiter(code, opening, "{", "}")
+            self.assertIsNotNone(closing, f"unbalanced original Control {name}")
+            assert closing is not None
+            return code[opening + 1 : closing]
+
+        wrapper = method_body("verify_original_cns_receipt_binding")
+        self.assertRegex(
+            wrapper,
+            r"^\s*self\s*\.\s*verify_original_cns_receipt_frontier_v1\s*\(\s*"
+            r"externally_verified_original_receipt_bytes\s*\)\s*"
+            r"\.\s*map\s*\(\s*\|_\|\s*\(\s*\)\s*\)\s*$",
+            "legacy CNS receipt API must be a one-hop typed Control owner join",
+        )
+        body = method_body("verify_original_cns_receipt_frontier_v1")
+        self.assertRegex(
+            body,
+            r"\bself\s*\.\s*state\s*\.\s*lock\s*\(\s*\)",
+            "typed original Control receipt join must hold the live mutex",
+        )
+        self.assertIn("state.pending_cutover", body)
+        self.assertIn("state.verify_original_full_history()", body)
+        self.assertIn("state.last_cns_original_receipt_binding", body)
+        self.assertIn("if expected != observed", body)
+        self.assertNotIn("drop(state)", body)
+        self.assertLess(
+            body.index("state.verify_original_full_history()"),
+            body.index("original_cns_receipt_binding("),
+            "the original WAL history must replay before signed receipt equality",
+        )
+        return body
+
     def test_control_cns_mutation_requires_an_original_owner_adapter(self) -> None:
         # A Control WAL digest alone is not a signed, current CNS receipt.
         # Until the original runtime owner and durable Control transaction
@@ -254,32 +293,15 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "Err(NduPublicationErrorV1::Unsupported)",
             "old direct CNS cutover API became effectful",
         )
-        joined = re.search(
-            r"\bpub\s+fn\s+verify_original_cns_receipt_binding\s*\(", lexical
-        )
-        self.assertIsNotNone(
-            joined, "independent CNS Observer must retain read-only WAL receipt join"
-        )
-        assert joined is not None
-        join_start = lexical.find("{", joined.end())
-        join_end = CALLER_PROOF._matching_delimiter(lexical, join_start, "{", "}")
-        self.assertIsNotNone(join_end, "Control receipt join body must be complete")
-        assert join_end is not None
-        join_body = lexical[join_start + 1 : join_end]
-        self.assertRegex(
-            join_body,
-            r"\bself\s*\.\s*state\s*\.\s*lock\s*\(\s*\)",
-            "original CNS receipt comparison must hold a live Control lock",
-        )
-        self.assertNotIn(
-            "self.last_cns_original_receipt_binding()",
-            join_body,
-            "separate readback may release the lock before receipt comparison",
-        )
-        self.assertRegex(join_body, r"\bstate\s*\.\s*verify_original_paths\s*\(\s*\)")
-        self.assertRegex(join_body, r"\bstate\s*\.\s*pending_cutover\b")
-        self.assertNotIn(
-            "drop(state)", join_body, "no Control lock release before joined equality"
+        # The void-return API is only a compatibility wrapper. Verify its
+        # sole call and inspect the callee's original Control mutex instead.
+        join_body = self.locked_original_cns_receipt_body(lexical)
+        self.assertGreaterEqual(
+            join_body.count(
+                "state.verify_original_paths(state.bytes, state.sequence, state.head)"
+            ),
+            2,
+            "Control pins original WAL path and fsynced tail before and after the join",
         )
 
         physical = self.lexical_code(
@@ -751,18 +773,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             self.assertIn(assertion, code, f"Control WAL tail fence missing: {assertion}")
         self.assertNotIn("state.verify_original_paths()", code)
 
-        entry = re.search(
-            r"\bpub\s+fn\s+verify_original_cns_receipt_binding\s*\(",
-            code,
-        )
-        self.assertIsNotNone(entry, "read-only original CNS receipt join absent")
-        assert entry is not None
-        start = code.find("{", entry.end())
-        end = CALLER_PROOF._matching_delimiter(code, start, "{", "}")
-        self.assertIsNotNone(end, "original CNS receipt join is incomplete")
-        assert end is not None
-        body = code[start + 1 : end]
-        self.assertRegex(body, r"self\s*\.\s*state\s*\.\s*lock\s*\(\s*\)")
+        body = self.locked_original_cns_receipt_body(code)
         self.assertGreaterEqual(
             body.count("state.verify_original_paths(state.bytes, state.sequence, state.head)"),
             2,
