@@ -45,8 +45,17 @@ jobs:
           PY="$RUNNER_TEMP/laya-venv/bin/python"
           "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           "$PY" -m pip install --only-binary=:all: 'laya==0.4.6' \
-            'transformers==5.19.0' 'safetensors==0.6.2' \
+            'transformers==5.19.0' 'safetensors==0.8.0' \
             'huggingface-hub==1.33.0' 'numpy==2.2.6'
+          "$PY" -m pip check
+          "$PY" - <<'PY'
+          from importlib.metadata import version
+          from packaging.version import Version
+          assert version("laya") == "0.4.6"
+          assert version("transformers") == "5.19.0"
+          assert version("safetensors") == "0.8.0"
+          assert Version(version("safetensors")) >= Version("0.8.0")
+          PY
           "$PY" -m pip freeze > "$RUNNER_TEMP/laya-frozen-env.txt"
       - name: Verify public checkpoint then run real typed decisions
         run: |
