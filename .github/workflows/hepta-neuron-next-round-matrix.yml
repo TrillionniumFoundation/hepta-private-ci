@@ -49,7 +49,7 @@ jobs:
           python-version: "3.13"
       - name: Install pinned CPU test dependencies
         run: |
-          python -m pip install numpy==2.3.5 safetensors==0.7.0
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
       - name: Record actual source and environment
         run: |
@@ -96,6 +96,7 @@ jobs:
           git rev-parse HEAD > "$RUNNER_TEMP/hf-source.txt"
           python -m pip freeze > "$RUNNER_TEMP/hf-environment.txt"
           python qualification/stem-cell-v1/hf_profile_checks.py -v 2>&1 | tee "$RUNNER_TEMP/hf-profile.log"
+          python qualification/stem-cell-v1/hf_generation_checks.py -v 2>&1 | tee "$RUNNER_TEMP/hf-generation.log"
       - name: Retain HF architecture observations
         if: always()
         uses: actions/upload-artifact@v4
@@ -105,6 +106,7 @@ jobs:
             ${{ runner.temp }}/hf-source.txt
             ${{ runner.temp }}/hf-environment.txt
             ${{ runner.temp }}/hf-profile.log
+            ${{ runner.temp }}/hf-generation.log
           if-no-files-found: error
 
   public-encoder-canary:

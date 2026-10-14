@@ -75,6 +75,37 @@ class System2ExecutionTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             aggregate_children([0., 10.], node_kind="join")
 
+    def test_and_requires_complete_externally_named_boolean_obligations(self):
+        required = ("independent_source", "retained_old_tasks", "authorized_effect")
+        complete = [("authorized_effect", True), ("independent_source", True),
+                    ("retained_old_tasks", True)]
+        self.assertIs(aggregate_children(complete, node_kind="and",
+                                         required_ids=required), True)
+        incomplete_success = [("authorized_effect", True), ("independent_source", True),
+                              ("retained_old_tasks", False)]
+        self.assertIs(aggregate_children(incomplete_success, node_kind="and",
+                                         required_ids=required), False)
+
+        violations = (
+            complete[:2],  # dropped a necessary condition
+            [complete[0], complete[0], complete[1]],  # repeated favorable branch
+            [complete[0], complete[1], ("unregistered", True)],  # substituted evidence
+            [(key, 1) for key, _ in complete],  # integer 1 is not verified Boolean
+            [("authorized_effect", 0.999), *complete[1:]],  # confidence is not proof
+        )
+        for observed in violations:
+            with self.subTest(observed=observed), self.assertRaises(ValueError):
+                aggregate_children(observed, node_kind="and", required_ids=required)
+        for kwargs in ({"required_ids": None}, {"required_ids": ("x", "x", "y")},
+                       {"required_ids": required, "probabilities": [1., 0., 0.]}):
+            with self.subTest(kwargs=kwargs), self.assertRaises(ValueError):
+                aggregate_children(complete, node_kind="and", **kwargs)
+        with self.assertRaises(ValueError):
+            aggregate_children([True, True], node_kind="choice")
+        with self.assertRaises(ValueError):
+            aggregate_children([0., 1.], node_kind="chance", probabilities=[0.5, 0.5],
+                               required_ids=("a", "b"))
+
     def test_nonfinite_discount_or_invalid_duration_rejected(self):
         for rate, duration in ((float("nan"), 1), (-1, 1), (0, 0), (0, True)):
             with self.assertRaises(ValueError):

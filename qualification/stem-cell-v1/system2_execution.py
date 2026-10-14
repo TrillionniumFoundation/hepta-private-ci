@@ -9,6 +9,7 @@ from __future__ import annotations
 import math
 import copy
 import contextlib
+import sys
 import time
 from dataclasses import asdict, dataclass
 from typing import Callable
@@ -51,7 +52,7 @@ def _text(text):
 def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
                   continue_values: Callable, value_profile: str,
                   max_rounds: int = 8, max_calls: int = 24,
-                  ndu_policy=None, meter=None, clock=time.time_ns, paired_start=None):
+                  ndu_policy=None, meter=None, clock=time.time_ns, paired_start=None, fixed_policy=None):
     """Actually call proposer/verifier, then revise using returned feedback.
 
     continue_values(task, candidate, feedback, rounds_left) returns
@@ -69,16 +70,20 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
     """
     task.validate()
     policy = copy.deepcopy(ndu_policy)
-    if policy is not None and paired_start is not None:
-        raise ValueError("paired collection cannot be selected by an NDU critic")
+    fixed = copy.deepcopy(fixed_policy)
+    if sum(x is not None for x in (policy, paired_start, fixed)) > 1:
+        raise ValueError("paired collection, fixed control and NDU policies are mutually exclusive")
+    if fixed is not None:
+        from reasoning_baselines import validate_baseline
+        validate_baseline(fixed, task, meter, max_rounds, max_calls, value_profile, continue_values)
     if paired_start is not None:
         from paired_capture import PairedStart
         if type(paired_start) is not PairedStart:
             raise ValueError("typed registered pair start required")
         paired_start = copy.deepcopy(paired_start)
         paired_start.validate(task, meter, max_rounds, max_calls, value_profile, continue_values)
-    bounded = policy is not None or paired_start is not None
-    expiry = policy["expires_at_ns"] if policy is not None else (paired_start.expires_at_ns if paired_start else None)
+    bounded = policy is not None or paired_start is not None or fixed is not None
+    expiry = policy["expires_at_ns"] if policy is not None else (paired_start.expires_at_ns if paired_start else (fixed["expires_at_ns"] if fixed else None))
     task = copy.deepcopy(task) if bounded else task
     fixed_task_id = _digest(asdict(task))
     if policy is not None:
@@ -93,7 +98,7 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
         now = clock()
         if type(now) is not int or not task.as_of_ns <= now < policy["expires_at_ns"]:
             raise ValueError("reasoning policy is not valid at the current task boundary")
-    elif meter is not None and paired_start is None:
+    elif meter is not None and paired_start is None and fixed is None:
         raise ValueError("metered reasoning requires a bound NDU policy")
     _text(value_profile)
     if type(max_rounds) is not int or not 1 <= max_rounds <= 64:
@@ -129,6 +134,10 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
                           full_cost_qualification=False)
         if policy is not None and policy.get("empirical_protocol_id") is not None:
             result["empirical_critic"] = continue_values.receipt()
+        if fixed is not None:
+            result.update(schema="hepta.stem.fixed-control-execution.v1", fixed_policy=fixed,
+                          task_sha256=fixed_task_id, work_observation=meter.report(),
+                          common_ceiling_is_not_equal_work=True, full_cost_qualification=False)
         if paired_start is not None:
             result.update(schema="hepta.stem.paired-segment-execution.v1", capture_id=paired_start.capture_id,
                           task_sha256=fixed_task_id, work_observation=meter.report(),
@@ -141,6 +150,11 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
         before = time.perf_counter_ns()
         entry = {"kind": kind, "call": calls, "elapsed_ns": 0, "status": "unknown"}
         trace.append(entry)
+        # Preserve bounded generation observations in the SAME callback trace.
+        causal_module = sys.modules.get("causal_generation")
+        local_generator = (kind == "propose" and causal_module is not None
+                           and type(function) is getattr(causal_module, "LocalCausalProposer", None))
+        prior_generation = function.receipt()["last_generation"] if local_generator else None
         try:
             component = {"propose": "proposer", "verify": "verifier", "value": "value"}[kind]
             with scope("search", component):
@@ -149,6 +163,8 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
                     if type(boundary) is not int or not task.as_of_ns <= boundary < expiry:
                         raise ValueError("reasoning policy expired before callback")
                 result = function(*args)
+                if fixed is not None and clock() >= expiry:
+                    raise ValueError("fixed control expired during callback")
                 if bounded and _digest(asdict(task)) != fixed_task_id:
                     raise ValueError("callback mutated the fixed public task")
                 if kind == "propose":
@@ -183,6 +199,10 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
             entry["error_type"] = type(exc).__name__
             raise
         finally:
+            if local_generator:
+                generated = function.receipt()["last_generation"]
+                if generated != prior_generation:
+                    entry["generation"] = generated
             entry["elapsed_ns"] = time.perf_counter_ns() - before
 
     for round_index in range(max_rounds):
@@ -211,6 +231,9 @@ def run_reasoning(task: PublicTask, *, propose: Callable, verify: Callable,
                 return finish("verifier_accepted_not_independent_eval")
             if round_index + 1 == max_rounds:
                 return finish("depth_exhausted")
+            if fixed is not None:
+                # A true fixed-depth control never calls a dummy value callback.
+                continue
             # One valuation plus at least proposer+verifier must remain.
             if calls + 3 > max_calls:
                 return finish("budget_exhausted")
@@ -270,8 +293,34 @@ def discounted_segments(segments, *, terminal_value, discount_rate):
     return list(reversed(result))
 
 
-def aggregate_children(values, *, node_kind, probabilities=None):
-    """Chance expectation and choice optimization are deliberately distinct."""
+def aggregate_children(values, *, node_kind, probabilities=None, required_ids=None):
+    """Distinguish choice, chance, and *complete* mandatory-proof conjunctions.
+
+    An AND node is a Boolean feasibility check, NOT a numeric utility
+    aggregator. Its full obligation inventory must be fixed independently;
+    a favorable subset of children cannot stand in for all requirements.
+    This helper is not a learned FBSDE solver or a production verifier.
+    """
+    if node_kind == "and":
+        if (probabilities is not None or type(required_ids) is not tuple
+                or not 1 <= len(required_ids) <= 64
+                or any(type(i) is not str or not 1 <= len(i.encode("utf-8")) <= 128
+                       for i in required_ids)
+                or len(set(required_ids)) != len(required_ids)
+                or not isinstance(values, (list, tuple)) or len(values) != len(required_ids)):
+            raise ValueError("AND requires an exact externally fixed obligation inventory")
+        observed = {}
+        for item in values:
+            if (not isinstance(item, (tuple, list)) or len(item) != 2
+                    or type(item[0]) is not str or type(item[1]) is not bool
+                    or item[0] in observed):
+                raise ValueError("AND requires distinct typed obligation verdicts")
+            observed[item[0]] = item[1]
+        if set(observed) != set(required_ids):
+            raise ValueError("missing, replaced, or extra AND obligation")
+        return all(observed.values())
+    if required_ids is not None:
+        raise ValueError("numeric choice/chance nodes cannot accept AND requirements")
     if (not isinstance(values, (list, tuple)) or not 1 <= len(values) <= 64
             or any(type(v) not in (int, float) or not math.isfinite(v) for v in values)):
         raise ValueError("bounded finite child values required")
