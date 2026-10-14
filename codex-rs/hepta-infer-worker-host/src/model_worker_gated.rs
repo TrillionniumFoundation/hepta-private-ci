@@ -1229,21 +1229,25 @@ mod tests {
             // Nearest-rank reference percentiles from actual driver batch calls.
             // Two samples at 64 Cells cannot establish production p99.
             let percentile = |percent: usize| {
-                let rank = batch_latency_micros.len().saturating_mul(percent).div_ceil(100);
+                let rank = batch_latency_micros
+                    .len()
+                    .saturating_mul(percent)
+                    .div_ceil(100);
                 batch_latency_micros[rank.saturating_sub(1)]
             };
             // Linux CI process RSS is explicitly not GPU or deployment-host RSS.
-            let process_rss_kib = std::fs::read_to_string("/proc/self/status")
-                .ok()
-                .and_then(|status| {
-                    status.lines().find_map(|line| {
-                        line.strip_prefix("VmRSS:")?
-                            .split_whitespace()
-                            .next()?
-                            .parse::<u64>()
-                            .ok()
-                    })
-                });
+            let process_rss_kib =
+                std::fs::read_to_string("/proc/self/status")
+                    .ok()
+                    .and_then(|status| {
+                        status.lines().find_map(|line| {
+                            line.strip_prefix("VmRSS:")?
+                                .split_whitespace()
+                                .next()?
+                                .parse::<u64>()
+                                .ok()
+                        })
+                    });
             assert_eq!(worker.driver.batch_calls(), cell_count / 32);
             assert_eq!(cache.resident_bytes(), 16);
             assert!(worker.active_requests.is_empty());
