@@ -584,7 +584,7 @@ impl CellSplitExecutionPortV1 for DropAckAfterRealCasRpc {
 }
 
 #[test]
-fn real_signed_artifact_cas_lost_ack_reconciles_only_after_selector_revocation() {
+fn real_signed_artifact_cas_lost_ack_respects_independent_final_use_on_recovery() {
     use crate::CellSplitExecutionErrorV1;
     use crate::CellSplitExecutionOwnerV1;
     use crate::CellSplitOwnerTrustV1;
@@ -648,7 +648,8 @@ fn real_signed_artifact_cas_lost_ack_reconciles_only_after_selector_revocation()
         }
     });
 
-    let keys = [1_u8, 2, 3, 4].map(|value| SigningKey::from_bytes(&[value; 32]).verifying_key());
+    let keys =
+        [1_u8, 2, 3, 4].map(|value| SigningKey::from_bytes(&[value; 32]).verifying_key());
     let trust = CellSplitOwnerTrustV1::new(&plan, keys.clone())
         .expect("four distinct owner keys");
     let endpoints = [
