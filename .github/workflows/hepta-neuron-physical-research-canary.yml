@@ -107,6 +107,9 @@ jobs:
           sudo apt-get install -y build-essential pkg-config libcap-dev
           python -m pip install --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
           python -m pip install 'safetensors==0.7.0' 'cryptography==46.0.4'
+      - name: Verify exact native Rustfmt without modifying source
+        working-directory: codex-rs
+        run: cargo fmt -p codex-hepta-neuron -- --check
       - name: Verify native trained-weight and quantized Head unit tests
         working-directory: codex-rs
         run: cargo test --locked -p codex-hepta-neuron --bin neuron_trained_q24_shadow
@@ -130,6 +133,8 @@ jobs:
             --report "$PHYSICAL_RECEIPT"
           python - "$PHYSICAL_RECEIPT" <<'PY'
           import json, sys
+          def native_tick_count(row):
+              return row['native_receipt']['original_tick_count']
           with open(sys.argv[1], encoding='utf-8') as src:
               result=json.load(src)
           assert result['twenty_native_physical_model_executions']==20
@@ -139,6 +144,9 @@ jobs:
           assert result['cross_process_q24_frontier_and_head_receipts_equal'] is True
           assert result['frozen_a0_owner_revalidation']['a0_rechecked'] is False
           assert result['quantized_native_head_integer_oracle_matches']==20
+          assert result['quantized_head_margin_oracle_matches']==20
+          assert result['head_sign_margin_research_only'] is True
+          assert result['valid_zero_head_native_abstentions_verified']==4
           for row in result['results']:
               gap=row['float_surrogate_vs_native_q24_state_gap']
               assert gap['compared_event_count']>=1
@@ -147,11 +155,16 @@ jobs:
               assert gap['production_qualification'] is False
               oracle=row['q24_head_integer_oracle']
               assert oracle['all_native_head_logits_match_independent_integer_oracle'] is True
+              assert oracle['all_native_head_sign_margins_match_independent_integer_oracle'] is True
+              assert sum(oracle['head_sign_margin_counts'].values())==native_tick_count(row)
               assert row['fresh_process_count']==2
               assert row['independent_rust_processes_bit_identical'] is True
               assert oracle['full_original_f32_policy_execution_verified'] is False
               native=row['native_receipt']
               assert native['quantized_q24_head_executed_in_rust'] is True
+              assert native['head_sign_margin_profile']=='hepta.neuron.same-activation-head-sign-margin.v1'
+              assert native['head_margin_abstention_is_research_only'] is True
+              assert native['head_margin_authorized_for_final_use'] is False
               assert native['f32_head_executed'] is False
           assert result['native_negative_cases_rejected']==6
           assert result['full_selected_model_head_executed'] is False
