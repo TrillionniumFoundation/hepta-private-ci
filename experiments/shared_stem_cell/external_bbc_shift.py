@@ -140,6 +140,52 @@ def score_sealed(predictions, labels, rows, *, source_revision=REVISION):
             "retention_certified": False, "production_accepted": False}
 
 
+def evaluate_published(prediction_path, prediction_sha, cohort_path, cohort_sha, rows, label_at):
+    """Check BOTH closed source files before first access to any outcome label.
+
+    This is not an independent scorer/provider: it enforces ordering and binds
+    local bytes; publisher truth and evaluation integrity remain separate.
+    """
+    for path, expected in ((Path(prediction_path), prediction_sha),
+                           (Path(cohort_path), cohort_sha)):
+        require(isinstance(expected, str) and len(expected) == 64 and
+                all(c in "0123456789abcdef" for c in expected) and
+                path.is_file() and not path.is_symlink() and
+                0 < path.stat().st_size <= 16 * 1024**2,
+                "missing, linked or oversized publication")
+    raw, cohort_raw = Path(prediction_path).read_bytes(), Path(cohort_path).read_bytes()
+    require(digest(raw) == prediction_sha and digest(cohort_raw) == cohort_sha,
+            "sealed prediction/cohort file changed before labels")
+
+    def unique(pairs):
+        result = {}
+        for k, v in pairs:
+            require(k not in result, "duplicate published JSON field")
+            result[k] = v
+        return result
+
+    def reject_nonfinite(_):
+        raise SourceError("nonfinite published JSON")
+
+    packet = json.loads(raw, object_pairs_hook=unique, parse_constant=reject_nonfinite)
+    stored = json.loads(cohort_raw, object_pairs_hook=unique, parse_constant=reject_nonfinite)
+    require(raw == canonical(packet) and cohort_raw == canonical(stored),
+            "noncanonical publication")
+    require(type(packet) is dict and set(packet) == {
+                "schema", "source_revision", "cohort_sha256", "case_ids",
+                "predictions", "work", "production_accepted"} and
+            packet["schema"] == SCHEMA and packet["source_revision"] == REVISION and
+            packet["cohort_sha256"] == cohort_sha and
+            packet["production_accepted"] is False and
+            type(packet["work"]) is dict and
+            stored == rows and packet["case_ids"] == [r["case_id"] for r in rows],
+            "wrong previous publication profile or case binding")
+    # This callback is the FIRST point where source ground truth is allowed.
+    return score_sealed(packet["predictions"],
+                        [label_at(r["source_index"]) for r in rows], rows)
+
+
+
 def run(study: Path, consolidation: Path, producer_sha: str,
         consolidation_sha: str, previous: Path, previous_sha: str, output: Path):
     import torch
@@ -205,10 +251,9 @@ def run(study: Path, consolidation: Path, producer_sha: str,
             "case_ids": [r["case_id"] for r in rows],
             "predictions": predicted["predictions"], "work": census,
             "production_accepted": False})
-        sealed = e.decode(e.bound_file(output / "predictions.json", seal, 16 * 1024**2))
-        # First access to source answers is AFTER sealing all frozen predictions.
-        gold = [ds[r["source_index"]]["label_text"] for r in rows]
-        assessment = score_sealed(sealed["predictions"], gold, safe)
+        assessment = evaluate_published(
+            output / "predictions.json", seal, output / "cohort.json", cohort_sha,
+            safe, lambda i: ds[i]["label_text"])
         report = {**assessment, "cohort_sha256": cohort_sha,
                   "predictions_sha256": seal,
                   "source_original_document_text_stored": False,

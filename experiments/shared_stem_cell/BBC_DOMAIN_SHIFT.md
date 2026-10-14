@@ -27,8 +27,10 @@ change the production model, or silently rework the old research experiment.
   has no AG counterpart; include it in the denominator for source support,
   but do **not** pretend it has a four-way ground-truth label.
   Unknown labels, source drift, invalid outputs or missing classes reject.
-- The complete four-arm prediction table is sealed **before any BBC label
-  lookup**. Publish source hashes, names/indexes, per-arm proxy scores,
+- The complete four-arm prediction table and label-free cohort are
+  separately byte-hash-checked and sealed **before any BBC label lookup**.
+  Tampered/duplicate/noncanonical files reject without calling the label
+  accessor. Publish source hashes, names/indexes, per-arm proxy scores,
   unsupported coverage and actual Encoder/Head work receipts; **never**
   republish copyrighted BBC article text or model weights in Actions artifacts.
 

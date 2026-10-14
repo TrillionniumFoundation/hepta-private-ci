@@ -1,5 +1,7 @@
 """External source protocol tests on invented strings; NOT pretrained evidence."""
 import json
+from pathlib import Path
+import tempfile
 import unittest
 
 from experiments.shared_stem_cell import external_bbc_shift as b
@@ -46,6 +48,43 @@ class ShiftTests(unittest.TestCase):
                 b.score_sealed(wrong, labels, rows)
         with self.assertRaises(b.SourceError):
             b.score_sealed(frozen, labels, rows, source_revision="unqualified")
+
+    def test_prediction_and_cohort_bytes_must_seal_before_label_callback(self):
+        rows = b.public_cohort(b.sample(self.texts()))
+        probs = {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.ARMS}
+        cohort_raw = b.canonical(rows)
+        cohort_sha = b.digest(cohort_raw)
+        packet = {"schema": b.SCHEMA, "source_revision": b.REVISION,
+                  "cohort_sha256": cohort_sha,
+                  "case_ids": [r["case_id"] for r in rows],
+                  "predictions": probs, "work": {}, "production_accepted": False}
+        raw = b.canonical(packet)
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            pred, cohort = root / "predictions.json", root / "cohort.json"
+            pred.write_bytes(raw)
+            cohort.write_bytes(cohort_raw)
+            calls = []
+            def label(index):
+                self.assertEqual(b.digest(pred.read_bytes()), b.digest(raw))
+                calls.append(index)
+                return "business" if len(calls) < 121 else "entertainment"
+            result = b.evaluate_published(pred, b.digest(raw), cohort,
+                                          cohort_sha, rows, label)
+            self.assertEqual(len(calls), 128)
+            self.assertEqual(result["scores"]["bank"]["proxy_correct"], 120)
+            calls.clear()
+            pred.write_bytes(raw + b"\n")
+            with self.assertRaises(b.SourceError):
+                b.evaluate_published(pred, b.digest(raw), cohort,
+                                     cohort_sha, rows, label)
+            self.assertEqual(calls, [])
+            pred.write_bytes(raw)
+            cohort.write_bytes(cohort_raw + b"\n")
+            with self.assertRaises(b.SourceError):
+                b.evaluate_published(pred, b.digest(raw), cohort,
+                                     cohort_sha, rows, label)
+            self.assertEqual(calls, [])
 
     def test_insufficient_or_duplicate_unlabeled_source_rejects(self):
         with self.assertRaises(b.SourceError):
