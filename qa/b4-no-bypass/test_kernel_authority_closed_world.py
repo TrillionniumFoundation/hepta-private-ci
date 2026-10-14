@@ -272,6 +272,31 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         source_path = "codex-rs/hepta-control-plane/src/cell_split_route.rs"
         code = self.lexical_code(source_path)
         self.assertIn("ControlHandoffRequired", code)
+        # A newly named public mutation entrypoint could evade checks for
+        # the two historic activation method names. The entire public
+        # controller surface is reviewed as a closed set.
+        self.assertEqual(
+            self.public_methods(source_path, "CellSplitRouteControllerV1"),
+            {
+                "new",
+                "generation",
+                "phase",
+                "with_metrics_sink",
+                "production_metrics_ready",
+                "flush_production_metrics",
+                "cns_latency_observations",
+                "parent_route",
+                "host",
+                "route_fence_receipt",
+                "child_route",
+                "start_all",
+                "dispatch_parent_once",
+                "activate_children",
+                "activate_children_with_migration",
+                "dispatch_child_once",
+            },
+            "unreviewed CellSplit controller method may bypass Control handoff",
+        )
         for method in ("activate_children", "activate_children_with_migration"):
             with self.subTest(entrypoint=method):
                 entrypoint = re.search(
