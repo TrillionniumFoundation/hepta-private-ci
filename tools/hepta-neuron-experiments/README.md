@@ -161,7 +161,8 @@ The raw 768-wide float32 output is captured into a local file. An **untrained,
 rank-one tail-coordinate diagnostic** projector maps 768→256 with no hidden
 slice. The independent numeric oracle recalculates all outputs, and the
 existing shadow `native_bridge.native_logits` runs a deterministic
-diagnostic 2-logit Q24 Head. This is an actual public-weight execution
+256-wide diagnostic Q24 Head (matching the chosen V1 temporal-state width,
+without creating a real Worker ModelPort receipt). This is an actual public-weight execution
 *mechanism* test, not a trained/selected Cell or production Neuron invocation.
 
 In a pinned full source checkout with the approved public CPU snapshot and
