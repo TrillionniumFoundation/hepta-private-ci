@@ -291,7 +291,7 @@ impl CellSplitUnixEffectPortV1 {
 /// std::os::unix::net::UnixStream::connect. The connection alone is not
 /// authority: callers still require the original signed effect receipt and
 /// a fresh signed owner readback after committing.
-fn connect_owner_with_deadline(
+pub(crate) fn connect_owner_with_deadline(
     path: &Path,
     started_at: Instant,
     total: Duration,
