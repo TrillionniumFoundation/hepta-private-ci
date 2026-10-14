@@ -58,6 +58,24 @@ impl std::fmt::Display for NduPublicationErrorV1 {
 }
 impl std::error::Error for NduPublicationErrorV1 {}
 
+/// Bounded, original-inode, read-only Control WAL observation for an independent
+/// Observer. All fields are LOCAL and UNSIGNED; even an exact frontier is not a
+/// Final-use token, original CNS runtime receipt, rollback witness, or license
+/// to perform a physical Cell Split.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct NduPublicationLocalFrontierV1 {
+    pub snapshot: NduSnapshotRefV1,
+    pub checkpoint: Digest32,
+    pub sequence: u64,
+    pub head: Digest32,
+    pub wal_bytes: u64,
+    pub wal_device: u64,
+    pub wal_inode: u64,
+    pub marker_device: u64,
+    pub marker_inode: u64,
+    pub original_cns_receipt_binding: Option<Digest32>,
+}
+
 /// A persistent writer-lock inode is independent of the append-only journal
 /// inode. Losing either path must never silently bootstrap a new Control
 /// frontier, even when the old writer held a lock on an unlinked WAL inode.
@@ -301,6 +319,96 @@ impl State {
             .map_err(|_| NduPublicationErrorV1::Indeterminate)?
             .len()
             != expected_bytes
+        {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        Ok(())
+    }
+
+    /// Replay the *entire original locked WAL inode* without cloning its open
+    /// file description or changing the serving append cursor. A terminal
+    /// hash/size/inode pin by itself cannot detect corruption of an older row.
+    /// This bounded scan is for read-only evidence collection, never the hot
+    /// Neuron checkpoint publication path.
+    #[cfg(unix)]
+    fn verify_original_full_history(&self) -> Result<(), NduPublicationErrorV1> {
+        if self.bytes == 0 || self.bytes > MAX_BYTES {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        let mut row = Vec::with_capacity(MAX_ROW);
+        let mut block = [0_u8; 8192];
+        let mut offset = 0_u64;
+        let mut sequence = 0_u64;
+        let mut head = Digest32::ZERO;
+        let mut current = None;
+        let mut checkpoint = Digest32::ZERO;
+        let mut pending = None;
+        let mut original_binding = None;
+
+        while offset < self.bytes {
+            let length = (self.bytes - offset).min(block.len() as u64) as usize;
+            self.file
+                .read_exact_at(&mut block[..length], offset)
+                .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+            for &byte in &block[..length] {
+                if row.len() == MAX_ROW {
+                    return Err(NduPublicationErrorV1::Indeterminate);
+                }
+                row.push(byte);
+                if byte != b'\n' {
+                    continue;
+                }
+                let text = std::str::from_utf8(&row[..row.len() - 1])
+                    .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+                let event = decode(text).map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+                if event.sequence
+                    != sequence
+                        .checked_add(1)
+                        .ok_or(NduPublicationErrorV1::Indeterminate)?
+                    || event.previous != head
+                    || event.head != event_hash(&event)
+                {
+                    return Err(NduPublicationErrorV1::Indeterminate);
+                }
+                validate_replay(&event, current, checkpoint, pending)
+                    .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+                sequence = event.sequence;
+                head = event.head;
+                match event.kind {
+                    'B' => {
+                        pending = Some(PendingCutover {
+                            successor: event.snapshot,
+                            previous_checkpoint: event.before,
+                            migrated_checkpoint: event.after,
+                        });
+                    }
+                    'C' => {
+                        pending = None;
+                        current = Some(event.snapshot);
+                        checkpoint = event.after;
+                        original_binding = Some(event.read);
+                    }
+                    _ => {
+                        current = Some(event.snapshot);
+                        checkpoint = event.after;
+                    }
+                }
+                row.clear();
+            }
+            offset += length as u64;
+        }
+
+        let expected_snapshot = self
+            .snapshot
+            .semantic_digest()
+            .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+        if !row.is_empty()
+            || pending.is_some()
+            || current != Some(expected_snapshot)
+            || checkpoint != self.checkpoint
+            || sequence != self.sequence
+            || head != self.head
+            || original_binding != self.last_cns_original_receipt_binding
         {
             return Err(NduPublicationErrorV1::Indeterminate);
         }
@@ -627,6 +735,69 @@ impl NduPublicationOwnerV1 {
         Ok((state.snapshot.clone(), state.checkpoint))
     }
 
+    /// Original Control owner Actor readback. Scans and replays only already
+    /// fsynced WAL bytes from its pinned file descriptor; does not flush
+    /// staging, seek the shared descriptor, issue signatures or mutate CNS.
+    /// An unresolved B/C handoff and any earlier-prefix corruption deny.
+    #[cfg(unix)]
+    pub fn read_original_local_frontier_v1(
+        &self,
+    ) -> Result<NduPublicationLocalFrontierV1, NduPublicationErrorV1> {
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| NduPublicationErrorV1::Poisoned)?;
+        if state.poisoned {
+            return Err(NduPublicationErrorV1::Poisoned);
+        }
+        if let Err(error) = state.verify_original_paths(state.bytes, state.sequence, state.head) {
+            state.poisoned = true;
+            return Err(error);
+        }
+        if state.pending_cutover {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        if let Err(error) = state.verify_original_full_history() {
+            state.poisoned = true;
+            return Err(error);
+        }
+        let identities = control_owner_file_identity(&state.file, &state.journal_path)
+            .and_then(|wal| {
+                control_owner_file_identity(&state.owner_lock, &state.lock_path)
+                    .map(|marker| (wal, marker))
+            });
+        let ((wal_device, wal_inode), (marker_device, marker_inode)) = match identities {
+            Ok(identities) => identities,
+            Err(error) => {
+                state.poisoned = true;
+                return Err(error);
+            }
+        };
+        if let Err(error) = state.verify_original_paths(state.bytes, state.sequence, state.head) {
+            state.poisoned = true;
+            return Err(error);
+        }
+        Ok(NduPublicationLocalFrontierV1 {
+            snapshot: state.snapshot.clone(),
+            checkpoint: state.checkpoint,
+            sequence: state.sequence,
+            head: state.head,
+            wal_bytes: state.bytes,
+            wal_device,
+            wal_inode,
+            marker_device,
+            marker_inode,
+            original_cns_receipt_binding: state.last_cns_original_receipt_binding,
+        })
+    }
+
+    #[cfg(not(unix))]
+    pub fn read_original_local_frontier_v1(
+        &self,
+    ) -> Result<NduPublicationLocalFrontierV1, NduPublicationErrorV1> {
+        Err(NduPublicationErrorV1::Unsupported)
+    }
+
     /// Read-only reference for independent Observer verification of the
     /// original signed CNS commit. This is a digest of exact runtime-owner
     /// receipt bytes, NOT an attestation, capability, or physical state proof.
@@ -651,15 +822,29 @@ impl NduPublicationOwnerV1 {
         Ok(state.last_cns_original_receipt_binding)
     }
 
-    /// Compare freshly authenticated original CNS receipt bytes against the
-    /// Control Commit's immutable WAL evidence link. The caller must have
-    /// *already verified* the original runtime key, exact commit identity and
-    /// fresh serving-state readback. This byte comparison does none of those
-    /// authorizations and cannot itself activate a split.
+    /// Compatibility read-only check. The returned equality is never an
+    /// independent signed CNS runtime receipt or a physical cutover grant.
+    /// Preserve the original public Result<(), _> API for existing readers.
     pub fn verify_original_cns_receipt_binding(
         &self,
         externally_verified_original_receipt_bytes: &[u8],
     ) -> Result<(), NduPublicationErrorV1> {
+        self.verify_original_cns_receipt_frontier_v1(externally_verified_original_receipt_bytes)
+            .map(|_| ())
+    }
+
+    /// Atomic original Control WAL readback for an independently authenticated
+    /// CNS receipt. Signature verification and live route proof are owned by
+    /// the external CNS witness; this output itself is LOCAL and UNSIGNED.
+    /// Control Commit's immutable WAL evidence link. The caller must have
+    /// *already verified* the original runtime key, exact commit identity and
+    /// fresh serving-state readback. This byte comparison does none of those
+    /// authorizations and cannot itself activate a split.
+    #[cfg(unix)]
+    pub fn verify_original_cns_receipt_frontier_v1(
+        &self,
+        externally_verified_original_receipt_bytes: &[u8],
+    ) -> Result<NduPublicationLocalFrontierV1, NduPublicationErrorV1> {
         // A separate last_binding() call would release the Control mutex
         // before comparing bytes, allowing a new fsynced C record between
         // the two reads. Compare against exactly one locked live frontier.
@@ -677,6 +862,13 @@ impl NduPublicationOwnerV1 {
         if state.pending_cutover {
             return Err(NduPublicationErrorV1::Indeterminate);
         }
+        // A valid terminal row is not proof of an unmodified older prefix.
+        // The signed original CNS/Control join must replay the real Control
+        // history before accepting the cached Commit receipt binding.
+        if let Err(error) = state.verify_original_full_history() {
+            state.poisoned = true;
+            return Err(error);
+        }
         let expected = state
             .last_cns_original_receipt_binding
             .ok_or(NduPublicationErrorV1::Stale)?;
@@ -691,7 +883,38 @@ impl NduPublicationOwnerV1 {
             state.poisoned = true;
             return Err(error);
         }
-        Ok(())
+        let identities = control_owner_file_identity(&state.file, &state.journal_path)
+            .and_then(|wal| {
+                control_owner_file_identity(&state.owner_lock, &state.lock_path)
+                    .map(|marker| (wal, marker))
+            });
+        let ((wal_device, wal_inode), (marker_device, marker_inode)) = match identities {
+            Ok(identities) => identities,
+            Err(error) => {
+                state.poisoned = true;
+                return Err(error);
+            }
+        };
+        Ok(NduPublicationLocalFrontierV1 {
+            snapshot: state.snapshot.clone(),
+            checkpoint: state.checkpoint,
+            sequence: state.sequence,
+            head: state.head,
+            wal_bytes: state.bytes,
+            wal_device,
+            wal_inode,
+            marker_device,
+            marker_inode,
+            original_cns_receipt_binding: state.last_cns_original_receipt_binding,
+        })
+    }
+
+    #[cfg(not(unix))]
+    pub fn verify_original_cns_receipt_frontier_v1(
+        &self,
+        _externally_verified_original_receipt_bytes: &[u8],
+    ) -> Result<NduPublicationLocalFrontierV1, NduPublicationErrorV1> {
+        Err(NduPublicationErrorV1::Unsupported)
     }
 
     /// Compatibility-only name. The old single-phase API could write a
