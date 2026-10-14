@@ -16,38 +16,76 @@ This directory contains a **no-authority** POSIX host measurement collector and 
 
 ## On a named target host
 
-1. Create an *untracked, local* `manifest.json`, with exactly two keys: `shared` and `arms`. `shared` must map `encoder`, `tokenizer`, `dataset`, `objective`, `runtime` to **nonempty actual files**. `arms` must map every arm in the chosen stage to its **actual on-disk candidate weight/artifact bytes**, not a made-up digest. Preserve training budgets, dataset split, model preprocessing and actual per-arm parameter inventory separately under the existing learning/evaluation owners. Do not put private data, model weights or the generated plan into public git history.
-2. Freeze after the source checkout, model artifacts, objective and dataset are selected, *before* observing holdout outcomes:
+1. Create a *private, untracked* `manifest.json`. For **E0**, it requires the following shape (paths here are illustrative and **must point to actual, nonempty on-host files**):
+
+   ```json
+   {
+     "shared": {
+       "encoder": "/secure/actual-encoder-weights",
+       "tokenizer": "/secure/actual-tokenizer",
+       "dataset": "/secure/frozen-requests-and-split",
+       "objective": "/secure/frozen-objective",
+       "runtime": "/secure/runtime-build-or-configuration"
+     },
+     "arms": {"no_change": "/secure/selected-head-or-adapter-weights"},
+     "commands": {
+       "no_change": ["/path/to/qualified-neuron-runner", "--manifest=/secure/actual-model-manifest", "--benchmark-workload", "/secure/frozen-requests-and-split"]
+     },
+     "e0_model": {
+       "model_manifest": "/secure/actual-model-manifest",
+       "preprocessor": "/secure/actual-preprocessor",
+       "quantization": "/secure/actual-quantization-profile",
+       "normalizer": "/secure/actual-normalization-profile",
+       "calibration": "/secure/actual-calibration",
+       "device_manifest": "/secure/actual-device-observation",
+       "license_sbom": "/secure/actual-license-and-sbom"
+     }
+   }
+   ```
+
+   For E1–E4, use exactly `shared`, `arms` and `commands`. All registered arms must have an on-disk candidate and an exact, non-shell command list. The tooling pins executable bytes, argv, and file arguments that already exist at freeze time. The same command is required for every trial within an arm. Runtime-loaded files or network models not represented by frozen paths require additional external owner evidence. **A file labeled "model" is not proof it contains a real model.** Never include credentials in command arguments or store private inputs in Git.
+
+2. Freeze the exact source commit/tree, host, selected performance environment (CPU thread settings and GPU visibility), artifacts, commands and trial counts *before* observing holdout outcomes:
 
    ```sh
    python3 tools/hepta-neuron-experiments/measure.py freeze \
-     --stage E0 --manifest /secure/manifest.json --out /secure/e0-plan.json
+     --stage E0 --repetitions 1 \
+     --manifest /secure/manifest.json --out /secure/e0-plan.json
    ```
 
-3. Submit that frozen plan digest to an **independent evaluator and immutable plan registry**. A local JSON digest alone is *not* a trusted signature or proof of preregistration. For each arm, call its real, bounded executable (no shell interpolation). For instance:
+   Submit that plan digest to a separate independent evaluator/immutable registry. A local digest is **not** an authenticated plan registration. Pilot plans from experimental schema v1 are not reinterpreted as v2; refreeze a new plan.
+
+3. Run the previously frozen command for each trial with no post-hoc substitution:
 
    ```sh
    python3 tools/hepta-neuron-experiments/measure.py run \
-     --plan /secure/e0-plan.json --arm no_change --timeout 120 \
-     --out /secure/e0-run-001.json -- /path/to/qualified-neuron-runner --benchmark-workload /secure/task.json
+     --plan /secure/e0-plan.json --arm no_change --trial 0 --timeout 120 \
+     --sample-group-rss --out /secure/e0-run-0.json -- \
+     /path/to/qualified-neuron-runner \
+     --manifest=/secure/actual-model-manifest \
+     --benchmark-workload /secure/frozen-requests-and-split
    ```
+
+   `HEPTA_NEURON_EXPERIMENT_TRIAL` is set to the frozen trial index in the child environment. For a matched arm comparison, use the same preregistered trial population, task families and budgets. Never cherry-pick fast or successful trials; retain all failed attempts in an external immutable evidence owner as well.
 
 4. Audit **only the execution inventory**:
 
    ```sh
    python3 tools/hepta-neuron-experiments/measure.py audit \
-     --plan /secure/e0-plan.json --receipts /secure/e0-run-001.json
+     --plan /secure/e0-plan.json --receipts /secure/e0-run-0.json
    ```
 
-5. Let the existing independent `learning.eval` and `learning.artifacts` owners consume frozen datasets, signed outcomes, no-change baselines, real Tensor/Worker/model receipts, support and fairness diagnostics. They—not this collector—decide whether an experiment supports a model or Cell-structure change. No automatic selection, self-authorization, production activation, merge or release is performed here.
+   The audit rejects missing/duplicate `(arm, trial)` slots, changed commands and binaries, mismatched source/host/environment, tampered logs and failed runs. For whole-child-process wall time, it reports p50 only with at least 3 samples, p95 with at least 20 and p99 with at least 100. Those are **process-level observations including startup**, not model-internal request latency or independent experimental episodes. E4 additionally requires real concurrency and GPU/power/throughput instrumentation outside this tool.
+
+5. The existing independent `learning.eval`, `learning.ledger`, `learning.artifacts`, Neuron, inference and model owners must supply real authenticated model load/invocation, genuine Neuron Tick/Checkpoint/CAS and external task outcomes, matched unique/trainable parameters and compute, future-time holdouts, NDU value, retention and rollback. **Nothing in this collector can issue those receipts or approve a Cell Split.**
 
 ## Limitations and refusal semantics
 
-- `run` actually executes a child process and records its exit, wall duration, **direct child** CPU and peak RSS via POSIX `wait4`. It binds the executable and raw stdout/stderr bytes by SHA-256, checks log sizes while the child runs, kills its process group on timeout/log-budget breach, and fails on nonzero exit, source drift, artifact drift or wrong host. The command is **not sandboxed**; only run trusted binaries within existing authorization envelopes, with no production credentials in the benchmark environment.
-- Direct child RSS is not full process-tree peak memory. GPU, power, warm inference latency distributions, backend FLOPs, throughput, parameter count, and outcomes are **not measured** by this collector. Do not substitute a successful run for these missing metrics; E0/E4 therefore remain *unqualified* until real provider/target-host meters are attached.
-- Plan and receipt hashes provide accident/tamper detection and byte binding, **not authenticity**. The independent observer must attach an externally verifiable signature/identity and genuine future-time holdout evidence. Logs may contain sensitive data; retain securely, do not upload as public artifacts.
-- `audit` checks exactly the registered arms, run status, source/artifact/host identity and logs. Its `execution_matrix_complete=true` field **never** means parameter fairness, causal uplift, AGI, scale benefit, operator acceptance, topology cutover or a green production gate.
-- The test suite uses ephemeral git repositories and mock command-line processes for fail-closed *control* verification. These are **not** model performance or efficacy tests.
+- `run` executes a **caller-explicit trusted native command** (not a sandbox) and records observed process wall time, direct-child CPU/RSS via POSIX `wait4`, an executable digest checked before and after, and raw stdout/stderr SHA-256. Timeout/output-budget overruns kill the child's process group. Model/provider access, token accounting and worker identity must be authenticated by existing owners.
+- Optional `--sample-group-rss` measures a **Linux procfs sample lower bound** over visible processes with the child's process group ID, at approximately 100 ms intervals. It can miss short peaks, inaccessible processes, processes that change groups, or workloads launched in external services. It adds sampling overhead. Do not substitute it for full process-tree peak or GPU memory measurement.
+- GPU, power, model-internal inference p95/p99, FLOPs, throughput, parameter counts, effect outcomes, and scientifically matched task/compute budgets remain **unmeasured by this collector**. A complete arm matrix is not E0/E1/E2/E3/E4 acceptance.
+- Local plan/run SHA-256 digests detect unrecorded byte drift but **are not signatures or independent evidence**. A malicious writer can recompute them. Commands can import non-pinned runtime components; a loaded artifact need not be the frozen file unless the trusted inference owner provides that binding. Source weights, parameters and principal scopes are not inferred from filenames.
+- The test suite uses temporary Git repositories and controllable subprocesses for **gate correctness only**, not true model training, inference efficacy or AGI performance. No experiment result from fixtures may be promoted or advertised as target-host capacity.
 
 ## Tests
 
