@@ -386,6 +386,7 @@ def run(study: Path, consolidation: Path, producer_sha: str,
     from experiments.shared_stem_cell import fresh_confirmation as f
     from experiments.shared_stem_cell import residual_consolidation as rc
     from experiments.shared_stem_cell import sequential_confirmation as sq
+    from experiments.shared_stem_cell import bbc_source_attestation as source_proof
     from experiments.shared_stem_cell.sequential_work_audit import (
         SCHEMA as WORK_SCHEMA, validate_batch as validate_work,
     )
@@ -414,6 +415,8 @@ def run(study: Path, consolidation: Path, producer_sha: str,
             texts = public_text_column(ds)  # materialize only text, never gold
             rows = sample(texts, excluded)
         safe = public_cohort(rows)
+        source_receipt = source_proof.attest(texts, excluded, safe)
+        source_sha = e.write_once(output / "publisher-selection.json", source_receipt)
         cohort_sha = e.write_once(output / "cohort.json", safe)
         cases = tuple(e.Case(row["case_id"], row["case_id"], "holdout", None,
                              row["cell"], original_lock["scope"], row["text"])
@@ -446,6 +449,14 @@ def run(study: Path, consolidation: Path, producer_sha: str,
         # Recheck the exact full publisher article at every answer access;
         # source contents cannot silently change between feature extraction
         # and the first sealed-label evaluation.
+        # Recompute the complete publisher source selection AFTER model work
+        # and BEFORE the first source label. A rehashed favorable subset cannot
+        # be smuggled into an otherwise well-formed 128-row cohort.
+        rechecked = source_proof.attest(public_text_column(ds), excluded, safe)
+        require(rechecked == source_receipt and
+                e.decode(e.bound_file(output / "publisher-selection.json",
+                                      source_sha)) == source_receipt,
+                "publisher cohort/source drift before BBC labels")
         original_texts = {row["source_index"]: row["full_source_sha256"]
                           for row in safe}
         def label_after_seal(index):
@@ -456,6 +467,8 @@ def run(study: Path, consolidation: Path, producer_sha: str,
             output / "predictions.json", seal, output / "cohort.json", cohort_sha,
             safe, label_after_seal)
         report = {**assessment, "cohort_sha256": cohort_sha,
+                  "publisher_selection_sha256": source_sha,
+                  "source_selection_replayed_before_gold": True,
                   "predictions_sha256": seal,
                   "source_original_document_text_stored": False,
                   "source_origins_proved_independent_from_pretraining": False,

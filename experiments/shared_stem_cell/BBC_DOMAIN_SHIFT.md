@@ -86,6 +86,26 @@ existing full AG News confirmation and sequential execution run first in
 CI; a BBC-source outage/ontology failure must not hide their retained
 completed results. A BBC failure is still a failure, not a skipped pass.
 
+## Full-publisher source-selection replay, not just row validation
+
+The source identity rules now also recompute the fixed 128-row SHA ordering
+from **all 1,000 BBC test article texts** and the previously pinned AG
+exclusions. Before the first model forward, the complete text-column
+digest, old-text exclusion digest, exact 128-case order and alternating Cell
+inventory are written to a separate \`publisher-selection.json\` receipt.
+After the frozen model has run but **before reading any category**, the same
+complete text column and original exclusions are replayed and the receipt is
+SHA-checked again. No category column is consulted by this control.
+
+A rehashed 128-row index can be structurally well-formed while substituting
+a convenient article or permuting two same-Cell entries. Such indices now
+fail the full-source replay even if every identifier, digest, case/index
+binding, Cell parity and five-arm probability file has been rehashed.
+Synthetic adversarial tests exercise both cases, changing unselected
+publisher text and changing earlier exclusion data. A digest is still not
+proof of publisher authenticity, independence from pretraining or a
+future-window model improvement.
+
 ## Valid and invalid claims
 
 Different **publication family** offers a useful domain shift. Its label
