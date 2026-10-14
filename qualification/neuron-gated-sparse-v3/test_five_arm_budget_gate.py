@@ -23,8 +23,9 @@ def save_tensor_file(path: Path, shapes: dict[str, tuple[int, ...]]) -> str:
         count = 1
         for dim in shape:
             count *= dim
-        size = count * 4
-        header[name] = {"dtype": "F32", "shape": list(shape),
+        dtype = "I64" if name.startswith("temporal.") else "F32"
+        size = count * (8 if dtype == "I64" else 4)
+        header[name] = {"dtype": dtype, "shape": list(shape),
                         "data_offsets": [offset, offset + size]}
         offset += size
     raw_header = json.dumps(header, sort_keys=True, separators=(",", ":")).encode()
