@@ -140,10 +140,10 @@ impl FeatureSnapshotRefV1 {
 
     /// Borrow only while a freshly resolved owner binding matches exactly.
     /// The caller must revalidate at dispatch, not just at enqueue time.
-    pub fn borrow_q24<'a>(
-        &'a self,
+    pub fn borrow_q24(
+        &self,
         current_owner_binding: &FeatureSnapshotBindingV1,
-    ) -> Result<&'a [i64], FeatureSnapshotError> {
+    ) -> Result<&[i64], FeatureSnapshotError> {
         self.check_binding(current_owner_binding)?;
         Ok(&self.features)
     }
