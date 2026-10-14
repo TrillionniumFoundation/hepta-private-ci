@@ -125,3 +125,24 @@ Head-bank persistence/readback code, 14 source/tamper regressions and
 hosted original-archive workflow was prepared, but is **not part of this Git
 commit** unless those paths are separately imported and checked at exact SHA.
 Do not claim an unmerged local source was executed in GitHub Actions.
+
+
+## Immutable six-Head bank proof added to the remote owner research
+
+`seal_detached_typed_bank` and `reload_pinned_typed_bank` now persist and
+physically verify six actually trained FP32 Head snapshots: frozen,
+single-shared, two typed and two equal-parameter untyped controls. This
+extends the existing research-only `amcn_typed_budget.py`, not the
+production Learning Artifact owner. Create-only safetensors are fsynced,
+the manifest is content-hashed, and caller-supplied exact feature and
+TRAIN-source binding digests are checked before readback. Source-binding
+digest equality is **not** an independent owner signature. Readback rejects
+unexpected tensor keys, mismatched shapes, changed bytes, wrong memory
+types, forged source pins and reused output paths. All outputs remain
+candidate-only and `production_accepted=false`.
+
+The separate authentic-LoCoMo offline pipeline and test source are
+distributed as a local reproducibility bundle until their independent
+GitHub source import and exact-head hosted run are verified. Thus a
+successful Head-bank unit test must never be reported as a hosted real
+LoCoMo Reader / pretrained Encoder qualification.

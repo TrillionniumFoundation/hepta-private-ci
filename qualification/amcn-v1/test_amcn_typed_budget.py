@@ -134,6 +134,63 @@ class TypedMemoryBudgetTest(unittest.TestCase):
         self.assertTrue(metrics["future_labels_opened_during_training"] is False)
         self.assertEqual(len(output["predictions"]), len(self.withheld))
 
+    def test_saved_gated_head_bank_physical_readback_is_exact(self):
+        import tempfile
+        from pathlib import Path
+        from hashlib import sha256
+        from amcn_typed_budget import seal_detached_typed_bank, reload_pinned_typed_bank
+        source = sha256(b"original-scoped-source-pin").hexdigest()
+        with tempfile.TemporaryDirectory() as temporary:
+            location = Path(temporary) / "bank"
+            original = seal_detached_typed_bank(self.trial_result, self.matrix, self.types,
+                                                 location, source_binding_sha256=source)
+            self.assertEqual(original["physical_models_saved"], 6)
+            restored = reload_pinned_typed_bank(location,
+                        expected_manifest_sha256=original["manifest_sha256"],
+                        expected_feature_sha256=self.matrix.identity,
+                        expected_source_binding_sha256=source)
+            self.assertTrue(restored["physical_head_bytes_verified"])
+            self.assertEqual(len(restored["models"]), 6)
+            self.assertFalse(restored["production_accepted"])
+            with self.assertRaises(Refused):
+                seal_detached_typed_bank(self.trial_result, self.matrix, self.types,
+                                         location, source_binding_sha256=source)
+
+    def test_changed_weight_bytes_and_external_model_pin_fail_closed(self):
+        import tempfile
+        from pathlib import Path
+        from hashlib import sha256
+        from amcn_typed_budget import seal_detached_typed_bank, reload_pinned_typed_bank
+        source = sha256(b"original-scoped-source-pin").hexdigest()
+        with tempfile.TemporaryDirectory() as temporary:
+            location = Path(temporary) / "bank"
+            receipt = seal_detached_typed_bank(self.trial_result,self.matrix,self.types,
+                                                location,source_binding_sha256=source)
+            kwargs = {"expected_manifest_sha256":receipt["manifest_sha256"],
+                      "expected_feature_sha256":self.matrix.identity,
+                      "expected_source_binding_sha256":source}
+            with self.assertRaises(Refused):
+                reload_pinned_typed_bank(location,**dict(kwargs,expected_source_binding_sha256=sha256(b"forged").hexdigest()))
+            tensor = location / "typed_equal_budget__semantic.safetensors"
+            raw = tensor.read_bytes()
+            tensor.write_bytes(raw + b"\x00")
+            with self.assertRaises(Refused):
+                reload_pinned_typed_bank(location,**kwargs)
+            tensor.write_bytes(raw)
+            restored = reload_pinned_typed_bank(location,**kwargs)
+            self.assertEqual(restored["manifest"]["feature_sha256"],self.matrix.identity)
+
+    def test_source_binding_required_before_sealing_any_files(self):
+        import tempfile
+        from pathlib import Path
+        from amcn_typed_budget import seal_detached_typed_bank
+        with tempfile.TemporaryDirectory() as temporary:
+            location = Path(temporary) / "not-born"
+            with self.assertRaises(Refused):
+                seal_detached_typed_bank(self.trial_result,self.matrix,self.types,
+                                         location,source_binding_sha256="forged")
+            self.assertFalse(location.exists())
+
     def test_unregistered_sampler_refused(self):
         with self.assertRaises(Refused):
             train_typed_budget(self.matrix, self.train, self.types,

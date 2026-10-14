@@ -184,3 +184,148 @@ def train_typed_budget(matrix, train_labels, type_by_row, *,
         measured_end_to_end_compression_ratio=None)
     return {"predictions": predictions, "receipt": receipt,
             "trained_heads": learned, "single_head": single, "frozen_head": frozen}
+
+
+def seal_detached_typed_bank(trial, matrix, type_by_row, destination, *,
+                             source_binding_sha256):
+    """Persist genuinely trained detached 2+2 Head tensors; no Artifact Selection.
+
+    The caller must provide a Source owner-bound witness digest separately.
+    This exact byte seal is a research integrity primitive, not issuer trust,
+    credential authority, source deletion, parameter unlearning or deployment.
+    """
+    import os
+    from pathlib import Path
+    from hashlib import sha256
+    from safetensors.torch import save as safe_save
+    require(isinstance(matrix, FeatureMatrix) and
+            is_sha(source_binding_sha256), "externally pinned source binding required")
+    require(isinstance(trial, dict) and set(trial) ==
+            {"predictions", "receipt", "trained_heads", "single_head", "frozen_head"},
+            "complete fitted typed Head bank required")
+    metrics = trial["receipt"]["metrics"]
+    require(trial["receipt"].get("production_accepted") is False
+            and metrics["frozen_feature_sha256"] == matrix.identity
+            and metrics["precommitted_type_inventory_sha256"] ==
+            type_inventory_digest(matrix, type_by_row), "fitted trial identity drift")
+    types = sorted(set(type_by_row.values()))
+    require(len(types) == 2 and metrics["functional_types"] == types,
+            "invalid frozen functional type inventory")
+    models = {"frozen": trial["frozen_head"], "single_shared": trial["single_head"]}
+    for arm in ("typed_equal_budget", "untyped_equal_budget"):
+        require(set(trial["trained_heads"][arm]) == set(types),
+                "incomplete typed/unsplit physical Head bank")
+        for kind in types:
+            models[arm + "__" + kind] = trial["trained_heads"][arm][kind]
+    require(all(isinstance(model, Head) and model.kind == "gated"
+                for model in models.values()), "safetensors-v1 only seals gated Heads")
+    output = Path(destination)
+    require(not output.exists() and not output.is_symlink(), "create-only Head bank")
+    output.mkdir(parents=True, mode=0o700)
+    entries = {}
+    for key, model in sorted(models.items()):
+        state = {k: v.detach().cpu().contiguous()
+                 for k, v in model.state_dict().items()}
+        require(state and all(v.dtype == torch.float32 and
+                bool(torch.isfinite(v).all()) for v in state.values()),
+                "FP32 finite Head parameters required")
+        payload = safe_save(state)
+        filename = key + ".safetensors"
+        with (output / filename).open("xb") as stream:
+            stream.write(payload)
+            stream.flush()
+            os.fsync(stream.fileno())
+        entries[key] = {"file": filename, "sha256": sha256(payload).hexdigest(),
+                        "bytes": len(payload), "parameters": parameters(model)}
+    manifest = {"schema": "hepta.amcn.typed-bank.safetensors.shadow.v1",
+                "feature_sha256": matrix.identity,
+                "source_binding_sha256": source_binding_sha256,
+                "type_inventory_sha256": type_inventory_digest(matrix, type_by_row),
+                "stem_sha256": matrix.encoder_sha256,
+                "feature_width": matrix.x.shape[1],
+                "head_kind": "gated",
+                "types": types, "entries": entries,
+                "trained_sampling": metrics["training_sampling"],
+                "production_accepted": False}
+    require(len(entries) == 6, "exactly six persisted Heads required")
+    raw = canonical_bank_json(manifest)
+    with (output / "manifest.json").open("xb") as stream:
+        stream.write(raw)
+        stream.flush()
+        os.fsync(stream.fileno())
+    directory = os.open(str(output), os.O_RDONLY)
+    try:
+        os.fsync(directory)
+    finally:
+        os.close(directory)
+    return {"manifest_sha256": sha256(raw).hexdigest(),
+            "manifest": manifest, "physical_models_saved": len(entries),
+            "candidate_only": True, "production_accepted": False}
+
+
+def canonical_bank_json(payload):
+    import json
+    return (json.dumps(payload, sort_keys=True, separators=(",", ":"),
+                       ensure_ascii=False, allow_nan=False) + "\n").encode()
+
+
+def reload_pinned_typed_bank(directory, *, expected_manifest_sha256,
+                             expected_feature_sha256, expected_source_binding_sha256):
+    """Physical safetensors readback of each original Head; never infer grants."""
+    from pathlib import Path
+    from hashlib import sha256
+    import json
+    from safetensors.torch import load as safe_load
+    require(all(is_sha(x) for x in (expected_manifest_sha256,
+            expected_feature_sha256, expected_source_binding_sha256)),
+            "missing external exact readback pins")
+    base = Path(directory)
+    require(base.is_dir() and not base.is_symlink(), "unsafe Head bank directory")
+    manifest_file = base / "manifest.json"
+    require(manifest_file.is_file() and not manifest_file.is_symlink() and
+            0 < manifest_file.stat().st_size <= 65536, "missing bank manifest")
+    manifest_raw = manifest_file.read_bytes()
+    require(sha256(manifest_raw).hexdigest() == expected_manifest_sha256,
+            "original Head bank manifest changed")
+    manifest = json.loads(manifest_raw)
+    require(manifest.get("schema") == "hepta.amcn.typed-bank.safetensors.shadow.v1"
+            and manifest.get("production_accepted") is False
+            and manifest.get("feature_sha256") == expected_feature_sha256
+            and manifest.get("source_binding_sha256") == expected_source_binding_sha256
+            and manifest.get("head_kind") == "gated", "incompatible pinned bank")
+    types, entries, width = manifest.get("types"), manifest.get("entries"), manifest.get("feature_width")
+    require(isinstance(types, list) and len(types) == 2 and
+            types == sorted(set(types)) and all(x in KINDS for x in types) and
+            type(width) is int and 1 <= width <= 8192,
+            "invalid geometry/types")
+    needed = {"frozen", "single_shared"} | {
+        arm + "__" + kind for arm in ("typed_equal_budget", "untyped_equal_budget")
+        for kind in types}
+    require(isinstance(entries, dict) and set(entries) == needed,
+            "head inventory missing or excessive")
+    models = {}
+    for key in sorted(needed):
+        item = entries[key]
+        require(isinstance(item, dict) and set(item) ==
+                {"file", "sha256", "bytes", "parameters"} and
+                item["file"] == key + ".safetensors" and is_sha(item["sha256"])
+                and type(item["bytes"]) is int and 0 < item["bytes"] <= 2 * 1024 * 1024,
+                "unbounded or misleading original tensor manifest")
+        path = base / item["file"]
+        require(path.is_file() and not path.is_symlink()
+                and path.stat().st_size == item["bytes"], "unsafe physical Head")
+        raw = path.read_bytes()
+        require(sha256(raw).hexdigest() == item["sha256"], "tampered Head bytes")
+        physical = safe_load(raw)
+        model = Head(width, 2, kind="gated", rank=min(8, width)).eval()
+        reference = model.state_dict()
+        require(set(physical) == set(reference)
+                and all(physical[k].shape == reference[k].shape and
+                        physical[k].dtype == torch.float32 and
+                        bool(torch.isfinite(physical[k]).all()) for k in physical),
+                "malformed Head tensor layout")
+        model.load_state_dict(physical, strict=True)
+        require(parameters(model) == item["parameters"], "trained numeric parameter drift")
+        models[key] = model.eval()
+    return {"models": models, "manifest": manifest,
+            "physical_head_bytes_verified": True, "production_accepted": False}
