@@ -95,3 +95,16 @@ def test_reuse_trial_and_meter_counter_are_not_confused():
     assert met.receipt()['module_forward_completions'] == 12
     assert result['encoder_forward_rows'] == met.receipt()['rows_completed']
     assert not met.receipt()['production_worker_execution_verified']
+
+def test_caught_failure_followed_by_success_counts_correct_row_batch():
+    model = TokenModel(fail_on_negative=True)
+    with EncoderModuleForwardMeter(model) as meter:
+        with pytest.raises(RuntimeError, match='simulated'):
+            model(input_ids=-torch.ones(7, 3))
+        model(input_ids=torch.ones(2, 3))
+    record = meter.receipt()
+    assert record['module_forward_attempts'] == 2
+    assert record['module_forward_completions'] == 1
+    assert record['rows_attempted'] == 9
+    assert record['rows_completed'] == 2
+    assert record['module_forward_failures_or_incomplete'] == 1
