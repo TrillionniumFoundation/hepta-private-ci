@@ -414,6 +414,12 @@ CognitiveRecoveryAnchor, and holds both locks until the callback exits.
 Feature-only tests trigger BOTH real owner writers after the locks are held
 and verify neither can publish early. A dataset withdrawal invalidates a
 previously admitted Head even if no row in CognitiveStore changes.
+The runtime call also requires explicit matching selected Artifact ID, runtime
+model-tuple digest and pinned source-training dataset digest. Crucially, it
+calls the original DatasetWithdrawalRegistry.admit_manifest again UNDER the
+owner lock, so that a caller-crafted old admission cannot bypass a currently
+withdrawn training dataset. The V3 receipt and new source admission must both
+validate against the same head before the SQLite transaction begins.
 
 This lock ordering prevents only the test's check-then-use race. The research
 Artifact Mutex is not the durable/signature-verified ArtifactOwnerHost. The

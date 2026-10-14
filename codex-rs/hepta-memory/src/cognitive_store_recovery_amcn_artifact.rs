@@ -16,7 +16,7 @@ use codex_hepta_learning_artifacts::{
     ArtifactKind, DatasetWithdrawalRegistry, WithdrawalBoundArtifactAdmissionV3,
     validate_artifact_publication_v3,
 };
-use codex_hepta_types::Digest32;
+use codex_hepta_types::{Digest32, StableId};
 use tokio::sync::Mutex;
 
 use crate::{CognitiveAccess, CognitiveScope, CognitiveStore, CognitiveStoreError};
@@ -43,15 +43,21 @@ impl CognitiveStore {
         withdrawal_owner: &Mutex<DatasetWithdrawalRegistry>,
         admission: &WithdrawalBoundArtifactAdmissionV3,
         expected_withdrawal_head: Digest32,
+        expected_selected_artifact: &StableId,
+        expected_runtime_tuple_digest: Digest32,
+        expected_training_dataset_digest: Digest32,
         now: u64,
         execute: F,
     ) -> Result<T, CognitiveStoreError>
     where
         F: FnOnce() -> Result<T, CognitiveStoreError>,
     {
-        if expected_withdrawal_head.is_zero() {
+        if expected_withdrawal_head.is_zero()
+            || expected_runtime_tuple_digest.is_zero()
+            || expected_training_dataset_digest.is_zero()
+        {
             return Err(CognitiveStoreError::AccessDenied(
-                "AMCN withdrawal head must be externally pinned".into(),
+                "AMCN withdrawal, runtime and training-source pins required".into(),
             ));
         }
 
@@ -64,14 +70,30 @@ impl CognitiveStore {
                 "AMCN artifact withdrawal changed after current pin".into(),
             ));
         }
-        if !matches!(
-            admission.validated_manifest.manifest.kind,
-            ArtifactKind::Model | ArtifactKind::Parameters
-        ) || admission.validated_manifest.manifest.source_dataset_digests.is_empty()
+        let manifest = &admission.validated_manifest.manifest;
+        if !matches!(manifest.kind, ArtifactKind::Model | ArtifactKind::Parameters)
+            || manifest.artifact_id != *expected_selected_artifact
+            || manifest.runtime_tuple_digest != expected_runtime_tuple_digest
+            || !manifest.source_dataset_digests.contains(&expected_training_dataset_digest)
             || validate_artifact_publication_v3(admission, &owner, now).is_err()
         {
             return Err(CognitiveStoreError::AccessDenied(
-                "AMCN artifact admission invalid or source dataset withdrawn".into(),
+                "AMCN selected artifact, runtime or withdrawal admission mismatch".into(),
+            ));
+        }
+        // Re-check the ORIGINAL withdrawal registry against the entire
+        // training-source set NOW. Receipt validation alone is not enough:
+        // a forged caller-supplied admission must never bypass a tombstone.
+        let current_manifest = owner.admit_manifest(manifest.clone(), now).map_err(|_| {
+            CognitiveStoreError::AccessDenied(
+                "AMCN training dataset currently withdrawn or invalid".into(),
+            )
+        })?;
+        if current_manifest.manifest_digest != admission.validated_manifest.manifest_digest
+            || current_manifest.authority.grants_any()
+        {
+            return Err(CognitiveStoreError::AccessDenied(
+                "AMCN current manifest disagrees with admitted artifact".into(),
             ));
         }
 

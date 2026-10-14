@@ -96,7 +96,8 @@ async fn amcn_shadow_two_owner_withdrawal_denies_old_head_when_cognitive_cut_is_
 
     let admitted = store.with_amcn_shadow_artifact_and_source(
         &access, &cognitive_scope, &current_cut,
-        &withdrawals, &admission, expected_head, 20,
+        &withdrawals, &admission, expected_head, 
+        &id("amcn-test-head"), d("model-tuple"), dataset, 20,
         || {
             called.store(true, Ordering::SeqCst);
             Ok::<_, CognitiveStoreError>(7_u64)
@@ -116,7 +117,8 @@ async fn amcn_shadow_two_owner_withdrawal_denies_old_head_when_cognitive_cut_is_
     called.store(false, Ordering::SeqCst);
     let stale = store.with_amcn_shadow_artifact_and_source(
         &access, &cognitive_scope, &current_cut,
-        &withdrawals, &admission, expected_head, 21,
+        &withdrawals, &admission, expected_head, 
+        &id("amcn-test-head"), d("model-tuple"), dataset, 21,
         || {
             called.store(true, Ordering::SeqCst);
             Ok::<_, CognitiveStoreError>(())
@@ -127,7 +129,8 @@ async fn amcn_shadow_two_owner_withdrawal_denies_old_head_when_cognitive_cut_is_
     let new_head = withdrawals.lock().await.head_digest();
     let stolen = store.with_amcn_shadow_artifact_and_source(
         &access, &cognitive_scope, &current_cut,
-        &withdrawals, &admission, new_head, 21,
+        &withdrawals, &admission, new_head, 
+        &id("amcn-test-head"), d("model-tuple"), dataset, 21,
         || {
             called.store(true, Ordering::SeqCst);
             Ok::<_, CognitiveStoreError>(())
@@ -187,7 +190,8 @@ async fn amcn_shadow_two_owner_holds_artifact_and_sqlite_locks_during_actual_cal
 
     let observed = first.with_amcn_shadow_artifact_and_source(
         &access, &scope, &original_cut,
-        &withdrawals, &admission, original_head, 20,
+        &withdrawals, &admission, original_head, 
+        &id("amcn-test-head"), d("model-tuple"), dataset, 20,
         || {
             artifact_go_tx.send(()).expect("release competing artifact writer");
             source_go_tx.send(()).expect("release competing source writer");
@@ -219,7 +223,8 @@ async fn amcn_shadow_two_owner_holds_artifact_and_sqlite_locks_during_actual_cal
     assert_ne!(withdrawals.lock().await.head_digest(), original_head);
     let forbidden = first.with_amcn_shadow_artifact_and_source(
         &access, &scope, &original_cut,
-        &withdrawals, &admission, original_head, 21,
+        &withdrawals, &admission, original_head, 
+        &id("amcn-test-head"), d("model-tuple"), dataset, 21,
         || Ok::<_, CognitiveStoreError>(0_u8),
     ).await;
     assert!(matches!(forbidden, Err(CognitiveStoreError::AccessDenied(_))));
@@ -233,11 +238,12 @@ async fn amcn_shadow_two_owner_invalid_scope_admission_and_error_never_mint_auth
     let access = CognitiveAccess::agent_private(agent);
     let scope = CognitiveScope::AgentPrivate;
     let original = store.recovery_anchor().await.expect("current complete source cut");
-    let (withdrawals, admission, head, _dataset) = fixtures();
+    let (withdrawals, admission, head, dataset) = fixtures();
     let called = AtomicBool::new(false);
     let error = store.with_amcn_shadow_artifact_and_source(
         &access, &scope, &original,
-        &withdrawals, &admission, Digest32::ZERO, 20,
+        &withdrawals, &admission, Digest32::ZERO, 
+        &id("amcn-test-head"), d("model-tuple"), dataset, 20,
         || {
             called.store(true, Ordering::SeqCst);
             Ok::<_, CognitiveStoreError>(())
@@ -248,7 +254,8 @@ async fn amcn_shadow_two_owner_invalid_scope_admission_and_error_never_mint_auth
 
     let wrong = CognitiveAccess::agent_private(agent_id(229));
     let error = store.with_amcn_shadow_artifact_and_source(
-        &wrong, &scope, &original, &withdrawals, &admission, head, 20,
+        &wrong, &scope, &original, &withdrawals, &admission, head, 
+        &id("amcn-test-head"), d("model-tuple"), dataset, 20,
         || {
             called.store(true, Ordering::SeqCst);
             Ok::<_, CognitiveStoreError>(())
@@ -256,8 +263,29 @@ async fn amcn_shadow_two_owner_invalid_scope_admission_and_error_never_mint_auth
     ).await;
     assert!(matches!(error, Err(CognitiveStoreError::AccessDenied(_))));
     assert!(!called.load(Ordering::SeqCst));
+    // All three pins are required to identify the exact selected Head and
+    // its immutable source-training set, not merely a healthy registry head.
+    for (candidate, runtime_tuple, training_set) in [
+        (id("another-head"), d("model-tuple"), dataset),
+        (id("amcn-test-head"), d("different-runtime"), dataset),
+        (id("amcn-test-head"), d("model-tuple"), d("different-training-set")),
+    ] {
+        called.store(false, Ordering::SeqCst);
+        let denied = store.with_amcn_shadow_artifact_and_source(
+            &access, &scope, &original, &withdrawals, &admission, head,
+            &candidate, runtime_tuple, training_set, 20,
+            || {
+                called.store(true, Ordering::SeqCst);
+                Ok::<_, CognitiveStoreError>(())
+            },
+        ).await;
+        assert!(matches!(denied, Err(CognitiveStoreError::AccessDenied(_))));
+        assert!(!called.load(Ordering::SeqCst));
+    }
+
     let error = store.with_amcn_shadow_artifact_and_source(
-        &access, &scope, &original, &withdrawals, &admission, head, 20,
+        &access, &scope, &original, &withdrawals, &admission, head, 
+        &id("amcn-test-head"), d("model-tuple"), dataset, 20,
         || Err::<(), _>(CognitiveStoreError::Invalid("research candidate refused".into())),
     ).await;
     assert!(matches!(error, Err(CognitiveStoreError::Invalid(_))));
