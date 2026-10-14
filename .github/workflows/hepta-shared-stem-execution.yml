@@ -41,8 +41,8 @@ jobs:
           PY="$RUNNER_TEMP/hepta-execution-env/bin/python"
           git rev-parse HEAD > "$RUNNER_TEMP/hepta-execution-source.txt"
           "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-execution-source.txt"
-          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{execution,controls,wire,browser_loop,browser_recovery,checkpoint_conversion,public_smoke,public_media,control_evaluation,media_execution,hf_integration_checks,test_execution,test_browser,test_browser_recovery,test_checkpoint_conversion,test_media_execution,test_public_media,head_artifacts,test_head_artifacts,test_modality_probe,test_generation_contract,head_batch,head_batch_study,test_head_batch,head_training,head_training_study,test_head_training,split_learning,split_study,test_split_learning,stopping,stopping_study,test_stopping,test_materialization,calibrated_fusion,test_calibrated_fusion,choice_fusion,test_choice_fusion,feature_replay,test_feature_replay,consolidation,consolidation_study,consolidation_digits,test_consolidation,partial_consolidation,test_partial_consolidation,residual_consolidation,ridge_consolidation,test_residual_consolidation,test_ridge_consolidation,paired_frontier,test_paired_frontier,media_counterfactual,test_media_counterfactual,consolidation_group_guard,test_consolidation_group_guard,process_peak,test_process_peak,final_selection_gate,test_final_selection_gate,preflight_review,test_preflight_review,physical_head_replay,test_physical_head_replay,public_encoder_pair,public_encoder_pair_review,test_public_encoder_pair,e2_budget_sweep,e2_budget_review,e2_budget_integrity,test_e2_budget,e2_cluster_uncertainty,test_e2_cluster_uncertainty}.py
-          "$PY" -m unittest -v experiments.shared_stem_cell.test_execution experiments.shared_stem_cell.test_browser experiments.shared_stem_head_matrix.tests.test_runner experiments.shared_stem_cell.test_checkpoint_conversion experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.test_browser_recovery experiments.shared_stem_cell.test_public_media experiments.shared_stem_cell.test_head_artifacts experiments.shared_stem_cell.test_modality_probe experiments.shared_stem_cell.test_generation_contract experiments.shared_stem_cell.test_head_batch experiments.shared_stem_cell.test_head_training experiments.shared_stem_cell.test_split_learning experiments.shared_stem_cell.test_stopping experiments.shared_stem_cell.test_materialization experiments.shared_stem_cell.test_calibrated_fusion experiments.shared_stem_cell.test_choice_fusion experiments.shared_stem_cell.test_feature_replay experiments.shared_stem_cell.test_consolidation experiments.shared_stem_cell.test_partial_consolidation experiments.shared_stem_cell.test_residual_consolidation experiments.shared_stem_cell.test_ridge_consolidation experiments.shared_stem_cell.test_paired_frontier experiments.shared_stem_cell.test_media_counterfactual experiments.shared_stem_cell.test_consolidation_group_guard experiments.shared_stem_cell.test_process_peak experiments.shared_stem_cell.test_final_selection_gate experiments.shared_stem_cell.test_preflight_review experiments.shared_stem_cell.test_physical_head_replay experiments.shared_stem_cell.test_public_encoder_pair experiments.shared_stem_cell.test_e2_budget experiments.shared_stem_cell.test_e2_cluster_uncertainty 2>&1 | tee "$RUNNER_TEMP/hepta-execution-tests.txt"
+          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{execution,controls,wire,browser_loop,browser_recovery,checkpoint_conversion,public_smoke,public_media,control_evaluation,media_execution,hf_integration_checks,test_execution,test_browser,test_browser_recovery,test_checkpoint_conversion,test_media_execution,test_public_media,head_artifacts,test_head_artifacts,test_modality_probe,test_generation_contract,head_batch,head_batch_study,test_head_batch,head_training,head_training_study,test_head_training,split_learning,split_study,test_split_learning,stopping,stopping_study,test_stopping,test_materialization,calibrated_fusion,test_calibrated_fusion,choice_fusion,test_choice_fusion,feature_replay,test_feature_replay,consolidation,consolidation_study,consolidation_digits,test_consolidation,partial_consolidation,test_partial_consolidation,residual_consolidation,ridge_consolidation,test_residual_consolidation,test_ridge_consolidation,paired_frontier,test_paired_frontier,media_counterfactual,test_media_counterfactual,consolidation_group_guard,test_consolidation_group_guard,process_peak,test_process_peak,final_selection_gate,test_final_selection_gate,preflight_review,test_preflight_review,physical_head_replay,test_physical_head_replay,public_encoder_pair,public_encoder_pair_review,test_public_encoder_pair,e2_budget_sweep,e2_budget_review,e2_budget_integrity,test_e2_budget,e2_cluster_uncertainty,test_e2_cluster_uncertainty,e2_modern_budget,e2_modern_review,e1_e2_joint_review,test_e1_e2_joint_review}.py
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_execution experiments.shared_stem_cell.test_browser experiments.shared_stem_head_matrix.tests.test_runner experiments.shared_stem_cell.test_checkpoint_conversion experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.test_browser_recovery experiments.shared_stem_cell.test_public_media experiments.shared_stem_cell.test_head_artifacts experiments.shared_stem_cell.test_modality_probe experiments.shared_stem_cell.test_generation_contract experiments.shared_stem_cell.test_head_batch experiments.shared_stem_cell.test_head_training experiments.shared_stem_cell.test_split_learning experiments.shared_stem_cell.test_stopping experiments.shared_stem_cell.test_materialization experiments.shared_stem_cell.test_calibrated_fusion experiments.shared_stem_cell.test_choice_fusion experiments.shared_stem_cell.test_feature_replay experiments.shared_stem_cell.test_consolidation experiments.shared_stem_cell.test_partial_consolidation experiments.shared_stem_cell.test_residual_consolidation experiments.shared_stem_cell.test_ridge_consolidation experiments.shared_stem_cell.test_paired_frontier experiments.shared_stem_cell.test_media_counterfactual experiments.shared_stem_cell.test_consolidation_group_guard experiments.shared_stem_cell.test_process_peak experiments.shared_stem_cell.test_final_selection_gate experiments.shared_stem_cell.test_preflight_review experiments.shared_stem_cell.test_physical_head_replay experiments.shared_stem_cell.test_public_encoder_pair experiments.shared_stem_cell.test_e2_budget experiments.shared_stem_cell.test_e2_cluster_uncertainty experiments.shared_stem_cell.test_e1_e2_joint_review 2>&1 | tee "$RUNNER_TEMP/hepta-execution-tests.txt"
           "$PY" -m experiments.shared_stem_cell.browser_loop --output "$RUNNER_TEMP/hepta-browser-study" --tasks 24
           "$PY" -m experiments.shared_stem_cell.browser_recovery --output "$RUNNER_TEMP/hepta-controller-recovery"
           "$PY" -m experiments.shared_stem_cell.head_batch_study --synthetic --output "$RUNNER_TEMP/hepta-head-batch-study"
@@ -154,6 +154,35 @@ jobs:
             --output "$RUNNER_TEMP/hepta-public-encoder-pair-review.json" 2>&1 \
             | tee "$RUNNER_TEMP/hepta-paired-review-log.txt"
           "$PY" -c 'import json,sys; r=json.load(open(sys.argv[1])); assert r["paired_holdout_cases"] == 32 and r["same_budget_cap_per_cell"] == 16384 and len(r["trained_heads"]) == 4 and r["saved_weights_replay_verified"] is True and r["four_encoder_e1_completed"] is False and r["future_ndu_utility_evaluated"] is False and r["production_accepted"] is False' "$RUNNER_TEMP/hepta-public-encoder-pair-review.json"
+          # E1×E2: execute the same five-Head-capacity experiment with actual
+          # ModernBERT 768d frozen features, then independently recompute all
+          # 60 checkpoint roles/1,920 vectors. No synthetic-data fallback.
+          MODERN_REPORT_SHA=$(sha256sum "$RUNNER_TEMP/hepta-modernbert-pair/execution/report.json" | cut -d' ' -f1)
+          "$PY" -m experiments.shared_stem_cell.e2_modern_budget \
+            --manifest "$RUNNER_TEMP/hepta-modernbert-pair/manifest.json" \
+            --producer "$RUNNER_TEMP/hepta-modernbert-pair/execution" \
+            --report-sha256 "$MODERN_REPORT_SHA" \
+            --output "$RUNNER_TEMP/hepta-e2-modern-budget"
+          "$PY" -m experiments.shared_stem_cell.e2_modern_review \
+            --manifest "$RUNNER_TEMP/hepta-modernbert-pair/manifest.json" \
+            --producer "$RUNNER_TEMP/hepta-modernbert-pair/execution" \
+            --report-sha256 "$MODERN_REPORT_SHA" \
+            --sweep "$RUNNER_TEMP/hepta-e2-modern-budget" \
+            --output "$RUNNER_TEMP/hepta-e2-modern-review.json"
+          "$PY" -c 'import json,sys; r=json.load(open(sys.argv[1])); assert r["physical_head_checkpoint_count"] == 60 and r["independently_replayed_prediction_vectors"] == 1920 and r["production_accepted"] is False and r["future_ndu_evaluated"] is False' "$RUNNER_TEMP/hepta-e2-modern-review.json"
+          # Independent matched-condition, matched-source E1×E2 frontier:
+          # keep each original case's three seed trajectories together.
+          "$PY" -m experiments.shared_stem_cell.e1_e2_joint_review \
+            --mmbert-manifest "$RUNNER_TEMP/hepta-public-study/manifest.json" \
+            --mmbert-producer "$RUNNER_TEMP/hepta-public-study/execution" \
+            --mmbert-report-sha256 "$REPORT_SHA" \
+            --mmbert-sweep "$RUNNER_TEMP/hepta-e2-physical-budget" \
+            --modern-manifest "$RUNNER_TEMP/hepta-modernbert-pair/manifest.json" \
+            --modern-producer "$RUNNER_TEMP/hepta-modernbert-pair/execution" \
+            --modern-report-sha256 "$MODERN_REPORT_SHA" \
+            --modern-sweep "$RUNNER_TEMP/hepta-e2-modern-budget" \
+            --output "$RUNNER_TEMP/hepta-e1e2-joint-frontier.json"
+          "$PY" -c 'import json,sys; r=json.load(open(sys.argv[1])); assert len(r["per_budget_results"]) == 5 and r["original_paired_holdout_items"] == 32 and r["per_cell_sample_stream_identical_across_stems"] is True and r["research_winner_selected"] is False and r["all_four_registered_e1_stems_executed"] is False and r["signed_future_NDU_verified"] is False and r["production_accepted"] is False' "$RUNNER_TEMP/hepta-e1e2-joint-frontier.json"
           # Replay input intentionally omits model weights, tokenizer and Head artifacts.
           mkdir -p "$RUNNER_TEMP/hepta-replay-input/producer"
           cp "$RUNNER_TEMP/hepta-public-study/manifest.json" "$RUNNER_TEMP/hepta-public-study/dataset.jsonl" "$RUNNER_TEMP/hepta-replay-input/"
@@ -186,6 +215,9 @@ jobs:
             ${{ runner.temp }}/hepta-modernbert-log.txt
             ${{ runner.temp }}/hepta-paired-review-log.txt
             ${{ runner.temp }}/hepta-public-encoder-pair-review.json
+            ${{ runner.temp }}/hepta-e2-modern-budget
+            ${{ runner.temp }}/hepta-e2-modern-review.json
+            ${{ runner.temp }}/hepta-e1e2-joint-frontier.json
             ${{ runner.temp }}/hepta-modernbert-pair/model-source.json
             ${{ runner.temp }}/hepta-modernbert-pair/verified-publisher-files.json
             ${{ runner.temp }}/hepta-modernbert-pair/manifest.json
