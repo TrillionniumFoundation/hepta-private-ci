@@ -191,6 +191,21 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "unsigned CNS callback must remain test-only and crate-private",
         )
         lexical = self.lexical_code(path)
+        self.assertRegex(
+            lexical,
+            r"\bpending\s*\.\s*is_some_and\s*\(\s*\|prepared\|",
+            "replayed CNS Commit must have a preceding durable Control Begin",
+        )
+        self.assertRegex(
+            lexical,
+            r"!\s*e\s*\.\s*read\s*\.\s*is_zero\s*\(\s*\)",
+            "replayed CNS Commit must bind original runtime receipt bytes",
+        )
+        self.assertNotRegex(
+            lexical,
+            r"\bpending\s*\.\s*is_none_or\s*\(",
+            "pre-B legacy CNS Commit must not replay as successful cutover",
+        )
         self.assertNotRegex(
             lexical,
             r"\b(?:pub(?:\(crate\))?\s+)?fn\s+publish_cutover_with_external_effect\s*<",
