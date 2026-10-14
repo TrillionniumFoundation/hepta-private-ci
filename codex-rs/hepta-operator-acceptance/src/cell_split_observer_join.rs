@@ -9,6 +9,9 @@
 //! snapshot, production activation, physical split or performance acceptance.
 //! The caller must still enforce those independent gates.
 
+#[cfg(unix)]
+use std::path::Path;
+
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD as BASE64;
 use ed25519_dalek::Signature;
@@ -37,6 +40,8 @@ use crate::CellSplitSupervisorMinimumSubjectV1;
 use crate::CellSplitSupervisorMonotonicFrontierPortV1;
 #[cfg(unix)]
 use crate::CellSplitSupervisorMonotonicFrontierV1;
+#[cfg(unix)]
+use crate::cell_split_execution_owner::verify_cell_split_original_metrics_ledger_v1;
 use crate::CellSplitTargetHostEventKindV1;
 use crate::CellSplitTargetHostEvidenceTrustPolicyV1;
 use crate::CellSplitTargetHostSignatureV1;
@@ -172,6 +177,9 @@ pub trait CellSplitEvidenceRetentionReadPortV1 {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct CellSplitEvidenceObserverReceiptV1 {
     pub join: CellSplitObserverDeepReceiptV1,
+    /// Read-only digest of original four signed metrics ACK frames, frozen
+    /// plan and pinned keys. Never a Split permission or external witness.
+    pub original_metrics_ledger_digest: String,
     pub effect_receipt_digest: String,
     pub original_sample_binding_digest: String,
     pub independently_retained_record_digest: String,
@@ -607,6 +615,9 @@ pub fn verify_cell_split_evidence_retention_join_v1<
     trusted_supervisor_monotonic_key: &VerifyingKey,
     supervisor_monotonic: &mut H,
     live_owners: &mut CellSplitUnixEffectPortV1,
+    // Must be the independently pinned ORIGINAL coordinator ledger root.
+    // Read-only verifier acquires the existing sidecar; cannot bootstrap it.
+    original_split_ledger_root: &Path,
     step_index: usize,
     candidate: &CellSplitEvidenceMetricBindingV1,
     trusted_retention_domain: &str,
@@ -674,6 +685,19 @@ pub fn verify_cell_split_evidence_retention_join_v1<
         supervisor_monotonic,
         live_owners,
     )?;
+    // An original signed effect may be committed while its metrics ACK
+    // frame is absent/tampered. Even a valid local F1 record and external
+    // minimum signature cannot replace the exact original Split Ledger.
+    let original_metrics_ledger_digest = verify_cell_split_original_metrics_ledger_v1(
+        original_split_ledger_root,
+        transcript,
+        owner_trust,
+    )
+    .map_err(|_| {
+        CellSplitObserverJoinErrorV1::Invalid(
+            "original Split metrics-acked ledger is not durably bound",
+        )
+    })?;
     let final_nonce = rand::random::<[u8; 32]>()
         .iter()
         .map(|byte| format!("{byte:02x}"))
@@ -695,8 +719,27 @@ pub fn verify_cell_split_evidence_retention_join_v1<
             "retained Evidence minimum changed during four-owner readbacks",
         ));
     }
+    // Re-read after the final external retention challenge: immutable
+    // local metrics ACK frames may not drift after four owner readbacks.
+    // This still is not atomic across systems; no physical action is allowed.
+    let final_metrics_ledger_digest = verify_cell_split_original_metrics_ledger_v1(
+        original_split_ledger_root,
+        transcript,
+        owner_trust,
+    )
+    .map_err(|_| {
+        CellSplitObserverJoinErrorV1::Invalid(
+            "original Split metrics-acked ledger changed after retention proof",
+        )
+    })?;
+    if final_metrics_ledger_digest != original_metrics_ledger_digest {
+        return Err(CellSplitObserverJoinErrorV1::Invalid(
+            "original Split metrics ACK changed across independent retention",
+        ));
+    }
     Ok(CellSplitEvidenceObserverReceiptV1 {
         join: current,
+        original_metrics_ledger_digest,
         effect_receipt_digest: transcript.receipts[step_index].receipt_digest.clone(),
         original_sample_binding_digest: sha256(&canonical_json(candidate)?),
         independently_retained_record_digest: first.retained_record_digest,
