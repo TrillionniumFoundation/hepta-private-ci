@@ -139,9 +139,19 @@ def validate_arm(rows, cohort, scope, task, cutoff):
         label = iso_utc(expect["label_available_at"])
         require(cutoff <= commit and event <= commit < label,
                 "prediction timestamp not after event and before available label")
-        for key in ("latency_micros", "resident_bytes", "transient_bytes"):
-            require(type(row.get(key)) is int and row[key] >= 0,
-                    "missing/nonnegative resource measurement: " + key)
+        require(type(row.get("latency_micros")) is int
+                and row["latency_micros"] >= 0, "invalid claimed latency")
+        resident = row.get("resident_bytes")
+        transient = row.get("transient_bytes")
+        if resident is None or transient is None:
+            require(resident is None and transient is None,
+                    "partial memory telemetry cannot be treated as measured")
+            require(row.get("resource_observation") == "HEAD_ONLY_LATENCY_NO_RSS",
+                    "missing provenance for unmeasured memory telemetry")
+        else:
+            require(type(resident) is int and resident >= 0
+                    and type(transient) is int and transient >= 0,
+                    "invalid claimed memory telemetry")
         result[case_id] = row
     require(set(result) == set(allowed), "prediction cohort incomplete")
     require(len({
@@ -171,9 +181,22 @@ def score(rows, predictions):
         "mean_latency_micros": sum(
             predictions[r["case_id"]]["latency_micros"] for r in rows
         ) / n,
-        "max_resident_bytes_reported": max(
-            predictions[r["case_id"]]["resident_bytes"] for r in rows
+        "max_resident_bytes_reported": (
+            max(predictions[r["case_id"]]["resident_bytes"] for r in rows)
+            if all(predictions[r["case_id"]]["resident_bytes"] is not None
+                   for r in rows) else None
         ),
+        "max_transient_bytes_reported": (
+            max(predictions[r["case_id"]]["transient_bytes"] for r in rows)
+            if all(predictions[r["case_id"]]["transient_bytes"] is not None
+                   for r in rows) else None
+        ),
+        "resource_memory_measurement_complete": all(
+            predictions[r["case_id"]]["resident_bytes"] is not None
+            and predictions[r["case_id"]]["transient_bytes"] is not None
+            for r in rows
+        ),
+        "resource_claims_independently_authenticated": False,
     }
 
 
