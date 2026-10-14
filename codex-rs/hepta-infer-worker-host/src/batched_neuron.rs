@@ -57,6 +57,10 @@ pub enum BatchWorkerErrorV1 {
     /// The configured Evidence sink failed or was unhealthy before effect.
     /// Callers must reconcile durable intents; the Worker never replays.
     MetricsUnavailable,
+    /// The scheduler accepted the request, but its Admission Evidence write
+    /// failed. The original identity may remain pending; reconcile it rather
+    /// than treating this error as proof that enqueue never happened.
+    AdmissionTelemetryIndeterminate,
     /// A live CNS scope frontier advanced while the external backend ran.
     /// Treat the result as unresolved; never return it as successful or retry.
     StaleAfterEffect,
@@ -276,6 +280,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         let scope_digest = Digest32::of_bytes(key.scope_id.as_str().as_bytes());
         let operation_digest = Digest32::of_bytes(request.authorization.request_id.as_bytes());
         let result = self.enqueue_inner(now_ms, model_id, request, key, signed);
+        let queued = result.is_ok();
         if let Some(sink) = &self.metric_sink {
             let metric_result = sink.record(PhaseMetricEventV1 {
                 scope_digest,
@@ -286,6 +291,12 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             });
             if metric_result.is_err() {
                 self.failed_metrics.fetch_add(1, Ordering::Release);
+                if queued {
+                    // The queue now owns this identity, but Evidence did not
+                    // acknowledge its admission. No signed effect may follow
+                    // until the original durable owner reconciles the intent.
+                    return Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate);
+                }
             }
         }
         result

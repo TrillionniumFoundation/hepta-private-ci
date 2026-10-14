@@ -457,9 +457,13 @@ fn failed_metrics_latch_readiness_without_replaying_an_authorized_request() {
     assert!(!execution.flush_production_metrics());
     execution = execution.with_metric_sink(Arc::new(UnavailableMetricSink));
     assert!(execution.production_metrics_ready());
-    execution
-        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
-        .unwrap();
+    assert_eq!(
+        execution.enqueue(100, "model".into(), request, key, signed(&signer, binding)),
+        Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate)
+    );
+    // An error is not proof of non-admission: retain the identity for exact
+    // original-owner reconciliation without consuming the signed grant.
+    assert_eq!(execution.pending(), 1);
     assert!(!execution.production_metrics_ready());
     assert!(!execution.flush_production_metrics());
     assert!(matches!(
@@ -533,18 +537,46 @@ fn failed_native_batch_metrics_never_mark_production_ready_or_retry_driver() {
     ));
 }
 
+#[derive(Clone)]
+struct CountingScalarDriver(Arc<std::sync::atomic::AtomicUsize>);
+
+impl ModelDriver for CountingScalarDriver {
+    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+        Driver.load(manifest)
+    }
+
+    fn run(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &WorkerRequest,
+    ) -> Result<DriverRunObservation, Error> {
+        Driver.run(handle, request)
+    }
+
+    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
+        Driver.unload(handle)
+    }
+}
+
+impl NeuronFeatureDriver for CountingScalarDriver {
+    fn run_neuron_features(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error> {
+        self.0.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        Driver.run_neuron_features(handle, request)
+    }
+}
+
 #[test]
 fn terminal_metric_failure_preserves_completed_effect_but_blocks_next_admission() {
     let dir = tempfile::tempdir().unwrap();
     let signer = SigningKey::from_bytes(&[84; 32]);
     let (model, first, key) = fixture_request();
     let second = second_request(&first);
-    let backend_calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
-    let backend = NativeTestDriver {
-        invocations: backend_calls.clone(),
-        truncate_outputs: false,
-        reorder_outputs: false,
-    };
+    let scalar_calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let backend = CountingScalarDriver(scalar_calls.clone());
     let mut worker = runner_with_driver(&signer, dir.path(), model, backend, 2)
         .with_metric_sink(Arc::new(FailAtPhaseMetricSink(
             PhaseMetricKindV1::NeuronFeature,
@@ -565,8 +597,8 @@ fn terminal_metric_failure_preserves_completed_effect_but_blocks_next_admission(
         &observed.outcomes[0].result,
         Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
     ));
-    // A terminal metric failure cannot rewrite the already observed result
-    // or cause the model to execute again.
+    // A terminal metric failure cannot rewrite the actual one-shot effect.
+    assert_eq!(scalar_calls.load(std::sync::atomic::Ordering::SeqCst), 1);
     assert!(!worker.production_metrics_ready());
     let next_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
     assert_eq!(
@@ -580,7 +612,7 @@ fn terminal_metric_failure_preserves_completed_effect_but_blocks_next_admission(
         Err(BatchWorkerErrorV1::MetricsUnavailable)
     );
     assert_eq!(worker.pending(), 0);
-    assert_eq!(backend_calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+    assert_eq!(scalar_calls.load(std::sync::atomic::Ordering::SeqCst), 1);
 }
 
 #[test]
