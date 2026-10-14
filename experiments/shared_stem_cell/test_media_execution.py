@@ -130,6 +130,32 @@ class MediaTests(unittest.TestCase):
             with self.assertRaises(e.InputError):
                 m.read_cases(self.root, self.save(rows), 2)
 
+    def test_video_tower_cannot_shift_time_or_drop_sealed_source_frames(self):
+        rows = self.rows()
+        rows[-1]["inputs"]["video"] = [
+            dict(self.picture(31), timestamp_us=1),
+            dict(self.picture(32), timestamp_us=2),
+        ]
+        cases, _ = m.read_cases(self.root, self.save(rows), 2)
+        baseline = m.extract(FixtureTowers(None, None), cases, self.root)
+        self.assertEqual(int(baseline["video"][1][-1].sum()), 2)
+
+        class ShiftedTime(FixtureTowers):
+            def encode(self, name, item, root):
+                x, stamps = super().encode(name, item, root)
+                return (x, stamps + 1) if name == "video" else (x, stamps)
+
+        class DroppedFrame(FixtureTowers):
+            def encode(self, name, item, root):
+                x, stamps = super().encode(name, item, root)
+                return (x[:1], stamps[:1]) if name == "video" else (x, stamps)
+
+        for tower in (ShiftedTime, DroppedFrame):
+            with self.subTest(tower=tower.__name__), self.assertRaisesRegex(
+                e.InputError, "video tower timestamps/frames"
+            ):
+                m.extract(tower(None, None), cases, self.root)
+
     def test_missing_modality_uses_mask_not_fabricated_feature(self):
         cases, _ = m.read_cases(self.root, self.save(self.rows()), 2)
         cases = list(cases)
