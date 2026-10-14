@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import math
+import os
 from pathlib import Path
 import re
 import sys
@@ -306,13 +307,29 @@ def main(argv=None):
             budget=args.budget, seed=args.seed, steps=args.steps,
             cutoff=args.train_cutoff, now=now, optimizer_kind=args.optimizer,
         )
-        for path, data in zip(paths, (manifest, learned, frozen)):
-            with path.open("x", encoding="utf-8") as stream:
-                if isinstance(data, list):
-                    for row in data:
-                        stream.write(json.dumps(row, sort_keys=True) + "\n")
-                else:
-                    stream.write(json.dumps(data, indent=2, sort_keys=True) + "\n")
+        # The manifest is the final completion marker. On an interrupted
+        # run, existing predictions without a manifest are INCOMPLETE.
+        # These hashes detect accidental mixing, not authenticated execution.
+        for name, path, rows in (
+            ("learned_predictions_sha256_unverified", paths[1], learned),
+            ("frozen_predictions_sha256_unverified", paths[2], frozen),
+        ):
+            payload = "".join(
+                json.dumps(row, sort_keys=True) + "\n" for row in rows
+            ).encode("utf-8")
+            with path.open("xb") as stream:
+                stream.write(payload)
+                stream.flush()
+                os.fsync(stream.fileno())
+            manifest[name] = hashlib.sha256(payload).hexdigest()
+        manifest["manifest_written_after_prediction_files"] = True
+        manifest["prediction_file_hashes_cryptographically_signed"] = False
+        with paths[0].open("xb") as stream:
+            stream.write(
+                (json.dumps(manifest, indent=2, sort_keys=True) + "\n").encode("utf-8")
+            )
+            stream.flush()
+            os.fsync(stream.fileno())
     except (ValueError, OSError, ImportError) as exc:
         print(f"Head shadow failed closed: {exc}", file=sys.stderr)
         return 2
