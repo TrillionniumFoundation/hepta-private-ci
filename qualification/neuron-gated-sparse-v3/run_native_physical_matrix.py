@@ -22,7 +22,7 @@ from matched_train import (CAPS, ARMS, sha_file, unique_json, require,
                            require_selected_owner_a0)
 
 SCHEMA = 'hepta.neuron.twenty-physical-q24-mechanism-matrix.v1'
-RUN_SCHEMA = 'hepta.neuron.physical-trained-q24-mechanism-replay.v2'
+RUN_SCHEMA = 'hepta.neuron.physical-trained-q24-mechanism-replay.v3'
 MAX_STDOUT = 16 << 20
 
 
@@ -185,6 +185,9 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
                     and parsed.get('f32_head_executed') is False
                     and parsed.get('quantized_q24_head_executed_in_rust') is True
                     and parsed.get('f32_to_q24_head_round_ties_even_profile') == 'hepta.neuron.f32-q24-head.v1'
+                    and parsed.get('head_sign_margin_profile') == 'hepta.neuron.same-activation-head-sign-margin.v1'
+                    and parsed.get('head_margin_abstention_is_research_only') is True
+                    and parsed.get('head_margin_authorized_for_final_use') is False
                     and parsed.get('torch_f32_native_q24_prediction_parity_verified') is False
                     and parsed.get('crash_recovery_verified') is False
                     and parsed.get('production_qualification') is False
@@ -227,6 +230,11 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
             sha_file(binary, binary_sha)
             sha_file(trace, trace_sha)
             integer_head_oracle = verify_native_head(path, parsed)
+            require(integer_head_oracle['all_native_head_sign_margins_match_independent_integer_oracle'] is True
+                    and integer_head_oracle['native_q24_model_production_qualification'] is False,
+                    f'{cap}/{arm}: native Q24 Head margin oracle failed or claimed authority')
+            require(sum(integer_head_oracle['head_sign_margin_counts'].values()) ==
+                    len(frontier), f'{cap}/{arm}: missing signed/abstained head outputs')
             gap = floating_gap(path, arm=arm, width=m['width'], rank=m['rank'],
                                native_trace=frozen_trace, native_result=parsed)
             require(gap['bitwise_float_to_q24_prediction_parity_proven'] is False and
@@ -259,6 +267,8 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
         'native_q24_temporal_replay_executed': True,
         'diagnostic_native_vs_float_gap_rows': len(results),
         'quantized_native_head_integer_oracle_matches': len(results),
+        'quantized_head_margin_oracle_matches': len(results),
+        'head_sign_margin_research_only': True,
         'full_selected_model_head_executed': False,
         'floating_torch_native_q24_prediction_parity_verified': False,
         'real_target_host_attested': False, 'crash_durable_recovery_verified': False,
