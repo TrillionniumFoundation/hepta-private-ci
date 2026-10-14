@@ -322,8 +322,12 @@ fn writer_loop(
                 if !ok {
                     health.healthy.store(false, Ordering::Release);
                 }
+                // The Stop ACK is the original WAL+marker lock handoff.
+                // The next process must not reopen until BOTH owned fds
+                // are dropped, even when flush already completed.
+                drop(writer);
                 let _ = reply.send(ok);
-                break;
+                return;
             }
             Err(RecvTimeoutError::Timeout) => {
                 if flush(&mut writer, &health).is_err() {

@@ -22,6 +22,12 @@ const MAX_GROUP_ROWS: usize = 256;
 const MAX_LINE_BYTES: usize = 65_536;
 const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
 const DOMAIN: &[u8] = b"hepta.metrics.group.v1";
+// One fixed-size append-only local witness per committed WAL group.
+// The suffix is a bound frontier, NOT an external or signed rollback witness.
+#[cfg(unix)]
+const OWNER_FRONTIER_ROW_BYTES: usize = 102;
+#[cfg(unix)]
+const MAX_OWNER_MARKER_BYTES: u64 = 64 * 1024 * 1024;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum MetricPhaseV1 {
@@ -158,7 +164,9 @@ impl MetricsGroupCommitV1 {
                 return Err(MetricsJournalErrorV1::UnsafePath);
             }
             let mut options = OpenOptions::new();
-            options.read(true).write(true).mode(0o600);
+            // O_APPEND is essential on restart: the reopened marker file
+            // starts at offset zero and must never overwrite its identity.
+            options.read(true).write(true).append(true).mode(0o600);
             if !marker_exists {
                 options.create_new(true);
             }
@@ -195,7 +203,7 @@ impl MetricsGroupCommitV1 {
             let expected =
                 format!("HEMW1|{}|{}\n", metadata.dev(), metadata.ino()).into_bytes();
             if marker_preexisting {
-                verify_original_owner_marker(
+                verify_original_owner_marker_header(
                     &owner_marker_path,
                     &owner_marker,
                     &expected,
@@ -281,10 +289,13 @@ impl MetricsGroupCommitV1 {
         #[cfg(unix)]
         {
             verify_original_parent_path(&self.original_parent_path, &self.original_parent)?;
-            verify_original_owner_marker(
+            verify_original_owner_marker_frontier(
                 &self.owner_marker_path,
                 &self.owner_marker,
                 &self.owner_marker_bytes,
+                self.sequence,
+                self.bytes,
+                self.head,
             )?;
         }
         check_open_file(&self.journal_path, &self.file)?;
@@ -307,10 +318,8 @@ impl MetricsGroupCommitV1 {
             #[cfg(unix)]
             {
                 use std::os::unix::fs::FileExt as _;
-                self.file.read_exact_at(
-                    &mut tail,
-                    self.bytes - self.last_row_len as u64,
-                )?;
+                self.file
+                    .read_exact_at(&mut tail, self.bytes - self.last_row_len as u64)?;
             }
             #[cfg(not(unix))]
             {
@@ -332,16 +341,48 @@ impl MetricsGroupCommitV1 {
         #[cfg(unix)]
         {
             verify_original_parent_path(&self.original_parent_path, &self.original_parent)?;
-            verify_original_owner_marker(
+            verify_original_owner_marker_frontier(
                 &self.owner_marker_path,
                 &self.owner_marker,
                 &self.owner_marker_bytes,
+                self.sequence,
+                self.bytes,
+                self.head,
             )?;
         }
         check_open_file(&self.journal_path, &self.file)?;
         if self.file.metadata()?.len() != self.bytes {
             return Err(MetricsJournalErrorV1::Corrupt);
         }
+        Ok(())
+    }
+
+    // The original WAL group is already fsynced when this is called.
+    // Persist its independent high-water row BEFORE granting a success ACK.
+    // A crash or write failure between these fsyncs leaves an unresolved
+    // mismatch; a restarted owner must refuse, never silently repair it.
+    #[cfg(unix)]
+    fn append_owner_frontier(&mut self) -> Result<(), MetricsJournalErrorV1> {
+        let row = owner_frontier_row(self.sequence, self.bytes, self.head);
+        if row.len() != OWNER_FRONTIER_ROW_BYTES {
+            return Err(MetricsJournalErrorV1::Corrupt);
+        }
+        let marker_size = self
+            .owner_marker_bytes
+            .len()
+            .try_into()
+            .ok()
+            .and_then(|base: u64| {
+                self.sequence
+                    .checked_mul(OWNER_FRONTIER_ROW_BYTES as u64)
+                    .and_then(|added| base.checked_add(added))
+            })
+            .ok_or(MetricsJournalErrorV1::Capacity)?;
+        if marker_size > MAX_OWNER_MARKER_BYTES {
+            return Err(MetricsJournalErrorV1::Capacity);
+        }
+        self.owner_marker.write_all(&row)?;
+        self.owner_marker.sync_all()?;
         Ok(())
     }
 
@@ -430,14 +471,20 @@ impl MetricsGroupCommitV1 {
             self.poisoned = true;
             return Err(MetricsJournalErrorV1::Io(error));
         }
-        let sync_latency_micros =
-            u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
         self.bytes = next_bytes;
         self.sequence = sequence;
         self.committed_rows = next_rows;
         self.head = next_head;
         self.last_row_len = encoded.len();
         self.last_row_digest = Digest32::of_bytes(&encoded.as_bytes()[..encoded.len() - 1]);
+        #[cfg(unix)]
+        if let Err(error) = self.append_owner_frontier() {
+            // The WAL may already be durable, but its independent high-water
+            // is not confirmed. Preserve the uncertain original effect;
+            // NEVER claim a positive metrics ACK or attempt a second write.
+            self.poisoned = true;
+            return Err(error);
+        }
         if let Err(error) = self.verify_original_frontier() {
             // The fsync may already have happened. Poison and refuse the ACK
             // without trying to append a duplicate group or Split effect.
@@ -448,7 +495,7 @@ impl MetricsGroupCommitV1 {
             sequence,
             head_digest: next_head,
             rows: self.staged.len(),
-            sync_latency_micros,
+            sync_latency_micros: u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX),
         };
         self.staged.clear();
         Ok(Some(receipt))
@@ -494,11 +541,17 @@ fn check_journal_path(path: &Path) -> Result<(), MetricsJournalErrorV1> {
     Ok(())
 }
 
-/// The independent marker is a write-once local owner identity, not a
-/// signature or external anti-rollback witness. Validate the locked original
-/// descriptor as well as its pathname and exact binding bytes.
+/// The local witness format is fixed-width so every original WAL fsync
+/// advances a bounded marker by exactly one immutable frontier row.
 #[cfg(unix)]
-fn verify_original_owner_marker(
+fn owner_frontier_row(sequence: u64, bytes: u64, head: Digest32) -> Vec<u8> {
+    format!("F1|{sequence:016x}|{bytes:016x}|{head}\n").into_bytes()
+}
+
+/// Before WAL replay we may authenticate the marker identity prefix, but
+/// only the complete replay can identify the expected committed high-water.
+#[cfg(unix)]
+fn verify_original_owner_marker_header(
     marker_path: &Path,
     opened_marker: &File,
     expected: &[u8],
@@ -506,7 +559,7 @@ fn verify_original_owner_marker(
     use std::os::unix::fs::FileExt as _;
 
     check_open_file(marker_path, opened_marker)?;
-    if opened_marker.metadata()?.len() != expected.len() as u64 {
+    if opened_marker.metadata()?.len() < expected.len() as u64 {
         return Err(MetricsJournalErrorV1::UnsafePath);
     }
     let mut observed = vec![0_u8; expected.len()];
@@ -515,8 +568,56 @@ fn verify_original_owner_marker(
         return Err(MetricsJournalErrorV1::UnsafePath);
     }
     check_open_file(marker_path, opened_marker)?;
-    if opened_marker.metadata()?.len() != expected.len() as u64 {
-        return Err(MetricsJournalErrorV1::UnsafePath);
+    Ok(())
+}
+
+/// The marker's latest separately fsynced sequence/head/byte frontier
+/// must agree with the complete original WAL replay or live owner cache.
+/// A locally coordinated rollback of BOTH files still needs external custody.
+#[cfg(unix)]
+fn verify_original_owner_marker_frontier(
+    marker_path: &Path,
+    opened_marker: &File,
+    identity: &[u8],
+    sequence: u64,
+    bytes: u64,
+    head: Digest32,
+) -> Result<(), MetricsJournalErrorV1> {
+    use std::os::unix::fs::FileExt as _;
+
+    verify_original_owner_marker_header(marker_path, opened_marker, identity)?;
+    if (sequence == 0 && (bytes != 0 || !head.is_zero()))
+        || (sequence > 0 && (bytes == 0 || head.is_zero()))
+    {
+        return Err(MetricsJournalErrorV1::Corrupt);
+    }
+    let required = sequence
+        .checked_mul(OWNER_FRONTIER_ROW_BYTES as u64)
+        .and_then(|total| total.checked_add(identity.len() as u64))
+        .ok_or(MetricsJournalErrorV1::Capacity)?;
+    if required > MAX_OWNER_MARKER_BYTES {
+        return Err(MetricsJournalErrorV1::Capacity);
+    }
+    if opened_marker.metadata()?.len() != required {
+        return Err(MetricsJournalErrorV1::Corrupt);
+    }
+    if sequence > 0 {
+        let expected = owner_frontier_row(sequence, bytes, head);
+        if expected.len() != OWNER_FRONTIER_ROW_BYTES {
+            return Err(MetricsJournalErrorV1::Corrupt);
+        }
+        let mut last = vec![0_u8; OWNER_FRONTIER_ROW_BYTES];
+        opened_marker.read_exact_at(
+            &mut last,
+            required - OWNER_FRONTIER_ROW_BYTES as u64,
+        )?;
+        if last != expected {
+            return Err(MetricsJournalErrorV1::Corrupt);
+        }
+    }
+    check_open_file(marker_path, opened_marker)?;
+    if opened_marker.metadata()?.len() != required {
+        return Err(MetricsJournalErrorV1::Corrupt);
     }
     Ok(())
 }
