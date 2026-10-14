@@ -176,6 +176,88 @@ fn concurrent_model_and_cns_cas_cannot_both_commit_one_predecessor() {
 
 #[cfg(unix)]
 #[test]
+fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
+    let dir = tempfile::tempdir().expect("private Control root");
+    let path = dir.path().join("guarded-cutover.wal");
+    let current = snapshot(3);
+    let successor = snapshot(4);
+    let migrated = Digest32::of_bytes(b"real-migrated-checkpoint");
+    let mut physical_calls = 0;
+    {
+        let owner = NduPublicationOwnerV1::open_production(&path, current.clone(), Digest32::ZERO)
+            .expect("Control owner");
+        let (real_receipt, commit) = owner
+            .publish_cutover_with_external_effect(
+                &current,
+                Digest32::ZERO,
+                successor.clone(),
+                migrated,
+                || -> Result<_, &'static str> {
+                    physical_calls += 1;
+                    Ok("original-fsynced-runtime-receipt")
+                },
+            )
+            .expect("durable Prepare, external original receipt, Commit");
+        assert_eq!(real_receipt, "original-fsynced-runtime-receipt");
+        assert!(!commit.is_zero());
+        assert_eq!(owner.current().unwrap(), (successor.clone(), migrated));
+    }
+    assert_eq!(physical_calls, 1, "the external effect is not replayable");
+    let reopened = NduPublicationOwnerV1::open_production(&path, successor.clone(), migrated)
+        .expect("both durable journal phases replay");
+    assert_eq!(reopened.current().unwrap(), (successor, migrated));
+}
+
+#[cfg(unix)]
+#[test]
+fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
+    let dir = tempfile::tempdir().expect("private Control root");
+    let path = dir.path().join("unknown-physical-effect.wal");
+    let original = snapshot(3);
+    let mut calls = 0;
+    {
+        let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+            .expect("Control owner");
+        assert!(matches!(
+            owner.publish_cutover_with_external_effect(
+                &original,
+                Digest32::ZERO,
+                snapshot(4),
+                Digest32::of_bytes(b"unknown-migrated"),
+                || -> Result<(), &'static str> {
+                    calls += 1;
+                    Err("runtime already entered but original receipt unavailable")
+                },
+            ),
+            Err(NduPublicationErrorV1::Indeterminate)
+        ));
+        assert_eq!(owner.current(), Err(NduPublicationErrorV1::Poisoned));
+        assert_eq!(
+            owner.compare_and_publish_checkpoint(
+                &original,
+                Digest32::of_bytes(b"signed-read"),
+                Digest32::of_bytes(b"tick"),
+                Digest32::ZERO,
+                Digest32::of_bytes(b"new-checkpoint"),
+            ),
+            Err(NduPublicationErrorV1::Poisoned)
+        );
+    }
+    let recorded = std::fs::read(&path).expect("durable unresolved history");
+    assert_eq!(calls, 1, "the model/router must never replay an unknown effect");
+    assert!(matches!(
+        NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO),
+        Err(NduPublicationErrorV1::Indeterminate)
+    ));
+    assert_eq!(
+        std::fs::read(&path).expect("journal preserved"),
+        recorded,
+        "no stale-startup write may erase or upgrade an orphan Begin"
+    );
+}
+
+#[cfg(unix)]
+#[test]
 fn truncated_journal_is_rejected_without_mutating_history() {
     let dir = tempfile::tempdir().expect("owner-only");
     let path = dir.path().join("frontier.wal");

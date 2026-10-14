@@ -32,6 +32,9 @@ const DOMAIN: &[u8] = b"hepta.control.ndu-publication.v1";
 pub enum NduPublicationErrorV1 {
     Invalid,
     Stale,
+    /// A durable route Prepare exists but physical runtime effect/Commit is
+    /// not conclusively resolved. Never replay or bootstrap a fresh owner.
+    Indeterminate,
     UnsafePath,
     Unsupported,
     WriterUnavailable,
@@ -83,6 +86,7 @@ fn decode(line: &str) -> Result<Event, NduPublicationErrorV1> {
     let digest = |i| Digest32::from_str(p[i]).map_err(|_| NduPublicationErrorV1::Corrupt);
     let kind = match p[4] {
         "G" => 'G',
+        "B" => 'B',
         "C" => 'C',
         "P" => 'P',
         _ => return Err(NduPublicationErrorV1::Corrupt),
@@ -99,25 +103,55 @@ fn decode(line: &str) -> Result<Event, NduPublicationErrorV1> {
         tick: digest(9)?,
     })
 }
+/// Durable but unresolved CNS handoff. A process crash after Begin is an
+/// ambiguous external effect, regardless of which route is currently visible.
+#[derive(Clone, Copy)]
+struct PendingCutover {
+    successor: Digest32,
+    previous_checkpoint: Digest32,
+    migrated_checkpoint: Digest32,
+}
+
 #[cfg(unix)]
 fn validate_replay(
     e: &Event,
     current: Option<Digest32>,
     checkpoint: Digest32,
+    pending: Option<PendingCutover>,
 ) -> Result<(), NduPublicationErrorV1> {
     if e.snapshot.is_zero() {
         return Err(NduPublicationErrorV1::Corrupt);
     }
     let valid = match e.kind {
-        'G' => current.is_none() && e.before.is_zero() && e.read.is_zero() && e.tick.is_zero(),
+        'G' => {
+            pending.is_none()
+                && current.is_none()
+                && e.before.is_zero()
+                && e.read.is_zero()
+                && e.tick.is_zero()
+        }
+        'B' => {
+            pending.is_none()
+                && current.is_some_and(|prev| prev != e.snapshot)
+                && e.before == checkpoint
+                && !e.after.is_zero()
+                && e.read.is_zero()
+                && e.tick.is_zero()
+        }
         'C' => {
             current.is_some_and(|prev| prev != e.snapshot)
                 && e.before == checkpoint
                 && e.read.is_zero()
                 && e.tick.is_zero()
+                && pending.is_none_or(|prepared| {
+                    prepared.successor == e.snapshot
+                        && prepared.previous_checkpoint == e.before
+                        && prepared.migrated_checkpoint == e.after
+                })
         }
         'P' => {
-            current == Some(e.snapshot)
+            pending.is_none()
+                && current == Some(e.snapshot)
                 && e.before == checkpoint
                 && !e.after.is_zero()
                 && e.after != checkpoint
@@ -192,7 +226,12 @@ impl State {
         }
         self.sequence = sequence;
         self.head = e.head;
-        self.checkpoint = after;
+        // A durable Begin is a *fence*, not publication of the successor.
+        // Keep the previous checkpoint until the external runtime has
+        // executed and a separate final Commit is fsynced.
+        if kind != 'B' {
+            self.checkpoint = after;
+        }
         self.bytes = bytes;
         Ok(e.head)
     }
@@ -270,6 +309,7 @@ impl NduPublicationOwnerV1 {
         let mut head = Digest32::ZERO;
         let mut latest = None;
         let mut checkpoint = Digest32::ZERO;
+        let mut pending = None;
         let mut bytes = 0u64;
         loop {
             row.clear();
@@ -296,11 +336,33 @@ impl NduPublicationOwnerV1 {
             {
                 return Err(NduPublicationErrorV1::Corrupt);
             }
-            validate_replay(&e, latest, checkpoint)?;
+            validate_replay(&e, latest, checkpoint, pending)?;
             sequence = e.sequence;
             head = e.head;
-            latest = Some(e.snapshot);
-            checkpoint = e.after;
+            match e.kind {
+                'B' => {
+                    pending = Some(PendingCutover {
+                        successor: e.snapshot,
+                        previous_checkpoint: e.before,
+                        migrated_checkpoint: e.after,
+                    });
+                }
+                'C' => {
+                    pending = None;
+                    latest = Some(e.snapshot);
+                    checkpoint = e.after;
+                }
+                _ => {
+                    latest = Some(e.snapshot);
+                    checkpoint = e.after;
+                }
+            }
+        }
+        // A Begin without an original committed successor is ambiguous.
+        // In particular, do not replay an external effect or trust an old
+        // canonical checkpoint to reset this owner's anti-rollback frontier.
+        if pending.is_some() {
+            return Err(NduPublicationErrorV1::Indeterminate);
         }
         // An existing zero-byte file could be a truncated ledger. Never treat
         // it as a first bootstrap or silently erase the rollback evidence.
@@ -402,6 +464,84 @@ impl NduPublicationOwnerV1 {
         )?;
         state.snapshot = next;
         Ok(receipt)
+    }
+
+    /// Transactional adapter for a *real* external CNS owner. Write a
+    /// durable, fsynced Begin first, while holding the SAME Control mutex
+    /// used by Neuron checkpoint CAS. The trusted caller must execute the
+    /// real runtime cutover and persist its original receipt in the closure.
+    /// Only after that succeeds may this owner append/acknowledge Commit.
+    ///
+    /// Any failure or crash after Begin permanently quarantines this owner
+    /// until an independently witnessed reconciliation; neither route nor
+    /// model effects may be automatically retried on restart.
+    pub fn publish_cutover_with_external_effect<T, E: std::fmt::Display>(
+        &self,
+        expected: &NduSnapshotRefV1,
+        expected_checkpoint: Digest32,
+        next: NduSnapshotRefV1,
+        migrated_checkpoint: Digest32,
+        apply_original_runtime_once: impl FnOnce() -> Result<T, E>,
+    ) -> Result<(T, Digest32), NduPublicationErrorV1> {
+        next.validate()
+            .map_err(|_| NduPublicationErrorV1::Invalid)?;
+        if migrated_checkpoint.is_zero() {
+            return Err(NduPublicationErrorV1::Invalid);
+        }
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| NduPublicationErrorV1::Poisoned)?;
+        if state.poisoned {
+            return Err(NduPublicationErrorV1::Poisoned);
+        }
+        if state.snapshot != *expected
+            || state.checkpoint != expected_checkpoint
+            || next.scope_id != expected.scope_id
+            || next.generation < expected.generation
+            || next.route_fence <= expected.route_fence
+            || next.revocation_epoch < expected.revocation_epoch
+        {
+            return Err(NduPublicationErrorV1::Stale);
+        }
+        let successor = next
+            .semantic_digest()
+            .map_err(|_| NduPublicationErrorV1::Invalid)?;
+        // A failed fsync makes the business effect inadmissible; do not run
+        // the closure until Begin itself has been durably committed.
+        state.append(
+            'B',
+            successor,
+            expected_checkpoint,
+            migrated_checkpoint,
+            Digest32::ZERO,
+            Digest32::ZERO,
+        )?;
+        let actual = match apply_original_runtime_once() {
+            Ok(receipt) => receipt,
+            Err(_) => {
+                state.poisoned = true;
+                return Err(NduPublicationErrorV1::Indeterminate);
+            }
+        };
+        // A rejected Commit is indeterminate even if the external runtime
+        // succeeded. Never let another model tick or cutover enter this lane.
+        let committed = match state.append(
+            'C',
+            successor,
+            expected_checkpoint,
+            migrated_checkpoint,
+            Digest32::ZERO,
+            Digest32::ZERO,
+        ) {
+            Ok(receipt) => receipt,
+            Err(_) => {
+                state.poisoned = true;
+                return Err(NduPublicationErrorV1::Indeterminate);
+            }
+        };
+        state.snapshot = next;
+        Ok((actual, committed))
     }
 
     pub fn compare_and_publish_checkpoint(
