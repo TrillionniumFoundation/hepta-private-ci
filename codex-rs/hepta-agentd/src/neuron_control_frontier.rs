@@ -20,6 +20,20 @@ impl ControlNduFrontierAdapterV1 {
     }
 }
 impl NduReadFrontierPortV1 for ControlNduFrontierAdapterV1 {
+    fn check_checkpoint_publisher(
+        &self,
+        expected: &NduSnapshotRefV1,
+    ) -> Result<(), NduReadVerificationErrorV1> {
+        let (snapshot, _) = self
+            .owner
+            .current()
+            .map_err(|_| NduReadVerificationErrorV1::CheckpointPublicationUnavailable)?;
+        if snapshot != *expected {
+            return Err(NduReadVerificationErrorV1::StaleFrontier);
+        }
+        Ok(())
+    }
+
     fn latest(&self, scope: &StableId) -> Result<NduSnapshotRefV1, NduReadVerificationErrorV1> {
         let (snapshot, _) = self
             .owner

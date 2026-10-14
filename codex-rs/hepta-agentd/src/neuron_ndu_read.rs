@@ -42,6 +42,16 @@ impl std::error::Error for NduReadVerificationErrorV1 {}
 pub trait NduReadFrontierPortV1: fmt::Debug + Send + Sync {
     fn latest(&self, scope: &StableId) -> Result<NduSnapshotRefV1, NduReadVerificationErrorV1>;
 
+    /// Non-authorizing preflight. Refuse even to enter the physical model
+    /// when this frontier cannot eventually commit the checkpoint. The real
+    /// cutover/commit race is resolved only by the final atomic CAS below.
+    fn check_checkpoint_publisher(
+        &self,
+        _expected: &NduSnapshotRefV1,
+    ) -> Result<(), NduReadVerificationErrorV1> {
+        Err(NduReadVerificationErrorV1::CheckpointPublicationUnavailable)
+    }
+
     /// Control-owned linearization point for a persisted Neuron checkpoint.
     /// Read-only frontiers cannot acknowledge model effects as published.
     /// An authorized implementation MUST share the same exclusive owner lane
@@ -169,6 +179,15 @@ impl NduReadVerifierV1 {
         exact.extend_from_slice(&signed_bytes);
         exact.extend_from_slice(&signed.signature);
         Ok(Digest32::of_bytes(&exact))
+    }
+
+    /// Fail closed before signed model dispatch for a read-only/unhealthy
+    /// publication owner. This check alone never authorizes the final CAS.
+    pub fn check_checkpoint_publisher(
+        &self,
+        expected: &NduSnapshotRefV1,
+    ) -> Result<(), NduReadVerificationErrorV1> {
+        self.frontier.check_checkpoint_publisher(expected)
     }
 
     /// Reverify the independently signed read before asking Control to

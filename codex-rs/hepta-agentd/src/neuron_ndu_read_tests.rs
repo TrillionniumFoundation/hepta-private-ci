@@ -258,3 +258,21 @@ fn atomic_checkpoint_publication_rejects_cutover_and_duplicate_predecessor() {
     );
     assert_eq!(frontier.state.lock().unwrap().2, 1);
 }
+
+#[test]
+fn read_only_frontier_preflight_denies_without_entering_model_or_claiming_nonce() {
+    let key = SigningKey::from_bytes(&[46; 32]);
+    let verifier = NduReadVerifierV1::new(
+        StableId::new("ndu-owner").unwrap(),
+        key.verifying_key().to_bytes(),
+        Arc::new(ProtectedClock(1000)),
+        Arc::new(ControlFrontier(Mutex::new(snapshot()))),
+    )
+    .unwrap();
+    let read = signed_read(&key, snapshot());
+    assert!(verifier.verify(&read).is_ok());
+    assert_eq!(
+        verifier.check_checkpoint_publisher(&read.snapshot),
+        Err(NduReadVerificationErrorV1::CheckpointPublicationUnavailable)
+    );
+}
