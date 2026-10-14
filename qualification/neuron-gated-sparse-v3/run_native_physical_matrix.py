@@ -18,7 +18,8 @@ import time
 from candidate_inventory import verify_artifact
 from native_float_gap import compare as floating_gap
 from head_q24_oracle import verify_native_head
-from matched_train import CAPS, ARMS, sha_file, unique_json, require
+from matched_train import (CAPS, ARMS, sha_file, unique_json, require,
+                           require_selected_owner_a0)
 
 SCHEMA = 'hepta.neuron.twenty-physical-q24-mechanism-matrix.v1'
 RUN_SCHEMA = 'hepta.neuron.physical-trained-q24-mechanism-replay.v2'
@@ -29,8 +30,58 @@ def sha(raw: bytes) -> str:
     return hashlib.sha256(raw).hexdigest()
 
 
+def independently_recheck_a0_for_native_use(
+        receipt: dict, *, synthetic_canary: bool,
+        selected_v1: Path | None = None, selected_v1_sha256: str | None = None,
+        a0_evidence_root: Path | None = None, a0_trusted_public_key: Path | None = None,
+        a0_expected_host_id: str | None = None,
+        a0_max_age_seconds: int = 300) -> dict:
+    # The untrusted training receipt is not independent A0 evidence. Native
+    # replay must recheck current signed owner records instead of inheriting a
+    # claimed evidence_class string. Synthetic runs remain explicit and denied.
+    if synthetic_canary:
+        require(all(x is None for x in (
+            selected_v1, selected_v1_sha256, a0_evidence_root,
+            a0_trusted_public_key, a0_expected_host_id)),
+            'synthetic canary cannot be passed as a live selected owner')
+        return {'a0_rechecked': False, 'a0_evidence_class': 'SYNTHETIC_FIXTURE_ONLY'}
+    require(all(x is not None for x in (
+        selected_v1, selected_v1_sha256, a0_evidence_root,
+        a0_trusted_public_key, a0_expected_host_id)),
+        'fresh signed A0 owner, public key and selected physical V1 required for native replay')
+    require(type(a0_max_age_seconds) is int and 1 <= a0_max_age_seconds <= 86_400,
+            'A0 signed owner evidence freshness cap invalid')
+    require(receipt.get('evidence_class') == 'SIGNED_A0_FORMAT_ONLY_NOT_HOST_EXECUTION',
+            'not a signed-format A0 training receipt')
+    require(selected_v1_sha256 == receipt.get('no_change_v1_selected_sha256'),
+            'selected V1 baseline digest differs from frozen research train receipt')
+    sha_file(selected_v1, selected_v1_sha256)
+    from argparse import Namespace
+    namespace = Namespace(
+        synthetic_canary=False, a0_evidence_root=str(a0_evidence_root),
+        a0_trusted_public_key=str(a0_trusted_public_key),
+        a0_expected_host_id=a0_expected_host_id,
+        a0_max_age_seconds=a0_max_age_seconds)
+    current = require_selected_owner_a0(
+        namespace, receipt['cell_id'], selected_v1_sha256)
+    for field in (
+        'a0_registry_sha256', 'a0_host_id',
+        'a0_checkpoint_digest_claimed', 'a0_generation_claimed',
+    ):
+        require(current[field] == receipt.get(field),
+                f'current A0 owner evidence drift: {field}')
+    return {'a0_rechecked': True,
+            'a0_evidence_class': 'SIGNED_A0_FORMAT_ONLY_NOT_HOST_EXECUTION',
+            'live_host_execution_independently_attested': False}
+
+
 def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
-             trace: Path, trace_sha: str, *, synthetic_canary: bool = False) -> dict:
+             trace: Path, trace_sha: str, *, synthetic_canary: bool = False,
+             selected_v1: Path | None = None, selected_v1_sha256: str | None = None,
+             a0_evidence_root: Path | None = None,
+             a0_trusted_public_key: Path | None = None,
+             a0_expected_host_id: str | None = None,
+             a0_max_age_seconds: int = 300) -> dict:
     require(not binary.is_symlink() and not trace.is_symlink() and not root.is_symlink(),
             'symlinked benchmark input is not a frozen source')
     sha_file(binary, binary_sha)
@@ -54,6 +105,13 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
             receipt.get('no_change_optimizer_steps') == 0 and
             receipt.get('production_qualification') is False,
             'training receipt has fabricated production/native qualification')
+    current_a0 = independently_recheck_a0_for_native_use(
+        receipt, synthetic_canary=synthetic_canary,
+        selected_v1=selected_v1, selected_v1_sha256=selected_v1_sha256,
+        a0_evidence_root=a0_evidence_root,
+        a0_trusted_public_key=a0_trusted_public_key,
+        a0_expected_host_id=a0_expected_host_id,
+        a0_max_age_seconds=a0_max_age_seconds)
     models = receipt.get('models')
     require(type(models) is list and len(models) == 20, '20 physical trained arms required')
     bound = {}
@@ -184,6 +242,7 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
         'selected_executable_sha256': binary_sha,
         'same_frozen_trace_sha256': trace_sha,
         'training_receipt_sha256': receipt_sha,
+        'frozen_a0_owner_revalidation': current_a0,
         'twenty_native_physical_model_executions': len(results),
         'forty_fresh_native_process_invocations': len(results)*2,
         'cross_process_q24_frontier_and_head_receipts_equal': len(results)==20,
@@ -204,13 +263,25 @@ def main() -> int:
               'trace-sha256','report'):
         p.add_argument('--'+x, required=True)
     p.add_argument('--synthetic-canary', action='store_true')
+    p.add_argument('--selected-v1', type=Path)
+    p.add_argument('--selected-v1-sha256')
+    p.add_argument('--a0-evidence-root', type=Path)
+    p.add_argument('--a0-trusted-public-key', type=Path)
+    p.add_argument('--a0-expected-host-id')
+    p.add_argument('--a0-max-age-seconds', type=int, default=300)
     args = p.parse_args()
     try:
         result = evaluate(
             Path(args.binary), args.binary_sha256,
             Path(args.trained_root), args.receipt_sha256,
             Path(args.trace), args.trace_sha256,
-            synthetic_canary=args.synthetic_canary)
+            synthetic_canary=args.synthetic_canary,
+            selected_v1=args.selected_v1,
+            selected_v1_sha256=args.selected_v1_sha256,
+            a0_evidence_root=args.a0_evidence_root,
+            a0_trusted_public_key=args.a0_trusted_public_key,
+            a0_expected_host_id=args.a0_expected_host_id,
+            a0_max_age_seconds=args.a0_max_age_seconds)
         with Path(args.report).open('x',encoding='utf-8') as f:
             json.dump(result, f, sort_keys=True, indent=2)
             f.write('\n')
