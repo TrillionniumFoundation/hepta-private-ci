@@ -78,12 +78,8 @@ class SourceCoverageTests(unittest.TestCase):
         self.assertEqual(plan["entries"], [0, 2])
         self.assertEqual(result["by_kind"]["two_hop"]["source_examples_unvisited"], 1)
         self.assertEqual(result["by_kind"]["two_hop"]["planned_updates"], 0)
-        self.assertEqual(
-            result["source_exposure"]["unscheduled_source_scope_pairs"], 1
-        )
-        self.assertEqual(
-            result["source_exposure"]["scheduled_source_scope_pairs"], 2
-        )
+        self.assertEqual(result["source_exposure"]["unscheduled_source_scope_pairs"], 1)
+        self.assertEqual(result["source_exposure"]["scheduled_source_scope_pairs"], 2)
         self.assertEqual(result["source_exposure"]["eligible_source_scope_pairs"], 3)
 
     def test_shared_source_is_not_falsely_counted_as_new_knowledge(self):
@@ -110,9 +106,9 @@ class SourceCoverageTests(unittest.TestCase):
             maximum_steps=1,
             token_ceiling=32,
         )
-        census = audit_coverage(
-            examples, prepared, plan, curriculum="source_two_hop"
-        )["source_exposure"]
+        census = audit_coverage(examples, prepared, plan, curriculum="source_two_hop")[
+            "source_exposure"
+        ]
         self.assertEqual(census["eligible_source_scopes"], 2)
         self.assertEqual(census["source_scopes_with_scheduled_updates"], 1)
         self.assertEqual(census["source_scopes_without_scheduled_updates"], 1)

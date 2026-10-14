@@ -6,6 +6,8 @@ on:
     paths:
       - "scripts/memory_cell/source_write_effects.py"
       - "scripts/memory_cell/test_source_write*.py"
+      - "scripts/memory_cell/pretrained.py"
+      - "scripts/memory_cell/test_pretrained.py"
       - ".github/workflows/hepta-memory-source-effects.yml"
   workflow_dispatch:
 permissions:

@@ -8,6 +8,9 @@ on:
       - "scripts/memory_cell/test_source_write_schedule.py"
       - "scripts/memory_cell/test_source_schedule_interleave.py"
       - "scripts/memory_cell/source_write_coverage.py"
+      - "scripts/memory_cell/test_source_write_coverage.py"
+      - "scripts/memory_cell/pretrained.py"
+      - "scripts/memory_cell/test_pretrained.py"
       - "scripts/memory_cell/experience_memory.py"
       - ".github/workflows/hepta-memory-source-preflight.yml"
   workflow_dispatch:

@@ -26,7 +26,9 @@ class PretrainedConfigTests(unittest.TestCase):
             (directory / "config.json").write_text("tampered", encoding="utf-8")
             self.assertNotEqual(original, file_inventory(directory))
             (directory / "extra.json").write_text("unauthorized", encoding="utf-8")
-            self.assertEqual(set(file_inventory(directory)), {"config.json", "extra.json"})
+            self.assertEqual(
+                set(file_inventory(directory)), {"config.json", "extra.json"}
+            )
 
     def test_peft_save_auto_mapping_is_pinned_exactly(self):
         # RelevanceRanker deliberately leaves task_type unset so PEFT keeps the

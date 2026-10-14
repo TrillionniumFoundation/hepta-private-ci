@@ -54,7 +54,6 @@ def verify_frozen_retrieval(encoder, directory, *, inventory_digest, weights_dig
         raise ValueError("frozen retrieval Encoder weights, mode or files changed")
 
 
-
 def write(path, obj):
     with path.open("x", encoding="utf-8") as f:
         json.dump(obj, f, ensure_ascii=False, allow_nan=False, indent=2, sort_keys=True)
