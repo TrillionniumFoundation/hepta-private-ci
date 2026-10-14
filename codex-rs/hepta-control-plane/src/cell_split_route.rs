@@ -306,11 +306,12 @@ impl CellSplitRouteControllerV1 {
         Ok((deliveries, receipt))
     }
 
-    /// Activate all child routes through the existing generation cutover.
+    /// Exercise child-route activation in the crate's reference tests.
     ///
-    /// The candidate is started and the predecessor is stopped by
-    /// `CnsOrganHostV1`.  Child routes are stored only after that method
-    /// succeeds, so a failed candidate can never receive dispatch.
+    /// Production always denies this legacy in-memory cutover: it has no
+    /// same-owner durable Control Begin/Commit or original CNS receipt.
+    /// Under `cfg(test)` the candidate is started and predecessor stopped
+    /// by `CnsOrganHostV1`, and child routes become visible only on success.
     pub fn activate_children(
         &mut self,
         expected: Generation,
@@ -346,8 +347,8 @@ impl CellSplitRouteControllerV1 {
         Ok(())
     }
 
-    /// Variant used when the authoritative state owner must migrate state
-    /// before CNS publishes the successor generation.
+    /// Reference-test variant with state migration before child publication.
+    /// Production denies until the real Control/CNS authority handoff exists.
     pub fn activate_children_with_migration<M: OrganStateMigrationV1 + ?Sized>(
         &mut self,
         expected: Generation,
