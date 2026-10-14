@@ -1045,6 +1045,62 @@ fn original_control_cns_join_poisoned_by_earlier_same_inode_wal_corruption() {
     ));
 }
 
+
+#[cfg(unix)]
+#[test]
+fn signed_original_receipt_binding_does_not_mask_a_later_checkpoint_frontier() {
+    let dir = private_control_dir();
+    let path = dir.path().join("control-cns-checkpoint-race.wal");
+    let predecessor = snapshot(3);
+    let successor = snapshot(4);
+    let migrated = Digest32::of_bytes(b"checkpoint-race-migrated");
+    let next_checkpoint = Digest32::of_bytes(b"checkpoint-race-next");
+    let owner = NduPublicationOwnerV1::open_production(
+        &path,
+        predecessor.clone(),
+        Digest32::ZERO,
+    )
+    .expect("original signed Control owner");
+    owner
+        .publish_cutover_with_external_effect(
+            &predecessor,
+            Digest32::ZERO,
+            successor.clone(),
+            migrated,
+            || -> Result<((), Vec<u8>), &'static str> { Ok(((), vec![0x6a; 96])) },
+        )
+        .expect("test-only original receipt, durable B and C");
+    let before = owner
+        .verify_original_cns_receipt_frontier_v1(&[0x6a; 96])
+        .expect("full Control replay at signed readback start");
+    assert_eq!(before.sequence, 3);
+    owner
+        .compare_and_publish_checkpoint(
+            &successor,
+            Digest32::of_bytes(b"checkpoint-race-read"),
+            Digest32::of_bytes(b"checkpoint-race-tick"),
+            migrated,
+            next_checkpoint,
+        )
+        .expect("Neuron CAS can advance independently between Observer reads");
+    let after = owner
+        .verify_original_cns_receipt_frontier_v1(&[0x6a; 96])
+        .expect("identical original CNS bytes but a different Control revision");
+    assert_eq!(
+        before.original_cns_receipt_binding,
+        after.original_cns_receipt_binding,
+        "digest-only original CNS receipt binding cannot detect intervening P"
+    );
+    assert_eq!(after.sequence, before.sequence + 1);
+    assert_ne!(before.head, after.head);
+    assert_ne!(before.checkpoint, after.checkpoint);
+    assert_ne!(
+        before, after,
+        "Runtime Observer must refuse a cross-revision signed CNS/Control join"
+    );
+    assert_eq!(owner.current().unwrap(), (successor, next_checkpoint));
+}
+
 #[cfg(not(unix))]
 #[test]
 fn unsupported_platform_denies_frontier_owner() {

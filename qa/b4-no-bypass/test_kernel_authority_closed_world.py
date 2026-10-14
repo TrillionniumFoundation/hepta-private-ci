@@ -416,13 +416,24 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         local = method_body("read_original_local_frontier_v1")
         self.assertIn("state.verify_original_full_history()", local)
         self.assertIn("state.pending_cutover", local)
-        join = method_body("verify_original_cns_receipt_binding")
+        wrapper = method_body("verify_original_cns_receipt_binding")
+        self.assertIn("self.verify_original_cns_receipt_frontier_v1(", wrapper)
+        join = method_body("verify_original_cns_receipt_frontier_v1")
         self.assertIn("state.verify_original_full_history()", join)
         self.assertLess(
             join.index("state.verify_original_full_history()"),
             join.index("original_cns_receipt_binding("),
             "CNS receipt digest must not precede full original Control replay",
         )
+        runtime = self.lexical_code(
+            "codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs"
+        )
+        self.assertIn("let control_before = control", runtime)
+        self.assertIn("let control_after = control", runtime)
+        self.assertGreaterEqual(
+            runtime.count(".verify_original_cns_receipt_frontier_v1("), 2
+        )
+        self.assertIn("if control_before != control_after", runtime)
 
     def test_generic_cns_generation_writer_callers_are_closed_world(self) -> None:
         # The generic CNS host is shared beyond Cell Split and cannot be

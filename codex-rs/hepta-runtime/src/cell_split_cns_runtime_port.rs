@@ -179,8 +179,8 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
             return Err("CNS does not currently serve the signed successor".into());
         }
         let original_bytes = cell_split_cns_control_original_receipt_bytes_v1(&original)?;
-        control
-            .verify_original_cns_receipt_binding(&original_bytes)
+        let control_before = control
+            .verify_original_cns_receipt_frontier_v1(&original_bytes)
             .map_err(|error| format!("Control original CNS Commit binding rejected: {error}"))?;
         // Control readback and independent CNS verification can race a later
         // rollback. Demand a second current signed original-owner observation
@@ -193,9 +193,16 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
         {
             return Err("signed CNS successor changed during Control join".into());
         }
-        control
-            .verify_original_cns_receipt_binding(&original_bytes)
+        let control_after = control
+            .verify_original_cns_receipt_frontier_v1(&original_bytes)
             .map_err(|error| format!("Control CNS binding changed during join: {error}"))?;
+        // Identical CNS receipt bytes do not establish one Control revision:
+        // a Neuron checkpoint CAS may have fsynced P between the two signed
+        // runtime reads. Reject that cross-frontier join, including inode,
+        // original WAL sequence/head/bytes and NDU checkpoint drift.
+        if control_before != control_after {
+            return Err("original Control WAL frontier changed during CNS readback".into());
+        }
         Ok(())
     }
 

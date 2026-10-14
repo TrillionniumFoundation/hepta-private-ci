@@ -822,15 +822,29 @@ impl NduPublicationOwnerV1 {
         Ok(state.last_cns_original_receipt_binding)
     }
 
-    /// Compare freshly authenticated original CNS receipt bytes against the
-    /// Control Commit's immutable WAL evidence link. The caller must have
-    /// *already verified* the original runtime key, exact commit identity and
-    /// fresh serving-state readback. This byte comparison does none of those
-    /// authorizations and cannot itself activate a split.
+    /// Compatibility read-only check. The returned equality is never an
+    /// independent signed CNS runtime receipt or a physical cutover grant.
+    /// Preserve the original public Result<(), _> API for existing readers.
     pub fn verify_original_cns_receipt_binding(
         &self,
         externally_verified_original_receipt_bytes: &[u8],
     ) -> Result<(), NduPublicationErrorV1> {
+        self.verify_original_cns_receipt_frontier_v1(externally_verified_original_receipt_bytes)
+            .map(|_| ())
+    }
+
+    /// Atomic original Control WAL readback for an independently authenticated
+    /// CNS receipt. Signature verification and live route proof are owned by
+    /// the external CNS witness; this output itself is LOCAL and UNSIGNED.
+    /// Control Commit's immutable WAL evidence link. The caller must have
+    /// *already verified* the original runtime key, exact commit identity and
+    /// fresh serving-state readback. This byte comparison does none of those
+    /// authorizations and cannot itself activate a split.
+    #[cfg(unix)]
+    pub fn verify_original_cns_receipt_frontier_v1(
+        &self,
+        externally_verified_original_receipt_bytes: &[u8],
+    ) -> Result<NduPublicationLocalFrontierV1, NduPublicationErrorV1> {
         // A separate last_binding() call would release the Control mutex
         // before comparing bytes, allowing a new fsynced C record between
         // the two reads. Compare against exactly one locked live frontier.
@@ -869,7 +883,38 @@ impl NduPublicationOwnerV1 {
             state.poisoned = true;
             return Err(error);
         }
-        Ok(())
+        let identities = control_owner_file_identity(&state.file, &state.journal_path)
+            .and_then(|wal| {
+                control_owner_file_identity(&state.owner_lock, &state.lock_path)
+                    .map(|marker| (wal, marker))
+            });
+        let ((wal_device, wal_inode), (marker_device, marker_inode)) = match identities {
+            Ok(identities) => identities,
+            Err(error) => {
+                state.poisoned = true;
+                return Err(error);
+            }
+        };
+        Ok(NduPublicationLocalFrontierV1 {
+            snapshot: state.snapshot.clone(),
+            checkpoint: state.checkpoint,
+            sequence: state.sequence,
+            head: state.head,
+            wal_bytes: state.bytes,
+            wal_device,
+            wal_inode,
+            marker_device,
+            marker_inode,
+            original_cns_receipt_binding: state.last_cns_original_receipt_binding,
+        })
+    }
+
+    #[cfg(not(unix))]
+    pub fn verify_original_cns_receipt_frontier_v1(
+        &self,
+        _externally_verified_original_receipt_bytes: &[u8],
+    ) -> Result<NduPublicationLocalFrontierV1, NduPublicationErrorV1> {
+        Err(NduPublicationErrorV1::Unsupported)
     }
 
     /// Compatibility-only name. The old single-phase API could write a
