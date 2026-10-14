@@ -314,7 +314,9 @@ def validate_resources(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
         if profile == "vary_active":
             varied.add(concurrency)
             variable_by_scale[scale].add(concurrency)
-        summary[name] = {"rps": completed / r["elapsed_seconds"], "p99_ms": r["p99_ms"],
+        throughput = completed / r["elapsed_seconds"]
+        require(math.isfinite(throughput), f"{name}: non-finite derived throughput")
+        summary[name] = {"rps": throughput, "p99_ms": r["p99_ms"],
                          "rss_bytes": r["rss_peak_bytes"], "network_bytes": r["network_bytes"],
                          "completion_rate": completed / attempts,
                          "cpu_seconds_per_completion": r["cpu_seconds"] / completed if completed else None}
@@ -335,9 +337,11 @@ def validate_resources(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
             base = summary[f"E/in_process/{scale}/{profile}"]
             for mode in DEPLOYMENTS[1:]:
                 candidate = summary[f"E/{mode}/{scale}/{profile}"]
+                ratio = candidate["rps"] / base["rps"] if base["rps"] else None
+                require(ratio is None or math.isfinite(ratio),
+                        f"E/{mode}/{scale}/{profile}: non-finite throughput ratio")
                 diagnostics[f"{mode}/{scale}/{profile}"] = {
-                    "throughput_ratio_vs_in_process": (
-                        candidate["rps"] / base["rps"] if base["rps"] else None),
+                    "throughput_ratio_vs_in_process": ratio,
                     "p99_delta_ms": candidate["p99_ms"] - base["p99_ms"],
                     "rss_delta_bytes": candidate["rss_bytes"] - base["rss_bytes"],
                     "network_delta_bytes": candidate["network_bytes"] - base["network_bytes"],
@@ -399,6 +403,11 @@ def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
         for metric in ("total_cost", "elapsed_seconds", "cpu_seconds", "task_quality",
                        "model_calls", "token_count"):
             totals[metric] += r[metric]
+            if metric in ("model_calls", "token_count"):
+                count(totals[metric], f"F/{route}/{case}: aggregate {metric}")
+            else:
+                require(math.isfinite(totals[metric]),
+                        f"F/{route}/{case}: non-finite aggregate {metric}")
         if route == "direct_effect":
             require(r["model_calls"] == 0 and r["token_count"] == 0,
                     f"{name}: direct execution must not conceal an Agent/model call")
