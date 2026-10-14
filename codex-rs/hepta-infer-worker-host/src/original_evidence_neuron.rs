@@ -49,6 +49,11 @@ pub enum OriginalEvidenceWorkerBootstrapErrorV1 {
     UnsupportedHost,
     UnsafeEvidenceRoot,
     OriginalEvidenceUnavailable,
+    /// Existing fsynced Evidence means prior requests may have consumed
+    /// Final-use nonces or performed model effects. This in-memory queue
+    /// has no independently reconciled original Control state; reopening
+    /// it as empty would permit a differently signed duplicate request.
+    PriorHistoryNeedsReconciliation,
     Worker(BatchWorkerErrorV1),
 }
 
@@ -133,6 +138,23 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
                 .map_err(OriginalEvidenceWorkerBootstrapErrorV1::Worker)?;
             if !owner.flush_production_metrics() {
                 return Err(OriginalEvidenceWorkerBootstrapErrorV1::OriginalEvidenceUnavailable);
+            }
+            // An original WAL that already contains committed model history
+            // cannot be adopted by a newly empty in-memory dedup queue.
+            // A new Final-use nonce for the same logical request could then
+            // repeat an old physical effect. Until the independent original
+            // Control owner supplies and verifies durable reconciliation,
+            // cold restart with ANY committed group is denied, including
+            // groups containing failed/indeterminate terminal observations.
+            // This readback is deliberately startup-only; never scan the
+            // full WAL during a Cell inference hot path.
+            let recovered = original_evidence
+                .read_local_frontier()
+                .map_err(|_| OriginalEvidenceWorkerBootstrapErrorV1::OriginalEvidenceUnavailable)?;
+            if recovered.sequence != 0 || recovered.committed_rows != 0 {
+                return Err(
+                    OriginalEvidenceWorkerBootstrapErrorV1::PriorHistoryNeedsReconciliation,
+                );
             }
             Ok(Self {
                 owner,
