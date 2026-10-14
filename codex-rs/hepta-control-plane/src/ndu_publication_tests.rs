@@ -3,8 +3,10 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 #[cfg(unix)]
-fn test_only_original_runtime_receipt() -> Result<(), &'static str> {
-    Ok(())
+fn test_only_original_runtime_receipt() -> Result<((), Vec<u8>), &'static str> {
+    // Test-only owner bytes are not a production signature or a real runtime
+    // receipt. Production still needs independently verified owner readback.
+    Ok(((), vec![0x52; 96]))
 }
 
 fn snapshot(fence: u64) -> NduSnapshotRefV1 {
@@ -262,7 +264,7 @@ fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
                         Err(NduPublicationErrorV1::Indeterminate),
                         "a callback must not reenter the Control lane to publish a tick"
                     );
-                    Ok("original-fsynced-runtime-receipt")
+                    Ok(("original-fsynced-runtime-receipt", vec![0x53; 96]))
                 },
             )
             .expect("durable Prepare, external original receipt, Commit");
@@ -271,9 +273,90 @@ fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
         assert_eq!(owner.current().unwrap(), (successor.clone(), migrated));
     }
     assert_eq!(physical_calls, 1, "the external effect is not replayable");
+    // The fsynced Control C record must commit to the exact original-owner
+    // receipt bytes returned from the callback, not merely the next route
+    // digest, a bool success or a no-data OK. This fixture is not signed.
+    let mut receipt_binding = b"hepta.control.ndu-publication.cns-original-receipt.v1\0".to_vec();
+    receipt_binding.extend_from_slice(&(96_u64).to_be_bytes());
+    receipt_binding.extend_from_slice(&[0x53; 96]);
+    let expected_receipt_digest = Digest32::of_bytes(&receipt_binding).to_string();
+    let journal = std::fs::read_to_string(&path).expect("original Control WAL");
+    let commit_row = journal
+        .lines()
+        .find(|line| line.split('|').nth(4) == Some("C"))
+        .expect("new guarded cutover must fsync a C event");
+    assert_eq!(commit_row.split('|').nth(8), Some(expected_receipt_digest.as_str()));
+    let expected_binding = Digest32::of_bytes(&receipt_binding);
     let reopened = NduPublicationOwnerV1::open_production(&path, successor.clone(), migrated)
         .expect("both durable journal phases replay");
     assert_eq!(reopened.current().unwrap(), (successor, migrated));
+    assert_eq!(
+        reopened.last_cns_original_receipt_binding().unwrap(),
+        Some(expected_binding),
+        "recovery must retain the exact committed original owner bytes digest"
+    );
+    assert_eq!(
+        reopened.verify_original_cns_receipt_binding(&[0x53; 96]),
+        Ok(()),
+        "independent original-owner bytes must match the durable Control WAL"
+    );
+    assert_eq!(
+        reopened.verify_original_cns_receipt_binding(&[0x54; 96]),
+        Err(NduPublicationErrorV1::Stale),
+        "a different externally signed receipt must not match this cutover"
+    );
+    assert_eq!(
+        reopened.verify_original_cns_receipt_binding(&[]),
+        Err(NduPublicationErrorV1::Invalid),
+        "a missing original receipt cannot satisfy the observer join"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn missing_or_unbounded_original_cns_receipt_never_commits_control_handoff() {
+    for receipt_bytes in [0_usize, 63, 32 * 1024 + 1] {
+        let root = tempfile::tempdir().expect("isolated private Control directory");
+        let path = root.path().join("ambiguous-original-receipt.wal");
+        let original = snapshot(3);
+        let mut calls = 0_usize;
+        let owner =
+            NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+                .expect("original Control owner");
+        let result = owner.publish_cutover_with_external_effect(
+            &original,
+            Digest32::ZERO,
+            snapshot(4),
+            Digest32::of_bytes(b"migrated-child-state"),
+            || -> Result<((), Vec<u8>), &'static str> {
+                calls += 1;
+                Ok(((), vec![0x55; receipt_bytes]))
+            },
+        );
+        assert_eq!(result, Err(NduPublicationErrorV1::Indeterminate));
+        assert_eq!(calls, 1, "unknown external effect cannot be retried");
+        assert_eq!(owner.current(), Err(NduPublicationErrorV1::Poisoned));
+        assert_eq!(
+            owner.last_cns_original_receipt_binding(),
+            Err(NduPublicationErrorV1::Poisoned)
+        );
+        drop(owner);
+
+        let durable = std::fs::read_to_string(&path).expect("durable prepared WAL");
+        assert!(
+            durable.lines().any(|line| line.split('|').nth(4) == Some("B")),
+            "original Begin must remain for independent recovery"
+        );
+        assert!(
+            !durable.lines().any(|line| line.split('|').nth(4) == Some("C")),
+            "a fake original-owner acknowledgement cannot issue Control Commit"
+        );
+        assert_eq!(
+            NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO)
+                .expect_err("orphan Begin must quarantine restart"),
+            NduPublicationErrorV1::Indeterminate
+        );
+    }
 }
 
 #[cfg(unix)]
@@ -298,9 +381,9 @@ fn unsigned_ndu_owner_or_policy_change_is_denied_before_durable_begin() {
                 Digest32::ZERO,
                 successor,
                 Digest32::of_bytes(b"migrated"),
-                || -> Result<(), &'static str> {
+                || -> Result<((), Vec<u8>), &'static str> {
                     effects += 1;
-                    Ok(())
+                    Ok(((), vec![0x54; 96]))
                 },
             ),
             Err(NduPublicationErrorV1::Stale)
@@ -327,7 +410,7 @@ fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
                 Digest32::ZERO,
                 snapshot(4),
                 Digest32::of_bytes(b"unknown-migrated"),
-                || -> Result<(), &'static str> {
+                || -> Result<((), Vec<u8>), &'static str> {
                     calls += 1;
                     Err("runtime already entered but original receipt unavailable")
                 },
@@ -408,9 +491,9 @@ fn concurrent_model_checkpoint_and_guarded_runtime_cutover_have_one_winner() {
             Digest32::ZERO,
             snapshot(4),
             migrated,
-            || -> Result<(), &'static str> {
+            || -> Result<((), Vec<u8>), &'static str> {
                 cns_calls.fetch_add(1, Ordering::SeqCst);
-                Ok(())
+                Ok(((), vec![0x54; 96]))
             },
         )
     });

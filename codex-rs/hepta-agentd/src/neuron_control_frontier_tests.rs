@@ -2,6 +2,7 @@ use super::*;
 
 #[cfg(unix)]
 #[test]
+#[allow(deprecated)]
 fn adapter_uses_same_durable_control_owner_for_reads_and_checkpoint_publication() {
     use codex_hepta_types::Generation;
     let dir = tempfile::tempdir().expect("private root");
@@ -56,34 +57,22 @@ fn adapter_uses_same_durable_control_owner_for_reads_and_checkpoint_publication(
     assert_eq!(adapter.check_checkpoint_publisher(&snapshot, next), Ok(()));
     assert!(adapter.latest(&StableId::new("other").unwrap()).is_err());
 
-    // CNS uses the same exclusive Control lane; the earlier signed read
-    // cannot publish a second checkpoint after the route has advanced.
+    // An unrelated Agentd caller cannot publish an unsigned CNS handoff or
+    // mint a fake original receipt using the old single-phase Control API.
+    // The reviewed physical Control/CNS effect adapter is not yet installed.
     let mut successor = snapshot.clone();
     successor.route_fence += 1;
-    let (_, cutover) = owner
-        .publish_cutover_with_external_effect(
-            &snapshot,
-            next,
-            successor.clone(),
-            next,
-            || -> Result<(), &'static str> { Ok(()) },
-        )
-        .expect("durable CNS Begin and Commit");
-    assert!(!cutover.is_zero());
-    assert_eq!(adapter.latest(&scope).unwrap(), successor);
+    let source = std::fs::read(dir.path().join("ndu-control.wal"))
+        .expect("original immutable Control evidence");
     assert_eq!(
-        adapter.check_checkpoint_publisher(&snapshot, next),
-        Err(NduReadVerificationErrorV1::StaleFrontier)
+        owner.publish_cutover(&snapshot, next, successor, next),
+        Err(codex_hepta_control_plane::NduPublicationErrorV1::Unsupported)
     );
     assert_eq!(
-        adapter.compare_and_publish_checkpoint(
-            &snapshot,
-            Digest32::of_bytes(b"authenticated-read"),
-            Digest32::of_bytes(b"stale-tick"),
-            next,
-            Digest32::of_bytes(b"stale-checkpoint"),
-        ),
-        Err(NduReadVerificationErrorV1::CheckpointPublicationUnavailable)
+        std::fs::read(dir.path().join("ndu-control.wal")).expect("no new Control WAL effect"),
+        source
     );
+    assert_eq!(adapter.latest(&scope).unwrap(), snapshot);
+    assert_eq!(adapter.check_checkpoint_publisher(&snapshot, next), Ok(()));
     assert_eq!(owner.current().unwrap().1, next);
 }
