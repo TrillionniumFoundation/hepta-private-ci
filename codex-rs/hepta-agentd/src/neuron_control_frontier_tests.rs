@@ -56,34 +56,26 @@ fn adapter_uses_same_durable_control_owner_for_reads_and_checkpoint_publication(
     assert_eq!(adapter.check_checkpoint_publisher(&snapshot, next), Ok(()));
     assert!(adapter.latest(&StableId::new("other").unwrap()).is_err());
 
-    // CNS uses the same exclusive Control lane; the earlier signed read
-    // cannot publish a second checkpoint after the route has advanced.
+    // The public single-phase CNS cutover port is always unavailable. A
+    // caller-supplied dummy success callback is NOT proof of the original
+    // signed runtime effect. The candidate's real physical port remains
+    // denied until a separately reviewed authenticated handoff is wired.
     let mut successor = snapshot.clone();
     successor.route_fence += 1;
-    let (_, cutover) = owner
-        .publish_cutover_with_external_effect(
+    #[allow(deprecated)]
+    let denied = owner.publish_cutover(&snapshot, next, successor, next);
+    assert_eq!(denied, Err(codex_hepta_control_plane::NduPublicationErrorV1::Unsupported));
+    assert_eq!(adapter.latest(&scope).unwrap(), snapshot);
+    assert_eq!(adapter.check_checkpoint_publisher(&snapshot, next), Ok(()));
+    let subsequent = Digest32::of_bytes(b"second-model-checkpoint");
+    assert!(adapter
+        .compare_and_publish_checkpoint(
             &snapshot,
+            Digest32::of_bytes(b"another-authenticated-read"),
+            Digest32::of_bytes(b"second-tick"),
             next,
-            successor.clone(),
-            next,
-            || -> Result<(), &'static str> { Ok(()) },
+            subsequent,
         )
-        .expect("durable CNS Begin and Commit");
-    assert!(!cutover.is_zero());
-    assert_eq!(adapter.latest(&scope).unwrap(), successor);
-    assert_eq!(
-        adapter.check_checkpoint_publisher(&snapshot, next),
-        Err(NduReadVerificationErrorV1::StaleFrontier)
-    );
-    assert_eq!(
-        adapter.compare_and_publish_checkpoint(
-            &snapshot,
-            Digest32::of_bytes(b"authenticated-read"),
-            Digest32::of_bytes(b"stale-tick"),
-            next,
-            Digest32::of_bytes(b"stale-checkpoint"),
-        ),
-        Err(NduReadVerificationErrorV1::CheckpointPublicationUnavailable)
-    );
-    assert_eq!(owner.current().unwrap().1, next);
+        .is_ok());
+    assert_eq!(owner.current().unwrap().1, subsequent);
 }
