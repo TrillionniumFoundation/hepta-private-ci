@@ -267,6 +267,20 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 )
                 self.assertIn("authority.claim(", body)
 
+    def test_metric_callback_cannot_serve_as_production_split_admission(self) -> None:
+        path = "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"
+        raw = (ROOT / path).read_text(encoding="utf-8")
+        symbol = "pub fn run_pinned_cell_split_execution_with_admission_and_metrics_v1"
+        self.assertEqual(raw.count(symbol), 1)
+        body = raw[raw.index("{", raw.index(symbol)) + 1:]
+        self.assertRegex(
+            body,
+            r'^\s*(?://[^\n]*\n\s*)*'
+            r'if\s+!cfg!\(test\)\s*&&\s*action\s*==\s*"advance"\s*\{\s*'
+            r'return\s+Err\s*\(',
+            "caller-owned metrics sink must deny physical advance before forwarding",
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
