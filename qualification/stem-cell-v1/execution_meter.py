@@ -24,6 +24,7 @@ from torch.utils._python_dispatch import TorchDispatchMode
 
 POLICY_SCHEMA = 'hepta.execution-meter-policy.v1'
 TRANSFORMER_POLICY_SCHEMA = 'hepta.execution-meter-policy.v2'
+EXTENDED_POLICY_SCHEMA = 'hepta.execution-meter-policy.v3'
 
 
 class BudgetStop(RuntimeError):
@@ -36,12 +37,15 @@ def validate_policy(policy):
     if not isinstance(policy, dict):
         raise ValueError('complete versioned measurement policy required')
     schema = policy.get('schema')
-    if schema == TRANSFORMER_POLICY_SCHEMA:
-        from transformer_work import PROFILE as transformer_profile
+    if schema in (TRANSFORMER_POLICY_SCHEMA, EXTENDED_POLICY_SCHEMA):
+        if schema == EXTENDED_POLICY_SCHEMA:
+            from transformer_work_v3 import PROFILE as transformer_profile
+        else:
+            from transformer_work import PROFILE as transformer_profile
         expected.add('arithmetic_profile')
         if policy.get('arithmetic_profile') != transformer_profile:
             raise ValueError('unregistered Transformer arithmetic profile')
-    if set(policy) != expected or schema not in (POLICY_SCHEMA, TRANSFORMER_POLICY_SCHEMA):
+    if set(policy) != expected or schema not in (POLICY_SCHEMA, TRANSFORMER_POLICY_SCHEMA, EXTENDED_POLICY_SCHEMA):
         raise ValueError('complete versioned measurement policy required')
     if policy['mode'] not in ('observe', 'strict'):
         raise ValueError('measurement mode must be observe or strict')
@@ -193,6 +197,9 @@ class _DispatchMeter(TorchDispatchMode):
         try:
             if ledger.arithmetic_profile == PROFILE:
                 charge = cost(operator, args, kwargs)
+            elif ledger.policy['schema'] == EXTENDED_POLICY_SCHEMA:
+                from transformer_work_v3 import cost as extended_cost
+                charge = extended_cost(operator, args, kwargs)
             else:
                 from transformer_work import cost as transformer_cost
                 charge = transformer_cost(operator, args, kwargs)
