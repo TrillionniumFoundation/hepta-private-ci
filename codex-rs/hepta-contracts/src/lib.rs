@@ -17,6 +17,7 @@ pub mod authority_trust;
 mod callers_manifest_tests;
 mod canonical;
 pub mod execution_contract_v1;
+pub mod exec_server_start_p2c;
 mod final_use;
 mod final_use_control;
 mod identity;
