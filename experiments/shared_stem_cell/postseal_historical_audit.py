@@ -197,6 +197,26 @@ def audit(path, expected_zip_sha256=None):
                 recorded["nonregression_supported_under_iid"] is False,
                 "original paired gains/losses or failed nonregression gate changed")
         pairs.append({"cell": cell, "cases": 256, "gains": gain, "losses": loss})
+    # Compute every disjoint outcome transition from UNMODIFIED raw probabilities.
+    # These are descriptive counts, not post-hoc selection or iid confidence.
+    paired_deltas = {}
+    for phase in ("confirmation", "evaluation"):
+        paired_deltas[phase] = {}
+        for arm in sorted(ARMS - {"bank"}):
+            records = []
+            for cell in (0, 1):
+                idx = [j for j, row_index in enumerate(index[phase])
+                       if cohort[row_index]["cell"] == cell]
+                b = [flags[phase]["bank"][j] for j in idx]
+                c = [flags[phase][arm][j] for j in idx]
+                wins = sum(candidate and not baseline
+                           for baseline, candidate in zip(b, c))
+                losses = sum(baseline and not candidate
+                             for baseline, candidate in zip(b, c))
+                records.append({"cell": cell, "cases": len(idx),
+                                "gains": wins, "losses": losses,
+                                "net_correct": wins - losses})
+            paired_deltas[phase][arm] = records
     require(confirmation["bound"]["supported_under_iid"] is False and
             confirmation["chosen"] == report["chosen"] == "bank" and
             report["chosen_score"] == report["scores"]["bank"] and
@@ -211,6 +231,7 @@ def audit(path, expected_zip_sha256=None):
             "members": {k: digest(raw[k]) for k in NAMES},
             "cohort_sizes": {k: len(v) for k, v in index.items()},
             "scores": scores, "confirmation_pairs": pairs,
+            "descriptive_paired_deltas": paired_deltas,
             "candidate": report["proposed"], "chosen": report["chosen"],
             "flops_observed": report["encoding"].get("active_flops") is not None,
             "energy_observed": report["encoding"].get("energy_joules") is not None,
