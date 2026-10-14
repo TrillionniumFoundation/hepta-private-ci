@@ -337,3 +337,34 @@ injects an exception after a first successful forward and verifies the
 attempt/completion mismatch plus hook cleanup. A CPU floating-point
 reproducibility comparison tolerates numerical error up to 1e-6 while
 preserving exact model count, optimizer bytes and sample-draw identities.
+
+## E4 prequential hash-chain shadow audit
+
+The optional `e4-future --prequential-event-log ... --prequential-event-log-sha256 ...`
+mode checks a *separately supplied, SHA256-pinned* JSON event log before
+reporting future-window Brier statistics. It does not replace the original
+frozen no-change and candidate probability snapshots or existing safety gates.
+
+The log has `dataset_sha256`, `cell_scope = [principal, organ_id, cell_id]`,
+and `events`. Each canonical event contains its zero-indexed `seq`,
+`previous_digest` (64 zeros for genesis), `event_digest`,
+`dataset_sha256`, `cell_scope`, `row_id`, `source_group`,
+`input_digest` (pre-outcome row question/options/state fingerprint),
+`generation`, `authority_epoch`, `recorded_at` (timezone-aware) and
+`kind`. Forecast events additionally contain `role` (either
+`frozen_no_change` or `candidate`), exact `artifact_digest`, and the
+matching probability row. Outcome events instead contain the observed integer
+`label`. The hash is SHA256 of the fixed domain separator followed by
+canonical JSON of the event excluding its own `event_digest`; see
+`neuron_shared_encoder.prequential_receipts.event_digest` for the exact
+algorithm and `input_digest` for the full pre-outcome input identity.
+
+The audit requires two distinct forecasts for each future row *before* its
+outcome, checks source/Cell/model/epoch and row-specific option semantics,
+requires nondecreasing claimed append timestamps, and rejects digest-chain
+tampering or forecast/snapshot mismatches. Passing returns only
+`HASH_CHAIN_CONSISTENT_UNVERIFIED`: anyone can rebuild the unsigned chain,
+forge timestamps, or backfill after seeing future labels. No causal learning,
+NDU verification, trusted witness, production Final-use or Cell promotion is
+ever granted. The true independent Evaluator must consume owner-signed
+pre-outcome writes and verified later outcomes.
