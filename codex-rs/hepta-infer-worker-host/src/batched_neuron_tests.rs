@@ -446,6 +446,29 @@ impl PhaseMetricSinkV1 for FailAtPhaseMetricSink {
     }
 }
 
+#[derive(Debug)]
+struct DelayedMicrobatchMetricSink;
+
+impl PhaseMetricSinkV1 for DelayedMicrobatchMetricSink {
+    fn record(
+        &self,
+        event: PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        if event.phase == PhaseMetricKindV1::Microbatch {
+            std::thread::sleep(std::time::Duration::from_millis(25));
+        }
+        Ok(())
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
+}
+
 #[test]
 fn failed_metrics_latch_readiness_without_replaying_an_authorized_request() {
     let dir = tempfile::tempdir().unwrap();
@@ -613,6 +636,48 @@ fn terminal_metric_failure_preserves_completed_effect_but_blocks_next_admission(
     );
     assert_eq!(worker.pending(), 0);
     assert_eq!(scalar_calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
+
+#[test]
+fn slow_metric_records_cannot_admit_expired_signed_physical_batch() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[87; 32]);
+    let (model, mut first, key) = fixture_request();
+    first.authorization.deadline_ms = 115;
+    let second = second_request(&first);
+    let backend_calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let backend = NativeTestDriver {
+        invocations: backend_calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut worker = runner_with_driver(&signer, dir.path(), model, backend, 2)
+        .with_metric_sink(Arc::new(DelayedMicrobatchMetricSink));
+    for (index, request) in [first, second].into_iter().enumerate() {
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        worker
+            .enqueue(
+                100,
+                "model".into(),
+                request,
+                key.clone(),
+                signed_member(
+                    &signer,
+                    binding,
+                    &format!("delayed-metric-{index}"),
+                    u8::try_from(index).unwrap() + 88,
+                ),
+            )
+            .unwrap();
+    }
+    let outcomes = worker.poll_and_execute(106).unwrap();
+    assert_eq!(outcomes.outcomes.len(), 2);
+    assert!(outcomes.outcomes.iter().all(|item| matches!(
+        item.result,
+        Err(BatchWorkerErrorV1::DeadlineExpired)
+    )));
+    assert_eq!(backend_calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+    assert_eq!(worker.pending(), 0);
 }
 
 #[test]
@@ -1093,6 +1158,93 @@ fn coalesced_batch_denies_stale_other_scope_without_claiming_either_nonce() {
     );
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
     assert_eq!(worker.pending(), 0);
+}
+
+#[derive(Clone)]
+struct DelayedNativeBatchDriver(NativeTestDriver);
+
+impl ModelDriver for DelayedNativeBatchDriver {
+    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+        self.0.load(manifest)
+    }
+
+    fn run(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &WorkerRequest,
+    ) -> Result<DriverRunObservation, Error> {
+        self.0.run(handle, request)
+    }
+
+    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
+        self.0.unload(handle)
+    }
+}
+
+impl NeuronFeatureDriver for DelayedNativeBatchDriver {
+    fn run_neuron_features(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error> {
+        self.0.run_neuron_features(handle, request)
+    }
+
+    fn supports_neuron_feature_batch(&self, handle: &DriverModelHandle) -> bool {
+        self.0.supports_neuron_feature_batch(handle)
+    }
+
+    fn run_neuron_features_batch(
+        &mut self,
+        handle: &DriverModelHandle,
+        requests: &[NeuronFeatureRequest],
+    ) -> Result<Vec<crate::model_worker::DriverNeuronFeatureBatchObservationV1>, Error> {
+        std::thread::sleep(std::time::Duration::from_millis(25));
+        self.0.run_neuron_features_batch(handle, requests)
+    }
+}
+
+#[test]
+fn late_native_batch_receipt_is_stale_without_replay() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[89; 32]);
+    let (model, mut first, key) = fixture_request();
+    first.authorization.deadline_ms = 115;
+    let second = second_request(&first);
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = DelayedNativeBatchDriver(NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    });
+    let mut worker = runner_with_driver(&signer, dir.path(), model, driver, 2);
+    for (index, request) in [first, second].into_iter().enumerate() {
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        worker
+            .enqueue(
+                100,
+                "model".into(),
+                request,
+                key.clone(),
+                signed_member(
+                    &signer,
+                    binding,
+                    &format!("late-driver-{index}"),
+                    u8::try_from(index).unwrap() + 90,
+                ),
+            )
+            .unwrap();
+    }
+    let result = worker.poll_and_execute(106).unwrap();
+    assert_eq!(result.outcomes.len(), 2);
+    assert!(result.outcomes.iter().all(|item| matches!(
+        item.result,
+        Err(BatchWorkerErrorV1::StaleAfterEffect)
+    )));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert_eq!(worker.pending(), 0);
+    assert!(worker.poll_and_execute(132).unwrap().outcomes.is_empty());
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
 }
 
 #[test]
