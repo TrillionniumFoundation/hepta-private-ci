@@ -547,11 +547,12 @@ mod tests {
 
         // Pure reconciliation is not a hidden advance: with no previously
         // prepared effect, it must not create an intent or call an owner.
-        let no_pending_recovery =
-            run_pinned_cell_split_reconcile_only_v1(&config_path, &pin)
-                .expect_err("an empty prepared prefix cannot be reconciled");
-        assert!(no_pending_recovery
-            .contains("reconciliation requires an existing uncommitted prepared intent"));
+        let no_pending_recovery = run_pinned_cell_split_reconcile_only_v1(&config_path, &pin)
+            .expect_err("an empty prepared prefix cannot be reconciled");
+        assert!(
+            no_pending_recovery
+                .contains("reconciliation requires an existing uncommitted prepared intent")
+        );
         assert!(!execution_root.join("cell-split-00-prepared.json").exists());
 
         // The telemetry-bound endpoint must not prepare a new CAS intent
