@@ -245,3 +245,26 @@ python3 -m experiments.shared_stem_cell.e2_budget_integrity \
   --report-sha256 "$REPORT_SHA" --sweep /fresh/e2-budget \
   --output /fresh/e2-integrity.json
 \`\`\`
+
+## Exact hosted ModernBERT failure and bounded correction
+
+The real E1 public-pretrained job on parent PR #1835, workflow run
+`38525780446`, performed an actual pinned ModernBERT forward and then
+failed in `split_learning.checked_features`: the research-only train-fitted
+centroid router admitted only 512-dimensional FP32 features, while the
+candidate Encoder emitted 768d features. This was a **post-Encoder control
+pipeline incompatibility**, not evidence of task-model inferiority.
+
+This continuation increases ONLY the offline FP32 **training-only routing**
+width to 768, keeping the existing 32 MiB input tensor cap, CPU/finite/
+amplitude checks, two owned centroids, label-free training, 16-iteration
+default bound and immutable inference routing. Tests verify actual
+768-dimensional training and owner-level model flow, and reject 769d inputs
+and cross-width application. It does not change signed Q24 semantics,
+native Neuron `d_z<=512` pilot constraints, persistent checkpoint
+format, NDU acceptance, production weights or Cell routing.
+
+The failed exact-SHA run and failure artifact remain historical evidence.
+Only a new completed hosted job on the corrected SHA can close this
+specific blocker. Do not relabel the old workflow as passed or infer a
+ModernBERT task accuracy before it actually completes.
