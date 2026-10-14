@@ -232,3 +232,19 @@ def test_e5_forged_complete_schema_cannot_authorize():
     assert report['production_admission'] == 'BLOCKED'
     rows[0]['encoder_forward_rows'] = 10
     assert scale_receipt_audit({'results': rows})['schema_status'] == 'BLOCKED'
+
+
+def test_e1_real_run_refuses_missing_staged_weights_without_mock_fallback():
+    from neuron_shared_encoder.validation_v3 import run_real_encoder_matrix
+    rows = dataset(8)
+    matrix = {'dataset_sha256': D('d'), 'split_manifest_sha256': D('b'),
+              'frozen_no_change_sha256': D('c'),
+              'training': {'seed': 0, 'steps': 1, 'batch': 4,
+                           'optimizer': 'AdamW', 'learning_rate': 1e-3},
+              'encoders': {kind: {'bundle_sha256': D('a'), 'weights_sha256': D('b'),
+                                 'tokenizer_sha256': D('c'), 'local_path': '/not/a/staged/checkpoint'}
+                           for kind in ENCODERS},
+              'question_option_layout': 'explicit-laya-vs-generic-controls'}
+    assert encoder_matrix_contract(matrix)['status'] == 'SCHEMA_COMPLETE_UNVERIFIED'
+    with pytest.raises(FileNotFoundError, match='missing local'):
+        run_real_encoder_matrix(rows, D('d'), matrix)
