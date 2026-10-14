@@ -1,0 +1,125 @@
+{
+  "schema": "hepta.e5.actual-24-sparse-packed-sgd-20261014.v1",
+  "authority": "DENY_ALL",
+  "production_promotion_permitted": false,
+  "source_kind": "actual isolated PyTorch CPU SGD with synthetic Q24 feature and synthetic labels",
+  "experiment_host": {
+    "python": "3.13.5",
+    "torch": "2.10.0+cpu",
+    "psutil": "7.2.2",
+    "torch_threads": 1
+  },
+  "design": {
+    "scales": [
+      64,
+      256,
+      1024,
+      4096
+    ],
+    "seeds": [
+      20261014,
+      20261015,
+      20261016
+    ],
+    "arms": [
+      "packed",
+      "modules"
+    ],
+    "physical_processes": 24,
+    "sgd_steps_per_active_cell": 3,
+    "active_cells": "max(8, floor(logical_cells/10))",
+    "head_parameters_per_cell": 9744,
+    "fp32_all_head_weights_resident": true
+  },
+  "observed": {
+    "64": {
+      "active": 8,
+      "paired_sgd_speed_ratios": [
+        1.9806,
+        1.6625,
+        1.7836
+      ],
+      "median_speedup": 1.7836,
+      "rss_savings_mib": [
+        1.129,
+        1.195,
+        1.109
+      ],
+      "median_rss_savings_mib": 1.129
+    },
+    "256": {
+      "active": 25,
+      "paired_sgd_speed_ratios": [
+        2.7089,
+        2.371,
+        2.8252
+      ],
+      "median_speedup": 2.7089,
+      "rss_savings_mib": [
+        5,
+        4.98,
+        5.152
+      ],
+      "median_rss_savings_mib": 5
+    },
+    "1024": {
+      "active": 102,
+      "paired_sgd_speed_ratios": [
+        0.7701,
+        3.2087,
+        3.2045
+      ],
+      "median_speedup": 3.2045,
+      "rss_savings_mib": [
+        21.199,
+        20.742,
+        20.152
+      ],
+      "median_rss_savings_mib": 20.742
+    },
+    "4096": {
+      "active": 409,
+      "paired_sgd_speed_ratios": [
+        3.3109,
+        3.1769,
+        2.9791
+      ],
+      "median_speedup": 3.1769,
+      "rss_savings_mib": [
+        84.016,
+        84.914,
+        84.277
+      ],
+      "median_rss_savings_mib": 84.277
+    }
+  },
+  "source_git_blobs": {
+    "e5_sparse_packed_sgd.py": "e00986b891f5795b92f7b7196d8a4cb241873afa",
+    "e5_sparse_sgd_review.py": "74a5eda8eb6a06cacbdbf0d5005d5a7171248ed0",
+    "test_e5_sparse_packed_sgd.py": "a413a2cec260ffb0abd90094ed331fa79251be64",
+    "test_e5_sparse_sgd_review.py": "ecef565975e7742d9e0be5e99b67a861e44dec4a"
+  },
+  "local_artifact_zip_sha256": "62b05c410c85da65f863c8535a4275581073959162ac4296d3eff4f960edfb16",
+  "raw_24_receipt_sha256_manifest_digest": "3773cbc98f44c9712c2bb886bbbabc04cc93ebb8dfe564e2b038c47f03fc0d10",
+  "independent_local_review_sha256": "dcc1e8bf293877b93f403e7c57bbb6ad84bde488a01867798f57673d50faeadb",
+  "local_checks": {
+    "model_math_tests": 12,
+    "independent_review_adversarial_tests": 16,
+    "passed": 28,
+    "failed": 0
+  },
+  "disclosures": {
+    "first_4096_module_RSS_overstated_due_to_memory_spiking_hash_audit": true,
+    "corrected_with_streaming_sha256": true,
+    "early_three_seed_campaign_timeout_and_resume_disclosed": true,
+    "all_completed_24_receipts_accounted": true,
+    "one_local_host_three_repetitions_only": true,
+    "statistical_superiority_established": false,
+    "pretrained_encoder_executed": false,
+    "target_rust_worker_executed": false,
+    "independent_future_ndu_verified": false,
+    "OOD_verified": false,
+    "physical_power_or_GPU_verified": false,
+    "end_to_end_p99_verified": false
+  }
+}
