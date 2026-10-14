@@ -27,7 +27,8 @@ def repackage(changed):
     data.update(changed)
     data["SHA256SUMS"] = "".join(
         f"{hashlib.sha256(content).hexdigest()}  ./{name}\n"
-        for name, content in sorted(data.items()) if name != "SHA256SUMS"
+        for name, content in sorted(data.items())
+        if name != "SHA256SUMS"
     ).encode()
     dst = BytesIO()
     with zipfile.ZipFile(dst, "w", compression=zipfile.ZIP_DEFLATED) as z:
@@ -73,8 +74,11 @@ class LocalContracts(unittest.TestCase):
             audit.index([dict(qid="q", arm="arm", view="view")] * 2, expected)
 
     def test_raw_fact_source_must_match_exact_rational_corpus_contract(self):
-        doc = dict(excerpt="Device DEV-1234ABC requires clearance token TAG-1234ABC.",
-                   source_start=0, source_end=56)
+        doc = dict(
+            excerpt="Device DEV-1234ABC requires clearance token TAG-1234ABC.",
+            source_start=0,
+            source_end=56,
+        )
         doc["source_end"] = len(doc["excerpt"].encode())
         doc["source_digest"] = audit.digest(doc["excerpt"])
         self.assertEqual(audit.fact_from_source(doc), ("DEV-1234ABC", "TAG-1234ABC"))
@@ -98,8 +102,11 @@ class HostedArchiveAudit(unittest.TestCase):
             self.assertEqual(lookup["decoy_only", view]["exact_refusals"], 0)
             self.assertEqual(lookup["decoy_only", view]["unsupported_copies"], 20)
         for arm in ("target_decoy_first", "target_decoy_last", "decoy_only"):
-            paired = next(x for x in result["pairwise"]
-                          if x["arm"] == arm and x["second"] == "neutral_alias")
+            paired = next(
+                x
+                for x in result["pairwise"]
+                if x["arm"] == arm and x["second"] == "neutral_alias"
+            )
             self.assertEqual(paired["input_token_delta"], 0)
 
     def test_outer_zip_pin_not_derived_from_the_archive_itself(self):
@@ -128,6 +135,7 @@ class HostedArchiveAudit(unittest.TestCase):
             # Caller can give a different outer hash only in this local test;
             # the production CLI pins the original GitHub ZIP unconditionally.
             import tempfile
+
             with tempfile.TemporaryDirectory() as tmp:
                 f = Path(tmp) / "f.zip"
                 f.write_bytes(forged)
@@ -142,8 +150,12 @@ class HostedArchiveAudit(unittest.TestCase):
         rows[0] = json.dumps(item, sort_keys=True).encode()
         modified = b"\n".join(rows) + b"\n"
         seal["sha256"] = hashlib.sha256(modified).hexdigest()
-        forged = repackage({"trial/raw-answers.jsonl": modified,
-                            "trial/raw-seal.json": json.dumps(seal).encode()})
+        forged = repackage(
+            {
+                "trial/raw-answers.jsonl": modified,
+                "trial/raw-seal.json": json.dumps(seal).encode(),
+            }
+        )
         members = audit.read_archive(forged, hashlib.sha256(forged).hexdigest())
         with patch.object(audit, "RAW_SEAL", seal["sha256"]):
             with self.assertRaisesRegex(ValueError, "provenance"):
@@ -158,8 +170,12 @@ class HostedArchiveAudit(unittest.TestCase):
         lines[0] = json.dumps(item, sort_keys=True).encode()
         modified = b"\n".join(lines) + b"\n"
         seal["sha256"] = hashlib.sha256(modified).hexdigest()
-        forged = repackage({"trial/raw-answers.jsonl": modified,
-                            "trial/raw-seal.json": json.dumps(seal).encode()})
+        forged = repackage(
+            {
+                "trial/raw-answers.jsonl": modified,
+                "trial/raw-seal.json": json.dumps(seal).encode(),
+            }
+        )
         members = audit.read_archive(forged, hashlib.sha256(forged).hexdigest())
         with patch.object(audit, "RAW_SEAL", seal["sha256"]):
             with self.assertRaisesRegex(ValueError, "provenance"):
