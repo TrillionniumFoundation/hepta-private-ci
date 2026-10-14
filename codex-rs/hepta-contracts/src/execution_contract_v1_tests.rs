@@ -20,6 +20,10 @@ fn intent() -> ExecutionIntentV1 {
     }
 }
 
+fn digest_hex(bytes: &[u8; 32]) -> String {
+    bytes.iter().map(|byte| format!("{byte:02x}")).collect()
+}
+
 fn observation(
     value: &ExecutionIntentV1,
     state: ExecutionTransportObservationV1,
@@ -39,6 +43,19 @@ fn observation(
         transport: state,
         claimed_original_receipt_sha256: None,
     }
+}
+
+#[test]
+fn canonical_sha256_vectors_match_an_independent_big_endian_reference() {
+    let proposed = intent().binding_proposal().expect("proposal");
+    assert_eq!(
+        digest_hex(&proposed.request_sha256),
+        "089c25dab7c2c930918cdff41800b686d05e2b4440bc85ff43b46cbc0c313052"
+    );
+    assert_eq!(
+        digest_hex(&proposed.scope_sha256),
+        "06dae7b898732c7141ef45a199427d82fb87dccbc49543fce3594ec510caf72d"
+    );
 }
 
 #[test]
@@ -192,7 +209,8 @@ fn scope_hash_changes_with_principal_destination_generation_fence_and_epoch() {
 
 #[test]
 fn identity_validation_rejects_path_escape_unicode_and_unbounded_strings() {
-    for bad in ["", "../escape", "a\nb", "scope space", "界", &"x".repeat(129)] {
+    let oversized = "x".repeat(129);
+    for bad in ["", "../escape", "a\nb", "scope space", "界", oversized.as_str()] {
         let mut value = intent();
         value.operation_id = bad.to_string();
         assert_eq!(value.validate(), Err(ExecutionEnvelopeErrorV1::InvalidIdentity));
