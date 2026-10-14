@@ -299,7 +299,10 @@ fn failed_telemetry_cannot_replay_effect_or_hide_pending_owner_reconciliation() 
     assert!(owner.metrics_poisoned);
 
     // No second dispatch: read the original owner result after lost ACK.
-    let receipt = owner.advance().expect("reconcile").expect("original receipt");
+    let receipt = owner
+        .advance()
+        .expect("reconcile")
+        .expect("original receipt");
     assert_eq!(receipt.intent.step.index(), 0);
     assert_eq!(state.borrow().executions, 1);
     assert_eq!(owner.completed_steps(), 1);
