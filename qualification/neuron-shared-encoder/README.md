@@ -247,3 +247,40 @@ future labels; independent NDU Evaluator/Selector; real signed
 Artifact CAS + Final-use + generation fences; true physical batch;
 64/256/1024/4096 Cell target-host CPU/RSS/GPU/WAL/restart receipts.
 Keep this PR Draft/shadow until every independent owner gate passes.
+
+### E2-V4 — matched actual parameter-count nonlinear ablation
+
+The isolated `strict_e2.py` runner compares `dynamic_gate` (sigmoid
+input-dependent gate, SiLU drive) with `swiglu`. They share the exact same
+linear tensor geometry, actual trainable parameter count, tensor
+initialization, CPU sample order and train-only feature normalization.
+The upper budgets 2K/16K/64K/262K remain ceilings, **not** arbitrary claims
+that different Head architectures have identical parameter counts.
+
+From this qualification directory after generating a synthetic dataset
+with `experiment synth-data`:
+
+```bash
+DATA_SHA="$(sha256sum smoke_dataset.jsonl | cut -d' ' -f1)"
+python -m neuron_shared_encoder.strict_e2 \
+  --allow-synthetic --dataset smoke_dataset.jsonl \
+  --dataset-sha256 "$DATA_SHA" --output e2_equal_shadow.json \
+  --dimension 128 --budget 16384 --steps 32 --seeds 11 29 47
+python -m pytest -q tests/test_strict_e2.py
+```
+
+Actual offline Encoder runs require local, complete pinned checkpoint files
+and exact `--weights-sha256` plus `--bundle-sha256`; they do not fetch
+models from the network or fall back to synthetic features. A frozen
+`frozen_projection` is deterministic but **random and untrained** whenever
+the real Encoder hidden width differs from the requested Head width.
+Such an experiment must not be read as quality-equivalent to a learned
+projection or to full Laya.
+
+The **descriptive** comparison uses mean validation Brier across paired seeds.
+Future data are only reported post hoc and never used to choose the
+descriptive winner. Tests check that changing future labels leaves the
+chosen validation winner and training sample schedule unchanged.
+The JSON has `production_admission=BLOCKED`, `ndu_verified=false` and
+`selection_authorized=false`; no signature, causal prequential commit,
+Final-use or live Encoder physical-call proof is conferred by its hashes.
