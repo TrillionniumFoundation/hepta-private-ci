@@ -118,6 +118,50 @@ class PublicReceiptTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "identity"):
                 LIB.audit(path, sha, "research/other", REV)
 
+    def test_legitimate_actions_sibling_evidence_is_not_rejected(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "public.zip"
+            sha = write_zip(path, archive_files(),
+                            "hepta-replay-input/producer/report.json")
+            report = LIB.audit(path, sha, MODEL, REV)
+            self.assertFalse(report["target_host_e0_verified"])
+
+    def test_public_parent_no_change_is_recomputed_not_assumed_deployed(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "public.zip"
+            files = archive_files()
+            control = {
+                "holdout_case_ids": ["h0", "h1"],
+                "split": {"predictions": {
+                    "parent_no_change": [[1.0, 0.0], [0.0, 1.0]],
+                }},
+            }
+            files["execution/controls.json"] = raw_json(control)
+            report = json.loads(files["execution/report.json"])
+            report["controls_sha256"] = hashlib.sha256(
+                files["execution/controls.json"]
+            ).hexdigest()
+            report["control_scores"] = {
+                "split": {"scores": {"parent_no_change": {
+                    "cases": 2, "correct": 2, "accuracy": 1.0, "brier": 0.0,
+                }}},
+            }
+            files["execution/report.json"] = raw_json(report)
+            sha = write_zip(path, files)
+            result = LIB.audit(path, sha, MODEL, REV)
+            paired = result["paired_to_public_parent_no_change_research_only"]
+            self.assertAlmostEqual(paired["gated"]["brier_delta"], 0.05)
+            self.assertFalse(
+                paired["gated"]["parent_is_deployed_hepta_no_change"]
+            )
+            report["control_scores"]["split"]["scores"]["parent_no_change"][
+                "accuracy"
+            ] = 0.5
+            files["execution/report.json"] = raw_json(report)
+            sha = write_zip(path, files)
+            with self.assertRaisesRegex(ValueError, "public control reported score"):
+                LIB.audit(path, sha, MODEL, REV)
+
     def test_production_claim_and_traversal_are_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "public.zip"
