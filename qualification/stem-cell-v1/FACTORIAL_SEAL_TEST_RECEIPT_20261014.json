@@ -1,0 +1,77 @@
+{
+  "actual_trained_pytorch_reader_seals_replayed": true,
+  "base_pr": 2016,
+  "base_remote_commit": "6d22d29c666d4ef1ba3ca1f9315b15dc6786e5d4",
+  "date": "2026-10-14",
+  "draft_pr": 2030,
+  "exact_test_source_file_hash_inventories_identical": true,
+  "exact_uploaded_blobs": {
+    ".github/workflows/hepta-real-multirc-reader.yml": {
+      "bytes": 13644,
+      "git_sha1": "ec4ebf090c57f8150dc72a5682190d52fade307b",
+      "sha256": "abf8aef44d8321be1bff198bdf75d1fc62b78a8da20d8c82c0da9c86c49661ae"
+    },
+    "qualification/stem-cell-v1/multirc_factorial_review.py": {
+      "bytes": 13140,
+      "git_sha1": "d763b6168f91b0d7ec29b9a553e91a3784841161",
+      "sha256": "c71274de6463811648a13564534cf6890c9830aa8e63977a26541607c4afcbac"
+    },
+    "qualification/stem-cell-v1/test_multirc_factorial_review.py": {
+      "bytes": 11406,
+      "git_sha1": "eda0e5ac9e2c5868e10b90f5311b6d1f7c30dbae",
+      "sha256": "1e216a6e823ba237f7b7a3ac57ef967f896009193636d3b2f2f25b2a767829b6"
+    }
+  },
+  "fixed_original_epsilon": 0.001,
+  "focused_seal_replay_tests": [
+    {
+      "executed": 13,
+      "passed": true,
+      "planned": 13
+    },
+    {
+      "executed": 13,
+      "passed": true,
+      "planned": 13
+    }
+  ],
+  "full_repo_rust_gpu_native_qualification": false,
+  "full_repository_checked_out_locally": false,
+  "full_test_runs": [
+    {
+      "errors": 0,
+      "executed": 610,
+      "exit_code": 0,
+      "failures": 0,
+      "full_report_sha256": "7469f2c9650ee6f14b7b76f8ea34521be449ccc5fb59a78edf6a9a1cb4e96c43",
+      "passed": true,
+      "planned": 610,
+      "raw_log_sha256": "a24eab982edaf05dc3a31ff71fc02b06cd78f17a5da2a051ecff55a431035355",
+      "skips": 0
+    },
+    {
+      "errors": 0,
+      "executed": 610,
+      "exit_code": 0,
+      "failures": 0,
+      "full_report_sha256": "7469f2c9650ee6f14b7b76f8ea34521be449ccc5fb59a78edf6a9a1cb4e96c43",
+      "passed": true,
+      "planned": 610,
+      "raw_log_sha256": "698c8272c735277915043854c17f48bc4367cff9608628b1406a37ad9f135d1f",
+      "skips": 0
+    }
+  ],
+  "independent_real_world_qa_quality_qualification": false,
+  "new_code_commit": "1295bc003ed1fed423af3e879a1b95883aec0518",
+  "new_remote_ci_last_checked": "queued",
+  "new_remote_multirc_run": 38584542142,
+  "number_distinct_test_sources": 56,
+  "patch_replay_three_paths_equal": true,
+  "patch_sha256": "e4d46a9293501ab22d64d58c33c482f653bb2c11533b1c7cc9e4889400c60d84",
+  "planned_and_executed_test_id_inventories_identical": true,
+  "pretrained_multirc_executed_on_new_commit": false,
+  "production_authorized": false,
+  "review_imputes_counterfactual_accuracy": false,
+  "review_workflow_precedes_external_label_read": true,
+  "schema": "hepta.multirc.three-way-seal-handoff.v1"
+}
