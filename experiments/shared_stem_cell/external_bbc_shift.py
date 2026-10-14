@@ -64,7 +64,11 @@ def sample(texts, excluded=(), count=COUNT):
         if not 40 <= len(excerpt.encode()) <= 2048:
             continue
         fingerprint = digest(normalized(excerpt).encode())
-        if fingerprint in known:
+        # Exclusions bind both the full original document and the lossy
+        # 320-character representation. Matching only the latter would admit
+        # an identical previously observed long article as a "new" example.
+        full_fingerprint = digest(normalized(source).encode())
+        if fingerprint in known or full_fingerprint in known:
             continue
         identity = digest(source.encode())
         priority = digest(("hepta-bbc-ood-v1:" + identity).encode())

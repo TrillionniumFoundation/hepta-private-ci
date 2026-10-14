@@ -14,7 +14,9 @@ change the production model, or silently rework the old research experiment.
 - Exactly 128 source examples are selected using a fixed SHA-256 rank over
   original article bytes, before reading any label, Head score or model result.
   Exclude exact casefolded/whitespace-normalized original producer and
-  previously observed AG News texts. Keep exactly 64 cases assigned to each
+  previously observed AG News texts, checking **both full source articles and
+  their shortened 320-character model inputs**, not only the short excerpt.
+  Keep exactly 64 cases assigned to each
   existing logical Cell via deterministic alternating route: that Cell
   assignment is a **proxy**, not an independently learned BBC specialist.
 - Take the first 320 Unicode characters after whitespace normalization.

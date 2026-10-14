@@ -146,6 +146,20 @@ class ShiftTests(unittest.TestCase):
                 b.evaluate_published(alias, b.digest(raw), cohort,
                                      cohort_sha, rows, lambda _: self.fail("premature label"))
 
+    def test_full_historical_article_cannot_reenter_as_truncated_new_article(self):
+        original = ("Historical economic report with long article content " * 16)
+        self.assertGreater(len(original), b.PREFIX)
+        texts = [original] + self.texts()
+        # An exact full-document duplicate must be excluded despite BBC
+        # embedding only the first 320 characters as the model input.
+        rows = b.sample(texts, excluded=[original])
+        self.assertEqual(len(rows), b.COUNT)
+        self.assertTrue(all(r["source_index"] != 0 for r in rows))
+        # Exclusion by the original representation is also preserved.
+        prefix = " ".join(original.split())[:b.PREFIX]
+        rows = b.sample(texts, excluded=[prefix])
+        self.assertTrue(all(r["source_index"] != 0 for r in rows))
+
     def test_insufficient_or_duplicate_unlabeled_source_rejects(self):
         with self.assertRaises(b.SourceError):
             b.sample(self.texts()[:8])
