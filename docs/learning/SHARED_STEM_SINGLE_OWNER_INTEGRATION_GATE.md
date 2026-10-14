@@ -34,17 +34,22 @@ optimization must eventually converge into this single, richer contract.
    its complete content was verified at construction. The ordinary
    `borrow_stem_feature_request_v1` path for potentially mutable borrowed
    slices **always** hashes the actual vector on each use.
-5. The legacy owned V1 pathway uses `materialize_owned_after_refresh`
-   and preserves the original V1 request/digest; this may still allocate a
-   new Vec at serialization. No end-to-end zero-copy or latency claim follows.
+5. The immutable buffer's `materialize_owned_for_head` revalidates the
+   supplied current Principal/Scope/Epoch/Lease/Revocation/Head claims and
+   then allocates the **one Vec required** by existing V1 serialization,
+   without rehashing its immutable bytes. For an arbitrary caller-held
+   borrowed view, `materialize_owned_after_refresh` independently rehashes
+   before producing owned V1. Both retain identical V1 request/digest bytes.
+   No end-to-end zero-copy or latency claim follows.
 6. A separate independently signed Final-use / Worker / runtime dispatch
    receipt is required at the actual execution boundary. An Arc, feature
    digest, or caller-supplied `StemAccessContextV1` is not evidence of
    issuer custody, revocation freshness or permission to execute.
 
 For `C` Cell Heads seeing one identical `D`-dimensional frozen feature,
-the expected input-content hashing work changes from approximately
-`O(C * D)` in repeated direct borrow checks to `O(D)` for the single
+when each Head uses the immutable-buffer borrow or owned-materialization
+path, the expected input-content hashing work changes from approximately
+`O(C * D)` in repeated direct slice validation to `O(D)` for the single
 immutable-buffer construction. **This is an algorithmic cost claim only**:
 the implementation still performs `O(C)` authorization-claim/Head checks,
 digest construction, selected Head work and downstream execution. Actual
