@@ -131,8 +131,8 @@ def _auroc(positive: torch.Tensor, negative: torch.Tensor) -> float:
 
 
 def head_trials(features: torch.Tensor, labels: torch.Tensor, splits: list[str], *,
-                budgets: tuple[int, ...] = BUDGETS, seed: int = 42,
-                steps: int = 16, batch: int = 32, lr: float = 1e-3) -> dict:
+                budgets: tuple[int, ...] = BUDGETS, kinds: tuple[str, ...] = KINDS,
+                seed: int = 42, steps: int = 16, batch: int = 32, lr: float = 1e-3) -> dict:
     """E2: identical frozen features, training indices/steps and tuning opportunity."""
     if features.ndim != 2 or len(features) != len(labels) or len(splits) != len(labels):
         raise ValueError('invalid aligned feature dataset')
@@ -151,7 +151,7 @@ def head_trials(features: torch.Tensor, labels: torch.Tensor, splits: list[str],
     for budget in budgets:
         if budget <= 0 or budget > max(BUDGETS):
             raise ValueError('unsupported budget')
-        for kind in KINDS:
+        for kind in kinds:
             torch.manual_seed(seed)
             try:
                 head = SmallHead(kind, features.shape[1], classes, budget)
@@ -510,10 +510,41 @@ def main() -> None:
                                          tokenizer_digest=tok, normalizer_digest=norm,
                                          mode='public', batch_size=args.batch,
                                          generation=args.generation, authority_epoch=args.authority_epoch)
+                from .models import frozen_projection
+                if args.dimension < 4 or args.dimension > 512:
+                    raise ValueError('E3 requires a bounded projected dimension 4..512')
+                public_dim = args.dimension // 2
+                def train_normalized(vectors):
+                    mask = torch.tensor([r['split'] == 'train' for r in rows], dtype=torch.bool)
+                    avg = vectors[mask].mean(0)
+                    scale = vectors[mask].std(0).clamp_min(1e-4)
+                    return ((vectors - avg) / scale).clamp(-10, 10).float().cpu()
+                joint_features = train_normalized(frozen_projection(_j.float().cpu(), args.dimension, args.seed))
+                public_features = frozen_projection(_p.float().cpu(), public_dim, args.seed)
+                # Deliberate synthetic local-state control: this isolates encoder reuse
+                # but CANNOT establish quality of a real trained State Adapter.
+                state_features = torch.stack([_mock_embedding({
+                    'state': r['state'], 'question': '', 'options': ['private-state-only']},
+                    args.dimension - public_dim) for r in rows])
+                fused_features = train_normalized(torch.cat([public_features, state_features], dim=1))
+                label_tensor = torch.tensor([r['label'] for r in rows], dtype=torch.long)
+                split_names = [r['split'] for r in rows]
+                compared = {
+                    'joint': head_trials(joint_features, label_tensor, split_names,
+                                         kinds=('linear', 'dynamic_gate'), budgets=tuple(args.budgets),
+                                         steps=args.steps, batch=args.batch, seed=args.seed),
+                    'public_plus_private_state': head_trials(fused_features, label_tensor, split_names,
+                                         kinds=('linear', 'dynamic_gate'), budgets=tuple(args.budgets),
+                                         steps=args.steps, batch=args.batch, seed=args.seed),
+                }
                 result = {'experiment': 'E3', 'evidence_class': evidence_class,
                           'production_admission': 'BLOCKED', 'joint': joint, 'public': public,
+                          'quality_shadow': compared,
+                          'state_adapter': 'SYNTHETIC_HASH_NOT_DEPLOYABLE',
                           'public_vs_joint_quality_not_established': True,
-                          'warning': 'Public-state decomposition must have separately trained/evaluated task predictions.'}
+                          'warning': ('E3 measured the accuracy/cache tradeoff only for a hash-based '
+                                      'private-state control. Real trained state fusion and independent '
+                                      'future-window evaluation remain necessary.')}
             else:
                 features = encode(rows).float().cpu()
                 from .models import frozen_projection
