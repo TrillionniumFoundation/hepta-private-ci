@@ -28,6 +28,7 @@ def candidate(archive: bytes, metadata: bytes, destination: Path):
     """Unpack only verified safe crate members; edit one dependency in a throwaway dir."""
     if not 0 < len(archive) <= MAX_BYTES or not 0 < len(metadata) <= 1024 * 1024:
         raise ValueError("bounded upstream package bytes required")
+
     def unique(pairs):
         row = {}
         for name, value in pairs:
@@ -35,6 +36,7 @@ def candidate(archive: bytes, metadata: bytes, destination: Path):
                 raise ValueError("duplicate registry metadata field")
             row[name] = value
         return row
+
     data = json.loads(metadata, object_pairs_hook=unique)
     record = data.get("version")
     if not isinstance(record, dict) or record.get("num") != VERSION:
@@ -53,11 +55,17 @@ def candidate(archive: bytes, metadata: bytes, destination: Path):
             raise ValueError("oversized crate file census")
         for member in members:
             parts = PurePosixPath(member.name).parts
-            if (not parts or parts[0] != ROOT or len(parts) < 2
+            if (
+                not parts
+                or parts[0] != ROOT
+                or len(parts) < 2
                 or PurePosixPath(member.name).is_absolute()
-                or ".." in parts or "\\" in member.name
+                or ".." in parts
+                or "\\" in member.name
                 or not (member.isdir() or member.isfile())
-                or member.name in found or member.size < 0):
+                or member.name in found
+                or member.size < 0
+            ):
                 raise ValueError("unsafe upstream crate member")
             found.add(member.name)
             if member.isfile():
@@ -77,22 +85,25 @@ def candidate(archive: bytes, metadata: bytes, destination: Path):
     manifest = content[manifest_path].decode("utf-8", "strict")
     original = tomllib.loads(manifest)
     package = original.get("package", {})
-    if (package.get("name") != CRATE or package.get("version") != VERSION
+    if (
+        package.get("name") != CRATE
+        or package.get("version") != VERSION
         or original.get("dependencies", {}).get("rusqlite", {}).get("version")
-            != OLD_RUSQLITE):
+        != OLD_RUSQLITE
+    ):
         raise ValueError("upstream exact rusqlite dependency pin changed")
-    section = re.search(
-        r"(?ms)^\[dependencies\.rusqlite\]\n.*?(?=^\[|\Z)", manifest
-    )
+    section = re.search(r"(?ms)^\[dependencies\.rusqlite\]\n.*?(?=^\[|\Z)", manifest)
     if section is None:
         raise ValueError("no isolated rusqlite dependency table")
     old_line = f'version = "{OLD_RUSQLITE}"'
     body = section.group()
     if body.count(old_line) != 1:
         raise ValueError("original rusqlite version not uniquely patchable")
-    patched = manifest[:section.start()] + body.replace(
-        old_line, f'version = "{EXPERIMENTAL_RUSQLITE}"'
-    ) + manifest[section.end():]
+    patched = (
+        manifest[: section.start()]
+        + body.replace(old_line, f'version = "{EXPERIMENTAL_RUSQLITE}"')
+        + manifest[section.end() :]
+    )
     parsed = tomllib.loads(patched)
     if parsed["dependencies"]["rusqlite"]["version"] != EXPERIMENTAL_RUSQLITE:
         raise ValueError("dependency edit did not bind expected version")
@@ -105,15 +116,17 @@ def candidate(archive: bytes, metadata: bytes, destination: Path):
             stream.write(body)
     return dict(
         schema="hepta.matrix-sdk-019-sqlite-compatibility-probe.v1",
-        publisher_crate=CRATE, publisher_version=VERSION,
-        registry_zip_sha256=expected, original_manifest_sha256=hashlib.sha256(
-            manifest.encode()
-        ).hexdigest(),
+        publisher_crate=CRATE,
+        publisher_version=VERSION,
+        registry_zip_sha256=expected,
+        original_manifest_sha256=hashlib.sha256(manifest.encode()).hexdigest(),
         experimental_manifest_sha256=hashlib.sha256(patched.encode()).hexdigest(),
         original_rusqlite=OLD_RUSQLITE,
         experimental_rusqlite=EXPERIMENTAL_RUSQLITE,
-        source_member_count=len(content), source_uncompressed_bytes=total,
-        production_compatible=False, upstream_crate_modified_for_research_only=True,
+        source_member_count=len(content),
+        source_uncompressed_bytes=total,
+        production_compatible=False,
+        upstream_crate_modified_for_research_only=True,
         full_cargo_deny_and_binary_runtime_still_required=True,
     )
 
@@ -128,8 +141,9 @@ def main():
     for path in (args.crate, args.metadata):
         if not path.is_file() or path.is_symlink():
             raise ValueError("only bounded regular inputs may be admitted")
-    out = candidate(args.crate.read_bytes(), args.metadata.read_bytes(),
-                    args.destination)
+    out = candidate(
+        args.crate.read_bytes(), args.metadata.read_bytes(), args.destination
+    )
     with args.report.open("x", encoding="utf-8") as dest:
         json.dump(out, dest, indent=2, sort_keys=True, allow_nan=False)
         dest.write("\n")
