@@ -14,6 +14,7 @@ use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
 
+use codex_hepta_agentd::DurablePhaseMetricSinkV1;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
@@ -151,6 +152,13 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
+    // Only the same-crate original Evidence bootstrap may mark this true
+    // after binding a CONCRETE DurablePhaseMetricSinkV1. A generic caller
+    // with an arbitrary PhaseMetricSinkV1 must not execute signed effects
+    // in non-test binaries even if its sink lies about fsync/healthy().
+    original_evidence_bound: bool,
+    #[cfg(test)]
+    research_test_effects_allowed: bool,
     failed_metrics: AtomicU64,
     // healthy() alone does not mean Evidence has fsynced the asynchronous
     // Record queue. Only an explicit successful post-record flush can
@@ -247,6 +255,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
+            original_evidence_bound: false,
+            #[cfg(test)]
+            research_test_effects_allowed: false,
             failed_metrics: AtomicU64::new(0),
             metrics_flushed: AtomicBool::new(false),
             maximum_pending: limits.max_pending,
@@ -280,6 +291,18 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         }
         self.metric_sink = Some(sink);
         self.metrics_flushed.store(false, Ordering::Release);
+        Ok(())
+    }
+
+    /// Only the original Evidence-bound product composition can call this
+    /// crate-private typed binder. Generic public metric binders remain
+    /// research/test compatibility paths and never mint this provenance.
+    pub(crate) fn bind_original_evidence_sink(
+        &mut self,
+        sink: Arc<DurablePhaseMetricSinkV1>,
+    ) -> Result<(), BatchWorkerErrorV1> {
+        self.bind_metric_sink(sink)?;
+        self.original_evidence_bound = true;
         Ok(())
     }
 
@@ -331,8 +354,24 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
     /// Research-only runs may omit a sink, but such runs can never satisfy
     /// production_metrics_ready. Once a sink is configured, any failure is a
     /// permanent rejection gate for new effects in this Worker lifetime.
+    fn original_evidence_or_test_fixture_ready(&self) -> bool {
+        #[cfg(test)]
+        {
+            self.original_evidence_bound || self.research_test_effects_allowed
+        }
+        #[cfg(not(test))]
+        {
+            self.original_evidence_bound
+        }
+    }
+
     fn metrics_available_for_effect(&self) -> bool {
-        self.failed_metrics.load(Ordering::Acquire) == 0
+        // Test-only research drivers still exercise historical scalar/native
+        // fixtures without a physical Evidence writer. Production binaries
+        // must enter through the typed original-Evidence owner, not through
+        // a public generic sink that can forge a flush ACK.
+        self.original_evidence_or_test_fixture_ready()
+            && self.failed_metrics.load(Ordering::Acquire) == 0
             && self.metric_sink.as_ref().is_none_or(|sink| sink.healthy())
     }
 
@@ -340,7 +379,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
     /// authorization from one successful model execution. A failed write
     /// remains latched even if the current metric sink later reports healthy.
     pub fn production_metrics_ready(&self) -> bool {
-        self.scope_frontier.is_some()
+        self.original_evidence_or_test_fixture_ready()
+            && self.scope_frontier.is_some()
             && !self.unmetered_activity
             && self.metrics_flushed.load(Ordering::Acquire)
             && self.metric_sink.as_ref().is_some_and(|sink| sink.healthy())

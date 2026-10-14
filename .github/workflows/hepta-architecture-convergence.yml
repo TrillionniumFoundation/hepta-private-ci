@@ -240,6 +240,9 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-neuron-mechanism.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-neuron --lib runtime::tests -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/role-control-durable-cas.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-cell-roles --lib control_owner -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-final-use-library.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --lib final_use::tests -- --nocapture
+          # Compile the NON-TEST Worker library too: test-only research
+          # fixture permissions must not exist in the release implementation.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-worker-non-test-provenance.json" --minimum-tests 0 -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-batch-worker.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib batched_neuron -- --nocapture
           # Test the signed Worker against the ACTUAL original Evidence
           # WAL actor and fsynced marker, including cold restart readback.
