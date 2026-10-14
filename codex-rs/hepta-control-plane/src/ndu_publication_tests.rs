@@ -126,7 +126,6 @@ fn cutover_and_checkpoint_cas_use_same_exclusive_owner() {
     assert_eq!(recovered.current().unwrap(), (snapshot(4), migrated));
 }
 
-
 #[cfg(unix)]
 #[test]
 fn checkpoint_advance_invalidates_frozen_cutover_without_losing_new_state() {
@@ -406,7 +405,10 @@ fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
         );
     }
     let recorded = std::fs::read(&path).expect("durable unresolved history");
-    assert_eq!(calls, 1, "the model/router must never replay an unknown effect");
+    assert_eq!(
+        calls, 1,
+        "the model/router must never replay an unknown effect"
+    );
     assert!(matches!(
         NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO),
         Err(NduPublicationErrorV1::Indeterminate)
