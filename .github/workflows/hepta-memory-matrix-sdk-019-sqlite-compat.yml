@@ -6,6 +6,8 @@ on:
       - ".github/workflows/hepta-memory-matrix-sdk-019-sqlite-compat.yml"
       - "scripts/memory_cell/matrix_sdk_sqlite_vendor.py"
       - "scripts/memory_cell/test_matrix_sdk_sqlite_vendor.py"
+      - "scripts/memory_cell/matrix_sdk_registry_index.py"
+      - "scripts/memory_cell/test_matrix_sdk_registry_index.py"
 permissions:
   contents: read
 concurrency:
@@ -34,13 +36,19 @@ jobs:
           cp codex-rs/Cargo.lock /tmp/sdk019-compat/original-Cargo.lock
           cp codex-rs/Cargo.toml /tmp/sdk019-compat/original-Cargo.toml
           cp codex-rs/deny.toml /tmp/sdk019-compat/original-deny.toml
-          python3 -m unittest -v test_matrix_sdk_sqlite_vendor 2>&1 | tee /tmp/sdk019-compat/tests.log
+          python3 -m unittest -v test_matrix_sdk_sqlite_vendor test_matrix_sdk_registry_index 2>&1 | tee /tmp/sdk019-compat/tests.log
       - name: Pin released Matrix SDK SQLite crate and prepare disposable research patch
         run: |
           set -euo pipefail
+          # crates.io API can return 403 on hosted runners. The official
+          # sparse index publishes the same version->archive SHA256 binding.
           curl --fail --show-error --silent --location --retry 3 \
-            'https://crates.io/api/v1/crates/matrix-sdk-sqlite/0.19.0' \
-            > /tmp/sdk019-compat/registry-metadata.json
+            'https://index.crates.io/ma/tr/matrix-sdk-sqlite' \
+            > /tmp/sdk019-compat/registry-index.jsonl
+          python3 scripts/memory_cell/matrix_sdk_registry_index.py \
+            --index /tmp/sdk019-compat/registry-index.jsonl \
+            --metadata /tmp/sdk019-compat/registry-metadata.json \
+            --report /tmp/sdk019-compat/registry-index-admission.json
           curl --fail --show-error --silent --location --retry 3 \
             'https://static.crates.io/crates/matrix-sdk-sqlite/matrix-sdk-sqlite-0.19.0.crate' \
             > /tmp/sdk019-compat/published-0.19.0.crate
@@ -100,6 +108,8 @@ jobs:
           fi
           cp scripts/memory_cell/matrix_sdk_sqlite_vendor.py /tmp/sdk019-compat/source/
           cp scripts/memory_cell/test_matrix_sdk_sqlite_vendor.py /tmp/sdk019-compat/source/
+          cp scripts/memory_cell/matrix_sdk_registry_index.py /tmp/sdk019-compat/source/
+          cp scripts/memory_cell/test_matrix_sdk_registry_index.py /tmp/sdk019-compat/source/
           cp scripts/memory_cell/matrix_sdk_security_probe.py /tmp/sdk019-compat/source/
           cp .github/workflows/hepta-memory-matrix-sdk-019-sqlite-compat.yml /tmp/sdk019-compat/source/
           (cd /tmp/sdk019-compat && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
