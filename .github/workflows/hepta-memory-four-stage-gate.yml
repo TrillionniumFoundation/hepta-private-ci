@@ -49,12 +49,6 @@ jobs:
           mkdir -p /tmp/four-stage-repair
           if command -v uv >/dev/null 2>&1; then
             uv run --frozen --project scripts ruff format --diff scripts/memory_cell/four_stage_audit.py scripts/memory_cell/test_four_stage_audit.py > /tmp/four-stage-repair/formatter.diff || true
-            uv run --frozen --project scripts ruff format scripts/memory_cell/four_stage_audit.py scripts/memory_cell/test_four_stage_audit.py
-            printf 'FOUR_STAGE_FMT_SOURCE='
-            base64 -w0 scripts/memory_cell/four_stage_audit.py
-            printf '\nFOUR_STAGE_FMT_TEST='
-            base64 -w0 scripts/memory_cell/test_four_stage_audit.py
-            printf '\n'
           fi
           git rev-parse HEAD > /tmp/four-stage-repair/tested-commit.txt
           (cd /tmp/four-stage-repair && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
