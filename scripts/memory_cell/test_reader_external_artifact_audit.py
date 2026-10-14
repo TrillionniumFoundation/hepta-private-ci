@@ -138,9 +138,7 @@ class ExternalArtifactAuditTests(unittest.TestCase):
                 wrong = listing(raw)
                 wrong["artifacts"][0][key] = value
                 with self.assertRaises(ValueError):
-                    checked_metadata(
-                        run(), wrong, run_id=RUN_ID, source=SOURCE
-                    )
+                    checked_metadata(run(), wrong, run_id=RUN_ID, source=SOURCE)
 
     def test_other_github_run_must_not_sign_model_artifacts(self):
         raw = sealed_zip()
@@ -149,9 +147,7 @@ class ExternalArtifactAuditTests(unittest.TestCase):
                 wrong = listing(raw)
                 wrong["artifacts"][0]["workflow_run"][field] = value
                 with self.assertRaises(ValueError):
-                    checked_metadata(
-                        run(), wrong, run_id=RUN_ID, source=SOURCE
-                    )
+                    checked_metadata(run(), wrong, run_id=RUN_ID, source=SOURCE)
 
     def test_duplicate_ids_names_and_missing_page_are_rejected(self):
         raw = sealed_zip()
@@ -175,9 +171,7 @@ class ExternalArtifactAuditTests(unittest.TestCase):
 
     def test_external_archive_digest_is_not_self_reported(self):
         raw = sealed_zip()
-        record = checked_metadata(
-            run(), listing(raw), run_id=RUN_ID, source=SOURCE
-        )[0]
+        record = checked_metadata(run(), listing(raw), run_id=RUN_ID, source=SOURCE)[0]
         checked_archive(raw, record)
         with self.assertRaisesRegex(ValueError, "external GitHub SHA256"):
             checked_archive(raw + b"edited", record)
@@ -210,9 +204,7 @@ class ExternalArtifactAuditTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
             (root / "artifact-114.zip").write_bytes(data)
-            return audit(
-                run(), listing(data), root, run_id=RUN_ID, source=SOURCE
-            )
+            return audit(run(), listing(data), root, run_id=RUN_ID, source=SOURCE)
 
 
 if __name__ == "__main__":

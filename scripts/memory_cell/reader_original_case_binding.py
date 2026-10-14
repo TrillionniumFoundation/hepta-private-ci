@@ -31,8 +31,11 @@ def h(data):
 
 
 def digest(value):
-    return h(json.dumps(value, ensure_ascii=False, sort_keys=True,
-                        separators=(",", ":")).encode("utf-8"))
+    return h(
+        json.dumps(
+            value, ensure_ascii=False, sort_keys=True, separators=(",", ":")
+        ).encode("utf-8")
+    )
 
 
 def strict(raw):
@@ -159,8 +162,14 @@ def bind_shard(files, *, tier, index, plan, docs):
     if raw is None:
         if "run.json" in files:
             raise ValueError("a run receipt cannot exist without an answer journal")
-        return dict(tier=tier, case_index=index, rows=0, succeeded=0,
-                    full_original_pair=False, exact_source_bound=True)
+        return dict(
+            tier=tier,
+            case_index=index,
+            rows=0,
+            succeeded=0,
+            full_original_pair=False,
+            exact_source_bound=True,
+        )
     if not raw.endswith(b"\n"):
         raise ValueError("non-terminated original journal")
     rows = [strict(line) for line in raw.splitlines()]
@@ -201,20 +210,32 @@ def bind_shard(files, *, tier, index, plan, docs):
             or not isinstance(receipt.get("seconds"), (int, float))
             or not math.isfinite(receipt["seconds"])
             or receipt["seconds"] < 0
-            or any(SHA64.fullmatch(str(receipt.get(name))) is None
-                   for name in ("reader_profile", "input_ids_digest", "generated_ids_digest"))
+            or any(
+                SHA64.fullmatch(str(receipt.get(name))) is None
+                for name in (
+                    "reader_profile",
+                    "input_ids_digest",
+                    "generated_ids_digest",
+                )
+            )
         ):
             raise ValueError("unqualified frozen Reader model/prompt/output receipt")
         provided = receipt.get("delivered_evidence")
-        if not isinstance(provided, list) or [p.get("original_id") for p in provided] != row["selected"]:
+        if (
+            not isinstance(provided, list)
+            or [p.get("original_id") for p in provided] != row["selected"]
+        ):
             raise ValueError("delivered evidence IDs differ from frozen selection")
         for source in provided:
             doc = docs.get(source["original_id"])
             if (
-                doc is None or doc["scope"] != case["query"]["scope"]
+                doc is None
+                or doc["scope"] != case["query"]["scope"]
                 or source.get("excerpt") != doc["content"]
             ):
-                raise ValueError("source excerpt differs from original immutable content")
+                raise ValueError(
+                    "source excerpt differs from original immutable content"
+                )
         citation = row.get("citation_audit", {})
         request = citation.get("request", {}) if isinstance(citation, dict) else {}
         if (
@@ -237,18 +258,22 @@ def bind_shard(files, *, tier, index, plan, docs):
             or execution.get("reader_identity") != IDENTITIES[tier]
             or execution.get("raw_sha256") != h(raw)
             or execution.get("attempts") != len(ARMS)
-            or execution.get("actual_successes") != sum(
-                row["status"] == "succeeded" for row in rows
-            )
+            or execution.get("actual_successes")
+            != sum(row["status"] == "succeeded" for row in rows)
             or execution.get("case_plan_sha256") != h(files["case-plan.json"])
             or execution.get("production_accepted") is not False
         ):
             raise ValueError("complete journal and run receipt not synchronized")
     elif full:
         raise ValueError("five successful answers without a complete run receipt")
-    return dict(tier=tier, case_index=index, rows=len(rows),
-                succeeded=sum(r["status"] == "succeeded" for r in rows),
-                full_original_pair=full, exact_source_bound=True)
+    return dict(
+        tier=tier,
+        case_index=index,
+        rows=len(rows),
+        succeeded=sum(r["status"] == "succeeded" for r in rows),
+        full_original_pair=full,
+        exact_source_bound=True,
+    )
 
 
 def audit_attested_shards(source_zip, attestation, archive_dir):
@@ -256,14 +281,15 @@ def audit_attested_shards(source_zip, attestation, archive_dir):
     from reader_external_artifact_audit import checked_archive
 
     if (
-        attestation.get("schema") !=
-        "hepta.memory-cell.reader-external-artifact-audit.v1"
+        attestation.get("schema")
+        != "hepta.memory-cell.reader-external-artifact-audit.v1"
         or attestation.get("github_outer_zip_sha256_verified") is not True
         or attestation.get("all_original_inner_sha256sums_verified") is not True
         or attestation.get("original_run_and_source_bound") is not True
         or attestation.get("production_accepted") is not False
         or attestation.get("new_model_calls_by_this_audit") != 0
-        or len(attestation.get("shards", [])) != attestation.get("github_artifact_count")
+        or len(attestation.get("shards", []))
+        != attestation.get("github_artifact_count")
         or attestation.get("github_artifact_count", 0) > 16
     ):
         raise ValueError("not an external-root SHA-audited original shard census")
@@ -280,26 +306,42 @@ def audit_attested_shards(source_zip, attestation, archive_dir):
         if filename.is_symlink() or not filename.is_file():
             raise ValueError("external artifact ZIP missing")
         raw = filename.read_bytes()
-        files = checked_archive(raw, dict(bytes=len(raw), sha256=item["github_zip_sha256"]))
+        files = checked_archive(
+            raw, dict(bytes=len(raw), sha256=item["github_zip_sha256"])
+        )
         tier, index = item.get("tier"), item.get("case_index")
         if (
-            tier not in IDENTITIES or type(index) is not int or not 0 <= index < 8
+            tier not in IDENTITIES
+            or type(index) is not int
+            or not 0 <= index < 8
             or item.get("artifact_name") != f"memory-reader-bottleneck-{tier}-{index}"
         ):
             raise ValueError("external Reader shard name/case binding changed")
         if "case-plan.json" not in files:
-            if item.get("outcome") != "hardware_ineligible" or "raw-answers.jsonl" in files:
+            if (
+                item.get("outcome") != "hardware_ineligible"
+                or "raw-answers.jsonl" in files
+            ):
                 raise ValueError("missing source case plan on eligible original shard")
-            result = dict(tier=tier, case_index=index, rows=0, succeeded=0,
-                          full_original_pair=False, exact_source_bound=False)
+            result = dict(
+                tier=tier,
+                case_index=index,
+                rows=0,
+                succeeded=0,
+                full_original_pair=False,
+                exact_source_bound=False,
+            )
         else:
             result = bind_shard(files, tier=tier, index=index, plan=plan, docs=docs)
-        if (result["rows"] != item.get("raw_attempt_rows")
-                or result["succeeded"] != item.get("raw_success_rows")
-                or result["full_original_pair"] != item.get("full_original_journal")):
+        if (
+            result["rows"] != item.get("raw_attempt_rows")
+            or result["succeeded"] != item.get("raw_success_rows")
+            or result["full_original_pair"] != item.get("full_original_journal")
+        ):
             raise ValueError("original GitHub source-bound journal census disagrees")
-        entries.append(dict(artifact_id=aid, github_zip_sha256=item["github_zip_sha256"],
-                            **result))
+        entries.append(
+            dict(artifact_id=aid, github_zip_sha256=item["github_zip_sha256"], **result)
+        )
     if len({(v["tier"], v["case_index"]) for v in entries}) != len(entries):
         raise ValueError("one reader case has multiple claimed original artifacts")
     return dict(
@@ -340,9 +382,17 @@ def main():
     with args.result.open("x", encoding="utf-8") as output:
         json.dump(result, output, sort_keys=True, indent=2, allow_nan=False)
         output.write("\n")
-    print(json.dumps(dict(original_source_bound_generations=result[
-        "source_bound_successful_generations"], complete_shards=result[
-        "complete_five_arm_shards"]), sort_keys=True))
+    print(
+        json.dumps(
+            dict(
+                original_source_bound_generations=result[
+                    "source_bound_successful_generations"
+                ],
+                complete_shards=result["complete_five_arm_shards"],
+            ),
+            sort_keys=True,
+        )
+    )
 
 
 if __name__ == "__main__":
