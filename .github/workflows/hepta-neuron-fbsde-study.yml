@@ -241,3 +241,60 @@ jobs:
             cpu-tail-replay/
           if-no-files-found: error
           retention-days: 30
+
+  failed-head-fusion-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Fixed CPU numerical microbenchmark dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/fbsde-fused-env"
+          "$RUNNER_TEMP/fbsde-fused-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          "$RUNNER_TEMP/fbsde-fused-env/bin/pip" install numpy==2.2.6 ruff==0.14.0
+      - name: Recheck exact historical failed material and run both bounded profiles
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/fbsde-fused-env/bin/python"
+          git rev-parse HEAD > "$RUNNER_TEMP/fbsde-fused-source.txt"
+          "$PY" -m pip freeze >> "$RUNNER_TEMP/fbsde-fused-source.txt"
+          "$PY" -m ruff check --select F,E9 qualification/neuron-stem/fbsde_head_fusion_probe.py qualification/neuron-stem/test_fbsde_head_fusion_probe.py
+          PYTHONPATH=qualification/neuron-stem "$PY" -m unittest -v test_fbsde_head_fusion_probe 2>&1 | tee "$RUNNER_TEMP/fbsde-fused-tests.log"
+          RAW="$RUNNER_TEMP/original-failed-fbsde.zip"
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11875899646/zip" > "$RAW"
+          printf '%s  %s\n' cd9997b69e88b88f0817985fca00cb5b359936bcd5589fd49cc2c5ac78cb200a "$RAW" | sha256sum -c -
+          PYTHONPATH=qualification/neuron-stem "$PY" qualification/neuron-stem/fbsde_head_fusion_probe.py \
+            --archive "$RAW" --threads 1 --output "$RUNNER_TEMP/fbsde-fused-1" 2>&1 | tee "$RUNNER_TEMP/fbsde-fused-1.log"
+          PYTHONPATH=qualification/neuron-stem "$PY" qualification/neuron-stem/fbsde_head_fusion_probe.py \
+            --archive "$RAW" --threads 2 --output "$RUNNER_TEMP/fbsde-fused-2" 2>&1 | tee "$RUNNER_TEMP/fbsde-fused-2.log"
+          git diff --exit-code
+      - name: Preserve numeric results and failures, never Head weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fbsde-frozen-head-control-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/fbsde-fused-source.txt
+            ${{ runner.temp }}/fbsde-fused-tests.log
+            ${{ runner.temp }}/fbsde-fused-1.log
+            ${{ runner.temp }}/fbsde-fused-2.log
+            ${{ runner.temp }}/fbsde-fused-1/report.json
+            ${{ runner.temp }}/fbsde-fused-2/report.json
+          if-no-files-found: warn
