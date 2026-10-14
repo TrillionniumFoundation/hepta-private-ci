@@ -64,13 +64,8 @@ fn tick_scope_binding_cannot_cross_objective_subject_or_generation() {
         scope_digest: crate::runtime_types::subject_scope_digest(&subject).unwrap(),
         objective_digest: objective,
     };
-    let owner = DurableNeuronEffectIntentV1::open(
-        file,
-        scope,
-        Generation::new(2).unwrap(),
-        8,
-    )
-    .unwrap();
+    let owner =
+        DurableNeuronEffectIntentV1::open(file, scope, Generation::new(2).unwrap(), 8).unwrap();
     assert!(owner.matches_tick_scope(&subject, objective, Generation::new(2).unwrap()));
     assert!(!owner.matches_tick_scope(
         &StableId::new("another").unwrap(),
@@ -93,9 +88,9 @@ fn durable_prepare_quarantines_recovery_and_reissued_nonce() {
     let (path, file) = fixture_file();
     let tick = Digest32::of_bytes(b"semantic-tick-one");
     {
-        let mut owner = DurableNeuronEffectIntentV1::open(
-            file, test_scope(), Generation::new(2).unwrap(), 8,
-        ).unwrap();
+        let mut owner =
+            DurableNeuronEffectIntentV1::open(file, test_scope(), Generation::new(2).unwrap(), 8)
+                .unwrap();
         owner.prepare(tick, Digest32::ZERO).unwrap();
         assert_eq!(owner.status().unresolved_tick, Some(tick));
         assert_eq!(
@@ -132,25 +127,35 @@ fn committed_tick_is_deduplicated_across_new_authorization_and_restart() {
     let (path, file) = fixture_file();
     let tick = Digest32::of_bytes(b"semantic-tick-one");
     {
-        let mut owner = DurableNeuronEffectIntentV1::open(
-            file, test_scope(), Generation::new(2).unwrap(), 8,
-        ).unwrap();
+        let mut owner =
+            DurableNeuronEffectIntentV1::open(file, test_scope(), Generation::new(2).unwrap(), 8)
+                .unwrap();
         owner.prepare(tick, Digest32::ZERO).unwrap();
-        owner.resolve(tick, Digest32::of_bytes(b"checkpoint-one")).unwrap();
+        owner
+            .resolve(tick, Digest32::of_bytes(b"checkpoint-one"))
+            .unwrap();
         assert_eq!(owner.status().unresolved_tick, None);
         assert_eq!(owner.status().durable_records, 2);
     }
     {
         let mut reopened = DurableNeuronEffectIntentV1::open(
-            reopen(&path), test_scope(), Generation::new(2).unwrap(), 8,
-        ).unwrap();
+            reopen(&path),
+            test_scope(),
+            Generation::new(2).unwrap(),
+            8,
+        )
+        .unwrap();
         assert_eq!(
             reopened.can_prepare(tick),
             Err(NeuronEffectIntentErrorV1::DuplicateTick)
         );
         let second = Digest32::of_bytes(b"semantic-tick-two");
-        reopened.prepare(second, Digest32::of_bytes(b"checkpoint-one")).unwrap();
-        reopened.resolve(second, Digest32::of_bytes(b"checkpoint-two")).unwrap();
+        reopened
+            .prepare(second, Digest32::of_bytes(b"checkpoint-one"))
+            .unwrap();
+        reopened
+            .resolve(second, Digest32::of_bytes(b"checkpoint-two"))
+            .unwrap();
         assert_eq!(reopened.status().attempted_ticks, 2);
     }
     std::fs::remove_file(path).unwrap();
@@ -160,19 +165,25 @@ fn committed_tick_is_deduplicated_across_new_authorization_and_restart() {
 #[test]
 fn file_scope_generation_and_exclusive_owner_are_fenced() {
     let (path, file) = fixture_file();
-    let owner = DurableNeuronEffectIntentV1::open(
-        file, test_scope(), Generation::new(2).unwrap(), 8,
-    ).unwrap();
+    let owner =
+        DurableNeuronEffectIntentV1::open(file, test_scope(), Generation::new(2).unwrap(), 8)
+            .unwrap();
     assert!(matches!(
         DurableNeuronEffectIntentV1::open(
-            reopen(&path), test_scope(), Generation::new(2).unwrap(), 8
+            reopen(&path),
+            test_scope(),
+            Generation::new(2).unwrap(),
+            8
         ),
         Err(NeuronEffectIntentErrorV1::Busy)
     ));
     drop(owner);
     assert!(matches!(
         DurableNeuronEffectIntentV1::open(
-            reopen(&path), test_scope(), Generation::new(3).unwrap(), 8
+            reopen(&path),
+            test_scope(),
+            Generation::new(3).unwrap(),
+            8
         ),
         Err(NeuronEffectIntentErrorV1::Corrupt)
     ));
@@ -183,9 +194,9 @@ fn file_scope_generation_and_exclusive_owner_are_fenced() {
 #[test]
 fn torn_record_is_detected_and_denied_without_rollback() {
     let (path, file) = fixture_file();
-    let mut owner = DurableNeuronEffectIntentV1::open(
-        file, test_scope(), Generation::new(2).unwrap(), 8,
-    ).unwrap();
+    let mut owner =
+        DurableNeuronEffectIntentV1::open(file, test_scope(), Generation::new(2).unwrap(), 8)
+            .unwrap();
     owner
         .prepare(Digest32::of_bytes(b"tick"), Digest32::ZERO)
         .unwrap();
@@ -198,7 +209,10 @@ fn torn_record_is_detected_and_denied_without_rollback() {
         .unwrap();
     assert!(matches!(
         DurableNeuronEffectIntentV1::open(
-            reopen(&path), test_scope(), Generation::new(2).unwrap(), 8
+            reopen(&path),
+            test_scope(),
+            Generation::new(2).unwrap(),
+            8
         ),
         Err(NeuronEffectIntentErrorV1::Corrupt)
     ));
@@ -209,12 +223,14 @@ fn torn_record_is_detected_and_denied_without_rollback() {
 #[test]
 fn capacity_reserves_resolution_slot_before_effect() {
     let (path, file) = fixture_file();
-    let mut owner = DurableNeuronEffectIntentV1::open(
-        file, test_scope(), Generation::new(2).unwrap(), 2,
-    ).unwrap();
+    let mut owner =
+        DurableNeuronEffectIntentV1::open(file, test_scope(), Generation::new(2).unwrap(), 2)
+            .unwrap();
     let tick = Digest32::of_bytes(b"tick");
     owner.prepare(tick, Digest32::ZERO).unwrap();
-    owner.resolve(tick, Digest32::of_bytes(b"checkpoint")).unwrap();
+    owner
+        .resolve(tick, Digest32::of_bytes(b"checkpoint"))
+        .unwrap();
     assert_eq!(
         owner.can_prepare(Digest32::of_bytes(b"another")),
         Err(NeuronEffectIntentErrorV1::Capacity)
@@ -222,7 +238,6 @@ fn capacity_reserves_resolution_slot_before_effect() {
     drop(owner);
     std::fs::remove_file(path).unwrap();
 }
-
 
 #[cfg(unix)]
 #[test]
@@ -242,7 +257,9 @@ fn raw_unbound_journal_cannot_claim_bootstrap_path_identity() {
     // Raw-journal tests still exercise the low-level WAL, but an unbound
     // descriptor cannot be presented as an Agentd owner-path witness.
     assert!(
-        owner.can_prepare(Digest32::of_bytes(b"unbound-test-tick")).is_ok(),
+        owner
+            .can_prepare(Digest32::of_bytes(b"unbound-test-tick"))
+            .is_ok(),
     );
     drop(owner);
     std::fs::remove_file(path).expect("remove fixture");
