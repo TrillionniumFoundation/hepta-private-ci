@@ -197,3 +197,29 @@ def test_fails_closed_for_token_or_model_geometry(tmp_path, monkeypatch, fault, 
     with pytest.raises(ValueError, match=match):
         run_pinned_offline(**kw)
     assert calls[0] == 'load'
+
+
+def test_real_offline_test_stub_can_meter_pooled_cached_vs_token_query(tmp_path, monkeypatch):
+    """The optional measurement piggybacks on the SAME captured token snapshot."""
+    kw, _, _, calls = harness(tmp_path, monkeypatch)
+    kw.update(cost_cells=4, cost_rounds=3, cost_warmups=1)
+    result = run_pinned_offline(**kw)
+    cost = result['optional_readout_cost_probe']
+    assert result['production_admission'] == cost['production_admission'] == 'BLOCKED'
+    assert not cost['physical_worker_batch_verified']
+    assert not cost['real_encoder_forward_measured_by_this_probe']
+    assert cost['cell_count'] == 4
+    assert cost['head_parameters_per_cell'] <= kw['head_budget']
+    assert cost['snapshot_sha256'] == result['snapshot_sha256']
+    assert cost['cached_pooled_feature_bytes'] == 12 * 4
+    assert result['observed_encoding']['total_encoder_batches'] == 6
+    assert calls == ['load', 'check', 'check']
+    assert 'private payload' not in json.dumps(cost)
+
+
+def test_optional_readout_cost_denies_nonbounded_cell_count_before_dispatch(tmp_path, monkeypatch):
+    kw, _, _, calls = harness(tmp_path, monkeypatch)
+    kw.update(cost_cells=4097)
+    with pytest.raises(ValueError, match='bounded optional readout cost'):
+        run_pinned_offline(**kw)
+    assert calls[0] == 'load'
