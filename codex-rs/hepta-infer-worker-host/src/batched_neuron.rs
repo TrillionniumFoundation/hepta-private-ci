@@ -62,6 +62,12 @@ pub enum BatchWorkerErrorV1 {
     /// failed. The original identity may remain pending; reconcile it rather
     /// than treating this error as proof that enqueue never happened.
     AdmissionTelemetryIndeterminate,
+    /// The model effect MAY have executed and its original Final-use nonce
+    /// MAY be consumed, but terminal Evidence recording failed. The caller
+    /// must reconcile the exact request, never treat this as a safe retry.
+    /// A single missing batch member also withholds all successful receipts
+    /// for that one physical batch, without altering its real effects.
+    TerminalTelemetryIndeterminate,
     /// The monotonic observation crossed this request's execution deadline
     /// before entering a model backend. No late request is executed.
     DeadlineExpired,
@@ -585,7 +591,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                 let frontier = self.scope_frontier.clone();
                                 let key = intent.key;
                                 let deadline_ms = intent.deadline_ms;
-                                let result = FinalUseAuthority::claim(
+                                let mut result = FinalUseAuthority::claim(
                                     &self.authority,
                                     &pending.signed,
                                     &pending.binding,
@@ -643,6 +649,13 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                     });
                                     if metric_result.is_err() {
                                         self.failed_metrics.fetch_add(1, Ordering::Release);
+                                        // The signed effect cannot be undone. Do not publish
+                                        // a successful receipt without its terminal Evidence.
+                                        if result.is_ok() {
+                                            result = Err(
+                                                BatchWorkerErrorV1::TerminalTelemetryIndeterminate,
+                                            );
+                                        }
                                     }
                                 }
                                 result
@@ -826,34 +839,45 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             Ok(_) => vec![Err(BatchWorkerErrorV1::Worker); items.len()],
             Err(error) => vec![Err(error); items.len()],
         };
-        items
-            .into_iter()
-            .zip(results.drain(..))
-            .map(|((intent, _), result)| {
-                if let Some(sink) = &self.metric_sink {
-                    self.metrics_flushed.store(false, Ordering::Release);
-                    let metric_result = sink.record(PhaseMetricEventV1 {
-                        scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
-                        operation_digest: Digest32::of_bytes(intent.request_id.as_str().as_bytes()),
-                        phase: PhaseMetricKindV1::NeuronFeature,
-                        latency_micros: u64::try_from(started.elapsed().as_micros())
-                            .unwrap_or(u64::MAX),
-                        succeeded: matches!(
-                            &result,
-                            Ok(receipt) if receipt.status
-                                == NeuronFeatureTerminalStatusV1::Succeeded
-                        ),
-                    });
-                    if metric_result.is_err() {
-                        self.failed_metrics.fetch_add(1, Ordering::Release);
-                    }
+        let mut outcomes = Vec::with_capacity(items.len());
+        let mut lost_terminal_evidence = false;
+        for ((intent, _), result) in items.into_iter().zip(results.drain(..)) {
+            if let Some(sink) = &self.metric_sink {
+                self.metrics_flushed.store(false, Ordering::Release);
+                let metric_result = sink.record(PhaseMetricEventV1 {
+                    scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
+                    operation_digest: Digest32::of_bytes(intent.request_id.as_str().as_bytes()),
+                    phase: PhaseMetricKindV1::NeuronFeature,
+                    latency_micros: u64::try_from(started.elapsed().as_micros())
+                        .unwrap_or(u64::MAX),
+                    succeeded: matches!(
+                        &result,
+                        Ok(receipt) if receipt.status
+                            == NeuronFeatureTerminalStatusV1::Succeeded
+                    ),
+                });
+                if metric_result.is_err() {
+                    self.failed_metrics.fetch_add(1, Ordering::Release);
+                    lost_terminal_evidence = true;
                 }
-                BatchWorkerItemOutcomeV1 {
-                    request_id: intent.request_id,
-                    result,
+            }
+            outcomes.push(BatchWorkerItemOutcomeV1 {
+                request_id: intent.request_id,
+                result,
+            });
+        }
+        if lost_terminal_evidence {
+            // The original physical batch already ran. Failure of even one
+            // member's terminal Evidence means the group cannot publish a
+            // partially certified set of successful results. Preserve real
+            // effect/nonce histories; never dispatch or claim another grant.
+            for outcome in &mut outcomes {
+                if outcome.result.is_ok() {
+                    outcome.result = Err(BatchWorkerErrorV1::TerminalTelemetryIndeterminate);
                 }
-            })
-            .collect()
+            }
+        }
+        outcomes
     }
 
     /// Cutover drops all stale queued requests without ever invoking a driver.
