@@ -545,6 +545,15 @@ mod tests {
         assert!(read_only.transcript.is_none());
         assert!(!read_only.production_activation_authorized);
 
+        // Pure reconciliation is not a hidden advance: with no previously
+        // prepared effect, it must not create an intent or call an owner.
+        let no_pending_recovery =
+            run_pinned_cell_split_reconcile_only_v1(&config_path, &pin)
+                .expect_err("an empty prepared prefix cannot be reconciled");
+        assert!(no_pending_recovery
+            .contains("reconciliation requires an existing uncommitted prepared intent"));
+        assert!(!execution_root.join("cell-split-00-prepared.json").exists());
+
         // The telemetry-bound endpoint must not prepare a new CAS intent
         // while its writer is unhealthy, even with an allow-all fixture
         // admission. Its read-only original-owner transcript must remain
@@ -597,6 +606,13 @@ mod tests {
         let error = run_pinned_cell_split_execution_v1("advance", &missing, &"00".repeat(32))
             .expect_err("a configuration hash is not an NDU/Selector grant");
         assert!(error.contains("independently admitted NDU/Selector"));
+        let recovery = run_pinned_cell_split_execution_v1(
+            "reconcile",
+            &missing,
+            &"00".repeat(32),
+        )
+        .expect_err("the legacy command cannot disguise mutation as recovery");
+        assert!(recovery.contains("explicit pending-only reconciliation API"));
         assert!(!missing.exists());
         assert_eq!(
             std::fs::read_dir(dir.path())
