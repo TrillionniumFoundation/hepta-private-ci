@@ -69,6 +69,19 @@ jobs:
             --future-file /tmp/ndu-shadow-head-panel/teacher_future_inputs.json --future-sha256 "$F_HASH" \
             --seal-file /tmp/ndu-shadow-head-panel/teacher_sealed_predictions.json --seal-sha256 "$S_HASH" \
             --output /tmp/ndu-shadow-head-panel/teacher_decision_utility.json
+      - name: Execute actual paired observed-return System2 Critic, seal two source-disjoint future windows
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ndu-shadow-head-panel/paired-raw
+          python experiments/ndu_tree_fbsde_gates/paired_trial_replay.py \
+            --output-dir /tmp/ndu-shadow-head-panel/paired-raw \
+            --train-count 4096 --future-count 512
+          python experiments/ndu_tree_fbsde_gates/paired_result_audit.py \
+            --directory /tmp/ndu-shadow-head-panel/paired-raw \
+            --audit /tmp/ndu-shadow-head-panel/paired-raw-independent-audit.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:

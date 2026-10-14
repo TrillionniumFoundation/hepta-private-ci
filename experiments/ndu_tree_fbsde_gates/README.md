@@ -117,3 +117,10 @@ The synthetic known probability law and deterministic fixed seeds are not
 natural-world generalization, authenticated external observations, or qualified
 stochastic NDU/FBSDE. This new scorer does not activate the native Neuron or
 authorize P3/P5, Cell split, artifact selection, FinalUse or any software effect.
+
+
+## P0 actual pretrained artifact + P3 two-future-window continuation (2026-10-14)
+
+The research-only, pinned [GitHub Actions #38541658096](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38541658096) pretrained Gemma/Laya source output ZIP is independently rechecked by real_model_artifact_replay.py against its exact archive SHA-256. This read-only real model observation reports 128 new AG News source rows with frozen Gemma 49/128, learned Gemma 120/128 and frozen Laya421 124/128. The 1024-scaled trained Head improves Brier, not task accuracy. Neither full lifecycle costs nor model-origin authentication are independently qualified. The small p0_historical_real_replay.py is a separate additional scorer on the same archive; do not combine its validation with independent physical forward proof.
+
+The executed synthetic observed-return P3 experiment is now source-published in this PR via paired_continuation.py, paired_trial_replay.py, its independent-process evaluator, read-only auditor and adversarial tests. It fits an actual 45-parameter ridge Critic to 4096 public states x3 sampled action returns, seals four candidate policies on each 512-case source-disjoint future window BEFORE generating hidden-world outcomes, and scores them separately. Learned Critic mean expected utility: .736189 and .733705. Exact cheap Bellman: .741178 and .740257, better on both windows. The local reference execution passed 112 tests in both ordinary and python -O configurations, but current exact-HEAD hosted CI is not yet established. Hosted research workflow now executes the whole paired experiment and retains complete raw artifacts. This cannot be claimed as natural Reader, multimodal, stochastic FBSDE or production NDU efficacy; P0–P6 qualification remains DENY_ALL.
