@@ -8,10 +8,10 @@
 #![forbid(unsafe_code)]
 
 pub mod batched_neuron;
-/// Original WAL-bound composition for the existing signed Neuron batch owner.
-pub mod original_evidence_neuron;
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
+/// Original WAL-bound composition for the existing signed Neuron batch owner.
+pub mod original_evidence_neuron;
 
 pub mod final_use_authorizer;
 pub mod native_app_server;

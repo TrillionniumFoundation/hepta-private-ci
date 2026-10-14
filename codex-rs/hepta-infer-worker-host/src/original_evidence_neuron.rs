@@ -114,9 +114,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
             // This constructor does not create a Final-use signer or Control
             // snapshot. Both owners are injected and independently checked
             // by the existing signed effect and Scope-fence logic.
-            let mut owner =
-                AuthenticatedNeuronMicrobatchWorkerV1::new(worker, authority, limits)
-                    .map_err(OriginalEvidenceWorkerBootstrapErrorV1::Worker)?;
+            let mut owner = AuthenticatedNeuronMicrobatchWorkerV1::new(worker, authority, limits)
+                .map_err(OriginalEvidenceWorkerBootstrapErrorV1::Worker)?;
             owner
                 .bind_live_scope_frontier(live_scope_frontier)
                 .map_err(OriginalEvidenceWorkerBootstrapErrorV1::Worker)?;
@@ -127,9 +126,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
                     config.group_size,
                     config.flush_interval_ms,
                 )
-                .map_err(|_| {
-                    OriginalEvidenceWorkerBootstrapErrorV1::OriginalEvidenceUnavailable
-                })?,
+                .map_err(|_| OriginalEvidenceWorkerBootstrapErrorV1::OriginalEvidenceUnavailable)?,
             );
             owner
                 .bind_metric_sink(original_evidence.clone())
@@ -209,9 +206,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
     /// Read-only ORIGINAL LOCAL WAL observation. This is O(committed WAL)
     /// and is for an independent Observer lane, never each inference tick.
     /// Its result is UNSIGNED and grants no authorization by itself.
-    pub fn observe_original_frontier(
-        &self,
-    ) -> Result<MetricsLocalFrontierV1, BatchWorkerErrorV1> {
+    pub fn observe_original_frontier(&self) -> Result<MetricsLocalFrontierV1, BatchWorkerErrorV1> {
         self.original_evidence
             .read_local_frontier()
             .map_err(|_| BatchWorkerErrorV1::MetricsUnavailable)

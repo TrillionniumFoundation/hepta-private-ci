@@ -2582,10 +2582,7 @@ fn original_evidence_bound_scalar_has_exact_committed_records_and_cold_recovery(
         MetricPhaseV1::Microbatch,
         MetricPhaseV1::NeuronFeature,
     ] {
-        let query = MetricsCommittedSampleQueryV1 {
-            phase,
-            ..admission
-        };
+        let query = MetricsCommittedSampleQueryV1 { phase, ..admission };
         let matching = owner
             .observe_exact_committed_sample(query)
             .unwrap()
@@ -2596,9 +2593,7 @@ fn original_evidence_bound_scalar_has_exact_committed_records_and_cold_recovery(
     }
     drop(owner);
     let reopened = DurablePhaseMetricSinkV1::open(
-        &path,
-        /* capacity */ 128,
-        /* group_size */ 64,
+        &path, /* capacity */ 128, /* group_size */ 64,
         /* flush_interval_ms */ 60_000,
     )
     .expect("recover the exact original locked WAL and its marker");
@@ -2637,14 +2632,7 @@ fn original_evidence_bound_native_batch_fsyncs_admission_then_two_terminal_nonce
         truncate_outputs: false,
         reorder_outputs: false,
     };
-    let mut owner = original_evidence_bound_fixture(
-        &signer,
-        dir.path(),
-        model,
-        driver,
-        2,
-        path,
-    );
+    let mut owner = original_evidence_bound_fixture(&signer, dir.path(), model, driver, 2, path);
     for (index, request) in [first, second].into_iter().enumerate() {
         let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
         owner
@@ -2754,9 +2742,7 @@ fn original_evidence_bound_rejects_second_original_writer_lock() {
     let dir = tempfile::tempdir().unwrap();
     let path = dir.path().join("sole-original-writer.wal");
     let original_writer = DurablePhaseMetricSinkV1::open(
-        &path,
-        /* capacity */ 128,
-        /* group_size */ 64,
+        &path, /* capacity */ 128, /* group_size */ 64,
         /* flush_interval_ms */ 60_000,
     )
     .unwrap();
