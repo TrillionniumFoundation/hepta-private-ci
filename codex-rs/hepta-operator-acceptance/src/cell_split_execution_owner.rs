@@ -86,8 +86,7 @@ impl CellSplitExecutionPlanV1 {
             || self.parent_generation == 0
             || self.parent_generation.checked_add(1) != Some(self.child_generation)
             || self.owner_ids.iter().any(|id| {
-                codex_hepta_types::StableId::new(id.clone()).is_err()
-                    || !distinct_owners.insert(id)
+                codex_hepta_types::StableId::new(id.clone()).is_err() || !distinct_owners.insert(id)
             })
         {
             return Err(CellSplitExecutionErrorV1::Invalid(

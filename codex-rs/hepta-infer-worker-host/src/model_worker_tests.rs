@@ -359,11 +359,7 @@ fn streaming_neuron_feature_digest_preserves_exact_v1_wire_for_multiple_widths()
         request.feature_vector_q24 = (0..width)
             .map(|index| {
                 let value = i64::try_from(index % 9).expect("bounded feature index") << 20;
-                if index % 2 == 0 {
-                    value
-                } else {
-                    -value
-                }
+                if index % 2 == 0 { value } else { -value }
             })
             .collect();
         request.expected_output_width = 5;

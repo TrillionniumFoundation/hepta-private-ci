@@ -208,11 +208,17 @@ fn frozen_split_plan_rejects_noncanonical_split_and_owner_ids() {
     for invalid_id in ["../other", "parent/child", "line\nspoof", "nul\0id"] {
         let mut invalid_split = plan();
         invalid_split.split_id = invalid_id.into();
-        assert!(invalid_split.digest().is_err(), "invalid split ID: {invalid_id:?}");
+        assert!(
+            invalid_split.digest().is_err(),
+            "invalid split ID: {invalid_id:?}"
+        );
 
         let mut invalid_owner = plan();
         invalid_owner.owner_ids[2] = invalid_id.into();
-        assert!(invalid_owner.digest().is_err(), "invalid owner ID: {invalid_id:?}");
+        assert!(
+            invalid_owner.digest().is_err(),
+            "invalid owner ID: {invalid_id:?}"
+        );
     }
 }
 
@@ -745,8 +751,15 @@ fn selector_revoked_during_last_owner_readback_never_prepares_successor() {
         Err(CellSplitExecutionErrorV1::External(message))
             if message.contains("Selector revoked")
     ));
-    assert_eq!(admission_reads, 2, "Selector checked again after live readback");
-    assert_eq!(state.borrow().executions, 1, "no successor effect may execute");
+    assert_eq!(
+        admission_reads, 2,
+        "Selector checked again after live readback"
+    );
+    assert_eq!(
+        state.borrow().executions,
+        1,
+        "no successor effect may execute"
+    );
     assert_eq!(owner.completed_steps(), 1);
     assert!(!root.path().join("cell-split-01-prepared.json").exists());
 }
@@ -777,7 +790,11 @@ fn late_admission_plan_tamper_cannot_prepare_first_effect() {
         Err(CellSplitExecutionErrorV1::Invalid("frozen plan drift"))
     ));
     assert_eq!(checks, 2, "the final admission boundary was reached");
-    assert_eq!(state.borrow().executions, 0, "no original effect was dispatched");
+    assert_eq!(
+        state.borrow().executions,
+        0,
+        "no original effect was dispatched"
+    );
     assert!(!root.path().join("cell-split-00-prepared.json").exists());
 }
 
@@ -805,7 +822,11 @@ fn late_admission_committed_prefix_tamper_cannot_prepare_successor() {
     });
     assert!(matches!(outcome, Err(CellSplitExecutionErrorV1::Codec(_))));
     assert_eq!(checks, 2, "the final admission boundary was reached");
-    assert_eq!(state.borrow().executions, 1, "no successor effect was dispatched");
+    assert_eq!(
+        state.borrow().executions,
+        1,
+        "no successor effect was dispatched"
+    );
     assert!(!root.path().join("cell-split-01-prepared.json").exists());
 }
 

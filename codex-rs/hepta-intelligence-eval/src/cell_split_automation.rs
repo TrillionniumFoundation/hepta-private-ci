@@ -1932,7 +1932,9 @@ mod tests {
         )
         .expect("canary receipt");
         journal.finish_canary(&canary).expect("canary finish");
-        journal.begin_retirement(&split).expect("retirement prepare");
+        journal
+            .begin_retirement(&split)
+            .expect("retirement prepare");
         journal.retire(&split).expect("retire");
 
         // A single commit must advance each predecessor state in order. This
@@ -2029,7 +2031,8 @@ mod tests {
             fn load(
                 &self,
                 split_id: &StableId,
-            ) -> Result<Option<CellSplitLifecycleJournalV1>, CellSplitAutomationErrorV1> {
+            ) -> Result<Option<CellSplitLifecycleJournalV1>, CellSplitAutomationErrorV1>
+            {
                 self.0.load(split_id)
             }
 
@@ -2151,7 +2154,11 @@ mod tests {
         let journal = owner.load(&split.split_id).expect("load").expect("journal");
         assert_eq!(journal.current_state, CellSplitLifecycleStateV1::Retained);
         assert_eq!(journal.events.len(), 5);
-        assert!(journal.retirement_pending(&split).expect("prepared retirement"));
+        assert!(
+            journal
+                .retirement_pending(&split)
+                .expect("prepared retirement")
+        );
         let mut altered = split.clone();
         altered.retirement.drain_watermark_digest = digest(130);
         assert_eq!(

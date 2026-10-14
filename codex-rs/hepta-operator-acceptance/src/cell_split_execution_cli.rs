@@ -312,17 +312,9 @@ mod tests {
             calls += 1;
             Err("selection revoked".to_owned())
         };
-        assert!(revalidate_selected_plan_at_boundary(
-            "transcript",
-            None,
-            &mut denied,
-        ).is_ok());
+        assert!(revalidate_selected_plan_at_boundary("transcript", None, &mut denied,).is_ok());
         assert_eq!(calls, 0);
-        assert!(revalidate_selected_plan_at_boundary(
-            "advance",
-            None,
-            &mut denied,
-        ).is_err());
+        assert!(revalidate_selected_plan_at_boundary("advance", None, &mut denied,).is_err());
         assert_eq!(calls, 0);
     }
 
