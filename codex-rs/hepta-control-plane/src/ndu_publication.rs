@@ -707,6 +707,17 @@ impl NduPublicationOwnerV1 {
         let successor = next
             .semantic_digest()
             .map_err(|_| NduPublicationErrorV1::Invalid)?;
+        // Reserve two WAL sequences and the maximum bytes of BOTH Begin and
+        // Commit before the original external CNS effect. A known exhausted
+        // journal must never accept a Begin it cannot safely resolve.
+        if state.sequence.checked_add(2).is_none()
+            || state
+                .bytes
+                .checked_add(2 * MAX_ROW as u64)
+                .is_none_or(|total| total > MAX_BYTES)
+        {
+            return Err(NduPublicationErrorV1::Capacity);
+        }
         // A failed fsync makes the business effect inadmissible; do not run
         // the closure until Begin itself has been durably committed.
         state.append(
