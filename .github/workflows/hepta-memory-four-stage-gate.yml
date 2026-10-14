@@ -1,0 +1,60 @@
+name: MemoryCell four-stage research admission audit
+on:
+  pull_request:
+    paths:
+      - "scripts/memory_cell/four_stage_audit.py"
+      - "scripts/memory_cell/test_four_stage_audit.py"
+      - ".github/workflows/hepta-memory-four-stage-gate.yml"
+      - "codex-rs/hepta-intelligence-eval/MEMORY_CELL_FOUR_STAGE_PROTOCOL.md"
+  push:
+    branches:
+      - codex/memory-cell-evidence-20261008
+    paths:
+      - "scripts/memory_cell/four_stage_audit.py"
+      - "scripts/memory_cell/test_four_stage_audit.py"
+      - ".github/workflows/hepta-memory-four-stage-gate.yml"
+permissions:
+  contents: read
+concurrency:
+  group: memory-four-stage-research-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: false
+jobs:
+  audited-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Source syntax and adversarial structural tests
+        env:
+          PYTHONPATH: scripts/memory_cell
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/four_stage_audit.py scripts/memory_cell/test_four_stage_audit.py
+          python3 -m unittest discover -s scripts/memory_cell -p 'test_four_stage_audit.py' -v
+      - name: Repository formatter, without any waiver
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check scripts/memory_cell/four_stage_audit.py scripts/memory_cell/test_four_stage_audit.py
+      - name: Retain formatter diagnostic if source fails formatting
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/four-stage-repair
+          if command -v uv >/dev/null 2>&1; then
+            uv run --frozen --project scripts ruff format --diff scripts/memory_cell/four_stage_audit.py scripts/memory_cell/test_four_stage_audit.py > /tmp/four-stage-repair/formatter.diff || true
+          fi
+          git rev-parse HEAD > /tmp/four-stage-repair/tested-commit.txt
+          (cd /tmp/four-stage-repair && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: four-stage-scoped-format-repair
+          path: /tmp/four-stage-repair
+          if-no-files-found: warn
