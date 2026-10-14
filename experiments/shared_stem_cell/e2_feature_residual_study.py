@@ -174,7 +174,10 @@ def study(panel, model_id, vectors, *, seed=20261014, steps=40, learning_rate=.1
                                           'joint_input_digest': c['joint_input_digest'],
                                           'positive_probability': float(p)}
                                          for c,p in zip(scored, probs)]}
+    from e1e2_q24_identity import feature_inventory
+    bank=feature_inventory([c['case_id'] for c in cases],vectors)
     return {'schema': 'hepta.e2-feature-gated-head-public.v1', 'model': model_id,
+            'frozen_feature_bank_identity':bank,
             'width':width, 'case_count':len(cases), 'train_case_ids_sha256':hashlib.sha256(json.dumps(
                 [c['case_id'] for c in parts['train']],sort_keys=True,separators=(',',':')).encode()).hexdigest(),
             'head_kind':'post_encoder_feature_gated_residual_not_cell_state_film',
