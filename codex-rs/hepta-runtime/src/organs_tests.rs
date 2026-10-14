@@ -122,10 +122,24 @@ fn governed_topology_for_runtime(
     current: &crate::RuntimeTopologySnapshotV1,
     successor: &crate::RuntimeTopologySnapshotV1,
 ) -> (codex_hepta_plasticity::GovernedTopologyProposalV1, StableId) {
+    governed_topology_for_runtime_with_operation(
+        label,
+        current,
+        successor,
+        codex_hepta_plasticity::TopologyOperationV2::Replace,
+    )
+}
+
+#[cfg(unix)]
+fn governed_topology_for_runtime_with_operation(
+    label: &str,
+    current: &crate::RuntimeTopologySnapshotV1,
+    successor: &crate::RuntimeTopologySnapshotV1,
+    operation: codex_hepta_plasticity::TopologyOperationV2,
+) -> (codex_hepta_plasticity::GovernedTopologyProposalV1, StableId) {
     use codex_hepta_plasticity::ProposalWindowV2;
     use codex_hepta_plasticity::TopologyCandidateKindV2;
     use codex_hepta_plasticity::TopologyChangeV2;
-    use codex_hepta_plasticity::TopologyOperationV2;
     use codex_hepta_plasticity::TopologyProposalRequestV2;
     use codex_hepta_plasticity::admit_governed_topology_v1;
     use codex_hepta_plasticity::build_writer_handoff_plan_v1;
@@ -169,7 +183,7 @@ fn governed_topology_for_runtime(
         rollback_predecessor_digest: selected,
         changes: vec![TopologyChangeV2 {
             module_id: handoff.module_id.clone(),
-            operation: TopologyOperationV2::Replace,
+            operation,
             predecessor_digest: Some(current.hierarchy_digest()),
             candidate_digest: Some(successor.hierarchy_digest()),
             capability_typing_digest: Digest32::of_bytes(b"runtime-capability-typing"),
@@ -199,6 +213,52 @@ fn governed_topology_for_runtime(
     )
     .expect("governed topology");
     (governed, candidate_id)
+}
+
+#[cfg(unix)]
+#[test]
+fn generic_topology_final_use_and_recovery_refuse_unowned_split() -> Result<()> {
+    use codex_hepta_plasticity::TopologyOperationV2;
+
+    let calls = Arc::new(AtomicUsize::new(0));
+    let root = HeptaStateRoot::parse(
+        std::env::temp_dir().join("hepta-generic-split-control-denial"),
+    )?;
+    let state: Arc<dyn RuntimeStateAdapter> =
+        Arc::new(ObservedAdapter(Arc::clone(&calls)));
+    let runtime = crate::HeptaRuntime::from_adapter(root.clone(), Arc::clone(&state));
+    let before = runtime.topology_snapshot()?;
+    let candidate = build_host_generation(root, state, before.generation().next()?)?;
+    let successor = RuntimeTopologySuccessorV1::new(candidate.host, candidate.route)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let projected = successor.snapshot();
+    let (governed, candidate_id) = governed_topology_for_runtime_with_operation(
+        "generic-split-control-denial",
+        &before,
+        &projected,
+        TopologyOperationV2::Split,
+    );
+    let (migration, migrations, rollbacks) =
+        runtime_topology_migration_for(&governed, &candidate_id);
+    let request = RuntimeTopologyApplyRequestV1 {
+        governed,
+        candidate_id,
+        accepted_subject_id: StableId::new("operator:generic-split-control-denial")?,
+        migration,
+        successor,
+    };
+    assert!(matches!(
+        runtime_topology_final_use_binding_v1(&before, &request),
+        Err(RuntimeTopologyExecutionError::Binding)
+    ));
+    assert!(matches!(
+        runtime_topology_recovery_final_use_binding_v1(&before, &request),
+        Err(RuntimeTopologyExecutionError::Binding)
+    ));
+    assert_eq!(runtime.topology_snapshot()?, before);
+    assert_eq!(migrations.load(Ordering::SeqCst), 0);
+    assert_eq!(rollbacks.load(Ordering::SeqCst), 0);
+    Ok(())
 }
 
 #[cfg(unix)]

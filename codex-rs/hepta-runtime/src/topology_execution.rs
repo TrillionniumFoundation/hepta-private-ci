@@ -18,6 +18,7 @@ use codex_hepta_control_plane::OrganStateMigrationV1;
 use codex_hepta_plasticity::GovernedTopologyProposalV1;
 use codex_hepta_plasticity::TopologyCandidateKindV2;
 use codex_hepta_plasticity::TopologyGovernanceErrorV1;
+use codex_hepta_plasticity::TopologyOperationV2;
 use codex_hepta_plasticity::WriterHandoffPlanV1;
 use codex_hepta_plasticity::admit_governed_topology_v1;
 use codex_hepta_plasticity::validate_writer_handoff_plan_v1;
@@ -226,6 +227,14 @@ fn validate_runtime_topology_transition_for_destination_v1(
         return Err(RuntimeTopologyExecutionError::Binding);
     }
     let change = &candidate.changes[0];
+    // The generic topology execution AND recovery destinations cannot
+    // originate a physical Cell Split: neither carries the durable
+    // same-Control-owner cutover Prepare/Commit or original owner recovery
+    // custody. A valid Final-use signature alone must not bypass the typed
+    // CellSplit CNS transaction. Non-Split topology changes are unaffected.
+    if change.operation == TopologyOperationV2::Split {
+        return Err(RuntimeTopologyExecutionError::Binding);
+    }
     if change
         .predecessor_digest
         .is_some_and(|digest| digest != current_route.hierarchy_digest)
