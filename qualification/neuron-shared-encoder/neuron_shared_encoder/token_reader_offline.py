@@ -17,6 +17,7 @@ import torch
 from torch import Tensor
 
 from .token_reader_v1 import _audit, _hex_digest, paired_token_reader_trial, snapshot_sha256
+from .token_stream_binding_v2 import add_token_row, new_cell_stream
 
 KINDS = ('mmbert-joint', 'granite-joint', 'modernbert-joint')
 INPUT_ENCODING = b'hepta.token-reader.ordered-json-question-options-state.v1'
@@ -73,7 +74,8 @@ def _prepare_rows(raw_rows: list[dict], purpose: str, pins: dict) -> tuple[list[
 
 
 def _tokenize_and_capture(backend: Any, texts: list[str], *, max_length: int,
-                          batch: int) -> tuple[Tensor, Tensor, dict]:
+                          batch: int, cell_index: int | None = None,
+                          input_sha256: list[str] | None = None) -> tuple[Tensor, Tensor, dict]:
     from .encoder_meter import EncoderModuleForwardMeter
 
     if not 8 <= max_length <= 256 or not 1 <= batch <= 32:
@@ -82,6 +84,14 @@ def _tokenize_and_capture(backend: Any, texts: list[str], *, max_length: int,
     if (type(dimension) is not int or not 1 <= dimension <= 768 or not texts
             or len(texts) * max_length * dimension > 8_388_608):
         raise ValueError('real token snapshot exceeds dimension/byte bound')
+    if (cell_index is None) != (input_sha256 is None):
+        raise ValueError('complete paired Cell/input token lineage required')
+    stream = None
+    if cell_index is not None:
+        if (type(cell_index) is not int or cell_index not in (0, 1)
+                or not isinstance(input_sha256, list) or len(input_sha256) != len(texts)):
+            raise ValueError('complete pinned per-Cell input lineage required')
+        stream = new_cell_stream(cell_index)
     features = torch.empty((len(texts), max_length, dimension), dtype=torch.float32)
     masks = torch.empty((len(texts), max_length), dtype=torch.bool)
     tokenize_ns = 0
@@ -91,9 +101,13 @@ def _tokenize_and_capture(backend: Any, texts: list[str], *, max_length: int,
             for start in range(0, len(texts), batch):
                 end = min(start + batch, len(texts))
                 t0 = time.perf_counter_ns()
-                encoded = backend.tok(texts[start:end], padding='max_length',
-                                      truncation=False, max_length=max_length,
-                                      return_tensors='pt')
+                options = {'padding':'max_length', 'truncation':False,
+                           'max_length':max_length, 'return_tensors':'pt'}
+                if stream is not None:
+                    # Match the pinned tokenizer-only preflight's special-token
+                    # and attention-mask semantics without silent defaults.
+                    options.update(add_special_tokens=True, return_attention_mask=True)
+                encoded = backend.tok(texts[start:end], **options)
                 tokenize_ns += time.perf_counter_ns() - t0
                 if (not isinstance(encoded, Mapping)
                         or not {'input_ids', 'attention_mask'} <= set(encoded)
@@ -113,6 +127,18 @@ def _tokenize_and_capture(backend: Any, texts: list[str], *, max_length: int,
                        or tuple(value.shape) != tuple(ids.shape)
                        for value in encoded.values()):
                     raise ValueError('tokenizer must return aligned CPU tensors')
+                if stream is not None:
+                    # Hash actual IDs passed to this forward, not a second
+                    # tokenizer call. Mask must describe right-padding only.
+                    for offset in range(end - start):
+                        active = int(attn[offset].sum().item())
+                        expected = torch.arange(max_length, dtype=torch.long) < active
+                        if not torch.equal(attn[offset].bool(), expected):
+                            raise ValueError('actual token mask is not contiguous right-padding')
+                        add_token_row(stream, None, cell=cell_index,
+                                      index=start + offset,
+                                      input_sha256=input_sha256[start + offset],
+                                      token_ids=ids[offset, :active].tolist())
                 t0 = time.perf_counter_ns()
                 actual = backend.model(**encoded).last_hidden_state
                 model_ns += time.perf_counter_ns() - t0
@@ -133,6 +159,8 @@ def _tokenize_and_capture(backend: Any, texts: list[str], *, max_length: int,
         'total_encoder_batches': meter.completions,
         'observed_masked_tokens': int(masks.sum()),
         'padded_token_slots': masks.numel(),
+        **({'ordered_active_token_ids_sha256': stream.hexdigest()}
+           if stream is not None else {}),
     }
 
 
