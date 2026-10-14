@@ -327,6 +327,11 @@ fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
                         "the runtime callback must not see a publishable NDU frontier"
                     );
                     assert_eq!(
+                        owner.read_original_local_frontier_v1(),
+                        Err(NduPublicationErrorV1::Indeterminate),
+                        "original Control Observer must not accept unresolved durable Begin"
+                    );
+                    assert_eq!(
                         owner.verify_original_cns_receipt_binding(&[0x53; 96]),
                         Err(NduPublicationErrorV1::Indeterminate),
                         "durable Begin must fence original CNS receipt joins until Commit"
@@ -907,6 +912,136 @@ fn symlink_and_world_accessible_directory_cannot_own_frontier() {
             Digest32::ZERO,
         ),
         Err(NduPublicationErrorV1::UnsafePath)
+    ));
+}
+
+
+#[cfg(unix)]
+#[test]
+fn original_control_actor_replays_fsynced_history_without_moving_writer_offset() {
+    use std::io::Seek as _;
+    use std::os::unix::fs::MetadataExt as _;
+
+    let dir = private_control_dir();
+    let path = dir.path().join("original-actor.wal");
+    let original = snapshot(3);
+    let first = Digest32::of_bytes(b"actor-checkpoint-1");
+    let second = Digest32::of_bytes(b"actor-checkpoint-2");
+    let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+        .expect("original Control writer");
+    let first_head = owner
+        .compare_and_publish_checkpoint(
+            &original,
+            Digest32::of_bytes(b"actor-read-1"),
+            Digest32::of_bytes(b"actor-tick-1"),
+            Digest32::ZERO,
+            first,
+        )
+        .expect("first original fsync");
+    let second_head = owner
+        .compare_and_publish_checkpoint(
+            &original,
+            Digest32::of_bytes(b"actor-read-2"),
+            Digest32::of_bytes(b"actor-tick-2"),
+            first,
+            second,
+        )
+        .expect("second original fsync");
+    assert_ne!(first_head, second_head);
+    let original_bytes = std::fs::read(&path).expect("original WAL bytes");
+    let before_offset = {
+        let mut state = owner.state.lock().expect("original writer lock");
+        state.file.stream_position().expect("append cursor")
+    };
+    let observed = owner
+        .read_original_local_frontier_v1()
+        .expect("real original-inode, full-history readback");
+    let after_offset = {
+        let mut state = owner.state.lock().expect("original writer lock");
+        state.file.stream_position().expect("unchanged append cursor")
+    };
+    assert_eq!(before_offset, after_offset, "Observer must use positional reads");
+    assert_eq!(std::fs::read(&path).unwrap(), original_bytes);
+    assert_eq!(observed.snapshot, original);
+    assert_eq!(observed.checkpoint, second);
+    assert_eq!(observed.sequence, 3, "G and two persisted P records");
+    assert_eq!(observed.head, second_head);
+    assert_eq!(observed.wal_bytes, original_bytes.len() as u64);
+    assert_eq!(observed.original_cns_receipt_binding, None);
+    assert_eq!(observed.wal_inode, std::fs::metadata(&path).unwrap().ino());
+    let marker = PathBuf::from(format!("{}.owner-lock", path.display()));
+    assert_eq!(
+        observed.marker_inode,
+        std::fs::metadata(&marker).unwrap().ino()
+    );
+    assert_ne!(observed.wal_inode, observed.marker_inode);
+}
+
+#[cfg(unix)]
+#[test]
+fn original_control_cns_join_poisoned_by_earlier_same_inode_wal_corruption() {
+    use std::os::unix::fs::MetadataExt as _;
+
+    let dir = private_control_dir();
+    let path = dir.path().join("control-prefix.wal");
+    let original = snapshot(3);
+    let successor = snapshot(4);
+    let migrated = Digest32::of_bytes(b"control-prefix-migrated");
+    let after = Digest32::of_bytes(b"control-prefix-model");
+    let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+        .expect("original Control owner");
+    owner
+        .publish_cutover_with_external_effect(
+            &original,
+            Digest32::ZERO,
+            successor.clone(),
+            migrated,
+            || -> Result<((), Vec<u8>), &'static str> { Ok(((), vec![0x68; 96])) },
+        )
+        .expect("fsynced original B, reference effect and C");
+    owner
+        .compare_and_publish_checkpoint(
+            &successor,
+            Digest32::of_bytes(b"prefix-read"),
+            Digest32::of_bytes(b"prefix-tick"),
+            migrated,
+            after,
+        )
+        .expect("later original checkpoint");
+    assert!(owner.read_original_local_frontier_v1().is_ok());
+    assert_eq!(owner.verify_original_cns_receipt_binding(&[0x68; 96]), Ok(()));
+
+    let mut bytes = std::fs::read(&path).expect("original WAL");
+    let inode = std::fs::metadata(&path).unwrap().ino();
+    let first_end = bytes.iter().position(|&byte| byte == b'\n').unwrap();
+    let changed = first_end - 2;
+    bytes[changed] = if bytes[changed] == b'0' { b'1' } else { b'0' };
+    let final_row = bytes.rsplit(|&byte| byte == b'\n').nth(1).unwrap().to_vec();
+    std::fs::write(&path, &bytes).expect("same original inode, earlier prefix changed");
+    assert_eq!(std::fs::metadata(&path).unwrap().ino(), inode);
+    assert_eq!(std::fs::metadata(&path).unwrap().len(), bytes.len() as u64);
+    let persisted = std::fs::read(&path).unwrap();
+    assert_eq!(
+        persisted.rsplit(|&byte| byte == b'\n').nth(1).unwrap(),
+        final_row.as_slice(),
+        "terminal row is intact; digest-only/tail-only verification is insufficient"
+    );
+    assert_eq!(
+        owner.verify_original_cns_receipt_binding(&[0x68; 96]),
+        Err(NduPublicationErrorV1::Indeterminate),
+        "original CNS Control join must replay the entire actual WAL prefix"
+    );
+    assert_eq!(
+        owner.read_original_local_frontier_v1(),
+        Err(NduPublicationErrorV1::Poisoned)
+    );
+    assert_eq!(owner.current(), Err(NduPublicationErrorV1::Poisoned));
+    assert_eq!(std::fs::read(&path).unwrap(), bytes, "Observer does not rewrite WAL");
+    drop(owner);
+    assert!(matches!(
+        NduPublicationOwnerV1::open_production(&path, successor, after),
+        Err(NduPublicationErrorV1::Corrupt)
+            | Err(NduPublicationErrorV1::Indeterminate)
     ));
 }
 

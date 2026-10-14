@@ -390,6 +390,40 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 )
                 self.assertIn("authority.claim(", body)
 
+    def test_control_original_inode_actor_replays_history_before_cns_receipt_join(self) -> None:
+        # A valid final Control WAL row cannot authenticate an altered older
+        # prefix. Freeze the serving original descriptor/Actor reader, and
+        # require this complete replay in the non-test CNS receipt join.
+        path = "codex-rs/hepta-control-plane/src/ndu_publication.rs"
+        code = self.lexical_code(path)
+
+        def method_body(name: str) -> str:
+            entry = re.search(rf"\bfn\s+{name}\s*\(", code)
+            self.assertIsNotNone(entry, f"{name}: missing original owner method")
+            assert entry is not None
+            begin = code.find("{", entry.end())
+            end = CALLER_PROOF._matching_delimiter(code, begin, "{", "}")
+            self.assertIsNotNone(end, f"{name}: invalid original owner body")
+            assert end is not None
+            return code[begin + 1 : end]
+
+        full = method_body("verify_original_full_history")
+        self.assertIn("self.file", full)
+        self.assertIn(".read_exact_at(", full)
+        self.assertIn("validate_replay(", full)
+        self.assertNotIn(".seek(", full)
+        self.assertIn("self.bytes", full)
+        local = method_body("read_original_local_frontier_v1")
+        self.assertIn("state.verify_original_full_history()", local)
+        self.assertIn("state.pending_cutover", local)
+        join = method_body("verify_original_cns_receipt_binding")
+        self.assertIn("state.verify_original_full_history()", join)
+        self.assertLess(
+            join.index("state.verify_original_full_history()"),
+            join.index("original_cns_receipt_binding("),
+            "CNS receipt digest must not precede full original Control replay",
+        )
+
     def test_generic_cns_generation_writer_callers_are_closed_world(self) -> None:
         # The generic CNS host is shared beyond Cell Split and cannot be
         # arbitrarily disabled. Freeze the concrete non-test callsites for
