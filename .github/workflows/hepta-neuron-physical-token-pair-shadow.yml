@@ -56,8 +56,8 @@ jobs:
         run: |
           set -euo pipefail
           PY="$RUNNER_TEMP/hepta-token-real-env/bin/python"
-          "$PY" -m pytest -q -p no:cacheprovider tests/test_physical_token_pair_v1.py tests/test_stage_modernbert_public_v1.py tests/test_physical_token_reviewer_v1.py tests/test_physical_token_capture_profile_v1.py tests/test_tokenizer_length_preflight_v1.py tests/test_token_stream_binding_v2.py
-          "$PY" -m compileall -q neuron_shared_encoder/physical_token_pair_v1.py neuron_shared_encoder/stage_modernbert_public_v1.py neuron_shared_encoder/physical_token_reviewer_v1.py neuron_shared_encoder/tokenizer_length_preflight_v1.py neuron_shared_encoder/token_stream_binding_v2.py
+          "$PY" -m pytest -q -p no:cacheprovider tests/test_physical_token_pair_v1.py tests/test_stage_modernbert_public_v1.py tests/test_physical_token_reviewer_v1.py tests/test_physical_token_capture_profile_v1.py tests/test_tokenizer_length_preflight_v1.py tests/test_token_stream_binding_v2.py tests/test_paired_holdout_effect_v1.py
+          "$PY" -m compileall -q neuron_shared_encoder/physical_token_pair_v1.py neuron_shared_encoder/stage_modernbert_public_v1.py neuron_shared_encoder/physical_token_reviewer_v1.py neuron_shared_encoder/tokenizer_length_preflight_v1.py neuron_shared_encoder/token_stream_binding_v2.py neuron_shared_encoder/paired_holdout_effect_v1.py
 
       - name: Retrieve exact original public AG News source artifact
         shell: bash
@@ -161,6 +161,15 @@ jobs:
           assert r['checked_head_checkpoints'] == 12
           assert r['checked_holdout_cases_per_seed'] == 32
           assert r['training_seeds'] == [11, 23, 47]
+          paired = r['paired_original_case_descriptive_effect']
+          assert paired['schema'] == 'hepta.neuron.paired-original-case-retrospective.v1'
+          assert paired['original_holdout_cases'] == 32
+          assert paired['repeated_train_seeds'] == [11, 23, 47]
+          assert set(paired['paired_token_minus_pooled']) == {'accuracy', 'brier', 'nll'}
+          assert paired['three_training_seeds_are_not_independent_cases'] is True
+          assert paired['model_winner_selected'] is False
+          assert paired['prospective_future_outcome_verified'] is False
+          assert paired['production_admission'] == 'BLOCKED'
           assert r['independent_numeric_replay_all_metrics_passed'] is True
           assert r['real_pretrained_encoder_forward_reobserved'] is True
           assert r['production_admission'] == 'BLOCKED'
