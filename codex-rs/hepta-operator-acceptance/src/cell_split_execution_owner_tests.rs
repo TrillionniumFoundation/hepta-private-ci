@@ -541,11 +541,8 @@ fn injected_future_metrics_acceptance_never_prepares_any_original_effect() {
     // This is a forged but permission-valid durable frame. A mode-invalid
     // fs::write fixture would fail in secure_read before exercising the
     // promised non-prefix metrics-ACK guard.
-    crate::durable::write_private_new(
-        &root.path().join("cell-split-02-metrics-acked.json"),
-        b"{}",
-    )
-    .expect("simulate privately persisted injected later-step telemetry");
+    crate::durable::write_private_new(&root.path().join("cell-split-02-metrics-acked.json"), b"{}")
+        .expect("simulate privately persisted injected later-step telemetry");
     assert!(matches!(
         owner.advance(),
         Err(CellSplitExecutionErrorV1::Invalid(_))
