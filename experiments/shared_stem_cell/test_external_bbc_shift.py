@@ -1,0 +1,62 @@
+"""External source protocol tests on invented strings; NOT pretrained evidence."""
+import json
+import unittest
+
+from experiments.shared_stem_cell import external_bbc_shift as b
+
+
+class ShiftTests(unittest.TestCase):
+    def texts(self):
+        return [f"Synthetic article content number {i:04d} about topic and "
+                f"publication number {i} with enough words to pass the limit"
+                for i in range(256)]
+
+    def test_label_free_hash_determinism_and_only_hashed_public_index(self):
+        first = b.sample(self.texts())
+        second = b.sample(list(self.texts()))
+        self.assertEqual(first, second)
+        self.assertEqual(len(first), 128)
+        self.assertEqual([r["cell"] for r in first], [i % 2 for i in range(128)])
+        self.assertNotIn("text", b.public_cohort(first)[0])
+        self.assertNotIn("synthetic", json.dumps(b.public_cohort(first)).lower())
+        self.assertEqual(len({r["source_index"] for r in first}), 128)
+
+    def test_unknown_label_never_mapped_to_one_of_four_ag_classes(self):
+        rows = b.public_cohort(b.sample(self.texts()))
+        labels = ["business", "sport", "politics", "tech", "entertainment"] * 25 + ["business"] * 3
+        frozen = {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.ARMS}
+        result = b.score_sealed(frozen, labels, rows)
+        self.assertEqual(result["unsupported"], 25)
+        self.assertEqual(result["proxy_eligible"], 103)
+        self.assertEqual(result["scores"]["bank"]["proxy_correct"], 28)
+        self.assertFalse(result["same_label_ontology_verified"])
+        self.assertFalse(result["production_accepted"])
+        labels[0] = "unknown"
+        with self.assertRaises(b.SourceError):
+            b.score_sealed(frozen, labels, rows)
+
+    def test_missing_arm_malformed_probs_and_bad_source_reject(self):
+        rows = b.public_cohort(b.sample(self.texts()))
+        labels = ["business"] * 120 + ["entertainment"] * 8
+        frozen = {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.ARMS}
+        for wrong in (dict(list(frozen.items())[:-1]),
+                      {**frozen, "bank": frozen["bank"][:-1]},
+                      {**frozen, "bank": [[0.2, 0.2, 0.2, 0.2]] + frozen["bank"][1:]}):
+            with self.assertRaises(b.SourceError):
+                b.score_sealed(wrong, labels, rows)
+        with self.assertRaises(b.SourceError):
+            b.score_sealed(frozen, labels, rows, source_revision="unqualified")
+
+    def test_insufficient_or_duplicate_unlabeled_source_rejects(self):
+        with self.assertRaises(b.SourceError):
+            b.sample(self.texts()[:8])
+        with self.assertRaises(b.SourceError):
+            b.sample([self.texts()[0]] * 256)
+        with self.assertRaises(b.SourceError):
+            b.sample([*self.texts(), 7])
+        with self.assertRaises(b.SourceError):
+            b.sample(self.texts(), count=129)
+
+
+if __name__ == "__main__":
+    unittest.main()
