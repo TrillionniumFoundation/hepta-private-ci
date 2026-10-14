@@ -52,10 +52,15 @@ def audit(source,runs,out):
         must(rec['oracle_parameters_used_in_training']==False,'oracle leakage')
         must(rec['certificate_used_for_stopping_only']==True,'quality gating mismatch')
         must(len(rec['history'])==rec['counts']['updates']+1,'missing/repeated checkpoints')
-        must(rec['counts']['updates']>0,'untrained candidate')
+        # A budget-censored run can have zero updates on a slower hosted runner.
+        # Preserve such runs, rather than treating a missed quality target as
+        # corruption or silently deleting it from the experiment.
         must(rec['cpu']<=r['overall_cpu']+1e-8,'fit CPU not fully charged')
         must(rec['wall']<=r['overall_wall']+1e-8,'fit wall not fully charged')
-        must(rec['status']=='quality','unexpected reason for stop')
+        if rec['success']:
+            must(rec['status']=='quality','unexpected success reason')
+        else:
+            must(rec['status']!='quality','false success status')
         # Independently compute exact parameter-quality from each binary64 checkpoint.
         qcount=0;times=[];previous=-1.;last_step=-1
         for step,ck in enumerate(rec['history']):
@@ -69,7 +74,12 @@ def audit(source,runs,out):
             if passed and t<=solver.CAP:qcount+=1;times.append(t)
             count+=1
         must(rec['success']==bool(times),'false success')
-        must(len(times)==1 and times[0]==rec['first_quality_cpu'],'forged time / did not stop at first quality')
+        if rec['success']:
+            must(len(times)==1 and times[0]==rec['first_quality_cpu'],
+                 'forged time / did not stop at first quality')
+        else:
+            must(not times and rec['first_quality_cpu'] is None,
+                 'forged time / censored run falsely admitted')
         must(np.array_equal(trained,np.asarray(rec['history'][-1]['theta'])),'nonterminal saved weight')
         cost,g,H=solver.population(trained)
         must(abs(cost-rec['final_cost'])<=1e-13,'forged final cost')
