@@ -177,6 +177,17 @@ impl SparseCheckpoint {
         self.sequence
     }
 
+    /// Last committed monotonic time. Hosts may reject stale incoming ticks
+    /// before invoking a potentially costly/external model port.
+    pub fn monotonic_micros(&self) -> u64 {
+        self.monotonic_micros
+    }
+
+    /// Existing subject/objective/body lineage digest, not effect authority.
+    pub fn body_digest(&self) -> Digest32 {
+        self.body
+    }
+
     /// Canonical digest of the recurrent temporal-state vector only.
     ///
     /// This is intentionally distinct from the full checkpoint digest so the
