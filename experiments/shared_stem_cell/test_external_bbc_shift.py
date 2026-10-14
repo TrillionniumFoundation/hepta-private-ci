@@ -85,6 +85,20 @@ class ShiftTests(unittest.TestCase):
                 b.evaluate_published(pred, b.digest(raw), cohort,
                                      cohort_sha, rows, label)
             self.assertEqual(calls, [])
+            cohort.write_bytes(cohort_raw)
+            def tamper_with_prediction(index):
+                pred.write_bytes(b"{}")
+                return "business"
+            with self.assertRaises(b.SourceError):
+                b.evaluate_published(pred, b.digest(raw), cohort,
+                                     cohort_sha, rows, tamper_with_prediction)
+            calls.clear()
+            pred.write_bytes(raw)
+            alias = root / "alias"
+            alias.symlink_to(pred)
+            with self.assertRaises(b.SourceError):
+                b.evaluate_published(alias, b.digest(raw), cohort,
+                                     cohort_sha, rows, lambda _: self.fail("premature label"))
 
     def test_insufficient_or_duplicate_unlabeled_source_rejects(self):
         with self.assertRaises(b.SourceError):

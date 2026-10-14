@@ -150,7 +150,8 @@ def evaluate_published(prediction_path, prediction_sha, cohort_path, cohort_sha,
                            (Path(cohort_path), cohort_sha)):
         require(isinstance(expected, str) and len(expected) == 64 and
                 all(c in "0123456789abcdef" for c in expected) and
-                path.is_file() and not path.is_symlink() and
+                path.is_file() and not any(x.is_symlink() for x in
+                                                (path, *path.parents)) and
                 0 < path.stat().st_size <= 16 * 1024**2,
                 "missing, linked or oversized publication")
     raw, cohort_raw = Path(prediction_path).read_bytes(), Path(cohort_path).read_bytes()
@@ -181,8 +182,11 @@ def evaluate_published(prediction_path, prediction_sha, cohort_path, cohort_sha,
             stored == rows and packet["case_ids"] == [r["case_id"] for r in rows],
             "wrong previous publication profile or case binding")
     # This callback is the FIRST point where source ground truth is allowed.
-    return score_sealed(packet["predictions"],
-                        [label_at(r["source_index"]) for r in rows], rows)
+    answers = [label_at(r["source_index"]) for r in rows]
+    require(Path(prediction_path).read_bytes() == raw and
+            Path(cohort_path).read_bytes() == cohort_raw,
+            "published evidence changed while labels were read")
+    return score_sealed(packet["predictions"], answers, rows)
 
 
 
