@@ -272,10 +272,9 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         // Verify context against the journal's *registered* Scope/Objective,
         // not against caller-provided digests. Wrong identity must never
         // result in a model request, even for the very first tick.
-        self.journal.verify_owner_context(
-            subject_scope_digest(&input.subject_id)?,
-            input.objective_digest,
-        )?;
+        let source_scope_digest = subject_scope_digest(&input.subject_id)?;
+        self.journal
+            .verify_owner_context(source_scope_digest, input.objective_digest)?;
         // Validate the durable frontier BEFORE invoking the selected model.
         // SparseJournal::commit used to discover these stale/future inputs only
         // *after* model.execute(), wasting resources and potentially issuing
@@ -318,7 +317,7 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         let model_runtime_digest = digest_model_binding(&model_output)?;
 
         let sparse_tick = SparseTick {
-            scope_digest: subject_scope_digest(&input.subject_id)?,
+            scope_digest: source_scope_digest,
             objective_digest: input.objective_digest,
             ndu_digest: input.ndu_snapshot_digest,
             body_digest: body_digest(&self.config, &input),
