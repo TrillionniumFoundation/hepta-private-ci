@@ -56,6 +56,27 @@ models or suppress negative transfer.
 Development (separate reused 32-case holdout, **not** either fresh phase):
 gated 22/32, linear 18/32, low-rank 21/32, sparse expert 13/32.
 
+### Physically inspected Head tensors (not full resident model memory)
+
+The original public ZIP retains real safetensors weights. A read-only
+tensor count on the seven *actually used* components confirms these
+historical parameter allocations in **float32**:
+
+| Frozen Head deployment alternative | Physical Head parameters | Head tensor bytes | Relative to bank |
+| --- | ---: | ---: | ---: |
+| Original two gated Cell Heads (bank) | 12,384 | 49,536 | reference |
+| One shared supervised gated Head | 6,224 | 24,896 | 49.74% fewer parameters |
+| Shared supervised Head + two linear residuals | 9,304 | 37,216 | 24.87% fewer parameters |
+| Two independent linear ridge Heads | 3,080 | 12,320 | 75.13% fewer parameters |
+
+These are **Head tensor counts only**. They exclude the shared Encoder,
+KV/activation/cache, training optimizer, materialization and all producer/
+migration/evaluation costs. Two-Head corrected inference actually executes
+one shared Head plus its Cell-specific residual, so parameter savings do
+not imply fewer active Head forwards or better total-device latency. The
+historical script's separate sampled running-process RSS endpoints are not
+a deployment peak-memory or energy measurement.
+
 ## What was physically measured
 
 Shared mmBERT-small 128-record source batch used 16 physical Encoder forwards.
