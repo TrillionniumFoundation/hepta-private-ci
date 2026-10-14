@@ -402,6 +402,33 @@ ordering, with real crash/restart and source-withdrawal tests. An anchor SHA is
 not a reviewer signature or a capability token. NO model selection, Head
 promotion, FinalUse or source effect authority is generated here.
 
+### Combined Learning Artifacts withdrawal + SQLite source fence (research)
+
+The next **default-off** amcn-artifact-shadow Cargo feature makes a second
+source-owner comparison with the ORIGINAL codex-hepta-learning-artifacts
+withdrawal registry and V3 admission. The bounded research method
+with_amcn_shadow_artifact_and_source locks the Artifact withdrawal registry
+BEFORE beginning SQLite BEGIN IMMEDIATE, revalidates the exact withdrawal
+scope/head and the Head/Parameters manifest, checks the complete
+CognitiveRecoveryAnchor, and holds both locks until the callback exits.
+Feature-only tests trigger BOTH real owner writers after the locks are held
+and verify neither can publish early. A dataset withdrawal invalidates a
+previously admitted Head even if no row in CognitiveStore changes.
+
+This lock ordering prevents only the test's check-then-use race. The research
+Artifact Mutex is not the durable/signature-verified ArtifactOwnerHost. The
+original GuardedSelectedCandidateV1 still needs a genuine signed current
+registry view before production selection; source dataset digests are not yet
+atomically mapped to every SQLite SourceRevisionId. The two owners do not
+share an authenticated distributed lease or a crash-recovery transaction.
+New tests and registration alone cannot establish product zero resurrection.
+
+Run on the pinned Rust host:
+
+    cd codex-rs
+    cargo test --locked -p codex-hepta-memory --features amcn-artifact-shadow \
+      amcn_shadow_two_owner -- --nocapture --test-threads=1
+
 ## No-go and required production evidence
 
 Still missing: sufficient-evidence Reader certification, strong cached hybrid

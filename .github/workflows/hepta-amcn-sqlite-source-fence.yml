@@ -6,7 +6,7 @@ on:
     paths:
       - "codex-rs/hepta-memory/Cargo.toml"
       - "codex-rs/hepta-memory/src/cognitive_store_recovery.rs"
-      - "codex-rs/hepta-memory/src/cognitive_store_recovery_amcn_fence*.rs"
+      - "codex-rs/hepta-memory/src/cognitive_store_recovery_amcn_*.rs"
       - ".github/workflows/hepta-amcn-sqlite-source-fence.yml"
   workflow_dispatch:
 
@@ -51,6 +51,17 @@ jobs:
             2>&1 | tee /tmp/amcn-sqlite-owner/sqlite-fence-tests.log
           grep -Fq 'amcn_shadow_sqlite_fence_prevents_real_competing_source_writer_until_work_exits' \
             /tmp/amcn-sqlite-owner/sqlite-fence-tests.log
+      - name: Real Learning Artifacts withdrawal and CognitiveStore write locks compose
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-memory --features amcn-artifact-shadow \
+            amcn_shadow_two_owner -- --nocapture --test-threads=1 \
+            2>&1 | tee /tmp/amcn-sqlite-owner/artifact-and-sqlite-tests.log
+          grep -Fq 'amcn_shadow_two_owner_withdrawal_denies_old_head_when_cognitive_cut_is_unchanged' \
+            /tmp/amcn-sqlite-owner/artifact-and-sqlite-tests.log
+          grep -Fq 'amcn_shadow_two_owner_holds_artifact_and_sqlite_locks_during_actual_callback' \
+            /tmp/amcn-sqlite-owner/artifact-and-sqlite-tests.log
       - name: Default production Source Store fixture, no research feature
         working-directory: codex-rs
         run: |
@@ -70,6 +81,8 @@ jobs:
              codex-rs/hepta-memory/src/cognitive_store_recovery.rs \
              codex-rs/hepta-memory/src/cognitive_store_recovery_amcn_fence.rs \
              codex-rs/hepta-memory/src/cognitive_store_recovery_amcn_fence_tests.rs \
+             codex-rs/hepta-memory/src/cognitive_store_recovery_amcn_artifact.rs \
+             codex-rs/hepta-memory/src/cognitive_store_recovery_amcn_artifact_tests.rs \
              .github/workflows/hepta-amcn-sqlite-source-fence.yml \
              /tmp/amcn-sqlite-owner/source/
           printf '%s\n' \
@@ -80,6 +93,8 @@ jobs:
             'neuron_runtime_witness_jointly_fenced=false' \
             'host_executor_blocking_unqualified=true' \
             'source_store_lease_is_not_a_grant=true' \
+            'artifact_owner_mutex_is_not_signed_or_persistent=true' \
+            'learning_artifact_selection_still_independent=true' \
             'deletion_zero_resurrection_product_proven=false' \
             > /tmp/amcn-sqlite-owner/nonpromotion.txt
           (cd /tmp/amcn-sqlite-owner && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)

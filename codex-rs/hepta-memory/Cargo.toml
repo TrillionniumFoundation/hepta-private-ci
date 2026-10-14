@@ -12,6 +12,8 @@ doctest = false
 [features]
 # Source-only SQLite research lease; NOT a production model grant.
 amcn-shadow = []
+# Compose original Artifacts withdrawal owner and SQLite source owner; no product grant.
+amcn-artifact-shadow = ["amcn-shadow", "dep:codex-hepta-learning-artifacts", "tokio/sync"]
 
 [lints]
 workspace = true
@@ -21,6 +23,7 @@ base64 = { workspace = true }
 codex-hepta-cognitive-read = { path = "../hepta-cognitive-read" }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-memory-retrieval = { path = "../hepta-memory-retrieval" }
+codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts", optional = true }
 codex-hepta-contracts = { workspace = true }
 codex-hepta-memory-federation = { path = "../hepta-memory-federation" }
 codex-hepta-kg = { path = "../hepta-kg" }
