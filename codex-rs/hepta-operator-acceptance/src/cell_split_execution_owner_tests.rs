@@ -608,7 +608,11 @@ fn pending_only_reconciliation_never_dispatches_a_new_effect_or_reseeds_an_empty
         .expect("existing-only reconciliation with original pinned signer");
         assert!(recovery.reconcile_only);
         assert_eq!(
-            recovery.reconcile_pending_only().expect("signed original readback").intent.step,
+            recovery
+                .reconcile_pending_only()
+                .expect("signed original readback")
+                .intent
+                .step,
             super::CellSplitExecutionStepV1::ArtifactCas
         );
         assert_eq!(state.borrow().executions, 1);
