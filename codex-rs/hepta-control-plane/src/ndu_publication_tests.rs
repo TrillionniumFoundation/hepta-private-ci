@@ -787,12 +787,8 @@ fn inplace_wal_truncate_and_equal_length_tail_rewrite_fence_live_observer() {
         let path = root.path().join("owner.wal");
         let previous = snapshot(3);
         let migrated = Digest32::of_bytes(b"migrated-checkpoint");
-        let owner = NduPublicationOwnerV1::open_production(
-            &path,
-            previous.clone(),
-            Digest32::ZERO,
-        )
-        .expect("durable owner");
+        let owner = NduPublicationOwnerV1::open_production(&path, previous.clone(), Digest32::ZERO)
+            .expect("durable owner");
         owner
             .publish_cutover_with_external_effect(
                 &previous,
@@ -802,7 +798,10 @@ fn inplace_wal_truncate_and_equal_length_tail_rewrite_fence_live_observer() {
                 || -> Result<((), Vec<u8>), &'static str> { Ok(((), vec![0x64; 96])) },
             )
             .expect("fixture original bytes bound by Control Commit");
-        assert_eq!(owner.verify_original_cns_receipt_binding(&[0x64; 96]), Ok(()));
+        assert_eq!(
+            owner.verify_original_cns_receipt_binding(&[0x64; 96]),
+            Ok(())
+        );
         let bytes = std::fs::read(&path).expect("durable control WAL");
         let inode = std::fs::metadata(&path).expect("original inode").ino();
         match fault {
@@ -827,7 +826,9 @@ fn inplace_wal_truncate_and_equal_length_tail_rewrite_fence_live_observer() {
             _ => unreachable!("fixed fault cases"),
         }
         assert_eq!(
-            std::fs::metadata(&path).expect("still original inode").ino(),
+            std::fs::metadata(&path)
+                .expect("still original inode")
+                .ino(),
             inode
         );
         assert_eq!(
@@ -852,12 +853,10 @@ fn inplace_wal_truncate_and_equal_length_tail_rewrite_fence_live_observer() {
         drop(owner);
         assert!(matches!(
             NduPublicationOwnerV1::open_production(&path, snapshot(4), migrated),
-            Err(NduPublicationErrorV1::Corrupt)
-                | Err(NduPublicationErrorV1::Indeterminate)
+            Err(NduPublicationErrorV1::Corrupt) | Err(NduPublicationErrorV1::Indeterminate)
         ));
     }
 }
-
 
 #[cfg(unix)]
 #[test]
@@ -915,7 +914,6 @@ fn symlink_and_world_accessible_directory_cannot_own_frontier() {
     ));
 }
 
-
 #[cfg(unix)]
 #[test]
 fn original_control_actor_replays_fsynced_history_without_moving_writer_offset() {
@@ -958,9 +956,15 @@ fn original_control_actor_replays_fsynced_history_without_moving_writer_offset()
         .expect("real original-inode, full-history readback");
     let after_offset = {
         let mut state = owner.state.lock().expect("original writer lock");
-        state.file.stream_position().expect("unchanged append cursor")
+        state
+            .file
+            .stream_position()
+            .expect("unchanged append cursor")
     };
-    assert_eq!(before_offset, after_offset, "Observer must use positional reads");
+    assert_eq!(
+        before_offset, after_offset,
+        "Observer must use positional reads"
+    );
     assert_eq!(std::fs::read(&path).unwrap(), original_bytes);
     assert_eq!(observed.snapshot, original);
     assert_eq!(observed.checkpoint, second);
@@ -1009,7 +1013,10 @@ fn original_control_cns_join_poisoned_by_earlier_same_inode_wal_corruption() {
         )
         .expect("later original checkpoint");
     assert!(owner.read_original_local_frontier_v1().is_ok());
-    assert_eq!(owner.verify_original_cns_receipt_binding(&[0x68; 96]), Ok(()));
+    assert_eq!(
+        owner.verify_original_cns_receipt_binding(&[0x68; 96]),
+        Ok(())
+    );
 
     let mut bytes = std::fs::read(&path).expect("original WAL");
     let inode = std::fs::metadata(&path).unwrap().ino();
@@ -1036,15 +1043,17 @@ fn original_control_cns_join_poisoned_by_earlier_same_inode_wal_corruption() {
         Err(NduPublicationErrorV1::Poisoned)
     );
     assert_eq!(owner.current(), Err(NduPublicationErrorV1::Poisoned));
-    assert_eq!(std::fs::read(&path).unwrap(), bytes, "Observer does not rewrite WAL");
+    assert_eq!(
+        std::fs::read(&path).unwrap(),
+        bytes,
+        "Observer does not rewrite WAL"
+    );
     drop(owner);
     assert!(matches!(
         NduPublicationOwnerV1::open_production(&path, successor, after),
-        Err(NduPublicationErrorV1::Corrupt)
-            | Err(NduPublicationErrorV1::Indeterminate)
+        Err(NduPublicationErrorV1::Corrupt) | Err(NduPublicationErrorV1::Indeterminate)
     ));
 }
-
 
 #[cfg(unix)]
 #[test]
@@ -1055,12 +1064,8 @@ fn signed_original_receipt_binding_does_not_mask_a_later_checkpoint_frontier() {
     let successor = snapshot(4);
     let migrated = Digest32::of_bytes(b"checkpoint-race-migrated");
     let next_checkpoint = Digest32::of_bytes(b"checkpoint-race-next");
-    let owner = NduPublicationOwnerV1::open_production(
-        &path,
-        predecessor.clone(),
-        Digest32::ZERO,
-    )
-    .expect("original signed Control owner");
+    let owner = NduPublicationOwnerV1::open_production(&path, predecessor.clone(), Digest32::ZERO)
+        .expect("original signed Control owner");
     owner
         .publish_cutover_with_external_effect(
             &predecessor,
@@ -1087,8 +1092,7 @@ fn signed_original_receipt_binding_does_not_mask_a_later_checkpoint_frontier() {
         .verify_original_cns_receipt_frontier_v1(&[0x6a; 96])
         .expect("identical original CNS bytes but a different Control revision");
     assert_eq!(
-        before.original_cns_receipt_binding,
-        after.original_cns_receipt_binding,
+        before.original_cns_receipt_binding, after.original_cns_receipt_binding,
         "digest-only original CNS receipt binding cannot detect intervening P"
     );
     assert_eq!(after.sequence, before.sequence + 1);
