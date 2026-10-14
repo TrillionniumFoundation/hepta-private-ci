@@ -1,6 +1,6 @@
 # Hepta Neuron E0–E4: execution evidence gate (qualification only)
 
-This directory contains a **no-authority** POSIX host measurement collector and an execution-matrix validator. It does not train DecisionCells, dispatch models, approve topology changes, evaluate task outcomes, or establish production readiness. It deliberately consumes the project's existing [adaptive experiment registry](../../docs/learning/EXPERIMENTS.json), [neural biomimicry specification](../../docs/learning/NEURAL_BIOMIMICRY_SPEC.md), and [causal/longitudinal evaluation specification](../../docs/learning/CAUSAL_LONGITUDINAL_SPEC.md) rather than registering a competing authority.
+This directory contains a **no-authority** POSIX host measurement collector and an execution-matrix validator. It does not train DecisionCells, dispatch models, approve topology changes, evaluate task outcomes, or establish production readiness. It is an **experimental execution overlay** aligned with the existing [adaptive experiment registry](../../docs/learning/EXPERIMENTS.json), [neural biomimicry specification](../../docs/learning/NEURAL_BIOMIMICRY_SPEC.md), and [causal/longitudinal evaluation specification](../../docs/learning/CAUSAL_LONGITUDINAL_SPEC.md). Its E0–E4 stage arm names are local trial labels, **not** newly accepted canonical experiment IDs or proof that the registry was programmatically consumed.
 
 ## Stage mapping
 
