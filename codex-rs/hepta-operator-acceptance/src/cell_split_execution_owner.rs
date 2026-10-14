@@ -1275,6 +1275,102 @@ fn frame_path(root: &Path, index: usize, phase: &str) -> PathBuf {
     root.join(format!("cell-split-{index:02}-{phase}.json"))
 }
 
+/// Pure read-only attestation of the ORIGINAL split coordinator's locked
+/// immutable metrics acknowledgement frames. This never initializes the
+/// coordinator, writes an ACK, verifies a mock backend or mints authority.
+/// The signed effect transcript is checked against independent pinned trust
+/// before any local frame can be adopted. The original sidecar lock MUST exist
+/// and be acquired exclusively: observing while a writer is live fails closed.
+///
+/// Even success is local ledger consistency only. External monotonic
+/// Evidence custody, fresh original-effect readbacks and NDU Final-use are
+/// still required by the independent Observer.
+#[cfg(unix)]
+pub(crate) fn verify_cell_split_original_metrics_ledger_v1(
+    execution_root: &Path,
+    transcript: &CellSplitExecutionTranscriptV1,
+    trust: &CellSplitOwnerTrustV1,
+) -> Result<String, CellSplitExecutionErrorV1> {
+    verify_cell_split_execution_transcript_signatures_v1(transcript, trust)?;
+    let root = secure_root(execution_root, "original split ledger root")?;
+    let lock = lock_existing_sidecar(&root)?;
+    lock.verify_current(&root)?;
+    verify_split_frame_namespace(&root)?;
+    if read_frame(&root.join("cell-split-frozen-plan.json"))?
+        != Some(canonical_json(&transcript.plan)?)
+    {
+        return Err(CellSplitExecutionErrorV1::Invalid(
+            "original split ledger frozen plan drift",
+        ));
+    }
+    if read_frame(&root.join("cell-split-owner-trust-pins.json"))?
+        != Some(frozen_owner_trust_pins(&transcript.plan, trust)?)
+    {
+        return Err(CellSplitExecutionErrorV1::Invalid(
+            "original split ledger owner trust pins drift",
+        ));
+    }
+    let plan_digest = transcript.plan.digest()?;
+    let mut predecessor = plan_digest.clone();
+    let mut exact_frames = Vec::with_capacity(STEP_COUNT);
+    for (index, receipt) in transcript.receipts.iter().enumerate() {
+        let step = CellSplitExecutionStepV1::at(index)
+            .ok_or(CellSplitExecutionErrorV1::Invalid("original step index"))?;
+        let intent = make_intent(&transcript.plan, &plan_digest, step, &predecessor);
+        validate_receipt(&intent, receipt)?;
+        trust.verify(&intent, receipt)?;
+        let prepared = canonical_json(&intent)?;
+        let committed = canonical_json(receipt)?;
+        let acknowledged = metrics_ack_bytes(receipt)?;
+        if read_frame(&frame_path(&root, index, "prepared"))? != Some(prepared.clone())
+            || read_frame(&frame_path(&root, index, "committed"))? != Some(committed.clone())
+            || read_frame(&frame_path(&root, index, "metrics-acked"))?
+                != Some(acknowledged.clone())
+        {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "original metrics-acked is missing or not bound to signed owner commit",
+            ));
+        }
+        exact_frames.push((prepared, committed, acknowledged));
+        predecessor = receipt.receipt_digest.clone();
+    }
+    // Revalidate the pinned lock, namespace and ALL immutable bytes after the
+    // complete scan; a detached lock or swapped signed local frame may not
+    // return a positive local ledger digest. This is not a global atomic
+    // snapshot, so the independent retention challenge must bracket it.
+    lock.verify_current(&root)?;
+    verify_split_frame_namespace(&root)?;
+    if read_frame(&root.join("cell-split-frozen-plan.json"))?
+        != Some(canonical_json(&transcript.plan)?)
+        || read_frame(&root.join("cell-split-owner-trust-pins.json"))?
+            != Some(frozen_owner_trust_pins(&transcript.plan, trust)?)
+    {
+        return Err(CellSplitExecutionErrorV1::Invalid(
+            "original split ledger identity changed during readback",
+        ));
+    }
+    for (index, (prepared, committed, acknowledged)) in exact_frames.iter().enumerate() {
+        if read_frame(&frame_path(&root, index, "prepared"))?.as_deref()
+            != Some(prepared.as_slice())
+            || read_frame(&frame_path(&root, index, "committed"))?.as_deref()
+                != Some(committed.as_slice())
+            || read_frame(&frame_path(&root, index, "metrics-acked"))?.as_deref()
+                != Some(acknowledged.as_slice())
+        {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "original split ledger changed during metrics proof",
+            ));
+        }
+    }
+    lock.verify_current(&root)?;
+    Ok(sha256(&canonical_json(&(
+        METRICS_ACK_SCHEMA,
+        &plan_digest,
+        &transcript.transcript_digest,
+        &exact_frames,
+    ))?))
+}
+
 fn metrics_ack_bytes(
     receipt: &CellSplitExecutionReceiptV1,
 ) -> Result<Vec<u8>, CellSplitExecutionErrorV1> {
