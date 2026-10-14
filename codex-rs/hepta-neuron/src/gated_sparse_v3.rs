@@ -227,7 +227,7 @@ fn gated_sparse_tick_v3_inner(
     config: &GatedSparseConfigV3,
     input: &PopulationSparseTickV2,
     previous: Option<&GatedSparseCheckpointV3>,
-    prepared: Option<(&PreparedPopulationSparseConfigV2, Digest32)>,
+    prepared: Option<(&PreparedPopulationSparseDigestV2, Digest32)>,
 ) -> Result<(GatedSparseCheckpointV3, GatedSparseSignalReceiptV3), GatedSparseErrorV3> {
     let config_digest = match prepared {
         Some((_, digest)) => digest,
