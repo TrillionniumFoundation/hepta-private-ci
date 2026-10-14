@@ -1,0 +1,95 @@
+{
+  "schema": "hepta.e5.local-two-wave-checkpoint-observations.20261014.v1",
+  "authority": "DENY_ALL",
+  "production_promotion_permitted": false,
+  "evidence_kind": "local CPU PyTorch and safetensors process-level observations; synthetic features and labels",
+  "provenance": {
+    "local_source_file_bundle": "HEPTA_E5_EPISODIC_SOURCE_BUNDLE_20261014.txt",
+    "local_zip_sha256": "dcd603fa8bca2570ae885e7220e5cebbe930724ce79bd6e7d3eeb091a93187b9",
+    "source_candidate_differs_from_compact_repo_workflow": true,
+    "expected_current_head_hosted_ci_required": true,
+    "local_python": "3.13.5",
+    "local_torch": "2.10.0+cpu",
+    "local_safetensors": "0.7.0",
+    "test_counts": {
+      "full_checkpoint": 16,
+      "sparse_checkpoint": 15,
+      "independent_review": 9,
+      "passed": 40
+    }
+  },
+  "experiment": {
+    "waves": 2,
+    "updates_per_active_cell_per_wave": 3,
+    "optimizer": "SGD momentum=0.9, lr=0.01",
+    "partial_overlap": "floor(active_cells/2)",
+    "all_logical_cell_heads_resident": true,
+    "per_cell_head_parameters": 9744,
+    "baseline_is_deterministic_synthetic_weights": true
+  },
+  "scale_observations": [
+    {
+      "logical_cells": 64,
+      "active_cells": 8,
+      "distinct_learned_cells": 12,
+      "full_wave1_bytes": 2808128,
+      "full_wave2_bytes": 2964080,
+      "sparse_wave1_bytes": 624984,
+      "sparse_wave2_bytes": 936880,
+      "wave2_disk_saving_percent": 68.3922161345173,
+      "two_checkpoint_saving_percent": 72.94165421620289,
+      "full_and_sparse_restored_weight_momentum_steps_identical": true,
+      "momentum_reset_ablation_changes_result": true
+    },
+    {
+      "logical_cells": 256,
+      "active_cells": 25,
+      "distinct_learned_cells": 38,
+      "full_wave1_bytes": 10955808,
+      "full_wave2_bytes": 11462608,
+      "sparse_wave1_bytes": 1950472,
+      "sparse_wave2_bytes": 2964064,
+      "wave2_disk_saving_percent": 74.14145192786843,
+      "two_checkpoint_saving_percent": 78.07813005165039,
+      "full_and_sparse_restored_weight_momentum_steps_identical": true,
+      "momentum_reset_ablation_changes_result": true
+    },
+    {
+      "logical_cells": 1024,
+      "active_cells": 102,
+      "distinct_learned_cells": 153,
+      "full_wave1_bytes": 43897328,
+      "full_wave2_bytes": 45885512,
+      "sparse_wave1_bytes": 7954040,
+      "sparse_wave2_bytes": 11930408,
+      "wave2_disk_saving_percent": 73.99961887752282,
+      "two_checkpoint_saving_percent": 77.85272998715568,
+      "full_and_sparse_restored_weight_momentum_steps_identical": true,
+      "momentum_reset_ablation_changes_result": true
+    },
+    {
+      "logical_cells": 4096,
+      "active_cells": 409,
+      "distinct_learned_cells": 614,
+      "full_wave1_bytes": 175624272,
+      "full_wave2_bytes": 183615992,
+      "sparse_wave1_bytes": 31890232,
+      "sparse_wave2_bytes": 47873672,
+      "wave2_disk_saving_percent": 73.92728624639624,
+      "two_checkpoint_saving_percent": 77.7965022317209,
+      "full_and_sparse_restored_weight_momentum_steps_identical": true,
+      "momentum_reset_ablation_changes_result": true
+    }
+  ],
+  "limits": {
+    "actual_pretrained_model_executed": false,
+    "signed_model_or_weight_origin_verified": false,
+    "production_worker_final_use_or_cas_wal_verified": false,
+    "target_host_failure_recovery_verified": false,
+    "OOD_and_future_ndu_verified": false,
+    "energy_and_gpu_verified": false,
+    "request_p99_verified": false,
+    "sparse_memory_footprint_equal_to_disk_ratio": false,
+    "full_rebuild_CPU_and_RSS_charged": true
+  }
+}
