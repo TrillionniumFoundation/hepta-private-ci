@@ -4,6 +4,11 @@ on:
   pull_request:
     paths:
       - "experiments/shared_stem_cell/e1_public_triplet_real_cpu.py"
+      - "experiments/shared_stem_cell/e2_feature_residual_study.py"
+      - "experiments/shared_stem_cell/test_e2_feature_residual_study.py"
+      - "experiments/shared_stem_cell/e2_residual_review.py"
+      - "experiments/shared_stem_cell/test_e2_residual_review.py"
+      - "experiments/shared_stem_cell/E2_PUBLIC_RESIDUAL_STUDY.md"
       - "experiments/shared_stem_cell/test_e1_public_triplet_real_cpu.py"
       - "experiments/shared_stem_cell/e1_public_triplet_review.py"
       - "experiments/shared_stem_cell/test_e1_public_triplet_review.py"
@@ -80,6 +85,8 @@ jobs:
           set -euo pipefail
           "$RUNNER_TEMP/e1-real-venv/bin/python" -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_e1_public_triplet_*.py' -v
+          "$RUNNER_TEMP/e1-real-venv/bin/python" -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_e2_*.py' -v
       - name: Independently re-create pinned AG News panel
         run: |
           set -euo pipefail
@@ -145,7 +152,8 @@ jobs:
               --panel "$ROOT/panel.json" --model "$model" \
               --compact-checkout pinned-compact --gemma-checkout pinned-gemma \
               --gemma-manifest "$ROOT/gemma-pinned/manifest.json" \
-              --output "$ROOT/$model.json"; then
+              --output "$ROOT/$model.json" \
+              --e2-output "$ROOT/$model.e2.json"; then
               echo "$model real model and Head run completed"
             else
               echo "$model failed, original failure preserved" >&2
