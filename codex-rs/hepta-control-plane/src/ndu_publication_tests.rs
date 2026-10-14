@@ -258,6 +258,79 @@ fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
 
 #[cfg(unix)]
 #[test]
+fn concurrent_model_checkpoint_and_guarded_runtime_cutover_have_one_winner() {
+    use std::sync::Arc;
+    use std::sync::Barrier;
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::atomic::Ordering;
+    use std::thread;
+
+    let dir = tempfile::tempdir().expect("protected owner directory");
+    let path = dir.path().join("guarded-race.wal");
+    let old = snapshot(3);
+    let model_checkpoint = Digest32::of_bytes(b"model-winner");
+    let migrated = Digest32::of_bytes(b"runtime-winner");
+    let owner = Arc::new(
+        NduPublicationOwnerV1::open_production(&path, old.clone(), Digest32::ZERO)
+            .expect("durable Control owner"),
+    );
+    let physical_calls = Arc::new(AtomicUsize::new(0));
+    let barrier = Arc::new(Barrier::new(3));
+
+    let model_owner = Arc::clone(&owner);
+    let model_barrier = Arc::clone(&barrier);
+    let model_old = old.clone();
+    let model = thread::spawn(move || {
+        model_barrier.wait();
+        model_owner.compare_and_publish_checkpoint(
+            &model_old,
+            Digest32::of_bytes(b"signed-model-read"),
+            Digest32::of_bytes(b"model-tick"),
+            Digest32::ZERO,
+            model_checkpoint,
+        )
+    });
+
+    let cns_owner = Arc::clone(&owner);
+    let cns_barrier = Arc::clone(&barrier);
+    let cns_calls = Arc::clone(&physical_calls);
+    let cns_old = old.clone();
+    let cns = thread::spawn(move || {
+        cns_barrier.wait();
+        cns_owner.publish_cutover_with_external_effect(
+            &cns_old,
+            Digest32::ZERO,
+            snapshot(4),
+            migrated,
+            || -> Result<(), &'static str> {
+                cns_calls.fetch_add(1, Ordering::SeqCst);
+                Ok(())
+            },
+        )
+    });
+    barrier.wait();
+    let model_ok = model.join().expect("model join").is_ok();
+    let cns_ok = cns.join().expect("CNS join").is_ok();
+    assert_ne!(model_ok, cns_ok, "one frozen predecessor can commit once");
+    assert_eq!(
+        physical_calls.load(Ordering::SeqCst),
+        usize::from(cns_ok),
+        "a stale CNS route must not perform the external effect"
+    );
+    let (live, checkpoint) = owner.current().expect("single surviving frontier");
+    if model_ok {
+        assert_eq!((live.clone(), checkpoint), (old, model_checkpoint));
+    } else {
+        assert_eq!((live.clone(), checkpoint), (snapshot(4), migrated));
+    }
+    drop(owner);
+    let restored = NduPublicationOwnerV1::open_production(&path, live.clone(), checkpoint)
+        .expect("winner's exact original WAL must replay");
+    assert_eq!(restored.current().unwrap(), (live, checkpoint));
+}
+
+#[cfg(unix)]
+#[test]
 fn truncated_journal_is_rejected_without_mutating_history() {
     let dir = tempfile::tempdir().expect("owner-only");
     let path = dir.path().join("frontier.wal");
