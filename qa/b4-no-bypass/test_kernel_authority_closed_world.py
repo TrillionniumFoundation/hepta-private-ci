@@ -412,6 +412,59 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "generic CNS generation writer callsites drifted; audit Control handoff",
         )
 
+    def test_generic_runtime_denies_typed_split_before_final_use(self) -> None:
+        # This is a second physical cutover route distinct from the direct
+        # CellSplitRouteController. An admitted topology Update carrying a
+        # typed Split must not claim Final-use and must not publish a route
+        # until the original CNS/Control Begin/Commit has a real owner.
+        path = "codex-rs/hepta-runtime/src/topology_execution.rs"
+        code = self.lexical_code(path)
+        self.assertIn("ControlCutoverUnbound", code)
+        ingress = re.search(
+            r"\bfn\s+validate_runtime_topology_transition_for_destination_v1\s*\(",
+            code,
+        )
+        self.assertIsNotNone(ingress, "common apply/recover validator missing")
+        assert ingress is not None
+        opening = code.find("{", ingress.end())
+        closing = CALLER_PROOF._matching_delimiter(code, opening, "{", "}")
+        self.assertIsNotNone(closing, "common topology validator must be complete")
+        assert closing is not None
+        body = code[opening + 1 : closing]
+        deny = body.find("reject_ungoverned_split_operation_v1(change.operation)?")
+        self.assertGreaterEqual(deny, 0, "typed Split rejection is not called")
+        self.assertIn(
+            "for change in &candidate.changes",
+            body,
+            "all changes including compound Updates must be inspected",
+        )
+        self.assertLess(
+            deny,
+            body.index("if candidate.kind"),
+            "typed Split must deny before accepting a generic Update",
+        )
+        self.assertLess(
+            deny,
+            body.index("let binding = FinalUseBinding"),
+            "typed Split must deny before creating a Final-use binding",
+        )
+        self.assertRegex(
+            code,
+            r"if\s+operation\s*==\s*TopologyOperationV2::Split\s*\{\s*"
+            r"return\s+Err\s*\(\s*RuntimeTopologyExecutionError::ControlCutoverUnbound\s*\)",
+            "typed Split must never return generic approval",
+        )
+        for method in (
+            "validate_runtime_topology_transition_v1",
+            "validate_runtime_topology_recovery_v1",
+        ):
+            self.assertRegex(
+                code,
+                rf"\bfn\s+{method}\s*\([^{{]+"
+                r"validate_runtime_topology_transition_for_destination_v1\s*\(",
+                f"{method} bypasses the shared Split-denying validator",
+            )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
