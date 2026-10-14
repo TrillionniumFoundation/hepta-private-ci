@@ -33,6 +33,11 @@ supplies independent episode count/ESS, pre-label prediction commitment,
 outcome receipt, model bundle, actual training/inference bytes and real model
 invocation count. A–D also require at least three distinct frozen independent
 snapshot digests and exact protected-slice names on every arm/window.
+Experiment C additionally fixes one underlying Circuit graph identity across arms
+while requiring distinct route/depth policies and observed route traces.
+Experiment D requires explicit held-out task-family inventories disjoint from the
+frozen training family inventory and across both future windows. These are
+identity/conformance checks, not independent proof of task-family provenance.
 The reported interval allocation must be no more than Bonferroni
 0.05/(two future windows × registered comparisons); one protected
 slice degrading by more than 2% vetoes a provisional improvement even
