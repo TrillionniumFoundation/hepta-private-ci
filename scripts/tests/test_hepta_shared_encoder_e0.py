@@ -39,6 +39,15 @@ class ProcessCaptureTests(unittest.TestCase):
         with self.assertRaises(CaptureError):
             parse_stat("not a process stat")
 
+    def test_duplicate_memory_fields_and_invalid_counter_rejected(self):
+        with self.assertRaisesRegex(CaptureError, "duplicate"):
+            parse_memory_kib("VmRSS: 100 kB\nVmRSS: 200 kB", {"VmRSS"})
+        tail = ["S"] + ["0"] * 21
+        tail[19] = "22"
+        tail[21] = "-1"
+        with self.assertRaises(CaptureError):
+            parse_stat("17 (worker) " + " ".join(tail))
+
     def test_bounds_and_real_self_process_sample(self):
         for kwargs in ({"samples": 1}, {"samples": 257}, {"interval_ms": 0}):
             with self.assertRaises(CaptureError):
