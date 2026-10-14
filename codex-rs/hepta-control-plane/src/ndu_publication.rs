@@ -238,9 +238,7 @@ struct State {
     // Durable B is fsynced, physical effect and original receipt are unresolved.
     // This is a sticky publication fence even while the mutex is released.
     pending_cutover: bool,
-    // The most recent fsynced C's original-runtime receipt binding. Observers
-    // must independently authenticate its original signed bytes and current
-    // serving state; this digest by itself grants no route/Final-use authority.
+    // Hash of latest fsynced original CNS owner receipt bytes, not authority.
     last_cns_original_receipt_binding: Option<Digest32>,
 }
 impl State {
