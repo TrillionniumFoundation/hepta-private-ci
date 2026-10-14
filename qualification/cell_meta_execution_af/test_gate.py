@@ -445,6 +445,25 @@ class AfEvidenceTests(unittest.TestCase):
         self.d["codex"]["device_profile_sha256"] = sha("different-device")
         check_bad(self.d, "F", "does not match E")
 
+    def test_paired_placement_deltas_do_not_select_a_winner(self):
+        for r in self.d["resources"]["runs"]:
+            if r["mode"] == "per_cell_process" and r["logical_cells"] == 4096 and r["load_profile"] == "fixed_active":
+                r["p99_ms"] = 19.0
+                r["rss_peak_bytes"] += 20_000_000
+        report = gate.verify(self.d)
+        diagnostics = report["gates"]["E"]["paired_placement_diagnostics"]
+        self.assertEqual(diagnostics["per_cell_process/4096/fixed_active"]["p99_delta_ms"], 7.0)
+        self.assertEqual(diagnostics["per_cell_process/4096/fixed_active"]["rss_delta_bytes"], 20_000_000)
+        self.assertFalse(report["gates"]["E"]["placement_selection_authorized"])
+        self.assertFalse(report["production_selection_permitted"])
+
+    def test_F_route_costs_are_reported_without_codex_extraction_authority(self):
+        result = gate.verify(self.d)["gates"]["F"]
+        self.assertEqual(result["per_route_cost_diagnostics"]["full_codex_agent"]["allowed"]["tasks"], 2)
+        self.assertEqual(result["per_route_cost_diagnostics"]["direct_effect"]["allowed"]["model_calls"], 0)
+        self.assertEqual(result["per_route_cost_diagnostics"]["full_codex_agent"]["allowed"]["model_calls"], 2)
+        self.assertFalse(result["codex_extraction_authorized"])
+
     def test_missing_E_resources_blocks_F_without_crashing(self):
         del self.d["resources"]
         report = gate.verify(self.d)
