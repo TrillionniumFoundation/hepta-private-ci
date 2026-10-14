@@ -279,12 +279,37 @@ def run(repo: Path, plan_file: Path, arm: str, output: Path, timeout: float,
                 break
             time.sleep(min(.02, max(.001, deadline - time.monotonic())))
     elapsed = time.monotonic_ns() - t0
+    # The direct child can exit successfully while a same-session helper still
+    # writes evidence or executes model code. A complete run must settle its
+    # isolated process group, not just the first PID.
+    if status == "completed":
+        try:
+            os.killpg(process.pid, 0)
+        except ProcessLookupError:
+            pass
+        else:
+            status = "unsettled_descendants"
+            try:
+                os.killpg(process.pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
     try:
         executable_after = sha256_file(executable)
     except (OSError, EvidenceError):
         executable_after = None
     if executable_after != executable_digest:
         status = "executable_drift"
+    # Reopen and rehash the ENTIRE frozen source/artifact/argument inventory
+    # after the executable has finished. Checking only argv[0] leaves an
+    # ordinary input mutation during execution undetected. This remains a
+    # before/after check, not an attestation of bytes actually consumed.
+    postrun_binding_verified = False
+    try:
+        verify_plan(plan_file, repo)
+        postrun_binding_verified = True
+    except (EvidenceError, OSError, subprocess.CalledProcessError, ValueError):
+        if status == "completed":
+            status = "postrun_binding_drift"
     # Per-direct-child wait4 resource usage. Descendant CPU/RSS and GPU remain unmeasured.
     rss = usage.ru_maxrss
     if sys.platform == "darwin":
@@ -296,6 +321,7 @@ def run(repo: Path, plan_file: Path, arm: str, output: Path, timeout: float,
         "artifact_sha256": plan["arms"][arm]["sha256"],
         "command_sha256": digest(command), "executable_path": str(executable),
         "executable_sha256": executable_digest, "status": status, "exit_code": return_code,
+        "postrun_binding_verified": postrun_binding_verified,
         "elapsed_wall_ns": elapsed,
         "child_user_cpu_ns": int(max(0, usage.ru_utime) * 1e9),
         "child_system_cpu_ns": int(max(0, usage.ru_stime) * 1e9),
@@ -343,6 +369,7 @@ def audit(plan_file: Path, repo: Path, receipt_paths: list[Path]) -> dict:
         observed_slots.add(slot)
         require(rec.get("artifact_sha256") == plan["arms"][arm]["sha256"], "receipt artifact mismatch")
         require(rec.get("status") == "completed" and rec.get("exit_code") == 0, "incomplete/failed model execution")
+        require(rec.get("postrun_binding_verified") is True, "postrun source/artifacts were not verified")
         require(isinstance(rec.get("executable_path"), str) and sha256_file(Path(rec["executable_path"])) == rec.get("executable_sha256"), "executable byte drift")
         require(rec["executable_path"] == plan["commands"][arm]["executable"]["path"] and
                 rec["executable_sha256"] == plan["commands"][arm]["executable"]["sha256"] and
