@@ -1019,15 +1019,19 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
     assert_eq!(migration_calls.load(Ordering::SeqCst), 1);
     assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
     let original = port
-        .read_original_commit(&intent.idempotency_key)?
+        .read_original_commit(&intent.idempotency_key)
+        .map_err(|error| anyhow::anyhow!("{error}"))?
         .expect("fsynced original runtime receipt");
     port.verify_original_commit(&original)
         .map_err(|e| anyhow::anyhow!("{e}"))?;
     assert_eq!(
         original.committed_sequence,
-        port.committed_sequence(&binding.cns_id)?
+        port.committed_sequence(&binding.cns_id)
+            .map_err(|error| anyhow::anyhow!("{error}"))?
     );
-    let live = port.inspect_live(&binding.cns_id, &plan.scope_digest, &"aa".repeat(32))?;
+    let live = port
+        .inspect_live(&binding.cns_id, &plan.scope_digest, &"aa".repeat(32))
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
     port.verify_live(&live)
         .map_err(|e| anyhow::anyhow!("{e}"))?;
     assert_eq!(live.generation, plan.child_generation);
