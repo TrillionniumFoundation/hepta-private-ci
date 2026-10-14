@@ -451,14 +451,20 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         assert end is not None
         body = code[begin + 1 : end]
         self.assertIn("secure_cns_nonce()", body)
-        self.assertGreaterEqual(
-            body.count("control.read_original_local_frontier_v1()"), 0
+        self.assertEqual(
+            body.count(".read_original_local_frontier_v1()"),
+            2,
+            "original Control must be read before AND after signed Observer RPC",
         )
-        self.assertIn(".read_original_local_frontier_v1()", body)
         self.assertIn(".read_signed_highwater(", body)
         self.assertIn("pinned_observer_key == &self.runtime_key", body)
         self.assertIn("verify_strict(", body)
         self.assertIn("if original_before != original_after", body)
+        root = self.lexical_code("codex-rs/hepta-runtime/src/lib.rs")
+        self.assertIn("CellSplitIndependentControlObserverV1", root)
+        self.assertIn("CellSplitSignedControlHighwaterV1", root)
+        self.assertIn("cell_split_control_highwater_signing_bytes_v1", root)
+        self.assertIn("CELL_SPLIT_SIGNED_CONTROL_HIGHWATER_SCHEMA_V1", root)
         self.assertIn("self.plan.ndu_snapshot_digest", body)
         self.assertIn("claimed.wal_inode != original_before.wal_inode", body)
         self.assertIn("claimed.marker_inode != original_before.marker_inode", body)

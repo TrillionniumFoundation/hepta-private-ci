@@ -228,6 +228,7 @@ enum IndependentControlWitnessFault {
     None,
     ReplayedChallenge,
     WrongStoredSequence,
+    WrongScope,
     WrongPlan,
     CorruptedSignature,
 }
@@ -286,6 +287,9 @@ impl CellSplitIndependentControlObserverV1 for IndependentControlWitnessFixture 
             }
             IndependentControlWitnessFault::WrongStoredSequence => {
                 proof.sequence += 1;
+            }
+            IndependentControlWitnessFault::WrongScope => {
+                proof.scope_id = "another-unrelated-scope".into();
             }
             IndependentControlWitnessFault::WrongPlan => {
                 proof.plan_digest = "ee".repeat(32);
@@ -431,6 +435,7 @@ fn independent_control_observer_rejects_replayed_nonce_wrong_scope_or_forged_sig
     for fault in [
         IndependentControlWitnessFault::ReplayedChallenge,
         IndependentControlWitnessFault::WrongStoredSequence,
+        IndependentControlWitnessFault::WrongScope,
         IndependentControlWitnessFault::WrongPlan,
         IndependentControlWitnessFault::CorruptedSignature,
     ] {
