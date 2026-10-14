@@ -105,6 +105,31 @@ class PhysicalMaterialIntegrationTests(unittest.TestCase):
         self.assertEqual(receipt["encoded_sha256"], again["encoded_sha256"])
         self.assertEqual(receipt["feature_encoder_identity"], again["feature_encoder_identity"])
 
+    def test_cls_pooled_real_forward_matches_independent_oracle(self):
+        # RANDOM tiny BERT verifies actual LocalEncoder dispatch, not Granite quality.
+        mean = self.run_ingress(output="mean-v7")
+        cls_profile = deepcopy(self.profile)
+        cls_profile["pooling"] = "cls-first-token"
+        cls_profile["normalization"] = "unit_l2"
+        cls = self.run_ingress(output="cls-v7", profile=cls_profile)
+        self.assertEqual((mean["physical_forwards"], cls["physical_forwards"]), (3, 3))
+        self.assertEqual(cls["pooling"], "cls-first-token")
+        self.assertNotEqual(mean["feature_encoder_identity"],
+                            cls["feature_encoder_identity"])
+        self.assertNotEqual(mean["encoded_sha256"], cls["encoded_sha256"])
+        encoded, _ = load_pinned_jsonl(self.root / "cls-v7/encoded.jsonl",
+                                       cls["encoded_sha256"])
+        with torch.no_grad():
+            for row, source in zip(encoded, self.rows):
+                tokens = self.tokenizer([source["target_text"]], return_tensors="pt")
+                hidden = self.model(**tokens).last_hidden_state
+                oracle = torch.nn.functional.normalize(hidden[:, 0, :], dim=1)[0]
+                actual = torch.tensor(row["target"]["values"])
+                torch.testing.assert_close(actual, oracle.float(), atol=1e-5, rtol=1e-5)
+                self.assertAlmostEqual(float(torch.linalg.vector_norm(actual)), 1., places=5)
+        self.assertFalse(cls["actual_pretrained_model_proven"])
+        self.assertFalse(cls["production_accepted"])
+
     def test_modified_weight_fails_without_success_file(self):
         p = next(self.model_root / n for n in self.profile["snapshot"]["files"]
                  if n.endswith(".safetensors"))
