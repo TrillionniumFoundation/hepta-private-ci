@@ -1,0 +1,185 @@
+name: MemoryCell real Reader capacity and one-premise ablation
+on:
+  push:
+    branches: [codex/memorycell-reader-bottleneck-ablation-20261014]
+    paths:
+      - "scripts/memory_cell/reader_bottleneck_ablation.py"
+      - "scripts/memory_cell/test_reader_bottleneck_ablation.py"
+      - ".github/workflows/hepta-memory-reader-bottleneck-ablation.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/reader_bottleneck_ablation.py"
+      - "scripts/memory_cell/test_reader_bottleneck_ablation.py"
+      - ".github/workflows/hepta-memory-reader-bottleneck-ablation.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-reader-ablation-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+env:
+  PYTHONPATH: scripts/memory_cell
+  HEPTA_MEMORY_TESTED_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+  HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+  HF_HUB_DISABLE_XET: "1"
+  TOKENIZERS_PARALLELISM: "false"
+  OMP_NUM_THREADS: "2"
+  MKL_NUM_THREADS: "2"
+jobs:
+  source-gate:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.HEPTA_MEMORY_TESTED_COMMIT }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Compile and run negative controls without model weights or targets
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/reader_bottleneck_ablation.py scripts/memory_cell/test_reader_bottleneck_ablation.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_reader_bottleneck_ablation.py -v
+      - name: Mandatory repository Ruff format
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/reader_bottleneck_ablation.py \
+            scripts/memory_cell/test_reader_bottleneck_ablation.py
+      - name: Preserve format diagnostics on source failure
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-bottleneck-format
+          git rev-parse HEAD > /tmp/reader-bottleneck-format/tested-commit.txt
+          if command -v uv >/dev/null; then
+            uv run --frozen --project scripts ruff format --diff \
+              scripts/memory_cell/reader_bottleneck_ablation.py \
+              scripts/memory_cell/test_reader_bottleneck_ablation.py > /tmp/reader-bottleneck-format/ruff.diff || true
+          fi
+          (cd /tmp/reader-bottleneck-format && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: memory-reader-bottleneck-source-diagnostics
+          path: /tmp/reader-bottleneck-format
+          if-no-files-found: warn
+  generate:
+    needs: source-gate
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        tier: [smol-1.7b, qwen-3b]
+        case: [0, 1, 2, 3, 4, 5, 6, 7]
+    runs-on: ubuntu-22.04
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.HEPTA_MEMORY_TESTED_COMMIT }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Retrieve externally pinned original source, excluding every target
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11827287296/zip > /tmp/original-reader-source.zip
+          echo '31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a  /tmp/original-reader-source.zip' | sha256sum --check --strict
+          mkdir -p /tmp/reader-public
+          unzip -q /tmp/original-reader-source.zip 'plan/*' -d /tmp/reader-public
+          test -s /tmp/reader-public/plan/plan.json
+          test -s /tmp/reader-public/plan/source-view.json
+          test ! -e /tmp/reader-public/observations
+          unzip -p /tmp/original-reader-source.zip environment.txt > /tmp/reader-environment.txt
+          test -s /tmp/reader-environment.txt
+      - name: Pin native CPU environment and actual pretrained Reader weights
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/reader-py
+          /tmp/reader-py/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/reader-py/bin/pip install -r /tmp/reader-environment.txt
+          /tmp/reader-py/bin/pip freeze > /tmp/reader-installed.txt
+          diff -u /tmp/reader-environment.txt /tmp/reader-installed.txt
+          python3 scripts/memory_cell/strong_rag_host_gate.py --output /tmp/reader-host.json
+          /tmp/reader-py/bin/python scripts/memory_cell/reader_reference.py stage ${{ matrix.tier }} /tmp/reader-model
+      - name: Generate five raw answers, no scoring labels in reader workspace
+        env:
+          HF_HUB_OFFLINE: "1"
+          TRANSFORMERS_OFFLINE: "1"
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-shards
+          /tmp/reader-py/bin/python scripts/memory_cell/reader_bottleneck_ablation.py generate \
+            /tmp/reader-public/plan /tmp/reader-model \
+            /tmp/reader-shards/${{ matrix.tier }}-${{ matrix.case }} \
+            --case ${{ matrix.case }} --tier ${{ matrix.tier }} \
+            --stage-sha "$(sha256sum /tmp/reader-model/stage.json | cut -d ' ' -f1)"
+      - name: Seal raw journal after attempt, including failed/partial runs
+        if: always()
+        run: |
+          set -euo pipefail
+          folder=/tmp/reader-shards/${{ matrix.tier }}-${{ matrix.case }}
+          mkdir -p "$folder"
+          git rev-parse HEAD > "$folder/checkout-commit.txt"
+          (cd "$folder" && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: memory-reader-bottleneck-${{ matrix.tier }}-${{ matrix.case }}
+          path: /tmp/reader-shards/${{ matrix.tier }}-${{ matrix.case }}
+          if-no-files-found: warn
+  collect:
+    needs: generate
+    runs-on: ubuntu-22.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.HEPTA_MEMORY_TESTED_COMMIT }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-reader-bottleneck-*
+          path: /tmp/reader-downloaded
+      - name: Reopen immutable original source and complete original answers
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11827287296/zip > /tmp/original-reader-source.zip
+          echo '31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a  /tmp/original-reader-source.zip' | sha256sum --check --strict
+          mkdir -p /tmp/reader-source /tmp/reader-shards
+          unzip -q /tmp/original-reader-source.zip -d /tmp/reader-source
+          python3 scripts/memory_cell/strong_rag_sharded_ci.py verify /tmp/reader-source
+          for tier in smol-1.7b qwen-3b; do
+            for index in 0 1 2 3 4 5 6 7; do
+              source=/tmp/reader-downloaded/memory-reader-bottleneck-"$tier"-"$index"
+              test -s "$source/SHA256SUMS"
+              (cd "$source" && sha256sum --check --strict SHA256SUMS)
+              cp -a "$source" /tmp/reader-shards/"$tier"-"$index"
+            done
+          done
+      - name: Only now open original gold and re-execute bounded program verifier
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/reader_bottleneck_ablation.py collect \
+            /tmp/reader-source/plan /tmp/reader-source/observations /tmp/reader-shards \
+            /tmp/reader-results --generating-commit "$HEPTA_MEMORY_TESTED_COMMIT"
+          git rev-parse HEAD > /tmp/reader-results/collector-commit.txt
+          (cd /tmp/reader-results && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memory-reader-bottleneck-original-80-call-report
+          path: /tmp/reader-results
+          if-no-files-found: error
