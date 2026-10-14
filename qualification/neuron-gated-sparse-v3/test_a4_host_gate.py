@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Synthetic A4 100-slot negative cases; never attest a target host."""
 import hashlib
+import importlib.util
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
@@ -159,8 +160,8 @@ class HostA4GateTests(unittest.TestCase):
             self.check()
 
 
-@unittest.skipUnless(__import__('importlib').util.find_spec('torch') is not None and
-                     __import__('importlib').util.find_spec('safetensors') is not None,
+@unittest.skipUnless(importlib.util.find_spec('torch') is not None and
+                     importlib.util.find_spec('safetensors') is not None,
                      'requires pinned CPU Torch + safetensors')
 class PhysicalArtifactA4StructureTests(HostA4GateTests):
     """Same 100-slot input fixture, but validate REAL on-disk safetensors bytes.
