@@ -55,6 +55,9 @@ pub enum BatchWorkerErrorV1 {
     Worker,
     BatchUnsupported,
     Capacity,
+    ScopeFrontierUnavailable,
+    StaleScope,
+    StaleAfterEffect,
 }
 
 #[derive(Debug)]
@@ -69,6 +72,12 @@ pub struct BatchWorkerPollV1 {
     pub outcomes: Vec<BatchWorkerItemOutcomeV1>,
     pub scanned_lanes: usize,
     pub pending: usize,
+}
+
+/// Control-owned live scope/generation/fence/epoch reader, not a caller hint.
+/// An unavailable owner must deny any queued signed batch.
+pub trait MicrobatchScopeFrontierV1: std::fmt::Debug + Send + Sync {
+    fn current(&self, scope: &StableId) -> Result<MicrobatchKeyV1, BatchWorkerErrorV1>;
 }
 
 struct PendingV1 {
@@ -86,6 +95,7 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     scheduler: BoundedMicrobatchSchedulerV1,
     worker: InferenceWorker<D>,
     authority: FinalUseAuthority,
+    scope_frontier: Arc<dyn MicrobatchScopeFrontierV1>,
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
@@ -162,9 +172,20 @@ fn neuron_batch_final_use_binding_with_slice_v1(
 }
 
 impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1<D> {
+    /// The old constructor has no independent Control route authority.
+    /// Preserve source compatibility but fail closed before any model effect.
     pub fn new(
+        _worker: InferenceWorker<D>,
+        _authority: FinalUseAuthority,
+        _limits: MicrobatchLimitsV1,
+    ) -> Result<Self, BatchWorkerErrorV1> {
+        Err(BatchWorkerErrorV1::ScopeFrontierUnavailable)
+    }
+
+    pub fn new_with_scope_frontier(
         worker: InferenceWorker<D>,
         authority: FinalUseAuthority,
+        scope_frontier: Arc<dyn MicrobatchScopeFrontierV1>,
         limits: MicrobatchLimitsV1,
     ) -> Result<Self, BatchWorkerErrorV1> {
         let scheduler =
@@ -173,12 +194,17 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             scheduler,
             worker,
             authority,
+            scope_frontier,
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
             failed_metrics: AtomicU64::new(0),
             maximum_pending: limits.max_pending,
         })
+    }
+
+    fn scope_binding_live(&self, key: &MicrobatchKeyV1) -> bool {
+        self.scope_frontier.current(&key.scope_id).ok().as_ref() == Some(key)
     }
 
     pub fn with_metric_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
@@ -335,7 +361,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         }
         let mut outcomes = Vec::new();
         if let Some(batch) = poll.batch {
-            if batch.requests.len() > 1 {
+            // Physical model compatibility is weaker than Scope authority.
+            // A batch can span independently fenced scopes; compare every
+            // exact generation, fence and epoch before consuming any nonce.
+            if batch
+                .requests
+                .iter()
+                .any(|intent| !self.scope_binding_live(&intent.key))
+            {
+                outcomes.extend(self.deny_stale_batch(batch.requests));
+            } else if batch.requests.len() > 1 {
                 outcomes.extend(self.execute_native_batch(now_ms, &batch.key, batch.requests));
             } else {
                 for intent in batch.requests {
@@ -544,6 +579,45 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                 BatchWorkerItemOutcomeV1 {
                     request_id: intent.request_id,
                     result,
+                }
+            })
+            .collect()
+    }
+
+    /// All stale queued identities remain terminal without claiming Final-use
+    /// or entering a physical scalar/native backend.
+    fn deny_stale_batch(
+        &mut self,
+        intents: Vec<InferenceIntentV1>,
+    ) -> Vec<BatchWorkerItemOutcomeV1> {
+        let started = Instant::now();
+        intents
+            .into_iter()
+            .map(|intent| {
+                self.pending.remove(&intent.request_id);
+                self.retired.insert(retired_identity(&intent.request_id));
+                if let Some(sink) = &self.metric_sink {
+                    if sink
+                        .record(PhaseMetricEventV1 {
+                            scope_digest: Digest32::of_bytes(
+                                intent.key.scope_id.as_str().as_bytes(),
+                            ),
+                            operation_digest: Digest32::of_bytes(
+                                intent.request_id.as_str().as_bytes(),
+                            ),
+                            phase: PhaseMetricKindV1::NeuronFeature,
+                            latency_micros: u64::try_from(started.elapsed().as_micros())
+                                .unwrap_or(u64::MAX),
+                            succeeded: false,
+                        })
+                        .is_err()
+                    {
+                        self.failed_metrics.fetch_add(1, Ordering::Release);
+                    }
+                }
+                BatchWorkerItemOutcomeV1 {
+                    request_id: intent.request_id,
+                    result: Err(BatchWorkerErrorV1::StaleScope),
                 }
             })
             .collect()
