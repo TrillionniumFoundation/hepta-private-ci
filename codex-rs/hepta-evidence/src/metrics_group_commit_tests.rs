@@ -648,17 +648,10 @@ fn local_original_frontier_rejects_same_inode_early_row_tampering() {
     assert_eq!(initial.sequence, 2);
     let before = fs::read_to_string(&path).expect("original bytes");
     let corrupted = before.replacen(":42:1", ":43:1", 1);
-    assert_ne!(
-        corrupted, before,
-        "one earlier payload field was rewritten"
-    );
+    assert_ne!(corrupted, before, "one earlier payload field was rewritten");
     assert_eq!(corrupted.len(), before.len(), "preserve WAL length");
     let old_tail = before.lines().last();
-    assert_eq!(
-        corrupted.lines().last(),
-        old_tail,
-        "same last fsynced row"
-    );
+    assert_eq!(corrupted.lines().last(), old_tail, "same last fsynced row");
 
     let original_inode = fs::metadata(&path).expect("original inode").ino();
     fs::write(&path, corrupted.as_bytes()).expect("same inode prefix overwrite");
