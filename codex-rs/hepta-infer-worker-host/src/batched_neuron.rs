@@ -137,6 +137,10 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     // anchor. Replaying a nondecreasing but frozen caller now_ms cannot
     // extend its own deadline across future polls.
     queue_clock_anchor: Option<(u64, Instant)>,
+    // Preserve the original raw caller clock too: max(raw, monotonic anchor)
+    // must never hide a caller timestamp regression and silently bypass the
+    // scheduler's ClockRegressed fail-closed contract.
+    last_caller_now_ms: Option<u64>,
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
@@ -232,6 +236,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             frontier_binding_frozen: false,
             unmetered_activity: false,
             queue_clock_anchor: None,
+            last_caller_now_ms: None,
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
@@ -288,6 +293,22 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
 
     fn binding_current(&self, key: &MicrobatchKeyV1) -> bool {
         scope_binding_current(self.scope_frontier.as_ref(), key)
+    }
+
+    /// The monotonic anchor must never turn a regressing raw caller timestamp
+    /// into an apparently valid effective timestamp. Only successful queue
+    /// operations advance this watermark. Rejected future-dated admissions
+    /// and rejected polls cannot poison it.
+    fn validate_caller_now_ms(&self, observed_ms: u64) -> Result<(), BatchWorkerErrorV1> {
+        if self
+            .last_caller_now_ms
+            .is_some_and(|last| observed_ms < last)
+        {
+            return Err(BatchWorkerErrorV1::Scheduler(
+                SchedulerErrorV1::ClockRegressed,
+            ));
+        }
+        Ok(())
     }
 
     /// Prevent indefinitely extending a queued intent by reusing the same
@@ -357,11 +378,19 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             self.unmetered_activity = true;
         }
         let started = Instant::now();
+        let caller_now_ms = now_ms;
         let now_ms = self.queue_effective_now_ms(now_ms);
         let scope_digest = Digest32::of_bytes(key.scope_id.as_str().as_bytes());
         let operation_digest = Digest32::of_bytes(request.authorization.request_id.as_bytes());
-        let result = self.enqueue_inner(now_ms, model_id, request, key, signed);
+        // Keep failed Admission telemetry observable without allowing an
+        // invalid caller clock to consume a queue ID or a Final-use nonce.
+        let result = self
+            .validate_caller_now_ms(caller_now_ms)
+            .and_then(|()| self.enqueue_inner(now_ms, model_id, request, key, signed));
         let queued = result.is_ok();
+        if queued {
+            self.last_caller_now_ms = Some(caller_now_ms);
+        }
         if queued && self.queue_clock_anchor.is_none() {
             // Only a successful scheduler admission sets the anchor. A
             // rejected future-dated request must not poison the owner clock.
@@ -471,12 +500,16 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         }
         // A fresh poll-local Instant alone cannot account for time spent in
         // the queue if a caller resubmits a stale but nonregressing clock.
+        // Reject raw regressions *before* the anchored max() can hide them.
+        self.validate_caller_now_ms(now_ms)?;
+        let caller_now_ms = now_ms;
         let now_ms = self.queue_effective_now_ms(now_ms);
         let started = Instant::now();
         let poll = self
             .scheduler
             .poll_physically_compatible(now_ms)
             .map_err(BatchWorkerErrorV1::Scheduler)?;
+        self.last_caller_now_ms = Some(caller_now_ms);
         if let (Some(sink), Some(batch)) = (&self.metric_sink, &poll.batch) {
             self.metrics_flushed.store(false, Ordering::Release);
             // One phase sample per admitted request, not just the first
