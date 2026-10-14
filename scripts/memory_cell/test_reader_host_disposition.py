@@ -174,7 +174,7 @@ class HostDispositionTests(unittest.TestCase):
                 error_type="ReaderTimeout"
             )
             raw = b"".join(
-                json.dumps(row, sort_keys=True).encode() + b"\\n"
+                json.dumps(row, sort_keys=True).encode() + b"\n"
                 for row in original_rows
             )
             run = completed_run(raw)
