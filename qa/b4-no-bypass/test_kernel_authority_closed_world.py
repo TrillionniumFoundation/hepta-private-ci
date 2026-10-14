@@ -290,10 +290,28 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             r"atomic_control_cutover_owner:\s*None",
             "native physical CNS port must not invent a Control owner",
         )
+        # Rustfmt may wrap field / as_ref / ok_or across separate lines.
+        # Extract the exact non-test publish_once body and prove the Control
+        # owner check is its FIRST executable statement, before verify_pin or
+        # any Final-use claim, original mutation, route or child dispatch.
+        method = re.search(r"\bfn\s+publish_once\s*\(", physical)
+        self.assertIsNotNone(method, "original runtime CNS mutator missing")
+        assert method is not None
+        opening = physical.find("{", method.end())
+        closing = CALLER_PROOF._matching_delimiter(physical, opening, "{", "}")
+        self.assertIsNotNone(closing, "malformed physical cutover owner")
+        assert closing is not None
+        body = physical[opening + 1 : closing]
         self.assertRegex(
-            physical,
-            r"self\.atomic_control_cutover_owner\.as_ref\(\)\.ok_or\(",
-            "original runtime cutover must stay blocked without Control",
+            body,
+            r"^\s*self\s*\.\s*atomic_control_cutover_owner\s*\.\s*"
+            r"as_ref\(\)\s*\.\s*ok_or\(",
+            "original CNS cutover must refuse before any other executable step",
+        )
+        self.assertLess(
+            body.index("atomic_control_cutover_owner"),
+            body.index("self.verify_pin(plan, intent)?"),
+            "a signed pin is not an original durable Control Begin/Commit",
         )
 
     def test_legacy_cell_split_route_activation_cannot_bypass_control(self) -> None:
