@@ -94,6 +94,15 @@ jobs:
           set -euo pipefail
           python3 qualification/neuron-gated-sparse-v3/analyze_mechanism_costs.py \
             --matrix "$PROBE_RESULT" --output "$COST_REPORT"
+      - name: Same-host fresh-process legacy-vs-prepared matrix, exact frontier parity
+        working-directory: codex-rs
+        env:
+          PAIRED_RESULT: ${{ runner.temp }}/neuron-q24-prepared-pairs.json
+        run: >-
+          python3 ../qualification/neuron-gated-sparse-v3/run_prepared_pair.py
+          --binary target/debug/neuron_shadow_mechanism_probe
+          --trace ../qualification/neuron-gated-sparse-v3/fixture_q24_trace.json
+          --report "$PAIRED_RESULT"
       - name: Retain explicitly non-production native fixture measurements
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -102,5 +111,6 @@ jobs:
           path: |
             ${{ runner.temp }}/neuron-q24-fixture-matrix.json
             ${{ runner.temp }}/neuron-q24-cost-analysis.json
+            ${{ runner.temp }}/neuron-q24-prepared-pairs.json
           if-no-files-found: warn
           retention-days: 14
