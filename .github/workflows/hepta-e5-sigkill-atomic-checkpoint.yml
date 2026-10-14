@@ -1,0 +1,101 @@
+name: Hepta E5 SIGKILL atomic checkpoint research
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e5_crash_atomic_store.py"
+      - "experiments/shared_stem_cell/e5_crash_matrix.py"
+      - "experiments/shared_stem_cell/e5_crash_matrix_review.py"
+      - "experiments/shared_stem_cell/test_e5_crash_atomic_store.py"
+      - "experiments/shared_stem_cell/test_e5_crash_matrix_review.py"
+      - "experiments/shared_stem_cell/E5_CRASH_ATOMIC_LOCAL_64_20261014.json"
+      - "experiments/shared_stem_cell/E5_CRASH_ATOMIC_LOCAL_256_20261014.json"
+      - "experiments/shared_stem_cell/E5_SIGKILL_ATOMIC_CHECKPOINT.md"
+      - ".github/workflows/hepta-e5-sigkill-atomic-checkpoint.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: hepta-e5-sigkill-\${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  real-child-sigkill-and-recovery:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      OPENBLAS_NUM_THREADS: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    steps:
+      - name: Exact immutable PR source checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: \${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Validate HEAD and clean read-only source
+        env:
+          SOURCE_SHA: \${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git diff --check
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install pinned real CPU Torch
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip check
+          python -m pip freeze > "$RUNNER_TEMP/e5-atomic-runtime.txt"
+      - name: Test exact optimizer and actual killed subprocesses
+        run: |
+          set -euo pipefail
+          python -m py_compile \
+            experiments/shared_stem_cell/e5_crash_atomic_store.py \
+            experiments/shared_stem_cell/e5_crash_matrix.py \
+            experiments/shared_stem_cell/e5_crash_matrix_review.py
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e5_crash_atomic_store.py' -v
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e5_crash_matrix_review.py' -v
+      - name: Fresh 64 Cell ten-stage SIGKILL matrix
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/e5-crash-physical"
+          python experiments/shared_stem_cell/e5_crash_matrix.py \
+            --cells 64 --active 8 --output "$RUNNER_TEMP/e5-crash-physical/64.json"
+      - name: Fresh 256 Cell four-stage SIGKILL matrix
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/e5_crash_matrix.py \
+            --cells 256 --active 25 \
+            --failpoint blob_partial \
+            --failpoint manifest_published \
+            --failpoint head_replaced \
+            --failpoint head_dirsynced \
+            --output "$RUNNER_TEMP/e5-crash-physical/256.json"
+      - name: Independent source/phase consistency review
+        run: |
+          set -euo pipefail
+          python experiments/shared_stem_cell/e5_crash_matrix_review.py \
+            --small "$RUNNER_TEMP/e5-crash-physical/64.json" \
+            --medium "$RUNNER_TEMP/e5-crash-physical/256.json" \
+            --output "$RUNNER_TEMP/e5-crash-physical/independent-review.json"
+          python - "$RUNNER_TEMP/e5-crash-physical/independent-review.json" <<'PY'
+          import json,sys
+          report=json.load(open(sys.argv[1]))
+          assert report['claimed_total_separate_sigkill_children']==14
+          assert report['production_promotion_permitted'] is False
+          assert report['real_power_cut_or_native_WAL_qualified'] is False
+          assert report['independently_verified_OS_process_exits'] is False
+          PY
+      - name: Preserve partial receipts on success or failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hepta-e5-sigkill-atomic-\${{ github.run_id }}
+          path: |
+            \${{ runner.temp }}/e5-crash-physical/*.json
+            \${{ runner.temp }}/e5-atomic-runtime.txt
+          retention-days: 7
