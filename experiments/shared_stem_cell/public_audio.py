@@ -173,8 +173,9 @@ def acquire(root, *, _read=read_url):
     return {"path": "dataset.jsonl", "sha256": e.sha(raw)}
 
 
-def run(root, *, native_control=False, _acquire=acquire, _stage=stage_model, _towers=media.LocalTowers):
-    if type(native_control) is not bool:
+def run(root, *, native_control=False, cascade_control=False, _acquire=acquire, _stage=stage_model, _towers=media.LocalTowers):
+    if (type(native_control) is not bool or type(cascade_control) is not bool
+            or (native_control and cascade_control)):
         raise e.InputError("explicit native control mode required")
     root = Path(root)
     root.mkdir(parents=True, exist_ok=False)
@@ -190,6 +191,8 @@ def run(root, *, native_control=False, _acquire=acquire, _stage=stage_model, _to
         "independent_evaluation": False, "production_accepted": False}
     if native_control:
         plan["native_decoder_control"] = "same Encoder output, frozen greedy 16-token budget, holdout only"
+    if cascade_control:
+        plan["cascade_control"] = "calibration-only threshold, fixed 32 slots, separately charged native shadow control"
     e.write_once(root / "plan.json", plan)
     try:
         with e.measured() as acquisition:
@@ -202,6 +205,15 @@ def run(root, *, native_control=False, _acquire=acquire, _stage=stage_model, _to
             "seed": 20261014, "temporal": False, "fusion_profile": "calibrated_checkpoints_v1",
             "dataset": data, "models": {"whisper": model}}
         e.write_once(root / "manifest.json", manifest)
+        if cascade_control:
+            from experiments.shared_stem_cell import speech_cascade
+            result = speech_cascade.run(root, manifest, _towers=_towers)
+            report = {"schema": "hepta.public-audio-cascade-executed.v1", "acquisition": acquisition,
+                "cascade_report_sha256": e.sha((root / "cascade/report.json").read_bytes()),
+                "dataset_sha256": data["sha256"], "scores": result["scores"],
+                "simulated_towers": result["simulated_towers"], "production_accepted": False}
+            e.write_once(root / "report.json", report)
+            return report
         control_instances = []
         factory = _towers
         if native_control:
@@ -231,7 +243,9 @@ def run(root, *, native_control=False, _acquire=acquire, _stage=stage_model, _to
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--native-control", action="store_true")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--native-control", action="store_true")
+    mode.add_argument("--cascade-control", action="store_true")
     arguments = parser.parse_args()
     torch.set_num_threads(2)
-    run(arguments.output, native_control=arguments.native_control)
+    run(arguments.output, native_control=arguments.native_control, cascade_control=arguments.cascade_control)

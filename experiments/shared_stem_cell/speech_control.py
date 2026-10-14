@@ -92,6 +92,31 @@ def decode_shared(model, tokenizer, hidden):
         "eos_observed": model.config.eos_token_id in tokens[0, 1:].tolist()}
 
 
+def encode_shared(towers, item, root):
+    """One existing audio forward, preserving its features and transient full states."""
+    captured = []
+
+    def capture(_module, _args, value):
+        if captured:
+            raise e.InputError("multiple encoder forwards for one audio")
+        hidden = value.last_hidden_state
+        if (not isinstance(hidden, torch.Tensor) or hidden.dtype != torch.float32
+                or hidden.device.type != "cpu"
+                or hidden.shape != (1, 1500, towers.models["whisper"].config.d_model)):
+            raise e.InputError("missing or unbounded actual encoder states")
+        captured.append(hidden.detach().clone().contiguous())
+
+    handle = towers.models["whisper"].model.encoder.register_forward_hook(capture)
+    try:
+        with e.measured() as work:
+            value, stamps = towers.encode("audio", item, root)
+    finally:
+        handle.remove()
+    if len(captured) != 1:
+        raise e.InputError("native comparison requires one physical encoder call")
+    return value, stamps, captured[0], work
+
+
 class NativeControl:
     """Read-only wrapper of existing LocalTowers; never exposes labels to model."""
     def __init__(self, towers, tokenizer, targets, output):
@@ -126,29 +151,11 @@ class NativeControl:
         case_id = self.targets[digest]
         e.write_once(self.output / (case_id + ".started.json"), {"case_id": case_id,
             "audio_sha256": digest, "status": "entered_not_completed"})
-        captured = []
-
-        def capture(_module, _args, value):
-            if captured:
-                raise e.InputError("multiple encoder forwards for one audio")
-            hidden = value.last_hidden_state
-            if (not isinstance(hidden, torch.Tensor) or hidden.dtype != torch.float32
-                    or hidden.device.type != "cpu" or hidden.shape != (1, 1500, self.towers.models["whisper"].config.d_model)):
-                raise e.InputError("missing or unbounded actual encoder states")
-            captured.append(hidden.detach().clone().contiguous())
-
-        handle = self.towers.models["whisper"].model.encoder.register_forward_hook(capture)
-        try:
-            with e.measured() as shared_work:
-                value, stamps = self.towers.encode(name, item, root)
-        finally:
-            handle.remove()
-        if len(captured) != 1:
-            raise e.InputError("native comparison requires one physical encoder call")
+        value, stamps, hidden, shared_work = encode_shared(self.towers, item, root)
         # Use the unpooled states, not fabricated states reconstructed from landmarks.
         record = {"case_id": case_id, "audio_sha256": digest,
             "landmark_sha256": e.tensor_digest(value), "shared_encode_work": shared_work,
-            **decode_shared(self.towers.models["whisper"], self.tokenizer, captured[0])}
+            **decode_shared(self.towers.models["whisper"], self.tokenizer, hidden)}
         e.write_once(self.output / (case_id + ".result.json"), record)
         self.records[digest] = record
         if len(self.records) == len(self.targets):

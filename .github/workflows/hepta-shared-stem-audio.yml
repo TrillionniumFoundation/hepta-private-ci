@@ -6,6 +6,8 @@ on:
       - "experiments/shared_stem_cell/public_audio.py"
       - "experiments/shared_stem_cell/test_public_audio.py"
       - "experiments/shared_stem_cell/speech_control.py"
+      - "experiments/shared_stem_cell/speech_cascade.py"
+      - "experiments/shared_stem_cell/test_speech_cascade.py"
       - "experiments/shared_stem_cell/test_speech_control.py"
       - "experiments/shared_stem_cell/test_speech_hf.py"
       - "experiments/shared_stem_cell/calibrated_fusion.py"
@@ -46,9 +48,10 @@ jobs:
           PY="$RUNNER_TEMP/hepta-audio-env/bin/python"
           git rev-parse HEAD > "$RUNNER_TEMP/hepta-audio-source.txt"
           "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-audio-source.txt"
-          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{public_audio,test_public_audio,calibrated_fusion,speech_control,test_speech_control,test_speech_hf}.py
-          "$PY" -m unittest -v experiments.shared_stem_cell.test_public_audio experiments.shared_stem_cell.test_calibrated_fusion experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.test_materialization experiments.shared_stem_cell.hf_integration_checks experiments.shared_stem_cell.test_speech_control experiments.shared_stem_cell.test_speech_hf 2>&1 | tee "$RUNNER_TEMP/hepta-audio-tests.log"
+          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{public_audio,test_public_audio,calibrated_fusion,speech_control,test_speech_control,test_speech_hf,speech_cascade,test_speech_cascade}.py
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_public_audio experiments.shared_stem_cell.test_calibrated_fusion experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.test_materialization experiments.shared_stem_cell.hf_integration_checks experiments.shared_stem_cell.test_speech_control experiments.shared_stem_cell.test_speech_hf experiments.shared_stem_cell.test_speech_cascade 2>&1 | tee "$RUNNER_TEMP/hepta-audio-tests.log"
           "$PY" -m experiments.shared_stem_cell.public_audio --native-control --output "$RUNNER_TEMP/hepta-audio-study" 2>&1 | tee "$RUNNER_TEMP/hepta-audio-execution.log"
+          "$PY" -m experiments.shared_stem_cell.speech_cascade --root "$RUNNER_TEMP/hepta-audio-study" 2>&1 | tee "$RUNNER_TEMP/hepta-cascade-execution.log"
           git diff --exit-code
       - name: Preserve outputs and failure evidence, never pretrained weights
         if: always()
@@ -59,11 +62,13 @@ jobs:
             ${{ runner.temp }}/hepta-audio-source.txt
             ${{ runner.temp }}/hepta-audio-tests.log
             ${{ runner.temp }}/hepta-audio-execution.log
+            ${{ runner.temp }}/hepta-cascade-execution.log
             ${{ runner.temp }}/hepta-audio-study/*.json
             ${{ runner.temp }}/hepta-audio-study/*.jsonl
             ${{ runner.temp }}/hepta-audio-study/FSDD-README.txt
             ${{ runner.temp }}/hepta-audio-study/audio
             ${{ runner.temp }}/hepta-audio-study/execution
             ${{ runner.temp }}/hepta-audio-study/native-control
+            ${{ runner.temp }}/hepta-audio-study/cascade
             ${{ runner.temp }}/hepta-audio-study/whisper/model-source.json
             ${{ runner.temp }}/hepta-audio-study/whisper/verified-publisher-files.json
