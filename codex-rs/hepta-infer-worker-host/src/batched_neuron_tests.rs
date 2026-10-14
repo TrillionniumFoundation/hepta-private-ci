@@ -656,7 +656,7 @@ fn regressed_caller_enqueue_does_not_consume_a_signed_batch_nonce() {
 }
 
 #[test]
-fn evidence_readiness_requires_flush_after_each_recorded_batch() {
+fn evidence_readiness_flushes_terminal_metrics_before_returning_success() {
     let dir = tempfile::tempdir().unwrap();
     let signer = SigningKey::from_bytes(&[99; 32]);
     let (model, first, key) = fixture_request();
@@ -680,10 +680,9 @@ fn evidence_readiness_requires_flush_after_each_recorded_batch() {
     assert!(outcome.outcomes[0].result.is_ok());
     assert_eq!(worker.pending(), 0);
     assert_eq!(metrics.0.lock().unwrap().len(), 3);
-    assert!(!worker.production_metrics_ready());
-
-    // Only an explicit group-commit flush of the post-effect telemetry
-    // restores the non-authorizing Evidence readiness barrier.
+    // A successful result now includes the explicit original-owner
+    // post-effect durable flush; the caller cannot skip it.
+    assert!(worker.production_metrics_ready());
     assert!(worker.flush_production_metrics());
     assert!(worker.production_metrics_ready());
 }
@@ -1374,6 +1373,229 @@ fn native_batch_lost_second_terminal_evidence_withholds_all_success_receipts() {
         worker.poll_and_execute(102),
         Err(BatchWorkerErrorV1::MetricsUnavailable)
     ));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
+
+/// Simulate an Evidence sink which accepts every asynchronous record but
+/// refuses the WAL fsync acknowledgment only after a terminal model record.
+#[derive(Debug, Default)]
+struct RejectPostEffectFlushSink {
+    terminal_records: std::sync::atomic::AtomicUsize,
+    flush_attempts: std::sync::atomic::AtomicUsize,
+}
+
+impl PhaseMetricSinkV1 for RejectPostEffectFlushSink {
+    fn record(
+        &self,
+        event: PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        if event.phase == PhaseMetricKindV1::NeuronFeature {
+            self.terminal_records
+                .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        }
+        Ok(())
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        self.flush_attempts
+            .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        if self
+            .terminal_records
+            .load(std::sync::atomic::Ordering::SeqCst)
+            != 0
+        {
+            return Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable);
+        }
+        Ok(())
+    }
+}
+
+#[test]
+fn accepted_scalar_terminal_record_without_fsync_never_publishes_success() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[108; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let sink = Arc::new(RejectPostEffectFlushSink::default());
+    let backend = CountingScalarDriver(calls.clone());
+    let mut worker =
+        runner_with_driver(&signer, dir.path(), model, backend, 1).with_metric_sink(sink.clone());
+    assert!(worker.flush_production_metrics());
+    worker
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    let observed = worker.poll_and_execute(106).unwrap();
+    assert_eq!(observed.outcomes.len(), 1);
+    assert!(matches!(
+        &observed.outcomes[0].result,
+        Err(BatchWorkerErrorV1::TerminalTelemetryIndeterminate)
+    ));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert_eq!(
+        sink.terminal_records
+            .load(std::sync::atomic::Ordering::SeqCst),
+        1
+    );
+    assert_eq!(
+        sink.flush_attempts
+            .load(std::sync::atomic::Ordering::SeqCst),
+        2
+    );
+    assert_eq!(worker.pending(), 0);
+    assert!(!worker.production_metrics_ready());
+    assert!(matches!(
+        worker.poll_and_execute(107),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    ));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
+
+#[test]
+fn accepted_native_batch_records_without_fsync_withhold_both_receipts() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[109; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let sink = Arc::new(RejectPostEffectFlushSink::default());
+    let backend = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut worker =
+        runner_with_driver(&signer, dir.path(), model, backend, 2).with_metric_sink(sink.clone());
+    assert!(worker.flush_production_metrics());
+    for (index, request) in [first, second].into_iter().enumerate() {
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        worker
+            .enqueue(
+                100,
+                "model".into(),
+                request,
+                key.clone(),
+                signed_member(
+                    &signer,
+                    binding,
+                    &format!("uncommitted-batch-{index}"),
+                    u8::try_from(index).unwrap() + 110,
+                ),
+            )
+            .unwrap();
+    }
+    let observed = worker.poll_and_execute(101).unwrap();
+    assert_eq!(observed.outcomes.len(), 2);
+    assert!(observed.outcomes.iter().all(|item| matches!(
+        &item.result,
+        Err(BatchWorkerErrorV1::TerminalTelemetryIndeterminate)
+    )));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert_eq!(
+        sink.terminal_records
+            .load(std::sync::atomic::Ordering::SeqCst),
+        2
+    );
+    assert_eq!(
+        sink.flush_attempts
+            .load(std::sync::atomic::Ordering::SeqCst),
+        2
+    );
+    assert_eq!(worker.pending(), 0);
+    assert!(!worker.production_metrics_ready());
+    assert!(matches!(
+        worker.poll_and_execute(102),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    ));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
+
+/// An independent live Control route may change while the original
+/// Evidence actor is waiting for fsync. Even committed Evidence must not
+/// authorize a stale route to publish a successful model receipt.
+#[derive(Debug)]
+struct ScopeCutoverOnCommitSink {
+    frontier: Arc<FixtureScopeFrontier>,
+    successor: MicrobatchKeyV1,
+    terminal_seen: std::sync::atomic::AtomicBool,
+}
+
+impl PhaseMetricSinkV1 for ScopeCutoverOnCommitSink {
+    fn record(
+        &self,
+        event: PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        if event.phase == PhaseMetricKindV1::NeuronFeature {
+            self.terminal_seen
+                .store(true, std::sync::atomic::Ordering::Release);
+        }
+        Ok(())
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        if self
+            .terminal_seen
+            .swap(false, std::sync::atomic::Ordering::AcqRel)
+        {
+            self.frontier.install(self.successor.clone());
+        }
+        Ok(())
+    }
+}
+
+#[test]
+fn live_scope_cutover_during_terminal_fsync_denies_success_without_replay() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[111; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let frontier = Arc::new(FixtureScopeFrontier::new(key.model_digest));
+    let mut successor = key.clone();
+    successor.route_fence += 1;
+    let sink = Arc::new(ScopeCutoverOnCommitSink {
+        frontier: frontier.clone(),
+        successor,
+        terminal_seen: std::sync::atomic::AtomicBool::new(false),
+    });
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let backend = CountingScalarDriver(calls.clone());
+    let mut worker = runner_with_driver_using_frontier(
+        &signer,
+        dir.path(),
+        model,
+        backend,
+        1,
+        frontier,
+    )
+    .with_metric_sink(sink);
+    assert!(worker.flush_production_metrics());
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            request,
+            key,
+            signed(&signer, binding),
+        )
+        .unwrap();
+    let observed = worker.poll_and_execute(106).unwrap();
+    assert_eq!(observed.outcomes.len(), 1);
+    assert!(matches!(
+        &observed.outcomes[0].result,
+        Err(BatchWorkerErrorV1::StaleAfterEffect)
+    ));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert_eq!(worker.pending(), 0);
+    // The effect and nonce are consumed; no automatic model replay occurred.
+    assert!(worker.poll_and_execute(107).unwrap().outcomes.is_empty());
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
 }
 
