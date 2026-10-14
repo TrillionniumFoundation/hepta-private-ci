@@ -5,6 +5,8 @@ on:
     paths:
       - "experiments/shared_stem_cell/e1_public_triplet_real_cpu.py"
       - "experiments/shared_stem_cell/e2_feature_residual_study.py"
+      - "experiments/shared_stem_cell/e1e2_q24_identity.py"
+      - "experiments/shared_stem_cell/test_e1e2_q24_identity.py"
       - "experiments/shared_stem_cell/test_e2_feature_residual_study.py"
       - "experiments/shared_stem_cell/e2_residual_review.py"
       - "experiments/shared_stem_cell/test_e2_residual_review.py"
@@ -89,6 +91,8 @@ jobs:
             -s experiments/shared_stem_cell -p 'test_e1_public_triplet_*.py' -v
           "$RUNNER_TEMP/e1-real-venv/bin/python" -m unittest discover \
             -s experiments/shared_stem_cell -p 'test_e2_*.py' -v
+          "$RUNNER_TEMP/e1-real-venv/bin/python" -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_e1e2_q24_identity.py' -v
       - name: Independently re-create pinned AG News panel
         run: |
           set -euo pipefail
