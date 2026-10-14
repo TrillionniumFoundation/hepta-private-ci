@@ -31,14 +31,17 @@ out-of-range Q24 inputs and non-binary labels. It never reads heldout, OOD or
 future files. One invocation is for a single Cell scope.
 
 Training uses a common generated source-group schedule, Torch AdamW CPU,
-identical training steps/window/seed, and per-cap physical 'safetensors'
+identical training steps/window/seed and an enforced common per-candidate
+CPU ceiling (default 300 seconds), and per-cap physical 'safetensors'
 reloading. The arms are V2, V3, diagonal SSM, and low-rank minGRU. Budgets are
 2K/8K/16K/64K/262K upper ceilings, NOT padded equality. Identity projection,
 Head and trainable temporal factors are counted; miniGRU rank must fit the
 complete private footprint. At 256 dimensions minGRU cannot fit the 2K
 tier with a private projection/Head; choose smaller common width or an
 independently justified cost profile instead of hiding parameters.
-Independent optimizer-state estimate and process-wide RSS are recorded
+Identical ceilings and optimizer steps do NOT mean identical FLOPs or actual
+CPU consumed; all real work/cost observations must be retained. Independent
+optimizer-state estimate and process-wide RSS are recorded
 separately and are NOT arm-isolated peak RSS or target-host measurements.
 
 The diagonal SSM research profile pins a 1,000,000-microsecond time quantum (one second); this is not the existing fixture's 100-microsecond quantum. The floating-point learning kernel is a **restricted differentiable surrogate**.
@@ -79,7 +82,8 @@ physically executed frozen Encoder; do not call a synthetic feature generator
       --a0-trusted-public-key /independent/a0-owner.pem \
       --a0-expected-host-id "$HEPTA_HOST_ID" \
       --output /new/research-four-candidate-weights \
-      --steps 64 --window 32 --seed 7347
+      --steps 64 --window 32 --seed 7347 \
+      --max-train-cpu-seconds 300
 
 The command writes **20 physically reloaded candidate weight files**, the
 SHA/count/cost/no-authority 'training-receipt.json', and does not create a
