@@ -619,11 +619,8 @@ fn injected_future_metrics_acceptance_never_prepares_any_original_effect() {
     // is non-prefix history, even when it has a well-formed known filename.
     // An injected frame must be permission-valid so we really exercise
     // non-prefix journal denial, not an unrelated UnsafePath failure.
-    crate::durable::write_private_new(
-        &root.path().join("cell-split-02-metrics-acked.json"),
-        b"{}",
-    )
-    .expect("privately persisted injected later-step telemetry");
+    crate::durable::write_private_new(&root.path().join("cell-split-02-metrics-acked.json"), b"{}")
+        .expect("privately persisted injected later-step telemetry");
     assert!(matches!(
         owner.advance(),
         Err(CellSplitExecutionErrorV1::Invalid(_))

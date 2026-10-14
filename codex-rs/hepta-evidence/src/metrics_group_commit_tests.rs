@@ -516,7 +516,9 @@ fn same_inode_marker_content_corruption_denies_live_and_recovered_owner() {
         .write(true)
         .open(&marker)
         .expect("original inode");
-    opened.write_all(&bytes).expect("overwrite marker with same size");
+    opened
+        .write_all(&bytes)
+        .expect("overwrite marker with same size");
     opened.sync_all().expect("persist marker corruption");
     assert!(matches!(
         owner.flush(),
@@ -573,9 +575,23 @@ fn evidence_wal_highwater_survives_cold_reopen_and_original_owner_append() {
     {
         let mut first = MetricsGroupCommitV1::open(&path).expect("original writer");
         first.stage(sample(MetricPhaseV1::Cas)).expect("first");
-        assert_eq!(first.flush().expect("first durable group").unwrap().sequence, 1);
+        assert_eq!(
+            first
+                .flush()
+                .expect("first durable group")
+                .unwrap()
+                .sequence,
+            1
+        );
         first.stage(sample(MetricPhaseV1::Cns)).expect("second");
-        assert_eq!(first.flush().expect("second durable group").unwrap().sequence, 2);
+        assert_eq!(
+            first
+                .flush()
+                .expect("second durable group")
+                .unwrap()
+                .sequence,
+            2
+        );
     }
     {
         let mut recovered = MetricsGroupCommitV1::open(&path).expect("recover two groups");
@@ -584,13 +600,22 @@ fn evidence_wal_highwater_survives_cold_reopen_and_original_owner_append() {
         recovered
             .stage(sample(MetricPhaseV1::Signature))
             .expect("post-restart third group");
-        assert_eq!(recovered.flush().expect("third durable group").unwrap().sequence, 3);
+        assert_eq!(
+            recovered
+                .flush()
+                .expect("third durable group")
+                .unwrap()
+                .sequence,
+            3
+        );
     }
     let final_view = MetricsGroupCommitV1::open(&path).expect("recover all three groups");
     assert_eq!(final_view.committed_groups(), 3);
     assert_eq!(final_view.committed_rows(), 3);
     assert_eq!(
-        fs::metadata(&marker).expect("separate high-water file").len(),
+        fs::metadata(&marker)
+            .expect("separate high-water file")
+            .len(),
         final_view.owner_marker_bytes.len() as u64 + 3 * OWNER_FRONTIER_ROW_BYTES as u64
     );
 }
@@ -605,15 +630,24 @@ fn valid_older_wal_prefix_cannot_be_adopted_after_cold_same_inode_truncate() {
     let earlier;
     {
         let mut writer = MetricsGroupCommitV1::open(&path).expect("original owner");
-        writer.stage(sample(MetricPhaseV1::Cas)).expect("first sample");
+        writer
+            .stage(sample(MetricPhaseV1::Cas))
+            .expect("first sample");
         writer.flush().expect("durable first group");
         earlier = fs::read(&path).expect("valid committed prefix");
-        writer.stage(sample(MetricPhaseV1::Cns)).expect("second sample");
+        writer
+            .stage(sample(MetricPhaseV1::Cns))
+            .expect("second sample");
         writer.flush().expect("durable second group");
     }
     let inode = fs::metadata(&path).expect("original inode").ino();
-    let opened = OpenOptions::new().write(true).open(&path).expect("same inode");
-    opened.set_len(earlier.len() as u64).expect("roll back to VALID prefix");
+    let opened = OpenOptions::new()
+        .write(true)
+        .open(&path)
+        .expect("same inode");
+    opened
+        .set_len(earlier.len() as u64)
+        .expect("roll back to VALID prefix");
     opened.sync_all().expect("persist truncated prefix");
     assert_eq!(fs::read(&path).expect("remaining bytes"), earlier);
     assert_eq!(fs::metadata(&path).expect("inode unchanged").ino(), inode);
@@ -633,7 +667,9 @@ fn marker_highwater_truncation_is_not_accepted_after_restart() {
         let mut writer = MetricsGroupCommitV1::open(&path).expect("original writer");
         writer.stage(sample(MetricPhaseV1::Cas)).expect("first");
         writer.flush().expect("first fsync");
-        writer.stage(sample(MetricPhaseV1::Signature)).expect("second");
+        writer
+            .stage(sample(MetricPhaseV1::Signature))
+            .expect("second");
         writer.flush().expect("second fsync");
     }
     let original_len = fs::metadata(&marker).expect("two frontiers").len();
@@ -668,9 +704,14 @@ fn valid_wal_group_fsynced_without_marker_highwater_remains_quarantined() {
     let payload = encode_sample(&sample(MetricPhaseV1::FinalUse));
     let head = digest_group(2, old_head, &payload);
     let second = format!("M1|{}|{}|{}|{}|{}\n", 2, old_head, head, 1, payload);
-    let mut raw = OpenOptions::new().append(true).open(&path).expect("original WAL");
-    raw.write_all(second.as_bytes()).expect("second group bytes");
-    raw.sync_all().expect("durable WAL without separate marker ACK");
+    let mut raw = OpenOptions::new()
+        .append(true)
+        .open(&path)
+        .expect("original WAL");
+    raw.write_all(second.as_bytes())
+        .expect("second group bytes");
+    raw.sync_all()
+        .expect("durable WAL without separate marker ACK");
     assert!(matches!(
         MetricsGroupCommitV1::open(&path),
         Err(MetricsJournalErrorV1::Corrupt)
@@ -689,7 +730,10 @@ fn tampered_same_inode_marker_last_frontier_denies_live_empty_flush() {
     let mut bytes = fs::read(&marker).expect("original marker highwater");
     let index = bytes.len() - 2;
     bytes[index] = if bytes[index] == b'0' { b'1' } else { b'0' };
-    let mut file = OpenOptions::new().write(true).open(&marker).expect("same marker inode");
+    let mut file = OpenOptions::new()
+        .write(true)
+        .open(&marker)
+        .expect("same marker inode");
     file.write_all(&bytes).expect("alter final head byte");
     file.sync_all().expect("persist tampering");
     assert!(matches!(
