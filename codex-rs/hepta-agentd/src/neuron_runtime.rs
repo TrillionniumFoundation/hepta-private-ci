@@ -258,6 +258,12 @@ where
         if signed_grant.grant.authority_epoch != snapshot.revocation_epoch {
             return Err(NeuronRuntimeError::InvalidInput);
         }
+        // Read-only and unhealthy Control frontiers cannot run a model whose
+        // checkpoint they would be unable to publish. This preflight grants
+        // no authority; the final same-owner durable CAS remains mandatory.
+        read_verifier
+            .check_checkpoint_publisher(snapshot, input.checkpoint_digest)
+            .map_err(|_| NeuronRuntimeError::PendingReconciliation)?;
         let binding = neuron_ndu_final_use_binding_v1(
             owner_id,
             &input,
@@ -288,6 +294,20 @@ where
                 read_verifier
                     .verify(signed_read)
                     .map_err(|_| NeuronRuntimeError::InvalidInput)
+            },
+            |tick_digest, previous_checkpoint, next_checkpoint| {
+                // The same durable Control owner serializes this publication
+                // against CNS route cutover; a stale commit leaves the
+                // business intent unresolved, never retried automatically.
+                read_verifier
+                    .compare_and_publish_checkpoint(
+                        signed_read,
+                        tick_digest,
+                        previous_checkpoint,
+                        next_checkpoint,
+                    )
+                    .map(|_| ())
+                    .map_err(|_| NeuronRuntimeError::NduStaleAfterEffect)
             },
         )
     }

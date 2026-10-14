@@ -305,8 +305,14 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         authority: &FinalUseAuthority,
         signed_grant: &SignedFinalUseGrant,
         mut verify_live_ndu_read: impl FnMut() -> Result<Digest32, NeuronRuntimeError>,
+        publish_control_checkpoint: impl FnOnce(
+            Digest32,
+            Digest32,
+            Digest32,
+        ) -> Result<(), NeuronRuntimeError>,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
         let tick_digest = input.semantic_digest()?;
+        let previous_checkpoint = input.checkpoint_digest;
         crate::bind_ndu_snapshot_stage_v1(
             &input.subject_id,
             self.config.generation,
@@ -370,6 +376,15 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
             if verify_live_ndu_read()? != admitted_read_receipt_digest {
                 return Err(NeuronRuntimeError::NduStaleAfterEffect);
             }
+            // Checkpoint and CNS route cutover share one external Control CAS.
+            // The local sparse journal and witness may already be committed;
+            // on rejection the independent Prepare remains unresolved and no
+            // new Final-use nonce is allowed to replay the physical model.
+            publish_control_checkpoint(
+                tick_digest,
+                previous_checkpoint,
+                outcome.tick.checkpoint_after,
+            )?;
             effect_intent
                 .resolve(tick_digest, outcome.tick.checkpoint_after)
                 .map_err(|_| NeuronRuntimeError::PendingReconciliation)?;
