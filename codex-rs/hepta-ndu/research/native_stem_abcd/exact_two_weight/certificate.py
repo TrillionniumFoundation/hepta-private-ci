@@ -105,8 +105,8 @@ def exact_poly_gradient(a=A,b=B,degree=DEGREE):
     z=zpoly(a,b)
     # For p0=0: P1+=1, P1-=0 -> +1/40 offset inside log cosh.
     # For p0=1: P1+=0, P1-=1 -> -1/40.
-    t0=poly_add(poly_scale(z,F(1,5)),[F(1,80)])
-    t1=poly_add(poly_scale(z,F(2,5)),[F(-1,40)])
+    t0=poly_add(poly_scale(z,RISK[0]*2*DELTA),[RISK[0]*PREFERENCE_COST/2])
+    t1=poly_add(poly_scale(z,RISK[1]*2*DELTA),[-RISK[1]*PREFERENCE_COST/2])
     # rho0=1/2, (2delta*z+1/40)*rho0=z/5+1/80.
     g=poly_add(poly_scale(z,F(2)),poly_scale(poly_add(tanh_poly(t0,degree),tanh_poly(t1,degree)),DELTA))
     return tuple(GAMMA*integrate_uniform(([F(0)]*power)+g) for power in (2,3))
