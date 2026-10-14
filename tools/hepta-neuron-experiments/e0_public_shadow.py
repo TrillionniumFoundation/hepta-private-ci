@@ -20,6 +20,9 @@ import time
 from types import SimpleNamespace
 
 from e0_projection_numeric import calculate, field, i64, u64
+from e0_feature_normalization import (
+    normalize_feature_bytes, choose_diagnostic_tail_index,
+)
 
 STEM_RESEARCH_SHA = "be511bd63aaae8813c415a116d50f01fe54baba5"
 STEM_AUDIT_SHA = "d6f35c362289c90427bfbdffd4505d2e535c1b1b"
@@ -183,21 +186,32 @@ def main() -> int:
         rss_after_kib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         if feature.shape != (768,) or feature.dtype != torch.float32:
             raise ValueError("public Encoder did not produce frozen 768-D float32")
-        feature_f32 = tuple(feature.tolist())
-        raw = struct.pack(">768f", *feature_f32)
-        source_feature_file = root / "feature.f32be"
-        source_feature_file.write_bytes(raw)
+        # Preserve the actual 768-D pretrained output independently from the
+        # normalized feature that the existing Q24 Stem projector consumes.
+        # The policy is frozen; the integer shift is per input and diagnostic,
+        # never a learned or production-approved normalizer.
+        raw = struct.pack(">768f", *feature.tolist())
+        raw_feature_file = root / "encoder-raw.f32be"
+        raw_feature_file.write_bytes(raw)
+        normalized_raw, normalization = normalize_feature_bytes(raw)
+        feature_f32 = struct.unpack(">768f", normalized_raw)
+        source_feature_file = root / "projection-input-normalized.f32be"
+        source_feature_file.write_bytes(normalized_raw)
         feature_digest = hashlib.sha256(b"hepta.stem.feature.f32.v1" +
-                                        u64(768) + raw + u64(tokens) + b"mean").hexdigest()
+                                        u64(768) + normalized_raw + u64(tokens) + b"mean").hexdigest()
         source_feature = SimpleNamespace(values=feature_f32, token_count=tokens,
                                          representation="mean", feature_digest=feature_digest)
         encoder_digest = snapshot_digest(snapshot)
         # Non-authorizing stable diagnostic tuple, not a selected production bundle.
-        preprocessor_digest = sha(b"hepta.e0.public.render_joint.max128.v1")
+        preprocessor_digest = sha(b"hepta.e0.public.render_joint.max128.dyadic.v2")
         runtime_digest = sha(b"hepta.e0.public.cpu-fp32.eager.transformers4.57.1.v1")
-        normalizer_digest = sha(b"hepta.e0.public.attention-masked-mean.v1")
+        normalizer_digest = normalization["policy_digest"]
+        # Select the strongest *actual* tail coordinate solely to exercise a
+        # nondegenerate diagnostic path. This input-dependent choice is not
+        # a learned Head, a scientific selection or a valid deployed projector.
+        tail_index = choose_diagnostic_tail_index(normalized_raw, 256)
         a = [0] * 768
-        a[767] = Q
+        a[tail_index] = Q
         b = [0] * 256
         b[255] = Q
         projection = LowRankProjectionQ24(
@@ -209,11 +223,18 @@ def main() -> int:
         projection_sha = save_shadow_projection(
             projection_path, projection,
             training_lineage_digest=sha(b"hepta.e0.untrained-diagnostic-projection.v1"))
-        input_digest = sha(json.dumps(case, sort_keys=True, separators=(",", ":")).encode())
+        input_digest = sha(b"hepta.e0.public.diagnostic-input.normalized.v2" +
+                           json.dumps(case, sort_keys=True, separators=(",", ":")).encode() +
+                           bytes.fromhex(normalization["binding_digest"]))
         request = ShadowRequest(projection, input_digest)
         ref = project_ref(request, source_feature, projection)
-        trial = dict(schema="hepta.neuron.e0-projection-numeric-trial.v1",
-                     source_kind="local_f32_capture_untrusted",
+        trial = dict(schema="hepta.neuron.e0-projection-numeric-trial.v2",
+                     source_kind="normalized_local_f32_capture_untrusted",
+                     raw_encoder_feature_file=str(raw_feature_file),
+                     raw_encoder_feature_sha256=normalization["raw_sha256"],
+                     normalization_shift=normalization["shift"],
+                     normalization_binding_digest=normalization["binding_digest"],
+                     normalization_policy_digest=normalization["policy_digest"],
                      feature_file=str(source_feature_file),
                      feature_file_sha256=file_sha(source_feature_file),
                      feature_digest=feature_digest, token_count=tokens,
@@ -252,7 +273,11 @@ def main() -> int:
                       parameters_full=loading["checkpoint_parameters"],
                       parameters_feature=loading["feature_parameters"],
                       encoder_width=768, projector_output_width=256,
-                      token_count=tokens, original_feature_sha256=sha(raw),
+                      token_count=tokens,
+                      original_feature_sha256=normalization["raw_sha256"],
+                      normalized_feature_sha256=normalization["normalized_sha256"],
+                      normalization=normalization,
+                      diagnostic_tail_coordinate=tail_index,
                       projection_sha256=projection_sha, projection_digest=projection.digest,
                       projected_input_digest=ref.projected_input_digest,
                       oracle_result=independent_oracle,

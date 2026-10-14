@@ -23,7 +23,8 @@ MAX_RANK = 64
 MAX_COEFF = 600_000
 P_SCHEMA = "hepta.stem.low-rank-projection.q24.v1"
 C_SCHEMA = "hepta.neuron.e0-projection-numeric-trial.v1"
-R_SCHEMA = "hepta.neuron.e0-projection-numeric-result.v3"
+C_SCHEMA_V2 = "hepta.neuron.e0-projection-numeric-trial.v2"
+R_SCHEMA = "hepta.neuron.e0-projection-numeric-result.v4"
 P_DOMAIN = b"hepta.stem.low-rank-projection.q24.v1"
 F_DOMAIN = b"hepta.stem.feature.f32.v1"
 B_DOMAIN = b"hepta.stem.projected-feature-bound.v1"
@@ -40,6 +41,13 @@ C_FIELDS = {
     "revocation_frontier_digest", "generation", "head_input_width",
     "expected_output_q24", "projected_input_digest",
 }
+C_FIELDS_V2 = C_FIELDS | {
+    "raw_encoder_feature_file", "raw_encoder_feature_sha256",
+    "normalization_shift", "normalization_binding_digest",
+    "normalization_policy_digest",
+}
+NORMALIZER_POLICY_DOMAIN = b"hepta.neuron.e0.f32-dyadic-bound.v1"
+NORMALIZER_BINDING_DOMAIN = b"hepta.neuron.e0.f32-dyadic-source-binding.v1"
 HEX = frozenset("0123456789abcdef")
 
 
@@ -175,8 +183,20 @@ def load_projector(raw: bytes) -> dict:
 
 def calculate(contract_path: Path) -> dict:
     # This consumes real physical bytes; it cannot attest they originated from a model.
-    con = load_obj(read_regular(str(contract_path.absolute()), 200_000), C_FIELDS)
-    need(con["schema"] == C_SCHEMA and con["source_kind"] == "local_f32_capture_untrusted",
+    contract_raw = read_regular(str(contract_path.absolute()), 200_000)
+    # Decode once only to choose the schema; parse again with the exact
+    # version-specific field inventory and duplicate-key rejection.
+    try:
+        tentative = json.loads(contract_raw)
+    except (UnicodeError, json.JSONDecodeError) as exc:
+        raise NumericGateError("invalid numeric trial JSON") from exc
+    schema = tentative.get("schema") if type(tentative) is dict else None
+    fields = C_FIELDS_V2 if schema == C_SCHEMA_V2 else C_FIELDS
+    con = load_obj(contract_raw, fields)
+    normalized_input = schema == C_SCHEMA_V2
+    need((schema == C_SCHEMA_V2 and
+          con["source_kind"] == "normalized_local_f32_capture_untrusted") or
+         (schema == C_SCHEMA and con["source_kind"] == "local_f32_capture_untrusted"),
          "invalid numeric trial schema/source posture")
     for k in ("feature_file_sha256", "feature_digest", "projection_file_sha256",
               "projection_digest", "source_input_digest", "scope_digest",
@@ -195,6 +215,49 @@ def calculate(contract_path: Path) -> dict:
     feature_raw = verified_bytes(
         con["feature_file"], con["feature_file_sha256"], MAX_F32 * 4)
     width = projector["input_width"]
+    normalization_observation = None
+    raw_encoder_bytes = None
+    if normalized_input:
+        policy_digest = hashlib.sha256(NORMALIZER_POLICY_DOMAIN).hexdigest()
+        need(con["normalization_policy_digest"] == policy_digest and
+             projector["normalizer_digest"] == policy_digest,
+             "normalizer policy/projector binding mismatch")
+        sha(con["raw_encoder_feature_sha256"], "raw encoder feature sha256")
+        sha(con["normalization_binding_digest"], "normalization binding digest")
+        raw_encoder_bytes = verified_bytes(
+            con["raw_encoder_feature_file"], con["raw_encoder_feature_sha256"], MAX_F32 * 4)
+        need(len(raw_encoder_bytes) == width * 4,
+             "raw pretrained Encoder f32 width mismatch")
+        raw_values = struct.unpack(f">{width}f", raw_encoder_bytes)
+        need(all(math.isfinite(v) for v in raw_values),
+             "nonfinite raw pretrained Encoder feature")
+        shift = con["normalization_shift"]
+        need(type(shift) is int and 0 <= shift <= 126,
+             "invalid normalization shift")
+        minimal_shift = 0
+        raw_magnitude = max(abs(v) for v in raw_values)
+        while math.ldexp(raw_magnitude, -minimal_shift) > 4.0:
+            minimal_shift += 1
+            need(minimal_shift <= 126, "raw feature exceeds dyadic policy envelope")
+        need(shift == minimal_shift, "noncanonical dyadic normalization shift")
+        expected_normalized = struct.pack(
+            f">{width}f", *(math.ldexp(v, -shift) for v in raw_values))
+        need(expected_normalized == feature_raw,
+             "normalization does not reproduce frozen f32 feature bytes")
+        bound_norm = hashlib.sha256(
+            NORMALIZER_BINDING_DOMAIN + u64(shift) +
+            bytes.fromhex(con["raw_encoder_feature_sha256"]) +
+            bytes.fromhex(con["feature_file_sha256"])).hexdigest()
+        need(bound_norm == con["normalization_binding_digest"],
+             "raw-to-normalized feature binding mismatch")
+        normalization_observation = {
+            "policy_digest": policy_digest, "shift": shift,
+            "raw_encoder_feature_sha256": con["raw_encoder_feature_sha256"],
+            "normalized_feature_sha256": con["feature_file_sha256"],
+            "normalization_binding_digest": bound_norm,
+            "per_input_exponent": True, "no_clipping": True,
+            "production_authorized": False,
+        }
     # A 768-D claim implemented by zero-padding a copied 256-D prefix is
     # indistinguishable from clipping on shape checks alone. Require at least
     # one nonzero rank path from a tail source coordinate to a live output
@@ -276,12 +339,17 @@ def calculate(contract_path: Path) -> dict:
          "source changed after numeric calculation")
     need(verified_bytes(con["projection_manifest"], con["projection_file_sha256"], 22_000_000) == projector_raw,
          "projection manifest changed after numeric calculation")
+    if normalized_input:
+        need(verified_bytes(con["raw_encoder_feature_file"],
+                            con["raw_encoder_feature_sha256"], MAX_F32 * 4)
+             == raw_encoder_bytes, "raw Encoder feature changed after normalization")
     return {
         "schema": R_SCHEMA, "source_feature_sha256": con["feature_file_sha256"],
         "source_feature_digest": con["feature_digest"],
         "projection_sha256": con["projection_file_sha256"],
         "projection_digest": con["projection_digest"],
         "projected_input_digest": con["projected_input_digest"],
+        "normalization": normalization_observation,
         "input_width": width, "output_width": len(computed),
         "rank": projector["rank"], "active_source_tail_rank_paths": tail_paths,
         "observed_source_tail_q24_influence": observed_tail_influence,

@@ -223,3 +223,44 @@ input, alongside the positive last-coordinate fixture. These are synthetic
 mechanism tests, not real Model Worker receipts or guarantees of learned
 capacity. The selected task utility of a projection still requires
 independent held-out evaluation.
+
+
+### E0 real-model Q24 range failure and versioned diagnostic normalization
+
+**Actual CI failure, not a fixture:** hosted run
+[38550615028](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38550615028)
+job \`115807384740\` successfully installed pinned CPU Torch/Transformers,
+downloaded the genuine public ModernBERT checkpoint, loaded it and reached
+\`stem_projection.py.project_ref\`; the raw pretrained float32 feature
+violated the existing **strict** Q24 input range \`[-8,8]\` and was rejected.
+This must NOT be repaired by silent clipping, suppressing the exception,
+changing Neuron V1 bounds or fabricating inference evidence.
+
+The additive research-only \`e0_feature_normalization.py\` instead freezes a
+**deterministic policy**: convert the complete raw f32 vector with the
+*smallest nonnegative power-of-two right shift* that gives maximum absolute
+f32 feature at most \`4.0\`. Its exponent is chosen per actual request
+and explicitly recorded, not a trained or selected production normalizer.
+The complete **unchanged raw 768-D encoder bytes** are retained separately
+from the normalized 768-D f32 bytes, each with its own SHA-256, frozen
+policy digest, scaling exponent and domain-separated raw-to-normalized
+binding digest. The existing audited Q24 projector consumes only the
+latter. The independent numerical oracle, under exact **trial schema v2**
+and **result schema v4**, reopens both physical sources, recomputes the
+minimal exponent and float32 normalization *independently*, checks the
+original Stem feature digest, and only then recomputes signed Q24
+projection and tail-counterfactual behavior.
+
+The diagnostic rank-one projector now selects the strongest actually
+representable source **tail** coordinate to avoid a false zero-vector
+pass when one arbitrarily fixed tail coordinate happens to be small.
+Both this coordinate choice and the per-request scaling are **diagnostics
+only**, **not** a pre-registered fixed projection/normalizer for an E1
+fair-budget or scientific comparison. Scaling can lose information
+through float32 rounding, underflow or Q24 quantization; it is not
+claimed mathematically reversible, task-neutral or learning-optimal.
+If the source has no Q24-representable tail after scaling, the diagnostic
+fails closed. Production Encoder/Head/Worker execution still needs an
+independently selected, calibrated, fixed and authorized preprocessing
+manifest, actual loaded-tensor receipts, final-use gates and a durable
+Neuron Tick/Checkpoint with independently verified outcomes.

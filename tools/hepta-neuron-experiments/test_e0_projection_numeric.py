@@ -9,6 +9,7 @@ import unittest
 from pathlib import Path
 
 import e0_projection_numeric as m
+import e0_feature_normalization as dyadic
 
 
 def h(x):
@@ -196,6 +197,55 @@ class E0NumericOracleTests(unittest.TestCase):
         self.contract["expected_output_q24"] = self.out[:]
         self.freeze()
         with self.assertRaisesRegex(m.NumericGateError, "no observed Q24 influence"):
+            self.run_trial()
+
+    def configure_normalized_v2(self):
+        original = struct.pack(">768f", *([0.0] * 767 + [32.0]))
+        normalized, observed = dyadic.normalize_feature_bytes(original)
+        self.f32[-1] = struct.unpack(">768f", normalized)[-1]
+        self.out[-1] = 4 * m.Q
+        self.contract["expected_output_q24"] = self.out[:]
+        self.projector["normalizer_digest"] = observed["policy_digest"]
+        self.freeze()
+        self.assertEqual(self.feature_file.read_bytes(), normalized)
+        raw_path = self.root / "real-encoder-raw.f32be"
+        raw_path.write_bytes(original)
+        self.contract.update(
+            schema=m.C_SCHEMA_V2,
+            source_kind="normalized_local_f32_capture_untrusted",
+            raw_encoder_feature_file=str(raw_path),
+            raw_encoder_feature_sha256=observed["raw_sha256"],
+            normalization_shift=observed["shift"],
+            normalization_binding_digest=observed["binding_digest"],
+            normalization_policy_digest=observed["policy_digest"],
+        )
+        return raw_path
+
+    def test_admitted_dyadic_normalized_v2_matches_raw_model_feature(self):
+        self.configure_normalized_v2()
+        r = self.run_trial()
+        self.assertTrue(r["numeric_oracle_agrees"])
+        self.assertEqual(r["schema"], m.R_SCHEMA)
+        self.assertEqual(r["normalization"]["shift"], 3)
+        self.assertTrue(r["observed_source_tail_q24_influence"])
+
+    def test_raw_model_byte_mutation_detected_after_normalization(self):
+        raw_path = self.configure_normalized_v2()
+        raw_path.write_bytes(struct.pack(">768f", *([0.0]*767+[33.0])))
+        with self.assertRaisesRegex(m.NumericGateError, "physical artifact SHA256 mismatch"):
+            self.run_trial()
+
+    def test_noncanonical_shift_even_with_rebound_metadata_is_denied(self):
+        self.configure_normalized_v2()
+        self.contract["normalization_shift"] = 2
+        self.contract["normalization_binding_digest"] = "a"*64
+        with self.assertRaisesRegex(m.NumericGateError, "noncanonical dyadic"):
+            self.run_trial()
+
+    def test_wrong_normalizer_policy_denied(self):
+        self.configure_normalized_v2()
+        self.contract["normalization_policy_digest"] = "f"*64
+        with self.assertRaisesRegex(m.NumericGateError, "normalizer policy"):
             self.run_trial()
 
     def test_wrong_head_width_is_rejected(self):
