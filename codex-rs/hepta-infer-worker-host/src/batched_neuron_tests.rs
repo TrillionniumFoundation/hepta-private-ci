@@ -524,7 +524,11 @@ fn evidence_sink_builder_replacement_also_poisoned_before_first_effect() {
     assert_eq!(worker.pending(), 0);
     assert!(!worker.flush_production_metrics());
     assert!(!worker.production_metrics_ready());
-    assert!(!Arc::ptr_eq(&original, &replacement));
+    let original_identity: Arc<dyn PhaseMetricSinkV1> = original;
+    assert!(Arc::ptr_eq(
+        worker.metric_sink.as_ref().unwrap(),
+        &original_identity
+    ));
 }
 
 #[derive(Debug)]
