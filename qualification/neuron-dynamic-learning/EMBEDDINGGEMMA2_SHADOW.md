@@ -198,3 +198,13 @@ Remaining hard blockers: completed physical inference, actual Laya 421M/322M
 equal-budget controls, multimodal pairs, independent evaluation, real future
 episodes, calibrated OOD, signed Worker receipts, artifact CAS/revocation,
 WAL/crash recovery, exact candidate CI and owner promotion approval.
+
+## 2026-10-14 follow-up: adversarial evidence review
+
+Paired Laya/Stem evidence now rejects recycled owner outcomes, reused model
+prediction receipts, and model/policy identities disguised as distinct arms.
+All four windows require at least eight independent source groups, and
+multiple comparisons use a Bonferroni-corrected one-sided cluster bootstrap
+lower bound before a cost screen can pass. Original per-arm 95% bounds remain
+descriptive only. These inputs are still externally supplied and **unsigned**:
+positive screens cannot authenticate real model outcomes or enable FinalUse.

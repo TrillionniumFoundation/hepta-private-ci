@@ -19,7 +19,9 @@ SPLITS = ("test", "future1", "future2", "future3")
 MAX_CASES = 4096
 MAX_ARMS = 12
 MIN_PER_WINDOW = 8
+MIN_GROUPS_PER_WINDOW = 8
 BOOTSTRAPS = 1000
+FAMILYWISE_ALPHA = 0.05
 
 
 class AuditError(ValueError):
@@ -84,6 +86,9 @@ def validate_panel(panel: dict) -> dict:
         ids.append(arm["arm_id"])
     if len(set(ids)) != len(ids) or panel["baseline_arm"] not in ids:
         raise AuditError("repeated arm or absent exact baseline")
+    effective_identities = [(arm["model_digest"], arm["policy_digest"]) for arm in arms]
+    if len(set(effective_identities)) != len(effective_identities):
+        raise AuditError("duplicate effective model/policy under distinct arm labels")
     lifecycle_costs = panel["lifecycle_cost_units"]
     required_lifecycle = {"training", "evaluation", "migration", "storage", "source_read"}
     if not isinstance(lifecycle_costs, dict) or set(lifecycle_costs) != set(ids):
@@ -100,6 +105,7 @@ def validate_panel(panel: dict) -> dict:
         raise AuditError("missing four independently observed windows")
     by_window = {split: [] for split in SPLITS}
     seen_cases, group_split, source_split = set(), {}, {}
+    outcome_receipts, prediction_receipts = set(), set()
     for row in cases:
         if not isinstance(row, dict) or set(row) != {
             "case_id", "group_id", "split", "observed_utc", "scope_id", "source_digest",
@@ -113,6 +119,9 @@ def validate_panel(panel: dict) -> dict:
                 or any(not _sha(row[k]) for k in ("source_digest", "outcome_receipt_digest"))
                 or type(row["truth"]) is not int or row["truth"] not in (0, 1)):
             raise AuditError("duplicate, unscoped, unsigned or improperly labelled case")
+        if row["outcome_receipt_digest"] in outcome_receipts:
+            raise AuditError("reused owner outcome receipt cannot count as independent cases")
+        outcome_receipts.add(row["outcome_receipt_digest"])
         seen_cases.add(cid)
         when = _utc(row["observed_utc"])
         if when <= freeze_time:
@@ -131,6 +140,9 @@ def validate_panel(panel: dict) -> dict:
             } or p["arm_id"] not in ids or p["arm_id"] in observed_arms:
                 raise AuditError("missing or duplicate paired arm result")
             observed_arms.add(p["arm_id"])
+            if p["prediction_receipt_digest"] in prediction_receipts:
+                raise AuditError("recycled model prediction receipt across cases or arms")
+            prediction_receipts.add(p["prediction_receipt_digest"])
             _probability(p["probability"])
             _positive(p["observed_cost_units"])
             if (not _sha(p["prediction_receipt_digest"])
@@ -141,8 +153,9 @@ def validate_panel(panel: dict) -> dict:
                 raise AuditError("unmeasured resource or unsigned model prediction")
         by_window[split].append((row, when))
     for name, rows in by_window.items():
-        if len(rows) < MIN_PER_WINDOW or len({x["group_id"] for x, _ in rows}) < 2:
-            raise AuditError(f"insufficient independent samples in {name}")
+        if (len(rows) < MIN_PER_WINDOW
+                or len({x["group_id"] for x, _ in rows}) < MIN_GROUPS_PER_WINDOW):
+            raise AuditError(f"insufficient independent source groups in {name}")
     for older, newer in zip(SPLITS, SPLITS[1:]):
         if max(t for _, t in by_window[older]) >= min(t for _, t in by_window[newer]):
             raise AuditError("future windows are not strictly time ordered")
@@ -155,8 +168,10 @@ def _brier(p: float, y: int) -> float:
     return (p - y) ** 2
 
 
-def _bootstrap_lcb(group_differences: dict, *, seed: int) -> float:
-    """Cluster-level paired 5th percentile, not an observation-unit CI."""
+def _bootstrap_lcb(group_differences: dict, *, seed: int, alpha: float = 0.05) -> float:
+    """Cluster-level paired one-sided LCB; not independent evidence authentication."""
+    if not 0 < alpha <= FAMILYWISE_ALPHA:
+        raise AuditError("invalid preregistered one-sided bootstrap alpha")
     keys = sorted(group_differences)
     if len(keys) < 8:
         raise AuditError("at least eight independent future groups required for CI")
@@ -166,13 +181,15 @@ def _bootstrap_lcb(group_differences: dict, *, seed: int) -> float:
         sampled = [group_differences[keys[rng.randrange(len(keys))]] for _ in keys]
         draws.append(sum(sampled) / len(sampled))
     draws.sort()
-    return draws[int(0.05 * BOOTSTRAPS)]
+    return draws[min(BOOTSTRAPS - 1, int(alpha * BOOTSTRAPS))]
 
 
 def evaluate_panel(panel: dict) -> dict:
     checked = validate_panel(panel)
     ids, baseline = checked["ids"], panel["baseline_arm"]
     scored = []
+    # Conservative familywise error control across all declared alternatives.
+    per_arm_alpha = FAMILYWISE_ALPHA / (len(ids) - 1)
     group_values = defaultdict(lambda: defaultdict(list))
     windows = {}
     for split in SPLITS:
@@ -210,12 +227,15 @@ def evaluate_panel(panel: dict) -> dict:
             sp: windows[sp][baseline]["brier"] - windows[sp][arm]["brier"]
             for sp in SPLITS[1:]
         }
-        lcb = _bootstrap_lcb(gains, seed=int(checked["dataset_digest"][:12], 16))
+        bootstrap_seed = int(checked["dataset_digest"][:12], 16)
+        lcb = _bootstrap_lcb(gains, seed=bootstrap_seed)
+        familywise_lcb = _bootstrap_lcb(gains, seed=bootstrap_seed, alpha=per_arm_alpha)
         scored.append({"arm_id": arm, "future_group_gain_lcb95": lcb,
+                       "future_group_gain_familywise_lcb": familywise_lcb,
                        "matched_lifecycle_cost_ratio": cost_ratio,
                        "per_future_window_brier_gain": per_future_gain,
                        "passes_statistical_cost_screen": (
-                           lcb > 0 and cost_ratio <= 1.0
+                           familywise_lcb > 0 and cost_ratio <= 1.0
                            and all(gain > 0 for gain in per_future_gain.values())
                        ),
                        "independent_source_attestation": False,
@@ -225,6 +245,9 @@ def evaluate_panel(panel: dict) -> dict:
             "evidence_type": "self_reported_pairing_statistic_not_independent_outcome",
             "dataset_digest": checked["dataset_digest"],
             "independent_groups": checked["independent_groups"],
+            "one_sided_familywise_alpha": FAMILYWISE_ALPHA,
+            "one_sided_per_arm_alpha": per_arm_alpha,
+            "familywise_correction": "bonferroni_over_declared_alternatives",
             "windows": windows, "comparisons": scored,
             "production_promotion": "DENY_ALL"}
 

@@ -107,6 +107,44 @@ class PairedAudit(unittest.TestCase):
         self.assertLess(r['per_future_window_brier_gain']['future3'], 0)
         self.assertFalse(r['passes_statistical_cost_screen'])
 
+    def test_receipt_reuse_or_arm_alias_is_rejected(self):
+        for kind in ("outcome", "prediction", "arm_alias"):
+            p = fixture()
+            if kind == "outcome":
+                p["cases"][1]["outcome_receipt_digest"] = p["cases"][0]["outcome_receipt_digest"]
+            elif kind == "prediction":
+                p["cases"][1]["predictions"][0]["prediction_receipt_digest"] = (
+                    p["cases"][0]["predictions"][0]["prediction_receipt_digest"])
+            else:
+                p["arms"][1]["model_digest"] = p["arms"][0]["model_digest"]
+                p["arms"][1]["policy_digest"] = p["arms"][0]["policy_digest"]
+            with self.subTest(kind=kind), self.assertRaises(AuditError):
+                validate_panel(p)
+
+    def test_source_group_pseudoreplication_rejected(self):
+        p = fixture()
+        for row in p["cases"]:
+            if row["split"] == "future3":
+                row["group_id"] = f"future3.only.{row['truth']}"
+        with self.assertRaises(AuditError):
+            validate_panel(p)
+
+    def test_multiple_arm_bootstrap_is_familywise_adjusted(self):
+        p = fixture()
+        p["arms"].append(dict(p["arms"][1], arm_id="candidate.two", model_digest="e" * 64,
+                              policy_digest="f" * 64))
+        p["lifecycle_cost_units"]["candidate.two"] = dict(p["lifecycle_cost_units"]["candidate"])
+        for index, row in enumerate(p["cases"]):
+            row["predictions"].append(dict(row["predictions"][1], arm_id="candidate.two",
+                prediction_receipt_digest=f"{30000+index:064x}"))
+        result = evaluate_panel(p)
+        self.assertEqual(result["familywise_correction"], "bonferroni_over_declared_alternatives")
+        self.assertAlmostEqual(result["one_sided_per_arm_alpha"], 0.025)
+        for arm in result["comparisons"]:
+            self.assertLessEqual(arm["future_group_gain_familywise_lcb"],
+                                 arm["future_group_gain_lcb95"])
+            self.assertEqual(arm["selection_authority"], "DENY_ALL")
+
     def test_no_promotion_even_for_green_self_claims(self):
         r = evaluate_panel(fixture())
         self.assertFalse(r['comparisons'][0]['model_execution_independently_verified'])
