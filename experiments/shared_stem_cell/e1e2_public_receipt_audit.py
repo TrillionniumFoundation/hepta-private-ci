@@ -159,17 +159,35 @@ def audit(paired_path,paired_sha,sealed_path,sealed_sha):
             bundle=strict_json(raw_bundle)
             if bundle.get('payload_sha256')!=sha_bytes(canonical(bundle.get('payload'))) or receipt.get('snapshot_payload_sha256')!=bundle['payload_sha256'] or receipt.get('snapshot_file_sha256')!=sha_bytes(raw_bundle):
                 raise Invalid('checkpoint digest mismatch')
+            if receipt.get('historical_20261014_head_byte_identity_claimed') is not False:
+                raise Invalid('unproven historical Head byte identity')
             if receipt.get('trained_weights_exact_float64_reloaded') is not True or receipt.get('frozen_weights_exact_float64_reloaded') is not True or not (0<receipt.get('trainable_parameters',0)<=2048) or receipt.get('training_steps',0)<1:
                 raise Invalid('small Head checkpoint not read back')
             if seal.get('snapshot_file_sha256')!=receipt['snapshot_file_sha256'] or seal.get('snapshot_payload_sha256')!=receipt['snapshot_payload_sha256']:
                 raise Invalid('sealed snapshot drift')
+            exploration=a.json('stem-head-exploratory-calibration.json')
+            if exploration.get('selected_logit_multiplier')!=1024 or exploration.get('test_distribution_already_reviewed_by_researcher') is not True:
+                raise Invalid('missing exploratory calibration selection disclosure')
             reported=a.json('stem-new-source-independent-review.json')
             sealed_report=b.json('stem-sealed-val2-independent-review.json')
             _check_metric_report(metrics,reported.get('metrics'),{'accuracy':'accuracy','brier':'brier','descriptive_ece_8bin':'descriptive_ece_8bin','reported_serving_micros':'allocated_serving_time_micros'})
             _check_metric_report({k:v for k,v in metrics.items() if k in ARMS[:3]},sealed_report.get('metrics'),{'accuracy':'accuracy','brier':'brier','descriptive_ece_8bin':'descriptive_ece_8_equal_width'})
             for key in ('new_window_is_chronologically_future','equal_total_lifecycle_cost_proven','model_forward_origin_independently_authenticated'):
                 if reported.get(key) is not False:raise Invalid('overclaimed public replication')
+            discordant={'both_correct':0,'only_laya_correct':0,'only_gemma_correct':0,'both_wrong':0}
+            for ident,c in cases.items():
+                laya=int((obs['laya421_frozen'][ident]['prob_sports']>=.5)==bool(c['label']))
+                gemma=int((obs['gemma2_trained_head'][ident]['prob_sports']>=.5)==bool(c['label']))
+                label=('both_correct' if laya and gemma else 'only_laya_correct' if laya
+                       else 'only_gemma_correct' if gemma else 'both_wrong')
+                discordant[label]+=1
+            n=discordant['only_laya_correct']+discordant['only_gemma_correct']
+            k=min(discordant['only_laya_correct'],discordant['only_gemma_correct'])
+            descriptive_p=(min(1.,2*sum(math.comb(n,i) for i in range(k+1))/2**n) if n else 1.)
             return {'schema':SCHEMA,'source_artifact_ids':[11886761368,11886807698],
+                    'laya_vs_gemma_paired_counts':discordant,
+                    'laya_vs_gemma_mcnemar_exact_two_sided_unadjusted_p':descriptive_p,
+                    'scaled_logits_selected_in_prior_exploratory_work':True,
                     'paired_archive_sha256':a.sha256,'sealed_archive_sha256':b.sha256,
                     'checkpoint_bundle_sha256':receipt['snapshot_file_sha256'],
                     'reloaded_head_parameter_count':receipt['trainable_parameters'],
