@@ -536,6 +536,55 @@ fn evidence_sink_builder_replacement_also_poisoned_before_first_effect() {
     ));
 }
 
+#[test]
+fn completed_signed_effect_cannot_switch_to_a_fresh_evidence_writer() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[97; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let first_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
+    let original = Arc::new(CapturedMetrics::default());
+    let replacement = Arc::new(CapturedMetrics::default());
+    let mut worker = runner(&signer, dir.path(), model).with_metric_sink(original.clone());
+    assert!(worker.production_metrics_ready());
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            first,
+            key.clone(),
+            signed(&signer, first_binding),
+        )
+        .unwrap();
+    let completed = worker.poll_and_execute(106).unwrap();
+    assert_eq!(completed.outcomes.len(), 1);
+    assert!(completed.outcomes[0].result.is_ok());
+    assert_eq!(original.0.lock().unwrap().len(), 3);
+    assert_eq!(worker.pending(), 0);
+
+    // Replacing the Evidence journal cannot erase a completed effect's
+    // provenance. No second signed nonce may be claimed after this violation.
+    assert_eq!(
+        worker.bind_metric_sink(replacement.clone()),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    );
+    assert!(!worker.production_metrics_ready());
+    let second_binding = neuron_batch_final_use_binding_v1("worker-one", &key, &second).unwrap();
+    assert_eq!(
+        worker.enqueue(
+            107,
+            "model".into(),
+            second,
+            key,
+            signed_member(&signer, second_binding, "denied-after-writer-swap", 98),
+        ),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    );
+    assert_eq!(worker.pending(), 0);
+    assert_eq!(original.0.lock().unwrap().len(), 3);
+    assert!(replacement.0.lock().unwrap().is_empty());
+}
+
 #[derive(Debug)]
 struct UnavailableMetricSink;
 
