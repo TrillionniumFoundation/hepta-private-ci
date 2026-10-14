@@ -484,3 +484,100 @@ fn agentd_queued_but_uncommitted_terminal_evidence_denies_success() {
         Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
     );
 }
+
+#[derive(Debug)]
+struct RejectSpecificPhase(codex_hepta_types::PhaseMetricKindV1);
+
+impl codex_hepta_types::PhaseMetricSinkV1 for RejectSpecificPhase {
+    fn record(
+        &self,
+        sample: codex_hepta_types::PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        if sample.phase == self.0 {
+            Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+        } else {
+            Ok(())
+        }
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
+}
+
+#[test]
+fn agentd_lost_ndu_final_use_or_wal_phase_blocks_next_effect_boundary() {
+    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::Ordering;
+    use std::time::Duration;
+
+    use codex_hepta_types::Digest32;
+    use codex_hepta_types::PhaseMetricKindV1;
+
+    // These are actual per-phase observation calls used before original
+    // Final-use claim, model entry and checkpoint publication respectively.
+    for phase in [
+        PhaseMetricKindV1::NduRead,
+        PhaseMetricKindV1::FinalUse,
+        PhaseMetricKindV1::Wal,
+    ] {
+        let sink = RejectSpecificPhase(phase);
+        let failed = AtomicU64::new(0);
+        assert_eq!(
+            super::ensure_observed_phases_ready_v1(Some(&sink), &failed),
+            Ok(())
+        );
+        super::observe_phase_v1(
+            Some(&sink),
+            &failed,
+            Digest32::of_bytes(b"subject"),
+            Digest32::of_bytes(b"signed-effect"),
+            phase,
+            Duration::from_micros(7),
+            true,
+        );
+        assert_eq!(
+            super::ensure_observed_phases_ready_v1(Some(&sink), &failed),
+            Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
+        );
+        assert_eq!(failed.load(Ordering::Acquire), 1);
+        // A different healthy writer cannot erase missing original evidence.
+        assert_eq!(
+            super::ensure_observed_phases_ready_v1(
+                Some(&RecordedNeuronPhases::default()),
+                &failed,
+            ),
+            Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
+        );
+    }
+}
+
+#[test]
+fn agentd_unhealthy_evidence_writer_poison_is_irreversible_before_effect() {
+    use std::sync::atomic::AtomicU64;
+    use std::sync::atomic::Ordering;
+
+    let failed = AtomicU64::new(0);
+    assert_eq!(
+        super::ensure_observed_phases_ready_v1(None, &failed),
+        Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
+    );
+    assert_eq!(failed.load(Ordering::Acquire), 0);
+    // A health failure is not a successful record/flush ACK.
+    assert_eq!(
+        super::ensure_observed_phases_ready_v1(Some(&RejectNeuronMetrics), &failed),
+        Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
+    );
+    assert_eq!(failed.load(Ordering::Acquire), 1);
+    assert_eq!(
+        super::ensure_observed_phases_ready_v1(
+            Some(&RecordedNeuronPhases::default()),
+            &failed,
+        ),
+        Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
+    );
+}

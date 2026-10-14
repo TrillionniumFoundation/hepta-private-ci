@@ -332,6 +332,9 @@ where
         );
         let authenticated_read_receipt_digest =
             read_result.map_err(|_| NeuronRuntimeError::InvalidInput)?;
+        // NDU Evidence is emitted before claiming any Final-use nonce.
+        // Lost phase telemetry must not silently become an authorized effect.
+        ensure_observed_phases_ready_v1(self.metric_sink.as_deref(), &self.failed_metrics)?;
         let snapshot = &signed_read.snapshot;
         if snapshot.generation != self.runtime.generation() {
             return Err(NeuronRuntimeError::InvalidInput);
@@ -378,6 +381,10 @@ where
             claimed.is_ok(),
         );
         let token = claimed.map_err(|_| NeuronRuntimeError::InvalidInput)?;
+        // Final-use claim may already have consumed its durable nonce.
+        // Refuse the physical effect if reporting that claim failed.
+        // This denial does not refund or replay the original nonce.
+        ensure_observed_phases_ready_v1(self.metric_sink.as_deref(), &self.failed_metrics)?;
         // Claim persistence may advance past an NDU read cutover/expiry.
         // Consume the nonce but deny the model effect if the live frontier or
         // the protected clock changed while authority was being claimed.
@@ -413,6 +420,9 @@ where
                 prepared.is_ok(),
             );
             prepared.map_err(|_| NeuronRuntimeError::PendingReconciliation)?;
+            // A lost WAL Prepare observation aborts BEFORE physical model
+            // entry. The durable Prepare remains unresolved for reconciliation.
+            ensure_observed_phases_ready_v1(metric_sink, failed_metrics)?;
             // Durable Prepare can block on fsync while CNS/NDU advances.
             // Re-check signed time and the live Control frontier immediately
             // before entering the device, not just before writing Prepare.
@@ -434,6 +444,9 @@ where
                 pre_device_read.is_ok(),
             );
             pre_device_read?;
+            // Even a successful live NDU check cannot justify a model effect
+            // when its accompanying pre-device Evidence record was rejected.
+            ensure_observed_phases_ready_v1(metric_sink, failed_metrics)?;
             self.runtime.tick_with_ndu_snapshot_guarded(
                 &mut model,
                 input,
@@ -453,6 +466,10 @@ where
         })
         .map_err(|_| NeuronRuntimeError::InvalidInput)?;
         let output = outcome?;
+        // A concurrent writer failure during physical inference forbids
+        // checkpoint publication even if the backend returned successfully.
+        // Unknown physical effects stay behind their durable Prepare.
+        ensure_observed_phases_ready_v1(metric_sink, failed_metrics)?;
         // Never publish a successful serving result if CNS/NDU advanced
         // during checkpoint persistence. In this case the durable Prepare
         // deliberately remains unresolved for independent reconciliation.
@@ -541,6 +558,28 @@ fn observe_phase_v1(
             failed_metrics.fetch_add(1, Ordering::Release);
         }
     }
+}
+
+/// Every signed phase must remain observable before entering the next
+/// external-effect boundary. This is a failure-denial fence, never a source of
+/// signer authority or proof of Evidence durability. Durable flush/readback
+/// remains separately required before publishing a successful result.
+fn ensure_observed_phases_ready_v1(
+    sink: Option<&dyn PhaseMetricSinkV1>,
+    failed_metrics: &AtomicU64,
+) -> Result<(), NeuronRuntimeError> {
+    if failed_metrics.load(Ordering::Acquire) != 0 {
+        return Err(NeuronRuntimeError::PendingReconciliation);
+    }
+    let Some(sink) = sink else {
+        return Err(NeuronRuntimeError::PendingReconciliation);
+    };
+    if !sink.healthy() {
+        // A future healthy state cannot silently cure missed evidence.
+        failed_metrics.fetch_add(1, Ordering::Release);
+        return Err(NeuronRuntimeError::PendingReconciliation);
+    }
+    Ok(())
 }
 
 /// A bound Evidence writer cannot be swapped out to backfill missing
