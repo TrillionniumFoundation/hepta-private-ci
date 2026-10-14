@@ -2,6 +2,7 @@ use super::*;
 
 #[cfg(unix)]
 #[test]
+#[allow(deprecated)]
 fn adapter_uses_same_durable_control_owner_for_reads_and_checkpoint_publication() {
     use codex_hepta_types::Generation;
     let dir = tempfile::tempdir().expect("private root");
@@ -56,17 +57,27 @@ fn adapter_uses_same_durable_control_owner_for_reads_and_checkpoint_publication(
     assert_eq!(adapter.check_checkpoint_publisher(&snapshot, next), Ok(()));
     assert!(adapter.latest(&StableId::new("other").unwrap()).is_err());
 
-    // The public single-phase CNS cutover port is always unavailable. A
-    // caller-supplied dummy success callback is NOT proof of the original
-    // signed runtime effect. The candidate's real physical port remains
-    // denied until a separately reviewed authenticated handoff is wired.
+    // An unrelated Agentd caller cannot publish an unsigned CNS handoff or
+    // mint a fake original receipt using the old single-phase Control API.
+    // The reviewed physical Control/CNS effect adapter is not yet installed.
     let mut successor = snapshot.clone();
     successor.route_fence += 1;
-    #[allow(deprecated)]
-    let denied = owner.publish_cutover(&snapshot, next, successor, next);
-    assert_eq!(denied, Err(codex_hepta_control_plane::NduPublicationErrorV1::Unsupported));
+    let source = std::fs::read(dir.path().join("ndu-control.wal"))
+        .expect("original immutable Control evidence");
+    assert_eq!(
+        owner.publish_cutover(&snapshot, next, successor, next),
+        Err(codex_hepta_control_plane::NduPublicationErrorV1::Unsupported)
+    );
+    assert_eq!(
+        std::fs::read(dir.path().join("ndu-control.wal")).expect("no new Control WAL effect"),
+        source
+    );
     assert_eq!(adapter.latest(&scope).unwrap(), snapshot);
     assert_eq!(adapter.check_checkpoint_publisher(&snapshot, next), Ok(()));
+    assert_eq!(owner.current().unwrap().1, next);
+
+    // A denied legacy CNS route write must not poison the valid predecessor
+    // or block a later independently admitted model checkpoint CAS.
     let subsequent = Digest32::of_bytes(b"second-model-checkpoint");
     assert!(adapter
         .compare_and_publish_checkpoint(

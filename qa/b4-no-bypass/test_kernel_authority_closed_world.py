@@ -178,6 +178,93 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             f"kernel.authority privileged boundaries missing from privileged_inventory: {sorted(canonical - required)}",
         )
 
+    def test_control_cns_mutation_requires_an_original_owner_adapter(self) -> None:
+        # A Control WAL digest alone is not a signed, current CNS receipt.
+        # Until the original runtime owner and durable Control transaction
+        # are composed, neither the old one-phase publication nor the
+        # internal success-shaped test callback may authorize a cutover.
+        path = "codex-rs/hepta-control-plane/src/ndu_publication.rs"
+        source = (ROOT / path).read_text(encoding="utf-8")
+        self.assertRegex(
+            source,
+            r"(?m)^\s*#\[cfg\(test\)\]\s*\n\s*pub\(crate\)\s+fn\s+publish_cutover_with_external_effect\s*<",
+            "unsigned CNS callback must remain test-only and crate-private",
+        )
+        lexical = self.lexical_code(path)
+        self.assertRegex(
+            lexical,
+            r"\bpending\s*\.\s*is_some_and\s*\(\s*\|prepared\|",
+            "replayed CNS Commit must have a preceding durable Control Begin",
+        )
+        self.assertRegex(
+            lexical,
+            r"!\s*e\s*\.\s*read\s*\.\s*is_zero\s*\(\s*\)",
+            "replayed CNS Commit must bind original runtime receipt bytes",
+        )
+        self.assertNotRegex(
+            lexical,
+            r"\bpending\s*\.\s*is_none_or\s*\(",
+            "pre-B legacy CNS Commit must not replay as successful cutover",
+        )
+        self.assertNotRegex(
+            lexical,
+            r"\b(?:pub(?:\(crate\))?\s+)?fn\s+publish_cutover_with_external_effect\s*<",
+            "normal production Rust must not expose a generic Control cutover",
+        )
+        match = re.search(r"\bpub\s+fn\s+publish_cutover\s*\(", lexical)
+        self.assertIsNotNone(match, "legacy API must remain explicitly denied")
+        assert match is not None
+        opening = lexical.find("{", match.end())
+        ending = CALLER_PROOF._matching_delimiter(lexical, opening, "{", "}")
+        self.assertIsNotNone(ending, "legacy public Control API must have a complete body")
+        assert ending is not None
+        self.assertEqual(
+            lexical[opening + 1 : ending].strip(),
+            "Err(NduPublicationErrorV1::Unsupported)",
+            "old direct CNS cutover API became effectful",
+        )
+        joined = re.search(
+            r"\bpub\s+fn\s+verify_original_cns_receipt_binding\s*\(", lexical
+        )
+        self.assertIsNotNone(
+            joined, "independent CNS Observer must retain read-only WAL receipt join"
+        )
+        assert joined is not None
+        join_start = lexical.find("{", joined.end())
+        join_end = CALLER_PROOF._matching_delimiter(lexical, join_start, "{", "}")
+        self.assertIsNotNone(join_end, "Control receipt join body must be complete")
+        assert join_end is not None
+        join_body = lexical[join_start + 1 : join_end]
+        self.assertRegex(
+            join_body,
+            r"\bself\s*\.\s*state\s*\.\s*lock\s*\(\s*\)",
+            "original CNS receipt comparison must hold a live Control lock",
+        )
+        self.assertNotIn(
+            "self.last_cns_original_receipt_binding()",
+            join_body,
+            "separate readback may release the lock before receipt comparison",
+        )
+        self.assertRegex(join_body, r"\bstate\s*\.\s*verify_original_paths\s*\(\s*\)")
+        self.assertRegex(join_body, r"\bstate\s*\.\s*pending_cutover\b")
+        self.assertNotIn(
+            "drop(state)", join_body, "no Control lock release before joined equality"
+        )
+
+        physical = self.lexical_code(
+            "codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs"
+        )
+        self.assertRegex(
+            physical,
+            r"atomic_control_cutover_owner:\s*None",
+            "native physical CNS port must not invent a Control owner",
+        )
+        self.assertRegex(
+            physical,
+            r"self\.atomic_control_cutover_owner\.as_ref\(\)\.ok_or\(",
+            "original runtime cutover must stay blocked without Control",
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
