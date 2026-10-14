@@ -17,6 +17,7 @@ use std::io::Write;
 #[cfg(unix)]
 use std::path::Component;
 use std::path::Path;
+use std::path::PathBuf;
 #[cfg(unix)]
 use std::str::FromStr;
 use std::sync::Mutex;
@@ -32,6 +33,9 @@ const DOMAIN: &[u8] = b"hepta.control.ndu-publication.v1";
 pub enum NduPublicationErrorV1 {
     Invalid,
     Stale,
+    /// A durable route Prepare exists but physical runtime effect/Commit is
+    /// not conclusively resolved. Never replay or bootstrap a fresh owner.
+    Indeterminate,
     UnsafePath,
     Unsupported,
     WriterUnavailable,
@@ -51,6 +55,36 @@ impl std::fmt::Display for NduPublicationErrorV1 {
     }
 }
 impl std::error::Error for NduPublicationErrorV1 {}
+
+/// A persistent writer-lock inode is independent of the append-only journal
+/// inode. Losing either path must never silently bootstrap a new Control
+/// frontier, even when the old writer held a lock on an unlinked WAL inode.
+/// This is local durability only; external custody is still mandatory.
+#[cfg(unix)]
+fn control_owner_file_identity(
+    file: &File,
+    path: &Path,
+) -> Result<(u64, u64), NduPublicationErrorV1> {
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::PermissionsExt;
+
+    let opened = file
+        .metadata()
+        .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+    let named = fs::symlink_metadata(path).map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+    if !opened.is_file()
+        || !named.file_type().is_file()
+        || opened.dev() != named.dev()
+        || opened.ino() != named.ino()
+        || opened.nlink() != 1
+        || named.nlink() != 1
+        || opened.permissions().mode() & 0o077 != 0
+        || named.permissions().mode() & 0o077 != 0
+    {
+        return Err(NduPublicationErrorV1::Indeterminate);
+    }
+    Ok((opened.dev(), opened.ino()))
+}
 
 #[derive(Clone, Copy)]
 struct Event {
@@ -83,6 +117,7 @@ fn decode(line: &str) -> Result<Event, NduPublicationErrorV1> {
     let digest = |i| Digest32::from_str(p[i]).map_err(|_| NduPublicationErrorV1::Corrupt);
     let kind = match p[4] {
         "G" => 'G',
+        "B" => 'B',
         "C" => 'C',
         "P" => 'P',
         _ => return Err(NduPublicationErrorV1::Corrupt),
@@ -99,25 +134,60 @@ fn decode(line: &str) -> Result<Event, NduPublicationErrorV1> {
         tick: digest(9)?,
     })
 }
+/// Durable but unresolved CNS handoff. A process crash after Begin is an
+/// ambiguous external effect, regardless of which route is currently visible.
+#[cfg(unix)]
+#[derive(Clone, Copy)]
+struct PendingCutover {
+    successor: Digest32,
+    previous_checkpoint: Digest32,
+    migrated_checkpoint: Digest32,
+}
+
 #[cfg(unix)]
 fn validate_replay(
     e: &Event,
     current: Option<Digest32>,
     checkpoint: Digest32,
+    pending: Option<PendingCutover>,
 ) -> Result<(), NduPublicationErrorV1> {
     if e.snapshot.is_zero() {
         return Err(NduPublicationErrorV1::Corrupt);
     }
     let valid = match e.kind {
-        'G' => current.is_none() && e.before.is_zero() && e.read.is_zero() && e.tick.is_zero(),
+        'G' => {
+            pending.is_none()
+                && current.is_none()
+                && e.before.is_zero()
+                && e.read.is_zero()
+                && e.tick.is_zero()
+        }
+        'B' => {
+            pending.is_none()
+                && current.is_some_and(|prev| prev != e.snapshot)
+                && e.before == checkpoint
+                && !e.after.is_zero()
+                && e.read.is_zero()
+                && e.tick.is_zero()
+        }
         'C' => {
             current.is_some_and(|prev| prev != e.snapshot)
                 && e.before == checkpoint
                 && e.read.is_zero()
                 && e.tick.is_zero()
+                // Every successful cutover in the pinned sidecar schema
+                // must be preceded by a durable Begin for this same exact
+                // successor and predecessor checkpoint. No digest-only,
+                // legacy single-phase C may silently replay as committed.
+                && pending.is_some_and(|prepared| {
+                    prepared.successor == e.snapshot
+                        && prepared.previous_checkpoint == e.before
+                        && prepared.migrated_checkpoint == e.after
+                })
         }
         'P' => {
-            current == Some(e.snapshot)
+            pending.is_none()
+                && current == Some(e.snapshot)
                 && e.before == checkpoint
                 && !e.after.is_zero()
                 && e.after != checkpoint
@@ -135,14 +205,39 @@ fn validate_replay(
 #[derive(Debug)]
 struct State {
     file: File,
+    // The independent persistent writer lock survives WAL deletion/replacement.
+    owner_lock: File,
+    journal_path: PathBuf,
+    lock_path: PathBuf,
     snapshot: NduSnapshotRefV1,
     checkpoint: Digest32,
     sequence: u64,
     head: Digest32,
     bytes: u64,
     poisoned: bool,
+    // Durable B is fsynced, physical effect and original receipt are unresolved.
+    // This is a sticky publication fence even while the mutex is released.
+    pending_cutover: bool,
 }
 impl State {
+    #[cfg(unix)]
+    fn verify_original_paths(&self) -> Result<(), NduPublicationErrorV1> {
+        let (device, inode) = control_owner_file_identity(&self.file, &self.journal_path)?;
+        control_owner_file_identity(&self.owner_lock, &self.lock_path)?;
+        let expected = format!("NDUW1|{device}|{inode}\n");
+        let recorded =
+            fs::read(&self.lock_path).map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+        if recorded != expected.as_bytes() {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        Ok(())
+    }
+
+    #[cfg(not(unix))]
+    fn verify_original_paths(&self) -> Result<(), NduPublicationErrorV1> {
+        Err(NduPublicationErrorV1::Unsupported)
+    }
+
     fn append(
         &mut self,
         kind: char,
@@ -154,6 +249,10 @@ impl State {
     ) -> Result<Digest32, NduPublicationErrorV1> {
         if self.poisoned {
             return Err(NduPublicationErrorV1::Poisoned);
+        }
+        if let Err(error) = self.verify_original_paths() {
+            self.poisoned = true;
+            return Err(error);
         }
         let sequence = self
             .sequence
@@ -190,9 +289,18 @@ impl State {
             self.poisoned = true;
             return Err(error.into());
         }
+        if let Err(error) = self.verify_original_paths() {
+            self.poisoned = true;
+            return Err(error);
+        }
         self.sequence = sequence;
         self.head = e.head;
-        self.checkpoint = after;
+        // A durable Begin is a *fence*, not publication of the successor.
+        // Keep the previous checkpoint until the external runtime has
+        // executed and a separate final Commit is fsynced.
+        if kind != 'B' {
+            self.checkpoint = after;
+        }
         self.bytes = bytes;
         Ok(e.head)
     }
@@ -243,33 +351,74 @@ impl NduPublicationOwnerV1 {
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => false,
             Err(error) => return Err(error.into()),
         };
-        let file = OpenOptions::new()
-            .create(true)
-            .read(true)
-            .append(true)
-            .mode(0o600)
-            .open(path)?;
-        let opened = file.metadata()?;
-        let named = fs::symlink_metadata(path)?;
-        if !opened.is_file()
-            || !named.file_type().is_file()
-            || opened.dev() != named.dev()
-            || opened.ino() != named.ino()
-            || opened.nlink() != 1
-            || named.nlink() != 1
-            || opened.permissions().mode() & 0o077 != 0
-            || named.permissions().mode() & 0o077 != 0
-        {
-            return Err(NduPublicationErrorV1::UnsafePath);
+        // The marker must either already accompany an existing WAL, or
+        // neither path may exist on a first bootstrap. Do not adopt a removed
+        // journal, a removed marker, or legacy history lacking identity.
+        let mut lock_name = path.as_os_str().to_os_string();
+        lock_name.push(".owner-lock");
+        let lock_path = PathBuf::from(lock_name);
+        let lock_existed = match fs::symlink_metadata(&lock_path) {
+            Ok(meta)
+                if !meta.file_type().is_file()
+                    || meta.permissions().mode() & 0o077 != 0
+                    || meta.nlink() != 1 =>
+            {
+                return Err(NduPublicationErrorV1::UnsafePath);
+            }
+            Ok(_) => true,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => false,
+            Err(error) => return Err(error.into()),
+        };
+        if preexisting != lock_existed {
+            return Err(NduPublicationErrorV1::Indeterminate);
         }
+        let mut lock_options = OpenOptions::new();
+        lock_options.read(true).write(true).mode(0o600);
+        if !preexisting {
+            lock_options.create_new(true);
+        }
+        let mut owner_lock = lock_options.open(&lock_path)?;
+        control_owner_file_identity(&owner_lock, &lock_path)?;
+        owner_lock
+            .try_lock()
+            .map_err(|_| NduPublicationErrorV1::WriterUnavailable)?;
+        if !preexisting {
+            // Once the marker exists durably, a crash before genesis must
+            // quarantine the half-bootstrapped owner rather than reinitialize.
+            fs::File::open(parent)?.sync_all()?;
+        }
+
+        let mut journal_options = OpenOptions::new();
+        journal_options.read(true).append(true).mode(0o600);
+        if !preexisting {
+            journal_options.create_new(true);
+        }
+        let file = journal_options.open(path)?;
+        let (journal_device, journal_inode) = control_owner_file_identity(&file, path)?;
         file.try_lock()
             .map_err(|_| NduPublicationErrorV1::WriterUnavailable)?;
+        let expected_marker = format!("NDUW1|{journal_device}|{journal_inode}\n");
+        if preexisting {
+            let mut recorded = Vec::new();
+            owner_lock
+                .try_clone()?
+                .take(256)
+                .read_to_end(&mut recorded)?;
+            if recorded != expected_marker.as_bytes() {
+                return Err(NduPublicationErrorV1::Indeterminate);
+            }
+        } else {
+            owner_lock.write_all(expected_marker.as_bytes())?;
+            owner_lock.sync_all()?;
+            fs::File::open(parent)?.sync_all()?;
+        }
         let mut reader = BufReader::new(file.try_clone()?);
         let mut row = Vec::new();
         let mut sequence = 0u64;
         let mut head = Digest32::ZERO;
         let mut latest = None;
         let mut checkpoint = Digest32::ZERO;
+        let mut pending = None;
         let mut bytes = 0u64;
         loop {
             row.clear();
@@ -296,11 +445,33 @@ impl NduPublicationOwnerV1 {
             {
                 return Err(NduPublicationErrorV1::Corrupt);
             }
-            validate_replay(&e, latest, checkpoint)?;
+            validate_replay(&e, latest, checkpoint, pending)?;
             sequence = e.sequence;
             head = e.head;
-            latest = Some(e.snapshot);
-            checkpoint = e.after;
+            match e.kind {
+                'B' => {
+                    pending = Some(PendingCutover {
+                        successor: e.snapshot,
+                        previous_checkpoint: e.before,
+                        migrated_checkpoint: e.after,
+                    });
+                }
+                'C' => {
+                    pending = None;
+                    latest = Some(e.snapshot);
+                    checkpoint = e.after;
+                }
+                _ => {
+                    latest = Some(e.snapshot);
+                    checkpoint = e.after;
+                }
+            }
+        }
+        // A Begin without an original committed successor is ambiguous.
+        // In particular, do not replay an external effect or trust an old
+        // canonical checkpoint to reset this owner's anti-rollback frontier.
+        if pending.is_some() {
+            return Err(NduPublicationErrorV1::Indeterminate);
         }
         // An existing zero-byte file could be a truncated ledger. Never treat
         // it as a first bootstrap or silently erase the rollback evidence.
@@ -315,12 +486,16 @@ impl NduPublicationOwnerV1 {
         }
         let mut state = State {
             file,
+            owner_lock,
+            journal_path: path.to_path_buf(),
+            lock_path,
             snapshot,
             checkpoint,
             sequence,
             head,
             bytes,
             poisoned: false,
+            pending_cutover: false,
         };
         if latest.is_none() {
             state.append(
@@ -348,27 +523,6 @@ impl NduPublicationOwnerV1 {
     }
 
     pub fn current(&self) -> Result<(NduSnapshotRefV1, Digest32), NduPublicationErrorV1> {
-        let state = self
-            .state
-            .lock()
-            .map_err(|_| NduPublicationErrorV1::Poisoned)?;
-        if state.poisoned {
-            return Err(NduPublicationErrorV1::Poisoned);
-        }
-        Ok((state.snapshot.clone(), state.checkpoint))
-    }
-
-    /// CNS must use this exclusive owner for cutover to linearize with Neuron
-    /// publication. Other CNS paths are not covered until explicitly wired.
-    pub fn publish_cutover(
-        &self,
-        expected: &NduSnapshotRefV1,
-        expected_checkpoint: Digest32,
-        next: NduSnapshotRefV1,
-        migrated_checkpoint: Digest32,
-    ) -> Result<Digest32, NduPublicationErrorV1> {
-        next.validate()
-            .map_err(|_| NduPublicationErrorV1::Invalid)?;
         let mut state = self
             .state
             .lock()
@@ -376,32 +530,148 @@ impl NduPublicationOwnerV1 {
         if state.poisoned {
             return Err(NduPublicationErrorV1::Poisoned);
         }
-        // The caller's frozen predecessor must match BOTH the current route
-        // and checkpoint. A model checkpoint CAS that wins first invalidates
-        // a stale migration; the same mutex alone is not sufficient.
+        if let Err(error) = state.verify_original_paths() {
+            state.poisoned = true;
+            return Err(error);
+        }
+        if state.pending_cutover {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        Ok((state.snapshot.clone(), state.checkpoint))
+    }
+
+    /// Compatibility-only name. The old single-phase API could write a
+    /// successful route cutover without a durable pre-effect Prepare, which
+    /// left an ambiguous crash window and bypassed the Neuron Control lane.
+    /// It is permanently non-authorizing; callers must migrate to the
+    /// separately reviewed fsynced Begin/physical-effect/Commit protocol.
+    #[deprecated(note = "single-phase CNS publication is denied; use guarded durable handoff")]
+    pub fn publish_cutover(
+        &self,
+        _expected: &NduSnapshotRefV1,
+        _expected_checkpoint: Digest32,
+        _next: NduSnapshotRefV1,
+        _migrated_checkpoint: Digest32,
+    ) -> Result<Digest32, NduPublicationErrorV1> {
+        Err(NduPublicationErrorV1::Unsupported)
+    }
+
+    /// Transactional adapter for a *real* external CNS owner. Write a
+    /// durable, fsynced Begin first, while holding the SAME Control mutex
+    /// used by Neuron checkpoint CAS. A sticky pending fence then allows
+    /// releasing that mutex before slow external I/O; all competing Neuron
+    /// CAS and Control reads return Indeterminate until Commit is durable.
+    /// The trusted caller must execute the real runtime cutover and persist
+    /// its original receipt in the closure before this owner acknowledges C.
+    ///
+    /// Any failure or crash after Begin permanently quarantines this owner
+    /// until an independently witnessed reconciliation; neither route nor
+    /// model effects may be automatically retried on restart.
+    // An arbitrary caller-provided success callback is not an authenticated
+    // original CNS runtime receipt. Keep the prototype confined to Control
+    // unit tests until an independently signed receipt port and guarded
+    // runtime composition exist; no public code can mint a successful C.
+    #[cfg(test)]
+    pub(crate) fn publish_cutover_with_external_effect<T, E: std::fmt::Display>(
+        &self,
+        expected: &NduSnapshotRefV1,
+        expected_checkpoint: Digest32,
+        next: NduSnapshotRefV1,
+        migrated_checkpoint: Digest32,
+        apply_original_runtime_once: impl FnOnce() -> Result<T, E>,
+    ) -> Result<(T, Digest32), NduPublicationErrorV1> {
+        next.validate()
+            .map_err(|_| NduPublicationErrorV1::Invalid)?;
+        if migrated_checkpoint.is_zero() {
+            return Err(NduPublicationErrorV1::Invalid);
+        }
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| NduPublicationErrorV1::Poisoned)?;
+        if state.poisoned {
+            return Err(NduPublicationErrorV1::Poisoned);
+        }
+        if state.pending_cutover {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
         if state.snapshot != *expected
             || state.checkpoint != expected_checkpoint
             || next.scope_id != expected.scope_id
+            // A new NDU owner or policy needs an independently signed
+            // handoff protocol. Until then never silently change trust roots.
+            || next.owner_id != expected.owner_id
+            || next.policy_digest != expected.policy_digest
             || next.generation < expected.generation
             || next.route_fence <= expected.route_fence
             || next.revocation_epoch < expected.revocation_epoch
         {
             return Err(NduPublicationErrorV1::Stale);
         }
-        let next_digest = next
+        let successor = next
             .semantic_digest()
             .map_err(|_| NduPublicationErrorV1::Invalid)?;
-        let previous = state.checkpoint;
-        let receipt = state.append(
-            'C',
-            next_digest,
-            previous,
+        // Reserve the maximum space and two sequence numbers for BOTH B/C
+        // before any external effect enters. A valid Begin without room to
+        // durably Resolve would leave a preventable permanent quarantine.
+        if state.sequence.checked_add(2).is_none()
+            || state
+                .bytes
+                .checked_add(2 * MAX_ROW as u64)
+                .is_none_or(|total| total > MAX_BYTES)
+        {
+            return Err(NduPublicationErrorV1::Capacity);
+        }
+        // A failed fsync makes the business effect inadmissible; do not run
+        // the closure until Begin itself has been durably committed.
+        state.append(
+            'B',
+            successor,
+            expected_checkpoint,
             migrated_checkpoint,
             Digest32::ZERO,
             Digest32::ZERO,
         )?;
+        state.pending_cutover = true;
+        // The durable pending flag, not a mutex held over external runtime I/O,
+        // fences model CAS and all other cutovers. Callback readback may safely
+        // reenter Control and receive Indeterminate instead of deadlocking.
+        drop(state);
+        let actual_result = apply_original_runtime_once();
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+        if !state.pending_cutover {
+            state.poisoned = true;
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        let actual = match actual_result {
+            Ok(receipt) => receipt,
+            Err(_) => {
+                state.poisoned = true;
+                return Err(NduPublicationErrorV1::Indeterminate);
+            }
+        };
+        // A rejected Commit is indeterminate even if the external runtime
+        // succeeded. Never let another model tick or cutover enter this lane.
+        let committed = match state.append(
+            'C',
+            successor,
+            expected_checkpoint,
+            migrated_checkpoint,
+            Digest32::ZERO,
+            Digest32::ZERO,
+        ) {
+            Ok(receipt) => receipt,
+            Err(_) => {
+                state.poisoned = true;
+                return Err(NduPublicationErrorV1::Indeterminate);
+            }
+        };
         state.snapshot = next;
-        Ok(receipt)
+        state.pending_cutover = false;
+        Ok((actual, committed))
     }
 
     pub fn compare_and_publish_checkpoint(
@@ -418,6 +688,9 @@ impl NduPublicationOwnerV1 {
             .map_err(|_| NduPublicationErrorV1::Poisoned)?;
         if state.poisoned {
             return Err(NduPublicationErrorV1::Poisoned);
+        }
+        if state.pending_cutover {
+            return Err(NduPublicationErrorV1::Indeterminate);
         }
         if state.snapshot != *expected || state.checkpoint != before {
             return Err(NduPublicationErrorV1::Stale);
