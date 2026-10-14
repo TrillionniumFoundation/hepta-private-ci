@@ -332,6 +332,52 @@ logit corruption. Rust unit tests exercise the corresponding Q24 math.
 The independent matrix checks all 20 native physical files at the final
 binary's exact SHA; a green Python test alone is not native Rust parity.
 
+## Independent process replay and refreshed A0 owner census (2026-10-14)
+
+The physical matrix runner now starts **two fresh Rust operating-system
+processes for each of the 20 physical model/budget combinations**, with the
+same SHA-pinned executable, model and Q24 event stream (40 process invocations).
+Both Rust subprocesses must return byte-equivalent structured JSON receipts:
+actual ordered Checkpoint predecessor/successor digests, every Q24 activation,
+prediction residual, quantized physical Head logit and all no-authority fields.
+A mismatch, timeout, changed binary, weights, trace or unexpected output
+blocks the entire matrix. This is stronger than the native binary's own two
+consecutive empty-state replays, but is still **not a physical crash/reopen
+or durable CAS recovery test**.
+
+For a non-synthetic study, merely seeing
+\`evidence_class=SIGNED_A0_FORMAT_ONLY_NOT_HOST_EXECUTION\` in the training
+receipt is not sufficient. The matrix now independently reopens:
+
+- the current signed target-owner A0 registry and scoped selected-V1 Cell
+  record, using a separately supplied trusted Ed25519 public key and host ID;
+- the exact frozen V1 weight blob and its pinned SHA256;
+- the signed-format registry SHA, scope Cell ID, owner host ID, generation
+  and checkpoint identity, which must still match the pretraining baseline.
+
+The normal CLI therefore additionally requires:
+
+    --selected-v1 "$OWNER_SELECTED_V1" \
+    --selected-v1-sha256 "$OWNER_SELECTED_SHA" \
+    --a0-evidence-root "$READONLY_A0" \
+    --a0-trusted-public-key "$INDEPENDENT_A0_PUBKEY" \
+    --a0-expected-host-id "$EXPECTED_HOST_ID" \
+    --a0-max-age-seconds 300
+
+Absent, stale, differently scoped, changed or mismatched A0 evidence always
+fails closed. The alternate \`--synthetic-canary\` explicitly refuses all
+live-A0 arguments, and its reports always record \`a0_rechecked=false\`.
+\`test_native_matrix_admission.py\` covers missing/stale A0, changed selected
+bytes, time-bound rejection, false mixed synthetic+live admission and numeric
+cross-process divergence.
+
+The A0 file signatures and pinned hashes validate *claims and bytes*:
+they cannot prove that an independent trusted host executed the selected
+model, establish actual availability, or imply NDU benefit. Regardless of
+A0 result, all research receipts retain
+\`live_host_execution_independently_attested=false\`,
+\`ndu_eligible=false\` and \`production_qualification=false\`.
+
 ## Testing
 
     python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
