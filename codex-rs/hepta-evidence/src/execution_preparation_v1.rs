@@ -125,7 +125,7 @@ impl HeptaEvidenceStore {
         let status = match observed {
             None => ExecutionPreparationReadbackStatusV1::Absent,
             Some(record) => {
-                if record.intent.intent != *expected {
+                if &record.intent.intent != expected {
                     return Err(EvidenceError::IdempotencyConflict {
                         record_id: expected.key.as_str().to_owned(),
                     });
