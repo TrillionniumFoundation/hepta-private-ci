@@ -104,7 +104,6 @@ fn ndu_final_use_binding_fences_snapshot_read_and_owner() {
     );
 }
 
-
 #[derive(Debug, Default)]
 struct RecordingPhaseSink {
     events: std::sync::Mutex<Vec<codex_hepta_types::PhaseMetricEventV1>>,
@@ -119,7 +118,10 @@ impl codex_hepta_types::PhaseMetricSinkV1 for RecordingPhaseSink {
         if self.fail.load(std::sync::atomic::Ordering::Acquire) {
             return Err(codex_hepta_types::PhaseMetricSinkErrorV1::Backpressure);
         }
-        self.events.lock().expect("recording phase sink").push(event);
+        self.events
+            .lock()
+            .expect("recording phase sink")
+            .push(event);
         Ok(())
     }
 
