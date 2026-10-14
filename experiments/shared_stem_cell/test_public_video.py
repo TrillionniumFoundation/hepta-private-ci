@@ -90,6 +90,7 @@ class PublicVideoTests(unittest.TestCase):
             p.stage(self.root,_read=bad,_decode=self.decode,inventory=self.inventory,
                     revision=self.revision,readme_blob=self.readme_blob)
 
+
     def test_decode_mp4_uses_exact_pts_and_bounds(self):
         import sys
         from types import SimpleNamespace
@@ -127,6 +128,7 @@ class PublicVideoTests(unittest.TestCase):
         def stage_model(model_root,*args,**kwargs):
             (model_root/"model").mkdir()
             return {"path":"model","revision":"b"*40,"files":{}}
+        # main() has production pins; patch the stage helper, then stage our closed source separately.
         root.mkdir()
         dataset,cohort=p.stage(root,_read=self.read,_decode=self.decode,inventory=self.inventory,
                                revision=self.revision,readme_blob=self.readme_blob)
