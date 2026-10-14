@@ -1,0 +1,9 @@
+# R17 package: nonproduct two-step positive-risk NDU
+
+**Exact mathematical proof:** `python source/certificate.py`; `PROOF.md`. Source math regression: `cd source && python -m unittest -v test_math` (18 distinct). This source and certificate are self-contained standard Python; numeric fits/audit additionally need numpy 2.3.5 and scipy 1.17.0.
+
+**Actual frozen sweep:** `cd source && python run.py sweep --out AN_EMPTY_DIRECTORY` produces 64 fresh-process fits (2 structural variants × 8 starts × 4 solvers) under .75 CPU second per fit. The two variants share the same input law, initial weights, objectives within an architecture and global optimum; their off-optimum landscapes differ. Bad starts and all checkpoints are retained. Read-only auditor: `python source/audit.py --runs sweep_runs --out ANOTHER_EMPTY_DIRECTORY`. Real-artifact tamper tests: `R17_RUNS=/path/to/sweep_runs python -O -m unittest -v test_tamper` (7 distinct tests).
+
+The protocol was actually pushed to GitHub before efficacy at `52b4160c009c10d55b059c2fddb5af71ba5c5c81`. An initial unsupported launch to an already-existing directory performed NO FIT; a read-only audit first failed because audit helpers had been added after the five executed source modules, then its scope was explicitly corrected to bind the executed sources separately. An intermediate audit also encountered JSON serialization of numpy.int64; it was corrected without altering any candidate, source used for fitting or outcome. Original failure logs retained. The final independent replay passed.
+
+Environment: assistant CPU/FP64 source slice, not user project cloud or native Neuron host. No full FLOP, GPU, energy, hardware-attested timing or complete research TCO measurement. Hosted GitHub Actions status is independent of the local pass. No model/CURRENT switch, main merge, permissions change or historical-gate deletion.
