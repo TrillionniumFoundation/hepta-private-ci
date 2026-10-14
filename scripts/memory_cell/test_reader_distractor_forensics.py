@@ -120,7 +120,6 @@ class OriginalReaderForensicsTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 audit(source, model)
 
-
     def test_order_reversal_pair_is_not_a_new_model_call(self):
         pair = self._reversal_pair()
         report = reversal_control({"one": pair})
