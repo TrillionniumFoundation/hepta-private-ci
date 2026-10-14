@@ -54,6 +54,10 @@ pub enum OriginalEvidenceWorkerBootstrapErrorV1 {
     /// has no independently reconciled original Control state; reopening
     /// it as empty would permit a differently signed duplicate request.
     PriorHistoryNeedsReconciliation,
+    /// The caller-supplied live Scope frontier has not been tied to an
+    /// independently authenticated original Control/CNS owner. A trait
+    /// object alone is never adequate production-source attestation.
+    UnverifiedOriginalControl,
     Worker(BatchWorkerErrorV1),
 }
 
@@ -64,6 +68,22 @@ impl std::fmt::Display for OriginalEvidenceWorkerBootstrapErrorV1 {
 }
 
 impl std::error::Error for OriginalEvidenceWorkerBootstrapErrorV1 {}
+
+/// P0 DENY_ALL until the original Control/CNS signer is actually wired.
+/// This has NO caller inputs and is not a positive security attestation.
+/// The normal library always denies. Explicit internal unit-test fixtures
+/// may exercise the full signed Worker mechanics against their fake frontier;
+/// this permission does NOT compile into the production library.
+pub fn require_original_control_v1() -> Result<(), OriginalEvidenceWorkerBootstrapErrorV1> {
+    #[cfg(not(test))]
+    {
+        Err(OriginalEvidenceWorkerBootstrapErrorV1::UnverifiedOriginalControl)
+    }
+    #[cfg(test)]
+    {
+        Ok(())
+    }
+}
 
 /// This is a concrete Evidence *provenance* barrier, not a Control signer.
 /// No API returns the underlying generic worker or accepts another sink.
@@ -89,6 +109,11 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
         #[cfg(unix)]
         {
             use std::os::unix::fs::PermissionsExt as _;
+
+            // Must be the first runtime gate in production, before any WAL
+            // open, queue bootstrap, authority claim or model invocation.
+            // A trait object can never self-certify its original CNS owner.
+            require_original_control_v1()?;
 
             // The operator preprovisions this private canonical directory.
             // Relative, symlinked or aliasable ancestors cannot be used to
