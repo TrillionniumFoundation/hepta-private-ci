@@ -32,7 +32,7 @@ impl NeuronInferenceControlPort for Control {
         let mut receipt = checked(build_neuron_feature_receipt_v1(
             request,
             NeuronModelRuntimeTupleV1 {
-                model_id: request.model_id.clone(),
+                model_id: (*request.model_id).clone(),
                 model_manifest_digest: Digest32::of_bytes(b"manifest"),
                 weights_digest: request.weights_digest,
                 tokenizer_digest: Digest32::of_bytes(b"tokenizer"),
@@ -153,7 +153,7 @@ impl NeuronInferenceControlPort for BorrowOnlyControl {
             codex_hepta_infer_core::build_neuron_feature_receipt_view_v1(
                 request,
                 NeuronModelRuntimeTupleV1 {
-                    model_id: request.model_id.clone(),
+                    model_id: (*request.model_id).clone(),
                     model_manifest_digest: Digest32::of_bytes(b"manifest"),
                     weights_digest: request.weights_digest,
                     tokenizer_digest: Digest32::of_bytes(b"tokenizer"),
