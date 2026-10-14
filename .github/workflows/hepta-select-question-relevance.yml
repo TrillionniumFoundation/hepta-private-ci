@@ -1,0 +1,122 @@
+name: Hepta SELECT same-source question followthrough
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/select_question_relevance*.py"
+      - "scripts/memory_cell/test_select_question_relevance*.py"
+      - ".github/workflows/hepta-select-question-relevance.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: select-question-followthrough-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  saved-candidates-no-new-fitting:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify new immutable-input and paired-behavior contracts
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-select-question/source/memory_cell
+          python3 -m unittest discover -s scripts/memory_cell -p test_select_question_relevance.py -v 2>&1 | tee /tmp/hepta-select-question/new-pure-tests.log
+          python3 -m py_compile scripts/memory_cell/select_question_relevance.py scripts/memory_cell/select_question_relevance_trial.py
+      - name: Install existing pinned official model dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/hepta-select-question-env
+          /tmp/hepta-select-question-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/hepta-select-question/install-torch.log 2>&1
+          /tmp/hepta-select-question-env/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/hepta-select-question/install-worker.log 2>&1
+          /tmp/hepta-select-question-env/bin/pip check
+          /tmp/hepta-select-question-env/bin/pip freeze > /tmp/hepta-select-question/environment.txt
+      - name: Require inherited contracts and new real tiny-model scoring
+        run: |
+          set -euo pipefail
+          failed=0
+          for pattern in test_full_cell_matrix.py test_five_causal_experiments.py test_five_causal_native.py 'test_five_group*.py' test_five_reader_response.py 'test_five_reader_adapter*.py' test_five_encoder_snapshot.py test_five_reader_evidence_pairs.py 'test_source_time_evidence*.py' test_reader_fit_audit.py 'test_assistant_projection*.py' test_reader_content_swap.py test_select_content_inventory.py test_answer_evidence_review.py 'test_question*relevance*.py' test_select_question_relevance_hf.py; do
+            name=$(printf '%s' "$pattern" | tr '*' '_')
+            if /tmp/hepta-select-question-env/bin/python -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/hepta-select-question/$name.log"; then
+              printf '%s\tpassed\n' "$pattern" >> /tmp/hepta-select-question/suites.tsv
+            else
+              failed=1
+              printf '%s\tfailed\n' "$pattern" >> /tmp/hepta-select-question/suites.tsv
+            fi
+          done
+          test "$failed" -eq 0
+      - name: Bind completed upstream run and its immutable artifact before model loading
+        id: dependency
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38512395172 > /tmp/hepta-select-question/dependency-run.json
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/runs/38512395172/artifacts > /tmp/hepta-select-question/dependency-artifacts.json
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          root=Path('/tmp/hepta-select-question')
+          run=json.loads((root/'dependency-run.json').read_text())
+          source='644799a3ec45e18e77ce4ad772029f67fee55db7'
+          if not (run['id']==38512395172 and run['head_sha']==source and run['status']=='completed' and run['conclusion']=='success'):
+              (root/'dependency-blocked.json').write_text(json.dumps({'status':'upstream_not_completed_successfully','observed_status':run['status'],'observed_conclusion':run['conclusion'],'new_model_calls':0,'new_optimizer_updates':0}))
+              raise SystemExit('Exact upstream training is not complete/successful. No fallback or refitting.')
+          rows=json.loads((root/'dependency-artifacts.json').read_text())['artifacts']
+          matches=[a for a in rows if a['name']=='hepta-question-relevance-development-not-confirmation' and not a['expired']]
+          assert len(matches)==1, 'unique completed training artifact required'
+          artifact=matches[0]
+          assert artifact['workflow_run']['head_sha']==source
+          assert re.fullmatch(r'sha256:[0-9a-f]{64}',artifact['digest'])
+          (root/'selected-training-artifact.json').write_text(json.dumps(artifact,sort_keys=True))
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:
+              out.write('artifact_id='+str(artifact['id'])+'\n')
+              out.write('artifact_sha256='+artifact['digest'].split(':',1)[1]+'\n')
+          PY
+      - name: Retrieve verified original material and selected saved results
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TRAIN_ARTIFACT: ${{ steps.dependency.outputs.artifact_id }}
+          TRAIN_SHA: ${{ steps.dependency.outputs.artifact_sha256 }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/select-question-original.zip
+          gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/${TRAIN_ARTIFACT}/zip" > /tmp/select-question-trained.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11863981474/zip > /tmp/select-question-select.zip
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/select-question-original.zip | sha256sum -c -
+          printf '%s  %s\n' "$TRAIN_SHA" /tmp/select-question-trained.zip | sha256sum -c -
+          printf '%s  %s\n' aeb4113b6d2baace0a042f960876861c78b5449b6d9dac404dee2e5c041e46fa /tmp/select-question-select.zip | sha256sum -c -
+      - name: Generate only missing matched questions and audit frozen candidates
+        env:
+          TRAIN_SHA: ${{ steps.dependency.outputs.artifact_sha256 }}
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/hepta-select-question/process-resources.txt /tmp/hepta-select-question-env/bin/python scripts/memory_cell/select_question_relevance_trial.py --original-archive /tmp/select-question-original.zip --training-archive /tmp/select-question-trained.zip --training-sha256 "$TRAIN_SHA" --select-archive /tmp/select-question-select.zip --work /tmp/hepta-select-question-materials --output /tmp/hepta-select-question/study 2>&1 | tee /tmp/hepta-select-question/execution.log
+      - name: Preserve actual source and all failures without pretrained weights
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-select-question/source/memory_cell
+          git rev-parse HEAD > /tmp/hepta-select-question/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-select-question/source/tested-tree.txt
+          cp scripts/memory_cell/*.py scripts/memory_cell/requirements.txt /tmp/hepta-select-question/source/memory_cell/
+          cp experiments/shared_stem_cell/execution.py .github/workflows/hepta-select-question-relevance.yml /tmp/hepta-select-question/source/
+          (cd /tmp/hepta-select-question && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-select-question-followthrough-not-confirmation
+          path: /tmp/hepta-select-question
+          if-no-files-found: error
