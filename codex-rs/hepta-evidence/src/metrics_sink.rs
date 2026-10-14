@@ -26,6 +26,9 @@ use std::time::Duration;
 
 const MAX_QUEUE: usize = 65_536;
 const MAX_BATCH: usize = 256;
+// A flushed physical Split effect must not stall forever on Evidence I/O.
+// Timeout means an indeterminate telemetry barrier, never success.
+const MAX_FLUSH_WAIT: Duration = Duration::from_secs(30);
 
 enum WriterCommandV1 {
     Record(MetricSampleV1),
@@ -125,18 +128,47 @@ impl DurablePhaseMetricSinkV1 {
         }
     }
 
-    /// Synchronous export barrier; never called inside an effect boundary.
+    /// Synchronous durability barrier, including bounded queue admission.
+    /// A stalled writer/fsync must never hold a Split coordinator indefinitely.
+    /// On timeout the sink stays unhealthy even if a delayed writer later ACKs:
+    /// existing effects remain committed and their next-step gate fails closed.
     pub fn flush(&self) -> Result<(), PhaseMetricSinkErrorV1> {
+        self.flush_with_timeout(MAX_FLUSH_WAIT)
+    }
+
+    fn flush_with_timeout(&self, timeout: Duration) -> Result<(), PhaseMetricSinkErrorV1> {
         if !self.healthy() {
             return Err(PhaseMetricSinkErrorV1::Unavailable);
         }
+        let deadline = std::time::Instant::now() + timeout;
         let (tx, rx) = sync_channel(1);
-        self.channel
-            .send(WriterCommandV1::Flush(tx))
-            .map_err(|_| PhaseMetricSinkErrorV1::Unavailable)?;
-        match rx.recv() {
+        let mut command = WriterCommandV1::Flush(tx);
+        loop {
+            match self.channel.try_send(command) {
+                Ok(()) => break,
+                Err(TrySendError::Disconnected(_)) => {
+                    self.health.healthy.store(false, Ordering::Release);
+                    return Err(PhaseMetricSinkErrorV1::Unavailable);
+                }
+                Err(TrySendError::Full(pending)) => {
+                    command = pending;
+                    if !self.healthy() || std::time::Instant::now() >= deadline {
+                        self.health.healthy.store(false, Ordering::Release);
+                        return Err(PhaseMetricSinkErrorV1::Unavailable);
+                    }
+                    std::thread::sleep(
+                        Duration::from_millis(1)
+                            .min(deadline.saturating_duration_since(std::time::Instant::now())),
+                    );
+                }
+            }
+        }
+        match rx.recv_timeout(deadline.saturating_duration_since(std::time::Instant::now())) {
             Ok(true) if self.healthy() => Ok(()),
-            _ => Err(PhaseMetricSinkErrorV1::Unavailable),
+            _ => {
+                self.health.healthy.store(false, Ordering::Release);
+                Err(PhaseMetricSinkErrorV1::Unavailable)
+            }
         }
     }
 }

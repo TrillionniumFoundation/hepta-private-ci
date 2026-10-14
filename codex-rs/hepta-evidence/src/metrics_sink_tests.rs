@@ -148,3 +148,62 @@ fn signed_neuron_phase_writer_round_trips_actual_group_commit() {
     let reopened = MetricsGroupCommitV1::open(&path).unwrap();
     assert_eq!(reopened.pending(), 0);
 }
+
+#[test]
+fn metrics_flush_timeout_poisoned_when_queue_is_full_without_writer_progress() {
+    // A stalled Evidence owner must not block the Split coordinator forever
+    // while it waits to enqueue its commit barrier.
+    let (tx, rx) = sync_channel(1);
+    let sink = DurablePhaseMetricSinkV1 {
+        channel: tx,
+        health: Arc::new(WriterHealthV1 {
+            healthy: AtomicBool::new(true),
+            dropped: AtomicU64::new(0),
+            persisted_batches: AtomicU64::new(0),
+            persisted_rows: AtomicU64::new(0),
+        }),
+        worker: Mutex::new(None),
+    };
+    sink.record(sample(PhaseMetricKindV1::Cas)).unwrap();
+    let start = std::time::Instant::now();
+    assert_eq!(
+        sink.flush_with_timeout(Duration::from_millis(20)),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+    assert!(start.elapsed() < Duration::from_secs(2));
+    assert!(!sink.healthy());
+    assert_eq!(
+        sink.record(sample(PhaseMetricKindV1::Cns)),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+    // Make Drop's existing best-effort shutdown nonblocking in this fixture.
+    drop(rx);
+    drop(sink);
+}
+
+#[test]
+fn metrics_flush_timeout_poisoned_when_writer_accepts_but_never_acks() {
+    // This simulates fsync stalled *after* the flush command was queued.
+    let (tx, rx) = sync_channel(1);
+    let sink = DurablePhaseMetricSinkV1 {
+        channel: tx,
+        health: Arc::new(WriterHealthV1 {
+            healthy: AtomicBool::new(true),
+            dropped: AtomicU64::new(0),
+            persisted_batches: AtomicU64::new(0),
+            persisted_rows: AtomicU64::new(0),
+        }),
+        worker: Mutex::new(None),
+    };
+    assert_eq!(
+        sink.flush_with_timeout(Duration::from_millis(20)),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+    assert!(!sink.healthy());
+    assert_eq!(
+        sink.flush_with_timeout(Duration::from_millis(20)),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+    drop(rx);
+    drop(sink);
+}
