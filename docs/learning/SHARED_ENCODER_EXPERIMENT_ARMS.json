@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "authority": "experiment_only_no_promotion",
+  "reference_commit": "78fdb0cf8537e3a84fc6e0a849707559c80881e8",
+  "model_revision_policy": "pin_exact_weight_tokenizer_preprocessor_and_backend_revisions_before_execution",
+  "arms": [
+    {
+      "id": "no-change",
+      "role": "frozen_real_deployment",
+      "revision": null,
+      "dimension": null,
+      "requires_receipt": true
+    },
+    {
+      "id": "deployed-421m",
+      "role": "measured_teacher_and_control",
+      "revision": null,
+      "dimension": null,
+      "requires_receipt": true
+    },
+    {
+      "id": "mmbert-small",
+      "role": "general_learning_candidate",
+      "revision": null,
+      "dimension": 384,
+      "requires_receipt": true
+    },
+    {
+      "id": "granite-embedding-97m-r2",
+      "role": "retrieval_efficient_candidate",
+      "revision": null,
+      "dimension": 384,
+      "requires_receipt": true
+    },
+    {
+      "id": "modernbert-base",
+      "role": "larger_dimensional_control",
+      "revision": null,
+      "dimension": 768,
+      "requires_projection": true,
+      "max_q24_dimension": 512,
+      "requires_receipt": true
+    }
+  ],
+  "head_rank_grid": [
+    2,
+    8,
+    16
+  ],
+  "cell_scale_grid": [
+    64,
+    256,
+    1024,
+    4096
+  ],
+  "hard_requirements": [
+    "chronological_future_test",
+    "frozen_no_change_baseline",
+    "independent_ndu_evaluator",
+    "paired_confidence_intervals",
+    "no_future_label_leakage",
+    "observed_device_resource_receipts",
+    "verified_generation_fence",
+    "measured_latency_p99",
+    "measured_negative_transfer",
+    "no_automatic_promotion"
+  ],
+  "promotion_allowed": false
+}
