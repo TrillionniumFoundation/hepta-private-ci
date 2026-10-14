@@ -1,0 +1,89 @@
+{
+  "actual_model_generations": 0,
+  "calibration_sha256": "ba152e22e90edcbdb9d1b0528a8336658789e0d3d680b066e77f8a3847c63d0f",
+  "feature_keys": [
+    "entity_matches_current_path_cursor",
+    "attribute_matches_current_path_step",
+    "entity_and_attribute_match",
+    "not_future_revision",
+    "is_retired_by_visible_supersession",
+    "is_latest_visible_revision_for_entity_attribute",
+    "has_supersession_edges",
+    "has_later_future_revision",
+    "candidate_order_reciprocal",
+    "intercept"
+  ],
+  "frozen_before_test": true,
+  "heldout_task_metric": null,
+  "independent_source_family_count": 0,
+  "params_learned_not_same_as_reader_weights": true,
+  "production_accepted": false,
+  "profile": "hepta.memory-cell.source-only-tiny-sgd-heldout.v1",
+  "tested_questions_exposed": false,
+  "torch_runtime": "2.10.0+cpu",
+  "train_source_bytes": 30313,
+  "training": {
+    "shuffled_sgd": {
+      "actual_update_squared_l2": 22.54008932700402,
+      "constructed_feature_examples": 12,
+      "gradient_updates": 192,
+      "labels": "rotated-null-control",
+      "objective": "source-event-path-next-hop-cross-entropy",
+      "observed_train_cpu_seconds": 0.118802108001546,
+      "parameter_count": 10,
+      "steps": 192,
+      "train_loss_final": 0.5540823806702463,
+      "train_loss_first": 2.0278007329829504
+    },
+    "teacher_sgd": {
+      "actual_update_squared_l2": 26.740584983718435,
+      "constructed_feature_examples": 12,
+      "gradient_updates": 192,
+      "labels": "source-only-teacher",
+      "objective": "source-event-path-next-hop-cross-entropy",
+      "observed_train_cpu_seconds": 0.14839197599940235,
+      "parameter_count": 10,
+      "steps": 192,
+      "train_loss_final": 0.05557355944127858,
+      "train_loss_first": 1.8611340663162839
+    }
+  },
+  "weights": {
+    "frozen_rank_only": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      1.0,
+      0.0
+    ],
+    "shuffled_sgd": [
+      0.5040363959666517,
+      -2.990063009932566,
+      -1.7375088353020842,
+      1.2523452216035182,
+      -0.20474776633897918,
+      1.2459000215288598,
+      -0.4361788641739229,
+      -1.2523452216035094,
+      -1.3249613461862646,
+      3.767547492746662e-07
+    ],
+    "teacher_sgd": [
+      2.2841928025971785,
+      1.9949978186794375,
+      2.5159146836488886,
+      1.5229348484803094,
+      -1.1768910486858777,
+      1.9660168337299166,
+      1.0618606827942811,
+      -1.522934848480308,
+      0.5564898126720079,
+      3.9098283628860545e-08
+    ]
+  }
+}

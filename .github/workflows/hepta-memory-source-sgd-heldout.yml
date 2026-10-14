@@ -1,0 +1,133 @@
+name: MemoryCell real tiny source-only SGD versus strong frozen organizer
+on:
+  push:
+    branches: [codex/memorycell-source-sgd-shadow-20261014]
+    paths:
+      - "scripts/memory_cell/memorycell_source_head_holdout.py"
+      - "scripts/memory_cell/test_memorycell_source_head_holdout.py"
+      - "scripts/memory_cell/data/source_head_sgd_*"
+      - ".github/workflows/hepta-memory-source-sgd-heldout.yml"
+  pull_request:
+    paths:
+      - "scripts/memory_cell/memorycell_source_head_holdout.py"
+      - "scripts/memory_cell/test_memorycell_source_head_holdout.py"
+      - "scripts/memory_cell/data/source_head_sgd_*"
+      - ".github/workflows/hepta-memory-source-sgd-heldout.yml"
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: memory-source-sgd-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+jobs:
+  real-source-gradient-and-negative-controls:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: scripts/memory_cell
+      HEPTA_ORIGINAL_EVENT_ZIP: /tmp/original-controlled-source.zip
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Externally pin the ORIGINAL authored development source archive
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11827287296/zip > "$HEPTA_ORIGINAL_EVENT_ZIP"
+          echo '31c6f191ecf62095779f7c9a5dd6c5b2f89c6ae408fe9c26f74e017a2d62c47a  /tmp/original-controlled-source.zip' | sha256sum --check --strict
+      - name: Install pinned CPU SGD, NEVER Reader model weights
+        run: |
+          set -euo pipefail
+          python3 -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          python3 -c 'import torch; assert torch.__version__ == "2.5.1+cpu"'
+      - name: Execute twelve original-data adversarial tests
+        run: |
+          set -euo pipefail
+          python3 -m py_compile scripts/memory_cell/memorycell_source_head_holdout.py scripts/memory_cell/test_memorycell_source_head_holdout.py
+          python3 -m unittest discover -s scripts/memory_cell -p test_memorycell_source_head_holdout.py -v
+      - name: Mandatory scoped Ruff, never bypass blocking-ci
+        run: |
+          set -euo pipefail
+          python3 -m pip install uv==0.8.22
+          uv run --frozen --project scripts ruff format --check \
+            scripts/memory_cell/memorycell_source_head_holdout.py \
+            scripts/memory_cell/test_memorycell_source_head_holdout.py
+      - name: Preserve exact hosted Ruff patch on source failure
+        if: failure()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/source-sgd-ruff
+          git rev-parse HEAD > /tmp/source-sgd-ruff/source-commit.txt
+          if command -v uv >/dev/null 2>&1; then
+            uv run --frozen --project scripts ruff format --diff \
+              scripts/memory_cell/memorycell_source_head_holdout.py \
+              scripts/memory_cell/test_memorycell_source_head_holdout.py \
+              > /tmp/source-sgd-ruff/ruff.diff || true
+            cat /tmp/source-sgd-ruff/ruff.diff
+          fi
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: failure()
+        with:
+          name: source-only-sgd-scoped-failure
+          path: /tmp/source-sgd-ruff
+          if-no-files-found: warn
+      - name: Prepare 8 CALIBRATION and 8 public heldout source-only scopes
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/memorycell_source_head_holdout.py prepare \
+            "$HEPTA_ORIGINAL_EVENT_ZIP" /tmp/memory-source-head
+      - name: Execute 192 real Torch gradient updates for each of two heads
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/memorycell_source_head_holdout.py fit \
+            /tmp/memory-source-head/calibration-source-only.json \
+            /tmp/memory-source-head/learned-head.json \
+            --input-sha "$(sha256sum /tmp/memory-source-head/calibration-source-only.json | cut -d ' ' -f1)"
+      - name: Commit actual predictions BEFORE opening authored test labels
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/memorycell_source_head_holdout.py predict \
+            /tmp/memory-source-head/heldout-public-input.json \
+            /tmp/memory-source-head/learned-head.json \
+            /tmp/memory-source-head/predictions.json \
+            --public-sha "$(sha256sum /tmp/memory-source-head/heldout-public-input.json | cut -d ' ' -f1)" \
+            --model-sha "$(sha256sum /tmp/memory-source-head/learned-head.json | cut -d ' ' -f1)"
+          sha256sum /tmp/memory-source-head/predictions.json > /tmp/memory-source-head/predictions-pinned-before-gold.txt
+      - name: Now score source SUPPORT only; disallow promotion claims
+        run: |
+          set -euo pipefail
+          python3 scripts/memory_cell/memorycell_source_head_holdout.py score \
+            "$HEPTA_ORIGINAL_EVENT_ZIP" /tmp/memory-source-head/predictions.json \
+            /tmp/memory-source-head/learned-head.json \
+            /tmp/memory-source-head/report.json \
+            --predictions-sha "$(sha256sum /tmp/memory-source-head/predictions.json | cut -d ' ' -f1)" \
+            --policy-sha "$(sha256sum /tmp/memory-source-head/learned-head.json | cut -d ' ' -f1)"
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('/tmp/memory-source-head')
+          report = json.loads((root/'report.json').read_text())
+          train = json.loads((root/'learned-head.json').read_text())
+          assert {arm: r['support_exact'] for arm, r in report['arms'].items()} == {
+              'frozen_rank_only': 3, 'shuffled_sgd': 0,
+              'teacher_sgd': 8, 'frozen_organized': 8}
+          assert all(r['gradient_updates'] == 192 for r in train['training'].values())
+          assert report['actual_new_model_generations'] == 0
+          assert report['model_output_quality_measured'] is False
+          assert report['independent_future_project_families'] == 0
+          assert report['production_accepted'] is False
+          PY
+          git rev-parse HEAD > /tmp/memory-source-head/auditor-commit.txt
+          (cd /tmp/memory-source-head && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memory-actual-tiny-sgd-source-only-heldout-original-receipts
+          path: /tmp/memory-source-head
+          if-no-files-found: error
