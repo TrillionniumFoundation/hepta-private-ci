@@ -296,8 +296,10 @@ fn signed_live_route_and_positive_preflight_cannot_bypass_unbound_control_cutove
         .inspect_live(&binding.cns_id, &plan.scope_digest, &"ab".repeat(32))
         .expect("signed route is independently observable");
     port.verify_live(&route).expect("valid signed read");
-    port.verify_preconditions(&plan, &intent).expect("separate preliminary admission");
-    let denial = port.publish_once(&plan, &binding, &intent)
+    port.verify_preconditions(&plan, &intent)
+        .expect("separate preliminary admission");
+    let denial = port
+        .publish_once(&plan, &binding, &intent)
         .expect_err("no independent same-owner Control cutover transaction");
     assert!(
         denial.contains("no shared durable Control/Neuron cutover transaction"),
