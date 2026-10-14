@@ -491,6 +491,38 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         self.assertNotIn("publish_once(", body)
         self.assertNotIn("authority.claim(", body)
 
+    def test_signed_cns_control_and_external_highwater_are_joined_read_only(self) -> None:
+        # It is insufficient for an operator to call two separately successful
+        # read-only verifiers at unrelated Control WAL revisions. Require a
+        # single explicitly named double-collect entrypoint and deny any
+        # original CNS-missing case BEFORE external Observer RPC.
+        code = self.lexical_code(
+            "codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs"
+        )
+        method = re.search(
+            r"\bpub\s+fn\s+"
+            r"verify_original_cns_control_independent_highwater_join_v1\s*<",
+            code,
+        )
+        self.assertIsNotNone(method, "joined original signed owner verifier missing")
+        assert method is not None
+        opening = code.find("{", method.end())
+        closing = CALLER_PROOF._matching_delimiter(code, opening, "{", "}")
+        self.assertIsNotNone(closing, "unbalanced joined original owner verifier")
+        assert closing is not None
+        body = code[opening + 1 : closing]
+        self.assertEqual(body.count(".read_original_local_frontier_v1()"), 2)
+        signed = "self.verify_original_cns_control_commit_v1(control)?"
+        remote = "self.verify_independent_control_highwater_v1("
+        self.assertEqual(body.count(signed), 2)
+        self.assertEqual(body.count(remote), 1)
+        self.assertLess(body.index(signed), body.index(remote))
+        self.assertLess(body.index(remote), body.rindex(signed))
+        self.assertIn("if before != after", body)
+        self.assertNotIn("publish_once(", body)
+        self.assertNotIn("apply_governed_topology(", body)
+        self.assertNotIn("authority.claim(", body)
+
     def test_control_highwater_unix_rpc_has_no_echoback_or_mutation_surface(self) -> None:
         path = "codex-rs/hepta-runtime/src/cell_split_control_highwater_unix.rs"
         code = self.lexical_code(path)

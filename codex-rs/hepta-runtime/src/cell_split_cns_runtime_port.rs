@@ -352,6 +352,53 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
         Ok(())
     }
 
+    /// Read-only double-collect join across three independent facts:
+    /// (1) original signed CNS runtime effect and serving successor,
+    /// (2) exact original Control WAL Commit and full-history frontier,
+    /// (3) separately signed and challenge-bound Control high-water.
+    ///
+    /// None of the individual read APIs constitutes this joined evidence.
+    /// Before and after the full read sequence, replay the original locked
+    /// Control WAL and reject intervening Neuron checkpoint/CNS revisions.
+    /// An absent original CNS commit must fail BEFORE contacting the remote
+    /// high-water Observer; remote availability cannot launder that absence.
+    ///
+    /// This is only bounded observational consistency, NOT cross-owner
+    /// atomicity, external rollback custody, Final-use or effect authority.
+    /// No physical Cell Split can be admitted through this API.
+    pub fn verify_original_cns_control_independent_highwater_join_v1<
+        O: CellSplitIndependentControlObserverV1,
+    >(
+        &mut self,
+        control: &NduPublicationOwnerV1,
+        observer: &mut O,
+        pinned_observer_key: &VerifyingKey,
+        expected_observer_id: &str,
+    ) -> Result<(), String> {
+        let before = control
+            .read_original_local_frontier_v1()
+            .map_err(|error| format!("original Control WAL unavailable before join: {error}"))?;
+        // First demand a real original CNS signed effect, not a digest-only
+        // Control frontier or a successful remote Observer callback.
+        self.verify_original_cns_control_commit_v1(control)?;
+        self.verify_independent_control_highwater_v1(
+            control,
+            observer,
+            pinned_observer_key,
+            expected_observer_id,
+        )?;
+        // Revalidate original CNS effect, its durable sequence and current
+        // signed serving route AFTER the potentially slow external RPC.
+        self.verify_original_cns_control_commit_v1(control)?;
+        let after = control
+            .read_original_local_frontier_v1()
+            .map_err(|error| format!("original Control WAL unavailable after join: {error}"))?;
+        if before != after {
+            return Err("original Control WAL changed across signed CNS/Observer join".into());
+        }
+        Ok(())
+    }
+
     fn live_runtime(&self) -> Result<RuntimeTopologySnapshotV1, String> {
         let observed = self
             .runtime
