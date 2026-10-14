@@ -381,9 +381,16 @@ fn compact_validated_v2_shadow_digest_is_one_digest_and_exact_64_tick_parity() {
         };
         let mut copied_tick = input.clone();
         copied_tick.temporal_drive_q24 = temporal.clone();
-        let a = checked(population_sparse_tick_v2(&copied, &copied_tick, old.as_ref()));
+        let a = checked(population_sparse_tick_v2(
+            &copied,
+            &copied_tick,
+            old.as_ref(),
+        ));
         let b = checked(digest_only.tick_from_temporal_override(
-            &base, &input, &temporal, compact.as_ref()
+            &base,
+            &input,
+            &temporal,
+            compact.as_ref(),
         ));
         assert_eq!(a, b);
         old = Some(a.0);
@@ -393,12 +400,9 @@ fn compact_validated_v2_shadow_digest_is_one_digest_and_exact_64_tick_parity() {
     different.generation = generation(9);
     let rotated = checked(PreparedPopulationSparseDigestV2::new(&different));
     assert_eq!(
-        rotated.tick_from_temporal_override(
-            &different,
-            &tick(65, 6_500),
-            &[Q, Q],
-            compact.as_ref()
-        ).err(),
+        rotated
+            .tick_from_temporal_override(&different, &tick(65, 6_500), &[Q, Q], compact.as_ref())
+            .err(),
         Some(PopulationSparseError::ConfigDrift)
     );
 }
