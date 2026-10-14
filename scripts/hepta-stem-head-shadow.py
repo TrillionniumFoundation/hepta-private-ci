@@ -242,7 +242,8 @@ def train(train_rows, predict_rows, *, budget, seed, steps, cutoff, now,
                 "runtime_generation": identity[7],
                 "execution_receipt_id": "RESEARCH_ONLY_UNVERIFIED_" + weights[:16],
                 "latency_micros": micros,
-                "resident_bytes": 0, "transient_bytes": 0,
+                "resident_bytes": None, "transient_bytes": None,
+                "resource_observation": "HEAD_ONLY_LATENCY_NO_RSS",
             })
         return results
 
