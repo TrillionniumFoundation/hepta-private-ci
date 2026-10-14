@@ -126,6 +126,41 @@ def audit_coverage(examples, prepared, plan, *, curriculum):
                 {source for i in viewed for source in examples[i]["sources"]}
             ),
         )
+    # The same original source may appear in multiple source-only QA examples.
+    # Count (scope, original ID) once, but charge each planned repeat separately.
+    # A scheduled optimizer step is not evidence of a successful model update.
+    available_sources = {
+        (ex["query"]["scope"], source)
+        for ex in examples
+        for source in ex["sources"]
+    }
+    scheduled_visits = Counter()
+    for i, count in enumerate(visits):
+        scope = examples[i]["query"]["scope"]
+        for source in examples[i]["sources"]:
+            scheduled_visits[scope, source] += count
+    covered_sources = {key for key, count in scheduled_visits.items() if count}
+    all_scopes = {scope for scope, _ in available_sources}
+    covered_scopes = {scope for scope, _ in covered_sources}
+    source_exposure = dict(
+        eligible_source_scope_pairs=len(available_sources),
+        scheduled_source_scope_pairs=len(covered_sources),
+        unscheduled_source_scope_pairs=len(available_sources - covered_sources),
+        source_scope_pair_coverage=len(covered_sources) / len(available_sources),
+        total_scheduled_source_references=sum(scheduled_visits.values()),
+        minimum_visits_per_eligible_source=min(
+            scheduled_visits[key] for key in available_sources
+        ),
+        maximum_visits_per_eligible_source=max(
+            scheduled_visits[key] for key in available_sources
+        ),
+        eligible_source_scopes=len(all_scopes),
+        source_scopes_with_scheduled_updates=len(covered_scopes),
+        source_scopes_without_scheduled_updates=len(all_scopes - covered_scopes),
+        unique_training_examples_scheduled=sum(bool(n) for n in visits),
+        repeated_example_update_steps=len(entries) - sum(bool(n) for n in visits),
+        only_planned_source_exposure_not_gradient_or_task_success=True,
+    )
     return dict(
         schema="hepta.source-write.curriculum-coverage.v1",
         curriculum=curriculum,
@@ -134,6 +169,7 @@ def audit_coverage(examples, prepared, plan, *, curriculum):
         total_source_examples=len(examples),
         planned_optimizer_updates=len(entries),
         by_kind=outcomes,
+        source_exposure=source_exposure,
         direct_or_composition_exposure_is_not_task_accuracy=True,
         independent_semantic_support_review=False,
         heldout_task_plan_loaded=False,
