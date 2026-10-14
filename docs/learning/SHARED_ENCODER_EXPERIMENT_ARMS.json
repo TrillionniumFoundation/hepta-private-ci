@@ -33,7 +33,9 @@
       "revision_source": "https://huggingface.co/jhu-clsp/mmBERT-small/commit/abc32620dd4f6ab06f5fbe905dc25f310618e09f",
       "revision_status": "repository_commit_identified_weights_not_verified",
       "weight_signature_verified": false,
-      "model_invocation_verified": false
+      "model_invocation_verified": false,
+      "upstream_weight_filename_seen": "pytorch_model.bin",
+      "weight_loading_caveat": "pickle-based weights require isolated inspected conversion to an authenticated safe artifact before any production consideration"
     },
     {
       "id": "granite-embedding-97m-r2",
@@ -51,7 +53,10 @@
       "revision_source": "https://huggingface.co/ibm-granite/granite-embedding-97m-multilingual-r2/commit/835ad14087e140460703cf0fae09f97d469d65c2",
       "revision_status": "repository_commit_identified_weights_not_verified",
       "weight_signature_verified": false,
-      "model_invocation_verified": false
+      "model_invocation_verified": false,
+      "upstream_weight_filename_seen": "model.safetensors",
+      "publisher_model_sig_file_seen": true,
+      "publisher_model_signature_verified": false
     },
     {
       "id": "modernbert-base",
@@ -70,7 +75,8 @@
       "revision_source": "https://huggingface.co/api/models/answerdotai/ModernBERT-base",
       "revision_status": "repository_commit_identified_weights_not_verified",
       "weight_signature_verified": false,
-      "model_invocation_verified": false
+      "model_invocation_verified": false,
+      "upstream_weight_filename_seen": "model.safetensors"
     }
   ],
   "head_rank_grid": [
@@ -97,5 +103,13 @@
     "no_automatic_promotion"
   ],
   "promotion_allowed": false,
-  "model_cards_as_deployment_evidence": false
+  "model_cards_as_deployment_evidence": false,
+  "execution_security_policy": {
+    "trust_remote_code": false,
+    "floating_revision_allowed": false,
+    "use_publisher_manifest_as_signature_proof": false,
+    "require_local_weight_hash_validation": true,
+    "require_execution_receipts_from_actual_backend": true,
+    "require_model_loading_in_isolated_reproducible_environment": true
+  }
 }
