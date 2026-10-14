@@ -9,6 +9,7 @@ from datetime import datetime, timezone
 import hashlib
 import json
 import math
+import random
 from typing import Any
 
 import torch
@@ -49,6 +50,14 @@ def _audit_dataset(features: Tensor, labels: Tensor, rows: list[dict]) -> dict[s
     scope = (rows[0].get('principal'), rows[0].get('organ_id'), rows[0].get('cell_id'))
     if any(not isinstance(s, str) or not s for s in scope):
         raise ValueError('complete Cell scope required')
+    # Class indices have meaning only with a stable option vocabulary/order.
+    # A different option order with the same integer labels silently pollutes
+    # held-out Brier scores and the selection signal.
+    options = rows[0].get('options')
+    if (not isinstance(options, list) or not 2 <= len(options) <= 16
+            or any(not isinstance(v, str) or not v for v in options)
+            or len(set(options)) != len(options)):
+        raise ValueError('invalid canonical option vocabulary')
     seen_ids: set[str] = set()
     groups: dict[str, str] = {}
     dates: dict[str, list[datetime]] = {s: [] for s in SPLITS}
@@ -71,8 +80,10 @@ def _audit_dataset(features: Tensor, labels: Tensor, rows: list[dict]) -> dict[s
         indices[split].append(i)
         choices = row.get('options')
         if (not isinstance(choices, list) or len(choices) < 2 or len(choices) > 16
-                or len(choices) != len(rows[0].get('options', []))):
+                or len(choices) != len(options)):
             raise ValueError('option geometry mismatch')
+        if choices != options:
+            raise ValueError('option order/content mismatch')
         if row.get('label') != int(labels[i]) or type(row.get('label')) is not int:
             raise ValueError('tensor labels differ from pinned dataset rows')
     if any(not indices[s] for s in SPLITS):
@@ -87,6 +98,71 @@ def _audit_dataset(features: Tensor, labels: Tensor, rows: list[dict]) -> dict[s
     if len(set(labels[indices['train']].tolist())) != classes:
         raise ValueError('all classes must be present in training rows')
     return {s: torch.tensor(values, dtype=torch.long) for s, values in indices.items()}
+
+
+def paired_validation_bootstrap(
+    per_seed_losses: list[tuple[Tensor, Tensor]], source_groups: list[str], *,
+    repeats: int = 500, seed: int = 20261014,
+) -> dict:
+    """Two-axis resampling diagnostic for paired Cell Head comparisons.
+
+    First resample validation source groups, then training seeds. Repeated
+    rows from the same source group stay together. No future labels or
+    source groups participate. This never creates a causal NDU receipt.
+    """
+    if not 100 <= repeats <= 2000 or not 0 <= seed < 2**32 or not per_seed_losses:
+        raise ValueError('invalid paired bootstrap controls')
+    if not source_groups or any(not isinstance(g, str) or not g for g in source_groups):
+        raise ValueError('invalid validation source groups')
+    ids = list(dict.fromkeys(source_groups))
+    maps: list[dict[str, tuple[float, int]]] = []
+    for lhs, rhs in per_seed_losses:
+        if (lhs.ndim != 1 or rhs.ndim != 1 or len(lhs) != len(source_groups)
+                or rhs.shape != lhs.shape or not torch.isfinite(lhs).all()
+                or not torch.isfinite(rhs).all()):
+            raise ValueError('invalid paired validation losses')
+        totals: dict[str, list[float]] = {key: [0.0, 0.0] for key in ids}
+        for group, left, right in zip(source_groups, lhs.tolist(), rhs.tolist()):
+            totals[group][0] += left - right
+            totals[group][1] += 1
+        maps.append({key: (value[0], int(value[1])) for key, value in totals.items()})
+    point = (sum(sum(row[g][0] for g in ids) / sum(row[g][1] for g in ids)
+                 for row in maps) / len(maps))
+    rng = random.Random(seed)
+    sampled: list[float] = []
+    for _ in range(repeats):
+        chosen_groups = [ids[rng.randrange(len(ids))] for _ in ids]
+        chosen_seeds = [maps[rng.randrange(len(maps))] for _ in maps]
+        numerator = 0.0
+        denominator = 0
+        for row in chosen_seeds:
+            for group in chosen_groups:
+                amount, count = row[group]
+                numerator += amount
+                denominator += count
+        sampled.append(numerator / denominator)
+    sampled.sort()
+    lower = sampled[int((repeats - 1) * 0.025)]
+    upper = sampled[int((repeats - 1) * 0.975)]
+    # A CI sign alone with one/two training seeds or too few independent
+    # source groups cannot even establish a stable research-only winner.
+    if len(ids) < 8 or len(maps) < 3:
+        winner = 'INCONCLUSIVE_INSUFFICIENT_REPLICATION'
+    elif upper < 0:
+        winner = 'dynamic_gate'
+    elif lower > 0:
+        winner = 'swiglu'
+    else:
+        winner = 'INCONCLUSIVE_PAIRED_INTERVAL'
+    return {
+        'delta_definition': 'dynamic_gate_minus_swiglu_brier; negative favors dynamic_gate',
+        'mean_paired_validation_brier_delta': point,
+        'paired_bootstrap_95pct_interval': [lower, upper],
+        'bootstrap_repeats': repeats, 'bootstrap_seed': seed,
+        'validation_source_groups': len(ids), 'training_seed_replicates': len(maps),
+        'independent_causal_test': False,
+        'descriptive_winner': winner,
+    }
 
 
 def equal_parameter_nonlinear_trial(features: Tensor, labels: Tensor, rows: list[dict], *,
@@ -115,6 +191,8 @@ def equal_parameter_nonlinear_trial(features: Tensor, labels: Tensor, rows: list
     x = ((x - center) / spread).clamp(-10, 10)
     classes = len(rows[0]['options'])
     result = []
+    paired_validation_losses: list[tuple[Tensor, Tensor]] = []
+    validation_sources = [rows[int(i)]['source_group'] for i in groups['validation']]
     for seed in seeds:
         with torch.random.fork_rng(devices=[]):
             torch.manual_seed(seed)
@@ -135,6 +213,7 @@ def equal_parameter_nonlinear_trial(features: Tensor, labels: Tensor, rows: list
         sampling_hash = hashlib.sha256(json.dumps([v.tolist() for v in batches],
                                                   separators=(',', ':')).encode()).hexdigest()
         records = {}
+        val_predictions: dict[str, Tensor] = {}
         for kind, model in zip(KINDS, (dynamic, swiglu)):
             optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
             model.train()
@@ -151,17 +230,23 @@ def equal_parameter_nonlinear_trial(features: Tensor, labels: Tensor, rows: list
                 metrics['ood_auroc_msp'] = _auroc(
                     1 - probabilities['ood'].max(1).values,
                     1 - probabilities['validation'].max(1).values)
+                val_predictions[kind] = probabilities['validation'].detach()
             records[kind] = {'parameter_count': model.parameter_count,
                              'optimizer_state_bytes': sum(t.numel() * t.element_size()
                                  for state in optimizer.state.values() for t in state.values()
                                  if isinstance(t, Tensor)),
                              'validation': metrics['validation'], 'future': metrics['future'],
                              'ood_auroc_msp': metrics['ood_auroc_msp']}
+        truth = F.one_hot(labels[groups['validation']], num_classes=classes).float()
+        paired_validation_losses.append(tuple(
+            (val_predictions[kind] - truth).square().sum(1) for kind in KINDS
+        ))
         result.append({'seed': seed, 'train_sampling_sha256': sampling_hash,
                        'candidates': records})
     val_brier = {kind: sum(item['candidates'][kind]['validation']['brier'] for item in result) / len(result)
                  for kind in KINDS}
-    selected = min(KINDS, key=lambda kind: val_brier[kind])
+    paired = paired_validation_bootstrap(paired_validation_losses, validation_sources)
+    selected = paired['descriptive_winner']
     return {'experiment': 'E2_EQUAL_PARAMETERS_NONLINEAR',
             'evidence_class': 'RETROSPECTIVE_RESEARCH_ONLY',
             'production_admission': 'BLOCKED', 'causal_learning_verified': False,
@@ -172,6 +257,8 @@ def equal_parameter_nonlinear_trial(features: Tensor, labels: Tensor, rows: list
             'training_steps': steps, 'training_batch': batch, 'learning_rate': lr,
             'validation_only_descriptive_winner': selected,
             'future_used_to_select_winner': False, 'validation_mean_brier': val_brier,
+            'paired_validation_diagnostic': paired,
+            'actual_parameters_equal_but_compute_cost_not_verified': True,
             'runs': result,
             'warning': 'Held-out future results here are retrospective, untrusted, not independently precommitted NDU evidence.'}
 
