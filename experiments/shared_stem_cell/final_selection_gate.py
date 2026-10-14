@@ -212,29 +212,43 @@ def audit(bundle: dict) -> dict:
     groups_ok = len(all_groups) >= min_groups and all(len(v) >= min_groups for v in per_window.values())
     arms_complete = set(STEMS).issubset(seen_stems)
     m = len(reg) - 1  # all registered comparisons, not the observed apparent winners
-    alpha = .05 / m
+    alpha = .05 / (2 * m)  # familywise: registered candidates x two future windows
     result = {}
     for arm in arms:
         if arm["id"] == bundle["baseline"]:
             continue
         grouped: dict[str, list[float]] = {}
-        old_groups: dict[str, list[bool]] = {}
+        window_groups: dict[str, dict[str, list[float]]] = {w: {} for w in ("future_1", "future_2")}
+        old_window_groups: dict[str, dict[str, list[bool]]] = {w: {} for w in ("future_1", "future_2")}
         for case_id, r in case_sets[arm["id"]].items():
             delta = r["external_ndu"] - base[case_id]["external_ndu"]
             grouped.setdefault(r["group_id"], []).append(delta)
+            window_groups[r["window"]].setdefault(r["group_id"], []).append(delta)
             if r["old_task"]:
-                old_groups.setdefault(r["group_id"], []).append(r["negative_transfer"])
+                old_window_groups[r["window"]].setdefault(r["group_id"], []).append(
+                    r["negative_transfer"])
         group_means = [sum(values) / len(values) for _, values in sorted(grouped.items())]
-        rng = random.Random(bundle["seed"])
-        bootstrap = sorted(sum(group_means[rng.randrange(len(group_means))]
-                               for _ in range(len(group_means))) / len(group_means)
-                           for _ in range(count))
-        lcb = _quantile(bootstrap, alpha)
+        window_stats = {}
+        for window in ("future_1", "future_2"):
+            values = [sum(v) / len(v) for _, v in sorted(window_groups[window].items())]
+            rng = random.Random(f'{bundle["seed"]}-{arm["id"]}-{window}')
+            bootstrap = sorted(sum(values[rng.randrange(len(values))] for _ in range(len(values)))
+                               / len(values) for _ in range(count))
+            old = old_window_groups[window]
+            old_rate = (sum(sum(v) / len(v) for v in old.values()) / len(old)
+                        if old else None)
+            window_stats[window] = {
+                "delta_ndu_group_mean": sum(values) / len(values),
+                "delta_ndu_lcb_familywise": _quantile(bootstrap, alpha),
+                "negative_transfer_rate": old_rate,
+                "source_groups_reported": len(values),
+            }
+        lcb = min(v["delta_ndu_lcb_familywise"] for v in window_stats.values())
+        transfer_rates = [v["negative_transfer_rate"] for v in window_stats.values()]
+        transfer_rate = max(transfer_rates) if all(v is not None for v in transfer_rates) else None
         quality = arm["quality"]
         bq = baseline["quality"]
-        transfer_rate = (sum(sum(v) / len(v) for v in old_groups.values()) / len(old_groups)
-                         if old_groups else None)
-        quality_ok = bool(old_groups) and transfer_rate <= lim["max_negative_transfer_rate"] and (
+        quality_ok = transfer_rate is not None and transfer_rate <= lim["max_negative_transfer_rate"] and (
             quality["brier"] - bq["brier"] <= lim["max_brier_increase"] and
             quality["ece"] - bq["ece"] <= lim["max_ece_increase"] and
             quality["ood_false_acceptance_rate"] <= lim["max_ood_false_acceptance_rate"] and
@@ -250,6 +264,7 @@ def audit(bundle: dict) -> dict:
         result[arm["id"]] = {
             "delta_ndu_group_mean": sum(group_means) / len(group_means),
             "delta_ndu_lcb_familywise": lcb,
+            "future_window_bounds": window_stats,
             "adjusted_one_sided_alpha": alpha,
             "source_groups_reported": len(group_means),
             "negative_transfer_rate": transfer_rate,
