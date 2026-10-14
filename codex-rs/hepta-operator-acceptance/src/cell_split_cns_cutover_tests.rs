@@ -658,22 +658,38 @@ fn corrupted_runtime_signature_cannot_become_a_signed_cns_readback() {
 
 #[test]
 fn replayed_signed_cns_snapshot_is_not_a_fresh_readback() {
-    let root = private_root();
+    let denied_root = private_root();
     let port = DiskCns::open(
-        root.path().to_path_buf(),
+        denied_root.path().to_path_buf(),
         SigningKey::from_bytes(&[9; 32]),
         Arc::new(AtomicBool::new(true)),
     )
     .with_stale_readback();
 
-    // On a new owner, the replayed nonce must fail before writing even the
-    // frozen binding. This is part of the bootstrap anti-resurrection check.
-    let denied = CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), port);
+    // A rejected bootstrap can leave the persistent writer-lock inode. It
+    // must not turn that directory into a fresh install: never reuse it for
+    // an independently admitted owner or bypass anti-resurrection.
+    let denied = CellSplitCnsCutoverOwnerV1::open(denied_root.path(), plan(), binding(), port);
     assert!(matches!(denied, Err(CellSplitCnsCutoverErrorV1::Invalid)));
-    assert!(!root.path().join(FROZEN).exists());
+    assert!(!denied_root.path().join(FROZEN).exists());
+    assert!(
+        CellSplitCnsCutoverOwnerV1::open(
+            denied_root.path(),
+            plan(),
+            binding(),
+            DiskCns::open(
+                denied_root.path().to_path_buf(),
+                SigningKey::from_bytes(&[9; 32]),
+                Arc::new(AtomicBool::new(true)),
+            ),
+        )
+        .is_err(),
+        "failed bootstrap must never be resurrected on the same owner history"
+    );
 
-    // An independently admitted predecessor may freeze the plan. Every
-    // subsequent readback still needs a fresh, independently signed nonce.
+    // Exercise successful enrollment in an independent pristine directory.
+    // The negative fixture above is intentionally never reset or reused.
+    let root = private_root();
     let admitted = owner(root.path(), Arc::new(AtomicBool::new(true)));
     drop(admitted);
     let stale = DiskCns::open(
