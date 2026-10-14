@@ -263,17 +263,29 @@ class LocalEncoder:
         self.root, self.manifest = root, manifest
         self.identity = verify_snapshot(root, manifest)
         self.maximum_tokens = integer(maximum_tokens, 8, 8192, "token ceiling")
-        from transformers import AutoModel, AutoModelForCausalLM, AutoModelForMaskedLM, AutoTokenizer
+        import transformers
+        from transformers import AutoConfig, AutoModel, AutoModelForCausalLM, AutoModelForMaskedLM, AutoTokenizer
         kind = manifest.get("kind")
         factories = {"encoder": AutoModel, "masked_lm": AutoModelForMaskedLM, "causal_lm": AutoModelForCausalLM}
         if kind not in self.permitted_kinds:
             raise InputError("unsupported model kind; no Laya/generator reinterpretation")
         self.tokenizer = AutoTokenizer.from_pretrained(
             root, local_files_only=True, trust_remote_code=False)
+        # ModernBERT's reference_compile must not silently JIT-compile a
+        # different runtime. It is explicitly disabled only for pinned stock MLM.
+        config_kwargs = {}
+        if kind == "masked_lm":
+            config = AutoConfig.from_pretrained(root, local_files_only=True, trust_remote_code=False)
+            if config.model_type == "modernbert":
+                if transformers.__version__ != "4.57.1":
+                    raise InputError("exact reviewed Transformers required for tied ModernBERT MLM")
+                config.reference_compile = False
+                config._attn_implementation = "eager"
+                config_kwargs["config"] = config
         loaded, info = factories[kind].from_pretrained(
             root, local_files_only=True, trust_remote_code=False, use_safetensors=True,
-            output_loading_info=True, attn_implementation="eager")
-        if any(info.get(k) for k in ("missing_keys", "unexpected_keys", "mismatched_keys", "error_msgs")):
+            output_loading_info=True, attn_implementation="eager", **config_kwargs)
+        if any(info.get(k) for k in ("unexpected_keys", "mismatched_keys", "error_msgs")):
             raise InputError("incomplete model load")
         self.loaded = loaded.cpu().float().eval()
         self.loaded.requires_grad_(False)
@@ -300,6 +312,14 @@ class LocalEncoder:
                             raise InputError("snapshot tensor materialization mismatch: " + key)
                         pointers.add((state[key].data_ptr(), tuple(state[key].shape)))
                     covered.add(key)
+        # A complete stock tied ModernBERT MLM can omit decoder.weight on
+        # disk. Reconcile this ONE alias only after all saved bytes have been
+        # compared and its source embedding is known to be serialized.
+        from multimodal_exact_tied_alias_v11 import MissingTensorError, reconcile_loading_report
+        try:
+            self.reconciled_tied_aliases = reconcile_loading_report(self.loaded, info, covered)
+        except MissingTensorError as exc:
+            raise InputError("unproven saved-tensor omission: " + str(exc)) from exc
         if any(k not in covered and (v.data_ptr(), tuple(v.shape)) not in pointers for k, v in state.items()):
             raise InputError("unverified loaded tensor")
         verify_snapshot(root, manifest)
