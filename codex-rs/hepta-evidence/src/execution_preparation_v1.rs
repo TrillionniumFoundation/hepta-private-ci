@@ -126,9 +126,9 @@ impl HeptaEvidenceStore {
             None => ExecutionPreparationReadbackStatusV1::Absent,
             Some(record) => {
                 if record.intent.intent != *expected {
-                    return Err(EvidenceError::Corrupt(
-                        "execution preparation original identity or envelope changed".to_owned(),
-                    ));
+                    return Err(EvidenceError::IdempotencyConflict {
+                        record_id: expected.key.as_str().to_owned(),
+                    });
                 }
                 if record.acknowledgements.is_empty() && record.uncertainties.is_empty() {
                     ExecutionPreparationReadbackStatusV1::RecordedOnly
