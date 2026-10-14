@@ -5,6 +5,11 @@ on:
       - "qualification/stem-video-independent-source/**"
       - ".github/workflows/hepta-video-independent-source-gate.yml"
   workflow_dispatch:
+    inputs:
+      plan_path:
+        description: Approved prelabel, in-repository v2 candidate plan
+        required: true
+        type: string
 permissions:
   contents: read
 jobs:
@@ -17,10 +22,52 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
-      - name: Execute fail-closed stdlib source identity tests
+      - name: Execute source identity and publisher-byte attestation tests
         shell: bash
         run: |
           set -euo pipefail
           python3 -m unittest discover -s qualification/stem-video-independent-source -p 'test_*.py' -v
-          python3 -m py_compile qualification/stem-video-independent-source/source_gate.py qualification/stem-video-independent-source/test_source_gate.py
+          python3 -m py_compile \
+            qualification/stem-video-independent-source/source_gate.py \
+            qualification/stem-video-independent-source/test_source_gate.py \
+            qualification/stem-video-independent-source/source_attestation.py \
+            qualification/stem-video-independent-source/test_source_attestation.py
           git diff --exit-code
+  publisher-byte-attestation:
+    if: github.event_name == 'workflow_dispatch'
+    needs: identity-preflight-tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout pinned workflow dispatch commit
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Verify publisher objects and compute original media SHA256
+        env:
+          PLAN_REL: ${{ inputs.plan_path }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ ! "$PLAN_REL" =~ ^qualification/stem-video-independent-source/plans/[A-Za-z0-9][A-Za-z0-9._-]{0,80}\.json$ ]]; then
+            echo 'Only a committed immutable prelabel candidate plan is accepted' >&2
+            exit 1
+          fi
+          test -f "$PLAN_REL"
+          test ! -L "$PLAN_REL"
+          mkdir -p "$RUNNER_TEMP/independent-video-attestation"
+          python3 qualification/stem-video-independent-source/source_attestation.py \
+            --plan "$PLAN_REL" \
+            --prior-sha256 b2d6ba8cfededc3894bf3760ec9891cf2be1dbf7fa481ba7e3f7eacf515f60af \
+            --output "$RUNNER_TEMP/independent-video-attestation/source-receipt.json"
+          sha256sum "$RUNNER_TEMP/independent-video-attestation/source-receipt.json" \
+            > "$RUNNER_TEMP/independent-video-attestation/source-receipt.sha256"
+          git diff --exit-code
+      - name: Retain metadata receipts only (no media bytes)
+        if: success()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: independent-source-attestation-${{ github.run_id }}
+          path: ${{ runner.temp }}/independent-video-attestation/
+          if-no-files-found: error
