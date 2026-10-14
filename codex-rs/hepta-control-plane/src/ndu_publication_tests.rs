@@ -507,6 +507,13 @@ fn lost_writer_marker_or_replaced_wal_cannot_adopt_old_signed_state() {
         Err(NduPublicationErrorV1::Indeterminate),
         "valid-looking replacement must not become live owner state"
     );
+    // The first rejected read must poison this original owner persistently:
+    // a later call may not revalidate a replacement file as fresh authority.
+    assert_eq!(
+        owner.current(),
+        Err(NduPublicationErrorV1::Poisoned),
+        "same-process read cannot clear the Control WAL poison latch"
+    );
     assert!(matches!(
         owner.compare_and_publish_checkpoint(
             &original,
