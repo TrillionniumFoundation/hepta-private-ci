@@ -217,6 +217,7 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
     width, sequences = training_input(spec)
     a0_info = require_selected_owner_a0(args, spec['cell_id'], baseline_sha)
     require(1 <= args.steps <= 512 and 1 <= args.window <= 128, 'invalid training work budget')
+    require(0 < args.max_train_cpu_seconds <= 3600, 'invalid per-arm CPU training ceiling')
     import torch
     from safetensors.torch import save_file, load_file
     torch.set_num_threads(1)
@@ -234,6 +235,7 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
         'train_source_group_hashes': [sha_bytes(group[0]['source_group'].encode()) for group in sequences],
         'no_change_v1_selected_sha256': baseline_sha, 'no_change_optimizer_steps': 0,
         'candidate_optimizer_steps': args.steps, 'cpu_only': True,
+        'uniform_per_arm_cpu_ceiling_seconds': args.max_train_cpu_seconds,
         'preregistered_window': args.window, 'seed': args.seed, 'schedule_sha256': schedule_sha,
         'target_host_attested': False, 'native_q24_parity_verified': False,
         'training_provenance_independently_verified': False,
@@ -264,6 +266,8 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
                 optimizer.step()
+                require(time.process_time()-cpu0 <= args.max_train_cpu_seconds,
+                        'shared per-arm CPU training ceiling exceeded')
                 last_loss = float(loss.detach())
             saved = {'structure.projection': torch.full((width,), Q, dtype=torch.int64)}
             quant_saturations = 0
@@ -320,6 +324,7 @@ def main() -> int:
                    help='unit-test fixture ONLY; denies real A0/model proof')
     p.add_argument('--steps', type=int, default=64)
     p.add_argument('--window', type=int, default=32)
+    p.add_argument('--max-train-cpu-seconds', type=float, default=300.0)
     p.add_argument('--seed', type=int, default=7347)
     p.add_argument('--lr', type=float, default=.01)
     args = p.parse_args()
