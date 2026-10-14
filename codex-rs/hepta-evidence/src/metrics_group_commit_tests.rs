@@ -563,3 +563,64 @@ fn partial_or_legacy_evidence_owner_cannot_be_adopted_as_new_genesis() {
         assert!(!missing.exists(), "missing half must not be created");
     }
 }
+
+#[test]
+fn local_original_frontier_counts_only_original_fsynced_groups() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("frontier.log");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
+    let empty = owner
+        .read_local_original_frontier()
+        .expect("original empty WAL");
+    assert_eq!(empty.sequence, 0);
+    assert_eq!(empty.committed_rows, 0);
+    assert_eq!(empty.head_digest, Digest32::ZERO);
+    assert_eq!(empty.wal_bytes, 0);
+
+    owner.stage(sample(MetricPhaseV1::Cas)).expect("pending");
+    assert_eq!(
+        owner.read_local_original_frontier().expect("no fake fsync"),
+        empty
+    );
+    let receipt = owner.flush().expect("fsynced").expect("original group");
+    let committed = owner.read_local_original_frontier().expect("readback");
+    assert_eq!(committed.sequence, 1);
+    assert_eq!(committed.committed_rows, 1);
+    assert_eq!(committed.head_digest, receipt.head_digest);
+    assert!(committed.wal_bytes > 0);
+    owner.stage(sample(MetricPhaseV1::Cns)).expect("staged");
+    assert_eq!(
+        owner
+            .read_local_original_frontier()
+            .expect("exclude unflushed rows"),
+        committed
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn local_original_frontier_refuses_replaced_wal_even_with_identical_bytes() {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let parked = dir.path().join("retired-journal");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
+    owner.stage(sample(MetricPhaseV1::Cas)).expect("stage");
+    owner.flush().expect("original fsync");
+    let original = std::fs::read(&path).expect("original bytes");
+
+    std::fs::rename(&path, &parked).expect("displace original inode");
+    std::fs::write(&path, &original).expect("same bytes different owner");
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))
+        .expect("private replacement");
+
+    assert!(matches!(
+        owner.read_local_original_frontier(),
+        Err(MetricsJournalErrorV1::UnsafePath)
+    ));
+    assert!(matches!(
+        owner.read_local_original_frontier(),
+        Err(MetricsJournalErrorV1::Poisoned)
+    ));
+}

@@ -302,3 +302,65 @@ fn graceful_stop_commits_queued_samples_before_lock_handoff() {
         assert_eq!(committed.committed_groups(), round + 1);
     }
 }
+
+#[test]
+fn local_original_frontier_flushes_real_queued_rows_before_reporting() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("original-frontier.log");
+    let last;
+    {
+        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000)
+            .expect("single actual original writer");
+        sink.record(sample(PhaseMetricKindV1::Cas))
+            .expect("first queued");
+        sink.record(sample(PhaseMetricKindV1::Cns))
+            .expect("second queued");
+        let first = sink
+            .local_original_frontier()
+            .expect("original fsync readback");
+        assert_eq!(first.sequence, 1);
+        assert_eq!(first.committed_rows, 2);
+        assert!(!first.head_digest.is_zero());
+        assert!(first.wal_bytes > 0);
+        assert_eq!(sink.status().persisted_rows, 2);
+
+        sink.record(sample(PhaseMetricKindV1::Wal))
+            .expect("new queued");
+        last = sink.local_original_frontier().expect("next fsync readback");
+        assert_eq!(last.sequence, 2);
+        assert_eq!(last.committed_rows, 3);
+        assert_ne!(last.head_digest, first.head_digest);
+    }
+    let mut reopened = MetricsGroupCommitV1::open(&path).expect("same original WAL");
+    assert_eq!(
+        reopened
+            .read_local_original_frontier()
+            .expect("on-disk readback"),
+        last
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn local_original_frontier_does_not_ack_tampered_live_wal() {
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("original-frontier.log");
+    let parked = dir.path().join("old-wal");
+    let sink = DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000).expect("real writer");
+    sink.record(sample(PhaseMetricKindV1::Cas)).expect("sample");
+    sink.local_original_frontier().expect("original flush");
+    let original = std::fs::read(&path).expect("original bytes");
+
+    std::fs::rename(&path, &parked).expect("displace original");
+    std::fs::write(&path, &original).expect("same bytes replacement");
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))
+        .expect("private replacement");
+
+    assert_eq!(
+        sink.local_original_frontier(),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+    assert!(!sink.healthy());
+}
