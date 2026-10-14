@@ -2546,3 +2546,145 @@ fn last_original_owner_readback_selector_revocation_is_reconcile_only() {
         "late revocation and recovery must never duplicate CAS"
     );
 }
+
+#[test]
+fn read_only_original_ledger_audits_every_durable_metric_ack_with_live_owner_receipts() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let sink = Arc::new(CapturedPhaseMetrics::default());
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("single original owner")
+        .with_metric_sink(sink);
+        for index in 0..4 {
+            assert_eq!(owner.completed_steps(), index);
+            assert!(owner.advance().expect("signed original effect").is_some());
+        }
+        assert_eq!(state.borrow().executions, 4);
+        assert!(
+            owner.verified_metrics_ack_ledger_v1().is_err(),
+            "live mutation coordinator may not forge a read-only audit"
+        );
+    }
+    let mut opened = CellSplitExecutionOwnerV1::open_existing(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("original existing ledger only");
+    let frozen = opened
+        .verified_transcript()
+        .expect("fresh original owner readback")
+        .expect("all four original signed effects");
+    let receipt = opened
+        .verified_metrics_ack_ledger_v1()
+        .expect("all four write-once original Evidence ACKs");
+    assert_eq!(receipt.acknowledged_steps.len(), 4);
+    assert_eq!(receipt.plan_digest, frozen.plan.digest().unwrap());
+    assert_eq!(receipt.transcript_digest, frozen.transcript_digest);
+    assert!(receipt.all_four_original_signed_owner_readbacks);
+    assert!(receipt.all_four_original_metrics_ack_frames);
+    assert!(!receipt.production_activation_authorized);
+    for (index, step) in receipt.acknowledged_steps.iter().enumerate() {
+        assert_eq!(step.index, index);
+        assert_eq!(step.step, frozen.receipts[index].intent.step);
+        assert_eq!(step.owner_id, frozen.receipts[index].intent.owner_id);
+        assert_eq!(
+            step.idempotency_key,
+            frozen.receipts[index].intent.idempotency_key
+        );
+        assert_eq!(
+            step.committed_owner_receipt_digest,
+            frozen.receipts[index].receipt_digest
+        );
+        assert_eq!(
+            step.original_metrics_ack_frame_digest,
+            sha256(&super::metrics_ack_bytes(&frozen.receipts[index]).unwrap())
+        );
+    }
+    assert_eq!(state.borrow().executions, 4, "audit may only read effects");
+}
+
+#[test]
+fn read_only_ledger_never_accepts_unsigned_or_absent_original_metrics_ack() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    {
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("original owner with NO Evidence sink");
+        for _ in 0..4 {
+            assert!(owner.advance().expect("signed fixture owner").is_some());
+        }
+    }
+    let mut recovered = CellSplitExecutionOwnerV1::open_existing(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("signed receipt transcript is readable despite missing Evidence");
+    assert!(
+        recovered.verified_transcript().unwrap().is_some(),
+        "forensic signed transcript is allowed without telemetry"
+    );
+    assert!(
+        recovered.verified_metrics_ack_ledger_v1().is_err(),
+        "an old unsigned effect transcript can NEVER mint a metrics ACK"
+    );
+    assert!(
+        !root.path().join("cell-split-00-metrics-acked.json").exists(),
+        "forensic Observer must never synthesize a missing frame"
+    );
+    assert_eq!(state.borrow().executions, 4);
+}
+
+#[test]
+fn read_only_original_metrics_ack_audit_rejects_single_frame_tamper_or_loss() {
+    for remove in [false, true] {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        {
+            let sink = Arc::new(CapturedPhaseMetrics::default());
+            let mut owner = CellSplitExecutionOwnerV1::open(
+                root.path(),
+                plan(),
+                trust(),
+                FixturePort::new(state.clone()),
+            )
+            .expect("single original owner")
+            .with_metric_sink(sink);
+            for _ in 0..4 {
+                owner.advance().expect("committed original effect");
+            }
+        }
+        let target = root.path().join("cell-split-02-metrics-acked.json");
+        if remove {
+            fs::remove_file(&target).expect("remove original Evidence ACK");
+        } else {
+            fs::write(&target, b"[]").expect("modify original ACK in place");
+        }
+        let mut reopened = CellSplitExecutionOwnerV1::open_existing(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("original signed effect readback remains available");
+        assert!(
+            reopened.verified_metrics_ack_ledger_v1().is_err(),
+            "tampered/missing original ACK must fence independent Observer"
+        );
+        assert_eq!(state.borrow().executions, 4);
+    }
+}
