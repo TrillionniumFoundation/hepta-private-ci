@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import errno
 import importlib.util
 import json
 import subprocess
 import sys
 import tempfile
+import time
 import tomllib
 import unittest
 from pathlib import Path
@@ -16,6 +18,46 @@ spec = importlib.util.spec_from_file_location("hepta_ci_dependencies", SCRIPT)
 ci = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = ci
 spec.loader.exec_module(ci)
+
+
+def cleanup_temporary_git_repo(temp):
+    """Retry only transient ENOTEMPTY during Git fixture teardown.
+
+    Never suppress assertion failures or swallow an actual final cleanup
+    error; background Git maintenance can race with .git directory removal.
+    """
+    for attempt in range(4):
+        try:
+            temp.cleanup()
+            return
+        except OSError as error:
+            if error.errno != errno.ENOTEMPTY or attempt == 3:
+                raise
+            time.sleep(0.05 * (attempt + 1))
+
+
+class TemporaryGitCleanupTests(unittest.TestCase):
+    def test_retry_only_transient_enotempty(self):
+        class OnceBusy:
+            calls = 0
+
+            def cleanup(self):
+                self.calls += 1
+                if self.calls == 1:
+                    raise OSError(errno.ENOTEMPTY, "Git fixture busy")
+
+        fixture = OnceBusy()
+        cleanup_temporary_git_repo(fixture)
+        self.assertEqual(fixture.calls, 2)
+
+    def test_permission_error_is_not_ignored(self):
+        class Denied:
+            def cleanup(self):
+                raise OSError(errno.EACCES, "permission denied")
+
+        with self.assertRaises(OSError) as exc:
+            cleanup_temporary_git_repo(Denied())
+        self.assertEqual(exc.exception.errno, errno.EACCES)
 
 
 class SelectionTests(unittest.TestCase):
@@ -118,9 +160,13 @@ class SelectionTests(unittest.TestCase):
 class GitGraphTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temp.cleanup)
+        self.addCleanup(cleanup_temporary_git_repo, self.temp)
         self.root = Path(self.temp.name)
         self.git("init", "-q")
+        # The test repository is tiny; automatic background GC adds no value
+        # and can race with TemporaryDirectory's deterministic cleanup.
+        self.git("config", "gc.auto", "0")
+        self.git("config", "maintenance.auto", "false")
         self.git("config", "user.name", "CI regression")
         self.git("config", "user.email", "ci@example.invalid")
         self.write(
@@ -214,9 +260,13 @@ renamed = { package = "leaf", path = "leaf" }
 class DocumentInputTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.addCleanup(self.tmp.cleanup)
+        self.addCleanup(cleanup_temporary_git_repo, self.tmp)
         self.root = Path(self.tmp.name)
         self.git("init", "-q")
+        # The test repository is tiny; automatic background GC adds no value
+        # and can race with TemporaryDirectory's deterministic cleanup.
+        self.git("config", "gc.auto", "0")
+        self.git("config", "maintenance.auto", "false")
         self.git("config", "user.name", "Regression")
         self.git("config", "user.email", "regression@example.invalid")
         self.write(

@@ -292,7 +292,7 @@ fn post_prepare_ndu_revalidation_denies_fence_cutover_and_expiry() {
         Err(codex_hepta_neuron::NeuronRuntimeError::PendingReconciliation)
     ));
 }
- 
+
 #[test]
 fn agentd_metrics_readiness_needs_explicit_flush_and_is_invalidated_by_new_tick() {
     use std::sync::atomic::AtomicBool;
