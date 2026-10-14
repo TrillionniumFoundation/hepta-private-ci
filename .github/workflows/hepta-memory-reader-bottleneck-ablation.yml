@@ -5,11 +5,15 @@ on:
     paths:
       - "scripts/memory_cell/reader_bottleneck_ablation.py"
       - "scripts/memory_cell/test_reader_bottleneck_ablation.py"
+      - "scripts/memory_cell/reader_host_disposition.py"
+      - "scripts/memory_cell/test_reader_host_disposition.py"
       - ".github/workflows/hepta-memory-reader-bottleneck-ablation.yml"
   pull_request:
     paths:
       - "scripts/memory_cell/reader_bottleneck_ablation.py"
       - "scripts/memory_cell/test_reader_bottleneck_ablation.py"
+      - "scripts/memory_cell/reader_host_disposition.py"
+      - "scripts/memory_cell/test_reader_host_disposition.py"
       - ".github/workflows/hepta-memory-reader-bottleneck-ablation.yml"
 permissions:
   contents: read
@@ -40,15 +44,18 @@ jobs:
       - name: Compile and run negative controls without model weights or targets
         run: |
           set -euo pipefail
-          python3 -m py_compile scripts/memory_cell/reader_bottleneck_ablation.py scripts/memory_cell/test_reader_bottleneck_ablation.py
+          python3 -m py_compile scripts/memory_cell/reader_bottleneck_ablation.py scripts/memory_cell/test_reader_bottleneck_ablation.py scripts/memory_cell/reader_host_disposition.py scripts/memory_cell/test_reader_host_disposition.py
           python3 -m unittest discover -s scripts/memory_cell -p test_reader_bottleneck_ablation.py -v
+          python3 -m unittest discover -s scripts/memory_cell -p test_reader_host_disposition.py -v
       - name: Mandatory repository Ruff format
         run: |
           set -euo pipefail
           python3 -m pip install uv==0.8.22
           uv run --frozen --project scripts ruff format --check \
             scripts/memory_cell/reader_bottleneck_ablation.py \
-            scripts/memory_cell/test_reader_bottleneck_ablation.py
+            scripts/memory_cell/test_reader_bottleneck_ablation.py \
+            scripts/memory_cell/reader_host_disposition.py \
+            scripts/memory_cell/test_reader_host_disposition.py
       - name: Preserve format diagnostics on source failure
         if: failure()
         run: |
@@ -58,7 +65,9 @@ jobs:
           if command -v uv >/dev/null; then
             uv run --frozen --project scripts ruff format --diff \
               scripts/memory_cell/reader_bottleneck_ablation.py \
-              scripts/memory_cell/test_reader_bottleneck_ablation.py > /tmp/reader-bottleneck-format/ruff.diff || true
+              scripts/memory_cell/test_reader_bottleneck_ablation.py \
+            scripts/memory_cell/reader_host_disposition.py \
+            scripts/memory_cell/test_reader_host_disposition.py > /tmp/reader-bottleneck-format/ruff.diff || true
             cat /tmp/reader-bottleneck-format/ruff.diff
           fi
           (cd /tmp/reader-bottleneck-format && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
@@ -138,6 +147,40 @@ jobs:
           name: memory-reader-bottleneck-${{ matrix.tier }}-${{ matrix.case }}
           path: /tmp/reader-shards/${{ matrix.tier }}-${{ matrix.case }}
           if-no-files-found: warn
+
+  host-disposition:
+    if: always() && needs.source-gate.result == 'success'
+    needs: [source-gate, generate]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ env.HEPTA_MEMORY_TESTED_COMMIT }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: "3.12"
+      - name: Retrieve every existing original shard, even from failed jobs
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-reader-bottleneck-*
+          path: /tmp/reader-downloaded
+      - name: Separate BF16 host rejection from completed original inference
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/reader-host-disposition
+          python3 scripts/memory_cell/reader_host_disposition.py \
+            /tmp/reader-downloaded /tmp/reader-host-disposition/disposition.json \
+            --source "$HEPTA_MEMORY_TESTED_COMMIT"
+          git rev-parse HEAD > /tmp/reader-host-disposition/auditor-commit.txt
+          (cd /tmp/reader-host-disposition && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: success()
+        with:
+          name: memory-reader-original-host-disposition
+          path: /tmp/reader-host-disposition
+          if-no-files-found: error
   collect:
     needs: generate
     runs-on: ubuntu-22.04
