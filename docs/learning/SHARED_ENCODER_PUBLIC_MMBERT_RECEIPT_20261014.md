@@ -33,6 +33,30 @@ labels**, rather than merely copied from the publisher report:
 | Low-rank | 21 / 32 | 65.625% | 0.5013715819763659 |
 | Sparse expert | 13 / 32 | 40.625% | 0.8909663935166834 |
 
+## Counterfactual screen: public parent_no_change is still stronger
+
+The same archive has an **internal research** `parent_no_change` control
+in `execution/controls.json`. After joining its ordered
+`holdout_case_ids` against the original dataset, we independently
+recomputed **26/32 correct (81.25%), multiclass Brier 0.3142704408**.
+
+Paired against that specific local control, the four Head arms show:
+
+| Head | Accuracy difference | Corrected errors (gains) | New errors (losses) | Brier difference (Head minus control) |
+| --- | ---: | ---: | ---: | ---: |
+| Gated | -12.50 pp | 2 | 6 | +0.2783 |
+| Linear | -25.00 pp | 1 | 9 | +0.3101 |
+| Low-rank | -15.625 pp | 2 | 7 | +0.1871 |
+| Sparse expert | -40.625 pp | 1 | 14 | +0.5767 |
+
+The positive Brier differences mean worse scoring than this local
+control. This is **not** a matched-compute causal conclusion, and the
+internal `parent_no_change` is *not* independently authenticated as
+the actual deployed Hepta no-change model. Still, the source-observed
+negative deltas must not be omitted when discussing the best shared
+Stem/Cell architecture. The research data do not support promoting
+any of these four Heads over the local parent control.
+
 The ZIP archive matches the following report bindings:
 
 - Dataset SHA-256: `50335a2214756c7a9e09fee9ac9ed27ab855ea98635bb0fab0998144165ffb2c`
