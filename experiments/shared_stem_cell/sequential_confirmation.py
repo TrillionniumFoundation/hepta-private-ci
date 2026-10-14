@@ -16,6 +16,9 @@ from experiments.shared_stem_cell import consolidation as c, execution as e
 from experiments.shared_stem_cell import fresh_confirmation as f
 from experiments.shared_stem_cell import residual_consolidation as rc
 from experiments.shared_stem_cell.sequential_evidence import PairedEvidence, BETS
+from experiments.shared_stem_cell.sequential_work_audit import (
+    SCHEMA as WORK_SCHEMA, aggregate as aggregate_work, validate_batch as validate_work_batch,
+)
 
 CONFIRM = 4096
 FINAL = 512
@@ -74,12 +77,15 @@ def stream(output, rows, lock, predict_rows, label_at):
     state = PairedEvidence(cells=2,classes=4,alpha=ALPHA)
     pools = [[r for r in rows if r['split']=='confirmation' and r['cell']==cell] for cell in (0,1)]
     positions, chain, consumed, batches = [0,0], e.sha(e.canonical([lock_sha,cohort_sha])), [], []
+    work_receipts = []
 
     def predict(part, name, previous):
         raw = predict_rows(part)
         if (not isinstance(raw,dict) or set(raw.get('predictions',{})) != NAMES
                 or not set(raw) <= {'predictions','inference_costs','selected','encoding','feature_sha256'}):
             raise e.InputError('missing original panel control')
+        physical = (validate_work_batch(part, raw, lock)
+                    if lock.get('physical_work_profile') == WORK_SCHEMA else None)
         matrices = {}
         for key, values in raw['predictions'].items():
             p = torch.tensor(values,dtype=torch.float64)
@@ -89,12 +95,15 @@ def stream(output, rows, lock, predict_rows, label_at):
                 raise e.InputError('invalid full panel prediction batch')
             matrices[key] = p
         payload = {'case_ids':[r['case_id'] for r in part], 'previous_sha256':previous,
-            'candidate_lock_sha256':lock_sha,'cohort_sha256':cohort_sha,**raw}
+            'candidate_lock_sha256':lock_sha,'cohort_sha256':cohort_sha,**raw,
+            **({'physical_work_census': physical} if physical is not None else {})}
         seal = e.write_once(output/f'{name}-predictions.json',payload)
         if e.decode(e.bound_file(output/f'{name}-predictions.json',seal,16*1024**2)) != payload:
             raise e.InputError('predictions changed before labels')
         e.bound_file(output/'candidate-lock.json',lock_sha)
         e.bound_file(output/'cohort.json',cohort_sha,16*1024**2)
+        if physical is not None:
+            work_receipts.append(physical)
         return matrices,seal
 
     while smaller:
@@ -132,11 +141,14 @@ def stream(output, rows, lock, predict_rows, label_at):
     labels = [e.integer(label_at(r['source_index']),0,3,'final label') for r in final]
     routes = torch.tensor([r['cell'] for r in final],dtype=torch.long)
     scores = {key:c.score(p.tolist(),torch.tensor(labels),routes,2) for key,p in matrices.items()}
+    if lock.get('physical_work_profile') == WORK_SCHEMA and not work_receipts:
+        raise e.InputError('empty physical-work census after terminal prediction')
     return {'schema':'hepta.sequential-confirmation.v1','decision_sha256':decision_sha,
         'evaluation_predictions_sha256':final_sha,'evaluation_labels':labels,'scores':scores,
         'chosen':chosen,'proposed':proposed,'chosen_score':scores[chosen],
         'reserved_confirmation_rows':sum(map(len,pools)),'encoded_confirmation_rows':len(consumed),
         'unencoded_confirmation_rows':sum(map(len,pools))-len(consumed),'evaluation_rows':len(final),
+        'physical_work_census': aggregate_work(work_receipts) if work_receipts else None,
         'assumptions_verified':False,'retention_certified':False,'production_accepted':False}
 
 
@@ -157,7 +169,9 @@ def run(study, consolidation, producer_sha, consolidation_sha, previous, previou
             'bets':list(BETS),'chunk_per_cell':CHUNK_PER_CELL,'previous_report_sha256':previous_sha,
             'source_sha256':source_identity(),
             'error_budget_scope':'this_new_stream_only_not_all_prior_research',
-            'prior_results_not_pooled':True,'extra_optimizer_steps':0,'extra_svd_calls':0}
+            'prior_results_not_pooled':True,'extra_optimizer_steps':0,'extra_svd_calls':0,
+            'physical_work_profile': WORK_SCHEMA,
+            'expected_stem_sha256': e.sha(e.canonical(config['model']))}
         e.write_once(output/'plan.json',plan)
         with e.measured() as acquisition:
             source = load_dataset('fancyzhx/ag_news',revision=f.DATA_REVISION,split='test',

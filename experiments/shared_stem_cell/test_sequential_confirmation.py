@@ -137,6 +137,21 @@ class StreamTests(unittest.TestCase):
         self.assertNotIn(s.f.normalized('old news'),{r['normalized_sha256'] for r in rows})
         with self.assertRaises(e.InputError):s.cohort(['same']*300,[],confirmation=128,final=32)
 
+    def test_actual_resource_profile_requires_a_complete_meter_before_labels(self):
+        from experiments.shared_stem_cell.sequential_work_audit import SCHEMA
+        lock = {**self.lock, "physical_work_profile": SCHEMA,
+                "source_simulated_encoder": True,
+                "expected_stem_sha256": "a" * 64,
+                "profile": {"width": 384}}
+        out = self.root / "resource-fail"
+        out.mkdir()
+        def unmetered(part):
+            return {"predictions": {k: [[1., 0., 0., 0.] for _ in part] for k in s.NAMES}}
+        with self.assertRaises(e.InputError):
+            s.stream(out, self.rows, lock, unmetered,
+                     lambda _: self.fail("unverified work cannot consume labels"))
+        self.assertFalse((out / "decision.json").exists())
+
     def test_invalid_prediction_rejects_before_first_label(self):
         for mode in ('missing','bad'):
             out=self.root/mode;out.mkdir()

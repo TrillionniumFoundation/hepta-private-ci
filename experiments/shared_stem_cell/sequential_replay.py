@@ -20,7 +20,8 @@ MAX_TOTAL = 128 * 1024**2
 SPECIAL = {'plan.json', 'candidate-lock.json', 'cohort.json', 'decision.json',
            'evaluation-predictions.json', 'report.json', 'failure.json'}
 BATCH = re.compile(r'batch-[0-9]{4}-(predictions|outcomes)\.json\Z')
-PROTOCOL = ('sequential_confirmation.py', 'sequential_evidence.py', 'sequential_replay.py')
+PROTOCOL = ('sequential_confirmation.py', 'sequential_evidence.py',
+            'sequential_replay.py', 'sequential_work_audit.py')
 RAW_KEYS = {'predictions', 'inference_costs', 'selected', 'encoding', 'feature_sha256'}
 
 
