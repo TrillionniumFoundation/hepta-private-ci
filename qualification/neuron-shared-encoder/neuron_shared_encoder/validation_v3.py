@@ -349,7 +349,8 @@ def prequential_order_audit(rows: list[dict], frozen_no_change: dict,
 
 def evaluate_shadow(rows: list[dict], dataset_digest: str,
                     frozen_no_change: dict, candidate: dict, *,
-                    bootstrap_repeats: int = 500, seed: int = 42) -> dict:
+                    bootstrap_repeats: int = 500, seed: int = 42,
+                    prequential_event_log: dict | None = None) -> dict:
     """E4: future grouped bootstrap against a file-frozen no-change prediction set.
 
     Statistical evidence alone does not establish independent NDU or permit a
@@ -392,12 +393,21 @@ def evaluate_shadow(rows: list[dict], dataset_digest: str,
     # Retrospective statistics alone cannot certify precommitted predictions.
     strong_signal = len(future_groups) >= 30 and lower > 0 and negative == 0
     ordering = prequential_order_audit(rows, frozen_no_change, candidate)
+    if prequential_event_log is None:
+        event_chain = {'status': 'NOT_PROVIDED',
+                       'independent_timestamp_witness_verified': False,
+                       'production_admission': 'BLOCKED'}
+    else:
+        from .prequential_receipts import prequential_chain_audit
+        event_chain = prequential_chain_audit(
+            rows, dataset_digest, frozen_no_change, candidate, prequential_event_log)
     return {'experiment': 'E4', 'production_admission': 'BLOCKED',
             'independent_evaluator_verified': False, 'ndu_receipt_verified': False,
             'selection': 'NOT_AUTHORIZED',
             'shadow_signal': ('RETROSPECTIVE_POSITIVE_UNVERIFIED' if strong_signal else 'INCONCLUSIVE_OR_NEGATIVE'),
             'causal_learning_verified': False,
             'prequential_order_audit': ordering,
+            'prequential_event_chain_audit': event_chain,
             'baseline_artifact_digest': frozen_no_change['artifact_digest'],
             'candidate_artifact_digest': candidate['artifact_digest'],
             'future_groups': len(future_groups), 'negative_transfer_group_count': negative,
@@ -603,6 +613,8 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument('--baseline-sha256', default='')
     parser.add_argument('--candidate', default='')
     parser.add_argument('--candidate-sha256', default='')
+    parser.add_argument('--prequential-event-log', default='')
+    parser.add_argument('--prequential-event-log-sha256', default='')
     parser.add_argument('--encoder', choices=('synthetic-hash',) + ENCODERS, default='synthetic-hash')
     parser.add_argument('--allow-synthetic', action='store_true')
     parser.add_argument('--checkpoint-dir', default='')
@@ -644,7 +656,12 @@ def main() -> None:
         elif args.command == 'e4-future':
             baseline = _read_pinned_json(args.baseline, args.baseline_sha256)
             candidate = _read_pinned_json(args.candidate, args.candidate_sha256)
-            result = evaluate_shadow(rows, data['dataset_sha256'], baseline, candidate, seed=args.seed)
+            if bool(args.prequential_event_log) != bool(args.prequential_event_log_sha256):
+                raise ValueError('E4 event-chain file and SHA256 must be supplied together')
+            chain = (_read_pinned_json(args.prequential_event_log, args.prequential_event_log_sha256)
+                     if args.prequential_event_log else None)
+            result = evaluate_shadow(rows, data['dataset_sha256'], baseline, candidate,
+                                     seed=args.seed, prequential_event_log=chain)
             result['snapshot_file_sha256'] = {'baseline': args.baseline_sha256,
                                               'candidate': args.candidate_sha256}
         else:
