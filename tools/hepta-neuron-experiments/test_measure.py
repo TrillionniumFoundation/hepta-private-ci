@@ -299,6 +299,21 @@ class ExperimentEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(m.EvidenceError, "incomplete/failed model execution"):
             m.audit(plan, self.repo, [rec])
 
+    def test_v2_receipt_cannot_claim_v3_postrun_conformance(self) -> None:
+        command = [sys.executable, "-c", "pass"]
+        plan = self.plan_with_commands("v2-rejected", {"multi_head": command})
+        rec = self.root / "v2-old.json"
+        m.run(self.repo, plan, "multi_head", rec, 5, command)
+        value = json.loads(rec.read_text())
+        self.assertEqual(value["schema"], "hepta.neuron.experiment-run.v3")
+        value.pop("receipt_digest")
+        value["schema"] = "hepta.neuron.experiment-run.v2"
+        value.pop("postrun_binding_verified")
+        value["receipt_digest"] = m.digest(value)
+        rec.write_text(json.dumps(value))
+        with self.assertRaisesRegex(m.EvidenceError, "invalid receipt schema"):
+            m.audit(plan, self.repo, [rec])
+
     def test_timeout_receipt_and_no_success_laundering(self) -> None:
         rec = self.root / "timeout.json"
         command = [sys.executable, "-c", "import time; time.sleep(1)"]
