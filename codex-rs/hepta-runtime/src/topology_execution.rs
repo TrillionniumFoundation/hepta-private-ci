@@ -17,6 +17,7 @@ use codex_hepta_control_plane::CnsRouteV1;
 use codex_hepta_control_plane::OrganStateMigrationV1;
 use codex_hepta_plasticity::GovernedTopologyProposalV1;
 use codex_hepta_plasticity::TopologyCandidateKindV2;
+use codex_hepta_plasticity::TopologyOperationV2;
 use codex_hepta_plasticity::TopologyGovernanceErrorV1;
 use codex_hepta_plasticity::WriterHandoffPlanV1;
 use codex_hepta_plasticity::admit_governed_topology_v1;
@@ -117,6 +118,9 @@ pub enum RuntimeTopologyExecutionError {
     Governance(TopologyGovernanceErrorV1),
     FinalUse(FinalUseError),
     Runtime(CnsHierarchyError),
+    /// Typed Split is not executable by a generic governed topology route:
+    /// it lacks original CNS/Control durable Begin, Commit and attestation.
+    ControlCutoverUnbound,
     Binding,
     Generation,
     Unavailable,
@@ -222,6 +226,13 @@ fn validate_runtime_topology_transition_for_destination_v1(
         .iter()
         .find(|candidate| candidate.candidate_id == request.candidate_id)
         .ok_or(RuntimeTopologyExecutionError::Binding)?;
+    // Plasticity admission and signed Final-use are insufficient to route a
+    // physical CellSplit. The original CNS Runtime and Neuron checkpoint must
+    // linearize with the same durable Control Begin/Commit owner, not this
+    // generic topology endpoint. Deny even if bundled with another operation.
+    for change in &candidate.changes {
+        reject_ungoverned_split_operation_v1(change.operation)?;
+    }
     if candidate.kind != TopologyCandidateKindV2::Update || candidate.changes.len() != 1 {
         return Err(RuntimeTopologyExecutionError::Binding);
     }
@@ -293,6 +304,17 @@ fn validate_runtime_topology_transition_for_destination_v1(
         successor_hierarchy_digest: successor.route.hierarchy_digest,
         final_use_request_digest,
     })
+}
+
+/// Reject every ungoverned typed Split, including candidates with an
+/// otherwise admissible Update wrapper, before consuming a Final-use nonce.
+fn reject_ungoverned_split_operation_v1(
+    operation: TopologyOperationV2,
+) -> Result<(), RuntimeTopologyExecutionError> {
+    if operation == TopologyOperationV2::Split {
+        return Err(RuntimeTopologyExecutionError::ControlCutoverUnbound);
+    }
+    Ok(())
 }
 
 pub fn runtime_topology_final_use_binding_v1(
@@ -376,4 +398,21 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
     let raw = value.as_str().as_bytes();
     bytes.extend_from_slice(&(raw.len() as u64).to_be_bytes());
     bytes.extend_from_slice(raw);
+}
+
+#[cfg(test)]
+mod split_control_fence_tests {
+    use super::*;
+
+    #[test]
+    fn ungoverned_typed_split_is_denied_before_runtime_final_use_binding() {
+        assert!(matches!(
+            reject_ungoverned_split_operation_v1(TopologyOperationV2::Split),
+            Err(RuntimeTopologyExecutionError::ControlCutoverUnbound)
+        ));
+        // Ordinary non-Split lifecycle candidates keep their existing
+        // independently signed Final-use and migration validation paths.
+        assert!(reject_ungoverned_split_operation_v1(TopologyOperationV2::Replace).is_ok());
+        assert!(reject_ungoverned_split_operation_v1(TopologyOperationV2::Rewire).is_ok());
+    }
 }
