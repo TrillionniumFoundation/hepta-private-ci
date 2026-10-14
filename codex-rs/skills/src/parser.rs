@@ -57,13 +57,11 @@ pub fn parse_skill_frontmatter_metadata(
             // Some third-party skills use prose like `description: Build for AWS: ECS`
             // or `argument-hint: <duration: e.g. 7d>`. Keep the repair line-oriented
             // so unrelated invalid YAML still surfaces.
-            Some(repaired_frontmatter) => {
-                serde_saphyr::from_str_with_options(
-                    &repaired_frontmatter,
-                    serde_saphyr::options! { reject_unsupported_tags: true },
-                )
-                .map_err(|_| original_error)
-            }
+            Some(repaired_frontmatter) => serde_saphyr::from_str_with_options(
+                &repaired_frontmatter,
+                serde_saphyr::options! { reject_unsupported_tags: true },
+            )
+            .map_err(|_| original_error),
             None => Err(original_error),
         },
     }
