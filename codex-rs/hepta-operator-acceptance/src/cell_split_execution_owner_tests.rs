@@ -350,7 +350,11 @@ fn successful_metrics_fsync_barrier_binds_each_signed_step_across_restarts() {
         .with_metric_sink(writer);
         assert_eq!(recovered.completed_steps(), 1);
         assert!(recovered.advance().expect("next original step").is_some());
-        assert!(root.path().join("cell-split-01-metrics-acked.json").exists());
+        assert!(
+            root.path()
+                .join("cell-split-01-metrics-acked.json")
+                .exists()
+        );
         assert_eq!(state.borrow().executions, 2);
     }
 }
@@ -428,7 +432,12 @@ fn missing_evidence_fsync_ack_never_grants_new_effect_even_after_restart() {
         ));
     }
     assert!(root.path().join("cell-split-00-committed.json").exists());
-    assert!(!root.path().join("cell-split-00-metrics-acked.json").exists());
+    assert!(
+        !root
+            .path()
+            .join("cell-split-00-metrics-acked.json")
+            .exists()
+    );
     let mut restarted = CellSplitExecutionOwnerV1::open(
         root.path(),
         plan(),
@@ -455,21 +464,21 @@ fn lost_ack_reconciliation_cannot_invent_missing_physical_metrics_after_restart(
     {
         let mut port = FixturePort::new(state.clone());
         port.drop_ack = true;
-        let mut original = CellSplitExecutionOwnerV1::open(
-            root.path(),
-            plan(),
-            trust(),
-            port,
-        )
-        .expect("single original owner")
-        .with_metric_sink(metrics.clone());
+        let mut original = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+            .expect("single original owner")
+            .with_metric_sink(metrics.clone());
         assert!(matches!(
             original.advance(),
             Err(CellSplitExecutionErrorV1::External(_))
         ));
         assert_eq!(state.borrow().executions, 1);
         assert!(original.pending);
-        assert!(!root.path().join("cell-split-00-metrics-acked.json").exists());
+        assert!(
+            !root
+                .path()
+                .join("cell-split-00-metrics-acked.json")
+                .exists()
+        );
     }
     {
         let mut recovery = CellSplitExecutionOwnerV1::open(
@@ -481,12 +490,20 @@ fn lost_ack_reconciliation_cannot_invent_missing_physical_metrics_after_restart(
         .expect("frozen original signed history")
         .with_metric_sink(metrics);
         assert!(
-            recovery.advance().expect("original signed readback").is_some(),
+            recovery
+                .advance()
+                .expect("original signed readback")
+                .is_some(),
             "lost ACK can reconcile, never repeat the physical effect"
         );
         assert_eq!(recovery.completed_steps(), 1);
         assert_eq!(state.borrow().executions, 1);
-        assert!(!root.path().join("cell-split-00-metrics-acked.json").exists());
+        assert!(
+            !root
+                .path()
+                .join("cell-split-00-metrics-acked.json")
+                .exists()
+        );
     }
     let mut later = CellSplitExecutionOwnerV1::open(
         root.path(),

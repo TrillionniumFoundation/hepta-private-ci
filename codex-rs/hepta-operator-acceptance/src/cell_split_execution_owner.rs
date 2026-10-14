@@ -762,9 +762,7 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             )?;
             let receipt = decode_committed_receipt(&bytes)?;
             let expected = metrics_ack_bytes(&receipt)?;
-            if read_frame(&frame_path(&self.root, index, "metrics-acked"))?
-                != Some(expected)
-            {
+            if read_frame(&frame_path(&self.root, index, "metrics-acked"))? != Some(expected) {
                 return Err(CellSplitExecutionErrorV1::Invalid(
                     "cell split metrics acknowledgment missing or changed",
                 ));
