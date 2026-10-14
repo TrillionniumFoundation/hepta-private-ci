@@ -295,6 +295,21 @@ fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
         Some(expected_binding),
         "recovery must retain the exact committed original owner bytes digest"
     );
+    assert_eq!(
+        reopened.verify_original_cns_receipt_binding(&[0x53; 96]),
+        Ok(()),
+        "independent original-owner bytes must match the durable Control WAL"
+    );
+    assert_eq!(
+        reopened.verify_original_cns_receipt_binding(&[0x54; 96]),
+        Err(NduPublicationErrorV1::Stale),
+        "a different externally signed receipt must not match this cutover"
+    );
+    assert_eq!(
+        reopened.verify_original_cns_receipt_binding(&[]),
+        Err(NduPublicationErrorV1::Invalid),
+        "a missing original receipt cannot satisfy the observer join"
+    );
 }
 
 #[cfg(unix)]
