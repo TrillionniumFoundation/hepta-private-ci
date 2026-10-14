@@ -2,11 +2,13 @@
 
 from __future__ import annotations
 
+import errno
 import importlib.util
 import json
 import subprocess
 import sys
 import tempfile
+import time
 import tomllib
 import unittest
 from pathlib import Path
@@ -16,6 +18,60 @@ spec = importlib.util.spec_from_file_location("hepta_ci_dependencies", SCRIPT)
 ci = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = ci
 spec.loader.exec_module(ci)
+
+
+def cleanup_git_fixture_with_retry(cleanup, *, attempts=5, sleep=time.sleep):
+    """Retry ONLY a transient ENOTEMPTY race during temporary Git cleanup.
+
+    Git may finalize loose object files between shutil's directory scan and
+    rmdir. A permanently nonempty fixture still fails, rather than being
+    silently ignored or letting the CI dependency-selection gate turn green.
+    """
+    for attempt in range(attempts):
+        try:
+            cleanup()
+            return
+        except OSError as exc:
+            if exc.errno != errno.ENOTEMPTY or attempt == attempts - 1:
+                raise
+            sleep(0.05 * (attempt + 1))
+
+
+class GitFixtureCleanupTests(unittest.TestCase):
+    def test_retry_only_transient_directory_not_empty(self):
+        calls = []
+
+        def cleanup():
+            calls.append(1)
+            if len(calls) < 3:
+                raise OSError(
+                    errno.ENOTEMPTY, "transient Git loose-object race", ".git"
+                )
+
+        cleanup_git_fixture_with_retry(cleanup, attempts=4, sleep=lambda _: None)
+        self.assertEqual(len(calls), 3)
+
+    def test_persistent_directory_not_empty_stays_failure(self):
+        calls = []
+
+        def cleanup():
+            calls.append(1)
+            raise OSError(errno.ENOTEMPTY, "persistent Git fixture", ".git")
+
+        with self.assertRaises(OSError):
+            cleanup_git_fixture_with_retry(cleanup, attempts=3, sleep=lambda _: None)
+        self.assertEqual(len(calls), 3)
+
+    def test_permission_errors_are_never_retried_or_suppressed(self):
+        calls = []
+
+        def cleanup():
+            calls.append(1)
+            raise OSError(errno.EACCES, "permissions", ".git")
+
+        with self.assertRaises(OSError):
+            cleanup_git_fixture_with_retry(cleanup, attempts=5, sleep=lambda _: None)
+        self.assertEqual(len(calls), 1)
 
 
 class SelectionTests(unittest.TestCase):
@@ -118,7 +174,7 @@ class SelectionTests(unittest.TestCase):
 class GitGraphTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.addCleanup(self.temp.cleanup)
+        self.addCleanup(cleanup_git_fixture_with_retry, self.temp.cleanup)
         self.root = Path(self.temp.name)
         self.git("init", "-q")
         self.git("config", "user.name", "CI regression")
@@ -214,7 +270,7 @@ renamed = { package = "leaf", path = "leaf" }
 class DocumentInputTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        self.addCleanup(self.tmp.cleanup)
+        self.addCleanup(cleanup_git_fixture_with_retry, self.tmp.cleanup)
         self.root = Path(self.tmp.name)
         self.git("init", "-q")
         self.git("config", "user.name", "Regression")

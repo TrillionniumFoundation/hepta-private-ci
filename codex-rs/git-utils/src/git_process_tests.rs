@@ -125,8 +125,15 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     match wrapper_lifetime {
         GitWrapperLifetime::WaitForChild => assert_eq!(output, None),
         GitWrapperLifetime::ExitBeforeTimeout => {
-            let completed = output.expect("completed wrapper must report its exit status");
-            assert!(completed.status.success(), "wrapper must exit successfully");
+            // The Unix descendant retains the wrapper's output pipes, so reading
+            // the output still times out after the wrapper itself has exited.
+            #[cfg(unix)]
+            assert_eq!(output, None);
+            #[cfg(windows)]
+            {
+                let completed = output.expect("completed wrapper must report its exit status");
+                assert!(completed.status.success(), "wrapper must exit successfully");
+            }
         }
     }
 
