@@ -114,3 +114,32 @@ actual mmBERT vs Granite inference; comparable future task utility; source
 family independence; signed NDU; production worker; 64/256/1024/4096
 resource and failure-recovery receipts; exact-head CI. None is replaced by a
 fixture, a digest-only declaration or the published retrieval leaderboard.
+
+## Independent, read-only pairing step
+
+After both exact-SHA model trials, use the pure-Python reviewer to reject
+unmatched training budgets or manipulated result packets:
+
+    python3 qualification/neuron-stem/compact_stem_pair_review.py \
+      --dataset /approved/task.jsonl --scope-id cell-scope-1 --task-id decision-v1 \
+      --mmbert-manifest /evidence/mmbert-compact.jsonl.manifest.json \
+      --mmbert-learned /evidence/mmbert-compact.jsonl \
+      --mmbert-frozen /evidence/mmbert-compact.jsonl.frozen-head.jsonl \
+      --granite-manifest /evidence/granite-compact.jsonl.manifest.json \
+      --granite-learned /evidence/granite-compact.jsonl \
+      --granite-frozen /evidence/granite-compact.jsonl.frozen-head.jsonl \
+      --out /evidence/compact-pair-review.json
+
+An optional '--no-change /evidence/production-no-change.jsonl' supplies
+separately observed baseline predictions. The reviewer reports paired
+accuracy/Brier/ECE, calibration-anchored OOD false acceptance diagnostics and
+learned/frozen Head controls, but never calls the packet an independently
+authenticated receipt. Missing authentic no-change means no defensible
+learning improvement claim. Even with no-change data, no prospective
+prediction-sealing/signed NDU is inferred; 'research_winner_selected=false'.
+
+    PYTHONPATH=qualification/neuron-stem python3 -m unittest \
+      discover -s qualification/neuron-stem -p 'test_compact_stem_pair_review.py' -v
+
+The packet integrity tests use explicit synthetic fixtures only to check
+rejection behavior, not to manufacture model success or benchmarks.
