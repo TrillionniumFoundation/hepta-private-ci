@@ -487,6 +487,7 @@ MEDIA_SEMANTIC_REQUIRED = (
 def paired_media_necessity_audit(
     report: dict, policy: dict, *, expected_protocol_sha256: str | None = None,
     raw_predictions: dict | None = None,
+    raw_labels: dict | None = None,
     expected_model_sha256: str | None = None,
     expected_media_source_sha256: str | None = None,
     expected_preprocessor_sha256: str | None = None,
@@ -571,6 +572,17 @@ def paired_media_necessity_audit(
             # non-ASCII media metadata must retain exactly those bytes.
             if actual_digest != report.get('prediction_sha256'):
                 issues.append('media report is not bound to actual raw prediction bytes')
+    # The group-level PR1774 summary alone is not proof of the stated
+    # correct answer. Replay every prediction against the separately
+    # provided paired truth, then compare ALL scorer counters exactly.
+    # This remains an untrusted offline consistency check; model/media
+    # origin, signer and independent labels are not authenticated here.
+    replay = None
+    try:
+        from .media_truth_replay import replay_paired_media_truth
+        replay = replay_paired_media_truth(raw_predictions, raw_labels, report)
+    except (ValueError, KeyError, TypeError, OverflowError) as exc:
+        issues.append('paired-media label/score replay failed: ' + str(exc))
     min_pairs = policy.get('minimum_pairs_per_group')
     min_groups = policy.get('minimum_distinct_source_groups_per_group')
     accuracy = policy.get('minimum_both_correct_fraction')
@@ -620,6 +632,7 @@ def paired_media_necessity_audit(
         'status': 'SCHEMA_COMPLETE_UNVERIFIED' if not issues else 'BLOCKED',
         'issues': issues,
         'media_groups': summaries,
+        'per_pair_truth_replay': replay,
         'independent_media_truth_verified': False,
         'independent_observer_verified': False,
         'ndu_utility_verified': False, 'production_admission': 'BLOCKED',
@@ -642,6 +655,7 @@ def joint_abc_evidence_gate(bundle: dict) -> dict:
     media = paired_media_necessity_audit(
         bundle.get('media_counterfactual'), bundle.get('media_policy'),
         raw_predictions=bundle.get('media_predictions'),
+        raw_labels=bundle.get('media_labels'),
         expected_protocol_sha256=c.get('protocol_sha256') if isinstance(c, dict) else None,
         expected_model_sha256=c.get('final_multimodal_model_sha256') if isinstance(c, dict) else None,
         expected_media_source_sha256=c.get('final_media_source_sha256') if isinstance(c, dict) else None,
@@ -720,7 +734,8 @@ def main() -> None:
     elif args.command == 'media-pairs':
         result = paired_media_necessity_audit(
             bundle.get('report'), bundle.get('policy'),
-            raw_predictions=bundle.get('raw_predictions'))
+            raw_predictions=bundle.get('raw_predictions'),
+            raw_labels=bundle.get('raw_labels'))
     else:
         result = joint_abc_evidence_gate(bundle)
     output = Path(args.output)
