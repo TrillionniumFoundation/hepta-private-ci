@@ -37,7 +37,7 @@ reports, never training data, model tensors, original ZIP or private tokens.
 Local diagnostic:
 
 \`\`\`bash
-PYTHONPATH=qualification/neuron-stem python3 -m unittest -v test_fbsde_head_fusion_probe
+PYTHONPATH=qualification/neuron-stem python3 -m unittest -v fbsde_head_fusion_tensor_checks
 PYTHONPATH=qualification/neuron-stem python3 qualification/neuron-stem/fbsde_head_fusion_probe.py \
   --archive /path/to/original-failed-artifact.zip \
   --threads 1 --output /new/fusion-one

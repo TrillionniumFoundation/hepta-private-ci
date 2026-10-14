@@ -275,8 +275,8 @@ jobs:
           PY="$RUNNER_TEMP/fbsde-fused-env/bin/python"
           git rev-parse HEAD > "$RUNNER_TEMP/fbsde-fused-source.txt"
           "$PY" -m pip freeze >> "$RUNNER_TEMP/fbsde-fused-source.txt"
-          "$PY" -m ruff check --select F,E9 qualification/neuron-stem/fbsde_head_fusion_probe.py qualification/neuron-stem/test_fbsde_head_fusion_probe.py
-          PYTHONPATH=qualification/neuron-stem "$PY" -m unittest -v test_fbsde_head_fusion_probe 2>&1 | tee "$RUNNER_TEMP/fbsde-fused-tests.log"
+          "$PY" -m ruff check --select F,E9 qualification/neuron-stem/fbsde_head_fusion_probe.py qualification/neuron-stem/fbsde_head_fusion_tensor_checks.py
+          PYTHONPATH=qualification/neuron-stem "$PY" -m unittest -v fbsde_head_fusion_tensor_checks 2>&1 | tee "$RUNNER_TEMP/fbsde-fused-tests.log"
           RAW="$RUNNER_TEMP/original-failed-fbsde.zip"
           gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11875899646/zip" > "$RAW"
           printf '%s  %s\n' cd9997b69e88b88f0817985fca00cb5b359936bcd5589fd49cc2c5ac78cb200a "$RAW" | sha256sum -c -
