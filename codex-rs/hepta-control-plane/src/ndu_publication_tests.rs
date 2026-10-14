@@ -590,6 +590,21 @@ fn lost_writer_marker_or_replaced_wal_cannot_adopt_old_signed_state() {
         Err(NduPublicationErrorV1::Indeterminate),
         "valid-looking replacement must not become live owner state"
     );
+    // An independently valid-looking WAL inode cannot clear the same-process
+    // poison latch on a later read or on the read-only CNS receipt join.
+    assert_eq!(
+        owner.current(),
+        Err(NduPublicationErrorV1::Poisoned),
+        "original Control WAL read remains permanently fenced"
+    );
+    assert_eq!(
+        owner.last_cns_original_receipt_binding(),
+        Err(NduPublicationErrorV1::Poisoned)
+    );
+    assert_eq!(
+        owner.verify_original_cns_receipt_binding(&[7_u8; 128]),
+        Err(NduPublicationErrorV1::Poisoned)
+    );
     assert!(matches!(
         owner.compare_and_publish_checkpoint(
             &original,
