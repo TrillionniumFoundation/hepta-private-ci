@@ -1,0 +1,65 @@
+name: Hepta NDU tree local-global shadow research
+on:
+  push:
+    branches: ["research/ndu-tree-p0-p6-20261014"]
+    paths:
+      - "experiments/shared_stem_cell/ndu_*.py"
+      - "experiments/shared_stem_cell/test_ndu_*.py"
+      - "experiments/shared_stem_cell/NDU_TREE_P0_P6_RESEARCH.md"
+      - ".github/workflows/hepta-ndu-tree-p0-p6-shadow.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/ndu_*.py"
+      - "experiments/shared_stem_cell/test_ndu_*.py"
+      - "experiments/shared_stem_cell/NDU_TREE_P0_P6_RESEARCH.md"
+      - ".github/workflows/hepta-ndu-tree-p0-p6-shadow.yml"
+permissions:
+  contents: read
+concurrency:
+  group: hepta-ndu-tree-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  mechanisms-not-efficacy:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Exact CPU dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/hepta-ndu-tree-venv
+          /tmp/hepta-ndu-tree-venv/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          mkdir -p /tmp/hepta-ndu-tree-artifacts
+          /tmp/hepta-ndu-tree-venv/bin/pip freeze > /tmp/hepta-ndu-tree-artifacts/requirements-observed.txt
+      - name: Run finite BSDE and global obstruction, Head distillation and P0-P6 negative gates
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell /tmp/hepta-ndu-tree-venv/bin/python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_ndu_*.py' -v 2>&1 | tee /tmp/hepta-ndu-tree-artifacts/test-log.txt
+          /tmp/hepta-ndu-tree-venv/bin/python -m py_compile \
+            experiments/shared_stem_cell/ndu_tree_global.py \
+            experiments/shared_stem_cell/ndu_cell_distill.py \
+            experiments/shared_stem_cell/ndu_p0p6_receipts.py
+      - name: Preserve exact-source lineage and unaccepted research disposition
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-ndu-tree-artifacts
+          git rev-parse HEAD > /tmp/hepta-ndu-tree-artifacts/commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-ndu-tree-artifacts/tree.txt
+          sha256sum experiments/shared_stem_cell/ndu_*.py experiments/shared_stem_cell/test_ndu_*.py \
+            experiments/shared_stem_cell/NDU_TREE_P0_P6_RESEARCH.md \
+            .github/workflows/hepta-ndu-tree-p0-p6-shadow.yml \
+            > /tmp/hepta-ndu-tree-artifacts/source-sha256.txt
+          echo '{"schema":"hepta.ndu-tree.shadow.v1","real_model_efficacy":false,"general_fbsde_qualified":false,"target_host_accepted":false,"production_accepted":false}' \
+            > /tmp/hepta-ndu-tree-artifacts/disposition.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ndu-tree-p0-p6-mechanics-only
+          path: /tmp/hepta-ndu-tree-artifacts
+          if-no-files-found: error
