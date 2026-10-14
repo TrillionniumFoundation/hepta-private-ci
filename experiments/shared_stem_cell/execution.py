@@ -307,7 +307,9 @@ class LocalEncoder:
         self.forward_calls = 0
 
     @torch.no_grad()
-    def encode(self, texts: list[str]):
+    def encode(self, texts: list[str], *, pooling="attention-mask-mean"):
+        if pooling not in ("attention-mask-mean", "cls-first-token"):
+            raise InputError("unsupported pinned pooling profile")
         if not 1 <= len(texts) <= 32:
             raise InputError("batch cardinality")
         encoded = self.tokenizer(texts, padding=True, truncation=False, return_tensors="pt")
@@ -315,8 +317,8 @@ class LocalEncoder:
         if length > self.maximum_tokens or length * len(texts) > 32768:
             raise InputError("token budget; no silent truncation")
         value = self.model(**encoded).last_hidden_state
-        mask = encoded["attention_mask"].unsqueeze(-1).to(value.dtype)
-        pooled = (value * mask).sum(1) / mask.sum(1).clamp_min(1)
+        from multimodal_native_pool_v7 import pool_hidden_state
+        pooled = pool_hidden_state(value, encoded["attention_mask"], pooling)
         self.forward_calls += 1
         return pooled.detach().cpu().float().contiguous()
 

@@ -1,0 +1,64 @@
+name: Hepta native pooling parity for frozen stem (research only)
+on:
+  push:
+    branches: ["research/multimodal-stem-bridge-20261014"]
+    paths:
+      - "experiments/shared_stem_cell/execution.py"
+      - "experiments/shared_stem_cell/multimodal_native_pool_v7.py"
+      - "experiments/shared_stem_cell/multimodal_real_encoder.py"
+      - "experiments/shared_stem_cell/multimodal_pinned_candidate.py"
+      - "experiments/shared_stem_cell/test_multimodal_pooling_v7.py"
+      - ".github/workflows/hepta-stem-native-pooling-v7.yml"
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/execution.py"
+      - "experiments/shared_stem_cell/multimodal_native_pool_v7.py"
+      - "experiments/shared_stem_cell/multimodal_real_encoder.py"
+      - "experiments/shared_stem_cell/multimodal_pinned_candidate.py"
+      - "experiments/shared_stem_cell/test_multimodal_pooling_v7.py"
+      - ".github/workflows/hepta-stem-native-pooling-v7.yml"
+permissions:
+  contents: read
+concurrency:
+  group: hepta-native-pool-v7-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  model-native-contract-only:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install CPU torch with fixed version
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/hepta-native-pool-v7
+          /tmp/hepta-native-pool-v7/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          /tmp/hepta-native-pool-v7/bin/pip install numpy==1.26.4 safetensors==0.6.2 psutil==7.0.0
+          /tmp/hepta-native-pool-v7/bin/pip freeze > /tmp/hepta-native-pool-v7-requirements.txt
+      - name: Run native-pooling contract and old ingress regressions
+        run: |
+          set -euo pipefail
+          P=/tmp/hepta-native-pool-v7/bin/python
+          export PYTHONPATH=experiments/shared_stem_cell
+          $P -m unittest discover -s experiments/shared_stem_cell -p 'test_multimodal_pooling_v7.py' -v
+          $P -m unittest discover -s experiments/shared_stem_cell -p 'test_multimodal_real_encoder.py' -v
+          $P -m py_compile experiments/shared_stem_cell/execution.py experiments/shared_stem_cell/multimodal_native_pool_v7.py experiments/shared_stem_cell/multimodal_real_encoder.py experiments/shared_stem_cell/multimodal_pinned_candidate.py
+      - name: Preserve exact source and no-promotion boundary
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-native-pool-v7-evidence
+          git rev-parse HEAD > /tmp/hepta-native-pool-v7-evidence/commit.txt
+          git rev-parse HEAD^{tree} > /tmp/hepta-native-pool-v7-evidence/tree.txt
+          cp /tmp/hepta-native-pool-v7-requirements.txt /tmp/hepta-native-pool-v7-evidence/requirements.txt || true
+          sha256sum experiments/shared_stem_cell/{execution.py,multimodal_native_pool_v7.py,multimodal_real_encoder.py,multimodal_pinned_candidate.py,test_multimodal_pooling_v7.py,MODEL_NATIVE_POOLING_V7.md} > /tmp/hepta-native-pool-v7-evidence/files.sha256
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-native-pooling-v7-contract-only-not-model-efficacy
+          path: /tmp/hepta-native-pool-v7-evidence
+          if-no-files-found: error

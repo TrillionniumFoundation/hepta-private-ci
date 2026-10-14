@@ -130,7 +130,8 @@ def _encode(backend, texts: list[str], profile) -> torch.Tensor:
     batches = []
     for start in range(0, len(texts), profile.batch_size):
         group = texts[start:start + profile.batch_size]
-        value = backend.encode(group)
+        value = (backend.encode(group) if profile.pooling == "attention-mask-mean"
+                 else backend.encode(group, pooling=profile.pooling))
         if (not isinstance(value, torch.Tensor) or value.ndim != 2
                 or tuple(value.shape) != (len(group), profile.expected_width)
                 or value.device.type != "cpu" or value.dtype != torch.float32
@@ -408,6 +409,12 @@ def _v6_material_gate(args, plan: dict, plan_sha: str, profile: dict) -> dict | 
         return None
     if any(x is None for x in trust_args):
         raise ContractError("non-fixture model requires independent V6 operator material admission")
+    # Granite R2 documents CLS pooling followed by unit-L2 normalization.
+    # A mean-pooled arm is an ablation and must not use the official arm name.
+    if args.candidate == "granite_97m" and (
+            profile["pooling"] != "cls-first-token"
+            or profile["normalization"] != "unit_l2"):
+        raise ContractError("granite_97m requires publisher-documented CLS pooling and unit L2")
     from multimodal_material_admission import admission
     trust = load_pinned_document(args.operator_trust, args.operator_trust_sha256)
     claim = load_pinned_document(args.signed_claim, args.signed_claim_sha256)
