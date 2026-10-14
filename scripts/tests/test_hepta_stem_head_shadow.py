@@ -67,6 +67,15 @@ class HeadTests(unittest.TestCase):
                     cutoff=self.cutoff, now=self.now,
                 )
                 self.assertEqual(a["trainable_head_parameters"], count)
+                self.assertEqual(a["head_fp32_parameter_payload_bytes"], count * 4)
+                self.assertGreater(
+                    a["adamw_optimizer_tensor_payload_bytes"], count * 8
+                )
+                self.assertEqual(
+                    a["head_plus_optimizer_tensor_payload_bytes"],
+                    a["head_fp32_parameter_payload_bytes"]
+                    + a["adamw_optimizer_tensor_payload_bytes"],
+                )
                 self.assertEqual(a["trained_head_sha256"], b["trained_head_sha256"])
                 self.assertEqual(a["frozen_head_sha256"], b["frozen_head_sha256"])
                 self.assertFalse(a["production_promotion_permitted"])
