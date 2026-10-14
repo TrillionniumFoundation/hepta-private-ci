@@ -47,12 +47,14 @@ def verify(source, root, out):
     # Scalars only; cache identical initial/checkpoint values without growing graphs.
     cache = {}
     for entry in done['census']:
+        require(entry['case'] == plan['cases'][len(rows)], 'case plan identity mismatch')
         folder = root/entry['name']
         require(entry['status'] == 'completed', 'failed case')
         rb = (folder/'REPORT.json').read_bytes()
         require(digest(rb) == entry['report_sha256'], 'report hash mismatch')
         report = json.loads(rb)
         child = json.loads((folder/'PLAN.json').read_text())
+        require(child['protocol'] == PROTOCOL_COMMIT, 'child protocol mismatch')
         require(report['case'] == entry['case'] == child['case'], 'identity mismatch')
         require(report['plan_sha256'] == digest((folder/'PLAN.json').read_bytes()), 'child plan mismatch')
         require(report['source'] == child['source'] == plan['source'], 'child source mismatch')
@@ -114,6 +116,7 @@ def verify(source, root, out):
                 counts['fine_calls'] == len(cps)-skipped, 'monitor counts mismatch')
         require(counts['full_hessians'] == 0, 'dense fallback')
         require(info['wall'] >= info['checks'][-1]['end'] and info['wall'] >= info['monitor_wall'], 'unmetered monitor')
+        require(np.isclose(info['monitor_wall'], sum(c['end']-c['start'] for c in info['checks']), rtol=1e-12, atol=1e-9), 'monitor time mismatch')
         require(report['predictions_sha256'] == digest((folder/'PREDICTIONS.npz').read_bytes()), 'prediction hash mismatch')
         with np.load(folder/'PREDICTIONS.npz', allow_pickle=False) as raw:
             for name, s, w, problem in panels():
