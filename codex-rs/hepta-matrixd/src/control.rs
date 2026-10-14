@@ -332,7 +332,8 @@ impl MatrixdControlState {
 
 pub(crate) struct MatrixdControlServer {
     listener: UnixListener,
-    socket_path: PathBuf,
+    // A restarted generation may now own this path. Never unlink it on Drop;
+    // the next start probes and reaps only an abandoned rendezvous.
     state: Arc<MatrixdControlState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
@@ -349,7 +350,6 @@ impl MatrixdControlServer {
         set_owner_only(&socket_path).await?;
         Ok(Self {
             listener,
-            socket_path,
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
@@ -371,19 +371,6 @@ impl MatrixdControlServer {
                 let _permit = permit;
                 let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
             });
-        }
-    }
-}
-
-impl Drop for MatrixdControlServer {
-    fn drop(&mut self) {
-        if let Err(error) = std::fs::remove_file(&self.socket_path)
-            && error.kind() != ErrorKind::NotFound
-        {
-            eprintln!(
-                "failed to remove matrixd control socket {}: {error}",
-                self.socket_path.display()
-            );
         }
     }
 }
@@ -939,6 +926,24 @@ mod tests {
             "an active control rendezvous must remain exclusively owned"
         );
         assert!(path.exists());
+        Ok(())
+    }
+
+    #[cfg(unix)]
+    #[tokio::test]
+    async fn control_socket_preflight_retired_server_cannot_unlink_successor() -> TestResult {
+        let temp = TempDir::new()?;
+        let (state, _) = state(&temp, Arc::new(FakeTransport::default())).await?;
+        let path = temp.path().join("matrixd-rebound");
+        let retired =
+            MatrixdControlServer::bind(path.clone(), state, CancellationToken::new()).await?;
+
+        // An old owner must never remove an active replacement's rendezvous.
+        fs::remove_file(&path)?;
+        let _successor = UnixListener::bind(&path).await?;
+        drop(retired);
+        assert!(path.exists(), "retired server unlinked newer generation");
+        let _connected = UnixStream::connect(&path).await?;
         Ok(())
     }
 }
