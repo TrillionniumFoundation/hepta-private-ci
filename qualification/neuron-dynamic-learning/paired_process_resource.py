@@ -12,7 +12,6 @@ import hashlib
 import json
 import math
 from pathlib import Path
-import platform
 import re
 import shlex
 

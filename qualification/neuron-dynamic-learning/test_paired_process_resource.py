@@ -1,6 +1,5 @@
 """No real-model claim: deterministic malformed GNU time resource fixtures."""
 from __future__ import annotations
-import copy
 from pathlib import Path
 import tempfile
 import unittest
