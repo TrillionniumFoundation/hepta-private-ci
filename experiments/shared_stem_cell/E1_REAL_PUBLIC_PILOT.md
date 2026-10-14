@@ -35,3 +35,12 @@ The hosted workflow itself creates the approved source data, model manifests and
 Independent Chinese/English/code source-group/time-separated tasks and three real future windows; Reader evidence sufficiency; independent no-change *production* arm; 2K/8K/16K baseline-preserving residual learning; real Granite+DINOv2 vs Gemma E3 visual capability; real Whisper/audio/video temporal reversal E4; 64/256/1024/4096 Cell native performance and unclean WAL/FinalUse E5; independently signed NDU and exact-HEAD whole-repository `blocking-ci`. This single public task does not supply any of those.
 
 **Authority is always DENY_ALL.** The trial may not mutate the selected Stem, production Encoder/Worker, Cell Head, Q24 V1 journal, CNS routes, Artifact CAS, or FinalUse.
+
+
+## Additional historical frozen Laya421 paired comparator
+
+The same-job research workflow now downloads previously completed public Laya reference artifact `11886761368` (ZIP SHA-256 `e5d945c655112139fce51b989023abd5111c9e7ab28d9bd4e8a771b86dd95f9d`) and runs the **independent** `e1_public_laya_reference.py` against the newly generated source panel and every actual E1 candidate prediction. It rejects even one changed case ID, joint task digest, public source digest, panel SHA, duplicate ZIP entry, or incomplete paired prediction. Source-specific historical Laya accuracy/Brier and paired McNemar are descriptive only.
+
+**This historical Laya checkpoint is not the authorized/current production no-change policy.** It was run at a different time with its own model API/prompt realization, host cost profile, and checkpoint exposure. The independent report keeps `historical_reference_is_production_no_change=false`, no equal-cost claims and `production_promotion_permitted=false` even if a candidate seems better.
+
+The historical ZIP is never published again and the 1.5 GB+ pretrained weights stay out of Actions artifacts. Only case-bound sanitized research reports and explicit failure markers are uploaded.
