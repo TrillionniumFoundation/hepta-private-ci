@@ -190,7 +190,10 @@ fn borrowed_zero_decay_shadow_is_exactly_legacy_v2_with_copied_config_and_tick()
             &forwarded,
             borrowed_state.as_ref(),
         ));
-        assert_eq!(no_copy, reference, "all original V2 bytes at sequence {sequence}");
+        assert_eq!(
+            no_copy, reference,
+            "all original V2 bytes at sequence {sequence}"
+        );
         assert_eq!(no_copy.0.digest(), reference.0.digest());
         assert_eq!(no_copy.1.input_digest, reference.1.input_digest);
         old_state = Some(reference.0);
@@ -203,32 +206,18 @@ fn borrowed_shadow_rejects_bad_replacements_and_still_checks_original_tick() {
     let baseline = config();
     let input = tick(1, 10);
     assert_eq!(
-        population_sparse_tick_v2_from_temporal_override(
-            &baseline,
-            &input,
-            &[Q],
-            None,
-        ).err(),
+        population_sparse_tick_v2_from_temporal_override(&baseline, &input, &[Q], None,).err(),
         Some(PopulationSparseError::InvalidInput)
     );
     assert_eq!(
-        population_sparse_tick_v2_from_temporal_override(
-            &baseline,
-            &input,
-            &[H + 1, 0],
-            None,
-        ).err(),
+        population_sparse_tick_v2_from_temporal_override(&baseline, &input, &[H + 1, 0], None,)
+            .err(),
         Some(PopulationSparseError::InvalidInput)
     );
     let mut invalid = input.clone();
     invalid.temporal_drive_q24[0] = H + 1;
     assert_eq!(
-        population_sparse_tick_v2_from_temporal_override(
-            &baseline,
-            &invalid,
-            &[Q, Q],
-            None,
-        ).err(),
+        population_sparse_tick_v2_from_temporal_override(&baseline, &invalid, &[Q, Q], None,).err(),
         Some(PopulationSparseError::InvalidInput)
     );
     let (prior, _) = checked(population_sparse_tick_v2_from_temporal_override(
@@ -244,7 +233,8 @@ fn borrowed_shadow_rejects_bad_replacements_and_still_checks_original_tick() {
             &tick(4, 20),
             &[Q, -Q],
             Some(&prior),
-        ).err(),
+        )
+        .err(),
         Some(PopulationSparseError::Sequence)
     );
     assert_eq!(
@@ -253,18 +243,15 @@ fn borrowed_shadow_rejects_bad_replacements_and_still_checks_original_tick() {
             &tick(2, 10),
             &[Q, -Q],
             Some(&prior),
-        ).err(),
+        )
+        .err(),
         Some(PopulationSparseError::Clock)
     );
     let mut other = baseline.clone();
     other.generation = generation(8);
     assert_eq!(
-        population_sparse_tick_v2_from_temporal_override(
-            &other,
-            &next,
-            &[Q, Q],
-            Some(&prior),
-        ).err(),
+        population_sparse_tick_v2_from_temporal_override(&other, &next, &[Q, Q], Some(&prior),)
+            .err(),
         Some(PopulationSparseError::ConfigDrift)
     );
     let mut scoped = next;
