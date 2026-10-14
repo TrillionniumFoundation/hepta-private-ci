@@ -196,7 +196,6 @@ class HostDispositionTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "generating source"):
                 census(Path(tmp), expected_commit="not-a-git-sha")
 
-
     def test_pr_source_check_cannot_run_host_disposition_without_model_shards(self):
         workflow = (
             Path(__file__).resolve().parents[2]
