@@ -175,7 +175,11 @@ fn validate_replay(
                 && e.before == checkpoint
                 && e.read.is_zero()
                 && e.tick.is_zero()
-                && pending.is_none_or(|prepared| {
+                // Every successful cutover in the pinned sidecar schema
+                // must be preceded by a durable Begin for this same exact
+                // successor and predecessor checkpoint. No digest-only,
+                // legacy single-phase C may silently replay as committed.
+                && pending.is_some_and(|prepared| {
                     prepared.successor == e.snapshot
                         && prepared.previous_checkpoint == e.before
                         && prepared.migrated_checkpoint == e.after
