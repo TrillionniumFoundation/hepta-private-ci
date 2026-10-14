@@ -7,12 +7,18 @@ import argparse
 import json
 import math
 import re
+import stat
 import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any
 
 SCHEMA = "hepta.cell-meta-execution.af.v1"
+MAX_INPUT_BYTES = 4 * 1024 * 1024
+MAX_TASK_CLASSES = 64
+MAX_PROTECTED_SLICES = 64
+MAX_INDEPENDENT_SNAPSHOTS = 64
+MAX_TRAIN_TASK_FAMILIES = 128
 ARMS = {
     "A": ("no_change", "frozen_head", "learning_head"),
     "B": ("unsplit", "shared_head", "child_heads"),
@@ -121,17 +127,17 @@ def common(input_data: dict[str, Any]) -> tuple[dict[str, Any], dict[str, tuple[
            ("generator_id", "outcome_observer_id", "evaluator_id", "selector_id", "executor_id")]
     require(len(set(ids)) == len(ids), "generator / observer / evaluator / selector / executor must differ")
     slices = sequence(field(meta, "protected_slices", "candidate"), "protected_slices")
-    require(len(slices) >= 1 and len(slices) == len(set(slices)),
+    require(1 <= len(slices) <= MAX_PROTECTED_SLICES and len(slices) == len(set(slices)),
             "protected_slices: nonempty unique protected slices required")
     for label in slices:
         identity(label, "protected slice")
     snapshots = sequence(field(meta, "independent_snapshots", "candidate"), "independent_snapshots")
-    require(len(snapshots) >= 3 and len(set(snapshots)) == len(snapshots),
+    require(3 <= len(snapshots) <= MAX_INDEPENDENT_SNAPSHOTS and len(set(snapshots)) == len(snapshots),
             "independent snapshots: at least three distinct evidence snapshots required")
     for snapshot in snapshots:
         digest(snapshot, "independent snapshot")
     families = sequence(field(meta, "train_task_families", "candidate"), "train_task_families")
-    require(len(families) >= 1 and len(families) == len(set(families)),
+    require(1 <= len(families) <= MAX_TRAIN_TASK_FAMILIES and len(families) == len(set(families)),
             "train task families must be a frozen unique inventory")
     for family in families:
         identity(family, "train task family")
@@ -172,6 +178,8 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
     d_families: dict[str, set[tuple[str, ...]]] = {k: set() for k in windows}
     c_graphs: set[str] = set()
     c_policies: dict[str, set[str]] = {arm: set() for arm in ARMS["C"]}
+    c_route_traces: dict[tuple[str, str], str] = {}
+    c_depth: dict[tuple[str, str], int] = {}
     result: dict[tuple[str, str], dict[str, float]] = {}
     for (arm, window), r in parsed.items():
         name = f"{letter}/{arm}/{window}"
@@ -190,8 +198,10 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
                                 name + ".fixed_circuit_graph_sha256"))
             c_policies[arm].add(digest(field(r, "routing_policy_sha256", name),
                                        name + ".routing_policy_sha256"))
-            digest(field(r, "actual_route_trace_sha256", name), name + ".actual_route_trace_sha256")
-            count(field(r, "sequential_cell_depth", name), name + ".sequential_cell_depth", positive=True)
+            c_route_traces[arm, window] = digest(field(r, "actual_route_trace_sha256", name),
+                                                name + ".actual_route_trace_sha256")
+            c_depth[arm, window] = count(field(r, "sequential_cell_depth", name),
+                                         name + ".sequential_cell_depth", positive=True)
         digest(field(r, "prediction_sha256", name), name + ".prediction_sha256")
         digest(field(r, "outcome_receipt_sha256", name), name + ".outcome_receipt_sha256")
         digest(field(r, "evaluation_receipt_sha256", name), name + ".evaluation_receipt_sha256")
@@ -247,9 +257,18 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
                 "C: routing policy changed between future windows")
         require(len({next(iter(policies)) for policies in c_policies.values()}) == 3,
                 "C: fixed and learned routing/depth policies indistinguishable")
+    causal_behavior_difference: dict[str, bool] = {}
+    if letter == "C":
+        for proposed in CONTRASTS["C"]:
+            changed_route = any(c_route_traces[proposed, w] != c_route_traces["fixed_graph", w]
+                                for w in windows)
+            changed_depth = any(c_depth[proposed, w] != c_depth["fixed_graph", w]
+                                for w in windows)
+            causal_behavior_difference[proposed] = (changed_route and
+                                                     (changed_depth if proposed == "adaptive_depth" else True))
     passing: list[str] = []
     for proposed, comparators in CONTRASTS[letter].items():
-        if all(
+        if (letter != "C" or causal_behavior_difference[proposed]) and all(
             result[(proposed, window)]["utility_lcb"] > result[(control, window)]["utility_ucb"]
             and result[(proposed, window)]["old_drop"] <= 0.02
             and result[(proposed, window)]["worst_slice_drop"] <= 0.02
@@ -259,6 +278,7 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
         ):
             passing.append(proposed)
     return {"status": "shadow_structurally_complete", "provisional_gain_arms": passing,
+            "behavior_difference_observed": causal_behavior_difference if letter == "C" else None,
             "not_independent_qualification": True}
 
 
@@ -360,7 +380,8 @@ def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
     require(same_device == resource_value.get("device_profile_sha256"),
             "F: device profile does not match E")
     tasks = sequence(field(obj, "task_ids", "F"), "F.task_ids")
-    require(len(tasks) >= 2 and len(set(tasks)) == len(tasks), "F: need two distinct registered task classes")
+    require(2 <= len(tasks) <= MAX_TASK_CLASSES and len(set(tasks)) == len(tasks),
+            "F: need 2..64 distinct registered task classes")
     for task in tasks:
         identity(task, "F.task_id")
     require("host_id" in resource_value and obj.get("host_id") == resource_value["host_id"],
@@ -431,6 +452,10 @@ def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
             else:
                 require(r.get("effect_owner_receipt_sha256") is None,
                         f"{name}: owner receipt without observed effect")
+                digest(field(r, "negative_effect_owner_readback_sha256", name),
+                       name + ".negative_effect_owner_readback_sha256")
+            require(r["status"] != "indeterminate",
+                    f"{name}: unresolved original-effect terminality; reconcile before comparing")
     require(all(len(x) == 1 for x in peers.values()), "F: unmatched task input or policy among routes")
     # These are task-level summaries of supplied measurements, not a provider
     # selection: success, quality, security and uncertainty remain separate gates.
@@ -518,13 +543,40 @@ def verify(input_data: Any) -> dict[str, Any]:
     return out
 
 
+def _reject_duplicate_json_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        require(key not in result, f"duplicate JSON key: {key[:128]}")
+        result[key] = value
+    return result
+
+
+def _reject_json_constant(value: str) -> Any:
+    raise InvalidEvidence(f"non-finite JSON constant: {value}")
+
+
+def read_external_evidence(path: Path) -> Any:
+    """Bound parser cost and forbid ambiguous JSON objects; never attest content."""
+    info = path.stat()
+    require(stat.S_ISREG(info.st_mode), "JSON evidence must be a regular file")
+    require(0 < info.st_size <= MAX_INPUT_BYTES, "JSON evidence input exceeds size bound")
+    with path.open("rb") as stream:
+        raw = stream.read(MAX_INPUT_BYTES + 1)
+    require(0 < len(raw) <= MAX_INPUT_BYTES, "JSON evidence input exceeds size bound")
+    try:
+        return json.loads(raw.decode("utf-8"), object_pairs_hook=_reject_duplicate_json_keys,
+                          parse_constant=_reject_json_constant)
+    except RecursionError as exc:
+        raise InvalidEvidence("JSON evidence nesting exceeds parser depth") from exc
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("input", type=Path, help="external observation bundle JSON (never a fixture receipt)")
     parser.add_argument("--out", type=Path, help="write a read-only audit report")
     args = parser.parse_args(argv)
     try:
-        report = verify(json.loads(args.input.read_text(encoding="utf-8")))
+        report = verify(read_external_evidence(args.input))
     except (OSError, ValueError, TypeError, OverflowError) as exc:
         report = {"schema": SCHEMA + ".report", "status": "blocked",
                   "authority_posture": "DENY_ALL", "error": str(exc),

@@ -309,6 +309,7 @@ class AfEvidenceTests(unittest.TestCase):
         r = self.d["codex"]["runs"][0]
         r["status"] = "failed"; r["external_effect_observed"] = False
         r["effect_owner_receipt_sha256"] = None
+        r["negative_effect_owner_readback_sha256"] = sha("signed-owner-negative-readback")
         report = gate.verify(self.d)
         self.assertEqual(report["gates"]["F"]["status"], "codex_path_comparison_structurally_complete")
         self.assertEqual(report["gates"]["F"]["observed_successes"]["full_codex_agent"], 1)
@@ -484,6 +485,89 @@ class AfEvidenceTests(unittest.TestCase):
     def test_F_row_device_profile_drift_blocked(self):
         self.d["codex"]["runs"][0]["device_profile_sha256"] = sha("new-gpu")
         check_bad(self.d, "F", "device profile drift")
+
+    def test_indeterminate_codex_turn_requires_resolution(self):
+        row = next(x for x in self.d["codex"]["runs"]
+                   if x["route"] == "full_codex_agent" and x["case"] == "allowed")
+        row["status"] = "indeterminate"
+        check_bad(self.d, "F", "unresolved original-effect terminality")
+
+    def test_failed_codex_without_negative_owner_readback_is_blocked(self):
+        row = next(x for x in self.d["codex"]["runs"]
+                   if x["route"] == "direct_effect" and x["case"] == "allowed")
+        row["status"] = "failed"
+        row["external_effect_observed"] = False
+        row["effect_owner_receipt_sha256"] = None
+        check_bad(self.d, "F", "negative_effect_owner_readback_sha256")
+
+    def test_failed_codex_signed_negative_readback_is_not_a_success(self):
+        row = next(x for x in self.d["codex"]["runs"]
+                   if x["route"] == "direct_effect" and x["case"] == "allowed")
+        row["status"] = "failed"
+        row["external_effect_observed"] = False
+        row["effect_owner_receipt_sha256"] = None
+        row["negative_effect_owner_readback_sha256"] = sha("signed-negative")
+        result = gate.verify(self.d)
+        self.assertEqual(result["gates"]["F"]["status"], "codex_path_comparison_structurally_complete")
+        self.assertEqual(result["gates"]["F"]["observed_successes"]["direct_effect"], 1)
+        self.assertFalse(result["production_selection_permitted"])
+
+    def test_unchanged_meta_router_behavior_cannot_claim_gain(self):
+        fixed = {r["window"]: r["actual_route_trace_sha256"]
+                 for r in self.d["studies"]["C"]["records"] if r["arm"] == "fixed_graph"}
+        for r in self.d["studies"]["C"]["records"]:
+            if r["arm"] == "learned_router":
+                r["actual_route_trace_sha256"] = fixed[r["window"]]
+        report = gate.verify(self.d)["gates"]["C"]
+        self.assertNotIn("learned_router", report["provisional_gain_arms"])
+        self.assertFalse(report["behavior_difference_observed"]["learned_router"])
+        self.assertIn("adaptive_depth", report["provisional_gain_arms"])
+
+    def test_unchanged_meta_depth_cannot_claim_adaptive_depth_gain(self):
+        for r in self.d["studies"]["C"]["records"]:
+            if r["arm"] == "adaptive_depth":
+                r["sequential_cell_depth"] = 2
+        report = gate.verify(self.d)["gates"]["C"]
+        self.assertNotIn("adaptive_depth", report["provisional_gain_arms"])
+        self.assertFalse(report["behavior_difference_observed"]["adaptive_depth"])
+
+    def test_too_many_codex_classes_are_rejected_before_expansion(self):
+        self.d["codex"]["task_ids"] = [f"task-{i:03}" for i in range(65)]
+        check_bad(self.d, "F", "2..64 distinct")
+
+    def test_excessive_protected_slices_are_rejected(self):
+        self.d["candidate"]["protected_slices"] = [f"protected-{i:03}" for i in range(65)]
+        check_bad(self.d, "identity", "protected slices")
+
+    def test_duplicate_json_key_rejected_by_cli(self):
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "duplicate.json"
+            out = Path(td) / "report.json"
+            p.write_text('{"schema": "first", "schema": "second"}', encoding="utf-8")
+            self.assertEqual(gate.main([str(p), "--out", str(out)]), 2)
+            self.assertIn("duplicate JSON key", json.loads(out.read_text())["error"])
+
+    def test_nonfinite_json_literal_rejected_by_cli(self):
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "nonfinite.json"
+            out = Path(td) / "report.json"
+            p.write_text('{"schema": NaN}', encoding="utf-8")
+            self.assertEqual(gate.main([str(p), "--out", str(out)]), 2)
+            self.assertIn("non-finite JSON constant", json.loads(out.read_text())["error"])
+
+    def test_large_external_json_is_rejected_before_parsing(self):
+        with tempfile.TemporaryDirectory() as td:
+            p = Path(td) / "huge.json"
+            out = Path(td) / "report.json"
+            p.write_bytes(b" " * (gate.MAX_INPUT_BYTES + 1))
+            self.assertEqual(gate.main([str(p), "--out", str(out)]), 2)
+            self.assertIn("exceeds size bound", json.loads(out.read_text())["error"])
+
+    def test_non_file_evidence_rejected(self):
+        with tempfile.TemporaryDirectory() as td:
+            out = Path(td) / "report.json"
+            self.assertEqual(gate.main([td, "--out", str(out)]), 2)
+            self.assertIn("regular file", json.loads(out.read_text())["error"])
 
     def test_cli_missing_real_bundle_is_blocked(self):
         with tempfile.TemporaryDirectory() as td:

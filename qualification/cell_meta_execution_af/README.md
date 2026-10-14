@@ -119,3 +119,18 @@ load an artifact, contact an issuer, authenticate signatures, or measure hardwar
 
 No automatic merge, production cutover, Cell/Encoder promotion, package extraction,
 new global authority or autonomous self-iteration is proposed by this harness.
+
+### Post-convergence conformance hardening
+
+- The CLI accepts at most 4 MiB of regular-file UTF-8 JSON and fails closed on
+  duplicate object keys, non-finite literals, parser-depth errors and oversized
+  inventories. Those limits are input safety, **not** proof of outcome validity.
+- Study C records whether a learned route actually differs from the fixed route;
+  adaptive-depth gain further requires an observed change in sequential Cell
+  depth. A policy-name or digest change alone cannot claim a causal benefit.
+- A Codex **indeterminate** terminal state blocks comparison pending original-owner
+  reconciliation. A failed allowed action with no observed external effect needs
+  a separately observed, signed negative original-owner readback reference; a
+  missing receipt or mere App Server status does not prove that no effect happened.
+  The validator still checks only supplied reference format, not signatures or
+  counterparty custody, so it never authorizes actual effects.
