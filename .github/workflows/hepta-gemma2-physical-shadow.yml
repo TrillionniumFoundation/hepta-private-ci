@@ -1,0 +1,125 @@
+name: Hepta EmbeddingGemma2 physical shadow (read-only)
+
+on:
+  pull_request:
+    paths:
+      - 'qualification/neuron-dynamic-learning/**'
+      - '.github/workflows/hepta-gemma2-physical-shadow.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gemma2-physical-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pinned-cpu-forward:
+    name: Real SHA-pinned Google text forward (not a learning claim)
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.head_ref == 'research/embeddinggemma2-multimodal-cell-20261014'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      HF_HUB_DISABLE_XET: '0'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+      MODEL_COMMIT: '914f7f89142e33e77833254d9c9b90c3cef7303b'
+    steps:
+      - name: Checkout exact review candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: Check exact source commit, permissions and clean tree
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          git diff --check
+          test -z "$(git status --porcelain)"
+      - name: Install pinned CPU inference dependencies
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/gemma2-venv"
+          PY="$RUNNER_TEMP/gemma2-venv/bin/python"
+          "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu \
+            'torch==2.10.0' 'torchvision==0.25.0'
+          "$PY" -m pip install --only-binary=:all: \
+            'sentence-transformers==6.1.0' 'transformers==5.19.0' \
+            'pillow==11.3.0' 'soundfile==0.13.1' 'numpy==2.2.6'
+          "$PY" -m pip freeze > "$RUNNER_TEMP/gemma2-environment.freeze"
+      - name: Prepare complete remote SHA/LFS-bound local snapshot
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/gemma2-venv/bin/python"
+          "$PY" qualification/neuron-dynamic-learning/prepare_gemma2_snapshot.py \
+            --revision "$MODEL_COMMIT" \
+            --destination "$RUNNER_TEMP/gemma2-pinned" \
+            --profile text --dimension 256 --precision float32 \
+            > "$RUNNER_TEMP/gemma2-snapshot-receipt.json"
+          test -s "$RUNNER_TEMP/gemma2-pinned/manifest.json"
+      - name: Real forward, duplicated input control, no fabricated model metric
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/gemma2-venv/bin/python"
+          "$PY" - <<'PY' > "$RUNNER_TEMP/gemma2-real-forward.json"
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import sys
+          sys.path.insert(0, 'qualification/neuron-dynamic-learning')
+          from embeddinggemma2_shadow import FrozenGemmaShadow
+
+          def request(cell, text):
+              return {
+                  'scope_id': 'public.shadow', 'principal_id': 'physical.cpu',
+                  'purpose_id': 'nonproduction.smoke', 'cell_id': cell,
+                  'generation': 1, 'authority_epoch': 1,
+                  'input': {
+                      'modality': 'text', 'role': 'classification', 'value': text,
+                      'sha256': hashlib.sha256(text.encode()).hexdigest(),
+                  },
+              }
+
+          model = FrozenGemmaShadow(
+              Path(os.environ['RUNNER_TEMP']) / 'gemma2-pinned/manifest.json',
+              device='cpu')
+          report = model.encode_cells([
+              request('cell.a', 'Classify a checked file-content digest.'),
+              request('cell.b', 'Classify a checked file-content digest.'),
+              request('cell.c', 'Classify an observed syntax error.'),
+          ])
+          assert report['physical_local_model_execution']
+          assert report['distinct_input_rows'] == 2
+          assert report['sentence_transformer_encode_calls'] == 1
+          assert report['physical_transformer_forward_calls'] is None
+          assert report['model_origin_independently_authenticated'] is False
+          assert report['production_promotion'] == 'DENY_ALL'
+          assert all(row['feature_digest'] for row in report['rows'])
+          print(json.dumps(report, sort_keys=True))
+          PY
+      - name: Redacted qualification receipts (never model bytes)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: gemma2-public-text-shadow-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/gemma2-environment.freeze
+            ${{ runner.temp }}/gemma2-snapshot-receipt.json
+            ${{ runner.temp }}/gemma2-real-forward.json
+          if-no-files-found: warn
+          retention-days: 7
+      - name: No source-tree mutation
+        if: always()
+        run: |
+          git diff --check
+          git diff --exit-code
