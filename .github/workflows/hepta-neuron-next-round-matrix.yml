@@ -166,6 +166,18 @@ jobs:
             --news-dir "$RUNNER_TEMP/public-news" \
             --training-flops-budget 5000000000 --max-budget-steps 4096 \
             --output "$RUNNER_TEMP/public-budget-learning" 2>&1 | tee "$RUNNER_TEMP/public-budget-learning.log"
+      - name: Compare fixed-update and fixed-compute schedules on one sealed panel
+        shell: bash
+        run: |
+          set -euo pipefail
+          FIXED_SEAL=$(python -c 'import json; print(json.load(open("'"$RUNNER_TEMP"'/public-learning/COMMITTED.json"))["seal_id"])')
+          BUDGET_SEAL=$(python -c 'import json; print(json.load(open("'"$RUNNER_TEMP"'/public-budget-learning/COMMITTED.json"))["seal_id"])')
+          python qualification/stem-cell-v1/public_schedule_comparison.py \
+            --fixed-dir "$RUNNER_TEMP/public-learning" \
+            --budget-dir "$RUNNER_TEMP/public-budget-learning" \
+            --news-dir "$RUNNER_TEMP/public-news" \
+            --fixed-seal-id "$FIXED_SEAL" --budget-seal-id "$BUDGET_SEAL" \
+            --output "$RUNNER_TEMP/public-schedule-comparison" 2>&1 | tee "$RUNNER_TEMP/public-schedule-comparison.log"
       - name: Exercise budgeted parent-preserving split against direct family control
         shell: bash
         run: |
@@ -217,6 +229,10 @@ jobs:
             ${{ runner.temp }}/public-budget-learning/controls/FAILED.json
             ${{ runner.temp }}/public-budget-learning/controls/*/RUN.json
             ${{ runner.temp }}/public-budget-learning/controls/*/FAILED.json
+            ${{ runner.temp }}/public-schedule-comparison.log
+            ${{ runner.temp }}/public-schedule-comparison/comparison.json
+            ${{ runner.temp }}/public-schedule-comparison/COMMITTED.json
+            ${{ runner.temp }}/public-schedule-comparison/FAILED.json
             ${{ runner.temp }}/public-family-learning.log
             ${{ runner.temp }}/public-family-learning/scores.json
             ${{ runner.temp }}/public-family-learning/selection.json
