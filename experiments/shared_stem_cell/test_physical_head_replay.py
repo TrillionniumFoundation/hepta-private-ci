@@ -181,6 +181,21 @@ class PhysicalReplayTests(unittest.TestCase):
             with self.assertRaisesRegex(PreflightError, "row drift"):
                 checked(root)
 
+    def test_rehashed_wrong_feature_profile_rejected(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            p = make_complete_study(root)
+            mpath = p / "frozen-features" / "manifest.json"
+            m = json.loads(mpath.read_bytes())
+            m["binding"]["feature_profile_sha256"] = "c" * 64
+            mpath.write_bytes(canonical(m))
+            rpath = p / "report.json"
+            r = json.loads(rpath.read_bytes())
+            r["frozen_features"]["manifest_sha256"] = sha(mpath.read_bytes())
+            rpath.write_bytes(canonical(r))
+            with self.assertRaisesRegex(PreflightError, "content/binding changed"):
+                checked(root)
+
     def test_unfair_head_steps_rejected(self):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
