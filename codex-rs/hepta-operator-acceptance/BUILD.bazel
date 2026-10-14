@@ -20,7 +20,7 @@ rust_library(
         "@crates//:thiserror",
     ] + select({
         "@platforms//os:windows": ["@crates//:winapi-util"],
-        "//conditions:default": [],
+        "//conditions:default": ["@crates//:socket2"],
     }),
 )
 
