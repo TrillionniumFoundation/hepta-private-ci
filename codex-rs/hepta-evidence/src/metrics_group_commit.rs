@@ -164,7 +164,9 @@ impl MetricsGroupCommitV1 {
                 return Err(MetricsJournalErrorV1::UnsafePath);
             }
             let mut options = OpenOptions::new();
-            options.read(true).write(true).mode(0o600);
+            // O_APPEND is essential on restart: the reopened marker file
+            // starts at offset zero and must never overwrite its identity.
+            options.read(true).write(true).append(true).mode(0o600);
             if !marker_exists {
                 options.create_new(true);
             }
