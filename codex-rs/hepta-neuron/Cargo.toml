@@ -10,6 +10,10 @@ name = "codex_hepta_neuron"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+# Research-only adapter; default product host cannot compile it accidentally.
+amcn-shadow = []
+
 [lints]
 workspace = true
 

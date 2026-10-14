@@ -1,0 +1,87 @@
+name: Hepta AMCN Neuron source-fenced model port (research only)
+
+on:
+  pull_request:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "codex-rs/hepta-neuron/Cargo.toml"
+      - "codex-rs/hepta-neuron/src/lib.rs"
+      - "codex-rs/hepta-neuron/src/amcn_shadow_fence*.rs"
+      - ".github/workflows/hepta-amcn-neuron-fence.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: amcn-neuron-fence-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rust-owner-fence-mechanisms:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      RUST_BACKTRACE: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind exact original source and rust toolchain identity
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-rust-owner-fence/source
+          git rev-parse HEAD > /tmp/amcn-rust-owner-fence/source/head.txt
+          git rev-parse HEAD^{tree} > /tmp/amcn-rust-owner-fence/source/tree.txt
+          rustc -Vv > /tmp/amcn-rust-owner-fence/rustc-version.txt
+          cargo -V > /tmp/amcn-rust-owner-fence/cargo-version.txt
+          grep -Fq 'pub const AMCN_SHADOW_PRODUCTION_ACCEPTED: bool = false;' codex-rs/hepta-neuron/src/amcn_shadow_fence.rs
+          grep -Fq 'amcn-shadow = []' codex-rs/hepta-neuron/Cargo.toml
+          git diff --quiet
+      - name: Execute real Neuron inference port with strict source-owner lock
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-neuron --features amcn-shadow \
+            amcn_shadow_fence -- --nocapture --test-threads=1 \
+            2>&1 | tee /tmp/amcn-rust-owner-fence/feature-tests.log
+      - name: Ensure default Neuron crate still passes without shadow feature
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-neuron --no-default-features \
+            -- --test-threads=2 \
+            2>&1 | tee /tmp/amcn-rust-owner-fence/default-tests.log
+      - name: Preserve exact source and nonpromotion evidence
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-rust-owner-fence/source
+          git rev-parse HEAD > /tmp/amcn-rust-owner-fence/source/head.txt
+          git rev-parse HEAD^{tree} > /tmp/amcn-rust-owner-fence/source/tree.txt
+          cp codex-rs/hepta-neuron/Cargo.toml \
+             codex-rs/hepta-neuron/src/lib.rs \
+             codex-rs/hepta-neuron/src/amcn_shadow_fence.rs \
+             codex-rs/hepta-neuron/src/amcn_shadow_fence_tests.rs \
+             .github/workflows/hepta-amcn-neuron-fence.yml \
+             /tmp/amcn-rust-owner-fence/source/
+          printf '%s\n' \
+            'amcn_shadow_only=true' \
+            'production_accepted=false' \
+            'cognitive_store_transaction_fenced=false' \
+            'learning_artifacts_owner_integrated=false' \
+            'source_reviewer_independence_verified=false' \
+            'final_use_allowed=false' \
+            'zero_resurrection_product_proven=false' \
+            > /tmp/amcn-rust-owner-fence/nonpromotion.txt
+          (cd /tmp/amcn-rust-owner-fence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: amcn-neuron-rust-owner-fence-non-authorizing
+          path: /tmp/amcn-rust-owner-fence
+          if-no-files-found: error

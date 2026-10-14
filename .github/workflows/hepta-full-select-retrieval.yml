@@ -1,0 +1,151 @@
+name: Hepta full SELECT frozen-feature retrieval
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/full_select_retrieval.py"
+      - "scripts/memory_cell/full_select_retrieval_trial.py"
+      - "scripts/memory_cell/test_full_select_retrieval.py"
+      - ".github/workflows/hepta-full-select-retrieval.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: full-select-retrieval-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  frozen-encoder-full-select:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install fixed frozen-feature worker
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/full-select/checks
+          python3 -m venv /tmp/full-select-env
+          /tmp/full-select-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/full-select/checks/install-torch.log 2>&1
+          /tmp/full-select-env/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/full-select/checks/install-worker.log 2>&1
+          /tmp/full-select-env/bin/pip check
+          /tmp/full-select-env/bin/pip freeze > /tmp/full-select/checks/environment.txt
+      - name: Require full-pool and inherited representation regressions
+        run: |
+          set -euo pipefail
+          failed=0
+          for pattern in test_full_select_retrieval.py test_shared_gate_similarity.py test_shared_gate_similarity_cache.py test_shared_gate_crossed.py test_shared_question_gate.py test_shared_question_gate_entrypoint.py test_select_content_inventory.py test_five_encoder_snapshot.py; do
+            if /tmp/full-select-env/bin/python -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/full-select/checks/$pattern.log"; then
+              printf '%s\tpassed\n' "$pattern" >> /tmp/full-select/checks/suites.tsv
+            else
+              failed=1
+              printf '%s\tfailed\n' "$pattern" >> /tmp/full-select/checks/suites.tsv
+            fi
+          done
+          /tmp/full-select-env/bin/python -m py_compile scripts/memory_cell/full_select_retrieval.py scripts/memory_cell/full_select_retrieval_trial.py scripts/memory_cell/test_full_select_retrieval.py
+          /tmp/full-select-env/bin/python scripts/memory_cell/full_select_retrieval_trial.py --help > /tmp/full-select/checks/real-cli-help.txt
+          test "$failed" -eq 0
+      - name: Resolve exact completed result origins once
+        id: dependency
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          for item in head:38526481788 cross:38526874475 select:38496209074; do
+            role=${item%%:*}; run=${item##*:}
+            gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/runs/${run}" > "/tmp/full-select/checks/${role}-run.json"
+            gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/runs/${run}/artifacts?per_page=100" > "/tmp/full-select/checks/${role}-artifacts.json"
+          done
+          code=0
+          /tmp/full-select-env/bin/python scripts/memory_cell/full_select_retrieval_trial.py dependency \
+            --head-run-json /tmp/full-select/checks/head-run.json \
+            --head-artifacts-json /tmp/full-select/checks/head-artifacts.json \
+            --cross-run-json /tmp/full-select/checks/cross-run.json \
+            --cross-artifacts-json /tmp/full-select/checks/cross-artifacts.json \
+            --select-run-json /tmp/full-select/checks/select-run.json \
+            --select-artifacts-json /tmp/full-select/checks/select-artifacts.json \
+            --output /tmp/full-select/dependency.json || code=$?
+          if test "$code" -ne 0 && test "$code" -ne 3; then exit "$code"; fi
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          value=json.loads(Path('/tmp/full-select/dependency.json').read_bytes())
+          with open(os.environ['GITHUB_OUTPUT'],'a') as out:
+              out.write('ready='+str(value['ready']).lower()+'\n')
+              if value['ready']:
+                  for role in ('heads','crossed','select'):
+                      out.write(role+'_id='+str(value['origins'][role]['artifact_id'])+'\n')
+                      out.write(role+'_sha='+value['origins'][role]['artifact_sha256']+'\n')
+          if not value['ready']:
+              print('DEFERRED: exact completed full-pool origins unavailable; no model load or scoring.')
+          PY
+      - name: Acquire exact results and original Encoder snapshot
+        if: steps.dependency.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_ID: ${{ steps.dependency.outputs.heads_id }}
+          CROSS_ID: ${{ steps.dependency.outputs.crossed_id }}
+          SELECT_ID: ${{ steps.dependency.outputs.select_id }}
+          HEAD_SHA: ${{ steps.dependency.outputs.heads_sha }}
+          CROSS_SHA: ${{ steps.dependency.outputs.crossed_sha }}
+          SELECT_SHA: ${{ steps.dependency.outputs.select_sha }}
+        run: |
+          set -euo pipefail
+          gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/${HEAD_ID}/zip" > /tmp/full-select-heads.zip
+          gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/${CROSS_ID}/zip" > /tmp/full-select-crossed.zip
+          gh api "repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/${SELECT_ID}/zip" > /tmp/full-select-inventory.zip
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/full-select-original.zip
+          printf '%s  %s\n' "$HEAD_SHA" /tmp/full-select-heads.zip | sha256sum -c -
+          printf '%s  %s\n' "$CROSS_SHA" /tmp/full-select-crossed.zip | sha256sum -c -
+          printf '%s  %s\n' "$SELECT_SHA" /tmp/full-select-inventory.zip | sha256sum -c -
+          printf '%s  %s\n' 07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af /tmp/full-select-original.zip | sha256sum -c -
+      - name: Encode missing public features and score frozen readers
+        if: steps.dependency.outputs.ready == 'true'
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/full-select/checks/process-resources.txt \
+            /tmp/full-select-env/bin/python scripts/memory_cell/full_select_retrieval_trial.py run \
+            --head-archive /tmp/full-select-heads.zip \
+            --cross-archive /tmp/full-select-crossed.zip \
+            --select-archive /tmp/full-select-inventory.zip \
+            --original-archive /tmp/full-select-original.zip \
+            --dependency-json /tmp/full-select/dependency.json \
+            --work /tmp/full-select-materials \
+            --output /tmp/full-select/study 2>&1 | tee /tmp/full-select/checks/execution.log
+      - name: Preserve exact source, outcome distinction and costs
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/full-select/source/memory_cell
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path=Path('/tmp/full-select/study/report.json')
+          report=json.loads(path.read_bytes()) if path.is_file() else None
+          value={'model_execution_completed':report is not None and report.get('errors')==[],
+                 'new_optimizer_updates':0,'new_reader_calls':0,
+                 'semantic_accuracy':None,'production_accepted':False}
+          Path('/tmp/full-select/execution-disposition.json').write_text(json.dumps(value,sort_keys=True))
+          print('FULL_SELECT_RETRIEVAL_DISPOSITION',json.dumps(value,sort_keys=True))
+          PY
+          git rev-parse HEAD > /tmp/full-select/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/full-select/source/tested-tree.txt
+          cp scripts/memory_cell/*.py scripts/memory_cell/requirements.txt /tmp/full-select/source/memory_cell/
+          cp experiments/shared_stem_cell/execution.py .github/workflows/hepta-full-select-retrieval.yml /tmp/full-select/source/
+          (cd /tmp/full-select && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-full-select-retrieval-development
+          path: /tmp/full-select
+          if-no-files-found: error

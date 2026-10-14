@@ -278,6 +278,44 @@ No real calendar-future learning gain, semantic citation adjudication,
 signed Selector decision, parameter unlearning or crash recovery on a
 production target host has been established.
 
+## Neuron InferenceControl execution inside a research source-lease
+
+The experimental Rust adapter now lives in
+codex-rs/hepta-neuron/src/amcn_shadow_fence.rs under the **opt-in**
+amcn-shadow Cargo feature; the default product crate build does NOT compile
+this interface. AmcnFencedNeuronModelPort implements the existing NeuronModelPort
+and delegates actual model execution and original receipt verification to
+InferenceControlModelPort, not a new model executor or self-issued selection
+service. It cannot run without an explicit AmcnSourceArtifactFence host.
+
+One binding covers exact request ID, config, runtime generation, model, Encoder,
+Head, weights, feature-input digest, output width, scope, full artifact ancestry,
+authoritative source frontier, withdrawal registry, monotonic quarantine journal
+and independent runtime checkpoint anchor. The host-provided fence must
+**remain held across** the entire InferenceControl call, rather than checking
+hashes and releasing the lock before execution. Synthetic Rust fixtures use an
+actual locked mutex and assert competing source writes cannot acquire it while
+the feature port runs; withdrawn/revised sources, an in-flight recovery,
+stale journals, swapped model tuples and forged result receipts refuse.
+
+This is **not yet a real production CognitiveStore/Runtime Owner adapter**:
+the generic source-fencing trait has no default implementation; test owners are
+only test doubles. No cross-owner SQLite transaction, distributed lease or
+versioned Learning Artifacts persistence is inferred from a trait, a digest,
+or a green test. The source writer, Model Selector and runtime checkpoint
+witness must still implement one atomic/fenced release and recovery protocol.
+Current execution remains a research-only, denied-authority experiment.
+
+Run the Rust contract, if the pinned 1.95.0 Rust toolchain is available:
+
+    cd codex-rs
+    cargo test --locked -p codex-hepta-neuron --features amcn-shadow amcn_shadow_fence -- --nocapture
+    cargo test --locked -p codex-hepta-neuron --no-default-features
+
+The dedicated hepta-amcn-neuron-fence workflow retains the exact source HEAD,
+Rust/Cargo identity, raw test logs and a negative-production-authority receipt.
+No production neuron feature flag is changed or enabled in this PR.
+
 ## No-go and required production evidence
 
 Still missing: sufficient-evidence Reader certification, strong cached hybrid
