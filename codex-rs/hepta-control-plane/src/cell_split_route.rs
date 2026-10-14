@@ -124,6 +124,8 @@ pub enum CellSplitRouteErrorV1 {
     RestartGeneration,
     ParentRouteResurrected,
     TombstoneMismatch,
+    /// This local reference host is not the durable Control/CNS cutover owner.
+    ControlHandoffRequired,
     Runtime(CnsHierarchyError),
     RuntimeOwner(OrganRuntimeError),
 }
@@ -315,6 +317,14 @@ impl CellSplitRouteControllerV1 {
         next: CnsOrganHostV1,
         child_routes: Vec<CnsRouteV1>,
     ) -> Result<(), CellSplitRouteErrorV1> {
+        // The in-memory CNS host is a reference fixture, NOT the signed
+        // same-owner Control Begin/Commit. In production no caller can
+        // turn a proposed CellSplit into active child dispatch through here.
+        // Real physical routes remain the responsibility of the separately
+        // authenticated, currently disabled CNS runtime owner.
+        if !cfg!(test) {
+            return Err(CellSplitRouteErrorV1::ControlHandoffRequired);
+        }
         self.split.validate()?;
         self.validate_child_routes(&next, &child_routes)?;
         let children = self.bind_child_routes(child_routes)?;
@@ -345,6 +355,11 @@ impl CellSplitRouteControllerV1 {
         child_routes: Vec<CnsRouteV1>,
         migration: &mut M,
     ) -> Result<(), CellSplitRouteErrorV1> {
+        // Migration cannot serve as an alternative to a durable, owner-atomic
+        // CNS cutover. Keep only the crate's unit-test reference host enabled.
+        if !cfg!(test) {
+            return Err(CellSplitRouteErrorV1::ControlHandoffRequired);
+        }
         self.split.validate()?;
         self.validate_child_routes(&next, &child_routes)?;
         let children = self.bind_child_routes(child_routes)?;
