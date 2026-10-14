@@ -672,7 +672,12 @@ fn replayed_signed_cns_snapshot_is_not_a_fresh_readback() {
     let denied = CellSplitCnsCutoverOwnerV1::open(rejected_root.path(), plan(), binding(), port);
     assert!(matches!(denied, Err(CellSplitCnsCutoverErrorV1::Invalid)));
     assert!(!rejected_root.path().join(FROZEN).exists());
-    assert!(rejected_root.path().join(crate::durable::SIDECAR_LOCK_FILE).exists());
+    assert!(
+        rejected_root
+            .path()
+            .join(crate::durable::SIDECAR_LOCK_FILE)
+            .exists()
+    );
     let cannot_reseed = CellSplitCnsCutoverOwnerV1::open(
         rejected_root.path(),
         plan(),
@@ -683,7 +688,10 @@ fn replayed_signed_cns_snapshot_is_not_a_fresh_readback() {
             Arc::new(AtomicBool::new(true)),
         ),
     );
-    assert!(matches!(cannot_reseed, Err(CellSplitCnsCutoverErrorV1::Invalid)));
+    assert!(matches!(
+        cannot_reseed,
+        Err(CellSplitCnsCutoverErrorV1::Invalid)
+    ));
     assert!(!rejected_root.path().join(FROZEN).exists());
 
     // A truly separate, never-initialized owner may freeze an independently
