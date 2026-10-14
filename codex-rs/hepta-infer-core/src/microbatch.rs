@@ -134,6 +134,8 @@ pub struct BoundedMicrobatchSchedulerV1 {
     lanes: BTreeMap<MicrobatchKeyV1, VecDeque<QueuedIntent>>,
     // Secondary affinity index; never conflates per-scope authorization.
     physical_lanes: BTreeMap<PhysicalBatchKeyV1, BTreeSet<MicrobatchKeyV1>>,
+    // Cutover visits only the retiring scope's active lanes, never every Cell.
+    scope_lanes: BTreeMap<StableId, BTreeSet<MicrobatchKeyV1>>,
     physical_cursor: BTreeMap<PhysicalBatchKeyV1, MicrobatchKeyV1>,
     round_robin: VecDeque<MicrobatchKeyV1>,
     // Includes stale slots left by a coalesced lane. Re-admitting that lane
@@ -149,6 +151,7 @@ impl BoundedMicrobatchSchedulerV1 {
             limits: limits.validate()?,
             lanes: BTreeMap::new(),
             physical_lanes: BTreeMap::new(),
+            scope_lanes: BTreeMap::new(),
             physical_cursor: BTreeMap::new(),
             round_robin: VecDeque::new(),
             round_robin_members: BTreeSet::new(),
@@ -173,6 +176,13 @@ impl BoundedMicrobatchSchedulerV1 {
                 self.physical_lanes.remove(&group);
                 self.physical_cursor.remove(&group);
             }
+        }
+        let empty_scope = self.scope_lanes.get_mut(&key.scope_id).is_some_and(|lanes| {
+            lanes.remove(key);
+            lanes.is_empty()
+        });
+        if empty_scope {
+            self.scope_lanes.remove(&key.scope_id);
         }
     }
 
@@ -248,6 +258,10 @@ impl BoundedMicrobatchSchedulerV1 {
             }
             self.physical_lanes
                 .entry(key.physical_key())
+                .or_default()
+                .insert(key.clone());
+            self.scope_lanes
+                .entry(key.scope_id.clone())
                 .or_default()
                 .insert(key.clone());
         }
@@ -443,8 +457,9 @@ impl BoundedMicrobatchSchedulerV1 {
         Ok(observed)
     }
 
-    /// Explicit fence cutover: drop queued work for a scope whose binding no
-    /// longer matches the independently admitted generation/fence/epoch.
+    /// Explicit fence cutover: inspect only indexed lanes in this scope.
+    /// Retired round-robin tickets are lazy tombstones, reaped by bounded,
+    /// amortized compaction instead of a full queue scan on each cutover.
     /// Call outside global control locks. No stale work is requeued.
     pub fn retain_scope_binding(
         &mut self,
@@ -454,28 +469,29 @@ impl BoundedMicrobatchSchedulerV1 {
         authority_epoch: u64,
     ) -> Vec<StableId> {
         let mut dropped = Vec::new();
-        let mut retired_lanes = Vec::new();
-        self.lanes.retain(|key, lane| {
-            if &key.scope_id == scope
-                && (key.generation != generation
-                    || key.route_fence != route_fence
-                    || key.authority_epoch != authority_epoch)
+        let keys = self
+            .scope_lanes
+            .get(scope)
+            .into_iter()
+            .flat_map(|lanes| lanes.iter().cloned())
+            .collect::<Vec<_>>();
+        for key in keys {
+            if key.generation == generation
+                && key.route_fence == route_fence
+                && key.authority_epoch == authority_epoch
             {
+                continue;
+            }
+            if let Some(lane) = self.lanes.remove(&key) {
                 for entry in lane {
                     self.queued_ids.remove(&entry.intent.request_id);
-                    dropped.push(entry.intent.request_id.clone());
+                    dropped.push(entry.intent.request_id);
                 }
-                retired_lanes.push(key.clone());
-                false
-            } else {
-                true
             }
-        });
-        for key in &retired_lanes {
-            self.remove_physical_lane(key);
+            self.remove_physical_lane(&key);
         }
-        self.round_robin.retain(|key| self.lanes.contains_key(key));
-        self.round_robin_members = self.round_robin.iter().cloned().collect();
+        // Also bound stale-ticket memory during enqueue/cutover-only traffic.
+        self.compact_round_robin_if_needed();
         dropped
     }
 }
