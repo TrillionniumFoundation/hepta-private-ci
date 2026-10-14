@@ -488,6 +488,51 @@ fn amcn_epoch_shadow_2048_distinct_cells_share_one_bounded_encoder_epoch() {
 }
 
 #[test]
+fn amcn_epoch_shadow_adversarial_iterators_reject_before_unbounded_allocation() {
+    use std::cell::Cell;
+    let current = header();
+    let consumed = Cell::new(0_usize);
+    // This iterator represents more unique source/Head manifests than an
+    // operator is permitted to register. The validator must stop at
+    // MAX+1, not materialize the entire untrusted input first.
+    let large = (0..(AMCN_EPOCH_MANIFEST_LIMIT + 20)).map(|i| {
+        consumed.set(consumed.get() + 1);
+        d(&format!("untrusted-Head-{i}"))
+    });
+    assert!(matches!(
+        AmcnShadowEpochIndex::from_external_floor(
+            current.clone(), &current, large, [],
+        ), Err(NeuronModelError::Rejected)
+    ));
+    assert_eq!(consumed.get(), AMCN_EPOCH_MANIFEST_LIMIT + 1);
+
+    let source = index();
+    let valid = source.header().expect("actual floor");
+    let next = source_withdrawal_successor(&valid);
+    let exceeded = Cell::new(0);
+    let too_many = (0..(AMCN_EPOCH_QUARANTINE_LIMIT + 99)).map(|i| {
+        exceeded.set(exceeded.get() + 1);
+        d(&format!("untrusted-revocation-{i}"))
+    });
+    assert_eq!(
+        source.observe_committed_owner_change(&valid, next, [], too_many),
+        Err(NeuronModelError::Rejected)
+    );
+    assert_eq!(exceeded.get(), AMCN_EPOCH_QUARANTINE_LIMIT + 1);
+    // Once a conflicting external withdrawal is attempted the research
+    // cache cannot resume on a stale assumption, even after rejection.
+    assert!(source.owner_change_pending());
+    assert_eq!(source.header(), Err(NeuronModelError::Indeterminate));
+
+    assert!(matches!(
+        AmcnShadowEpochIndex::from_external_floor(
+            current.clone(), &current,
+            [d("artifact.a"), d("artifact.a")], [],
+        ), Err(NeuronModelError::Rejected)
+    ));
+}
+
+#[test]
 fn amcn_epoch_shadow_steady_state_1024_calls_are_bounded_header_checks_not_store_scans() {
     let shared = index();
     let req = request();

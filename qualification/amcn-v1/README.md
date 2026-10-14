@@ -435,6 +435,40 @@ Run on the pinned Rust host:
     cargo test --locked -p codex-hepta-memory --features amcn-artifact-shadow \
       amcn_shadow_two_owner -- --nocapture --test-threads=1
 
+## Original signed Artifact Owner to Cell epoch inventory projection
+
+The opt-in hepta-learning-artifacts amcn-epoch-shadow module now accepts only
+the ORIGINAL opaque VerifiedCurrentRegistryViewV1 issued through the existing
+signed CURRENT-head and exact registry-snapshot verifier. With independently
+retained expected registry-head/witness/trust digests, it projects original
+Model/Parameters Manifest identities to exact registered Head hashes. Original
+ArtifactRegistry.is_eligible is used for every candidate and its ancestors,
+so revoking a shared Stem ancestor classifies derived Head children as
+unavailable. Unrelated Workflow/Policy kinds are not registered as Heads.
+
+Separate, count-framed enrolled and quarantined membership digests match
+the Neuron epoch implementation. The projected inventory is an opaque Rust
+type with no caller-writable fields. A second opt-in Neuron feature,
+amcn-artifact-owner-shadow, lets the cache consume only that typed projection,
+not arbitrary caller-provided population lists. The index also now stops
+oversized external iterators at the first over-budget value, avoiding late
+allocation-based resource denial during cold load or update.
+
+This projection is signed-CURRENT-registry *input provenance*, NOT a durable
+execution grant. A validly verified registry view may become stale while the
+owner advances its head. A real host must hold the Artifact Owner publication
+fence throughout the Runtime tick, combine V2 training-dataset withdrawals
+with the original V1 Registry ancestry, and independently validate the
+CognitiveStore/Neuron checkpoint current cuts. Tests construct the opaque
+view from existing in-crate TEST-only fixtures; those test fixtures are not
+human reviewer signatures or live authenticated owner releases.
+
+The exact-host Rust lane executes both the Artifact population projection
+tests and the optional Neuron bridge with cargo --locked, while the default
+product build keeps every AMCN research feature off. This does not establish
+a many-Cell p95 latency target, true future-window model accuracy or a
+production zero-resurrection result.
+
 ## Read-mostly source/withdrawal Epoch gate for many Cells (research only)
 
 The new default-off Rust Neuron amcn_shadow_epoch.rs module implements a

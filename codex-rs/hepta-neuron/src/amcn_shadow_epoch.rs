@@ -28,6 +28,21 @@ const QUARANTINED_DOMAIN: &[u8] = b"hepta.amcn.epoch.quarantined-manifests.v1";
 
 /// Canonical, count-framed and order-independent COMPLETE set commitment.
 /// This is recomputed only on enrollment or owner updates, never per inference.
+/// Stop adversarial iterators at their FIRST out-of-budget element. A late
+/// length check after collect() can allocate unbounded memory before refusal.
+fn bounded_manifest_set(
+    values: impl IntoIterator<Item = Digest32>,
+    maximum: usize,
+) -> Result<HashSet<Digest32>, NeuronModelError> {
+    let mut result = HashSet::new();
+    for value in values {
+        if result.len() >= maximum || value.is_zero() || !result.insert(value) {
+            return Err(NeuronModelError::Rejected);
+        }
+    }
+    Ok(result)
+}
+
 fn digest_manifest_set(domain: &[u8], members: &HashSet<Digest32>) -> Digest32 {
     let mut sorted: Vec<_> = members.iter().copied().collect();
     sorted.sort_unstable();
@@ -127,13 +142,9 @@ impl AmcnShadowEpochIndex {
         if &current != minimum_current {
             return Err(NeuronModelError::Rejected);
         }
-        let enrolled: HashSet<_> = enrolled.into_iter().collect();
-        let blocked: HashSet<_> = quarantined.into_iter().collect();
-        if enrolled.is_empty() || enrolled.len() > AMCN_EPOCH_MANIFEST_LIMIT
-            || enrolled.contains(&Digest32::ZERO)
-            || !blocked.is_subset(&enrolled)
-            || blocked.len() > AMCN_EPOCH_QUARANTINE_LIMIT
-            || blocked.contains(&Digest32::ZERO)
+        let enrolled = bounded_manifest_set(enrolled, AMCN_EPOCH_MANIFEST_LIMIT)?;
+        let blocked = bounded_manifest_set(quarantined, AMCN_EPOCH_QUARANTINE_LIMIT)?;
+        if enrolled.is_empty() || !blocked.is_subset(&enrolled)
             || current.enrolled_manifest_set_digest
                 != digest_manifest_set(ENROLLED_DOMAIN, &enrolled)
             || current.quarantined_manifest_set_digest
@@ -149,6 +160,47 @@ impl AmcnShadowEpochIndex {
             })),
             pending_owner_change: Arc::new(AtomicBool::new(false)),
         })
+    }
+
+    /// Prefer the ORIGINAL signed Artifact current-view projection over a
+    /// caller-assembled list of Cell candidates. The projection type is
+    /// opaque outside Learning Artifacts and only produced from a verified
+    /// current registry view. Expected pins remain independent host inputs.
+    ///
+    /// Source revisions, V2 withdrawal datasets, actual selection and the
+    /// Runtime Witness still have SEPARATE owners; this is research ONLY.
+    #[cfg(feature = "amcn-artifact-owner-shadow")]
+    pub fn from_verified_artifact_owner_view(
+        current: AmcnEpochHeaderV1,
+        independently_witnessed_floor: &AmcnEpochHeaderV1,
+        population: &codex_hepta_learning_artifacts::AmcnVerifiedRegistryEpochPopulationV1,
+        expected_registry_head: Digest32,
+        expected_registry_witness: Digest32,
+        expected_registry_trust: Digest32,
+    ) -> Result<Self, NeuronModelError> {
+        if population.production_accepted()
+            || population.authority().grants_any()
+            || expected_registry_head.is_zero()
+            || expected_registry_witness.is_zero()
+            || expected_registry_trust.is_zero()
+            || population.current_registry_head_digest() != expected_registry_head
+            || population.current_witness_digest() != expected_registry_witness
+            || population.current_trust_digest() != expected_registry_trust
+            || population.enrolled_manifest_set_digest()
+                != current.enrolled_manifest_set_digest
+            || population.quarantined_manifest_set_digest()
+                != current.quarantined_manifest_set_digest
+        {
+            return Err(NeuronModelError::Rejected);
+        }
+        Self::from_external_floor(
+            current,
+            independently_witnessed_floor,
+            population.enrolled_model_and_head_manifests()
+                .iter().map(|(_, digest)| *digest),
+            population.quarantined_model_and_head_manifest_digests()
+                .iter().copied(),
+        )
     }
 
     /// Exact O(1) current header read, not a claim that this was signed.
@@ -212,8 +264,10 @@ impl AmcnShadowEpochIndex {
         {
             return Err(NeuronModelError::Rejected);
         }
-        let enrolled: HashSet<_> = newly_enrolled.into_iter().collect();
-        let additional: HashSet<_> = additional_quarantined.into_iter().collect();
+        let enrolled = bounded_manifest_set(newly_enrolled, AMCN_EPOCH_MANIFEST_LIMIT)?;
+        let additional = bounded_manifest_set(
+            additional_quarantined, AMCN_EPOCH_QUARANTINE_LIMIT,
+        )?;
         let total_enrolled = guard.enrolled_manifests.len().saturating_add(enrolled.len());
         let total_blocked = guard.quarantined_manifests.len().saturating_add(additional.len());
         if enrolled.contains(&Digest32::ZERO)

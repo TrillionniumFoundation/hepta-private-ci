@@ -10,6 +10,11 @@ name = "codex_hepta_learning_artifacts"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+# Read-only projection of authenticated Artifact head to Cell epoch inventory.
+# Does not enable selection or model execution authority.
+amcn-epoch-shadow = []
+
 [lints]
 workspace = true
 

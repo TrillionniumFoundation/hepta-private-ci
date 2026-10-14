@@ -5,6 +5,8 @@
 
 #![forbid(unsafe_code)]
 
+#[cfg(feature = "amcn-epoch-shadow")]
+mod amcn_epoch_inventory;
 mod admin;
 mod admission_v3;
 mod closure_v2;
@@ -29,6 +31,12 @@ mod storage_hygiene;
 #[cfg(test)]
 mod test_support;
 
+#[cfg(feature = "amcn-epoch-shadow")]
+pub use amcn_epoch_inventory::{
+    AMCN_OWNER_EPOCH_MAX_MANIFESTS, AMCN_OWNER_EPOCH_MAX_QUARANTINED,
+    AMCN_OWNER_EPOCH_PRODUCTION_ACCEPTED, AmcnOwnerEpochError,
+    AmcnVerifiedRegistryEpochPopulationV1, project_verified_amcn_artifact_epoch_v1,
+};
 pub use admin::ArtifactOwnerStatusV1;
 pub use admin::inspect_artifact_owner_status_v1;
 pub use admission_v3::ArtifactAdmissionError;

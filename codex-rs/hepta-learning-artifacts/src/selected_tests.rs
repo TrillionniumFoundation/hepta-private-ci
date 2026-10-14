@@ -305,3 +305,111 @@ fn a_clock_rollback_cannot_reopen_a_selected_candidate() {
             .is_err()
     );
 }
+
+
+// These fixtures exercise the genuine Artifact Registry and its opaque current
+// view TYPE, but Fixture::current is deliberately a test-only constructor.
+// Only the real ArtifactOwnerHost's verified signed-head path may create a
+// production-current view. No selected-model or runtime grant is produced.
+#[cfg(feature = "amcn-epoch-shadow")]
+#[test]
+fn amcn_artifact_epoch_signed_view_projection_binds_exact_current_head_and_trust() {
+    let fixture = Fixture::new();
+    let view = fixture.current();
+    let first = project_verified_amcn_artifact_epoch_v1(
+        &view, view.receipt().head_digest, view.witness_digest(),
+        view.trust_digest(),
+    ).fixture("read-only current registry projection");
+    assert_eq!(first.enrolled_model_and_head_manifests().len(), 1);
+    assert!(first.quarantined_model_and_head_manifest_digests().is_empty());
+    assert!(!first.production_accepted());
+    assert!(!AMCN_OWNER_EPOCH_PRODUCTION_ACCEPTED);
+    assert_ne!(first.enrolled_manifest_set_digest(), Digest32::ZERO);
+    assert_ne!(first.quarantined_manifest_set_digest(), Digest32::ZERO);
+
+    for (head, witness, trust) in [
+        (d("old-registry"), view.witness_digest(), view.trust_digest()),
+        (view.receipt().head_digest, d("forged-witness"), view.trust_digest()),
+        (view.receipt().head_digest, view.witness_digest(), d("other-trust-root")),
+    ] {
+        assert!(matches!(
+            project_verified_amcn_artifact_epoch_v1(&view, head, witness, trust),
+            Err(AmcnOwnerEpochError::CurrentHeadMismatch),
+        ));
+    }
+}
+
+#[cfg(feature = "amcn-epoch-shadow")]
+#[test]
+fn amcn_artifact_epoch_original_registry_ancestor_quarantine_propagates_to_child() {
+    let mut fixture = Fixture::new();
+    let ancestor = fixture.registry.manifest(&id("parameters"))
+        .expect("registered Head ancestor").clone();
+    let derived = ArtifactManifest {
+        artifact_id: id("cell-derived-head"),
+        predecessor_id: Some(ancestor.artifact_id.clone()),
+        generation: Generation::new(2).fixture("derived generation"),
+        content_digest: d("derived-parameter-bytes"),
+        ..ancestor
+    };
+    fixture.registry.append(ArtifactEvent::Register {
+        event_id: id("derived-registration"),
+        manifest: derived.clone(),
+    }).fixture("original Registry derived Head registration");
+    let before = fixture.current();
+    let registered = project_verified_amcn_artifact_epoch_v1(
+        &before, before.receipt().head_digest, before.witness_digest(),
+        before.trust_digest(),
+    ).fixture("two original registered Heads");
+    assert_eq!(registered.enrolled_model_and_head_manifests().len(), 2);
+    assert!(registered.quarantined_model_and_head_manifest_digests().is_empty());
+
+    fixture.registry.append(ArtifactEvent::Revoke(StateChange {
+        event_id: id("withdrawn-source-revoke"),
+        artifact_id: id("parameters"),
+        evaluator_id: id("independent-source-owner"),
+        reason_digest: d("authoritative-dataset-withdrawal"),
+    })).fixture("original registry revocation");
+    let after = fixture.current();
+    let updated = project_verified_amcn_artifact_epoch_v1(
+        &after, after.receipt().head_digest, after.witness_digest(),
+        after.trust_digest(),
+    ).fixture("read original lineage-aware quarantine");
+    assert_eq!(registered.enrolled_manifest_set_digest(), updated.enrolled_manifest_set_digest());
+    assert_ne!(registered.quarantined_manifest_set_digest(),
+               updated.quarantined_manifest_set_digest());
+    assert_eq!(updated.quarantined_model_and_head_manifest_digests().len(), 2);
+    assert!(!updated.production_accepted());
+    // Old view is NOT proof of the newer current head. A required newer
+    // external head rejects that stale snapshot without resurrecting a Head.
+    assert_eq!(
+        project_verified_amcn_artifact_epoch_v1(
+            &before, after.receipt().head_digest,
+            after.witness_digest(), after.trust_digest(),
+        ),
+        Err(AmcnOwnerEpochError::CurrentHeadMismatch),
+    );
+}
+
+#[cfg(feature = "amcn-epoch-shadow")]
+#[test]
+fn amcn_artifact_epoch_excludes_non_cell_artifact_kinds_from_shared_stem_index() {
+    let mut fixture = Fixture::new();
+    let mut unrelated = fixture.registry.manifest(&id("parameters"))
+        .expect("registered fixture").clone();
+    unrelated.artifact_id = id("research-workflow-not-a-Head");
+    unrelated.kind = ArtifactKind::Workflow;
+    unrelated.predecessor_id = None;
+    fixture.registry.append(ArtifactEvent::Register {
+        event_id: id("register-unrelated-workflow"),
+        manifest: unrelated,
+    }).fixture("original registry accepts non-Head artifact");
+    let view = fixture.current();
+    let projected = project_verified_amcn_artifact_epoch_v1(
+        &view, view.receipt().head_digest, view.witness_digest(),
+        view.trust_digest(),
+    ).fixture("filter by original Artifact kind");
+    assert_eq!(projected.enrolled_model_and_head_manifests().len(), 1);
+    assert_eq!(projected.enrolled_model_and_head_manifests()[0].0,
+               id("parameters"));
+}

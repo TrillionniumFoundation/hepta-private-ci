@@ -5,6 +5,11 @@ on:
     branches: ["research/five-causal-experiments-20261013"]
     paths:
       - "codex-rs/hepta-neuron/Cargo.toml"
+      - "codex-rs/hepta-learning-artifacts/Cargo.toml"
+      - "codex-rs/hepta-learning-artifacts/src/amcn_epoch_inventory.rs"
+      - "codex-rs/hepta-learning-artifacts/src/lib.rs"
+      - "codex-rs/hepta-learning-artifacts/src/selected_tests.rs"
+      - "codex-rs/Cargo.lock"
       - "codex-rs/hepta-neuron/src/lib.rs"
       - "codex-rs/hepta-neuron/src/amcn_shadow_*.rs"
       - "codex-rs/hepta-neuron/src/runtime_tests.rs"
@@ -63,6 +68,18 @@ jobs:
             /tmp/amcn-rust-owner-fence/read-mostly-epoch-tests.log
           grep -Fq 'amcn_shadow_fence_runtime_pending_witness_reconciles_only_after_new_source_lease'             /tmp/amcn-rust-owner-fence/feature-tests.log
           grep -Fq 'amcn_shadow_fence_concurrent_source_writer_waits_for_actual_feature_completion'             /tmp/amcn-rust-owner-fence/feature-tests.log
+      - name: Project ORIGINAL signed Artifact Current View into epoch candidates
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo test --locked -p codex-hepta-learning-artifacts --features amcn-epoch-shadow \
+            amcn_artifact_epoch -- --nocapture --test-threads=1 \
+            2>&1 | tee /tmp/amcn-rust-owner-fence/original-artifact-owner-epoch.log
+          grep -Fq 'amcn_artifact_epoch_original_registry_ancestor_quarantine_propagates_to_child' \
+            /tmp/amcn-rust-owner-fence/original-artifact-owner-epoch.log
+          cargo test --locked -p codex-hepta-neuron --features amcn-artifact-owner-shadow \
+            amcn_epoch_shadow -- --nocapture --test-threads=1 \
+            2>&1 | tee /tmp/amcn-rust-owner-fence/typed-artifact-epoch-bridge.log
       - name: Ensure default Neuron crate still passes without shadow feature
         working-directory: codex-rs
         run: |
@@ -84,6 +101,9 @@ jobs:
              codex-rs/hepta-neuron/src/amcn_shadow_epoch.rs \
              codex-rs/hepta-neuron/src/amcn_shadow_epoch_tests.rs \
              codex-rs/hepta-neuron/src/runtime_tests.rs \
+             codex-rs/hepta-learning-artifacts/src/amcn_epoch_inventory.rs \
+             codex-rs/hepta-learning-artifacts/src/selected_tests.rs \
+             codex-rs/Cargo.lock \
              .github/workflows/hepta-amcn-neuron-fence.yml \
              /tmp/amcn-rust-owner-fence/source/
           printf '%s\n' \
