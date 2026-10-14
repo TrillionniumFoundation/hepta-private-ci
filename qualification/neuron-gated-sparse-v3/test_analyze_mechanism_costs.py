@@ -4,10 +4,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
-import subprocess
-import tempfile
 import unittest
-from pathlib import Path
 
 import analyze_mechanism_costs as audit
 import run_shadow_probe_matrix as probe
