@@ -1,0 +1,70 @@
+name: MemoryCell BF16 runner pool qualification without model downloads
+on:
+  push:
+    branches: [codex/memorycell-reader-dual-run-census-20261014]
+    paths:
+      - ".github/workflows/hepta-memory-bf16-runner-qualification.yml"
+permissions:
+  contents: read
+concurrency:
+  group: bf16-runner-sampling-${{ github.sha }}
+  cancel-in-progress: false
+jobs:
+  inspect-cpu-only:
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        image: [ubuntu-24.04, ubuntu-26.04]
+        sample: [0, 1]
+    runs-on: ${{ matrix.image }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Execute existing strict BF16 host gate, not a model call
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-bf16-host
+          set +e
+          python3 scripts/memory_cell/strong_rag_host_gate.py \
+            --output /tmp/hepta-bf16-host/host.json
+          gate_status=$?
+          set -e
+          case "$gate_status" in
+            0|3) ;;
+            *) echo "BF16 gate failed unexpectedly" >&2; exit "$gate_status" ;;
+          esac
+          printf '%s\n' "$gate_status" > /tmp/hepta-bf16-host/gate-exit.txt
+          printf '%s\n' '${{ matrix.image }}' > /tmp/hepta-bf16-host/runner-label.txt
+          printf '%s\n' '${{ matrix.sample }}' > /tmp/hepta-bf16-host/sample-number.txt
+          git rev-parse HEAD > /tmp/hepta-bf16-host/generating-commit.txt
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("/tmp/hepta-bf16-host")
+          receipt = json.loads((root / "host.json").read_bytes())
+          status = int((root / "gate-exit.txt").read_text())
+          assert receipt["schema"] == "hepta.memory-strong-rag.bf16-host-gate.v1"
+          assert receipt["policy"] == "x86_64-original-qwen-torch2.5.1-cpu-bfloat16-eager"
+          assert receipt["new_model_calls"] == 0
+          assert receipt["same_original_model_weights_required"] is True
+          assert receipt["full_inference_latency_qualified"] is False
+          assert receipt["production_accepted"] is False
+          assert type(receipt["host_eligible"]) is bool
+          assert receipt["host_eligible"] is (status == 0)
+          if status == 0:
+              assert receipt["all_cpus_bf16_accelerated"] is True
+              assert receipt["shared_acceleration_features"]
+              assert receipt["machine"] == "x86_64"
+          else:
+              assert status == 3 and receipt["host_eligible"] is False
+          PY
+          (cd /tmp/hepta-bf16-host && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: memory-bf16-host-${{ matrix.image }}-${{ matrix.sample }}
+          path: /tmp/hepta-bf16-host
+          if-no-files-found: error
