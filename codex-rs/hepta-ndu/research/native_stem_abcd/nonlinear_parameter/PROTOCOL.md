@@ -1,0 +1,21 @@
+# R15 frozen local protocol: nonlinear-in-weight two-step Stem with separate nonconvex stress arm
+
+Parent: R14 PR #1989, commit `7f6d69934ee042f0a2d20b6d224ea8a08e0e037b`. This protocol follows preliminary high-precision scouting of the main candidate and a preliminary numerical oscillatory multi-start diagnostic. Thus it is **not** independently blinded/preregistered. The frozen comparison run will not use test outcomes to select models or change thresholds.
+
+## Main exact theorem and scope
+
+Reuse R14's full 5-point known support X={-1,-1/2,0,1/2,1}, P0 equally likely 0/1, independent binary eps1/eps2, nonzero entropic risks rho=(1/2,1), gamma=9/10. Two trainable shared forward weights a,b affect both steps. Keep h1=X+a X²+b X³+eps1/5, t1=X²+X⁴/2 and preference flip on eps1>0. New second-step forward law h2=(1+eps1*X/10)*h1+**(h1-t1)²/100**+eps2/10, t2=(1+eps1*X/10)*t1+X/8; P2 flips on eps2>0. Stage costs are (h1-t1)²+P1/20 and (h2-t2)²+P2/25. Nested positive-risk binary entropic CE matches R14. Unlike R14, h2 is **quadratic in both trainable parameters**.
+
+Restrict training and certification to the CLOSED box [-2,2]²; this is essential. Prove |h1-t1|<=67/10, gain in [9/10,11/10], and leaf Hessian rank-one coefficient q2 >= 212939/250000 >0 throughout the entire parameter box. Nested positive-risk logsumexp then preserves convexity of branch costs. The first-stage Gram gives population Hessian >= (117/160) I globally *inside the box*. Outside the box neither strong convexity nor global minimum is asserted.
+
+Candidate a=1.4778030294885026, b=-1.0035571846373475 is a fixed rational pair proposed by independent arbitrary-precision scouting. Recompute all nested gradients at this pair using exact rational branch equations and 160-bit outward interval exp/log; bound distance to the UNIQUE box global optimum and true box-population excess; prove minimum of restricted b=0 family has positive cost separation. Proof predicates MUST depend only on rationals/intervals, not floating scouting or solver returns. Save exact authoritative fractions and checksums. Main gate (for optimizer comparison only): exact-rational certified optimum distance <1e-6, candidate inside box; the gate is not training supervision.
+
+## Genuine nonconvex contrast: no fraudulent global certificate
+
+Introduce a SEPARATE stress arm with identical first step, distribution, costs and risks, but h2=gain*h1+sin(4*(h1-t1))+eps2/10. This sinusoid makes parameter Hessian potentially indefinite within the same box. Numerically record actual Hessian eigenvalues, seeds, converged/failed stationary points, local minimum checks and distinct basin clusters. No global optimum/lower bound is claimed from multistart numerical optimization. Explicitly keep all higher-cost basins and negative-curvature witnesses; no post-hoc winner-only presentation. Never extend the main rigorous strong-convex certificate to the stress arm.
+
+## Fixed fresh-process solver matrix
+
+Eight fixed initialization seeds 11,23,47,59,83,97,101,109, same uniform(-1.8,1.8) initial bytes per arm x seed for THREE optimizers: Adam (rate=.045), analytic forward/backward Newton with SPD regularization and Armijo acceptance, and SciPy L-BFGS-B. Both arms, all three methods and eight seeds: 48 processes. Each uses 2.0 CPU seconds for fitting, including derivative work, checkpoints and quality monitoring; nonpreemptible overshoot reported. For main arm record time to first-observed certified-theta-distance <=1e-6 and cap-censor misses, no posthoc clipping to success. Stress has NO global-oracle training labels or success-by-best-of-multistart; classify gradients, curvature and different basins after saving all raw results.
+
+Every trial seals initial/final tensor bytes, full checkpoint history and source SHA before independent metrics. Independent scalar nested recursion, finite-difference gradients/Hessians and 85-digit mpmath gradient verify the FP64 implementation. Read-only audit replays all results, checks full-case census, B/C initial pairs, certificates and report hashes, and rejects changed file/laws/weights/success timing. Keep all logs and failures, with exact whole-child CPU/wall, fit CPU, RSS and counts; physical FLOPs/energy/GPU unknown. No main merge, CURRENT/native-contract promotion, production activation or general LLM/FBSDE/PMP/viscosity claims.
