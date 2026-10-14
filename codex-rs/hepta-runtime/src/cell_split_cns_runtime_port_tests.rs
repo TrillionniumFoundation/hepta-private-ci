@@ -318,6 +318,7 @@ fn signed_live_route_and_positive_preflight_cannot_bypass_unbound_control_cutove
 }
 
 #[test]
+#[allow(deprecated)]
 fn signed_cns_and_control_commit_join_cannot_accept_opaque_wal_without_original_owner() {
     use codex_hepta_types::Digest32;
     use codex_hepta_types::Generation;
@@ -351,29 +352,33 @@ fn signed_cns_and_control_commit_join_cannot_accept_opaque_wal_without_original_
             .contains("original durable effect receipt is missing")
     );
 
-    // Deliberately inject an unauthenticated fixture into the Control-only
-    // primitive. Its hash-linked C proves neither an original CNS commit nor
-    // a live cutover. The independent joined reader must still deny.
+    // The public Control interface must not accept a caller-controlled
+    // callback that can manufacture unsigned CNS success. The legacy direct
+    // route writer remains denied without a signed original-owner adapter.
     let mut next = frozen.clone();
     next.route_fence += 1;
-    control
-        .publish_cutover_with_external_effect(
+    assert_eq!(
+        control.publish_cutover(
             &frozen,
             Digest32::ZERO,
             next,
             Digest32::of_bytes(b"fixture-migrated"),
-            || -> Result<((), Vec<u8>), &'static str> { Ok(((), vec![0x6f; 96])) },
-        )
-        .expect("isolated Control fixture only");
-    assert!(
+        ),
+        Err(codex_hepta_control_plane::NduPublicationErrorV1::Unsupported)
+    );
+    assert_eq!(
         control
             .last_cns_original_receipt_binding()
-            .expect("Control C receipt binding")
-            .is_some()
+            .expect("read-only Control frontier"),
+        None
+    );
+    assert_eq!(
+        control.verify_original_cns_receipt_binding(&[0x6f; 96]),
+        Err(codex_hepta_control_plane::NduPublicationErrorV1::Stale)
     );
     assert!(
         port.verify_original_cns_control_commit_v1(&control)
-            .expect_err("opaque Control bytes cannot mint an original CNS effect")
+            .expect_err("unsigned Control bytes cannot mint an original CNS effect")
             .contains("original durable effect receipt is missing")
     );
     assert_eq!(
