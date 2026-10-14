@@ -42,6 +42,21 @@ jobs:
           python experiments/ndu_tree_fbsde_gates/head_panel_audit.py \
             --inputs /tmp/ndu-shadow-head-panel/head_{64,256,1024,4096}.json \
             --output /tmp/ndu-shadow-head-panel/panel_audit.json
+      - name: Train actual synthetic teacher-distilled gated Cell, seal, score in separate process
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          python experiments/ndu_tree_fbsde_gates/teacher_study.py \
+            --future-file /tmp/ndu-shadow-head-panel/teacher_future_inputs.json \
+            --seal-file /tmp/ndu-shadow-head-panel/teacher_sealed_predictions.json
+          F_HASH=$(sha256sum /tmp/ndu-shadow-head-panel/teacher_future_inputs.json | cut -d' ' -f1)
+          S_HASH=$(sha256sum /tmp/ndu-shadow-head-panel/teacher_sealed_predictions.json | cut -d' ' -f1)
+          python experiments/ndu_tree_fbsde_gates/teacher_study_evaluator.py \
+            --future-file /tmp/ndu-shadow-head-panel/teacher_future_inputs.json --future-sha256 "$F_HASH" \
+            --seal-file /tmp/ndu-shadow-head-panel/teacher_sealed_predictions.json --seal-sha256 "$S_HASH" \
+            --output /tmp/ndu-shadow-head-panel/teacher_independent_process_score.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:

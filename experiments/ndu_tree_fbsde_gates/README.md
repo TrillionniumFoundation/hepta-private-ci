@@ -43,6 +43,20 @@ These are **per-batch** wall-time order statistics across 100 runs, not p99 of i
 
 This measured panel cannot be used to select a winning Stem. To close P0/P1, reuse existing #1775/#1885/#1897/#1779 real-model candidate studies, then add physical shared Encoder, baseline single 421M model, actual same input/cohort, model lifetime and end-to-end training/serving/migration work. Retain every negative result and incomplete arm.
 
+## P3 → P6 synthetic controlled teacher distillation (actual learning, no model claim)
+
+- `teacher_study.py` generates 320 training-only exact two-bit public-belief problems, freezes their optimal search/stop labels from the existing rational `belief_tree`, and performs **300 actual full-Head Adam updates** to a seeded 9,744-parameter 384/64/rank-8/8-class gated residual Head; **6,264 parameters changed**. The shared 384 feature vector is synthetically encoded from rational priors and costs, never produced by a pretrained Laya/Granite/mmBERT/Gemma model.
+- Separately train a cheap 9-parameter logistic control with 300 updates on exactly the same training examples, retaining the no-change Head with identical original bytes. Actual CPU work differs materially; identical optimizer update count is not equal physical compute.
+- Three-arm predictions for 160 distinct, later-timestamped synthetic task identities are written **create-only** before the separate `teacher_study_evaluator.py` process recomputes exact future teacher labels. The raw source-only future rows and sealed three-arm predictions are retained under `observations/` along with exact SHA-256s.
+
+| Synthetic 160-case future teacher-agreement arm | Correct / total | CPU fit cost |
+|---|---:|---:|
+| Frozen initial Head (no-change) | 30/160 (18.75%) | zero updates |
+| Learned state-gated Head | 153/160 (95.625%) | ~111 ms in this host's measured optimizer phase |
+| Cheap trained logistic | 146/160 (91.25%) | ~10.3 ms in this host's measured optimizer phase |
+
+Paired learned-Head vs cheap linear: **12 recovered and 5 lost** teacher imitation cases (net 7). This is one seed, one tiny synthetic task, with no external ground truth, no statistical generalization guarantee and a markedly more expensive learner. It **does not justify selecting the gated Head** or claiming new reasoning/FBSDE efficacy. Natural task success, independent observer, OOD, old-task retention, Reader adequacy and target-host end-to-end costs remain untested. This is a P3→P6 *mechanism demonstration only* with `DENY_ALL`.
+
 ## Run
 
 ```sh
@@ -64,4 +78,4 @@ python3 experiments/ndu_tree_fbsde_gates/head_panel_audit.py --inputs /tmp/head_
 - Retain `qualification/neuron-stem/FBSDE_STUDY.md` / PR #1550 as the primary negative-control provenance.
 - Reader capacity is a separate prerequisite: an independently sufficient-evidence Reader failure cannot be relabeled a search or BSDE improvement.
 
-**Current receipts:** 45 locally completed tests, plus four separately executed 100-trial synthetic-feature/physical-Head CPU measurements, with source and raw samples retained. These measurements are NOT four-scale physical full Neuron/Encoder qualifications. There are no newly executed pretrained model loads, real multimodal task scores, independent NDU utility, qualified nonlinear FBSDE results, policy distillation, target-host admission, or production approval from this increment.
+**Current receipts:** 61 locally completed tests, four separately executed 100-trial synthetic-feature/physical-Head CPU measurements, and an actually optimized P3→P6 exact-teacher imitation study with source and three-arm predictions sealed before separate-process teacher scoring. These measurements are NOT four-scale physical full Neuron/Encoder qualifications. There are no newly executed pretrained model loads, real multimodal task scores, independent NDU utility, qualified nonlinear FBSDE results, policy distillation, target-host admission, or production approval from this increment.
