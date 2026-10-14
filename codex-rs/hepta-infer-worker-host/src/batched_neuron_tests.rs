@@ -306,6 +306,65 @@ fn signed_batch_executes_driver_once_then_rejects_duplicate() {
     );
 }
 
+#[test]
+fn multi_request_batch_records_each_member_in_all_three_metric_phases() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[81; 32]);
+    let (model, original, key) = fixture_request();
+    let metrics = std::sync::Arc::new(RecordedSink::default());
+    let mut worker =
+        runner_with_batch_size(&signer, dir.path(), model, 2).with_metric_sink(metrics.clone());
+    let mut request_digests = Vec::new();
+    for index in 0_u8..2 {
+        let mut request = original.clone();
+        request.authorization.request_id = format!("metric-member-{index}");
+        request.authorization.reservation_id = format!("metric-reservation-{index}");
+        let payload = canonical_neuron_feature_payload_digest(&request);
+        request.authorization.payload_digest = payload.clone();
+        request.authorization.lease_payload_digest = payload;
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        let mut grant = signed(&signer, binding);
+        grant.grant.grant_id = format!("metric-grant-{index}");
+        grant.grant.nonce = [index + 1; 32];
+        grant.signature = signer
+            .sign(&grant.grant.signing_bytes().unwrap())
+            .to_bytes()
+            .to_vec();
+        request_digests.push(Digest32::of_bytes(
+            request.authorization.request_id.as_bytes(),
+        ));
+        worker
+            .enqueue(100, "model".into(), request, key.clone(), grant)
+            .unwrap();
+    }
+    let polled = worker.poll_and_execute(101).unwrap();
+    assert_eq!(polled.outcomes.len(), 2);
+    assert!(polled.outcomes.iter().all(|outcome| matches!(
+        &outcome.result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    )));
+    assert!(worker.production_metrics_ready());
+
+    let events = metrics.0.lock().unwrap();
+    assert_eq!(events.len(), 6);
+    for phase in [
+        PhaseMetricKindV1::Admission,
+        PhaseMetricKindV1::Microbatch,
+        PhaseMetricKindV1::NeuronFeature,
+    ] {
+        assert_eq!(events.iter().filter(|event| event.phase == phase).count(), 2);
+    }
+    for request in request_digests {
+        assert_eq!(
+            events
+                .iter()
+                .filter(|event| event.operation_digest == request)
+                .count(),
+            3,
+        );
+    }
+}
+
 fn completed_signed_dummy(signer: &SigningKey) -> SignedFinalUseGrant {
     let (_, request, key) = fixture_request();
     signed(
