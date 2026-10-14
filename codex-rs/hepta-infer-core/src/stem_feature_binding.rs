@@ -118,11 +118,15 @@ impl SharedStemQ24BufferV1 {
         current_access_claim: &StemAccessContextV1,
         selected_head: &'a StemHeadBindingV1,
     ) -> Result<StemFeatureRequestViewV1<'a>, StemFeatureBindingError> {
-        borrow_stem_feature_request_v1(
+        // This Arc buffer was content-checked at construction and is
+        // immutable thereafter. Revalidate live access + selected Head for
+        // EVERY use, without rehashing the same Q24 bytes for each Cell.
+        borrow_stem_feature_request_checked_v1(
             &self.source,
             current_access_claim,
             selected_head,
             self.values.as_ref(),
+            FeatureDigestVerification::ImmutableBufferVerified,
         )
     }
 }
@@ -311,6 +315,33 @@ pub fn borrow_stem_feature_request_v1<'a>(
     selected_head: &'a StemHeadBindingV1,
     vector_q24: &'a [i64],
 ) -> Result<StemFeatureRequestViewV1<'a>, StemFeatureBindingError> {
+    // Caller-owned slices can change; they ALWAYS need a fresh full digest.
+    borrow_stem_feature_request_checked_v1(
+        source,
+        access,
+        selected_head,
+        vector_q24,
+        FeatureDigestVerification::RecomputeOnEveryUse,
+    )
+}
+
+/// Private proof selector; only the immutable buffer constructor may choose
+/// ImmutableBufferVerified, after validating the full Q24 content digest.
+/// This is NOT an authority proof; Principal/Scope/Epoch/Lease/Revocation and
+/// selected Head are checked again for every use in both paths.
+#[derive(Clone, Copy)]
+enum FeatureDigestVerification {
+    RecomputeOnEveryUse,
+    ImmutableBufferVerified,
+}
+
+fn borrow_stem_feature_request_checked_v1<'a>(
+    source: &StemFeatureRefV1,
+    access: &StemAccessContextV1,
+    selected_head: &'a StemHeadBindingV1,
+    vector_q24: &'a [i64],
+    feature_verification: FeatureDigestVerification,
+) -> Result<StemFeatureRequestViewV1<'a>, StemFeatureBindingError> {
     for digest in [
         source.stem_weights_digest,
         source.tokenizer_digest,
@@ -350,8 +381,12 @@ pub fn borrow_stem_feature_request_v1<'a>(
     if vector_q24.len() != source.feature_width {
         return Err(StemFeatureBindingError::InvalidFeatureWidth);
     }
-    let observed_feature_digest = stem_feature_vector_digest_v1(vector_q24)?;
-    if observed_feature_digest != source.feature_digest {
+    // Rehash arbitrary caller slices as before. The trusted immutable-buffer
+    // path was verified exactly once at construction, and Arc<[i64]> cannot
+    // be mutated using the safe APIs exposed by this crate.
+    if matches!(feature_verification, FeatureDigestVerification::RecomputeOnEveryUse)
+        && stem_feature_vector_digest_v1(vector_q24)? != source.feature_digest
+    {
         return Err(StemFeatureBindingError::FeatureDigestMismatch);
     }
     if selected_head.expected_output_width == 0 || selected_head.expected_output_width > 512 {
