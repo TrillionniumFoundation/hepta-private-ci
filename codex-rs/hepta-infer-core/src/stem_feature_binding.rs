@@ -865,7 +865,7 @@ mod tests {
         // Safe mutation of an unrelated Vec cannot poison immutable Arc bytes.
         assert_eq!(shared.borrow_for_head(&access, &head)
             .expect("unchanged shared content")
-            .feature_vector_q24(), direct_owned.request.feature_vector_q24);
+            .feature_vector_q24(), direct_owned.request.feature_vector_q24.as_slice());
     }
 
     #[test]
