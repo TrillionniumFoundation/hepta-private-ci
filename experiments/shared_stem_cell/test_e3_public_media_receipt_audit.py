@@ -135,5 +135,4 @@ class E3AuditTests(unittest.TestCase):
             files[path]=b'{"scores":{},"scores":{},"prediction_sha256":"'+b'a'*64+b'"}'
         self.run_case(tamper)
 
-if __name__=='__main__':
-    unittest.main()
+if __name__=='__main__':unittest.main()
