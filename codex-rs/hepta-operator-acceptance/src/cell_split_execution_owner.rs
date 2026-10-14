@@ -933,7 +933,10 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // attempted external effect; it does deny any *new* effect dispatch.
         if !self.pending
             && (self.metrics_poisoned
-                || self.metric_sink.as_ref().is_some_and(|sink| !sink.healthy()))
+                || self
+                    .metric_sink
+                    .as_ref()
+                    .is_some_and(|sink| !sink.healthy()))
         {
             return Err(CellSplitExecutionErrorV1::Invalid(
                 "cell split telemetry unavailable for new effects",
