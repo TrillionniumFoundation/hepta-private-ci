@@ -186,6 +186,9 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "run_pinned_cell_split_execution_v1": {
                 "codex-rs/hepta-operator-acceptance/src/lib.rs",
                 "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs",
+                # Actual production binary ingress. Never hide a CLI caller
+                # from the closed-world inventory just because it is read-only.
+                "codex-rs/hepta-operator-acceptance/src/main.rs",
             },
             "run_pinned_cell_split_execution_with_admission_v1": {
                 "codex-rs/hepta-operator-acceptance/src/lib.rs",
@@ -210,6 +213,30 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             with self.subTest(api=name):
                 self.assertEqual(observed[name], required,
                                  "unreviewed CellSplit executing caller")
+        # Source existence is not proof of read-only safety. Demand the
+        # executable itself refuse every effectful action BEFORE it can hand
+        # the user's arguments to the pinned Operator API.
+        binary = (ROOT / "codex-rs/hepta-operator-acceptance/src/main.rs").read_text(
+            encoding="utf-8"
+        )
+        start = binary.index("fn run_cell_split_execution_command(arguments: &[OsString])")
+        end = binary.index("#[cfg(not(unix))]", start)
+        entry = binary[start:end]
+        self.assertRegex(
+            entry,
+            r'if\s+action\s*!=\s*"transcript"\s*\{\s*return\s+Err\('
+            r'"operator binary CellSplit is read-only: transcript only"\.to_string\(\)\);\s*\}',
+            "stand-alone Operator binary must deny effectful CellSplit actions",
+        )
+        self.assertLess(
+            entry.index('if action != "transcript"'),
+            entry.index("run_pinned_cell_split_execution_v1(action"),
+            "CLI action denial must precede effect-owner dispatch",
+        )
+        self.assertNotIn(
+            "run_pinned_cell_split_execution_with_admission_v1", entry,
+            "CLI binary cannot mint its own NDU/Selector admission",
+        )
         self.assertEqual(
             self.public_free_functions(
                 "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"

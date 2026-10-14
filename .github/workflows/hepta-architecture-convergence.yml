@@ -244,6 +244,9 @@ jobs:
           # same-owner durable Control; positive fixture methods are test-only.
           cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane -p codex-hepta-runtime -- --check
           cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane -p codex-hepta-runtime --lib
+          # Compile the actual production CLI binary, whose action ingress is
+          # independently frozen by the B4 closed-world source audit above.
+          cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --bin hepta-operator-acceptance
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/legacy-cell-split-control-denial.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib cell_split_route -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/generic-typed-split-control-denial.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime --lib topology_execution -- --nocapture
       - name: Same-owner CNS and signed Neuron checkpoint linearization
