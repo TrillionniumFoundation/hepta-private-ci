@@ -19,8 +19,9 @@ WEIGHTS = (0.0, 0.25, 0.5, 0.75, 1.0)
 
 
 def validate(inputs, *, shapes=None, labels=None, classes=4):
-    if not isinstance(inputs, dict) or not inputs or not set(inputs) <= {"image", "text"}:
-        raise InputError("calibrated profile supports image/text only")
+    if (not isinstance(inputs, dict) or not inputs
+            or not (set(inputs) <= {"image", "text"} or set(inputs) == {"audio"})):
+        raise InputError("calibrated profile supports image/text or standalone audio")
     n, actual, storage = None, {}, 0
     for name, item in inputs.items():
         if not isinstance(item, tuple) or len(item) != 3:
