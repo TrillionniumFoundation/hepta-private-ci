@@ -298,6 +298,40 @@ declared Git SHA. Code publication/CI queue presence alone is not a pass.
 A0 target-Owner census and A4 true 100-slot target-host receipts remain
 missing. No model selection, Cell Split or CNS route changes are authorized.
 
+## Quantized physical Head execution and independent exact-value oracle
+
+The additive native runner now emits
+\`hepta.neuron.physical-trained-q24-mechanism-replay.v2\`.
+It reads the physical F32 \`head.weight\` and \`head.bias\` tensors and
+converts them into a separately versioned Q24 **research Head** using signed
+nearest/ties-to-even rounding. It rejects NaN, Inf and Head values outside
+[-8, 8], with the same admission in offline trainer export and private weight
+inventory. Every Rust Q24 sparse activation then passes through a deterministic
+quantized linear Head with per-product ties-even Q24 multiplication, checked
+i64 accumulation and a recorded \`quantized_head_logit_q24\`.
+
+The **independent Python oracle** in \`head_q24_oracle.py\` uses exact integer
+division and remainder, *not Rust receipt digests*, to check every native Head
+logit for all 20 physical candidates. The previous Float32 proxy and its
+original sigmoid probabilities are **not** claimed bitwise identical to this
+new discretized Head. \`native_float_gap.py\` separately exposes that
+remaining floating-versus-Q24 numerical difference.
+
+Native Q24 Head execution on physically loaded learned F32 weights is a useful
+research closure, **not a production complete Cell**. The real selected
+Encoder, Task Head/Intuition policy, calibration and independent NDU remain
+separate. No source result authorizes control or effect authority. A real
+target-host Rust binary with validated generation/fence, final-use, durable
+journal/reopen and CAS must still be qualified; the research fixed-point
+Head has no permission to replace that production path.
+
+Physical Python Head-oracle regression tests include round-to-even half cases,
+negative products, i64 overflow, nonfinite/out-of-range Head rejection,
+physical safetensors serialization, exact-logit comparison and deliberate
+logit corruption. Rust unit tests exercise the corresponding Q24 math.
+The independent matrix checks all 20 native physical files at the final
+binary's exact SHA; a green Python test alone is not native Rust parity.
+
 ## Testing
 
     python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
