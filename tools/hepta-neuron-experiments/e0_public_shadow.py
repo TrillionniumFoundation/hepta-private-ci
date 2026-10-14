@@ -10,6 +10,7 @@ import argparse
 import hashlib
 import json
 import os
+import resource
 from pathlib import Path
 import shutil
 import struct
@@ -123,14 +124,20 @@ def main() -> int:
         snapshot = freeze_public_snapshot(root if args.acquire_public else args.snapshot,
                                           acquire=args.acquire_public)
         t0 = time.perf_counter_ns()
+        c0 = time.process_time_ns()
+        rss_before_kib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         complete, encoder, loading = load_complete_mlm(snapshot)
         tokenizer = AutoTokenizer.from_pretrained(str(snapshot), local_files_only=True,
                                                    trust_remote_code=False)
         # This exact joint input intentionally duplicates the established public canary.
         case = dict(state="The engineer repaired the electric motor.",
                     question="Identify the subject.", options=["person", "place"])
+        t_forward = time.perf_counter_ns()
         feature, tokens = vectorize_case(torch, encoder, tokenizer, case, "cpu", max_tokens=128)
+        forward_wall_ns = time.perf_counter_ns() - t_forward
         elapsed_ns = time.perf_counter_ns() - t0
+        process_cpu_ns = time.process_time_ns() - c0
+        rss_after_kib = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         if feature.shape != (768,) or feature.dtype != torch.float32:
             raise ValueError("public Encoder did not produce frozen 768-D float32")
         feature_f32 = tuple(feature.tolist())
@@ -205,6 +212,11 @@ def main() -> int:
                       oracle_result=independent_oracle,
                       diagnostic_head_logits_q24=[round(x * Q) for x in logits],
                       loading_and_forward_wall_ns=elapsed_ns,
+                      forward_wall_ns=forward_wall_ns,
+                      process_cpu_ns=process_cpu_ns,
+                      process_lifetime_rss_peak_kib_before=rss_before_kib,
+                      process_lifetime_rss_peak_kib_after=rss_after_kib,
+                      peak_rss_scope="lifetime_high_water_not_single_request",
                       actual_public_pretrained_encoder_forward=True,
                       actual_original_stem_projection_forward=True,
                       actual_shadow_untrained_head_forward=True,
