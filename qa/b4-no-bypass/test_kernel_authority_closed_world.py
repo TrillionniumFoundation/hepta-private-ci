@@ -510,6 +510,54 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                     f"{action} must validate before Final-use, effect and route publication",
                 )
 
+    def test_control_signed_cns_join_pins_same_inode_wal_tail_under_one_lock(self) -> None:
+        # Verify two independent requirements on the SAME implementation:
+        # (1) a live Control WAL may not silently shrink or rewrite its final
+        # fsynced row while retaining its inode; and (2) the signed original
+        # CNS receipt is checked against one locked Control frontier, not an
+        # unlocked two-step readback that can straddle another Commit.
+        path = "codex-rs/hepta-control-plane/src/ndu_publication.rs"
+        code = self.lexical_code(path)
+        self.assertRegex(
+            code,
+            r"\bfn\s+verify_original_paths\s*\(\s*&self\s*,\s*"
+            r"expected_bytes\s*:\s*u64\s*,\s*"
+            r"expected_sequence\s*:\s*u64\s*,\s*"
+            r"expected_head\s*:\s*Digest32",
+            "Control must pin WAL length, monotonic sequence and fsynced head",
+        )
+        for assertion in (
+            "read_exact_at(&mut tail",
+            "last.sequence != expected_sequence",
+            "last.head != expected_head",
+            "last.head != event_hash(&last)",
+        ):
+            self.assertIn(assertion, code, f"Control WAL tail fence missing: {assertion}")
+        self.assertNotIn("state.verify_original_paths()", code)
+
+        entry = re.search(
+            r"\bpub\s+fn\s+verify_original_cns_receipt_binding\s*\(",
+            code,
+        )
+        self.assertIsNotNone(entry, "read-only original CNS receipt join absent")
+        assert entry is not None
+        start = code.find("{", entry.end())
+        end = CALLER_PROOF._matching_delimiter(code, start, "{", "}")
+        self.assertIsNotNone(end, "original CNS receipt join is incomplete")
+        assert end is not None
+        body = code[start + 1 : end]
+        self.assertRegex(body, r"self\s*\.\s*state\s*\.\s*lock\s*\(\s*\)")
+        self.assertGreaterEqual(
+            body.count("state.verify_original_paths(state.bytes, state.sequence, state.head)"),
+            2,
+            "single locked receipt comparison must revalidate WAL tail before and after",
+        )
+        self.assertNotIn(
+            "self.last_cns_original_receipt_binding()",
+            body,
+            "released Control lock can admit a different signed receipt frontier",
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
