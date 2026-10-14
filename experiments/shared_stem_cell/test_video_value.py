@@ -141,6 +141,13 @@ class ValueEndToEnd(unittest.TestCase):
                                  selection["calibration_ids"])),64)
         self.assertEqual(set(report["scores"]),set(value.ARMS))
         self.assertEqual({s["cases"] for s in report["scores"].values()}, {16})
+        for arm in value.ARMS:
+            self.assertTrue(0 < report["scores"][arm]["latency_ns"]["p50"]
+                            <= report["scores"][arm]["latency_ns"]["p95"]
+                            <= report["scores"][arm]["latency_ns"]["p99"])
+            self.assertEqual(sum(x["attempted"] for x in
+                                 report["per_source_video_scores"][arm].values()),16)
+            self.assertEqual(len(report["per_source_video_scores"][arm]),2)
         self.assertEqual(report["physical_work"]["fixed_8"]["unique_frames"],64)
         self.assertEqual(report["physical_work"]["fixed_2"]["unique_frames"],32)
         self.assertFalse(report["general_ndu_fbsde_established"])

@@ -60,7 +60,9 @@ the whole research experiment is more expensive than the one selected path.
 Reports include full source/model and selection identities, per-frame stop
 traces, paired reversal accuracy, full-row accuracy/NLL, loaded model parameter
 count, critic parameter and fitting cost, requested frames, unique features,
-cache hits, physical CLIP calls, model loading and per-arm wall intervals.
+cache hits, physical CLIP calls, model loading, per-arm wall intervals, and descriptive nearest-rank
+p50/p95/p99 per-row intervals (16 correlated rows, not population tails), plus
+per-source-video correct counts.
 Energy, total FLOPs, peak process RSS and independent population validity are
 null or explicitly unverified. The video stage still fetches, decodes, stores,
 and verifies all registered frames, even those the later Reader never encodes.

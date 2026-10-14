@@ -104,6 +104,14 @@ def _cost_order(profile, index):
             profile["requested_frame_rows"], -profile["correct"], index)
 
 
+def nearest_rank_latency(rows):
+    """Descriptive per-row samples only; 16 clustered observations have no tail CI."""
+    values = sorted(r["wall"]["wall_ns"] for r in rows)
+    if not values or any(type(v) is not int or v <= 0 for v in values):
+        raise e.InputError("actual positive row-wall intervals required")
+    return {f"p{p}": values[(len(values)*p + 99)//100-1] for p in (50,95,99)}
+
+
 def select(exits, labels, frame_ids, critic):
     """One sealed calibration cohort decides BOTH continuation policy families."""
     fixed = {d: _profile(frame_ids,
@@ -294,11 +302,19 @@ def run(manifest_path, output, *, _tower_factory=media.LocalTowers):
             raise e.InputError("source or selected Reader changed")
         saved = e.decode(e.bound_file(output / "predictions.json", pred_seal))
         holdout_y = y(by["holdout"])
-        scores, pairing = {}, {}
+        scores, pairing, per_source = {}, {}, {}
+        source_of = {r["case_id"]: r["source_id"] for r in registered}
         idx = {c.case_id: i for i,c in enumerate(by["holdout"])}
         for arm, rows in saved["records"].items():
             probabilities = torch.tensor([r["probabilities"] for r in rows], dtype=torch.float32)
             scores[arm] = temporal.score(probabilities, holdout_y)
+            scores[arm]["latency_ns"] = nearest_rank_latency(rows)
+            per_source[arm] = {}
+            for case, row in zip(by["holdout"], rows):
+                family = source_of[case.case_id]
+                counter = per_source[arm].setdefault(family, {"attempted":0, "correct":0})
+                counter["attempted"] += 1
+                counter["correct"] += int(row["prediction"] == targets[case.case_id])
             pairing[arm] = {"pairs": 0, "both_directions_correct": 0}
             for pair in pairs.values():
                 if pair[0]["split"] == "holdout":
@@ -310,7 +326,9 @@ def run(manifest_path, output, *, _tower_factory=media.LocalTowers):
         report = {"schema": "hepta.video-value-executed.v1",
             "manifest_sha256": e.sha(manifest_raw), "selection_sha256": seal,
             "prediction_sha256": pred_seal, "scores": scores,
-            "paired_direction_scores": pairing, "physical_work": costs,
+            "paired_direction_scores": pairing, "per_source_video_scores": per_source,
+            "row_latency_p95_p99_are_descriptive_not_population_tails": True,
+            "holdout_source_video_count": 2, "physical_work": costs,
             "loading_work": loading, "reader_critic_calibration_work": preparation,
             "whole_experiment_tower_calls": base.calls,
             "full_clip_resident_parameters": sum(p.numel() for p in base.models["clip"].parameters())

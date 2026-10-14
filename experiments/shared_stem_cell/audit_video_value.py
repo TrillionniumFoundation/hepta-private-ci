@@ -218,6 +218,16 @@ def audit(root):
         keys=[[f["sha256"] for f in c["inputs"]["video"]] for c in holdout]
         calc=work(keys,seen)
         need(all(saved["physical_work"][arm][k]==v for k,v in calc.items()),"physical frame cache cost drift")
+        samples=sorted(r["wall"]["wall_ns"] for r in rows)
+        latency={f"p{p}":samples[(len(samples)*p+99)//100-1] for p in (50,95,99)}
+        need(report["scores"][arm]["latency_ns"]==latency,"per-row wall latency drift")
+        by_source={}
+        for r,case in zip(rows,holdout):
+            source=next(s["source_id"] for s in roster if s["case_id"]==case["case_id"])
+            entry=by_source.setdefault(source,{"attempted":0,"correct":0})
+            entry["attempted"]+=1
+            entry["correct"]+=int(r["prediction"]==case["label"])
+        need(report["per_source_video_scores"][arm]==by_source,"per-source video score drift")
         correct=sum(pred==c["label"] for (_d,pred),c in zip(seen,holdout))
         need(report["scores"][arm]["cases"]==len(holdout)
              and report["scores"][arm]["correct"]==correct
