@@ -108,12 +108,53 @@ fn fixture_request() -> (ModelManifest, NeuronFeatureRequest, MicrobatchKeyV1) {
     (model, request, key)
 }
 
+#[derive(Debug)]
+struct FixtureScopeFrontier {
+    model_digest: Digest32,
+    route_fence: Arc<std::sync::atomic::AtomicU64>,
+}
+
+impl MicrobatchScopeFrontierV1 for FixtureScopeFrontier {
+    fn current(&self, scope: &StableId) -> Result<MicrobatchKeyV1, BatchWorkerErrorV1> {
+        Ok(MicrobatchKeyV1 {
+            scope_id: scope.clone(),
+            model_digest: self.model_digest,
+            generation: Generation::new(3).expect("fixture generation"),
+            route_fence: self.route_fence.load(std::sync::atomic::Ordering::Acquire),
+            authority_epoch: 9,
+        })
+    }
+}
+
 fn runner_with_driver<D: ModelDriver + NeuronFeatureDriver>(
     signing_key: &SigningKey,
     directory: &std::path::Path,
     model: ModelManifest,
     driver: D,
     max_batch_size: usize,
+) -> AuthenticatedNeuronMicrobatchWorkerV1<D> {
+    let model_digest = Digest32::from_str(&model.model_digest).expect("loaded model digest");
+    let frontier = Arc::new(FixtureScopeFrontier {
+        model_digest,
+        route_fence: Arc::new(std::sync::atomic::AtomicU64::new(2)),
+    });
+    runner_with_driver_and_frontier(
+        signing_key,
+        directory,
+        model,
+        driver,
+        max_batch_size,
+        frontier,
+    )
+}
+
+fn runner_with_driver_and_frontier<D: ModelDriver + NeuronFeatureDriver>(
+    signing_key: &SigningKey,
+    directory: &std::path::Path,
+    model: ModelManifest,
+    driver: D,
+    max_batch_size: usize,
+    scope_frontier: Arc<dyn MicrobatchScopeFrontierV1>,
 ) -> AuthenticatedNeuronMicrobatchWorkerV1<D> {
     // FinalUseAuthority requires a private owner-controlled state directory.
     // Temp directory permissions vary with the runner and its inherited umask;
@@ -149,9 +190,10 @@ fn runner_with_driver<D: ModelDriver + NeuronFeatureDriver>(
     };
     let mut worker = InferenceWorker::new(100, "worker-one".into(), 3, grant, driver).unwrap();
     worker.load_model(100, model).unwrap();
-    AuthenticatedNeuronMicrobatchWorkerV1::new(
+    AuthenticatedNeuronMicrobatchWorkerV1::new_with_scope_frontier(
         worker,
         authority,
+        scope_frontier,
         MicrobatchLimitsV1 {
             max_pending: 10,
             max_batch_size,
@@ -626,6 +668,56 @@ impl NeuronFeatureDriver for NativeTestDriver {
     }
 }
 
+#[derive(Clone)]
+struct CutoverDuringEffectDriver {
+    inner: NativeTestDriver,
+    route_fence: Arc<std::sync::atomic::AtomicU64>,
+}
+
+impl ModelDriver for CutoverDuringEffectDriver {
+    fn load(&mut self, manifest: &ModelManifest) -> Result<DriverModelHandle, Error> {
+        self.inner.load(manifest)
+    }
+
+    fn run(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &WorkerRequest,
+    ) -> Result<DriverRunObservation, Error> {
+        self.inner.run(handle, request)
+    }
+
+    fn unload(&mut self, handle: DriverModelHandle) -> Result<(), Error> {
+        self.inner.unload(handle)
+    }
+}
+
+impl NeuronFeatureDriver for CutoverDuringEffectDriver {
+    fn run_neuron_features(
+        &mut self,
+        handle: &DriverModelHandle,
+        request: &NeuronFeatureRequest,
+    ) -> Result<DriverNeuronFeatureObservation, Error> {
+        let result = self.inner.run_neuron_features(handle, request);
+        self.route_fence.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        result
+    }
+
+    fn supports_neuron_feature_batch(&self, handle: &DriverModelHandle) -> bool {
+        self.inner.supports_neuron_feature_batch(handle)
+    }
+
+    fn run_neuron_features_batch(
+        &mut self,
+        handle: &DriverModelHandle,
+        requests: &[NeuronFeatureRequest],
+    ) -> Result<Vec<crate::model_worker::DriverNeuronFeatureBatchObservationV1>, Error> {
+        let result = self.inner.run_neuron_features_batch(handle, requests);
+        self.route_fence.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
+        result
+    }
+}
+
 fn signed_member(
     signer: &SigningKey,
     binding: FinalUseBinding,
@@ -647,6 +739,54 @@ fn second_request(first: &NeuronFeatureRequest) -> NeuronFeatureRequest {
     next.authorization.request_id = "req-two".into();
     next.authorization.reservation_id = "reservation-two".into();
     next
+}
+
+#[test]
+fn cutover_between_admission_and_poll_denies_every_scope_without_backend_effect() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[67; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let fence = Arc::new(std::sync::atomic::AtomicU64::new(key.route_fence));
+    let model_digest = Digest32::from_str(&model.model_digest).unwrap();
+    let frontier = Arc::new(FixtureScopeFrontier {
+        model_digest,
+        route_fence: fence.clone(),
+    });
+    let driver = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut worker =
+        runner_with_driver_and_frontier(&signer, dir.path(), model, driver, 2, frontier);
+    for (index, request) in [first, second].into_iter().enumerate() {
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        worker
+            .enqueue(
+                100,
+                "model".into(),
+                request,
+                key.clone(),
+                signed_member(
+                    &signer,
+                    binding,
+                    &format!("fenced-{index}"),
+                    u8::try_from(index).unwrap() + 90,
+                ),
+            )
+            .unwrap();
+    }
+    fence.store(key.route_fence + 1, std::sync::atomic::Ordering::Release);
+    let observed = worker.poll_and_execute(101).unwrap();
+    assert_eq!(observed.outcomes.len(), 2);
+    assert!(observed.outcomes.iter().all(|item| {
+        matches!(&item.result, Err(BatchWorkerErrorV1::StaleScope))
+    }));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+    assert_eq!(worker.pending(), 0);
+    assert!(worker.poll_and_execute(102).unwrap().outcomes.is_empty());
 }
 
 #[test]
@@ -688,7 +828,10 @@ fn native_batch_dispatches_one_backend_call_with_two_signed_receipts_and_six_met
     assert_eq!(observed.outcomes.len(), 2);
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
     assert_eq!(worker.pending(), 0);
-    assert!(observed.outcomes.iter().all(|item| matches!(&item.result, Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded)));
+    assert!(observed.outcomes.iter().all(|item| matches!(
+        &item.result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    )));
     let events = metrics.0.lock().unwrap();
     assert_eq!(events.len(), 6);
     for phase in [
@@ -701,6 +844,106 @@ fn native_batch_dispatches_one_backend_call_with_two_signed_receipts_and_six_met
             2
         );
     }
+}
+
+#[test]
+fn native_backend_cutover_after_real_batch_denies_all_old_route_results() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[68; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let physical_batches = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let fence = Arc::new(std::sync::atomic::AtomicU64::new(key.route_fence));
+    let scope_frontier = Arc::new(FixtureScopeFrontier {
+        model_digest: Digest32::from_str(&model.model_digest).unwrap(),
+        route_fence: fence.clone(),
+    });
+    let driver = CutoverDuringEffectDriver {
+        inner: NativeTestDriver {
+            invocations: physical_batches.clone(),
+            truncate_outputs: false,
+            reorder_outputs: false,
+        },
+        route_fence: fence.clone(),
+    };
+    let mut worker = runner_with_driver_and_frontier(
+        &signer,
+        dir.path(),
+        model,
+        driver,
+        2,
+        scope_frontier,
+    );
+    for (index, request) in [first, second].into_iter().enumerate() {
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        worker
+            .enqueue(
+                100,
+                "model".into(),
+                request,
+                key.clone(),
+                signed_member(
+                    &signer,
+                    binding,
+                    &format!("post-cutover-{index}"),
+                    u8::try_from(index).unwrap() + 95,
+                ),
+            )
+            .unwrap();
+    }
+    let outcome = worker.poll_and_execute(101).unwrap();
+    assert_eq!(physical_batches.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert_eq!(outcome.outcomes.len(), 2);
+    assert!(outcome.outcomes.iter().all(|item| {
+        matches!(&item.result, Err(BatchWorkerErrorV1::StaleAfterEffect))
+    }));
+    assert_eq!(worker.pending(), 0);
+    assert!(worker.poll_and_execute(102).unwrap().outcomes.is_empty());
+}
+
+#[test]
+fn scalar_backend_cutover_after_model_call_never_publishes_old_route_receipt() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[69; 32]);
+    let (model, request, key) = fixture_request();
+    let fence = Arc::new(std::sync::atomic::AtomicU64::new(key.route_fence));
+    let scope_frontier = Arc::new(FixtureScopeFrontier {
+        model_digest: Digest32::from_str(&model.model_digest).unwrap(),
+        route_fence: fence.clone(),
+    });
+    let driver = CutoverDuringEffectDriver {
+        inner: NativeTestDriver {
+            invocations: Arc::new(std::sync::atomic::AtomicUsize::new(0)),
+            truncate_outputs: false,
+            reorder_outputs: false,
+        },
+        route_fence: fence,
+    };
+    let mut worker = runner_with_driver_and_frontier(
+        &signer,
+        dir.path(),
+        model,
+        driver,
+        1,
+        scope_frontier,
+    );
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            request,
+            key,
+            signed_member(&signer, binding, "scalar-cutover", 107),
+        )
+        .unwrap();
+    let outcome = worker.poll_and_execute(101).unwrap();
+    assert_eq!(outcome.outcomes.len(), 1);
+    assert!(matches!(
+        &outcome.outcomes[0].result,
+        Err(BatchWorkerErrorV1::StaleAfterEffect)
+    ));
+    assert_eq!(worker.pending(), 0);
 }
 
 #[test]
