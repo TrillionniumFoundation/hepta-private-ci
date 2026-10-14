@@ -658,22 +658,45 @@ fn corrupted_runtime_signature_cannot_become_a_signed_cns_readback() {
 
 #[test]
 fn replayed_signed_cns_snapshot_is_not_a_fresh_readback() {
-    let root = private_root();
+    let rejected_root = private_root();
     let port = DiskCns::open(
-        root.path().to_path_buf(),
+        rejected_root.path().to_path_buf(),
         SigningKey::from_bytes(&[9; 32]),
         Arc::new(AtomicBool::new(true)),
     )
     .with_stale_readback();
 
-    // On a new owner, the replayed nonce must fail before writing even the
-    // frozen binding. This is part of the bootstrap anti-resurrection check.
-    let denied = CellSplitCnsCutoverOwnerV1::open(root.path(), plan(), binding(), port);
+    // A replayed nonce must fail before writing the frozen binding. The
+    // original OS sidecar lock is still a durable continuity marker: even an
+    // otherwise valid runtime may NEVER resurrect that rejected namespace.
+    let denied = CellSplitCnsCutoverOwnerV1::open(rejected_root.path(), plan(), binding(), port);
     assert!(matches!(denied, Err(CellSplitCnsCutoverErrorV1::Invalid)));
-    assert!(!root.path().join(FROZEN).exists());
+    assert!(!rejected_root.path().join(FROZEN).exists());
+    assert!(
+        rejected_root
+            .path()
+            .join(crate::durable::SIDECAR_LOCK_FILE)
+            .exists()
+    );
+    let cannot_reseed = CellSplitCnsCutoverOwnerV1::open(
+        rejected_root.path(),
+        plan(),
+        binding(),
+        DiskCns::open(
+            rejected_root.path().to_path_buf(),
+            SigningKey::from_bytes(&[9; 32]),
+            Arc::new(AtomicBool::new(true)),
+        ),
+    );
+    assert!(matches!(
+        cannot_reseed,
+        Err(CellSplitCnsCutoverErrorV1::Invalid)
+    ));
+    assert!(!rejected_root.path().join(FROZEN).exists());
 
-    // An independently admitted predecessor may freeze the plan. Every
-    // subsequent readback still needs a fresh, independently signed nonce.
+    // A truly separate, never-initialized owner may freeze an independently
+    // admitted predecessor. Its readbacks must still be fresh nonce-bound.
+    let root = private_root();
     let admitted = owner(root.path(), Arc::new(AtomicBool::new(true)));
     drop(admitted);
     let stale = DiskCns::open(
