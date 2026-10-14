@@ -1,7 +1,10 @@
 """Offline, model-weight-free contract tests for strict compact Stem trial."""
 import copy
+import json
+import tempfile
 import importlib.util
 import unittest
+from pathlib import Path
 from types import SimpleNamespace
 
 from compact_stem_trial import (
@@ -128,6 +131,52 @@ class ContractTests(unittest.TestCase):
         head, count = make_head(torch, nn, "film", 384, 2, 2048)
         self.assertEqual(count, 1538)
 
+
+    @unittest.skipUnless(importlib.util.find_spec("torch") is not None, "torch unavailable in offline CI")
+    def test_mock_backend_run_emits_no_authority_controls(self):
+        import torch
+        from unittest.mock import patch
+        from compact_stem_trial import run
+
+        class FakeStem:
+            def __init__(self, model_id, revision, **kwargs):
+                self.model_load_ms = 0.0
+
+            def encode(self, row, **kwargs):
+                vec = torch.zeros(384)
+                vec[0] = (int(row["case_id"].split("-")[-1]) + 1) / 16
+                return vec, {"research_only_feature_sha256": "a" * 64}, {
+                    "original_tokens": 8, "truncated": False,
+                    "encoder_forward_ms": 0.01,
+                }
+
+        with tempfile.TemporaryDirectory() as root:
+            task = Path(root) / "cases.jsonl"
+            task.write_text("".join(json.dumps(r) + "\n" for r in cases()))
+            args = SimpleNamespace(model="mmbert-small", revision="a" * 40,
+                                   max_tokens=512, head="film", budget=2048,
+                                   shots=2, steps=2, batch_size=2, threads=1,
+                                   learning_rate=.001, seed=23, scope_id="demo-scope",
+                                   task_id="classify-v1", dataset=task,
+                                   device="cpu", allow_truncation=False,
+                                   output=str(Path(root) / "prediction.jsonl"))
+            with patch("compact_stem_trial.FrozenCompactStem", FakeStem):
+                response = run(args)
+                self.assertFalse(response["production_promotion_permitted"])
+                with self.assertRaises(FileExistsError):
+                    run(args)
+            manifest = json.loads(Path(response["manifest"]).read_text())
+            self.assertEqual(manifest["actual_complete_trainable_head_parameters"], 1538)
+            self.assertEqual(manifest["trainable_shared_projection_parameters"], 0)
+            self.assertEqual(manifest["authority"], "DENY_ALL")
+            self.assertFalse(manifest["production_no_change_supplied"])
+            self.assertFalse(manifest["independent_future_ndu_verified"])
+            outputs = [json.loads(line) for line in Path(response["learned"]).read_text().splitlines()]
+            frozen = [json.loads(line) for line in Path(response["frozen"]).read_text().splitlines()]
+            self.assertEqual(len(outputs), 4)
+            self.assertEqual([row["case_id"] for row in outputs],
+                             [row["case_id"] for row in frozen])
+            self.assertEqual(manifest["truncated_cases"], 0)
 
 if __name__ == "__main__":
     unittest.main()
