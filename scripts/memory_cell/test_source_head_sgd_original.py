@@ -99,6 +99,45 @@ class SourceHeadTrialTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "train-only admitted"):
             train(path, self.root / "invalid-cross-source.json", expected_sha=h(path.read_bytes()))
 
+    def test_trainable_head_cannot_copy_frozen_organizer_on_holdout(self):
+        original = from_file(self.public_file)
+        changed = deepcopy(original)
+        for case in changed["cases"]:
+            excluded = set(case["organized"])
+            noncontrol = [
+                ident for ident in case["candidate_ids"] if ident not in excluded
+            ]
+            self.assertGreaterEqual(len(noncontrol), len(case["organized"]))
+            case["organized"] = noncontrol[: len(case["organized"])]
+        altered_public = self.copy_as(changed)
+        altered_predictions = self.root / "organizer-control-mutant-predictions.json"
+        predict(
+            altered_public,
+            self.policy,
+            altered_predictions,
+            data_sha=h(altered_public.read_bytes()),
+            policy_sha=self.policy_sha,
+        )
+        expected = from_file(self.predictions)["predictions"]
+        actual = from_file(altered_predictions)["predictions"]
+        self.assertEqual(len(actual), 32)
+        for prior, changed_row in zip(expected, actual, strict=True):
+            self.assertEqual((prior["scope"], prior["arm"]),
+                             (changed_row["scope"], changed_row["arm"]))
+            if prior["arm"] == "frozen_organized":
+                self.assertNotEqual(prior["selected"], changed_row["selected"])
+            else:
+                self.assertEqual(prior["selected"], changed_row["selected"])
+        with self.assertRaisesRegex(ValueError, "not bound"):
+            score(
+                self.source,
+                altered_predictions,
+                self.policy,
+                self.root / "organizer-control-mutant-rejected.json",
+                predictions_sha=h(altered_predictions.read_bytes()),
+                policy_sha=self.policy_sha,
+            )
+
     def test_injected_eval_targets_rejected_before_reader_choice(self):
         p = from_file(self.public_file)
         p["cases"][0]["target"] = "site_secret"
