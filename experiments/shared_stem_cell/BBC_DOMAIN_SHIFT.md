@@ -42,6 +42,11 @@ change the production model, or silently rework the old research experiment.
   unsupported coverage and actual Encoder/Head work receipts; **never**
   republish copyrighted BBC article text or model weights in Actions artifacts.
 
+The label callback also re-reads each selected publisher record's **full
+source article** and verifies its previously frozen SHA-256 before accessing
+`label_text`. A changed article, missing category, or mismatched index fails
+the entire research run; no category can be associated with changed evidence.
+
 ## Fifth precommitted virtual Head route, not post-hoc BBC selection
 
 The original frozen panel executes **four physical arms**: bank, shared,

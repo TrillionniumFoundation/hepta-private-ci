@@ -49,6 +49,21 @@ class ShiftTests(unittest.TestCase):
         with self.assertRaises(b.SourceError):
             b.public_text_column(Wrong())
 
+    def test_source_replacement_after_prediction_cannot_supply_a_category(self):
+        original = "Original BBC publisher article content for frozen source"
+        frozen_digest = b.digest(original.encode())
+        self.assertEqual(b.verified_source_label(
+            {"text": original, "label_text": "business"}, frozen_digest),
+            "business")
+        for record, expected in (
+            ({"text": original + " tampered", "label_text": "business"}, frozen_digest),
+            ({"text": original}, frozen_digest),
+            ({"text": original, "label_text": True}, frozen_digest),
+            ({"text": original, "label_text": "business"}, "0" * 64),
+        ):
+            with self.subTest(record=record), self.assertRaises(b.SourceError):
+                b.verified_source_label(record, expected)
+
     def test_unknown_label_never_mapped_to_one_of_four_ag_classes(self):
         rows = b.public_cohort(b.sample(self.texts()))
         labels = ["business", "sport", "politics", "tech", "entertainment"] * 25 + ["business"] * 3

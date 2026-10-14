@@ -49,6 +49,25 @@ def normalized(text):
     return " ".join(text.casefold().split())
 
 
+def verified_source_label(record, original_text_sha256):
+    """Recheck the publisher row's *text* before exposing its category.
+
+    The label is not accessed if the post-prediction source row changed.
+    A valid SHA does not independently certify publisher truth or novelty.
+    """
+    require(type(original_text_sha256) is str and
+            len(original_text_sha256) == 64 and
+            all(c in "0123456789abcdef" for c in original_text_sha256),
+            "invalid frozen full-text digest")
+    require(type(record) is dict and type(record.get("text")) is str and
+            digest(record["text"].encode()) == original_text_sha256,
+            "publisher row changed after frozen predictions")
+    value = record.get("label_text")
+    require(type(value) is str and 1 <= len(value.encode()) <= 80,
+            "invalid publisher category record")
+    return value
+
+
 def public_text_column(dataset):
     """Materialize only the bounded publisher TEXT column, never labels.
 
@@ -395,9 +414,18 @@ def run(study: Path, consolidation: Path, producer_sha: str,
             "predictions": compose_frozen_hybrid(
                 safe, predicted["predictions"]), "work": census,
             "production_accepted": False})
+        # Recheck the exact full publisher article at every answer access;
+        # source contents cannot silently change between feature extraction
+        # and the first sealed-label evaluation.
+        original_texts = {row["source_index"]: row["full_source_sha256"]
+                          for row in safe}
+        def label_after_seal(index):
+            require(type(index) is int and index in original_texts,
+                    "unregistered publisher label access")
+            return verified_source_label(ds[index], original_texts[index])
         assessment = evaluate_published(
             output / "predictions.json", seal, output / "cohort.json", cohort_sha,
-            safe, lambda i: ds[i]["label_text"])
+            safe, label_after_seal)
         report = {**assessment, "cohort_sha256": cohort_sha,
                   "predictions_sha256": seal,
                   "source_original_document_text_stored": False,
