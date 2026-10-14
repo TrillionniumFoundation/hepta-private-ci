@@ -578,20 +578,16 @@ impl MetricsGroupCommitV1 {
                     .ok_or(MetricsJournalErrorV1::Corrupt)?;
                 for encoded in payload.split(';') {
                     let mut columns = encoded.split(':');
-                    let matching = columns.next() == Some(scope.as_str())
-                        && columns.next() == Some(operation.as_str())
-                        && columns.next() == Some(phase.as_str());
-                    if !matching {
-                        continue;
-                    }
-                    // Restart a fresh iterator: the short-circuit above
-                    // must not cause a skipped or shifted succeeded field.
-                    let mut columns = encoded.split(':');
-                    let _ = columns.next();
-                    let _ = columns.next();
-                    let _ = columns.next();
-                    let _ = columns.next();
-                    if columns.next() != Some(success.as_str()) {
+                    let original_scope = columns.next();
+                    let original_operation = columns.next();
+                    let original_phase = columns.next();
+                    let _original_latency = columns.next();
+                    let original_success = columns.next();
+                    if original_scope != Some(scope.as_str())
+                        || original_operation != Some(operation.as_str())
+                        || original_phase != Some(phase.as_str())
+                        || original_success != Some(success.as_str())
+                    {
                         continue;
                     }
                     matching_rows = matching_rows
