@@ -74,6 +74,8 @@ def study(manifest_path, producer, report_sha256, output, *, partial=False, resi
         "source_sha256": {name: e.sha((Path(__file__).parent / name).read_bytes())
                           for name in ("consolidation.py", "consolidation_study.py", "execution.py")},
         "independent_evaluation": False, "production_accepted": False}
+    origin["group_retention_guard_source_sha256"] = e.sha((Path(__file__).parent /
+        "consolidation_group_guard.py").read_bytes())
     if partial:
         origin["partial_policy_source_sha256"] = e.sha((Path(__file__).parent / "partial_consolidation.py").read_bytes())
     if residual:
@@ -195,6 +197,9 @@ def study(manifest_path, producer, report_sha256, output, *, partial=False, resi
             expected_arms |= {*(f"ridge_{k}" for k in rc.MODES), "ridge_selected"}
         if set(saved["predictions"]) != expected_arms or saved["case_ids"] != payload["case_ids"]:
             raise e.InputError("complete consolidation predictions required")
+        from experiments.shared_stem_cell import consolidation_group_guard
+        group_audit = consolidation_group_guard.evaluate(saved["predictions"],
+            [cases[i] for i in test], [all_labels[cases[i].case_id] for i in test])
         scores = {}
         for split in ("holdout", "retention"):
             ids = [j for j, i in enumerate(test) if cases[i].split == split]
@@ -212,8 +217,12 @@ def study(manifest_path, producer, report_sha256, output, *, partial=False, resi
             reloaded = load_head(producer / "heads/gated" / item["relative_path"], item["manifest_sha256"], item["binding"])
             if e.parameters(model) != e.parameters(reloaded):
                 raise e.InputError("original teacher file changed")
+        from experiments.shared_stem_cell.process_peak import linux_lifetime_peak_rss_bytes
         result = {"schema": "hepta.consolidation-executed.v1", "selection_sha256": seal,
-            "predictions_sha256": prediction_sha, "scores": scores, "selected": selection["selected"],
+            "process_lifetime_peak_rss_bytes": linux_lifetime_peak_rss_bytes(),
+            "peak_is_isolated_per_consolidation_arm": False,
+            "predictions_sha256": prediction_sha, "scores": scores, "source_family_retention": group_audit,
+            "selected": selection["selected"],
             "parameter_counts": selection["parameter_counts"], "producer_report_sha256": report_sha256,
             "features_and_teacher_reopen": reopening, "candidate_export_and_reopen": export_cost,
             "source_simulated_encoder": archive["simulated_encoder"], "encoder_calls": 0,

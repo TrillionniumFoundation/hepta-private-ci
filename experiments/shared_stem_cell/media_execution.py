@@ -361,7 +361,9 @@ def run(manifest_path, output, *, _tower_factory=LocalTowers):
                 [cases[test[j]].group for j in positions], classes=config["classes"], control="as_observed")
         source_mapping = {arm: [None if j is None else cases[test[j]].case_id for j in detail["rows"]]
                           for arm, detail in interventions["source_rows"].items()}
-        report = {"fusion_profile": profile, "calibration_selection_sha256": selection_seal, "prediction_sha256": seal, "scores": scores, "same_init_learning": learning, "connector_costs": result["costs"],
+        from experiments.shared_stem_cell.process_peak import linux_lifetime_peak_rss_bytes
+        report = {"process_lifetime_peak_rss_bytes": linux_lifetime_peak_rss_bytes(),
+            "peak_is_isolated_per_modality_arm": False, "fusion_profile": profile, "calibration_selection_sha256": selection_seal, "prediction_sha256": seal, "scores": scores, "same_init_learning": learning, "connector_costs": result["costs"],
             "modality_intervention_scores": probe_scores, "intervention_source_case_ids": source_mapping,
             "intervention_costs": interventions["costs"], "intervention_scope": interventions["intervention_scope"],
             "model_identities": towers.identities,

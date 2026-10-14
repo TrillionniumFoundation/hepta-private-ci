@@ -189,3 +189,24 @@ the declared optimization problem, not semantic correctness or production safety
 Numerical references: PyTorch `torch.linalg.svd` (reduced SVD) and scikit-learn
 `Ridge` (SVD ridge solver). Runtime remains the existing pinned Torch; no new model,
 network acquisition, training service, serving owner or execution authority.
+
+
+## Post-seal, actual source-group retention guard (P2 research extension)
+
+\`consolidation_study.py\` now invokes \`consolidation_group_guard.evaluate\`
+ONLY after \`predictions.json\` is created and hash-reopened. It uses the
+original producer dataset's heldout/retention labels to recompute the unchanged
+teacher bank versus *every* consolidated, residual, partial and ridge arm at
+the individual source-group and observed Cell level. All rows remain in the
+denominator, including losing candidates; unknown arms, invalid normalized
+probabilities, cross-scope/source leakage and missing predictions reject.
+
+The returned \`source_family_retention\` report distinguishes group-level
+regressions in holdout and retention. Its \`empirical_no_source_group_regression\`
+can be false even when aggregate test accuracy rises. This report is an
+auditable **diagnostic**, not a statistical confidence interval, causal
+credit estimator, future observation, independent label signature or an
+alternative model selector. Training/selection inputs are unchanged; no
+scoring labels reach any train/selection path.
+
+Test: \`python -m unittest -v experiments.shared_stem_cell.test_consolidation_group_guard\`.

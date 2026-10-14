@@ -759,7 +759,10 @@ def run(manifest_path: Path, output: Path):
         from experiments.shared_stem_cell.control_evaluation import evaluate_controls
         control_scores = evaluate_controls(output / "controls.json", controls_seal,
                                            labels, cases, classes=config["classes"])
+        from experiments.shared_stem_cell.process_peak import linux_lifetime_peak_rss_bytes
         report = {"schema": "hepta.shared-stem-executed.v1", "mode": "local_pretrained",
+            "process_lifetime_peak_rss_bytes": linux_lifetime_peak_rss_bytes(),
+            "peak_is_isolated_per_head_arm": False,
             "control_scores": control_scores,
             "manifest_sha256": sha(manifest_raw), "predictions_sha256": seal,
             "source_sha256": sha(Path(__file__).read_bytes()), "encoding": encoding,
