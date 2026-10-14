@@ -147,7 +147,7 @@ def threeway_prequential_audit(
         required = {
             'row_id', 'future_window', 'frozen_head_digest',
             'learned_head_digest_before', 'input_digest',
-            'prediction_digests', 'predicted_at', 'label_available_at',
+            'prediction_digests', 'predicted_at',
         }
         if not isinstance(event, dict) or set(event) != required:
             raise ValueError('unknown/missing or label-bearing precommit fields')
@@ -170,9 +170,8 @@ def threeway_prequential_audit(
             if not isinstance(event.get('prediction_digests'), dict) or event['prediction_digests'].get(role) != pred_digest:
                 raise ValueError('prediction changed after pre-label seal')
         predicted = _datetime(event.get('predicted_at'))
-        revealed = _datetime(event.get('label_available_at'))
-        if predicted >= revealed or predicted < _datetime(row['event_time']):
-            raise ValueError('prediction was not chronologically pre-label')
+        if predicted < _datetime(row['event_time']):
+            raise ValueError('prediction timestamp precedes the event')
         if previous_update_time is not None and predicted < previous_update_time:
             raise ValueError('next prediction preceded previous Head update')
         # A separate post-label journal cannot be smuggled into the
@@ -191,8 +190,11 @@ def threeway_prequential_audit(
         if update['label_digest'] != canonical_digest({
                 'row_id': row['row_id'], 'label': row['label']}):
             raise ValueError('post-label update label identity mismatch')
-        if update['label_available_at'] != event['label_available_at']:
-            raise ValueError('post-label availability time drift')
+        # Actual label availability is observed only AFTER prediction
+        # sealing, never inserted into a pre-label record retrospectively.
+        revealed = _datetime(update['label_available_at'])
+        if predicted >= revealed:
+            raise ValueError('prediction was not chronologically pre-label')
         update_time = _datetime(update['updated_at'])
         if update_time <= revealed:
             raise ValueError('Head update occurred before label availability')

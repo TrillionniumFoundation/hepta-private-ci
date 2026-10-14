@@ -75,7 +75,6 @@ def b_fixture():
                 }) for role in ROLES
             },
             'predicted_at': row['event_time'],
-            'label_available_at': row['event_time'].replace('00:00:00', '01:00:00'),
         })
         event = records[-1]
         before = snapshots['learned_head']['head_digests_by_row'][i]
@@ -88,7 +87,7 @@ def b_fixture():
             'label_digest': canonical_digest({
                 'row_id': row['row_id'], 'label': row['label'],
             }),
-            'label_available_at': event['label_available_at'],
+            'label_available_at': row['event_time'].replace('00:00:00', '01:00:00'),
             'updated_at': row['event_time'].replace('00:00:00', '02:00:00'),
             'update_kind': 'updated' if before != after else 'no_update',
         })
@@ -402,3 +401,21 @@ def test_c_malformed_queue_metric_is_blocked_not_crash():
     report = multimodal_cost_audit(m)
     assert report['status'] == 'BLOCKED'
     assert any('queue_peak_depth' in issue for issue in report['issues'])
+
+
+def test_b_future_label_availability_cannot_be_embedded_into_prelabel_seal():
+    rows, evidence = b_fixture()
+    evidence['prelabel_journal']['records'][0]['label_available_at'] = (
+        rows[8]['event_time'].replace('00:00:00', '01:00:00'))
+    with pytest.raises(ValueError, match='precommit fields'):
+        threeway_prequential_audit(
+            rows, D('d'), evidence, bootstrap=100, min_future_groups=2)
+
+
+def test_b_delayed_actual_label_arrival_blocks_premature_update():
+    rows, evidence = b_fixture()
+    evidence['postlabel_updates'][0]['label_available_at'] = (
+        rows[8]['event_time'].replace('00:00:00', '03:00:00'))
+    with pytest.raises(ValueError, match='before label availability'):
+        threeway_prequential_audit(
+            rows, D('d'), evidence, bootstrap=100, min_future_groups=2)

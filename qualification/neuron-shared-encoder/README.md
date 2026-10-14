@@ -391,3 +391,16 @@ This demonstrates label partitioning for the *research* optimizer
 rather than merely reporting matching parameter counts; it does NOT
 authenticate data collection, permissions, independent pre-label
 production, or causal NDU outcomes.
+
+
+### B pre-label seal correction: observation time is not future truth
+
+The immutable `prelabel_journal` no longer accepts the future
+`label_available_at` timestamp. Actual label availability is a
+separate **post-label observation** and is compared with the already
+sealed prediction timestamp. The post-label update must occur strictly
+after the observed label availability. This avoids manufacturing
+knowledge of when a not-yet-observed outcome arrives in a purported
+pre-label artifact. All timestamps are still self-reported here;
+an independent append-only producer and signed witness are required
+before a real selection.
