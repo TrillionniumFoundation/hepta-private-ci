@@ -533,7 +533,12 @@ impl NduPublicationOwnerV1 {
     /// Any failure or crash after Begin permanently quarantines this owner
     /// until an independently witnessed reconciliation; neither route nor
     /// model effects may be automatically retried on restart.
-    pub fn publish_cutover_with_external_effect<T, E: std::fmt::Display>(
+    /// Research-only Control WAL exercised with explicit test fixtures. Do
+    /// not expose a public closure that can self-assert unsigned CNS success:
+    /// real activation requires a separately reviewed original-owner signed
+    /// receipt verifier and an atomic Final-use/Control integration.
+    #[cfg(test)]
+    pub(crate) fn publish_cutover_with_external_effect<T, E: std::fmt::Display>(
         &self,
         expected: &NduSnapshotRefV1,
         expected_checkpoint: Digest32,
