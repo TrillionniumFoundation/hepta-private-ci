@@ -1,8 +1,8 @@
 """Public-data learning diagnostic on one frozen Encoder and existing CellBank.
 
-Three topology controls share exact input features and final parameter counts.
-Equal update schedules are NOT equal measured computation. No nine-arm relabel,
-split/NDU activation, native serving, independent efficacy or promotion claim.
+Fixed topologies or an explicit direct/family-split comparison share features.
+Fixed updates and pooled formula budgets are distinct protocols. No nine-arm
+relabel, NDU/native activation, independent efficacy or promotion claim.
 """
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ TOPOLOGIES = (('dense16', 16, 16), ('sparse16', 16, 2), ('direct32', 32, 2))
 
 
 def freeze_study(*, seed=7347, train_steps=32, batch_size=16, width_units=32,
-                 training_flops_budget=None, max_budget_steps=4096):
+                 training_flops_budget=None, max_budget_steps=4096, family_split=False):
     for name, value, limit in (('seed', seed, 2**31-1), ('steps', train_steps, 128),
                                ('batch', batch_size, 64), ('width', width_units, 128)):
         if type(value) is not int or not 1 <= value <= limit:
@@ -47,7 +47,21 @@ def freeze_study(*, seed=7347, train_steps=32, batch_size=16, width_units=32,
         body.update(schema='hepta.public-shared-learning-config.v2',
             schedule='formula_budget_whole_updates_v1', training_flops_budget=training_flops_budget,
             max_budget_steps=max_budget_steps)
+    if type(family_split) is not bool:
+        raise ValueError('explicit family experiment flag required')
+    if family_split:
+        if training_flops_budget is None or width_units % 2 or max_budget_steps < 2:
+            raise ValueError('family experiment requires budget, even width and two-stage room')
+        from public_family_budget import policy
+        body.update(schema='hepta.public-shared-learning-config.v3', family_policy=policy())
     return {**body, 'study_id': _digest(body)}
+
+
+def study_topologies(study):
+    if 'family_policy' in study:
+        from public_family_budget import TOPOLOGIES as families
+        return families
+    return TOPOLOGIES
 
 
 def _tensor_digest(tensor):
@@ -64,11 +78,12 @@ def fit_controls(encode, train, targets, evaluation, root, *, dimension, study):
     import torch
     from safetensors.torch import save_file
     fields = ('seed', 'train_steps', 'batch_size', 'width_units')
-    if study.get('schema') == 'hepta.public-shared-learning-config.v2':
+    if study.get('schema') in ('hepta.public-shared-learning-config.v2','hepta.public-shared-learning-config.v3'):
         fields += ('training_flops_budget', 'max_budget_steps')
-    expected = freeze_study(**{k: study[k] for k in fields})
+    expected = freeze_study(**{k: study[k] for k in fields}, family_split='family_policy' in study)
     if _digest(study) != _digest(expected):
         raise ValueError('study policy changed')
+    topologies = study_topologies(study)
     validate_disjoint(train, evaluation)
     if (type(dimension) is not int or not 1 <= dimension <= 8192
             or not 4 <= len(train) <= 128 or not 4 <= len(evaluation) <= 128
@@ -99,13 +114,13 @@ def fit_controls(encode, train, targets, evaluation, root, *, dimension, study):
         shared_work = common.report()
     except Exception as exc:
         write_json_exclusive(root / 'FAILED.json', dict(error_type=type(exc).__name__,
-            stage='shared_encoding', expected_arms=[t[0] for t in TOPOLOGIES], work=common.report()))
+            stage='shared_encoding', expected_arms=[t[0] for t in topologies], work=common.report()))
         raise
     x, heldout = arrays
     feature_id = [_tensor_digest(x), _tensor_digest(heldout)]
     y = torch.tensor(targets, dtype=torch.long)
     records, predictions = [], []
-    for name, count, active in TOPOLOGIES:
+    for name, count, active in topologies:
         # These geometry profiles do not borrow 421M experiment IDs. The same
         # existing CellBank constructor supplies exact Head+gate matching.
         profile = dict(logical_cells=count, initial_logical_cells=count, split=False, ndu=False,
@@ -115,6 +130,8 @@ def fit_controls(encode, train, targets, evaluation, root, *, dimension, study):
         caps = dict(study['phase_caps'])
         if 'training_flops_budget' in study:
             caps['train'] = study['training_flops_budget']
+            if 'family_policy' in study:
+                caps['migration'] = study['training_flops_budget']
         meter = WorkLedger(study['measurement_policy'], caps)
         bank = None
         record = dict(topology=name, cells=count, active_cells=active, status='failed',
@@ -125,12 +142,20 @@ def fit_controls(encode, train, targets, evaluation, root, *, dimension, study):
                 raise ValueError('prior arm invalidated shared frozen features')
             with meter.scope('train', 'initialization'), torch.random.fork_rng(devices=[]):
                 torch.random.default_generator.manual_seed(study['seed'])
-                bank = CellBank(dimension, 4, profile, study['width_units'])
+                if 'family_policy' in study:
+                    from public_family_budget import make_bank
+                    bank = make_bank(dimension, profile, study, name)
+                else:
+                    bank = CellBank(dimension, 4, profile, study['width_units'])
                 bank.eval()
                 record['initial_sha256'] = state_digest(bank)
             with meter.scope('evaluation', 'bank'), torch.inference_mode():
                 before = bank(heldout).tolist()
-            if 'training_flops_budget' in study:
+            if 'family_policy' in study:
+                from public_family_budget import train_family
+                bank, record['training'] = train_family(bank,x,y,study,meter=meter,topology=name)
+                record['trained_sha256'] = state_digest(bank)
+            elif 'training_flops_budget' in study:
                 from budgeted_learning import train_to_budget
                 record['training'] = train_to_budget(bank, x, y, study, study['seed'], meter=meter)
                 record['trained_sha256'] = state_digest(bank)
@@ -151,6 +176,10 @@ def fit_controls(encode, train, targets, evaluation, root, *, dimension, study):
             record['status'] = 'completed'
         except Exception as exc:
             record['error_type'] = type(exc).__name__
+            if 'family_policy' in study:
+                from public_family_budget import FamilyBudgetRejected
+                if isinstance(exc, FamilyBudgetRejected):
+                    record['family_disposition'] = exc.report
             # Partial weights are diagnostic only and are never selected for scoring.
         finally:
             record['work'] = meter.report()
@@ -174,7 +203,7 @@ def fit_controls(encode, train, targets, evaluation, root, *, dimension, study):
 
 
 def score_sealed(root, labels, *, expected_seal_id):
-    """Describe all three preregistered arms; no model work or winner selection."""
+    """Describe every configured arm; no model work or winner selection."""
     root = Path(root)
     if (root/'FAILED.json').exists():
         raise ValueError('shared execution did not complete')
@@ -187,7 +216,15 @@ def score_sealed(root, labels, *, expected_seal_id):
     if (not isinstance(labels, list) or len(labels)!=len(run['heldout_inputs']) or
             any(type(t) is not int or not 0<=t<4 for t in labels)):
         raise ValueError('complete four-class score denominator required')
-    expected_names = [t[0] for t in TOPOLOGIES]
+    study = strict_json(root/'STUDY.json')
+    if _digest({k:v for k,v in study.items() if k!='study_id'}) != study['study_id'] or study['study_id'] != run['study_id']:
+        raise ValueError('sealed study identity mismatch')
+    fields = ('seed','train_steps','batch_size','width_units')
+    if 'training_flops_budget' in study:
+        fields += ('training_flops_budget','max_budget_steps')
+    if study != freeze_study(**{k:study[k] for k in fields},family_split='family_policy' in study):
+        raise ValueError('unregistered study semantics')
+    expected_names = [t[0] for t in study_topologies(study)]
     if [a['topology'] for a in run['arms']] != expected_names or [a['topology'] for a in run['predictions']] != expected_names:
         raise ValueError('a planned arm was dropped or reordered')
     results = []
@@ -215,11 +252,14 @@ def score_sealed(root, labels, *, expected_seal_id):
     completed = [a for a in run['arms'] if a['status']=='completed']
     params = [a['inventory']['parameters'] for a in completed]
     train_cost = [a['work']['phase_flops']['train'] for a in completed]
-    matched = len(completed)==3 and all(v is not None for v in train_cost) and max(train_cost)-min(train_cost)<=.01*max(train_cost)
+    if 'family_policy' in study:
+        train_cost = [None if any(a['work']['phase_flops'][p] is None for p in ('train','migration'))
+                      else sum(a['work']['phase_flops'][p] for p in ('train','migration')) for a in completed]
+    matched = len(completed)==len(expected_names) and all(v is not None for v in train_cost) and max(train_cost)-min(train_cost)<=.01*max(train_cost)
     result = dict(schema='hepta.public-learning-scores.v1', seal_id=expected_seal_id,
         labels_sha256=_digest(labels), arms=results,
-        all_arms_completed=len(completed)==3,
-        parameter_matched=len(params)==3 and len(set(params))==1,
+        all_arms_completed=len(completed)==len(expected_names),
+        parameter_matched=len(params)==len(expected_names) and len(set(params))==1,
         observed_training_work_matched_within_one_percent=matched,
         fixed_update_schedule_not_compute_matching=True,
         shared_encoding_cost_paid_once_in_campaign=True,
@@ -234,7 +274,14 @@ def score_sealed(root, labels, *, expected_seal_id):
     study = strict_json(root/'STUDY.json')
     if _digest({k:v for k,v in study.items() if k!='study_id'}) != study['study_id'] or study['study_id'] != run['study_id']:
         raise ValueError('sealed study identity mismatch')
-    if 'training_flops_budget' in study:
+    if 'family_policy' in study:
+        from public_family_budget import validate_results
+        result.update(schema='hepta.public-learning-scores.v3',
+            fixed_update_schedule_not_compute_matching=False,
+            training_budget_results=validate_results(study,run['arms']),
+            matching_scope='train_plus_migration_formula_work',
+            shared_encoder_work=run['shared_encoder_work']['phase_flops'])
+    elif 'training_flops_budget' in study:
         result['schema'] = 'hepta.public-learning-scores.v2'
         result['fixed_update_schedule_not_compute_matching'] = False
         result['training_budget_results'] = validate_budget_results(study, run['arms'])
@@ -242,7 +289,7 @@ def score_sealed(root, labels, *, expected_seal_id):
     return result
 
 
-def run_public_learning(snapshot, news, output, *, training_flops_budget=None, max_budget_steps=4096):
+def run_public_learning(snapshot, news, output, *, training_flops_budget=None, max_budget_steps=4096, family_split=False):
     """Explicit real local-HF path; no randomly initialized fallback."""
     root = Path(output); root.mkdir(exist_ok=False)
     try:
@@ -255,7 +302,7 @@ def run_public_learning(snapshot, news, output, *, training_flops_budget=None, m
         sources={p.name:file_sha256(p) for p in Path(__file__).parent.glob('*.py')}
         write_json_exclusive(root/'source_files.json', sources)
         train, targets, heldout, final_labels, material = prepare_news(news)
-        study = freeze_study(training_flops_budget=training_flops_budget, max_budget_steps=max_budget_steps)
+        study = freeze_study(training_flops_budget=training_flops_budget, max_budget_steps=max_budget_steps, family_split=family_split)
         write_json_exclusive(root/'selection.json', material)
         write_json_exclusive(root/'STUDY.json', study)
         torch.set_num_threads(1)
@@ -302,13 +349,14 @@ def main():
     parser.add_argument('--output', required=True)
     parser.add_argument('--training-flops-budget', type=int)
     parser.add_argument('--max-budget-steps', type=int, default=4096)
+    parser.add_argument('--family-split', action='store_true', help='separate two-arm budgeted family experiment')
     args=parser.parse_args()
     if Path(args.output).exists():
         raise FileExistsError('study output already exists')
     if args.acquire_news:
         acquire_news(args.news_dir)
     report=run_public_learning(args.snapshot,args.news_dir,args.output,
-        training_flops_budget=args.training_flops_budget, max_budget_steps=args.max_budget_steps)
+        training_flops_budget=args.training_flops_budget, max_budget_steps=args.max_budget_steps, family_split=args.family_split)
     print(json.dumps({'parameter_matched':report['parameter_matched'],
         'learning_superiority_established':False,'production_authorized':False}))
     return 0 if report['all_arms_completed'] else 2
