@@ -149,7 +149,7 @@ jobs:
           if-no-files-found: warn
 
   host-disposition:
-    if: always() && needs.source-gate.result == 'success'
+    if: always() && github.event_name == 'push' && needs.source-gate.result == 'success'
     needs: [source-gate, generate]
     runs-on: ubuntu-24.04
     timeout-minutes: 20
@@ -161,10 +161,15 @@ jobs:
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
         with:
           python-version: "3.12"
-      - name: Retrieve every existing original shard, even from failed jobs
+      - name: Retrieve only original Smol shards, including failed jobs
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          pattern: memory-reader-bottleneck-*
+          pattern: memory-reader-bottleneck-smol-1.7b-[0-7]
+          path: /tmp/reader-downloaded
+      - name: Retrieve only original Qwen shards, including failed jobs
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-reader-bottleneck-qwen-3b-[0-7]
           path: /tmp/reader-downloaded
       - name: Separate BF16 host rejection from completed original inference
         run: |
@@ -195,7 +200,11 @@ jobs:
           python-version: "3.12"
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
         with:
-          pattern: memory-reader-bottleneck-*
+          pattern: memory-reader-bottleneck-smol-1.7b-[0-7]
+          path: /tmp/reader-downloaded
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          pattern: memory-reader-bottleneck-qwen-3b-[0-7]
           path: /tmp/reader-downloaded
       - name: Reopen immutable original source and complete original answers
         env:
