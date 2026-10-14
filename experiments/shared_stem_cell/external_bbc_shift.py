@@ -141,13 +141,14 @@ def score_sealed(predictions, labels, rows, *, source_revision=REVISION):
 
 
 def run(study: Path, consolidation: Path, producer_sha: str,
-        consolidation_sha: str, previous: Path, output: Path):
+        consolidation_sha: str, previous: Path, previous_sha: str, output: Path):
     import torch
     from datasets import load_dataset
     from huggingface_hub import HfApi
     from experiments.shared_stem_cell import execution as e
     from experiments.shared_stem_cell import fresh_confirmation as f
     from experiments.shared_stem_cell import residual_consolidation as rc
+    from experiments.shared_stem_cell import sequential_confirmation as sq
     from experiments.shared_stem_cell.sequential_work_audit import (
         SCHEMA as WORK_SCHEMA, validate_batch as validate_work,
     )
@@ -157,10 +158,7 @@ def run(study: Path, consolidation: Path, producer_sha: str,
                 "BBC public source immutable revision changed")
         panel, config, old, original_lock = f.load_panel(
             study, consolidation, producer_sha, consolidation_sha)
-        prior = e.decode((previous / "cohort.json").read_bytes())
-        require(type(prior) is list and len(prior) == 1024 and
-                all(type(r) is dict and isinstance(r.get("text"), str) for r in prior),
-                "original fixed confirmation cohort required")
+        prior = sq.prior_rows(previous, previous_sha, original_lock)
         excluded = [row.text for row in old] + [row["text"] for row in prior]
         e.write_once(output / "plan.json", {"schema": SCHEMA, "source": SOURCE,
             "revision": REVISION, "sample_count": COUNT,
@@ -168,6 +166,7 @@ def run(study: Path, consolidation: Path, producer_sha: str,
             "exclusion_hash": digest(canonical([
                 digest(normalized(v).encode()) for v in excluded])),
             "model": config["model"],
+            "previous_report_sha256": previous_sha,
             "candidate_lock_sha256": e.sha(e.canonical(original_lock)),
             "source_labels_read_before_prediction": False,
             "mapping_is_proxy": True, "new_training_steps": 0,
@@ -233,10 +232,11 @@ def main():
     parser.add_argument("--producer-sha256", required=True)
     parser.add_argument("--consolidation-sha256", required=True)
     parser.add_argument("--previous", type=Path, required=True)
+    parser.add_argument("--previous-sha256", required=True)
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     run(args.study, args.consolidation, args.producer_sha256,
-        args.consolidation_sha256, args.previous, args.output)
+        args.consolidation_sha256, args.previous, args.previous_sha256, args.output)
 
 
 if __name__ == "__main__":

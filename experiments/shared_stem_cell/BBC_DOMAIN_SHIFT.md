@@ -59,6 +59,7 @@ python -m experiments.shared_stem_cell.external_bbc_shift \
   --producer-sha256 "$PRODUCER_SHA" \
   --consolidation-sha256 "$CONSOLIDATION_SHA" \
   --previous /path/hepta-fresh-confirmation \
+  --previous-sha256 "$PREVIOUS_REPORT_SHA" \
   --output /new/path/hepta-bbc-domain-shift
 \`\`\`
 
