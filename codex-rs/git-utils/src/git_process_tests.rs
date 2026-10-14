@@ -12,6 +12,33 @@ enum GitWrapperLifetime {
     ExitBeforeTimeout,
 }
 
+#[cfg(windows)]
+#[test]
+fn windows_git_child_lifetime_fixture() {
+    // This is a real descendant of the Git wrapper, not a mock process.
+    // In the ordinary test run it exits immediately; the wrapper launches
+    // this *same test binary* with a private fixture marker.
+    if std::env::var_os("CODEX_GIT_PROCESS_TEST_CHILD").is_none() {
+        return;
+    }
+    let ready =
+        std::path::PathBuf::from(std::env::var_os("CHILD_READY_FILE").expect("child ready path"));
+    let release = std::path::PathBuf::from(
+        std::env::var_os("RELEASE_CHILD_FILE").expect("child release path"),
+    );
+    let survived = std::path::PathBuf::from(
+        std::env::var_os("CHILD_SURVIVED_FILE").expect("child survived path"),
+    );
+    std::fs::write(ready, "ready").expect("mark child ready");
+    while !release.exists() {
+        std::thread::sleep(Duration::from_millis(25));
+    }
+    std::thread::sleep(Duration::from_secs(1));
+    std::fs::write(survived, "survived").expect("mark child survived");
+    // A leaked descendant remains observable after the parent's timeout.
+    std::thread::sleep(Duration::from_secs(60));
+}
+
 async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     wrapper_lifetime: GitWrapperLifetime,
 ) {
@@ -38,37 +65,39 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     #[cfg(windows)]
     let mut command = {
         let mut command = Command::new("powershell.exe");
-        // Materialize the real child script rather than feeding a nested
-        // PowerShell -EncodedCommand to the Bazel no-console test host.
-        // The child must actually start and publish its readiness marker;
-        // the later JobObject/process-group test still proves descendant
-        // cleanup instead of accepting a missing child.
-        let child_script = temp_dir.path().join("git-child.ps1");
-        std::fs::write(
-            &child_script,
-            r#"Set-Content -LiteralPath $env:CHILD_READY_FILE -Value ready
-while (-not (Test-Path -LiteralPath $env:RELEASE_CHILD_FILE)) {
-    Start-Sleep -Milliseconds 25
-}
-Start-Sleep -Seconds 1
-Set-Content -LiteralPath $env:CHILD_SURVIVED_FILE -Value survived
-Start-Sleep -Seconds 60
-"#,
-        )
-        .expect("write actual PowerShell descendant fixture");
+        // Avoid a second PowerShell bootstrap. On headless Windows Bazel
+        // workers it can fail before writing CHILD_READY_FILE, producing
+        // an apparent 30-second process-tree-cleanup failure. Launch the
+        // current test executable as the *real* child instead. The same
+        // JobObject containment and descendant-kill assertions still apply.
+        //
+        // Pass the executable path through an environment variable, not
+        // inline PowerShell quoting, so spaces and apostrophes remain safe.
         let lifecycle = match wrapper_lifetime {
-            GitWrapperLifetime::WaitForChild => "Wait-Process -Id $child.Id",
+            GitWrapperLifetime::WaitForChild => "$child.WaitForExit()",
             GitWrapperLifetime::ExitBeforeTimeout => {
                 "while (-not (Test-Path $env:RELEASE_WRAPPER_FILE)) { Start-Sleep -Milliseconds 25 }"
             }
         };
         let wrapper_command = format!(
-            "$ErrorActionPreference = 'Stop'; $start = [System.Diagnostics.ProcessStartInfo]::new(); $start.FileName = 'powershell.exe'; $start.Arguments = '-NoProfile -NonInteractive -File \"' + $env:CHILD_SCRIPT_FILE + '\"'; $start.UseShellExecute = $false; $start.CreateNoWindow = $true; $child = [System.Diagnostics.Process]::new(); $child.StartInfo = $start; if (-not $child.Start()) {{ throw 'Git child did not start' }}; [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); {lifecycle}"
+            "$start = [System.Diagnostics.ProcessStartInfo]::new(); \
+             $start.FileName = $env:CODEX_GIT_PROCESS_CHILD_EXE; \
+             $start.Arguments = '--exact git_process::tests::windows_git_child_lifetime_fixture --nocapture'; \
+             $start.UseShellExecute = $false; $start.CreateNoWindow = $true; \
+             $child = [System.Diagnostics.Process]::new(); $child.StartInfo = $start; \
+             if (-not $child.Start()) {{ throw 'Git child did not start' }}; \
+             [System.IO.File]::WriteAllText($env:CHILD_PID_FILE, [string]$child.Id); \
+             {lifecycle}"
         );
         command
             .args(["-NoProfile", "-NonInteractive", "-Command"])
-            .arg(wrapper_command)
-            .env("CHILD_SCRIPT_FILE", &child_script);
+            .arg(wrapper_command);
+        command
+            .env(
+                "CODEX_GIT_PROCESS_CHILD_EXE",
+                std::env::current_exe().expect("test executable path"),
+            )
+            .env("CODEX_GIT_PROCESS_TEST_CHILD", "1");
         command
     };
     command
@@ -98,7 +127,15 @@ Start-Sleep -Seconds 60
         }
     })
     .await
-    .expect("wait for Git wrapper child readiness");
+    .unwrap_or_else(|_| {
+        let wrapper_status = wrapper.try_wait().expect("inspect Git wrapper exit status");
+        panic!(
+            "Git child fixture never became ready; wrapper_status={wrapper_status:?}, \
+             child_pid_exists={}, child_ready_exists={}",
+            child_pid_file.exists(),
+            child_ready_file.exists()
+        );
+    });
 
     if matches!(wrapper_lifetime, GitWrapperLifetime::ExitBeforeTimeout) {
         std::fs::write(&release_wrapper_file, "release").expect("release Git wrapper");
