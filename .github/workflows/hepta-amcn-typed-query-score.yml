@@ -1,0 +1,79 @@
+name: AMCN original source-first typed QUERY scorer (research DENY_ALL)
+
+on:
+  push:
+    branches: ["research/amcn-typed-query-score-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_typed_query_score.py"
+      - "qualification/amcn-v1/test_amcn_typed_query_score.py"
+      - "qualification/amcn-v1/TYPED_QUERY_SCORE_EXPERIMENT.md"
+      - ".github/workflows/hepta-amcn-typed-query-score.yml"
+  pull_request:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_typed_query_score.py"
+      - "qualification/amcn-v1/test_amcn_typed_query_score.py"
+      - "qualification/amcn-v1/TYPED_QUERY_SCORE_EXPERIMENT.md"
+      - ".github/workflows/hepta-amcn-typed-query-score.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: amcn-typed-query-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-first-query-scoring:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Actual standalone Python regression, no fake Reader
+        env:
+          PYTHONPATH: qualification/amcn-v1
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-query-audit
+          python3 -m compileall -q qualification/amcn-v1/amcn_typed_query_score.py qualification/amcn-v1/test_amcn_typed_query_score.py
+          python3 -m unittest discover -s qualification/amcn-v1 -p 'test_amcn_typed_query_score.py' -v 2>&1 | tee /tmp/amcn-query-audit/unittest.log
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from test_amcn_typed_query_score import setup, run
+          p, w, predictions, receipt, types = setup()
+          result = run(p, w, predictions, receipt, types)
+          assert result["production_accepted"] is False
+          assert result["natural_reader_answers"] == 0
+          assert result["true_future_calendar_windows"] == 0
+          assert result["independent_issuer_verified"] is False
+          assert result["total_heldout_queries"] == 8
+          assert result["zero_support_or_zero_shortlist_questions"] == 1
+          out = {"source_kind": "EXPLICIT_SYNTHETIC_MECHANICS_FIXTURE",
+                 "model_forward_executed": False,
+                 "independent_evaluation": False,
+                 "production_accepted": False,
+                 "source_first_query_mechanics": result}
+          Path("/tmp/amcn-query-audit/synthetic-source-first.json").write_text(
+              json.dumps(out, sort_keys=True, indent=2) + "\n", encoding="utf-8")
+          PY
+      - name: Pin exact source and negative capability
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-query-audit/source
+          git rev-parse HEAD > /tmp/amcn-query-audit/source/tested-sha.txt
+          git rev-parse HEAD^{tree} > /tmp/amcn-query-audit/source/tested-tree.txt
+          cp qualification/amcn-v1/amcn_typed_query_score.py qualification/amcn-v1/test_amcn_typed_query_score.py qualification/amcn-v1/TYPED_QUERY_SCORE_EXPERIMENT.md .github/workflows/hepta-amcn-typed-query-score.yml /tmp/amcn-query-audit/source/
+          printf '%s\n' 'production_accepted=false' 'pretrained_encoder_executed=false' 'reader_calls=0' 'real_future_calendar_windows=0' 'strong_hybrid_rag_claim=false' 'source_issuer_attested=false' 'synthetic_mechanics_only=true' > /tmp/amcn-query-audit/negative-authority.txt
+          (cd /tmp/amcn-query-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: amcn-typed-query-source-first-shadow
+          path: /tmp/amcn-query-audit
+          if-no-files-found: error
