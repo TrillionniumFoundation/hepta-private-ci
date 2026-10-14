@@ -26,14 +26,35 @@ def _hex_digest(value: object) -> bool:
             and all(char in '0123456789abcdef' for char in value))
 
 
+def _tensor_storage_bytes(value: Tensor) -> bytes:
+    """Exact CPU tensor bytes without the optional PyTorch NumPy integration.
+
+    A contiguous view can still start partway into a larger storage. Clone only
+    when the storage spans bytes outside the logical tensor, so no other
+    principal's adjacent tensor data is hashed or exposed accidentally.
+    """
+    flat = value.detach().contiguous()
+    storage = flat.untyped_storage()
+    if flat.storage_offset() or storage.nbytes() != flat.numel() * flat.element_size():
+        flat = flat.clone()
+        storage = flat.untyped_storage()
+    return bytes(storage)
+
+
 def snapshot_sha256(tokens: Tensor, mask: Tensor, rows: list[dict], pins: dict) -> str:
-    """Canonical experimental input identity, never an authorization token."""
+    """Bounded host-local byte identity; never an authenticated source receipt."""
+    if (not isinstance(tokens, Tensor) or tokens.device.type != 'cpu'
+            or tokens.dtype != torch.float32 or tokens.ndim != 3
+            or tokens.numel() > MAX_ELEMENTS
+            or not isinstance(mask, Tensor) or mask.device.type != 'cpu'
+            or mask.dtype != torch.bool or mask.ndim != 2
+            or tuple(mask.shape) != tuple(tokens.shape[:2])):
+        raise ValueError('bounded CPU float32 token and boolean mask required')
     header = json.dumps({'shape': list(tokens.shape), 'dtype': str(tokens.dtype),
                          'mask_shape': list(mask.shape), 'rows': rows, 'pins': pins},
                         sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()
     digest = hashlib.sha256(b'hepta.token-reader.shadow.snapshot.v1\0')
-    for section in (header, tokens.contiguous().numpy().tobytes(),
-                    mask.contiguous().numpy().tobytes()):
+    for section in (header, _tensor_storage_bytes(tokens), _tensor_storage_bytes(mask)):
         digest.update(len(section).to_bytes(8, 'big'))
         digest.update(section)
     return digest.hexdigest()
