@@ -331,6 +331,7 @@ def validate_resources(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
 
 def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
     obj = record(value, "F")
+    resource_value = record(resource_value, "F.shared_E_resources")
     digest(field(obj, "task_suite_sha256", "F"), "F.task_suite_sha256")
     same_device = digest(field(obj, "device_profile_sha256", "F"), "F.device_profile_sha256")
     require(same_device == resource_value.get("device_profile_sha256"),
