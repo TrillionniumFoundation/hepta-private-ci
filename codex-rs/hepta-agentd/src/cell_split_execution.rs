@@ -123,12 +123,10 @@ pub fn advance_scope_bound_selected_cell_split_with_metrics_v1<
     admission: &A,
     metric_sink: Arc<DurablePhaseMetricSinkV1>,
 ) -> Result<CellSplitExecutionCliOutcomeV1, String> {
-    // Fail *before* opening the coordinator or reading candidate config:
-    // a saturated writer or lost fsync acknowledgment cannot authorize a
-    // new effect; current prepared intents remain reconcile-only.
-    if !metric_sink.healthy() {
-        return Err("CellSplit Evidence phase metric sink unavailable".to_string());
-    }
+    // The coordinator distinguishes new execution from a durable prepared
+    // intent. Never deny read-only original-owner reconciliation merely
+    // because telemetry is unhealthy; the owner blocks any new dispatch.
+
     run_pinned_cell_split_execution_with_admission_and_metrics_v1(
         "advance",
         config_path,
