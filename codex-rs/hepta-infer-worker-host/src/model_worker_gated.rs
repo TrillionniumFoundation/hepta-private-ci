@@ -1149,15 +1149,12 @@ mod tests {
                 maximum_memory_bytes: 16 * 1024 * 1024,
                 semantic_digest: "1".repeat(64),
             };
-            let mut worker = InferenceWorker::new(
-                1,
-                format!("worker.scale.{cell_count}"),
-                3,
-                grant,
-                driver,
-            )
-            .expect("worker");
-            worker.load_model(1, selected.clone()).expect("loaded model");
+            let mut worker =
+                InferenceWorker::new(1, format!("worker.scale.{cell_count}"), 3, grant, driver)
+                    .expect("worker");
+            worker
+                .load_model(1, selected.clone())
+                .expect("loaded model");
 
             let identity = SharedFeatureIdentityV2 {
                 principal_id: id("principal.shared"),
