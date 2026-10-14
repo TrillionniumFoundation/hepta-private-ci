@@ -150,6 +150,16 @@ class PreparedPairedSmokeTests(unittest.TestCase):
             self.assertTrue(all(set(row["raw_mode_receipts"]) == set(pair.MODES)
                                 for row in output["pairs"]))
             self.assertEqual(sum(len(row["raw_mode_receipts"]) for row in output["pairs"]), 40)
+            with patch.object(pair, "sha256_binary",
+                              side_effect=[sha(b"first"), sha(b"changed")]):
+                with patch.object(pair.subprocess, "run", side_effect=fake_run):
+                    with self.assertRaisesRegex(ValueError, "executable changed"):
+                        pair.run(binary, trace)
+            with patch.object(pair, "read_trace",
+                              side_effect=[(digest, 8), (sha(b"tampered"), 8)]):
+                with patch.object(pair.subprocess, "run", side_effect=fake_run):
+                    with self.assertRaisesRegex(ValueError, "trace changed"):
+                        pair.run(binary, trace)
             self.assertTrue(all(row["exact_checkpoint_frontier_parity"] for row in output["pairs"]))
             self.assertFalse(output["target_host_certified"])
             self.assertFalse(output["production_qualification"])

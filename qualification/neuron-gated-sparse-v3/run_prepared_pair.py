@@ -177,6 +177,10 @@ def run(binary: Path, trace: Path) -> dict[str, Any]:
                 results[mode] = result
             pairs.append(validate_pair(results, arm, cells, trace_sha256, event_count))
     require(len(pairs) == len(ARMS) * len(SCALES), "paired native matrix incomplete")
+    require(sha256_binary(binary) == binary_sha256,
+            "native executable changed during 40-process comparison")
+    require(read_trace(trace) == (trace_sha256, event_count),
+            "original Q24 trace changed during 40-process comparison")
     return {
         "schema": SCHEMA,
         "evidence_kind": "UNVERIFIED_HOST_UNTRAINED_KERNEL_ONLY",
