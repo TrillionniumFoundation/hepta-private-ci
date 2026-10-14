@@ -1,0 +1,168 @@
+{
+  "complete_checkpoint": {
+    "attention_implementation": "eager",
+    "checkpoint_architecture": "ModernBertForMaskedLM",
+    "checkpoint_parameters": 149655232,
+    "feature_architecture": "ModernBertModel",
+    "feature_parameters": 149014272,
+    "loading": {
+      "complete": true,
+      "error_msgs": 0,
+      "mismatched_keys": 0,
+      "missing_keys": 0,
+      "reconciled_physical_aliases": [
+        "decoder.weight"
+      ],
+      "reported_missing_keys": [],
+      "schema": "hepta.local-hf-complete-mlm-load.v2",
+      "unexpected_keys": 0
+    },
+    "materialization": {
+      "all_state_dict_tensors_accounted": true,
+      "all_state_dict_tensors_compared": false,
+      "complete": true,
+      "omitted_tied_keys": [
+        "decoder.weight"
+      ],
+      "physical_aliases": {
+        "decoder.weight": "model.embeddings.tok_embeddings.weight"
+      },
+      "production_authorization": false,
+      "safetensors_shards": 1,
+      "schema": "hepta.local-hf-exact-tied-materialization.v2",
+      "tensor_count": 137,
+      "tensor_elements": 149655232
+    },
+    "mlm_head_executed_for_features": false,
+    "profile": "modernbert_mlm_full_eager_v1",
+    "reference_compile": false,
+    "retained_mlm_head": true
+  },
+  "different_input_distinguished": true,
+  "efficacy_established": false,
+  "feature_dimension": 768,
+  "inference_calls": 3,
+  "observation": {
+    "aborted_formula_reservations": 0,
+    "cpu_ns": 521956526,
+    "elapsed_ns": 521549820,
+    "hardware_instruction_count": false,
+    "latency_includes_measurement_overhead": true,
+    "observer_evaluation_measured": false,
+    "operators": {
+      "aten._local_scalar_dense.default": 6,
+      "aten.abs.default": 3,
+      "aten.add.Tensor": 330,
+      "aten.all.default": 3,
+      "aten.arange.default": 6,
+      "aten.cat.default": 198,
+      "aten.chunk.default": 66,
+      "aten.clamp_min.default": 3,
+      "aten.contiguous.default": 66,
+      "aten.cos.default": 66,
+      "aten.detach.default": 3,
+      "aten.detach_.default": 3,
+      "aten.div.Tensor": 3,
+      "aten.dropout.default": 135,
+      "aten.embedding.default": 3,
+      "aten.expand.default": 69,
+      "aten.gelu.default": 66,
+      "aten.isfinite.default": 3,
+      "aten.layer_norm.default": 135,
+      "aten.le.Scalar": 3,
+      "aten.lift_fresh.default": 9,
+      "aten.linear.default": 264,
+      "aten.logical_not.default": 3,
+      "aten.masked_fill.Scalar": 6,
+      "aten.matmul.default": 198,
+      "aten.mul.Tensor": 531,
+      "aten.neg.default": 132,
+      "aten.numpy_T.default": 3,
+      "aten.select.int": 3,
+      "aten.sin.default": 66,
+      "aten.slice.Tensor": 264,
+      "aten.softmax.int": 66,
+      "aten.sub.Tensor": 6,
+      "aten.sum.default": 3,
+      "aten.sum.dim_IntList": 6,
+      "aten.to.dtype": 474,
+      "aten.to.dtype_layout": 72,
+      "aten.transpose.int": 264,
+      "aten.unbind.int": 66,
+      "aten.unsqueeze.default": 351,
+      "aten.view.default": 132
+    },
+    "peak_rss_after_bytes": 1605513216,
+    "peak_rss_before_bytes": 1605513216,
+    "peak_rss_scope": "process_lifetime_not_request_peak",
+    "phase_flops": {
+      "evaluation": null,
+      "inference": null,
+      "migration": null,
+      "search": null,
+      "train": null
+    },
+    "policy": {
+      "arithmetic_profile": "hepta.cpu-eager-transformer-formula-work.v2",
+      "max_process_rss_bytes": null,
+      "mode": "observe",
+      "rapl_max_power_watts": null,
+      "rapl_zone": null,
+      "schema": "hepta.execution-meter-policy.v2",
+      "wall_time_ns": 600000000000
+    },
+    "production_authorized": false,
+    "profile": "hepta.cpu-eager-transformer-formula-work.v2",
+    "schema": "hepta.execution-work-observation.v1",
+    "scopes": [
+      {
+        "calls": 3,
+        "component": "encoder",
+        "cpu_ns": 521499144,
+        "elapsed_ns": 521079994,
+        "failed_calls": 0,
+        "formula_flops": 27647347432,
+        "phase": "inference",
+        "unknown_operators": 747
+      }
+    ],
+    "stopped": null,
+    "torch_dispatch_only": true,
+    "unknown_operators": {
+      "aten.matmul.default": 198,
+      "aten.numpy_T.default": 3,
+      "aten.to.dtype": 474,
+      "aten.to.dtype_layout": 72
+    },
+    "zone_energy": {
+      "joules": null,
+      "reason": "counter_unavailable",
+      "scope": "rapl_zone"
+    }
+  },
+  "paired_experiment_completed": false,
+  "parameter_training_performed": false,
+  "pretrained_provenance_independently_verified": false,
+  "probe_source_sha256": "0a8a9a360e330a4fc0855868f7f14a9e2620f3cee841eef299f6ab0dab60f246",
+  "production_authorized": false,
+  "repeated_input_exact": true,
+  "retained_tensor_inventory": {
+    "activation_bytes": null,
+    "optimizer_bytes": null,
+    "parameters": 149655232,
+    "trainable_parameters": 0,
+    "unique_weight_bytes": 598623744
+  },
+  "runtime": {
+    "torch": "2.10.0+cpu",
+    "transformers": "4.57.1"
+  },
+  "schema": "hepta.public-encoder-probe.v1",
+  "snapshot_sha256": "43138a5545ce4e7996d91735f2330519a8913304d3abf257f6cfdfbe0541283d",
+  "source_kind": "pinned_public_Hub_checkpoint",
+  "token_counts": [
+    41,
+    43,
+    41
+  ]
+}
