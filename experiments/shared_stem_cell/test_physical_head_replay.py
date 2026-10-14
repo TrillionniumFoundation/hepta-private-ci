@@ -53,9 +53,14 @@ def make_complete_study(root: Path):
     fm = {"schema": "hepta.offline-frozen-features.v1", "rows": feature_rows,
           "contains_labels": False, "production_accepted": False,
           "simulated_encoder": False, "file_sha256": sha(feat_raw), "file_bytes": len(feat_raw),
-          "shape": list(features.shape), "tensor_bytes": features.nbytes,
+          "shape": list(features.shape), "dtype": "float32", "tensor_bytes": features.nbytes,
           "tensor_sha256": sha(canonical(["torch.float32", list(features.shape)]) + features.tobytes()),
-          "binding": {"stem_sha256": stem, "dataset_sha256": plan["dataset"]["sha256"]}}
+          "binding": {"stem_sha256": stem, "dataset_sha256": plan["dataset"]["sha256"],
+                      "manifest_sha256": sha(plan_path.read_bytes()),
+                      "producer_source_sha256": H,
+                      "feature_profile_sha256": sha(canonical({"width": 3,
+                          "representation": "masked_mean_float32", "model": stem,
+                          "maximum_tokens": 512}))}}
     (fd / "manifest.json").write_bytes(canonical(fm))
     report_path = producer / "report.json"
     report = json.loads(report_path.read_bytes())
