@@ -22,6 +22,7 @@ from .physical_pooled_replay_v1 import MODEL, _member, _parsed, read_public_phys
 from .token_reader_offline import INPUT_ENCODING, NORMALIZATION, _joint_text, _tokenize_and_capture
 from .token_reader_v1 import snapshot_sha256
 from .trained_head_artifacts_v1 import _canonical
+from .token_stream_binding_v2 import read_checked_preflight
 
 SCHEMA = 'hepta.neuron.token-pair-independent-numerical-review.v1'
 SOURCE_SCHEMA = 'hepta.neuron.real-token-paired-retrospective.v1'
@@ -367,7 +368,8 @@ def audit_sealed_token_pair(*, results_dir: Path, source: list[dict],
 def review_pinned_real_token_pair(*, archive_path: Path, archive_sha256: str,
                                   checkpoint_dir: Path, bundle_sha256: str,
                                   results_dir: Path, output: Path,
-                                  max_length: int = 168, batch: int = 8) -> dict:
+                                  max_length: int = 168, batch: int = 8,
+                                  tokenizer_preflight: Path | None = None) -> dict:
     """Real run: fresh model forward in reviewer process and safe checkpoint replay."""
     # Refuse mismatched frozen preprocessing BEFORE the costly model reload.
     original = _json(_fixed_read(Path(results_dir) / 'report.json', MAX_REPORT_BYTES))
@@ -385,6 +387,16 @@ def review_pinned_real_token_pair(*, archive_path: Path, archive_sha256: str,
             or model['revision'] != MODEL['modernbert'][2]
             or model['conversion'] is not None):
         raise ValueError('pinned original ModernBERT revision mismatch')
+    if tokenizer_preflight is None:
+        raise ValueError('independent real re-encoding requires pinned tokenizer preflight')
+    preflight = read_checked_preflight(
+        tokenizer_preflight, source_sha256=archive_sha256,
+        tokenizer_sha256=model['files']['tokenizer.json'],
+        model_id=MODEL['modernbert'][1], revision=MODEL['modernbert'][2],
+        max_length=max_length, batch=batch)
+    if (original['encoder_observation'].get('pinned_tokenizer_preflight_sha256')
+            != preflight['preflight_file_sha256']):
+        raise ValueError('producer tokenizer preflight witness mismatches independent reviewer')
     for name, sha in model['files'].items():
         if (not (Path(checkpoint_dir)/name).is_file()
                 or (Path(checkpoint_dir)/name).is_symlink()
@@ -400,7 +412,13 @@ def review_pinned_real_token_pair(*, archive_path: Path, archive_sha256: str,
     for cell in (0,1):
         texts=[r['joint_text'] for r in cells[cell]]
         tokens,mask,observation = _tokenize_and_capture(model_backend,texts,
-                                                       max_length=max_length,batch=batch)
+                                                       max_length=max_length,batch=batch,
+                                                       cell_index=cell,
+                                                       input_sha256=[r['input_sha256'] for r in cells[cell]])
+        if (observation.get('ordered_active_token_ids_sha256') != preflight['cell_stream_sha256'][cell]
+                or original['encoder_observation']['cells'][cell].get('ordered_active_token_ids_sha256')
+                   != preflight['cell_stream_sha256'][cell]):
+            raise ValueError('independent real token IDs differ from Producer/pinned preflight')
         if observation['model_forward_observation']['module_forward_completions'] <= 0:
             raise ValueError('independent physical Encoder did not run')
         features[cell]=(tokens,mask)
@@ -431,6 +449,7 @@ def main():
     ap.add_argument('--source-sha256',required=True)
     ap.add_argument('--checkpoint-dir',type=Path,required=True)
     ap.add_argument('--bundle-sha256',required=True)
+    ap.add_argument('--tokenizer-preflight',type=Path)
     ap.add_argument('--producer',type=Path,required=True)
     ap.add_argument('--output',type=Path,required=True)
     ap.add_argument('--max-length',type=int,default=168)
@@ -439,7 +458,8 @@ def main():
     review_pinned_real_token_pair(archive_path=args.source_zip,
            archive_sha256=args.source_sha256,checkpoint_dir=args.checkpoint_dir,
            bundle_sha256=args.bundle_sha256,results_dir=args.producer,
-           output=args.output,max_length=args.max_length,batch=args.batch)
+           output=args.output,max_length=args.max_length,batch=args.batch,
+           tokenizer_preflight=args.tokenizer_preflight)
 
 
 if __name__ == '__main__':
