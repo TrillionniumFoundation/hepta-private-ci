@@ -144,7 +144,9 @@ def run_pinned_offline(*, dataset: str, dataset_sha256: str,
                        max_length: int = 64, encoder_batch: int = 8,
                        rank: int = 8, head_budget: int = 16384,
                        steps: int = 20, head_batch: int = 16,
-                       seeds: tuple[int, ...] = (11, 23, 47)) -> dict:
+                       seeds: tuple[int, ...] = (11, 23, 47),
+                       cost_cells: int = 0, cost_rounds: int = 3,
+                       cost_warmups: int = 1) -> dict:
     """Physically invoke an offline local model; return only nonauthorizing metrics.
 
     No model/data discovery or download is performed; all assets must already
@@ -191,6 +193,14 @@ def run_pinned_offline(*, dataset: str, dataset_sha256: str,
                                            rank=rank, budget=head_budget,
                                            seeds=seeds, steps=steps, batch=head_batch)
     head_seconds = (time.perf_counter_ns() - head_start) / 1e9
+    if type(cost_cells) is not int or not 0 <= cost_cells <= 4096:
+        raise ValueError('bounded optional readout cost Cell count required')
+    readout_cost = None
+    if cost_cells:
+        from .token_reader_cost_v1 import measure_cached_head_cost
+        readout_cost = measure_cached_head_cost(
+            tokens, mask, labels, rows, pins, frozen, cells=cost_cells,
+            rank=rank, rounds=cost_rounds, warmups=cost_warmups)
     backend._check_bundle_unchanged()
     if sha256_file(dataset) != dataset_sha256 or sha256_file(tokenizer_file) != tokenizer_sha256:
         raise ValueError('source/tokenizer mutated during model/Head execution')
@@ -207,6 +217,7 @@ def run_pinned_offline(*, dataset: str, dataset_sha256: str,
         'observed_capture_and_head_wall_seconds': (time.perf_counter_ns() - start) / 1e9,
         'observed_head_fit_and_evaluation_wall_seconds': head_seconds,
         'observed_encoding': capture,
+        'optional_readout_cost_probe': readout_cost,
         'pooled_feature_cache_minimum_bytes': len(rows) * tokens.shape[2] * 4,
         'whole_token_snapshot_bytes': comparison['snapshot_tensor_bytes_once'],
         'real_model_loaded_and_called_locally': True,
@@ -234,6 +245,10 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument('--head-budget', type=int, default=16384)
     parser.add_argument('--steps', type=int, default=20)
     parser.add_argument('--head-batch', type=int, default=16)
+    parser.add_argument('--cost-cells', type=int, default=0,
+                        help='optional CPU-only readout probe with separate pooled cache')
+    parser.add_argument('--cost-rounds', type=int, default=3)
+    parser.add_argument('--cost-warmups', type=int, default=1)
     parser.add_argument('--seeds', type=int, nargs='+', default=[11, 23, 47])
     args = parser.parse_args(argv)
     if Path(args.output).exists():
