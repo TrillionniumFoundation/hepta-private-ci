@@ -296,44 +296,50 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             )
 
     def test_control_cns_writer_never_exports_untyped_success_callback(self) -> None:
-        # Importing the durable Control owner must not silently turn a
-        # success-shaped closure into public route-mutation authority. The
-        # physical CNS runtime remains denied until a typed original signed
-        # receipt and fsynced same-owner Begin/Commit are independently wired.
-        owner = self.lexical_code(
-            "codex-rs/hepta-control-plane/src/ndu_publication.rs"
-        )
+        # The only generic effect closure is compiled for the Control crate's
+        # own regression fixtures. Production must consume actual signed
+        # original-owner bytes and never manufacture successful Control C.
+        relative = "codex-rs/hepta-control-plane/src/ndu_publication.rs"
+        raw = (ROOT / relative).read_text(encoding="utf-8")
+        production = self.lexical_code(relative)
         self.assertRegex(
-            owner,
-            r"\bpub\(crate\)\s+fn\s+publish_cutover_with_external_effect\b",
-            "generic external-effect callback must remain Control crate-private",
+            raw,
+            r"\#\[cfg\(test\)\]\s+pub\(crate\)\s+fn\s+publish_cutover_with_external_effect\b",
+            "untyped CNS callback must be test-only and crate-private",
         )
         self.assertNotRegex(
-            owner,
-            r"\bpub\s+fn\s+publish_cutover_with_external_effect\b",
-            "public callback could fabricate a successful physical CNS receipt",
+            production,
+            r"\bfn\s+publish_cutover_with_external_effect\s*\(",
+            "untyped callback must not compile as a production CNS mutation API",
         )
-        legacy_start = owner.find("pub fn publish_cutover(")
-        guarded_start = owner.find("pub(crate) fn publish_cutover_with_external_effect")
-        self.assertGreaterEqual(legacy_start, 0, "missing legacy denial API")
-        self.assertGreater(guarded_start, legacy_start, "missing guarded API")
+        legacy = production.find("pub fn publish_cutover(")
+        checkpoint = production.find("pub fn compare_and_publish_checkpoint(")
+        self.assertGreaterEqual(legacy, 0, "legacy Control API not found")
+        self.assertGreater(checkpoint, legacy, "checkpoint CAS method missing")
         self.assertIn(
             "Err(NduPublicationErrorV1::Unsupported)",
-            owner[legacy_start:guarded_start],
-            "old one-phase CNS publication must remain fail closed",
+            production[legacy:checkpoint],
+            "legacy single-phase CNS mutation must remain denied",
         )
-        pending = owner.find("state.pending_cutover = true")
-        dispatch = owner.find("apply_original_runtime_once()")
-        self.assertGreaterEqual(pending, 0, "Control durable Begin fence missing")
-        self.assertGreater(
-            dispatch,
-            pending,
-            "pending Control fence must precede external runtime callback",
+        self.assertIn(
+            "state.pending_cutover = true",
+            raw,
+            "durable Control Begin requires a pending fence",
+        )
+        self.assertLess(
+            raw.index("state.pending_cutover = true"),
+            raw.index("apply_original_runtime_once()"),
+            "Begin fence must precede the test-only original-runtime callback",
         )
         self.assertIn(
             "if state.pending_cutover",
-            owner,
-            "competing Neuron checkpoint CAS must deny while CNS is pending",
+            production,
+            "production checkpoint/CNS reads must refuse pending Begin",
+        )
+        self.assertIn(
+            "original_cns_receipt_binding",
+            production,
+            "original CNS bytes must be bound to the durable Control C record",
         )
 
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:

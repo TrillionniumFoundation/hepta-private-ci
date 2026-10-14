@@ -16,6 +16,7 @@ use std::sync::Arc;
 
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_control_plane::NduPublicationOwnerV1;
 use codex_hepta_operator_acceptance::CellSplitCnsLiveRouteV1;
 use codex_hepta_operator_acceptance::CellSplitCnsRouteBindingV1;
 use codex_hepta_operator_acceptance::CellSplitCnsRuntimeAttestationV1;
@@ -149,6 +150,53 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
             witness,
             atomic_control_cutover_prepared: None,
         })
+    }
+
+    /// Read-only dual-owner qualification. Verify the original CNS runtime
+    /// signature and independent durable owner readback, require a fresh signed
+    /// serving successor route, then join those ORIGINAL receipt bytes to the
+    /// fsynced Control C binding. Never attempts the physical cutover, claims
+    /// Final-use or acknowledges a pending/poisoned Control Begin.
+    ///
+    /// This API is evidence for an independent Observer, not an authorization
+    /// to activate or promote a Cell.
+    pub fn verify_original_cns_control_commit_v1(
+        &mut self,
+        control: &NduPublicationOwnerV1,
+    ) -> Result<(), String> {
+        let original = self
+            .witness
+            .read_original_commit(&self.intent.idempotency_key)
+            .map_err(|error| error.to_string())?
+            .ok_or("CNS original durable effect receipt is missing")?;
+        self.verify_original_commit(&original)?;
+        let current = self.signed_route(&secure_cns_nonce()?)?;
+        if current.generation != self.plan.child_generation
+            || current.artifact_digest != self.plan.child_artifact_digest
+            || current.route_digest != self.binding.successor_route_digest
+            || current.route_fence_digest != self.plan.route_fence_digest
+        {
+            return Err("CNS does not currently serve the signed successor".into());
+        }
+        let original_bytes = cell_split_cns_control_original_receipt_bytes_v1(&original)?;
+        control
+            .verify_original_cns_receipt_binding(&original_bytes)
+            .map_err(|error| format!("Control original CNS Commit binding rejected: {error}"))?;
+        // Control readback and independent CNS verification can race a later
+        // rollback. Demand a second current signed original-owner observation
+        // before exporting even read-only acceptance.
+        self.verify_original_commit(&original)?;
+        let still_live = self.signed_route(&secure_cns_nonce()?)?;
+        if still_live.generation != self.plan.child_generation
+            || still_live.route_digest != self.binding.successor_route_digest
+            || still_live.route_fence_digest != self.plan.route_fence_digest
+        {
+            return Err("signed CNS successor changed during Control join".into());
+        }
+        control
+            .verify_original_cns_receipt_binding(&original_bytes)
+            .map_err(|error| format!("Control CNS binding changed during join: {error}"))?;
+        Ok(())
     }
 
     fn live_runtime(&self) -> Result<RuntimeTopologySnapshotV1, String> {
@@ -444,6 +492,20 @@ fn secure_cns_nonce() -> Result<String, String> {
         .and_then(|mut source| source.read_exact(&mut bytes))
         .map_err(|e| format!("CNS challenge entropy unavailable: {e}"))?;
     Ok(bytes.iter().map(|value| format!("{value:02x}")).collect())
+}
+
+/// Canonical, versioned evidence bytes to link an original *already signed*
+/// CNS runtime commit with the independent durable Control C record. A caller
+/// must first verify the exact original runtime signature and fresh owner
+/// readback; producing these bytes does NOT authorize a physical cutover.
+pub fn cell_split_cns_control_original_receipt_bytes_v1(
+    original: &CellSplitCnsRuntimeCommitV1,
+) -> Result<Vec<u8>, String> {
+    let serialized = serde_json::to_vec(original).map_err(|error| error.to_string())?;
+    let mut bound = b"hepta.runtime.cns-control-original-commit.v1\0".to_vec();
+    bound.extend_from_slice(&(serialized.len() as u64).to_be_bytes());
+    bound.extend_from_slice(&serialized);
+    Ok(bound)
 }
 
 /// Domain-separated signing payload for a fresh, runtime-bound route
