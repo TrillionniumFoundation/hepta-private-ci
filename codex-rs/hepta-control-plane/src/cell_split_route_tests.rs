@@ -391,6 +391,9 @@ fn split(
 
 #[test]
 fn cutover_fences_parent_and_emits_child_dispatch_receipt() {
+    // Qualification-only: non-test production exports always deny this
+    // direct method with ControlCutoverUnbound.
+
     let predecessor = host(1, &[]);
     let parent_route = predecessor.route(&id("system"), &id("parent"), 0).unwrap();
     let successor = host(2, &[("child-a", "sink-a"), ("child-b", "sink-b")]);
