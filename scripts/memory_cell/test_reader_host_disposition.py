@@ -165,6 +165,32 @@ class HostDispositionTests(unittest.TestCase):
         self.assertFalse(report["independent_semantic_review"])
         self.assertFalse(report["entire_generation_census_complete"])
 
+    def test_five_attempts_with_one_model_failure_keep_cost_not_success(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp) / "memory-reader-bottleneck-qwen-3b-0"
+            original_rows = deepcopy(rows())
+            original_rows[-1] = dict(
+                question_id="one", arm=ARMS[-1], status="failed",
+                error_type="ReaderTimeout"
+            )
+            raw = b"".join(
+                json.dumps(row, sort_keys=True).encode() + b"\\n"
+                for row in original_rows
+            )
+            run = completed_run(raw)
+            run["actual_successes"] = 4
+            write_files(
+                folder, gate=host(eligible=True),
+                rows=original_rows, run=run,
+            )
+            result = inspect(folder, "qwen-3b", 0, expected_commit=SOURCE)
+        self.assertEqual(result["raw_attempt_rows"], 5)
+        self.assertEqual(result["raw_success_rows"], 4)
+        self.assertEqual(
+            result["outcome"], "complete_attempts_with_failed_generation"
+        )
+        self.assertFalse(result["full_original_journal"])
+
     def test_incomplete_partial_journal_is_not_complete_success(self):
         with tempfile.TemporaryDirectory() as tmp:
             folder = Path(tmp) / "memory-reader-bottleneck-qwen-3b-0"
