@@ -86,9 +86,11 @@ def test_future_and_ood_labels_cannot_affect_train_updates():
                                      kinds=('linear',), steps=3, seed=9)
     assert a['candidates'][0]['trainable_parameters_total'] == b['candidates'][0]['trainable_parameters_total']
     assert a['candidates'][0]['train_seconds'] >= 0
-    # Don't compare future metrics (their gold labels have deliberately
-    # changed). Same train-only learning is shown by identical predictions
-    # on untouched validation-only controls in a separate benchmark.
+    # Independent labels from validation/future/OOD may change reported
+    # metrics but never the TRAIN-ONLY optimizer trajectory.
+    assert a['candidates'][0]['trained_weights_digest'] == b['candidates'][0]['trained_weights_digest']
+    assert a['candidates'][0]['trained_state_adapter_digest'] == b['candidates'][0]['trained_state_adapter_digest']
+    assert a['candidates'][0]['trained_cell_head_digest'] == b['candidates'][0]['trained_cell_head_digest']
     assert a['state_feature_extractor'] == b['state_feature_extractor']
 
 
@@ -96,3 +98,28 @@ def test_cross_cell_state_is_not_a_shared_encoder_cache_entry():
     a, _ = fixed_state_ngram_features([{'state': {'local': 'a'}}])
     b, _ = fixed_state_ngram_features([{'state': {'local': 'b'}}])
     assert not torch.equal(a, b)
+
+
+def test_train_label_changes_really_update_the_cell_head_weights():
+    data = rows()
+    torch.manual_seed(11)
+    features = torch.randn(32, 96)
+    split = [r['split'] for r in data]
+    truth = torch.tensor([i % 2 for i in range(32)])
+    common = dict(total_dim=128, budgets=(2048,), kinds=('linear',),
+                  seed=9, steps=3, batch=8)
+    a = learned_state_fusion_trials(features, data, truth, split, **common)
+    changed = truth.clone()
+    changed[:8] = 1-changed[:8]
+    b = learned_state_fusion_trials(features, data, changed, split, **common)
+    assert a['candidates'][0]['trained_weights_digest'] != b['candidates'][0]['trained_weights_digest']
+
+
+def test_stable_weight_digest_is_sensitive_to_numeric_updates():
+    from neuron_shared_encoder.state_fusion import _model_weights_digest
+    model = LearnedCellStateFusion(total_dim=128, width=8, bins=64,
+                                   classes=2, head_kind='linear', budget=2048)
+    original = _model_weights_digest(model)
+    with torch.no_grad():
+        model.adapter.weight[0, 0] += 0.1
+    assert _model_weights_digest(model) != original

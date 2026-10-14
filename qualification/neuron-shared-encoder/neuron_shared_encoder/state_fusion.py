@@ -7,8 +7,10 @@ full Head and optimizer state, but not model/WAL/product authorization costs.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import math
+import struct
 import time
 
 import torch
@@ -20,6 +22,27 @@ from .validation_v3 import SmallHead, _auroc, _scores
 
 MAX_STATE_BYTES = 16384
 MAX_ROWS = 100000
+
+
+def _model_weights_digest(module: nn.Module) -> str:
+    """Canonical FP32-by-value diagnostic, not a signature/authority receipt.
+
+    Pure-Python struct packing avoids dependence on NumPy which is absent
+    from some pinned CPU PyTorch CI installations.
+    """
+    out = hashlib.sha256(b'hepta.research.cell-weight-values.v1\0')
+    for name, tensor in sorted(module.state_dict().items()):
+        key = name.encode('utf-8')
+        out.update(len(key).to_bytes(4, 'big'))
+        out.update(key)
+        out.update(len(tensor.shape).to_bytes(4, 'big'))
+        for dim in tensor.shape:
+            out.update(int(dim).to_bytes(8, 'big'))
+        values = tensor.detach().to(dtype=torch.float32, device='cpu').reshape(-1).tolist()
+        for i in range(0, len(values), 256):
+            part = values[i:i+256]
+            out.update(struct.pack('>' + 'f' * len(part), *part))
+    return out.hexdigest()
 
 
 def _state_bytes(row: dict) -> bytes:
@@ -182,6 +205,9 @@ def learned_state_fusion_trials(
                     'trainable_parameters_total': model.parameter_count,
                     'state_adapter_parameters': model.adapter_parameters,
                     'head_parameters': model.head.parameter_count,
+                    'trained_weights_digest': _model_weights_digest(model),
+                    'trained_state_adapter_digest': _model_weights_digest(model.adapter),
+                    'trained_cell_head_digest': _model_weights_digest(model.head),
                     'parameter_bytes_fp32': model.parameter_count * 4,
                     'optimizer_state_bytes': sum(
                         value.numel() * value.element_size()

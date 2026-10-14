@@ -378,3 +378,16 @@ It is an experimentally trainable control, not evidence that byte hashing
 preserves all decision signals. If image/audio/video, binary state, huge
 states or privacy permissions are not supported by this local text
 featurizer, E3 must use a separately qualified state adapter.
+
+
+### E3 trainer falsification: train-only gradient proof
+
+`state_fusion.py` now emits canonical FP32-value SHA-256 diagnostics for
+the complete trained Cell, state adapter and Gated Head, without requiring
+NumPy. Adversarial trials keep all training examples unchanged while
+flipping validation/future/OOD labels and assert exact equality of ALL
+trained weight digests. Flipping train labels must change the digest.
+This demonstrates label partitioning for the *research* optimizer
+rather than merely reporting matching parameter counts; it does NOT
+authenticate data collection, permissions, independent pre-label
+production, or causal NDU outcomes.
