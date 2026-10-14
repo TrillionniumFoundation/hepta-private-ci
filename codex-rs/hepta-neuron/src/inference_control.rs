@@ -32,9 +32,9 @@ pub trait NeuronInferenceControlPort {
         request: &NeuronFeatureRequestViewV1<'_>,
     ) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
         self.execute_feature(&NeuronFeatureRequestV1 {
-            request_id: request.request_id.clone(),
+            request_id: (*request.request_id).clone(),
             generation: request.generation,
-            model_id: request.model_id.clone(),
+            model_id: (*request.model_id).clone(),
             encoder_digest: request.encoder_digest,
             head_digest: request.head_digest,
             weights_digest: request.weights_digest,
