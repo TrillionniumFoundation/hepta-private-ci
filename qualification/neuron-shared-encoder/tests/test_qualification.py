@@ -269,3 +269,46 @@ def test_real_encoder_rejects_wrong_or_empty_tokenizer_rows():
     rows = [{'state': 'x', 'question': 'q', 'options': ['a', 'b']}]
     with pytest.raises(ValueError, match='complete token rows'):
         encoder.encode(rows)
+
+
+def test_dataset_duplicate_label_key_rejected_even_when_sha_pinned(tmp_path):
+    p = generated(tmp_path)
+    data = p.read_text().splitlines()
+    data[0] = data[0].rstrip()[:-1] + ', "label": 0}'
+    p.write_text('\n'.join(data) + '\n')
+    with pytest.raises(ValueError, match='duplicate JSON dataset field'):
+        load_dataset(p, expected_sha256=sha256_file(p))
+
+
+def test_dataset_nested_duplicate_and_nonfinite_json_rejected(tmp_path):
+    p = generated(tmp_path)
+    data = rows(p)
+    data[0]['state'] = {'ok': 1, 'bad': float('nan')}
+    rewrite(p, data)
+    with pytest.raises(ValueError, match='nonfinite JSON dataset constant'):
+        load_dataset(p)
+    data = rows(p)
+    data[0]['state'] = {'valid': 1}
+    rewrite(p, data)
+    physical = p.read_text().splitlines()
+    physical[0] = physical[0].replace('"state": {"valid": 1}',
+                                      '"state": {"valid": 1, "valid": 2}')
+    p.write_text('\n'.join(physical) + '\n')
+    with pytest.raises(ValueError, match='duplicate JSON dataset field'):
+        load_dataset(p)
+
+
+def test_dataset_blank_physical_row_rejected(tmp_path):
+    p = generated(tmp_path)
+    data = p.read_text()
+    p.write_text('\n' + data)
+    with pytest.raises(ValueError, match='blank physical JSONL row'):
+        load_dataset(p)
+
+
+def test_dataset_symlink_file_rejected(tmp_path):
+    p = generated(tmp_path)
+    link = tmp_path / 'dataset-link.jsonl'
+    link.symlink_to(p)
+    with pytest.raises(ValueError, match='symlink-free'):
+        load_dataset(link)

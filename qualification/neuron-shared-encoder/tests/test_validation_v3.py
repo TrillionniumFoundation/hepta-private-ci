@@ -386,3 +386,24 @@ def test_e2_declared_options_not_replaced_with_future_label_max():
     with pytest.raises(ValueError, match='2..16'):
         head_trials(features, labels, splits, kinds=('linear',),
                     budgets=(2048,), num_classes=17, steps=1)
+
+
+def test_v3_identical_option_width_is_not_enough_for_head_comparison():
+    from neuron_shared_encoder.validation_v3 import frozen_option_count
+    rows = dataset(8)
+    assert frozen_option_count(rows) == 2
+    altered = deepcopy(rows)
+    altered[-1]['options'] = ['yes', 'no']
+    with pytest.raises(ValueError, match='identical ordered choices'):
+        frozen_option_count(altered)
+    altered[-1]['options'] = ['no', 'new option']
+    with pytest.raises(ValueError, match='identical ordered choices'):
+        frozen_option_count(altered)
+
+
+def test_v3_fixed_option_inventory_validated_before_real_model_attempt():
+    from neuron_shared_encoder.validation_v3 import run_real_encoder_matrix
+    rows = dataset(8)
+    rows[0]['options'] = ['yes', 'no']
+    with pytest.raises(ValueError, match='identical ordered choices'):
+        run_real_encoder_matrix(rows, D('d'), five_arm_plan(), five_arm=True)

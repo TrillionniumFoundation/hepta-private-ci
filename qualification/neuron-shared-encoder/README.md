@@ -418,3 +418,22 @@ be tested if it was already part of the publicly registered choices:
 its Head output neuron exists before learning, even if that class was
 not observed in training. This removes a subtle previously present
 future-label information channel in E2/E3 Head construction.
+
+
+### A/B/C evidence integrity: literal JSONL and option meaning
+
+The frozen dataset reader now rejects **duplicate object keys at every
+JSON nesting depth**, NaN/Infinity extensions, blank physical JSONL rows,
+symlinked source paths and a file whose content changes between byte hash
+and the end of parsed-record validation. Raw SHA-256 alone does not
+resolve ambiguous parser interpretations. This is a research integrity
+check, not cryptographic authorization.
+
+The E1/E2/E3/A5 class-index Head contract additionally requires one
+fixed **ordered** set of 2–16 legal options across all records. Merely
+enforcing the same number of options is insufficient: a swapped option
+changes the meaning of logits, making the paired Head accuracy a
+misleading comparison. For tasks with per-example variable options,
+evaluate the original option-conditioned Laya decision directly or
+implement a separately qualified per-option scorer; do not assign
+variable semantic labels to fixed output neurons.

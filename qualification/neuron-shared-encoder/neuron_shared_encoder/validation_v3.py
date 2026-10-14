@@ -51,6 +51,22 @@ def is_commit_ref(value: Any) -> bool:
     return isinstance(value, str) and len(value) in (40, 64) and set(value) <= HEX and set(value) != {'0'}
 
 
+def frozen_option_count(rows: list[dict]) -> int:
+    """Class-index Head requires ONE immutable ordered option inventory.
+
+    Same length is insufficient: swapping legal choices changes what each
+    logit index means. Variable-option tasks need an explicit per-option
+    scorer instead of this fixed-class Head comparison.
+    """
+    if not rows or not isinstance(rows[0].get('options'), list):
+        raise ValueError('frozen registered options missing')
+    option_tuple = tuple(rows[0]['options'])
+    if not 2 <= len(option_tuple) <= 16 or any(
+            tuple(row.get('options', ())) != option_tuple for row in rows):
+        raise ValueError('class-index Heads require identical ordered choices for every record')
+    return len(option_tuple)
+
+
 class SmallHead(nn.Module):
     """Capacity-controlled alternatives; static_gate is linearly foldable."""
 
@@ -517,6 +533,7 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
         raise ValueError('E1 runner only implements AdamW; optimizer mismatch')
     if not rows or len({(r['principal'],r['organ_id'],r['cell_id']) for r in rows}) != 1:
         raise ValueError('E1 requires one principal/organ/Cell scope')
+    registered_choices = frozen_option_count(rows)
     labels = torch.tensor([r['label'] for r in rows], dtype=torch.long)
     split_names = [r['split'] for r in rows]
     masks = {split: torch.tensor([i for i, name in enumerate(split_names) if name == split],
@@ -559,7 +576,7 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
         trained = head_trials(features, labels, split_names,
                               budgets=BUDGETS, seed=spec['seed'], steps=spec['steps'],
                               batch=spec['batch'], lr=float(spec['learning_rate']),
-                              num_classes=len(rows[0]['options']))
+                              num_classes=registered_choices)
         result = {'checkpoint_bundle_sha256': backend.bundle_sha256,
                   'weights_sha256': backend.weights_sha256,
                   'tokenizer_sha256_claimed': entry['tokenizer_sha256'],
@@ -713,6 +730,9 @@ def main() -> None:
         if not is_digest(args.dataset_sha256):
             raise ValueError('pinned dataset SHA256 required')
         rows, data = load_dataset(args.dataset, expected_sha256=args.dataset_sha256)
+        # A fixed categorical Head cannot learn a coherent output if the
+        # meaning/order of its logits changes between train and future.
+        frozen_option_count(rows)
         if len({(r['principal'], r['organ_id'], r['cell_id']) for r in rows}) != 1:
             raise ValueError('one scoped Cell required; no cross-scope learning aggregation')
         if args.command in ('e1-run', 'e1-five-run'):
