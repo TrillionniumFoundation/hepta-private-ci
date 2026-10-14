@@ -286,6 +286,33 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "physical CNS mutation must deny before runtime topology execution",
         )
 
+    def test_topology_recovery_has_no_unreviewed_external_caller(self) -> None:
+        # Recovery changes the live topology too. A newly introduced
+        # recovery caller cannot be assumed to share the Cell Split CNS
+        # Control handoff merely because ordinary cutover is fenced.
+        symbol = "recover_governed_topology"
+        invocation = re.compile(r"(?:\.|::)\s*recover_governed_topology\s*\(")
+        observed: set[str] = set()
+        for path in self.rust_sources():
+            relative = path.relative_to(ROOT).as_posix()
+            if "/tests/" in f"/{relative}" or relative.endswith("_tests.rs"):
+                continue
+            if symbol not in path.read_text(encoding="utf-8"):
+                continue
+            if invocation.search(self.lexical_code(relative)):
+                observed.add(relative)
+        self.assertEqual(
+            observed,
+            {"codex-rs/hepta-runtime/src/lib.rs"},
+            "new physical topology recovery caller requires Control/Final-use review",
+        )
+        runtime = self.lexical_code("codex-rs/hepta-runtime/src/lib.rs")
+        self.assertRegex(
+            runtime,
+            r"\bpub\s+fn\s+recover_governed_topology\s*\(",
+            "reviewed recovery boundary disappeared or changed visibility",
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
