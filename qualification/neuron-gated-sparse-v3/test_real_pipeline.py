@@ -214,6 +214,18 @@ class TestPhysicalTorchCanary(unittest.TestCase):
                     output=str(out),steps=1,window=2,seed=12,lr=.01,synthetic_canary=True,max_train_cpu_seconds=300.0)
             receipt=train(args)
             self.assertEqual(len(receipt['models']),20)
+            physical_audit = out / 'realized-budget-audit.json'
+            self.assertTrue(physical_audit.is_file())
+            with physical_audit.open(encoding='utf-8') as handle:
+                realized = json.load(handle)
+            self.assertEqual(realized['schema'], 'hepta.neuron.realized-budget-physical-audit.v2')
+            self.assertEqual(realized['physical_candidate_artifact_slots'],20)
+            self.assertEqual(realized['distinct_physical_candidate_contents'],4)
+            self.assertEqual(realized['effective_independent_physical_model_comparisons'],4)
+            self.assertFalse(realized['five_tier_exact_realized_parameter_design_valid'])
+            self.assertIn('DUPLICATED_CAPACITY_ACROSS_NOMINAL_TIERS',
+                          realized['five_tier_design_blockers'])
+            self.assertFalse(realized['ndu_eligible'])
             self.assertFalse(receipt['native_q24_parity_verified'])
             self.assertFalse(receipt['future_utility_verified'])
             self.assertFalse(receipt['production_qualification'])
