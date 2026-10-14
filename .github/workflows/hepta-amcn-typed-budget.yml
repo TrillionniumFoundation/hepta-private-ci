@@ -38,6 +38,7 @@ jobs:
           /tmp/hepta-amcn-typed/bin/pip install numpy==1.26.4
           /tmp/hepta-amcn-typed/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
           /tmp/hepta-amcn-typed/bin/pip install ruff==0.15.8
+          /tmp/hepta-amcn-typed/bin/pip install safetensors==0.6.2
       - name: Real CPU matched-Head training and negative tests
         run: |
           set -euo pipefail

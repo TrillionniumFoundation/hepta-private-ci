@@ -38,7 +38,7 @@ def type_inventory_digest(matrix, type_by_row):
 
 def train_typed_budget(matrix, train_labels, type_by_row, *,
                        expected_type_digest, kind="gated", steps=24,
-                       batch=2, seed=17):
+                       batch=2, seed=17, train_sampling="uniform"):
     """Return physically learned Heads plus label-blind sealed predictions.
 
     The fixed metadata route invokes exactly ONE Head in each two-Head arm,
@@ -49,6 +49,8 @@ def train_typed_budget(matrix, train_labels, type_by_row, *,
             type(batch) is int and 1 <= batch <= 16 and
             type(seed) is int and 0 <= seed <= 2**31 - 1, "training work/seed bound")
     require(kind in ("linear", "gated", "low_rank"), "unknown Head architecture")
+    require(train_sampling in ("uniform", "balanced_binary"),
+            "unregistered TRAIN sampler")
     require(is_sha(expected_type_digest)
             and expected_type_digest == type_inventory_digest(matrix, type_by_row),
             "typed route not bound to external type inventory")
@@ -63,11 +65,11 @@ def train_typed_budget(matrix, train_labels, type_by_row, *,
                 len({matrix.rows[i].source_root for i in group}) >= 2 and
                 {train_labels[matrix.rows[i].row_id] for i in group} == {0, 1},
                 "each type requires balanced relevance labels and independent roots")
-    root_types = {}
-    for row in matrix.rows:
-        k = type_by_row[row.row_id]
-        old = root_types.setdefault(row.source_root, k)
-        require(old == k, "source root changes memory type")
+    # Functional types describe QUERY/learning tasks, not exclusive custody
+    # of a source. A single admitted source may support temporal and semantic
+    # TRAIN tasks. FeatureMatrix independently prevents source/family reuse
+    # across SELECT/FUTURE_A/FUTURE_B. Head lineage must track the union of
+    # original witnesses for each independently trained type.
     for split in ("future_a", "future_b"):
         require({type_by_row[r.row_id] for r in matrix.rows if r.split == split}
                 == set(kinds), "missing type or future diagnostic partition")
@@ -82,22 +84,44 @@ def train_typed_budget(matrix, train_labels, type_by_row, *,
     before = parameters(frozen)
     learned = {}
     meters = {}
+    pool = {}
+
+    def training_positions(selected):
+        if train_sampling == "uniform":
+            return selected
+        pos = [j for j in selected if train_labels[matrix.rows[j].row_id] == 1]
+        neg = [j for j in selected if train_labels[matrix.rows[j].row_id] == 0]
+        require(pos and neg, "class-balanced sampler requires both TRAIN classes")
+        width = max(len(pos), len(neg))
+        # Only TRAIN ids are repeated; never bring in heldout support labels.
+        # Both arms retain identical sampled minibatch counts and update steps.
+        return ([pos[j % len(pos)] for j in range(width)]
+                + [neg[j % len(neg)] for j in range(width)])
+
     with measured() as wall:
         for arm in ("untyped_equal_budget", "typed_equal_budget"):
             heads, receipts = {}, {}
             for i, k in enumerate(kinds):
                 selected = indices if arm == "untyped_equal_budget" else groups[k]
-                y = torch.tensor([train_labels[matrix.rows[j].row_id] for j in selected],
+                sampled = training_positions(selected)
+                y = torch.tensor([train_labels[matrix.rows[j].row_id] for j in sampled],
                                  dtype=torch.long)
-                trained, receipt = fit(deepcopy(frozen), matrix.x[selected], y,
+                trained, receipt = fit(deepcopy(frozen), matrix.x[sampled], y,
                                        steps=steps, batch=batch, seed=seed + i)
                 require(parameters(trained)["sha256"] != before["sha256"],
                         "Head did not learn")
                 heads[k] = trained
                 receipts[k] = receipt
+                pool[arm + "/" + k] = {
+                    "unique_train_rows": len(selected),
+                    "train_positive": sum(train_labels[matrix.rows[j].row_id] for j in selected),
+                    "train_negative": len(selected) - sum(train_labels[matrix.rows[j].row_id] for j in selected),
+                    "sampler_pool_rows_including_repetitions": len(sampled)}
             learned[arm], meters[arm] = heads, receipts
-        y_all = train_y
-        single, single_cost = fit(deepcopy(frozen), matrix.x[indices], y_all,
+        single_positions = training_positions(indices)
+        y_all = torch.tensor([train_labels[matrix.rows[j].row_id] for j in single_positions],
+                             dtype=torch.long)
+        single, single_cost = fit(deepcopy(frozen), matrix.x[single_positions], y_all,
                                   steps=steps, batch=batch, seed=seed)
     require(parameters(frozen) == before, "frozen parameter control mutated")
 
@@ -150,7 +174,9 @@ def train_typed_budget(matrix, train_labels, type_by_row, *,
         externally_authenticated_type_precommit=False,
         baseline_head=before, single_head=parameters(single),
         single_head_work=single_cost, untyped_budget=control_budget,
-        typed_budget=typed_budget, physical_inference_calls=counts,
+        typed_budget=typed_budget, training_sampling=train_sampling,
+        training_pool_receipt=pool,
+        physical_inference_calls=counts,
         training_wall=wall, prediction_sha256=digest(predictions),
         actual_model_update=True, future_labels_opened_during_training=False,
         independent_future_time_verified=False, independent_reader_results=None,

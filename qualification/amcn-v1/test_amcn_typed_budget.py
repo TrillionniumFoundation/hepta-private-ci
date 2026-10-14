@@ -120,6 +120,26 @@ class TypedMemoryBudgetTest(unittest.TestCase):
             train_typed_budget(self.matrix, labels, self.types,
                                expected_type_digest=self.type_sha, steps=2)
 
+    def test_balanced_train_sampler_keeps_physical_budget_and_no_future_labels(self):
+        output = train_typed_budget(self.matrix, self.train, self.types,
+                                    expected_type_digest=self.type_sha,
+                                    steps=4, batch=2, seed=19,
+                                    train_sampling="balanced_binary")
+        self.assertEqual(output["receipt"]["metrics"]["training_sampling"],
+                         "balanced_binary")
+        metrics = output["receipt"]["metrics"]
+        for key in ("parameters", "parameter_bytes", "optimizer_steps", "examples_processed"):
+            self.assertEqual(metrics["typed_budget"][key],
+                             metrics["untyped_budget"][key])
+        self.assertTrue(metrics["future_labels_opened_during_training"] is False)
+        self.assertEqual(len(output["predictions"]), len(self.withheld))
+
+    def test_unregistered_sampler_refused(self):
+        with self.assertRaises(Refused):
+            train_typed_budget(self.matrix, self.train, self.types,
+                               expected_type_digest=self.type_sha,
+                               train_sampling="sample_future_labels")
+
     def test_work_budget_requires_actual_complete_groups(self):
         with self.assertRaises(Refused):
             train_typed_budget(self.matrix, self.train, self.types,

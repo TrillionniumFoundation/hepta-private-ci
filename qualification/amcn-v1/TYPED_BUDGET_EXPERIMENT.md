@@ -78,3 +78,50 @@ windows, independent task/citation adjudication, equal end-to-end system cost,
 whole-lifecycle source revocation/retraining, independent NDU winner selection,
 exact-head blocking-ci and owner-reviewed CNS/Control publication. `main`
 remains unchanged. Keep this child PR Draft and production_accepted=false.
+
+## Original LoCoMo negative result (2026-10-14, local-only)
+
+Original publicly published source artifact: GitHub Actions artifact 11586991191,
+ZIP SHA256 `07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af`,
+LoCoMo source JSON SHA256 `79fa87e90f04081343b8c8debecb80a9a6842b76a7aa537dc9fdf651ea698ff4`.
+The actual source archive was downloaded and byte-verified locally. It contains
+10 conversation families and 1,986 published questions. A **source-first,
+question-text-only** retrospective experiment selected 92 questions across
+temporal/episodic and non-temporal/semantic heuristic types, built 1,472
+top-16 question/evidence pairs, trained over 768 TRAIN candidates
+(42 publisher-weak positives and 726 negatives), and independently opened
+publisher-weak support for the 704 non-TRAIN pairs. Zero-hit source-first
+shortlists remained in the denominator.
+
+For this local diagnostic, features came from deterministic **96D hashed lexical
+overlap**, not the archived pretrained Encoder. The candidate Heads really
+executed PyTorch optimizer updates. Training was isolated from withheld
+labels; the original uniform-sampling predictions were sealed before scoring.
+A subsequent **post-hoc, exploratory** TRAIN-only binary-balanced sampler
+repeated minority TRAIN rows only and used identical two-Head parameters,
+optimizer/minibatch budgets and one-Head-per-query inference for typed vs
+untyped. Weak publisher support hit@1:
+
+| Historical split | BM25 | Uniform typed/untyped | Balanced typed/untyped | Any weak support in top16 |
+| --- | ---: | ---: | ---: | ---: |
+| SELECT (16 questions) | 4 | 0/0 | 3/4 | 10 |
+| FUTURE_A (8 questions, 1 family) | 2 | 0/0 | 2/2 | 5 |
+| FUTURE_B (8 questions, 1 family) | 3 | 0/0 | 3/2 | 7 |
+| RETENTION (12 questions, 6 previously exposed families) | 5 | 0/0 | 4/3 | 7 |
+
+This **fails** a convincing typed-memory superiority claim: all original
+uniform-trained Heads selected zero annotated Top-1 supports, and the new
+balanced variant has mixed gains/losses on tiny retrospective families.
+Row-wise relevance accuracy is highly inflated by negatives; query-level
+evidence hit and actual Reader answers are required. No strong hybrid RAG,
+semantic answer completion, prospective calendar future, independent review,
+compression benefit, or real parameter unlearning is established. The reported
+future_a/future_b are historical partitions, **not time-forward observations**.
+
+Local dependency-shim suite validates 35 physical training and negative
+mechanism cases; this is NOT exact repository/hosted CI. A separate
+local source bundle containing the LoCoMo source-first CLI, six safetensors
+Head-bank persistence/readback code, 14 source/tamper regressions and
+hosted original-archive workflow was prepared, but is **not part of this Git
+commit** unless those paths are separately imported and checked at exact SHA.
+Do not claim an unmerged local source was executed in GitHub Actions.
