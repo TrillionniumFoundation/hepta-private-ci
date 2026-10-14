@@ -160,7 +160,13 @@ impl PreparedPopulationSparseConfigV2 {
         &self,
         input: &PopulationSparseTickV2,
         previous: Option<&PopulationSparseCheckpointV2>,
-    ) -> Result<(PopulationSparseCheckpointV2, PopulationSparseSignalReceiptV2), PopulationSparseError> {
+    ) -> Result<
+        (
+            PopulationSparseCheckpointV2,
+            PopulationSparseSignalReceiptV2,
+        ),
+        PopulationSparseError,
+    > {
         population_sparse_tick_v2_inner(
             &self.config,
             input,
@@ -178,7 +184,13 @@ impl PreparedPopulationSparseConfigV2 {
         input: &PopulationSparseTickV2,
         forwarded_temporal_q24: &[i64],
         previous: Option<&PopulationSparseCheckpointV2>,
-    ) -> Result<(PopulationSparseCheckpointV2, PopulationSparseSignalReceiptV2), PopulationSparseError> {
+    ) -> Result<
+        (
+            PopulationSparseCheckpointV2,
+            PopulationSparseSignalReceiptV2,
+        ),
+        PopulationSparseError,
+    > {
         population_sparse_tick_v2_inner(
             &self.config,
             input,

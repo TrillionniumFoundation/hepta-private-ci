@@ -335,7 +335,10 @@ fn prepared_v3_matches_exact_unprepared_64_tick_replay_and_fences_generation() {
         };
         let a = checked(gated_sparse_tick_v3(&cfg, &input, normal.as_ref()));
         let b = checked(prepared.tick(&input, cached.as_ref()));
-        assert_eq!(a, b, "prepared and unprepared Q24 results must be identical");
+        assert_eq!(
+            a, b,
+            "prepared and unprepared Q24 results must be identical"
+        );
         normal = Some(a.0);
         cached = Some(b.0);
     }

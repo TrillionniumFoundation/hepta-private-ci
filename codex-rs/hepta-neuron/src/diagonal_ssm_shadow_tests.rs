@@ -291,7 +291,10 @@ fn prepared_ssm_matches_original_64_tick_replay_even_with_irregular_time() {
         };
         let a = checked(diagonal_ssm_tick_v1(&cfg, &input, normal.as_ref()));
         let b = checked(prepared.tick(&input, cached.as_ref()));
-        assert_eq!(a, b, "prepared SSM must preserve original Q24 checkpoint bytes");
+        assert_eq!(
+            a, b,
+            "prepared SSM must preserve original Q24 checkpoint bytes"
+        );
         normal = Some(a.0);
         cached = Some(b.0);
     }
@@ -300,7 +303,9 @@ fn prepared_ssm_matches_original_64_tick_replay_even_with_irregular_time() {
     let newer = checked(PreparedDiagonalSsmConfigV1::new(changed));
     assert_ne!(prepared.digest(), newer.digest());
     assert_eq!(
-        newer.tick(&tick(65, 65 * 100 + 65 * 65), cached.as_ref()).err(),
+        newer
+            .tick(&tick(65, 65 * 100 + 65 * 65), cached.as_ref())
+            .err(),
         Some(DiagonalSsmErrorV1::ConfigDrift)
     );
 }

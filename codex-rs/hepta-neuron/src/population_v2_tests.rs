@@ -308,10 +308,14 @@ fn prepared_shadow_64_tick_is_exact_legacy_copy_and_bound_to_generation() {
         let mut old_input = original.clone();
         old_input.temporal_drive_q24 = forwarded.clone();
         let slow = checked(population_sparse_tick_v2(
-            &legacy_config, &old_input, legacy.as_ref(),
+            &legacy_config,
+            &old_input,
+            legacy.as_ref(),
         ));
         let fast = checked(prepared.tick_from_temporal_override(
-            &original, &forwarded, optimized.as_ref(),
+            &original,
+            &forwarded,
+            optimized.as_ref(),
         ));
         assert_eq!(fast, slow);
         legacy = Some(slow.0);
@@ -327,9 +331,9 @@ fn prepared_shadow_64_tick_is_exact_legacy_copy_and_bound_to_generation() {
     );
     let old_state = legacy.expect("64 old checkpoints");
     assert_eq!(
-        new_prepared.tick_from_temporal_override(
-            &tick(65, 65 * 20), &[Q, Q], Some(&old_state),
-        ).err(),
+        new_prepared
+            .tick_from_temporal_override(&tick(65, 65 * 20), &[Q, Q], Some(&old_state),)
+            .err(),
         Some(PopulationSparseError::ConfigDrift)
     );
 }

@@ -11,10 +11,10 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 
 use crate::population_v2::PopulationSparseCheckpointV2;
-use crate::population_v2::PreparedPopulationSparseConfigV2;
 use crate::population_v2::PopulationSparseConfigV2;
 use crate::population_v2::PopulationSparseError;
 use crate::population_v2::PopulationSparseTickV2;
+use crate::population_v2::PreparedPopulationSparseConfigV2;
 #[cfg(test)]
 use crate::population_v2::population_sparse_tick_v2;
 use crate::population_v2::population_sparse_tick_v2_from_temporal_override;
