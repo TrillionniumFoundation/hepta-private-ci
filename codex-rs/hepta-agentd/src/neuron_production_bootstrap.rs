@@ -23,6 +23,7 @@ use codex_hepta_neuron::NeuronRuntime;
 use codex_hepta_types::StableId;
 
 use crate::neuron_effect_bootstrap::NeuronEffectBootstrapErrorV1;
+#[cfg(unix)]
 use crate::neuron_effect_bootstrap::verify_neuron_effect_scope_v1;
 use crate::neuron_ndu_read::NduReadVerifierV1;
 use crate::neuron_runtime::AgentdNeuronOwner;
