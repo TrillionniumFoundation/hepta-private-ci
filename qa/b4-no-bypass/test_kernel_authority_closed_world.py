@@ -221,6 +221,29 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "no public raw Cell Split effect dispatch without Agentd admission",
         )
 
+        # A second public mutation entrypoint can bypass a caller inventory
+        # that only tracks the original symbol. Freeze both operator and
+        # Agentd public function sets; any new admitted entry needs a separate
+        # security review and explicit inventory update.
+        self.assertEqual(
+            self.public_free_functions(
+                "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"
+            ),
+            {
+                "run_pinned_cell_split_execution_v1",
+                "run_pinned_cell_split_execution_with_admission_v1",
+            },
+            "operator Cell Split public API widened without security review",
+        )
+        self.assertEqual(
+            self.public_free_functions("codex-rs/hepta-agentd/src/cell_split_execution.rs"),
+            {
+                "advance_selected_cell_split_v1",
+                "advance_scope_bound_selected_cell_split_v1",
+            },
+            "Agentd Cell Split public ingress widened without security review",
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
