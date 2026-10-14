@@ -309,6 +309,9 @@ def test_dataset_blank_physical_row_rejected(tmp_path):
 def test_dataset_symlink_file_rejected(tmp_path):
     p = generated(tmp_path)
     link = tmp_path / 'dataset-link.jsonl'
-    link.symlink_to(p)
+    try:
+        link.symlink_to(p)
+    except (NotImplementedError, OSError):
+        pytest.skip('symlink creation unavailable on this host')
     with pytest.raises(ValueError, match='symlink-free'):
         load_dataset(link)

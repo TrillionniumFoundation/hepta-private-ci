@@ -406,4 +406,4 @@ def test_v3_fixed_option_inventory_validated_before_real_model_attempt():
     rows = dataset(8)
     rows[0]['options'] = ['yes', 'no']
     with pytest.raises(ValueError, match='identical ordered choices'):
-        run_real_encoder_matrix(rows, D('d'), five_arm_plan(), five_arm=True)
+        run_real_encoder_matrix(rows, D('a'), five_arm_plan(), five_arm=True)
