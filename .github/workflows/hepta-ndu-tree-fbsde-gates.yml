@@ -1,0 +1,22 @@
+name: Hepta NDU Tree FBSDE global obstruction research
+on:
+  pull_request:
+    paths:
+      - 'experiments/ndu_tree_fbsde_gates/**'
+      - '.github/workflows/hepta-ndu-tree-fbsde-gates.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  exact-rational-oracle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record exact checkout
+        run: |
+          git rev-parse HEAD
+          python3 --version
+          sha256sum experiments/ndu_tree_fbsde_gates/*.py
+      - name: Exact rational obstruction and finite tree tests
+        run: python3 -m unittest discover -s experiments/ndu_tree_fbsde_gates -p 'test_*.py' -v
