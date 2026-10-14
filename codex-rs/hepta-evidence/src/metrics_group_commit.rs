@@ -225,10 +225,8 @@ impl MetricsGroupCommitV1 {
             #[cfg(unix)]
             {
                 use std::os::unix::fs::FileExt as _;
-                self.file.read_exact_at(
-                    &mut tail,
-                    self.bytes - self.last_row_len as u64,
-                )?;
+                self.file
+                    .read_exact_at(&mut tail, self.bytes - self.last_row_len as u64)?;
             }
             #[cfg(not(unix))]
             {
@@ -341,8 +339,7 @@ impl MetricsGroupCommitV1 {
             self.poisoned = true;
             return Err(MetricsJournalErrorV1::Io(error));
         }
-        let sync_latency_micros =
-            u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
+        let sync_latency_micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
         self.bytes = next_bytes;
         self.sequence = sequence;
         self.committed_rows = next_rows;
