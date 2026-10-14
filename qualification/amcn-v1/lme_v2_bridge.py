@@ -35,10 +35,11 @@ class AMCNShadowMemory(Memory):
 
     def __init__(self, memory_params: dict[str, object]):
         super().__init__(memory_params)
-        allowed = {"max_records", "max_text_bytes", "top_k", "per_item_chars"}
+        allowed = {"max_records", "max_text_bytes", "max_total_bytes", "top_k", "per_item_chars"}
         require(set(memory_params) <= allowed, "unknown AMCN shadow configuration")
         self.max_records = self._bounded(memory_params.get("max_records", 100000), 1, 250000)
         self.max_text_bytes = self._bounded(memory_params.get("max_text_bytes", 4096), 128, 32768)
+        self.max_total_bytes = self._bounded(memory_params.get("max_total_bytes", 134217728), 1048576, 1073741824)
         self.top_k = self._bounded(memory_params.get("top_k", 4), 1, 16)
         self.per_item_chars = self._bounded(memory_params.get("per_item_chars", 2800), 128, 8192)
         self._ids = set()
@@ -62,6 +63,7 @@ class AMCNShadowMemory(Memory):
         require(record["sha256"] == sha256(raw).hexdigest(), "source digest drift")
         require(record["id"] not in self._ids, "duplicate source ID")
         require(len(self._docs) < self.max_records, "AMCN shadow source backpressure")
+        require(self._bytes + len(raw) <= self.max_total_bytes, "AMCN total byte backpressure")
         self._ids.add(record["id"])
         idx = len(self._docs)
         self._docs.append(record)
@@ -112,6 +114,8 @@ class AMCNShadowMemory(Memory):
         with self._lock:
             require(tid not in self._ids, "duplicate trajectory")
             require(len(self._docs) + len(prepared) <= self.max_records, "bounded ingestion")
+            require(self._bytes + sum(len(row["text"].encode("utf-8")) for row in prepared)
+                    <= self.max_total_bytes, "atomic total ingestion byte budget")
             for row in prepared:
                 require(row["id"] not in self._ids, "duplicate record")
             for row in prepared:
