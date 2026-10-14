@@ -5,6 +5,7 @@ use super::metrics_group_commit::MetricPhaseV1;
 use super::metrics_group_commit::MetricSampleV1;
 use super::metrics_group_commit::MetricsGroupCommitV1;
 use super::metrics_group_commit::MetricsJournalErrorV1;
+use super::metrics_group_commit::MetricsOriginalLocalFrontierV1;
 use codex_hepta_types::PhaseMetricEventV1;
 use codex_hepta_types::PhaseMetricKindV1;
 use codex_hepta_types::PhaseMetricSinkErrorV1;
@@ -31,6 +32,7 @@ const METRICS_BARRIER_TIMEOUT: Duration = Duration::from_secs(5);
 enum WriterCommandV1 {
     Record(MetricSampleV1),
     Flush(SyncSender<bool>),
+    ReadFrontier(SyncSender<Option<MetricsOriginalLocalFrontierV1>>),
     Stop(SyncSender<bool>),
 }
 
@@ -123,6 +125,37 @@ impl DurablePhaseMetricSinkV1 {
             dropped: self.dropped(),
             persisted_batches: self.health.persisted_batches.load(Ordering::Acquire),
             persisted_rows: self.health.persisted_rows.load(Ordering::Acquire),
+        }
+    }
+
+    /// Durably flush all earlier queued observations on the original Evidence
+    /// owner and return only its locally verified WAL sequence/head/byte frontier.
+    /// The reply uses the same bounded queue/timeout and latches failure. It
+    /// does not sign, independently attest, authorize or replay any CellSplit.
+    pub fn local_original_frontier(
+        &self,
+    ) -> Result<MetricsOriginalLocalFrontierV1, PhaseMetricSinkErrorV1> {
+        if !self.healthy() {
+            return Err(PhaseMetricSinkErrorV1::Unavailable);
+        }
+        let (tx, rx) = sync_channel(1);
+        match self.channel.try_send(WriterCommandV1::ReadFrontier(tx)) {
+            Ok(()) => {}
+            Err(TrySendError::Full(_)) => {
+                self.health.healthy.store(false, Ordering::Release);
+                return Err(PhaseMetricSinkErrorV1::Backpressure);
+            }
+            Err(TrySendError::Disconnected(_)) => {
+                self.health.healthy.store(false, Ordering::Release);
+                return Err(PhaseMetricSinkErrorV1::Unavailable);
+            }
+        }
+        match rx.recv_timeout(METRICS_BARRIER_TIMEOUT) {
+            Ok(Some(frontier)) if self.healthy() => Ok(frontier),
+            _ => {
+                self.health.healthy.store(false, Ordering::Release);
+                Err(PhaseMetricSinkErrorV1::Unavailable)
+            }
         }
     }
 
@@ -259,6 +292,21 @@ fn writer_loop(
                 });
                 if result.is_err() {
                     health.healthy.store(false, Ordering::Release);
+                    break;
+                }
+            }
+            Ok(WriterCommandV1::ReadFrontier(reply)) => {
+                // FIFO channel ordering plus a real fsync: this is never a
+                // count inferred from accepted-but-undurable Record commands.
+                let frontier = flush(&mut writer, &health)
+                    .and_then(|()| writer.read_local_original_frontier())
+                    .ok();
+                let healthy = frontier.is_some();
+                if !healthy {
+                    health.healthy.store(false, Ordering::Release);
+                }
+                let _ = reply.send(frontier);
+                if !healthy {
                     break;
                 }
             }

@@ -53,6 +53,19 @@ pub struct MetricsCommitReceiptV1 {
     pub sync_latency_micros: u64,
 }
 
+/// Original-owner-local, already-fsynced Evidence WAL frontier.
+///
+/// This is NOT an external signature, anti-rollback custody, permission,
+/// NDU admission or proof of a physical CellSplit effect. Independent
+/// Observer high-water evidence must bind and exceed this local readback.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct MetricsOriginalLocalFrontierV1 {
+    pub sequence: u64,
+    pub committed_rows: u64,
+    pub head_digest: Digest32,
+    pub wal_bytes: u64,
+}
+
 #[derive(Debug)]
 pub enum MetricsJournalErrorV1 {
     Io(std::io::Error),
@@ -369,6 +382,28 @@ impl MetricsGroupCommitV1 {
 
     pub fn committed_head(&self) -> Digest32 {
         self.head
+    }
+
+    /// Verify the original WAL inode, private owner marker, parent directory,
+    /// exact current length and final fsynced row before exporting a local
+    /// diagnostic frontier. Staged rows are deliberately excluded. Never
+    /// treat this cached-owner readback as independently signed custody.
+    pub fn read_local_original_frontier(
+        &mut self,
+    ) -> Result<MetricsOriginalLocalFrontierV1, MetricsJournalErrorV1> {
+        if self.poisoned {
+            return Err(MetricsJournalErrorV1::Poisoned);
+        }
+        if let Err(error) = self.verify_original_frontier() {
+            self.poisoned = true;
+            return Err(error);
+        }
+        Ok(MetricsOriginalLocalFrontierV1 {
+            sequence: self.sequence,
+            committed_rows: self.committed_rows,
+            head_digest: self.head,
+            wal_bytes: self.bytes,
+        })
     }
 
     pub fn flush(&mut self) -> Result<Option<MetricsCommitReceiptV1>, MetricsJournalErrorV1> {
