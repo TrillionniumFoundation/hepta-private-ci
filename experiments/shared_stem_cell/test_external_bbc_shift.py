@@ -37,6 +37,26 @@ class ShiftTests(unittest.TestCase):
         with self.assertRaises(b.SourceError):
             b.score_sealed(frozen, labels, rows)
 
+    def test_unsupported_category_high_confidence_is_reported_not_scored(self):
+        rows = b.public_cohort(b.sample(self.texts()))
+        labels = ["entertainment" if i % 8 == 0 else "business" for i in range(128)]
+        probabilities = {arm: [[0.01, 0.01, 0.96, 0.02] for _ in rows] for arm in b.ARMS}
+        report = b.score_sealed(probabilities, labels, rows)
+        for arm in b.ARMS:
+            score = report["scores"][arm]
+            self.assertEqual(score["proxy_scored"], 112)
+            self.assertEqual(score["proxy_correct"], 112)
+            self.assertAlmostEqual(score["proxy_brier_uncalibrated"], 0.0022)
+            unknown = score["unsupported_confidence"]
+            self.assertEqual(unknown["cases"], 16)
+            self.assertEqual(unknown["top1_at_least_0_8"], 16)
+            self.assertEqual(unknown["top1_at_least_0_95"], 16)
+            self.assertEqual(unknown["per_cell"]["0"]["cases"], 16)
+            self.assertEqual(unknown["per_cell"]["1"]["cases"], 0)
+        self.assertTrue(report["unsupported_confidence_is_not_a_fifth_class_prediction"])
+        self.assertFalse(report["new_ood_calibration_performed"])
+        self.assertFalse(report["production_accepted"])
+
     def test_missing_arm_malformed_probs_and_bad_source_reject(self):
         rows = b.public_cohort(b.sample(self.texts()))
         labels = ["business"] * 120 + ["entertainment"] * 8

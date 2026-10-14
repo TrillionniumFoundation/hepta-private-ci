@@ -112,13 +112,25 @@ def score_sealed(predictions, labels, rows, *, source_revision=REVISION):
         require(type(probabilities) is list and len(probabilities) == len(rows),
                 "missing source prediction arm")
         correct, cells, per_class = 0, {}, {}
+        unsupported_confidences, supported_confidences, proxy_brier = [], [], 0.0
+        unsupported_cells = {cell: {"cases": 0, "top1_at_least_0_8": 0,
+                                    "top1_at_least_0_95": 0} for cell in (0, 1)}
         for idx, (values, label, row) in enumerate(zip(probabilities, gold, rows)):
             require(type(values) is list and len(values) == 4
                     and all(type(p) in (float, int) and 0 <= p <= 1 for p in values)
                     and abs(sum(values) - 1) <= 1e-5,
                     "invalid complete source probability vector")
+            top1 = max(values)
             if label is None:
+                unsupported_confidences.append(top1)
+                bucket = unsupported_cells[row["cell"]]
+                bucket["cases"] += 1
+                bucket["top1_at_least_0_8"] += int(top1 >= 0.8)
+                bucket["top1_at_least_0_95"] += int(top1 >= 0.95)
                 continue
+            supported_confidences.append(top1)
+            proxy_brier += sum((v - float(j == label)) ** 2
+                               for j, v in enumerate(values))
             predicted = max(range(4), key=lambda j: values[j])
             win = predicted == label
             correct += win
@@ -130,13 +142,24 @@ def score_sealed(predictions, labels, rows, *, source_revision=REVISION):
         results[arm] = {"proxy_scored": len(covered), "proxy_correct": correct,
                         "proxy_accuracy": correct / len(covered),
                         "per_cell": {str(k): v for k, v in sorted(cells.items())},
-                        "by_bbc_category": per_class}
+                        "by_bbc_category": per_class,
+                        "proxy_brier_uncalibrated": proxy_brier / len(covered),
+                        "proxy_mean_top1_confidence": sum(supported_confidences) / len(covered),
+                        "unsupported_confidence": {
+                            "cases": len(unsupported),
+                            "mean_top1": sum(unsupported_confidences) / len(unsupported),
+                            "top1_at_least_0_8": sum(v >= 0.8 for v in unsupported_confidences),
+                            "top1_at_least_0_95": sum(v >= 0.95 for v in unsupported_confidences),
+                            "per_cell": {str(k): v for k, v in sorted(unsupported_cells.items())},
+                        }}
     return {"schema": SCHEMA, "source": SOURCE, "revision": source_revision,
             "sample_count": len(rows), "source_labels": dict(Counter(labels)),
             "proxy_eligible": len(covered), "unsupported": len(unsupported),
             "unsupported_category": UNSUPPORTED, "proxy_mapping": PROXY_CLASSES,
             "scores": results, "selected_arm": None,
-            "same_label_ontology_verified": False, "independent_source_family": True,
+            "same_label_ontology_verified": False,
+            "unsupported_confidence_is_not_a_fifth_class_prediction": True,
+            "new_ood_calibration_performed": False, "independent_source_family": True,
             "pretraining_clean": False,
             "public_articles_from_2004_2005_not_future_data": True,
             "external_independent_model_gain_proved": False,

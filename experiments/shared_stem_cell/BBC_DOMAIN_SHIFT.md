@@ -27,6 +27,12 @@ change the production model, or silently rework the old research experiment.
   has no AG counterpart; include it in the denominator for source support,
   but do **not** pretend it has a four-way ground-truth label.
   Unknown labels, source drift, invalid outputs or missing classes reject.
+- Report frozen-model top-1 confidence on ALL unsupported entertainment examples,
+  including counts above the **predeclared 0.80 and 0.95** thresholds and
+  per-Cell counts, rather than silently discarding high-confidence unsupported
+  outputs. Report proxy-label Brier loss only on the mapped categories.
+  These are uncalibrated confidence diagnostics, **not** correctness on the
+  fifth category, refusal ability or a calibrated OOD rejection threshold.
 - The complete four-arm prediction table and label-free cohort are
   separately byte-hash-checked and sealed **before any BBC label lookup**.
   Tampered/duplicate/noncanonical files reject without calling the label
