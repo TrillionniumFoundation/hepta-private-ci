@@ -307,7 +307,7 @@ fn amcn_epoch_shadow_writer_pending_refuses_second_head_without_waiting_for_mode
     let first = shared.clone();
     let original = base.clone();
 
-    let thread = thread::spawn(move || {
+    let first_thread = thread::spawn(move || {
         let mut lease = first.candidate_fence(original);
         lease.with_fenced_candidate(&bound, &req, || {
             entered_tx.send(()).expect("held read lease");
@@ -349,7 +349,7 @@ fn amcn_epoch_shadow_writer_pending_refuses_second_head_without_waiting_for_mode
         (reply, counter.load(Ordering::SeqCst))
     });
     release_tx.send(()).expect("release first reader");
-    thread.join().expect("first model").expect("started before withdrawal pending");
+    first_thread.join().expect("first model").expect("started before withdrawal pending");
     writer.join().expect("writer").expect("withdrawal completed");
     let (second_reply, new_calls) = second.join().expect("second reader");
     assert_eq!(second_reply, Err(NeuronModelError::Rejected));
@@ -370,6 +370,34 @@ fn amcn_epoch_shadow_unregistered_head_is_never_a_grant() {
     });
     assert_eq!(result, Err(NeuronModelError::Rejected));
     assert_eq!(count.load(Ordering::SeqCst), 0);
+}
+
+#[test]
+fn amcn_epoch_shadow_2048_distinct_cells_share_one_bounded_encoder_epoch() {
+    let h = header();
+    let manifests: Vec<Digest32> = (0..2048)
+        .map(|n| d(&format!("shared-stem-cell:{n}")))
+        .collect();
+    let index = AmcnShadowEpochIndex::from_external_floor(
+        h.clone(), &h, manifests.iter().copied(), [],
+    ).expect("source/Artifact owner snapshot enrolled research population");
+    let req = request();
+    let called = AtomicUsize::new(0);
+    let started = Instant::now();
+    for manifest in manifests {
+        let b = binding(&req, &h, manifest);
+        let mut reader = index.candidate_fence(h.clone());
+        reader.with_fenced_candidate(&b, &req, || {
+            called.fetch_add(1, Ordering::Relaxed);
+            Ok::<_, NeuronModelError>(())
+        }).expect("same shared Stem epoch for independently enrolled tiny Heads");
+    }
+    assert_eq!(called.load(Ordering::Relaxed), 2048);
+    assert_eq!(index.header().expect("header").sequence, 1);
+    eprintln!(
+        "AMCN 2048 distinct source-bound Head lookups (fixture, not host p95): {} us",
+        started.elapsed().as_micros()
+    );
 }
 
 #[test]
