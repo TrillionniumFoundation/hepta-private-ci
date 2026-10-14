@@ -4,6 +4,16 @@ use std::cell::RefCell;
 use std::collections::BTreeMap;
 use std::fs;
 use std::rc::Rc;
+use std::sync::Arc;
+use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
+
+use codex_hepta_types::Digest32;
+use codex_hepta_types::PhaseMetricEventV1;
+use codex_hepta_types::PhaseMetricKindV1;
+use codex_hepta_types::PhaseMetricSinkErrorV1;
+use codex_hepta_types::PhaseMetricSinkV1;
 
 use super::CellSplitExecutionErrorV1;
 use super::CellSplitExecutionIntentV1;
@@ -200,6 +210,106 @@ fn plan() -> CellSplitExecutionPlanV1 {
             "supervisor-owner".into(),
         ],
     }
+}
+
+// A deliberately untrusted telemetry adapter: status can claim healthy even
+// when record fails. The owner must latch the observed error itself.
+#[derive(Debug, Default)]
+struct CapturedPhaseMetrics {
+    events: Mutex<Vec<PhaseMetricEventV1>>,
+    refuse_records: AtomicBool,
+}
+
+impl PhaseMetricSinkV1 for CapturedPhaseMetrics {
+    fn record(&self, event: PhaseMetricEventV1) -> Result<(), PhaseMetricSinkErrorV1> {
+        if self.refuse_records.load(Ordering::SeqCst) {
+            return Err(PhaseMetricSinkErrorV1::Backpressure);
+        }
+        self.events.lock().expect("fixture metrics").push(event);
+        Ok(())
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
+}
+
+#[test]
+fn coordinator_observes_real_cas_and_cns_port_rpcs_and_verified_signatures() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let metrics = Arc::new(CapturedPhaseMetrics::default());
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("frozen owner")
+    .with_metric_sink(metrics.clone());
+
+    for _ in 0..3 {
+        assert!(owner.advance().expect("owner effect").is_some());
+    }
+    assert!(!owner.metrics_poisoned);
+    assert_eq!(state.borrow().executions, 3);
+    let expected = [
+        PhaseMetricKindV1::Cas,
+        PhaseMetricKindV1::Signature,
+        PhaseMetricKindV1::Signature,
+        PhaseMetricKindV1::Cns,
+        PhaseMetricKindV1::Signature,
+    ];
+    let events = metrics.events.lock().expect("observed phases");
+    assert_eq!(events.len(), expected.len());
+    for (event, phase) in events.iter().zip(expected) {
+        assert_eq!(event.phase, phase);
+        assert_eq!(
+            event.scope_digest,
+            Digest32::from_str(&plan().scope_digest).expect("exact scope digest")
+        );
+        assert!(!event.operation_digest.is_zero());
+        assert!(event.succeeded);
+    }
+}
+
+#[test]
+fn failed_telemetry_cannot_replay_effect_or_hide_pending_owner_reconciliation() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut port = FixturePort::new(state.clone());
+    port.drop_ack = true;
+    let metrics = Arc::new(CapturedPhaseMetrics::default());
+    metrics.refuse_records.store(true, Ordering::SeqCst);
+    let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+        .expect("frozen owner")
+        .with_metric_sink(metrics);
+
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::External(_))
+    ));
+    assert_eq!(state.borrow().executions, 1);
+    assert!(owner.pending);
+    assert!(owner.metrics_poisoned);
+
+    // No second dispatch: read the original owner result after lost ACK.
+    let receipt = owner.advance().expect("reconcile").expect("original receipt");
+    assert_eq!(receipt.intent.step.index(), 0);
+    assert_eq!(state.borrow().executions, 1);
+    assert_eq!(owner.completed_steps(), 1);
+    assert!(!owner.pending);
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(
+            "cell split telemetry unavailable for new effects"
+        ))
+    ));
+    assert_eq!(state.borrow().executions, 1);
 }
 
 #[test]
