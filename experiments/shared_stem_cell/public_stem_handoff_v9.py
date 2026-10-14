@@ -17,7 +17,8 @@ import sys
 import tempfile
 
 from public_stem_material_v8 import (
-    RECEIPT, AdmissionError, canonical, sha, strict_json, validate_plan,
+    RECEIPT, PROBE_TEXTS, probe_input_digest, AdmissionError, canonical, sha,
+    strict_json, validate_plan,
 )
 
 SCHEMA = "hepta.public-stem-v9-research-handoff.v1"
@@ -110,6 +111,10 @@ def handoff(plan: dict, material: dict, physical: dict, model_root: Path) -> tup
             physical.get("normalization") == plan["profile"]["normalization"] and
             physical.get("feature_width") == plan["profile"]["width"],
             "V8 physical receipt does not match pinned material or profile")
+    require(physical.get("probe_input_sha256") == probe_input_digest(PROBE_TEXTS)
+            and type(physical.get("probe_count")) is int
+            and physical["probe_count"] == len(PROBE_TEXTS),
+            "V8 physical input census is absent or changed")
     require(physical.get("forward_calls") == 2 and
             type(physical.get("feature_sha256")) is str and
             HEX64.fullmatch(physical["feature_sha256"]) and
@@ -134,6 +139,7 @@ def handoff(plan: dict, material: dict, physical: dict, model_root: Path) -> tup
                "plan_sha256": sha(canonical(plan)),
                "material_sha256": sha(canonical(material)),
                "physical_receipt_sha256": sha(canonical(physical)),
+               "probe_input_sha256": probe_input_digest(PROBE_TEXTS),
                "profile_sha256": sha(canonical(profile)),
                "snapshot_sha256": sha(canonical(manifest)),
                "file_digests_rehashed": True,
