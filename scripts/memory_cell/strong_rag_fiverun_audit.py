@@ -426,9 +426,7 @@ def compare_five(runs):
             prior = {
                 (
                     runs[name][phase]["rows"][key]["answer"],
-                    runs[name][phase]["rows"][key]["receipt"][
-                        "generated_ids_digest"
-                    ],
+                    runs[name][phase]["rows"][key]["receipt"]["generated_ids_digest"],
                 )
                 for name in original
             }
