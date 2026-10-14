@@ -174,6 +174,9 @@ def run(archive, output, *, threads=1, repetitions=513, warmup=20):
         "maximum_logits_difference":difference,"argmax_flips":flips,
         "cpu_ns":{k:quantiles(v) for k,v in clocks.items()},
         "wall_ns":{k:quantiles(v) for k,v in walls.items()},
+        "cpu_samples_ns":clocks, "wall_samples_ns":walls,
+        "raw_measurements_are_complete":all(
+            len(rows)==repetitions for rows in (*clocks.values(), *walls.values())),
         "cpu_attempts_over_original_limit":{k:sum(v>MAX_CPU_NS for v in ls)
                                              for k,ls in clocks.items()},
         "cpu_all_original_samples_retained":True,
