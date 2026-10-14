@@ -1751,3 +1751,125 @@ fn oversized_owner_directory_fails_before_writing_frozen_plan() {
     assert!(!root.path().join("cell-split-frozen-plan.json").exists());
     assert_eq!(state.borrow().executions, 0);
 }
+
+#[test]
+fn post_effect_selector_revocation_must_not_acknowledge_a_committed_effect() {
+    // Exercise each CAS/migration/CNS/Supervisor step and both post-effect
+    // admission windows; withdrawal never makes a second effect admissible.
+    for completed_predecessors in 0..4 {
+        for withdrawn_on_check in [3_usize, 4] {
+            let root = private_tempdir();
+            let state = Rc::new(RefCell::new(Observed::default()));
+            {
+                let mut owner = CellSplitExecutionOwnerV1::open(
+                    root.path(),
+                    plan(),
+                    trust(),
+                    FixturePort::new(state.clone()),
+                )
+                .expect("single owner");
+                for _ in 0..completed_predecessors {
+                    owner.advance().expect("predecessor").expect("receipt");
+                }
+                let mut checks = 0_usize;
+                let result = owner.advance_with_admission(|| {
+                    checks += 1;
+                    if checks == withdrawn_on_check {
+                        Err("independent Selector/NDU withdrawn".into())
+                    } else {
+                        Ok(())
+                    }
+                });
+                assert!(matches!(
+                    result,
+                    Err(CellSplitExecutionErrorV1::External(reason))
+                        if reason == "independent Selector/NDU withdrawn"
+                ));
+                assert_eq!(checks, withdrawn_on_check);
+                assert_eq!(owner.completed_steps(), completed_predecessors);
+                assert_eq!(state.borrow().executions, completed_predecessors + 1);
+                assert!(
+                    root.path()
+                        .join(format!(
+                            "cell-split-{completed_predecessors:02}-prepared.json"
+                        ))
+                        .exists()
+                );
+                assert!(
+                    !root
+                        .path()
+                        .join(format!(
+                            "cell-split-{completed_predecessors:02}-committed.json"
+                        ))
+                        .exists()
+                );
+            }
+            let mut reopened = CellSplitExecutionOwnerV1::open(
+                root.path(),
+                plan(),
+                trust(),
+                FixturePort::new(state.clone()),
+            )
+            .expect("reopen pending intent");
+            assert!(matches!(
+                reopened.advance_with_admission(|| Err("selection still withdrawn".into())),
+                Err(CellSplitExecutionErrorV1::External(reason))
+                    if reason == "selection still withdrawn"
+            ));
+            assert_eq!(state.borrow().executions, completed_predecessors + 1);
+            reopened
+                .advance_with_admission(|| Ok(()))
+                .expect("reconciled original signed receipt")
+                .expect("original receipt");
+            assert_eq!(reopened.completed_steps(), completed_predecessors + 1);
+            assert_eq!(
+                state.borrow().executions,
+                completed_predecessors + 1,
+                "recovery must not duplicate the original effect"
+            );
+        }
+    }
+}
+
+#[test]
+fn post_effect_admission_cannot_hide_local_plan_or_original_owner_drift() {
+    for tamper_original_owner in [false, true] {
+        let root = private_tempdir();
+        let state = Rc::new(RefCell::new(Observed::default()));
+        let mut owner = CellSplitExecutionOwnerV1::open(
+            root.path(),
+            plan(),
+            trust(),
+            FixturePort::new(state.clone()),
+        )
+        .expect("single owner");
+        let plan_path = root.path().join("cell-split-frozen-plan.json");
+        let mut checks = 0_usize;
+        let result = owner.advance_with_admission(|| {
+            checks += 1;
+            if checks == 3 && tamper_original_owner {
+                state.borrow_mut().commits.clear();
+            }
+            if checks == 4 && !tamper_original_owner {
+                fs::write(&plan_path, b"{}").expect("adversarial frozen plan drift");
+            }
+            Ok(())
+        });
+        if tamper_original_owner {
+            assert!(matches!(result, Err(CellSplitExecutionErrorV1::External(_))));
+            assert_eq!(checks, 3);
+        } else {
+            assert!(matches!(
+                result,
+                Err(CellSplitExecutionErrorV1::Invalid("frozen plan drift"))
+            ));
+            assert_eq!(checks, 4);
+        }
+        assert_eq!(owner.completed_steps(), 0);
+        assert_eq!(state.borrow().executions, 1);
+        assert!(root.path().join("cell-split-00-prepared.json").exists());
+        assert!(!root.path().join("cell-split-00-committed.json").exists());
+        assert!(owner.advance().is_err(), "ambiguous effect is not redispatched");
+        assert_eq!(state.borrow().executions, 1);
+    }
+}
