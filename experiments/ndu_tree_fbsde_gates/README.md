@@ -94,11 +94,14 @@ uses the SAME public priors and costs, and retains a separate no-search and
 always-observe control.
 
 Measured local conditional EXPECTED utility on the single 160-case cohort:
-- no_search / frozen_gate: 0.562074, 0 inspections
+- no_search: 0.562074, 0 inspections
+- frozen_gate: 0.306736, zero inspections, 90 unsupported-class abstentions
 - fixed_depth_1: 0.561977, 160 inspections
 - cheap_linear: 0.730853, 121 inspections
 - learned_gate: 0.732948, 116 inspections
 - exact_tree: 0.743346, 93 inspections
+
+The original frozen 8-class Head outputs 90 unsupported labels (2 or 4); these are explicit zero-utility abstentions, NOT silently promoted to a legal STOP. Its corrected expected utility is 0.306736 over 70 legal and 90 abstained outputs. The trained gated and cheap linear Heads output only 0/1 for this panel.
 
 The gated Head's improvement over the cheap linear Head is ~0.002095 expected
 utility, despite materially greater fit CPU. The exact Bellman reference exceeds

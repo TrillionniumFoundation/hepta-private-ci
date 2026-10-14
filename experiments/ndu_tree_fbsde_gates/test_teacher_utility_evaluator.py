@@ -24,6 +24,17 @@ class TeacherUtilityTests(unittest.TestCase):
         self.assertEqual(r['arms']['exact_tree']['expected_regret_to_exact_tree'],0.)
         self.assertTrue(all(v['expected_regret_to_exact_tree']>=-1e-13 for v in r['arms'].values()))
         self.assertFalse(r['production_accepted'])
+        self.assertEqual(r['arms']['frozen_gate']['unsupported_class_abstentions'],90)
+        self.assertEqual(r['arms']['learned_gate']['unsupported_class_abstentions'],0)
+        self.assertEqual(r['arms']['cheap_linear']['unsupported_class_abstentions'],0)
+    def test_unsupported_class_not_relabelled_as_stop(self):
+        p=Path(self.temp.name,'unknown_output.json')
+        s=json.loads(self.s.read_text());s['predictions']['learned_gate']['future-0']=7
+        p.write_text(json.dumps(s))
+        new_hash=hashlib.sha256(p.read_bytes()).hexdigest()
+        scored=evaluate(self.f,self.f_sha,p,new_hash)
+        self.assertEqual(scored['arms']['learned_gate']['unsupported_class_abstentions'],1)
+        self.assertFalse(scored['p3_qualified'])
     def test_modified_seal_refused(self):
         p=Path(self.temp.name,'altered.json')
         s=json.loads(self.s.read_text());s['predictions']['learned_gate']['future-0']=1-s['predictions']['learned_gate']['future-0']

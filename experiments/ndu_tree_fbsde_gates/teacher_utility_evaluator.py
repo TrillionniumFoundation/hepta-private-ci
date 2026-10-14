@@ -56,7 +56,7 @@ def evaluate(future_path, future_sha, seal_path, seal_sha):
     if seal.get('future_source_digest')!=canon(rows):raise ValueError('future source binding mismatch')
     preds=seal.get('predictions')
     if type(preds) is not dict or set(preds)!={'frozen_gate','cheap_linear','learned_gate'}:raise ValueError('required no-change / trained controls')
-    ids=set();groups=set();out={name:[] for name in ARMS};counts={name:0 for name in ARMS};cost={name:Q(0) for name in ARMS}
+    ids=set();groups=set();out={name:[] for name in ARMS};counts={name:0 for name in ARMS};cost={name:Q(0) for name in ARMS};unsupported={name:0 for name in ARMS}
     for row in rows:
         case=row['case_id'];group=row['group_id']
         if type(case) is not str or type(group) is not str or type(row['observed_at']) is not int or row['observed_at']<10000 or case in ids or group in groups or group!=canon([row['prior'],row['cost']]):
@@ -70,10 +70,14 @@ def evaluate(future_path, future_sha, seal_path, seal_sha):
             arm_pred=preds[arm]
             if type(arm_pred) is not dict or case not in arm_pred or type(arm_pred[case]) is not int or not 0<=arm_pred[case]<8:
                 raise ValueError('missing/malformed future action')
-            picks[arm]=best_observe if arm_pred[case]==1 else 0
+            picks[arm]=-1 if arm_pred[case]>1 else best_observe if arm_pred[case]==1 else 0
         for name,act in picks.items():
-            out[name].append(v[act]);counts[name]+=int(act!=0)
-            if act:cost[name]+=c[act-1]
+            if act==-1:
+                # Unknown 8-class action is explicit abstain (zero), never reclassified as a legal stop.
+                out[name].append(Q(0));unsupported[name]+=1
+            else:
+                out[name].append(v[act]);counts[name]+=int(act!=0)
+                if act:cost[name]+=c[act-1]
     for arm,values in preds.items():
         if set(values)!=ids:raise ValueError('extra/missing sealed predictions')
     oracle=sum(out['exact_tree'],Q(0))/len(rows)
@@ -81,7 +85,7 @@ def evaluate(future_path, future_sha, seal_path, seal_sha):
     for name,arr in out.items():
         mean=sum(arr,Q(0))/len(arr)
         arms[name]={'expected_utility':float(mean),'expected_regret_to_exact_tree':float(oracle-mean),
-                    'inspection_count':counts[name],'mean_modelled_inspection_cost':float(cost[name]/len(rows)),
+                    'inspection_count':counts[name],'unsupported_class_abstentions':unsupported[name],'mean_modelled_inspection_cost':float(cost[name]/len(rows)),
                     'reasoning_training_cpu_ns':seal['gated_fit_cpu_ns'] if name=='learned_gate' else seal['linear_fit_cpu_ns'] if name=='cheap_linear' else 0,
                     'physical_encoder_forward_count':0}
     return {'schema':'hepta.ndu-tree.synthetic-utility-after-seal.v1',
