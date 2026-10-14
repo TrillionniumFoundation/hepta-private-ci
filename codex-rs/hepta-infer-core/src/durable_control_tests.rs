@@ -170,3 +170,122 @@ fn invalid_event_is_rejected_before_append() {
     drop(reopened);
     std::fs::remove_file(path).expect("cleanup");
 }
+
+#[derive(Debug, Default)]
+struct RecordedWalMetrics(std::sync::Mutex<Vec<PhaseMetricEventV1>>);
+
+impl PhaseMetricSinkV1 for RecordedWalMetrics {
+    fn record(
+        &self,
+        event: PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        self.0.lock().unwrap().push(event);
+        Ok(())
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
+}
+
+#[test]
+fn native_and_legacy_wal_fsync_emit_non_authorizing_phase_metrics() {
+    let path = path("wal-metrics");
+    let sink = std::sync::Arc::new(RecordedWalMetrics::default());
+    let mut owner = DurableInferenceControl::open(&path, 32)
+        .unwrap()
+        .with_metrics_sink(sink.clone());
+    assert!(owner.production_metrics_ready());
+    owner.submit(100, request()).expect("legacy fsync");
+    owner
+        .reserve_native(
+            native::NativeRequest {
+                request_id: "native.1".to_string(),
+                principal_id: "principal.1".to_string(),
+                worker_generation: 2,
+                model: "model".to_string(),
+                payload_digest: "a".repeat(64),
+            },
+            1,
+        )
+        .expect("native fsync");
+    assert!(owner.flush_production_metrics());
+    {
+        let events = sink.0.lock().unwrap();
+        assert_eq!(events.len(), 2);
+        assert_eq!(events[0].phase, PhaseMetricKindV1::Wal);
+        assert!(events[0].succeeded);
+        assert!(!events[0].scope_digest.is_zero());
+        assert!(!events[0].operation_digest.is_zero());
+    }
+    drop(owner);
+    let reopened = DurableInferenceControl::open(&path, 32).unwrap();
+    assert_eq!(reopened.get("request.1").unwrap().revision, 1);
+    assert!(reopened.native_record("native.1").is_some());
+    assert!(!reopened.production_metrics_ready());
+    drop(reopened);
+    fs::remove_file(path).unwrap();
+}
+
+#[derive(Debug)]
+struct RejectWalMetrics;
+
+impl PhaseMetricSinkV1 for RejectWalMetrics {
+    fn record(
+        &self,
+        _event: PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+    }
+
+    fn healthy(&self) -> bool {
+        false
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+    }
+}
+
+#[test]
+fn evidence_outage_is_not_an_authorization_failure_or_wal_retry() {
+    let path = path("wal-telemetry-failed");
+    let mut owner = DurableInferenceControl::open(&path, 32)
+        .unwrap()
+        .with_metrics_sink(std::sync::Arc::new(RejectWalMetrics));
+    assert!(!owner.production_metrics_ready());
+    assert_eq!(owner.submit(100, request()).unwrap().revision, 1);
+    assert!(!owner.production_metrics_ready());
+    assert!(!owner.flush_production_metrics());
+    // The WAL is still held under an exclusive writer lock. Reopening it
+    // with fs::read is forbidden by Windows share-mode semantics.
+    let committed_length = owner.file.metadata().unwrap().len();
+    assert_eq!(owner.submit(100, request()).unwrap().revision, 1);
+    assert_eq!(
+        owner.file.metadata().unwrap().len(),
+        committed_length,
+        "idempotent submit must not append another WAL event"
+    );
+    drop(owner);
+    let reopened = DurableInferenceControl::open(&path, 32).unwrap();
+    assert_eq!(reopened.get("request.1").unwrap().revision, 1);
+    drop(reopened);
+    fs::remove_file(path).unwrap();
+}
+
+// Direct library callers cannot bypass the higher-level worker's unsupported
+// platform denial by opening the production WAL independently.
+#[cfg(not(unix))]
+#[test]
+fn production_control_refuses_unsupported_platform() {
+    let path = path("non-unix-production");
+    assert!(matches!(
+        DurableInferenceControl::open_production(&path, 32),
+        Err(Error::InvalidIdentity(_))
+    ));
+    assert!(!path.exists());
+}
