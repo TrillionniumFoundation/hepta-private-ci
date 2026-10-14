@@ -1,0 +1,344 @@
+name: Hepta shared Stem actual execution (research only)
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/**"
+      - "experiments/shared_stem_head_matrix/**"
+      - ".github/workflows/hepta-shared-stem-execution.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: shared-stem-execution-${{ github.event.pull_request.number || github.ref }}
+  # Preserve started expensive model acquisition/inference; keep one running and one pending.
+  cancel-in-progress: false
+
+jobs:
+  mechanics-and-browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - name: Exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Isolated runtime
+        run: |
+          python3 -m venv "$RUNNER_TEMP/hepta-execution-env"
+          "$RUNNER_TEMP/hepta-execution-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          "$RUNNER_TEMP/hepta-execution-env/bin/pip" install numpy==2.2.6 safetensors==0.7.0 packaging==25.0 psutil==7.1.0 playwright==1.57.0 ruff==0.14.0 pillow==12.3.0 scikit-learn==1.8.0
+          "$RUNNER_TEMP/hepta-execution-env/bin/python" -c "import safetensors.torch; import packaging.version"
+          "$RUNNER_TEMP/hepta-execution-env/bin/python" -m playwright install --with-deps chromium
+      - name: Actual tests and browser comparison
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-execution-env/bin/python"
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-execution-source.txt"
+          "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-execution-source.txt"
+          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{execution,controls,wire,browser_loop,browser_recovery,checkpoint_conversion,public_smoke,public_media,control_evaluation,media_execution,hf_integration_checks,test_execution,test_browser,test_browser_recovery,test_checkpoint_conversion,test_media_execution,test_public_media,head_artifacts,test_head_artifacts,test_modality_probe,test_generation_contract,head_batch,head_batch_study,test_head_batch,head_training,head_training_study,test_head_training,split_learning,split_study,test_split_learning,stopping,stopping_study,test_stopping,test_materialization,calibrated_fusion,test_calibrated_fusion,choice_fusion,test_choice_fusion,feature_replay,test_feature_replay,consolidation,consolidation_study,consolidation_digits,test_consolidation,partial_consolidation,test_partial_consolidation,residual_consolidation,ridge_consolidation,test_residual_consolidation,test_ridge_consolidation,retention_confirmation,fresh_confirmation,test_confirmation,postseal_historical_audit,test_postseal_historical_audit,postseal_sparse_portfolio_probe,test_postseal_sparse_portfolio_probe,selective_residual_governed,test_selective_residual_governed}.py
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_execution experiments.shared_stem_cell.test_browser experiments.shared_stem_head_matrix.tests.test_runner experiments.shared_stem_cell.test_checkpoint_conversion experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.test_browser_recovery experiments.shared_stem_cell.test_public_media experiments.shared_stem_cell.test_head_artifacts experiments.shared_stem_cell.test_modality_probe experiments.shared_stem_cell.test_generation_contract experiments.shared_stem_cell.test_head_batch experiments.shared_stem_cell.test_head_training experiments.shared_stem_cell.test_split_learning experiments.shared_stem_cell.test_stopping experiments.shared_stem_cell.test_materialization experiments.shared_stem_cell.test_calibrated_fusion experiments.shared_stem_cell.test_choice_fusion experiments.shared_stem_cell.test_feature_replay experiments.shared_stem_cell.test_consolidation experiments.shared_stem_cell.test_partial_consolidation experiments.shared_stem_cell.test_residual_consolidation experiments.shared_stem_cell.test_ridge_consolidation experiments.shared_stem_cell.test_confirmation experiments.shared_stem_cell.test_postseal_historical_audit experiments.shared_stem_cell.test_postseal_sparse_portfolio_probe 2>&1 | tee "$RUNNER_TEMP/hepta-execution-tests.txt"
+          "$PY" -m experiments.shared_stem_cell.browser_loop --output "$RUNNER_TEMP/hepta-browser-study" --tasks 24
+          "$PY" -m experiments.shared_stem_cell.browser_recovery --output "$RUNNER_TEMP/hepta-controller-recovery"
+          "$PY" -m experiments.shared_stem_cell.head_batch_study --synthetic --output "$RUNNER_TEMP/hepta-head-batch-study"
+          "$PY" -m experiments.shared_stem_cell.head_training_study --cells 8 --output "$RUNNER_TEMP/hepta-learning-digits-8"
+          "$PY" -m experiments.shared_stem_cell.head_training_study --cells 32 --output "$RUNNER_TEMP/hepta-learning-digits-32"
+          "$PY" -m experiments.shared_stem_cell.split_study --output "$RUNNER_TEMP/hepta-split-digits"
+          "$PY" -m experiments.shared_stem_cell.stopping_study --output "$RUNNER_TEMP/hepta-stopping-digits"
+          "$PY" -m experiments.shared_stem_cell.consolidation_digits --partial --residual --ridge --output "$RUNNER_TEMP/hepta-consolidation-digits"
+          git diff --exit-code
+      - name: Retain actual results and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-execution-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-execution-source.txt
+            ${{ runner.temp }}/hepta-execution-tests.txt
+            ${{ runner.temp }}/hepta-browser-study
+            ${{ runner.temp }}/hepta-controller-recovery
+            ${{ runner.temp }}/hepta-head-batch-study
+            ${{ runner.temp }}/hepta-learning-digits-8
+            ${{ runner.temp }}/hepta-learning-digits-32
+            ${{ runner.temp }}/hepta-split-digits
+            ${{ runner.temp }}/hepta-stopping-digits
+            ${{ runner.temp }}/hepta-consolidation-digits
+  public-pretrained-smoke:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Isolated pretrained runtime
+        run: |
+          python3 -m venv "$RUNNER_TEMP/hepta-pretrained-env"
+          "$RUNNER_TEMP/hepta-pretrained-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          "$RUNNER_TEMP/hepta-pretrained-env/bin/pip" install transformers==4.57.1 datasets==4.2.0 numpy==2.2.6 safetensors==0.7.0 packaging==25.0 psutil==7.1.0 sentencepiece==0.2.1 pillow==12.3.0
+          "$RUNNER_TEMP/hepta-pretrained-env/bin/python" -c "import safetensors.torch; import packaging.version"
+      - name: Real public weights and public records, not future evidence
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          USE_TF: "0"
+          TOKENIZERS_PARALLELISM: "false"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-pretrained-env/bin/python"
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-pretrained-source.txt"
+          "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-pretrained-source.txt"
+          "$PY" -m unittest -v experiments.shared_stem_cell.hf_integration_checks 2>&1 | tee "$RUNNER_TEMP/hepta-hf-api-tests.txt"
+          "$PY" -m experiments.shared_stem_cell.public_smoke --allow-weights-only-conversion --output "$RUNNER_TEMP/hepta-public-study" 2>&1 | tee "$RUNNER_TEMP/hepta-public-log.txt"
+          # Replay input intentionally omits model weights, tokenizer and Head artifacts.
+          mkdir -p "$RUNNER_TEMP/hepta-replay-input/producer"
+          cp "$RUNNER_TEMP/hepta-public-study/manifest.json" "$RUNNER_TEMP/hepta-public-study/dataset.jsonl" "$RUNNER_TEMP/hepta-replay-input/"
+          cp "$RUNNER_TEMP/hepta-public-study/execution/"{report,predictions}.json "$RUNNER_TEMP/hepta-replay-input/producer/"
+          cp -r "$RUNNER_TEMP/hepta-public-study/execution/frozen-features" "$RUNNER_TEMP/hepta-replay-input/producer/"
+          REPORT_SHA=$(sha256sum "$RUNNER_TEMP/hepta-replay-input/producer/report.json" | cut -d' ' -f1)
+          for BACKEND in scalar grouped; do
+            "$PY" -m experiments.shared_stem_cell.feature_replay --manifest "$RUNNER_TEMP/hepta-replay-input/manifest.json" --producer "$RUNNER_TEMP/hepta-replay-input/producer" --report-sha256 "$REPORT_SHA" --backend "$BACKEND" --output "$RUNNER_TEMP/hepta-replay-$BACKEND" 2>&1 | tee "$RUNNER_TEMP/hepta-replay-$BACKEND.log"
+          done
+          # Bound Cell teachers are copied, but NOT Encoder or tokenizer weights.
+          cp -r "$RUNNER_TEMP/hepta-replay-input" "$RUNNER_TEMP/hepta-consolidation-input"
+          mkdir -p "$RUNNER_TEMP/hepta-consolidation-input/producer/heads"
+          cp -r "$RUNNER_TEMP/hepta-public-study/execution/heads/gated" "$RUNNER_TEMP/hepta-consolidation-input/producer/heads/"
+          "$PY" -m experiments.shared_stem_cell.consolidation_study --partial --residual --ridge --manifest "$RUNNER_TEMP/hepta-consolidation-input/manifest.json" --producer "$RUNNER_TEMP/hepta-consolidation-input/producer" --report-sha256 "$REPORT_SHA" --output "$RUNNER_TEMP/hepta-consolidation" 2>&1 | tee "$RUNNER_TEMP/hepta-consolidation.log"
+          # Freeze the chosen candidate, then acquire disjoint confirmation/evaluation rows.
+          CONSOLIDATION_SHA=$(sha256sum "$RUNNER_TEMP/hepta-consolidation/report.json" | cut -d' ' -f1)
+          "$PY" -m experiments.shared_stem_cell.fresh_confirmation --study "$RUNNER_TEMP/hepta-public-study" --consolidation "$RUNNER_TEMP/hepta-consolidation" --producer-sha256 "$REPORT_SHA" --consolidation-sha256 "$CONSOLIDATION_SHA" --output "$RUNNER_TEMP/hepta-fresh-confirmation" 2>&1 | tee "$RUNNER_TEMP/hepta-fresh-confirmation.log"
+          git diff --exit-code
+      - name: Retain manifests, predictions, counters and failures (no weight upload)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-public-pretrained-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-pretrained-source.txt
+            ${{ runner.temp }}/hepta-public-log.txt
+            ${{ runner.temp }}/hepta-hf-api-tests.txt
+            ${{ runner.temp }}/hepta-public-study/model-source.json
+            ${{ runner.temp }}/hepta-public-study/verified-publisher-files.json
+            ${{ runner.temp }}/hepta-public-study/conversion/conversion.json
+            ${{ runner.temp }}/hepta-public-study/conversion/worker.log
+            ${{ runner.temp }}/hepta-public-study/conversion/failure.json
+            ${{ runner.temp }}/hepta-public-study/acquisition.json
+            ${{ runner.temp }}/hepta-public-study/manifest.json
+            ${{ runner.temp }}/hepta-public-study/dataset.jsonl
+            ${{ runner.temp }}/hepta-public-study/execution
+            ${{ runner.temp }}/hepta-replay-input
+            ${{ runner.temp }}/hepta-replay-scalar
+            ${{ runner.temp }}/hepta-replay-grouped
+            ${{ runner.temp }}/hepta-replay-scalar.log
+            ${{ runner.temp }}/hepta-replay-grouped.log
+            ${{ runner.temp }}/hepta-consolidation-input
+            ${{ runner.temp }}/hepta-consolidation
+            ${{ runner.temp }}/hepta-consolidation.log
+            ${{ runner.temp }}/hepta-fresh-confirmation
+            ${{ runner.temp }}/hepta-fresh-confirmation.log
+
+  public-image-text:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Isolated image and text execution runtime
+        run: |
+          python3 -m venv "$RUNNER_TEMP/hepta-media-env"
+          "$RUNNER_TEMP/hepta-media-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          "$RUNNER_TEMP/hepta-media-env/bin/pip" install transformers==4.57.1 datasets==4.2.0 numpy==2.2.6 safetensors==0.7.0 packaging==25.0 psutil==7.1.0 sentencepiece==0.2.1 pillow==12.3.0
+          "$RUNNER_TEMP/hepta-media-env/bin/python" -c "import safetensors.torch; import packaging.version"
+      - name: Actual public ScienceQA, CLIP connectors and text-only Qwen control
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          USE_TF: "0"
+          TOKENIZERS_PARALLELISM: "false"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-media-env/bin/python"
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-media-source.txt"
+          "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-media-source.txt"
+          "$PY" -m unittest -v experiments.shared_stem_cell.hf_integration_checks experiments.shared_stem_cell.test_public_media experiments.shared_stem_cell.test_head_artifacts experiments.shared_stem_cell.test_modality_probe experiments.shared_stem_cell.test_generation_contract experiments.shared_stem_cell.test_head_batch 2>&1 | tee "$RUNNER_TEMP/hepta-media-tests.txt"
+          "$PY" -m experiments.shared_stem_cell.public_media --allow-weights-only-conversion --output "$RUNNER_TEMP/hepta-public-media" 2>&1 | tee "$RUNNER_TEMP/hepta-media-log.txt"
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_calibrated_fusion experiments.shared_stem_cell.test_choice_fusion experiments.shared_stem_cell.test_feature_replay experiments.shared_stem_cell.test_consolidation experiments.shared_stem_cell.test_partial_consolidation experiments.shared_stem_cell.test_residual_consolidation experiments.shared_stem_cell.test_ridge_consolidation experiments.shared_stem_cell.test_confirmation 2>&1 | tee "$RUNNER_TEMP/hepta-calibrated-tests.txt"
+          "$PY" -m experiments.shared_stem_cell.public_media --calibrated-fusion --allow-weights-only-conversion --output "$RUNNER_TEMP/hepta-calibrated-media" 2>&1 | tee "$RUNNER_TEMP/hepta-calibrated-log.txt"
+          "$PY" -m experiments.shared_stem_cell.public_media --candidate-shared --allow-weights-only-conversion --output "$RUNNER_TEMP/hepta-choice-media" 2>&1 | tee "$RUNNER_TEMP/hepta-choice-log.txt"
+          git diff --exit-code
+      - name: Preserve original predictions and failures, never upload model weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-public-media-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-media-source.txt
+            ${{ runner.temp }}/hepta-media-tests.txt
+            ${{ runner.temp }}/hepta-media-log.txt
+            ${{ runner.temp }}/hepta-public-media/acquisition.json
+            ${{ runner.temp }}/hepta-public-media/dataset-source.json
+            ${{ runner.temp }}/hepta-public-media/dataset-publisher-verified.json
+            ${{ runner.temp }}/hepta-public-media/cohort-before-labels.json
+            ${{ runner.temp }}/hepta-public-media/dataset.jsonl
+            ${{ runner.temp }}/hepta-public-media/manifest.json
+            ${{ runner.temp }}/hepta-public-media/report.json
+            ${{ runner.temp }}/hepta-public-media/failure.json
+            ${{ runner.temp }}/hepta-public-media/vision/model-source.json
+            ${{ runner.temp }}/hepta-public-media/vision/verified-publisher-files.json
+            ${{ runner.temp }}/hepta-public-media/vision/conversion/*.json
+            ${{ runner.temp }}/hepta-public-media/vision/conversion/*.log
+            ${{ runner.temp }}/hepta-public-media/reader/model-source.json
+            ${{ runner.temp }}/hepta-public-media/reader/verified-publisher-files.json
+            ${{ runner.temp }}/hepta-public-media/media-execution
+            ${{ runner.temp }}/hepta-public-media/text-execution
+            ${{ runner.temp }}/hepta-calibrated-tests.txt
+            ${{ runner.temp }}/hepta-calibrated-log.txt
+            ${{ runner.temp }}/hepta-calibrated-media/acquisition.json
+            ${{ runner.temp }}/hepta-calibrated-media/excluded-prior-cohort.json
+            ${{ runner.temp }}/hepta-calibrated-media/cohort-before-labels.json
+            ${{ runner.temp }}/hepta-calibrated-media/dataset-source.json
+            ${{ runner.temp }}/hepta-calibrated-media/dataset-publisher-verified.json
+            ${{ runner.temp }}/hepta-calibrated-media/dataset.jsonl
+            ${{ runner.temp }}/hepta-calibrated-media/manifest.json
+            ${{ runner.temp }}/hepta-calibrated-media/report.json
+            ${{ runner.temp }}/hepta-calibrated-media/failure.json
+            ${{ runner.temp }}/hepta-calibrated-media/vision/model-source.json
+            ${{ runner.temp }}/hepta-calibrated-media/vision/verified-publisher-files.json
+            ${{ runner.temp }}/hepta-calibrated-media/vision/conversion/*.json
+            ${{ runner.temp }}/hepta-calibrated-media/vision/conversion/*.log
+            ${{ runner.temp }}/hepta-calibrated-media/reader/model-source.json
+            ${{ runner.temp }}/hepta-calibrated-media/reader/verified-publisher-files.json
+            ${{ runner.temp }}/hepta-calibrated-media/media-execution
+            ${{ runner.temp }}/hepta-calibrated-media/text-execution
+            ${{ runner.temp }}/hepta-choice-log.txt
+            ${{ runner.temp }}/hepta-choice-media/acquisition.json
+            ${{ runner.temp }}/hepta-choice-media/excluded-prior-cohort.json
+            ${{ runner.temp }}/hepta-choice-media/excluded-calibrated-cohort.json
+            ${{ runner.temp }}/hepta-choice-media/cohort-before-labels.json
+            ${{ runner.temp }}/hepta-choice-media/dataset-source.json
+            ${{ runner.temp }}/hepta-choice-media/dataset-publisher-verified.json
+            ${{ runner.temp }}/hepta-choice-media/dataset.jsonl
+            ${{ runner.temp }}/hepta-choice-media/manifest.json
+            ${{ runner.temp }}/hepta-choice-media/report.json
+            ${{ runner.temp }}/hepta-choice-media/failure.json
+            ${{ runner.temp }}/hepta-choice-media/vision/model-source.json
+            ${{ runner.temp }}/hepta-choice-media/vision/verified-publisher-files.json
+            ${{ runner.temp }}/hepta-choice-media/vision/conversion/*.json
+            ${{ runner.temp }}/hepta-choice-media/vision/conversion/*.log
+            ${{ runner.temp }}/hepta-choice-media/choice-execution
+
+  historical-postseal-replay:
+    # Re-audit already completed 2026-10-14 source evidence. This is NOT new
+    # inference, independent labels, a current-head model result or a selection.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Exact audit source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Replay the pinned historical negative decision
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-historical-audit-source.txt"
+          echo "Original model generating HEAD: b43cefc80e1855db7581b58ab527af44d15c0d50" >> "$RUNNER_TEMP/hepta-historical-audit-source.txt"
+          echo "Original completed Actions run: 38514532798; artifact: 11872205556" >> "$RUNNER_TEMP/hepta-historical-audit-source.txt"
+          ORIGINAL_SHA=05b6ec4b33a7563ea368f7d5be212ad1dbf1220bbccb9195ac900ac5adde34a6
+          ZIP="$RUNNER_TEMP/hepta-original-pretrained.zip"
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11872205556/zip" > "$ZIP"
+          printf '%s  %s\n' "$ORIGINAL_SHA" "$ZIP" | sha256sum -c -
+          python3 -m unittest -v experiments.shared_stem_cell.test_postseal_historical_audit 2>&1 | tee "$RUNNER_TEMP/hepta-historical-audit-tests.log"
+          python3 -m experiments.shared_stem_cell.postseal_historical_audit \
+            --root "$ZIP" --zip-sha256 "$ORIGINAL_SHA" \
+            --output "$RUNNER_TEMP/hepta-historical-replay.json" 2>&1 | tee "$RUNNER_TEMP/hepta-historical-replay.log"
+          python3 -m experiments.shared_stem_cell.postseal_sparse_portfolio_probe \
+            --root "$ZIP" --zip-sha256 "$ORIGINAL_SHA" \
+            --output "$RUNNER_TEMP/hepta-retrospective-portfolio" 2>&1 | tee "$RUNNER_TEMP/hepta-retrospective-portfolio.log"
+      - name: Retain negative audit, never republish original case data
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-historical-postseal-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-historical-audit-source.txt
+            ${{ runner.temp }}/hepta-historical-audit-tests.log
+            ${{ runner.temp }}/hepta-historical-replay.log
+            ${{ runner.temp }}/hepta-historical-replay.json
+            ${{ runner.temp }}/hepta-retrospective-portfolio.log
+            ${{ runner.temp }}/hepta-retrospective-portfolio
+          if-no-files-found: warn
+
+  historical-physical-head:
+    # Actually invoke sealed trained Heads on original frozen features.
+    # This does NOT measure the Encoder or qualify new model results.
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - name: Exact research source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install exact isolated CPU Head runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/hepta-physical-env"
+          "$RUNNER_TEMP/hepta-physical-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          "$RUNNER_TEMP/hepta-physical-env/bin/pip" install numpy==2.2.6 safetensors==0.7.0 packaging==25.0 ruff==0.14.0
+          "$RUNNER_TEMP/hepta-physical-env/bin/python" -c "import numpy, torch, safetensors.torch; assert numpy.__version__ == '2.2.6'"
+      - name: Verify original archive and execute physical Head control
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-physical-env/bin/python"
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-physical-source.txt"
+          "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-physical-source.txt"
+          ORIGINAL_SHA=05b6ec4b33a7563ea368f7d5be212ad1dbf1220bbccb9195ac900ac5adde34a6
+          ZIP="$RUNNER_TEMP/hepta-original-pretrained.zip"
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11872205556/zip" > "$ZIP"
+          printf '%s  %s\n' "$ORIGINAL_SHA" "$ZIP" | sha256sum -c -
+          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/pretrained_head_portfolio_benchmark.py experiments/shared_stem_cell/test_pretrained_head_portfolio_benchmark.py experiments/shared_stem_cell/selective_residual_governed.py experiments/shared_stem_cell/test_selective_residual_governed.py
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_pretrained_head_portfolio_benchmark experiments.shared_stem_cell.test_selective_residual_governed 2>&1 | tee "$RUNNER_TEMP/hepta-physical-tests.log"
+          "$PY" -m experiments.shared_stem_cell.pretrained_head_portfolio_benchmark \
+            --archive "$ZIP" --sha256 "$ORIGINAL_SHA" \
+            --output "$RUNNER_TEMP/hepta-physical-work" 2>&1 | tee "$RUNNER_TEMP/hepta-physical-work.log"
+          "$PY" -m experiments.shared_stem_cell.selective_residual_governed \
+            --archive "$ZIP" --output "$RUNNER_TEMP/hepta-selective-training" 2>&1 | tee "$RUNNER_TEMP/hepta-selective-training.log"
+          "$PY" -c 'import json,sys;from pathlib import Path;p=Path(sys.argv[1]);s=json.loads((p/"selection.json").read_text());r=json.loads((p/"result.json").read_text());assert s["selected_per_cell"]=={"0":"shared","1":"bank"};assert s["attempted_training_cells"]==[1];assert s["candidate_parameters"]==12416 and not s["strict_parameter_saving"];assert r["total_heldout_correct"]=={"bank":22,"shared":23,"corrected":25,"selected":26};assert r["production_accepted"] is False' "$RUNNER_TEMP/hepta-selective-training"
+          git diff --exit-code
+      - name: Preserve physical observations without republishing source model files
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-historical-head-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-physical-source.txt
+            ${{ runner.temp }}/hepta-physical-tests.log
+            ${{ runner.temp }}/hepta-physical-work.log
+            ${{ runner.temp }}/hepta-physical-work/result.json
+            ${{ runner.temp }}/hepta-selective-training.log
+            ${{ runner.temp }}/hepta-selective-training
+          if-no-files-found: warn
