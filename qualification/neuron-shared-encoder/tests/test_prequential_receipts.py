@@ -194,6 +194,7 @@ def test_integrated_e4_rejects_mutated_validly_rehashed_forecast():
         evaluate_shadow(rows, D('a'), baseline, candidate,
                         bootstrap_repeats=100, prequential_event_log=log)
 
+
 def test_input_identity_cannot_be_rebound_by_rehashing_chain():
     args = list(fixtures())
     args[3]['events'][0]['input_digest'] = D('e')
