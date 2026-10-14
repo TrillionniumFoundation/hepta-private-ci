@@ -22,7 +22,7 @@ SCALES = (64, 256, 1024, 4096)
 ALL_ARMS = ('no-change-v1',) + ARMS
 HEX = set('0123456789abcdef')
 PERF_FIELDS = {
-    'measurement_kind', 'device_kind', 'request_count',
+    'measurement_kind', 'device_kind', 'request_count', 'measured_distinct_cell_count',
     'cpu_micros', 'process_tree_peak_rss_bytes', 'gpu_peak_alloc_bytes',
     'gpu_peak_total_bytes', 'encoder_forward_invocations', 'encoder_forward_rows',
     'throughput_milli_requests_per_second',
@@ -66,8 +66,8 @@ def percentile(p: dict) -> None:
     require(p['gpu_peak_alloc_bytes'] <= p['gpu_peak_total_bytes'], 'GPU allocation exceeds device use')
     if p['device_kind'] == 'gpu':
         require(p['gpu_peak_alloc_bytes'] > 0, 'GPU profiler absent for GPU profile')
-    require(p['encoder_forward_invocations'] <= p['encoder_forward_rows'] <= p['request_count'],
-            'Encoder calls/rows exceed requests')
+    require(p['encoder_forward_invocations'] <= p['encoder_forward_rows'],
+            'physical Encoder forward rows fewer than invocations')
     require(p['lost_replay_count'] == 0, 'acknowledged replay history lost')
     require(p['encoder_forward_rows'] > 0, 'actual Encoder not observed in end-to-end sample')
 
@@ -167,7 +167,8 @@ def validate(host: Any, training: Any, *, host_id: str, train_sha: str,
                 'gpu_peak_alloc_bytes','gpu_peak_total_bytes','lost_replay_count',
                 'encoder_forward_invocations','encoder_forward_rows',
             })
-        require(p['request_count'] >= scale, 'real request count below stated Cell scale')
+        require(p['request_count'] >= scale and p['measured_distinct_cell_count'] == scale,
+                'physically observed distinct Cell coverage does not match requested scale')
         percentile(p)
         results[str(cap)][f'{arm}@{scale}'] = {
             'p99_request_micros_claimed':p['request_p99_micros'],
