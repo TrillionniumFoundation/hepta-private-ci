@@ -543,6 +543,87 @@ fn concurrent_model_checkpoint_and_guarded_runtime_cutover_have_one_winner() {
 
 #[cfg(unix)]
 #[test]
+fn inplace_wal_truncate_and_equal_length_tail_rewrite_fence_live_observer() {
+    use std::os::unix::fs::MetadataExt as _;
+
+    for fault in ["truncate", "same_length_rewrite"] {
+        let root = tempfile::tempdir().expect("private directory");
+        let path = root.path().join("owner.wal");
+        let previous = snapshot(3);
+        let migrated = Digest32::of_bytes(b"migrated-checkpoint");
+        let owner = NduPublicationOwnerV1::open_production(
+            &path,
+            previous.clone(),
+            Digest32::ZERO,
+        )
+        .expect("durable owner");
+        owner
+            .publish_cutover_with_external_effect(
+                &previous,
+                Digest32::ZERO,
+                snapshot(4),
+                migrated,
+                || -> Result<((), Vec<u8>), &'static str> { Ok(((), vec![0x64; 96])) },
+            )
+            .expect("fixture original bytes bound by Control Commit");
+        assert_eq!(owner.verify_original_cns_receipt_binding(&[0x64; 96]), Ok(()));
+        let bytes = std::fs::read(&path).expect("durable control WAL");
+        let inode = std::fs::metadata(&path).expect("original inode").ino();
+        match fault {
+            "truncate" => {
+                let file = OpenOptions::new()
+                    .write(true)
+                    .open(&path)
+                    .expect("original WAL inode");
+                file.set_len(0).expect("truncate original file");
+                file.sync_all().expect("durably corrupt original file");
+            }
+            "same_length_rewrite" => {
+                let mut damaged = bytes.clone();
+                let pos = damaged.len() - 2;
+                damaged[pos] = if damaged[pos] == b'0' { b'1' } else { b'0' };
+                std::fs::write(&path, damaged).expect("same inode rewritten");
+                assert_eq!(
+                    std::fs::metadata(&path).expect("same length").len(),
+                    bytes.len() as u64
+                );
+            }
+            _ => unreachable!("fixed fault cases"),
+        }
+        assert_eq!(
+            std::fs::metadata(&path).expect("still original inode").ino(),
+            inode
+        );
+        assert_eq!(
+            owner.last_cns_original_receipt_binding(),
+            Err(NduPublicationErrorV1::Indeterminate),
+            "corrupt original WAL cannot provide the cached positive evidence"
+        );
+        assert_eq!(
+            owner.verify_original_cns_receipt_binding(&[0x64; 96]),
+            Err(NduPublicationErrorV1::Poisoned)
+        );
+        assert_eq!(
+            owner.compare_and_publish_checkpoint(
+                &previous,
+                Digest32::of_bytes(b"read"),
+                Digest32::of_bytes(b"tick"),
+                Digest32::ZERO,
+                Digest32::of_bytes(b"forbidden-checkpoint"),
+            ),
+            Err(NduPublicationErrorV1::Poisoned)
+        );
+        drop(owner);
+        assert!(matches!(
+            NduPublicationOwnerV1::open_production(&path, snapshot(4), migrated),
+            Err(NduPublicationErrorV1::Corrupt)
+                | Err(NduPublicationErrorV1::Indeterminate)
+        ));
+    }
+}
+
+#[cfg(unix)]
+#[test]
 fn deleted_control_wal_cannot_bootstrap_a_fresh_history() {
     let dir = tempfile::tempdir().expect("private Control directory");
     let path = dir.path().join("lost-control.wal");
