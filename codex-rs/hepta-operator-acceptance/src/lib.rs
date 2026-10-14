@@ -9,6 +9,8 @@ mod cell_split_effect_rpc;
 #[cfg(unix)]
 mod cell_split_effect_service;
 #[cfg(unix)]
+mod cell_split_evidence_wal_observer;
+#[cfg(unix)]
 mod cell_split_execution_cli;
 mod cell_split_execution_owner;
 #[cfg(unix)]
@@ -119,6 +121,24 @@ pub use cell_split_effect_service::CellSplitDurableEffectBackendV1;
 pub use cell_split_effect_service::CellSplitEffectServiceV1;
 #[cfg(unix)]
 pub use cell_split_effect_service::CellSplitOwnedEffectV1;
+#[cfg(unix)]
+pub use cell_split_evidence_wal_observer::CELL_SPLIT_EVIDENCE_WAL_OBSERVER_SCHEMA_V1;
+#[cfg(unix)]
+pub use cell_split_evidence_wal_observer::CellSplitEvidenceWalIndependentObserverV1;
+#[cfg(unix)]
+pub use cell_split_evidence_wal_observer::CellSplitEvidenceWalLocalFrontierV1;
+#[cfg(unix)]
+pub use cell_split_evidence_wal_observer::CellSplitEvidenceWalObserverErrorV1;
+#[cfg(unix)]
+pub use cell_split_evidence_wal_observer::CellSplitEvidenceWalObserverProofV1;
+#[cfg(unix)]
+pub use cell_split_evidence_wal_observer::CellSplitEvidenceWalOriginalOwnerReadV1;
+#[cfg(unix)]
+pub use cell_split_evidence_wal_observer::CellSplitEvidenceWalWitnessedReadbackV1;
+#[cfg(unix)]
+pub use cell_split_evidence_wal_observer::cell_split_evidence_wal_observer_signing_payload_v1;
+#[cfg(unix)]
+pub use cell_split_evidence_wal_observer::verify_cell_split_evidence_wal_observer_v1;
 #[cfg(unix)]
 pub use cell_split_execution_cli::CellSplitExecutionCliOutcomeV1;
 #[cfg(unix)]
