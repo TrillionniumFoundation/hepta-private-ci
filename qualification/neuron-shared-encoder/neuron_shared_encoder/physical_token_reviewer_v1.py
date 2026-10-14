@@ -63,6 +63,54 @@ def _json(raw: bytes) -> dict:
     return obj
 
 
+def require_exact_capture_profile(producer_report: dict, *,
+                                  max_length: int, batch: int) -> None:
+    """Refuse expensive re-encoding when Producer/Reviewer profiles differ.
+
+    These counters only establish INTERNAL consistency, not an independent
+    signature or physical-model provenance. A fresh numerical forward and
+    frozen source/tensor comparison remain mandatory.
+    """
+    if (type(max_length) is not int or not 8 <= max_length <= 256
+            or type(batch) is not int or not 1 <= batch <= 32):
+        raise ValueError('bounded independent replay profile required')
+    observation = producer_report.get('encoder_observation')
+    if not isinstance(observation, dict):
+        raise ValueError('independent capture profile missing')
+    profile = observation.get('capture_profile')
+    if (not isinstance(profile, dict)
+            or set(profile) != {'max_length', 'batch'}
+            or type(profile['max_length']) is not int
+            or type(profile['batch']) is not int
+            or profile['max_length'] != max_length
+            or profile['batch'] != batch):
+        raise ValueError('independent replay profile max_length/batch differs from Producer')
+    cells = observation.get('cells')
+    if not isinstance(cells, list) or len(cells) != 2:
+        raise ValueError('incomplete real Encoder cell-forward observations')
+    for cell, record in enumerate(cells):
+        if not isinstance(record, dict):
+            raise ValueError('invalid real Encoder observation record')
+        meter = record.get('model_forward_observation')
+        expected_batches = (64 + batch - 1) // batch
+        if (type(record.get('cell')) is not int or record['cell'] != cell
+                or type(record.get('padded_token_slots')) is not int
+                or record['padded_token_slots'] != 64 * max_length
+                or type(record.get('total_encoder_batches')) is not int
+                or record['total_encoder_batches'] != expected_batches
+                or not isinstance(meter, dict)
+                or type(meter.get('rows_attempted')) is not int
+                or meter['rows_attempted'] != 64
+                or type(meter.get('rows_completed')) is not int
+                or meter['rows_completed'] != 64
+                or type(meter.get('module_forward_attempts')) is not int
+                or meter['module_forward_attempts'] != expected_batches
+                or type(meter.get('module_forward_completions')) is not int
+                or meter['module_forward_completions'] != expected_batches
+                or meter.get('module_forward_failures_or_incomplete') != 0):
+            raise ValueError('inconsistent real Encoder capture counts')
+
+
 def _normal(tokens: torch.Tensor, mask: torch.Tensor, records: list[dict]) -> np.ndarray:
     train = [i for i, row in enumerate(records) if row['split'] == 'train']
     if len(train) != 32:
@@ -319,8 +367,11 @@ def audit_sealed_token_pair(*, results_dir: Path, source: list[dict],
 def review_pinned_real_token_pair(*, archive_path: Path, archive_sha256: str,
                                   checkpoint_dir: Path, bundle_sha256: str,
                                   results_dir: Path, output: Path,
-                                  max_length: int = 128, batch: int = 8) -> dict:
+                                  max_length: int = 168, batch: int = 8) -> dict:
     """Real run: fresh model forward in reviewer process and safe checkpoint replay."""
+    # Refuse mismatched frozen preprocessing BEFORE the costly model reload.
+    original = _json(_fixed_read(Path(results_dir) / 'report.json', MAX_REPORT_BYTES))
+    require_exact_capture_profile(original, max_length=max_length, batch=batch)
     from .bundle import verify_checkpoint_bundle
     from .contracts import sha256_file
     from .models import OfflineEncoder
@@ -382,7 +433,7 @@ def main():
     ap.add_argument('--bundle-sha256',required=True)
     ap.add_argument('--producer',type=Path,required=True)
     ap.add_argument('--output',type=Path,required=True)
-    ap.add_argument('--max-length',type=int,default=128)
+    ap.add_argument('--max-length',type=int,default=168)
     ap.add_argument('--batch',type=int,default=8)
     args=ap.parse_args()
     review_pinned_real_token_pair(archive_path=args.source_zip,
