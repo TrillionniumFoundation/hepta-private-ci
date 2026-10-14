@@ -20,8 +20,9 @@ from .physical_token_pair_v1 import _public_rows
 from .stage_modernbert_public_v1 import source_model_files
 from .token_reader_v1 import MAX_ELEMENTS
 from .trained_head_artifacts_v1 import _canonical
+from .token_stream_binding_v2 import PREFLIGHT_SCHEMA, new_cell_stream, add_token_row
 
-SCHEMA = 'hepta.neuron.tokenizer-only-length-preflight.shadow.v1'
+SCHEMA = PREFLIGHT_SCHEMA
 TOKENIZER_FILES = frozenset({'config.json', 'special_tokens_map.json',
                              'tokenizer.json', 'tokenizer_config.json'})
 MAX_PARTIAL_BYTES = 16 * 1024 * 1024
@@ -64,6 +65,7 @@ def audit_full_joint_token_lengths(tokenizer: Callable[..., Any], by_cell: dict[
     for cell in (0, 1):
         rows = by_cell[cell]
         lengths = []
+        cell_digest = new_cell_stream(cell)
         seen = set()
         batches = 0
         for start in range(0, len(rows), batch):
@@ -97,10 +99,8 @@ def audit_full_joint_token_lengths(tokenizer: Callable[..., Any], by_cell: dict[
                         or any(type(x) is not int or x != 1 for x in active)):
                     raise ValueError('full joint tokenizer exceeded model budget or malformed mask')
                 lengths.append(len(words))
-                payload = json.dumps([cell, start + offset, row['input_sha256'], words],
-                                     separators=(',', ':'), ensure_ascii=False).encode()
-                digest.update(len(payload).to_bytes(8, 'big'))
-                digest.update(payload)
+                add_token_row(cell_digest, digest, cell=cell, index=start + offset,
+                              input_sha256=row['input_sha256'], token_ids=words)
             batches += 1
         if len(lengths) != 64 or len(seen) != 64:
             raise ValueError('incomplete original Cell tokenizer census')
@@ -108,7 +108,8 @@ def audit_full_joint_token_lengths(tokenizer: Callable[..., Any], by_cell: dict[
                          'minimum_untruncated_tokens': min(lengths),
                          'maximum_untruncated_tokens': max(lengths),
                          'total_active_token_slots': sum(lengths),
-                         'padded_token_slots_after_model_collate': 64 * max_length})
+                         'padded_token_slots_after_model_collate': 64 * max_length,
+                         'ordered_active_token_ids_sha256': cell_digest.hexdigest()})
     return {'schema': SCHEMA, 'model_id': model_id, 'model_revision': revision,
             'source_zip_sha256': source_sha256,
             'tokenizer_json_sha256': tokenizer_sha256,
