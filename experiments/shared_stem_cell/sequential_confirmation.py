@@ -55,6 +55,10 @@ def prior_rows(directory, report_sha, panel_lock):
 
 def stream(output, rows, lock, predict_rows, label_at):
     """Save each predicted batch BEFORE answers; never request stopped Cell rows."""
+    # An unknown work profile must fail before calling the Encoder. A legacy
+    # fixture may omit it; the real model owner pins this to WORK_SCHEMA.
+    if lock.get('physical_work_profile') not in (None, WORK_SCHEMA):
+        raise e.InputError('unsupported sequential physical-work profile')
     if (not isinstance(rows,list) or not 4 <= len(rows) <= 8192
             or len({r['case_id'] for r in rows}) != len(rows)
             or len({r['source_index'] for r in rows}) != len(rows)
