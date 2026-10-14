@@ -98,7 +98,7 @@ fn contract() -> CellSplitV1 {
             compatibility_digest: digest(&format!("port-compat-{index}")),
         })
         .collect();
-    let partitions = vec![vec![0, 2], vec![1, 3]];
+    let partitions = vec![vec![0, 2, 4], vec![1, 3]];
     let value = CellSplitV1 {
         split_id: id("split.integration"),
         proposer_id: id("proposer"),
@@ -177,7 +177,7 @@ fn parent_checkpoint() -> codex_hepta_neuron::SparseCheckpoint {
         model_digest: digest("model"),
         normalization_digest: digest("normalization"),
         generation: g(7),
-        width: 4,
+        width: 5,
         top_k: 1,
         temporal_decay_q24: Q / 2,
         inhibition_gain_q24: Q,
@@ -197,9 +197,12 @@ fn parent_checkpoint() -> codex_hepta_neuron::SparseCheckpoint {
         input_digest: digest("input"),
         sequence: 1,
         monotonic_micros: 100,
-        drive_q24: vec![Q, Q / 2, Q / 4, 0],
-        prediction_q24: vec![0; 4],
+        drive_q24: vec![Q, Q / 2, Q / 4, 0, Q / 8],
+        prediction_q24: vec![0; 5],
     };
+    // Production SparseConfig requires width >= 5 and Top-K <= width / 5.
+    // Match the real kernel invariant; do not weaken it for a small fixture.
+    configuration.digest().expect("admitted parent mechanism");
     sparse_tick(&configuration, &input, None)
         .expect("parent state")
         .0
@@ -214,8 +217,8 @@ fn prepared() -> (CellStateMigrationV1, JournalAnchor) {
     };
     let plan = NeuronSplitPlan::from_contract(
         &contract,
-        vec![vec![0, 2], vec![1, 3]],
-        vec![vec![0, 2], vec![1, 3]],
+        vec![vec![0, 2, 4], vec![1, 3]],
+        vec![vec![0, 2, 4], vec![1, 3]],
     )
     .expect("typed projection plan");
     let migration = CellStateMigrationV1::begin(
