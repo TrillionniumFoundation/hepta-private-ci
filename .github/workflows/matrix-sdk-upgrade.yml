@@ -11,8 +11,17 @@ on:
       - "qualification/matrix-sdk-019/**"
       - ".github/workflows/matrix-sdk-upgrade.yml"
   workflow_dispatch:
+
+# Obsolete PR SHAs must not accumulate independent long-running Matrix
+# SDK and cargo-deny jobs. Only the latest exact PR head is qualified;
+# different PRs and the default branch remain independently runnable.
+concurrency:
+  group: matrix-sdk-compatibility-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.ref_name != 'main' }}
+
 permissions:
   contents: read
+
 jobs:
   dependency-advisory-audit:
     name: Matrix exact-head cargo-deny (no advisory waivers)
