@@ -532,6 +532,225 @@ fn single_split_coordinator_persists_real_cas_then_fences_missing_migration_owne
     server.join().expect("four-step owner test server");
 }
 
+/// Only the transport wrapper loses the result: the actual Artifact CAS
+/// service has already published its immutable bytes, original durable
+/// receipt and independent owner signature. Reconciliation reopens the same
+/// original signed Unix RPC owner; no cached mock receipt can prove success.
+struct DropAckAfterRealCasRpc {
+    original: CellSplitUnixEffectPortV1,
+}
+
+impl CellSplitExecutionPortV1 for DropAckAfterRealCasRpc {
+    type Error = String;
+
+    fn preflight_uncommitted(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<(), Self::Error> {
+        self.original
+            .preflight_uncommitted(intent)
+            .map_err(|error| error.to_string())
+    }
+
+    fn execute(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<crate::CellSplitExecutionReceiptV1, Self::Error> {
+        let _actual_signed_receipt = self
+            .original
+            .execute(intent)
+            .map_err(|error| error.to_string())?;
+        Err("fixture drops ACK only after original physical signed CAS".into())
+    }
+
+    fn reconcile(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+    ) -> Result<Option<crate::CellSplitExecutionReceiptV1>, Self::Error> {
+        self.original
+            .reconcile(intent)
+            .map_err(|error| error.to_string())
+    }
+
+    fn verify_committed(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+        receipt: &crate::CellSplitExecutionReceiptV1,
+    ) -> Result<(), Self::Error> {
+        self.original
+            .verify_committed(intent, receipt)
+            .map_err(|error| error.to_string())
+    }
+}
+
+#[test]
+fn real_signed_artifact_cas_lost_ack_respects_independent_final_use_on_recovery() {
+    use crate::CellSplitExecutionErrorV1;
+    use crate::CellSplitExecutionOwnerV1;
+    use crate::CellSplitOwnerTrustV1;
+    use std::io::ErrorKind;
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let fixture = Fixture::new();
+    let ledger = fixture.root.path().join("pending-reconcile-ledger");
+    fs::create_dir(&ledger).expect("coordinator ledger");
+    fs::set_permissions(&ledger, fs::Permissions::from_mode(0o700)).expect("private coordinator");
+    let plan = plan();
+    let signer = SigningKey::from_bytes(&[1; 32]);
+    let original_plan_digest = plan.digest().expect("original split plan");
+    let authority = Arc::new(AtomicBool::new(true));
+    let socket = fixture.root.path().join("original-cas.sock");
+    let listener = UnixListener::bind(&socket).expect("real CAS socket");
+    listener
+        .set_nonblocking(true)
+        .expect("bounded service stop");
+    let stop = Arc::new(AtomicBool::new(false));
+    let service_stop = stop.clone();
+    let store = fixture.store.clone();
+    let parent = fixture.parent.clone();
+    let child = fixture.child.clone();
+    let frozen_plan = plan.clone();
+    let live_authority = authority.clone();
+
+    let server = thread::spawn(move || {
+        let backend = CellSplitArtifactCasOwnerV1::open(
+            &store,
+            &parent,
+            &child,
+            frozen_plan.clone(),
+            ExternalFinalUse(live_authority),
+        )
+        .expect("physical durable Artifact CAS");
+        let mut service = CellSplitEffectServiceV1::new(
+            CellSplitExecutionStepV1::ArtifactCas,
+            frozen_plan.owner_ids[0].clone(),
+            original_plan_digest,
+            signer,
+            backend,
+        )
+        .expect("original signer-owned CAS service");
+        while !service_stop.load(Ordering::Acquire) {
+            match listener.accept() {
+                Ok((mut stream, _)) => {
+                    if let Err(error) = service.serve_connection(&mut stream) {
+                        assert!(
+                            matches!(error, crate::CellSplitEffectRpcErrorV1::Rejected(_)),
+                            "only revoked owner readback may refuse the signed RPC: {error}"
+                        );
+                    }
+                }
+                Err(error) if error.kind() == ErrorKind::WouldBlock => {
+                    thread::sleep(Duration::from_millis(1));
+                }
+                Err(error) => panic!("original CAS listener failed: {error}"),
+            }
+        }
+    });
+
+    let keys = [1_u8, 2, 3, 4].map(|value| SigningKey::from_bytes(&[value; 32]).verifying_key());
+    let trust = CellSplitOwnerTrustV1::new(&plan, keys.clone()).expect("four distinct owner keys");
+    let endpoints = [
+        socket,
+        fixture.root.path().join("unavailable-migration.sock"),
+        fixture.root.path().join("unavailable-cns.sock"),
+        fixture.root.path().join("unavailable-supervisor.sock"),
+    ];
+    {
+        let transport =
+            CellSplitUnixEffectPortV1::new(endpoints.clone(), keys.clone(), Duration::from_secs(3))
+                .expect("real Unix effect client");
+        let mut coordinator = CellSplitExecutionOwnerV1::open(
+            &ledger,
+            plan.clone(),
+            trust.clone(),
+            DropAckAfterRealCasRpc {
+                original: transport,
+            },
+        )
+        .expect("initialize single durable split owner");
+        assert!(matches!(
+            coordinator.advance(),
+            Err(CellSplitExecutionErrorV1::External(_))
+        ));
+        assert_eq!(coordinator.completed_steps(), 0);
+        assert!(ledger.join("cell-split-00-prepared.json").exists());
+        assert!(!ledger.join("cell-split-00-committed.json").exists());
+    }
+    assert_eq!(
+        fs::read(
+            fixture
+                .store
+                .join(format!("sha256-{}", plan.child_artifact_digest))
+        )
+        .expect("actually committed immutable child artifact"),
+        b"real child artifact bytes"
+    );
+
+    // Withdraw Final-use after the durable physical operation. The original
+    // CAS owner checks authority even on READBACK: pending-only recovery may
+    // never ignore that independent current restriction. No second execute.
+    authority.store(false, Ordering::Release);
+    let normal_transport =
+        CellSplitUnixEffectPortV1::new(endpoints.clone(), keys.clone(), Duration::from_secs(3))
+            .expect("recovery transport");
+    {
+        let mut recover = CellSplitExecutionOwnerV1::open_pending_reconciliation(
+            &ledger,
+            plan.clone(),
+            trust.clone(),
+            normal_transport,
+        )
+        .expect("only existing pending intent may reopen");
+        assert!(
+            recover.reconcile_pending_only().is_err(),
+            "revoked original-owner authority must not authenticate CAS readback"
+        );
+        assert!(!ledger.join("cell-split-00-committed.json").exists());
+        assert_eq!(recover.completed_steps(), 0);
+
+        // Reauthorize the actual original owner to inspect its durable CAS
+        // result. The coordinator may only reconcile the prepared effect,
+        // never issue a new Execute regardless of the admission callback.
+        authority.store(true, Ordering::Release);
+        let receipt = recover
+            .reconcile_pending_only()
+            .expect("current original signed CAS receipt");
+        assert_eq!(receipt.intent.step, CellSplitExecutionStepV1::ArtifactCas);
+        assert_eq!(recover.completed_steps(), 1);
+        assert!(ledger.join("cell-split-00-committed.json").exists());
+        assert!(matches!(
+            recover.advance_with_admission(|| Ok(())),
+            Err(CellSplitExecutionErrorV1::Invalid(
+                "reconcile-only owner cannot dispatch new effects"
+            ))
+        ));
+        assert_eq!(recover.completed_steps(), 1);
+    }
+    // Revoking the original CAS owner after its receipt was committed must
+    // also prevent *reopening* the historical prefix as a live admission.
+    authority.store(false, Ordering::Release);
+    let denied_client =
+        CellSplitUnixEffectPortV1::new(endpoints.clone(), keys.clone(), Duration::from_secs(3))
+            .expect("denied verifier");
+    assert!(
+        CellSplitExecutionOwnerV1::open(&ledger, plan.clone(), trust.clone(), denied_client,)
+            .is_err(),
+        "reopening an invalid original signed owner must fail closed"
+    );
+    authority.store(true, Ordering::Release);
+    let client = CellSplitUnixEffectPortV1::new(endpoints, keys, Duration::from_secs(3))
+        .expect("reopened verifier");
+    let mut recovered = CellSplitExecutionOwnerV1::open(&ledger, plan, trust, client)
+        .expect("read original frozen effect after restart");
+    assert_eq!(recovered.completed_steps(), 1);
+    assert!(
+        recovered.advance().is_err(),
+        "missing real migration owner cannot become an inferred effect"
+    );
+    stop.store(true, Ordering::Release);
+    server.join().expect("original CAS server joined");
+}
+
 #[test]
 fn independent_cas_owner_rejects_invalid_split_before_creating_state() {
     let fixture = Fixture::new();
