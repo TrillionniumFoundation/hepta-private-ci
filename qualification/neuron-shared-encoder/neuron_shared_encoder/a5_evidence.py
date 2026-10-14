@@ -11,7 +11,7 @@ import math
 from typing import Any
 
 from .validation_v3 import (
-    BUDGETS, ENCODERS, FIVE_ARM_CANDIDATES, KINDS, is_commit_ref, is_digest,
+    BUDGETS, FIVE_ARM_CANDIDATES, KINDS, is_commit_ref, is_digest,
 )
 
 
@@ -139,7 +139,9 @@ def review_a5_execution(report: dict) -> dict:
                 problems.append(f'{name}: non-object Head trial')
                 continue
             kind, budget = arm.get('kind'), arm.get('budget')
-            if (kind, budget) not in full_grid or (kind, budget) in seen:
+            if (not isinstance(kind, str) or type(budget) is not int
+                    or (kind, budget) not in full_grid
+                    or (kind, budget) in seen):
                 problems.append(f'{name}: duplicate/missing/unregistered Head budget arm')
                 continue
             seen.add((kind, budget))
@@ -152,8 +154,8 @@ def review_a5_execution(report: dict) -> dict:
             if (type(count) is not int or not 1 <= count <= budget
                     or arm.get('parameter_bytes_fp32') != count * 4
                     or type(arm.get('optimizer_state_bytes')) is not int
-                    or arm['optimizer_state_bytes'] < 0
-                    or not _finite_number(arm.get('train_seconds'))):
+                    or arm['optimizer_state_bytes'] <= 0
+                    or not _finite_number(arm.get('train_seconds'), positive=True)):
                 problems.append(f'{name}: fabricated/incomplete trained parameter cost')
                 continue
             if not all(_score_fields_good(arm.get(split))

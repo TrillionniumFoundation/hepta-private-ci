@@ -1,6 +1,4 @@
 """A5 offline schema falsification; no external model weights are loaded."""
-from copy import deepcopy
-
 import pytest
 
 from neuron_shared_encoder.a5_evidence import review_a5_execution
@@ -67,3 +65,19 @@ def test_joint_review_blocks_empty_real_model_dicts_before_media_gate():
     assert result['status'] == 'BLOCKED'
     assert result['a5_execution_integrity']['status'] == 'BLOCKED'
     assert result['candidate_stem_selected'] is None
+
+
+@pytest.mark.parametrize('bad_value', [['linear'], {'head': 'linear'}, True, 2048.0])
+def test_unhashable_or_bad_head_kind_is_a_blocker_not_an_exception(bad_value):
+    report = complete_a5_schema_fixture()
+    report['encoders']['mmbert-small']['trained_head_matrix']['candidates'][0]['kind'] = bad_value
+    result = review_a5_execution(report)
+    assert result['status'] == 'BLOCKED'
+    assert any('Head budget arm' in reason for reason in result['issues'])
+
+
+def test_head_optimizer_state_and_elapsed_time_must_be_measured():
+    for field in ('optimizer_state_bytes', 'train_seconds'):
+        report = complete_a5_schema_fixture()
+        report['encoders']['mmbert-small']['trained_head_matrix']['candidates'][0][field] = 0
+        assert review_a5_execution(report)['status'] == 'BLOCKED'
