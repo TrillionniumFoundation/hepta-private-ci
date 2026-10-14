@@ -231,6 +231,4 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
             .read_local_frontier()
             .map_err(|_| BatchWorkerErrorV1::MetricsUnavailable)
     }
-
-
 }
