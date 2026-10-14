@@ -191,6 +191,32 @@ jobs:
             --snapshot "$RUNNER_TEMP/public-encoder/snapshot" \
             --output "$RUNNER_TEMP/multirc-query-factors" \
             2>&1 | tee "$RUNNER_TEMP/multirc-query-factors.log"
+      - name: Material owner expands all genuine answer candidates for registered questions
+        shell: bash
+        run: |
+          set -euo pipefail
+          VAL_FILE=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/multirc-source-lock.json"))["files"]["val"]["path"])')
+          VAL_SHA=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/multirc-source-lock.json"))["files"]["val"]["sha256"])')
+          python qualification/stem-cell-v1/multirc_candidate_slate.py \
+            --train-bundle "$RUNNER_TEMP/multirc-material/train-bundle.json" \
+            --blind-eval-bundle "$RUNNER_TEMP/multirc-material/blind-eval-bundle.json" \
+            --validation-parquet "$VAL_FILE" --validation-sha256 "$VAL_SHA" \
+            --original-owner-labels "$RUNNER_TEMP/multirc-material/owner-only-labels.json" \
+            --output "$RUNNER_TEMP/multirc-native-candidate-material" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-native-candidates-prepare.log"
+      - name: Test the frozen fitted Readers on all authentic alternatives without loading labels
+        shell: bash
+        run: |
+          set -euo pipefail
+          SEAL=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/multirc-run/COMMITTED.json"))["seal_id"])')
+          python qualification/stem-cell-v1/multirc_candidate_audit.py run \
+            --train-bundle "$RUNNER_TEMP/multirc-material/train-bundle.json" \
+            --blind-eval-bundle "$RUNNER_TEMP/multirc-material/blind-eval-bundle.json" \
+            --candidate-slate "$RUNNER_TEMP/multirc-native-candidate-material/blind-candidate-slate.json" \
+            --run-dir "$RUNNER_TEMP/multirc-run" --expected-seal-id "$SEAL" \
+            --snapshot "$RUNNER_TEMP/public-encoder/snapshot" \
+            --output "$RUNNER_TEMP/multirc-native-candidate-audit" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-native-candidates-audit.log"
       - name: Join human-annotated dev labels only after prediction seal exists
         shell: bash
         run: |
@@ -202,6 +228,20 @@ jobs:
             --label-file "$RUNNER_TEMP/multirc-material/owner-only-labels.json" \
             --label-sha256 "$LABEL_SHA" --output "$RUNNER_TEMP/multirc-scores" \
             2>&1 | tee "$RUNNER_TEMP/multirc-score.log"
+      - name: Material owner scores all native labeled alternatives after their prediction seal
+        shell: bash
+        run: |
+          set -euo pipefail
+          AUDIT_SEAL=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/multirc-native-candidate-audit/COMMITTED.json"))["seal_id"])')
+          LABEL_SHA=$(python -c 'import hashlib,os; print(hashlib.sha256(open(os.environ["RUNNER_TEMP"]+"/multirc-native-candidate-material/owner-only-candidate-labels.json","rb").read()).hexdigest())')
+          python qualification/stem-cell-v1/multirc_candidate_audit.py score \
+            --candidate-slate "$RUNNER_TEMP/multirc-native-candidate-material/blind-candidate-slate.json" \
+            --audit-dir "$RUNNER_TEMP/multirc-native-candidate-audit" \
+            --expected-audit-seal-id "$AUDIT_SEAL" \
+            --owner-labels "$RUNNER_TEMP/multirc-native-candidate-material/owner-only-candidate-labels.json" \
+            --expected-label-sha256 "$LABEL_SHA" \
+            --output "$RUNNER_TEMP/multirc-native-candidate-scores" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-native-candidates-score.log"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -230,4 +270,15 @@ jobs:
             ${{ runner.temp }}/multirc-score.log
             ${{ runner.temp }}/multirc-scores/scores.json
             ${{ runner.temp }}/multirc-scores/COMMITTED.json
+            ${{ runner.temp }}/multirc-native-candidates-prepare.log
+            ${{ runner.temp }}/multirc-native-candidate-material/COMMITTED.json
+            ${{ runner.temp }}/multirc-native-candidate-material/FAILED.json
+            ${{ runner.temp }}/multirc-native-candidates-audit.log
+            ${{ runner.temp }}/multirc-native-candidate-audit/audit.json
+            ${{ runner.temp }}/multirc-native-candidate-audit/COMMITTED.json
+            ${{ runner.temp }}/multirc-native-candidate-audit/FAILED.json
+            ${{ runner.temp }}/multirc-native-candidates-score.log
+            ${{ runner.temp }}/multirc-native-candidate-scores/scores.json
+            ${{ runner.temp }}/multirc-native-candidate-scores/COMMITTED.json
+            ${{ runner.temp }}/multirc-native-candidate-scores/FAILED.json
           # Deliberately exclude raw passages, model weights and labels.
