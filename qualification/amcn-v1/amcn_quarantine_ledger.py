@@ -278,16 +278,58 @@ class ShadowQuarantineLedger:
                 is_sha(externally_pinned_frontier_sha256), "independent recovery pins")
         with self._lock():
             old, previous_sha, pending = self._scan(pending_is_error=False)
-            require(pending, "no interrupted transaction to recover")
+            require(len(pending) == 1,
+                    "exactly one interrupted transaction required for recovery")
             require(previous_sha == expected_previous_sha256,
                     "stale recovery / previous journal pin changed")
             require(old is not None and old["scope"] == scope and old["generation"] == generation
                     and old["artifact_manifest_sha256"] == _ledger_manifest(artifacts),
                     "recovery lineage changed")
+            # A prepared, fsynced event may contain the ONLY observation that
+            # a source was revoked before its original bytes reappeared. Never
+            # discard its adverse quarantine during crash recovery. A pending
+            # event is also untrusted input: accept only the exact canonical
+            # event the normal writer could have produced on this lineage.
+            attempted, pending_sha = _file_read(pending[0])
+            require(set(attempted) == {
+                "schema", "sequence", "prev_sha256", "scope", "generation",
+                "artifact_manifest_sha256", "source_frontier_sha256",
+                "quarantined_artifact_ids", "census_sha256", "production_accepted",
+                "recovery_pending_count",
+            }, "unrecognized pending journal fields")
+            require(attempted["schema"] == PROFILE
+                    and attempted["scope"] == scope
+                    and attempted["generation"] == generation
+                    and attempted["artifact_manifest_sha256"] == _ledger_manifest(artifacts)
+                    and attempted["production_accepted"] is False
+                    and type(attempted["recovery_pending_count"]) is int
+                    and attempted["recovery_pending_count"] == 0
+                    and is_sha(attempted["source_frontier_sha256"])
+                    and is_sha(attempted["census_sha256"]),
+                    "pending journal identity or authority drift")
+            if pending_sha == previous_sha:
+                # Crash AFTER hard-link publication; it must be byte-identical
+                # to the final already-scanned committed event.
+                require(attempted == old, "pending hard-link mismatches committed event")
+            else:
+                # Crash BEFORE hard-link publication. No later write is
+                # possible until recovery, so its parent must be the head.
+                require(type(attempted["sequence"]) is int
+                        and attempted["sequence"] == old["sequence"] + 1
+                        and attempted["prev_sha256"] == previous_sha,
+                        "pending transaction does not descend from current head")
+            old_ids = set(old["quarantined_artifact_ids"])
+            pending_ids = attempted["quarantined_artifact_ids"]
+            require(isinstance(pending_ids, list)
+                    and pending_ids == sorted(set(pending_ids))
+                    and all(is_sha(i) for i in pending_ids)
+                    and old_ids <= set(pending_ids)
+                    and set(pending_ids) <= {a.artifact_id for a in artifacts},
+                    "pending journal attempted invalid quarantine rollback")
             report = revocation_census(
                 artifacts, current_sources, scope=scope, generation=generation,
                 externally_pinned_frontier_sha256=externally_pinned_frontier_sha256,
-                old_quarantined=old["quarantined_artifact_ids"],
+                old_quarantined=pending_ids,
             )
             event = {
                 "schema": PROFILE, "sequence": old["sequence"] + 1,
@@ -305,6 +347,8 @@ class ShadowQuarantineLedger:
             return shadow_disposition(
                 profile=PROFILE, recovery_committed=True,
                 journal_head_sha256=new_sha, discarded_orphan_count=len(pending),
+                recovered_pending_event_sha256=pending_sha,
+                pending_quarantine_ids_preserved=len(pending_ids),
                 quarantined_artifact_ids=event["quarantined_artifact_ids"],
                 production_runtime_reattachment=False,
                 actual_source_deletion_verified=False,

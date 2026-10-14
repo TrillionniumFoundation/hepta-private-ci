@@ -127,6 +127,55 @@ class DurableShadowLedgerTests(unittest.TestCase):
         self.preflight(self.artifacts[2].artifact_id,
                        recovery["metrics"]["journal_head_sha256"], revised)
 
+    def test_crash_before_link_with_revocation_never_resurrects_on_source_restore(self):
+        """The fsynced pending revoke is adverse evidence even if not published."""
+        head = self.first()
+        revoked = [replace(self.sources[0], revoked=True), self.sources[1]]
+        crash = self.owner.apply(
+            self.artifacts, revoked,
+            externally_pinned_frontier_sha256=fixture.pinned(revoked),
+            expected_previous_sha256=head,
+            crash_at="prepared", **self.args,
+        )
+        self.assertFalse(crash["metrics"]["recorded"])
+        with self.assertRaises(Refused):
+            self.preflight(self.artifacts[0].artifact_id, head)
+
+        # A source can reappear with the original content before recovery.
+        # The interrupted quarantine must not be discarded or silently reset.
+        recovery = self.owner.recover(
+            self.artifacts, self.sources,
+            externally_pinned_frontier_sha256=fixture.pinned(self.sources),
+            expected_previous_sha256=head, **self.args,
+        )
+        self.assertEqual(recovery["metrics"]["pending_quarantine_ids_preserved"], 3)
+        self.assertEqual(len(recovery["metrics"]["recovered_pending_event_sha256"]), 64)
+        new_head = recovery["metrics"]["journal_head_sha256"]
+        for index in (0, 1, 3):
+            with self.subTest(artifact=index), self.assertRaises(Refused):
+                self.preflight(self.artifacts[index].artifact_id, new_head)
+        self.preflight(self.artifacts[2].artifact_id, new_head)
+
+    def test_corrupted_pending_revocation_cannot_be_discarded(self):
+        head = self.first()
+        revoked = [replace(self.sources[0], revoked=True), self.sources[1]]
+        self.owner.apply(
+            self.artifacts, revoked,
+            externally_pinned_frontier_sha256=fixture.pinned(revoked),
+            expected_previous_sha256=head,
+            crash_at="prepared", **self.args,
+        )
+        pending = next(self.owner.events.glob(".pending-*"))
+        pending.write_bytes(b"{}\n")
+        with self.assertRaises((Refused, ValueError)):
+            self.owner.recover(
+                self.artifacts, self.sources,
+                externally_pinned_frontier_sha256=fixture.pinned(self.sources),
+                expected_previous_sha256=head, **self.args,
+            )
+        with self.assertRaises(Refused):
+            self.preflight(self.artifacts[2].artifact_id, head)
+
     def test_crash_after_link_requires_new_chain_event(self):
         first = self.first()
         result = self.owner.apply(self.artifacts, self.sources,

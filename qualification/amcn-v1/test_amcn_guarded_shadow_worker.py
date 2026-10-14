@@ -134,6 +134,34 @@ class PreExecutionShadowHeadTests(unittest.TestCase):
         with self.assertRaises(Refused):
             self.execute()
 
+    def test_pending_source_revocation_survives_restart_and_never_executes_old_head(self):
+        from unittest.mock import patch
+        withdrawn = [replace(self.source, revoked=True)]
+        self.ledger.apply(
+            self.catalog, withdrawn,
+            externally_pinned_frontier_sha256=fixture.pinned(withdrawn),
+            expected_previous_sha256=self.first,
+            crash_at="prepared", **self.args,
+        )
+        # Simulate the original source bytes returning on another process
+        # before the interrupted fsynced quarantine is recovered.
+        reopened = ShadowQuarantineLedger(self.ledger.root)
+        with self.assertRaises(Refused):
+            reopened.preflight(
+                self.artifact.artifact_id, self.catalog, [self.source],
+                externally_pinned_frontier_sha256=fixture.pinned([self.source]),
+                expected_journal_head_sha256=self.first, **self.args,
+            )
+        recovered = reopened.recover(
+            self.catalog, [self.source],
+            externally_pinned_frontier_sha256=fixture.pinned([self.source]),
+            expected_previous_sha256=self.first, **self.args,
+        )["metrics"]["journal_head_sha256"]
+        with patch.object(self.head, "forward", wraps=self.head.forward) as spy:
+            with self.assertRaises(Refused):
+                self.execute(journal_head=recovered)
+            spy.assert_not_called()
+
 
 if __name__ == "__main__":
     unittest.main()

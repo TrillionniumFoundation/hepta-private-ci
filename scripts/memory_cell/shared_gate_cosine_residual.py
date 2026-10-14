@@ -132,6 +132,8 @@ def build_train_rectangles(public, train_plan, public_inputs):
         unit = source[qid]
         c.require(unit["split"] == prior["split"] == "train" and unit["family"] == prior["family"]
                   and unit["status"] == prior["status"], "TRAIN pair identity drift")
+        c.require(own[qid]["family"] == prior["family"],
+                  "original TRAIN source family changed")
         out = {"pair_id": prior["pair_id"], "question_id": qid, "family": prior["family"],
                "donor_question_id": unit.get("donor_question_id"), "donor_family": unit.get("donor_family"),
                "split": "train", "status": unit["status"], "variants": []}

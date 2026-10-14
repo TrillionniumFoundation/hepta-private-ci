@@ -232,6 +232,11 @@ model Selector. No local eligibility result grants production execution.
   inheritance. It rejects missing or changed source revisions, cross-scope
   ancestry, corrupted/rolled-back records and orphaned partial transactions.
   The caller must retain the latest journal-head SHA outside this directory.
+  After a crash before hard-link publication, recovery now validates the one
+  fsynced pending event against its actual parent and unions its quarantine
+  with the fresh source census; restoring the former source bytes cannot
+  silently unquarantine the Head or a descendant. Corrupt/ambiguous pending
+  records fail closed until explicit owner remediation.
 - amcn_quarantine_cli.py receives an exact, independently pinned
   Source frontier and Artifact bundle in **separate files**. It supports
   bootstrap, update, recover, and preflight. Preparation and
@@ -265,8 +270,8 @@ Test the complete isolated mechanism from repository root:
 
     python -m unittest discover -s qualification/amcn-v1 -p 'test_*.py' -v
 
-The local replay in this branch's development showed 81 test invocations:
-80 passed and one skipped because that *isolated source tree* did not
+The newest local regression replay showed 84 test invocations:
+83 passed and one skipped because that *isolated source tree* did not
 contain the original dual-signed Reader Owner fixture. Full-repository
 GitHub CI must execute that integration before any positive claim.
 No real calendar-future learning gain, semantic citation adjudication,
