@@ -613,6 +613,13 @@ fn lost_writer_marker_or_replaced_wal_cannot_adopt_old_signed_state() {
         Err(NduPublicationErrorV1::Indeterminate),
         "valid-looking replacement must not become live owner state"
     );
+    // The first failed inode check must poison the same Control owner; an
+    // apparently restored pathname must never reauthorize its old WAL.
+    assert_eq!(
+        owner.current(),
+        Err(NduPublicationErrorV1::Poisoned),
+        "replacement WAL cannot clear the sticky Control poison"
+    );
     assert!(matches!(
         owner.compare_and_publish_checkpoint(
             &original,
