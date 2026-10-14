@@ -1,0 +1,65 @@
+name: Hepta shared Stem speech execution (research only)
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/public_audio.py"
+      - "experiments/shared_stem_cell/test_public_audio.py"
+      - "experiments/shared_stem_cell/calibrated_fusion.py"
+      - "experiments/shared_stem_cell/media_execution.py"
+      - "experiments/shared_stem_cell/execution.py"
+      - ".github/workflows/hepta-shared-stem-audio.yml"
+permissions:
+  contents: read
+concurrency:
+  group: shared-stem-audio-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+jobs:
+  public-speaker-heldout:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Exact research source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Isolated acoustic runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/hepta-audio-env"
+          PY="$RUNNER_TEMP/hepta-audio-env/bin/python"
+          "$PY" -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          "$PY" -m pip install transformers==4.57.1 numpy==2.2.6 scipy==1.15.3 safetensors==0.7.0 psutil==7.1.0 pillow==12.3.0 packaging==24.2 ruff==0.14.0
+      - name: Actual frozen Whisper and held-out speaker experiment
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+          USE_TF: "0"
+          TOKENIZERS_PARALLELISM: "false"
+        shell: bash
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-audio-env/bin/python"
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-audio-source.txt"
+          "$PY" -m pip freeze >> "$RUNNER_TEMP/hepta-audio-source.txt"
+          "$PY" -m ruff check --select F,E9 experiments/shared_stem_cell/{public_audio,test_public_audio,calibrated_fusion}.py
+          "$PY" -m unittest -v experiments.shared_stem_cell.test_public_audio experiments.shared_stem_cell.test_calibrated_fusion experiments.shared_stem_cell.test_media_execution experiments.shared_stem_cell.test_materialization experiments.shared_stem_cell.hf_integration_checks 2>&1 | tee "$RUNNER_TEMP/hepta-audio-tests.log"
+          "$PY" -m experiments.shared_stem_cell.public_audio --output "$RUNNER_TEMP/hepta-audio-study" 2>&1 | tee "$RUNNER_TEMP/hepta-audio-execution.log"
+          git diff --exit-code
+      - name: Preserve outputs and failure evidence, never pretrained weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-audio-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-audio-source.txt
+            ${{ runner.temp }}/hepta-audio-tests.log
+            ${{ runner.temp }}/hepta-audio-execution.log
+            ${{ runner.temp }}/hepta-audio-study/*.json
+            ${{ runner.temp }}/hepta-audio-study/*.jsonl
+            ${{ runner.temp }}/hepta-audio-study/FSDD-README.txt
+            ${{ runner.temp }}/hepta-audio-study/audio
+            ${{ runner.temp }}/hepta-audio-study/execution
+            ${{ runner.temp }}/hepta-audio-study/whisper/model-source.json
+            ${{ runner.temp }}/hepta-audio-study/whisper/verified-publisher-files.json
