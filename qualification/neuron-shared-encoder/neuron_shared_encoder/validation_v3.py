@@ -199,7 +199,7 @@ def reuse_keys(record: dict, *, encoder_digest: str, tokenizer_digest: str,
                purpose: str = 'decision', generation: int = 1,
                authority_epoch: int = 1, mode: str = 'joint') -> str:
     """An experimental identity, NOT proof that a source reuse was authorized."""
-    if mode not in ('joint', 'public') or generation <= 0 or authority_epoch <= 0 or not purpose:
+    if mode not in ('joint', 'public', 'private_state') or generation <= 0 or authority_epoch <= 0 or not purpose:
         raise ValueError('invalid reuse contract')
     if any(not is_digest(d) for d in (encoder_digest, tokenizer_digest, normalizer_digest)):
         raise ValueError('exact encoder/tokenizer/normalizer digests required')
@@ -208,12 +208,24 @@ def reuse_keys(record: dict, *, encoder_digest: str, tokenizer_digest: str,
     who = record['principal']
     if not isinstance(who, str) or not who:
         raise ValueError('principal missing')
-    fields = {'question': record['question'], 'options': record['options']}
-    if mode == 'joint':
-        fields['state'] = record['state']
-    return canonical_digest({'scope': [who, purpose, generation, authority_epoch],
+    organ = record.get('organ_id')
+    cell = record.get('cell_id')
+    if not isinstance(organ, str) or not organ or not isinstance(cell, str) or not cell:
+        raise ValueError('exact organ and Cell scope is required for feature reuse')
+    if mode == 'private_state':
+        fields = {'state': record['state']}
+    else:
+        fields = {'question': record['question'], 'options': record['options']}
+        if mode == 'joint':
+            fields['state'] = record['state']
+    scope = [who, organ, purpose, generation, authority_epoch]
+    if mode != 'public':
+        scope.append(cell)
+    return canonical_digest({'scope': scope,
                              'model': [encoder_digest, tokenizer_digest, normalizer_digest],
-                             'split': record['split'], 'mode': mode, 'input': fields})
+                             'split': record['split'], 'mode': mode,
+                             'format': 'hepta.e3.frozen-stem-input.v2',
+                             'input': fields})
 
 
 def reuse_trial(rows: list[dict], encode: Callable[[list[dict]], torch.Tensor], *,
@@ -224,6 +236,9 @@ def reuse_trial(rows: list[dict], encode: Callable[[list[dict]], torch.Tensor], 
 
     Does not cache across principal, split, purpose, generation or authority epoch.
     In public mode Cell-private state is excluded from the shared encoder input.
+    In private_state mode task questions/options are fixed while the exact Cell
+    state is retained. Both modes use the SAME actual pinned Encoder adapter;
+    the state path is not a trained adapter or a cross-Cell authority grant.
     The benchmark has no ability to grant reuse authorization.
     """
     if not rows or not 1 <= batch_size <= 1024:
@@ -239,6 +254,11 @@ def reuse_trial(rows: list[dict], encode: Callable[[list[dict]], torch.Tensor], 
             sent = dict(row)
             if mode == 'public':
                 sent['state'] = ''
+            elif mode == 'private_state':
+                # Fixed question/choice layout for the frozen state Encoder
+                # control. Domain separation in reuse_keys binds this layout.
+                sent['question'] = 'Encode the Cell-local state only.'
+                sent['options'] = ['state-present', 'state-absent']
             seen[k] = sent
     unique_keys = list(seen)
     outputs = {}
@@ -610,12 +630,19 @@ def main() -> None:
                     return ((vectors - avg) / scale).clamp(-10, 10).float().cpu()
                 joint_features = train_normalized(frozen_projection(_j.float().cpu(), args.dimension, args.seed))
                 public_features = frozen_projection(_p.float().cpu(), public_dim, args.seed)
-                # Deliberate synthetic local-state control: this isolates encoder reuse
-                # but CANNOT establish quality of a real trained State Adapter.
-                state_features = torch.stack([_mock_embedding({
-                    'state': r['state'], 'question': '', 'options': ['private-state-only']},
-                    args.dimension - public_dim) for r in rows])
-                fused_features = train_normalized(torch.cat([public_features, state_features], dim=1))
+                # The SAME frozen Encoder must encode state-only inputs. No
+                # synthetic local-state hash may enter a real-Encoder result.
+                # Account for these physical forwards in the decomposed cost:
+                # sharing question encoding alone is not always a net saving.
+                _s, state = reuse_trial(
+                    rows, encode, encoder_digest=encoder_digest,
+                    tokenizer_digest=tok, normalizer_digest=norm,
+                    mode='private_state', batch_size=args.batch,
+                    generation=args.generation, authority_epoch=args.authority_epoch)
+                state_features = frozen_projection(
+                    _s.float().cpu(), args.dimension - public_dim, args.seed + 1)
+                fused_features = train_normalized(
+                    torch.cat([public_features, state_features], dim=1))
                 label_tensor = torch.tensor([r['label'] for r in rows], dtype=torch.long)
                 split_names = [r['split'] for r in rows]
                 compared = {
@@ -627,13 +654,31 @@ def main() -> None:
                                          steps=args.steps, batch=args.batch, seed=args.seed),
                 }
                 result = {'experiment': 'E3', 'evidence_class': evidence_class,
-                          'production_admission': 'BLOCKED', 'joint': joint, 'public': public,
+                          'production_admission': 'BLOCKED', 'joint': joint,
+                          'public': public, 'private_state': state,
+                          'encoder_forward_rows_total': (
+                              joint['encoder_forward_rows']
+                              + public['encoder_forward_rows']
+                              + state['encoder_forward_rows']),
+                          'decomposed_forward_rows': (
+                              public['encoder_forward_rows']
+                              + state['encoder_forward_rows']),
+                          'decomposed_rows_saved_vs_joint': (
+                              joint['encoder_forward_rows']
+                              - public['encoder_forward_rows']
+                              - state['encoder_forward_rows']),
                           'quality_shadow': compared,
-                          'state_adapter': 'SYNTHETIC_HASH_NOT_DEPLOYABLE',
+                          'state_adapter': (
+                              'SYNTHETIC_STEM_SMOKE' if args.encoder == 'synthetic-hash'
+                              else 'FROZEN_STATE_ENCODER_WITH_LEARNED_FUSION_HEAD'),
+                          'state_encoder_frozen': True,
+                          'state_encoder_is_same_pinned_model': args.encoder != 'synthetic-hash',
                           'public_vs_joint_quality_not_established': True,
-                          'warning': ('E3 measured the accuracy/cache tradeoff only for a hash-based '
-                                      'private-state control. Real trained state fusion and independent '
-                                      'future-window evaluation remain necessary.')}
+                          'warning': ('State and public inputs use separate frozen Encoder '
+                                      'forwards, including their measured physical rows. '
+                                      'Random projections and trained Head are shadow '
+                                      'controls; official model pooling, signed sources, '
+                                      'NDU and production quality remain unverified.')}
             else:
                 features = encode(rows).float().cpu()
                 from .models import frozen_projection

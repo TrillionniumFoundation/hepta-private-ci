@@ -131,13 +131,17 @@ hardware parity require independent native tests.
 inferred from the logical Cell count. The public-input key excludes Cell
 state but includes principal, purpose, generation, authority epoch,
 Encoder/tokenizer/normalizer digests and evaluation split. It cannot
-bypass a real source-entitlement or signed final-use check. The local
-Cell-state branch in this V3 control uses a **synthetic hash**, explicitly
-labelled `SYNTHETIC_HASH_NOT_DEPLOYABLE`. Both variants undergo equal-budget
-linear/dynamic Head training and future-set scoring, but even when the
-Encoder itself is real, this hybrid is not a qualified production
-state-fusion model. Replace the state hash with a pinned, trained and
-independently validated local adapter before claiming E3 quality parity.
+bypass a real source-entitlement or signed final-use check. The Cell-local branch now uses the **same frozen, SHA-pinned Encoder**
+with a fixed state-only prompt and options; it does not inject a synthetic
+hash when the Encoder is real. The decomposed execution explicitly counts
+**public + private-state** physical Encoder rows and reports the signed
+difference against joint rows, including cases where decomposition costs MORE.
+Public features are reused only within principal/organ/epoch/revision/split;
+state features are also fenced by Cell identity. This is a genuine
+frozen-state control with a trained fusion Head, **not** a separately trained
+State Adapter nor a production feature cache. The synthetic smoke route
+remains visibly synthetic. Real pooled-input quality, future independent
+evidence and signed owner/final-use checks remain unqualified.
 
 ### E4 — frozen no-change versus candidate; never promotion
 

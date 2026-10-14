@@ -248,3 +248,42 @@ def test_e1_real_run_refuses_missing_staged_weights_without_mock_fallback():
     assert encoder_matrix_contract(matrix)['status'] == 'SCHEMA_COMPLETE_UNVERIFIED'
     with pytest.raises(FileNotFoundError, match='missing local'):
         run_real_encoder_matrix(rows, D('d'), matrix)
+
+
+
+def test_private_state_encoder_is_called_and_cost_is_counted():
+    rows = dataset(4)
+    seen = []
+    def frozen_encoder(batch):
+        seen.extend((r['question'], r['state']) for r in batch)
+        return torch.tensor([[float(len(r['state'])), float(len(r['question']))]
+                             for r in batch])
+    kw = dict(encoder_digest=D('a'), tokenizer_digest=D('b'),
+              normalizer_digest=D('c'), batch_size=16)
+    _, joint = reuse_trial(rows, frozen_encoder, mode='joint', **kw)
+    _, public = reuse_trial(rows, frozen_encoder, mode='public', **kw)
+    _, state = reuse_trial(rows, frozen_encoder, mode='private_state', **kw)
+    assert state['encoder_forward_rows'] == 16  # four states per split
+    assert public['encoder_forward_rows'] == 4
+    assert joint['encoder_forward_rows'] == 16
+    assert sum(r[1] != '' for r in seen) == 32
+    assert all(q == 'Encode the Cell-local state only.'
+               for q, _ in seen if q.startswith('Encode the Cell-local'))
+    assert state['authorization_verified'] is False
+    assert public['encoder_forward_rows'] + state['encoder_forward_rows'] > joint['encoder_forward_rows']
+
+
+def test_private_state_cache_does_not_cross_cell_scope_or_question_identity():
+    row = dataset(4)[0]
+    opts = dict(encoder_digest=D('a'), tokenizer_digest=D('b'),
+                normalizer_digest=D('c'), mode='private_state')
+    original = reuse_keys(row, **opts)
+    assert original == reuse_keys({**row, 'question': 'different',
+                                   'options': ['X', 'Y']}, **opts)
+    assert original != reuse_keys({**row, 'state': 'different'}, **opts)
+    assert original != reuse_keys({**row, 'cell_id': 'cell-other'}, **opts)
+    assert original != reuse_keys({**row, 'organ_id': 'organ-other'}, **opts)
+    assert original != reuse_keys({**row, 'split': 'future'}, **opts)
+    assert original != reuse_keys({**row, 'principal': 'other'}, **opts)
+    with pytest.raises(ValueError, match='scope'):
+        reuse_keys({**row, 'cell_id': ''}, **opts)
