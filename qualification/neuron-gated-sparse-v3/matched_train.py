@@ -270,6 +270,11 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
                 # and stable SSM per-step decay. These are projected *during*
                 # research optimization rather than silently clipped on export.
                 with torch.no_grad():
+                    # Every temporal tensor must be publishable without
+                    # value-destroying clamp at the physical artifact boundary.
+                    for name, value in model.named_parameters():
+                        if not name.startswith('head.'):
+                            value.clamp_(-1, 1)
                     if arm == 'v3':
                         model.gate_bias.clamp_(0, 1)
                     elif arm == 'ssm':
@@ -288,6 +293,8 @@ def train(args: argparse.Namespace) -> dict[str, Any]:
                 else:
                     quant_saturations += int((raw.abs() > 1).sum())
                     saved[key] = torch.round(raw.clamp(-1, 1) * Q).to(torch.int64)
+            require(quant_saturations == 0,
+                    'trained temporal weights changed by post-training quantization clamp')
             fname = f'{cap}/{arm}.safetensors'
             path = root / fname
             path.parent.mkdir(parents=True, exist_ok=True)
