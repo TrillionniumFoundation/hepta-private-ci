@@ -458,10 +458,16 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "validate_runtime_topology_transition_v1",
             "validate_runtime_topology_recovery_v1",
         ):
-            self.assertRegex(
-                code,
-                rf"\bfn\s+{method}\s*\([^{{]+"
-                r"validate_runtime_topology_transition_for_destination_v1\s*\(",
+            entry = re.search(rf"\bfn\s+{method}\s*\(", code)
+            self.assertIsNotNone(entry, f"{method} is no longer a reviewed API")
+            assert entry is not None
+            start = code.find("{", entry.end())
+            end = CALLER_PROOF._matching_delimiter(code, start, "{", "}")
+            self.assertIsNotNone(end, f"{method} is not a complete Rust method")
+            assert end is not None
+            self.assertIn(
+                "validate_runtime_topology_transition_for_destination_v1(",
+                code[start + 1 : end],
                 f"{method} bypasses the shared Split-denying validator",
             )
 
