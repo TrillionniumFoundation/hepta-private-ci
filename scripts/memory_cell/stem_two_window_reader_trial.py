@@ -20,7 +20,7 @@ import torch
 
 from index import PersistentIndex, RetrievalPolicy
 from native import digest, load
-from pretrained import Encoder, file_inventory
+from pretrained import Encoder, file_inventory, frozen_digest
 from selector_answering import (
     FrozenAnswerGenerator,
     GENERATION,
@@ -40,6 +40,21 @@ ARCHIVED_TREE = "d280ba53070fb6457c04ff0d97fbb14ebbdbc3fb"
 ARCHIVED_ZIP = "1db7f8f7c13a1f718d5065956f14d554d3fe328c415fac4bb145d1eaf9d913c8"
 PHASES = ("test", "transfer")
 INPUT_CEILING = 1024
+
+
+def verify_frozen_retrieval(
+    encoder, directory, *, inventory_digest, weights_digest
+):
+    """Reject both changed loaded weights and drift of the staged source bytes."""
+    if (
+        encoder.identity != inventory_digest
+        or digest(file_inventory(directory)) != inventory_digest
+        or encoder.model.training
+        or any(p.requires_grad for p in encoder.model.parameters())
+        or frozen_digest(encoder.model) != weights_digest
+    ):
+        raise ValueError("frozen retrieval Encoder weights, mode or files changed")
+
 
 
 def write(path, obj):
@@ -244,6 +259,8 @@ def run(staged, ranker_dir, zipped, output):
             == plan["retriever_inventory"],
             "frozen retrieval Encoder inventory changed",
         )
+        # Seal the actual loaded tensor state before any retrieval inference.
+        retrieval_initial_weights = frozen_digest(retrieval.model)
         require(
             file_inventory(ranker_dir) == plan["ranker_inventory"],
             "frozen pair ranker inventory changed",
@@ -394,7 +411,12 @@ def run(staged, ranker_dir, zipped, output):
                     index.close()
         if not reader.quarantined:
             reader.verify_frozen()
-        retrieval.verify_frozen()
+        verify_frozen_retrieval(
+            retrieval,
+            staged / "encoder",
+            inventory_digest=plan["retriever_inventory"],
+            weights_digest=retrieval_initial_weights,
+        )
         ranker.verify_frozen()
         # Gold target strings are first accessed AFTER both raw-output
         # journals are persisted. Each of 16 original questions still counts.

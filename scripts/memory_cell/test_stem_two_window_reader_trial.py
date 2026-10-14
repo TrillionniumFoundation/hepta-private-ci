@@ -116,6 +116,59 @@ class PairedGenerationTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 answer_two(reader, q, candidate, revoked=set())
 
+    def test_retrieval_encoder_checks_loaded_weights_and_staged_bytes(self):
+        from pathlib import Path
+        from tempfile import TemporaryDirectory
+
+        from stem_two_window_reader_trial import verify_frozen_retrieval
+        from pretrained import file_inventory, frozen_digest
+
+        with TemporaryDirectory() as tmp:
+            staged = Path(tmp)
+            (staged / "config.json").write_text("frozen-source", encoding="utf-8")
+            identity = digest(file_inventory(staged))
+            model = torch.nn.Linear(2, 2).eval()
+            model.requires_grad_(False)
+            encoder = Obj(identity=identity, model=model)
+            sealed = frozen_digest(model)
+
+            def verify():
+                verify_frozen_retrieval(
+                    encoder,
+                    staged,
+                    inventory_digest=identity,
+                    weights_digest=sealed,
+                )
+
+            verify()
+            model.train()
+            with self.assertRaisesRegex(ValueError, "frozen retrieval Encoder"):
+                verify()
+            model.eval()
+
+            model.weight.requires_grad_(True)
+            with self.assertRaisesRegex(ValueError, "frozen retrieval Encoder"):
+                verify()
+            model.weight.requires_grad_(False)
+
+            original = model.weight.detach().clone()
+            with torch.no_grad():
+                model.weight.add_(0.5)
+            with self.assertRaisesRegex(ValueError, "frozen retrieval Encoder"):
+                verify()
+            with torch.no_grad():
+                model.weight.copy_(original)
+            verify()
+
+            (staged / "extra-file.txt").write_text("tampered", encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "frozen retrieval Encoder"):
+                verify()
+            (staged / "extra-file.txt").unlink()
+            verify()
+            encoder.identity = "forged-reader"
+            with self.assertRaisesRegex(ValueError, "frozen retrieval Encoder"):
+                verify()
+
     def test_model_generation_failure_quarantines_isolated_reader(self):
         reader, q, data = fixture()
 
