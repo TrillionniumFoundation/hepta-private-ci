@@ -78,6 +78,12 @@ class PairedFrontierTests(unittest.TestCase):
         with self.assertRaises(InvalidFrontier):
             audit(data, baseline="replicated_421m")
 
+    def test_cross_scope_comparison_is_not_authorized(self):
+        data = campaign()
+        data["arms"][1]["scope"] = "other-workspace"
+        with self.assertRaisesRegex(InvalidFrontier, "cross-scope"):
+            audit(data, baseline="replicated_421m")
+
     def test_process_peak_does_not_borrow_shared_process_memory(self):
         data = campaign()
         data["arms"][1]["isolated_process"] = False
