@@ -154,6 +154,27 @@ fn acknowledged_stop_releases_original_metrics_lock_before_reopen() {
     }
 }
 
+/// Stop itself must fsync queued samples before releasing the original
+/// writer lock and acknowledging a clean shutdown. No explicit flush,
+/// sleeps or fabricated journal counters are permitted in this regression.
+#[test]
+fn graceful_stop_commits_queued_samples_before_lock_handoff() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("stop-commits.log");
+    for round in 0..16_u64 {
+        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000)
+            .expect("one original Evidence writer");
+        sink.record(sample(PhaseMetricKindV1::NduRead))
+            .expect("queued sample");
+        drop(sink);
+
+        let committed = MetricsGroupCommitV1::open(&path)
+            .expect("Stop must fsync and release the original lock before ACK");
+        assert_eq!(committed.committed_rows(), round + 1);
+        assert_eq!(committed.committed_groups(), round + 1);
+    }
+}
+
 #[test]
 fn metrics_abrupt_exit_fixture() {
     // The child is intentionally isolated in another process: process::exit
