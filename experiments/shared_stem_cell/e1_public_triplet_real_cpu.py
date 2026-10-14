@@ -141,7 +141,10 @@ def main():
  if a.model=='embeddinggemma_2_text' and (a.gemma_checkout is None or a.gemma_manifest is None):
   raise Invalid('reviewed Gemma source and complete verified snapshot required')
  if a.model!='embeddinggemma_2_text' and a.compact_checkout is None:raise Invalid('reviewed compact source required')
- panel,panel_sha=load_panel(a.panel);start=time.perf_counter_ns();cpu=time.process_time_ns()
+ panel,panel_sha=load_panel(a.panel)
+ if panel_sha!='2f7a013648e16b60c74614b0fcf1496aa06475f7285f215adddaa51fe29e01a4':
+  raise Invalid('source selection differs from exact archived physical study')
+ start=time.perf_counter_ns();cpu=time.process_time_ns()
  vectors,tokens,digests,physical=encode_pretrained(panel['cases'],a.model,a.compact_checkout,a.gemma_checkout,a.gemma_manifest)
  fit=fit_heads(panel,a.model,vectors)
  out={'schema':'hepta.e1-english-public-pretrained-head.v1','model':a.model,
