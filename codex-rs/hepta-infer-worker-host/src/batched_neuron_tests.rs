@@ -803,7 +803,14 @@ fn completed_signed_effect_cannot_switch_to_a_fresh_evidence_writer() {
         Err(BatchWorkerErrorV1::MetricsUnavailable)
     );
     assert_eq!(worker.pending(), 0);
-    assert_eq!(original.0.lock().unwrap().len(), 3);
+    // The ORIGINAL writer retains the three successful effect phases plus
+    // the failed Admission attempted after an unauthorized writer swap.
+    // A rejected request is still observable; it never claims a new nonce.
+    let observed = original.0.lock().unwrap();
+    assert_eq!(observed.len(), 4);
+    assert_eq!(observed[3].phase, PhaseMetricKindV1::Admission);
+    assert!(!observed[3].succeeded);
+    drop(observed);
     assert!(replacement.0.lock().unwrap().is_empty());
 }
 
@@ -2825,7 +2832,9 @@ fn original_evidence_bound_cold_reopen_refuses_previously_committed_signed_effec
     use crate::original_evidence_neuron::OriginalEvidenceWriterConfigV1;
 
     let dir = tempfile::tempdir().unwrap();
-    let path = dir.path().join("signed-effect-requires-independent-recovery.wal");
+    let path = dir
+        .path()
+        .join("signed-effect-requires-independent-recovery.wal");
     let signer = SigningKey::from_bytes(&[123; 32]);
     let (model, request, key) = fixture_request();
     let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
@@ -2845,7 +2854,10 @@ fn original_evidence_bound_cold_reopen_refuses_previously_committed_signed_effec
     assert_eq!(completed.outcomes.len(), 1);
     assert!(completed.outcomes[0].result.is_ok());
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
-    assert_eq!(original.observe_original_frontier().unwrap().committed_rows, 3);
+    assert_eq!(
+        original.observe_original_frontier().unwrap().committed_rows,
+        3
+    );
     drop(original);
 
     // A new signed nonce can be presented after process recovery; the
@@ -2912,7 +2924,10 @@ fn original_evidence_bound_empty_preprovisioned_marker_does_not_fake_prior_effec
         path,
     );
     assert_eq!(reopened.pending(), 0);
-    assert_eq!(reopened.observe_original_frontier().unwrap().committed_rows, 0);
+    assert_eq!(
+        reopened.observe_original_frontier().unwrap().committed_rows,
+        0
+    );
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
 }
 
