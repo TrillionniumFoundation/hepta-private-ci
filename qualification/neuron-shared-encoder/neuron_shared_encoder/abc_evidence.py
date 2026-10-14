@@ -118,10 +118,13 @@ def threeway_prequential_audit(
         raise ValueError('one ordered, label-free precommit record per future row required')
     for index, event in zip(ordered, records):
         row = rows[index]
-        if not isinstance(event, dict) or any(
-            key in event for key in ('label', 'truth', 'reward', 'correct', 'target')
-        ):
-            raise ValueError('label contamination in precommit evidence')
+        required = {
+            'row_id', 'future_window', 'frozen_head_digest',
+            'learned_head_digest_before', 'input_digest',
+            'prediction_digests', 'predicted_at', 'label_available_at',
+        }
+        if not isinstance(event, dict) or set(event) != required:
+            raise ValueError('unknown/missing or label-bearing precommit fields')
         if event.get('row_id') != row['row_id'] or event.get('future_window') != row['future_window']:
             raise ValueError('out-of-order/missing future precommit')
         if (event.get('frozen_head_digest') != frozen_digest or
@@ -186,7 +189,8 @@ def threeway_prequential_audit(
     # OOD/retention limits MUST come from an independent, preregistered policy.
     # Report their values but never self-authorize a selection.
     return {
-        'experiment': 'B-threeway', 'status': 'PAIRED_SELF_REPORTED_SHADOW',
+        'experiment': 'B-threeway', 'dataset_sha256': dataset_sha256,
+        'status': 'PAIRED_SELF_REPORTED_SHADOW',
         'production_admission': 'BLOCKED', 'selection': 'NOT_AUTHORIZED',
         'self_reported_prelabel_timeline_consistent': True,
         'durable_external_prelabel_witness_verified': False,
@@ -239,6 +243,11 @@ def multimodal_cost_audit(manifest: dict) -> dict:
                       'resident_weights_bytes', 'peak_training_memory_bytes', 'training_seconds'):
             if not _finite(stage.get(field)):
                 problems.append(f'{name}: invalid {field}')
+        if (all(_finite(stage.get(k)) for k in
+                ('total_parameters', 'trainable_parameters', 'projection_parameters'))
+                and (stage['trainable_parameters'] > stage['total_parameters']
+                     or stage['projection_parameters'] > stage['trainable_parameters'])):
+            problems.append(f'{name}: impossible trainable/projector parameter counts')
         tasks = stage.get('tasks')
         if not isinstance(tasks, dict) or set(tasks) != set(TASKS[name]):
             problems.append(f'{name}: incomplete current and retained modality tasks')
@@ -271,6 +280,7 @@ def multimodal_cost_audit(manifest: dict) -> dict:
                 problems.append(f'{name}/{cells}: logical-only or missing Cell execution coverage')
             for field in ('encoder_forward_rows', 'encoder_batch_calls', 'throughput_rps',
                           'cpu_seconds', 'rss_peak_bytes', 'request_p95_ms', 'request_p99_ms',
+                          'batch_p95_ms', 'batch_p99_ms',
                           'wal_written_bytes', 'recovery_seconds', 'failed_replay_count',
                           'latency_cas_p99_ms', 'latency_signature_p99_ms', 'latency_cns_p99_ms'):
                 if not _finite(scale.get(field)):
@@ -281,7 +291,14 @@ def multimodal_cost_audit(manifest: dict) -> dict:
                 problems.append(f'{name}/{cells}: impossible Encoder batch counters')
             if (_finite(scale.get('request_p95_ms')) and _finite(scale.get('request_p99_ms'))
                     and scale['request_p99_ms'] < scale['request_p95_ms']):
-                problems.append(f'{name}/{cells}: p99 lower than p95')
+                problems.append(f'{name}/{cells}: request p99 lower than p95')
+            if (_finite(scale.get('batch_p95_ms')) and _finite(scale.get('batch_p99_ms'))
+                    and scale['batch_p99_ms'] < scale['batch_p95_ms']):
+                problems.append(f'{name}/{cells}: batch p99 lower than p95')
+            if any(not _finite(scale.get(f), positive=True) for f in
+                   ('throughput_rps', 'cpu_seconds', 'rss_peak_bytes',
+                    'request_p95_ms', 'request_p99_ms', 'wal_written_bytes')):
+                problems.append(f'{name}/{cells}: absent/nonpositive measured workload')
             if (scale.get('device') != 'cpu' and not _finite(scale.get('gpu_peak_bytes'))
                     or scale.get('unclean_crash_recovered') is not True):
                 problems.append(f'{name}/{cells}: missing GPU/crash-recovery observation')
@@ -308,13 +325,48 @@ def multimodal_cost_audit(manifest: dict) -> dict:
             })
         previous = stage
     return {
-        'experiment': 'C-stages',
+        'experiment': 'C-stages', 'dataset_sha256': manifest.get('dataset_sha256'),
         'status': 'SCHEMA_COMPLETE_UNVERIFIED' if not problems else 'BLOCKED',
         'issues': problems, 'stage_deltas': deltas,
         'target_host_attested': False, 'independent_real_model_runs_verified': False,
         'ndu_verification_present': False,
         'production_admission': 'BLOCKED', 'selection': 'NOT_AUTHORIZED',
         'warning': 'A complete telemetry table cannot establish real hardware, worker signatures, unclean WAL recovery, or NDU.',
+    }
+
+
+def joint_abc_evidence_gate(bundle: dict) -> dict:
+    """Cross-check the SAME dataset through A5/B/C, never pick a live model.
+
+    A successful self-reported schema is a research review prerequisite only.
+    A signature, causality, NDU and FinalUse can never be inferred here.
+    """
+    issues = []
+    if not isinstance(bundle, dict):
+        bundle = {}
+    a, b, c = (bundle.get(k) for k in ('A', 'B', 'C'))
+    if not all(isinstance(x, dict) for x in (a, b, c)):
+        issues.append('need all A5, B-threeway, C-stages reports')
+    else:
+        from .validation_v3 import FIVE_ARM_CANDIDATES
+        if a.get('experiment') != 'A5' or a.get('evidence_class') != 'REAL_MODEL_LOCAL_SHADOW':
+            issues.append('five actual local model runs missing')
+        elif set(a.get('encoders', {})) != {x[0] for x in FIVE_ARM_CANDIDATES}:
+            issues.append('A5 model inventory incomplete')
+        if b.get('experiment') != 'B-threeway' or not b.get('future_brier_precheck_positive'):
+            issues.append('no paired learned-Head future advantage over BOTH controls')
+        if c.get('experiment') != 'C-stages' or c.get('status') != 'SCHEMA_COMPLETE_UNVERIFIED':
+            issues.append('all real-stage resource/multimodal rows missing')
+        pins = [x.get('dataset_sha256') for x in (a, b, c)]
+        if not all(is_digest(p) for p in pins) or len(set(pins)) != 1:
+            issues.append('A/B/C dataset provenance is not identical')
+    return {
+        'experiment': 'ABC-joint',
+        'status': 'RESEARCH_REVIEW_CANDIDATE_UNVERIFIED' if not issues else 'BLOCKED',
+        'issues': issues,
+        'candidate_stem_selected': None, 'production_admission': 'BLOCKED',
+        'independent_ndu_and_final_use_verified': False,
+        'warning': 'Even complete A/B/C files are self-reported. Only independent evaluator, selector and executor may authorize a production change.',
     }
 
 
@@ -340,7 +392,7 @@ def _pinned_json(path: str, expected: str) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=('b-threeway', 'c-stages'))
+    parser.add_argument('command', choices=('b-threeway', 'c-stages', 'abc-joint'))
     parser.add_argument('--input-json', required=True)
     parser.add_argument('--input-sha256', required=True)
     parser.add_argument('--dataset')
@@ -353,8 +405,10 @@ def main() -> None:
             raise ValueError('B requires independently approved, pinned chronological dataset')
         rows, data = load_dataset(args.dataset, expected_sha256=args.dataset_sha256)
         result = threeway_prequential_audit(rows, data['dataset_sha256'], bundle)
-    else:
+    elif args.command == 'c-stages':
         result = multimodal_cost_audit(bundle)
+    else:
+        result = joint_abc_evidence_gate(bundle)
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False) + '\n',

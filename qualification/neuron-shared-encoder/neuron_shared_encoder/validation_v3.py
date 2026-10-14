@@ -422,7 +422,8 @@ def five_arm_matrix_contract(matrix: dict) -> dict:
             or type(training.get('seed')) is not int
             or type(training.get('steps')) is not int or training['steps'] <= 0
             or type(training.get('batch')) is not int or training['batch'] <= 0
-            or training.get('optimizer', '').lower() != 'adamw'
+            or not isinstance(training.get('optimizer'), str)
+            or training['optimizer'].lower() != 'adamw'
             or type(training.get('learning_rate')) not in (int, float)
             or not math.isfinite(training['learning_rate'])
             or training['learning_rate'] <= 0):
@@ -442,8 +443,10 @@ def five_arm_matrix_contract(matrix: dict) -> dict:
             continue
         if entry.get('backend_kind') != backend:
             errors.append(f'{name}: mismatched backend kind')
-        if (entry.get('repository') != expected_repo if expected_repo else
-                not isinstance(entry.get('repository'), str) or not entry['repository']):
+        repo_id = entry.get('repository')
+        if ((expected_repo is not None and repo_id != expected_repo)
+                or (expected_repo is None and
+                    (not isinstance(repo_id, str) or not repo_id))):
             errors.append(f'{name}: incorrect upstream repository')
         if not is_commit_ref(entry.get('revision')) or len(entry['revision']) != 40:
             errors.append(f'{name}: exact 40-hex model revision required')
@@ -454,6 +457,13 @@ def five_arm_matrix_contract(matrix: dict) -> dict:
             errors.append(f'{name}: license approval required')
         if name == 'laya-421m' and entry.get('local_code_reviewed') is not True:
             errors.append('Laya local package source review required')
+    # A five-name manifest pointing all names at the same checkpoint is not
+    # a five-model experiment, even if each digest has the correct shape.
+    weights = [arms[name].get('weights_sha256')
+               for name, _, _, _ in FIVE_ARM_CANDIDATES
+               if isinstance(arms.get(name), dict)]
+    if len(weights) == 5 and len(set(weights)) != 5:
+        errors.append('five independent model weight artifacts required')
     return {'experiment': 'A5',
             'status': 'SCHEMA_COMPLETE_UNVERIFIED' if not errors else 'BLOCKED',
             'missing_or_invalid': errors, 'real_encoder_runs_completed': False,
@@ -500,11 +510,17 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
         if not isinstance(entry.get('local_path'), str) or not Path(entry['local_path']).is_dir():
             raise FileNotFoundError(f'E1 missing local {kind} checkpoint')
     from .contracts import sha256_file
+    from .bundle import verify_checkpoint_bundle
     for kind, backend_kind, _, _ in arms:
         entry = matrix['encoders'][kind]
-        tokenizer_file = Path(entry['local_path']) / ('tokenizer/tokenizer.json' if backend_kind == 'laya-joint' else 'tokenizer.json')
+        root = Path(entry['local_path'])
+        tokenizer_file = root / ('tokenizer/tokenizer.json' if backend_kind == 'laya-joint' else 'tokenizer.json')
         if not tokenizer_file.is_file() or sha256_file(tokenizer_file) != entry['tokenizer_sha256']:
             raise ValueError(f'E1 tokenizer file digest mismatch: {kind}')
+        weight_file = root / 'model.safetensors'
+        if not weight_file.is_file() or sha256_file(weight_file) != entry['weights_sha256']:
+            raise ValueError(f'E1 exact weights mismatch: {kind}')
+        verify_checkpoint_bundle(root, backend_kind, entry['bundle_sha256'])
     from .models import OfflineEncoder, frozen_projection
     for kind, backend_kind, _, expected_hidden in arms:
         entry = matrix['encoders'][kind]
@@ -613,7 +629,16 @@ def _read_pinned_json(path: str, sha: str) -> dict:
     from .contracts import sha256_file
     if not is_digest(sha) or sha256_file(path) != sha:
         raise ValueError('JSON artifact SHA256 mismatch or missing')
-    result = json.loads(Path(path).read_text(encoding='utf-8'))
+    def unique_keys(pairs):
+        values = {}
+        for key, item in pairs:
+            if key in values:
+                raise ValueError('duplicate JSON evidence key')
+            values[key] = item
+        return values
+    result = json.loads(
+        Path(path).read_text(encoding='utf-8'), object_pairs_hook=unique_keys,
+        parse_constant=lambda _: (_ for _ in ()).throw(ValueError('nonfinite JSON')))
     if not isinstance(result, dict):
         raise ValueError('top-level JSON object required')
     return result

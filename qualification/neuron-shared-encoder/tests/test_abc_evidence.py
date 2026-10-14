@@ -6,7 +6,7 @@ import pytest
 
 from neuron_shared_encoder.abc_evidence import (
     ROLES, STAGES, SCALES, _pinned_json, multimodal_cost_audit,
-    threeway_prequential_audit,
+    threeway_prequential_audit, joint_abc_evidence_gate,
 )
 from neuron_shared_encoder.validation_v3 import canonical_digest
 
@@ -103,6 +103,7 @@ def c_fixture():
                 'device': 'cpu', 'gpu_peak_bytes': None,
                 'throughput_rps': 10, 'cpu_seconds': 1, 'rss_peak_bytes': 10000000 + n,
                 'request_p95_ms': 1, 'request_p99_ms': 2,
+                'batch_p95_ms': 2, 'batch_p99_ms': 3,
                 'wal_written_bytes': 500, 'recovery_seconds': 2,
                 'failed_replay_count': 0, 'latency_cas_p99_ms': 0.5,
                 'latency_signature_p99_ms': .5, 'latency_cns_p99_ms': .5,
@@ -174,3 +175,45 @@ def test_c_rejects_fake_or_incompatible_modality_bench(change):
     else:
         m['stages'][0]['scales'][0]['paired_text_workload_sha256'] = D('e')
     assert multimodal_cost_audit(m)['status'] == 'BLOCKED'
+
+
+def test_abc_missing_real_models_never_selects_winner():
+    b_rows, b = b_fixture()
+    b_report = threeway_prequential_audit(
+        b_rows, D('d'), b, bootstrap=100, min_future_groups=2)
+    c_report = multimodal_cost_audit(c_fixture())
+    blocked = joint_abc_evidence_gate({
+        'A': {'experiment': 'A5', 'encoders': {}}, 'B': b_report, 'C': c_report})
+    assert blocked['status'] == 'BLOCKED'
+    assert blocked['candidate_stem_selected'] is None
+    assert blocked['production_admission'] == 'BLOCKED'
+
+
+def test_abc_even_self_reported_complete_never_grants_permission():
+    from neuron_shared_encoder.validation_v3 import FIVE_ARM_CANDIDATES
+    b_rows, b = b_fixture()
+    observed = joint_abc_evidence_gate({
+        'A': {'experiment': 'A5', 'dataset_sha256': D('d'),
+              'evidence_class': 'REAL_MODEL_LOCAL_SHADOW',
+              'encoders': {name: {} for name, _, _, _ in FIVE_ARM_CANDIDATES}},
+        'B': threeway_prequential_audit(b_rows, D('d'), b,
+                                        bootstrap=100, min_future_groups=2),
+        'C': multimodal_cost_audit(c_fixture()),
+    })
+    assert observed['status'] == 'RESEARCH_REVIEW_CANDIDATE_UNVERIFIED'
+    assert not observed['independent_ndu_and_final_use_verified']
+    assert observed['candidate_stem_selected'] is None
+
+
+def test_c_rejects_impossible_projector_budget():
+    m = c_fixture()
+    m['stages'][1]['projection_parameters'] = 999999999999
+    assert multimodal_cost_audit(m)['status'] == 'BLOCKED'
+
+
+def test_b_precommit_unknown_fields_fail_closed():
+    rows, bundle = b_fixture()
+    bundle['prelabel_journal']['records'][0]['gold_answer'] = 1
+    with pytest.raises(ValueError):
+        threeway_prequential_audit(rows, D('d'), bundle,
+                                   bootstrap=100, min_future_groups=1)

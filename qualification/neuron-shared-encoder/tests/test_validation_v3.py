@@ -299,11 +299,13 @@ def five_arm_plan():
                      'optimizer': 'AdamW', 'learning_rate': 1e-3},
         'encoders': {
             name: {'backend_kind': backend, 'repository': repo or 'reviewed-laya-package',
-                   'revision': 'd' * 40, 'bundle_sha256': D('e'),
-                   'weights_sha256': D('f'), 'tokenizer_sha256': D('a'),
+                   'revision': 'd' * 40,
+                   'bundle_sha256': format(100 + index, '064x'),
+                   'weights_sha256': format(1 + index, '064x'),
+                   'tokenizer_sha256': D('a'),
                    'license_approved': True, 'local_code_reviewed': True,
                    'local_path': '/models/not-provisioned'}
-            for name, backend, repo, _ in FIVE_ARM_CANDIDATES
+            for index, (name, backend, repo, _) in enumerate(FIVE_ARM_CANDIDATES)
         },
     }
 
@@ -336,3 +338,20 @@ def test_a5_no_checkpoint_refuses_to_run_before_mock_substitution():
     from neuron_shared_encoder.validation_v3 import run_real_encoder_matrix
     with pytest.raises(FileNotFoundError, match='missing local'):
         run_real_encoder_matrix(dataset(4), D('a'), five_arm_plan(), five_arm=True)
+
+
+def test_a5_same_weights_under_five_names_rejected():
+    from neuron_shared_encoder.validation_v3 import five_arm_matrix_contract
+    spec = five_arm_plan()
+    for arm in spec['encoders'].values():
+        arm['weights_sha256'] = D('f')
+    report = five_arm_matrix_contract(spec)
+    assert report['status'] == 'BLOCKED'
+    assert any('independent model weight' in s for s in report['missing_or_invalid'])
+
+
+def test_a5_bad_optimizer_type_fails_closed():
+    from neuron_shared_encoder.validation_v3 import five_arm_matrix_contract
+    spec = five_arm_plan()
+    spec['training']['optimizer'] = None
+    assert five_arm_matrix_contract(spec)['status'] == 'BLOCKED'
