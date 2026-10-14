@@ -286,9 +286,15 @@ fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
         .find(|line| line.split('|').nth(4) == Some("C"))
         .expect("new guarded cutover must fsync a C event");
     assert_eq!(commit_row.split('|').nth(8), Some(expected_receipt_digest.as_str()));
+    let expected_binding = Digest32::of_bytes(&receipt_binding);
     let reopened = NduPublicationOwnerV1::open_production(&path, successor.clone(), migrated)
         .expect("both durable journal phases replay");
     assert_eq!(reopened.current().unwrap(), (successor, migrated));
+    assert_eq!(
+        reopened.last_cns_original_receipt_binding().unwrap(),
+        Some(expected_binding),
+        "recovery must retain the exact committed original owner bytes digest"
+    );
 }
 
 #[cfg(unix)]
@@ -315,6 +321,10 @@ fn missing_or_unbounded_original_cns_receipt_never_commits_control_handoff() {
         assert_eq!(result, Err(NduPublicationErrorV1::Indeterminate));
         assert_eq!(calls, 1, "unknown external effect cannot be retried");
         assert_eq!(owner.current(), Err(NduPublicationErrorV1::Poisoned));
+        assert_eq!(
+            owner.last_cns_original_receipt_binding(),
+            Err(NduPublicationErrorV1::Poisoned)
+        );
         drop(owner);
 
         let durable = std::fs::read_to_string(&path).expect("durable prepared WAL");
