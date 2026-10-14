@@ -11,6 +11,15 @@ use std::fs;
 use std::io::ErrorKind;
 use std::path::Path;
 use std::path::PathBuf;
+use std::str::FromStr;
+use std::sync::Arc;
+use std::time::Duration;
+use std::time::Instant;
+
+use codex_hepta_types::Digest32;
+use codex_hepta_types::PhaseMetricEventV1;
+use codex_hepta_types::PhaseMetricKindV1;
+use codex_hepta_types::PhaseMetricSinkV1;
 
 use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
@@ -420,6 +429,8 @@ pub struct CellSplitExecutionOwnerV1<P: CellSplitExecutionPortV1> {
     pending: bool,
     read_only: bool,
     previous_receipt_digest: String,
+    metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
+    metrics_poisoned: bool,
     _lock: SidecarLock,
 }
 
@@ -643,8 +654,49 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             pending,
             read_only: existing_only,
             previous_receipt_digest,
+            metric_sink: None,
+            metrics_poisoned: false,
             _lock: lock,
         })
+    }
+
+    /// Optional coordinator-observed timing only. The caller must still
+    /// independently admit this exact Scope and Final-use; no metrics grant
+    /// can authorize CAS, migration, CNS, or Supervisor effects.
+    pub fn with_metric_sink(mut self, sink: Arc<dyn PhaseMetricSinkV1>) -> Self {
+        self.metric_sink = Some(sink);
+        self
+    }
+
+    /// Never let a failed telemetry write convert a committed external effect
+    /// into a retry. Poison only future NEW effects; pending original-owner
+    /// readback remains available to resolve a lost acknowledgment.
+    fn record_phase_metric(
+        &mut self,
+        intent: &CellSplitExecutionIntentV1,
+        phase: PhaseMetricKindV1,
+        elapsed: Duration,
+        succeeded: bool,
+    ) {
+        let Some(sink) = self.metric_sink.as_ref() else {
+            return;
+        };
+        let scope_digest = Digest32::from_str(&self.plan.scope_digest);
+        let operation_digest = Digest32::from_str(&intent.idempotency_key);
+        let (Ok(scope_digest), Ok(operation_digest)) = (scope_digest, operation_digest) else {
+            self.metrics_poisoned = true;
+            return;
+        };
+        let result = sink.record(PhaseMetricEventV1 {
+            scope_digest,
+            operation_digest,
+            phase,
+            latency_micros: u64::try_from(elapsed.as_micros()).unwrap_or(u64::MAX),
+            succeeded,
+        });
+        if result.is_err() {
+            self.metrics_poisoned = true;
+        }
     }
 
     #[must_use]
@@ -877,6 +929,16 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
                 "read-only CellSplit owner cannot advance",
             ));
         }
+        // A telemetry failure does not suppress reconciliation of an already
+        // attempted external effect; it does deny any *new* effect dispatch.
+        if !self.pending
+            && (self.metrics_poisoned
+                || self.metric_sink.as_ref().is_some_and(|sink| !sink.healthy()))
+        {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "cell split telemetry unavailable for new effects",
+            ));
+        }
         self.verify_committed_prefix()?;
         let Some(step) = CellSplitExecutionStepV1::at(self.cursor) else {
             return Ok(None);
@@ -924,18 +986,43 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
             )?;
             self.pending = true;
         }
-        let receipt = if pending {
+        // Measure the external owner RPC at this coordinator boundary.
+        // A signature or digest cannot substitute for the port's real readback.
+        let rpc_started = self.metric_sink.as_ref().map(|_| Instant::now());
+        let receipt_result = if pending {
             self.port
                 .reconcile(&intent)
-                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?
-                .ok_or(CellSplitExecutionErrorV1::Ambiguous)?
+                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))
+                .and_then(|receipt| receipt.ok_or(CellSplitExecutionErrorV1::Ambiguous))
         } else {
             self.port
                 .execute(&intent)
-                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?
+                .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))
         };
+        if let Some(started) = rpc_started {
+            // Reconciliation is a read, not a second CAS or CNS write.
+            let phase = match (pending, step) {
+                (false, CellSplitExecutionStepV1::ArtifactCas) => Some(PhaseMetricKindV1::Cas),
+                (false, CellSplitExecutionStepV1::CnsRouteCutover) => Some(PhaseMetricKindV1::Cns),
+                _ => None,
+            };
+            if let Some(phase) = phase {
+                self.record_phase_metric(&intent, phase, started.elapsed(), receipt_result.is_ok());
+            }
+        }
+        let receipt = receipt_result?;
         validate_receipt(&intent, &receipt)?;
-        self.trust.verify(&intent, &receipt)?;
+        let verification_started = self.metric_sink.as_ref().map(|_| Instant::now());
+        let verified_signature = self.trust.verify(&intent, &receipt);
+        if let Some(started) = verification_started {
+            self.record_phase_metric(
+                &intent,
+                PhaseMetricKindV1::Signature,
+                started.elapsed(),
+                verified_signature.is_ok(),
+            );
+        }
+        verified_signature?;
         self.port
             .verify_committed(&intent, &receipt)
             .map_err(|error| CellSplitExecutionErrorV1::External(error.to_string()))?;
