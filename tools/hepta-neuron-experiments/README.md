@@ -53,7 +53,7 @@ This directory contains a **no-authority** POSIX host measurement collector and 
      --manifest /secure/manifest.json --out /secure/e0-plan.json
    ```
 
-   Submit that plan digest to a separate independent evaluator/immutable registry. A local digest is **not** an authenticated plan registration. Pilot plans from experimental schema v1 are not reinterpreted as v2; refreeze a new plan. After the in-flight/post-run evidence fix, **plan v2** remains stable but run/audit receipts intentionally advance to **v3**. Previously recorded run v2 receipts are rejected instead of being silently relabeled as verified v3; rerun with the exact still-valid frozen plan and an independent external evidence owner.
+   Submit that plan digest to a separate independent evaluator/immutable registry. A local digest is **not** an authenticated plan registration. Pilot plans from experimental schema v1 are not reinterpreted as v2; refreeze a new plan. After the in-flight/post-run evidence fix, **plan v2** remains stable but run/audit receipts intentionally advance to **v3**. Previously recorded run v2 receipts are rejected instead of being silently relabeled as verified v3; freeze a new exact-source plan and rerun under an independent external evidence owner.
 
 3. Run the previously frozen command for each trial with no post-hoc substitution:
 
