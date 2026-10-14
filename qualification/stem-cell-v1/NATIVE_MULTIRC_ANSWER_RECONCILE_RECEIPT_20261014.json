@@ -1,0 +1,52 @@
+{
+  "schema": "hepta.multirc-native-answer-reconcile-remote-receipt.v1",
+  "date": "2026-10-14",
+  "pr": 2047,
+  "base_commit": "8425c5bfe72378af8abf01e1c5828e32d3cba23d",
+  "tested_code_commit": "1bf53340e5ea67846aa12c02955926d456591df5",
+  "complete_local_rounds": 2,
+  "unique_source_test_count_each_round": 625,
+  "source_test_file_count": 57,
+  "partition_planned_and_executed": [
+    103,
+    103,
+    107,
+    106,
+    103,
+    103
+  ],
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "discovery_errors": 0,
+  "planned_executed_ids_identical_each_round": true,
+  "source_test_hashes_identical_both_rounds": true,
+  "test_id_inventory_sha256": "b9aed57383dbee7e30db33d326cf48ddf339acc5bf7f0fd568ccc454fa212c24",
+  "exact_tested_git_blobs": {
+    "qualification/stem-cell-v1/multirc_candidate_slate.py": "99d0dc1395140c85fa70837810d09073c5558dd1",
+    "qualification/stem-cell-v1/multirc_candidate_audit.py": "d3c6825a23ed7f1f0655ca719012123e7216d70a",
+    "qualification/stem-cell-v1/test_multirc_candidate_slate.py": "2a571bdcc2a8e03c7ef2fe16208553ab74299885",
+    "qualification/stem-cell-v1/hf_multirc_checks.py": "d66bca14f2d9db48f713cc5cf9a38fd8dd5e0c31",
+    ".github/workflows/hepta-real-multirc-reader.yml": "f6b49e09ef4e3690cc02793dc9db795f2401bab5"
+  },
+  "extra_local_source_tests": 15,
+  "extra_local_source_tests_passed": 15,
+  "synthetic_actual_pytorch_diagnostic": {
+    "passages": 2,
+    "questions": 4,
+    "authentic_candidate_entries": 8,
+    "original_prediction_anchors_replayed": 4,
+    "actual_encoder_calls": 2,
+    "actual_question_embeddings": 8,
+    "actual_reader_forwards": 32,
+    "observed_additional_formula_flops": 5048,
+    "all_four_arms_correct_over_8": 4,
+    "conditioned_answer_sensitivity_probability_span": 0,
+    "negative_mechanism_evidence": true
+  },
+  "public_pretrained_result_for_new_sha_confirmed": false,
+  "exact_hosted_full_regressions_confirmed": false,
+  "full_repository_rust_native_gpu_acceptance": false,
+  "production_authorized": false,
+  "results_not_backfilled_into_v1": true
+}
