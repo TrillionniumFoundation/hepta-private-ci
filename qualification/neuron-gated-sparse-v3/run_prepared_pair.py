@@ -22,11 +22,55 @@ from run_shadow_probe_matrix import ARMS, SCALES, validate_probe
 SCHEMA = "hepta.neuron.prepared-paired-mechanism-only.v1"
 MODES = ("legacy", "prepared")
 MAX_EVENTS = 1024
+MAX_PROBE_BINARY_BYTES = 1024 * 1024 * 1024
+MAX_NATIVE_RECEIPT_JSON_BYTES = 128 * 1024
 
 
 def require(value: bool, message: str) -> None:
     if not value:
         raise ValueError(message)
+
+
+def sha256_binary(binary: Path) -> str:
+    """Hash the actual runner executable, never infer source provenance."""
+    size = binary.stat().st_size
+    require(0 < size <= MAX_PROBE_BINARY_BYTES, "missing or unbounded native binary")
+    digest = hashlib.sha256()
+    with binary.open("rb") as stream:
+        for chunk in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def unique_json_keys(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for key, value in pairs:
+        require(key not in result, "duplicate JSON key in native observed receipt")
+        result[key] = value
+    return result
+
+
+def reject_nonfinite_number(value: str) -> None:
+    raise ValueError(f"nonfinite JSON number in native observed receipt: {value}")
+
+
+def parse_native_receipt(raw: str) -> dict[str, Any]:
+    require(len(raw.encode("utf-8")) <= MAX_NATIVE_RECEIPT_JSON_BYTES,
+            "unbounded native receipt output")
+    try:
+        observed = json.loads(raw, object_pairs_hook=unique_json_keys,
+                              parse_constant=reject_nonfinite_number)
+    except json.JSONDecodeError as exc:
+        raise ValueError("invalid native JSON receipt") from exc
+    require(isinstance(observed, dict), "native receipt must be one JSON object")
+    return observed
+
+
+def receipt_sha256(value: dict[str, Any]) -> str:
+    """Canonicalize locally recorded JSON only; NOT a host signature."""
+    serialized = json.dumps(value, sort_keys=True, separators=(",", ":"),
+                            ensure_ascii=True, allow_nan=False).encode("utf-8")
+    return hashlib.sha256(serialized).hexdigest()
 
 
 def measured_ratio(a: int, b: int) -> str:
@@ -81,6 +125,10 @@ def validate_pair(
         ),
         "legacy_wall_micros": old["process_wall_micros"],
         "prepared_wall_micros": new["process_wall_micros"],
+        "raw_mode_receipts": {mode: records[mode] for mode in MODES},
+        "raw_mode_receipt_sha256": {
+            mode: receipt_sha256(records[mode]) for mode in MODES
+        },
     }
 
 
@@ -98,6 +146,7 @@ def read_trace(trace_file: Path) -> tuple[str, int]:
 
 def run(binary: Path, trace: Path) -> dict[str, Any]:
     require(binary.is_file() and trace.is_file(), "missing binary or raw fixture trace")
+    binary_sha256 = sha256_binary(binary)
     trace_sha256, event_count = read_trace(trace)
     pairs = []
     for scale_index, cells in enumerate(SCALES):
@@ -112,10 +161,7 @@ def run(binary: Path, trace: Path) -> dict[str, Any]:
                 child = subprocess.run(args, capture_output=True, text=True, check=False, timeout=180)
                 require(child.returncode == 0,
                         f"{arm} {cells} {mode}: native child rejected: {child.stderr[-800:]}")
-                try:
-                    result = json.loads(child.stdout)
-                except json.JSONDecodeError as exc:
-                    raise ValueError(f"{arm} {cells} {mode}: not a native JSON receipt") from exc
+                result = parse_native_receipt(child.stdout)
                 require(isinstance(result, dict) and result.get("execution_mode") == mode,
                         f"{arm} {cells} {mode}: missing observed mode")
                 results[mode] = result
@@ -125,6 +171,8 @@ def run(binary: Path, trace: Path) -> dict[str, Any]:
         "schema": SCHEMA,
         "evidence_kind": "UNVERIFIED_HOST_UNTRAINED_KERNEL_ONLY",
         "source_trace_sha256": trace_sha256,
+        "source_binary_sha256_claim": binary_sha256,
+        "source_binary_independently_attested": False,
         "arms": list(ARMS),
         "scales": list(SCALES),
         "pair_count": len(pairs),
@@ -144,6 +192,7 @@ def run(binary: Path, trace: Path) -> dict[str, Any]:
             "The process includes Rust, journal-free checkpoint computations and model-config memory, not full model execution.",
             "Prepared config is constructed outside the timed Tick loop; cold start and model residency are not amortized in this p99.",
             "The runner does not verify a trusted target host, production artifact signatures, independent training or future utility.",
+            "All 40 raw mode receipts are retained with locally calculated digests and executable SHA; neither constitutes independent signing or execution attestation.",
         ],
     }
 
