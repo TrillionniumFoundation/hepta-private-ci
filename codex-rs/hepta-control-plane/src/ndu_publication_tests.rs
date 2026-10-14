@@ -1,6 +1,8 @@
 use super::*;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+#[cfg(unix)]
+use std::os::unix::fs::PermissionsExt;
 
 #[cfg(unix)]
 fn test_only_original_runtime_receipt() -> Result<(), &'static str> {
@@ -24,6 +26,8 @@ fn snapshot(fence: u64) -> NduSnapshotRefV1 {
 #[test]
 fn production_owner_replays_checkpoint_and_requires_single_writer() {
     let dir = tempfile::tempdir().expect("owner-only dir");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("control-ndu.wal");
     let original = snapshot(3);
     let next = Digest32::of_bytes(b"checkpoint-one");
@@ -69,6 +73,8 @@ fn production_owner_replays_checkpoint_and_requires_single_writer() {
 #[allow(deprecated)]
 fn direct_single_phase_cns_publication_is_always_denied_and_never_appends() {
     let dir = tempfile::tempdir().expect("private Control root");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("legacy-cutover.wal");
     let original = snapshot(3);
     let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
@@ -91,6 +97,8 @@ fn direct_single_phase_cns_publication_is_always_denied_and_never_appends() {
 #[test]
 fn valid_hash_chain_cannot_replay_direct_cns_commit_without_prior_begin() {
     let dir = tempfile::tempdir().expect("owner-only root");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("unprepared-cutover.wal");
     let prior = snapshot(3);
     {
@@ -155,6 +163,8 @@ fn valid_hash_chain_cannot_replay_direct_cns_commit_without_prior_begin() {
 #[test]
 fn cutover_and_checkpoint_cas_use_same_exclusive_owner() {
     let dir = tempfile::tempdir().expect("private directory");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("frontier.wal");
     let previous = snapshot(3);
     let migrated = Digest32::of_bytes(b"migrated-checkpoint");
@@ -192,6 +202,8 @@ fn cutover_and_checkpoint_cas_use_same_exclusive_owner() {
 #[test]
 fn checkpoint_advance_invalidates_frozen_cutover_without_losing_new_state() {
     let dir = tempfile::tempdir().expect("private directory");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("ndu-frontier.wal");
     let original = snapshot(3);
     let committed = Digest32::of_bytes(b"new-neuron-checkpoint");
@@ -238,6 +250,8 @@ fn concurrent_model_and_cns_cas_cannot_both_commit_one_predecessor() {
     use std::thread;
 
     let dir = tempfile::tempdir().expect("private Control root");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("competing-ndu-frontier.wal");
     let old = snapshot(3);
     let committed = Digest32::of_bytes(b"concurrent-neuron");
@@ -294,6 +308,8 @@ fn concurrent_model_and_cns_cas_cannot_both_commit_one_predecessor() {
 #[test]
 fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
     let dir = tempfile::tempdir().expect("private Control root");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("guarded-cutover.wal");
     let current = snapshot(3);
     let successor = snapshot(4);
@@ -344,6 +360,8 @@ fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
 #[test]
 fn unsigned_ndu_owner_or_policy_change_is_denied_before_durable_begin() {
     let dir = tempfile::tempdir().expect("private Control root");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("untrusted-handoff.wal");
     let original = snapshot(3);
     let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
@@ -379,6 +397,8 @@ fn unsigned_ndu_owner_or_policy_change_is_denied_before_durable_begin() {
 #[test]
 fn insufficient_space_for_commit_denies_before_durable_begin_or_model() {
     let dir = tempfile::tempdir().expect("private Control root");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("bounded-control.wal");
     let original = snapshot(3);
     let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
@@ -413,6 +433,8 @@ fn insufficient_space_for_commit_denies_before_durable_begin_or_model() {
 #[test]
 fn lost_wal_during_real_callback_never_publishes_success_or_recreates_history() {
     let dir = tempfile::tempdir().expect("private Control root");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("lost-mid-effect.wal");
     let original = snapshot(3);
     let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
@@ -447,6 +469,8 @@ fn lost_wal_during_real_callback_never_publishes_success_or_recreates_history() 
 #[test]
 fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
     let dir = tempfile::tempdir().expect("private Control root");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("unknown-physical-effect.wal");
     let original = snapshot(3);
     let mut calls = 0;
@@ -504,6 +528,8 @@ fn concurrent_model_checkpoint_and_guarded_runtime_cutover_have_one_winner() {
     use std::thread;
 
     let dir = tempfile::tempdir().expect("protected owner directory");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("guarded-race.wal");
     let old = snapshot(3);
     let model_checkpoint = Digest32::of_bytes(b"model-winner");
@@ -571,6 +597,8 @@ fn concurrent_model_checkpoint_and_guarded_runtime_cutover_have_one_winner() {
 #[test]
 fn deleted_control_wal_cannot_bootstrap_a_fresh_history() {
     let dir = tempfile::tempdir().expect("private Control directory");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("lost-control.wal");
     let original = snapshot(3);
     {
@@ -600,6 +628,8 @@ fn deleted_control_wal_cannot_bootstrap_a_fresh_history() {
 #[test]
 fn lost_writer_marker_or_replaced_wal_cannot_adopt_old_signed_state() {
     let dir = tempfile::tempdir().expect("private Control directory");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("pinned-control.wal");
     let original = snapshot(3);
     {
@@ -661,6 +691,8 @@ fn lost_writer_marker_or_replaced_wal_cannot_adopt_old_signed_state() {
 #[test]
 fn truncated_journal_is_rejected_without_mutating_history() {
     let dir = tempfile::tempdir().expect("owner-only");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("frontier.wal");
     {
         let owner = NduPublicationOwnerV1::open_production(&path, snapshot(3), Digest32::ZERO)
@@ -688,6 +720,8 @@ fn symlink_and_world_accessible_directory_cannot_own_frontier() {
     use std::os::unix::fs::PermissionsExt;
     use std::os::unix::fs::symlink;
     let dir = tempfile::tempdir().expect("private directory");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Control test root");
     let path = dir.path().join("frontier.wal");
     {
         let _owner = NduPublicationOwnerV1::open_production(&path, snapshot(3), Digest32::ZERO)
