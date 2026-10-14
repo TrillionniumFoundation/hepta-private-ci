@@ -1,0 +1,55 @@
+name: AMCN original MiniLM offline material audit (NO-GO)
+
+on:
+  push:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_typed_physical_audit.py"
+      - "qualification/amcn-v1/test_amcn_typed_physical_audit.py"
+      - "qualification/amcn-v1/ORIGINAL_MINILM_MATERIAL_AUDIT.md"
+      - ".github/workflows/hepta-amcn-original-minilm-material-audit.yml"
+  pull_request:
+    branches: ["research/amcn-five-stage-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_typed_physical_audit.py"
+      - "qualification/amcn-v1/test_amcn_typed_physical_audit.py"
+      - ".github/workflows/hepta-amcn-original-minilm-material-audit.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: amcn-original-material-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  inspect-material-provenance-contract:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Check original material auditor syntax and refusal tests
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q qualification/amcn-v1/amcn_typed_physical_audit.py qualification/amcn-v1/test_amcn_typed_physical_audit.py
+          PYTHONPATH=.:qualification/amcn-v1 python3 -m unittest discover -s qualification/amcn-v1 -p 'test_amcn_typed_physical_audit.py' -v
+      - name: Emit exact checkout and immutable negative limits
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-material-audit/source
+          git rev-parse HEAD > /tmp/amcn-material-audit/source/head-sha.txt
+          git rev-parse HEAD^{tree} > /tmp/amcn-material-audit/source/tree-sha.txt
+          cp qualification/amcn-v1/amcn_typed_physical_audit.py qualification/amcn-v1/test_amcn_typed_physical_audit.py qualification/amcn-v1/ORIGINAL_MINILM_MATERIAL_AUDIT.md /tmp/amcn-material-audit/source/
+          printf '%s\n' 'production_accepted=false' 'historical_weak_support_only=true' 'full_original_archive_not_downloaded_by_this_job=true' 'original_real_HF_tokenizer_parity=false' 'original_reader_answers=0' 'true_future_windows=0' 'strong_hybrid_rag_superiority=false' 'hosted_unit_tests_do_not_prove_physical_archive_verification=true' > /tmp/amcn-material-audit/nonpromotion.txt
+          (cd /tmp/amcn-material-audit && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: amcn-original-minilm-source-and-denial
+          path: /tmp/amcn-material-audit
+          if-no-files-found: error
