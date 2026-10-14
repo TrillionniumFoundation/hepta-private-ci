@@ -146,6 +146,8 @@ def main():
   raise Invalid('source selection differs from exact archived physical study')
  start=time.perf_counter_ns();cpu=time.process_time_ns()
  vectors,tokens,digests,physical=encode_pretrained(panel['cases'],a.model,a.compact_checkout,a.gemma_checkout,a.gemma_manifest)
+ from e1e2_q24_identity import feature_inventory
+ bank=feature_inventory([case['case_id'] for case in panel['cases']],vectors)
  fit=fit_heads(panel,a.model,vectors)
  out={'schema':'hepta.e1-english-public-pretrained-head.v1','model':a.model,
       'model_name':MODELS[a.model][0],'model_revision':MODELS[a.model][1],
@@ -153,7 +155,7 @@ def main():
       'public_dataset_is_chronological_future':False,'english_only':True,
       'actual_pretrained_local_weight_execution_claimed':True,'model_origin_independently_authenticated':False,
       'physical_transformer_forward_count_attested':False,'tokens_per_case':tokens,
-      'features_q24_identity':digests,'physical_observations':physical,'fitting':fit,
+      'features_q24_identity':digests,'frozen_feature_bank_identity':bank,'physical_observations':physical,'fitting':fit,
       'wall_ms':(time.perf_counter_ns()-start)/1e6,'cpu_process_ms':(time.process_time_ns()-cpu)/1e6,
       'process_lifetime_peak_rss_bytes':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss*1024,
       'future_ndu_verified':False,'production_promotion_permitted':False,'authority':'DENY_ALL'}
