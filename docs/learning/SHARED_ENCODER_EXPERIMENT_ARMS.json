@@ -2,7 +2,7 @@
   "schema_version": 1,
   "authority": "experiment_only_no_promotion",
   "reference_commit": "78fdb0cf8537e3a84fc6e0a849707559c80881e8",
-  "model_revision_policy": "pin_exact_weight_tokenizer_preprocessor_and_backend_revisions_before_execution",
+  "model_revision_policy": "Pinned HF repo revision is metadata only. Runtime must separately verify exact fetched weights, tokenizer, preprocessing, pooling/projection, quantization and signed execution receipts; never load floating main.",
   "arms": [
     {
       "id": "no-change",
@@ -21,25 +21,56 @@
     {
       "id": "mmbert-small",
       "role": "general_learning_candidate",
-      "revision": null,
+      "revision": "abc32620dd4f6ab06f5fbe905dc25f310618e09f",
       "dimension": 384,
-      "requires_receipt": true
+      "requires_receipt": true,
+      "model_repository": "jhu-clsp/mmBERT-small",
+      "license_model_card": "mit",
+      "max_sequence_length_published": 8192,
+      "nominal_parameters_published": 140000000,
+      "representation": "masked_language_encoder_token_states",
+      "pooling": "experiment_ablations_not_upstream_sentence_pooling",
+      "revision_source": "https://huggingface.co/jhu-clsp/mmBERT-small/commit/abc32620dd4f6ab06f5fbe905dc25f310618e09f",
+      "revision_status": "repository_commit_identified_weights_not_verified",
+      "weight_signature_verified": false,
+      "model_invocation_verified": false
     },
     {
       "id": "granite-embedding-97m-r2",
       "role": "retrieval_efficient_candidate",
-      "revision": null,
+      "revision": "835ad14087e140460703cf0fae09f97d469d65c2",
       "dimension": 384,
-      "requires_receipt": true
+      "requires_receipt": true,
+      "model_repository": "ibm-granite/granite-embedding-97m-multilingual-r2",
+      "license_model_card": "apache-2.0",
+      "max_sequence_length_published": 32768,
+      "nominal_parameters_published": 97000000,
+      "representation": "contrastive_embedding_encoder",
+      "pooling": "cls_token",
+      "pooling_source": "https://huggingface.co/ibm-granite/granite-embedding-97m-multilingual-r2/blob/main/1_Pooling/config.json",
+      "revision_source": "https://huggingface.co/ibm-granite/granite-embedding-97m-multilingual-r2/commit/835ad14087e140460703cf0fae09f97d469d65c2",
+      "revision_status": "repository_commit_identified_weights_not_verified",
+      "weight_signature_verified": false,
+      "model_invocation_verified": false
     },
     {
       "id": "modernbert-base",
       "role": "larger_dimensional_control",
-      "revision": null,
+      "revision": "8949b909ec900327062f0ebf497f51aef5e6f0c8",
       "dimension": 768,
       "requires_projection": true,
       "max_q24_dimension": 512,
-      "requires_receipt": true
+      "requires_receipt": true,
+      "model_repository": "answerdotai/ModernBERT-base",
+      "license_model_card": "apache-2.0",
+      "max_sequence_length_published": 8192,
+      "nominal_parameters_published": 149655232,
+      "representation": "masked_language_encoder_token_states",
+      "pooling": "experiment_ablations_with_separately_pinned_projection",
+      "revision_source": "https://huggingface.co/api/models/answerdotai/ModernBERT-base",
+      "revision_status": "repository_commit_identified_weights_not_verified",
+      "weight_signature_verified": false,
+      "model_invocation_verified": false
     }
   ],
   "head_rank_grid": [
@@ -65,5 +96,6 @@
     "measured_negative_transfer",
     "no_automatic_promotion"
   ],
-  "promotion_allowed": false
+  "promotion_allowed": false,
+  "model_cards_as_deployment_evidence": false
 }
