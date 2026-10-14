@@ -377,6 +377,16 @@ Feature-on Rust tests use the **original CognitiveStore**, not a fake Store,
 with two distinct connections/owners to the same underlying database.
 They check agent scope, stale source revisions, exclusion of a competing
 source writer during a bounded callback, and lock release after an error.
+A further real Store test now creates a verified memory with a source citation,
+uses the actual forget_memory CAS/tombstone API, and verifies the original
+complete CognitiveRecoveryAnchor cannot be replayed even if the old source
+event is idempotently inserted again. A new, current cut can still pass this
+SOURCE-only check: that is precisely why an old Head trained on tombstoned
+material must ALSO be rejected by the independent Learning Artifacts ancestry
+and durable withdrawal/quarantine owner. The separate
+codex-rs/hepta-learning-artifacts crate has authoritative selection,
+withdrawal and lifecycle owner contracts; no method in this Python/Rust
+research stack is allowed to counterfeit its signed decisions.
 A dedicated CI uses the repository's pinned Rust toolchain with
 cargo test --locked -p codex-hepta-memory --features amcn-shadow.
 The default product hepta-memory crate remains feature-off.

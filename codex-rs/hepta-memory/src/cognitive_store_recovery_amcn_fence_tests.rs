@@ -2,7 +2,8 @@
 //! BEGIN IMMEDIATE source writer transaction; no mocked database receipts.
 //! All witnesses are fixtures, NOT independently authorized production pins.
 use super::*;
-use crate::cognitive_test_support::{agent_id, layout, source};
+use crate::cognitive_test_support::{agent_id, layout, memory_revision, source};
+use crate::{ForgetMemoryDraft, MemoryDraft};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::sync::mpsc;
@@ -53,6 +54,73 @@ async fn amcn_shadow_sqlite_fence_checks_exact_current_cut_and_scope_before_work
     }).await;
     assert!(matches!(stale, Err(CognitiveStoreError::AccessDenied(_))));
     assert!(!invoked.load(Ordering::SeqCst));
+}
+
+#[tokio::test]
+async fn amcn_shadow_sqlite_fence_real_memory_forget_and_source_replay_deny_old_cut() {
+    let tmp = TempDir::new().expect("isolated source owner");
+    let owner = agent_id(225);
+    let store = CognitiveStore::open(&layout(&tmp, &owner))
+        .await
+        .expect("authoritative CognitiveStore");
+    let access = CognitiveAccess::agent_private(owner);
+    let scope = CognitiveScope::AgentPrivate;
+    let source_draft = source(scope.clone(), "source-used-in-head", "recorded original text");
+    let original_source = store.append_source(&access, &source_draft)
+        .await.expect("original source");
+    let memory = store.remember_memory(&access, &MemoryDraft {
+        stable_key: "amcn-fenced-memory".to_string(),
+        revision: memory_revision(
+            scope.clone(),
+            "Original memory constructed from the source",
+            original_source.clone(),
+        ),
+    }).await.expect("real memory with citation");
+    let old_cut = store.recovery_anchor().await.expect("pre-withdrawal cut");
+
+    store.forget_memory(
+        &access,
+        &memory.id.memory_id,
+        memory.id.revision,
+        &ForgetMemoryDraft {
+            scope: scope.clone(),
+            reason: "user confirmed deletion".into(),
+            valid_from_unix_seconds: 200,
+            citations: vec![original_source.clone()],
+        },
+    ).await.expect("original append-only tombstone");
+    let current_cut = store.recovery_anchor().await.expect("current tombstone cut");
+    assert_ne!(old_cut, current_cut, "memory tombstone must alter source-owner cut");
+
+    // Replaying identical original source bytes is idempotent, not an undo
+    // of the explicitly tombstoned memory revision.
+    let replayed = store.append_source(&access, &source_draft)
+        .await.expect("original source key is idempotent");
+    assert_eq!(replayed, original_source);
+    assert_eq!(store.recovery_anchor().await.expect("post-replay owner cut"),
+               current_cut);
+
+    let called = AtomicBool::new(false);
+    let stale = store.with_amcn_shadow_cognitive_cut(
+        &access, &scope, &old_cut, || {
+            called.store(true, Ordering::SeqCst);
+            Ok::<_, CognitiveStoreError>(())
+        }
+    ).await;
+    assert!(matches!(stale, Err(CognitiveStoreError::AccessDenied(_))));
+    assert!(!called.load(Ordering::SeqCst));
+
+    // A fresh *store-cut* proves ONLY owner identity/currentness, not that
+    // a particular previously trained Head is clean. Artifact ancestry and
+    // durable quarantine still have to deny the old model independently.
+    let current = store.with_amcn_shadow_cognitive_cut(
+        &access, &scope, &current_cut, || {
+            called.store(true, Ordering::SeqCst);
+            Ok::<_, CognitiveStoreError>(())
+        }
+    ).await;
+    assert!(current.is_ok(), "current SQLite cut is a source fence, not Head admission");
+    assert!(!AMCN_SHADOW_COGNITIVE_FENCE_PRODUCTION_ACCEPTED);
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
