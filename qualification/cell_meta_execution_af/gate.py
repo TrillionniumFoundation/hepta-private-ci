@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import os
 import re
 import stat
 import sys
@@ -174,6 +175,8 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
         [((record(r, letter + ".row").get("arm"), r.get("window")), r) for r in records],
         {(arm, window) for arm in ARMS[letter] for window in windows}, letter)
     task_sets: dict[str, set[str]] = {k: set() for k in windows}
+    prediction_times: dict[str, list[datetime]] = {k: [] for k in windows}
+    outcome_times: dict[str, list[datetime]] = {k: [] for k in windows}
     frozen_bundles: dict[str, set[str]] = {arm: set() for arm in ARMS[letter]}
     d_families: dict[str, set[tuple[str, ...]]] = {k: set() for k in windows}
     c_graphs: set[str] = set()
@@ -220,6 +223,8 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
         observed = timestamp(field(r, "outcomes_finalized_at", name), name + ".outcomes_finalized_at")
         require(windows[window][0] <= pred <= windows[window][1] and pred < observed,
                 f"{name}: post-label or out-of-window prediction")
+        prediction_times[window].append(pred)
+        outcome_times[window].append(observed)
         v = record(field(r, "metrics", name), name + ".metrics")
         slices = record(field(v, "protected_slice_degradation", name), name + ".protected_slice_degradation")
         require(set(slices) == set(meta["protected_slices"]),
@@ -241,6 +246,9 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
         count(field(v, "real_model_invocations", name), name + ".real_model_invocations", positive=True)
         count(field(v, "training_bytes", name), name + ".training_bytes")
         count(field(v, "inference_bytes", name), name + ".inference_bytes")
+    for window in windows:
+        require(max(prediction_times[window]) < min(outcome_times[window]),
+                f"{letter}/{window}: cross-arm label leakage: all predictions must precede first outcome")
     require(all(len(s) == 1 for s in task_sets.values()), f"{letter}: unpaired future task set")
     require(task_sets["future_1"] != task_sets["future_2"], f"{letter}: reused future task set")
     require(all(len(bundles) == 1 for bundles in frozen_bundles.values()),
@@ -468,12 +476,33 @@ def validate_split(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
     obj = record(value, "split_safety")
     require(obj.get("no_change_sha256") == meta["no_change_sha256"],
             "split: original frozen no-change baseline mismatch")
-    digest(field(obj, "split_plan_sha256", "split"), "split_plan_sha256")
+    plan = digest(field(obj, "split_plan_sha256", "split"), "split_plan_sha256")
+    split_id = identity(field(obj, "split_operation_id", "split"), "split_operation_id")
+    scope = identity(field(obj, "scope_id", "split"), "scope_id")
+    previous_generation = count(field(obj, "source_generation", "split"), "source_generation")
+    next_generation = count(field(obj, "target_generation", "split"), "target_generation", positive=True)
+    require(next_generation > previous_generation, "split: target generation must advance")
+    ordered = sequence(field(obj, "effects", "split"), "split.effects")
+    require([record(e, "split.phase").get("phase") for e in ordered] == list(PHASES),
+            "split: original-owner phase order must match committed ledger order")
     effects = exact_membership(
         [(record(v, "split.phase").get("phase"), v) for v in
-         sequence(field(obj, "effects", "split"), "split.effects")], set(PHASES), "split.effects")
+         ordered], set(PHASES), "split.effects")
     signers: set[str] = set()
-    for phase, entry in effects.items():
+    receipts: set[str] = set()
+    predecessor: str | None = None
+    for index, phase in enumerate(PHASES, start=1):
+        entry = effects[phase]
+        require(count(field(entry, "ledger_step_index", phase), phase + ".ledger_step_index") == index,
+                f"{phase}: coordinator ledger step index mismatch")
+        require(entry.get("split_plan_sha256") == plan and entry.get("split_operation_id") == split_id
+                and entry.get("scope_id") == scope,
+                f"{phase}: original-owner operation/scope/plan binding drift")
+        require(entry.get("source_generation") == previous_generation
+                and entry.get("target_generation") == next_generation,
+                f"{phase}: mixed source or target generation")
+        require(entry.get("predecessor_receipt_sha256") == predecessor,
+                f"{phase}: broken committed original-owner receipt predecessor chain")
         signer = identity(field(entry, "original_owner_id", phase), phase + ".original_owner_id")
         require(signer not in (meta["generator_id"], meta["selector_id"]), f"{phase}: not independent owner")
         signers.add(signer)
@@ -481,6 +510,10 @@ def validate_split(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
                 f"{phase}: no committed fenced original-owner effect")
         for name in ("signed_receipt_sha256", "signed_readback_sha256", "independent_witness_sha256"):
             digest(field(entry, name, phase), phase + "." + name)
+        receipt = entry["signed_receipt_sha256"]
+        require(receipt not in receipts, f"{phase}: duplicated original-owner effect receipt")
+        receipts.add(receipt)
+        predecessor = receipt
     require(len(signers) >= 4, "split: insufficient distinct original effect owners")
     restart = exact_membership(
         [(record(v, "split.crash").get("case"), v) for v in
@@ -557,11 +590,23 @@ def _reject_json_constant(value: str) -> Any:
 
 def read_external_evidence(path: Path) -> Any:
     """Bound parser cost and forbid ambiguous JSON objects; never attest content."""
-    info = path.stat()
-    require(stat.S_ISREG(info.st_mode), "JSON evidence must be a regular file")
-    require(0 < info.st_size <= MAX_INPUT_BYTES, "JSON evidence input exceeds size bound")
-    with path.open("rb") as stream:
-        raw = stream.read(MAX_INPUT_BYTES + 1)
+    flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_CLOEXEC", 0)
+    flags |= getattr(os, "O_NOFOLLOW", 0)
+    fd = os.open(path, flags)
+    try:
+        before = os.fstat(fd)
+        require(stat.S_ISREG(before.st_mode), "JSON evidence must be a regular file")
+        require(0 < before.st_size <= MAX_INPUT_BYTES, "JSON evidence input exceeds size bound")
+        with os.fdopen(fd, "rb") as stream:
+            fd = -1  # fdopen now owns and closes the descriptor
+            raw = stream.read(MAX_INPUT_BYTES + 1)
+            after = os.fstat(stream.fileno())
+    finally:
+        if fd != -1:
+            os.close(fd)
+    require((before.st_dev, before.st_ino, before.st_size, before.st_mtime_ns, before.st_ctime_ns)
+            == (after.st_dev, after.st_ino, after.st_size, after.st_mtime_ns, after.st_ctime_ns),
+            "JSON evidence source changed during read")
     require(0 < len(raw) <= MAX_INPUT_BYTES, "JSON evidence input exceeds size bound")
     try:
         return json.loads(raw.decode("utf-8"), object_pairs_hook=_reject_duplicate_json_keys,

@@ -134,3 +134,24 @@ new global authority or autonomous self-iteration is proposed by this harness.
   missing receipt or mere App Server status does not prove that no effect happened.
   The validator still checks only supplied reference format, not signatures or
   counterparty custody, so it never authorizes actual effects.
+
+### Cross-arm future-label embargo and original-owner split chain
+
+All arms in a paired future task set must now commit their predictions before
+the **first** arm's outcome is finalized. An individual arm's own prelabel
+timestamp is insufficient: a later candidate could otherwise see control labels
+and still appear prospective. This is structural screening, not proof of an
+independently witnessed per-example prediction.
+
+The split-safety envelope now binds one split_operation_id, scope_id,
+split_plan_sha256, source_generation and target_generation across the five
+ordered original-owner phases. Each phase includes a coordinator ledger_step_index
+and predecessor signed_receipt_sha256 link, starting at null. Reordered phases,
+stale generations, mixed scopes, duplicate receipts, and broken ancestry block
+structural review. These are **declarative** checks, not cryptographic signature
+verification, independent monotonic custody or authorization.
+
+The CLI uses a single nonblocking, no-follow file descriptor, checks the opened
+regular file and rejects metadata drift during the read. This avoids the
+path-stat/path-open race where a regular input could be replaced by a FIFO or
+symlink. A valid file remains untrusted evidence.

@@ -143,13 +143,21 @@ def synth() -> dict:
         },
         "no_change_sha256": meta["no_change_sha256"],
         "split_plan_sha256": sha("split-plan"),
+        "split_operation_id": "split-operation-alpha",
+        "scope_id": "scope-alpha",
+        "source_generation": 7,
+        "target_generation": 8,
         "effects": [
             {"phase": p, "original_owner_id": "owner-" + p,
+             "split_plan_sha256": sha("split-plan"), "split_operation_id": "split-operation-alpha",
+             "scope_id": "scope-alpha", "source_generation": 7, "target_generation": 8,
+             "ledger_step_index": index + 1,
+             "predecessor_receipt_sha256": sha(gate.PHASES[index-1] + "signed") if index else None,
              "terminal": "committed", "generation_fenced": True,
              "signed_receipt_sha256": sha(p + "signed"),
              "signed_readback_sha256": sha(p + "readback"),
              "independent_witness_sha256": sha(p + "witness")}
-            for p in gate.PHASES
+            for index, p in enumerate(gate.PHASES)
         ],
         "restarts": [
             {"case": kind, "no_duplicate_effect": True,
@@ -567,6 +575,75 @@ class AfEvidenceTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as td:
             out = Path(td) / "report.json"
             self.assertEqual(gate.main([td, "--out", str(out)]), 2)
+            self.assertIn("regular file", json.loads(out.read_text())["error"])
+
+    def test_cross_arm_label_exposure_precedes_candidate_prediction(self):
+        rows = self.d["studies"]["A"]["records"]
+        baseline = next(x for x in rows if x["arm"] == "no_change" and x["window"] == "future_1")
+        baseline["predictions_committed_at"] = "2026-10-02T01:00:00Z"
+        baseline["outcomes_finalized_at"] = "2026-10-02T09:00:00Z"
+        # Every arm still predicts before its OWN recorded outcome. Only a
+        # cohort-wide prelabel barrier catches the later candidate predictions.
+        check_bad(self.d, "A", "cross-arm label leakage")
+
+    def test_paired_arms_can_predict_at_different_times_before_any_labels(self):
+        baseline = next(x for x in self.d["studies"]["A"]["records"]
+                        if x["arm"] == "no_change" and x["window"] == "future_1")
+        baseline["predictions_committed_at"] = "2026-10-02T01:00:00Z"
+        self.assertEqual(gate.verify(self.d)["gates"]["A"]["status"], "shadow_structurally_complete")
+
+    def test_split_out_of_order_physical_effects_refused(self):
+        entries = self.d["split_safety"]["effects"]
+        entries[0], entries[1] = entries[1], entries[0]
+        check_bad(self.d, "split_safety", "phase order")
+
+    def test_split_predecessor_receipt_chain_mismatch_refused(self):
+        self.d["split_safety"]["effects"][2]["predecessor_receipt_sha256"] = sha("other-owner")
+        check_bad(self.d, "split_safety", "predecessor chain")
+
+    def test_split_cross_scope_owner_receipt_refused(self):
+        self.d["split_safety"]["effects"][1]["scope_id"] = "another-scope"
+        check_bad(self.d, "split_safety", "binding drift")
+
+    def test_split_mixed_target_generation_refused(self):
+        self.d["split_safety"]["effects"][3]["target_generation"] = 9
+        check_bad(self.d, "split_safety", "mixed source or target generation")
+
+    def test_split_forged_duplicate_original_receipt_refused(self):
+        first = self.d["split_safety"]["effects"][0]["signed_receipt_sha256"]
+        self.d["split_safety"]["effects"][1]["signed_receipt_sha256"] = first
+        check_bad(self.d, "split_safety", "duplicated original-owner")
+
+    def test_split_wrong_coordinator_step_refused(self):
+        self.d["split_safety"]["effects"][3]["ledger_step_index"] = 2
+        check_bad(self.d, "split_safety", "ledger step index")
+
+    def test_split_invalid_generation_transition_refused(self):
+        self.d["split_safety"]["target_generation"] = 7
+        check_bad(self.d, "split_safety", "must advance")
+
+    def test_input_symlink_fails_closed(self):
+        import os
+        if not hasattr(os, "O_NOFOLLOW"):
+            self.skipTest("kernel does not expose O_NOFOLLOW")
+        with tempfile.TemporaryDirectory() as td:
+            orig = Path(td) / "real.json"
+            link = Path(td) / "alias.json"
+            out = Path(td) / "report.json"
+            orig.write_text(json.dumps(self.d))
+            link.symlink_to(orig)
+            self.assertEqual(gate.main([str(link), "--out", str(out)]), 2)
+            self.assertFalse(json.loads(out.read_text())["physical_split_permitted"])
+
+    def test_input_fifo_does_not_block(self):
+        import os
+        if not hasattr(os, "mkfifo") or not hasattr(os, "O_NONBLOCK"):
+            self.skipTest("kernel does not support FIFO nonblocking reads")
+        with tempfile.TemporaryDirectory() as td:
+            fifo = Path(td) / "evidence.fifo"
+            out = Path(td) / "report.json"
+            os.mkfifo(fifo)
+            self.assertEqual(gate.main([str(fifo), "--out", str(out)]), 2)
             self.assertIn("regular file", json.loads(out.read_text())["error"])
 
     def test_cli_missing_real_bundle_is_blocked(self):
