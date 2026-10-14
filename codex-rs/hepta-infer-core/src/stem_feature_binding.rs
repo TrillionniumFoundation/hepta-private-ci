@@ -9,6 +9,7 @@
 //! scope/principal/stem-generation binding. The cache owner remains external.
 use std::error::Error as StdError;
 use std::fmt;
+use std::sync::Arc;
 
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
@@ -71,6 +72,59 @@ pub struct BoundStemNeuronRequestV1 {
     pub request: NeuronFeatureRequestV1,
     pub feature_ref_digest: Digest32,
     pub authority: AuthorityPosture,
+}
+
+/// Immutable, in-process Q24 *buffer*, not a second Stem authority owner.
+///
+/// The source descriptor is an unverified claim at construction. Callers must
+/// retrieve an independently authenticated, fresh StemAccessContextV1 from
+/// the one inference-control owner for EACH dispatch/final use. Only then may
+/// a returned borrowed view be handed to the separately authorized executor.
+#[derive(Clone, Debug)]
+pub struct SharedStemQ24BufferV1 {
+    source: StemFeatureRefV1,
+    values: Arc<[i64]>,
+}
+
+impl SharedStemQ24BufferV1 {
+    /// Consumes the original bounded Vec once; Arc clones share one allocation.
+    /// An exact Q24 content digest is required but is NOT a signature.
+    pub fn from_unverified_source(
+        source: StemFeatureRefV1,
+        values: Vec<i64>,
+    ) -> Result<Self, StemFeatureBindingError> {
+        if source.feature_digest.is_zero() {
+            return Err(StemFeatureBindingError::EmptyDigest);
+        }
+        if values.len() != source.feature_width {
+            return Err(StemFeatureBindingError::InvalidFeatureWidth);
+        }
+        if stem_feature_vector_digest_v1(&values)? != source.feature_digest {
+            return Err(StemFeatureBindingError::FeatureDigestMismatch);
+        }
+        Ok(Self {
+            source,
+            values: Arc::from(values.into_boxed_slice()),
+        })
+    }
+
+    /// Borrow features for exactly one selected Head. This executes the
+    /// SAME Principal/Scope/Epoch/Generation/Lease/Revocation/Head gates as
+    /// the historical owned V1 binding, not a weakened cache-only check.
+    ///
+    /// Neither this buffer nor the returned view grants model dispatch.
+    pub fn borrow_for_head<'a>(
+        &'a self,
+        current_access_claim: &StemAccessContextV1,
+        selected_head: &'a StemHeadBindingV1,
+    ) -> Result<StemFeatureRequestViewV1<'a>, StemFeatureBindingError> {
+        borrow_stem_feature_request_v1(
+            &self.source,
+            current_access_claim,
+            selected_head,
+            self.values.as_ref(),
+        )
+    }
 }
 
 /// An in-process, *borrow-only* view of the existing Stem-to-Neuron V1
@@ -671,6 +725,68 @@ mod tests {
             borrow_stem_feature_request_v1(&source, &access, &head, &vector),
             Err(StemFeatureBindingError::IncompatibleHead)
         );
+    }
+
+    #[test]
+    fn shared_stem_buffer_reuses_one_allocation_and_original_access_checks() {
+        let (source, access, first_head, values) = fixture();
+        let source_for_refresh = source.clone();
+        let shared = SharedStemQ24BufferV1::from_unverified_source(source, values.clone())
+            .expect("same-source immutable feature buffer");
+        let shared_copy = shared.clone();
+        let mut second_head = first_head.clone();
+        second_head.request_id = id("other-request");
+        second_head.head_model_id = id("other-head");
+
+        let first = shared.borrow_for_head(&access, &first_head)
+            .expect("validated first Cell view");
+        let second = shared_copy.borrow_for_head(&access, &second_head)
+            .expect("validated second Cell view");
+        assert_eq!(
+            first.feature_vector_q24().as_ptr(),
+            second.feature_vector_q24().as_ptr(),
+        );
+        assert_eq!(first.feature_vector_q24(), values.as_slice());
+        assert!(!first.authority().grants_any());
+        assert!(!second.authority().grants_any());
+        let old = bind_stem_feature_request_v1(
+            &source_for_refresh, &access, first_head.clone(), &values
+        ).expect("historical V1 representation");
+        let new = first.materialize_owned_after_refresh(
+            &source_for_refresh, &access, &first_head
+        ).expect("same V1 after fresh owner claim");
+        assert_eq!(new, old);
+    }
+
+    #[test]
+    fn shared_buffer_fails_closed_on_digest_and_stale_owner_context() {
+        let (mut source, mut access, head, values) = fixture();
+        source.feature_digest = digest(b"wrong");
+        assert!(matches!(
+            SharedStemQ24BufferV1::from_unverified_source(source.clone(), values.clone()),
+            Err(StemFeatureBindingError::FeatureDigestMismatch)
+        ));
+        source.feature_digest = stem_feature_vector_digest_v1(&values)
+            .expect("known good content");
+        source.feature_width += 1;
+        assert!(matches!(
+            SharedStemQ24BufferV1::from_unverified_source(source.clone(), values.clone()),
+            Err(StemFeatureBindingError::InvalidFeatureWidth)
+        ));
+        source.feature_width = values.len();
+        let shared = SharedStemQ24BufferV1::from_unverified_source(source, values)
+            .expect("same-source immutable feature");
+        access.revocation_observed = true;
+        assert!(matches!(
+            shared.borrow_for_head(&access, &head),
+            Err(StemFeatureBindingError::Revoked)
+        ));
+        access.revocation_observed = false;
+        access.authority_epoch += 1;
+        assert!(matches!(
+            shared.borrow_for_head(&access, &head),
+            Err(StemFeatureBindingError::AuthorityEpochMismatch)
+        ));
     }
 
 }
