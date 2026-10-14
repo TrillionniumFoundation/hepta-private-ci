@@ -12,7 +12,7 @@ from embeddinggemma2_shadow import (
     FrozenGemmaShadow, QualificationError, load_manifest, normalize_truncation,
     sha256, validate_sample,
 )
-from embeddinggemma2_pairs import paired_cosine_metrics, validate_pairs
+from embeddinggemma2_pairs import execute_pairs, paired_cosine_metrics, validate_pairs
 from differentiation_gate import DifferentiationError, advisory_gate
 
 
@@ -30,6 +30,7 @@ def sample(cell="cell.a", text="complete question plus options and state", **kw)
 
 def pair(case_id, split, group, time, text, media):
     t = sample("text." + case_id, text)
+    t["input"]["role"] = "search_query"
     m = sample("media." + case_id)
     m["input"] = {"modality": "image", "role": "document", "value": media,
                   "sha256": sha256(media.encode("utf-8"))}
@@ -80,6 +81,14 @@ class SnapshotAndModality(unittest.TestCase):
                 load_manifest(path)
             (directory / "unknown").unlink()
             (directory / "link").symlink_to("config.json")
+            with self.assertRaises(QualificationError):
+                load_manifest(path)
+            (directory / "link").unlink()
+            # Model file inventory alone is not sufficient to authorize
+            # potentially executable or unsafe Python/pickle weight formats.
+            (directory / "unsafe.pt").write_bytes(b"opaque unsafe pickle")
+            manifest["files"]["unsafe.pt"] = sha256((directory / "unsafe.pt").read_bytes())
+            path.write_text(json.dumps(manifest), encoding="utf-8")
             with self.assertRaises(QualificationError):
                 load_manifest(path)
 
@@ -138,9 +147,15 @@ class SnapshotAndModality(unittest.TestCase):
         self.assertEqual(result["distinct_input_rows"], 1)
         self.assertEqual(result["sentence_transformer_encode_calls"], 1)
         self.assertIsNone(result["physical_transformer_forward_calls"])
+        self.assertEqual(result["evidence_type"], "deterministic_stub_contract_only")
+        self.assertFalse(result["physical_local_model_execution"])
+        self.assertFalse(result["model_origin_independently_authenticated"])
         self.assertFalse(result["independently_authenticated_receipt"])
         self.assertEqual(result["production_promotion"], "DENY_ALL")
         self.assertEqual(result["rows"][0]["feature_digest"], result["rows"][1]["feature_digest"])
+        second = stem.encode_cells([sample("cell.c")])
+        self.assertEqual(second["sentence_transformer_encode_calls"], 1)
+        self.assertEqual(stem.model_encode_calls, 2)
         with self.assertRaises(QualificationError):
             stem.encode_cells([sample("cell.a"), sample("cell.b", scope_id="different")])
         with self.assertRaises(QualificationError):
@@ -160,6 +175,14 @@ class PairedEvidence(unittest.TestCase):
         with self.assertRaises(QualificationError):
             validate_pairs(leak)
         leak = pairs()
+        leak[1]["media"]["input"]["sha256"] = leak[0]["media"]["input"]["sha256"]
+        with self.assertRaises(QualificationError):
+            validate_pairs(leak)
+        leak = pairs()
+        leak[1]["text"]["input"]["sha256"] = leak[0]["text"]["input"]["sha256"]
+        with self.assertRaises(QualificationError):
+            validate_pairs(leak)
+        leak = pairs()
         leak[2]["observed_utc"] = "2026-07-01T00:00:00Z"
         with self.assertRaises(QualificationError):
             validate_pairs(leak)
@@ -168,13 +191,22 @@ class PairedEvidence(unittest.TestCase):
         with self.assertRaises(QualificationError):
             validate_pairs(leak)
 
+    def test_paired_execution_refuses_unverified_stub(self):
+        class StubRunner:
+            manifest = {"dimension": 256, "profile": "vision"}
+        with self.assertRaises(QualificationError):
+            execute_pairs(StubRunner(), pairs(), Path("/unused"))
+
     def test_paired_oracle_reports_only_metrics_not_promotion(self):
         rows = pairs()
         a, b = [1 << 24] + [0] * 255, [0, 1 << 24] + [0] * 254
-        vectors = {"a": (a, a), "b": (b, b), "c": (a, a), "d": (b, b)}
+        vectors = {"a": (a, a, a), "b": (b, b, b), "c": (a, a, a), "d": (b, b, b)}
         result = paired_cosine_metrics(rows, vectors)
         self.assertEqual(len(result["results"]), 4)
+        self.assertEqual(result["directional_text_views_per_case"], 2)
         self.assertTrue(all(r["recall_at_1"] == 1 for r in result["results"]))
+        with self.assertRaises(QualificationError):
+            paired_cosine_metrics(rows, {k: v[:2] for k, v in vectors.items()})
         self.assertEqual(result["production_promotion"], "DENY_ALL")
 
 

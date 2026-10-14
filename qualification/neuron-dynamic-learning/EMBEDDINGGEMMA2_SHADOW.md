@@ -37,7 +37,12 @@ media datasets, training outcomes or real host benchmarks are committed here.
   or 256d may currently export a neuron-pilot Q24 feature; 512d and 768d
   require a separately registered, versioned runtime profile, not silent truncation.
 - Encoder API-call counts are **not** physical forward counts. A real local
-  model invocation is not an independently signed model receipt.
+  model invocation is not an independently signed model receipt. A test-injected
+  stub is labelled `deterministic_stub_contract_only` and will be rejected by
+  the paired media evaluator. Encoded-call counts are scoped to each request.
+- Potentially executable, pickle or legacy Torch serialized model files are
+  rejected even when declared in the complete SHA256 inventory. External source
+  origin remains unverified until independent provenance attestation.
 
 ## Stage 3 — optional vision, audio, video qualification
 
@@ -47,7 +52,13 @@ media datasets, training outcomes or real host benchmarks are committed here.
   supports only four whitelisted selective-load profiles.
 - `embeddinggemma2_pairs.py` runs true encoded text/media pair retrieval on
   independent test/future groups with chronological ordering and anti-leakage
-  checks. At least two independent case groups per ranking cohort are required.
+  checks. Duplicate positive media or text bytes *within* one ranking cohort
+  are rejected, as well as asset reuse across windows. At least two independent
+  case groups per ranking cohort are required. It generates **two real text
+  embeddings per case** with distinct `SearchQuery` and `Document` prompts
+  (one per search direction), so the reciprocal search task is not silently
+  scored with a query-prompt vector as a corpus-document vector; both API
+  invocations and cost must be counted.
   It reports actual recall@1 per direction, never synthetic model accuracy.
 - This 256d paired retrieval gate does **not** establish GUI localization,
   audio transcription, temporal causal reasoning, visual grounding or

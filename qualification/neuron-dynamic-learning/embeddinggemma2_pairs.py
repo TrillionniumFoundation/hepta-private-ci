@@ -6,7 +6,7 @@ constructs fake features, trains on future rows, or authorizes FinalUse.
 from __future__ import annotations
 
 import argparse
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import json
 import math
 from pathlib import Path
@@ -19,6 +19,7 @@ def validate_pairs(rows: list[dict]) -> dict:
         raise QualificationError("4..512 independent multimodal pairs required")
     required = {"case_id", "group_id", "split", "observed_utc", "text", "media"}
     cases, group_splits, media_splits, text_splits, chronology = set(), {}, {}, {}, {}
+    unique_text_cohorts, unique_media_cohorts = set(), set()
     for pair in rows:
         if not isinstance(pair, dict) or set(pair) != required:
             raise QualificationError("exact pair schema required")
@@ -30,7 +31,7 @@ def validate_pairs(rows: list[dict]) -> dict:
         cases.add(cid)
         try:
             t = datetime.fromisoformat(pair["observed_utc"].replace("Z", "+00:00"))
-            if t.utcoffset() != __import__("datetime").timedelta(0):
+            if t.utcoffset() != timedelta(0):
                 raise ValueError("time not UTC")
             t = t.astimezone(timezone.utc)
         except (AttributeError, ValueError, TypeError) as exc:
@@ -58,6 +59,12 @@ def validate_pairs(rows: list[dict]) -> dict:
             raise QualificationError("media bytes leaked across windows")
         if text_splits.setdefault((scope, text_sha), split) != split:
             raise QualificationError("text bytes leaked across windows")
+        if (scope, split, media_sha) in unique_media_cohorts:
+            raise QualificationError("same media has multiple positive labels in cohort")
+        if (scope, split, text_sha) in unique_text_cohorts:
+            raise QualificationError("same text has multiple positive labels in cohort")
+        unique_media_cohorts.add((scope, split, media_sha))
+        unique_text_cohorts.add((scope, split, text_sha))
     if (not chronology.get("test") or not chronology.get("future")
             or max(chronology["test"]) >= min(chronology["future"])):
         raise QualificationError("genuine later future window is required")
@@ -78,10 +85,19 @@ def paired_cosine_metrics(pairs: list[dict], vectors: dict[str, tuple[list[int],
         for direction in ("text_to_media", "media_to_text"):
             hits = 0
             for pair in cohort:
-                q = vectors[pair["case_id"]][0 if direction == "text_to_media" else 1]
+                # Directional task prompts are different: a search-query
+                # text is not a corpus/document text representation. Keep
+                # both in an independently scored 3-vector pair.
+                triplet = vectors[pair["case_id"]]
+                if len(triplet) != 3:
+                    raise QualificationError("both query/document text views plus media required")
+                q = triplet[0 if direction == "text_to_media" else 2]
                 scores = []
                 for other in cohort:
-                    d = vectors[other["case_id"]][1 if direction == "text_to_media" else 0]
+                    other_triplet = vectors[other["case_id"]]
+                    if len(other_triplet) != 3:
+                        raise QualificationError("one-sided text prompt omitted")
+                    d = other_triplet[2 if direction == "text_to_media" else 1]
                     if len(q) != 256 or len(d) != 256:
                         raise QualificationError("paired V1 requires exact 256d Q24 vectors")
                     similarity = sum(float(a) * float(b) for a, b in zip(q, d))
@@ -94,22 +110,38 @@ def paired_cosine_metrics(pairs: list[dict], vectors: dict[str, tuple[list[int],
                         "total": len(cohort), "top1_correct": hits,
                         "recall_at_1": hits / len(cohort)})
     return {"paired_cases": validated["cases"], "independent_groups": validated["groups"],
+            "directional_text_views_per_case": 2,
             "results": out, "production_promotion": "DENY_ALL",
             "independently_authenticated_evaluation": False}
 
 
 def execute_pairs(runner: FrozenGemmaShadow, pairs: list[dict], media_root: Path) -> dict:
     validate_pairs(pairs)
+    if not getattr(runner, "_verified_local_weights", False):
+        raise QualificationError("real locally verified weights required; test stubs cannot be scored")
     if runner.manifest["dimension"] != 256 or runner.manifest["profile"] == "text":
         raise QualificationError("this V1 paired evaluator requires 256d and multimodal profile")
     vectors = {}
     for pair in pairs:
-        # No fake embeddings: this invokes the pinned real model under a one-scope
-        # admission and carries only evidence digests and scalars into the report.
-        rows = runner.encode_cells([pair["text"], pair["media"]], media_root=media_root)["rows"]
-        vectors[pair["case_id"]] = (rows[0]["features_q24"], rows[1]["features_q24"])
+        # Separate documented prompt names are needed for asymmetric
+        # text->media and media->text retrieval. The second text view has the
+        # same source bytes but a different task/prompt-bound feature key.
+        query = pair["text"]
+        if query["input"].get("role") != "search_query":
+            raise QualificationError("paired text must declare query role")
+        document = {
+            **query,
+            "cell_id": "paired.document",  # valid owner-private ephemeral Cell
+            "input": {**query["input"], "role": "document"},
+        }
+        # No fake embeddings: this invokes the pinned real model under a
+        # single-scope admission, and retains just the 3 directional views.
+        rows = runner.encode_cells([query, document, pair["media"]], media_root=media_root)["rows"]
+        vectors[pair["case_id"]] = (
+            rows[0]["features_q24"], rows[1]["features_q24"], rows[2]["features_q24"]
+        )
     report = paired_cosine_metrics(pairs, vectors)
-    report.update({"evidence_type": "real_local_multimodal_encoder_shadow_unsworn",
+    report.update({"evidence_type": "local_multimodal_weight_execution_unverified_origin",
                    "model_revision": runner.manifest["revision"],
                    "stem_pipeline_digest": runner.profile_digest,
                    "total_encode_api_calls": runner.model_encode_calls,

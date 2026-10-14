@@ -72,8 +72,14 @@ def _verify_file_tree(root: Path, names: dict) -> None:
                 or ".." in relative.parts or "\\" in name or not is_sha(expected, 64)):
             raise QualificationError("unsafe model file entry")
         path = root / relative
-        if not path.is_file() or path.suffix == ".py":
-            raise QualificationError("unreviewed Python executable or missing model file")
+        # Deserialization of arbitrary PyTorch pickle or executable payloads is forbidden.
+        # Only safetensors and inert reviewed config/tokenizer/preprocessor assets
+        # may be present in a pinned snapshot (exact inventory is still required).
+        if not path.is_file() or path.suffix.lower() in {
+            ".py", ".pyc", ".pyo", ".pkl", ".pickle", ".pt", ".pth", ".bin",
+            ".so", ".dylib", ".dll", ".exe", ".sh", ".bat", ".ps1",
+        }:
+            raise QualificationError("unsafe executable/serialized artifact or missing model file")
         hasher = hashlib.sha256()
         with path.open("rb") as stream:
             for block in iter(lambda: stream.read(1024 * 1024), b""):
@@ -95,8 +101,10 @@ def load_manifest(path: Path) -> tuple[dict, Path, str]:
     if not isinstance(manifest, dict) or set(manifest) != required:
         raise QualificationError("unknown or missing pinned manifest field")
     if (manifest["model_id"] != MODEL or not is_sha(manifest["revision"], 40)
+            or not isinstance(manifest["profile"], str)
             or manifest["profile"] not in PROFILES
             or type(manifest["dimension"]) is not int or manifest["dimension"] not in DIMENSIONS
+            or not isinstance(manifest["precision"], str)
             or manifest["precision"] not in ("float32", "bfloat16")
             or manifest["license"] != "Apache-2.0"):
         raise QualificationError("unsupported model, size, dtype, license or revision")
@@ -226,11 +234,16 @@ class FrozenGemmaShadow:
         self.model.eval()
         self._inference_context = torch.inference_mode
         self.model_encode_calls = 0
+        # Set only after complete on-disk digest and pinned-runtime validation,
+        # and after real SentenceTransformer loading succeeds. This is NOT an
+        # independent attestation of Hugging Face origin or worker ownership.
+        self._verified_local_weights = True
 
     def encode_cells(self, requests: list[dict], *, media_root: Path | None = None) -> dict:
         if not isinstance(requests, list) or not 1 <= len(requests) <= MAX_BATCH:
             raise QualificationError("unbounded Cell batch")
         started = time.perf_counter_ns()
+        prior_encode_calls = self.model_encode_calls
         first = requests[0]
         domain = tuple(first.get(k) for k in
                        ("scope_id", "principal_id", "purpose_id", "generation", "authority_epoch"))
@@ -284,11 +297,17 @@ class FrozenGemmaShadow:
                 "authority": "DENY_ALL",
             })
         return {
-            "evidence_type": "real_local_pretrained_encoder_shadow_unsworn",
+            "evidence_type": (
+                "local_weight_execution_unverified_origin"
+                if getattr(self, "_verified_local_weights", False)
+                else "deterministic_stub_contract_only"
+            ),
+            "physical_local_model_execution": bool(getattr(self, "_verified_local_weights", False)),
+            "model_origin_independently_authenticated": False,
             "model_id": MODEL, "model_revision": self.manifest["revision"],
             "profile": self.manifest["profile"], "feature_dimension": self.manifest["dimension"],
             "distinct_input_rows": len(unique), "cell_requests": len(requests),
-            "sentence_transformer_encode_calls": self.model_encode_calls,
+            "sentence_transformer_encode_calls": self.model_encode_calls - prior_encode_calls,
             "physical_transformer_forward_calls": None,
             "measured_wall_micros": (time.perf_counter_ns() - started) // 1000,
             "independently_authenticated_receipt": False,
