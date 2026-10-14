@@ -87,6 +87,10 @@ class SequentialWorkTests(unittest.TestCase):
                      self.rows + [{"cell": 3}]):
             with self.subTest(rows=rows), self.assertRaises(a.InputError):
                 a.validate_batch(rows, self.raw, self.lock)
+        missing_scope = deepcopy(self.lock)
+        missing_scope["scope"] = ""
+        with self.assertRaises(a.InputError):
+            a.validate_batch(self.rows, self.raw, missing_scope)
         receipt = a.validate_batch(self.rows, self.raw, self.lock)
         mixed = deepcopy(receipt)
         mixed["scope"] = "other"
