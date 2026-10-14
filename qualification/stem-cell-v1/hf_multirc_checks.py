@@ -85,3 +85,35 @@ class StockHFQuestionAnswerFactorialTests(unittest.TestCase):
         self.assertEqual(r['work_observation']['unknown_operators'],{})
         self.assertEqual(state_digest(readers['conditioned']),original)
         self.assertIsNone(r['counterfactual_accuracy'])
+
+
+class StockHFAllGenuineCandidatesTests(unittest.TestCase):
+    """Actual stock Model/Tokenizer, native candidate slates, frozen V1 banks."""
+
+    def test_real_stock_encoder_scores_all_original_answer_candidates(self):
+        from multirc_candidate_slate import prepare_candidate_slate
+        from multirc_candidate_audit import run_slate_audit,score_candidate_slate
+        import copy
+        sample=InstalledHFTests(methodName='test_full_stock_architecture_roundtrip_and_physical_tie')
+        sample.setUp()
+        self.addCleanup(sample.tmp.cleanup)
+        encoder,query,verify,ckpt,full,receipt=safe_encoder(sample.root)
+        source=fixture_rows(3,'val')
+        train,eval_bundle,orig_labels=prepare_panels(
+            fixture_rows(4),source,train_passages=2,val_passages=2,
+            dataset_sha256_train='a'*64,dataset_sha256_val='b'*64)
+        slate,labels=prepare_candidate_slate(train,eval_bundle,source,
+                                             original_label_receipt=orig_labels)
+        obs,banks=train_then_predict(train,lambda:copy.deepcopy(eval_bundle),
+            encoder=encoder,question_encoder=query,checkpoint_sha256=ckpt,steps=2)
+        measured=run_slate_audit(train,eval_bundle,slate,obs,banks,
+            encoder=encoder,question_encoder=query,checkpoint_sha256=ckpt)
+        verify()
+        scores=score_candidate_slate(measured,slate,labels,
+            expected_observation_id=measured['observation_id'],
+            expected_labels_sha256=_digest(labels))
+        self.assertEqual((measured['passage_count'],measured['question_count'],
+                          measured['actual_candidate_count']),(2,4,8))
+        self.assertEqual(measured['original_v1_anchors_replayed'],4)
+        self.assertEqual(scores['results']['conditioned']['total'],8)
+        self.assertFalse(scores['official_multirc_score_established'])
