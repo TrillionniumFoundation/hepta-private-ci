@@ -1,5 +1,6 @@
 import unittest
-from unittest.mock import patch, SimpleNamespace
+from unittest.mock import patch
+from types import SimpleNamespace
 
 from experiments.shared_stem_cell.process_peak import linux_lifetime_peak_rss_bytes
 
