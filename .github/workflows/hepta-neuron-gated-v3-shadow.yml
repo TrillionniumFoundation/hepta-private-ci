@@ -103,6 +103,17 @@ jobs:
           --binary target/debug/neuron_shadow_mechanism_probe
           --trace ../qualification/neuron-gated-sparse-v3/fixture_q24_trace.json
           --report "$PAIRED_RESULT"
+      - name: Independently re-audit all 40 raw A/B receipts and built executable SHA
+        env:
+          PAIRED_RESULT: ${{ runner.temp }}/neuron-q24-prepared-pairs.json
+          PAIRED_AUDIT: ${{ runner.temp }}/neuron-q24-paired-structural-audit.json
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/neuron-gated-sparse-v3/verify_prepared_pair_report.py \
+            --report "$PAIRED_RESULT" \
+            --binary codex-rs/target/debug/neuron_shadow_mechanism_probe \
+            --audit "$PAIRED_AUDIT"
       - name: Retain explicitly non-production native fixture measurements
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -112,5 +123,6 @@ jobs:
             ${{ runner.temp }}/neuron-q24-fixture-matrix.json
             ${{ runner.temp }}/neuron-q24-cost-analysis.json
             ${{ runner.temp }}/neuron-q24-prepared-pairs.json
+            ${{ runner.temp }}/neuron-q24-paired-structural-audit.json
           if-no-files-found: warn
           retention-days: 14

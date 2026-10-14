@@ -54,6 +54,12 @@ class PreparedPairedSmokeTests(unittest.TestCase):
         self.assertTrue(result["exact_checkpoint_frontier_parity"])
         self.assertEqual(result["legacy_to_prepared_p99_ratio"], "1.222222")
         self.assertGreater(result["prepared_peak_rss_bytes"], 0)
+        self.assertEqual(result["raw_mode_receipts"]["legacy"], matched["legacy"])
+        self.assertEqual(result["raw_mode_receipts"]["prepared"], matched["prepared"])
+        self.assertEqual(
+            result["raw_mode_receipt_sha256"]["legacy"],
+            pair.receipt_sha256(matched["legacy"]),
+        )
 
     def test_changed_checkpoint_digest_rejected_even_with_better_speed(self) -> None:
         matched = {mode: receipt(mode) for mode in pair.MODES}
@@ -130,10 +136,36 @@ class PreparedPairedSmokeTests(unittest.TestCase):
             self.assertEqual(len(called), 40)
             self.assertEqual(output["pair_count"], 20)
             self.assertEqual(output["native_subprocess_count"], 40)
+            self.assertEqual(output["source_binary_sha256_claim"], sha(binary.read_bytes()))
+            self.assertFalse(output["source_binary_independently_attested"])
+            self.assertTrue(all(set(row["raw_mode_receipts"]) == set(pair.MODES)
+                                for row in output["pairs"]))
+            self.assertEqual(sum(len(row["raw_mode_receipts"]) for row in output["pairs"]), 40)
             self.assertTrue(all(row["exact_checkpoint_frontier_parity"] for row in output["pairs"]))
             self.assertFalse(output["target_host_certified"])
             self.assertFalse(output["production_qualification"])
             self.assertEqual(output["decision"], "NO_PROMOTION")
+
+    def test_duplicate_nonfinite_or_unbounded_native_receipt_rejected(self) -> None:
+        for raw, reason in (
+            ('{"arm":"v3","arm":"ssm"}', "duplicate JSON key"),
+            ('{"p99_tick_nanos":NaN}', "nonfinite JSON number"),
+            ('[]', "native receipt must be one JSON object"),
+            ('{"x":"' + "0" * pair.MAX_NATIVE_RECEIPT_JSON_BYTES + '"}',
+             "unbounded native receipt output"),
+        ):
+            with self.subTest(reason=reason):
+                with self.assertRaisesRegex(ValueError, reason):
+                    pair.parse_native_receipt(raw)
+
+    def test_empty_binary_and_real_hash_readback(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "bin"
+            path.write_bytes(b"")
+            with self.assertRaisesRegex(ValueError, "missing or unbounded"):
+                pair.sha256_binary(path)
+            path.write_bytes(b"known-local-binary")
+            self.assertEqual(pair.sha256_binary(path), sha(b"known-local-binary"))
 
     def test_nonpositive_ratio_rejected(self) -> None:
         for a, b in ((0, 10), (10, 0), (True, 1), (1, False)):
