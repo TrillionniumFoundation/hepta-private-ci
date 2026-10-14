@@ -94,6 +94,16 @@ pub fn run_pinned_cell_split_execution_with_admission_v1<F>(
 where
     F: FnMut(&CellSplitExecutionPlanV1) -> Result<(), String>,
 {
+    // A caller-supplied closure is not independent NDU/Selector Final-use.
+    // This compatibility reference path may exercise mutation in crate unit
+    // tests only. Normal non-test builds can inspect a transcript, never start
+    // an original CAS, migration, CNS or Supervisor effect through this API.
+    if !cfg!(test) && action != "transcript" {
+        return Err(
+            "callback-only CellSplit advancement requires the Evidence-bound Agentd owner"
+                .to_string(),
+        );
+    }
     let selected_action = match action {
         "advance" => "advance",
         "transcript" => "transcript",

@@ -234,6 +234,29 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         self.assertNotRegex(owner, r"\bpub\s+fn\s+advance_with_admission\s*\(",
                             "raw CellSplit dispatch must not be exposed")
 
+    def test_public_callback_only_split_advance_denies_in_production(self) -> None:
+        # This older Control stack does not yet have the typed Evidence ingress.
+        # The public arbitrary-closure seam must be a reference-only no-op for
+        # new effects in non-test builds, before parsing any caller-supplied pin.
+        path = "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"
+        raw = (ROOT / path).read_text(encoding="utf-8")
+        stripped = self.lexical_code(path)
+        symbol = "pub fn run_pinned_cell_split_execution_with_admission_v1"
+        self.assertEqual(raw.count(symbol), 1)
+        self.assertEqual(stripped.count(symbol), 1)
+        raw_body = raw[raw.index("{", raw.index(symbol)) + 1 :]
+        code_body = stripped[stripped.index("{", stripped.index(symbol)) + 1 :]
+        self.assertRegex(
+            raw_body,
+            r'if\s+!cfg!\(test\)\s*&&\s*action\s*!=\s*"transcript"\s*\{',
+            "explicit read-only compatibility action was removed",
+        )
+        self.assertRegex(
+            code_body,
+            r"^\s*if\s+!\s*cfg!\(test\)\s*&&\s*action\s*!=\s*\{\s*return\s+Err\s*\(",
+            "public callback-only effects must deny before IO or admission",
+        )
+
     def test_operator_cli_transcript_only_and_legacy_advance_denial(self) -> None:
         # Adding a known caller must never relax the actual physical-effect guard.
         cli_path = "codex-rs/hepta-operator-acceptance/src/main.rs"
