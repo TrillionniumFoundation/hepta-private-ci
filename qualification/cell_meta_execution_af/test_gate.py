@@ -21,6 +21,7 @@ def synth() -> dict:
         "source_sha": "1" * 40, "source_tree": "2" * 40,
         "objective_sha256": sha("objective"), "no_change_sha256": sha("unchanged"),
         "budget_sha256": sha("budget"), "source_dataset_sha256": sha("source"),
+        "train_task_families": ["training-family-alpha", "training-family-beta"],
         "protected_slices": ["legacy-code", "legacy-retrieval"],
         "independent_snapshots": [sha("baseline-snapshot-1"), sha("baseline-snapshot-2"), sha("baseline-snapshot-3")],
         "generator_id": "proposal-generator", "outcome_observer_id": "sealed-observer",
@@ -41,6 +42,13 @@ def synth() -> dict:
                 u = 1.4 if better else 1.0
                 rows.append({
                     "arm": arm, "window": window,
+                    **({"heldout_task_families": ["novel-family-1" if window == "future_1" else "novel-family-2"]}
+                       if study == "D" else {}),
+                    **({"fixed_circuit_graph_sha256": sha("immutable-circuit-graph"),
+                        "routing_policy_sha256": sha("route-policy-" + arm),
+                        "actual_route_trace_sha256": sha(f"{arm}/{window}/actual-route"),
+                        "sequential_cell_depth": 2 if arm == "fixed_graph" else 3}
+                       if study == "C" else {}),
                     "task_set_sha256": sha(f"{study}/{window}/paired-input"),
                     "prediction_sha256": sha(f"{study}/{window}/{arm}/pre-label"),
                     "outcome_receipt_sha256": sha(f"{study}/{window}/{arm}/finalized"),
@@ -337,6 +345,27 @@ class AfEvidenceTests(unittest.TestCase):
     def test_independent_snapshot_count_below_three_rejected(self):
         self.d["candidate"]["independent_snapshots"] = self.d["candidate"]["independent_snapshots"][:2]
         check_bad(self.d, "identity", "at least three")
+
+    def test_meta_learning_train_family_leakage_rejected(self):
+        for r in self.d["studies"]["D"]["records"]:
+            r["heldout_task_families"] = ["training-family-alpha"]
+        check_bad(self.d, "D", "train/test overlap")
+
+    def test_meta_learning_future_family_reuse_rejected(self):
+        for r in self.d["studies"]["D"]["records"]:
+            r["heldout_task_families"] = ["same-unseen-family"]
+        check_bad(self.d, "D", "reused between")
+
+    def test_meta_learned_router_cannot_hide_graph_change(self):
+        row = next(r for r in self.d["studies"]["C"]["records"] if r["arm"] == "learned_router")
+        row["fixed_circuit_graph_sha256"] = sha("different-graph")
+        check_bad(self.d, "C", "changed graph")
+
+    def test_meta_fixed_and_learned_policy_identity_must_differ(self):
+        for r in self.d["studies"]["C"]["records"]:
+            if r["arm"] == "learned_router":
+                r["routing_policy_sha256"] = sha("route-policy-fixed_graph")
+        check_bad(self.d, "C", "indistinguishable")
 
     def test_split_late_selector_withdrawal_blocked(self):
         self.d["split_safety"]["selector_current_after_last_readback"] = False
