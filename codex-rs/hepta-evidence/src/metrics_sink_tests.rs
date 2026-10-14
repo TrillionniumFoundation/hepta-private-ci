@@ -231,3 +231,29 @@ fn metrics_sink_drop_never_waits_on_saturated_unserved_channel() {
     drop(sink);
     drop(rx);
 }
+
+
+#[test]
+fn live_durable_evidence_sink_refuses_replaced_wal_before_positive_flush_ack() {
+    let root = tempfile::tempdir().expect("private Evidence directory");
+    let path = root.path().join("original-evidence.log");
+    let former = root.path().join("renamed-original-evidence.log");
+    let sink = DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000)
+        .expect("real background fsync worker");
+    sink.record(sample(PhaseMetricKindV1::Cas))
+        .expect("original CAS phase");
+    sink.flush().expect("first durable fsync");
+
+    // The same valid bytes under a NEW inode must not let the still-running
+    // original async writer mint a metrics-ack continuation after corruption.
+    std::fs::rename(&path, &former).expect("remove original pathname");
+    std::fs::copy(&former, &path).expect("copy apparently intact Evidence WAL");
+    assert_eq!(sink.flush(), Err(PhaseMetricSinkErrorV1::Unavailable));
+    assert!(!sink.healthy(), "old writer must latch a terminal failure");
+    assert_eq!(
+        sink.record(sample(PhaseMetricKindV1::Cns)),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+    // This does NOT authorize opening a new trusted writer from the copied
+    // journal: true restart continuity requires independent storage custody.
+}
