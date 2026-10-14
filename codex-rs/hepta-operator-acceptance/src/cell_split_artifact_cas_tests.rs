@@ -633,9 +633,12 @@ fn real_signed_artifact_cas_lost_ack_reconciles_only_after_selector_revocation()
         while !service_stop.load(Ordering::Acquire) {
             match listener.accept() {
                 Ok((mut stream, _)) => {
-                    service
-                        .serve_connection(&mut stream)
-                        .expect("original signed CAS/readback RPC");
+                    if let Err(error) = service.serve_connection(&mut stream) {
+                        assert!(
+                            matches!(error, crate::CellSplitEffectRpcErrorV1::Rejected(_)),
+                            "only revoked owner readback may refuse the signed RPC: {error}"
+                        );
+                    }
                 }
                 Err(error) if error.kind() == ErrorKind::WouldBlock => {
                     thread::sleep(Duration::from_millis(1));
