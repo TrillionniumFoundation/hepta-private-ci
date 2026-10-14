@@ -25,6 +25,7 @@ fn yaml_description_contract_is_frozen_before_security_parser_migration() {
         ("description: [read, write]", None),
         ("description:\n  nested: text", None),
         ("description: !secret text", None),
+        ("description: Review changes\nextra: !secret data", None),
     ] {
         assert_eq!(parse_command_description(raw).as_deref(), expected, "{raw}");
     }

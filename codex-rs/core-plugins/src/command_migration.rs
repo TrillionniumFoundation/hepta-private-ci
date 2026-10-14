@@ -314,7 +314,9 @@ fn frontmatter_end(rest: &str) -> Option<(usize, usize)> {
 }
 
 fn parse_command_description(raw_frontmatter: &str) -> Option<String> {
-    let parsed: YamlValue = serde_saphyr::from_str(raw_frontmatter).ok()?;
+    // Untyped JSON values cannot retain an explicit YAML tag; reject unknown tags.
+    let options = serde_saphyr::options! { reject_unsupported_tags: true };
+    let parsed: YamlValue = serde_saphyr::from_str_with_options(raw_frontmatter, options).ok()?;
     let mapping = parsed.as_object()?;
     mapping.iter().find_map(|(key, value)| {
         if key.trim() == "description" {
