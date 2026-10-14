@@ -1,6 +1,6 @@
 """Exact-rational counterexamples to naive short-horizon FBSDE concatenation.
 
-Deterministic, fully coupled boundary system: dX_t=Y_t dt, dY_t=0,
+Deterministic, coupled boundary-value special case: dX_t=Y_t dt, dY_t=0,
 X_0=x0, Y_T=g X_T. This is an algebraic special case, not a theorem about
 nonlinear/stochastic FBSDEs or any semantic reasoning ability.
 """
@@ -38,7 +38,7 @@ def local_segment(x0: F, width: F, terminal_slope: F):
     require(0 < terminal_slope * width < 1, "no bounded local regular field")
     y = terminal_slope * x0 / (1 - terminal_slope * width)
     x_end = x0 + width * y
-    assert y == terminal_slope * x_end
+    require(y == terminal_slope * x_end, "local terminal boundary residual")
     return (x0, y, x_end)
 
 
@@ -58,7 +58,7 @@ def experiment_case(x0: F, horizon: F, slope: F, segments: int = 2):
         x = state[2]
     wrong_jump = max((abs(a[1] - b[1]) for a, b in zip(wrong, wrong[1:])),
                      default=F(0))
-    assert wrong[-1][1] == slope * wrong[-1][2]
+    require(wrong[-1][1] == slope * wrong[-1][2], "wrong-reset final residual")
 
     correct = []
     if profile["regular_decoupling_field_exists_on_whole_horizon"]:
