@@ -246,7 +246,7 @@ pub fn low_rank_min_gru_tick_v1(
             input.input_digest,
         ]
         .iter()
-        .any(Digest32::is_zero)
+        .any(|digest| digest.is_zero())
         || input
             .temporal_drive_q24
             .iter()
