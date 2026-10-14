@@ -369,7 +369,7 @@ impl CellSplitRouteControllerV1 {
     /// Deterministic internal migration qualification only.
     #[cfg(test)]
     #[allow(dead_code)]
-    pub(crate) fn activate_children_with_migration_for_qualification<M: OrganStateMigrationV1 + ?Sized>(
+    pub(crate) fn qualify_children_with_migration<M: OrganStateMigrationV1 + ?Sized>(
         &mut self,
         expected: Generation,
         next: CnsOrganHostV1,
