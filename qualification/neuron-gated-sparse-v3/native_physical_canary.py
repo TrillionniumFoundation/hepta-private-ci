@@ -76,6 +76,47 @@ def run(binary: Path, report: Path) -> dict:
         result=evaluate(binary, file_hash(binary), weights,
                         file_hash(weights/'training-receipt.json'),
                         trace_file,file_hash(trace_file),synthetic_canary=True)
+        # Native Rust must reject physical material violations even when an
+        # attacker supplies a freshly matching file SHA. These are isolated
+        # synthetic negatives: they do not exercise a real model owner.
+        import subprocess
+        from safetensors.torch import load_file
+        source_file=weights/'2048'/'v3.safetensors'
+        original=load_file(str(source_file),device='cpu')
+        def run_negative(name, changed, *, bad_trace=None, stale_sha=False):
+            local=home/(name+'.safetensors')
+            save_file(changed,str(local))
+            current_trace=trace_file if bad_trace is None else bad_trace
+            command=[str(binary),'--arm','v3','--model',str(local),
+                     '--model-sha256',(file_hash(source_file) if stale_sha else file_hash(local)),
+                     '--trace',str(current_trace),'--trace-sha256',file_hash(current_trace),
+                     '--cap','2048']
+            proc=subprocess.run(command,stdout=subprocess.PIPE,stderr=subprocess.PIPE,
+                                stdin=subprocess.DEVNULL,timeout=30,check=False)
+            if proc.returncode == 0 or b'BLOCKED_PHYSICAL_NATIVE_Q24_SHADOW' not in proc.stderr:
+                raise ValueError(f'{name}: native invalid weights/trace unexpectedly accepted')
+            return {'test':name,'rejected_by_native_rust':True}
+        negatives=[]
+        changed={k:v.clone() for k,v in original.items()}
+        changed['temporal.gate_bias'][0]=-1
+        negatives.append(run_negative('negative-native-q24-gate-bias',changed))
+        changed={k:v.clone() for k,v in original.items()}
+        changed['head.weight'][0,0]=float('nan')
+        negatives.append(run_negative('nonfinite-native-head',changed))
+        changed={k:v.clone() for k,v in original.items()}
+        changed['head.weight']=torch.zeros((2,16),dtype=torch.float32)
+        negatives.append(run_negative('same-count-wrong-native-head-shape',changed))
+        negatives.append(run_negative('changed-sha-native-model',
+                                      {k:v.clone() for k,v in original.items()},stale_sha=True))
+        invalid_trace=dict(trace)
+        invalid_trace['events']=[dict(row) for row in trace['events']]
+        invalid_trace['events'][1]['sequence']=1  # duplicate logical sequence
+        bad_trace=home/'invalid-duplicate-sequence-trace.json'
+        bad_trace.write_text(json.dumps(invalid_trace,sort_keys=True),encoding='utf-8')
+        negatives.append(run_negative('duplicate-native-trace-sequence',
+                                      {k:v.clone() for k,v in original.items()},bad_trace=bad_trace))
+        result['native_negative_cases_rejected']=len(negatives)
+        result['native_negative_cases']=negatives
         with report.open('x',encoding='utf-8') as out:
             json.dump(result,out,sort_keys=True,indent=2)
             out.write('\n')
