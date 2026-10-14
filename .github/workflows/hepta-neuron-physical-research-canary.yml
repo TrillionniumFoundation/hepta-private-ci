@@ -16,6 +16,8 @@ on:
       - 'qualification/neuron-gated-sparse-v3/test_native_matrix_admission.py'
       - 'qualification/neuron-gated-sparse-v3/realized_budget_audit.py'
       - 'qualification/neuron-gated-sparse-v3/test_realized_budget_audit.py'
+      - 'qualification/neuron-gated-sparse-v3/dedup_prospective_gate.py'
+      - 'qualification/neuron-gated-sparse-v3/test_dedup_prospective_gate.py'
       - 'codex-rs/hepta-neuron/src/bin/neuron_trained_q24_shadow.rs'
       - 'qualification/neuron-gated-sparse-v3/test_real_pipeline.py'
       - 'qualification/neuron-gated-sparse-v3/test_a4_host_gate.py'
@@ -89,6 +91,9 @@ jobs:
           python -m unittest discover \
             -s qualification/neuron-gated-sparse-v3 \
             -p 'test_realized_budget_audit.py' -v
+          python -m unittest discover \
+            -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_dedup_prospective_gate.py' -v
       - name: Never qualify model or NDU from source fixture CI
         run: |
           echo "No real selected Cell, production Encoder, future utility, signed target-host A4, NDU, or promotion is established."
