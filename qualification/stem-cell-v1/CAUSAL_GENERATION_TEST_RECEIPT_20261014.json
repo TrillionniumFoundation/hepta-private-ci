@@ -1,0 +1,195 @@
+{
+  "schema": "hepta.causal-generation-source-verification.v1",
+  "date": "2026-10-14",
+  "remote_parent": "08cb87a6df5fb0c68b9db3f1bb00d67579bf68c4",
+  "code_candidate": "4b46d14114dc43af9d36c570efb3e03a59732193",
+  "branch": "research/shared-stem-causal-generation-20261014",
+  "pull_request": 1758,
+  "local_tests": {
+    "parent": 342,
+    "first_stage": 360,
+    "final": 361,
+    "distinct_ids": 361,
+    "final_runs": 2,
+    "failures": 0,
+    "errors": 0,
+    "skips": 0
+  },
+  "local_runtime": {
+    "python": "3.13.5",
+    "torch": "2.10.0+cpu",
+    "safetensors": "0.7.0",
+    "transformers_available": false
+  },
+  "local_hf_checks": {
+    "encoder_executed": 0,
+    "causal_executed": 0,
+    "reason": "ModuleNotFoundError: transformers",
+    "included_in_pass_count": false
+  },
+  "hosted_verified": {
+    "code_commit": "59cbf06b95013ef13b8f4a5af1f904295a2258f0",
+    "prospective_merge_commit": "c6b2a91376246c95387303786c7b3d87eb581b5c",
+    "run_id": 38496683772,
+    "regression_tests_passed": 360,
+    "hf_encoder_checks_passed": 3,
+    "hf_causal_checks_passed": 3,
+    "public_causal_job_passed": true
+  },
+  "final_code_hosted": {
+    "run_id": 38497282611,
+    "hf_profile_compatibility": "success",
+    "preregistration": "success",
+    "execution_regressions": "success",
+    "public_causal_canary": "success",
+    "code_commit": "4b46d14114dc43af9d36c570efb3e03a59732193",
+    "prospective_merge_commit": "b84bf40b4a597dbe218dd641d6c2dfc41b12cb3d",
+    "regression_tests_passed": 361,
+    "regression_seconds": 44.996,
+    "hf_encoder_checks_passed": 3,
+    "hf_causal_checks_passed": 3,
+    "public_encoder_canary": "success",
+    "public_causal_artifact_id": 11864771376,
+    "public_causal_pair_count": 4,
+    "public_causal_initial_correct": 0,
+    "public_causal_revised_correct": 0,
+    "public_causal_fit_status": "blocked"
+  },
+  "actual_public_model_generation": true,
+  "independent_efficacy_established": false,
+  "cost_matched_experiment_completed": false,
+  "new_pretrained_weights_trained": false,
+  "ndu_matrix_arm_enabled": false,
+  "production_authorized": false,
+  "checks": {
+    "compileall": "passed",
+    "yaml_parse": "passed",
+    "git_diff_check": "passed",
+    "rust_fmt": "not_run_no_codex_rs_tree",
+    "full_repo_native_test": "not_claimed"
+  },
+  "source_blobs": {
+    "qualification/stem-cell-v1/hf_causal_generator.py": {
+      "sha256": "a01f926e78ab96895f98b111cc1a04e48d33599e0f5992e6f63277fb2b9f1cca",
+      "git_blob_sha1": "5dddfecdf4e68c4fb052f1c3ead8d55513fdadbf"
+    },
+    "qualification/stem-cell-v1/public_encoder_probe.py": {
+      "sha256": "0412a8d66270fd901440d0bfe4f89c2f3019f883c9dc1f957e2c1053448aa099",
+      "git_blob_sha1": "bea0836d7e9150e131722db1846e4ace2008d284"
+    },
+    "qualification/stem-cell-v1/public_causal_probe.py": {
+      "sha256": "5f10f5deab7aa60b5de7c0506ed7d6b99dd79cfa4903e4dbebe2b93be36ecc29",
+      "git_blob_sha1": "5bd389162319f5da40b91d8700fd006deeba6ea8"
+    },
+    "qualification/stem-cell-v1/causal_profile_checks.py": {
+      "sha256": "484f34d9fa86749c5effa3b0b98ef992dab46d815bf1765f2189cd270a4134d2",
+      "git_blob_sha1": "3f43a5ce5c159bf224cac73ede46d7051c969632"
+    },
+    "qualification/stem-cell-v1/test_causal_generator.py": {
+      "sha256": "689c779c5b13754554b7fc6b7de3e8eefa3ba222cbae0a7b4309c32b10d237ff",
+      "git_blob_sha1": "47a17ee56a2029e01dbcd337dafb506225bd45da"
+    },
+    "qualification/stem-cell-v1/test_causal_failure_observation.py": {
+      "sha256": "2ce42f0ea463e40e75032021d76316207007702dcf2091c4de85e3fb8a5539e1",
+      "git_blob_sha1": "de2e2bccfe2f87258bcc38a771cdd31929230968"
+    },
+    ".github/workflows/hepta-neuron-next-round-matrix.yml": {
+      "sha256": "951724e63c43a00aef20f07e18e31fbc8f974ecb0d3266d4ed88302cf6b3397b",
+      "git_blob_sha1": "345d00c87940b7472e46e55600ee1bc43f296823"
+    }
+  },
+  "local_logs": {
+    "final1.log": {
+      "sha256": "0fa6f0372ef6fbd2923ca98d9e99a2e82b87ce65435093fd4921a3042010b2b0",
+      "bytes": 57196
+    },
+    "causal-first.log": {
+      "sha256": "96ce67e71a4610f5cf6bed41c8b5ce70c0621d42abdf069ff7dc160cb842b86e",
+      "bytes": 2315
+    },
+    "final-fixed2.log": {
+      "sha256": "8d67d7023249b06500ff71ff87c5bbe8ea8232d6c378cce482614cd05c352981",
+      "bytes": 57367
+    },
+    "local-hf_profile_checks.log": {
+      "sha256": "e61cd0a97c964f102b75f0ebce0c339eaf3b7e94aa6c420fce9e3c5417635e17",
+      "bytes": 298
+    },
+    "local-causal_profile_checks.log": {
+      "sha256": "2993b63ea3ec304a03545728c45bc604818a90ab14c73516336e4a0daa3a2b5a",
+      "bytes": 243
+    },
+    "repository-fmt-attempt.log": {
+      "sha256": "03822bb6b41ee5185319dc1b476d07f13ecc5341a0254ab0d05b5c1ebfa75fcd",
+      "bytes": 54
+    },
+    "final-observation-fix.log": {
+      "sha256": "66c44d4281f4c7c4622ddb9477c50d14a2d35bcf35ffc68d8cad13939066d106",
+      "bytes": 3205
+    },
+    "causal-second.log": {
+      "sha256": "37d6f7e17b016fa1e02a396fe3571c396a3a81808d25c62f3e4d97114f64260a",
+      "bytes": 3863
+    },
+    "baseline-complete.log": {
+      "sha256": "e962c27cd92872d5f00fbe22e147c4b9b56293adb33fe065af91ec0624d11b99",
+      "bytes": 54242
+    },
+    "baseline.log": {
+      "sha256": "92db9f5dec03718c409c499522d636e7e2d27af36442d10e1973b0d608edfad3",
+      "bytes": 49281
+    },
+    "final2.log": {
+      "sha256": "cd5cad4a51c602ded2599a183b3d6cd5ad7b46c721a7b96b769e20fca5ba1a82",
+      "bytes": 57196
+    },
+    "final-fixed1.log": {
+      "sha256": "714cd712478622e20f7b35139c5ff9ecd86a451776ddf4ab2d691092422abd71",
+      "bytes": 57367
+    }
+  },
+  "downloaded_ci_artifacts": [
+    {
+      "file": "parent-modernbert-ci-evidence.zip",
+      "artifact_id": 11863277213,
+      "run_id": 38494242718,
+      "sha256": "95eb1a029f1ed57f26c2e2bf34ca04c4ae09e645d7341282190238f259f2e3ad"
+    },
+    {
+      "file": "causal-ci-regressions.zip",
+      "artifact_id": 11864305901,
+      "run_id": 38496683772,
+      "sha256": "97eb4002e4be5bc155c10402bcf9b072ece7f461c111550a5ab9614dc4af3876"
+    },
+    {
+      "file": "causal-ci-hf-architecture.zip",
+      "artifact_id": 11864116780,
+      "run_id": 38496683772,
+      "sha256": "3dd9999a388eb5ee3e2218847df042afac12f7c72a2aecda1a38ef80facf2b60"
+    },
+    {
+      "file": "public-causal-generation-ci-evidence.zip",
+      "artifact_id": 11864626046,
+      "run_id": 38496683772,
+      "sha256": "15adc0c2a886326d935ec6b672d32723040b489c5719d045abfa3fb7178954ff"
+    },
+    {
+      "file": "causal-final-ci-regressions.zip",
+      "artifact_id": 11863853599,
+      "run_id": 38497282611,
+      "sha256": "15dfc36d99368aa5fd4eae6c002b6f54851def80e3086eedea6bc6d8f0a01e60"
+    },
+    {
+      "file": "causal-final-ci-hf-architecture.zip",
+      "artifact_id": 11864152848,
+      "run_id": 38497282611,
+      "sha256": "dfa3fae2a9537995e06ebb8f076e0e980c330c27936fcac92bcaf7bf5a8ae2af"
+    },
+    {
+      "file": "public-causal-final-ci-evidence.zip",
+      "artifact_id": 11864771376,
+      "run_id": 38497282611,
+      "sha256": "a7b777a8dd1d173e965c2288606e7718ceba3cb1230a55190e2dbc63b055509a"
+    }
+  ]
+}
