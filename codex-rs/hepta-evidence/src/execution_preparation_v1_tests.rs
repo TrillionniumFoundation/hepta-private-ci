@@ -1,4 +1,3 @@
-use codex_hepta_contracts::ProviderEffectUncertainty;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::execution_contract_v1::ExecutionIntentV1;
 use codex_hepta_contracts::execution_contract_v1::ExecutionTargetV1;
