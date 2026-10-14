@@ -103,8 +103,7 @@ def inspect(folder, tier, index, *, expected_commit):
     gate = strict_json(files["host-gate.json"])
     if (
         gate.get("schema") != HOST_SCHEMA
-        or gate.get("policy")
-        != "x86_64-original-qwen-torch2.5.1-cpu-bfloat16-eager"
+        or gate.get("policy") != "x86_64-original-qwen-torch2.5.1-cpu-bfloat16-eager"
         or gate.get("new_model_calls") != 0
         or gate.get("production_accepted") is not False
         or type(gate.get("host_eligible")) is not bool
@@ -173,8 +172,7 @@ def inspect(folder, tier, index, *, expected_commit):
         or result["raw_attempt_rows"] != len(ARMS)
         or result["raw_success_rows"] != len(ARMS)
         or any(
-            r["receipt"].get("reader_identity") != run["reader_identity"]
-            for r in rows
+            r["receipt"].get("reader_identity") != run["reader_identity"] for r in rows
         )
     ):
         raise ValueError("invalid or mixed original model run receipt")
