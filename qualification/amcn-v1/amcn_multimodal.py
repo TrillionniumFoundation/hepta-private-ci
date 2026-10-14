@@ -72,6 +72,34 @@ class Binding:
         require(gap <= self.maximum_time_gap_ms, "unmatched modality timestamps")
 
 
+@dataclass(frozen=True)
+class TrainingPair:
+    """Explicit TRAIN contrast: positives require a supported Binding.
+
+    Negatives must be cross-event within one scope/generation; they are never
+    cast as a real co-reference or written to the HNMF evidence graph.
+    """
+    text_span: Span
+    other_span: Span
+    pair_sha256: str
+    positive: bool
+    split: str
+    relation_sha256: str | None = None
+
+    def __post_init__(self):
+        a, b = self.text_span, self.other_span
+        require(self.split == "train" and type(self.positive) is bool
+                and is_sha(self.pair_sha256), "training-only contrast identity")
+        require(a.modality == "text" and b.modality in ("image", "audio", "video")
+                and a.scope == b.scope and a.generation == b.generation
+                and not a.revoked and not b.revoked, "cross-scope/expired contrast")
+        if self.positive:
+            require(is_sha(self.relation_sha256), "missing matching support")
+            Binding(a, b, self.relation_sha256, maximum_time_gap_ms=600000)
+        else:
+            require(a.source_event != b.source_event
+                    and self.relation_sha256 is None, "false negative co-reference")
+
 def _checked(x, maximum_width=8192):
     require(isinstance(x, torch.Tensor) and x.dtype == torch.float32
             and x.device.type == "cpu" and x.ndim == 2 and 1 <= len(x) <= 4096
@@ -95,28 +123,26 @@ class Connector(nn.Module):
         return (a * b).sum(dim=-1)
 
 
-def train_connector(bindings, text_features, other_features, labels, *,
+def train_connector(pairs, text_features, other_features, *,
                     split, seed=17, steps=40, latent=32):
     """Train only same-TRAIN matched/wrong-pair examples; no future labels.
 
     Caller must supply materialized tower receipts independently; this trainer
     has no access to raw source or image/audio/video files or model credentials.
     """
-    require(split == "train" and isinstance(bindings, (tuple, list))
-            and 4 <= len(bindings) <= 4096, "TRAIN-only paired examples")
-    require(all(isinstance(b, Binding) for b in bindings), "typed modality bindings")
-    ids = [b.relation_sha256 for b in bindings]
+    require(split == "train" and isinstance(pairs, (tuple, list))
+            and 4 <= len(pairs) <= 4096, "TRAIN-only paired examples")
+    require(all(isinstance(p, TrainingPair) and p.split == "train" for p in pairs),
+            "typed TRAIN-only pairing contrasts")
+    ids = [p.pair_sha256 for p in pairs]
     require(len(set(ids)) == len(ids), "duplicate pairing support")
-    require(len({b.text_span.scope for b in bindings}) == 1
-            and len({b.text_span.generation for b in bindings}) == 1,
+    require(len({p.text_span.scope for p in pairs}) == 1
+            and len({p.text_span.generation for p in pairs}) == 1,
             "cross-scope/generation training")
     x, z = _checked(text_features), _checked(other_features)
-    require(len(x) == len(z) == len(bindings), "tensor/binding cardinality")
-    require(isinstance(labels, dict) and set(labels) == set(ids)
-            and all(type(y) is int and y in (0, 1) for y in labels.values()),
-            "TRAIN-only binary pairing labels")
-    require(set(labels.values()) == {0, 1}, "matched and wrong-pair supervision required")
-    y = torch.tensor([labels[i] for i in ids], dtype=torch.float32)
+    require(len(x) == len(z) == len(pairs), "tensor/binding cardinality")
+    require({p.positive for p in pairs} == {False, True}, "matched and wrong-pair contrasts")
+    y = torch.tensor([float(p.positive) for p in pairs], dtype=torch.float32)
     with torch.random.fork_rng(devices=[]):
         torch.manual_seed(seed)
         initial = Connector(x.shape[1], z.shape[1], latent)
