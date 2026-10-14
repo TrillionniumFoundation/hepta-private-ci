@@ -178,6 +178,14 @@ class PhysicalDedupFutureTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'not joined'):
             self.check()
 
+    def test_tensor_fingerprint_requires_current_pinned_physical_hash(self):
+        from dedup_prospective_gate import canonical_tensor_sha
+        model=next(x for x in self.training['models'] if x['arm']=='v3')
+        p=self.root/model['weight_file']
+        self.assertEqual(len(canonical_tensor_sha(p,model['weight_sha256'])),64)
+        with self.assertRaisesRegex(ValueError,'changed after pinned receipt audit'):
+            canonical_tensor_sha(p,'f'*64)
+
     def test_candidate_tensor_sha_changed_after_seal(self):
         with (self.root/'2048'/'v2.safetensors').open('ab') as fp: fp.write(b'evil')
         with self.assertRaisesRegex(ValueError,'SHA256 mismatch'):
@@ -226,6 +234,27 @@ class PhysicalDedupFutureTests(unittest.TestCase):
         result=review(self.root,self.train_sha,self.seal_path,self.seal_sha,
                       independently_verified,synthetic_canary=True)
         self.assertEqual(result['unique_physical_tensor_models_per_arm'],4)
+        # Exercise the unmocked CLI: both signer public keys and the sealed
+        # physical model bytes are rechecked before create-only JSON output.
+        from unittest.mock import patch
+        import contextlib
+        import io
+        import sys
+        report=self.root/'actual-signed-cli-dedup.json'
+        argv=['dedup_prospective_gate.py','--trained-root',str(self.root),
+              '--training-receipt-sha256',self.train_sha,
+              '--seal-file',str(self.seal_path),'--seal-sha256',self.seal_sha,
+              '--signed-witness',str(witness),'--witness-pubkey',str(pub),
+              '--signed-outcomes',str(outcomes),'--outcome-pubkey',str(outpub),
+              '--synthetic-canary','--report',str(report)]
+        with patch.object(sys,'argv',argv),contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(main(),0)
+        emitted=json.loads(report.read_text())
+        self.assertEqual(emitted['unique_physical_tensor_models_per_arm'],4)
+        self.assertEqual(emitted['redundant_ceiling_alias_count'],16)
+        self.assertEqual(emitted['decision'],'NO_MODEL_PROMOTION')
+        with patch.object(sys,'argv',argv),contextlib.redirect_stderr(io.StringIO()):
+            self.assertEqual(main(),2)  # create-only output rejects overwrite
         outcome['rows'][0]['label_available_at_utc']='2026-10-14T09:29:59Z'
         signed(self.root,'outcomes',outcome)
         with self.assertRaisesRegex(ValueError,'leakage'):
