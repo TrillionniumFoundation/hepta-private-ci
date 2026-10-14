@@ -236,9 +236,16 @@ fn make_configs(width: usize) -> Result<Configs, String> {
         .map_err(|error| format!("V3 config: {error:?}"))?;
     ssm.digest()
         .map_err(|error| format!("SSM config: {error:?}"))?;
-    min_gru.digest()
+    min_gru
+        .digest()
         .map_err(|error| format!("minGRU config: {error:?}"))?;
-    Ok(Configs { v1, v2, v3, ssm, min_gru })
+    Ok(Configs {
+        v1,
+        v2,
+        v3,
+        ssm,
+        min_gru,
+    })
 }
 
 fn parse_trace(bytes: &[u8]) -> Result<MechanismTraceV1, String> {
