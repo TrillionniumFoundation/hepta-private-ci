@@ -79,3 +79,38 @@ python3 experiments/ndu_tree_fbsde_gates/head_panel_audit.py --inputs /tmp/head_
 - Reader capacity is a separate prerequisite: an independently sufficient-evidence Reader failure cannot be relabeled a search or BSDE improvement.
 
 **Current receipts:** 61 locally completed tests, four separately executed 100-trial synthetic-feature/physical-Head CPU measurements, and an actually optimized P3→P6 exact-teacher imitation study with source and three-arm predictions sealed before separate-process teacher scoring. These measurements are NOT four-scale physical full Neuron/Encoder qualifications. There are no newly executed pretrained model loads, real multimodal task scores, independent NDU utility, qualified nonlinear FBSDE results, policy distillation, target-host admission, or production approval from this increment.
+
+## Cost-adjusted utility of actually trained Cell Heads (P3/P6 diagnostic)
+
+An independently executable scorer, teacher_utility_evaluator.py, now reuses
+the EXISTING trained 9,744-parameter State-Gated Cell Head, frozen control, and
+cheap linear Head. It consumes only the already source-bound 160 future synthetic
+two-bit tasks and three pre-scoring sealed Head predictions. It never fits model
+parameters or accesses natural-task outcomes. Each binary Head decision is
+interpreted as STOP versus INSPECT; all three Head arms use the identical cheap
+public-law selector for which bit to inspect. Actual modeled information cost is
+subtracted for each planned inspection. The exact three-choice Bellman reference
+uses the SAME public priors and costs, and retains a separate no-search and
+always-observe control.
+
+Measured local conditional EXPECTED utility on the single 160-case cohort:
+- no_search / frozen_gate: 0.562074, 0 inspections
+- fixed_depth_1: 0.561977, 160 inspections
+- cheap_linear: 0.730853, 121 inspections
+- learned_gate: 0.732948, 116 inspections
+- exact_tree: 0.743346, 93 inspections
+
+The gated Head's improvement over the cheap linear Head is ~0.002095 expected
+utility, despite materially greater fit CPU. The exact Bellman reference exceeds
+the gated Head by ~0.010399. Teacher imitation accuracy therefore DOES NOT
+establish a superior real System2 utility policy. The source/score digests,
+modelled costs, baseline inventory and explicit DENY_ALL negative gates are
+retained in observations/teacher_utility_summary.json. Dedicated tests reject
+tampered seal bytes, contaminated source, illegal promotion and missing arms.
+The GitHub workflow executes this scorer in a separate process after the
+existing teacher prediction seal and uploads the raw score.
+
+The synthetic known probability law and deterministic fixed seeds are not
+natural-world generalization, authenticated external observations, or qualified
+stochastic NDU/FBSDE. This new scorer does not activate the native Neuron or
+authorize P3/P5, Cell split, artifact selection, FinalUse or any software effect.

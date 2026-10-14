@@ -1,0 +1,64 @@
+{
+  "schema": "hepta.ndu-tree.synthetic-utility-after-seal.v1",
+  "n": 160,
+  "future_source_sha256": "bfa412d11045744e1c692c253824d33c716eee2c02d8b78ecde595bbe7b640ff",
+  "prediction_seal_sha256": "5739b50d3fed4c26ce73c2f81c4e21d4d1770902bd93964e0b6fb14791c56636",
+  "all_arms_same_predeclared_public_law": true,
+  "arms": {
+    "no_search": {
+      "expected_utility": 0.562073546604315,
+      "expected_regret_to_exact_tree": 0.18127270177875113,
+      "inspection_count": 0,
+      "mean_modelled_inspection_cost": 0,
+      "reasoning_training_cpu_ns": 0,
+      "physical_encoder_forward_count": 0
+    },
+    "fixed_depth_1": {
+      "expected_utility": 0.561976699219191,
+      "expected_regret_to_exact_tree": 0.18136954916387518,
+      "inspection_count": 160,
+      "mean_modelled_inspection_cost": 0.17619818652849742,
+      "reasoning_training_cpu_ns": 0,
+      "physical_encoder_forward_count": 0
+    },
+    "exact_tree": {
+      "expected_utility": 0.7433462483830662,
+      "expected_regret_to_exact_tree": 0,
+      "inspection_count": 93,
+      "mean_modelled_inspection_cost": 0.0768458549222798,
+      "reasoning_training_cpu_ns": 0,
+      "physical_encoder_forward_count": 0
+    },
+    "frozen_gate": {
+      "expected_utility": 0.562073546604315,
+      "expected_regret_to_exact_tree": 0.18127270177875113,
+      "inspection_count": 0,
+      "mean_modelled_inspection_cost": 0,
+      "reasoning_training_cpu_ns": 0,
+      "physical_encoder_forward_count": 0
+    },
+    "cheap_linear": {
+      "expected_utility": 0.7308527704980955,
+      "expected_regret_to_exact_tree": 0.01249347788497068,
+      "inspection_count": 121,
+      "mean_modelled_inspection_cost": 0.10012953367875647,
+      "reasoning_training_cpu_ns": 10257561,
+      "physical_encoder_forward_count": 0
+    },
+    "learned_gate": {
+      "expected_utility": 0.7329476428697692,
+      "expected_regret_to_exact_tree": 0.010398605513296992,
+      "inspection_count": 116,
+      "mean_modelled_inspection_cost": 0.08876295336787565,
+      "reasoning_training_cpu_ns": 111027825,
+      "physical_encoder_forward_count": 0
+    }
+  },
+  "real_pretrained_model_utility": false,
+  "independent_external_outcome": false,
+  "ndu_stochastic_fbsde_qualified": false,
+  "p3_qualified": false,
+  "p5_qualified": false,
+  "production_accepted": false,
+  "authority": "DENY_ALL"
+}

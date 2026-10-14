@@ -57,6 +57,18 @@ jobs:
             --future-file /tmp/ndu-shadow-head-panel/teacher_future_inputs.json --future-sha256 "$F_HASH" \
             --seal-file /tmp/ndu-shadow-head-panel/teacher_sealed_predictions.json --seal-sha256 "$S_HASH" \
             --output /tmp/ndu-shadow-head-panel/teacher_independent_process_score.json
+      - name: Score sealed Head policies against cost-adjusted exact Bellman
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+        run: |
+          set -euo pipefail
+          F_HASH=$(sha256sum /tmp/ndu-shadow-head-panel/teacher_future_inputs.json | cut -d' ' -f1)
+          S_HASH=$(sha256sum /tmp/ndu-shadow-head-panel/teacher_sealed_predictions.json | cut -d' ' -f1)
+          python experiments/ndu_tree_fbsde_gates/teacher_utility_evaluator.py \
+            --future-file /tmp/ndu-shadow-head-panel/teacher_future_inputs.json --future-sha256 "$F_HASH" \
+            --seal-file /tmp/ndu-shadow-head-panel/teacher_sealed_predictions.json --seal-sha256 "$S_HASH" \
+            --output /tmp/ndu-shadow-head-panel/teacher_decision_utility.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
