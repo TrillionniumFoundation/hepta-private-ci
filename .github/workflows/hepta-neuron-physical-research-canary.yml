@@ -138,7 +138,7 @@ jobs:
               native=row['native_receipt']
               assert native['quantized_q24_head_executed_in_rust'] is True
               assert native['f32_head_executed'] is False
-          assert result['native_negative_cases_rejected']==5
+          assert result['native_negative_cases_rejected']==6
           assert result['full_selected_model_head_executed'] is False
           assert result['floating_torch_native_q24_prediction_parity_verified'] is False
           assert result['production_qualification'] is False
