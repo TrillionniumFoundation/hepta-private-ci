@@ -175,6 +175,7 @@ def test_future_label_change_cannot_affect_trained_parameters_or_validation():
             assert left['candidates'][kind]['validation'] == right['candidates'][kind]['validation']
     assert baseline['validation_brier_delta_token_minus_pooled'] == replay['validation_brier_delta_token_minus_pooled']
 
+
 def test_snapshot_hash_without_numpy_preserves_exact_float32_and_mask(monkeypatch):
     """Hosted torch-only wheels need no implicit numpy installation."""
     from neuron_shared_encoder.token_reader_v1 import snapshot_sha256
