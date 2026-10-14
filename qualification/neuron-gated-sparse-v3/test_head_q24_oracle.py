@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Native Head integer oracle: exact signed ties-even, physical F32, never authority."""
 import hashlib
+import importlib.util
 import math
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -76,6 +77,11 @@ class SignedQ24HeadOracleTests(unittest.TestCase):
         self.assertEqual(bound,145)
         self.assertEqual(status,'QUANTIZATION_AMBIGUOUS_ABSTAIN')
 
+    @unittest.skipUnless(
+        importlib.util.find_spec('torch') is not None and
+        importlib.util.find_spec('safetensors') is not None,
+        'physical Head test requires pinned PyTorch and safetensors',
+    )
     def test_from_physical_safetensors_with_complete_native_frontier(self):
         import torch
         from safetensors.torch import save_file
