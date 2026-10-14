@@ -228,8 +228,9 @@ def validate_artifact(artifact, expected_id):
             _sha(binding[key], 'capture linkage ' + key)
         from aten_work import PROFILE as base_profile
         from transformer_work import PROFILE as transformer_profile
+        from transformer_work_v3 import PROFILE as extended_profile
         if (binding['protocol_id'] != p['protocol_id'] or binding['dataset_sha256'] != artifact['dataset_sha256']
-                or binding['arithmetic_profile'] not in (base_profile, transformer_profile)):
+                or binding['arithmetic_profile'] not in (base_profile, transformer_profile, extended_profile)):
             raise ValueError('capture linkage or arithmetic units do not match fitted data')
     expected = defaultdict(int)
     for pair in p['pairs']:

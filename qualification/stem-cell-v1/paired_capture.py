@@ -25,7 +25,7 @@ SCHEMA = 'hepta.ndu.paired-capture-registration.v1'
 PROFILE = 'registered_one_segment_capture.v1'
 SOURCE_NAMES = ('paired_capture.py', 'paired_capture_export.py', 'system2_execution.py',
                 'empirical_continuation.py', 'ndu_continuation.py', 'paired_critic.py',
-                'execution_meter.py', 'work_record.py', 'aten_work.py', 'transformer_work.py',
+                'execution_meter.py', 'work_record.py', 'aten_work.py', 'transformer_work.py', 'transformer_work_v3.py',
                 'host_counters.py', 'matrix_materials.py', 'matrix_runtime.py',
                 'next_round_matrix.py', 'paired_execution.py', 'causal_generation.py', 'causal_snapshot.py', 'reasoning_baselines.py', 'causal_cache.py')
 
