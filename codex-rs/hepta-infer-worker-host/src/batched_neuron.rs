@@ -9,6 +9,7 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::str::FromStr;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
 use std::time::Instant;
@@ -136,6 +137,10 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
     failed_metrics: AtomicU64,
+    // healthy() alone does not mean Evidence has fsynced the asynchronous
+    // Record queue. Only an explicit successful post-record flush can
+    // re-establish production telemetry readiness.
+    metrics_flushed: AtomicBool,
     maximum_pending: usize,
 }
 
@@ -226,6 +231,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             retired: BTreeSet::new(),
             metric_sink: None,
             failed_metrics: AtomicU64::new(0),
+            metrics_flushed: AtomicBool::new(false),
             maximum_pending: limits.max_pending,
         })
     }
@@ -256,6 +262,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             return Err(BatchWorkerErrorV1::MetricsUnavailable);
         }
         self.metric_sink = Some(sink);
+        self.metrics_flushed.store(false, Ordering::Release);
         Ok(())
     }
 
@@ -292,6 +299,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
     pub fn production_metrics_ready(&self) -> bool {
         self.scope_frontier.is_some()
             && !self.unmetered_activity
+            && self.metrics_flushed.load(Ordering::Acquire)
             && self.metric_sink.as_ref().is_some_and(|sink| sink.healthy())
             && self.failed_metrics.load(Ordering::Acquire) == 0
     }
@@ -303,9 +311,14 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             return false;
         };
         if sink.flush().is_err() {
+            self.metrics_flushed.store(false, Ordering::Release);
             self.failed_metrics.fetch_add(1, Ordering::Release);
             return false;
         }
+        // The Worker owns all mutable dispatch paths, and callers invoke
+        // this barrier only after in-flight effects have settled. Any
+        // subsequent metric record invalidates this acknowledgement.
+        self.metrics_flushed.store(true, Ordering::Release);
         self.production_metrics_ready()
     }
 
@@ -334,6 +347,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         let result = self.enqueue_inner(now_ms, model_id, request, key, signed);
         let queued = result.is_ok();
         if let Some(sink) = &self.metric_sink {
+            self.metrics_flushed.store(false, Ordering::Release);
             let metric_result = sink.record(PhaseMetricEventV1 {
                 scope_digest,
                 operation_digest,
@@ -440,6 +454,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             .poll_physically_compatible(now_ms)
             .map_err(BatchWorkerErrorV1::Scheduler)?;
         if let (Some(sink), Some(batch)) = (&self.metric_sink, &poll.batch) {
+            self.metrics_flushed.store(false, Ordering::Release);
             // One phase sample per admitted request, not just the first
             // member of a batch (which would silently undercount throughput).
             for intent in &batch.requests {
@@ -552,6 +567,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                     .map_err(|_| BatchWorkerErrorV1::Authority)?
                                 });
                                 if let Some(sink) = &self.metric_sink {
+                                    self.metrics_flushed.store(false, Ordering::Release);
                                     let metric_result = sink.record(PhaseMetricEventV1 {
                                         scope_digest: Digest32::of_bytes(
                                             batch.key.scope_id.as_str().as_bytes(),
@@ -758,6 +774,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             .zip(results.drain(..))
             .map(|((intent, _), result)| {
                 if let Some(sink) = &self.metric_sink {
+                    self.metrics_flushed.store(false, Ordering::Release);
                     let metric_result = sink.record(PhaseMetricEventV1 {
                         scope_digest: Digest32::of_bytes(intent.key.scope_id.as_str().as_bytes()),
                         operation_digest: Digest32::of_bytes(intent.request_id.as_str().as_bytes()),
