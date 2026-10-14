@@ -68,6 +68,19 @@ class ResidualStudyTests(unittest.TestCase):
         b=e.study(modified,'test',v)
         for name in a['training']:
             self.assertEqual(a['training'][name]['final_head_sha256'],b['training'][name]['final_head_sha256'])
+    def test_mutated_source_bank_during_optimizer_rejected(self):
+        from unittest.mock import patch
+        p,v=fixture(384);original=e._train
+        changed=[False]
+        def train_and_mutate(*args,**kwargs):
+            result=original(*args,**kwargs)
+            if not changed[0]:
+                v[next(iter(v))][3]+=.125
+                changed[0]=True
+            return result
+        with patch.object(e,'_train',side_effect=train_and_mutate):
+            with self.assertRaisesRegex(e.Invalid,'source vectors mutated'):
+                e.study(p,'frozen_bank_fault',v)
     def test_missing_features_rejected(self):
         p,v=fixture();v.pop(next(iter(v)))
         with self.assertRaises(e.Invalid):e.study(p,'x',v)
