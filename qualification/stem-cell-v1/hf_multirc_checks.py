@@ -54,3 +54,34 @@ class StockHFBlindEvidenceStressTests(unittest.TestCase):
 
 
 if __name__=='__main__':unittest.main()
+
+
+class StockHFQuestionAnswerFactorialTests(unittest.TestCase):
+    def test_trained_stock_reader_separates_question_from_candidate_answer(self):
+        # Real stock Transformer architecture, RANDOM weights: compatible
+        # execution only, not an independent public MultiRC quality result.
+        from multirc_evidence_stress import audit_evidence
+        from multirc_query_factorial import audit_question_answer_factors
+        from matrix_bank import state_digest
+        sample=InstalledHFTests(methodName='test_full_stock_architecture_roundtrip_and_physical_tie')
+        sample.setUp()
+        self.addCleanup(sample.tmp.cleanup)
+        evidence,query,verify,ckpt,full,loading=safe_encoder(sample.root)
+        tr,ev,_=prepare_panels(fixture_rows(5),fixture_rows(4,'val'),
+            dataset_sha256_train='a'*64,dataset_sha256_val='b'*64,
+            train_passages=3,val_passages=2)
+        obs,readers=train_then_predict(tr,lambda:ev,encoder=evidence,
+            question_encoder=query,checkpoint_sha256=ckpt,steps=2)
+        prior=audit_evidence(tr,ev,obs,readers['conditioned'],encoder=evidence,
+            question_encoder=query,checkpoint_sha256=ckpt)
+        original=state_digest(readers['conditioned'])
+        r=audit_question_answer_factors(tr,ev,obs,readers['conditioned'],
+            encoder=evidence,question_encoder=query,checkpoint_sha256=ckpt,
+            original_stress=prior)
+        verify()
+        self.assertEqual((r['passage_count'],r['question_count']),(2,4))
+        self.assertEqual((r['physical_encoder_calls'],r['newly_computed_question_embeddings'],
+                          r['conditioned_reader_calls']),(2,8,8))
+        self.assertEqual(r['work_observation']['unknown_operators'],{})
+        self.assertEqual(state_digest(readers['conditioned']),original)
+        self.assertIsNone(r['counterfactual_accuracy'])
