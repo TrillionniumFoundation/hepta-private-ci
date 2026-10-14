@@ -2493,3 +2493,339 @@ fn original_evidence_wal_native_batch_commits_all_six_rows_before_success() {
     }
     assert_eq!(invocations.load(std::sync::atomic::Ordering::SeqCst), 1);
 }
+
+#[cfg(unix)]
+fn original_evidence_bound_fixture<D: ModelDriver + NeuronFeatureDriver>(
+    signing_key: &SigningKey,
+    directory: &std::path::Path,
+    model: ModelManifest,
+    driver: D,
+    max_batch_size: usize,
+    wal_path: std::path::PathBuf,
+) -> crate::original_evidence_neuron::OriginalEvidenceBoundNeuronWorkerV1<D> {
+    use crate::original_evidence_neuron::OriginalEvidenceBoundNeuronWorkerV1;
+    use crate::original_evidence_neuron::OriginalEvidenceWriterConfigV1;
+
+    // Reuse the actual independently durable FinalUseAuthority and loaded
+    // ModelDriver from the signed Worker fixture. No fake model or nonce
+    // authority is injected into the strict original Evidence composition.
+    let original = runner_with_driver(signing_key, directory, model, driver, max_batch_size);
+    let scope_frontier = original.scope_frontier.clone().unwrap();
+    OriginalEvidenceBoundNeuronWorkerV1::open(
+        original.worker,
+        original.authority,
+        MicrobatchLimitsV1 {
+            max_pending: 10,
+            max_batch_size,
+            max_lanes_per_poll: 4,
+            max_wait_ms: 5,
+        },
+        scope_frontier,
+        OriginalEvidenceWriterConfigV1 {
+            wal_path,
+            queue_capacity: 128,
+            group_size: 64,
+            flush_interval_ms: 60_000,
+        },
+    )
+    .expect("original private WAL and signed Worker composition")
+}
+
+#[cfg(unix)]
+#[test]
+fn original_evidence_bound_scalar_has_exact_committed_records_and_cold_recovery() {
+    use codex_hepta_agentd::DurablePhaseMetricSinkV1;
+    use codex_hepta_agentd::MetricPhaseV1;
+    use codex_hepta_agentd::MetricsCommittedSampleQueryV1;
+
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("signed-original-scalar.wal");
+    let signer = SigningKey::from_bytes(&[115; 32]);
+    let (model, request, key) = fixture_request();
+    let scope_digest = Digest32::of_bytes(key.scope_id.as_str().as_bytes());
+    let operation_digest = Digest32::of_bytes(request.authorization.request_id.as_bytes());
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut owner = original_evidence_bound_fixture(
+        &signer,
+        dir.path(),
+        model,
+        CountingScalarDriver(calls.clone()),
+        1,
+        path.clone(),
+    );
+    let admission = MetricsCommittedSampleQueryV1 {
+        scope_digest,
+        operation_digest,
+        phase: MetricPhaseV1::Admission,
+        succeeded: true,
+    };
+    owner
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    // The original actor has accepted Admission asynchronously, but it is
+    // NOT yet part of the durable WAL/marker. Poll must flush before effect.
+    assert_eq!(
+        owner.observe_exact_committed_sample(admission).unwrap(),
+        None
+    );
+    let observed = owner.poll_and_execute(106).unwrap();
+    assert_eq!(observed.outcomes.len(), 1);
+    assert!(matches!(
+        &observed.outcomes[0].result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    ));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert_eq!(owner.pending(), 0);
+    let frontier = owner.observe_original_frontier().unwrap();
+    assert_eq!(frontier.committed_rows, 3);
+    assert_eq!(frontier.sequence, 2);
+    for phase in [
+        MetricPhaseV1::Admission,
+        MetricPhaseV1::Microbatch,
+        MetricPhaseV1::NeuronFeature,
+    ] {
+        let query = MetricsCommittedSampleQueryV1 {
+            phase,
+            ..admission
+        };
+        let matching = owner
+            .observe_exact_committed_sample(query)
+            .unwrap()
+            .expect("exact signed operation metric");
+        assert_eq!(matching.query, query);
+        assert_eq!(matching.matching_rows, 1);
+        assert_eq!(matching.frontier, frontier);
+    }
+    drop(owner);
+    let reopened = DurablePhaseMetricSinkV1::open(
+        &path,
+        /* capacity */ 128,
+        /* group_size */ 64,
+        /* flush_interval_ms */ 60_000,
+    )
+    .expect("recover the exact original locked WAL and its marker");
+    assert_eq!(reopened.read_local_frontier().unwrap(), frontier);
+    let recovered = reopened
+        .read_committed_sample(MetricsCommittedSampleQueryV1 {
+            phase: MetricPhaseV1::NeuronFeature,
+            ..admission
+        })
+        .unwrap()
+        .unwrap();
+    assert_eq!(recovered.matching_rows, 1);
+    assert_eq!(recovered.frontier, frontier);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
+
+#[cfg(unix)]
+#[test]
+fn original_evidence_bound_native_batch_fsyncs_admission_then_two_terminal_nonces() {
+    use codex_hepta_agentd::MetricPhaseV1;
+    use codex_hepta_agentd::MetricsCommittedSampleQueryV1;
+
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("signed-original-native-batch.wal");
+    let signer = SigningKey::from_bytes(&[116; 32]);
+    let (model, first, key) = fixture_request();
+    let second = second_request(&first);
+    let scope_digest = Digest32::of_bytes(key.scope_id.as_str().as_bytes());
+    let operations = [
+        Digest32::of_bytes(first.authorization.request_id.as_bytes()),
+        Digest32::of_bytes(second.authorization.request_id.as_bytes()),
+    ];
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut owner = original_evidence_bound_fixture(
+        &signer,
+        dir.path(),
+        model,
+        driver,
+        2,
+        path,
+    );
+    for (index, request) in [first, second].into_iter().enumerate() {
+        let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+        owner
+            .enqueue(
+                100,
+                "model".into(),
+                request,
+                key.clone(),
+                signed_member(
+                    &signer,
+                    binding,
+                    &format!("original-evidence-batch-{index}"),
+                    u8::try_from(index).unwrap() + 117,
+                ),
+            )
+            .unwrap();
+    }
+    assert_eq!(owner.pending(), 2);
+    let outcome = owner.poll_and_execute(101).unwrap();
+    assert_eq!(outcome.outcomes.len(), 2);
+    assert!(outcome.outcomes.iter().all(|item| matches!(
+        &item.result,
+        Ok(receipt) if receipt.status == NeuronFeatureTerminalStatusV1::Succeeded
+    )));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    assert_eq!(owner.pending(), 0);
+    let frontier = owner.observe_original_frontier().unwrap();
+    // One pre-effect Admission fsync for both queued intents, then one
+    // terminal fsync for two Microbatch and two NeuronFeature records.
+    assert_eq!(frontier.sequence, 2);
+    assert_eq!(frontier.committed_rows, 6);
+    for operation_digest in operations {
+        for phase in [
+            MetricPhaseV1::Admission,
+            MetricPhaseV1::Microbatch,
+            MetricPhaseV1::NeuronFeature,
+        ] {
+            let query = MetricsCommittedSampleQueryV1 {
+                scope_digest,
+                operation_digest,
+                phase,
+                succeeded: true,
+            };
+            let sample = owner
+                .observe_exact_committed_sample(query)
+                .unwrap()
+                .expect("one original signed member metric");
+            assert_eq!(sample.query, query);
+            assert_eq!(sample.matching_rows, 1);
+            assert_eq!(sample.frontier, frontier);
+        }
+    }
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+}
+
+#[cfg(unix)]
+#[test]
+fn original_evidence_bound_rejects_relative_unowned_writer_without_effect() {
+    use crate::original_evidence_neuron::OriginalEvidenceBoundNeuronWorkerV1;
+    use crate::original_evidence_neuron::OriginalEvidenceWorkerBootstrapErrorV1;
+    use crate::original_evidence_neuron::OriginalEvidenceWriterConfigV1;
+
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[119; 32]);
+    let (model, _request, _key) = fixture_request();
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let original = runner_with_driver(
+        &signer,
+        dir.path(),
+        model,
+        CountingScalarDriver(calls.clone()),
+        1,
+    );
+    let frontier = original.scope_frontier.clone().unwrap();
+    let attempted = OriginalEvidenceBoundNeuronWorkerV1::open(
+        original.worker,
+        original.authority,
+        MicrobatchLimitsV1 {
+            max_pending: 10,
+            max_batch_size: 1,
+            max_lanes_per_poll: 4,
+            max_wait_ms: 5,
+        },
+        frontier,
+        OriginalEvidenceWriterConfigV1 {
+            wal_path: std::path::PathBuf::from("relative-untrusted.wal"),
+            queue_capacity: 128,
+            group_size: 64,
+            flush_interval_ms: 60_000,
+        },
+    );
+    assert_eq!(
+        attempted.err(),
+        Some(OriginalEvidenceWorkerBootstrapErrorV1::UnsafeEvidenceRoot)
+    );
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+}
+
+#[cfg(unix)]
+#[test]
+fn original_evidence_bound_rejects_second_original_writer_lock() {
+    use crate::original_evidence_neuron::OriginalEvidenceBoundNeuronWorkerV1;
+    use crate::original_evidence_neuron::OriginalEvidenceWorkerBootstrapErrorV1;
+    use crate::original_evidence_neuron::OriginalEvidenceWriterConfigV1;
+    use codex_hepta_agentd::DurablePhaseMetricSinkV1;
+
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("sole-original-writer.wal");
+    let original_writer = DurablePhaseMetricSinkV1::open(
+        &path,
+        /* capacity */ 128,
+        /* group_size */ 64,
+        /* flush_interval_ms */ 60_000,
+    )
+    .unwrap();
+    let signer = SigningKey::from_bytes(&[120; 32]);
+    let (model, _request, _key) = fixture_request();
+    let original = runner(&signer, dir.path(), model);
+    let frontier = original.scope_frontier.clone().unwrap();
+    let attempted = OriginalEvidenceBoundNeuronWorkerV1::open(
+        original.worker,
+        original.authority,
+        MicrobatchLimitsV1 {
+            max_pending: 10,
+            max_batch_size: 1,
+            max_lanes_per_poll: 4,
+            max_wait_ms: 5,
+        },
+        frontier,
+        OriginalEvidenceWriterConfigV1 {
+            wal_path: path,
+            queue_capacity: 128,
+            group_size: 64,
+            flush_interval_ms: 60_000,
+        },
+    );
+    assert_eq!(
+        attempted.err(),
+        Some(OriginalEvidenceWorkerBootstrapErrorV1::OriginalEvidenceUnavailable)
+    );
+    drop(original_writer);
+}
+
+#[cfg(unix)]
+#[test]
+fn original_evidence_bound_corrupt_marker_refuses_dispatch_without_replaying_nonce() {
+    let dir = tempfile::tempdir().unwrap();
+    let path = dir.path().join("corrupt-before-signed-effect.wal");
+    let mut marker = path.as_os_str().to_os_string();
+    marker.push(".owner-lock");
+    let marker_path = std::path::PathBuf::from(marker);
+    let signer = SigningKey::from_bytes(&[121; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let mut owner = original_evidence_bound_fixture(
+        &signer,
+        dir.path(),
+        model,
+        CountingScalarDriver(calls.clone()),
+        1,
+        path,
+    );
+    owner
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    // Mutate the opened original marker inode. This is not a new journal:
+    // the same writer's next pre-dispatch fsync must poison and deny.
+    std::fs::write(&marker_path, b"corrupted owner marker").unwrap();
+    assert!(matches!(
+        owner.poll_and_execute(106),
+        Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate)
+    ));
+    assert_eq!(owner.pending(), 1);
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+    assert!(matches!(
+        owner.poll_and_execute(107),
+        Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate)
+    ));
+    assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 0);
+}
