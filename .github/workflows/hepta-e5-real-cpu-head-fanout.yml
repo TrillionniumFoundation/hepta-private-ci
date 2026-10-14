@@ -1,0 +1,94 @@
+name: Hepta E5 real CPU Cell Head packing (research only)
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e5_physical_head_fanout.py"
+      - "experiments/shared_stem_cell/e5_packed_head_fanout.py"
+      - "experiments/shared_stem_cell/e5_cpu_fanout_review.py"
+      - "experiments/shared_stem_cell/test_e5_physical_head_fanout.py"
+      - "experiments/shared_stem_cell/test_e5_packed_head_fanout.py"
+      - "experiments/shared_stem_cell/test_e5_cpu_fanout_review.py"
+      - "experiments/shared_stem_cell/E5_LOCAL_CPU_HEAD_FANOUT.md"
+      - "experiments/shared_stem_cell/E5_LOCAL_CPU_HEAD_FANOUT_20261014.json"
+      - ".github/workflows/hepta-e5-real-cpu-head-fanout.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-real-cpu-head-workloads:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install audited, pinned CPU Torch and process RSS dependency
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          python -m pip install --only-binary=:all: 'psutil==7.2.2'
+          python -m pip check
+      - name: Exact current-source CPU mechanism tests
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/shared_stem_cell/e5_physical_head_fanout.py experiments/shared_stem_cell/e5_packed_head_fanout.py experiments/shared_stem_cell/e5_cpu_fanout_review.py
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e5_physical_head_fanout.py' -v
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e5_packed_head_fanout.py' -v
+          python -m unittest discover -s experiments/shared_stem_cell -p 'test_e5_cpu_fanout_review.py' -v
+      - name: Actual isolated 16-arm CPU executions (synthetic Q24 only)
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/e5-head-physical"
+          export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1
+          for n in 64 256 1024 4096; do
+            active=$((n / 10))
+            if [ "$active" -lt 8 ]; then active=8; fi
+            for mode in shared cloned; do
+              timeout --signal=TERM --kill-after=5s 90s python experiments/shared_stem_cell/e5_physical_head_fanout.py \
+                --cells "$n" --active "$active" --mode "$mode" \
+                --train-steps 1 --repeats 2 --output "$RUNNER_TEMP/e5-head-physical/$n-$mode.json"
+            done
+            timeout --signal=TERM --kill-after=5s 90s python experiments/shared_stem_cell/e5_physical_head_fanout.py \
+              --cells "$n" --active "$active" --mode shared --train-steps 0 --repeats 20 \
+              --output "$RUNNER_TEMP/e5-head-physical/$n-sequential-inference.json"
+            timeout --signal=TERM --kill-after=5s 90s python experiments/shared_stem_cell/e5_packed_head_fanout.py \
+              --cells "$n" --active "$active" --repeats 20 \
+              --output "$RUNNER_TEMP/e5-head-physical/$n-packed.json"
+          done
+      - name: Independently reject missing/forged physical measurements
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])/"e5-head-physical"
+          panel={}
+          for n in (64,256,1024,4096):
+              files={"shared_sgd":f"{n}-shared.json","cloned_sgd":f"{n}-cloned.json",
+                     "shared_inference":f"{n}-sequential-inference.json",
+                     "packed_inference":f"{n}-packed.json"}
+              panel[str(n)]={kind:json.loads((root/name).read_text()) for kind,name in files.items()}
+          (root/"16-raw-receipts.json").write_text(json.dumps(panel,sort_keys=True,allow_nan=False))
+          PY
+          python experiments/shared_stem_cell/e5_cpu_fanout_review.py \
+            --receipts "$RUNNER_TEMP/e5-head-physical/16-raw-receipts.json" \
+            --output "$RUNNER_TEMP/e5-head-physical/independent-review.json"
+          python - "$RUNNER_TEMP/e5-head-physical/independent-review.json" <<'PY'
+          import json,sys
+          x=json.load(open(sys.argv[1]))
+          assert x["production_promotion_permitted"] is False
+          assert x["target_production_worker_verified"] is False
+          assert x["statistically_confirmed_resource_superiority"] is False
+          assert set(x["scales"])=={"64","256","1024","4096"}
+          PY
+      - name: Preserve observations AND failed-run partial receipts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-e5-real-local-cpu-heads-${{ github.run_id }}
+          path: ${{ runner.temp }}/e5-head-physical/*.json
+          retention-days: 7
