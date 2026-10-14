@@ -68,15 +68,13 @@ def checked_run(outer, bound, *, run_id):
         "incomplete_original_journal",
         "complete_original_journal_not_independently_scored",
     }
-    if (
-        any(
-            not isinstance(item, dict)
-            or not isinstance(item.get("outcome"), str)
-            or item["outcome"] not in permitted_outcomes
-            for item in shards
-        )
-        or dict(sorted(Counter(item["outcome"] for item in shards).items()))
-        != outer.get("dispositions")
+    if any(
+        not isinstance(item, dict)
+        or not isinstance(item.get("outcome"), str)
+        or item["outcome"] not in permitted_outcomes
+        for item in shards
+    ) or dict(sorted(Counter(item["outcome"] for item in shards).items())) != outer.get(
+        "dispositions"
     ):
         raise ValueError("disposition census cannot differ from external original ZIPs")
     by_id = {}
@@ -96,8 +94,7 @@ def checked_run(outer, bound, *, run_id):
             or tier not in TIERS
             or type(index) is not int
             or not 0 <= index < 8
-            or item.get("artifact_name")
-            != f"memory-reader-bottleneck-{tier}-{index}"
+            or item.get("artifact_name") != f"memory-reader-bottleneck-{tier}-{index}"
             or linked.get("tier") != tier
             or linked.get("case_index") != index
             or linked.get("github_zip_sha256") != item.get("github_zip_sha256")

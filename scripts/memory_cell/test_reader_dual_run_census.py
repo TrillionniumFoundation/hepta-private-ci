@@ -128,9 +128,7 @@ class TwoRunCensusTests(unittest.TestCase):
                 spoofed = deepcopy(run)
                 spoofed["head_branch"] = "main"
                 with self.assertRaises(ValueError):
-                    checked_metadata(
-                        spoofed, metadata, run_id=run_id, source=source
-                    )
+                    checked_metadata(spoofed, metadata, run_id=run_id, source=source)
 
     def test_repaired_run_cannot_use_an_alternative_commit(self):
         source, branch = COHORTS[REPAIRED]
@@ -146,8 +144,10 @@ class TwoRunCensusTests(unittest.TestCase):
         )
         with self.assertRaisesRegex(ValueError, "pinned source"):
             checked_metadata(
-                run, {"total_count": 0, "artifacts": []},
-                run_id=REPAIRED, source="f" * 40
+                run,
+                {"total_count": 0, "artifacts": []},
+                run_id=REPAIRED,
+                source="f" * 40,
             )
         self.assertEqual(len(source), 40)
 
@@ -182,7 +182,6 @@ class TwoRunCensusTests(unittest.TestCase):
                 original[field] = value
                 with self.assertRaisesRegex(ValueError, "unqualified"):
                     checked_run(original, bound, run_id=REPAIRED)
-
 
     def test_forged_disposition_census_is_rejected(self):
         outer, bound = pair(ORIGINAL, partial=True)
