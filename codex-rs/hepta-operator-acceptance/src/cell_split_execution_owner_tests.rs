@@ -1891,13 +1891,8 @@ fn last_original_owner_readback_selector_revocation_is_reconcile_only() {
     // selection in that final *real owner readback*, not inside admission.
     port.revoke_selection_on_readback = Some((selected.clone(), 2));
     {
-        let mut owner = CellSplitExecutionOwnerV1::open(
-            root.path(),
-            plan(),
-            trust(),
-            port,
-        )
-        .expect("single split owner");
+        let mut owner = CellSplitExecutionOwnerV1::open(root.path(), plan(), trust(), port)
+            .expect("single split owner");
         let mut admission_reads = 0_usize;
         let result = owner.advance_with_admission(|| {
             admission_reads += 1;
