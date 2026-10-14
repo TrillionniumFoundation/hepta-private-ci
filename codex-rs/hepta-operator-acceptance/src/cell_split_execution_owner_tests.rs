@@ -507,6 +507,31 @@ fn lost_ack_reconciliation_cannot_invent_missing_physical_metrics_after_restart(
 }
 
 #[test]
+fn injected_future_metrics_acceptance_never_prepares_any_original_effect() {
+    let root = private_tempdir();
+    let state = Rc::new(RefCell::new(Observed::default()));
+    let mut owner = CellSplitExecutionOwnerV1::open(
+        root.path(),
+        plan(),
+        trust(),
+        FixturePort::new(state.clone()),
+    )
+    .expect("frozen owner")
+    .with_metric_sink(Arc::new(CapturedPhaseMetrics::default()));
+
+    // A future metrics frame without its original signed committed effect
+    // is non-prefix history, even when it has a well-formed known filename.
+    fs::write(root.path().join("cell-split-02-metrics-acked.json"), b"{}")
+        .expect("simulate injected later-step telemetry");
+    assert!(matches!(
+        owner.advance(),
+        Err(CellSplitExecutionErrorV1::Invalid(_))
+    ));
+    assert_eq!(state.borrow().executions, 0);
+    assert!(!root.path().join("cell-split-00-prepared.json").exists());
+}
+
+#[test]
 fn frozen_split_plan_rejects_noncanonical_split_and_owner_ids() {
     assert!(plan().digest().is_ok());
     for invalid_id in ["../other", "parent/child", "line\nspoof", "nul\0id"] {
