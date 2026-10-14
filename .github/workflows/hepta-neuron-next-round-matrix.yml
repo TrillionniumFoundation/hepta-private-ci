@@ -149,6 +149,14 @@ jobs:
           python qualification/stem-cell-v1/public_encoder_probe.py \
             --acquire-public --upstream-revision 8949b909ec900327062f0ebf497f51aef5e6f0c8 \
             --compare-arithmetic --output "$RUNNER_TEMP/public-encoder" 2>&1 | tee "$RUNNER_TEMP/public-encoder.log"
+      - name: Exercise public news learning on the same pinned snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/shared_learning_probe.py \
+            --snapshot "$RUNNER_TEMP/public-encoder/snapshot" \
+            --news-dir "$RUNNER_TEMP/public-news" --acquire-news \
+            --output "$RUNNER_TEMP/public-learning" 2>&1 | tee "$RUNNER_TEMP/public-learning.log"
       - name: Retain observations, never upload model weights
         if: always()
         uses: actions/upload-artifact@v4
@@ -162,4 +170,20 @@ jobs:
             ${{ runner.temp }}/public-encoder/downloaded-material.json
             ${{ runner.temp }}/public-encoder/probe.json
             ${{ runner.temp }}/public-encoder/FAILED.json
+            ${{ runner.temp }}/public-learning.log
+            ${{ runner.temp }}/public-news/source-lock.json
+            ${{ runner.temp }}/public-news/material.json
+            ${{ runner.temp }}/public-news/FAILED.json
+            ${{ runner.temp }}/public-learning/scores.json
+            ${{ runner.temp }}/public-learning/selection.json
+            ${{ runner.temp }}/public-learning/STUDY.json
+            ${{ runner.temp }}/public-learning/source_files.json
+            ${{ runner.temp }}/public-learning/COMMITTED.json
+            ${{ runner.temp }}/public-learning/FAILED.json
+            ${{ runner.temp }}/public-learning/controls/STUDY.json
+            ${{ runner.temp }}/public-learning/controls/predictions.json
+            ${{ runner.temp }}/public-learning/controls/COMMITTED.json
+            ${{ runner.temp }}/public-learning/controls/FAILED.json
+            ${{ runner.temp }}/public-learning/controls/*/RUN.json
+            ${{ runner.temp }}/public-learning/controls/*/FAILED.json
           if-no-files-found: error
