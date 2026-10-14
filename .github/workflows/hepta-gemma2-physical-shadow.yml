@@ -170,6 +170,23 @@ jobs:
               gc.collect()
           print(json.dumps(reports, sort_keys=True))
           PY
+      - name: Recompute real text ZIP numerical identities (non-authorizing)
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/gemma2-venv/bin/python"
+          "$PY" - <<'PY'
+          import os
+          from pathlib import Path
+          import zipfile
+          root = Path(os.environ["RUNNER_TEMP"])
+          with zipfile.ZipFile(root / "gemma2-public-numerical-review.zip", "w") as evidence:
+              for name in ("gemma2-snapshot-receipt.json", "gemma2-real-forward.json",
+                           "gemma2-environment.freeze"):
+                  evidence.write(root / name, arcname=name)
+          PY
+          "$PY" qualification/neuron-dynamic-learning/verify_public_weight_receipt.py \
+            --archive "$RUNNER_TEMP/gemma2-public-numerical-review.zip" \
+            > "$RUNNER_TEMP/gemma2-numerical-review.json"
       - name: Redacted qualification receipts (never model bytes)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -179,6 +196,7 @@ jobs:
             ${{ runner.temp }}/gemma2-environment.freeze
             ${{ runner.temp }}/gemma2-snapshot-receipt.json
             ${{ runner.temp }}/gemma2-real-forward.json
+            ${{ runner.temp }}/gemma2-numerical-review.json
             ${{ runner.temp }}/gemma2-real-media.json
           if-no-files-found: warn
           retention-days: 7
