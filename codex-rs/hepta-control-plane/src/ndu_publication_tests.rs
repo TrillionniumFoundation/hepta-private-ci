@@ -89,7 +89,6 @@ fn cutover_and_checkpoint_cas_use_same_exclusive_owner() {
     assert_eq!(recovered.current().unwrap(), (snapshot(4), migrated));
 }
 
-
 #[cfg(unix)]
 #[test]
 fn checkpoint_advance_invalidates_frozen_cutover_without_losing_new_state() {
