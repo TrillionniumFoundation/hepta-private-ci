@@ -91,8 +91,8 @@ def validate_batch(part, raw, lock):
                                len(expected), len(expected), arm + " invocations")
         requested = sum(len(v["rows"]) for v in expected)
         _integer(item.get("head_rows_processed"), requested, requested, arm + " row work")
-        _integer(item.get("wall_ns"), 0, 10**18, arm + " wall time")
-        _integer(item.get("process_cpu_ns"), 0, 10**18, arm + " CPU time")
+        _integer(item.get("wall_ns"), 1, 10**18, arm + " wall time")
+        _integer(item.get("process_cpu_ns"), 1, 10**18, arm + " CPU time")
         timed[arm] = {"head_forward_calls": invocations, "head_rows_processed": requested,
                       "reported_wall_ns": item["wall_ns"],
                       "reported_process_cpu_ns": item["process_cpu_ns"]}
@@ -128,6 +128,14 @@ def aggregate(receipts):
                 for r in receipts) for arm in sorted(ARMS)},
             "per_arm_head_rows_processed": {arm: sum(r["head_work"][arm]["head_rows_processed"]
                 for r in receipts) for arm in sorted(ARMS)},
+            "per_arm_reported_wall_ns": {arm: sum(
+                r["head_work"][arm]["reported_wall_ns"] for r in receipts)
+                for arm in sorted(ARMS)},
+            "per_arm_reported_process_cpu_ns": {arm: sum(
+                r["head_work"][arm]["reported_process_cpu_ns"] for r in receipts)
+                for arm in sorted(ARMS)},
+            "common_encoder_excluded_from_per_arm_timing": True,
+            "timings_are_serial_diagnostics_not_matched_total_system_cost": True,
             "energy_joules": None, "active_flops": None,
             "independent_resource_attestation": False,
             "production_accepted": False}
