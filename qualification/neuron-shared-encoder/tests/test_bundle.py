@@ -7,7 +7,7 @@ from neuron_shared_encoder.bundle import checkpoint_bundle_sha256, verify_checkp
 
 def make_bundle(root: Path, kind='modernbert-joint'):
     root.mkdir()
-    required = ['model.safetensors', 'config.json', 'tokenizer.json'] if kind == 'modernbert-joint' else [
+    required = ['model.safetensors', 'config.json', 'tokenizer.json'] if kind != 'laya-joint' else [
         'model.safetensors', 'rl_agent_config.json', 'encoder/config.json', 'tokenizer/tokenizer.json']
     for name in required:
         path = root / name
