@@ -27,7 +27,7 @@ def evaluate(panel,reports):
  observed={c['case_id'] for c in cases if c['split'] in ('calibration','test')}
  panel_sha=sha(canonical(panel))
  if set(reports)!=set(MODELS):raise Invalid('three model execution records required')
- metrics={};prediction_map={};training=None
+ metrics={};prediction_map={};resource_summary={};training=None
  for model,report in reports.items():
   revision,width=MODELS[model]
   if (type(report) is not dict or report.get('schema')!='hepta.e1-english-public-pretrained-head.v1' or
@@ -52,6 +52,33 @@ def evaluate(panel,reports):
   if any(type(x) is not int or not 1<=x<=512 for x in tokens.values()):raise Invalid('truncated/missing token count')
   if any(type(x) is not str or len(x)!=64 or any(c not in '0123456789abcdef' for c in x) for x in features.values()):
    raise Invalid('invalid feature digest')
+  measures=report.get('physical_observations')
+  latency=measures.get('encode_ms_by_case') if type(measures) is dict else None
+  if (type(measures) is not dict or type(latency) is not dict or set(latency)!=set(bycase) or
+      measures.get('local_model_api_requests')!=224 or
+      measures.get('physical_transformer_forward_count_attested') is not False or
+      report.get('physical_transformer_forward_count_attested') is not False):
+   raise Invalid('incomplete or overclaimed physical cost envelope')
+  measurements=[report.get('wall_ms'),report.get('cpu_process_ms'),
+                report.get('process_lifetime_peak_rss_bytes'),
+                measures.get('load_ms'),fit.get('train_time_ms')]
+  if (any(type(x) not in (float,int) or not math.isfinite(x) or x<=0 for x in measurements) or
+      any(type(x) not in (float,int) or not math.isfinite(x) or x<=0 for x in latency.values())):
+   raise Invalid('nonpositive or missing measured runtime/RSS')
+  encoded=sum(latency.values())
+  if report['wall_ms'] + .001 < measures['load_ms'] + encoded + fit['train_time_ms']:
+   raise Invalid('whole-lifecycle physical time undercounts completed operations')
+  resource_summary[model]={'observed_total_process_wall_ms':report['wall_ms'],
+    'observed_process_cpu_ms':report['cpu_process_ms'],
+    'observed_lifetime_peak_rss_bytes':report['process_lifetime_peak_rss_bytes'],
+    'reported_encoder_load_ms':measures['load_ms'],
+    'reported_all_unique_input_encode_ms':encoded,
+    'reported_train_ms':fit['train_time_ms'],
+    'reported_unique_model_requests':measures['local_model_api_requests'],
+    'model_specific_token_count_range':[min(tokens.values()),max(tokens.values())],
+    'complete_Head_parameters':n,
+    'energy_joules':None,'request_p99_verified':False,
+    'backend_batch_physical_count_verified':False}
   controls=fit.get('controls')
   if type(controls) is not dict or set(controls)!={'frozen_head','learned_head'}:raise Invalid('missing frozen/learned Head')
   metrics[model]={};prediction_map[model]={}
@@ -91,7 +118,7 @@ def evaluate(panel,reports):
    pval=min(1.,2.*sum(math.comb(n,k) for k in range(min(wins)+1))/(2**n)) if n else 1.
    comparisons[left+'__'+right]={'left_only_correct':wins[0],'right_only_correct':wins[1],'unadjusted_exact_mcnemar_p':pval}
  return {'schema':'hepta.e1-english-three-pretrained-numeric.v1','cases':len(cases),'scores':metrics,
- 'pairwise_test':comparisons,'new_chinese_or_code_tasks_tested':False,
+ 'pairwise_test':comparisons,'resource_observations':resource_summary,'new_chinese_or_code_tasks_tested':False,
  'chronological_future_windows_tested':False,
  'independent_model_origin_and_run_signatures_verified':False,
  'independent_labels_or_ndu_verified':False,
