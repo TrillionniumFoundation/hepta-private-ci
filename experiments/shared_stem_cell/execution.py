@@ -338,9 +338,18 @@ class LocalTextGenerator(LocalEncoder):
 
 
 def encode_cases(backend, cases, *, batch_size=8, cache_bytes=0):
-    """Transactional finite output checks; cache hits retain their own tensors."""
+    """Transactional finite output checks; cache hits retain their own tensors.
+
+    Admit the ENTIRE workload before the first physical Encoder forward. A
+    batch-size change must not allow mixed-scope rows to bypass the single-Scope
+    research contract or spend model work before a late scope mismatch.
+    """
     integer(batch_size, 1, 32, "batch size")
     integer(cache_bytes, 0, 512 * 1024**2, "cache bytes")
+    if (not isinstance(cases, (list, tuple)) or not 1 <= len(cases) <= 16384
+            or any(type(case) is not Case for case in cases)
+            or len({case.scope for case in cases}) != 1):
+        raise InputError("bounded single-scope Encoder workload required before any forward")
     cache, size, results = OrderedDict(), 0, []
     calls = hits = 0
     with measured() as measurement:
