@@ -613,6 +613,99 @@ mod tests {
     }
 
     #[test]
+    fn lost_execute_ack_recovers_only_via_fresh_signed_original_owner_readback() {
+        let root = tempfile::tempdir().expect("root");
+        let cas_socket = root.path().join("cas.sock");
+        let listener = UnixListener::bind(&cas_socket).expect("CAS socket");
+        let signer = SigningKey::from_bytes(&[1_u8; 32]);
+        let keys = [1_u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
+        let server = thread::spawn(move || {
+            let mut durable_receipt: Option<CellSplitExecutionReceiptV1> = None;
+            let mut actions = Vec::new();
+            for _ in 0..3 {
+                let (mut socket, _) = listener.accept().expect("real owner accepted");
+                let request: CellSplitEffectRpcRequestV1 =
+                    receive_frame(&mut socket).expect("owner request");
+                actions.push(request.action);
+                match request.action {
+                    CellSplitEffectRpcActionV1::Execute => {
+                        assert!(durable_receipt.is_none(), "execute must not be replayed");
+                        assert!(request.challenge_nonce.is_none());
+                        durable_receipt = Some(committed(&request.intent, &signer));
+                        // The original operation is durably committed. Lose
+                        // its transport ACK before the caller can see it.
+                        drop(socket);
+                    }
+                    CellSplitEffectRpcActionV1::ReadBack => {
+                        let receipt = durable_receipt.clone().expect("real prior commit");
+                        let mut proof = CellSplitEffectReadbackV1 {
+                            schema: CELL_SPLIT_EFFECT_READBACK_SCHEMA_V1.into(),
+                            intent: request.intent,
+                            challenge_nonce: request.challenge_nonce.expect("fresh challenge"),
+                            committed_receipt_digest: Some(receipt.receipt_digest.clone()),
+                            state_digest: Some(receipt.output_digest.clone()),
+                            read_sequence: receipt.owner_sequence + 1,
+                            owner_signature_bytes: Vec::new(),
+                        };
+                        proof.owner_signature_bytes = signer
+                            .sign(
+                                &cell_split_effect_readback_signing_payload_v1(&proof)
+                                    .expect("readback signing payload"),
+                            )
+                            .to_bytes()
+                            .to_vec();
+                        send_frame(
+                            &mut socket,
+                            &CellSplitEffectRpcResponseV1 {
+                                schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.into(),
+                                action: CellSplitEffectRpcActionV1::ReadBack,
+                                receipt: Some(receipt),
+                                readback: Some(proof),
+                                error: None,
+                            },
+                        )
+                        .expect("independent signed owner readback");
+                    }
+                }
+            }
+            actions
+        });
+        let mut client = CellSplitUnixEffectPortV1::new(
+            [
+                cas_socket,
+                root.path().join("migration.sock"),
+                root.path().join("cns.sock"),
+                root.path().join("supervisor.sock"),
+            ],
+            keys,
+            Duration::from_secs(3),
+        )
+        .expect("four pinned original owner keys");
+        let effect = intent();
+        assert!(client.execute(&effect).is_err(), "original ACK was lost");
+        let recovered = client
+            .reconcile(&effect)
+            .expect("new nonce-bound durable readback")
+            .expect("original effect remains committed");
+        assert_eq!(
+            recovered,
+            committed(&effect, &SigningKey::from_bytes(&[1_u8; 32]))
+        );
+        client
+            .verify_committed(&effect, &recovered)
+            .expect("second fresh original-owner readback");
+        assert_eq!(
+            server.join().expect("owner server"),
+            vec![
+                CellSplitEffectRpcActionV1::Execute,
+                CellSplitEffectRpcActionV1::ReadBack,
+                CellSplitEffectRpcActionV1::ReadBack,
+            ],
+            "recovery and verification must never dispatch a second effect"
+        );
+    }
+
+    #[test]
     fn refuse_missing_owner_without_synthesizing_an_effect() {
         let root = tempfile::tempdir().expect("root");
         let keys = [1u8, 2, 3, 4].map(|v| SigningKey::from_bytes(&[v; 32]).verifying_key());
