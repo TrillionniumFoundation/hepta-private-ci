@@ -26,7 +26,9 @@ use std::time::Duration;
 
 const MAX_QUEUE: usize = 65_536;
 const MAX_BATCH: usize = 256;
-const METRICS_BARRIER_TIMEOUT: Duration = Duration::from_secs(5);
+// A flushed physical Split effect must not stall forever on Evidence I/O.
+// Timeout means an indeterminate telemetry barrier, never success.
+const MAX_FLUSH_WAIT: Duration = Duration::from_secs(30);
 
 enum WriterCommandV1 {
     Record(MetricSampleV1),
@@ -126,30 +128,42 @@ impl DurablePhaseMetricSinkV1 {
         }
     }
 
-    /// Bounded durable export barrier; never called inside an effect boundary.
-    /// A full queue, failed writer, or missing fsync acknowledgment permanently
-    /// removes telemetry readiness. None of these results authorizes effect replay.
+    /// Synchronous durability barrier, including bounded queue admission.
+    /// A stalled writer/fsync must never hold a Split coordinator indefinitely.
+    /// On timeout the sink stays unhealthy even if a delayed writer later ACKs:
+    /// existing effects remain committed and their next-step gate fails closed.
     pub fn flush(&self) -> Result<(), PhaseMetricSinkErrorV1> {
-        self.flush_with_timeout(METRICS_BARRIER_TIMEOUT)
+        self.flush_with_timeout(MAX_FLUSH_WAIT)
     }
 
     fn flush_with_timeout(&self, timeout: Duration) -> Result<(), PhaseMetricSinkErrorV1> {
         if !self.healthy() {
             return Err(PhaseMetricSinkErrorV1::Unavailable);
         }
+        let deadline = std::time::Instant::now() + timeout;
         let (tx, rx) = sync_channel(1);
-        match self.channel.try_send(WriterCommandV1::Flush(tx)) {
-            Ok(()) => {}
-            Err(TrySendError::Full(_)) => {
-                self.health.healthy.store(false, Ordering::Release);
-                return Err(PhaseMetricSinkErrorV1::Backpressure);
-            }
-            Err(TrySendError::Disconnected(_)) => {
-                self.health.healthy.store(false, Ordering::Release);
-                return Err(PhaseMetricSinkErrorV1::Unavailable);
+        let mut command = WriterCommandV1::Flush(tx);
+        loop {
+            match self.channel.try_send(command) {
+                Ok(()) => break,
+                Err(TrySendError::Disconnected(_)) => {
+                    self.health.healthy.store(false, Ordering::Release);
+                    return Err(PhaseMetricSinkErrorV1::Unavailable);
+                }
+                Err(TrySendError::Full(pending)) => {
+                    command = pending;
+                    if !self.healthy() || std::time::Instant::now() >= deadline {
+                        self.health.healthy.store(false, Ordering::Release);
+                        return Err(PhaseMetricSinkErrorV1::Unavailable);
+                    }
+                    std::thread::sleep(
+                        Duration::from_millis(1)
+                            .min(deadline.saturating_duration_since(std::time::Instant::now())),
+                    );
+                }
             }
         }
-        match rx.recv_timeout(timeout) {
+        match rx.recv_timeout(deadline.saturating_duration_since(std::time::Instant::now())) {
             Ok(true) if self.healthy() => Ok(()),
             _ => {
                 self.health.healthy.store(false, Ordering::Release);
@@ -205,26 +219,57 @@ impl PhaseMetricSinkV1 for DurablePhaseMetricSinkV1 {
     }
 }
 
-impl Drop for DurablePhaseMetricSinkV1 {
-    fn drop(&mut self) {
-        // Destruction is not allowed to hang behind a saturated telemetry
-        // channel or a stalled fsync. Dropping an unfinished JoinHandle only
-        // detaches the writer; it never fabricates a commit acknowledgment.
-        let (tx, rx) = sync_channel(1);
-        let stopped = match self.channel.try_send(WriterCommandV1::Stop(tx)) {
-            Ok(()) => matches!(rx.recv_timeout(METRICS_BARRIER_TIMEOUT), Ok(true)),
-            Err(_) => false,
-        };
-        if !stopped {
-            self.health.healthy.store(false, Ordering::Release);
+impl DurablePhaseMetricSinkV1 {
+    fn stop_with_timeout(&mut self, timeout: Duration) {
+        // Preserve the normal durable Drop barrier even when the bounded
+        // channel is temporarily full. Detach only if the writer is already
+        // unhealthy, disconnected or makes no progress by the deadline.
+        if !self.healthy() {
+            return;
         }
-        if let Ok(mut handle) = self.worker.lock() {
-            if let Some(worker) = handle.take() {
-                if worker.is_finished() {
-                    let _ = worker.join();
+        let deadline = std::time::Instant::now() + timeout;
+        let (tx, rx) = sync_channel(1);
+        let mut command = WriterCommandV1::Stop(tx);
+        loop {
+            match self.channel.try_send(command) {
+                Ok(()) => break,
+                Err(TrySendError::Disconnected(_)) => {
+                    self.health.healthy.store(false, Ordering::Release);
+                    return;
+                }
+                Err(TrySendError::Full(pending)) => {
+                    command = pending;
+                    if !self.healthy() || std::time::Instant::now() >= deadline {
+                        self.health.healthy.store(false, Ordering::Release);
+                        return;
+                    }
+                    std::thread::sleep(
+                        Duration::from_millis(1)
+                            .min(deadline.saturating_duration_since(std::time::Instant::now())),
+                    );
                 }
             }
         }
+        if rx
+            .recv_timeout(deadline.saturating_duration_since(std::time::Instant::now()))
+            .is_err()
+        {
+            // A timed-out writer remains in its own locked journal; never
+            // falsely report a flush or block process teardown indefinitely.
+            self.health.healthy.store(false, Ordering::Release);
+            return;
+        }
+        if let Ok(mut handle) = self.worker.lock() {
+            if let Some(worker) = handle.take() {
+                let _ = worker.join();
+            }
+        }
+    }
+}
+
+impl Drop for DurablePhaseMetricSinkV1 {
+    fn drop(&mut self) {
+        self.stop_with_timeout(MAX_FLUSH_WAIT);
     }
 }
 
@@ -277,13 +322,9 @@ fn writer_loop(
                 if !ok {
                     health.healthy.store(false, Ordering::Release);
                 }
-                // Stop is a linearization barrier for reopening the SAME
-                // durable Evidence WAL. Acknowledging before the original
-                // writer drops its OS lock lets the next owner spuriously
-                // observe WriterUnavailable on an otherwise healthy exit.
-                // Release the original owner before publishing success. A
-                // stalled fsync is still bounded by the caller's existing
-                // barrier timeout; there is no unbounded JoinHandle wait.
+                // The Stop ACK is the original WAL+marker lock handoff.
+                // The next process must not reopen until BOTH owned fds
+                // are dropped, even when flush already completed.
                 drop(writer);
                 let _ = reply.send(ok);
                 return;

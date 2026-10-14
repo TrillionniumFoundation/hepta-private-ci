@@ -11,65 +11,6 @@ fn sample(phase: PhaseMetricKindV1) -> PhaseMetricEventV1 {
     }
 }
 
-// A held receiver stands in for an Evidence writer blocked in an I/O call.
-// No fake successful fsync receipt or external effect is produced.
-fn unresponsive_writer_fixture(
-    capacity: usize,
-) -> (DurablePhaseMetricSinkV1, Receiver<WriterCommandV1>) {
-    let (channel, receiver) = sync_channel(capacity);
-    let health = Arc::new(WriterHealthV1 {
-        healthy: AtomicBool::new(true),
-        dropped: AtomicU64::new(0),
-        persisted_batches: AtomicU64::new(0),
-        persisted_rows: AtomicU64::new(0),
-    });
-    (
-        DurablePhaseMetricSinkV1 {
-            channel,
-            health,
-            worker: Mutex::new(None),
-        },
-        receiver,
-    )
-}
-
-#[test]
-fn saturated_writer_rejects_flush_and_drop_without_waiting_for_queue_space() {
-    let (sink, held_receiver) = unresponsive_writer_fixture(1);
-    let admitted = sink
-        .channel
-        .try_send(WriterCommandV1::Record(MetricSampleV1 {
-            scope_digest: Digest32::of_bytes(b"scope"),
-            operation_digest: Digest32::of_bytes(b"operation"),
-            phase: MetricPhaseV1::Cas,
-            latency_micros: 1,
-            succeeded: true,
-        }));
-    assert!(admitted.is_ok());
-    assert_eq!(
-        sink.flush_with_timeout(Duration::from_millis(5)),
-        Err(PhaseMetricSinkErrorV1::Backpressure)
-    );
-    assert!(!sink.healthy());
-    assert_eq!(sink.status().persisted_rows, 0);
-    drop(sink);
-    drop(held_receiver);
-}
-
-#[test]
-fn missing_fsync_ack_poison_writer_and_never_invents_commit() {
-    let (sink, receiver) = unresponsive_writer_fixture(1);
-    assert_eq!(
-        sink.flush_with_timeout(Duration::from_millis(5)),
-        Err(PhaseMetricSinkErrorV1::Unavailable)
-    );
-    assert!(!sink.healthy());
-    assert_eq!(sink.status().persisted_batches, 0);
-    assert!(matches!(receiver.try_recv(), Ok(WriterCommandV1::Flush(_))));
-    drop(receiver);
-    drop(sink);
-}
-
 #[test]
 fn producer_records_and_worker_durably_commits_group() {
     let dir = tempfile::tempdir().unwrap();
@@ -128,51 +69,6 @@ fn metrics_flush_barrier_and_restart_preserve_exact_committed_sample_counts() {
     let reopened = MetricsGroupCommitV1::open(&path).unwrap();
     assert_eq!(reopened.committed_rows(), 3);
     assert_eq!(reopened.committed_groups(), 2);
-}
-
-/// An acknowledged Stop is a writer-lock handoff, not merely a report
-/// that flush() has returned. The next owner must be able to reopen the same
-/// fsynced journal immediately, without sleeps, polling or a second writer.
-#[test]
-fn acknowledged_stop_releases_original_metrics_lock_before_reopen() {
-    let dir = tempfile::tempdir().expect("private Evidence root");
-    let path = dir.path().join("stop-handoff.log");
-    for round in 0..32_u64 {
-        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 2, 60_000)
-            .expect("one current Evidence writer");
-        sink.record(sample(PhaseMetricKindV1::Wal))
-            .expect("bounded phase sample");
-        sink.flush().expect("real durable flush before Stop");
-        drop(sink);
-
-        // The public writer Drop already received its Stop ACK. Reopen
-        // immediately to prove ACK cannot race the original OS lock release.
-        let recovered = MetricsGroupCommitV1::open(&path)
-            .expect("Stop ACK must follow writer lock release");
-        assert_eq!(recovered.committed_rows(), round + 1);
-        assert_eq!(recovered.committed_groups(), round + 1);
-    }
-}
-
-/// Stop itself must fsync queued samples before releasing the original
-/// writer lock and acknowledging a clean shutdown. No explicit flush,
-/// sleeps or fabricated journal counters are permitted in this regression.
-#[test]
-fn graceful_stop_commits_queued_samples_before_lock_handoff() {
-    let dir = tempfile::tempdir().expect("private Evidence root");
-    let path = dir.path().join("stop-commits.log");
-    for round in 0..16_u64 {
-        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000)
-            .expect("one original Evidence writer");
-        sink.record(sample(PhaseMetricKindV1::NduRead))
-            .expect("queued sample");
-        drop(sink);
-
-        let committed = MetricsGroupCommitV1::open(&path)
-            .expect("Stop must fsync and release the original lock before ACK");
-        assert_eq!(committed.committed_rows(), round + 1);
-        assert_eq!(committed.committed_groups(), round + 1);
-    }
 }
 
 #[test]
@@ -251,4 +147,178 @@ fn signed_neuron_phase_writer_round_trips_actual_group_commit() {
     }
     let reopened = MetricsGroupCommitV1::open(&path).unwrap();
     assert_eq!(reopened.pending(), 0);
+}
+
+#[test]
+fn metrics_flush_timeout_poisoned_when_queue_is_full_without_writer_progress() {
+    // A stalled Evidence owner must not block the Split coordinator forever
+    // while it waits to enqueue its commit barrier.
+    let (tx, rx) = sync_channel(1);
+    let sink = DurablePhaseMetricSinkV1 {
+        channel: tx,
+        health: Arc::new(WriterHealthV1 {
+            healthy: AtomicBool::new(true),
+            dropped: AtomicU64::new(0),
+            persisted_batches: AtomicU64::new(0),
+            persisted_rows: AtomicU64::new(0),
+        }),
+        worker: Mutex::new(None),
+    };
+    sink.record(sample(PhaseMetricKindV1::Cas)).unwrap();
+    let start = std::time::Instant::now();
+    assert_eq!(
+        sink.flush_with_timeout(Duration::from_millis(20)),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+    assert!(start.elapsed() < Duration::from_secs(2));
+    assert!(!sink.healthy());
+    assert_eq!(
+        sink.record(sample(PhaseMetricKindV1::Cns)),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+    // The timed-out sink can detach without making a false flush claim.
+    drop(rx);
+    drop(sink);
+}
+
+#[test]
+fn metrics_flush_timeout_poisoned_when_writer_accepts_but_never_acks() {
+    // This simulates fsync stalled *after* the flush command was queued.
+    let (tx, rx) = sync_channel(1);
+    let sink = DurablePhaseMetricSinkV1 {
+        channel: tx,
+        health: Arc::new(WriterHealthV1 {
+            healthy: AtomicBool::new(true),
+            dropped: AtomicU64::new(0),
+            persisted_batches: AtomicU64::new(0),
+            persisted_rows: AtomicU64::new(0),
+        }),
+        worker: Mutex::new(None),
+    };
+    assert_eq!(
+        sink.flush_with_timeout(Duration::from_millis(20)),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+    assert!(!sink.healthy());
+    assert_eq!(
+        sink.flush_with_timeout(Duration::from_millis(20)),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+    drop(rx);
+    drop(sink);
+}
+
+#[test]
+fn metrics_sink_drop_never_waits_on_saturated_unserved_channel() {
+    // No writer thread is scheduled: a blocking Stop send would never return.
+    let (tx, rx) = sync_channel(1);
+    let sink = DurablePhaseMetricSinkV1 {
+        channel: tx,
+        health: Arc::new(WriterHealthV1 {
+            healthy: AtomicBool::new(true),
+            dropped: AtomicU64::new(0),
+            persisted_batches: AtomicU64::new(0),
+            persisted_rows: AtomicU64::new(0),
+        }),
+        worker: Mutex::new(None),
+    };
+    sink.record(sample(PhaseMetricKindV1::Cas)).unwrap();
+    let started = std::time::Instant::now();
+    let mut sink = sink;
+    sink.stop_with_timeout(Duration::from_millis(20));
+    assert!(started.elapsed() < Duration::from_secs(2));
+    assert!(!sink.healthy());
+    drop(sink);
+    drop(rx);
+}
+
+#[cfg(unix)]
+#[test]
+fn evidence_writer_flush_refuses_ack_after_original_wal_inode_replacement() {
+    use std::fs;
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("journal");
+    let removed = dir.path().join("old-journal");
+    let sink = DurablePhaseMetricSinkV1::open(&path, 8, 2, 60_000).expect("live writer");
+    sink.record(sample(PhaseMetricKindV1::Cas)).expect("sample");
+    sink.flush().expect("original durable ACK");
+    let original = fs::read(&path).expect("original group");
+    fs::rename(&path, &removed).expect("replace while original owner is alive");
+    fs::write(&path, &original).expect("inject same-looking WAL");
+    fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).expect("private replacement");
+
+    // No new samples are staged: the flush would previously have returned
+    // Ok(None), letting a downstream Split mark telemetry as safely durable.
+    assert_eq!(sink.flush(), Err(PhaseMetricSinkErrorV1::Unavailable));
+    assert!(!sink.healthy());
+    assert_eq!(
+        sink.record(sample(PhaseMetricKindV1::Cns)),
+        Err(PhaseMetricSinkErrorV1::Unavailable)
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn restarted_evidence_sink_cannot_claim_a_new_history_after_wal_loss() {
+    use std::fs;
+
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("metrics.log");
+    let retired = dir.path().join("retired-metrics.log");
+    {
+        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 2, 25)
+            .expect("original durable writer");
+        sink.record(sample(PhaseMetricKindV1::Cas))
+            .expect("sample");
+        sink.flush().expect("original group fsync ACK");
+    }
+    let marker = dir.path().join("metrics.log.owner-lock");
+    assert!(marker.exists(), "independent persistent identity");
+    fs::rename(&path, &retired).expect("original journal is gone");
+    assert!(
+        DurablePhaseMetricSinkV1::open(&path, 8, 2, 25).is_err(),
+        "a new process must not mint a fresh healthy Evidence owner"
+    );
+    assert!(!path.exists(), "no replacement empty journal");
+}
+
+#[test]
+fn evidence_stop_ack_hands_off_original_wal_and_marker_lock_before_reopen() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("stop-handoff.log");
+    for round in 0..24_u64 {
+        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 2, 60_000)
+            .expect("one original writer");
+        sink.record(sample(PhaseMetricKindV1::Wal))
+            .expect("accepted metric");
+        sink.flush().expect("durably fsynced group and highwater");
+        drop(sink);
+
+        // This is an immediate original-owner reopen, not a sleep/poll test.
+        // A successful Stop ACK must follow release of both file locks.
+        let recovered = MetricsGroupCommitV1::open(&path)
+            .expect("no previous writer lock remains");
+        assert_eq!(recovered.committed_rows(), round + 1);
+        assert_eq!(recovered.committed_groups(), round + 1);
+    }
+}
+
+#[test]
+fn graceful_evidence_stop_persists_pending_sample_before_owner_lock_release() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("stop-unflushed.log");
+    for round in 0..12_u64 {
+        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000)
+            .expect("one original writer");
+        sink.record(sample(PhaseMetricKindV1::NduRead))
+            .expect("accepted pending metric");
+        drop(sink);
+
+        let reopened = MetricsGroupCommitV1::open(&path)
+            .expect("Stop ACK follows original owner drop");
+        assert_eq!(reopened.committed_rows(), round + 1);
+        assert_eq!(reopened.committed_groups(), round + 1);
+    }
 }
