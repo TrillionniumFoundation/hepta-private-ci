@@ -143,12 +143,15 @@ def review(root: Path, training_sha: str, seal_path: Path, seal_sha: str,
     if reuse is not None:
         require(type(reuse) is dict and set(reuse) == {
             'schema','nominal_candidate_slots',
-            'actual_per_group_surrogate_forward_executions',
-            'redundant_surrogate_model_forwards_eliminated',
+            'actual_distinct_models_executed_per_sequence_group',
+            'source_sequence_group_count',
+            'actual_surrogate_forward_calls_total',
+            'redundant_surrogate_forward_calls_avoided',
+            'redundant_model_graph_loads_avoided',
             'alias_groups','native_q24_parity_verified','ndu_eligible',
             'production_qualification',
         } and
-            reuse['schema'] == 'hepta.neuron.forecast-physical-reuse.v1' and
+            reuse['schema'] == 'hepta.neuron.forecast-physical-reuse.v2' and
             reuse['native_q24_parity_verified'] is False and
             reuse['ndu_eligible'] is False and
             reuse['production_qualification'] is False,
@@ -161,8 +164,14 @@ def review(root: Path, training_sha: str, seal_path: Path, seal_sha: str,
         } for item in groups]
         require(
             reuse['nominal_candidate_slots'] == len(models) and
-            reuse['actual_per_group_surrogate_forward_executions'] == len(groups) and
-            reuse['redundant_surrogate_model_forwards_eliminated'] == len(models)-len(groups) and
+            reuse['actual_distinct_models_executed_per_sequence_group'] == len(groups) and
+            reuse['source_sequence_group_count'] ==
+                len({row['source_group_sha256'] for row in seal['rows']}) and
+            reuse['actual_surrogate_forward_calls_total'] ==
+                len(groups)*reuse['source_sequence_group_count'] and
+            reuse['redundant_surrogate_forward_calls_avoided'] ==
+                (len(models)-len(groups))*reuse['source_sequence_group_count'] and
+            reuse['redundant_model_graph_loads_avoided'] == len(models)-len(groups) and
             reuse['alias_groups'] == expected_aliases,
             'sealed physical tensor reuse claims differ from real weight bytes')
     # Descriptive Pareto only: minimizing physical private parameter count,
