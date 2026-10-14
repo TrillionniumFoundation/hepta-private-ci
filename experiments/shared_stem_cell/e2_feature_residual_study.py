@@ -65,6 +65,8 @@ def study(panel, model_id, vectors, *, seed=20261014, steps=40, learning_rate=.1
     if type(learning_rate) not in (float, int) or not math.isfinite(learning_rate) or not 0 < learning_rate <= 1:
         raise Invalid('invalid learning rate')
     cases = panel['cases']
+    from e1e2_q24_identity import feature_inventory
+    bank=feature_inventory([c['case_id'] for c in cases],vectors)
     if type(cases) is not list or len(cases) != 224 or type(vectors) is not dict or set(vectors) != {c['case_id'] for c in cases}:
         raise Invalid('incomplete frozen Encoder feature inventory')
     dims = {len(v) for v in vectors.values() if isinstance(v, (list, tuple))}
@@ -175,7 +177,8 @@ def study(panel, model_id, vectors, *, seed=20261014, steps=40, learning_rate=.1
                                           'positive_probability': float(p)}
                                          for c,p in zip(scored, probs)]}
     from e1e2_q24_identity import feature_inventory
-    bank=feature_inventory([c['case_id'] for c in cases],vectors)
+    if feature_inventory([c['case_id'] for c in cases],vectors)!=bank:
+        raise Invalid('E2 source vectors mutated during Head fitting')
     return {'schema': 'hepta.e2-feature-gated-head-public.v1', 'model': model_id,
             'frozen_feature_bank_identity':bank,
             'width':width, 'case_count':len(cases), 'train_case_ids_sha256':hashlib.sha256(json.dumps(
