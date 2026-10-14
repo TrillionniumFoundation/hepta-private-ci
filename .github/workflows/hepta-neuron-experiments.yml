@@ -10,6 +10,12 @@ on:
 permissions:
   contents: read
 
+# One candidate at a time: obsolete 600MB+ pretrained downloads must not
+# accumulate across rapid research commits on the same PR.
+concurrency:
+  group: hepta-neuron-e0-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   provenance-gate-tests:
     runs-on: ubuntu-24.04
