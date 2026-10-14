@@ -370,6 +370,90 @@ def encoder_matrix_contract(matrix: dict) -> dict:
             'warning': 'A complete plan is not a model load, compatible tokenizer, same-semantics teacher or execution receipt.'}
 
 
+
+def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
+                            matrix: dict, *, dimension: int = 128,
+                            max_length: int = 512) -> dict:
+    """E1: run four separate *actual* pinned offline encoders, never synthetic.
+
+    The same approved ordered records, held-out split and Head optimization
+    budget are used for each Encoder. This cannot validate operator authority
+    and does not claim official retrieval-pooling or Laya teacher equivalence.
+    """
+    if encoder_matrix_contract(matrix)['status'] != 'SCHEMA_COMPLETE_UNVERIFIED':
+        raise ValueError('E1 common real-model manifest is incomplete')
+    if not is_digest(dataset_sha256) or dataset_sha256 != matrix['dataset_sha256']:
+        raise ValueError('E1 real run dataset identity mismatch')
+    if not 1 <= dimension <= 512 or not 1 <= max_length <= 8192:
+        raise ValueError('invalid shared projection or length budget')
+    spec = matrix['training']
+    if spec['optimizer'].lower() != 'adamw':
+        raise ValueError('E1 runner only implements AdamW; optimizer mismatch')
+    if not rows or len({(r['principal'],r['organ_id'],r['cell_id']) for r in rows}) != 1:
+        raise ValueError('E1 requires one principal/organ/Cell scope')
+    labels = torch.tensor([r['label'] for r in rows], dtype=torch.long)
+    split_names = [r['split'] for r in rows]
+    masks = {split: torch.tensor([i for i, name in enumerate(split_names) if name == split],
+                                  dtype=torch.long)
+             for split in ('train', 'validation', 'future', 'ood')}
+    if any(len(indices) == 0 for indices in masks.values()):
+        raise ValueError('all four splits required')
+    results = {}
+    # Preflight all four paths before any model is loaded; no silent missing
+    # candidate, substituting mocks, or accidentally letting HF fetch online.
+    for kind in ENCODERS:
+        entry = matrix['encoders'][kind]
+        if not isinstance(entry.get('local_path'), str) or not Path(entry['local_path']).is_dir():
+            raise FileNotFoundError(f'E1 missing local {kind} checkpoint')
+    from .contracts import sha256_file
+    for kind in ENCODERS:
+        entry = matrix['encoders'][kind]
+        tokenizer_file = Path(entry['local_path']) / ('tokenizer/tokenizer.json' if kind == 'laya-joint' else 'tokenizer.json')
+        if not tokenizer_file.is_file() or sha256_file(tokenizer_file) != entry['tokenizer_sha256']:
+            raise ValueError(f'E1 tokenizer file digest mismatch: {kind}')
+    from .models import OfflineEncoder, frozen_projection
+    for kind in ENCODERS:
+        entry = matrix['encoders'][kind]
+        backend = OfflineEncoder(kind, entry['local_path'], entry['weights_sha256'],
+                                 max_length=max_length,
+                                 expected_bundle_sha256=entry['bundle_sha256'])
+        start = time.perf_counter()
+        features = backend.encode(rows, batch=spec['batch'])
+        encoder_seconds = time.perf_counter() - start
+        features = frozen_projection(features.float().cpu(), dimension, int(spec['seed']))
+        mu, std = features[masks['train']].mean(0), features[masks['train']].std(0).clamp_min(1e-4)
+        features = ((features - mu) / std).clamp(-10,10)
+        trained = head_trials(features, labels, split_names,
+                              budgets=BUDGETS, seed=spec['seed'], steps=spec['steps'],
+                              batch=spec['batch'], lr=float(spec['learning_rate']))
+        result = {'checkpoint_bundle_sha256': backend.bundle_sha256,
+                  'weights_sha256': backend.weights_sha256,
+                  'tokenizer_sha256_claimed': entry['tokenizer_sha256'],
+                  'hidden_size': backend.dimension, 'projected_width': dimension,
+                  'input_rows': len(rows), 'encoder_seconds': encoder_seconds,
+                  'trained_head_matrix': trained,
+                  'normalized_from': 'train_only',
+                  'joint_format': 'laya-native-markers' if kind == 'laya-joint'
+                                  else 'generic-question-options-state-string'}
+        if kind == 'laya-joint':
+            # True original Laya policy; never replace with pooled CLS.
+            with torch.inference_mode():
+                original = backend.laya_baseline_probabilities(rows)
+            result['original_laya_system_one'] = {
+                split: _scores(original[indices], labels[indices])
+                for split, indices in masks.items() if split != 'train'}
+            result['original_laya_system_one']['ood_auroc_msp'] = _auroc(
+                1-original[masks['ood']].max(1).values,
+                1-original[masks['validation']].max(1).values)
+        results[kind] = result
+    return {'experiment': 'E1', 'evidence_class': 'REAL_MODEL_LOCAL_SHADOW',
+            'production_admission': 'BLOCKED', 'independent_artifact_signatures_verified': False,
+            'dataset_sha256': dataset_sha256, 'same_training': dict(spec),
+            'same_projected_width': dimension, 'encoders': results,
+            'warning': ('Exact pinned local weights were run, but this is not a signed '
+                        'Laya equivalence, independent NDU or deployable owner receipt.')}
+
+
 SCALE_COUNTS = (64, 256, 1024, 4096)
 SCALE_REQUIRED = ('cell_count', 'run_id', 'source_commit', 'host_id', 'device',
                   'requests', 'distinct_input_keys', 'encoder_forward_rows',
@@ -433,7 +517,7 @@ def _read_pinned_json(path: str, sha: str) -> dict:
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['e1-plan', 'e2-heads', 'e3-reuse', 'e4-future', 'e5-host'])
+    parser.add_argument('command', choices=['e1-plan', 'e1-run', 'e2-heads', 'e3-reuse', 'e4-future', 'e5-host'])
     parser.add_argument('--output', required=True)
     parser.add_argument('--input-json', default='')
     parser.add_argument('--input-sha256', default='')
@@ -451,6 +535,7 @@ def _parser() -> argparse.ArgumentParser:
     parser.add_argument('--tokenizer-sha256', default='')
     parser.add_argument('--normalizer-sha256', default='')
     parser.add_argument('--dimension', type=int, default=128)
+    parser.add_argument('--max-length', type=int, default=512)
     parser.add_argument('--steps', type=int, default=16)
     parser.add_argument('--batch', type=int, default=8)
     parser.add_argument('--threads', type=int, default=1)
@@ -476,7 +561,11 @@ def main() -> None:
         rows, data = load_dataset(args.dataset, expected_sha256=args.dataset_sha256)
         if len({(r['principal'], r['organ_id'], r['cell_id']) for r in rows}) != 1:
             raise ValueError('one scoped Cell required; no cross-scope learning aggregation')
-        if args.command == 'e4-future':
+        if args.command == 'e1-run':
+            matrix = _read_pinned_json(args.input_json, args.input_sha256)
+            result = run_real_encoder_matrix(rows, args.dataset_sha256, matrix,
+                                             dimension=args.dimension, max_length=args.max_length)
+        elif args.command == 'e4-future':
             baseline = _read_pinned_json(args.baseline, args.baseline_sha256)
             candidate = _read_pinned_json(args.candidate, args.candidate_sha256)
             result = evaluate_shadow(rows, data['dataset_sha256'], baseline, candidate, seed=args.seed)
