@@ -1,16 +1,16 @@
 use std::collections::BTreeSet;
 use std::os::unix::fs::PermissionsExt as _;
+use std::str::FromStr as _;
 use std::sync::Arc;
 
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_control_plane::NduPublicationOwnerV1;
+use codex_hepta_operator_acceptance::CellSplitCnsRuntimePortV1;
+use codex_hepta_paths::HeptaStateRoot;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::NduSnapshotRefV1;
 use codex_hepta_types::StableId;
-use std::str::FromStr as _;
-use codex_hepta_operator_acceptance::CellSplitCnsRuntimePortV1;
-use codex_hepta_paths::HeptaStateRoot;
 use ed25519_dalek::Signer as _;
 use ed25519_dalek::SigningKey;
 use sha2::Digest as _;
@@ -452,6 +452,95 @@ fn independent_control_observer_rejects_replayed_nonce_wrong_scope_or_forged_sig
         );
     }
     assert!(control.current().is_ok());
+}
+
+/// An original CNS commit must be authenticated before any remote high-water
+/// request. The test port has no signer and deliberately cannot produce a
+/// positive proof, so this fixture cannot mint mutation or Observer authority.
+struct JoinedControlObserverProbe {
+    calls: usize,
+}
+
+impl CellSplitIndependentControlObserverV1 for JoinedControlObserverProbe {
+    type Error = &'static str;
+
+    fn read_signed_highwater(
+        &mut self,
+        _split_id: &str,
+        _scope_id: &str,
+        _challenge_nonce: &str,
+    ) -> Result<CellSplitSignedControlHighwaterV1, Self::Error> {
+        self.calls += 1;
+        Err("untrusted Observer must never be queried before original CNS proof")
+    }
+}
+
+#[test]
+fn joined_cns_control_observer_denies_missing_original_commit_before_remote_rpc() {
+    let runtime_signer = SigningKey::from_bytes(&[42; 32]);
+    let (runtime, plan, _binding, _intent, mut port) =
+        fixture(false, false, runtime_signer.clone(), runtime_signer);
+    let root = tempfile::tempdir().expect("private original Control WAL root");
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("Control root must stay private");
+    let path = root.path().join("joined-original.wal");
+    let control = NduPublicationOwnerV1::open_production(
+        &path,
+        independent_control_snapshot(&plan),
+        Digest32::of_bytes(b"joined-original-checkpoint"),
+    )
+    .expect("real original Control WAL writer");
+    let state_before = runtime.topology_snapshot().expect("original serving route");
+    let original_bytes = std::fs::read(&path).expect("fsynced original Control history");
+    let before = control.read_original_local_frontier_v1().unwrap();
+    let mut observer = JoinedControlObserverProbe { calls: 0 };
+    let pinned = SigningKey::from_bytes(&[77; 32]).verifying_key();
+    let denial = port
+        .verify_original_cns_control_independent_highwater_join_v1(
+            &control,
+            &mut observer,
+            &pinned,
+            "separate-control-observer",
+        )
+        .expect_err("original CNS runtime commit must exist before remote Observer");
+    assert!(denial.contains("original durable effect receipt is missing"));
+    assert_eq!(observer.calls, 0, "never query remote on missing original effect");
+    assert_eq!(std::fs::read(&path).unwrap(), original_bytes);
+    assert_eq!(control.read_original_local_frontier_v1().unwrap(), before);
+    assert_eq!(runtime.topology_snapshot().unwrap(), state_before);
+}
+
+#[test]
+fn joined_cns_control_observer_denies_missing_original_wal_before_remote_rpc() {
+    let runtime_signer = SigningKey::from_bytes(&[42; 32]);
+    let (_runtime, plan, _binding, _intent, mut port) =
+        fixture(false, false, runtime_signer.clone(), runtime_signer);
+    let root = tempfile::tempdir().expect("private original Control root");
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("Control root must stay private");
+    let path = root.path().join("missing-original.wal");
+    let control = NduPublicationOwnerV1::open_production(
+        &path,
+        independent_control_snapshot(&plan),
+        Digest32::of_bytes(b"joined-missing-checkpoint"),
+    )
+    .expect("real fsynced Control root");
+    assert!(control.read_original_local_frontier_v1().is_ok());
+    std::fs::remove_file(&path).expect("simulate lost original WAL inode path");
+    let mut observer = JoinedControlObserverProbe { calls: 0 };
+    let pinned = SigningKey::from_bytes(&[77; 32]).verifying_key();
+    let denial = port
+        .verify_original_cns_control_independent_highwater_join_v1(
+            &control,
+            &mut observer,
+            &pinned,
+            "separate-control-observer",
+        )
+        .expect_err("a missing original WAL must deny before any remote claim");
+    assert!(denial.contains("original Control WAL unavailable before join"));
+    assert_eq!(observer.calls, 0);
+    assert!(control.read_original_local_frontier_v1().is_err());
+    assert!(!path.exists(), "read-only verification must not rebootstrap WAL");
 }
 
 #[test]
