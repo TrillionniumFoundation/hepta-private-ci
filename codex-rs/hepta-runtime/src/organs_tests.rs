@@ -753,12 +753,12 @@ fn authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_prede
     Ok(())
 }
 
-/// The first-party split CNS port must invoke the real runtime topology
-/// executor with a signed single-use grant, not mutate an imitation route
-/// map. This intentionally uses only test-owned keys, candidate and storage.
+/// Even the full test-owned signed Final-use grant, typed successor and real
+/// runtime cannot execute a CNS split before a durable same-Control-owner
+/// cutover Prepare. Retain the native fixture: do not skip an E2E regression.
 #[cfg(all(unix, feature = "cell-split-cns-port"))]
 #[test]
-fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
+fn cell_split_cns_runtime_port_denies_unprepared_real_governed_runtime() -> Result<()> {
     use std::fs;
     use std::io::Write as _;
     use std::os::unix::fs::OpenOptionsExt as _;
@@ -1013,30 +1013,31 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
         witness,
     )
     .map_err(|e| anyhow::anyhow!("{e}"))?;
-    port.publish_once(&plan, &binding, &intent)
-        .map_err(|e| anyhow::anyhow!("{e}"))?;
-    assert_eq!(runtime.topology_snapshot()?, expected);
-    assert_eq!(migration_calls.load(Ordering::SeqCst), 1);
-    assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
-    let original = port
-        .read_original_commit(&intent.idempotency_key)?
-        .expect("fsynced original runtime receipt");
-    port.verify_original_commit(&original)
-        .map_err(|e| anyhow::anyhow!("{e}"))?;
-    assert_eq!(
-        original.committed_sequence,
-        port.committed_sequence(&binding.cns_id)?
-    );
+    // Both live route signing and the separate witness preflight are valid,
+    // and a signed one-shot successor is available. None of these facts is
+    // equivalent to durable same-Control-owner Prepare.
     let live = port.inspect_live(&binding.cns_id, &plan.scope_digest, &"aa".repeat(32))?;
     port.verify_live(&live)
         .map_err(|e| anyhow::anyhow!("{e}"))?;
-    assert_eq!(live.generation, plan.child_generation);
+    port.verify_preconditions(&plan, &intent)
+        .map_err(|e| anyhow::anyhow!("{e}"))?;
+    let denied = port.publish_once(&plan, &binding, &intent)
+        .expect_err("unprepared CNS mutation must remain unavailable");
+    assert!(denied.contains("no shared durable Control/Neuron cutover transaction"));
+    assert_eq!(runtime.topology_snapshot()?, before);
+    assert_eq!(migration_calls.load(Ordering::SeqCst), 0);
+    assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
+    assert!(
+        port.read_original_commit(&intent.idempotency_key)?.is_none(),
+        "denial must never mint an original runtime commit"
+    );
+    assert!(!original_path.exists(), "no fsynced success on denied cutover");
+    assert_eq!(live.generation, plan.parent_generation);
     assert!(port.publish_once(&plan, &binding, &intent).is_err());
-    assert_eq!(migration_calls.load(Ordering::SeqCst), 1);
+    assert_eq!(migration_calls.load(Ordering::SeqCst), 0);
 
-    // Process-local CNS hosts are NOT a durable restart registry. A fresh
-    // default host must never be mistaken for the already-committed successor
-    // simply because the original signed runtime receipt survived on disk.
+    // An unrelated process restart must also retain the old generation.
+    // No original durable effect exists to reconcile into a positive commit.
     drop(port);
     let after_restart = crate::HeptaRuntime::from_adapter(root, state);
     assert_eq!(after_restart.topology_snapshot()?, before);
@@ -1066,8 +1067,8 @@ fn cell_split_cns_runtime_port_executes_real_governed_runtime() -> Result<()> {
     .map_err(|e| anyhow::anyhow!("{e}"))?;
     use codex_hepta_operator_acceptance::CellSplitDurableEffectBackendV1 as _;
     assert!(
-        owner.read_committed(&intent).is_err(),
-        "committed runtime receipt cannot activate a fresh old-generation host",
+        owner.read_committed(&intent)?.is_none(),
+        "no original runtime cutover may appear across restart after denial",
     );
     Ok(())
 }
