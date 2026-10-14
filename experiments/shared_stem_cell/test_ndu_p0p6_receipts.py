@@ -14,7 +14,10 @@ def frozen_panel():
                        preprocessor_sha256=h(name+"pre"), checkpoint_revision=h(name)[:40],
                        dataset_sha256=h("train"), reader_sha256=h("reader"),
                        objective_sha256=h("objective"), head_initial_sha256=h("head"),
-                       train_budget=1000000, license_review_id="independently-pending")
+                       train_budget=1000000, license_review_id="independently-pending",
+                       feature_width=256, pooling_sha256=h(name+"pool"),
+                       normalization_sha256=h(name+"norm"), quantization_sha256=h(name+"quant"),
+                       runtime_sha256=h(name+"runtime"), bridge_sha256=h(name+"bridge"))
             for name in ARMS}
 
 
@@ -34,9 +37,9 @@ class ReceiptsTests(unittest.TestCase):
         self.assertFalse(report["production_accepted"])
 
     def test_changed_reader_and_initial_head_are_rejected(self):
-        for field in ("reader_sha256", "dataset_sha256", "objective_sha256", "head_initial_sha256", "train_budget"):
+        for field in ("reader_sha256", "dataset_sha256", "objective_sha256", "head_initial_sha256", "train_budget", "feature_width"):
             panel = frozen_panel()
-            panel["granite97"][field] = 1 if field == "train_budget" else h("drift")
+            panel["granite97"][field] = (1 if field == "train_budget" else 384) if field in ("train_budget", "feature_width") else h("drift")
             with self.subTest(field=field), self.assertRaisesRegex(ReceiptError, "changed Reader/task"):
                 freeze_models(panel)
 
@@ -69,6 +72,14 @@ class ReceiptsTests(unittest.TestCase):
         records = synthetic_costs()
         records[2]["physical_encoder_forwards"] = 0
         with self.assertRaisesRegex(ReceiptError, "cost"):
+            meter_scale(records, arm="granite97")
+        records = synthetic_costs()
+        records[1]["model_sha256"] = h("drift")
+        with self.assertRaisesRegex(ReceiptError, "between physical scales"):
+            meter_scale(records, arm="granite97")
+        records = synthetic_costs()
+        records[0]["energy_joules"] = True
+        with self.assertRaisesRegex(ReceiptError, "energy"):
             meter_scale(records, arm="granite97")
         records = synthetic_costs()
         records[0]["energy_joules"] = float("nan")

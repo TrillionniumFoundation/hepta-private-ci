@@ -39,22 +39,28 @@ def freeze_models(manifest):
         m = manifest[name]
         required = {"weights_sha256", "tokenizer_sha256", "preprocessor_sha256",
                     "checkpoint_revision", "dataset_sha256", "reader_sha256",
-                    "objective_sha256", "head_initial_sha256", "train_budget", "license_review_id"}
+                    "objective_sha256", "head_initial_sha256", "train_budget", "license_review_id",
+                    "feature_width", "pooling_sha256", "normalization_sha256",
+                    "quantization_sha256", "runtime_sha256", "bridge_sha256"}
         if type(m) is not dict or set(m) != required:
             raise ReceiptError("complete model/readout/Reader freeze required")
         if any(not _sha(m[k]) for k in ("weights_sha256", "tokenizer_sha256",
                                            "preprocessor_sha256", "dataset_sha256",
                                            "reader_sha256", "objective_sha256",
-                                           "head_initial_sha256")):
+                                           "head_initial_sha256", "pooling_sha256",
+                                           "normalization_sha256", "quantization_sha256",
+                                           "runtime_sha256", "bridge_sha256")):
             raise ReceiptError("invalid model/source identity")
         if (type(m["checkpoint_revision"]) is not str or len(m["checkpoint_revision"]) != 40
                 or not all(c in "0123456789abcdef" for c in m["checkpoint_revision"])):
             raise ReceiptError("immutable checkpoint revision required")
+        if type(m["feature_width"]) is not int or not 1 <= m["feature_width"] <= 512:
+            raise ReceiptError("invalid explicit native Neuron feature width")
         if type(m["train_budget"]) is not int or not 0 < m["train_budget"] <= 10**15:
             raise ReceiptError("registered identical train budget required")
         if type(m["license_review_id"]) is not str or not m["license_review_id"]:
             raise ReceiptError("license review provenance required")
-        pinned = tuple(m[k] for k in ("dataset_sha256", "reader_sha256", "objective_sha256", "head_initial_sha256", "train_budget"))
+        pinned = tuple(m[k] for k in ("dataset_sha256", "reader_sha256", "objective_sha256", "head_initial_sha256", "train_budget", "feature_width"))
         if common is not None and pinned != common:
             raise ReceiptError("changed Reader/task/initial Head/budget invalidates comparison")
         common = pinned
@@ -88,6 +94,7 @@ def meter_scale(records, *, arm):
     if arm not in ARMS or type(records) not in (list, tuple) or len(records) != 4:
         raise ReceiptError("one four-scale arm required")
     by_scale = {}
+    frozen_binding = None
     for r in records:
         expected = {"arm", "cells", "concurrency", "scope_sha256", "source_sha256",
                     "model_sha256", "head_sha256", "physical_encoder_forwards",
@@ -99,6 +106,10 @@ def meter_scale(records, *, arm):
             raise ReceiptError("missing/duplicate scale or concurrency")
         if any(not _sha(r[k]) for k in ("scope_sha256", "source_sha256", "model_sha256", "head_sha256")):
             raise ReceiptError("unbound physical source/head")
+        binding = (r["scope_sha256"], r["model_sha256"], r["head_sha256"])
+        if frozen_binding is not None and binding != frozen_binding:
+            raise ReceiptError("model/head/scope changed between physical scales")
+        frozen_binding = binding
         if any(not _positive_int(r[k]) for k in ("physical_encoder_forwards", "cpu_ns", "wall_ns", "peak_rss_bytes")):
             raise ReceiptError("missing physical work/cost")
         samples = r["latencies_ns"]
