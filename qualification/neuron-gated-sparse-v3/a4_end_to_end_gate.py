@@ -80,7 +80,8 @@ def validate(host: Any, training: Any, *, host_id: str, train_sha: str,
         'schema','source_train_sha256','encoder_digest_claimed','cell_id',
         'training_cutoff_utc','train_source_group_hashes',
         'no_change_v1_selected_sha256','no_change_optimizer_steps',
-        'candidate_optimizer_steps','cpu_only','preregistered_window','seed',
+        'candidate_optimizer_steps','cpu_only','uniform_per_arm_cpu_ceiling_seconds',
+        'preregistered_window','seed',
         'schedule_sha256','target_host_attested','native_q24_parity_verified',
         'training_provenance_independently_verified','future_utility_verified',
         'ndu_eligible','production_qualification','decision','models',
@@ -90,6 +91,8 @@ def validate(host: Any, training: Any, *, host_id: str, train_sha: str,
     require(training['schema'] == 'hepta.neuron.five-arm-differentiable-shadow-train.v1'
             and training['evidence_class'] == 'SIGNED_A0_FORMAT_ONLY_NOT_HOST_EXECUTION'
             and training['no_change_optimizer_steps'] == 0
+            and type(training['uniform_per_arm_cpu_ceiling_seconds']) in (float,int)
+            and 0 < training['uniform_per_arm_cpu_ceiling_seconds'] <= 3600
             and training['ndu_eligible'] is False
             and training['production_qualification'] is False,
             'missing actual A0 signed-format claim / frozen V1 baseline')
