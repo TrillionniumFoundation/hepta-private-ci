@@ -16,6 +16,7 @@ use std::sync::Arc;
 
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_control_plane::NduPublicationLocalFrontierV1;
 use codex_hepta_control_plane::NduPublicationOwnerV1;
 use codex_hepta_operator_acceptance::CellSplitCnsLiveRouteV1;
 use codex_hepta_operator_acceptance::CellSplitCnsRouteBindingV1;
@@ -83,6 +84,67 @@ pub trait CellSplitCnsKernelWitnessV1 {
     /// Independently persisted anti-rollback sequence, not the generation of
     /// the process-local CNS host or the highest file in a directory.
     fn current_durable_sequence(&mut self, cns_id: &str) -> Result<u64, Self::Error>;
+}
+
+/// A separately administered Observer must read its OWN retained Control
+/// high-water, then sign a fresh challenge. Never send it a caller-provided
+/// frontier to echo; neither a repository digest nor local WAL marker is an
+/// independent rollback witness.
+pub trait CellSplitIndependentControlObserverV1 {
+    type Error: fmt::Display;
+
+    fn read_signed_highwater(
+        &mut self,
+        split_id: &str,
+        scope_id: &str,
+        challenge_nonce: &str,
+    ) -> Result<CellSplitSignedControlHighwaterV1, Self::Error>;
+}
+
+/// External Observer claim about its separately retained original Control
+/// history. No signer, key material or executable effect is present here.
+/// This is read-only evidence; it cannot grant CNS mutation or Final-use.
+pub const CELL_SPLIT_SIGNED_CONTROL_HIGHWATER_SCHEMA_V1: &str =
+    "hepta.runtime.cell-split.control-independent-highwater.v1";
+
+#[derive(Clone, Debug, Eq, PartialEq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct CellSplitSignedControlHighwaterV1 {
+    pub schema: String,
+    pub observer_id: String,
+    pub plan_digest: String,
+    pub split_id: String,
+    pub scope_id: String,
+    pub ndu_owner_id: String,
+    pub ndu_snapshot_digest: String,
+    pub generation: u64,
+    pub route_fence: u64,
+    pub revocation_epoch: u64,
+    pub sequence: u64,
+    pub wal_head: String,
+    pub checkpoint_digest: String,
+    pub wal_bytes: u64,
+    pub wal_device: u64,
+    pub wal_inode: u64,
+    pub marker_device: u64,
+    pub marker_inode: u64,
+    pub original_cns_receipt_binding: Option<String>,
+    pub challenge_nonce: String,
+    pub observer_signature_bytes: Vec<u8>,
+}
+
+/// Deterministic, domain-separated bytes signed ONLY by an independent
+/// Observer owner. Producing these bytes does not mint a witness or an effect.
+pub fn cell_split_control_highwater_signing_bytes_v1(
+    proof: &CellSplitSignedControlHighwaterV1,
+) -> Result<Vec<u8>, String> {
+    let mut unsigned = proof.clone();
+    unsigned.observer_signature_bytes.clear();
+    let encoded = serde_json::to_vec(&unsigned).map_err(|error| error.to_string())?;
+    let mut bytes = b"hepta.runtime.cell-split.control-independent-highwater.v1\0".to_vec();
+    bytes.extend_from_slice(&(encoded.len() as u64).to_be_bytes());
+    bytes.extend_from_slice(&encoded);
+    Ok(bytes)
 }
 
 /// The runtime itself owns dispatch and generation replacement. This adapter
@@ -202,6 +264,90 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsKernelRuntimePortV1<W> {
         // original WAL sequence/head/bytes and NDU checkpoint drift.
         if control_before != control_after {
             return Err("original Control WAL frontier changed during CNS readback".into());
+        }
+        Ok(())
+    }
+
+    /// Read-only Control high-water qualification against an *external*
+    /// independently signed and challenge-bound Observer response. The remote
+    /// reader must fetch its OWN durable high-water before signing; this
+    /// verifier never forwards the local original WAL frontier as input.
+    ///
+    /// Equality is deliberate: a stale remote minimum or rolled-back local
+    /// Control state is rejected instead of accepting a digest-only prefix.
+    /// The independent signer/key custody and persistent monotonic store must
+    /// still be audited; this method cannot authorize physical Cell Split.
+    pub fn verify_independent_control_highwater_v1<O: CellSplitIndependentControlObserverV1>(
+        &mut self,
+        control: &NduPublicationOwnerV1,
+        observer: &mut O,
+        pinned_observer_key: &VerifyingKey,
+        expected_observer_id: &str,
+    ) -> Result<(), String> {
+        if pinned_observer_key.is_weak()
+            || pinned_observer_key == &self.runtime_key
+            || expected_observer_id.is_empty()
+            || expected_observer_id == self.binding.cns_id
+            || expected_observer_id == self.intent.owner_id
+        {
+            return Err("Control Observer signer is not independently pinned".into());
+        }
+        let original_before = control
+            .read_original_local_frontier_v1()
+            .map_err(|error| format!("original Control high-water unavailable: {error}"))?;
+        if original_before.snapshot.snapshot_digest.to_string()
+            != self.plan.ndu_snapshot_digest
+        {
+            return Err("Control snapshot differs from the frozen NDU plan".into());
+        }
+
+        let nonce = secure_cns_nonce()?;
+        let claimed = observer
+            .read_signed_highwater(
+                &self.plan.split_id,
+                original_before.snapshot.scope_id.as_str(),
+                &nonce,
+            )
+            .map_err(|error| format!("independent Control high-water unavailable: {error}"))?;
+        if claimed.schema != CELL_SPLIT_SIGNED_CONTROL_HIGHWATER_SCHEMA_V1
+            || claimed.observer_id != expected_observer_id
+            || claimed.plan_digest != self.intent.plan_digest
+            || claimed.split_id != self.plan.split_id
+            || claimed.scope_id != original_before.snapshot.scope_id.as_str()
+            || claimed.ndu_owner_id != original_before.snapshot.owner_id.as_str()
+            || claimed.ndu_snapshot_digest != self.plan.ndu_snapshot_digest
+            || claimed.generation != original_before.snapshot.generation.get()
+            || claimed.route_fence != original_before.snapshot.route_fence
+            || claimed.revocation_epoch != original_before.snapshot.revocation_epoch
+            || claimed.sequence != original_before.sequence
+            || claimed.wal_head != original_before.head.to_string()
+            || claimed.checkpoint_digest != original_before.checkpoint.to_string()
+            || claimed.wal_bytes != original_before.wal_bytes
+            || claimed.wal_device != original_before.wal_device
+            || claimed.wal_inode != original_before.wal_inode
+            || claimed.marker_device != original_before.marker_device
+            || claimed.marker_inode != original_before.marker_inode
+            || claimed.original_cns_receipt_binding
+                != original_before.original_cns_receipt_binding.map(|value| value.to_string())
+            || claimed.challenge_nonce != nonce
+        {
+            return Err("independent Control high-water mismatches original owner".into());
+        }
+        let signature = Signature::from_slice(&claimed.observer_signature_bytes)
+            .map_err(|error| error.to_string())?;
+        pinned_observer_key
+            .verify_strict(
+                &cell_split_control_highwater_signing_bytes_v1(&claimed)?,
+                &signature,
+            )
+            .map_err(|_| "independent Control Observer signature is invalid".to_string())?;
+        // An independently signed answer is not current if model checkpoint
+        // CAS or Control C advanced while the remote observer was responding.
+        let original_after = control
+            .read_original_local_frontier_v1()
+            .map_err(|error| format!("original Control recheck unavailable: {error}"))?;
+        if original_before != original_after {
+            return Err("Control WAL changed during independent Observer readback".into());
         }
         Ok(())
     }

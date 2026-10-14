@@ -435,6 +435,38 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         )
         self.assertIn("if control_before != control_after", runtime)
 
+    def test_signed_independent_control_highwater_cannot_mint_physical_cutover(self) -> None:
+        # External Control high-water must be signed under a distinct key and
+        # fresh challenge, against an ACTUAL original Control WAL Actor read.
+        path = "codex-rs/hepta-runtime/src/cell_split_cns_runtime_port.rs"
+        code = self.lexical_code(path)
+        method = re.search(
+            r"\bpub\s+fn\s+verify_independent_control_highwater_v1\s*<", code
+        )
+        self.assertIsNotNone(method, "independent Control Observer gate missing")
+        assert method is not None
+        begin = code.find("{", method.end())
+        end = CALLER_PROOF._matching_delimiter(code, begin, "{", "}")
+        self.assertIsNotNone(end, "unbalanced external Observer validator")
+        assert end is not None
+        body = code[begin + 1 : end]
+        self.assertIn("secure_cns_nonce()", body)
+        self.assertGreaterEqual(
+            body.count("control.read_original_local_frontier_v1()"), 0
+        )
+        self.assertIn(".read_original_local_frontier_v1()", body)
+        self.assertIn(".read_signed_highwater(", body)
+        self.assertIn("pinned_observer_key == &self.runtime_key", body)
+        self.assertIn("verify_strict(", body)
+        self.assertIn("if original_before != original_after", body)
+        self.assertIn("self.plan.ndu_snapshot_digest", body)
+        self.assertIn("claimed.wal_inode != original_before.wal_inode", body)
+        self.assertIn("claimed.marker_inode != original_before.marker_inode", body)
+        # No original sender keys, runtime cutover, Final-use claim or grant.
+        self.assertNotIn("apply_governed_topology(", body)
+        self.assertNotIn("publish_once(", body)
+        self.assertNotIn("authority.claim(", body)
+
     def test_generic_cns_generation_writer_callers_are_closed_world(self) -> None:
         # The generic CNS host is shared beyond Cell Split and cannot be
         # arbitrarily disabled. Freeze the concrete non-test callsites for
