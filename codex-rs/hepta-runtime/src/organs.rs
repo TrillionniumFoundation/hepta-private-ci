@@ -37,6 +37,7 @@ use codex_hepta_control_plane::admit_compiled_body_graph_v2;
 use codex_hepta_control_plane::compiled_body_graph_digest_v2;
 use codex_hepta_control_plane::encode_compiled_body_graph_v2;
 use codex_hepta_paths::HeptaStateRoot;
+use codex_hepta_plasticity::TopologyOperationV2;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -63,6 +64,19 @@ pub(crate) struct RuntimeOrgans {
 struct StatusHost {
     host: CnsOrganHostV1,
     route: CnsRouteV1,
+}
+
+// Any Split candidate in a governed envelope requires the SAME durable
+// Control owner as the original signed CellSplit operation. A non-selected
+// Split alternative is still denied here: the caller may not smuggle a
+// physical route change through a generic Update/Replace envelope.
+fn proposal_contains_cell_split_v1(request: &RuntimeTopologyApplyRequestV1) -> bool {
+    request.governed.proposal.candidates.iter().any(|candidate| {
+        candidate
+            .changes
+            .iter()
+            .any(|change| change.operation == TopologyOperationV2::Split)
+    })
 }
 
 impl RuntimeOrgans {
@@ -105,6 +119,12 @@ impl RuntimeOrgans {
         signed_grant: &SignedFinalUseGrant,
         request: RuntimeTopologyApplyRequestV1,
     ) -> Result<RuntimeTopologyApplyReceiptV1, RuntimeTopologyExecutionError> {
+        // Final-use for generic topology work is not a same-owner Control WAL
+        // handoff for a CellSplit. Deny before lock, token claim or generation
+        // replacement; positive reference tests remain behind cfg(test).
+        if !cfg!(test) && proposal_contains_cell_split_v1(&request) {
+            return Err(RuntimeTopologyExecutionError::Binding);
+        }
         let mut host = self
             .host
             .lock()
@@ -152,6 +172,12 @@ impl RuntimeOrgans {
         signed_grant: &SignedFinalUseGrant,
         request: RuntimeTopologyApplyRequestV1,
     ) -> Result<RuntimeTopologyApplyReceiptV1, RuntimeTopologyExecutionError> {
+        // Final-use for generic topology work is not a same-owner Control WAL
+        // handoff for a CellSplit. Deny before lock, token claim or generation
+        // replacement; positive reference tests remain behind cfg(test).
+        if !cfg!(test) && proposal_contains_cell_split_v1(&request) {
+            return Err(RuntimeTopologyExecutionError::Binding);
+        }
         let mut host = self
             .host
             .lock()

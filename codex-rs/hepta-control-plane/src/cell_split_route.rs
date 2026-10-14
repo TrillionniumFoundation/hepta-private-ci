@@ -124,6 +124,8 @@ pub enum CellSplitRouteErrorV1 {
     RestartGeneration,
     ParentRouteResurrected,
     TombstoneMismatch,
+    /// This local reference host is not the durable Control/CNS cutover owner.
+    ControlHandoffRequired,
     Runtime(CnsHierarchyError),
     RuntimeOwner(OrganRuntimeError),
 }
@@ -304,17 +306,26 @@ impl CellSplitRouteControllerV1 {
         Ok((deliveries, receipt))
     }
 
-    /// Activate all child routes through the existing generation cutover.
+    /// Exercise child-route activation in the crate's reference tests.
     ///
-    /// The candidate is started and the predecessor is stopped by
-    /// `CnsOrganHostV1`.  Child routes are stored only after that method
-    /// succeeds, so a failed candidate can never receive dispatch.
+    /// Production always denies this legacy in-memory cutover: it has no
+    /// same-owner durable Control Begin/Commit or original CNS receipt.
+    /// Under `cfg(test)` the candidate is started and predecessor stopped
+    /// by `CnsOrganHostV1`, and child routes become visible only on success.
     pub fn activate_children(
         &mut self,
         expected: Generation,
         next: CnsOrganHostV1,
         child_routes: Vec<CnsRouteV1>,
     ) -> Result<(), CellSplitRouteErrorV1> {
+        // The in-memory CNS host is a reference fixture, NOT the signed
+        // same-owner Control Begin/Commit. In production no caller can
+        // turn a proposed CellSplit into active child dispatch through here.
+        // Real physical routes remain the responsibility of the separately
+        // authenticated, currently disabled CNS runtime owner.
+        if !cfg!(test) {
+            return Err(CellSplitRouteErrorV1::ControlHandoffRequired);
+        }
         self.split.validate()?;
         self.validate_child_routes(&next, &child_routes)?;
         let children = self.bind_child_routes(child_routes)?;
@@ -336,8 +347,8 @@ impl CellSplitRouteControllerV1 {
         Ok(())
     }
 
-    /// Variant used when the authoritative state owner must migrate state
-    /// before CNS publishes the successor generation.
+    /// Reference-test variant with state migration before child publication.
+    /// Production denies until the real Control/CNS authority handoff exists.
     pub fn activate_children_with_migration<M: OrganStateMigrationV1 + ?Sized>(
         &mut self,
         expected: Generation,
@@ -345,6 +356,11 @@ impl CellSplitRouteControllerV1 {
         child_routes: Vec<CnsRouteV1>,
         migration: &mut M,
     ) -> Result<(), CellSplitRouteErrorV1> {
+        // Migration cannot serve as an alternative to a durable, owner-atomic
+        // CNS cutover. Keep only the crate's unit-test reference host enabled.
+        if !cfg!(test) {
+            return Err(CellSplitRouteErrorV1::ControlHandoffRequired);
+        }
         self.split.validate()?;
         self.validate_child_routes(&next, &child_routes)?;
         let children = self.bind_child_routes(child_routes)?;
