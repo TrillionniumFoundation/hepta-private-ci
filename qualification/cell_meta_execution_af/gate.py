@@ -168,6 +168,7 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
         [((record(r, letter + ".row").get("arm"), r.get("window")), r) for r in records],
         {(arm, window) for arm in ARMS[letter] for window in windows}, letter)
     task_sets: dict[str, set[str]] = {k: set() for k in windows}
+    frozen_bundles: dict[str, set[str]] = {arm: set() for arm in ARMS[letter]}
     d_families: dict[str, set[tuple[str, ...]]] = {k: set() for k in windows}
     c_graphs: set[str] = set()
     c_policies: dict[str, set[str]] = {arm: set() for arm in ARMS["C"]}
@@ -194,7 +195,12 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
         digest(field(r, "prediction_sha256", name), name + ".prediction_sha256")
         digest(field(r, "outcome_receipt_sha256", name), name + ".outcome_receipt_sha256")
         digest(field(r, "evaluation_receipt_sha256", name), name + ".evaluation_receipt_sha256")
-        digest(field(r, "model_bundle_sha256", name), name + ".model_bundle_sha256")
+        bundle = digest(field(r, "model_bundle_sha256", name), name + ".model_bundle_sha256")
+        frozen_bundles[arm].add(bundle)
+        bundle_frozen_at = timestamp(field(r, "model_bundle_frozen_at", name),
+                                     name + ".model_bundle_frozen_at")
+        require(bundle_frozen_at <= timestamp(meta["frozen_at"], "candidate.frozen_at"),
+                f"{name}: candidate model was not frozen before future evaluation")
         count(field(r, "independent_episodes", name), name + ".independent_episodes", positive=True)
         ess = number(field(r, "effective_sample_size", name), name + ".effective_sample_size", minimum=1)
         require(ess <= r["independent_episodes"] and ess >= 400
@@ -227,6 +233,8 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
         count(field(v, "inference_bytes", name), name + ".inference_bytes")
     require(all(len(s) == 1 for s in task_sets.values()), f"{letter}: unpaired future task set")
     require(task_sets["future_1"] != task_sets["future_2"], f"{letter}: reused future task set")
+    require(all(len(bundles) == 1 for bundles in frozen_bundles.values()),
+            f"{letter}: candidate model bundle changed across future windows")
     if letter == "D":
         require(all(len(families) == 1 for families in d_families.values()),
                 "D: heldout task-family distribution drift between paired arms")
@@ -257,7 +265,7 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
 def validate_resources(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
     obj = record(value, "E")
     host = identity(field(obj, "host_id", "E"), "E.host_id")
-    digest(field(obj, "device_profile_sha256", "E"), "E.device_profile_sha256")
+    device_profile = digest(field(obj, "device_profile_sha256", "E"), "E.device_profile_sha256")
     digest(field(obj, "runtime_profile_sha256", "E"), "E.runtime_profile_sha256")
     entries = sequence(field(obj, "runs", "E"), "E.runs")
     expected = {(mode, scale, profile) for mode in DEPLOYMENTS for scale in SCALES for profile in LOADS}
@@ -273,6 +281,9 @@ def validate_resources(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
         name = f"E/{mode}/{scale}/{profile}"
         require(identity(field(r, "host_id", name), name + ".host_id") == host, f"{name}: host drift")
         require(r.get("runtime_profile_sha256") == obj["runtime_profile_sha256"], f"{name}: runtime drift")
+        require(digest(field(r, "device_profile_sha256", name),
+                       name + ".device_profile_sha256") == device_profile,
+                f"{name}: device profile drift")
         trace = digest(field(r, "attempt_trace_sha256", name), name + ".attempt_trace_sha256")
         digest(field(r, "terminal_receipt_sha256", name), name + ".terminal_receipt_sha256")
         concurrency = count(field(r, "active_concurrency", name), name + ".active_concurrency", positive=True)
@@ -321,6 +332,9 @@ def validate_resources(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
 def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
     obj = record(value, "F")
     digest(field(obj, "task_suite_sha256", "F"), "F.task_suite_sha256")
+    same_device = digest(field(obj, "device_profile_sha256", "F"), "F.device_profile_sha256")
+    require(same_device == resource_value.get("device_profile_sha256"),
+            "F: device profile does not match E")
     tasks = sequence(field(obj, "task_ids", "F"), "F.task_ids")
     require(len(tasks) >= 2 and len(set(tasks)) == len(tasks), "F: need two distinct registered task classes")
     for task in tasks:
@@ -342,6 +356,12 @@ def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
         digest(field(r, "sandbox_sha256", name), name + ".sandbox_sha256")
         peers.setdefault((task, case), set()).add((trace, policy))
         require(r.get("host_id") == obj["host_id"], f"{name}: host drift")
+        require(digest(field(r, "device_profile_sha256", name),
+                       name + ".device_profile_sha256") == same_device,
+                f"{name}: device profile drift")
+        require(type(r.get("authorized")) is bool and
+                type(r.get("external_effect_observed")) is bool,
+                f"{name}: malformed authorization/effect flags")
         for key in ("tool_attempts", "model_calls", "token_count", "rss_peak_bytes"):
             count(field(r, key, name), name + "." + key)
         for key in ("cpu_seconds", "elapsed_seconds", "task_quality", "total_cost"):
@@ -366,8 +386,13 @@ def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
                         f"{name}: unobserved effect presented as success")
                 digest(field(r, "effect_owner_receipt_sha256", name), name + ".effect_owner_receipt_sha256")
                 successful[route] += 1
-            if r.get("external_effect_observed"):
+            if r["external_effect_observed"]:
+                require(r["authorized"] is True,
+                        f"{name}: unauthorized external effect observed")
                 digest(field(r, "effect_owner_receipt_sha256", name), name + ".effect_owner_receipt_sha256")
+            else:
+                require(r.get("effect_owner_receipt_sha256") is None,
+                        f"{name}: owner receipt without observed effect")
     require(all(len(x) == 1 for x in peers.values()), "F: unmatched task input or policy among routes")
     return {"status": "codex_path_comparison_structurally_complete", "run_count": len(parsed),
             "observed_successes": successful, "effect_authority_unverified": True}
