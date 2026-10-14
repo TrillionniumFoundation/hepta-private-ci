@@ -256,7 +256,9 @@ fn research_q24_head_sign_margin(
     if !(5..=256).contains(&activation_q24.len())
         || activation_q24.iter().any(|v| !(-H..=H).contains(v))
     {
-        return Err(fail("quantized Head margin requires bounded native Q24 activation"));
+        return Err(fail(
+            "quantized Head margin requires bounded native Q24 activation",
+        ));
     }
     let twice_margin = u64::try_from(activation_q24.len() * 9 + 1)
         .map_err(|_| fail("research margin width overflow"))?;
