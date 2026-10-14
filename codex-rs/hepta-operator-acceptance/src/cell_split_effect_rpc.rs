@@ -878,12 +878,8 @@ mod tests {
         ));
         // A live socket remains reachable with a fresh budget, without
         // granting any effect authority or creating an owner receipt.
-        let stream = connect_owner_with_deadline(
-            &path,
-            Instant::now(),
-            Duration::from_secs(1),
-        )
-        .expect("bounded Unix connect");
+        let stream = connect_owner_with_deadline(&path, Instant::now(), Duration::from_secs(1))
+            .expect("bounded Unix connect");
         let (accepted, _) = listener.accept().expect("real listener accepted");
         drop(accepted);
         drop(stream);
