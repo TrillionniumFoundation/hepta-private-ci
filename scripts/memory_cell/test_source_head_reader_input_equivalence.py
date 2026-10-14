@@ -148,6 +148,16 @@ class ReaderInputIdentityTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "source pool drift"):
             check(args)
 
+    def test_nonfinite_sgd_update_receipts_are_rejected(self):
+        for value in (float("inf"), float("-inf"), float("nan")):
+            with self.subTest(value=str(value)):
+                args = list(deepcopy(fixture()))
+                args[1]["training"]["teacher_sgd"][
+                    "actual_update_squared_l2"
+                ] = value
+                with self.assertRaisesRegex(ValueError, "provenance"):
+                    check(args)
+
     def test_training_update_receipt_cannot_be_missing_or_forged(self):
         for k, v in (("gradient_updates", 0), ("parameter_count", 200), ("actual_update_squared_l2", 0)):
             args = list(deepcopy(fixture()))
