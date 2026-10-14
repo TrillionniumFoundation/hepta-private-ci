@@ -3,8 +3,9 @@
 
 use codex_hepta_infer_core::NeuronFeatureReceiptV1;
 use codex_hepta_infer_core::NeuronFeatureRequestV1;
+use codex_hepta_infer_core::NeuronFeatureRequestViewV1;
 use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
-use codex_hepta_infer_core::verify_neuron_feature_receipt_v1;
+use codex_hepta_infer_core::verify_neuron_feature_receipt_view_v1;
 use codex_hepta_types::StableId;
 
 use crate::LocalModelRuntimeReceiptV1;
@@ -22,6 +23,26 @@ pub trait NeuronInferenceControlPort {
         &mut self,
         request: &NeuronFeatureRequestV1,
     ) -> Result<NeuronFeatureReceiptV1, NeuronModelError>;
+
+    /// Optional borrow-only hot path for an in-process compatible backend.
+    /// Existing implementations still work through the owned V1 fallback,
+    /// which necessarily copies the feature slice to the worker wire format.
+    fn execute_feature_view(
+        &mut self,
+        request: &NeuronFeatureRequestViewV1<'_>,
+    ) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
+        self.execute_feature(&NeuronFeatureRequestV1 {
+            request_id: request.request_id.clone(),
+            generation: request.generation,
+            model_id: request.model_id.clone(),
+            encoder_digest: request.encoder_digest,
+            head_digest: request.head_digest,
+            weights_digest: request.weights_digest,
+            input_digest: request.input_digest,
+            feature_vector_q24: request.feature_vector_q24.to_vec(),
+            expected_output_width: request.expected_output_width,
+        })
+    }
 }
 
 pub struct InferenceControlModelPort<'a, P: NeuronInferenceControlPort> {
@@ -39,19 +60,19 @@ impl<P: NeuronInferenceControlPort> NeuronModelPort for InferenceControlModelPor
         &mut self,
         request: &NeuronModelRequestV1,
     ) -> Result<NeuronModelOutputV1, NeuronModelError> {
-        let control_request = NeuronFeatureRequestV1 {
-            request_id: request.request_id.clone(),
+        let control_request = NeuronFeatureRequestViewV1 {
+            request_id: &request.request_id,
             generation: request.generation,
-            model_id: request.model_id.clone(),
+            model_id: &request.model_id,
             encoder_digest: request.encoder_digest,
             head_digest: request.head_digest,
             weights_digest: request.weights_digest,
             input_digest: request.input_digest,
-            feature_vector_q24: request.feature_vector_q24.clone(),
+            feature_vector_q24: &request.feature_vector_q24,
             expected_output_width: request.expected_output_width,
         };
-        let receipt = self.control.execute_feature(&control_request)?;
-        verify_neuron_feature_receipt_v1(&control_request, &receipt)
+        let receipt = self.control.execute_feature_view(&control_request)?;
+        verify_neuron_feature_receipt_view_v1(&control_request, &receipt)
             .map_err(|_| NeuronModelError::Rejected)?;
         match receipt.status {
             NeuronFeatureTerminalStatusV1::Succeeded => {}
