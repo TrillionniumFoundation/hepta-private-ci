@@ -327,10 +327,7 @@ fn local_original_frontier_flushes_real_queued_rows_before_reporting() {
         assert_ne!(last.head_digest, first.head_digest);
     }
     let mut reopened = MetricsGroupCommitV1::open(&path).expect("same original WAL");
-    assert_eq!(
-        reopened.read_local_original_frontier().expect("on-disk readback"),
-        last
-    );
+    assert_eq!(reopened.read_local_original_frontier().expect("on-disk readback"), last);
 }
 
 #[cfg(unix)]
@@ -352,9 +349,6 @@ fn local_original_frontier_does_not_ack_tampered_live_wal() {
     std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))
         .expect("private replacement");
 
-    assert_eq!(
-        sink.local_original_frontier(),
-        Err(PhaseMetricSinkErrorV1::Unavailable)
-    );
+    assert_eq!(sink.local_original_frontier(), Err(PhaseMetricSinkErrorV1::Unavailable));
     assert!(!sink.healthy());
 }

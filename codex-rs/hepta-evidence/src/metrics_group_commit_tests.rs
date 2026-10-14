@@ -576,10 +576,7 @@ fn local_original_frontier_counts_only_original_fsynced_groups() {
     assert_eq!(empty.wal_bytes, 0);
 
     owner.stage(sample(MetricPhaseV1::Cas)).expect("pending");
-    assert_eq!(
-        owner.read_local_original_frontier().expect("no fake fsync"),
-        empty
-    );
+    assert_eq!(owner.read_local_original_frontier().expect("no fake fsync"), empty);
     let receipt = owner.flush().expect("fsynced").expect("original group");
     let committed = owner.read_local_original_frontier().expect("readback");
     assert_eq!(committed.sequence, 1);
@@ -587,10 +584,7 @@ fn local_original_frontier_counts_only_original_fsynced_groups() {
     assert_eq!(committed.head_digest, receipt.head_digest);
     assert!(committed.wal_bytes > 0);
     owner.stage(sample(MetricPhaseV1::Cns)).expect("staged");
-    assert_eq!(
-        owner.read_local_original_frontier().expect("exclude unflushed rows"),
-        committed
-    );
+    assert_eq!(owner.read_local_original_frontier().expect("exclude unflushed rows"), committed);
 }
 
 #[cfg(unix)]
