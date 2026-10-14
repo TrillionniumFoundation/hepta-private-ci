@@ -288,6 +288,36 @@ fn preflight_pass_without_signed_successor_cannot_mutate_real_runtime() {
 }
 
 #[test]
+fn valid_signed_live_route_cannot_bypass_missing_same_owner_control_prepare() {
+    let key = SigningKey::from_bytes(&[52; 32]);
+    let (runtime, plan, binding, intent, mut port) = fixture(false, false, key.clone(), key);
+    let before = runtime.topology_snapshot().expect("actual predecessor");
+    let signed = port
+        .inspect_live(&binding.cns_id, &plan.scope_digest, &"ab".repeat(32))
+        .expect("genuine signed current route");
+    port.verify_live(&signed).expect("valid original signature");
+    port.verify_preconditions(&plan, &intent)
+        .expect("positive independent preflight");
+    let denied = port
+        .publish_once(&plan, &binding, &intent)
+        .expect_err("Control did not durably prepare same-owner cutover");
+    assert!(denied.contains("no shared durable Control/Neuron cutover transaction"));
+    assert_eq!(
+        runtime
+            .topology_snapshot()
+            .expect("unchanged serving route"),
+        before,
+        "a signed live readback cannot replace a Control transaction"
+    );
+    assert!(
+        port.read_original_commit(&intent.idempotency_key)
+            .expect("read original durable commit")
+            .is_none(),
+        "denied physical cutover cannot mint a positive commit receipt"
+    );
+}
+
+#[test]
 fn typed_cell_split_cutover_rejects_generic_non_split_mutations() {
     use codex_hepta_plasticity::TopologyCandidateKindV2;
     use codex_hepta_plasticity::TopologyCandidateV2;
