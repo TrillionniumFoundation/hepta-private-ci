@@ -55,6 +55,21 @@ impl std::fmt::Display for NduPublicationErrorV1 {
 }
 impl std::error::Error for NduPublicationErrorV1 {}
 
+/// Identifies bytes returned by the original CNS owner after its
+/// independent signed mutation/readback. This hash is not an authorization
+/// token: the caller must verify the original owner signature and live route.
+fn original_cns_receipt_binding(
+    original_receipt_bytes: &[u8],
+) -> Result<Digest32, NduPublicationErrorV1> {
+    if !(64..=32 * 1024).contains(&original_receipt_bytes.len()) {
+        return Err(NduPublicationErrorV1::Invalid);
+    }
+    let mut bound = b"hepta.control.ndu-publication.cns-original-receipt.v1\0".to_vec();
+    bound.extend_from_slice(&(original_receipt_bytes.len() as u64).to_be_bytes());
+    bound.extend_from_slice(original_receipt_bytes);
+    Ok(Digest32::of_bytes(&bound))
+}
+
 #[derive(Clone, Copy)]
 struct Event {
     sequence: u64,
@@ -468,6 +483,25 @@ impl NduPublicationOwnerV1 {
         Ok(state.last_cns_original_receipt_binding)
     }
 
+    /// Compare freshly authenticated original CNS receipt bytes against the
+    /// Control Commit's immutable WAL evidence link. The caller must have
+    /// *already verified* the original runtime key, exact commit identity and
+    /// fresh serving-state readback. This byte comparison does none of those
+    /// authorizations and cannot itself activate a split.
+    pub fn verify_original_cns_receipt_binding(
+        &self,
+        externally_verified_original_receipt_bytes: &[u8],
+    ) -> Result<(), NduPublicationErrorV1> {
+        let expected = self
+            .last_cns_original_receipt_binding()?
+            .ok_or(NduPublicationErrorV1::Stale)?;
+        let observed = original_cns_receipt_binding(externally_verified_original_receipt_bytes)?;
+        if expected != observed {
+            return Err(NduPublicationErrorV1::Stale);
+        }
+        Ok(())
+    }
+
     /// Compatibility-only name. The old single-phase API could write a
     /// successful route cutover without a durable pre-effect Prepare, which
     /// left an ambiguous crash window and bypassed the Neuron Control lane.
@@ -573,14 +607,13 @@ impl NduPublicationOwnerV1 {
         // Original CNS attestations include authenticated operation bindings
         // and a runtime signature. Control never treats a short opaque OK or a
         // caller-supplied digest as a physical completion receipt.
-        if !(64..=32 * 1024).contains(&original_receipt_bytes.len()) {
-            state.poisoned = true;
-            return Err(NduPublicationErrorV1::Indeterminate);
-        }
-        let mut bound = b"hepta.control.ndu-publication.cns-original-receipt.v1\0".to_vec();
-        bound.extend_from_slice(&(original_receipt_bytes.len() as u64).to_be_bytes());
-        bound.extend_from_slice(&original_receipt_bytes);
-        let original_receipt_digest = Digest32::of_bytes(&bound);
+        let original_receipt_digest = match original_cns_receipt_binding(&original_receipt_bytes) {
+            Ok(digest) => digest,
+            Err(_) => {
+                state.poisoned = true;
+                return Err(NduPublicationErrorV1::Indeterminate);
+            }
+        };
         // A rejected Commit is indeterminate even if the external runtime
         // succeeded. Never let another model tick or cutover enter this lane.
         let committed = match state.append(
