@@ -623,4 +623,133 @@ mod tests {
         changed.ndu_snapshot_digest = "cc".repeat(32);
         assert!(assert_selection(&changed).is_err());
     }
+
+    fn evidence_transcript_fixture() -> CellSplitExecutionTranscriptV1 {
+        use codex_hepta_operator_acceptance::CellSplitExecutionIntentV1;
+        use codex_hepta_operator_acceptance::CellSplitExecutionReceiptV1;
+
+        let frozen = plan();
+        let digest = frozen.digest().expect("frozen plan");
+        let steps = [
+            CellSplitExecutionStepV1::ArtifactCas,
+            CellSplitExecutionStepV1::ChildStateMigration,
+            CellSplitExecutionStepV1::CnsRouteCutover,
+            CellSplitExecutionStepV1::SupervisorGenerationFence,
+        ];
+        let receipts = steps
+            .iter()
+            .enumerate()
+            .map(|(index, step)| CellSplitExecutionReceiptV1 {
+                intent: CellSplitExecutionIntentV1 {
+                    schema: "hepta.learning.cell-split.execution-owner.v1".into(),
+                    plan_digest: digest.clone(),
+                    step: *step,
+                    owner_id: frozen.owner_ids[index].clone(),
+                    idempotency_key: format!("{:02x}", index + 1).repeat(32),
+                    previous_receipt_digest: "66".repeat(32),
+                },
+                owner_sequence: index as u64 + 1,
+                output_digest: "77".repeat(32),
+                owner_receipt_bytes: Vec::new(),
+                owner_signature_bytes: Vec::new(),
+                receipt_digest: "88".repeat(32),
+            })
+            .collect();
+        CellSplitExecutionTranscriptV1 {
+            plan: frozen,
+            receipts,
+            transcript_digest: "99".repeat(32),
+        }
+    }
+
+    #[test]
+    fn original_evidence_actor_adapter_never_invents_uncommitted_split_metrics() {
+        use codex_hepta_types::PhaseMetricEventV1;
+        use codex_hepta_types::PhaseMetricKindV1;
+        use codex_hepta_types::PhaseMetricSinkV1 as _;
+        use std::os::unix::fs::PermissionsExt as _;
+
+        let dir = tempfile::tempdir().expect("private original Evidence owner");
+        std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("owner-only journal directory");
+        let sink = DurablePhaseMetricSinkV1::open(
+            dir.path().join("original-split-metrics.wal"),
+            8,
+            4,
+            60_000,
+        )
+        .expect("original Evidence Writer");
+        let transcript = evidence_transcript_fixture();
+        let event = PhaseMetricEventV1 {
+            scope_digest: Digest32::from_array([0x11; 32]),
+            operation_digest: Digest32::from_array([0x01; 32]),
+            phase: PhaseMetricKindV1::Cas,
+            latency_micros: 1,
+            succeeded: true,
+        };
+        sink.record(event).expect("queued original CAS metric");
+        assert_eq!(
+            read_original_cell_split_metric_candidate_v1(&sink, &transcript, 0).unwrap(),
+            None,
+            "unflushed original WAL sample is not independent Evidence"
+        );
+        sink.flush().expect("real original WAL and F1 fsync barriers");
+        let binding = read_original_cell_split_metric_candidate_v1(&sink, &transcript, 0)
+            .expect("original readback")
+            .expect("one committed CAS metric");
+        assert_eq!(binding.phase, 3);
+        assert_eq!(binding.matching_rows, 1);
+        assert_eq!(binding.first_group_sequence, 1);
+        assert_eq!(binding.last_group_sequence, 1);
+        assert_eq!(binding.terminal_group_sequence, 1);
+        assert_eq!(binding.operation_digest, "01".repeat(32));
+        assert_eq!(binding.scope_digest, transcript.plan.scope_digest);
+        assert_eq!(
+            read_original_cell_split_metric_candidate_v1(&sink, &transcript, 2).unwrap(),
+            None,
+            "one CAS metric cannot justify an unrelated CNS effect"
+        );
+        sink.record(event).expect("duplicated telemetry is not a second CAS");
+        sink.flush().expect("second original durable metric group");
+        assert!(
+            read_original_cell_split_metric_candidate_v1(&sink, &transcript, 0).is_err(),
+            "duplicate successful CAS samples must never qualify one original effect"
+        );
+        assert!(sink.healthy(), "a well-formed duplicate is not WAL corruption");
+    }
+
+    #[test]
+    fn original_evidence_adapter_denies_invalid_or_cross_bound_transcripts_before_io() {
+        use std::os::unix::fs::PermissionsExt as _;
+
+        let dir = tempfile::tempdir().expect("private original Evidence owner");
+        std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+            .expect("owner-only journal directory");
+        let sink = DurablePhaseMetricSinkV1::open(
+            dir.path().join("frozen-metrics.wal"),
+            8,
+            2,
+            60_000,
+        )
+        .expect("original Evidence Writer");
+        let mut forged = evidence_transcript_fixture();
+        forged.receipts[0].intent.idempotency_key = "00".repeat(32);
+        assert!(read_original_cell_split_metric_candidate_v1(&sink, &forged, 0).is_err());
+        let mut cross_bound = evidence_transcript_fixture();
+        cross_bound.receipts[0].intent.owner_id = "unexpected-owner".into();
+        assert!(read_original_cell_split_metric_candidate_v1(&sink, &cross_bound, 0).is_err());
+        let mut missing = evidence_transcript_fixture();
+        missing.receipts.pop();
+        assert!(read_original_cell_split_metric_candidate_v1(&sink, &missing, 0).is_err());
+        assert!(
+            read_original_cell_split_metric_candidate_v1(
+                &sink,
+                &evidence_transcript_fixture(),
+                4,
+            )
+            .is_err()
+        );
+        assert!(sink.healthy(), "rejected read-only callers do not poison Evidence");
+    }
+
 }
