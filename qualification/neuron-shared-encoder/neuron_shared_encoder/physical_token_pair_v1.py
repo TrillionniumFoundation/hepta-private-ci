@@ -22,6 +22,7 @@ from .physical_pooled_replay_v1 import MODEL, read_public_physical_features
 from .token_reader_offline import INPUT_ENCODING, NORMALIZATION, _joint_text, _tokenize_and_capture
 from .token_reader_cost_v1 import cached_pooled_logits, prepared_token_query_logits
 from .token_reader_v1 import CellHead, snapshot_sha256
+from .token_stream_binding_v2 import read_checked_preflight
 from .trained_head_artifacts_v1 import (
     PinnedHeadArtifactV1, _canonical, load_pinned_trained_bank_v1, seal_head_v1,
 )
@@ -302,7 +303,8 @@ def run_pinned_historical_token_pair(*, archive_path: Path, archive_sha256: str,
                                      steps: int = 20, seeds: tuple[int,...]=(11,23,47),
                                      max_length: int = 128, encoder_batch: int = 8,
                                      output: Path, allow_synthetic: bool = False,
-                                     synthetic_capture: Callable | None = None) -> dict:
+                                     synthetic_capture: Callable | None = None,
+                                     tokenizer_preflight: Path | None = None) -> dict:
     """Fail closed if original publisher source or local real model is missing.
 
     `synthetic_capture` may be used ONLY against a non-physical synthetic
@@ -338,6 +340,13 @@ def run_pinned_historical_token_pair(*, archive_path: Path, archive_sha256: str,
         if any(not (checkpoint_dir/name).is_file() or (checkpoint_dir/name).is_symlink()
                or sha256_file(checkpoint_dir/name)!=digest for name,digest in expected.items()):
             raise ValueError('physical staged model file identity differs from original publisher')
+        if tokenizer_preflight is None:
+            raise ValueError('real pretrained token stream requires checked tokenizer preflight')
+        preflight = read_checked_preflight(
+            tokenizer_preflight, source_sha256=archive_sha256,
+            tokenizer_sha256=expected['tokenizer.json'],
+            model_id=MODEL['modernbert'][1], revision=MODEL['modernbert'][2],
+            max_length=max_length, batch=encoder_batch)
         verify_checkpoint_bundle(checkpoint_dir,'modernbert-joint',bundle_sha256)
         backend=OfflineEncoder('modernbert-joint',str(checkpoint_dir),
                                expected['model.safetensors'],device='cpu',max_length=max_length,
@@ -349,7 +358,11 @@ def run_pinned_historical_token_pair(*, archive_path: Path, archive_sha256: str,
         texts=[row['joint_text'] for row in by_cell[cell]]
         if real:
             tokens,mask,measurement=_tokenize_and_capture(backend,texts,
-                                           max_length=max_length,batch=encoder_batch)
+                                           max_length=max_length,batch=encoder_batch,
+                                           cell_index=cell,
+                                           input_sha256=[r['input_sha256'] for r in by_cell[cell]])
+            if measurement['ordered_active_token_ids_sha256'] != preflight['cell_stream_sha256'][cell]:
+                raise ValueError('actual pretrained forward token IDs differ from pinned preflight')
         else:
             if synthetic_capture is None:
                 raise ValueError('synthetic archive requires explicitly passed test capture')
@@ -375,7 +388,10 @@ def run_pinned_historical_token_pair(*, archive_path: Path, archive_sha256: str,
          model_revision=MODEL['modernbert'][2],
          encoder_observation={'cells':observed,
                               'capture_profile':{'max_length':max_length,
-                                                 'batch':encoder_batch}},
+                                                 'batch':encoder_batch},
+                              **({'pinned_tokenizer_preflight_sha256':
+                                   preflight['preflight_file_sha256']}
+                                 if real else {})},
          rank=8,steps=steps,seeds=seeds)
     return report
 
@@ -386,6 +402,7 @@ def main() -> None:
     parser.add_argument('--source-sha256',required=True)
     parser.add_argument('--checkpoint-dir',type=Path,required=True)
     parser.add_argument('--bundle-sha256',required=True)
+    parser.add_argument('--tokenizer-preflight', type=Path)
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--max-length',type=int,default=128)
     parser.add_argument('--encoder-batch',type=int,default=8)
@@ -396,7 +413,8 @@ def main() -> None:
          archive_sha256=args.source_sha256,checkpoint_dir=args.checkpoint_dir,
          bundle_sha256=args.bundle_sha256,output=args.output,
          max_length=args.max_length,encoder_batch=args.encoder_batch,
-         steps=args.steps,seeds=tuple(args.seeds))
+         steps=args.steps,seeds=tuple(args.seeds),
+         tokenizer_preflight=args.tokenizer_preflight)
 
 
 if __name__=='__main__':
