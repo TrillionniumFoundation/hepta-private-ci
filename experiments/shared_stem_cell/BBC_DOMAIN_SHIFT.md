@@ -42,6 +42,31 @@ change the production model, or silently rework the old research experiment.
   unsupported coverage and actual Encoder/Head work receipts; **never**
   republish copyrighted BBC article text or model weights in Actions artifacts.
 
+## Fifth precommitted virtual Head route, not post-hoc BBC selection
+
+The original frozen panel executes **four physical arms**: bank, shared,
+residual-corrected and standalone linear distilled. This study additionally
+computes a **fifth virtual comparison**, \`shared_cell0_residual_cell1\`, using
+the fixed AG-development routing hypothesis: Cell 0 takes the shared Head
+probabilities; Cell 1 takes the shared+linear-residual probabilities.
+The route is fixed in source before BBC sample labels are read and is recomputed
+by the evaluator from the four archived probability matrices. Altering it,
+dropping a parent arm, or selecting per BBC outcome invalidates the receipt.
+
+For every eligible mapped BBC row, report paired **gains, losses, both-correct,
+both-wrong** versus the unchanged Bank, including per-Cell discordance. The
+unmapped entertainment category is excluded from four-way proxy correctness,
+not from the source coverage/OOD confidence census. No choice is made among
+five arms on BBC labels. This pairing is descriptive across nonmatching
+ontologies, NOT a retention bound or a right to promote.
+
+The fifth arm causes **zero additional model inference in this research
+evaluation**, because all parent physical arms already executed. That does
+NOT mean zero deployment FLOPs: real one-arm serving would require one shared
+forward plus a residual forward on Cell 1 inputs, and its independent p95/p99,
+energy and end-to-end cost are **not** measured here. Report the four-arm
+research work separately from any hypothetical serving portfolio.
+
 ## Valid and invalid claims
 
 Different **publication family** offers a useful domain shift. Its label

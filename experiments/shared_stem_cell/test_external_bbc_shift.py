@@ -52,7 +52,7 @@ class ShiftTests(unittest.TestCase):
     def test_unknown_label_never_mapped_to_one_of_four_ag_classes(self):
         rows = b.public_cohort(b.sample(self.texts()))
         labels = ["business", "sport", "politics", "tech", "entertainment"] * 25 + ["business"] * 3
-        frozen = {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.ARMS}
+        frozen = b.compose_frozen_hybrid(rows, {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.BASE_ARMS})
         result = b.score_sealed(frozen, labels, rows)
         self.assertEqual(result["unsupported"], 25)
         self.assertEqual(result["proxy_eligible"], 103)
@@ -66,7 +66,7 @@ class ShiftTests(unittest.TestCase):
     def test_unsupported_category_high_confidence_is_reported_not_scored(self):
         rows = b.public_cohort(b.sample(self.texts()))
         labels = ["entertainment" if i % 8 == 0 else "business" for i in range(128)]
-        probabilities = {arm: [[0.01, 0.01, 0.96, 0.02] for _ in rows] for arm in b.ARMS}
+        probabilities = b.compose_frozen_hybrid(rows, {arm: [[0.01, 0.01, 0.96, 0.02] for _ in rows] for arm in b.BASE_ARMS})
         report = b.score_sealed(probabilities, labels, rows)
         for arm in b.ARMS:
             score = report["scores"][arm]
@@ -86,7 +86,7 @@ class ShiftTests(unittest.TestCase):
     def test_missing_arm_malformed_probs_and_bad_source_reject(self):
         rows = b.public_cohort(b.sample(self.texts()))
         labels = ["business"] * 120 + ["entertainment"] * 8
-        frozen = {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.ARMS}
+        frozen = b.compose_frozen_hybrid(rows, {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.BASE_ARMS})
         for wrong in (dict(list(frozen.items())[:-1]),
                       {**frozen, "bank": frozen["bank"][:-1]},
                       {**frozen, "bank": [[0.2, 0.2, 0.2, 0.2]] + frozen["bank"][1:]}):
@@ -98,7 +98,7 @@ class ShiftTests(unittest.TestCase):
     def test_shared_producer_write_once_bytes_score_without_reinterpretation(self):
         from experiments.shared_stem_cell import wire
         rows = b.public_cohort(b.sample(self.texts()))
-        probabilities = {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.ARMS}
+        probabilities = b.compose_frozen_hybrid(rows, {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.BASE_ARMS})
         packet = {"schema": b.SCHEMA, "source_revision": b.REVISION,
                   "cohort_sha256": b.digest(wire.canonical(rows)),
                   "case_ids": [r["case_id"] for r in rows],
@@ -123,7 +123,7 @@ class ShiftTests(unittest.TestCase):
 
     def test_prediction_and_cohort_bytes_must_seal_before_label_callback(self):
         rows = b.public_cohort(b.sample(self.texts()))
-        probs = {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.ARMS}
+        probs = b.compose_frozen_hybrid(rows, {arm: [[0.1, 0.1, 0.7, 0.1] for _ in rows] for arm in b.BASE_ARMS})
         cohort_raw = b.canonical(rows)
         cohort_sha = b.digest(cohort_raw)
         packet = {"schema": b.SCHEMA, "source_revision": b.REVISION,
@@ -185,6 +185,37 @@ class ShiftTests(unittest.TestCase):
         prefix = " ".join(original.split())[:b.PREFIX]
         rows = b.sample(texts, excluded=[prefix])
         self.assertTrue(all(r["source_index"] != 0 for r in rows))
+
+    def test_frozen_hybrid_is_label_independent_and_pairs_are_per_cell(self):
+        rows = b.public_cohort(b.sample(self.texts()))
+        correct = [0.05, 0.05, 0.85, 0.05]
+        wrong = [0.85, 0.05, 0.05, 0.05]
+        physical = {arm: [list(correct) for _ in rows] for arm in b.BASE_ARMS}
+        for i, row in enumerate(rows):
+            physical["shared"][i] = list(correct if row["cell"] == 0 else wrong)
+            physical["residual_corrected"][i] = list(correct if row["cell"] == 1 else wrong)
+        fixed = b.compose_frozen_hybrid(rows, physical)
+        self.assertEqual(fixed[b.HYBRID], [correct] * 128)
+        labels = ["entertainment" if i % 8 == 0 else "business"
+                  for i in range(128)]
+        result = b.score_sealed(fixed, labels, rows)
+        self.assertEqual(result["scores"][b.HYBRID]["proxy_correct"], 112)
+        self.assertEqual(result["paired_vs_bank"][b.HYBRID]["gains"], 0)
+        self.assertEqual(result["paired_vs_bank"][b.HYBRID]["losses"], 0)
+        self.assertEqual(result["paired_vs_bank"]["shared"]["losses"], 56)
+        self.assertFalse(result["frozen_hybrid"]["standalone_deployment_cost_measured"])
+        self.assertFalse(result["frozen_hybrid"]["selected_using_bbc_labels"])
+        self.assertIsNone(result["selected_arm"])
+        # Post-label favorable fifth arm is not a legal independent model.
+        tampered = {key: [list(p) for p in matrix]
+                    for key, matrix in fixed.items()}
+        tampered[b.HYBRID][0] = list(wrong)
+        with self.assertRaises(b.SourceError):
+            b.score_sealed(tampered, labels, rows)
+        bad_routes = [dict(row) for row in rows]
+        bad_routes[0]["cell"] = 2
+        with self.assertRaises(b.SourceError):
+            b.compose_frozen_hybrid(bad_routes, physical)
 
     def test_insufficient_or_duplicate_unlabeled_source_rejects(self):
         with self.assertRaises(b.SourceError):

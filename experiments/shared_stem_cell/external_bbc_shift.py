@@ -19,7 +19,9 @@ COUNT = 128
 PREFIX = 320
 PROXY_CLASSES = {"politics": 0, "sport": 1, "business": 2, "tech": 3}
 UNSUPPORTED = "entertainment"
-ARMS = frozenset({"bank", "shared", "residual_corrected", "linear_distilled"})
+BASE_ARMS = frozenset({"bank", "shared", "residual_corrected", "linear_distilled"})
+HYBRID = "shared_cell0_residual_cell1"
+ARMS = BASE_ARMS | {HYBRID}
 
 
 class SourceError(ValueError):
@@ -116,6 +118,27 @@ def public_cohort(rows):
             for row in rows]
 
 
+def compose_frozen_hybrid(rows, physical):
+    """Fixed AG-derived route: Cell 0 shared, Cell 1 shared+residual.
+
+    This is a virtual fifth *research* arm composed from predictions that
+    were already generated under the four original physical comparators.
+    No BBC label, optimizer step or fifth model forward is consulted.
+    """
+    require(type(rows) is list and len(rows) == COUNT and
+            all(type(row) is dict and type(row.get("cell")) is int
+                and row["cell"] in (0, 1) for row in rows) and
+            type(physical) is dict and set(physical) == BASE_ARMS,
+            "complete physical controls and fixed Cell routes required")
+    for arm in BASE_ARMS:
+        require(type(physical[arm]) is list and len(physical[arm]) == len(rows),
+                "missing complete physical control predictions")
+    return {**physical, HYBRID: [
+        physical["shared"][i] if row["cell"] == 0
+        else physical["residual_corrected"][i]
+        for i, row in enumerate(rows)]}
+
+
 def score_sealed(predictions, labels, rows, *, source_revision=REVISION):
     """Descriptive proxy accuracy only, with an explicit unsupported category."""
     require(source_revision == REVISION and len(rows) == COUNT
@@ -132,6 +155,12 @@ def score_sealed(predictions, labels, rows, *, source_revision=REVISION):
     unsupported = [i for i, v in enumerate(gold) if v is None]
     require(len(covered) >= 16 and len(unsupported) >= 1,
             "insufficient coverage/support probe")
+    # Even a re-hashed sealed file may not substitute an after-label favorable
+    # arm for this AG-development-only, previously fixed Cell route.
+    expected_hybrid = compose_frozen_hybrid(
+        rows, {arm: predictions[arm] for arm in BASE_ARMS})
+    require(predictions[HYBRID] == expected_hybrid[HYBRID],
+            "post-label hybrid selection or fixed-route substitution")
     results = {}
     for arm, probabilities in predictions.items():
         require(type(probabilities) is list and len(probabilities) == len(rows),
@@ -177,11 +206,46 @@ def score_sealed(predictions, labels, rows, *, source_revision=REVISION):
                             "top1_at_least_0_95": sum(v >= 0.95 for v in unsupported_confidences),
                             "per_cell": {str(k): v for k, v in sorted(unsupported_cells.items())},
                         }}
+    paired = {}
+    # Descriptive discordance only. No McNemar-derived promotion or iid claims.
+    for arm in sorted(ARMS - {"bank"}):
+        gains = losses = both_correct = both_wrong = 0
+        cells = {}
+        for index in covered:
+            control_hit = (max(range(4), key=lambda j: predictions["bank"][index][j])
+                           == gold[index])
+            candidate_hit = (max(range(4), key=lambda j: predictions[arm][index][j])
+                             == gold[index])
+            cell = rows[index]["cell"]
+            row = cells.setdefault(cell, {"cases": 0, "gains": 0, "losses": 0,
+                                           "both_correct": 0, "both_wrong": 0})
+            win = int(candidate_hit and not control_hit)
+            loss = int(control_hit and not candidate_hit)
+            agree_correct = int(candidate_hit and control_hit)
+            agree_wrong = int(not candidate_hit and not control_hit)
+            gains += win
+            losses += loss
+            both_correct += agree_correct
+            both_wrong += agree_wrong
+            row["cases"] += 1
+            row["gains"] += win
+            row["losses"] += loss
+            row["both_correct"] += agree_correct
+            row["both_wrong"] += agree_wrong
+        paired[arm] = {"cases": len(covered), "gains": gains, "losses": losses,
+                       "net_correct": gains - losses,
+                       "both_correct": both_correct, "both_wrong": both_wrong,
+                       "per_cell": {str(k): v for k, v in sorted(cells.items())}}
     return {"schema": SCHEMA, "source": SOURCE, "revision": source_revision,
             "sample_count": len(rows), "source_labels": dict(Counter(labels)),
             "proxy_eligible": len(covered), "unsupported": len(unsupported),
             "unsupported_category": UNSUPPORTED, "proxy_mapping": PROXY_CLASSES,
-            "scores": results, "selected_arm": None,
+            "scores": results, "paired_vs_bank": paired,
+            "frozen_hybrid": {"route": {"0": "shared", "1": "residual_corrected"},
+                              "selected_using_bbc_labels": False,
+                              "new_head_forward_calls": 0,
+                              "standalone_deployment_cost_measured": False},
+            "selected_arm": None,
             "same_label_ontology_verified": False,
             "unsupported_confidence_is_not_a_fifth_class_prediction": True,
             "new_ood_calibration_performed": False, "independent_source_family": True,
@@ -304,7 +368,8 @@ def run(study: Path, consolidation: Path, producer_sha: str,
         seal = e.write_once(output / "predictions.json", {"schema": SCHEMA,
             "source_revision": REVISION, "cohort_sha256": cohort_sha,
             "case_ids": [r["case_id"] for r in rows],
-            "predictions": predicted["predictions"], "work": census,
+            "predictions": compose_frozen_hybrid(
+                safe, predicted["predictions"]), "work": census,
             "production_accepted": False})
         assessment = evaluate_published(
             output / "predictions.json", seal, output / "cohort.json", cohort_sha,
