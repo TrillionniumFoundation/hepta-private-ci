@@ -66,6 +66,7 @@ def review(panel,e1,e1_file_sha,e2):
         e2.get('train_case_ids_sha256')!=fit['train_case_ids_sha256'] or
         e2.get('frozen_base_parameters_counted_as_shared_storage')!=fit['head_parameter_count'] or
         e2.get('head_kind')!='post_encoder_feature_gated_residual_not_cell_state_film' or
+        e2.get('frozen_base_weight_storage_shared_among_residual_arms') is not True or
         e2.get('cosine_uses_train_labels_not_no_fit') is not True or
         e2.get('head_parameter_ceiling_by_arm')!=BUDGETS):
         raise Invalid('Head budget/schedule or frozen base accounting drift')
