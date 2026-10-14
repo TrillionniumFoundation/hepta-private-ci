@@ -138,3 +138,47 @@ execution, signatory identity, source-family independence, external objective/ND
 outcomes, a production no-change baseline or native 4,096-Cell capacity.
 It provides a stronger model-data-plane consistency check for E1/E2, not E1–E6
 completion and never production authority.
+
+## E1 public two-Encoder execution pilot: frozen mmBERT-small vs ModernBERT-base
+
+The public-pretrained execution lane now first executes the existing pinned
+mmBERT-small/AG News program and independent 16-checkpoint replay. It then
+runs **another genuine pretrained Encoder** in a separate Python invocation:
+\`answerdotai/ModernBERT-base\` at the exact preselected model revision
+\`fa3113d09d6dacfe5528708803dd92a62240237a\` (Apache-2.0).
+Its publisher safetensors must be present, SHA-verified and materialized
+without conversion, remote code or hidden synthetic weights. Failure is a
+failed hosted job, not a fabricated fallback.
+
+\`public_encoder_pair.py\` reuses the immutable baseline dataset bytes
+verbatim (64 train, 32 calibration, 32 publisher holdout), with the same
+two logical Cell assignments, 20 training steps, seed, batch settings,
+Head architectures and controls; only the Encoder manifest is replaced.
+The two Encoders have different hidden sizes, so **identical architecture does
+not mean equal actual Head parameter count**. Both are constrained to
+a **16,384 trainable parameter maximum per Cell**; physical parameter
+counts and resident memory must be disclosed. Initial Encoder download
+and separate-process loading are not treated as steady-state latency.
+
+\`public_encoder_pair_review.py\` independently rechecks both published
+preflight reports and all 16 learned/frozen saved Head checkpoint predictions,
+rejects changed rows/train knobs/model revisions/missing prediction pairs,
+and reports exactly matched correctness gains/losses/ties and Brier on
+the publisher's 32 original holdout cases. Neither a synthetic fixture nor
+any unsupported Encoder is silently counted as another observed arm.
+
+This is **a two-Encoder feasibility comparison**, not the preregistered
+full E1 four-Encoder evaluation, five-budget E2 curve, production no-change
+baseline, Laya 421M comparator, real future NDU or 64–4096 physical Cell
+scaling acceptance. No statistical independence is proved by AG News row IDs.
+A clean result is retained as retrospective research only, with
+\`four_encoder_e1_completed=false\`,
+\`five_head_budgets_e2_completed=false\`,
+\`future_ndu_utility_evaluated=false\` and
+\`production_accepted=false\`.
+
+Run the actual hosted \`public-pretrained-smoke\` lane; exact-source CI stores
+the ModernBERT publisher hashes, bounded dataset, Head weights, sealed
+predictions and paired-review receipt, **never any downloaded base-model
+weights**. A failed provision or execution retains the job log and does
+not synthesize a paired review.
