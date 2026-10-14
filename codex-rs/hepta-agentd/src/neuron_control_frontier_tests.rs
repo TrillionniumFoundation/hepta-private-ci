@@ -4,7 +4,10 @@ use super::*;
 #[test]
 fn adapter_uses_same_durable_control_owner_for_reads_and_checkpoint_publication() {
     use codex_hepta_types::Generation;
+    use std::os::unix::fs::PermissionsExt;
     let dir = tempfile::tempdir().expect("private root");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("Control WAL parent must be owner-only");
     let scope = StableId::new("subject").unwrap();
     let snapshot = NduSnapshotRefV1 {
         scope_id: scope.clone(),
