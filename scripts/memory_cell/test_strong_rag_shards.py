@@ -179,6 +179,58 @@ class ShardedReaderContractTests(unittest.TestCase):
                 (folder / "sha-pins.json").write_text(json.dumps(pins) + "\n")
         return cases
 
+    def test_collection_cli_preserves_actual_plan_and_inputs_paths(self):
+        from contextlib import redirect_stdout
+        from io import StringIO
+
+        observed = {}
+
+        def collect(plan, inputs, prep, calibration, shards, output, **pins):
+            observed.update(
+                plan=plan,
+                inputs=inputs,
+                prep=prep,
+                calibration=calibration,
+                shards=shards,
+                output=output,
+                **pins,
+            )
+            return {"read_only_recovery": True}
+
+        arguments = [
+            "strong_rag_shards.py",
+            "evaluation-collect",
+            "/original/plan",
+            "/original/observations",
+            "/joined/prep",
+            "/joined/calibration",
+            "/shards/evaluation",
+            "/release/evaluation",
+            "--plan-sha",
+            "a" * 64,
+            "--policy-sha",
+            "b" * 64,
+        ]
+        with (
+            patch.object(self.shards, "collect_evaluation", side_effect=collect),
+            patch.object(sys, "argv", arguments),
+            redirect_stdout(StringIO()),
+        ):
+            self.shards.main()
+        self.assertEqual(
+            observed,
+            dict(
+                plan=Path("/original/plan"),
+                inputs=Path("/original/observations"),
+                prep=Path("/joined/prep"),
+                calibration=Path("/joined/calibration"),
+                shards=Path("/shards/evaluation"),
+                output=Path("/release/evaluation"),
+                plan_sha="a" * 64,
+                policy_sha="b" * 64,
+            ),
+        )
+
     def test_exact_frozen_calibration_40_and_evaluation_72(self):
         s = self.shards
         self.assertEqual(sum(len(x) for x in s.groups("calibration")), 5)

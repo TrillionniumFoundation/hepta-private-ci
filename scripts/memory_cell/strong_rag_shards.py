@@ -780,7 +780,14 @@ def main():
         p.add_argument("--policy-sha")
     for command in ("calibration-collect", "evaluation-collect"):
         p = sub.add_parser(command)
-        for field in ("prep", "plan", "inputs", "calibration", "shards", "output"):
+        # The evaluation workflow supplies PLAN, INPUTS, PREP, CALIBRATION,
+        # SHARDS, OUTPUT. Calibration intentionally retains its old order.
+        fields = (
+            ("plan", "inputs", "prep", "calibration", "shards", "output")
+            if command == "evaluation-collect"
+            else ("prep", "plan", "inputs", "calibration", "shards", "output")
+        )
+        for field in fields:
             p.add_argument(field, type=Path)
         p.add_argument("--prep-sha")
         p.add_argument("--plan-sha")
