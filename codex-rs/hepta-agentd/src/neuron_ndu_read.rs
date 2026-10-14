@@ -26,6 +26,7 @@ pub enum NduReadVerificationErrorV1 {
     ClockUnavailable,
     FrontierUnavailable,
     StaleFrontier,
+    CheckpointPublicationUnavailable,
     Signature,
 }
 
@@ -40,6 +41,21 @@ impl std::error::Error for NduReadVerificationErrorV1 {}
 /// Provided by the authoritative Control scope owner, never by Cognitive.
 pub trait NduReadFrontierPortV1: fmt::Debug + Send + Sync {
     fn latest(&self, scope: &StableId) -> Result<NduSnapshotRefV1, NduReadVerificationErrorV1>;
+
+    /// Control-owned linearization point for a persisted Neuron checkpoint.
+    /// Read-only frontiers cannot acknowledge model effects as published.
+    /// An authorized implementation MUST share the same exclusive owner lane
+    /// as CNS route cutover and revalidate the exact snapshot and checkpoint.
+    fn compare_and_publish_checkpoint(
+        &self,
+        _expected: &NduSnapshotRefV1,
+        _verified_read_digest: Digest32,
+        _tick_digest: Digest32,
+        _previous_checkpoint: Digest32,
+        _next_checkpoint: Digest32,
+    ) -> Result<Digest32, NduReadVerificationErrorV1> {
+        Err(NduReadVerificationErrorV1::CheckpointPublicationUnavailable)
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -153,6 +169,33 @@ impl NduReadVerifierV1 {
         exact.extend_from_slice(&signed_bytes);
         exact.extend_from_slice(&signed.signature);
         Ok(Digest32::of_bytes(&exact))
+    }
+
+    /// Reverify the independently signed read before asking Control to
+    /// atomically publish against the same durable CNS cutover owner.
+    /// No verified read digest or read-only adapter is publication authority.
+    pub fn compare_and_publish_checkpoint(
+        &self,
+        signed: &SignedNduSnapshotReadV1,
+        tick_digest: Digest32,
+        previous_checkpoint: Digest32,
+        next_checkpoint: Digest32,
+    ) -> Result<Digest32, NduReadVerificationErrorV1> {
+        if tick_digest.is_zero() || next_checkpoint.is_zero() {
+            return Err(NduReadVerificationErrorV1::InvalidReceipt);
+        }
+        let verified_read_digest = self.verify(signed)?;
+        let receipt = self.frontier.compare_and_publish_checkpoint(
+            &signed.snapshot,
+            verified_read_digest,
+            tick_digest,
+            previous_checkpoint,
+            next_checkpoint,
+        )?;
+        if receipt.is_zero() {
+            return Err(NduReadVerificationErrorV1::InvalidReceipt);
+        }
+        Ok(receipt)
     }
 }
 
