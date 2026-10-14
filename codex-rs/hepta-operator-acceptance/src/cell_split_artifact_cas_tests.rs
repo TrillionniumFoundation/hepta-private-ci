@@ -461,6 +461,15 @@ fn single_split_coordinator_persists_real_cas_then_fences_missing_migration_owne
     let parent = fixture.parent.clone();
     let child = fixture.child.clone();
     let server_plan = plan.clone();
+    // A successful step-zero commit is not the end of this fixture's service
+    // lifetime. The coordinator reads the original CAS owner again before a
+    // successor and during restart recovery; closing the listener after five
+    // requests manufactured ECONNREFUSED instead of testing durable state.
+    // Keep the original signer/owner alive until the coordinator explicitly
+    // finishes, with a bounded nonblocking accept loop to avoid hanging CI.
+    listener.set_nonblocking(true).expect("bounded CAS listener");
+    let stop = Arc::new(AtomicBool::new(false));
+    let stop_server = Arc::clone(&stop);
     let server = thread::spawn(move || {
         let backend = CellSplitArtifactCasOwnerV1::open(
             &store,
@@ -478,12 +487,29 @@ fn single_split_coordinator_persists_real_cas_then_fences_missing_migration_owne
             backend,
         )
         .expect("signed CAS owner");
-        for _ in 0..5 {
-            let (mut stream, _) = listener.accept().expect("coordinator CAS call");
-            service
-                .serve_connection(&mut stream)
-                .expect("real signed CAS operation");
+        let started = std::time::Instant::now();
+        let mut requests = 0_usize;
+        while !stop_server.load(Ordering::Acquire) {
+            assert!(
+                started.elapsed() < Duration::from_secs(30),
+                "CAS fixture exceeded bounded owner lifetime"
+            );
+            match listener.accept() {
+                Ok((mut stream, _)) => {
+                    stream.set_nonblocking(false).expect("blocking RPC stream");
+                    service
+                        .serve_connection(&mut stream)
+                        .expect("real signed CAS operation");
+                    requests += 1;
+                    assert!(requests <= 16, "unexpected CAS readback storm");
+                }
+                Err(error) if error.kind() == std::io::ErrorKind::WouldBlock => {
+                    thread::sleep(Duration::from_millis(2));
+                }
+                Err(error) => panic!("CAS listener failed: {error}"),
+            }
         }
+        requests
     });
     let keys = [1_u8, 2, 3, 4].map(|value| SigningKey::from_bytes(&[value; 32]).verifying_key());
     let trust = CellSplitOwnerTrustV1::new(&plan, keys.clone()).expect("independent owners");
@@ -529,7 +555,15 @@ fn single_split_coordinator_persists_real_cas_then_fences_missing_migration_owne
             "unknown migration is not re-executed"
         );
     }
-    server.join().expect("four-step owner test server");
+    stop.store(true, Ordering::Release);
+    // One new effect plus the original-owner preflight and signed readbacks
+    // before/after cutover denial and during coordinator restart. Never use a
+    // missing listener as evidence that the prior physical CAS disappeared.
+    assert_eq!(
+        server.join().expect("four-step owner test server"),
+        7,
+        "real CAS must remain reachable through all predecessor/restart reads"
+    );
 }
 
 #[test]
