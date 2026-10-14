@@ -38,7 +38,17 @@ def test_equal_parameter_training_and_report_is_not_authorizing():
         assert a['parameter_count'] == b['parameter_count'] == report['parameter_count']
         assert len(run['train_sampling_sha256']) == 64
     again = equal_parameter_nonlinear_trial(x, y, rows, seeds=(7, 19), steps=2, batch=8)
-    assert [r['candidates'] for r in report['runs']] == [r['candidates'] for r in again['runs']]
+    # BLAS kernels may differ in the last FP bits even with identical samples.
+    # Preserve tight numeric reproducibility without claiming bit identity.
+    for observed, replayed in zip(report['runs'], again['runs']):
+        for kind in ('dynamic_gate', 'swiglu'):
+            left, right = observed['candidates'][kind], replayed['candidates'][kind]
+            assert left['parameter_count'] == right['parameter_count']
+            assert left['optimizer_state_bytes'] == right['optimizer_state_bytes']
+            for split in ('validation', 'future'):
+                for metric in ('accuracy', 'brier', 'ece_15', 'nll'):
+                    assert left[split][metric] == pytest.approx(right[split][metric], abs=1e-6)
+            assert left['ood_auroc_msp'] == pytest.approx(right['ood_auroc_msp'], abs=1e-6)
     assert [r['train_sampling_sha256'] for r in report['runs']] == [r['train_sampling_sha256'] for r in again['runs']]
 
 
