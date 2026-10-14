@@ -41,6 +41,8 @@ jobs:
             --profile riccati_solver_v1 --output riccati-study 2>&1 | tee riccati-study.log
           PYTHONPATH=qualification/neuron-stem python3 qualification/neuron-stem/fbsde_study.py \
             --profile continuation_workspace_v1 --output workspace-study 2>&1 | tee workspace-study.log
+          PYTHONPATH=qualification/neuron-stem python3 qualification/neuron-stem/fbsde_study.py \
+            --profile global_obstruction_v1 --output obstruction-study 2>&1 | tee obstruction-study.log
           git diff --exit-code
       - name: Retain original source, measurements and failures
         if: always()
@@ -59,6 +61,8 @@ jobs:
             riccati-study/
             workspace-study.log
             workspace-study/
+            obstruction-study.log
+            obstruction-study/
           if-no-files-found: error
           retention-days: 30
 
