@@ -491,8 +491,14 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         self.assertIn("verify_strict(", code)
         self.assertIn("proof.challenge_nonce != nonce", code)
         self.assertIn("proof.sequence < previous.sequence", code)
+        self.assertIn("proof.sequence == previous.sequence && observed != *previous", code)
+        self.assertIn("proof.wal_bytes <= previous.wal_bytes", code)
+        self.assertIn("proof.route_fence < previous.route_fence", code)
         self.assertIn("proof.wal_inode != previous.wal_inode", code)
-        self.assertIn("read_control_highwater", code)
+        # The closed-world lexer intentionally strips Rust string literals.
+        # Verify the literal RPC method against source bytes, not stripped code.
+        raw = (ROOT / path).read_text(encoding="utf-8")
+        self.assertIn('const READ_METHOD: &str = "read_control_highwater";', raw)
         # An RPC read may send identity and freshness only, never the original
         # local WAL frontier for an untrusted service to echo-sign.
         self.assertNotRegex(code, r"pub\s+fn\s+sign_|SigningKey")
@@ -507,6 +513,9 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "signed_unix_observer_requests_only_scope_split_and_fresh_challenge",
             "mismatched_signer_or_signed_replayed_nonce_never_returns_evidence",
             "even_a_validly_signed_remote_rollback_is_denied_by_client_ratchet",
+            "signed_same_sequence_cannot_rewrite_checkpoint_or_frozen_plan",
+            "signed_newer_sequence_cannot_shrink_original_wal_or_lower_fences",
+            "valid_signed_control_wal_append_is_accepted_without_evicting_history",
             "malformed_denial_and_oversized_frame_are_rejected_before_positive_proof",
             "missing_or_symlinked_socket_and_unbounded_timeout_fail_closed",
             "truncated_frame_times_out_within_bounded_read_budget",
