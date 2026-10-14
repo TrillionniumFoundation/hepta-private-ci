@@ -153,6 +153,49 @@ Selector and Executor must each approve a separate future-snapshot candidate
 before production change. No data or physical target-host receipts are bundled
 with this PR.
 
+## Strict 100-slot signed target-host telemetry (A4 structural gate)
+
+The additional 'a4_end_to_end_gate.py' refuses a partial experiment. Supply
+an independently provisioned and trusted host signer, frozen exact host ID,
+Git commit, Encoder bundle SHA, host-profile SHA, current signed-format A0
+training receipt, 20 physical private candidate files and selected V1 blob.
+The signed payload schema is 'hepta.neuron.a4-end-to-end-host-100-slot.v1',
+with 5 parameter caps x (frozen V1 + 4 candidates) x 4 requested
+Cell scales = **100 distinct receipts**.
+
+Each target-host sample must report the *complete request*, not just the Q24
+tick: actual source model-load/worker/CAS/WAL/final-use/signature/CNS/fence/
+revocation receipt digests; host-observed Encoder forward rows and calls;
+request and batch latency distributions; real CPU, process-tree peak RSS,
+GPU peak allocation/total use, throughput, cold load, WAL writes, recovery,
+lost acknowledged replay, and successful scope-bound reopen, fence, revoke
+and model deduplication checks. All 20 candidate safetensors are re-opened,
+structurally parsed, compared with recorded parameter counts and pinned SHA;
+minGRU tensor geometry is independently rechecked. Every host row binds the
+physical weight SHA. The selected V1 is always the same frozen baseline.
+
+    python qualification/neuron-gated-sparse-v3/a4_end_to_end_gate.py \
+      --signed-host-receipts /host/frozen-signed-a4.json \
+      --trusted-host-public-key /independent/trusted-host.pem \
+      --host-id "$HEPTA_HOST_ID" \
+      --training-receipt /study/training-receipt.json \
+      --training-sha256 "$SHA_TRAIN_RECEIPT" \
+      --trained-root /study/ \
+      --selected-v1 /owner-selected/v1.safetensors \
+      --selected-v1-sha256 "$SHA_OWNER_BASELINE" \
+      --expected-commit "$EXACT_GIT_SHA" \
+      --expected-encoder-bundle-sha "$ENCODER_BUNDLE_SHA" \
+      --expected-host-profile-sha "$HOST_PROFILE_SHA" \
+      --report /review/a4-host-structural-review.json
+
+This CLI does **not** execute the workload. It rejects incomplete/tampered
+resource claims and always emits 'trusted_host_execution_independently_attested
+=false', 'ndu_eligible=false', 'production_qualification=false' even when all
+100 slots and their signatures/physical source hashes are structurally valid.
+A genuinely independent operator must verify the host signer, time/order,
+actual inference and recovery, causality and NDU before any production cutover.
+No target-host receipts are included in the source or CI.
+
 ## Testing
 
     python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
