@@ -15,8 +15,8 @@ use std::io::Read as _;
 use std::sync::Arc;
 
 use codex_hepta_contracts::FinalUseAuthority;
-use codex_hepta_control_plane::NduPublicationOwnerV1;
 use codex_hepta_contracts::SignedFinalUseGrant;
+use codex_hepta_control_plane::NduPublicationOwnerV1;
 use codex_hepta_operator_acceptance::CellSplitCnsLiveRouteV1;
 use codex_hepta_operator_acceptance::CellSplitCnsRouteBindingV1;
 use codex_hepta_operator_acceptance::CellSplitCnsRuntimeAttestationV1;
@@ -333,9 +333,9 @@ impl<W: CellSplitCnsKernelWitnessV1> CellSplitCnsRuntimePortV1
         // unavailable until a reviewed, durable pre-effect Prepare / post-
         // effect Commit protocol holds the SAME Control owner as Neuron CAS,
         // and recovery quarantines a crash between the two writes.
-        self.atomic_control_cutover_owner.as_ref().ok_or(
-            "CNS mutation denied: no shared durable Control/Neuron cutover transaction",
-        )?;
+        self.atomic_control_cutover_owner
+            .as_ref()
+            .ok_or("CNS mutation denied: no shared durable Control/Neuron cutover transaction")?;
         self.verify_pin(plan, intent)?;
         if binding != &self.binding {
             return Err("CNS cutover binding changed".into());
