@@ -762,6 +762,7 @@ fn cell_split_cns_runtime_port_denies_without_original_control_owner() -> Result
     use std::fs;
     use std::io::Write as _;
     use std::os::unix::fs::OpenOptionsExt as _;
+    use std::os::unix::fs::PermissionsExt as _;
     use std::path::PathBuf;
 
     use codex_hepta_contracts::SignedFinalUseGrant;
@@ -1074,6 +1075,9 @@ fn cell_split_cns_runtime_port_denies_without_original_control_owner() -> Result
     )
     .map_err(|e| anyhow::anyhow!("{e}"))?;
     let owner_root = tempfile::tempdir()?;
+    // Enforce the same 0700 original-owner root required in production;
+    // never relax the owner security gate for a test fixture.
+    fs::set_permissions(owner_root.path(), fs::Permissions::from_mode(0o700))?;
     let mut owner = codex_hepta_operator_acceptance::CellSplitCnsCutoverOwnerV1::open(
         owner_root.path(),
         plan,
@@ -1083,8 +1087,8 @@ fn cell_split_cns_runtime_port_denies_without_original_control_owner() -> Result
     .map_err(|e| anyhow::anyhow!("{e}"))?;
     use codex_hepta_operator_acceptance::CellSplitDurableEffectBackendV1 as _;
     assert!(
-        owner.read_committed(&intent).is_err(),
-        "committed runtime receipt cannot activate a fresh old-generation host",
+        owner.read_committed(&intent)?.is_none(),
+        "without an original Control/CNS commit a fresh host must return no effect",
     );
     Ok(())
 }
