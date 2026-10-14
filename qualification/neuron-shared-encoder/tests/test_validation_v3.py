@@ -124,36 +124,6 @@ def test_reuse_counts_physical_encoder_calls_and_rows():
     assert public['authorization_verified'] is False
 
 
-def test_public_feature_reuse_is_source_isolated_by_default():
-    rows = dataset(8)
-    calls = []
-    def encoder(batch):
-        calls.append(len(batch))
-        return torch.ones((len(batch), 4))
-    _, result = reuse_trial(rows, encoder, encoder_digest=D('a'),
-                            tokenizer_digest=D('b'), normalizer_digest=D('c'),
-                            mode='public', batch_size=8)
-    assert result['distinct_input_keys'] == 32
-    assert result['encoder_forward_rows'] == 32
-    assert result['cross_source_reuse_policy'] == 'STRICT_SOURCE_GROUP_ISOLATION'
-    assert sum(calls) == 32
-    assert result['authorization_verified'] is False
-
-
-def test_synthetic_cross_source_only_public_and_never_authorizes():
-    rows = dataset(8)
-    a, b = rows[0], rows[1]
-    kw = dict(encoder_digest=D('a'), tokenizer_digest=D('b'),
-              normalizer_digest=D('c'), mode='public')
-    assert reuse_keys(a, **kw) != reuse_keys(b, **kw)
-    assert reuse_keys(a, **kw, research_synthetic_cross_source=True) == reuse_keys(
-        b, **kw, research_synthetic_cross_source=True)
-    with pytest.raises(ValueError, match='synthetic cross-source'):
-        reuse_keys(a, **{**kw, 'mode': 'joint'}, research_synthetic_cross_source=True)
-    with pytest.raises(ValueError, match='source group'):
-        reuse_keys({**a, 'source_group': ''}, **kw)
-
-
 def test_reuse_key_fences_scope_and_artifacts():
     row = dataset(8)[0]
     opts = dict(encoder_digest=D('a'), tokenizer_digest=D('b'), normalizer_digest=D('c'), mode='public')
@@ -188,42 +158,6 @@ def test_e4_good_future_signal_never_promotes():
     assert result['negative_transfer_group_fraction'] == 0
     assert result['bootstrap_95pct_group_mean_improvement'][0] > 0
     assert result['selection'] == 'NOT_AUTHORIZED'
-    assert result['production_admission'] == 'BLOCKED'
-
-
-def test_e4_prequential_claims_checked_but_never_authorize():
-    rows = dataset(8)
-    baseline, candidate = make_snapshots(rows)
-    future = [r for r in rows if r['split'] == 'future']
-    for row in future:
-        row['event_time'] = '2026-10-12T12:00:00Z'
-    good = {r['row_id']: '2026-10-11T23:00:00+00:00' for r in future}
-    baseline['prediction_committed_at_by_row'] = dict(good)
-    candidate['prediction_committed_at_by_row'] = dict(good)
-    audit = prequential_order_audit(rows, baseline, candidate)
-    assert audit['status'] == 'TEMPORAL_ORDER_CONSISTENT_UNVERIFIED'
-    assert audit['commitment_signature_verified'] is False
-    result = evaluate_shadow(rows, D('d'), baseline, candidate, bootstrap_repeats=100)
-    assert result['prequential_order_audit']['status'] == 'TEMPORAL_ORDER_CONSISTENT_UNVERIFIED'
-    assert result['causal_learning_verified'] is False
-    assert result['selection'] == 'NOT_AUTHORIZED'
-
-
-def test_e4_late_or_partial_predictions_never_certify_causality():
-    rows = dataset(8)
-    baseline, candidate = make_snapshots(rows)
-    future = [r for r in rows if r['split'] == 'future']
-    for row in future:
-        row['event_time'] = '2026-10-12T12:00:00Z'
-    candidate['prediction_committed_at_by_row'] = {
-        r['row_id']: '2026-10-12T12:00:00Z' for r in future}
-    baseline['prediction_committed_at_by_row'] = {
-        r['row_id']: '2026-10-11T23:00:00Z' for r in future[:-1]}
-    result = evaluate_shadow(rows, D('d'), baseline, candidate, bootstrap_repeats=100)
-    issues = result['prequential_order_audit']['issues']
-    assert any('incomplete' in s for s in issues)
-    assert any('not before outcome' in s for s in issues)
-    assert result['causal_learning_verified'] is False
     assert result['production_admission'] == 'BLOCKED'
 
 
@@ -317,3 +251,255 @@ def test_e1_real_run_refuses_missing_staged_weights_without_mock_fallback():
     assert encoder_matrix_contract(matrix)['status'] == 'SCHEMA_COMPLETE_UNVERIFIED'
     with pytest.raises(FileNotFoundError, match='missing local'):
         run_real_encoder_matrix(rows, D('d'), matrix)
+
+
+
+def test_private_state_encoder_is_called_and_cost_is_counted():
+    rows = dataset(4)
+    seen = []
+    def frozen_encoder(batch):
+        seen.extend((r['question'], r['state']) for r in batch)
+        return torch.tensor([[float(len(r['state'])), float(len(r['question']))]
+                             for r in batch])
+    kw = dict(encoder_digest=D('a'), tokenizer_digest=D('b'),
+              normalizer_digest=D('c'), batch_size=16)
+    _, joint = reuse_trial(rows, frozen_encoder, mode='joint', **kw)
+    _, public = reuse_trial(rows, frozen_encoder, mode='public',
+                            research_synthetic_cross_source=True, **kw)
+    _, state = reuse_trial(rows, frozen_encoder, mode='private_state', **kw)
+    assert state['encoder_forward_rows'] == 16  # four states per split
+    assert public['encoder_forward_rows'] == 4
+    assert joint['encoder_forward_rows'] == 16
+    assert sum(r[1] != '' for r in seen) == 32
+    assert all(q == 'Encode the Cell-local state only.'
+               for q, _ in seen if q.startswith('Encode the Cell-local'))
+    assert state['authorization_verified'] is False
+    assert public['encoder_forward_rows'] + state['encoder_forward_rows'] > joint['encoder_forward_rows']
+
+
+def test_private_state_cache_does_not_cross_cell_scope_or_question_identity():
+    row = dataset(4)[0]
+    opts = dict(encoder_digest=D('a'), tokenizer_digest=D('b'),
+                normalizer_digest=D('c'), mode='private_state')
+    original = reuse_keys(row, **opts)
+    assert original == reuse_keys({**row, 'question': 'different',
+                                   'options': ['X', 'Y']}, **opts)
+    assert original != reuse_keys({**row, 'state': 'different'}, **opts)
+    assert original != reuse_keys({**row, 'cell_id': 'cell-other'}, **opts)
+    assert original != reuse_keys({**row, 'organ_id': 'organ-other'}, **opts)
+    assert original != reuse_keys({**row, 'split': 'future'}, **opts)
+    assert original != reuse_keys({**row, 'principal': 'other'}, **opts)
+    with pytest.raises(ValueError, match='scope'):
+        reuse_keys({**row, 'cell_id': ''}, **opts)
+
+
+def five_arm_plan():
+    from neuron_shared_encoder.validation_v3 import FIVE_ARM_CANDIDATES
+    return {
+        'dataset_sha256': D('a'), 'split_manifest_sha256': D('b'),
+        'frozen_no_change_sha256': D('c'), 'data_use_approved': True,
+        'question_option_layout': 'common-state-question-options-v1',
+        'training': {'seed': 42, 'steps': 100, 'batch': 16,
+                     'optimizer': 'AdamW', 'learning_rate': 1e-3},
+        'encoders': {
+            name: {'backend_kind': backend, 'repository': repo or 'reviewed-laya-package',
+                   'revision': 'd' * 40,
+                   'bundle_sha256': format(100 + index, '064x'),
+                   'weights_sha256': format(1 + index, '064x'),
+                   'tokenizer_sha256': D('a'),
+                   'license_approved': True, 'local_code_reviewed': True,
+                   'local_path': '/models/not-provisioned'}
+            for index, (name, backend, repo, _) in enumerate(FIVE_ARM_CANDIDATES)
+        },
+    }
+
+
+def test_a5_exact_five_model_pins_are_required_without_claiming_load():
+    from neuron_shared_encoder.validation_v3 import five_arm_matrix_contract
+    manifest = five_arm_plan()
+    audit = five_arm_matrix_contract(manifest)
+    assert audit['status'] == 'SCHEMA_COMPLETE_UNVERIFIED'
+    assert not audit['real_encoder_runs_completed']
+    assert audit['production_admission'] == 'BLOCKED'
+    assert len(manifest['encoders']) == 5
+    for dropped in manifest['encoders']:
+        bad = deepcopy(manifest)
+        bad['encoders'].pop(dropped)
+        assert five_arm_matrix_contract(bad)['status'] == 'BLOCKED'
+
+
+def test_a5_wrong_gte_identity_revision_or_license_blocks():
+    from neuron_shared_encoder.validation_v3 import five_arm_matrix_contract
+    for field, invalid in [('repository', 'answerdotai/ModernBERT-base'),
+                           ('revision', 'floating-main'), ('license_approved', False),
+                           ('weights_sha256', None), ('backend_kind', 'mmbert-joint')]:
+        bad = deepcopy(five_arm_plan())
+        bad['encoders']['gte-modernbert-base'][field] = invalid
+        assert five_arm_matrix_contract(bad)['status'] == 'BLOCKED', field
+
+
+def test_a5_no_checkpoint_refuses_to_run_before_mock_substitution():
+    from neuron_shared_encoder.validation_v3 import run_real_encoder_matrix
+    with pytest.raises(FileNotFoundError, match='missing local'):
+        run_real_encoder_matrix(dataset(4), D('a'), five_arm_plan(), five_arm=True)
+
+
+def test_a5_same_weights_under_five_names_rejected():
+    from neuron_shared_encoder.validation_v3 import five_arm_matrix_contract
+    spec = five_arm_plan()
+    for arm in spec['encoders'].values():
+        arm['weights_sha256'] = D('f')
+    report = five_arm_matrix_contract(spec)
+    assert report['status'] == 'BLOCKED'
+    assert any('independent model weight' in s for s in report['missing_or_invalid'])
+
+
+def test_a5_bad_optimizer_type_fails_closed():
+    from neuron_shared_encoder.validation_v3 import five_arm_matrix_contract
+    spec = five_arm_plan()
+    spec['training']['optimizer'] = None
+    assert five_arm_matrix_contract(spec)['status'] == 'BLOCKED'
+
+
+def test_e2_future_labels_cannot_resize_option_schema():
+    # Two choices were visible in TRAIN. A future-only third answer is
+    # not allowed to silently change the architecture after training.
+    torch.manual_seed(17)
+    features = torch.randn(16, 8)
+    splits = ['train']*8 + ['validation']*2 + ['future']*3 + ['ood']*3
+    labels = torch.tensor([0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 2, 2, 2, 0, 1, 2])
+    from neuron_shared_encoder.validation_v3 import head_trials
+    with pytest.raises(ValueError, match='outside frozen option space'):
+        head_trials(features, labels, splits, kinds=('linear',),
+                    budgets=(2048,), steps=1)
+    report = head_trials(features, labels, splits, kinds=('linear',),
+                         budgets=(2048,), num_classes=3, steps=1)
+    assert report['frozen_output_class_count'] == 3
+    assert report['class_count_source'] == 'frozen_registered_option_width'
+    assert report['candidates'][0]['status'] == 'EVALUATED_SHADOW'
+
+
+def test_e2_declared_options_not_replaced_with_future_label_max():
+    torch.manual_seed(20)
+    features = torch.randn(16, 8)
+    splits = ['train']*8 + ['validation']*2 + ['future']*3 + ['ood']*3
+    labels = torch.tensor([0, 1]*8)
+    report = head_trials(features, labels, splits, kinds=('linear',),
+                         budgets=(2048,), num_classes=4, steps=1)
+    assert report['frozen_output_class_count'] == 4
+    with pytest.raises(ValueError, match='2..16'):
+        head_trials(features, labels, splits, kinds=('linear',),
+                    budgets=(2048,), num_classes=17, steps=1)
+
+
+def test_v3_identical_option_width_is_not_enough_for_head_comparison():
+    from neuron_shared_encoder.validation_v3 import frozen_option_count
+    rows = dataset(8)
+    assert frozen_option_count(rows) == 2
+    altered = deepcopy(rows)
+    altered[-1]['options'] = ['yes', 'no']
+    with pytest.raises(ValueError, match='identical ordered choices'):
+        frozen_option_count(altered)
+    altered[-1]['options'] = ['no', 'new option']
+    with pytest.raises(ValueError, match='identical ordered choices'):
+        frozen_option_count(altered)
+
+
+def test_v3_fixed_option_inventory_validated_before_real_model_attempt():
+    from neuron_shared_encoder.validation_v3 import run_real_encoder_matrix
+    rows = dataset(8)
+    rows[0]['options'] = ['yes', 'no']
+    with pytest.raises(ValueError, match='identical ordered choices'):
+        run_real_encoder_matrix(rows, D('a'), five_arm_plan(), five_arm=True)
+
+
+def test_e1_manifest_nonfinite_exponent_rejected_before_qualification(tmp_path):
+    from hashlib import sha256
+    from neuron_shared_encoder.validation_v3 import _read_pinned_json
+    path = tmp_path / 'in.json'
+    content = '{"training":{"learning_rate":1e9999}}'
+    path.write_text(content)
+    with pytest.raises(ValueError, match='nonfinite JSON evidence float exponent'):
+        _read_pinned_json(str(path), sha256(content.encode()).hexdigest())
+
+
+def test_e3_public_source_groups_do_not_share_by_default():
+    rows = dataset(8)
+    seen = []
+    def fake_encoder(batch):
+        seen.extend(batch)
+        return torch.ones((len(batch), 3))
+    _, receipt = reuse_trial(rows, fake_encoder, encoder_digest=D('a'),
+                             tokenizer_digest=D('b'), normalizer_digest=D('c'),
+                             mode='public', batch_size=8)
+    assert receipt['distinct_input_keys'] == len(rows)
+    assert receipt['cross_source_reuse_policy'] == 'STRICT_SOURCE_GROUP_ISOLATION'
+    assert receipt['encoder_forward_rows'] == len(rows)
+    _, upper = reuse_trial(rows, fake_encoder, encoder_digest=D('a'),
+                           tokenizer_digest=D('b'), normalizer_digest=D('c'),
+                           mode='public', batch_size=8,
+                           research_synthetic_cross_source=True)
+    assert upper['encoder_forward_rows'] < receipt['encoder_forward_rows']
+    assert upper['cross_source_reuse_policy'] == 'SYNTHETIC_UNVERIFIED_UPPER_BOUND'
+    assert upper['authorization_verified'] is False
+
+
+def test_e3_synthetic_cross_source_rejects_nonpublic_and_missing_group():
+    row = dataset(8)[0]
+    args = dict(encoder_digest=D('a'), tokenizer_digest=D('b'),
+                normalizer_digest=D('c'))
+    with pytest.raises(ValueError, match='synthetic cross-source'):
+        reuse_keys(row, mode='private_state',
+                   research_synthetic_cross_source=True, **args)
+    with pytest.raises(ValueError, match='synthetic cross-source'):
+        reuse_keys(row, mode='joint',
+                   research_synthetic_cross_source=True, **args)
+    with pytest.raises(ValueError, match='source group'):
+        reuse_keys({**row, 'source_group': ''}, mode='public', **args)
+
+
+def test_e4_retrospective_shadow_uses_explicit_label_arrival_not_event_time():
+    rows = dataset(8)
+    base, candidate = make_snapshots(rows)
+    future = [r for r in rows if r['split'] == 'future']
+    for row in future:
+        row['event_time'] = '2026-10-12T12:00:00Z'
+    commits = {r['row_id']: '2026-10-12T12:01:00Z' for r in future}
+    outcomes = {r['row_id']: '2026-10-12T13:00:00Z' for r in future}
+    for snapshot in (base, candidate):
+        snapshot['prediction_committed_at_by_row'] = dict(commits)
+        snapshot['outcome_available_at_by_row'] = dict(outcomes)
+    order = prequential_order_audit(rows, base, candidate)
+    assert order['status'] == 'TEMPORAL_ORDER_CONSISTENT_UNVERIFIED'
+    report = evaluate_shadow(rows, D('d'), base, candidate, bootstrap_repeats=100)
+    assert report['prequential_order_audit']['status'] == 'TEMPORAL_ORDER_CONSISTENT_UNVERIFIED'
+    assert report['causal_learning_verified'] is False
+    assert report['production_admission'] == 'BLOCKED'
+
+
+def test_e4_missing_late_or_disagreeing_label_arrivals_fail_temporal_check():
+    rows = dataset(8)
+    base, candidate = make_snapshots(rows)
+    future = [r for r in rows if r['split'] == 'future']
+    for row in future:
+        row['event_time'] = '2026-10-12T12:00:00Z'
+    commits = {r['row_id']: '2026-10-12T12:01:00Z' for r in future}
+    outcomes = {r['row_id']: '2026-10-12T13:00:00Z' for r in future}
+    base['prediction_committed_at_by_row'] = dict(commits)
+    base['outcome_available_at_by_row'] = dict(outcomes)
+    candidate['prediction_committed_at_by_row'] = dict(commits)
+    candidate['outcome_available_at_by_row'] = dict(outcomes)
+    candidate['prediction_committed_at_by_row'][future[0]['row_id']] = '2026-10-12T13:00:00Z'
+    candidate['outcome_available_at_by_row'][future[1]['row_id']] = '2026-10-12T14:00:00Z'
+    result = prequential_order_audit(rows, base, candidate)
+    assert result['status'] == 'MISSING_OR_INVALID'
+    assert any('not between' in issue for issue in result['issues'])
+    assert any('disagree' in issue for issue in result['issues'])
+
+
+def test_e4_changed_ordered_options_fail_before_retrospective_scoring():
+    rows = dataset(8)
+    base, candidate = make_snapshots(rows)
+    rows[0]['options'] = ['yes', 'no']
+    with pytest.raises(ValueError, match='identical ordered choices'):
+        evaluate_shadow(rows, D('d'), base, candidate, bootstrap_repeats=100)

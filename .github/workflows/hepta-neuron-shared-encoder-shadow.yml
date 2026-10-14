@@ -21,8 +21,8 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
-      PYTHONDONTWRITEBYTECODE: '1'
-      PIP_DISABLE_PIP_VERSION_CHECK: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
+      PIP_DISABLE_PIP_VERSION_CHECK: "1"
     defaults:
       run:
         working-directory: qualification/neuron-shared-encoder
@@ -95,8 +95,16 @@ jobs:
           assert {'static_gate', 'dynamic_gate'} <= {x['kind'] for x in e2['candidates']}
           assert all(x['production_admission'] == 'BLOCKED' for x in (e2, e3, e5))
           assert e3['public']['encoder_forward_rows'] < e3['joint']['encoder_forward_rows']
-          assert 'quality_shadow' in e3 and e3['state_adapter'] == 'SYNTHETIC_HASH_NOT_DEPLOYABLE'
+          assert 'quality_shadow' in e3 and e3['state_adapter'] == 'SYNTHETIC_STEM_SMOKE'
+          assert 'public_plus_trainable_lightweight_state_adapter' in e3['quality_shadow']
+          assert e3['quality_shadow']['public_plus_trainable_lightweight_state_adapter']['production_admission'] == 'BLOCKED'
+          assert e3['lightweight_state_additional_encoder_rows'] == 0
+          assert e3['lightweight_state_trainable']
           assert e3['public_vs_joint_quality_not_established']
+          assert e3['private_state']['encoder_forward_rows'] > 0
+          assert e3['decomposed_forward_rows'] == (e3['public']['encoder_forward_rows'] +
+                                                   e3['private_state']['encoder_forward_rows'])
+          assert not e3['state_encoder_is_same_pinned_model']
           assert e5['schema_status'] == 'BLOCKED'
           PY
           sha256sum e1_missing_real_models.json e2_dynamic_heads.json e3_input_reuse.json e5_missing_host_receipts.json >> result_hashes.txt

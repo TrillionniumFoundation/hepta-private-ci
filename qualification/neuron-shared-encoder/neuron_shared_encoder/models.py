@@ -88,6 +88,8 @@ class OfflineEncoder:
                  expected_bundle_sha256: str | None = None):
         if kind not in ('laya-joint', 'modernbert-joint', 'mmbert-joint', 'granite-joint'):
             raise ValueError('real backend requires pinned laya/mmbert/granite/modernbert checkpoint')
+        if type(max_length) is not int or not 1 <= max_length <= 8192:
+            raise ValueError('real Encoder maximum token length must be 1..8192')
         root = Path(local_path)
         if not root.is_dir():
             raise FileNotFoundError('local model checkpoint directory missing; online download forbidden')
@@ -147,6 +149,10 @@ class OfflineEncoder:
                         q = self.agent._to_internal(definition)
                         items.append(self.agent._encode_state(row['state'], ['q'], {'q': q}))
                     tokenized = collate_items(items, self.agent.tok.pad_token_id)
+                    if tokenized['input_ids'].shape[1] > self.max_length:
+                        raise ValueError('Laya joint sequence exceeds frozen max_length')
+                    # Laya's internal _encode_state may truncate before this
+                    # check. Original pretruncation lengths are not proven here.
                     hidden = self.model(input_ids=tokenized['input_ids'].to(self.device),
                                         attention_mask=tokenized['attention_mask'].to(self.device))
                     hs = hidden.last_hidden_state
@@ -163,8 +169,23 @@ class OfflineEncoder:
                     texts = ['Question: ' + r['question'] + '\nOptions: ' +
                              ' | '.join(r['options']) + '\nState: ' + s
                              for r, s in zip(subset, states)]
-                    enc = self.tok(texts, padding=True, truncation=True,
-                                   max_length=self.max_length, return_tensors='pt')
+                    # First tokenize WITHOUT truncation and check source
+                    # lengths, including special tokens. Never silently
+                    # change the task/options for a flattering model score.
+                    source_tokens = self.tok(
+                        texts, padding=False, truncation=False)
+                    token_ids = source_tokens.get('input_ids')
+                    if (not isinstance(token_ids, list)
+                            or len(token_ids) != len(texts)
+                            or any(not isinstance(ids, list) or not ids for ids in token_ids)):
+                        raise ValueError('Encoder tokenizer did not return complete token rows')
+                    if any(len(ids) > self.max_length for ids in token_ids):
+                        raise ValueError('non-Laya joint sequence exceeds frozen max_length; no truncation permitted')
+                    enc = self.tok.pad(
+                        source_tokens, padding=True, return_tensors='pt')
+                    if (enc['input_ids'].shape[0] != len(texts)
+                            or enc['input_ids'].shape[1] > self.max_length):
+                        raise ValueError('Encoder padded token geometry mismatch')
                     enc = {k: v.to(self.device) for k, v in enc.items()}
                     hidden = self.model(**enc).last_hidden_state
                     mask = enc['attention_mask'][..., None]

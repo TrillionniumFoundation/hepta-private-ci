@@ -19,6 +19,27 @@ SPLITS = frozenset({'train', 'validation', 'future', 'ood'})
 MAX_BYTES = 10 * 1024 * 1024
 
 
+def _strict_json_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
+    obj = {}
+    for key, value in pairs:
+        if key in obj:
+            raise ValueError(f'duplicate JSON dataset field: {key}')
+        obj[key] = value
+    return obj
+
+
+def _reject_nonfinite_json_constant(value: str) -> Any:
+    raise ValueError(f'nonfinite JSON dataset constant: {value}')
+
+
+def _finite_json_float(value: str) -> float:
+    """Reject 1e9999-style floats that overflow even without NaN literals."""
+    parsed = float(value)
+    if not math.isfinite(parsed):
+        raise ValueError('nonfinite JSON dataset float exponent')
+    return parsed
+
+
 def sha256_file(path: str | Path) -> str:
     h = hashlib.sha256()
     with open(path, 'rb') as f:
@@ -68,6 +89,10 @@ def _record(obj: Any, line: int, width: int | None) -> dict[str, Any]:
 def load_dataset(path: str | Path, *, expected_sha256: str | None = None,
                  max_bytes: int = MAX_BYTES) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     p = Path(path)
+    if not p.is_file() or p.is_symlink():
+        raise ValueError('approved dataset must be a regular, symlink-free file')
+    if type(max_bytes) is not int or not 1 <= max_bytes <= MAX_BYTES:
+        raise ValueError('invalid fixed dataset byte budget')
     size = p.stat().st_size
     if size == 0 or size > max_bytes:
         raise ValueError('empty or oversized dataset')
@@ -82,8 +107,11 @@ def load_dataset(path: str | Path, *, expected_sha256: str | None = None,
     with p.open(encoding='utf-8') as f:
         for line_no, raw in enumerate(f, 1):
             if not raw.strip():
-                continue
-            row = _record(json.loads(raw), line_no, width)
+                raise ValueError(f'line {line_no}: blank physical JSONL row forbidden')
+            obj = json.loads(raw, object_pairs_hook=_strict_json_pairs,
+                             parse_constant=_reject_nonfinite_json_constant,
+                             parse_float=_finite_json_float)
+            row = _record(obj, line_no, width)
             width = len(row['options'])
             if row['row_id'] in seen_ids:
                 raise ValueError(f'line {line_no}: duplicate row id')
@@ -101,6 +129,8 @@ def load_dataset(path: str | Path, *, expected_sha256: str | None = None,
             raise ValueError(f'missing split: {split}')
     if min(timestamps['future']) <= max(timestamps['train'] + timestamps['validation']):
         raise ValueError('future window overlaps train/validation time')
+    if sha256_file(p) != digest:
+        raise ValueError('dataset changed between hash and parsed records')
     return rows, {'dataset_sha256': digest, 'rows': len(rows), 'width': width,
                   'split_counts': {s: len(timestamps[s]) for s in sorted(SPLITS)}}
 

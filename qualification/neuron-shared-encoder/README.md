@@ -130,21 +130,22 @@ hardware parity require independent native tests.
 `encoder_forward_rows` from actual calls to the adapter; counts are not
 inferred from the logical Cell count. The public-input key excludes Cell
 state but includes principal, purpose, generation, authority epoch,
-Encoder/tokenizer/normalizer digests, evaluation split, **and source-group
-partition by default**. Identical public questions across independent
-source groups are not automatically entitled to share an Encoder result.
-The opt-in `research_synthetic_cross_source=True` ablation deliberately
-drops this partition only in the non-authorizing synthetic-hash CLI path,
-and reports `SYNTHETIC_UNVERIFIED_UPPER_BOUND`. A real model without
-independently verified cross-source entitlement conservatively retains
-source-group isolation, even if this eliminates all such reuse. It cannot
-bypass a real source-entitlement or signed final-use check. The local
-Cell-state branch in this V3 control uses a **synthetic hash**, explicitly
-labelled `SYNTHETIC_HASH_NOT_DEPLOYABLE`. Both variants undergo equal-budget
-linear/dynamic Head training and future-set scoring, but even when the
-Encoder itself is real, this hybrid is not a qualified production
-state-fusion model. Replace the state hash with a pinned, trained and
-independently validated local adapter before claiming E3 quality parity.
+Encoder/tokenizer/normalizer digests, evaluation split and **source-group**
+by default. Different source groups cannot automatically share an Encoder
+result merely because their questions match. Explicit
+`research_synthetic_cross_source=True` is an untrusted synthetic-only
+upper-bound ablation, never a real source entitlement. It cannot
+bypass a real source-entitlement or signed final-use check. The Cell-local branch now uses the **same frozen, SHA-pinned Encoder**
+with a fixed state-only prompt and options; it does not inject a synthetic
+hash when the Encoder is real. The decomposed execution explicitly counts
+**public + private-state** physical Encoder rows and reports the signed
+difference against joint rows, including cases where decomposition costs MORE.
+Public features are reused only within principal/organ/epoch/revision/split;
+state features are also fenced by Cell identity. This is a genuine
+frozen-state control with a trained fusion Head, **not** a separately trained
+State Adapter nor a production feature cache. The synthetic smoke route
+remains visibly synthetic. Real pooled-input quality, future independent
+evidence and signed owner/final-use checks remain unqualified.
 
 ### E4 — frozen no-change versus candidate; never promotion
 
@@ -159,19 +160,18 @@ or identical artifacts. It reports grouped future-window bootstrap 95%
 intervals for Brier improvement, 15-bin ECE, NLL, OOD detection AUROC and
 future source-group negative-transfer fraction. The optional positive
 *retrospective statistical signal* requires at least 30 future groups,
-positive lower CI and zero materially degraded groups. It is reported as
-`RETROSPECTIVE_POSITIVE_UNVERIFIED`, **not** an NDU decision or a
-causal learning claim. V3 now inspects optional per-future-row
-`prediction_committed_at_by_row` maps in both snapshots and checks each
-declared prediction timestamp precedes the outcome's timezone-aware
-`event_time`. Missing, partial, naive or late timestamps are reported
-as `MISSING_OR_INVALID`. Even complete ordered claims remain
-`TEMPORAL_ORDER_CONSISTENT_UNVERIFIED`; untrusted JSON timestamps and
-SHA-256 pins cannot prove independent precommit or absence of
-future-label leakage. `causal_learning_verified` and final-use stay false.
-The independent Evaluator must still verify actual precommitted predictions,
-causal improvement and receipt authenticity; Selector and Executor remain
-separate owners.
+positive lower CI and zero materially degraded groups. Its strongest
+possible label is `RETROSPECTIVE_POSITIVE_UNVERIFIED`, not causal
+learning. E4 optionally audits claimed prediction timestamps against
+a **separate label arrival timestamp** for each future row:
+`prediction_committed_at_by_row` and
+`outcome_available_at_by_row` must be complete in both snapshots,
+agree on the outcome arrival time, and obey
+`event_time <= prediction_time < outcome_available_at`.
+Incomplete or contradictory timing claims are `MISSING_OR_INVALID`.
+Even consistent operator-authored times remain unverified; E4 cannot
+authenticate independent pre-label capture, genuine NDU, or permission
+to select and execute a new model.
 
 ### E5 — complete host telemetry schema, no fabricated measurements
 
@@ -202,48 +202,355 @@ blocked. The E4 frozen baseline is **not generated from random/untrained
 Heads**, and all V3 claims are research/shadow only.
 
 
-### Exact-head CI and fair-comparison acceptance ledger (2026-10-14)
+### A5 — exact five-arm Stem selection (non-authorizing)
 
-The 2026-10-14 source HEAD `b7cdeba1db215ee30418b2269ddd147dee064410`
-has a completed, successful shadow workflow
-[38513414552](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38513414552).
-That result covers isolated Python research checks, **not** a production
-release. Architecture source-head and base-merge checks succeeded but
-their aggregate required check must independently complete. Whole-tree
-[blocking-ci 38513414635](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38513414635)
-is not green: actual job logs show `cargo-deny` reporting Matrix SDK
-0.18 dependency advisories and unmaintained `unsafe-libyaml`;
-`repo-checks/build-test` failed at `pnpm run format:check`; macOS
-Bazel Clippy also failed. None can be overridden, ignored or relabeled
-as a successful scoped E1–E5 receipt.
+The requested five-model grid is available separately from the original
+four-model E1/Granite control. `e1-five-plan` requires the exact
+`mmbert-small`, `modernbert-base`, `gte-modernbert-base`,
+`mmbert-base` and `laya-421m` arms. Each entry binds `repository`,
+40-hex upstream `revision`, local SHA-256 weight/bundle/tokenizer digests,
+`backend_kind`, license approval, and a common frozen dataset/split/baseline
+and AdamW training protocol. Laya additionally requires local package review.
+A matrix with any omitted, extra or swapped model fails closed.
 
-**Fairness requirements before comparing E2 as scientific evidence:**
-- The 2K / 16K / 64K / 262K values are **ceilings**, not equal parameter
-  counts. Compare each candidate's *actual* trainable parameters, peak
-  optimizer memory, wall-clock training time and measured inference cost.
-- Within each task and Encoder, hold frozen feature bytes, source splits,
-  seed set, update steps, batch schedule, tuning/search opportunity and
-  evaluation window fixed. Run several seeds and paired group-level
-  intervals; never infer a winner from a single two-step smoke.
-- Compare static Gate to its **post-training** folded Linear equivalent
-  at identical frozen weights before any efficiency claim; independently
-  compare ordinary Linear trained from scratch at a matched actual
-  parameter budget. Report the fixed-gate parameter overhead separately.
-- Gate on future Brier/NLL, task utility, OOD rejection, calibration,
-  negative transfer and cost rather than selecting by accuracy alone.
-  The research runner cannot act as the independent NDU Evaluator.
+Use `e1-five-plan` on a hash-pinned manifest first; once all **real offline**
+weights and an approved dataset exist, run `e1-five-run` with that same
+manifest, `--dataset-sha256` and `--dimension 128` or other registered
+1–512 width. The runner preflights all five paths before loading, verifies
+the tokenizer and bundle hashes, and checks the published mmBERT/ModernBERT
+hidden width. It records actual forward timings, original Laya System One
+and separate trained Heads. In particular, the GTE arm here uses a
+**generic masked-mean Transformer control, not the official model-specific
+GTE Embedding API**; do not report it as an official GTE leaderboard score.
+Official GTE pooling/task adapters need a separately pinned run.
 
-**E3 physical reuse requirements:** Record logical requests, admitted
-distinct full-input digests, encoder invocations, forwarded rows,
-tokenized lengths, cache hits/misses, feature materialization bytes,
-queue latency and end-to-end p95/p99 on the same hardware. Deduplicate
-only after live source entitlement and final-use checks. Do not equate
-shared weights, number of logical Cells, or an instrumented mock
-callback with a physically shared Transformer forward.
+The complete five-arm schema is `SCHEMA_COMPLETE_UNVERIFIED`, not proof that
+all five models ran. All outputs remain shadow-only; no real weights or
+qualified approved data are supplied by this PR.
 
-**Production-blocking evidence:** genuine pinned four-Encoder weights
-and approved data; frozen no-change predictions collected before
-future labels; independent NDU Evaluator/Selector; real signed
-Artifact CAS + Final-use + generation fences; true physical batch;
-64/256/1024/4096 Cell target-host CPU/RSS/GPU/WAL/restart receipts.
-Keep this PR Draft/shadow until every independent owner gate passes.
+
+### B — three-way prequential Head evidence (no independent signatures)
+
+`python -m neuron_shared_encoder.abc_evidence b-threeway --dataset
+/approved/frozen.jsonl --dataset-sha256 SHA --input-json
+/approved/threeway.json --input-sha256 SHA --output /evidence/b.json`
+requires the same exact row identities for externally obtained
+`frozen_no_change`, `frozen_head`, and `learned_head` snapshots.
+The candidate snapshot supplies a per-row pre-update Head digest;
+a label-free, ordered event journal seals all three probability vectors,
+the input, initial matched frozen Head and observed prediction time before
+the label-availability timestamp. Distinct future_1/future_2 windows cannot
+overlap in clock or source group. Report grouped bootstrap improvements
+against BOTH controls, Brier/ECE/NLL, old-task retention, OOD false
+acceptance and abstention at the precommitted threshold.
+
+A self-authored hash/timestamp does not establish authentic pre-label
+publication. A validated offline B report remains `NOT_AUTHORIZED`
+until independently signed NDU, external baseline/evaluator and full
+production FinalUse gates exist.
+
+### C — text -> vision -> audio -> video cost truth (shadow)
+
+`python -m neuron_shared_encoder.abc_evidence c-stages --input-json
+/approved/paired-stages.json --input-sha256 SHA --output /evidence/c.json`
+requires each stage to preserve the pinned text probe, all prior modality
+tasks with identical cohorts, and actual FULL-active Cell coverage at
+64, 256, 1024, and 4096. The same host, source commit and paired
+text-control workload must be present. Counters include physical encoder
+forward rows AND batches, CPU/RSS/GPU, request p95/p99, WAL, CAS/signature/CNS
+p99 and unclean crash recovery. Multimedia frames may legitimately create
+MORE encoder rows than requests, so that ratio is not silently rejected.
+It reports incremental parameter/weight/RSS cost and prior-task score
+changes; negative changes are retained.
+
+This C checker accepts self-reported metrics only as
+`SCHEMA_COMPLETE_UNVERIFIED`: it cannot authenticate host, worker,
+real model, signature, timing, external truth or recovery. The test suite
+uses deliberately synthetic contract fixtures, not real measurements.
+
+
+### Explicit A/B/C joint gate and retention constraints
+
+After collecting individually pinned A5, B and C reports, pass
+`{"A": {...}, "B": {...}, "C": {...}}` to the `abc-joint` command.
+The gate requires all five **real local model** A5 arms, learned Head
+improvement against both frozen controls across the B future windows,
+complete C stage telemetry, and the same dataset identity in all reports.
+Even an entirely complete operator-authored bundle remains
+`RESEARCH_REVIEW_CANDIDATE_UNVERIFIED`, never a production selection.
+Neither file-presence nor an asserted signature field is accepted as NDU
+or effect authorization.
+
+B requires the learned Head to start from exactly the immutable frozen
+Head weights; the first future prediction must use that same initialization.
+C requires an explicit `max_retained_task_score_drop` preregistered
+before evaluating later modality stages. Any old-task score loss over the
+limit blocks the research precheck instead of being hidden by new-task gain.
+
+
+### A5 safety: no silent non-Laya truncation
+
+The real `OfflineEncoder.encode` generic mmBERT/ModernBERT/Granite path
+first tokenizes the complete joint question+options+state input with
+`truncation=False`; it rejects even one example whose complete token
+count exceeds `--max-length` before dispatching the Encoder model.
+Padding happens only after this check. The previous
+`truncation=True` behavior could compare **different tasks** across
+different checkpoints and is no longer accepted. This is a strict
+experiment-equality gate, not a production tokenizer.
+
+Laya's own `Agent._encode_state` is still a private upstream encoder
+that may already have truncated the input before its post-encode
+length can be inspected. The public Hepta harness can reject its
+over-length returned IDs but **cannot independently attest zero
+pretruncation** for Laya. Do not use Laya from this path as a strictly
+zero-truncation-qualified A5 winner without separately instrumenting
+the pinned upstream Laya tokenizer and proving lossless option and
+state encoding.
+
+
+### B: post-label Head successor continuity
+
+The original `prelabel_journal.records` remains **strictly label-free**.
+A *separate* `postlabel_updates` journal now supplies one committed
+successor per chronological future event, with exact digest of the
+pre-label record, observed label identity, update disposition, label
+availability time, post-label update time, and predecessor/successor
+Head digests. The next prediction must consume the last Head successor
+and cannot precede the previous update. `no_update` must preserve the
+exact Head digest; `updated` must have new weights. The final Head
+digest must match the last successor. Missing updates, forks and
+post-label-injected prediction fields are rejected. These
+**self-reported** observations still require an independent, durable
+source to establish true pre-label ordering and cannot grant authority.
+
+B window scores now report both `brier` (multiclass sum) and
+`brier_normalized` (divided by option count); grouped paired deltas
+always use the latter. Do not rank reports using incompatible Brier
+units.
+
+
+### B: matched first-prediction and immutable feature/runtime identity
+
+Frozen and Learned controls now must pin identical
+`encoder_bundle_sha256`, `feature_pipeline_sha256`,
+`runtime_profile_sha256` and `input_contract_sha256`. The very
+first future event must have the same probability distribution for
+the learned Head as its untouched same-initialization Frozen Head
+(up to 1e-7 float tolerance), or no learning claim is made. Digest
+agreement by itself is insufficient: this catches alternate pooling,
+input layouts, or output heads masquerading as online plasticity.
+Subsequent Head changes require the separately chained post-label
+journal. The independent production no-change arm is NOT forced to
+share these artifacts.
+
+
+### C: same Stem, measurable active modality and recovery
+
+All four modality stages bind the exact same
+`shared_text_stem_sha256`, while each added sensory tower has its own
+`modality_adapter_sha256` and paired, source-approved
+`paired_media_dataset_sha256`. A shared text-probe digest by itself
+was not sufficient: a different underlying text model could be passed
+off as a new sensory differentiation.
+
+Every full-active 64/256/1024/4096 Cell row now requires an observed
+`run_id`, `active_modality_peak_bytes`,
+`head_resident_bytes`, `queue_peak_depth`, `wal_fsync_count`,
+and `recovery_trace_sha256`. A non-text stage without measured active
+modality memory, a full-active cohort without Head memory, a
+non-durable WAL, or a missing crash trace is blocked. Intermediate
+stage deltas retain both total RSS and active-modality peak
+differences. These are **operator-supplied, unverified** measurements
+until independent target-host/owner receipts establish their origin.
+The separate counterfactual truth-flip executor in PR #1774 remains a
+distinct required evidence producer; C's scalar task scores alone
+cannot demonstrate that the model actually used images/audio/video.
+
+
+### E3 fourth arm: *learned* lightweight state, not an extra Transformer
+
+E3 retains **three different cost paths**: (i) frozen joint
+state+question+options Encoder, (ii) public-question Encoder + frozen
+state-only Encoder and ordinary Head (which may consume MORE forwards
+than joint), and (iii) public-question Encoder + real trainable
+Cell-local byte n-gram State Adapter + light Gated/Linear Head.
+Path (iii), `quality_shadow.public_plus_trainable_lightweight_state_adapter`,
+uses train-only gradients for the State Adapter and Head. All parameters
+are counted together under the same 2K/16K/... total Cell ceiling,
+including an AdamW optimizer memory report. Private state processing
+uses deterministic, explicitly lossy byte 1–3-gram counts, without
+another full Transformer call. It also reports actual raw bytes
+processed and elapsed featurization time; this cost is **not zero**.
+Fixed public projections and input normalizers are fitted or frozen
+without using future labels; no production feature sharing is claimed.
+
+This fourth arm lets research compare *true cheap state adaptation*
+against full-joint accuracy and frozen double-Encoder input decomposition.
+It is an experimentally trainable control, not evidence that byte hashing
+preserves all decision signals. If image/audio/video, binary state, huge
+states or privacy permissions are not supported by this local text
+featurizer, E3 must use a separately qualified state adapter.
+
+
+### E3 trainer falsification: train-only gradient proof
+
+`state_fusion.py` now emits canonical FP32-value SHA-256 diagnostics for
+the complete trained Cell, state adapter and Gated Head, without requiring
+NumPy. Adversarial trials keep all training examples unchanged while
+flipping validation/future/OOD labels and assert exact equality of ALL
+trained weight digests. Flipping train labels must change the digest.
+This demonstrates label partitioning for the *research* optimizer
+rather than merely reporting matching parameter counts; it does NOT
+authenticate data collection, permissions, independent pre-label
+production, or causal NDU outcomes.
+
+
+### B pre-label seal correction: observation time is not future truth
+
+The immutable `prelabel_journal` no longer accepts the future
+`label_available_at` timestamp. Actual label availability is a
+separate **post-label observation** and is compared with the already
+sealed prediction timestamp. The post-label update must occur strictly
+after the observed label availability. This avoids manufacturing
+knowledge of when a not-yet-observed outcome arrives in a purported
+pre-label artifact. All timestamps are still self-reported here;
+an independent append-only producer and signed witness are required
+before a real selection.
+
+
+### E2/E3 fixed option-space proof (future-label leakage regression)
+
+The number of Head output classes is now resolved only from a **frozen,
+registered choice count** (`len(options)`) for all real dataset/CLI
+experiments, and never from a future/validation/OOD label maximum. The
+standalone Python APIs accept an explicit `num_classes`; if absent they
+derive the class count from the training slice ONLY and fail closed when
+future labels fall outside that frozen geometry. A future-only class can
+be tested if it was already part of the publicly registered choices:
+its Head output neuron exists before learning, even if that class was
+not observed in training. This removes a subtle previously present
+future-label information channel in E2/E3 Head construction.
+
+
+### A/B/C evidence integrity: literal JSONL and option meaning
+
+The frozen dataset reader now rejects **duplicate object keys at every
+JSON nesting depth**, NaN/Infinity extensions, blank physical JSONL rows,
+symlinked source paths and a file whose content changes between byte hash
+and the end of parsed-record validation. Raw SHA-256 alone does not
+resolve ambiguous parser interpretations. This is a research integrity
+check, not cryptographic authorization.
+
+The E1/E2/E3/A5 class-index Head contract additionally requires one
+fixed **ordered** set of 2–16 legal options across all records. Merely
+enforcing the same number of options is insufficient: a swapped option
+changes the meaning of logits, making the paired Head accuracy a
+misleading comparison. For tasks with per-example variable options,
+evaluate the original option-conditioned Laya decision directly or
+implement a separately qualified per-option scorer; do not assign
+variable semantic labels to fixed output neurons.
+
+
+### C semantic necessity: real media counterfactual results, not embeddings alone
+
+The A/B/C combined research review now requires the **separate,
+source-bound paired-media counterfactual scorer output from PR #1774**,
+plus an externally precommitted `media_policy` tied to the frozen C
+`protocol_sha256`. The `media-pairs` command audits its
+`hepta.stem.paired-modality-audit.v1` output and requires held-out
+image substitution, held-out audio substitution, and actual video
+*temporal reordering* with original and changed truths. Structural
+counts, distinct source groups, both-correct fraction and failure to
+respond to media changes must satisfy the policy's stated limits.
+A video retrieval score or changed embedding cosine alone does not pass.
+
+Example evaluation envelope:
+`{"report": <PR1774 output>, "policy": {"schema":
+"hepta.stem.media-review-policy.v1", "protocol_sha256": <matching-C-protocol>,
+"minimum_pairs_per_group": <frozen-int>, "minimum_distinct_source_groups_per_group":
+<frozen-int>, "minimum_both_correct_fraction": <frozen-float>,
+"maximum_unresponsive_fraction": <frozen-float>}}`.
+This is a schema example, not an authorization or recommended numeric
+threshold. The research verifier does **not** authenticate the observer,
+whether those thresholds were truly preregistered, or source media
+bytes. Even an entirely passing result remains
+`SCHEMA_COMPLETE_UNVERIFIED` and `production_admission=BLOCKED`.
+
+Missing media evidence now blocks the combined A/B/C *research review
+candidate*, even if all model/Head and four-scale resource fields are
+present. A separate authenticated Evaluator/Selector/Executor remains
+necessary for a production decision.
+
+
+### JSON number overflow is not a valid observation
+
+All three offline JSON entry points (dataset JSONL, E1/E5 manifest and
+B/C/A+B+C evidence) now reject not only literal `NaN`/`Infinity`
+and duplicate keys but also valid-looking numeric exponents such as
+`1e9999`, which Python would otherwise quietly decode as infinity.
+No allegedly pinned model input or measured resource may become an
+infinite Python float. This is research input validation, not a signed
+source-attestation mechanism.
+
+
+### C cross-source integrity: actual paired predictions must belong to C's final model
+
+The multimodal audit now retains the registered final **video-stage**
+composite model, media source and preprocessing SHA-256 identities.
+The `abc-joint` envelope must additionally include the full
+`media_predictions` input used by the PR #1774 paired-media scorer
+alongside its `media_counterfactual` summary and frozen policy.
+The raw input is canonicalized with PR #1774's JSON encoding and hashed
+to exactly match `prediction_sha256` from that scorer. Its
+`model_sha256`, `preprocessor_sha256` and `source_sha256`
+must also match the final C-stage identities; scored cohort counts
+must match the associated source-bound raw modality pairs.
+
+This prevents a researcher from attaching a genuine image/audio/video
+truth-flip score from a *different* model, data source or processor
+to this A/B/C resource/learning comparison. It remains an **untrusted
+offline** cross-source consistency check, not a replay of PR #1774's
+entire scorer, independent media truth verification, or signed owner
+attestation. The real C final stage and paired scorer must actually
+use the same complete multimodal model/pipeline; otherwise the honest
+result is BLOCKED, not a guessed projection/identity mapping.
+
+
+### Principal and Scope identity across C resource and semantic evidence
+
+The C resource manifest must carry nonempty `principal_id` and
+`scope_id` bound to every 64/256/1024/4096 Cell run. This is a
+research comparison cohort identity, not a reusable grant. The
+PR #1774 raw paired-media payload's `scope` must equal C's
+`scope_id`, in addition to its exact model, preprocessor and media
+source SHA-256. Cross-principal/cross-scope numbers cannot be
+combined to manufacture an apparently improved shared Stem. Actual
+data-use permission and revocation checks remain the responsibility
+of the independent product owner.
+
+
+### Reconciliation of advanced E3/E4 work (2026-10-14)
+
+The latest #1772 base incorporated independent source-group fencing,
+time-order research checks and pinned YAML formatting; all of these are
+retained in this stacked A/B/C line. **E3 base and A/B/C tests differ
+only in their declared source-reuse policy:** default real inputs
+cannot cross a source group; `research_synthetic_cross_source=True`
+produces a deliberately non-authorizing optimistic reuse ceiling
+for synthetic experiments. Thus the original 4-physical-forward mock
+cannot be presented as true cross-source shared Encoder economics.
+
+The E4 base branch's temporal-intent check is strengthened to avoid a
+timestamp semantic mismatch with experiment B: a future row's
+`event_time` is its **observed input event**, not automatically
+the label availability. Independent future label availability must
+come from the disjoint `outcome_available_at_by_row` map. If these
+maps are absent, this is at most a retrospective quality report,
+never a causal learning claim. The signed independent Evaluator,
+actual Laya/MMBERT model execution, and production gates remain open.
+
+The base's historical exact-SHA CI audit and cargo-deny/Windows/format
+blockers are not erased by this merge; the source must be qualified
+again after reconciliation. No advisory ignores or security bypasses
+are introduced.

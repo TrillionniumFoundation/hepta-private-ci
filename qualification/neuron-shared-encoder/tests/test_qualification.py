@@ -204,3 +204,126 @@ def test_synthetic_stress_runs_and_records_real_batch_execution():
     assert report['production_admission'] == 'BLOCKED'
     assert all(r['requests'] > 0 for r in report['results'])
     assert all(r['encoder_forward_rows'] > 0 for r in report['results'])
+
+
+class _NoTruncateTokenizer:
+    def __init__(self, token_counts):
+        self.token_counts = token_counts
+        self.last_kwargs = None
+
+    def __call__(self, texts, **kwargs):
+        self.last_kwargs = kwargs
+        return {'input_ids': [[1] * n for n in self.token_counts],
+                'attention_mask': [[1] * n for n in self.token_counts]}
+
+    def pad(self, batch, *, padding, return_tensors):
+        import torch
+        maximum = max(map(len, batch['input_ids']))
+        return {k: torch.tensor([row + [0] * (maximum - len(row))
+                                  for row in rows], dtype=torch.long)
+                for k, rows in batch.items()}
+
+
+class _SimpleEncoderModule:
+    def __init__(self):
+        self.called = False
+
+    def __call__(self, **inputs):
+        from types import SimpleNamespace
+        self.called = True
+        hidden = inputs['input_ids'].float().unsqueeze(-1).repeat(1, 1, 4)
+        return SimpleNamespace(last_hidden_state=hidden)
+
+
+def _offline_stub(token_counts, maximum):
+    encoder = OfflineEncoder.__new__(OfflineEncoder)
+    encoder.kind = 'modernbert-joint'
+    encoder.device = torch.device('cpu')
+    encoder.max_length = maximum
+    encoder.tok = _NoTruncateTokenizer(token_counts)
+    encoder.model = _SimpleEncoderModule()
+    encoder._check_bundle_unchanged = lambda: None
+    return encoder
+
+
+def test_real_encoder_rejects_oversize_joint_input_without_forward():
+    encoder = _offline_stub([4, 6], 5)
+    rows = [{'state': 'x', 'question': 'q', 'options': ['a', 'b']}] * 2
+    with pytest.raises(ValueError, match='no truncation permitted'):
+        encoder.encode(rows, batch=2)
+    assert encoder.tok.last_kwargs['truncation'] is False
+    assert not encoder.model.called
+
+
+def test_real_encoder_preserves_all_tokens_and_original_batch_size():
+    encoder = _offline_stub([3, 4], 5)
+    rows = [{'state': 'x', 'question': 'q', 'options': ['a', 'b']}] * 2
+    y = encoder.encode(rows, batch=2)
+    assert y.shape == (2, 4)
+    assert encoder.model.called
+    assert encoder.tok.last_kwargs['truncation'] is False
+
+
+def test_real_encoder_rejects_wrong_or_empty_tokenizer_rows():
+    encoder = _offline_stub([], 5)
+    rows = [{'state': 'x', 'question': 'q', 'options': ['a', 'b']}]
+    with pytest.raises(ValueError, match='complete token rows'):
+        encoder.encode(rows)
+
+
+def test_dataset_duplicate_label_key_rejected_even_when_sha_pinned(tmp_path):
+    p = generated(tmp_path)
+    data = p.read_text().splitlines()
+    data[0] = data[0].rstrip()[:-1] + ', "label": 0}'
+    p.write_text('\n'.join(data) + '\n')
+    with pytest.raises(ValueError, match='duplicate JSON dataset field'):
+        load_dataset(p, expected_sha256=sha256_file(p))
+
+
+def test_dataset_nested_duplicate_and_nonfinite_json_rejected(tmp_path):
+    p = generated(tmp_path)
+    data = rows(p)
+    data[0]['state'] = {'ok': 1, 'bad': float('nan')}
+    rewrite(p, data)
+    with pytest.raises(ValueError, match='nonfinite JSON dataset constant'):
+        load_dataset(p)
+    data = rows(p)
+    data[0]['state'] = {'valid': 1}
+    rewrite(p, data)
+    physical = p.read_text().splitlines()
+    physical[0] = physical[0].replace('"state": {"valid": 1}',
+                                      '"state": {"valid": 1, "valid": 2}')
+    p.write_text('\n'.join(physical) + '\n')
+    with pytest.raises(ValueError, match='duplicate JSON dataset field'):
+        load_dataset(p)
+
+
+def test_dataset_blank_physical_row_rejected(tmp_path):
+    p = generated(tmp_path)
+    data = p.read_text()
+    p.write_text('\n' + data)
+    with pytest.raises(ValueError, match='blank physical JSONL row'):
+        load_dataset(p)
+
+
+def test_dataset_symlink_file_rejected(tmp_path):
+    p = generated(tmp_path)
+    link = tmp_path / 'dataset-link.jsonl'
+    try:
+        link.symlink_to(p)
+    except (NotImplementedError, OSError):
+        pytest.skip('symlink creation unavailable on this host')
+    with pytest.raises(ValueError, match='symlink-free'):
+        load_dataset(link)
+
+
+def test_dataset_rejects_overflowing_numeric_exponents(tmp_path):
+    p = generated(tmp_path)
+    original = p.read_text()
+    # JSON literal is syntactically valid but default float parser maps it
+    # to infinity. This would survive parse_constant= checks alone.
+    bad = original.replace('"label": 0', '"label": 0, "untrusted_cost": 1e9999', 1)
+    assert bad != original
+    p.write_text(bad)
+    with pytest.raises(ValueError, match='nonfinite JSON dataset float exponent'):
+        load_dataset(p)

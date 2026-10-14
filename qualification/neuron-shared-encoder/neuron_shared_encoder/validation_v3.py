@@ -21,6 +21,15 @@ from torch import nn
 from torch.nn import functional as F
 
 ENCODERS = ('laya-joint', 'mmbert-joint', 'granite-joint', 'modernbert-joint')
+# The user-requested A5 is a separate, exactly identified model grid. Its
+# generic mean-pooling controls are NOT official embedding API equivalents.
+FIVE_ARM_CANDIDATES = (
+    ('mmbert-small', 'mmbert-joint', 'jhu-clsp/mmBERT-small', 384),
+    ('modernbert-base', 'modernbert-joint', 'answerdotai/ModernBERT-base', 768),
+    ('gte-modernbert-base', 'modernbert-joint', 'Alibaba-NLP/gte-modernbert-base', 768),
+    ('mmbert-base', 'mmbert-joint', 'jhu-clsp/mmBERT-base', 768),
+    ('laya-421m', 'laya-joint', None, None),
+)
 KINDS = ('linear', 'static_gate', 'dynamic_gate', 'film', 'lowrank8', 'lowrank16', 'mlp', 'swiglu')
 BUDGETS = (2048, 16384, 65536, 262144)
 HEX = frozenset('0123456789abcdef')
@@ -41,6 +50,22 @@ def is_digest(value: Any) -> bool:
 
 def is_commit_ref(value: Any) -> bool:
     return isinstance(value, str) and len(value) in (40, 64) and set(value) <= HEX and set(value) != {'0'}
+
+
+def frozen_option_count(rows: list[dict]) -> int:
+    """Class-index Head requires ONE immutable ordered option inventory.
+
+    Same length is insufficient: swapping legal choices changes what each
+    logit index means. Variable-option tasks need an explicit per-option
+    scorer instead of this fixed-class Head comparison.
+    """
+    if not rows or not isinstance(rows[0].get('options'), list):
+        raise ValueError('frozen registered options missing')
+    option_tuple = tuple(rows[0]['options'])
+    if not 2 <= len(option_tuple) <= 16 or any(
+            tuple(row.get('options', ())) != option_tuple for row in rows):
+        raise ValueError('class-index Heads require identical ordered choices for every record')
+    return len(option_tuple)
 
 
 class SmallHead(nn.Module):
@@ -133,7 +158,8 @@ def _auroc(positive: torch.Tensor, negative: torch.Tensor) -> float:
 
 def head_trials(features: torch.Tensor, labels: torch.Tensor, splits: list[str], *,
                 budgets: tuple[int, ...] = BUDGETS, kinds: tuple[str, ...] = KINDS,
-                seed: int = 42, steps: int = 16, batch: int = 32, lr: float = 1e-3) -> dict:
+                seed: int = 42, steps: int = 16, batch: int = 32, lr: float = 1e-3,
+                num_classes: int | None = None) -> dict:
     """E2: identical frozen features, training indices/steps and tuning opportunity."""
     if features.ndim != 2 or len(features) != len(labels) or len(splits) != len(labels):
         raise ValueError('invalid aligned feature dataset')
@@ -141,13 +167,32 @@ def head_trials(features: torch.Tensor, labels: torch.Tensor, splits: list[str],
         raise ValueError('invalid features or training budget')
     if not set(('train', 'validation', 'future', 'ood')) <= set(splits):
         raise ValueError('all four disjoint splits required')
-    classes = int(labels.max().item()) + 1
-    if classes < 2:
-        raise ValueError('need at least two labeled classes')
     groups = {name: torch.tensor([i for i, s in enumerate(splits) if s == name], dtype=torch.long)
               for name in ('train', 'validation', 'future', 'ood')}
+    if any(len(ids) == 0 for ids in groups.values()):
+        raise ValueError('all experiment splits require actual records')
+    if (not isinstance(labels, torch.Tensor) or labels.ndim != 1
+            or labels.dtype not in (torch.int8, torch.int16, torch.int32, torch.int64)
+            or bool((labels < 0).any())):
+        raise ValueError('labels require nonnegative integer positions')
     train_x = features[groups['train']]
     train_y = labels[groups['train']]
+    if num_classes is None:
+        # The direct API has no options manifest; derive ONLY from the
+        # already-visible training labels, never from future/holdout truth.
+        classes = int(train_y.max().item()) + 1
+        class_source = 'train_labels_only_no_future_cardinality'
+    else:
+        if type(num_classes) is not int:
+            raise ValueError('registered option count must be an integer')
+        classes = num_classes
+        class_source = 'frozen_registered_option_width'
+    if not 2 <= classes <= 16:
+        raise ValueError('bounded 2..16 legal options required')
+    if bool((labels >= classes).any()):
+        # Evaluation truth can disqualify a pre-committed decision space,
+        # but must never resize a trained Head.
+        raise ValueError('label outside frozen option space; no future cardinality inference')
     trials = []
     for budget in budgets:
         if budget <= 0 or budget > max(BUDGETS):
@@ -192,6 +237,7 @@ def head_trials(features: torch.Tensor, labels: torch.Tensor, splits: list[str],
                 trials.append(row)
     return {'experiment': 'E2', 'evidence_class': 'TRAINED_SHADOW', 'production_admission': 'BLOCKED',
             'same_train_steps': steps, 'same_train_batch': batch, 'same_train_lr': lr,
+            'frozen_output_class_count': classes, 'class_count_source': class_source,
             'budgets_are_upper_limits_not_equal_counts': True, 'candidates': trials}
 
 
@@ -200,15 +246,15 @@ def reuse_keys(record: dict, *, encoder_digest: str, tokenizer_digest: str,
                purpose: str = 'decision', generation: int = 1,
                authority_epoch: int = 1, mode: str = 'joint',
                research_synthetic_cross_source: bool = False) -> str:
-    """Experimental identity, NOT a source entitlement or final-use authority.
+    """Source-group-isolated identity; no cache/source entitlement implied.
 
-    Different source groups never share features by default, even if their
-    public question/options happen to match. Explicit cross-source grouping
-    is permitted only as a clearly untrusted SYNTHETIC reuse upper-bound.
+    Cross-source grouping is only an explicitly non-authorizing synthetic
+    upper bound, never a real model entitlement or production feature key.
     """
-    if mode not in ('joint', 'public') or generation <= 0 or authority_epoch <= 0 or not purpose:
+    if mode not in ('joint', 'public', 'private_state') or generation <= 0 or authority_epoch <= 0 or not purpose:
         raise ValueError('invalid reuse contract')
-    if type(research_synthetic_cross_source) is not bool or (research_synthetic_cross_source and mode != 'public'):
+    if type(research_synthetic_cross_source) is not bool or (
+            research_synthetic_cross_source and mode != 'public'):
         raise ValueError('synthetic cross-source control requires public mode')
     source_group = record.get('source_group')
     if not isinstance(source_group, str) or not source_group:
@@ -220,14 +266,27 @@ def reuse_keys(record: dict, *, encoder_digest: str, tokenizer_digest: str,
     who = record['principal']
     if not isinstance(who, str) or not who:
         raise ValueError('principal missing')
-    fields = {'question': record['question'], 'options': record['options']}
-    if mode == 'joint':
-        fields['state'] = record['state']
-    return canonical_digest({'scope': [who, purpose, generation, authority_epoch],
+    organ = record.get('organ_id')
+    cell = record.get('cell_id')
+    if not isinstance(organ, str) or not organ or not isinstance(cell, str) or not cell:
+        raise ValueError('exact organ and Cell scope is required for feature reuse')
+    if mode == 'private_state':
+        fields = {'state': record['state']}
+    else:
+        fields = {'question': record['question'], 'options': record['options']}
+        if mode == 'joint':
+            fields['state'] = record['state']
+    scope = [who, organ, purpose, generation, authority_epoch]
+    if mode != 'public':
+        scope.append(cell)
+    return canonical_digest({'scope': scope,
                              'model': [encoder_digest, tokenizer_digest, normalizer_digest],
-                             'source_reuse_partition': ('synthetic:cross-source-upper-bound' if research_synthetic_cross_source
-                                                        else source_group),
-                             'split': record['split'], 'mode': mode, 'input': fields})
+                             'source_reuse_partition': (
+                                 'synthetic:cross-source-upper-bound'
+                                 if research_synthetic_cross_source else source_group),
+                             'split': record['split'], 'mode': mode,
+                             'format': 'hepta.e3.frozen-stem-input.v2',
+                             'input': fields})
 
 
 def reuse_trial(rows: list[dict], encode: Callable[[list[dict]], torch.Tensor], *,
@@ -237,8 +296,12 @@ def reuse_trial(rows: list[dict], encode: Callable[[list[dict]], torch.Tensor], 
                 research_synthetic_cross_source: bool = False) -> tuple[torch.Tensor, dict]:
     """E3: count actual adapter invocations AND distinct rows forwarded.
 
-    Does not cache across principal, split, purpose, generation or authority epoch.
+    Does not cache across source group, principal, split, purpose,
+    generation or authority epoch by default.
     In public mode Cell-private state is excluded from the shared encoder input.
+    In private_state mode task questions/options are fixed while the exact Cell
+    state is retained. Both modes use the SAME actual pinned Encoder adapter;
+    the state path is not a trained adapter or a cross-Cell authority grant.
     The benchmark has no ability to grant reuse authorization.
     """
     if not rows or not 1 <= batch_size <= 1024:
@@ -255,6 +318,11 @@ def reuse_trial(rows: list[dict], encode: Callable[[list[dict]], torch.Tensor], 
             sent = dict(row)
             if mode == 'public':
                 sent['state'] = ''
+            elif mode == 'private_state':
+                # Fixed question/choice layout for the frozen state Encoder
+                # control. Domain separation in reuse_keys binds this layout.
+                sent['question'] = 'Encode the Cell-local state only.'
+                sent['options'] = ['state-present', 'state-absent']
             seen[k] = sent
     unique_keys = list(seen)
     outputs = {}
@@ -277,15 +345,17 @@ def reuse_trial(rows: list[dict], encode: Callable[[list[dict]], torch.Tensor], 
                       'deduplicated_rows': len(rows) - rows_forwarded,
                       'forward_row_reuse_fraction': 1 - rows_forwarded / len(rows),
                       'production_admission': 'BLOCKED', 'authorization_verified': False,
-                      'cross_source_reuse_policy': ('SYNTHETIC_UNVERIFIED_UPPER_BOUND' if research_synthetic_cross_source
-                                                    else 'STRICT_SOURCE_GROUP_ISOLATION'),
-                      'warning': 'No cross-source reuse authority is established by this harness.'}
+                      'cross_source_reuse_policy': (
+                          'SYNTHETIC_UNVERIFIED_UPPER_BOUND'
+                          if research_synthetic_cross_source else 'STRICT_SOURCE_GROUP_ISOLATION'),
+                      'warning': 'No cross-source feature reuse entitlement or final-use is established here.'}
 
 
 def _validated_snapshot(snapshot: dict, rows: list[dict], dataset_digest: str,
                         role: str) -> torch.Tensor:
     if snapshot.get('role') != role or snapshot.get('dataset_sha256') != dataset_digest:
         raise ValueError('baseline/candidate role or dataset identity mismatch')
+    frozen_option_count(rows)
     expected_cell = [rows[0][k] for k in ('principal', 'organ_id', 'cell_id')]
     if snapshot.get('cell_scope') != expected_cell or any(
         [row[k] for k in ('principal', 'organ_id', 'cell_id')] != expected_cell for row in rows
@@ -316,35 +386,50 @@ def _utc_time(value: Any) -> datetime:
 
 def prequential_order_audit(rows: list[dict], frozen_no_change: dict,
                             candidate: dict) -> dict:
-    """Check declared forecast-before-outcome ordering, never verify attestations.
+    """E4 source-order audit: event observed <= forecast < label arrival.
 
-    Offline labels are visible to this harness. A correct timestamp *claim*
-    cannot prove predictions were sealed before labels, nor establish an
-    independent causal NDU improvement. Both roles are checked separately.
+    Unlike a hindsight comparison, this requires explicit post-event label
+    availability times. The E4 `event_time` is input observation time, NOT
+    outcome availability. All timestamps are still operator-authored claims
+    and cannot independently prove precommit or causal NDU.
     """
     issues = []
-    future = [r for r in rows if r.get('split') == 'future']
+    future = [row for row in rows if row.get('split') == 'future']
     if not future:
         issues.append('future rows missing')
-    for name, snapshot in (('frozen_no_change', frozen_no_change), ('candidate', candidate)):
-        times = snapshot.get('prediction_committed_at_by_row')
-        if not isinstance(times, dict) or set(times) != {r['row_id'] for r in future}:
-            issues.append(f'{name}: incomplete prediction commitment timestamps')
+    ids = {row['row_id'] for row in future}
+    shared_outcomes = None
+    for role, snapshot in (('frozen_no_change', frozen_no_change),
+                           ('candidate', candidate)):
+        commits = snapshot.get('prediction_committed_at_by_row')
+        arrivals = snapshot.get('outcome_available_at_by_row')
+        if (not isinstance(commits, dict) or set(commits) != ids or
+                not isinstance(arrivals, dict) or set(arrivals) != ids):
+            issues.append(f'{role}: incomplete forecast/label arrival timestamp maps')
             continue
+        if shared_outcomes is None:
+            shared_outcomes = arrivals
+        elif arrivals != shared_outcomes:
+            issues.append('baseline/candidate disagree on future outcome availability')
         for row in future:
             row_id = row['row_id']
             try:
-                predicted_at = _utc_time(times[row_id])
-                outcome_at = _utc_time(row.get('event_time'))
+                observed = _utc_time(row.get('event_time'))
+                forecast = _utc_time(commits[row_id])
+                outcome = _utc_time(arrivals[row_id])
             except ValueError:
-                issues.append(f'{name}:{row_id}: invalid timestamp')
+                issues.append(f'{role}:{row_id}: invalid timezone-aware timestamp')
                 continue
-            if predicted_at >= outcome_at:
-                issues.append(f'{name}:{row_id}: prediction not before outcome')
-    return {'status': ('TEMPORAL_ORDER_CONSISTENT_UNVERIFIED' if not issues else 'MISSING_OR_INVALID'),
-            'issues': issues, 'commitment_signature_verified': False,
-            'independent_prequential_evaluator_verified': False,
-            'production_admission': 'BLOCKED'}
+            if not observed <= forecast < outcome:
+                issues.append(f'{role}:{row_id}: prediction not between observation and outcome')
+    return {
+        'status': ('TEMPORAL_ORDER_CONSISTENT_UNVERIFIED' if not issues
+                   else 'MISSING_OR_INVALID'),
+        'issues': issues, 'commitment_signature_verified': False,
+        'independent_prequential_evaluator_verified': False,
+        'production_admission': 'BLOCKED',
+    }
+
 
 
 def evaluate_shadow(rows: list[dict], dataset_digest: str,
@@ -389,13 +474,14 @@ def evaluate_shadow(rows: list[dict], dataset_digest: str,
                      for _ in range(bootstrap_repeats))
     lower = samples[int(.025 * (len(samples) - 1))]
     upper = samples[int(.975 * (len(samples) - 1))]
-    # Retrospective statistics alone cannot certify precommitted predictions.
+    # Hindsight accuracy is not prequential learning nor independent NDU.
     strong_signal = len(future_groups) >= 30 and lower > 0 and negative == 0
     ordering = prequential_order_audit(rows, frozen_no_change, candidate)
     return {'experiment': 'E4', 'production_admission': 'BLOCKED',
             'independent_evaluator_verified': False, 'ndu_receipt_verified': False,
             'selection': 'NOT_AUTHORIZED',
-            'shadow_signal': ('RETROSPECTIVE_POSITIVE_UNVERIFIED' if strong_signal else 'INCONCLUSIVE_OR_NEGATIVE'),
+            'shadow_signal': ('RETROSPECTIVE_POSITIVE_UNVERIFIED' if strong_signal
+                              else 'INCONCLUSIVE_OR_NEGATIVE'),
             'causal_learning_verified': False,
             'prequential_order_audit': ordering,
             'baseline_artifact_digest': frozen_no_change['artifact_digest'],
@@ -438,17 +524,93 @@ def encoder_matrix_contract(matrix: dict) -> dict:
 
 
 
+def five_arm_matrix_contract(matrix: dict) -> dict:
+    """A5: enforce all five named candidates, exact source pins and fair budgets.
+
+    Passing this schema is never proof of a real model run or a source signature.
+    GTE's generic Transformer mean-pooling control is not its official retrieval
+    embedding pipeline; the two must not be silently equated.
+    """
+    errors = []
+    if not isinstance(matrix, dict):
+        return {'experiment': 'A5', 'status': 'BLOCKED',
+                'missing_or_invalid': ['manifest must be an object'],
+                'production_admission': 'BLOCKED', 'real_encoder_runs_completed': False}
+    for key in ('dataset_sha256', 'split_manifest_sha256', 'frozen_no_change_sha256'):
+        if not is_digest(matrix.get(key)):
+            errors.append(f'missing dataset/protocol pin: {key}')
+    if matrix.get('data_use_approved') is not True:
+        errors.append('approved training/evaluation data use required')
+    training = matrix.get('training')
+    if (not isinstance(training, dict)
+            or type(training.get('seed')) is not int
+            or type(training.get('steps')) is not int or training['steps'] <= 0
+            or type(training.get('batch')) is not int or training['batch'] <= 0
+            or not isinstance(training.get('optimizer'), str)
+            or training['optimizer'].lower() != 'adamw'
+            or type(training.get('learning_rate')) not in (int, float)
+            or not math.isfinite(training['learning_rate'])
+            or training['learning_rate'] <= 0):
+        errors.append('same finite AdamW training budget required')
+    if not isinstance(matrix.get('question_option_layout'), str) or not matrix['question_option_layout']:
+        errors.append('fixed common question/option layout missing')
+    arms = matrix.get('encoders')
+    if not isinstance(arms, dict):
+        arms = {}
+    expected = {name for name, _, _, _ in FIVE_ARM_CANDIDATES}
+    if set(arms) != expected:
+        errors.append('exact five candidate names required (no omissions or extras)')
+    for name, backend, expected_repo, _ in FIVE_ARM_CANDIDATES:
+        entry = arms.get(name)
+        if not isinstance(entry, dict):
+            errors.append(f'{name}: missing candidate manifest')
+            continue
+        if entry.get('backend_kind') != backend:
+            errors.append(f'{name}: mismatched backend kind')
+        repo_id = entry.get('repository')
+        if ((expected_repo is not None and repo_id != expected_repo)
+                or (expected_repo is None and
+                    (not isinstance(repo_id, str) or not repo_id))):
+            errors.append(f'{name}: incorrect upstream repository')
+        if not is_commit_ref(entry.get('revision')) or len(entry['revision']) != 40:
+            errors.append(f'{name}: exact 40-hex model revision required')
+        if not all(is_digest(entry.get(key)) for key in
+                   ('bundle_sha256', 'weights_sha256', 'tokenizer_sha256')):
+            errors.append(f'{name}: missing weights/bundle/tokenizer pins')
+        if entry.get('license_approved') is not True:
+            errors.append(f'{name}: license approval required')
+        if name == 'laya-421m' and entry.get('local_code_reviewed') is not True:
+            errors.append('Laya local package source review required')
+    # A five-name manifest pointing all names at the same checkpoint is not
+    # a five-model experiment, even if each digest has the correct shape.
+    weights = [arms[name].get('weights_sha256')
+               for name, _, _, _ in FIVE_ARM_CANDIDATES
+               if isinstance(arms.get(name), dict)]
+    if len(weights) == 5 and len(set(weights)) != 5:
+        errors.append('five independent model weight artifacts required')
+    return {'experiment': 'A5',
+            'status': 'SCHEMA_COMPLETE_UNVERIFIED' if not errors else 'BLOCKED',
+            'missing_or_invalid': errors, 'real_encoder_runs_completed': False,
+            'production_admission': 'BLOCKED',
+            'pooling_caveat': 'GTE/ModernBERT/mmBERT use generic masked mean pooling controls',
+            'warning': 'Manifest SHA/revision and license flags are untrusted operator claims, not independent validation.'}
+
+
 def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
                             matrix: dict, *, dimension: int = 128,
-                            max_length: int = 512) -> dict:
-    """E1: run four separate *actual* pinned offline encoders, never synthetic.
+                            max_length: int = 512,
+                            five_arm: bool = False) -> dict:
+    """E1/A5: run exact offline checkpoint set, never a synthetic encoder.
 
     The same approved ordered records, held-out split and Head optimization
     budget are used for each Encoder. This cannot validate operator authority
     and does not claim official retrieval-pooling or Laya teacher equivalence.
     """
-    if encoder_matrix_contract(matrix)['status'] != 'SCHEMA_COMPLETE_UNVERIFIED':
-        raise ValueError('E1 common real-model manifest is incomplete')
+    audit = five_arm_matrix_contract(matrix) if five_arm else encoder_matrix_contract(matrix)
+    if audit['status'] != 'SCHEMA_COMPLETE_UNVERIFIED':
+        raise ValueError('E1/A5 common real-model manifest is incomplete')
+    arms = (FIVE_ARM_CANDIDATES if five_arm else
+            tuple((kind, kind, None, None) for kind in ENCODERS))
     if not is_digest(dataset_sha256) or dataset_sha256 != matrix['dataset_sha256']:
         raise ValueError('E1 real run dataset identity mismatch')
     if not 1 <= dimension <= 512 or not 1 <= max_length <= 8192:
@@ -458,6 +620,7 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
         raise ValueError('E1 runner only implements AdamW; optimizer mismatch')
     if not rows or len({(r['principal'],r['organ_id'],r['cell_id']) for r in rows}) != 1:
         raise ValueError('E1 requires one principal/organ/Cell scope')
+    registered_choices = frozen_option_count(rows)
     labels = torch.tensor([r['label'] for r in rows], dtype=torch.long)
     split_names = [r['split'] for r in rows]
     masks = {split: torch.tensor([i for i, name in enumerate(split_names) if name == split],
@@ -466,24 +629,31 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
     if any(len(indices) == 0 for indices in masks.values()):
         raise ValueError('all four splits required')
     results = {}
-    # Preflight all four paths before any model is loaded; no silent missing
-    # candidate, substituting mocks, or accidentally letting HF fetch online.
-    for kind in ENCODERS:
+    # Preflight ALL candidate paths before loading any model. No mock fallback.
+    for kind, _, _, _ in arms:
         entry = matrix['encoders'][kind]
         if not isinstance(entry.get('local_path'), str) or not Path(entry['local_path']).is_dir():
             raise FileNotFoundError(f'E1 missing local {kind} checkpoint')
     from .contracts import sha256_file
-    for kind in ENCODERS:
+    from .bundle import verify_checkpoint_bundle
+    for kind, backend_kind, _, _ in arms:
         entry = matrix['encoders'][kind]
-        tokenizer_file = Path(entry['local_path']) / ('tokenizer/tokenizer.json' if kind == 'laya-joint' else 'tokenizer.json')
+        root = Path(entry['local_path'])
+        tokenizer_file = root / ('tokenizer/tokenizer.json' if backend_kind == 'laya-joint' else 'tokenizer.json')
         if not tokenizer_file.is_file() or sha256_file(tokenizer_file) != entry['tokenizer_sha256']:
             raise ValueError(f'E1 tokenizer file digest mismatch: {kind}')
+        weight_file = root / 'model.safetensors'
+        if not weight_file.is_file() or sha256_file(weight_file) != entry['weights_sha256']:
+            raise ValueError(f'E1 exact weights mismatch: {kind}')
+        verify_checkpoint_bundle(root, backend_kind, entry['bundle_sha256'])
     from .models import OfflineEncoder, frozen_projection
-    for kind in ENCODERS:
+    for kind, backend_kind, _, expected_hidden in arms:
         entry = matrix['encoders'][kind]
-        backend = OfflineEncoder(kind, entry['local_path'], entry['weights_sha256'],
+        backend = OfflineEncoder(backend_kind, entry['local_path'], entry['weights_sha256'],
                                  max_length=max_length,
                                  expected_bundle_sha256=entry['bundle_sha256'])
+        if expected_hidden is not None and backend.dimension != expected_hidden:
+            raise ValueError(f'{kind}: wrong model hidden width')
         start = time.perf_counter()
         features = backend.encode(rows, batch=spec['batch'])
         encoder_seconds = time.perf_counter() - start
@@ -492,7 +662,8 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
         features = ((features - mu) / std).clamp(-10,10)
         trained = head_trials(features, labels, split_names,
                               budgets=BUDGETS, seed=spec['seed'], steps=spec['steps'],
-                              batch=spec['batch'], lr=float(spec['learning_rate']))
+                              batch=spec['batch'], lr=float(spec['learning_rate']),
+                              num_classes=registered_choices)
         result = {'checkpoint_bundle_sha256': backend.bundle_sha256,
                   'weights_sha256': backend.weights_sha256,
                   'tokenizer_sha256_claimed': entry['tokenizer_sha256'],
@@ -500,9 +671,16 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
                   'input_rows': len(rows), 'encoder_seconds': encoder_seconds,
                   'trained_head_matrix': trained,
                   'normalized_from': 'train_only',
-                  'joint_format': 'laya-native-markers' if kind == 'laya-joint'
+                  'backend_kind': backend_kind,
+                  'upstream_repository': entry.get('repository') if five_arm else None,
+                  'upstream_revision': entry.get('revision') if five_arm else None,
+                  'embedding_contract': (
+                      'generic-masked-mean-NOT-official-GTE' if kind == 'gte-modernbert-base'
+                      else 'laya-original-plus-lossy-pooled-control' if backend_kind == 'laya-joint'
+                      else 'generic-masked-mean-control'),
+                  'joint_format': 'laya-native-markers' if backend_kind == 'laya-joint'
                                   else 'generic-question-options-state-string'}
-        if kind == 'laya-joint':
+        if backend_kind == 'laya-joint':
             # True original Laya policy; never replace with pooled CLS.
             with torch.inference_mode():
                 original = backend.laya_baseline_probabilities(rows)
@@ -513,7 +691,8 @@ def run_real_encoder_matrix(rows: list[dict], dataset_sha256: str,
                 1-original[masks['ood']].max(1).values,
                 1-original[masks['validation']].max(1).values)
         results[kind] = result
-    return {'experiment': 'E1', 'evidence_class': 'REAL_MODEL_LOCAL_SHADOW',
+    return {'experiment': 'A5' if five_arm else 'E1',
+            'evidence_class': 'REAL_MODEL_LOCAL_SHADOW',
             'production_admission': 'BLOCKED', 'independent_artifact_signatures_verified': False,
             'dataset_sha256': dataset_sha256, 'same_training': dict(spec),
             'same_projected_width': dimension, 'encoders': results,
@@ -576,7 +755,22 @@ def _read_pinned_json(path: str, sha: str) -> dict:
     from .contracts import sha256_file
     if not is_digest(sha) or sha256_file(path) != sha:
         raise ValueError('JSON artifact SHA256 mismatch or missing')
-    result = json.loads(Path(path).read_text(encoding='utf-8'))
+    def unique_keys(pairs):
+        values = {}
+        for key, item in pairs:
+            if key in values:
+                raise ValueError('duplicate JSON evidence key')
+            values[key] = item
+        return values
+    def finite_float(token):
+        value = float(token)
+        if not math.isfinite(value):
+            raise ValueError('nonfinite JSON evidence float exponent')
+        return value
+    result = json.loads(
+        Path(path).read_text(encoding='utf-8'), object_pairs_hook=unique_keys,
+        parse_constant=lambda _: (_ for _ in ()).throw(ValueError('nonfinite JSON')),
+        parse_float=finite_float)
     if not isinstance(result, dict):
         raise ValueError('top-level JSON object required')
     return result
@@ -584,7 +778,8 @@ def _read_pinned_json(path: str, sha: str) -> dict:
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=['e1-plan', 'e1-run', 'e2-heads', 'e3-reuse', 'e4-future', 'e5-host'])
+    parser.add_argument('command', choices=['e1-plan', 'e1-run', 'e1-five-plan', 'e1-five-run',
+                                            'e2-heads', 'e3-reuse', 'e4-future', 'e5-host'])
     parser.add_argument('--output', required=True)
     parser.add_argument('--input-json', default='')
     parser.add_argument('--input-sha256', default='')
@@ -616,9 +811,11 @@ def _parser() -> argparse.ArgumentParser:
 def main() -> None:
     args = _parser().parse_args()
     torch.set_num_threads(args.threads)
-    if args.command in ('e1-plan', 'e5-host'):
+    if args.command in ('e1-plan', 'e1-five-plan', 'e5-host'):
         obj = _read_pinned_json(args.input_json, args.input_sha256)
-        result = encoder_matrix_contract(obj) if args.command == 'e1-plan' else scale_receipt_audit(obj)
+        result = (encoder_matrix_contract(obj) if args.command == 'e1-plan'
+                  else five_arm_matrix_contract(obj) if args.command == 'e1-five-plan'
+                  else scale_receipt_audit(obj))
     else:
         from .contracts import load_dataset, sha256_file
         from .models import OfflineEncoder
@@ -626,12 +823,16 @@ def main() -> None:
         if not is_digest(args.dataset_sha256):
             raise ValueError('pinned dataset SHA256 required')
         rows, data = load_dataset(args.dataset, expected_sha256=args.dataset_sha256)
+        # A fixed categorical Head cannot learn a coherent output if the
+        # meaning/order of its logits changes between train and future.
+        frozen_option_count(rows)
         if len({(r['principal'], r['organ_id'], r['cell_id']) for r in rows}) != 1:
             raise ValueError('one scoped Cell required; no cross-scope learning aggregation')
-        if args.command == 'e1-run':
+        if args.command in ('e1-run', 'e1-five-run'):
             matrix = _read_pinned_json(args.input_json, args.input_sha256)
-            result = run_real_encoder_matrix(rows, args.dataset_sha256, matrix,
-                                             dimension=args.dimension, max_length=args.max_length)
+            result = run_real_encoder_matrix(
+                rows, args.dataset_sha256, matrix, dimension=args.dimension,
+                max_length=args.max_length, five_arm=args.command == 'e1-five-run')
         elif args.command == 'e4-future':
             baseline = _read_pinned_json(args.baseline, args.baseline_sha256)
             candidate = _read_pinned_json(args.candidate, args.candidate_sha256)
@@ -666,7 +867,8 @@ def main() -> None:
                                          tokenizer_digest=tok, normalizer_digest=norm,
                                          mode='public', batch_size=args.batch,
                                          generation=args.generation, authority_epoch=args.authority_epoch,
-                                         research_synthetic_cross_source=(args.encoder == 'synthetic-hash' and args.allow_synthetic))
+                                         research_synthetic_cross_source=(
+                                             args.encoder == 'synthetic-hash' and args.allow_synthetic))
                 from .models import frozen_projection
                 if args.dimension < 4 or args.dimension > 512:
                     raise ValueError('E3 requires a bounded projected dimension 4..512')
@@ -678,30 +880,70 @@ def main() -> None:
                     return ((vectors - avg) / scale).clamp(-10, 10).float().cpu()
                 joint_features = train_normalized(frozen_projection(_j.float().cpu(), args.dimension, args.seed))
                 public_features = frozen_projection(_p.float().cpu(), public_dim, args.seed)
-                # Deliberate synthetic local-state control: this isolates encoder reuse
-                # but CANNOT establish quality of a real trained State Adapter.
-                state_features = torch.stack([_mock_embedding({
-                    'state': r['state'], 'question': '', 'options': ['private-state-only']},
-                    args.dimension - public_dim) for r in rows])
-                fused_features = train_normalized(torch.cat([public_features, state_features], dim=1))
+                # The SAME frozen Encoder must encode state-only inputs. No
+                # synthetic local-state hash may enter a real-Encoder result.
+                # Account for these physical forwards in the decomposed cost:
+                # sharing question encoding alone is not always a net saving.
+                _s, state = reuse_trial(
+                    rows, encode, encoder_digest=encoder_digest,
+                    tokenizer_digest=tok, normalizer_digest=norm,
+                    mode='private_state', batch_size=args.batch,
+                    generation=args.generation, authority_epoch=args.authority_epoch)
+                state_features = frozen_projection(
+                    _s.float().cpu(), args.dimension - public_dim, args.seed + 1)
+                fused_features = train_normalized(
+                    torch.cat([public_features, state_features], dim=1))
                 label_tensor = torch.tensor([r['label'] for r in rows], dtype=torch.long)
                 split_names = [r['split'] for r in rows]
+                from .state_fusion import learned_state_fusion_trials
+                lightweight_state = learned_state_fusion_trials(
+                    _p.float().cpu(), rows, label_tensor, split_names,
+                    total_dim=args.dimension, budgets=tuple(args.budgets),
+                    kinds=('linear', 'dynamic_gate'), steps=args.steps,
+                    batch=args.batch, seed=args.seed,
+                    num_classes=len(rows[0]['options']))
                 compared = {
                     'joint': head_trials(joint_features, label_tensor, split_names,
                                          kinds=('linear', 'dynamic_gate'), budgets=tuple(args.budgets),
-                                         steps=args.steps, batch=args.batch, seed=args.seed),
+                                         steps=args.steps, batch=args.batch, seed=args.seed,
+                                         num_classes=len(rows[0]['options'])),
                     'public_plus_private_state': head_trials(fused_features, label_tensor, split_names,
                                          kinds=('linear', 'dynamic_gate'), budgets=tuple(args.budgets),
-                                         steps=args.steps, batch=args.batch, seed=args.seed),
+                                         steps=args.steps, batch=args.batch, seed=args.seed,
+                                         num_classes=len(rows[0]['options'])),
+                    'public_plus_trainable_lightweight_state_adapter': lightweight_state,
                 }
                 result = {'experiment': 'E3', 'evidence_class': evidence_class,
-                          'production_admission': 'BLOCKED', 'joint': joint, 'public': public,
+                          'production_admission': 'BLOCKED', 'joint': joint,
+                          'public': public, 'private_state': state,
+                          'encoder_forward_rows_total': (
+                              joint['encoder_forward_rows']
+                              + public['encoder_forward_rows']
+                              + state['encoder_forward_rows']),
+                          'decomposed_forward_rows': (
+                              public['encoder_forward_rows']
+                              + state['encoder_forward_rows']),
+                          'decomposed_rows_saved_vs_joint': (
+                              joint['encoder_forward_rows']
+                              - public['encoder_forward_rows']
+                              - state['encoder_forward_rows']),
+                          'lightweight_state_additional_encoder_rows': 0,
+                          'lightweight_state_estimated_transformer_rows_saved': (
+                              joint['encoder_forward_rows'] -
+                              public['encoder_forward_rows']),
+                          'lightweight_state_trainable': True,
                           'quality_shadow': compared,
-                          'state_adapter': 'SYNTHETIC_HASH_NOT_DEPLOYABLE',
+                          'state_adapter': (
+                              'SYNTHETIC_STEM_SMOKE' if args.encoder == 'synthetic-hash'
+                              else 'FROZEN_STATE_ENCODER_WITH_LEARNED_FUSION_HEAD'),
+                          'state_encoder_frozen': True,
+                          'state_encoder_is_same_pinned_model': args.encoder != 'synthetic-hash',
                           'public_vs_joint_quality_not_established': True,
-                          'warning': ('E3 measured the accuracy/cache tradeoff only for a hash-based '
-                                      'private-state control. Real trained state fusion and independent '
-                                      'future-window evaluation remain necessary.')}
+                          'warning': ('State and public inputs use separate frozen Encoder '
+                                      'forwards, including their measured physical rows. '
+                                      'Random projections and trained Head are shadow '
+                                      'controls; official model pooling, signed sources, '
+                                      'NDU and production quality remain unverified.')}
             else:
                 features = encode(rows).float().cpu()
                 from .models import frozen_projection
@@ -712,7 +954,7 @@ def main() -> None:
                 labels = torch.tensor([r['label'] for r in rows], dtype=torch.long)
                 result = head_trials(normalized, labels, [r['split'] for r in rows],
                                      budgets=tuple(args.budgets), seed=args.seed, steps=args.steps,
-                                     batch=args.batch)
+                                     batch=args.batch, num_classes=len(rows[0]['options']))
                 result['evidence_class'] = evidence_class
             result['dataset_sha256'] = sha256_file(args.dataset)
             result['encoder_bundle_sha256'] = encoder_digest if args.encoder != 'synthetic-hash' else None
