@@ -12,6 +12,7 @@ use codex_hepta_operator_acceptance::verify_cell_split_evidence_wal_observer_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::PhaseMetricEventV1;
 use codex_hepta_types::PhaseMetricKindV1;
+use codex_hepta_types::PhaseMetricSinkV1;
 
 const DOMAIN: &str = "scope.evidence.metrics";
 
