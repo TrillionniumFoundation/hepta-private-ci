@@ -94,9 +94,10 @@ fn binding_proposal_has_no_authority_and_binds_original_bytes() {
         proposed.proposed_final_use_binding.destination_id,
         value.destination_id
     );
+    let expected_payload_sha256: [u8; 32] = Sha256::digest(b"example-tool-payload").into();
     assert_eq!(
         proposed.proposed_final_use_binding.payload_sha256,
-        Sha256::digest(b"example-tool-payload").into()
+        expected_payload_sha256
     );
 }
 
