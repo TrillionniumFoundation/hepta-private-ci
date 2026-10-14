@@ -367,6 +367,23 @@ class AfEvidenceTests(unittest.TestCase):
                 r["routing_policy_sha256"] = sha("route-policy-fixed_graph")
         check_bad(self.d, "C", "indistinguishable")
 
+    def test_non_object_input_denied_without_crash(self):
+        r = gate.verify(["not-an-evidence-object"])
+        self.assertEqual(r["gates"]["identity"]["status"], "blocked")
+        self.assertFalse(r["physical_split_permitted"])
+
+    def test_unhashable_protected_slice_denied_without_crash(self):
+        self.d["candidate"]["protected_slices"] = [["unhashable"]]
+        check_bad(self.d, "identity")
+
+    def test_unhashable_snapshot_denied_without_crash(self):
+        self.d["candidate"]["independent_snapshots"] = [["unhashable"]]
+        check_bad(self.d, "identity")
+
+    def test_huge_numeric_measurement_denied_without_crash(self):
+        self.d["studies"]["A"]["records"][0]["effective_sample_size"] = 10 ** 1000
+        check_bad(self.d, "A", "finite number")
+
     def test_split_late_selector_withdrawal_blocked(self):
         self.d["split_safety"]["selector_current_after_last_readback"] = False
         check_bad(self.d, "split_safety", "selector")
