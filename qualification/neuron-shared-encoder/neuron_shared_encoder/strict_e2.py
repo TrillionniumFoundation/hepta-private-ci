@@ -174,3 +174,82 @@ def equal_parameter_nonlinear_trial(features: Tensor, labels: Tensor, rows: list
             'future_used_to_select_winner': False, 'validation_mean_brier': val_brier,
             'runs': result,
             'warning': 'Held-out future results here are retrospective, untrusted, not independently precommitted NDU evidence.'}
+
+
+def main(argv: list[str] | None = None) -> None:
+    """Offline E2 pairing entrypoint; no downloads, no production grant."""
+    import argparse
+    from pathlib import Path
+    from .contracts import load_dataset
+    from .experiment import _mock_embedding
+    from .models import OfflineEncoder, frozen_projection
+    from .validation_v3 import ENCODERS, is_digest
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--dataset', required=True)
+    parser.add_argument('--dataset-sha256', required=True)
+    parser.add_argument('--output', required=True)
+    parser.add_argument('--encoder', choices=('synthetic-hash',) + ENCODERS, default='synthetic-hash')
+    parser.add_argument('--allow-synthetic', action='store_true')
+    parser.add_argument('--checkpoint-dir', default='')
+    parser.add_argument('--weights-sha256', default='')
+    parser.add_argument('--bundle-sha256', default='')
+    parser.add_argument('--dimension', type=int, default=128)
+    parser.add_argument('--budget', type=int, default=16384)
+    parser.add_argument('--seeds', type=int, nargs='+', default=[11, 29, 47])
+    parser.add_argument('--steps', type=int, default=32)
+    parser.add_argument('--batch', type=int, default=32)
+    parser.add_argument('--encoder-batch', type=int, default=8)
+    parser.add_argument('--threads', type=int, default=1)
+    args = parser.parse_args(argv)
+
+    if not is_digest(args.dataset_sha256):
+        raise ValueError('pinned dataset SHA-256 required')
+    if not 1 <= args.dimension <= 512 or not 1 <= args.encoder_batch <= 128:
+        raise ValueError('bounded feature dimension / encoder batch required')
+    if not 1 <= args.threads <= 32:
+        raise ValueError('bounded CPU threads required')
+    rows, _ = load_dataset(args.dataset, expected_sha256=args.dataset_sha256)
+    torch.set_num_threads(args.threads)
+    if args.encoder == 'synthetic-hash':
+        if not args.allow_synthetic:
+            raise ValueError('synthetic test requires --allow-synthetic')
+        features = torch.stack([_mock_embedding(r, args.dimension) for r in rows])
+        real_bundle = None
+        evidence_class = 'SYNTHETIC_SMOKE'
+    else:
+        if args.allow_synthetic or not args.checkpoint_dir or not all(
+            is_digest(x) for x in (args.weights_sha256, args.bundle_sha256)
+        ):
+            raise ValueError('pinned offline real assets required; no synthetic fallback')
+        backend = OfflineEncoder(args.encoder, args.checkpoint_dir, args.weights_sha256,
+                                 expected_bundle_sha256=args.bundle_sha256)
+        features = backend.encode(rows, batch=args.encoder_batch)
+        real_bundle = args.bundle_sha256
+        evidence_class = 'REAL_MODEL_OFFLINE_RESEARCH_UNVERIFIED'
+    original_dimension = features.shape[1]
+    projected = frozen_projection(features.float().cpu(), args.dimension, seed=42)
+    labels = torch.tensor([r['label'] for r in rows], dtype=torch.long)
+    report = equal_parameter_nonlinear_trial(projected, labels, rows, budget=args.budget,
+                                             seeds=tuple(args.seeds), steps=args.steps,
+                                             batch=args.batch)
+    report.update({'evidence_class': evidence_class,
+                   'dataset_sha256': args.dataset_sha256,
+                   'encoder_kind': args.encoder,
+                   'encoder_bundle_sha256': real_bundle,
+                   'encoder_feature_dimension': original_dimension,
+                   'head_feature_dimension': projected.shape[1],
+                   'random_untrained_projection': original_dimension != projected.shape[1],
+                   'encoder_adapter_call_count': 1,
+                   'encoder_rows_submitted': len(rows),
+                   'physical_encoder_kernel_count_verified': False,
+                   'approved_data_use_verified': False})
+    destination = Path(args.output)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(json.dumps(report, ensure_ascii=False, indent=2, allow_nan=False) + '\n',
+                           encoding='utf-8')
+    print(f'E2 equal-parameter offline shadow: {destination}')
+
+
+if __name__ == '__main__':
+    main()
