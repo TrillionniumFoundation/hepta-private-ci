@@ -184,10 +184,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         # caller of the legacy/metrics-bound/reconcile APIs; new callers require
         # explicit security review, never an automatically expanded whitelist.
         expected = {
-            "run_pinned_cell_split_execution_with_admission_v1": {
-                "codex-rs/hepta-operator-acceptance/src/lib.rs",
-                "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs",
-            },
+            "run_pinned_cell_split_execution_with_admission_v1": set(),
             "run_pinned_cell_split_execution_with_admission_and_metrics_v1": {
                 "codex-rs/hepta-operator-acceptance/src/lib.rs",
                 "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs",
@@ -219,13 +216,27 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                     "unreviewed Cell Split mutation or pending-recovery caller",
                 )
 
+        # Raw test-only callback may exist in the test build, but must be
+        # absent from ordinary production Rust and from all crate exports.
+        cli_raw = (
+            ROOT / "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"
+        ).read_text(encoding="utf-8")
+        self.assertRegex(
+            cli_raw,
+            r"\#\[cfg\(test\)\]\s+fn\s+run_pinned_cell_split_execution_with_admission_v1\b",
+            "callback-only admission must be test-only and non-public",
+        )
+        self.assertNotRegex(
+            self.lexical_code("codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"),
+            r"\bfn\s+run_pinned_cell_split_execution_with_admission_v1\s*\(",
+            "legacy arbitrary callback must not compile into the production coordinator",
+        )
         self.assertEqual(
             self.public_free_functions(
                 "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"
             ),
             {
                 "run_pinned_cell_split_execution_v1",
-                "run_pinned_cell_split_execution_with_admission_v1",
                 "run_pinned_cell_split_execution_with_admission_and_metrics_v1",
                 "run_pinned_cell_split_reconcile_only_v1",
             },
