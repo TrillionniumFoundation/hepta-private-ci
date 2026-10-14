@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 import pytest
 
 from neuron_shared_encoder.prequential_receipts import (
-    GENESIS, event_digest, prequential_chain_audit,
+    GENESIS, event_digest, input_digest, prequential_chain_audit,
 )
 
 D = lambda c: c * 64
@@ -21,6 +21,7 @@ def fixtures(n=8):
             rows.append({'row_id': f'{split}-{i}', 'source_group': f'{split}-{i}',
                          'event_time': at.isoformat(), 'split': split, 'principal': 'p1',
                          'organ_id': 'o1', 'cell_id': 'c1', 'question': 'Which?',
+                         'state': {'source': f'episode-{split}-{i}'},
                          'options': ['no', 'yes'], 'label': i % 2})
     common = {'dataset_sha256': D('a'), 'cell_scope': ['p1', 'o1', 'c1'],
               'row_ids': [r['row_id'] for r in rows], 'source_commit': D('f')}
@@ -38,10 +39,12 @@ def fixtures(n=8):
         row_at = datetime.fromisoformat(row['event_time'])
         for role, model in [('frozen_no_change', baseline), ('candidate', candidate)]:
             events.append({'kind': 'forecast', 'row_id': row['row_id'], 'role': role,
+                           'source_group': row['source_group'], 'input_digest': input_digest(row),
                            'artifact_digest': model['artifact_digest'],
                            'probabilities': model['probabilities'][index],
                            'recorded_at': (row_at - timedelta(hours=1)).isoformat()})
         events.append({'kind': 'outcome', 'row_id': row['row_id'],
+                       'source_group': row['source_group'], 'input_digest': input_digest(row),
                        'label': row['label'],
                        'recorded_at': (row_at + timedelta(hours=1)).isoformat()})
     log = {'dataset_sha256': D('a'), 'cell_scope': common['cell_scope'], 'events': events}
@@ -190,3 +193,24 @@ def test_integrated_e4_rejects_mutated_validly_rehashed_forecast():
     with pytest.raises(ValueError, match='forecast probabilities'):
         evaluate_shadow(rows, D('a'), baseline, candidate,
                         bootstrap_repeats=100, prequential_event_log=log)
+
+def test_input_identity_cannot_be_rebound_by_rehashing_chain():
+    args = list(fixtures())
+    args[3]['events'][0]['input_digest'] = D('e')
+    resign(args[3])
+    with pytest.raises(ValueError, match='source and admitted input'):
+        run(*args)
+    args = list(fixtures())
+    args[3]['events'][0]['source_group'] = 'other-source'
+    resign(args[3])
+    with pytest.raises(ValueError, match='source and admitted input'):
+        run(*args)
+
+
+def test_monotonic_append_order_rejects_backdated_sealed_chain():
+    args = list(fixtures())
+    first = datetime.fromisoformat(args[3]['events'][0]['recorded_at'])
+    args[3]['events'][1]['recorded_at'] = (first - timedelta(seconds=1)).isoformat()
+    resign(args[3])
+    with pytest.raises(ValueError, match='clock moved backwards'):
+        run(*args)
