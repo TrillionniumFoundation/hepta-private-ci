@@ -280,3 +280,25 @@ write, and rejects any surviving helper effect. A child that escapes the
 isolated process group or dispatches to an independent remote service remains
 outside this local process cleanup; only a real provider/Worker owner can
 reconcile those external side effects.
+
+### GitHub pull_request exact-HEAD provenance correction
+
+On a `pull_request` event, `github.sha` identifies GitHub's **synthetic
+merge commit**, *not* the author's PR branch HEAD. Previous E0 jobs
+(e.g. run `38550615028`) checked out and tested merge SHA
+`6db556c9ebf9a8a6fee049b7bcb3f572b4e13dba` while the experiment
+PR HEAD was `185cb9366267149f45885d4196f7e355bf4b22de`. Their real
+results remain valid **for that synthetic merge tree**, but are NOT a
+bit-for-bit original-head CI receipt. The 55/55 success and genuine
+Q24-range failure must not be mislabeled as proof of an exact-HEAD
+execution. Previous separately verified local Python source artifacts
+also do not replace this hosted correction.
+
+Both CI test and public CPU checkout now explicitly select
+`github.event.pull_request.head.sha` and assert the same SHA before
+execution; the provenance-only job retains a manual `workflow_dispatch`
+fallback to `github.sha`. Only same-repository pull requests run the
+heavy public pretrained job. Static regression tests reject returning
+to an unqualified `github.sha` PR checkout and retain manual-dispatch
+and origin restrictions. This changes **evidence identity**, not Rust,
+signature authority, approved models, or Cell routes.

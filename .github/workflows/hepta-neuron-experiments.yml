@@ -21,14 +21,16 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
+      # pull_request github.sha is synthetic merge SHA, not the PR head.
+      # Manual dispatch lacks pull_request and falls back to github.sha.
       - name: Checkout exact tested candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - name: Assert source identity
         env:
-          EXPECTED_SHA: ${{ github.sha }}
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
         run: test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
       - name: Fail-closed provenance and receipt tests (fixtures only)
         run: python3 -m unittest discover -v -s tools/hepta-neuron-experiments -p 'test_*.py'
@@ -50,10 +52,11 @@ jobs:
       HF_HUB_DISABLE_TELEMETRY: "1"
       DO_NOT_TRACK: "1"
     steps:
+      # The public experiment must execute the real PR HEAD, never a merge ref.
       - name: Checkout exact experiment candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
       - name: Checkout pinned previously tested HF loader
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -69,7 +72,7 @@ jobs:
           persist-credentials: false
       - name: Verify all three source identities before dependencies
         env:
-          EXPECTED_SHA: ${{ github.sha }}
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
