@@ -303,7 +303,9 @@ fn valid_signed_live_route_cannot_bypass_missing_same_owner_control_prepare() {
         .expect_err("Control did not durably prepare same-owner cutover");
     assert!(denied.contains("no shared durable Control/Neuron cutover transaction"));
     assert_eq!(
-        runtime.topology_snapshot().expect("unchanged serving route"),
+        runtime
+            .topology_snapshot()
+            .expect("unchanged serving route"),
         before,
         "a signed live readback cannot replace a Control transaction"
     );
