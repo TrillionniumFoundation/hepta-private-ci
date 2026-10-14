@@ -124,6 +124,8 @@ jobs:
             --mode gemma --panel "$RUNNER_TEMP/stem-agnews-panel.json" \
             --manifest "$RUNNER_TEMP/stem-gemma2-pinned/manifest.json" \
             --output "$RUNNER_TEMP/stem-gemma-physical-arms.json" \
+            --sealed-checkpoint "$RUNNER_TEMP/stem-cell-immutable-bundle.json" \
+            --sealed-receipt "$RUNNER_TEMP/stem-cell-immutable-receipt.json" \
             --confirmatory-panel "$RUNNER_TEMP/stem-agnews-new-source-panel.json" \
             --confirmatory-output "$RUNNER_TEMP/stem-gemma-fresh-arms.json"
       - name: Pin all Laya model bytes against fixed revision
@@ -285,6 +287,8 @@ jobs:
             -s qualification/neuron-dynamic-learning -p 'test_paired_process_resource.py'
           PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-paired-venv/bin/python" -m unittest discover -v \
             -s qualification/neuron-dynamic-learning -p 'test_public_agnews_source.py'
+          PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/stem-paired-venv/bin/python" -m unittest discover -v \
+            -s qualification/neuron-dynamic-learning -p 'test_sealed_cell_checkpoint.py'
           git diff --check
           git diff --exit-code
       - name: Archive only public-case digests and non-authorizing statistics
@@ -310,5 +314,7 @@ jobs:
             ${{ runner.temp }}/stem-gemma-process-time.txt
             ${{ runner.temp }}/stem-laya-process-time.txt
             ${{ runner.temp }}/stem-process-resources.json
+            ${{ runner.temp }}/stem-cell-immutable-bundle.json
+            ${{ runner.temp }}/stem-cell-immutable-receipt.json
           if-no-files-found: warn
           retention-days: 7

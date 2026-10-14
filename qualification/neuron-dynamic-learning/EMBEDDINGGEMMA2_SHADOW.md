@@ -467,3 +467,54 @@ The **incomplete** paired ZIP (SHA256 `598096f87c134a7f2792a106e74f4ee6116d2e016
 **Crucial identity negative evidence:** Old Stem and frozen Head digests reproduced, yet the re-trained Head digest was `bcebc80c25c36256199e72ac30b99a2907d55e18aed11950d10da720a61aab18`, not historical `007420eef8999ea6096d74d390c910f0bcfb5e2ae44b3bd717a0e369d7fa2e0e`; per-case old-source probability changes were tiny (largest observed about 6.6e-9) but their Q24 Head tensor identities are **not identical**. The historical full-tensor identity fence must **continue rejecting** this as a replay of the exact previous Head. A genuinely exact-replay study will require recording and loading an immutable, complete Head tensor artifact rather than relying solely on seeded retraining. No CI fix in this branch weakens that gate.
 
 The local source/unit test slice for this repair completed **37/37** (Python mechanism/adversarial tests, not pretrained results). Exact-HEAD CI, true Laya/Gemma new-source scores, real multimodal qualification, resource measurements, signed owner outcomes and production authority remain separate unclosed gates. All changes are Shadow / Draft / `DENY_ALL`.
+
+
+## 2026-10-14 — exact full Float64 Cell artifact / new-candidate val2 replay
+
+The prior [actual historical Head identity failure](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/38531666735)
+remains **correct**: the original completed 2026-10-14 public run did not
+preserve the complete float tensor state. Equal source revision, seed, steps
+and approximately equal predictions do not prove identical Head tensors.
+Its `historical_head_anchor.py` test remains mandatory for experiments
+**claiming** the original historical Head. The old Head cannot be recovered
+by reversing a digest; this branch does not relabel a fresh model as old.
+
+`sealed_cell_checkpoint.py` introduces a separate, explicitly NEW,
+research-only Head generation. It serializes **all six Float64 Cell tensors
+plus both scalar biases** using exact hexadecimal float representations,
+source-panel SHA256, model revision, shared Encoder/profile digest,
+scope/purpose/generation/epoch, optimizer step count, training seed and
+the official existing Rust Q24 candidate digests for both frozen and trained
+Heads. It creates a bounded canonical, SHA256-wrapped JSON file with exclusive,
+0600, no-follow creation and rejects tampering, changed identity, oversized
+or noncanonical data. Readback constructs the existing `DynamicCell` with
+all original Float64 values, independently checks the Rust-compatible
+candidate digests, and exposes **prediction-only** replay handles. A
+replayed Head is never trained on the new source.
+
+`sealed_cell_replay.py` makes a **second real model CPU process** reload
+this newly sealed Head candidate and encode 128 separately hash-pinned
+`val2` inputs, with exact per-case Q24 digest and ownership checks.
+The independent `sealed_cell_numeric_review.py` reselects source cases
+from the entire val2 file and recomputes the three Gemma descriptive arms:
+frozen Head, trained Head, and its fixed historical exploratory ×1024
+logit scale. It refuses modified case labels, missing/reordered inputs,
+nonfinite predictions, altered metrics, forged scale factors and any
+authority elevation. It is a *separate empirical run*, not a claim to have
+reloaded the unavailable historic initial Head, not a new final model,
+and not a complete Laya equal-lifecycle-cost comparison.
+
+New read-only [sealed training and new-source replay workflow]
+(https://github.com/TrillionniumFoundation/hepta-private-ci/blob/research/embeddinggemma2-multimodal-cell-20261014/.github/workflows/hepta-stem-sealed-head.yml)
+downloads only fixed public source/model revisions, trains only on original
+train labels, seals the new Head before val2 execution, uses the second
+process to load exactly that tensor bundle, and saves the raw receipts
+and independent review as non-authorizing 7-day artifacts. The existing
+three-arm workflow additionally preserves a newly serialized Head even
+when its strict historical identity gate correctly refuses it.
+
+These are implemented interfaces and synthetic/adversarial tests; the
+new workflow still needs a real-weight exact-source successful run.
+Independent signed provenance, full lifecycle costs, OOD/Reader, real
+future1/future2/future3 task windows, target-host service timing,
+`blocking-ci` and FinalUse are NOT satisfied. **DENY_ALL.**

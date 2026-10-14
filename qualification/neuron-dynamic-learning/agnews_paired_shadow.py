@@ -116,7 +116,8 @@ def _fresh_report(panel_digest, original_digest, arm_id, rows, **metadata):
     }
 
 
-def run_gemma(panel:dict, runner, *, seed:int=17, steps:int=40, confirmatory=None):
+def run_gemma(panel:dict, runner, *, seed:int=17, steps:int=40, confirmatory=None,
+              sealed_checkpoint:Path|None=None, sealed_receipt:Path|None=None):
     """Consume actual pinned-model Q24 receipts; fit existing bounded Head on train only."""
     import numpy as np
     from cell_learning import budgeted_cell, rust_candidate_digest
@@ -175,6 +176,22 @@ def run_gemma(panel:dict, runner, *, seed:int=17, steps:int=40, confirmatory=Non
     for _ in range(steps):
         head.learn(train_x,train_y,0.15)
     train_us=max(1,(time.perf_counter_ns()-tic)//1000)
+    # First store/reload *all* Float64 Head tensors. Historical selected-Head
+    # equality remains a SEPARATE strict check; this new snapshot is expressly
+    # not the absent tensor artifact from the old successful 2026-10-14 run.
+    if sealed_checkpoint is not None:
+        from sealed_cell_checkpoint import seal_checkpoint
+        receipt = seal_checkpoint(
+            sealed_checkpoint, frozen, head,
+            source_panel_digest=panel_digest,
+            model_revision=runner.manifest["revision"],
+            pipeline_digest=runner.profile_digest,
+            scope_id="public.agnews", purpose_id="capability.noeffects",
+            generation=1, authority_epoch=1, steps=steps, seed=seed,
+        )
+        if sealed_receipt is None or sealed_receipt.exists():
+            raise CapabilityError("separate, fresh sealed Head receipt path required")
+        sealed_receipt.write_bytes(canonical(receipt))
     def sigmoid(x): return np.exp(-np.logaddexp(0.0,-x))
     reports=[]
     for arm, cell in (("gemma2_frozen_head",frozen),("gemma2_trained_head",head)):
@@ -462,6 +479,8 @@ def main():
     p.add_argument("--revision")
     p.add_argument("--confirmatory-panel", type=Path)
     p.add_argument("--confirmatory-output", type=Path)
+    p.add_argument("--sealed-checkpoint", type=Path)
+    p.add_argument("--sealed-receipt", type=Path)
     p.add_argument("--gemma-report",type=Path)
     p.add_argument("--laya-report",type=Path)
     args=p.parse_args()
@@ -472,11 +491,16 @@ def main():
         raise CapabilityError("new cohorts require physical model mode, not comparator")
     confirmatory = (json.loads(args.confirmatory_panel.read_text(encoding="utf-8"))
                     if args.confirmatory_panel else None)
+    if ((args.sealed_checkpoint is None) != (args.sealed_receipt is None)
+            or (args.sealed_checkpoint is not None and args.mode != "gemma")):
+        raise CapabilityError("sealed Head recording is only valid for approved Gemma mode")
     if args.mode=="gemma":
         from embeddinggemma2_shadow import FrozenGemmaShadow
         if args.manifest is None: raise CapabilityError("exact Gemma manifest required")
         result=run_gemma(panel,FrozenGemmaShadow(args.manifest,device="cpu"),
-                         confirmatory=confirmatory)
+                         confirmatory=confirmatory,
+                         sealed_checkpoint=args.sealed_checkpoint,
+                         sealed_receipt=args.sealed_receipt)
     elif args.mode=="laya":
         from laya import load
         if args.snapshot is None or args.sha_manifest is None or args.revision is None:
