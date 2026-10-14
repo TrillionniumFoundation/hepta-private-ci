@@ -15,7 +15,9 @@ from experiments.shared_stem_cell import consolidation as c, execution as e, fea
 from experiments.shared_stem_cell.head_artifacts import _digest, _path, _read, export_head, load_head
 
 
-def study(manifest_path, producer, report_sha256, output):
+def study(manifest_path, producer, report_sha256, output, *, partial=False):
+    if type(partial) is not bool:
+        raise e.InputError("exact partial-consolidation option required")
     raw = _read(manifest_path, f.MAX_INDEX)
     config = e.decode(raw)
     producer_raw = e.bound_file(producer / "report.json", _digest(report_sha256), f.MAX_INDEX)
@@ -72,6 +74,8 @@ def study(manifest_path, producer, report_sha256, output):
         "source_sha256": {name: e.sha((Path(__file__).parent / name).read_bytes())
                           for name in ("consolidation.py", "consolidation_study.py", "execution.py")},
         "independent_evaluation": False, "production_accepted": False}
+    if partial:
+        origin["partial_policy_source_sha256"] = e.sha((Path(__file__).parent / "partial_consolidation.py").read_bytes())
     e.write_once(output / "plan.json", origin)
     try:
         tr, cal = folds["train"], folds["calibration"]
@@ -89,18 +93,41 @@ def study(manifest_path, producer, report_sha256, output):
                 b = {**base, "training_lineage_sha256": e.sha(e.canonical([origin, selection, name]))}
                 exports[name] = {**export_head(output / "heads" / name, model, b), "binding": b}
                 models[name] = load_head(output / "heads" / name, exports[name]["manifest_sha256"], b)
+        partial_result = None
+        if partial:
+            from experiments.shared_stem_cell import partial_consolidation as pc
+            partial_selection = pc.select(selection, y(cal), routes[cal])
+            policy = partial_selection["policy"]
+            components = {k: models[policy["student"]] if k == "shared" else teachers[int(k[5:])]
+                          for k in policy["components"]}
+            bindings = {k: exports[policy["student"]]["binding"] if k == "shared"
+                        else teacher_receipts[int(k[5:])]["binding"] for k in components}
+            with e.measured() as partial_export:
+                bundle_sha = pc.export(output / "partial-bundle", components, policy, bindings)
+                components, loaded_policy = pc.reopen(output / "partial-bundle", bundle_sha)
+            if loaded_policy != policy:
+                raise e.InputError("partial policy changed on reopen")
+            partial_seal = e.write_once(output / "partial-selection.json",
+                {"selection": partial_selection, "bundle_sha256": bundle_sha})
+            e.bound_file(output / "partial-selection.json", partial_seal, f.MAX_INDEX)
         seal = e.write_once(output / "selection.json", {"origin": origin, "selection": selection, "heads": exports})
         selected = e.decode(e.bound_file(output / "selection.json", seal, f.MAX_INDEX))
         if selected != {"origin": origin, "selection": selection, "heads": exports}:
             raise e.InputError("selection changed before inference")
         test = [i for i, case in enumerate(cases) if case.split in {"holdout", "retention"}]
         predicted = c.predict(teachers, models, selected["selection"], x[test], routes[test])
+        if partial:
+            partial_result = pc.predict(components, loaded_policy, x[test], routes[test])
+            predicted["predictions"]["partial_selected"] = partial_result["probabilities"]
+            predicted["partial_execution"] = partial_result["execution"]
+            predicted["partial_selection_sha256"] = partial_seal
         payload = {"case_ids": [cases[i].case_id for i in test],
                    "input_digests": [cases[i].input_digest for i in test],
                    "routes": routes[test].tolist(), "selection_sha256": seal, **predicted}
         prediction_sha = e.write_once(output / "predictions.json", payload)
         saved = e.decode(e.bound_file(output / "predictions.json", prediction_sha, f.MAX_TENSOR))
-        if set(saved["predictions"]) != set(c.ARMS) or saved["case_ids"] != payload["case_ids"]:
+        expected_arms = set(c.ARMS) | ({"partial_selected"} if partial else set())
+        if set(saved["predictions"]) != expected_arms or saved["case_ids"] != payload["case_ids"]:
             raise e.InputError("complete consolidation predictions required")
         scores = {}
         for split in ("holdout", "retention"):
@@ -131,6 +158,11 @@ def study(manifest_path, producer, report_sha256, output):
             "route_labels_shared_class_schema": True, "independent_evaluation": False,
             "new_holdout": False, "optimizer_resume": False, "generator_consolidation": False,
             "production_accepted": False}
+        if partial:
+            result["partial"] = {"selected": partial_selection["selected"], "policy": policy,
+                "selection_sha256": partial_seal, "bundle_sha256": bundle_sha,
+                "export_and_reopen": partial_export, "execution": partial_result["execution"],
+                "additional_training_steps": 0, "production_accepted": False}
         e.write_once(output / "report.json", result)
         return result
     except Exception as error:
@@ -145,6 +177,7 @@ if __name__ == "__main__":
     parser.add_argument("--producer", type=Path, required=True)
     parser.add_argument("--report-sha256", required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--partial", action="store_true")
     args = parser.parse_args()
     torch.set_num_threads(2)
-    study(args.manifest, args.producer, args.report_sha256, args.output)
+    study(args.manifest, args.producer, args.report_sha256, args.output, partial=args.partial)

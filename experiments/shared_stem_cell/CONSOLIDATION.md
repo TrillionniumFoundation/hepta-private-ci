@@ -52,3 +52,42 @@ also runs the fixed three-seed, eight-Cell bundled real-image development trial.
 It uses raw 8x8 pixels/16, no pretrained Encoder, and seals ALL seeds' predictions
 before reading holdout labels. The already used dataset is not independent future
 evidence; input content, fold and route assignments are saved without relabeling.
+
+## Partial consolidation with retained specialist Heads
+
+`--partial` on either existing study adds a calibration-only comparison without
+changing the original five arms or fitting another model. For each shared
+candidate, assign a Cell to it only if that Cell has calibration coverage and its
+correct count is at least the bank's. Keep that Cell's original teacher otherwise.
+Count ONE shared Head plus EVERY retained teacher, including the existing one-hot
+input parameters. A candidate is eligible only if it uses strictly fewer Head
+parameters than the bank. Rank by calibration correct count, parameters, NLL and
+name; the unchanged bank is always an option. This is a fixed Cell assignment,
+not per-request confidence gating, a new NDU subject or a deployment decision.
+
+The two-Cell case illustrates the cost boundary: a 6,224-parameter shared Head
+plus one retained 6,192-parameter Head is larger than the original 12,384-parameter
+bank. It is rejected, not advertised as a compression. These are the actual gated
+Head shapes in the public 384-dimensional feature trial, not process RSS numbers.
+
+The selected policy is sealed before holdout inference. Each row executes only
+its assigned Head; the shared Head receives only its assigned rows, and retained
+teachers receive only their own rows. Full original controls remain separately
+executed and billed. The offline `partial-bundle` contains only the selected
+components using the existing Head format. External bundle SHA256, exact files,
+component identities and total allocation preflight are checked before reload.
+No Encoder/tokenizer is loaded. Original teachers and CURRENT are not modified.
+The comparison process still holds all candidates, so candidate parameter savings
+are NOT measured process peak-memory, energy or latency savings.
+
+```sh
+python -m experiments.shared_stem_cell.consolidation_digits --partial --output /new/partial-digits
+python -m experiments.shared_stem_cell.consolidation_study --partial \
+  --manifest /staged/manifest.json --producer /staged/producer \
+  --report-sha256 <externally-verified-sha256> --output /new/partial
+```
+
+Per-Cell calibration nonregression is an empirical selection rule, not a promise
+of future retention. All per-Cell heldout scores remain reported, even when total
+accuracy improves. These reused public/digit cohorts remain development evidence;
+no new independent task window or product acceptance is created by this option.
