@@ -123,6 +123,72 @@ impl fmt::Display for PopulationSparseError {
 
 impl StdError for PopulationSparseError {}
 
+/// Owned, generation-bound, immutable V2 configuration.
+///
+/// A fresh instance must be built for each selected model/normalizer/generation.
+/// Only input, predecessor, scope, clock and state checks run on each Tick.
+/// Validation and canonical sorted-config hashing are done once at construction.
+/// No mutable config reference or way to retarget the digests is exposed.
+#[derive(Clone, Debug)]
+pub struct PreparedPopulationSparseConfigV2 {
+    config: PopulationSparseConfigV2,
+    selected_digest: Digest32,
+    zero_decay_digest: Digest32,
+}
+
+impl PreparedPopulationSparseConfigV2 {
+    pub fn new(config: PopulationSparseConfigV2) -> Result<Self, PopulationSparseError> {
+        let selected_digest = config.digest()?;
+        let zero_decay_digest = config.digest_with_temporal_decay(0)?;
+        Ok(Self {
+            config,
+            selected_digest,
+            zero_decay_digest,
+        })
+    }
+
+    pub fn digest(&self) -> Digest32 {
+        self.selected_digest
+    }
+
+    pub fn generation(&self) -> Generation {
+        self.config.generation
+    }
+
+    /// Exact ordinary V2 update with the frozen selected configuration.
+    pub fn tick(
+        &self,
+        input: &PopulationSparseTickV2,
+        previous: Option<&PopulationSparseCheckpointV2>,
+    ) -> Result<(PopulationSparseCheckpointV2, PopulationSparseSignalReceiptV2), PopulationSparseError> {
+        population_sparse_tick_v2_inner(
+            &self.config,
+            input,
+            None,
+            Some(self.selected_digest),
+            previous,
+        )
+    }
+
+    /// V3/SSM/minGRU shadow-only temporal update, with one prevalidated zero
+    /// decay configuration digest. It still verifies the whole original input,
+    /// the forwarded vector and exact predecessor at every invocation.
+    pub(crate) fn tick_from_temporal_override(
+        &self,
+        input: &PopulationSparseTickV2,
+        forwarded_temporal_q24: &[i64],
+        previous: Option<&PopulationSparseCheckpointV2>,
+    ) -> Result<(PopulationSparseCheckpointV2, PopulationSparseSignalReceiptV2), PopulationSparseError> {
+        population_sparse_tick_v2_inner(
+            &self.config,
+            input,
+            Some(forwarded_temporal_q24),
+            Some(self.zero_decay_digest),
+            previous,
+        )
+    }
+}
+
 impl PopulationSparseConfigV2 {
     pub fn digest(&self) -> Result<Digest32, PopulationSparseError> {
         self.digest_with_temporal_decay(self.temporal_decay_q24)
@@ -368,7 +434,7 @@ pub fn population_sparse_tick_v2(
     ),
     PopulationSparseError,
 > {
-    population_sparse_tick_v2_inner(config, input, None, previous)
+    population_sparse_tick_v2_inner(config, input, None, None, previous)
 }
 
 /// Borrowed shadow-only successor equivalent to V2(config.decay=0,
@@ -386,13 +452,14 @@ pub(crate) fn population_sparse_tick_v2_from_temporal_override(
     ),
     PopulationSparseError,
 > {
-    population_sparse_tick_v2_inner(config, input, Some(forwarded_temporal_q24), previous)
+    population_sparse_tick_v2_inner(config, input, Some(forwarded_temporal_q24), None, previous)
 }
 
 fn population_sparse_tick_v2_inner(
     config: &PopulationSparseConfigV2,
     input: &PopulationSparseTickV2,
     forwarded_temporal_q24: Option<&[i64]>,
+    prepared_config_digest: Option<Digest32>,
     previous: Option<&PopulationSparseCheckpointV2>,
 ) -> Result<
     (
@@ -406,7 +473,12 @@ fn population_sparse_tick_v2_inner(
     } else {
         config.temporal_decay_q24
     };
-    let config_digest = config.digest_with_temporal_decay(decay)?;
+    // The only cached digest entrypoint owns the immutable config and binds
+    // its generation. Callers of the ordinary public V2 API always revalidate.
+    let config_digest = match prepared_config_digest {
+        Some(digest) => digest,
+        None => config.digest_with_temporal_decay(decay)?,
+    };
     validate_input(config, input)?;
     let drive_q24 = forwarded_temporal_q24.unwrap_or(&input.temporal_drive_q24);
     if forwarded_temporal_q24.is_some()
@@ -415,7 +487,6 @@ fn population_sparse_tick_v2_inner(
     {
         return Err(PopulationSparseError::InvalidInput);
     }
-    validate_input(config, input)?;
     let before = previous.map_or(Digest32::ZERO, PopulationSparseCheckpointV2::digest);
     if let Some(prior) = previous {
         if prior.calculate_digest()? != prior.digest {
