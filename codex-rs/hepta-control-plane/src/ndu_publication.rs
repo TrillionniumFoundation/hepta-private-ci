@@ -519,7 +519,7 @@ impl NduPublicationOwnerV1 {
     }
 
     pub fn current(&self) -> Result<(NduSnapshotRefV1, Digest32), NduPublicationErrorV1> {
-        let state = self
+        let mut state = self
             .state
             .lock()
             .map_err(|_| NduPublicationErrorV1::Poisoned)?;
