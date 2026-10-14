@@ -1,0 +1,137 @@
+name: hepta-shared-fanout-research
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/**"
+      - ".github/workflows/hepta-shared-fanout-research.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fanout-source-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install pinned CPU source test dependencies
+        run: |
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Test exact-view fanout and reject unsafe reuse
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/fanout-source.txt"
+          python qualification/stem-cell-v1/run_checked_tests.py \
+            --pattern test_shared_fanout.py --output "$RUNNER_TEMP/fanout-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/fanout-tests.log"
+          python -m compileall -q qualification/stem-cell-v1
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-fanout-source-checks
+          path: |
+            ${{ runner.temp }}/fanout-source.txt
+            ${{ runner.temp }}/fanout-tests.json
+            ${{ runner.temp }}/fanout-tests.log
+          if-no-files-found: error
+
+  fanout-stock-hf:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install exact stock Transformers CPU profile
+        run: |
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Execute stock miniature ModernBERT fanout
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/fanout-hf-source.txt"
+          python qualification/stem-cell-v1/run_checked_tests.py \
+            --pattern hf_fanout_checks.py --output "$RUNNER_TEMP/fanout-hf-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/fanout-hf-tests.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-fanout-stock-hf-checks
+          path: |
+            ${{ runner.temp }}/fanout-hf-source.txt
+            ${{ runner.temp }}/fanout-hf-tests.json
+            ${{ runner.temp }}/fanout-hf-tests.log
+          if-no-files-found: error
+
+  fanout-public-pretrained:
+    needs: fanout-stock-hf
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      DO_NOT_TRACK: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install exact public CPU pretrained profile
+        run: |
+          python -m pip install numpy==2.3.5 safetensors==0.7.0 packaging==25.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Acquire pinned public safetensors without executable remote code
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/fanout-pretrained-source.txt"
+          python qualification/stem-cell-v1/public_encoder_probe.py \
+            --acquire-public --upstream-revision 8949b909ec900327062f0ebf497f51aef5e6f0c8 \
+            --compare-arithmetic --output "$RUNNER_TEMP/public-encoder" \
+            2>&1 | tee "$RUNNER_TEMP/fanout-pretrained-encoder.log"
+      - name: Physically execute one versus seven Encoder forwards
+        shell: bash
+        run: |
+          set -euo pipefail
+          python qualification/stem-cell-v1/public_fanout_probe.py \
+            --snapshot "$RUNNER_TEMP/public-encoder/snapshot" \
+            --tasks 7 --output "$RUNNER_TEMP/public-fanout" \
+            2>&1 | tee "$RUNNER_TEMP/public-fanout.log"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-shared-fanout-public-observations
+          path: |
+            ${{ runner.temp }}/fanout-pretrained-source.txt
+            ${{ runner.temp }}/fanout-pretrained-encoder.log
+            ${{ runner.temp }}/public-encoder/source-lock.json
+            ${{ runner.temp }}/public-encoder/downloaded-material.json
+            ${{ runner.temp }}/public-encoder/probe.json
+            ${{ runner.temp }}/public-encoder/FAILED.json
+            ${{ runner.temp }}/public-fanout.log
+            ${{ runner.temp }}/public-fanout/observation.json
+            ${{ runner.temp }}/public-fanout/COMMITTED.json
+            ${{ runner.temp }}/public-fanout/FAILED.json
+          if-no-files-found: error
