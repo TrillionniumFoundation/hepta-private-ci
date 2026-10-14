@@ -38,6 +38,38 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 1
           persist-credentials: false
+      - name: Refresh actual pull request base while fencing exact source head
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          EXPECTED_BASE_REF: ${{ github.event.pull_request.base.ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$PR_NUMBER"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          current="$(gh api "repos/$REPO/pulls/$PR_NUMBER")"
+          current_head="$(jq -er '.head.sha' <<<"$current")"
+          pr_base_snapshot="$(jq -er '.base.sha' <<<"$current")"
+          current_ref="$(jq -er '.base.ref' <<<"$current")"
+          [[ "$current_head" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$pr_base_snapshot" =~ ^[0-9a-f]{40}$ ]]
+          test "$current_head" = "$SOURCE_SHA"
+          test "$current_ref" = "$EXPECTED_BASE_REF"
+          # The PR metadata's base.sha can itself lag its living target
+          # branch. Do not trust an old webhook OR an old PR snapshot.
+          current_base="$(gh api "repos/$REPO/branches/$current_ref" --jq '.commit.sha')"
+          [[ "$current_base" =~ ^[0-9a-f]{40}$ ]]
+          if [[ "$BASE_SHA" != "$current_base" || "$pr_base_snapshot" != "$current_base" ]]; then
+            echo "::notice::using current target branch SHA, not stale PR/webhook base snapshot"
+          fi
+          # The SAME parent is passed into history, merge-ref validation,
+          # synthetic candidate construction, and both scoped test lanes.
+          # Any subsequent base/head race still fails closed at the live
+          # GitHub merge parent's exact SHA/tree verification below.
+          printf 'BASE_SHA=%s\n' "$current_base" >> "$GITHUB_ENV"
       - name: Fetch exact qualification history
         env:
           GH_TOKEN: ${{ github.token }}
@@ -59,6 +91,19 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$PR_NUMBER"
+          mkdir -p "$RUNNER_TEMP/hepta-command-records"
+          printf 'SOURCE_SHA=%s\nBASE_SHA=%s\n' "$SOURCE_SHA" "$BASE_SHA" > "$RUNNER_TEMP/hepta-command-records/prospective-merge-parents.txt"
+          # First compute the two-parent tree against the ACTUAL live base.
+          # On a source conflict, retain bounded Git diagnostics instead of
+          # blaming stale GitHub PR metadata or generating a fake merge.
+          if ! merge_output="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA" 2>&1)"; then
+            printf '%s\n' "$merge_output" | head -n 180 | tee "$RUNNER_TEMP/hepta-command-records/prospective-merge-conflicts.txt" >&2
+            echo "::error::Source conflicts with the exact current base; no production merge tree exists"
+            exit 1
+          fi
+          expected_tree="$merge_output"
+          [[ "$expected_tree" =~ ^[0-9a-f]{40}$ ]]
+          printf 'EXPECTED_MERGE_TREE=%s\n' "$expected_tree" >> "$RUNNER_TEMP/hepta-command-records/prospective-merge-parents.txt"
           ref_json="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
           actual_sha="$(jq -er '.object.sha' <<<"$ref_json")"
           commit_json="$(gh api "repos/$REPO/git/commits/$actual_sha")"
@@ -67,7 +112,6 @@ jobs:
           test "${parents[0]}" = "$BASE_SHA"
           test "${parents[1]}" = "$SOURCE_SHA"
           actual_tree="$(jq -er '.tree.sha' <<<"$commit_json")"
-          expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
           test "$actual_tree" = "$expected_tree"
           printf 'GITHUB_PROSPECTIVE_MERGE_SHA=%s\n' "$actual_sha" >> "$GITHUB_ENV"
           printf 'GITHUB_PROSPECTIVE_MERGE_TREE=%s\n' "$actual_tree" >> "$GITHUB_ENV"

@@ -20,6 +20,15 @@ name = "hepta-g5-trust-assessor"
 path = "src/g5_main.rs"
 test = false
 
+# cargo-shear 1.11.2 does not descend into #[cfg(windows)] modules
+# declared with #[path = "durable_windows.rs"]. This is not an unused
+# dependency: durable_windows.rs calls winapi_util::file::information on
+# the *actual opened handle* to reject symlink/reparse/hard-link substitution.
+# Keep this package-local analyzer exception without changing Cargo's
+# platform dependency, cargo-deny advisories, or Windows tests.
+[package.metadata.cargo-shear]
+ignored = ["winapi-util"]
+
 [lints]
 workspace = true
 

@@ -909,6 +909,15 @@ mod batch;
 pub use batch::NeuronFeatureBatchDriver;
 pub use batch::NeuronFeatureBatchItemObservationV2;
 
+// Private research-only adapter; cannot bypass the canonical production owner.
+#[path = "model_worker_stem_shadow.rs"]
+mod stem_shadow;
+
+#[path = "model_worker_dynamic_gate.rs"]
+mod dynamic_gate;
+pub use dynamic_gate::DynamicGateArtifactV3;
+pub use dynamic_gate::DynamicGateCandidateV3;
+
 #[path = "model_worker_gated.rs"]
 mod gated_cpu;
 pub use gated_cpu::GatedHeadCandidateV2;
