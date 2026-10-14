@@ -100,7 +100,9 @@ where
     // A caller-provided Selector/NDU callback is not proof of a durable
     // Evidence writer. Keep read-only transcript, reject new effects here.
     if action == "advance" {
-        return Err("CellSplit advance requires an Evidence-owned durable phase metric sink".to_string());
+        return Err(
+            "CellSplit advance requires an Evidence-owned durable phase metric sink".to_string(),
+        );
     }
     run_pinned_cell_split_execution_inner_v1(
         action,
