@@ -66,7 +66,7 @@ fn adapter_uses_same_durable_control_owner_for_reads_and_checkpoint_publication(
             next,
             successor.clone(),
             next,
-            || -> Result<(), &'static str> { Ok(()) },
+            || -> Result<((), Vec<u8>), &'static str> { Ok(((), vec![0x57; 96])) },
         )
         .expect("durable CNS Begin and Commit");
     assert!(!cutover.is_zero());
