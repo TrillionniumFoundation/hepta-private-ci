@@ -46,3 +46,13 @@ def test_bundle_directory_member_change_is_detected(tmp_path):
     a = checkpoint_bundle_sha256(root, 'modernbert-joint')
     (root / 'preprocessing.json').write_text('{}')
     assert checkpoint_bundle_sha256(root, 'modernbert-joint') != a
+
+
+@pytest.mark.parametrize('kind', ['mmbert-joint', 'granite-joint'])
+def test_new_offline_checkpoint_kinds_are_bundle_pinned(tmp_path, kind):
+    root = make_bundle(tmp_path / kind, kind)
+    pinned = checkpoint_bundle_sha256(root, kind)
+    assert verify_checkpoint_bundle(root, kind, pinned) == pinned
+    (root / 'tokenizer.json').write_bytes(b'changed-tokenizer')
+    with pytest.raises(ValueError, match='mismatch'):
+        verify_checkpoint_bundle(root, kind, pinned)
