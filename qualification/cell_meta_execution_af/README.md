@@ -52,6 +52,15 @@ F rejects a failed/indeterminate turn with an unauthorized but observed external
 effect, an orphan original-owner receipt without an observed effect, or a
 truthy non-boolean authorization/observation flag. An authorized tool effect is
 not inferred from an App Server turn status.
+For physical placement, E now emits `paired_placement_diagnostics` for the
+16 shared-worker/per-cell-process comparisons against the in-process reference,
+per exact Cell scale and load profile: throughput ratio, p99/RSS/network deltas
+and completion-rate delta. F emits `per_route_cost_diagnostics`, separated by
+allowed/denied cases, for quality, elapsed time, CPU, money, model calls and
+tokens. Finite derived values and bounded count sums are mandatory. These are
+**arithmetic summaries of supplied rows**, not new independent observations,
+causal effects, proof of hardware identity, a winning placement, permission to
+extract a Codex fork, or permission to modify a Cell.
 The reported interval allocation must be no more than Bonferroni
 0.05/(two future windows × registered comparisons); one protected
 slice degrading by more than 2% vetoes a provisional improvement even
