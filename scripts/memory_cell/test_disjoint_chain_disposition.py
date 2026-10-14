@@ -25,16 +25,25 @@ def pack(files):
 
 def case():
     row = {
-        "question_id": "q1", "arm": "organized", "kind": "composition",
-        "selected": ["E1_original", "E2_original"], "status": "succeeded",
+        "question_id": "q1",
+        "arm": "organized",
+        "kind": "composition",
+        "selected": ["E1_original", "E2_original"],
+        "status": "succeeded",
         "strict_task_success": True,
-        "receipt": {"delivered_evidence": [
-            {"original_id": "E1_original"}, {"original_id": "E2_original"}
-        ]},
+        "receipt": {
+            "delivered_evidence": [
+                {"original_id": "E1_original"},
+                {"original_id": "E2_original"},
+            ]
+        },
     }
     citation = {
-        "question_id": "q1", "arm": "organized", "generation_status": "succeeded",
-        "strict_task_success": True, "cited_source_ids": ["E2_original"],
+        "question_id": "q1",
+        "arm": "organized",
+        "generation_status": "succeeded",
+        "strict_task_success": True,
+        "cited_source_ids": ["E2_original"],
         "missing_program_declared_support": ["E1_original"],
     }
     return row, citation
@@ -43,9 +52,10 @@ def case():
 class DisjointChainTests(unittest.TestCase):
     def test_real_delivery_gap_is_not_missing_retrieval(self):
         row, citation = case()
-        self.assertEqual(classify(row, citation), {
-            "delivered_but_uncited": ["E1_original"], "not_delivered": []
-        })
+        self.assertEqual(
+            classify(row, citation),
+            {"delivered_but_uncited": ["E1_original"], "not_delivered": []},
+        )
 
     def test_missing_evidence_classification_distinct(self):
         row, citation = case()
@@ -95,12 +105,15 @@ class DisjointChainTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "a.zip"
             path.write_bytes(data)
-            self.assertEqual(checked_zip(path, digest(data), count=1)["original.json"], b'{"sample":1}\n')
+            self.assertEqual(
+                checked_zip(path, digest(data), count=1)["original.json"],
+                b'{"sample":1}\n',
+            )
             with self.assertRaisesRegex(ValueError, "external original ZIP hash"):
                 checked_zip(path, "f" * 64, count=1)
 
     def test_edited_inner_member_even_with_matching_outer_pin(self):
-        data = pack({"original.json": b'{}'})
+        data = pack({"original.json": b"{}"})
         with zipfile.ZipFile(io.BytesIO(data)) as source:
             files = {key: source.read(key) for key in source.namelist()}
         files["original.json"] = b'{"edited":true}'
@@ -115,7 +128,7 @@ class DisjointChainTests(unittest.TestCase):
     def test_traversal_and_duplicate_archive_members_denied(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "archive.zip"
-            unsafe = pack({"../escape": b'{}'})
+            unsafe = pack({"../escape": b"{}"})
             path.write_bytes(unsafe)
             with self.assertRaisesRegex(ValueError, "unsafe"):
                 checked_zip(path, digest(unsafe), count=1)
