@@ -12,8 +12,8 @@ use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_neuron::AnchorWitnessStore;
 use codex_hepta_neuron::DurableNeuronEffectIntentV1;
-use codex_hepta_neuron::NeuronEffectIntentStatusV1;
 use codex_hepta_neuron::InferenceControlModelPort;
+use codex_hepta_neuron::NeuronEffectIntentStatusV1;
 use codex_hepta_neuron::NeuronInferenceControlPort;
 use codex_hepta_neuron::NeuronRuntime;
 use codex_hepta_neuron::NeuronRuntimeError;
@@ -21,10 +21,10 @@ use codex_hepta_neuron::NeuronRuntimeOutputV1;
 use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::NduSnapshotRefV1;
-use codex_hepta_types::StableId;
 use codex_hepta_types::PhaseMetricEventV1;
 use codex_hepta_types::PhaseMetricKindV1;
 use codex_hepta_types::PhaseMetricSinkV1;
+use codex_hepta_types::StableId;
 use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
@@ -207,8 +207,8 @@ where
         // no Evidence sink is configured. This metric is the real wall-clock
         // duration of the signed tick, never a simulated NDU/WAL phase.
         let started = self.metric_sink.as_ref().map(|_| Instant::now());
-        let scope_digest = started
-            .map(|_| Digest32::of_bytes(input.subject_id.as_str().as_bytes()));
+        let scope_digest =
+            started.map(|_| Digest32::of_bytes(input.subject_id.as_str().as_bytes()));
         let operation_digest = started.and_then(|_| input.semantic_digest().ok());
         let result = self.tick_bound_inner(input, signed_read, signed_grant);
         if let (Some(started), Some(scope_digest), Some(operation_digest)) =

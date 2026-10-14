@@ -1156,8 +1156,7 @@ mod original_checkpoint_integrity_tests {
             "previousReceiptDigest": "65".repeat(32),
             "receiptDigest": "00".repeat(32),
         });
-        let mut checkpoint: OriginalSupervisorCheckpointV1 =
-            serde_json::from_value(json)?;
+        let mut checkpoint: OriginalSupervisorCheckpointV1 = serde_json::from_value(json)?;
         checkpoint.receipt_digest = checkpoint.content_digest_v1()?;
         let bytes = serde_json::to_vec(&checkpoint)?;
         let journal = CellSplitSupervisorCommitV1 {
@@ -1236,8 +1235,7 @@ mod original_checkpoint_integrity_tests {
         ] {
             let mut altered = serde_json::to_value(&original)?;
             altered[key] = value;
-            let mut changed: OriginalSupervisorCheckpointV1 =
-                serde_json::from_value(altered)?;
+            let mut changed: OriginalSupervisorCheckpointV1 = serde_json::from_value(altered)?;
             // Except for the explicit hash-tamper case, repair the receipt
             // digest so the test exercises semantic validation independently
             // of the self-hash check.

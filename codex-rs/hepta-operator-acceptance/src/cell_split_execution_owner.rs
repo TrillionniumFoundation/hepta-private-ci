@@ -86,8 +86,7 @@ impl CellSplitExecutionPlanV1 {
             || self.parent_generation == 0
             || self.parent_generation.checked_add(1) != Some(self.child_generation)
             || self.owner_ids.iter().any(|id| {
-                codex_hepta_types::StableId::new(id.clone()).is_err()
-                    || !distinct_owners.insert(id)
+                codex_hepta_types::StableId::new(id.clone()).is_err() || !distinct_owners.insert(id)
             })
         {
             return Err(CellSplitExecutionErrorV1::Invalid(
@@ -727,9 +726,11 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         // verification. A later valid-looking pending frame cannot silently
         // replace the one this invocation originally observed.
         let pending_frame = if self.pending {
-            Some(read_frame(&frame_path(&self.root, self.cursor, "prepared"))?.ok_or(
-                CellSplitExecutionErrorV1::Invalid("pending intent disappeared"),
-            )?)
+            Some(
+                read_frame(&frame_path(&self.root, self.cursor, "prepared"))?.ok_or(
+                    CellSplitExecutionErrorV1::Invalid("pending intent disappeared"),
+                )?,
+            )
         } else {
             None
         };
