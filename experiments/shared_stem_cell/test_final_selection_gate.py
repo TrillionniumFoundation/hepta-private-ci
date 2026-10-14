@@ -54,7 +54,7 @@ class SelectionGateTests(unittest.TestCase):
         self.assertFalse(receipt["external_observer_signature_verified"])
         self.assertFalse(receipt["independent_source_groups_verified"])
         self.assertTrue(all(v["delta_ndu_lcb_familywise"] > 0 for v in receipt["arms"].values()))
-        self.assertEqual(receipt["arms"]["mmbert-small-gated16k"]["adjusted_one_sided_alpha"], .0125)
+        self.assertEqual(receipt["arms"]["mmbert-small-gated16k"]["adjusted_one_sided_alpha"], .00625)
 
     def test_fixture_cannot_qualify(self):
         b = bundle()
@@ -83,6 +83,24 @@ class SelectionGateTests(unittest.TestCase):
         b["arms"][1]["cases"][0]["group_id"] = "fabricated"
         with self.assertRaisesRegex(InvalidEvidence, "unpaired"):
             audit(b)
+
+    def test_future_window_regression_not_hidden_by_first_window(self):
+        b = bundle()
+        for row in b["arms"][1]["cases"]:
+            row["external_ndu"] = 0.3 if row["window"] == "future_1" else -0.01
+        result = audit(b)["arms"]["mmbert-small-gated16k"]
+        self.assertGreater(result["delta_ndu_group_mean"], 0)
+        self.assertLess(result["future_window_bounds"]["future_2"]["delta_ndu_lcb_familywise"], 0)
+        self.assertFalse(result["provisional_research_eligible"])
+
+    def test_future_window_negative_transfer_not_pooled_away(self):
+        b = bundle()
+        for row in b["arms"][1]["cases"]:
+            if row["window"] == "future_2" and row["group_id"] == "source-0":
+                row["negative_transfer"] = True
+        result = audit(b)["arms"]["mmbert-small-gated16k"]
+        self.assertGreater(result["negative_transfer_rate"], .02)
+        self.assertFalse(result["provisional_research_eligible"])
 
     def test_negative_transfer_and_calibration_veto(self):
         b = bundle()
