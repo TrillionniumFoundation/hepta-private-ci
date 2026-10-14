@@ -1,0 +1,137 @@
+{
+  "accounting": {
+    "arms": [
+      {
+        "bank_final_inference": 101583808,
+        "bank_training": 2067124032,
+        "initial_control_prediction": 101583808,
+        "standalone_observed_trial": 2890063581192,
+        "topology": "dense16"
+      },
+      {
+        "bank_final_inference": 14075072,
+        "bank_training": 314369576,
+        "initial_control_prediction": 14075072,
+        "standalone_observed_trial": 2888135809264,
+        "topology": "sparse16"
+      },
+      {
+        "bank_final_inference": 9300160,
+        "bank_training": 211935472,
+        "initial_control_prediction": 9300160,
+        "standalone_observed_trial": 2888023825336,
+        "topology": "direct32"
+      }
+    ],
+    "dense_to_sparse16_reduction_fractions": {
+      "bank_final_inference_formula_work_candidate_reduction": 0.8614437450503922,
+      "bank_training_formula_work_candidate_reduction": 0.8479193453641779,
+      "baseline": "dense16",
+      "candidate": "sparse16",
+      "standalone_final_inference_formula_work_candidate_reduction": 6.0891166369314575e-05,
+      "standalone_observed_trial_formula_work_candidate_reduction": 0.0006670344350019342,
+      "standalone_training_formula_work_candidate_reduction": 0.0012064427963172086
+    },
+    "formula_work_not_latency_or_energy": true,
+    "physical_campaign_observed_formula_work": 2890636636704,
+    "shared_encoder": {
+      "inference": 1437031931902,
+      "train": 1450761357642
+    },
+    "unit": "hepta.cpu-eager-transformer-formula-work.v3"
+  },
+  "analysis": "retrospective_descriptive_not_a_new_model_run",
+  "checks": {
+    "archive_digest": true,
+    "arm_records": true,
+    "bank_tensors_not_in_artifact": true,
+    "class_count_consistency": true,
+    "independent_score_truth_verified": false,
+    "inner_outer_file_bindings": true,
+    "per_row_paired_outcomes_reconstructed": false,
+    "raw_labels_not_in_artifact": true,
+    "selection_bindings": true
+  },
+  "class_order": [
+    "World",
+    "Sports",
+    "Business",
+    "Science/Technology"
+  ],
+  "limitations": {
+    "equivalent_quality_established": false,
+    "family_split_result": false,
+    "fixed_updates_not_matched_training_compute": true,
+    "full_system_efficiency": false,
+    "independent_learning_superiority": false,
+    "one_seed_small_panel": true,
+    "pretraining_contamination_ruled_out": false,
+    "production_authorized": false,
+    "selection_tuned_after_results": false
+  },
+  "schema": "hepta.public-quality-cost-hosted-observation.v1",
+  "scores": [
+    {
+      "after_brier": 0.5163881103546331,
+      "after_correct": 39,
+      "after_correct_by_class": [
+        8,
+        16,
+        5,
+        10
+      ],
+      "before_correct": 14,
+      "rows_per_class": 16,
+      "test_rows": 64,
+      "topology": "dense16"
+    },
+    {
+      "after_brier": 0.5159358022583342,
+      "after_correct": 38,
+      "after_correct_by_class": [
+        8,
+        16,
+        11,
+        3
+      ],
+      "before_correct": 15,
+      "rows_per_class": 16,
+      "test_rows": 64,
+      "topology": "sparse16"
+    },
+    {
+      "after_brier": 0.5469502636285831,
+      "after_correct": 38,
+      "after_correct_by_class": [
+        9,
+        16,
+        10,
+        3
+      ],
+      "before_correct": 16,
+      "rows_per_class": 16,
+      "test_rows": 64,
+      "topology": "direct32"
+    }
+  ],
+  "setup": {
+    "bank_parameters": 791552,
+    "model": "answerdotai/ModernBERT-base",
+    "model_snapshot_sha256": "43138a5545ce4e7996d91735f2330519a8913304d3abf257f6cfdfbe0541283d",
+    "retained_parameters": 149655232,
+    "seed": 7347,
+    "test_rows": 64,
+    "train_rows": 64,
+    "updates_per_arm": 32
+  },
+  "source": {
+    "archive_sha256": "37b02f390f0f7d55e5bd8cea3247b72cf389cd97d920a94918f077e4751a6630",
+    "artifact_id": 11878438336,
+    "checkout": "571224a4a4571d479aac29b4bad2fe90f439d3bf",
+    "head": "2892b82ca5c4da66c2d16ca2e861c8e9df89886c",
+    "job_id": 115734312489,
+    "prediction_seal_id": "c8010cdc3d3c70d3033c82cfdbf423e0464ebc1064a6bd3d51aead2e3d0c9169",
+    "run_id": 38525101021,
+    "score_file_sha256": "55d4bd15513fb89508131a046c052875e6bd95e6212a16b3dc985bd08ab0bd32"
+  }
+}

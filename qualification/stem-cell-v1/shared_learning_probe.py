@@ -286,6 +286,8 @@ def score_sealed(root, labels, *, expected_seal_id):
         result['fixed_update_schedule_not_compute_matching'] = False
         result['training_budget_results'] = validate_budget_results(study, run['arms'])
         result['shared_encoder_work'] = run['shared_encoder_work']['phase_flops']
+    from public_comparison import quality_cost_comparison
+    result['quality_cost_comparison'] = quality_cost_comparison(run, study, labels)
     return result
 
 
