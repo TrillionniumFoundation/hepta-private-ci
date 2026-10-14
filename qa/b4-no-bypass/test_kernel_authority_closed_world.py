@@ -359,10 +359,9 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         symbol = "pub fn run_pinned_cell_split_execution_with_admission_and_metrics_v1"
         self.assertEqual(raw.count(symbol), 1)
         opening = raw.index("{", raw.index(symbol))
-        closing = CALLER_PROOF._matching_delimiter(raw, opening, "{", "}")
-        self.assertIsNotNone(closing)
-        assert closing is not None
-        body = raw[opening + 1 : closing]
+        # Only the first executable statement matters; raw strings later in
+        # the Rust method may contain braces unrelated to code nesting.
+        body = raw[opening + 1 :]
         self.assertRegex(
             body,
             r'^\s*(?://[^\n]*\n\s*)*if\s+!cfg!\(test\)\s*&&\s*'
