@@ -200,7 +200,7 @@ fn diagonal_ssm_tick_v1_inner(
     config: &DiagonalSsmConfigV1,
     input: &PopulationSparseTickV2,
     previous: Option<&DiagonalSsmCheckpointV1>,
-    prepared: Option<(&PreparedPopulationSparseConfigV2, Digest32)>,
+    prepared: Option<(&PreparedPopulationSparseDigestV2, Digest32)>,
 ) -> Result<(DiagonalSsmCheckpointV1, DiagonalSsmReceiptV1), DiagonalSsmErrorV1> {
     let config_digest = match prepared {
         Some((_, digest)) => digest,

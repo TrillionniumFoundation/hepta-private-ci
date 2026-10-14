@@ -288,7 +288,7 @@ fn low_rank_min_gru_tick_v1_inner(
     config: &LowRankMinGruConfigV1,
     input: &PopulationSparseTickV2,
     previous: Option<&LowRankMinGruCheckpointV1>,
-    prepared: Option<(&PreparedPopulationSparseConfigV2, Digest32)>,
+    prepared: Option<(&PreparedPopulationSparseDigestV2, Digest32)>,
 ) -> Result<(LowRankMinGruCheckpointV1, LowRankMinGruReceiptV1), LowRankMinGruErrorV1> {
     let config_digest = match prepared {
         Some((_, digest)) => digest,
