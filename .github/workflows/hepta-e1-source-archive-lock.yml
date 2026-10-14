@@ -22,7 +22,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Check exact immutable source and run no-model 20-case tamper suite
+      - name: Check exact immutable source and run no-model 23-case tamper suite
         run: |
           set -euo pipefail
           python -m py_compile experiments/shared_stem_cell/e1_source_archive_lock.py
