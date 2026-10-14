@@ -106,8 +106,7 @@ fn scope_binding_current(
 /// Account for time spent in telemetry, signature verification, prior requests
 /// and the actual device call. Caller time is the starting observation only.
 fn dispatch_now_ms_v1(observed_at_ms: u64, started: Instant) -> u64 {
-    observed_at_ms
-        .saturating_add(u64::try_from(started.elapsed().as_millis()).unwrap_or(u64::MAX))
+    observed_at_ms.saturating_add(u64::try_from(started.elapsed().as_millis()).unwrap_or(u64::MAX))
 }
 
 struct PendingV1 {
@@ -483,8 +482,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                             if !scope_binding_current(frontier.as_ref(), &key) {
                                                 return Err(BatchWorkerErrorV1::InvalidBinding);
                                             }
-                                            let effect_now_ms =
-                                                dispatch_now_ms_v1(now_ms, started);
+                                            let effect_now_ms = dispatch_now_ms_v1(now_ms, started);
                                             if effect_now_ms >= deadline_ms {
                                                 return Err(BatchWorkerErrorV1::DeadlineExpired);
                                             }
@@ -497,7 +495,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                                                 )
                                                 .map_err(|_| BatchWorkerErrorV1::Worker);
                                             if !scope_binding_current(frontier.as_ref(), &key)
-                                                || dispatch_now_ms_v1(now_ms, started) >= deadline_ms
+                                                || dispatch_now_ms_v1(now_ms, started)
+                                                    >= deadline_ms
                                             {
                                                 return Err(BatchWorkerErrorV1::StaleAfterEffect);
                                             }
@@ -674,9 +673,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
                     if scope_keys
                         .iter()
                         .any(|key| !scope_binding_current(frontier.as_ref(), key))
-                        || deadlines
-                            .iter()
-                            .any(|deadline| *deadline <= dispatch_now_ms_v1(now_ms, dispatch_started))
+                        || deadlines.iter().any(|deadline| {
+                            *deadline <= dispatch_now_ms_v1(now_ms, dispatch_started)
+                        })
                     {
                         stale_after_effect = true;
                     }
