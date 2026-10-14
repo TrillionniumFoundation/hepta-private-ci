@@ -79,9 +79,12 @@ class PhysicalForecastCacheTests(unittest.TestCase):
             sealed=self.seal_and_read()
         reuse=sealed['physical_tensor_reuse_observation']
         self.assertEqual(len(called),4)
+        self.assertEqual(reuse['source_sequence_group_count'],6)
+        self.assertEqual(reuse['actual_surrogate_forward_calls_total'],24)
+        self.assertEqual(reuse['redundant_surrogate_forward_calls_avoided'],96)
         self.assertEqual((reuse['nominal_candidate_slots'],
-                          reuse['actual_per_group_surrogate_forward_executions'],
-                          reuse['redundant_surrogate_model_forwards_eliminated']),(20,4,16))
+                          reuse['actual_distinct_models_executed_per_sequence_group'],
+                          reuse['redundant_model_graph_loads_avoided']),(20,4,16))
         for row in sealed['rows']:
             self.assertEqual(len(row['candidates']),20)
             for group in reuse['alias_groups']:
@@ -99,7 +102,7 @@ class PhysicalForecastCacheTests(unittest.TestCase):
         self.update_candidate_sha()
         sealed=self.seal_and_read()
         self.assertEqual(sealed['physical_tensor_reuse_observation'][
-            'actual_per_group_surrogate_forward_executions'],4)
+            'actual_distinct_models_executed_per_sequence_group'],4)
 
     def test_actual_tensor_change_requires_fifth_forward(self):
         from safetensors.torch import load_file,save_file
@@ -108,7 +111,7 @@ class PhysicalForecastCacheTests(unittest.TestCase):
         save_file(tensors,str(path));self.update_candidate_sha()
         sealed=self.seal_and_read()
         self.assertEqual(sealed['physical_tensor_reuse_observation'][
-            'actual_per_group_surrogate_forward_executions'],5)
+            'actual_distinct_models_executed_per_sequence_group'],5)
 
     def test_mutated_model_without_receipt_update_blocks_seal(self):
         path=self.root/'8192'/'v2.safetensors'
