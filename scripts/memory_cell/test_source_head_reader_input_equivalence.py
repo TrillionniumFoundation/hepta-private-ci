@@ -26,6 +26,15 @@ def fixture():
                 path=["location"],
             )
         )
+        cases[-1]["docs"] = [
+            dict(
+                identity=identity,
+                scope=scope,
+                content=json.dumps({"id": identity, "value": "source-only"}),
+                observed_at="2026-10-10T00:00:00+00:00",
+            )
+            for identity in candidates
+        ]
         for arm in ARMS:
             rows.append(
                 dict(
@@ -89,6 +98,11 @@ class ReaderInputIdentityTests(unittest.TestCase):
         result = check(fixture())
         self.assertEqual(result["matched_choice_tasks"], 8)
         self.assertEqual(result["distinct_choice_tasks"], 0)
+        self.assertEqual(result["matching_original_evidence_byte_tasks"], 8)
+        self.assertTrue(result["exact_frozen_source_bytes_present"])
+        self.assertTrue(
+            all(row["exact_original_delivery_bytes_same"] for row in result["per_scope"])
+        )
         self.assertEqual(result["model_answers_generated_in_audit"], 0)
         self.assertFalse(result["exact_response_gain_over_strong_frozen_organizer_proven"])
         self.assertFalse(result["production_accepted"])
@@ -161,6 +175,32 @@ class ReaderInputIdentityTests(unittest.TestCase):
                 files.append(path)
             with self.assertRaisesRegex(ValueError, "checksum"):
                 audit(*files, public_sha="0" * 64, weights_sha="1" * 64, predictions_sha="2" * 64)
+
+    def test_missing_frozen_event_bytes_are_rejected(self):
+        args = list(deepcopy(fixture()))
+        args[0]["cases"][0]["docs"].pop()
+        with self.assertRaisesRegex(ValueError, "frozen source bytes"):
+            check(args)
+
+    def test_duplicate_source_identity_and_wrong_scope_are_rejected(self):
+        for wrong in ("duplicate", "wrong_scope"):
+            args = list(deepcopy(fixture()))
+            sources = args[0]["cases"][0]["docs"]
+            if wrong == "duplicate":
+                sources[1]["identity"] = sources[0]["identity"]
+            else:
+                sources[0]["scope"] = "other-scope"
+            with self.subTest(wrong=wrong):
+                with self.assertRaisesRegex(ValueError, "source bytes"):
+                    check(args)
+
+    def test_false_source_event_body_identity_cannot_preserve_reader_input(self):
+        args = list(deepcopy(fixture()))
+        args[0]["cases"][0]["docs"][0]["content"] = json.dumps(
+            {"id": "an-unrelated-event", "value": "forged"}
+        )
+        with self.assertRaisesRegex(ValueError, "body identity"):
+            check(args)
 
     def test_no_answerable_readout_without_actual_reader(self):
         value = check(fixture())

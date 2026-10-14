@@ -62,6 +62,44 @@ def compare(public, weights, predictions, *, public_sha, weights_sha, prediction
     cases = {row["scope"]: row for row in public["cases"]}
     if len(cases) != 8:
         raise ValueError("duplicate original heldout source scope")
+    # A source ID is not a delivered Reader input without its exact frozen
+    # original text and observed-at coordinate. Keep this target-label-blind.
+    docs = {}
+    for scope, case in cases.items():
+        candidates = case.get("candidate_ids")
+        sources = case.get("docs")
+        if (
+            not isinstance(candidates, list)
+            or not isinstance(sources, list)
+            or len(candidates) != len(sources)
+            or not 1 <= len(candidates) <= 32
+            or len(set(candidates)) != len(candidates)
+        ):
+            raise ValueError("incomplete exact original frozen source bytes")
+        grouped = {}
+        for event in sources:
+            if (
+                not isinstance(event, dict)
+                or not isinstance(event.get("identity"), str)
+                or event["identity"] not in candidates
+                or event["identity"] in grouped
+                or event.get("scope") != scope
+                or not isinstance(event.get("content"), str)
+                or not event["content"]
+                or not isinstance(event.get("observed_at"), str)
+                or not event["observed_at"]
+            ):
+                raise ValueError("unknown, duplicate or changed original source bytes")
+            try:
+                original = json.loads(event["content"])
+            except (TypeError, ValueError) as error:
+                raise ValueError("invalid immutable source event content") from error
+            if not isinstance(original, dict) or original.get("id") != event["identity"]:
+                raise ValueError("event body identity differs from chosen source ID")
+            grouped[event["identity"]] = event
+        if set(grouped) != set(candidates):
+            raise ValueError("missing original frozen candidate source content")
+        docs[scope] = grouped
     matched = {}
     for row in predictions["predictions"]:
         key = (row.get("scope"), row.get("arm"))
@@ -93,6 +131,19 @@ def compare(public, weights, predictions, *, public_sha, weights_sha, prediction
     for scope in sorted(cases):
         learned = matched[scope, "teacher_sgd"]
         strong = matched[scope, "frozen_organized"]
+        def delivered_bytes(selected):
+            delivered = [
+                dict(
+                    original_id=identity,
+                    observed_at=docs[scope][identity]["observed_at"],
+                    excerpt=docs[scope][identity]["content"],
+                )
+                for identity in selected
+            ]
+            return h(canonical(delivered))
+
+        teacher_digest = delivered_bytes(learned)
+        frozen_digest = delivered_bytes(strong)
         comparisons.append(
             dict(
                 scope=scope,
@@ -100,6 +151,9 @@ def compare(public, weights, predictions, *, public_sha, weights_sha, prediction
                 teacher_selected_ids=list(learned),
                 strong_frozen_selected_ids=list(strong),
                 exact_ordered_source_choice_same=learned == strong,
+                teacher_original_evidence_bytes_sha256=teacher_digest,
+                strong_frozen_evidence_bytes_sha256=frozen_digest,
+                exact_original_delivery_bytes_same=teacher_digest == frozen_digest,
                 source_ids_belong_to_frozen_candidates=True,
             )
         )
@@ -114,6 +168,10 @@ def compare(public, weights, predictions, *, public_sha, weights_sha, prediction
         original_development_task_count=len(comparisons),
         matched_choice_tasks=same,
         distinct_choice_tasks=different,
+        matching_original_evidence_byte_tasks=sum(
+            row["exact_original_delivery_bytes_same"] for row in comparisons
+        ),
+        exact_frozen_source_bytes_present=True,
         same_original_candidate_pool_and_source_order=True,
         identical_reader_prompt_conditional_on_same_template=True,
         reader_capacity_effect_measured=False,
