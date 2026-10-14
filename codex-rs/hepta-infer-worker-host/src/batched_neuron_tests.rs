@@ -596,7 +596,9 @@ fn regressed_caller_poll_cannot_bypass_scheduler_via_monotonic_max() {
     // regression and permit an invalid source time to reach the scheduler.
     assert!(matches!(
         worker.poll_and_execute(100),
-        Err(BatchWorkerErrorV1::Scheduler(SchedulerErrorV1::ClockRegressed))
+        Err(BatchWorkerErrorV1::Scheduler(
+            SchedulerErrorV1::ClockRegressed
+        ))
     ));
     assert_eq!(worker.pending(), 1);
     assert_eq!(worker.last_caller_now_ms, Some(101));
@@ -639,7 +641,9 @@ fn regressed_caller_enqueue_does_not_consume_a_signed_batch_nonce() {
             key.clone(),
             second_grant.clone(),
         ),
-        Err(BatchWorkerErrorV1::Scheduler(SchedulerErrorV1::ClockRegressed))
+        Err(BatchWorkerErrorV1::Scheduler(
+            SchedulerErrorV1::ClockRegressed
+        ))
     );
     assert_eq!(worker.pending(), 1);
     assert_eq!(worker.last_caller_now_ms, Some(100));
@@ -1567,24 +1571,12 @@ fn live_scope_cutover_during_terminal_fsync_denies_success_without_replay() {
     });
     let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
     let backend = CountingScalarDriver(calls.clone());
-    let mut worker = runner_with_driver_using_frontier(
-        &signer,
-        dir.path(),
-        model,
-        backend,
-        1,
-        frontier,
-    )
-    .with_metric_sink(sink);
+    let mut worker =
+        runner_with_driver_using_frontier(&signer, dir.path(), model, backend, 1, frontier)
+            .with_metric_sink(sink);
     assert!(worker.flush_production_metrics());
     worker
-        .enqueue(
-            100,
-            "model".into(),
-            request,
-            key,
-            signed(&signer, binding),
-        )
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
         .unwrap();
     let observed = worker.poll_and_execute(106).unwrap();
     assert_eq!(observed.outcomes.len(), 1);
@@ -2288,7 +2280,9 @@ fn original_evidence_wal_scalar_success_has_fsynced_three_phase_rows_after_reope
     assert_eq!(worker.pending(), 0);
     assert!(worker.production_metrics_ready());
 
-    let durable = evidence.read_local_frontier().expect("original fsynced frontier");
+    let durable = evidence
+        .read_local_frontier()
+        .expect("original fsynced frontier");
     assert_eq!(durable.committed_rows, 3);
     assert_eq!(durable.sequence, 1);
     assert_ne!(durable.head_digest, Digest32::ZERO);
@@ -2323,10 +2317,7 @@ fn original_evidence_wal_scalar_success_has_fsynced_three_phase_rows_after_reope
         operation_digest: Digest32::of_bytes(b"another signed request"),
         ..staged_admission
     };
-    assert_eq!(
-        evidence.read_committed_sample(other_request).unwrap(),
-        None
-    );
+    assert_eq!(evidence.read_committed_sample(other_request).unwrap(), None);
     assert_eq!(
         evidence
             .read_committed_sample(MetricsCommittedSampleQueryV1 {
@@ -2413,12 +2404,14 @@ fn original_evidence_wal_native_batch_commits_all_six_rows_before_success() {
     assert_eq!(pending_original.committed_rows, 0);
     for operation_digest in operations {
         assert_eq!(
-            evidence.read_committed_sample(MetricsCommittedSampleQueryV1 {
-                scope_digest,
-                operation_digest,
-                phase: MetricPhaseV1::Admission,
-                succeeded: true,
-            }).expect("uncommitted Admission is not a signed effect receipt"),
+            evidence
+                .read_committed_sample(MetricsCommittedSampleQueryV1 {
+                    scope_digest,
+                    operation_digest,
+                    phase: MetricPhaseV1::Admission,
+                    succeeded: true,
+                })
+                .expect("uncommitted Admission is not a signed effect receipt"),
             None
         );
     }
@@ -2432,7 +2425,9 @@ fn original_evidence_wal_native_batch_commits_all_six_rows_before_success() {
     assert_eq!(invocations.load(std::sync::atomic::Ordering::SeqCst), 1);
     assert_eq!(worker.pending(), 0);
 
-    let fsynced = evidence.read_local_frontier().expect("fsynced original rows");
+    let fsynced = evidence
+        .read_local_frontier()
+        .expect("fsynced original rows");
     assert_eq!(fsynced.committed_rows, 6);
     assert_eq!(fsynced.sequence, 1);
     assert_ne!(fsynced.head_digest, Digest32::ZERO);
@@ -2461,12 +2456,14 @@ fn original_evidence_wal_native_batch_commits_all_six_rows_before_success() {
         }
     }
     assert_eq!(
-        evidence.read_committed_sample(MetricsCommittedSampleQueryV1 {
-            scope_digest: Digest32::of_bytes(b"other-scope"),
-            operation_digest: operations[0],
-            phase: MetricPhaseV1::NeuronFeature,
-            succeeded: true,
-        }).unwrap(),
+        evidence
+            .read_committed_sample(MetricsCommittedSampleQueryV1 {
+                scope_digest: Digest32::of_bytes(b"other-scope"),
+                operation_digest: operations[0],
+                phase: MetricPhaseV1::NeuronFeature,
+                succeeded: true,
+            })
+            .unwrap(),
         None
     );
 

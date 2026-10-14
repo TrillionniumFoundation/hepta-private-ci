@@ -455,14 +455,10 @@ impl MetricsGroupCommitV1 {
             bytes = bytes
                 .checked_add(read as u64)
                 .ok_or(MetricsJournalErrorV1::Capacity)?;
-            if read > MAX_LINE_BYTES
-                || bytes > MAX_JOURNAL_BYTES
-                || row.pop() != Some(b'\n')
-            {
+            if read > MAX_LINE_BYTES || bytes > MAX_JOURNAL_BYTES || row.pop() != Some(b'\n') {
                 return Err(MetricsJournalErrorV1::Corrupt);
             }
-            let text =
-                std::str::from_utf8(&row).map_err(|_| MetricsJournalErrorV1::Corrupt)?;
+            let text = std::str::from_utf8(&row).map_err(|_| MetricsJournalErrorV1::Corrupt)?;
             let (next_sequence, next_head, rows) = parse_group(text, sequence, head)?;
             verify_original_frontier_row(
                 &self.owner_marker,
@@ -914,10 +910,7 @@ fn verify_original_owner_marker_frontier(
             return Err(MetricsJournalErrorV1::Corrupt);
         }
         let mut last = vec![0_u8; OWNER_FRONTIER_ROW_BYTES];
-        opened_marker.read_exact_at(
-            &mut last,
-            required - OWNER_FRONTIER_ROW_BYTES as u64,
-        )?;
+        opened_marker.read_exact_at(&mut last, required - OWNER_FRONTIER_ROW_BYTES as u64)?;
         if last != expected {
             return Err(MetricsJournalErrorV1::Corrupt);
         }
