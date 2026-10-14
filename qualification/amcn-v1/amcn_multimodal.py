@@ -130,6 +130,7 @@ def train_connector(pairs, text_features, other_features, *,
     Caller must supply materialized tower receipts independently; this trainer
     has no access to raw source or image/audio/video files or model credentials.
     """
+    require(type(steps) is int and 1 <= steps <= 512, "multimodal training budget")
     require(split == "train" and isinstance(pairs, (tuple, list))
             and 4 <= len(pairs) <= 4096, "TRAIN-only paired examples")
     require(all(isinstance(p, TrainingPair) and p.split == "train" for p in pairs),
