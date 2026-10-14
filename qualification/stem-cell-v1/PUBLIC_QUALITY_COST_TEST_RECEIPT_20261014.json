@@ -1,0 +1,103 @@
+{
+  "branch": "research/shared-stem-public-quality-cost-20261014",
+  "checks": {
+    "compileall": "passed",
+    "diff_whitespace": "passed",
+    "full_repo_native_gpu": "not_run",
+    "new_code_hosted_result": "not_observed",
+    "rust_fmt": "not_run_no_codex_rs_checkout"
+  },
+  "evidence_sha256": {
+    "baseline.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "baseline.json": "e4e0e13d82fdd079604bcdfa623a4810b9e25743d8cdda75f206ffc7a642dfbd",
+    "baseline.log": "523a56da07fece4bb1d214ddc1e9ca18ae52df33c9ab467f8b0c6825acb05655",
+    "final1.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "final1.json": "236a0fe94c96d50870ac10b47e674c49307afc15b2411748d6710e755c8bc274",
+    "final1.log": "909998b28c8ff75fac9deca3afd39b5ff83b597cdba169b1339797ba18cb9ec1",
+    "final2.exit": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa",
+    "final2.json": "236a0fe94c96d50870ac10b47e674c49307afc15b2411748d6710e755c8bc274",
+    "final2.log": "34dd33cb2a595df9d03a326c15b2ba51f2c1e9b2524357b4c34edff2f303047f",
+    "focused-fixed.json": "abbedf7c7c1ff16452c1987d8ac095c136af06c6c1fb3364fd688151ec1ca6fa",
+    "focused-fixed.log": "fd91983ece5401b01c80f2043b962f836941491fbacd3c9d6cd4ccb3aae12f63",
+    "focused.json": "f937586c6ef6a047844ef541be87520507facf49bf01c27a6c8c92852c9fbdf4",
+    "focused.log": "e98af51196b1a7be836cbeffe045a144e3643f42394dc267e7ea6123b7046acd",
+    "prepare_delivery.py": "6b31d6b430fd431f5fbbe432829e5366396f88fdf8f4327b98e0c738670abd1d",
+    "public_result.json": "083ef3068731b2f4798b2508de5fd373af061cab0ba1fbbb17c518ef2cd1fbc9",
+    "reproduce_public_result.py": "d76512d3dea5252d15f66693a332f1d9479307e756ee76a26947583a132dfdc3",
+    "run_process.py": "9336f97e8be773f08754344ff6c55c468615d1e88e5e6a7d29ff4da97237bcb0"
+  },
+  "hosted_result": {
+    "archive_sha256": "37b02f390f0f7d55e5bd8cea3247b72cf389cd97d920a94918f077e4751a6630",
+    "artifact_id": 11878438336,
+    "checkout": "571224a4a4571d479aac29b4bad2fe90f439d3bf",
+    "head": "2892b82ca5c4da66c2d16ca2e861c8e9df89886c",
+    "job_id": 115734312489,
+    "prediction_seal_id": "c8010cdc3d3c70d3033c82cfdbf423e0464ebc1064a6bd3d51aead2e3d0c9169",
+    "run_id": 38525101021,
+    "score_file_sha256": "55d4bd15513fb89508131a046c052875e6bd95e6212a16b3dc985bd08ab0bd32"
+  },
+  "limitations": {
+    "full_system_efficiency": false,
+    "independent_source_truth_verified": false,
+    "new_code_changes_scoring_only": true,
+    "new_model_run_in_session": false,
+    "new_training_algorithm": false,
+    "production_authorized": false,
+    "real_public_learning_result_from_earlier_commit": true,
+    "single_seed_64_train_64_test": true,
+    "weights_and_raw_labels_absent_from_hosted_archive": true
+  },
+  "observations": [
+    {
+      "executed": 473,
+      "log": "baseline.log",
+      "structured": "baseline.json"
+    },
+    {
+      "executed": 487,
+      "log": "final1.log",
+      "structured": "final1.json"
+    },
+    {
+      "executed": 487,
+      "log": "final2.log",
+      "structured": "final2.json"
+    }
+  ],
+  "runtime": {
+    "numpy": "2.3.5",
+    "python": "3.13.5",
+    "safetensors": "0.7.0",
+    "torch": "2.10.0+cpu",
+    "transformers_present": false
+  },
+  "schema": "hepta.public-quality-cost-verification.v1",
+  "source_base": "b7c09fb20180fd927820f84a4501bfb472e472f9",
+  "source_blobs": {
+    "public_comparison.py": {
+      "git_blob_sha1": "ec37c54ff97d0a74ff62fb9ee976e0de81c19489",
+      "sha256": "66cceb649eb2cf9bd0bce85c8096236095659efe4a93b767a7808e3d482aefd8"
+    },
+    "shared_learning_probe.py": {
+      "git_blob_sha1": "3db0ef63b58a3e56154d8b5ba885bc32daaa855a",
+      "sha256": "c9f2039e0853c31b7a588717d38d4d5ee586fecd60c37cb7c439b4231e9ba4d2"
+    },
+    "test_public_comparison.py": {
+      "git_blob_sha1": "56f6924e029e5f11e2291d773e0460f3c1805813",
+      "sha256": "35767d3ff1369713ed70104ddc950ceb63fed6e9b2c968c715b7ea6fe2ebaf5e"
+    }
+  },
+  "tested_code": "b921ab8bdc02a3b8273dc6adfa30c406c460ec29",
+  "tests": {
+    "added": 14,
+    "all_exit_codes_zero": true,
+    "complete_runs": 2,
+    "errors": 0,
+    "expected_failures": 0,
+    "failures": 0,
+    "final": 487,
+    "identical_test_ids": true,
+    "predecessor": 473,
+    "skips": 0
+  }
+}
