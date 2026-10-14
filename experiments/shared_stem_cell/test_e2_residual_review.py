@@ -4,7 +4,7 @@ import copy,hashlib,json,unittest
 import e1_public_triplet_real_cpu as e1
 import e2_feature_residual_study as e2
 import e2_residual_review as r
-from test_e1_public_triplet_real_cpu import synthetic_panel
+from test_e1_public_triplet_real_cpu import panel as synthetic_panel
 
 
 def fixture():
