@@ -7,7 +7,9 @@ import tempfile
 import unittest
 from types import SimpleNamespace as NS
 
-from public_stem_material_v8 import CATALOG, RECEIPT, canonical, make_plan, sha
+from public_stem_material_v8 import (
+    CATALOG, RECEIPT, PROBE_TEXTS, canonical, make_plan, probe_input_digest, sha
+)
 from public_stem_handoff_v9 import AdmissionError, PROFILE, SCHEMA, _json, handoff, main
 
 REVISION = '1'*40
@@ -33,6 +35,8 @@ def fixture(root, candidate='granite-97m-r2'):
               'normalization':plan['profile']['normalization'],
               'feature_width':plan['profile']['width'],
               'feature_sha256':sha(b'fake-physical-feature'),
+              'probe_input_sha256':probe_input_digest(PROBE_TEXTS),
+              'probe_count':len(PROBE_TEXTS),
               'forward_calls':2,'wall_ns':1,'cpu_ns':1,
               'process_lifetime_peak_rss_bytes':1,
               'pretrained_source_independently_attested':False,
@@ -79,6 +83,21 @@ class V9HandoffTests(unittest.TestCase):
                     continue
                 with self.subTest(field=k),self.assertRaisesRegex(AdmissionError,'physical receipt'):
                     handoff(plan,material,copy_p,root)
+
+    def test_handoff_rejects_missing_or_changed_probe_census(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp);plan,material,physical=fixture(root)
+            for key,value in (("probe_count",0),
+                              ("probe_count",True),
+                              ("probe_input_sha256","f"*64)):
+                with self.subTest(key=key,value=value):
+                    with self.assertRaisesRegex(AdmissionError,"input census"):
+                        handoff(plan,material,{**physical,key:value},root)
+            for field in ("probe_count","probe_input_sha256"):
+                broken={k:v for k,v in physical.items() if k!=field}
+                with self.subTest(missing=field),self.assertRaisesRegex(
+                        AdmissionError,"input census"):
+                    handoff(plan,material,broken,root)
 
     def test_missing_physical_observation_or_fake_authority_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
