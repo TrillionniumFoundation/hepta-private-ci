@@ -7,6 +7,7 @@ mod authbus_recovery;
 mod authbus_store;
 mod canonical;
 mod execution_preparation_v1;
+mod execution_entry_deny_v1;
 mod governance_store;
 mod governance_validation;
 mod historical;
@@ -41,6 +42,9 @@ pub use execution_preparation_v1::EXECUTION_PREPARE_P2A_PRODUCTION_CALLER;
 pub use execution_preparation_v1::ExecutionPreparationReadbackStatusV1;
 pub use execution_preparation_v1::ExecutionPreparationReadbackV1;
 pub use execution_preparation_v1::ExecutionPreparationReceiptV1;
+pub use execution_entry_deny_v1::EXECUTION_EFFECT_ENTRY_P2B_PERMITTED;
+pub use execution_entry_deny_v1::ExecutionEffectEntryAuditV1;
+pub use execution_entry_deny_v1::ExecutionEffectEntryDeniedV1;
 pub use historical::HISTORICAL_EVIDENCE_SCHEMA_VERSION;
 pub use historical::HistoricalEvidenceFamily;
 pub use historical::HistoricalEvidenceRecord;
@@ -146,3 +150,7 @@ mod authbus_outbox_quarantine_tests;
 #[cfg(test)]
 #[path = "qualification_tests.rs"]
 mod qualification_tests;
+
+#[cfg(test)]
+#[path = "execution_entry_deny_v1_tests.rs"]
+mod execution_entry_deny_v1_tests;
