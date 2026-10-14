@@ -294,3 +294,24 @@ pretruncation** for Laya. Do not use Laya from this path as a strictly
 zero-truncation-qualified A5 winner without separately instrumenting
 the pinned upstream Laya tokenizer and proving lossless option and
 state encoding.
+
+
+### B: post-label Head successor continuity
+
+The original `prelabel_journal.records` remains **strictly label-free**.
+A *separate* `postlabel_updates` journal now supplies one committed
+successor per chronological future event, with exact digest of the
+pre-label record, observed label identity, update disposition, label
+availability time, post-label update time, and predecessor/successor
+Head digests. The next prediction must consume the last Head successor
+and cannot precede the previous update. `no_update` must preserve the
+exact Head digest; `updated` must have new weights. The final Head
+digest must match the last successor. Missing updates, forks and
+post-label-injected prediction fields are rejected. These
+**self-reported** observations still require an independent, durable
+source to establish true pre-label ordering and cannot grant authority.
+
+B window scores now report both `brier` (multiclass sum) and
+`brier_normalized` (divided by option count); grouped paired deltas
+always use the latter. Do not rank reports using incompatible Brier
+units.

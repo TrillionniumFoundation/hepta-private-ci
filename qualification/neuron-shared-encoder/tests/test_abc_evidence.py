@@ -45,7 +45,9 @@ def b_fixture():
     snapshots['learned_head']['initial_head_digest'] = D('f')
     snapshots['learned_head']['head_digests_by_row'] = [D('9') for _ in rows]
     snapshots['learned_head']['head_digests_by_row'][8] = D('f')
+    snapshots['learned_head']['final_head_digest'] = D('9')
     records = []
+    updates = []
     for i, row in enumerate(rows):
         if row['split'] != 'future':
             continue
@@ -64,12 +66,28 @@ def b_fixture():
             'predicted_at': row['event_time'],
             'label_available_at': row['event_time'].replace('00:00:00', '01:00:00'),
         })
+        event = records[-1]
+        before = snapshots['learned_head']['head_digests_by_row'][i]
+        after = D('9')
+        updates.append({
+            'row_id': row['row_id'],
+            'head_digest_before': before,
+            'head_digest_after': after,
+            'prediction_record_digest': canonical_digest(event),
+            'label_digest': canonical_digest({
+                'row_id': row['row_id'], 'label': row['label'],
+            }),
+            'label_available_at': event['label_available_at'],
+            'updated_at': row['event_time'].replace('00:00:00', '02:00:00'),
+            'update_kind': 'updated' if before != after else 'no_update',
+        })
     return rows, {
         'dataset_sha256': D('d'), 'snapshots': snapshots,
         'prelabel_journal': {
             'frozen_head_digest': D('f'), 'acceptance_threshold': .8,
             'records': records,
         },
+        'postlabel_updates': updates,
     }
 
 
@@ -258,3 +276,47 @@ def test_c_cumulative_negative_transfer_does_not_roll_the_baseline_forward():
     m['stages'][1]['tasks']['text_decision']['score'] = .694
     m['stages'][2]['tasks']['text_decision']['score'] = .688
     assert multimodal_cost_audit(m)['status'] == 'BLOCKED'
+
+
+def test_b_postlabel_updates_chain_valid_and_brier_units_match():
+    rows, evidence = b_fixture()
+    result = threeway_prequential_audit(
+        rows, D('d'), evidence, bootstrap=100, min_future_groups=2)
+    assert result['postlabel_update_count'] == 1
+    assert result['postlabel_no_update_count'] == 7
+    assert result['postlabel_head_update_chain_consistent']
+    for window in result['future_windows'].values():
+        for summary in window['scores'].values():
+            assert summary['brier_normalized'] == pytest.approx(summary['brier'] / 2)
+
+
+@pytest.mark.parametrize('mutation', [
+    'omit_update', 'update_before_label', 'unsealed_prediction',
+    'fork_head', 'false_noop', 'false_update', 'wrong_final',
+    'changed_label', 'extra_postlabel_field',
+])
+def test_b_postlabel_chain_rejects_spoofed_learning(mutation):
+    rows, bundle = b_fixture()
+    updates = bundle['postlabel_updates']
+    if mutation == 'omit_update':
+        updates.pop()
+    elif mutation == 'update_before_label':
+        updates[0]['updated_at'] = rows[8]['event_time']
+    elif mutation == 'unsealed_prediction':
+        updates[0]['prediction_record_digest'] = D('a')
+    elif mutation == 'fork_head':
+        bundle['snapshots']['learned_head']['head_digests_by_row'][9] = D('c')
+        bundle['prelabel_journal']['records'][1]['learned_head_digest_before'] = D('c')
+    elif mutation == 'false_noop':
+        updates[0]['update_kind'] = 'no_update'
+    elif mutation == 'false_update':
+        updates[1]['update_kind'] = 'updated'
+    elif mutation == 'wrong_final':
+        bundle['snapshots']['learned_head']['final_head_digest'] = D('c')
+    elif mutation == 'changed_label':
+        updates[0]['label_digest'] = D('c')
+    else:
+        updates[0]['target_answer'] = 1
+    with pytest.raises(ValueError):
+        threeway_prequential_audit(
+            rows, D('d'), bundle, bootstrap=100, min_future_groups=2)

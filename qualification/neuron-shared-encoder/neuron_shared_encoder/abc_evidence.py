@@ -118,9 +118,16 @@ def threeway_prequential_audit(
     if head_before[ordered[0]] != frozen_digest:
         raise ValueError('first future learned Head must equal frozen initialization')
     records = journal.get('records')
+    updates = bundle.get('postlabel_updates')
     if not isinstance(records, list) or len(records) != len(ordered):
         raise ValueError('one ordered, label-free precommit record per future row required')
-    for index, event in zip(ordered, records):
+    if not isinstance(updates, list) or len(updates) != len(ordered):
+        raise ValueError('one separately recorded post-label update per future row required')
+    expected_next_head = frozen_digest
+    previous_update_time = None
+    applied_updates = 0
+    skipped_updates = 0
+    for index, event, update in zip(ordered, records, updates):
         row = rows[index]
         required = {
             'row_id', 'future_window', 'frozen_head_digest',
@@ -134,6 +141,8 @@ def threeway_prequential_audit(
         if (event.get('frozen_head_digest') != frozen_digest or
                 event.get('learned_head_digest_before') != head_before[index]):
             raise ValueError('pre-label Head identity mismatch')
+        if head_before[index] != expected_next_head:
+            raise ValueError('learned Head digest chain fork/missing previous update')
         expected_input = canonical_digest({
             'state': row['state'], 'question': row['question'], 'options': row['options'],
         })
@@ -149,6 +158,45 @@ def threeway_prequential_audit(
         revealed = _datetime(event.get('label_available_at'))
         if predicted >= revealed or predicted < _datetime(row['event_time']):
             raise ValueError('prediction was not chronologically pre-label')
+        if previous_update_time is not None and predicted < previous_update_time:
+            raise ValueError('next prediction preceded previous Head update')
+        # A separate post-label journal cannot be smuggled into the
+        # label-free precommit object; its link is the exact prediction hash.
+        update_fields = {
+            'row_id', 'head_digest_before', 'head_digest_after',
+            'prediction_record_digest', 'label_digest',
+            'label_available_at', 'updated_at', 'update_kind',
+        }
+        if not isinstance(update, dict) or set(update) != update_fields:
+            raise ValueError('missing, unknown or ambiguous post-label update fields')
+        if update['row_id'] != row['row_id'] or update['head_digest_before'] != head_before[index]:
+            raise ValueError('post-label update Head identity mismatch')
+        if update['prediction_record_digest'] != canonical_digest(event):
+            raise ValueError('post-label update does not bind the sealed prediction')
+        if update['label_digest'] != canonical_digest({
+                'row_id': row['row_id'], 'label': row['label']}):
+            raise ValueError('post-label update label identity mismatch')
+        if update['label_available_at'] != event['label_available_at']:
+            raise ValueError('post-label availability time drift')
+        update_time = _datetime(update['updated_at'])
+        if update_time <= revealed:
+            raise ValueError('Head update occurred before label availability')
+        if not is_digest(update['head_digest_after']):
+            raise ValueError('post-label successor Head digest invalid')
+        if update['update_kind'] == 'updated':
+            if update['head_digest_after'] == head_before[index]:
+                raise ValueError('claimed Head update without new weights')
+            applied_updates += 1
+        elif update['update_kind'] == 'no_update':
+            if update['head_digest_after'] != head_before[index]:
+                raise ValueError('no-update must retain identical Head weights')
+            skipped_updates += 1
+        else:
+            raise ValueError('invalid post-label update disposition')
+        expected_next_head = update['head_digest_after']
+        previous_update_time = update_time
+    if snapshots['learned_head'].get('final_head_digest') != expected_next_head:
+        raise ValueError('learned final Head differs from committed successor chain')
     labels = torch.tensor([r['label'] for r in rows], dtype=torch.long)
     width = tensors['learned_head'].shape[1]
     per_row = {role: ((values - F.one_hot(labels, width).float()).square().sum(1)
@@ -160,9 +208,17 @@ def threeway_prequential_audit(
         groups = defaultdict(list)
         for i in ids:
             groups[(rows[i]['principal'], rows[i]['source_group'])].append(i)
+        window_scores = {
+            role: _scores(tensors[role][ids], labels[ids])
+            for role in ROLES
+        }
+        for score in window_scores.values():
+            # _scores returns unnormalized multiclass Brier; the paired
+            # comparison below uses /width. Publish both unambiguously.
+            score['brier_normalized'] = score['brier'] / width
         report = {
             'groups': len(groups), 'cases': len(ids),
-            'scores': {role: _scores(tensors[role][ids], labels[ids]) for role in ROLES},
+            'scores': window_scores,
             'paired_normalized_brier_improvement': {},
         }
         for r_index, comparator in enumerate(('frozen_no_change', 'frozen_head')):
@@ -195,6 +251,9 @@ def threeway_prequential_audit(
     return {
         'experiment': 'B-threeway', 'dataset_sha256': dataset_sha256,
         'status': 'PAIRED_SELF_REPORTED_SHADOW',
+        'postlabel_head_update_chain_consistent': True,
+        'postlabel_update_count': applied_updates,
+        'postlabel_no_update_count': skipped_updates,
         'production_admission': 'BLOCKED', 'selection': 'NOT_AUTHORIZED',
         'self_reported_prelabel_timeline_consistent': True,
         'durable_external_prelabel_witness_verified': False,
