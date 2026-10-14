@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Physical metadata-insensitive forecast forward reuse, synthetic research only."""
 import argparse
+import importlib.util
 import json
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -12,6 +13,11 @@ from physical_tensor_identity import canonical_tensor_sha
 from test_realized_budget_audit import fixture, sha
 
 
+@unittest.skipUnless(
+    importlib.util.find_spec('torch') is not None and
+    importlib.util.find_spec('safetensors') is not None,
+    'physical forecast reuse requires pinned Torch and safetensors',
+)
 class PhysicalForecastCacheTests(unittest.TestCase):
     def setUp(self):
         self.tmp=TemporaryDirectory()
