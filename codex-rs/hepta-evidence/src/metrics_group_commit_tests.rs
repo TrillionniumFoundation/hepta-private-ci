@@ -419,7 +419,9 @@ fn lost_evidence_wal_with_persistent_marker_never_bootstraps_new_history() {
     let missing = dir.path().join("displaced-original-journal");
     {
         let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
-        owner.stage(sample(MetricPhaseV1::Cas)).expect("original group");
+        owner
+            .stage(sample(MetricPhaseV1::Cas))
+            .expect("original group");
         owner.flush().expect("durable original group");
     }
     let marker = dir.path().join("journal.owner-lock");
@@ -440,13 +442,14 @@ fn missing_owner_marker_revokes_live_empty_flush_and_denies_reopen() {
     let path = dir.path().join("journal");
     let marker = dir.path().join("journal.owner-lock");
     let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
-    owner.stage(sample(MetricPhaseV1::Cns)).expect("first sample");
+    owner
+        .stage(sample(MetricPhaseV1::Cns))
+        .expect("first sample");
     owner.flush().expect("original durable record");
     fs::remove_file(&marker).expect("lose persistent marker");
     assert!(matches!(
         owner.flush(),
-        Err(MetricsJournalErrorV1::Io(_))
-            | Err(MetricsJournalErrorV1::UnsafePath)
+        Err(MetricsJournalErrorV1::Io(_)) | Err(MetricsJournalErrorV1::UnsafePath)
     ));
     assert!(matches!(
         owner.flush(),
@@ -470,7 +473,9 @@ fn replacement_owner_marker_inode_with_same_bytes_revokes_live_writer() {
     let marker = dir.path().join("journal.owner-lock");
     let removed = dir.path().join("previous-owner-marker");
     let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
-    owner.stage(sample(MetricPhaseV1::Admission)).expect("first sample");
+    owner
+        .stage(sample(MetricPhaseV1::Admission))
+        .expect("first sample");
     owner.flush().expect("original durable record");
     let bytes = fs::read(&marker).expect("original marker bytes");
     fs::rename(&marker, &removed).expect("move original marker inode");
@@ -494,7 +499,9 @@ fn same_inode_marker_content_corruption_denies_live_and_recovered_owner() {
     let path = dir.path().join("journal");
     let marker = dir.path().join("journal.owner-lock");
     let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
-    owner.stage(sample(MetricPhaseV1::Signature)).expect("first sample");
+    owner
+        .stage(sample(MetricPhaseV1::Signature))
+        .expect("first sample");
     owner.flush().expect("original durable record");
     let mut bytes = fs::read(&marker).expect("original identity");
     // The original HEMW1 header, not the separately tested F1 high-water
