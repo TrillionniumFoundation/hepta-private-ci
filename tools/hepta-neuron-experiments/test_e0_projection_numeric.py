@@ -131,7 +131,9 @@ class E0NumericOracleTests(unittest.TestCase):
             self.run_trial()
 
     def test_tampered_coefficients_after_rehash_cannot_preserve_result(self):
-        self.projector["a_q24"][-1] = 0
+        # Preserve a nonzero source-tail path, but change its magnitude so
+        # numeric recomputation (not merely tail connectivity) rejects.
+        self.projector["a_q24"][-1] = m.Q // 2
         self.freeze()
         with self.assertRaisesRegex(m.NumericGateError, "numerical mismatch"):
             self.run_trial()
