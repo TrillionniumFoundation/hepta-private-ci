@@ -17,6 +17,8 @@ use codex_hepta_types::StableId;
 
 #[cfg(feature = "amcn-shadow")]
 mod amcn_shadow_fence;
+#[cfg(feature = "amcn-shadow")]
+mod amcn_shadow_epoch;
 mod deletion;
 mod inference_control;
 mod journal;
@@ -40,6 +42,12 @@ pub use inference_control::NeuronInferenceControlPort;
 pub use amcn_shadow_fence::{
     AMCN_SHADOW_PRODUCTION_ACCEPTED, AmcnFencedModelBindingV1,
     AmcnFencedNeuronModelPort, AmcnSourceArtifactFence,
+};
+#[cfg(feature = "amcn-shadow")]
+pub use amcn_shadow_epoch::{
+    AMCN_EPOCH_SHADOW_PRODUCTION_ACCEPTED, AMCN_EPOCH_QUARANTINE_LIMIT,
+    AMCN_EPOCH_MANIFEST_LIMIT, AmcnEpochHeaderV1, AmcnShadowEpochIndex,
+    AmcnShadowEpochFence,
 };
 pub use journal::JournalAnchor;
 pub use journal::JournalError;

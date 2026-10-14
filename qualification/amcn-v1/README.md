@@ -435,6 +435,49 @@ Run on the pinned Rust host:
     cargo test --locked -p codex-hepta-memory --features amcn-artifact-shadow \
       amcn_shadow_two_owner -- --nocapture --test-threads=1
 
+## Read-mostly source/withdrawal Epoch gate for many Cells (research only)
+
+The new default-off Rust Neuron amcn_shadow_epoch.rs module implements a
+bounded read-mostly epoch cache behind the existing amcn-shadow Cargo feature.
+It implements the SAME AmcnSourceArtifactFence interface already accepted by
+NeuronRuntime::tick_amcn_fenced, not a new model-dispatch API.
+
+At research enrolment/recovery, the host supplies an EXACT separately retained
+current epoch floor: scope, Runtime Generation, sequence, source epoch,
+withdrawal epoch, Artifact epoch, respective head digests, current runtime
+witness and predecessor event digest. The model registry materializes its
+bounded enrolled-manifest and monotonically quarantined-manifest sets ONCE.
+Each subsequent Cell access acquires a shared in-process lock across the
+whole callback and performs fixed-field equality comparisons plus expected
+O(1) HashSet membership; it does NOT re-read the complete CognitiveStore or
+re-scan all historical Artifact/Source lineage on every inference.
+
+Changes are accepted only under the writer side of the SAME lock, using exact
+compare-and-swap of the old header, a single subsequent sequence, nondecreasing
+component epochs, matched digest changes and a chained predecessor event
+digest. Quarantined manifest digests never disappear. A restored old snapshot
+is rejected if the independently retained current floor is newer. The index
+limits the current enrolled set to 65,536 manifests and revocations to 16,384;
+these are mechanism bounds, not Cell capacity recommendations. The feature
+test executes original InferenceControl receipt verification, starts an actual
+concurrent writer that must await a reader's model-lease release, and runs
+1,024 steady-state lookups while reporting observational CPU time without a
+host-latency PASS threshold.
+
+**Caution:** A caller can supply fabricated bytes to this unauthenticated
+research constructor. It does NOT issue or verify a signature, prove a current
+source epoch, persist a crash-safe monotonic witness, map every SourceRevision
+to a training dataset, or stop writes by independently running product owners.
+A real production integration would feed the cache only from the ORIGINAL
+LearningArtifactOwnerHost signed-current-head and authenticated Source owner
+commits, with externally retained anti-rollback floors and the immutable
+selected candidate pin. Any mutation path bypassing this single in-process
+read/write lock makes this cache unsafe; SourceStore, Artifact Store and Runtime
+currently do NOT implement such a joint write protocol. Therefore results
+remain SHADOW, no model effects or FinalUse, and no production zero-resurrection
+claim. The full owner audits from earlier stages remain mandatory at
+enrollment/recovery or any ambiguous state, not automatically bypassed.
+
 ## No-go and required production evidence
 
 Still missing: sufficient-evidence Reader certification, strong cached hybrid
