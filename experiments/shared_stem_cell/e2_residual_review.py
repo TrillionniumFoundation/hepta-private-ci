@@ -60,6 +60,28 @@ def review(panel,e1,e1_file_sha,e2):
         e2.get('independent_no_change_production_arm_present') is not False or
         e2.get('chronological_future_ndu_verified') is not False):
         raise Invalid('unbound or overstated E2 source/authority')
+    def check_bank(bank):
+        if (type(bank) is not dict or bank.get('schema')!='hepta.e1e2-q24-feature-bank.v1'
+                or bank.get('authority')!='DENY_ALL'
+                or bank.get('model_origin_independently_verified') is not False
+                or bank.get('case_count')!=224
+                or bank.get('feature_width')!=e1['feature_width']):
+            raise Invalid('E1/E2 feature inventory identity not declared')
+        entries=bank.get('case_q24_sha256')
+        if type(entries) is not dict or set(entries)!=set(index):
+            raise Invalid('E1/E2 feature inventory missing source cases')
+        for value in entries.values():
+            _digest(value)
+        ordered=[[key,entries[key]] for key in sorted(entries)]
+        canonical=json.dumps(ordered,sort_keys=True,separators=(',',':'),ensure_ascii=True).encode()
+        recomputed=hashlib.sha256(b'hepta.e1e2.bank-q24.v1\\0'+canonical).hexdigest()
+        if recomputed!=_digest(bank.get('bank_q24_sha256')):
+            raise Invalid('inconsistent feature bank full digest')
+        return entries,recomputed
+    old_bank,old_sha=check_bank(e1.get('frozen_feature_bank_identity'))
+    learned_bank,learned_sha=check_bank(e2.get('frozen_feature_bank_identity'))
+    if old_sha!=learned_sha or old_bank!=learned_bank:
+        raise Invalid('E2 Head trained on feature bytes inconsistent with E1 original')
     fit=e1['fitting']
     if (e2.get('optimizer')!='SGD_full_train_batch' or e2.get('steps')!=fit['steps'] or
         e2.get('seed')!=fit['seed'] or e2.get('learning_rate')!=fit['learning_rate'] or
@@ -125,7 +147,10 @@ def review(panel,e1,e1_file_sha,e2):
                       'vs_from_zero_accuracy_delta':a['accuracy']-c['accuracy'],
                       'vs_frozen_brier_delta':a['brier']-b['brier']}
     return {'schema':'hepta.e2-residual-independent-numeric.v1','model':e1['model'],
-            'same_input_features_reused_claimed':True,'n_test_cases':64,
+            'same_input_features_reused_claimed':True,
+            'per_case_q24_inventory_identical_with_e1_source_report':True,
+            'observed_feature_bank_q24_sha256':old_sha,
+            'independent_model_encoder_execution_attested':False,'n_test_cases':64,
             'scores':descriptive,'descriptive_residual_deltas':deltas,
             'no_change_model_or_future_ndu_verified':False,'actual_weights_and_forwards_signed':False,
             'production_promotion_permitted':False,'authority':'DENY_ALL'}
