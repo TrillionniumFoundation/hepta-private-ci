@@ -60,7 +60,8 @@ def read_journal(raw):
         raise ValueError("malformed immutable prediction journal") from exc
 
 
-def verify_and_index(dataset, trial, journal_bytes, nochange):
+def verify_cell_trace(dataset, trial, journal_bytes):
+    """Verify the original two Cell arms without inventing a no-change distribution."""
     audit = audit_dataset(dataset)
     if (trial.get("schema") != "hepta.jina-v5-cell-prequential-shadow.v1" or
             trial.get("production_promotion_permitted") is not False or
@@ -183,6 +184,12 @@ def verify_and_index(dataset, trial, journal_bytes, nochange):
         raise ValueError("final Cell Head artifact digests do not match replayed update chain")
     if trial.get("frozen_final_head_digests") != initial:
         raise ValueError("frozen final Head tensor digests changed during future learning")
+    return indexed, audit, bool(updates_per_event and any_head_update)
+
+
+def verify_and_index(dataset, trial, journal_bytes, nochange):
+    indexed, audit, changed = verify_cell_trace(dataset, trial, journal_bytes)
+    futures = [item["dataset"] for item in indexed.values()]
     if type(nochange) is not list or len(nochange) != len(futures):
         raise ValueError("genuine production no-change prediction coverage missing")
     observed, nochange_identity = set(), None
@@ -215,7 +222,7 @@ def verify_and_index(dataset, trial, journal_bytes, nochange):
         observed.add(case_id)
     if set(indexed) != observed:
         raise ValueError("missing no-change predictions")
-    return indexed, audit, nochange_identity, bool(updates_per_event and any_head_update)
+    return indexed, audit, nochange_identity, changed
 
 
 def measure(probs, correct_index):

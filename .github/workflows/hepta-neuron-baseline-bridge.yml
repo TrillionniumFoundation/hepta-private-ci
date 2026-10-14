@@ -1,0 +1,73 @@
+name: Hepta typed production baseline bridge
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/neuron-stem/**"
+      - ".github/workflows/hepta-neuron-baseline-bridge.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  owner-contract:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        source: ${{ fromJSON(github.event_name == 'pull_request' && '["head","merge"]' || '["head"]') }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.source == 'head' && (github.event.pull_request.head.sha || github.sha) || github.sha }}
+          path: candidate
+          persist-credentials: false
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: aef947be91c9fbcac7f9f7315ecbc99122349e7d
+          path: baseline-owner
+          persist-credentials: false
+      - name: Preserve both exact source identities
+        run: |
+          git -C candidate rev-parse HEAD > candidate-source.txt
+          git -C baseline-owner rev-parse HEAD > owner-source.txt
+          test "$(cat owner-source.txt)" = aef947be91c9fbcac7f9f7315ecbc99122349e7d
+          git -C baseline-owner archive --format=tar.gz HEAD scripts .github/scripts qualification/neuron-model-trials > baseline-owner-source.tar.gz
+          git -C candidate archive --format=tar.gz HEAD qualification/neuron-stem > candidate-source.tar.gz
+      - name: Install isolated signature verification dependency
+        run: |
+          python3 -m venv /tmp/baseline-bridge-venv
+          /tmp/baseline-bridge-venv/bin/python -m pip install --disable-pip-version-check --no-input cryptography==46.0.4
+          /tmp/baseline-bridge-venv/bin/python -m pip freeze > environment.txt
+      - name: Run original signed baseline contract tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd baseline-owner
+          /tmp/baseline-bridge-venv/bin/python -m unittest discover -s .github/scripts -p 'test_hepta_neuron_production_baseline_compare.py' -v 2>&1 | tee ../baseline-owner-tests.log
+          git diff --exit-code
+      - name: Run canonical Cell bridge against original owner code without skips
+        shell: bash
+        run: |
+          set -euo pipefail
+          export HEPTA_BASELINE_OWNER_ROOT="$PWD/baseline-owner"
+          export PYTHONPATH="$PWD/candidate/qualification/neuron-stem"
+          /tmp/baseline-bridge-venv/bin/python -m unittest baseline_owner_bridge_checks -v 2>&1 | tee baseline-bridge-tests.log
+          git -C candidate diff --exit-code
+      - name: Retain source and actual test records only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: baseline-bridge-${{ matrix.source }}-${{ github.run_id }}
+          path: |
+            candidate-source.txt
+            owner-source.txt
+            environment.txt
+            baseline-owner-source.tar.gz
+            candidate-source.tar.gz
+            baseline-owner-tests.log
+            baseline-bridge-tests.log
+          if-no-files-found: error
+          retention-days: 14
