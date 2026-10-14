@@ -419,7 +419,9 @@ fn lost_evidence_wal_with_persistent_marker_never_bootstraps_new_history() {
     let missing = dir.path().join("displaced-original-journal");
     {
         let mut owner = MetricsGroupCommitV1::open(&path).expect("original owner");
-        owner.stage(sample(MetricPhaseV1::Cas)).expect("original group");
+        owner
+            .stage(sample(MetricPhaseV1::Cas))
+            .expect("original group");
         owner.flush().expect("durable original group");
     }
     let marker = dir.path().join("journal.owner-lock");
@@ -440,13 +442,14 @@ fn missing_owner_marker_revokes_live_empty_flush_and_denies_reopen() {
     let path = dir.path().join("journal");
     let marker = dir.path().join("journal.owner-lock");
     let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
-    owner.stage(sample(MetricPhaseV1::Cns)).expect("first sample");
+    owner
+        .stage(sample(MetricPhaseV1::Cns))
+        .expect("first sample");
     owner.flush().expect("original durable record");
     fs::remove_file(&marker).expect("lose persistent marker");
     assert!(matches!(
         owner.flush(),
-        Err(MetricsJournalErrorV1::Io(_))
-            | Err(MetricsJournalErrorV1::UnsafePath)
+        Err(MetricsJournalErrorV1::Io(_)) | Err(MetricsJournalErrorV1::UnsafePath)
     ));
     assert!(matches!(
         owner.flush(),
@@ -470,7 +473,9 @@ fn replacement_owner_marker_inode_with_same_bytes_revokes_live_writer() {
     let marker = dir.path().join("journal.owner-lock");
     let removed = dir.path().join("previous-owner-marker");
     let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
-    owner.stage(sample(MetricPhaseV1::Admission)).expect("first sample");
+    owner
+        .stage(sample(MetricPhaseV1::Admission))
+        .expect("first sample");
     owner.flush().expect("original durable record");
     let bytes = fs::read(&marker).expect("original marker bytes");
     fs::rename(&marker, &removed).expect("move original marker inode");
@@ -494,7 +499,9 @@ fn same_inode_marker_content_corruption_denies_live_and_recovered_owner() {
     let path = dir.path().join("journal");
     let marker = dir.path().join("journal.owner-lock");
     let mut owner = MetricsGroupCommitV1::open(&path).expect("original writer");
-    owner.stage(sample(MetricPhaseV1::Signature)).expect("first sample");
+    owner
+        .stage(sample(MetricPhaseV1::Signature))
+        .expect("first sample");
     owner.flush().expect("original durable record");
     let mut bytes = fs::read(&marker).expect("original identity");
     // The original HEMW1 header, not the separately tested F1 high-water
@@ -822,5 +829,49 @@ fn local_observer_frontier_is_read_only_and_never_counts_unflushed_staging() {
     assert_eq!(
         fs::read(&marker).expect("unchanged marker"),
         original_marker
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn observer_replay_does_not_mutate_original_writer_file_offset() {
+    use std::io::Seek as _;
+    use std::io::SeekFrom;
+
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("offset.log");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original WAL owner");
+    for phase in [MetricPhaseV1::Cas, MetricPhaseV1::Signature] {
+        owner.stage(sample(phase)).expect("stage original metric");
+        owner.flush().expect("durable original metric");
+    }
+    // Deliberately set an unrelated offset on the original owned FD. The
+    // previous cloned-descriptor seek(0) changed this shared offset.
+    let before = {
+        let mut original = &owner.file;
+        original
+            .seek(SeekFrom::Start(7))
+            .expect("test original fd offset");
+        original.stream_position().expect("original position")
+    };
+    let snapshot = owner.read_local_frontier().expect("read complete history");
+    assert_eq!(snapshot.sequence, 2);
+    let after = {
+        let mut original = &owner.file;
+        original.stream_position().expect("unchanged original offset")
+    };
+    assert_eq!(after, before, "Observer must use read_at, not shared seek");
+    // The original O_APPEND owner must still be able to commit normally.
+    owner.stage(sample(MetricPhaseV1::Cns)).expect("third metric");
+    assert_eq!(
+        owner.flush().expect("third group").expect("durable ACK").sequence,
+        3
+    );
+    drop(owner);
+    assert_eq!(
+        MetricsGroupCommitV1::open(&path)
+            .expect("verified recovery")
+            .committed_groups(),
+        3
     );
 }
