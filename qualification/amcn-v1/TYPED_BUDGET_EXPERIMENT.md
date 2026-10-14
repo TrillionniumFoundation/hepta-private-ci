@@ -58,6 +58,18 @@ PYTHONPATH=.:qualification/amcn-v1 python3 -m unittest discover \
   -s qualification/amcn-v1 -p 'test_amcn_typed_*.py' -v
 ```
 
+## Training-source withdrawal experiment
+
+`amcn_typed_lineage.py` binds each actual Head tensor SHA to complete
+TRAIN SourceWitness revision/digest records from the original AMCN
+revocation contracts. Its four detached candidates differentiate the
+shared-bank all-source dependency from the typed-head local-source
+dependency. `test_amcn_typed_lineage.py` proves a revoked source
+quarantines both unspecialized Heads but not an unrelated typed Head.
+This is a **shadow revocation census**, not actual model unlearning,
+authenticated source-issuer evidence, storage durability or
+published Artifact selection. Missing witnesses fail closed.
+
 ## NO-GO beyond mechanics
 
 Missing: independent source/type precommit, authenticated pretrained Encoder
