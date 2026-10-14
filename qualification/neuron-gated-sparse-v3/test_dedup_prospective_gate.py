@@ -220,10 +220,13 @@ class PhysicalDedupFutureTests(unittest.TestCase):
             'alias_candidate_keys':g['nominal_budget_aliases'],
         } for g in baseline['unique_model_groups']]
         self.seal['physical_tensor_reuse_observation']={
-            'schema':'hepta.neuron.forecast-physical-reuse.v1',
+            'schema':'hepta.neuron.forecast-physical-reuse.v2',
             'nominal_candidate_slots':20,
-            'actual_per_group_surrogate_forward_executions':4,
-            'redundant_surrogate_model_forwards_eliminated':16,
+            'actual_distinct_models_executed_per_sequence_group':4,
+            'source_sequence_group_count':6,
+            'actual_surrogate_forward_calls_total':24,
+            'redundant_surrogate_forward_calls_avoided':96,
+            'redundant_model_graph_loads_avoided':16,
             'alias_groups':aliases,
             'native_q24_parity_verified':False,
             'ndu_eligible':False,'production_qualification':False,
@@ -233,12 +236,12 @@ class PhysicalDedupFutureTests(unittest.TestCase):
         self.assertTrue(checked['preoutcome_physical_forward_reuse_claim_verified'])
         self.assertEqual(checked['actual_distinct_physical_tensor_groups'],4)
         self.seal['physical_tensor_reuse_observation'][
-            'actual_per_group_surrogate_forward_executions']=5
+            'actual_distinct_models_executed_per_sequence_group']=5
         self.seal_sha=self.save_seal()
         with self.assertRaisesRegex(ValueError,'reuse claims differ'):
             self.check()
         self.seal['physical_tensor_reuse_observation'][
-            'actual_per_group_surrogate_forward_executions']=4
+            'actual_distinct_models_executed_per_sequence_group']=4
         self.seal['physical_tensor_reuse_observation'][
             'head_margin_authorized_for_final_use']=True
         self.seal_sha=self.save_seal()
