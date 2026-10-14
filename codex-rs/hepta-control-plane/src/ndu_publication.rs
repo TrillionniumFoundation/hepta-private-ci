@@ -175,6 +175,9 @@ struct State {
     head: Digest32,
     bytes: u64,
     poisoned: bool,
+    // Durable B is fsynced, physical effect and original receipt are unresolved.
+    // This is a sticky publication fence even while the mutex is released.
+    pending_cutover: bool,
 }
 impl State {
     fn append(
@@ -383,6 +386,7 @@ impl NduPublicationOwnerV1 {
             head,
             bytes,
             poisoned: false,
+            pending_cutover: false,
         };
         if latest.is_none() {
             state.append(
@@ -416,6 +420,9 @@ impl NduPublicationOwnerV1 {
             .map_err(|_| NduPublicationErrorV1::Poisoned)?;
         if state.poisoned {
             return Err(NduPublicationErrorV1::Poisoned);
+        }
+        if state.pending_cutover {
+            return Err(NduPublicationErrorV1::Indeterminate);
         }
         Ok((state.snapshot.clone(), state.checkpoint))
     }
@@ -465,6 +472,9 @@ impl NduPublicationOwnerV1 {
         if state.poisoned {
             return Err(NduPublicationErrorV1::Poisoned);
         }
+        if state.pending_cutover {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
         if state.snapshot != *expected
             || state.checkpoint != expected_checkpoint
             || next.scope_id != expected.scope_id
@@ -487,7 +497,21 @@ impl NduPublicationOwnerV1 {
             Digest32::ZERO,
             Digest32::ZERO,
         )?;
-        let actual = match apply_original_runtime_once() {
+        state.pending_cutover = true;
+        // The durable pending flag, not a mutex held over external runtime I/O,
+        // fences model CAS and all other cutovers. Callback readback may safely
+        // reenter Control and receive Indeterminate instead of deadlocking.
+        drop(state);
+        let actual_result = apply_original_runtime_once();
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+        if !state.pending_cutover {
+            state.poisoned = true;
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        let actual = match actual_result {
             Ok(receipt) => receipt,
             Err(_) => {
                 state.poisoned = true;
@@ -511,6 +535,7 @@ impl NduPublicationOwnerV1 {
             }
         };
         state.snapshot = next;
+        state.pending_cutover = false;
         Ok((actual, committed))
     }
 
@@ -528,6 +553,9 @@ impl NduPublicationOwnerV1 {
             .map_err(|_| NduPublicationErrorV1::Poisoned)?;
         if state.poisoned {
             return Err(NduPublicationErrorV1::Poisoned);
+        }
+        if state.pending_cutover {
+            return Err(NduPublicationErrorV1::Indeterminate);
         }
         if state.snapshot != *expected || state.checkpoint != before {
             return Err(NduPublicationErrorV1::Stale);

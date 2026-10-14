@@ -247,6 +247,22 @@ fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
                 migrated,
                 || -> Result<_, &'static str> {
                     physical_calls += 1;
+                    assert_eq!(
+                        owner.current(),
+                        Err(NduPublicationErrorV1::Indeterminate),
+                        "the runtime callback must not see a publishable NDU frontier"
+                    );
+                    assert_eq!(
+                        owner.compare_and_publish_checkpoint(
+                            &current,
+                            Digest32::of_bytes(b"signed-read"),
+                            Digest32::of_bytes(b"late-model"),
+                            Digest32::ZERO,
+                            Digest32::of_bytes(b"forbidden-checkpoint"),
+                        ),
+                        Err(NduPublicationErrorV1::Indeterminate),
+                        "a callback must not reenter the Control lane to publish a tick"
+                    );
                     Ok("original-fsynced-runtime-receipt")
                 },
             )
