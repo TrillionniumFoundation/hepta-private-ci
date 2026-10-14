@@ -20,7 +20,7 @@ from matched_train import CAPS, ARMS, H, Q, sha_bytes, sha_file, unique_json, ut
 
 FORECAST_SCHEMA = 'hepta.neuron.unlabelled-future-q24.v1'
 BASELINE_SCHEMA = 'hepta.neuron.owner-v1-frozen-predictions.v1'
-SEAL_SCHEMA = 'hepta.neuron.five-arm-research-forecast-seal.v1'
+SEAL_SCHEMA = 'hepta.neuron.five-arm-research-forecast-seal.v2'
 WITNESS_SCHEMA = 'hepta.neuron.five-arm-precommit-witness.v1'
 OUTCOME_SCHEMA = 'hepta.neuron.five-arm-independent-outcomes.v1'
 
@@ -99,6 +99,15 @@ def seal(args: argparse.Namespace) -> dict:
     require(receipt['schema'] == 'hepta.neuron.five-arm-differentiable-shadow-train.v1' and
             receipt['no_change_optimizer_steps'] == 0 and
             receipt['production_qualification'] is False, 'unsupported training receipt')
+    a0_class = receipt.get('evidence_class')
+    if getattr(args, 'synthetic_canary', False):
+        require(a0_class == 'SYNTHETIC_FIXTURE_ONLY',
+                'synthetic forecast canary only accepts declared synthetic A0')
+    else:
+        require(a0_class == 'SIGNED_A0_FORMAT_ONLY_NOT_HOST_EXECUTION' and
+                isinstance(receipt.get('a0_registry_sha256'), str) and
+                len(receipt['a0_registry_sha256']) == 64,
+                'live signed A0 prerequisite missing; refusing to seal fixture as real')
     models = physical_models(root, receipt)
     future_path = Path(args.future_features)
     future_sha = sha_file(future_path, args.future_sha256)
@@ -164,7 +173,9 @@ def seal(args: argparse.Namespace) -> dict:
                     p = torch.sigmoid(logits)
                     for r,value in zip(group,p):
                         out[r['case_id']]['candidates'][f'{cap}:{arm}'] = int(round(float(value)*1000000))
-    result = {'schema':SEAL_SCHEMA, 'train_receipt_sha256':args.receipt_sha256,
+    result = {'schema':SEAL_SCHEMA, 'a0_evidence_class':a0_class,
+              'a0_registry_sha256_claimed':receipt.get('a0_registry_sha256'),
+              'train_receipt_sha256':args.receipt_sha256,
               'future_source_sha256':future_sha,'owner_predictions_sha256':base_sha,
               'encoder_digest_claimed':receipt['encoder_digest_claimed'],
               'cell_id':receipt['cell_id'],'training_cutoff_utc':receipt['training_cutoff_utc'],
@@ -205,6 +216,9 @@ def score(args: argparse.Namespace) -> dict:
     seal_sha = sha_file(seal_path,args.seal_sha256)
     seal_data = unique_json(seal_path.read_bytes())
     require(seal_data['schema'] == SEAL_SCHEMA and
+            (seal_data.get('a0_evidence_class') == 'SIGNED_A0_FORMAT_ONLY_NOT_HOST_EXECUTION' or
+             (getattr(args, 'synthetic_canary', False) and
+              seal_data.get('a0_evidence_class') == 'SYNTHETIC_FIXTURE_ONLY')) and
             seal_data['ndu_eligible'] is False and
             seal_data['production_qualification'] is False, 'untrusted seal schema/authority')
     witness_key, fp = load_public_key(Path(args.witness_pubkey))
@@ -261,6 +275,7 @@ def score(args: argparse.Namespace) -> dict:
             candidates[model] = s
         results[part] = {'owner_v1':base,'candidates':candidates}
     return {'schema':'hepta.neuron.paired-sealed-future-diagnostics.v1',
+            'a0_evidence_class':seal_data['a0_evidence_class'],
             'seal_sha256':seal_sha,'witness_public_key_fingerprint':fp,
             'outcome_public_key_fingerprint':outcome_fp,
             'chronology_consistent_with_signed_claims':True,
@@ -282,6 +297,10 @@ def main() -> int:
               'signed-outcomes','outcome-pubkey'):
         b.add_argument('--'+x,required=True)
     b.add_argument('--report',required=True)
+    a.add_argument('--synthetic-canary', action='store_true',
+                   help='test-only: labelled synthetic A0 can never support promotion')
+    b.add_argument('--synthetic-canary', action='store_true',
+                   help='test-only: score synthetic precommit fixture without authority')
     args = p.parse_args()
     try:
         result = seal(args) if args.cmd == 'seal' else score(args)
