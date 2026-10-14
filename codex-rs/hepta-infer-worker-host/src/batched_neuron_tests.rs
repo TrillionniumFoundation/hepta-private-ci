@@ -596,7 +596,9 @@ fn regressed_caller_poll_cannot_bypass_scheduler_via_monotonic_max() {
     // regression and permit an invalid source time to reach the scheduler.
     assert!(matches!(
         worker.poll_and_execute(100),
-        Err(BatchWorkerErrorV1::Scheduler(SchedulerErrorV1::ClockRegressed))
+        Err(BatchWorkerErrorV1::Scheduler(
+            SchedulerErrorV1::ClockRegressed
+        ))
     ));
     assert_eq!(worker.pending(), 1);
     assert_eq!(worker.last_caller_now_ms, Some(101));
@@ -639,7 +641,9 @@ fn regressed_caller_enqueue_does_not_consume_a_signed_batch_nonce() {
             key.clone(),
             second_grant.clone(),
         ),
-        Err(BatchWorkerErrorV1::Scheduler(SchedulerErrorV1::ClockRegressed))
+        Err(BatchWorkerErrorV1::Scheduler(
+            SchedulerErrorV1::ClockRegressed
+        ))
     );
     assert_eq!(worker.pending(), 1);
     assert_eq!(worker.last_caller_now_ms, Some(100));
@@ -1567,24 +1571,12 @@ fn live_scope_cutover_during_terminal_fsync_denies_success_without_replay() {
     });
     let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
     let backend = CountingScalarDriver(calls.clone());
-    let mut worker = runner_with_driver_using_frontier(
-        &signer,
-        dir.path(),
-        model,
-        backend,
-        1,
-        frontier,
-    )
-    .with_metric_sink(sink);
+    let mut worker =
+        runner_with_driver_using_frontier(&signer, dir.path(), model, backend, 1, frontier)
+            .with_metric_sink(sink);
     assert!(worker.flush_production_metrics());
     worker
-        .enqueue(
-            100,
-            "model".into(),
-            request,
-            key,
-            signed(&signer, binding),
-        )
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
         .unwrap();
     let observed = worker.poll_and_execute(106).unwrap();
     assert_eq!(observed.outcomes.len(), 1);
