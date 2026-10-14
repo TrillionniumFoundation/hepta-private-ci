@@ -127,6 +127,11 @@ pub struct AuthenticatedNeuronMicrobatchWorkerV1<D: ModelDriver + NeuronFeatureD
     // Absent until independent Control composition installs a live reader.
     // No new admission or backend effect may proceed while it is absent.
     scope_frontier: Option<Arc<dyn MicrobatchScopeFrontierV1>>,
+    // A Control reader cannot be rebound once installed or once an
+    // admission/cutover/poll has started. This does not attest its origin.
+    frontier_binding_frozen: bool,
+    // A late sink must never make uninstrumented historical work "ready".
+    unmetered_activity: bool,
     pending: BTreeMap<StableId, PendingV1>,
     retired: BTreeSet<Digest32>,
     metric_sink: Option<Arc<dyn PhaseMetricSinkV1>>,
@@ -215,6 +220,8 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
             worker,
             authority,
             scope_frontier: None,
+            frontier_binding_frozen: false,
+            unmetered_activity: false,
             pending: BTreeMap::new(),
             retired: BTreeSet::new(),
             metric_sink: None,
@@ -228,14 +235,19 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         self
     }
 
-    /// Inject exactly one Control-owned live frontier before admission.
-    /// A simulator or mutable caller map is not production authority.
-    pub fn with_live_scope_frontier(
-        mut self,
+    /// Bind exactly one original Control-owned live frontier at startup.
+    /// Do not permit a stale reader to replace it later, even if the local
+    /// queue is empty. An untrusted caller-supplied reader is NOT attested by
+    /// this method; the production composition owns provenance verification.
+    pub fn bind_live_scope_frontier(
+        &mut self,
         frontier: Arc<dyn MicrobatchScopeFrontierV1>,
-    ) -> Self {
+    ) -> Result<(), BatchWorkerErrorV1> {
+        if self.frontier_binding_frozen || self.scope_frontier.is_some() {
+            return Err(BatchWorkerErrorV1::InvalidBinding);
+        }
         self.scope_frontier = Some(frontier);
-        self
+        Ok(())
     }
 
     fn binding_current(&self, key: &MicrobatchKeyV1) -> bool {
@@ -254,7 +266,9 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
     /// authorization from one successful model execution. A failed write
     /// remains latched even if the current metric sink later reports healthy.
     pub fn production_metrics_ready(&self) -> bool {
-        self.metric_sink.as_ref().is_some_and(|sink| sink.healthy())
+        self.scope_frontier.is_some()
+            && !self.unmetered_activity
+            && self.metric_sink.as_ref().is_some_and(|sink| sink.healthy())
             && self.failed_metrics.load(Ordering::Acquire) == 0
     }
 
@@ -286,6 +300,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         key: MicrobatchKeyV1,
         signed: SignedFinalUseGrant,
     ) -> Result<(), BatchWorkerErrorV1> {
+        self.frontier_binding_frozen = true;
+        if self.metric_sink.is_none() {
+            self.unmetered_activity = true;
+        }
         let started = Instant::now();
         let scope_digest = Digest32::of_bytes(key.scope_id.as_str().as_bytes());
         let operation_digest = Digest32::of_bytes(request.authorization.request_id.as_bytes());
@@ -382,6 +400,10 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         &mut self,
         now_ms: u64,
     ) -> Result<BatchWorkerPollV1, BatchWorkerErrorV1> {
+        self.frontier_binding_frozen = true;
+        if self.metric_sink.is_none() {
+            self.unmetered_activity = true;
+        }
         // Fail before dequeue if Admission telemetry poisoned this owner.
         // Keep already durably admitted intent identities available for
         // original-owner reconciliation, never invoke or retry a backend.
@@ -744,6 +766,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> AuthenticatedNeuronMicrobatchWorkerV1
         fence: u64,
         authority_epoch: u64,
     ) -> Vec<StableId> {
+        self.frontier_binding_frozen = true;
         let removed =
             self.scheduler
                 .retain_scope_binding(scope, generation, fence, authority_epoch);

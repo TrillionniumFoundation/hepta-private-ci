@@ -162,6 +162,25 @@ fn runner_with_driver<D: ModelDriver + NeuronFeatureDriver>(
     driver: D,
     max_batch_size: usize,
 ) -> AuthenticatedNeuronMicrobatchWorkerV1<D> {
+    let model_digest = Digest32::from_str(&model.model_digest).unwrap();
+    runner_with_driver_using_frontier(
+        signing_key,
+        directory,
+        model,
+        driver,
+        max_batch_size,
+        Arc::new(FixtureScopeFrontier::new(model_digest)),
+    )
+}
+
+fn runner_with_driver_using_frontier<D: ModelDriver + NeuronFeatureDriver>(
+    signing_key: &SigningKey,
+    directory: &std::path::Path,
+    model: ModelManifest,
+    driver: D,
+    max_batch_size: usize,
+    frontier: Arc<dyn MicrobatchScopeFrontierV1>,
+) -> AuthenticatedNeuronMicrobatchWorkerV1<D> {
     // FinalUseAuthority requires a private owner-controlled state directory.
     // Temp directory permissions vary with the runner and its inherited umask;
     // normalize the fixture rather than weakening the production owner gate.
@@ -194,10 +213,9 @@ fn runner_with_driver<D: ModelDriver + NeuronFeatureDriver>(
         maximum_memory_bytes: 4096,
         semantic_digest: digest(b"resource-grant").to_string(),
     };
-    let model_digest = Digest32::from_str(&model.model_digest).unwrap();
     let mut worker = InferenceWorker::new(100, "worker-one".into(), 3, grant, driver).unwrap();
     worker.load_model(100, model).unwrap();
-    AuthenticatedNeuronMicrobatchWorkerV1::new(
+    let mut owner = AuthenticatedNeuronMicrobatchWorkerV1::new(
         worker,
         authority,
         MicrobatchLimitsV1 {
@@ -207,8 +225,9 @@ fn runner_with_driver<D: ModelDriver + NeuronFeatureDriver>(
             max_wait_ms: 5,
         },
     )
-    .unwrap()
-    .with_live_scope_frontier(Arc::new(FixtureScopeFrontier::new(model_digest)))
+    .unwrap();
+    owner.bind_live_scope_frontier(frontier).unwrap();
+    owner
 }
 
 fn runner(
@@ -239,6 +258,43 @@ fn signed(signing_key: &SigningKey, binding: FinalUseBinding) -> SignedFinalUseG
         .to_bytes()
         .to_vec();
     SignedFinalUseGrant { grant, signature }
+}
+
+#[test]
+fn scope_reader_is_write_once_and_queued_identity_survives_failed_rebind() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[93; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let mut worker = runner(&signer, dir.path(), model);
+    assert_eq!(
+        worker.bind_live_scope_frontier(Arc::new(FixtureScopeFrontier::new(key.model_digest))),
+        Err(BatchWorkerErrorV1::InvalidBinding)
+    );
+    worker
+        .enqueue(
+            100,
+            "model".into(),
+            request,
+            key.clone(),
+            signed(&signer, binding),
+        )
+        .unwrap();
+    assert_eq!(worker.pending(), 1);
+    assert_eq!(
+        worker.bind_live_scope_frontier(Arc::new(FixtureScopeFrontier::new(key.model_digest))),
+        Err(BatchWorkerErrorV1::InvalidBinding)
+    );
+    assert_eq!(worker.pending(), 1);
+    let result = worker.poll_and_execute(106).unwrap();
+    assert_eq!(result.outcomes.len(), 1);
+    assert!(result.outcomes[0].result.is_ok());
+    assert_eq!(worker.pending(), 0);
+    // Completed IDs also cannot enable later reader rebinding.
+    assert_eq!(
+        worker.bind_live_scope_frontier(Arc::new(FixtureScopeFrontier::new(key.model_digest))),
+        Err(BatchWorkerErrorV1::InvalidBinding)
+    );
 }
 
 #[test]
@@ -400,6 +456,26 @@ impl PhaseMetricSinkV1 for CapturedMetrics {
     fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
         Ok(())
     }
+}
+
+#[test]
+fn late_metrics_sink_cannot_certify_previously_unmetered_model_execution() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[94; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let mut worker = runner(&signer, dir.path(), model);
+    worker
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    let outcome = worker.poll_and_execute(106).unwrap();
+    assert_eq!(outcome.outcomes.len(), 1);
+    assert!(outcome.outcomes[0].result.is_ok());
+    let mut worker = worker.with_metric_sink(Arc::new(CapturedMetrics::default()));
+    assert!(!worker.production_metrics_ready());
+    assert!(!worker.flush_production_metrics());
+    assert!(worker.poll_and_execute(107).unwrap().outcomes.is_empty());
+    assert!(!worker.production_metrics_ready());
 }
 
 #[derive(Debug)]
@@ -1127,8 +1203,8 @@ fn coalesced_batch_denies_stale_other_scope_without_claiming_either_nonce() {
         truncate_outputs: false,
         reorder_outputs: false,
     };
-    let mut worker = runner_with_driver(&signer, dir.path(), model, driver, 2)
-        .with_live_scope_frontier(frontier.clone());
+    let mut worker =
+        runner_with_driver_using_frontier(&signer, dir.path(), model, driver, 2, frontier.clone());
     let signed_a = signed_member(
         &signer,
         neuron_batch_final_use_binding_v1("worker-one", &first_key, &first).unwrap(),
