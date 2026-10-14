@@ -220,6 +220,59 @@ the original_predictions_reexecuted_here field remains false. Fixture
 model material uses a genuine Head layout but fake evaluation scores; fixtures
 never constitute a pretrained model outcome.
 
+## Durable shadow quarantine journal, original Source/Artifacts owner handoff
+
+This development increment is an **isolated, POSIX, single-host candidate
+experiment**. It does not update CognitiveStore, NeuronRuntime or the deployed
+model Selector. No local eligibility result grants production execution.
+
+- amcn_quarantine_ledger.py has an immutable, canonical JSON/SHA-256
+  journal under a private directory, with fsynced files, hash-linked CAS
+  head, exclusive POSIX writer lock and monotonic source-tombstone
+  inheritance. It rejects missing or changed source revisions, cross-scope
+  ancestry, corrupted/rolled-back records and orphaned partial transactions.
+  The caller must retain the latest journal-head SHA outside this directory.
+- amcn_quarantine_cli.py receives an exact, independently pinned
+  Source frontier and Artifact bundle in **separate files**. It supports
+  bootstrap, update, recover, and preflight. Preparation and
+  recovery are not silently treated as promotion. All returned receipts
+  have production_accepted=false.
+- amcn_guarded_shadow_worker.py executes a real frozen CPU PyTorch
+  Semantic Head while holding the local journal lock. It binds exact
+  source frontier, generation, Encoder SHA, physical feature tensor SHA,
+  artifact lineage and actual Head state digest. Withdrawals, tampering,
+  stale journals, a trainable Head or a wrong feature are rejected
+  **before** an execution call. The lock protects only competing callers
+  of *this local research ledger*, **not** production source writers.
+- The existing amcn_preuse.py is a complementary one-shot
+  authority-free advisory checking a supplied persistent tombstone
+  digest. It is not a journal writer or a durable lease; neither
+  module's result authorizes product model use.
+
+The three original owners must cooperate for an actual product fence:
+codex-rs/hepta-memory/src/cognitive_store.rs is the authoritative
+source revision and withdrawal owner; codex-rs/hepta-neuron/src/runtime.rs
+holds the runtime lifecycle and generation; and
+codex-rs/hepta-neuron/src/inference_control.rs dispatches the
+registered model feature port. The existing
+codex-rs/hepta-neuron/src/deletion.rs requires a fresh generation and
+**never** reuses the predecessor checkpoint on deletion. These owners
+must atomically bind source frontier, selected Head, runtime generation
+and durable quarantine witness. Adding this Python experiment outside
+their transaction cannot prove the **zero-resurrection** requirement.
+
+Test the complete isolated mechanism from repository root:
+
+    python -m unittest discover -s qualification/amcn-v1 -p 'test_*.py' -v
+
+The local replay in this branch's development showed 81 test invocations:
+80 passed and one skipped because that *isolated source tree* did not
+contain the original dual-signed Reader Owner fixture. Full-repository
+GitHub CI must execute that integration before any positive claim.
+No real calendar-future learning gain, semantic citation adjudication,
+signed Selector decision, parameter unlearning or crash recovery on a
+production target host has been established.
+
 ## No-go and required production evidence
 
 Still missing: sufficient-evidence Reader certification, strong cached hybrid

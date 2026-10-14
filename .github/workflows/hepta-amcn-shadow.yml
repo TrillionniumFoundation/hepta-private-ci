@@ -74,6 +74,9 @@ jobs:
           printf '%s\n' 'production_accepted=false' 'reader_semantic_review=null' \
              'future_window_evidence=false' 'full_longmemeval_v2=false' \
              'independent_evaluator=false' 'pretrained_encoder_loaded=false' \
+             'production_source_owner_fenced=false' 'parameter_unlearning_performed=false' \
+             'production_runtime_fenced=false' 'single_host_shadow_only=true' \
+             'model_activation_allowed=false' 'zero_resurrection_proven=false' \
              > /tmp/hepta-amcn-evidence/nonpromotion.txt
           (cd /tmp/hepta-amcn-evidence && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
