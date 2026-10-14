@@ -190,20 +190,16 @@ fn validate_replay(
                 && e.before == checkpoint
                 && !e.after.is_zero()
                 && e.tick.is_zero()
-                && match pending {
-                    // Every new guarded Commit must identify the exact original
-                    // runtime receipt bytes witnessed after durable Begin.
-                    Some(prepared) => {
-                        !e.read.is_zero()
-                            && prepared.successor == e.snapshot
-                            && prepared.previous_checkpoint == e.before
-                            && prepared.migrated_checkpoint == e.after
-                    }
-                    // Existing pre-B journals may contain historical C events.
-                    // Retain their old representation for honest replay, not
-                    // as a new, publicly writable single-phase cutover path.
-                    None => e.read.is_zero(),
-                }
+                // A replayed Control Commit requires BOTH the exact
+                // fsynced Begin and an original CNS receipt binding. Neither
+                // a self-consistent legacy C nor a C with only fake receipt
+                // bytes can silently publish a physical successor.
+                && pending.is_some_and(|prepared| {
+                    !e.read.is_zero()
+                        && prepared.successor == e.snapshot
+                        && prepared.previous_checkpoint == e.before
+                        && prepared.migrated_checkpoint == e.after
+                })
         }
         'P' => {
             pending.is_none()
