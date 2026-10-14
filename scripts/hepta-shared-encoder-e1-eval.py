@@ -84,14 +84,15 @@ def validate_dataset(rows, scope, task, cutoff):
         label = iso_utc(row["label_available_at"])
         require(event < label, "labels must follow events")
         groups[(row["scope_id"], row["task_id"], row["group_id"])].add(row["split"])
-        if (row["scope_id"] == scope and row["task_id"] == task
-                and row["split"] in {"future", "ood", "old"}):
-            require(event > cutoff, "held-out event not strictly after training cutoff")
-            selected.append(row)
+        if row["scope_id"] == scope and row["task_id"] == task:
+            if row["split"] in {"train", "calibration", "test"}:
+                require(event < cutoff and label <= cutoff,
+                        "pre-cutoff training/calibration/test label leaked past freeze")
+            elif row["split"] in {"future", "ood", "old"}:
+                require(event > cutoff, "held-out event not strictly after training cutoff")
+                selected.append(row)
     for splits in groups.values():
-        require(not ("train" in splits and splits.intersection(
-            {"calibration", "test", "future", "ood", "old"})),
-            "train/evaluation group contamination")
+        require(len(splits) == 1, "cross-split group contamination")
     require(any(row["split"] == "future" for row in selected), "no future cohort")
     return selected
 
