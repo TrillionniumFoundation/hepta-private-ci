@@ -273,7 +273,11 @@ def multimodal_cost_audit(manifest: dict) -> dict:
                     problems.append(f'{name}: changed previously frozen {task} cohort')
                 if value['score'] < old_score - allowed_drop - 1e-9:
                     problems.append(f'{name}: negative transfer above registered limit for {task}')
-            seen_tasks[task] = (value['dataset_sha256'], value['cases'], value['score'])
+            else:
+                # Retain the FIRST stage's frozen task score, not the
+                # immediately preceding score: repeated small regressions
+                # must not conceal cumulative negative transfer.
+                seen_tasks[task] = (value['dataset_sha256'], value['cases'], value['score'])
         cohort = stage.get('scales')
         if not isinstance(cohort, list) or [r.get('cell_count') if isinstance(r, dict) else None for r in cohort] != list(SCALES):
             problems.append(f'{name}: missing 64/256/1024/4096 ordered full-active trials')

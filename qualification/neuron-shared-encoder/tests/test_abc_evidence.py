@@ -251,3 +251,10 @@ def test_evidence_loader_rejects_duplicate_json_keys(tmp_path):
     path.write_bytes(body)
     with pytest.raises(ValueError, match='duplicate'):
         _pinned_json(str(path), sha256(body).hexdigest())
+
+
+def test_c_cumulative_negative_transfer_does_not_roll_the_baseline_forward():
+    m = c_fixture()
+    m['stages'][1]['tasks']['text_decision']['score'] = .694
+    m['stages'][2]['tasks']['text_decision']['score'] = .688
+    assert multimodal_cost_audit(m)['status'] == 'BLOCKED'
