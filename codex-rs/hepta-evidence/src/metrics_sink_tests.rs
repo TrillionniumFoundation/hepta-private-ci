@@ -259,3 +259,48 @@ fn restarted_evidence_sink_cannot_claim_a_new_history_after_wal_loss() {
     );
     assert!(!path.exists(), "no replacement empty journal");
 }
+/// An acknowledged Stop is a writer-lock handoff, not merely a report
+/// that flush() has returned. The next owner must be able to reopen the same
+/// fsynced journal immediately, without sleeps, polling or a second writer.
+#[test]
+fn acknowledged_stop_releases_original_metrics_lock_before_reopen() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("stop-handoff.log");
+    for round in 0..32_u64 {
+        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 2, 60_000)
+            .expect("one current Evidence writer");
+        sink.record(sample(PhaseMetricKindV1::Wal))
+            .expect("bounded phase sample");
+        sink.flush().expect("real durable flush before Stop");
+        drop(sink);
+
+        // The public writer Drop already received its Stop ACK. Reopen
+        // immediately to prove ACK cannot race the original OS lock release.
+        let recovered = MetricsGroupCommitV1::open(&path)
+            .expect("Stop ACK must follow writer lock release");
+        assert_eq!(recovered.committed_rows(), round + 1);
+        assert_eq!(recovered.committed_groups(), round + 1);
+    }
+}
+
+/// Stop itself must fsync queued samples before releasing the original
+/// writer lock and acknowledging a clean shutdown. No explicit flush,
+/// sleeps or fabricated journal counters are permitted in this regression.
+#[test]
+fn graceful_stop_commits_queued_samples_before_lock_handoff() {
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("stop-commits.log");
+    for round in 0..16_u64 {
+        let sink = DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000)
+            .expect("one original Evidence writer");
+        sink.record(sample(PhaseMetricKindV1::NduRead))
+            .expect("queued sample");
+        drop(sink);
+
+        let committed = MetricsGroupCommitV1::open(&path)
+            .expect("Stop must fsync and release the original lock before ACK");
+        assert_eq!(committed.committed_rows(), round + 1);
+        assert_eq!(committed.committed_groups(), round + 1);
+    }
+}
+
