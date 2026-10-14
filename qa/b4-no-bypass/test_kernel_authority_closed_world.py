@@ -546,8 +546,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         self.assertIsNotNone(end, "original CNS receipt join is incomplete")
         assert end is not None
         body = code[start + 1 : end]
-        self.assertIn("self.state", body)
-        self.assertIn(".lock()", body)
+        self.assertRegex(body, r"self\s*\.\s*state\s*\.\s*lock\s*\(\s*\)")
         self.assertGreaterEqual(
             body.count("state.verify_original_paths(state.bytes, state.sequence, state.head)"),
             2,
