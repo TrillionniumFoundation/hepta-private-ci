@@ -352,6 +352,11 @@ fn subagent_yaml_scalar_contract_is_frozen_before_security_parser_migration() {
         let document = parse_document_content(&source);
         assert!(agent_metadata(&document).is_none(), "{value}");
     }
+
+    let tagged_extra = parse_document_content(
+        "---\nname: reviewer\ndescription: Review\nextra: !secret data\n---\nReview carefully.\n",
+    );
+    assert!(agent_metadata(&tagged_extra).is_none());
 }
 
 #[test]

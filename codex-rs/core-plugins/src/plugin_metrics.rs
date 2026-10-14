@@ -74,7 +74,10 @@ pub(crate) fn load_plugin_metrics_operations(
     if contents.len() as u64 > MAX_ANALYTICS_MANIFEST_BYTES {
         return None;
     }
-    let manifest: AnalyticsManifest = serde_yaml::from_slice(&contents).ok()?;
+    // Metadata is untrusted: do not allow application tags to become plain scalars.
+    let options = serde_saphyr::options! { reject_unsupported_tags: true };
+    let manifest: AnalyticsManifest =
+        serde_saphyr::from_slice_with_options(&contents, options).ok()?;
     validate_manifest(manifest, plugin_root)
 }
 
