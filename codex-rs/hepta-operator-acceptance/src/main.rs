@@ -122,6 +122,12 @@ fn run_cell_split_execution_command(arguments: &[OsString]) -> Result<(), String
     let action = arguments[2]
         .to_str()
         .ok_or_else(|| "cell-split action must be UTF-8".to_string())?;
+    // The stand-alone Operator binary has no independently admitted NDU,
+    // Selector or Final-use grant. Keep its transport read-only, even before
+    // parsing the externally pinned config or contacting an effect service.
+    if action != "transcript" {
+        return Err("operator binary CellSplit is read-only: transcript only".to_string());
+    }
     let pin = arguments[4]
         .to_str()
         .ok_or_else(|| "cell-split external pin must be UTF-8".to_string())?;

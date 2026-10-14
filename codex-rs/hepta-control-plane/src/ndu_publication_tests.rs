@@ -1,12 +1,29 @@
 use super::*;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+
+/// A production Control WAL rejects directories writable by group/others.
+/// TempDir creation is influenced by the host umask; make these *test* roots
+/// private explicitly rather than relaxing the real original-owner check.
 #[cfg(unix)]
-use std::os::unix::fs::PermissionsExt;
+fn private_control_dir() -> tempfile::TempDir {
+    use std::os::unix::fs::PermissionsExt;
+    let dir = tempfile::tempdir().expect("isolated Control root");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("secure temporary Control directory");
+    let mode = std::fs::symlink_metadata(dir.path())
+        .expect("original directory")
+        .permissions()
+        .mode();
+    assert_eq!(mode & 0o077, 0, "fixture may not weaken owner-only privacy");
+    dir
+}
 
 #[cfg(unix)]
-fn test_only_original_runtime_receipt() -> Result<(), &'static str> {
-    Ok(())
+fn test_only_original_runtime_receipt() -> Result<((), Vec<u8>), &'static str> {
+    // Test-only owner bytes are not a production signature or a real runtime
+    // receipt. Production still needs independently verified owner readback.
+    Ok(((), vec![0x52; 96]))
 }
 
 fn snapshot(fence: u64) -> NduSnapshotRefV1 {
@@ -25,9 +42,7 @@ fn snapshot(fence: u64) -> NduSnapshotRefV1 {
 #[cfg(unix)]
 #[test]
 fn production_owner_replays_checkpoint_and_requires_single_writer() {
-    let dir = tempfile::tempdir().expect("owner-only dir");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("control-ndu.wal");
     let original = snapshot(3);
     let next = Digest32::of_bytes(b"checkpoint-one");
@@ -72,9 +87,7 @@ fn production_owner_replays_checkpoint_and_requires_single_writer() {
 #[test]
 #[allow(deprecated)]
 fn direct_single_phase_cns_publication_is_always_denied_and_never_appends() {
-    let dir = tempfile::tempdir().expect("private Control root");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("legacy-cutover.wal");
     let original = snapshot(3);
     let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
@@ -96,9 +109,7 @@ fn direct_single_phase_cns_publication_is_always_denied_and_never_appends() {
 #[cfg(unix)]
 #[test]
 fn valid_hash_chain_cannot_replay_direct_cns_commit_without_prior_begin() {
-    let dir = tempfile::tempdir().expect("owner-only root");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("unprepared-cutover.wal");
     let prior = snapshot(3);
     {
@@ -154,9 +165,7 @@ fn valid_hash_chain_cannot_replay_direct_cns_commit_without_prior_begin() {
 #[cfg(unix)]
 #[test]
 fn cutover_and_checkpoint_cas_use_same_exclusive_owner() {
-    let dir = tempfile::tempdir().expect("private directory");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("frontier.wal");
     let previous = snapshot(3);
     let migrated = Digest32::of_bytes(b"migrated-checkpoint");
@@ -193,9 +202,7 @@ fn cutover_and_checkpoint_cas_use_same_exclusive_owner() {
 #[cfg(unix)]
 #[test]
 fn checkpoint_advance_invalidates_frozen_cutover_without_losing_new_state() {
-    let dir = tempfile::tempdir().expect("private directory");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("ndu-frontier.wal");
     let original = snapshot(3);
     let committed = Digest32::of_bytes(b"new-neuron-checkpoint");
@@ -241,9 +248,7 @@ fn concurrent_model_and_cns_cas_cannot_both_commit_one_predecessor() {
     use std::sync::Barrier;
     use std::thread;
 
-    let dir = tempfile::tempdir().expect("private Control root");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("competing-ndu-frontier.wal");
     let old = snapshot(3);
     let committed = Digest32::of_bytes(b"concurrent-neuron");
@@ -299,9 +304,7 @@ fn concurrent_model_and_cns_cas_cannot_both_commit_one_predecessor() {
 #[cfg(unix)]
 #[test]
 fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
-    let dir = tempfile::tempdir().expect("private Control root");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("guarded-cutover.wal");
     let current = snapshot(3);
     let successor = snapshot(4);
@@ -334,7 +337,7 @@ fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
                         Err(NduPublicationErrorV1::Indeterminate),
                         "a callback must not reenter the Control lane to publish a tick"
                     );
-                    Ok("original-fsynced-runtime-receipt")
+                    Ok(("original-fsynced-runtime-receipt", vec![0x53; 96]))
                 },
             )
             .expect("durable Prepare, external original receipt, Commit");
@@ -343,17 +346,124 @@ fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
         assert_eq!(owner.current().unwrap(), (successor.clone(), migrated));
     }
     assert_eq!(physical_calls, 1, "the external effect is not replayable");
+    // The fsynced Control C record must commit to the exact original-owner
+    // receipt bytes returned from the callback, not merely the next route
+    // digest, a bool success or a no-data OK. This fixture is not signed.
+    let mut receipt_binding = b"hepta.control.ndu-publication.cns-original-receipt.v1\0".to_vec();
+    receipt_binding.extend_from_slice(&(96_u64).to_be_bytes());
+    receipt_binding.extend_from_slice(&[0x53; 96]);
+    let expected_receipt_digest = Digest32::of_bytes(&receipt_binding).to_string();
+    let journal = std::fs::read_to_string(&path).expect("original Control WAL");
+    let commit_row = journal
+        .lines()
+        .find(|line| line.split('|').nth(4) == Some("C"))
+        .expect("new guarded cutover must fsync a C event");
+    assert_eq!(
+        commit_row.split('|').nth(8),
+        Some(expected_receipt_digest.as_str())
+    );
+    let expected_binding = Digest32::of_bytes(&receipt_binding);
     let reopened = NduPublicationOwnerV1::open_production(&path, successor.clone(), migrated)
         .expect("both durable journal phases replay");
     assert_eq!(reopened.current().unwrap(), (successor, migrated));
+    assert_eq!(
+        reopened.last_cns_original_receipt_binding().unwrap(),
+        Some(expected_binding),
+        "recovery must retain the exact committed original owner bytes digest"
+    );
+    assert_eq!(
+        reopened.verify_original_cns_receipt_binding(&[0x53; 96]),
+        Ok(()),
+        "independent original-owner bytes must match the durable Control WAL"
+    );
+    assert_eq!(
+        reopened.verify_original_cns_receipt_binding(&[0x54; 96]),
+        Err(NduPublicationErrorV1::Stale),
+        "a different externally signed receipt must not match this cutover"
+    );
+    assert_eq!(
+        reopened.verify_original_cns_receipt_binding(&[]),
+        Err(NduPublicationErrorV1::Invalid),
+        "a missing original receipt cannot satisfy the observer join"
+    );
+    // Even a correctly formatted, previously signed original receipt cannot
+    // be joined to a freshly renamed/copied WAL with the same valid bytes.
+    // Replacing the original durable inode while this writer is open must
+    // permanently fence Observer success and later Control publication.
+    let former_wal = dir.path().join("original-control-history.wal");
+    std::fs::rename(&path, &former_wal).expect("simulate original WAL rename");
+    std::fs::copy(&former_wal, &path).expect("same bytes, different inode");
+    assert_eq!(
+        reopened.last_cns_original_receipt_binding(),
+        Err(NduPublicationErrorV1::Indeterminate),
+        "Observer cannot attest a replacement Control WAL"
+    );
+    assert_eq!(
+        reopened.verify_original_cns_receipt_binding(&[0x53; 96]),
+        Err(NduPublicationErrorV1::Poisoned),
+        "a previously matching original CNS receipt cannot override poisoned Control history"
+    );
+    drop(reopened);
+    assert!(matches!(
+        NduPublicationOwnerV1::open_production(&path, snapshot(4), migrated),
+        Err(NduPublicationErrorV1::Indeterminate)
+    ));
+}
+
+#[cfg(unix)]
+#[test]
+fn missing_or_unbounded_original_cns_receipt_never_commits_control_handoff() {
+    for receipt_bytes in [0_usize, 63, 32 * 1024 + 1] {
+        let root = private_control_dir();
+        let path = root.path().join("ambiguous-original-receipt.wal");
+        let original = snapshot(3);
+        let mut calls = 0_usize;
+        let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
+            .expect("original Control owner");
+        let result = owner.publish_cutover_with_external_effect(
+            &original,
+            Digest32::ZERO,
+            snapshot(4),
+            Digest32::of_bytes(b"migrated-child-state"),
+            || -> Result<((), Vec<u8>), &'static str> {
+                calls += 1;
+                Ok(((), vec![0x55; receipt_bytes]))
+            },
+        );
+        assert_eq!(result, Err(NduPublicationErrorV1::Indeterminate));
+        assert_eq!(calls, 1, "unknown external effect cannot be retried");
+        assert_eq!(owner.current(), Err(NduPublicationErrorV1::Poisoned));
+        assert_eq!(
+            owner.last_cns_original_receipt_binding(),
+            Err(NduPublicationErrorV1::Poisoned)
+        );
+        drop(owner);
+
+        let durable = std::fs::read_to_string(&path).expect("durable prepared WAL");
+        assert!(
+            durable
+                .lines()
+                .any(|line| line.split('|').nth(4) == Some("B")),
+            "original Begin must remain for independent recovery"
+        );
+        assert!(
+            !durable
+                .lines()
+                .any(|line| line.split('|').nth(4) == Some("C")),
+            "a fake original-owner acknowledgement cannot issue Control Commit"
+        );
+        assert_eq!(
+            NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO)
+                .expect_err("orphan Begin must quarantine restart"),
+            NduPublicationErrorV1::Indeterminate
+        );
+    }
 }
 
 #[cfg(unix)]
 #[test]
 fn unsigned_ndu_owner_or_policy_change_is_denied_before_durable_begin() {
-    let dir = tempfile::tempdir().expect("private Control root");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("untrusted-handoff.wal");
     let original = snapshot(3);
     let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
@@ -372,9 +482,9 @@ fn unsigned_ndu_owner_or_policy_change_is_denied_before_durable_begin() {
                 Digest32::ZERO,
                 successor,
                 Digest32::of_bytes(b"migrated"),
-                || -> Result<(), &'static str> {
+                || -> Result<((), Vec<u8>), &'static str> {
                     effects += 1;
-                    Ok(())
+                    Ok(((), vec![0x54; 96]))
                 },
             ),
             Err(NduPublicationErrorV1::Stale)
@@ -388,9 +498,7 @@ fn unsigned_ndu_owner_or_policy_change_is_denied_before_durable_begin() {
 #[cfg(unix)]
 #[test]
 fn insufficient_space_for_commit_denies_before_durable_begin_or_model() {
-    let dir = tempfile::tempdir().expect("private Control root");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("bounded-control.wal");
     let original = snapshot(3);
     let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
@@ -409,9 +517,9 @@ fn insufficient_space_for_commit_denies_before_durable_begin_or_model() {
             Digest32::ZERO,
             snapshot(4),
             Digest32::of_bytes(b"successor-state"),
-            || -> Result<(), &'static str> {
+            || -> Result<((), Vec<u8>), &'static str> {
                 external_calls += 1;
-                Ok(())
+                Ok(((), vec![0x51; 96]))
             },
         ),
         Err(NduPublicationErrorV1::Capacity)
@@ -424,9 +532,7 @@ fn insufficient_space_for_commit_denies_before_durable_begin_or_model() {
 #[cfg(unix)]
 #[test]
 fn lost_wal_during_real_callback_never_publishes_success_or_recreates_history() {
-    let dir = tempfile::tempdir().expect("private Control root");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("lost-mid-effect.wal");
     let original = snapshot(3);
     let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
@@ -438,10 +544,10 @@ fn lost_wal_during_real_callback_never_publishes_success_or_recreates_history() 
             Digest32::ZERO,
             snapshot(4),
             Digest32::of_bytes(b"successor-state"),
-            || -> Result<(), &'static str> {
+            || -> Result<((), Vec<u8>), &'static str> {
                 external_calls += 1;
                 std::fs::remove_file(&path).expect("simulate physical WAL loss");
-                Ok(())
+                Ok(((), vec![0x52; 96]))
             },
         ),
         Err(NduPublicationErrorV1::Indeterminate)
@@ -463,9 +569,7 @@ fn lost_wal_during_real_callback_never_publishes_success_or_recreates_history() 
 #[cfg(unix)]
 #[test]
 fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
-    let dir = tempfile::tempdir().expect("private Control root");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("unknown-physical-effect.wal");
     let original = snapshot(3);
     let mut calls = 0;
@@ -478,7 +582,7 @@ fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
                 Digest32::ZERO,
                 snapshot(4),
                 Digest32::of_bytes(b"unknown-migrated"),
-                || -> Result<(), &'static str> {
+                || -> Result<((), Vec<u8>), &'static str> {
                     calls += 1;
                     Err("runtime already entered but original receipt unavailable")
                 },
@@ -522,9 +626,7 @@ fn concurrent_model_checkpoint_and_guarded_runtime_cutover_have_one_winner() {
     use std::sync::atomic::Ordering;
     use std::thread;
 
-    let dir = tempfile::tempdir().expect("protected owner directory");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("guarded-race.wal");
     let old = snapshot(3);
     let model_checkpoint = Digest32::of_bytes(b"model-winner");
@@ -561,9 +663,9 @@ fn concurrent_model_checkpoint_and_guarded_runtime_cutover_have_one_winner() {
             Digest32::ZERO,
             snapshot(4),
             migrated,
-            || -> Result<(), &'static str> {
+            || -> Result<((), Vec<u8>), &'static str> {
                 cns_calls.fetch_add(1, Ordering::SeqCst);
-                Ok(())
+                Ok(((), vec![0x54; 96]))
             },
         )
     });
@@ -590,10 +692,89 @@ fn concurrent_model_checkpoint_and_guarded_runtime_cutover_have_one_winner() {
 
 #[cfg(unix)]
 #[test]
+fn inplace_wal_truncate_and_equal_length_tail_rewrite_fence_live_observer() {
+    use std::os::unix::fs::MetadataExt as _;
+
+    for fault in ["truncate", "same_length_rewrite"] {
+        let root = private_control_dir();
+        let path = root.path().join("owner.wal");
+        let previous = snapshot(3);
+        let migrated = Digest32::of_bytes(b"migrated-checkpoint");
+        let owner = NduPublicationOwnerV1::open_production(
+            &path,
+            previous.clone(),
+            Digest32::ZERO,
+        )
+        .expect("durable owner");
+        owner
+            .publish_cutover_with_external_effect(
+                &previous,
+                Digest32::ZERO,
+                snapshot(4),
+                migrated,
+                || -> Result<((), Vec<u8>), &'static str> { Ok(((), vec![0x64; 96])) },
+            )
+            .expect("fixture original bytes bound by Control Commit");
+        assert_eq!(owner.verify_original_cns_receipt_binding(&[0x64; 96]), Ok(()));
+        let bytes = std::fs::read(&path).expect("durable control WAL");
+        let inode = std::fs::metadata(&path).expect("original inode").ino();
+        match fault {
+            "truncate" => {
+                let file = OpenOptions::new()
+                    .write(true)
+                    .open(&path)
+                    .expect("original WAL inode");
+                file.set_len(0).expect("truncate original file");
+                file.sync_all().expect("durably corrupt original file");
+            }
+            "same_length_rewrite" => {
+                let mut damaged = bytes.clone();
+                let pos = damaged.len() - 2;
+                damaged[pos] = if damaged[pos] == b'0' { b'1' } else { b'0' };
+                std::fs::write(&path, damaged).expect("same inode rewritten");
+                assert_eq!(
+                    std::fs::metadata(&path).expect("same length").len(),
+                    bytes.len() as u64
+                );
+            }
+            _ => unreachable!("fixed fault cases"),
+        }
+        assert_eq!(
+            std::fs::metadata(&path).expect("still original inode").ino(),
+            inode
+        );
+        assert_eq!(
+            owner.last_cns_original_receipt_binding(),
+            Err(NduPublicationErrorV1::Indeterminate),
+            "corrupt original WAL cannot provide the cached positive evidence"
+        );
+        assert_eq!(
+            owner.verify_original_cns_receipt_binding(&[0x64; 96]),
+            Err(NduPublicationErrorV1::Poisoned)
+        );
+        assert_eq!(
+            owner.compare_and_publish_checkpoint(
+                &previous,
+                Digest32::of_bytes(b"read"),
+                Digest32::of_bytes(b"tick"),
+                Digest32::ZERO,
+                Digest32::of_bytes(b"forbidden-checkpoint"),
+            ),
+            Err(NduPublicationErrorV1::Poisoned)
+        );
+        drop(owner);
+        assert!(matches!(
+            NduPublicationOwnerV1::open_production(&path, snapshot(4), migrated),
+            Err(NduPublicationErrorV1::Corrupt)
+                | Err(NduPublicationErrorV1::Indeterminate)
+        ));
+    }
+}
+
+#[cfg(unix)]
+#[test]
 fn deleted_control_wal_cannot_bootstrap_a_fresh_history() {
-    let dir = tempfile::tempdir().expect("private Control directory");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("lost-control.wal");
     let original = snapshot(3);
     {
@@ -624,9 +805,7 @@ fn deleted_control_wal_cannot_bootstrap_a_fresh_history() {
 #[cfg(unix)]
 #[test]
 fn lost_writer_marker_or_replaced_wal_cannot_adopt_old_signed_state() {
-    let dir = tempfile::tempdir().expect("private Control directory");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("pinned-control.wal");
     let original = snapshot(3);
     {
@@ -679,9 +858,7 @@ fn lost_writer_marker_or_replaced_wal_cannot_adopt_old_signed_state() {
 #[cfg(unix)]
 #[test]
 fn truncated_journal_is_rejected_without_mutating_history() {
-    let dir = tempfile::tempdir().expect("owner-only");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("frontier.wal");
     {
         let owner = NduPublicationOwnerV1::open_production(&path, snapshot(3), Digest32::ZERO)
@@ -708,9 +885,7 @@ fn truncated_journal_is_rejected_without_mutating_history() {
 fn symlink_and_world_accessible_directory_cannot_own_frontier() {
     use std::os::unix::fs::PermissionsExt;
     use std::os::unix::fs::symlink;
-    let dir = tempfile::tempdir().expect("private directory");
-    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
-        .expect("owner-only Control test root");
+    let dir = private_control_dir();
     let path = dir.path().join("frontier.wal");
     {
         let _owner = NduPublicationOwnerV1::open_production(&path, snapshot(3), Digest32::ZERO)

@@ -118,6 +118,8 @@ pub enum CellSplitRouteErrorV1 {
     ParentDispatchUnavailable(CellSplitRoutePhaseV1),
     ChildDispatchUnavailable(CellSplitRoutePhaseV1),
     ParentRouteFenced,
+    /// Ungoverned legacy child cutover cannot publish without signed Control handoff.
+    ControlCutoverUnbound,
     MissingRouteFence,
     RouteFenceMismatch,
     RestartReplayRequiresRetire,
@@ -309,7 +311,21 @@ impl CellSplitRouteControllerV1 {
     /// The candidate is started and the predecessor is stopped by
     /// `CnsOrganHostV1`.  Child routes are stored only after that method
     /// succeeds, so a failed candidate can never receive dispatch.
+    /// A direct legacy CNS route call never grants a physical generation
+    /// replacement, including in tests. Only the separately authorized live
+    /// Control handoff (not yet wired) may publish the successor.
     pub fn activate_children(
+        &mut self,
+        _expected: Generation,
+        _next: CnsOrganHostV1,
+        _child_routes: Vec<CnsRouteV1>,
+    ) -> Result<(), CellSplitRouteErrorV1> {
+        Err(CellSplitRouteErrorV1::ControlCutoverUnbound)
+    }
+
+    /// Deterministic route mechanism only; never a production cutover grant.
+    #[cfg(test)]
+    pub(crate) fn activate_children_for_qualification(
         &mut self,
         expected: Generation,
         next: CnsOrganHostV1,
@@ -338,7 +354,22 @@ impl CellSplitRouteControllerV1 {
 
     /// Variant used when the authoritative state owner must migrate state
     /// before CNS publishes the successor generation.
+    /// A migrating physical cutover also needs the external durable Control
+    /// owner; this legacy API never owns that authority, even in tests.
     pub fn activate_children_with_migration<M: OrganStateMigrationV1 + ?Sized>(
+        &mut self,
+        _expected: Generation,
+        _next: CnsOrganHostV1,
+        _child_routes: Vec<CnsRouteV1>,
+        _migration: &mut M,
+    ) -> Result<(), CellSplitRouteErrorV1> {
+        Err(CellSplitRouteErrorV1::ControlCutoverUnbound)
+    }
+
+    /// Deterministic internal migration qualification only.
+    #[cfg(test)]
+    #[allow(dead_code)]
+    pub(crate) fn qualify_children_with_migration<M: OrganStateMigrationV1 + ?Sized>(
         &mut self,
         expected: Generation,
         next: CnsOrganHostV1,

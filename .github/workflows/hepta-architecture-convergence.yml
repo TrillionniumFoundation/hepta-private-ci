@@ -162,6 +162,10 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/repository-controls.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_repository_controls scripts.test_hepta_control_hardening scripts.test_hepta_candidate_transport_workflow
+      - name: CellSplit ingress, Control WAL, and CNS physical-effect no-bypass
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-cns-closed-world.json" --minimum-tests 10 -- python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py
       - name: Prepare native prerequisites
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         run: |
@@ -232,6 +236,19 @@ jobs:
         run: python3 -m unittest discover -s .github/scripts -p 'test_hepta_cell_split_perf_gate.py' -v
       - name: Frozen-source CellSplit measurement matrix capture regressions
         run: python3 -m unittest discover -s .github/scripts -p 'test_hepta_cell_split_matrix_capture.py' -v
+      - name: Production CellSplit legacy routes and generic Split Final-use bypass regression
+        if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
+        run: |
+          set -euo pipefail
+          # Production-bound route/controller APIs deny physical Split without
+          # same-owner durable Control; positive fixture methods are test-only.
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane -p codex-hepta-runtime -- --check
+          cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane -p codex-hepta-runtime --lib
+          # Compile the actual production CLI binary, whose action ingress is
+          # independently frozen by the B4 closed-world source audit above.
+          cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --bin hepta-operator-acceptance
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/legacy-cell-split-control-denial.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib cell_split_route -- --nocapture
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/generic-typed-split-control-denial.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime --lib topology_execution -- --nocapture
       - name: Same-owner CNS and signed Neuron checkpoint linearization
         if: steps.execution.outputs.run_native == 'true' && (steps.scope.outputs.lifecycle == 'true' || steps.scope.outputs.inference == 'true' || steps.scope.outputs.effects == 'true' || steps.scope.outputs.learning == 'true')
         run: |
