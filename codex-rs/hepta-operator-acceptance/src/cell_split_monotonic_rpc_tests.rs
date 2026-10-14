@@ -371,6 +371,15 @@ impl CellSplitMonotonicAuthoritativeRegistryV1 for DiskAuthoritativeRegistry {
 }
 
 fn write_test_registry(root: &Path) -> PathBuf {
+    // The production sidecar writer requires a canonical private directory.
+    // tempfile does not promise Unix mode 0700 under every hosted umask;
+    // normalize only this test-owned root, never weaken write_private_new.
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(root, std::fs::Permissions::from_mode(0o700))
+            .expect("private independent monotonic registry fixture directory");
+    }
     let path = root.join("external-domain-highwater.json");
     let record = CellSplitMonotonicDurableFrontierV1 {
         journal_domain_id: DOMAIN.to_owned(),
