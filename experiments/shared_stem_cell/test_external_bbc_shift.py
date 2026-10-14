@@ -67,7 +67,7 @@ class ShiftTests(unittest.TestCase):
             self.assertEqual(cohort.read_bytes(), b.canonical(rows))
             count = []
             def label(index):
-                self.assertTrue(pred.read_bytes().endswith(b"\\n"))
+                self.assertTrue(pred.read_bytes().endswith(b"\n"))
                 count.append(index)
                 return "business" if len(count) <= 120 else "entertainment"
             result = b.evaluate_published(pred, seal, cohort, cohort_sha, rows, label)
