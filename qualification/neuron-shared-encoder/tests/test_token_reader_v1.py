@@ -174,3 +174,46 @@ def test_future_label_change_cannot_affect_trained_parameters_or_validation():
         for kind in ('pooled_feature_gate', 'token_query_gate'):
             assert left['candidates'][kind]['validation'] == right['candidates'][kind]['validation']
     assert baseline['validation_brier_delta_token_minus_pooled'] == replay['validation_brier_delta_token_minus_pooled']
+
+def test_snapshot_hash_without_numpy_preserves_exact_float32_and_mask(monkeypatch):
+    """Hosted torch-only wheels need no implicit numpy installation."""
+    from neuron_shared_encoder.token_reader_v1 import snapshot_sha256
+    import hashlib
+    import struct
+    import json
+
+    tokens, mask, _y, rows, pins = sample()
+    original = snapshot_sha256(tokens, mask, rows, pins)
+    header = json.dumps({'shape': list(tokens.shape), 'dtype': str(tokens.dtype),
+                         'mask_shape': list(mask.shape), 'rows': rows, 'pins': pins},
+                        sort_keys=True, separators=(',', ':'), ensure_ascii=False).encode()
+    packed = struct.pack('<' + 'f' * tokens.numel(), *tokens.reshape(-1).tolist())
+    mask_bytes = bytes(int(v) for v in mask.reshape(-1).tolist())
+    digest = hashlib.sha256(b'hepta.token-reader.shadow.snapshot.v1\0')
+    for section in (header, packed, mask_bytes):
+        digest.update(len(section).to_bytes(8, 'big'))
+        digest.update(section)
+    assert original == digest.hexdigest()
+    def unavailable(*_args, **_kwargs):
+        raise RuntimeError('NumPy is not installed in hosted CI')
+    monkeypatch.setattr(torch.Tensor, 'numpy', unavailable)
+    assert snapshot_sha256(tokens, mask, rows, pins) == original
+
+
+def test_snapshot_hash_does_not_include_bytes_outside_contiguous_view():
+    from neuron_shared_encoder.token_reader_v1 import snapshot_sha256
+    tokens, mask, _y, rows, pins = sample()
+    big_tokens = torch.empty((len(tokens) + 1, *tokens.shape[1:]))
+    big_tokens[0] = 999
+    big_tokens[1:] = tokens
+    big_mask = torch.zeros((len(mask) + 1, mask.shape[1]), dtype=torch.bool)
+    big_mask[1:] = mask
+    offset_tokens = big_tokens[1:]
+    offset_mask = big_mask[1:]
+    assert offset_tokens.is_contiguous() and offset_tokens.storage_offset() > 0
+    assert offset_mask.is_contiguous() and offset_mask.storage_offset() > 0
+    original = snapshot_sha256(tokens, mask, rows, pins)
+    assert snapshot_sha256(offset_tokens, offset_mask, rows, pins) == original
+    big_tokens[0].fill_(1.0)
+    big_mask[0].fill_(True)
+    assert snapshot_sha256(offset_tokens, offset_mask, rows, pins) == original
