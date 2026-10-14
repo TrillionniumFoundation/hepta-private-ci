@@ -89,6 +89,8 @@ def synth() -> dict:
                     "attempt_trace_sha256": sha(f"{scale}|{load}|attempted-requests"),
                     "terminal_receipt_sha256": sha(f"{mode}/{scale}/{load}/terminal"),
                     "active_concurrency": 8 if load == "fixed_active" else scale // 4,
+                    "observed_peak_active_requests": 8 if load == "fixed_active" else scale // 4,
+                    "observed_peak_inflight_backend_calls": 1,
                     "attempted": 1000, "completed": 990, "failed": 5, "rejected": 5,
                     "backend_calls": 1000, "native_batch_requests": 990,
                     "rss_peak_bytes": 100_000_000, "gpu_peak_bytes": 0,
@@ -122,6 +124,14 @@ def synth() -> dict:
                     "effect_owner_receipt_sha256": sha(f"{route}/{task}/owner") if allowed else None,
                     "tool_attempts": 1, "model_calls": 0 if direct else 1,
                     "token_count": 0 if direct else 100,
+                    "provider_direct_effect_attempts": 0,
+                    "effect_gateway_attempts": 1,
+                    "agent_planner_invocations": 1 if route == "full_codex_agent" else 0,
+                    "original_owner_readbacks": 1,
+                    "execution_path_sha256": sha("execution-binary/" + route),
+                    "effect_gateway_binary_sha256": sha("shared-effect-gateway"),
+                    "original_effect_owner_id": "fixed-owner/" + task,
+                    "negative_effect_owner_readback_sha256": sha(f"{route}/{task}/{case}/negative") if not allowed else None,
                     "rss_peak_bytes": 2_000_000, "cpu_seconds": 1.0,
                     "elapsed_seconds": 2.0, "task_quality": 1.0 if allowed else 0.0,
                     "total_cost": 0.03 if allowed else 0.0,
@@ -273,6 +283,7 @@ class AfEvidenceTests(unittest.TestCase):
 
     def test_fixed_concurrency_drift_blocked(self):
         self.d["resources"]["runs"][0]["active_concurrency"] = 4
+        self.d["resources"]["runs"][0]["observed_peak_active_requests"] = 4
         check_bad(self.d, "E", "unmatched")
 
     def test_resource_attempt_accounting_blocked(self):
@@ -338,6 +349,7 @@ class AfEvidenceTests(unittest.TestCase):
         for r in self.d["resources"]["runs"]:
             if r["logical_cells"] == 4096 and r["load_profile"] == "vary_active":
                 r["active_concurrency"] = 10
+                r["observed_peak_active_requests"] = 10
         check_bad(self.d, "E", "must increase")
 
     def test_hidden_protected_slice_regression_vetoes_gain(self):
@@ -672,6 +684,69 @@ class AfEvidenceTests(unittest.TestCase):
         row["native_batch_requests"] = 0
         row["backend_calls"] = 0
         check_bad(self.d, "E", "no physically completed")
+
+
+    def test_active_concurrency_must_be_physically_observed(self):
+        self.d["resources"]["runs"][0]["observed_peak_active_requests"] = 1
+        check_bad(self.d, "E", "requested concurrency was not physically observed")
+
+    def test_impossible_inflight_backend_concurrency_rejected(self):
+        self.d["resources"]["runs"][0]["observed_peak_inflight_backend_calls"] = 1001
+        check_bad(self.d, "E", "impossible physically concurrent backend")
+
+    def test_agent_tools_cannot_bypass_independent_effect_gateway(self):
+        row = next(r for r in self.d["codex"]["runs"] if r["route"] == "full_codex_agent")
+        row["provider_direct_effect_attempts"] = 1
+        row["tool_attempts"] = 2
+        check_bad(self.d, "F", "outside independent gateway")
+
+    def test_model_only_app_server_cannot_use_codex_agent_planner(self):
+        row = next(r for r in self.d["codex"]["runs"] if r["route"] == "app_server_provider")
+        row["agent_planner_invocations"] = 1
+        check_bad(self.d, "F", "non-Agent route invoked")
+
+    def test_full_agent_must_actually_invoke_agent_planner(self):
+        row = next(r for r in self.d["codex"]["runs"] if r["route"] == "full_codex_agent")
+        row["agent_planner_invocations"] = 0
+        check_bad(self.d, "F", "no actual planner")
+
+    def test_gateway_effect_accounting_cannot_hide_tool_attempts(self):
+        row = self.d["codex"]["runs"][0]
+        row["tool_attempts"] = 2
+        check_bad(self.d, "F", "gateway tool accounting")
+
+    def test_original_owner_negative_readback_mandatory_for_denied_action(self):
+        row = next(r for r in self.d["codex"]["runs"] if r["case"] == "denied")
+        row["negative_effect_owner_readback_sha256"] = None
+        check_bad(self.d, "F", "SHA256")
+
+    def test_original_effect_owner_must_match_across_routes(self):
+        row = next(r for r in self.d["codex"]["runs"] if r["route"] == "direct_effect")
+        row["original_effect_owner_id"] = "unmatched-owner"
+        check_bad(self.d, "F", "different original effect owners")
+
+    def test_gateway_binary_must_match_across_execution_paths(self):
+        row = next(r for r in self.d["codex"]["runs"] if r["route"] == "full_codex_agent")
+        row["effect_gateway_binary_sha256"] = sha("different-gateway")
+        check_bad(self.d, "F", "gateway implementation changed")
+
+    def test_claimed_codex_routes_must_have_distinct_executed_path_identities(self):
+        for row in self.d["codex"]["runs"]:
+            if row["route"] == "app_server_provider":
+                row["execution_path_sha256"] = sha("execution-binary/full_codex_agent")
+        check_bad(self.d, "F", "identical path identity")
+
+    def test_codex_route_identity_must_remain_fixed_across_task_cases(self):
+        row = next(r for r in self.d["codex"]["runs"] if r["route"] == "direct_effect")
+        row["execution_path_sha256"] = sha("other-path")
+        check_bad(self.d, "F", "identity changed")
+
+    def test_codex_experimental_composition_remains_non_authorizing(self):
+        report = gate.verify(self.d)
+        self.assertEqual(report["status"], "shadow_structural_review_only")
+        self.assertFalse(report["gates"]["E"]["placement_selection_authorized"])
+        self.assertFalse(report["gates"]["F"]["codex_extraction_authorized"])
+        self.assertFalse(report["production_selection_permitted"])
 
     def test_cli_missing_real_bundle_is_blocked(self):
         with tempfile.TemporaryDirectory() as td:

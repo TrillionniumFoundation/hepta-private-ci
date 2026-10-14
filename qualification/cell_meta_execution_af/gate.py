@@ -321,6 +321,10 @@ def validate_resources(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
         digest(field(r, "terminal_receipt_sha256", name), name + ".terminal_receipt_sha256")
         concurrency = count(field(r, "active_concurrency", name), name + ".active_concurrency", positive=True)
         require(concurrency <= scale, f"{name}: concurrency exceeds cell count")
+        observed_peak = count(field(r, "observed_peak_active_requests", name),
+                              name + ".observed_peak_active_requests", positive=True)
+        require(observed_peak == concurrency,
+                f"{name}: requested concurrency was not physically observed")
         attempts = count(field(r, "attempted", name), name + ".attempted", positive=True)
         completed = count(field(r, "completed", name), name + ".completed")
         failed = count(field(r, "failed", name), name + ".failed")
@@ -331,6 +335,10 @@ def validate_resources(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
         require(batch <= completed and batch <= calls * 256, f"{name}: impossible batch accounting")
         require(completed > 0 and calls > 0,
                 f"{name}: no physically completed model requests/backend calls")
+        peak_backend = count(field(r, "observed_peak_inflight_backend_calls", name),
+                             name + ".observed_peak_inflight_backend_calls", positive=True)
+        require(peak_backend <= calls,
+                f"{name}: impossible physically concurrent backend count")
         for key in ("rss_peak_bytes", "gpu_peak_bytes", "network_bytes", "fsync_count", "replayed_effects"):
             count(field(r, key, name), name + "." + key)
         require(r["rss_peak_bytes"] > 0 and r["replayed_effects"] == 0, f"{name}: invalid RSS or duplicate effect")
@@ -351,6 +359,8 @@ def validate_resources(value: Any, meta: dict[str, Any]) -> dict[str, Any]:
         require(math.isfinite(throughput), f"{name}: non-finite derived throughput")
         summary[name] = {"rps": throughput, "p99_ms": r["p99_ms"],
                          "rss_bytes": r["rss_peak_bytes"], "network_bytes": r["network_bytes"],
+                         "observed_peak_active_requests": observed_peak,
+                         "observed_peak_inflight_backend_calls": peak_backend,
                          "completion_rate": completed / attempts,
                          "cpu_seconds_per_completion": r["cpu_seconds"] / completed if completed else None}
     require(all(len(rows) == 1 for rows in shared.values()), "E: unmatched source trace, requests, or concurrency")
@@ -405,6 +415,9 @@ def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
         [((record(r, "F.row").get("route"), r.get("task_id"), r.get("case")), r)
          for r in runs], expected, "F")
     peers: dict[tuple[str, str], set[tuple[str, str]]] = {}
+    original_owners: dict[tuple[str, str], set[str]] = {}
+    gateway_binaries: set[str] = set()
+    execution_paths: dict[str, set[str]] = {route: set() for route in ROUTES}
     successful: dict[str, int] = {route: 0 for route in ROUTES}
     route_costs = {route: {case: {"tasks": 0, "total_cost": 0.0,
                                  "elapsed_seconds": 0.0, "cpu_seconds": 0.0,
@@ -417,6 +430,12 @@ def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
         digest(field(r, "terminal_observation_sha256", name), name + ".terminal_observation_sha256")
         digest(field(r, "sandbox_sha256", name), name + ".sandbox_sha256")
         peers.setdefault((task, case), set()).add((trace, policy))
+        original_owners.setdefault((task, case), set()).add(
+            identity(field(r, "original_effect_owner_id", name), name + ".original_effect_owner_id"))
+        execution_paths[route].add(digest(field(r, "execution_path_sha256", name),
+                                          name + ".execution_path_sha256"))
+        gateway_binaries.add(digest(field(r, "effect_gateway_binary_sha256", name),
+                                    name + ".effect_gateway_binary_sha256"))
         require(r.get("host_id") == obj["host_id"], f"{name}: host drift")
         require(digest(field(r, "device_profile_sha256", name),
                        name + ".device_profile_sha256") == same_device,
@@ -424,8 +443,26 @@ def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
         require(type(r.get("authorized")) is bool and
                 type(r.get("external_effect_observed")) is bool,
                 f"{name}: malformed authorization/effect flags")
-        for key in ("tool_attempts", "model_calls", "token_count", "rss_peak_bytes"):
+        for key in ("tool_attempts", "model_calls", "token_count", "rss_peak_bytes",
+                    "provider_direct_effect_attempts", "effect_gateway_attempts",
+                    "agent_planner_invocations", "original_owner_readbacks"):
             count(field(r, key, name), name + "." + key)
+        require(r["provider_direct_effect_attempts"] == 0,
+                f"{name}: provider attempted direct effect outside independent gateway")
+        require(r["tool_attempts"] == r["effect_gateway_attempts"]
+                + r["provider_direct_effect_attempts"] and r["effect_gateway_attempts"] > 0,
+                f"{name}: gateway tool accounting missing or inconsistent")
+        require(r["original_owner_readbacks"] > 0,
+                f"{name}: no independent original effect-owner readback attempt")
+        if route == "full_codex_agent":
+            require(r["agent_planner_invocations"] > 0 and r["model_calls"] > 0,
+                    f"{name}: full Agent route has no actual planner/model execution")
+        else:
+            require(r["agent_planner_invocations"] == 0,
+                    f"{name}: non-Agent route invoked Codex Agent planner")
+            if route == "app_server_provider":
+                require(r["model_calls"] > 0,
+                        f"{name}: model-only App Server Provider made no model call")
         for key in ("cpu_seconds", "elapsed_seconds", "task_quality", "total_cost"):
             number(field(r, key, name), name + "." + key,
                    maximum=1 if key == "task_quality" else None)
@@ -450,6 +487,8 @@ def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
                     and r.get("external_effect_observed") is False
                     and r.get("effect_owner_receipt_sha256") is None,
                     f"{name}: denied action leaked an effect")
+            digest(field(r, "negative_effect_owner_readback_sha256", name),
+                   name + ".negative_effect_owner_readback_sha256")
         else:
             require(r.get("status") in ("succeeded", "failed", "indeterminate"),
                     f"{name}: unrecognized allowed-case terminality")
@@ -470,6 +509,14 @@ def validate_codex(value: Any, resource_value: Any) -> dict[str, Any]:
             require(r["status"] != "indeterminate",
                     f"{name}: unresolved original-effect terminality; reconcile before comparing")
     require(all(len(x) == 1 for x in peers.values()), "F: unmatched task input or policy among routes")
+    require(all(len(owners) == 1 for owners in original_owners.values()),
+            "F: different original effect owners for same paired task/policy")
+    require(len(gateway_binaries) == 1,
+            "F: gateway implementation changed between compared execution paths")
+    require(all(len(ids) == 1 for ids in execution_paths.values()),
+            "F: execution path identity changed across paired task cases")
+    require(len({next(iter(ids)) for ids in execution_paths.values()}) == len(ROUTES),
+            "F: three purported execution routes share an identical path identity")
     # These are task-level summaries of supplied measurements, not a provider
     # selection: success, quality, security and uncertainty remain separate gates.
     return {"status": "codex_path_comparison_structurally_complete", "run_count": len(parsed),

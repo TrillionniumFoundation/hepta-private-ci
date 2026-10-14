@@ -175,3 +175,31 @@ request is only a structural lower bound, **not** a sufficient production
 p95/p99 sample. Existing signed host authenticity, common trace and exact
 resource/cutover acceptance requirements remain unchanged. No placement or
 Codex extraction is authorized.
+
+### Physically observed concurrency and shared Effect Gateway routing
+
+For E, every workload now reports `observed_peak_active_requests` and
+`observed_peak_inflight_backend_calls` separately from the configured
+`active_concurrency`, completed requests, backend calls and logical Cell count.
+A trial that merely registered 4,096 Cells, but never physically reached its
+declared active request concurrency, is not a completed comparable load test.
+Backend calls may be microbatched; their peak in-flight concurrency is NOT
+assumed equal to request concurrency. All values remain untrusted
+self-declarations until target-host telemetry is independently observed.
+
+For F, `execution_path_sha256` must be stable within each route and distinct
+across the Full Codex Agent, model-only App Server Provider and direct Effect
+Gateway controls. All arms must bind one `effect_gateway_binary_sha256` and the
+same `original_effect_owner_id` for each paired task. The typed counters
+`agent_planner_invocations`, `provider_direct_effect_attempts`,
+`effect_gateway_attempts` and `original_owner_readbacks` must reconcile with
+`tool_attempts`. Full Agent requires planner/model calls, model-only Provider
+must not run an Agent planner, and direct effect must not run a model. No
+provider-local external effects are allowed: they must pass the **same
+independent Effect Gateway**. Even denied actions require a referenced
+original-owner *negative* readback, not just a failed app-server turn.
+
+These are read-only **evidence-shape** checks. No attested executable
+measurement, independent signer key, physical concurrent backend proof,
+true Codex tool isolation, production execution permission, or extracted Codex
+module is established by hashes, typed counters or a green shadow test.
