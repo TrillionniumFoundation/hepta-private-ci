@@ -3,6 +3,7 @@
 
 use super::metrics_group_commit::MetricPhaseV1;
 use super::metrics_group_commit::MetricSampleV1;
+use super::metrics_group_commit::MetricsLocalFrontierV1;
 use super::metrics_group_commit::MetricsGroupCommitV1;
 use super::metrics_group_commit::MetricsJournalErrorV1;
 use codex_hepta_types::PhaseMetricEventV1;
@@ -26,10 +27,16 @@ use std::time::Duration;
 
 const MAX_QUEUE: usize = 65_536;
 const MAX_BATCH: usize = 256;
+// A flushed physical Split effect must not stall forever on Evidence I/O.
+// Timeout means an indeterminate telemetry barrier, never success.
+const MAX_FLUSH_WAIT: Duration = Duration::from_secs(30);
 
 enum WriterCommandV1 {
     Record(MetricSampleV1),
     Flush(SyncSender<bool>),
+    // Read-only, self-verifying original WAL+marker history. The response is
+    // deliberately unsigned and cannot be used as an effect authorization.
+    Observe(SyncSender<Result<MetricsLocalFrontierV1, MetricsJournalErrorV1>>),
     Stop(SyncSender<bool>),
 }
 
@@ -125,18 +132,93 @@ impl DurablePhaseMetricSinkV1 {
         }
     }
 
-    /// Synchronous export barrier; never called inside an effect boundary.
+    /// Synchronous durability barrier, including bounded queue admission.
+    /// A stalled writer/fsync must never hold a Split coordinator indefinitely.
+    /// On timeout the sink stays unhealthy even if a delayed writer later ACKs:
+    /// existing effects remain committed and their next-step gate fails closed.
     pub fn flush(&self) -> Result<(), PhaseMetricSinkErrorV1> {
+        self.flush_with_timeout(MAX_FLUSH_WAIT)
+    }
+
+    /// Read-only local Evidence frontier for independent Observer collection.
+    /// It deliberately does not flush staged metrics, mint a signature, or
+    /// confer any Cell Split authority. The caller must maintain own custody.
+    pub fn read_local_frontier(&self) -> Result<MetricsLocalFrontierV1, PhaseMetricSinkErrorV1> {
+        self.read_local_frontier_with_timeout(MAX_FLUSH_WAIT)
+    }
+
+    fn read_local_frontier_with_timeout(
+        &self,
+        timeout: Duration,
+    ) -> Result<MetricsLocalFrontierV1, PhaseMetricSinkErrorV1> {
         if !self.healthy() {
             return Err(PhaseMetricSinkErrorV1::Unavailable);
         }
+        let deadline = std::time::Instant::now() + timeout;
         let (tx, rx) = sync_channel(1);
-        self.channel
-            .send(WriterCommandV1::Flush(tx))
-            .map_err(|_| PhaseMetricSinkErrorV1::Unavailable)?;
-        match rx.recv() {
+        let mut command = WriterCommandV1::Observe(tx);
+        loop {
+            match self.channel.try_send(command) {
+                Ok(()) => break,
+                Err(TrySendError::Disconnected(_)) => {
+                    self.health.healthy.store(false, Ordering::Release);
+                    return Err(PhaseMetricSinkErrorV1::Unavailable);
+                }
+                Err(TrySendError::Full(pending)) => {
+                    command = pending;
+                    if !self.healthy() || std::time::Instant::now() >= deadline {
+                        self.health.healthy.store(false, Ordering::Release);
+                        return Err(PhaseMetricSinkErrorV1::Unavailable);
+                    }
+                    std::thread::sleep(
+                        Duration::from_millis(1)
+                            .min(deadline.saturating_duration_since(std::time::Instant::now())),
+                    );
+                }
+            }
+        }
+        match rx.recv_timeout(deadline.saturating_duration_since(std::time::Instant::now())) {
+            Ok(Ok(frontier)) if self.healthy() => Ok(frontier),
+            _ => {
+                self.health.healthy.store(false, Ordering::Release);
+                Err(PhaseMetricSinkErrorV1::Unavailable)
+            }
+        }
+    }
+
+    fn flush_with_timeout(&self, timeout: Duration) -> Result<(), PhaseMetricSinkErrorV1> {
+        if !self.healthy() {
+            return Err(PhaseMetricSinkErrorV1::Unavailable);
+        }
+        let deadline = std::time::Instant::now() + timeout;
+        let (tx, rx) = sync_channel(1);
+        let mut command = WriterCommandV1::Flush(tx);
+        loop {
+            match self.channel.try_send(command) {
+                Ok(()) => break,
+                Err(TrySendError::Disconnected(_)) => {
+                    self.health.healthy.store(false, Ordering::Release);
+                    return Err(PhaseMetricSinkErrorV1::Unavailable);
+                }
+                Err(TrySendError::Full(pending)) => {
+                    command = pending;
+                    if !self.healthy() || std::time::Instant::now() >= deadline {
+                        self.health.healthy.store(false, Ordering::Release);
+                        return Err(PhaseMetricSinkErrorV1::Unavailable);
+                    }
+                    std::thread::sleep(
+                        Duration::from_millis(1)
+                            .min(deadline.saturating_duration_since(std::time::Instant::now())),
+                    );
+                }
+            }
+        }
+        match rx.recv_timeout(deadline.saturating_duration_since(std::time::Instant::now())) {
             Ok(true) if self.healthy() => Ok(()),
-            _ => Err(PhaseMetricSinkErrorV1::Unavailable),
+            _ => {
+                self.health.healthy.store(false, Ordering::Release);
+                Err(PhaseMetricSinkErrorV1::Unavailable)
+            }
         }
     }
 }
@@ -187,17 +269,57 @@ impl PhaseMetricSinkV1 for DurablePhaseMetricSinkV1 {
     }
 }
 
-impl Drop for DurablePhaseMetricSinkV1 {
-    fn drop(&mut self) {
+impl DurablePhaseMetricSinkV1 {
+    fn stop_with_timeout(&mut self, timeout: Duration) {
+        // Preserve the normal durable Drop barrier even when the bounded
+        // channel is temporarily full. Detach only if the writer is already
+        // unhealthy, disconnected or makes no progress by the deadline.
+        if !self.healthy() {
+            return;
+        }
+        let deadline = std::time::Instant::now() + timeout;
         let (tx, rx) = sync_channel(1);
-        if self.channel.send(WriterCommandV1::Stop(tx)).is_ok() {
-            let _ = rx.recv();
+        let mut command = WriterCommandV1::Stop(tx);
+        loop {
+            match self.channel.try_send(command) {
+                Ok(()) => break,
+                Err(TrySendError::Disconnected(_)) => {
+                    self.health.healthy.store(false, Ordering::Release);
+                    return;
+                }
+                Err(TrySendError::Full(pending)) => {
+                    command = pending;
+                    if !self.healthy() || std::time::Instant::now() >= deadline {
+                        self.health.healthy.store(false, Ordering::Release);
+                        return;
+                    }
+                    std::thread::sleep(
+                        Duration::from_millis(1)
+                            .min(deadline.saturating_duration_since(std::time::Instant::now())),
+                    );
+                }
+            }
+        }
+        if rx
+            .recv_timeout(deadline.saturating_duration_since(std::time::Instant::now()))
+            .is_err()
+        {
+            // A timed-out writer remains in its own locked journal; never
+            // falsely report a flush or block process teardown indefinitely.
+            self.health.healthy.store(false, Ordering::Release);
+            return;
         }
         if let Ok(mut handle) = self.worker.lock() {
             if let Some(worker) = handle.take() {
                 let _ = worker.join();
             }
         }
+    }
+}
+
+impl Drop for DurablePhaseMetricSinkV1 {
+    fn drop(&mut self) {
+        self.stop_with_timeout(MAX_FLUSH_WAIT);
     }
 }
 
@@ -222,7 +344,17 @@ fn writer_loop(
     interval: Duration,
 ) {
     loop {
-        match rx.recv_timeout(interval) {
+        let received = rx.recv_timeout(interval);
+        // A timed-out Observe/Flush request poisons the shared sink even
+        // while the original writer is occupied in a previous disk read.
+        // Do not subsequently persist previously queued Records, idle-flush
+        // staged rows, or positively acknowledge an old queued barrier.
+        // An already in-flight fsync is not cancellable, and its outcome
+        // remains uncertain to the coordinator.
+        if !health.healthy.load(Ordering::Acquire) {
+            break;
+        }
+        match received {
             Ok(WriterCommandV1::Record(sample)) => {
                 let result = writer.stage(sample).and_then(|()| {
                     if writer.pending() >= group_size {
@@ -245,13 +377,28 @@ fn writer_loop(
                     break;
                 }
             }
+            Ok(WriterCommandV1::Observe(reply)) => {
+                let frontier = writer.read_local_frontier();
+                let success = frontier.is_ok();
+                if !success {
+                    health.healthy.store(false, Ordering::Release);
+                }
+                let _ = reply.send(frontier);
+                if !success {
+                    break;
+                }
+            }
             Ok(WriterCommandV1::Stop(reply)) => {
                 let ok = flush(&mut writer, &health).is_ok();
                 if !ok {
                     health.healthy.store(false, Ordering::Release);
                 }
+                // The Stop ACK is the original WAL+marker lock handoff.
+                // The next process must not reopen until BOTH owned fds
+                // are dropped, even when flush already completed.
+                drop(writer);
                 let _ = reply.send(ok);
-                break;
+                return;
             }
             Err(RecvTimeoutError::Timeout) => {
                 if flush(&mut writer, &health).is_err() {
