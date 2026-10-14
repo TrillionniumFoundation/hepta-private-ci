@@ -13,6 +13,7 @@ use std::io::BufReader;
 use std::io::Read;
 use std::io::Write;
 use std::path::Path;
+use std::path::PathBuf;
 use std::time::Instant;
 
 use codex_hepta_types::Digest32;
@@ -79,11 +80,20 @@ impl std::error::Error for MetricsJournalErrorV1 {}
 /// the instance until inspection/reopen, never silently skipping a record.
 pub struct MetricsGroupCommitV1 {
     file: File,
+    journal_path: PathBuf,
+    #[cfg(unix)]
+    original_parent_path: PathBuf,
+    #[cfg(unix)]
+    original_parent: File,
     staged: Vec<MetricSampleV1>,
     sequence: u64,
     head: Digest32,
     committed_rows: u64,
     bytes: u64,
+    // Exact last committed row, not a signed evidence claim. The bounded
+    // readback prevents live same-inode tail rewrites from earning an ACK.
+    last_row_len: usize,
+    last_row_digest: Digest32,
     poisoned: bool,
 }
 
@@ -105,6 +115,16 @@ impl MetricsGroupCommitV1 {
         // effect of opening the writer. The deployment's own storage
         // administrator must create and protect the parent beforehand.
         check_journal_path(path)?;
+        #[cfg(unix)]
+        let (original_parent_path, original_parent) = {
+            let parent = path
+                .parent()
+                .filter(|p| !p.as_os_str().is_empty())
+                .unwrap_or_else(|| Path::new("."));
+            let opened = File::open(parent)?;
+            verify_original_parent_path(parent, &opened)?;
+            (parent.to_path_buf(), opened)
+        };
         let mut options = OpenOptions::new();
         options.create(true).append(true).read(true);
         #[cfg(unix)]
@@ -124,6 +144,8 @@ impl MetricsGroupCommitV1 {
         let mut sequence = 0_u64;
         let mut committed_rows = 0_u64;
         let mut head = Digest32::ZERO;
+        let mut last_row_len = 0_usize;
+        let mut last_row_digest = Digest32::ZERO;
         loop {
             line.clear();
             let remaining = MAX_JOURNAL_BYTES.saturating_sub(total).saturating_add(1);
@@ -142,21 +164,94 @@ impl MetricsGroupCommitV1 {
             let contents =
                 std::str::from_utf8(&line).map_err(|_| MetricsJournalErrorV1::Corrupt)?;
             let (next_sequence, next_head, rows) = parse_group(contents, sequence, head)?;
+            last_row_len = read;
+            last_row_digest = Digest32::of_bytes(&line);
             sequence = next_sequence;
             committed_rows = committed_rows
                 .checked_add(rows as u64)
                 .ok_or(MetricsJournalErrorV1::Capacity)?;
             head = next_head;
         }
-        Ok(Self {
+        let owner = Self {
             file,
+            journal_path: path.to_path_buf(),
+            #[cfg(unix)]
+            original_parent_path,
+            #[cfg(unix)]
+            original_parent,
             staged: Vec::new(),
             sequence,
             head,
             committed_rows,
             bytes: total,
+            last_row_len,
+            last_row_digest,
             poisoned: false,
-        })
+        };
+        // Recheck after the replay: path replacement or same-inode rewrite
+        // during an expensive cold scan cannot be accepted as a fresh writer.
+        owner.verify_original_frontier()?;
+        Ok(owner)
+    }
+
+    /// Verify the OPEN original inode still names the journal, its cached
+    /// durable length is exact, and the last fsynced row has not been changed.
+    /// Bounded to MAX_LINE_BYTES: older-prefix rewrite and coordinated full
+    /// rollback still require independent external custody/Observer.
+    fn verify_original_frontier(&self) -> Result<(), MetricsJournalErrorV1> {
+        // Protect the original parent DIRECTORY inode too. A directory
+        // swap that moves the exact same WAL inode to a new private parent
+        // defeats checks of only the WAL file name, size and inode.
+        check_journal_path(&self.journal_path)?;
+        #[cfg(unix)]
+        verify_original_parent_path(&self.original_parent_path, &self.original_parent)?;
+        check_open_file(&self.journal_path, &self.file)?;
+        if self.file.metadata()?.len() != self.bytes {
+            return Err(MetricsJournalErrorV1::Corrupt);
+        }
+        if self.sequence == 0 {
+            if self.bytes != 0 || self.last_row_len != 0 || !self.last_row_digest.is_zero() {
+                return Err(MetricsJournalErrorV1::Corrupt);
+            }
+        } else {
+            if self.last_row_len == 0
+                || self.last_row_len > MAX_LINE_BYTES
+                || self.bytes < self.last_row_len as u64
+                || self.last_row_digest.is_zero()
+            {
+                return Err(MetricsJournalErrorV1::Corrupt);
+            }
+            let mut tail = vec![0_u8; self.last_row_len];
+            #[cfg(unix)]
+            {
+                use std::os::unix::fs::FileExt as _;
+                self.file
+                    .read_exact_at(&mut tail, self.bytes - self.last_row_len as u64)?;
+            }
+            #[cfg(not(unix))]
+            {
+                use std::io::Seek as _;
+                use std::io::SeekFrom;
+                let mut reader = self.file.try_clone()?;
+                reader.seek(SeekFrom::Start(self.bytes - self.last_row_len as u64))?;
+                reader.read_exact(&mut tail)?;
+            }
+            if tail.last() != Some(&b'\n')
+                || Digest32::of_bytes(&tail[..tail.len() - 1]) != self.last_row_digest
+            {
+                return Err(MetricsJournalErrorV1::Corrupt);
+            }
+        }
+        // Reread both protected parent and exact opened inode after the
+        // tail check; neither directory drift nor WAL replacement may ACK.
+        check_journal_path(&self.journal_path)?;
+        #[cfg(unix)]
+        verify_original_parent_path(&self.original_parent_path, &self.original_parent)?;
+        check_open_file(&self.journal_path, &self.file)?;
+        if self.file.metadata()?.len() != self.bytes {
+            return Err(MetricsJournalErrorV1::Corrupt);
+        }
+        Ok(())
     }
 
     pub fn stage(&mut self, sample: MetricSampleV1) -> Result<(), MetricsJournalErrorV1> {
@@ -195,6 +290,12 @@ impl MetricsGroupCommitV1 {
     pub fn flush(&mut self) -> Result<Option<MetricsCommitReceiptV1>, MetricsJournalErrorV1> {
         if self.poisoned {
             return Err(MetricsJournalErrorV1::Poisoned);
+        }
+        // An empty flush can still be an ACK for a previously committed
+        // physical effect. It MUST validate the original journal as well.
+        if let Err(error) = self.verify_original_frontier() {
+            self.poisoned = true;
+            return Err(error);
         }
         if self.staged.is_empty() {
             return Ok(None);
@@ -238,15 +339,24 @@ impl MetricsGroupCommitV1 {
             self.poisoned = true;
             return Err(MetricsJournalErrorV1::Io(error));
         }
+        let sync_latency_micros = u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX);
         self.bytes = next_bytes;
         self.sequence = sequence;
         self.committed_rows = next_rows;
         self.head = next_head;
+        self.last_row_len = encoded.len();
+        self.last_row_digest = Digest32::of_bytes(&encoded.as_bytes()[..encoded.len() - 1]);
+        if let Err(error) = self.verify_original_frontier() {
+            // The fsync may already have happened. Poison and refuse the ACK
+            // without trying to append a duplicate group or Split effect.
+            self.poisoned = true;
+            return Err(error);
+        }
         let receipt = MetricsCommitReceiptV1 {
             sequence,
             head_digest: next_head,
             rows: self.staged.len(),
-            sync_latency_micros: u64::try_from(started.elapsed().as_micros()).unwrap_or(u64::MAX),
+            sync_latency_micros,
         };
         self.staged.clear();
         Ok(Some(receipt))
@@ -288,6 +398,30 @@ fn check_journal_path(path: &Path) -> Result<(), MetricsJournalErrorV1> {
         }
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
         Err(error) => return Err(MetricsJournalErrorV1::Io(error)),
+    }
+    Ok(())
+}
+
+/// A named parent that changes inode is not the original Evidence owner
+/// directory, even when an attacker moves the very same WAL file into it.
+/// Keep the original directory handle open to prevent inode reuse.
+#[cfg(unix)]
+fn verify_original_parent_path(
+    parent_path: &Path,
+    opened_parent: &File,
+) -> Result<(), MetricsJournalErrorV1> {
+    use std::os::unix::fs::MetadataExt;
+
+    let named = fs::symlink_metadata(parent_path)?;
+    let opened = opened_parent.metadata()?;
+    if !named.file_type().is_dir()
+        || named.file_type().is_symlink()
+        || !opened.is_dir()
+        || named.dev() != opened.dev()
+        || named.ino() != opened.ino()
+        || (named.mode() | opened.mode()) & 0o022 != 0
+    {
+        return Err(MetricsJournalErrorV1::UnsafePath);
     }
     Ok(())
 }
