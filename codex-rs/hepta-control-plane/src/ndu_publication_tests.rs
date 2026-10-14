@@ -2,6 +2,23 @@ use super::*;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+/// A production Control WAL rejects directories writable by group/others.
+/// TempDir creation is influenced by the host umask; make these *test* roots
+/// private explicitly rather than relaxing the real original-owner check.
+#[cfg(unix)]
+fn private_control_dir() -> tempfile::TempDir {
+    use std::os::unix::fs::PermissionsExt;
+    let dir = tempfile::tempdir().expect("isolated Control root");
+    std::fs::set_permissions(dir.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("secure temporary Control directory");
+    let mode = std::fs::symlink_metadata(dir.path())
+        .expect("original directory")
+        .permissions()
+        .mode();
+    assert_eq!(mode & 0o077, 0, "fixture may not weaken owner-only privacy");
+    dir
+}
+
 #[cfg(unix)]
 fn test_only_original_runtime_receipt() -> Result<((), Vec<u8>), &'static str> {
     // Test-only owner bytes are not a production signature or a real runtime
@@ -25,7 +42,7 @@ fn snapshot(fence: u64) -> NduSnapshotRefV1 {
 #[cfg(unix)]
 #[test]
 fn production_owner_replays_checkpoint_and_requires_single_writer() {
-    let dir = tempfile::tempdir().expect("owner-only dir");
+    let dir = private_control_dir();
     let path = dir.path().join("control-ndu.wal");
     let original = snapshot(3);
     let next = Digest32::of_bytes(b"checkpoint-one");
@@ -70,7 +87,7 @@ fn production_owner_replays_checkpoint_and_requires_single_writer() {
 #[test]
 #[allow(deprecated)]
 fn direct_single_phase_cns_publication_is_always_denied_and_never_appends() {
-    let dir = tempfile::tempdir().expect("private Control root");
+    let dir = private_control_dir();
     let path = dir.path().join("legacy-cutover.wal");
     let original = snapshot(3);
     let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
@@ -92,7 +109,7 @@ fn direct_single_phase_cns_publication_is_always_denied_and_never_appends() {
 #[cfg(unix)]
 #[test]
 fn valid_hash_chain_cannot_replay_direct_cns_commit_without_prior_begin() {
-    let dir = tempfile::tempdir().expect("owner-only root");
+    let dir = private_control_dir();
     let path = dir.path().join("unprepared-cutover.wal");
     let prior = snapshot(3);
     {
@@ -148,7 +165,7 @@ fn valid_hash_chain_cannot_replay_direct_cns_commit_without_prior_begin() {
 #[cfg(unix)]
 #[test]
 fn cutover_and_checkpoint_cas_use_same_exclusive_owner() {
-    let dir = tempfile::tempdir().expect("private directory");
+    let dir = private_control_dir();
     let path = dir.path().join("frontier.wal");
     let previous = snapshot(3);
     let migrated = Digest32::of_bytes(b"migrated-checkpoint");
@@ -185,7 +202,7 @@ fn cutover_and_checkpoint_cas_use_same_exclusive_owner() {
 #[cfg(unix)]
 #[test]
 fn checkpoint_advance_invalidates_frozen_cutover_without_losing_new_state() {
-    let dir = tempfile::tempdir().expect("private directory");
+    let dir = private_control_dir();
     let path = dir.path().join("ndu-frontier.wal");
     let original = snapshot(3);
     let committed = Digest32::of_bytes(b"new-neuron-checkpoint");
@@ -231,7 +248,7 @@ fn concurrent_model_and_cns_cas_cannot_both_commit_one_predecessor() {
     use std::sync::Barrier;
     use std::thread;
 
-    let dir = tempfile::tempdir().expect("private Control root");
+    let dir = private_control_dir();
     let path = dir.path().join("competing-ndu-frontier.wal");
     let old = snapshot(3);
     let committed = Digest32::of_bytes(b"concurrent-neuron");
@@ -287,7 +304,7 @@ fn concurrent_model_and_cns_cas_cannot_both_commit_one_predecessor() {
 #[cfg(unix)]
 #[test]
 fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
-    let dir = tempfile::tempdir().expect("private Control root");
+    let dir = private_control_dir();
     let path = dir.path().join("guarded-cutover.wal");
     let current = snapshot(3);
     let successor = snapshot(4);
@@ -380,7 +397,7 @@ fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
 #[test]
 fn missing_or_unbounded_original_cns_receipt_never_commits_control_handoff() {
     for receipt_bytes in [0_usize, 63, 32 * 1024 + 1] {
-        let root = tempfile::tempdir().expect("isolated private Control directory");
+        let root = private_control_dir();
         let path = root.path().join("ambiguous-original-receipt.wal");
         let original = snapshot(3);
         let mut calls = 0_usize;
@@ -429,7 +446,7 @@ fn missing_or_unbounded_original_cns_receipt_never_commits_control_handoff() {
 #[cfg(unix)]
 #[test]
 fn unsigned_ndu_owner_or_policy_change_is_denied_before_durable_begin() {
-    let dir = tempfile::tempdir().expect("private Control root");
+    let dir = private_control_dir();
     let path = dir.path().join("untrusted-handoff.wal");
     let original = snapshot(3);
     let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
@@ -464,7 +481,7 @@ fn unsigned_ndu_owner_or_policy_change_is_denied_before_durable_begin() {
 #[cfg(unix)]
 #[test]
 fn insufficient_space_for_commit_denies_before_durable_begin_or_model() {
-    let dir = tempfile::tempdir().expect("private Control root");
+    let dir = private_control_dir();
     let path = dir.path().join("bounded-control.wal");
     let original = snapshot(3);
     let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
@@ -498,7 +515,7 @@ fn insufficient_space_for_commit_denies_before_durable_begin_or_model() {
 #[cfg(unix)]
 #[test]
 fn lost_wal_during_real_callback_never_publishes_success_or_recreates_history() {
-    let dir = tempfile::tempdir().expect("private Control root");
+    let dir = private_control_dir();
     let path = dir.path().join("lost-mid-effect.wal");
     let original = snapshot(3);
     let owner = NduPublicationOwnerV1::open_production(&path, original.clone(), Digest32::ZERO)
@@ -535,7 +552,7 @@ fn lost_wal_during_real_callback_never_publishes_success_or_recreates_history() 
 #[cfg(unix)]
 #[test]
 fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
-    let dir = tempfile::tempdir().expect("private Control root");
+    let dir = private_control_dir();
     let path = dir.path().join("unknown-physical-effect.wal");
     let original = snapshot(3);
     let mut calls = 0;
@@ -592,7 +609,7 @@ fn concurrent_model_checkpoint_and_guarded_runtime_cutover_have_one_winner() {
     use std::sync::atomic::Ordering;
     use std::thread;
 
-    let dir = tempfile::tempdir().expect("protected owner directory");
+    let dir = private_control_dir();
     let path = dir.path().join("guarded-race.wal");
     let old = snapshot(3);
     let model_checkpoint = Digest32::of_bytes(b"model-winner");
@@ -659,7 +676,7 @@ fn concurrent_model_checkpoint_and_guarded_runtime_cutover_have_one_winner() {
 #[cfg(unix)]
 #[test]
 fn deleted_control_wal_cannot_bootstrap_a_fresh_history() {
-    let dir = tempfile::tempdir().expect("private Control directory");
+    let dir = private_control_dir();
     let path = dir.path().join("lost-control.wal");
     let original = snapshot(3);
     {
@@ -690,7 +707,7 @@ fn deleted_control_wal_cannot_bootstrap_a_fresh_history() {
 #[cfg(unix)]
 #[test]
 fn lost_writer_marker_or_replaced_wal_cannot_adopt_old_signed_state() {
-    let dir = tempfile::tempdir().expect("private Control directory");
+    let dir = private_control_dir();
     let path = dir.path().join("pinned-control.wal");
     let original = snapshot(3);
     {
@@ -758,7 +775,7 @@ fn lost_writer_marker_or_replaced_wal_cannot_adopt_old_signed_state() {
 #[cfg(unix)]
 #[test]
 fn truncated_journal_is_rejected_without_mutating_history() {
-    let dir = tempfile::tempdir().expect("owner-only");
+    let dir = private_control_dir();
     let path = dir.path().join("frontier.wal");
     {
         let owner = NduPublicationOwnerV1::open_production(&path, snapshot(3), Digest32::ZERO)
@@ -785,7 +802,7 @@ fn truncated_journal_is_rejected_without_mutating_history() {
 fn symlink_and_world_accessible_directory_cannot_own_frontier() {
     use std::os::unix::fs::PermissionsExt;
     use std::os::unix::fs::symlink;
-    let dir = tempfile::tempdir().expect("private directory");
+    let dir = private_control_dir();
     let path = dir.path().join("frontier.wal");
     {
         let _owner = NduPublicationOwnerV1::open_production(&path, snapshot(3), Digest32::ZERO)
