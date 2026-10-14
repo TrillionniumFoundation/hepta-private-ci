@@ -498,10 +498,9 @@ fn failed_native_batch_metrics_never_mark_production_ready_or_retry_driver() {
         truncate_outputs: false,
         reorder_outputs: false,
     };
-    let mut worker = runner_with_driver(&signer, dir.path(), model, backend, 2)
-        .with_metric_sink(Arc::new(FailAtPhaseMetricSink(
-            PhaseMetricKindV1::Microbatch,
-        )));
+    let mut worker = runner_with_driver(&signer, dir.path(), model, backend, 2).with_metric_sink(
+        Arc::new(FailAtPhaseMetricSink(PhaseMetricKindV1::Microbatch)),
+    );
     for (index, request) in [first, second].into_iter().enumerate() {
         let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
         worker
@@ -521,10 +520,12 @@ fn failed_native_batch_metrics_never_mark_production_ready_or_retry_driver() {
     }
     let results = worker.poll_and_execute(101).unwrap();
     assert_eq!(results.outcomes.len(), 2);
-    assert!(results.outcomes.iter().all(|item| matches!(
-        &item.result,
-        Err(BatchWorkerErrorV1::MetricsUnavailable)
-    )));
+    assert!(
+        results
+            .outcomes
+            .iter()
+            .all(|item| matches!(&item.result, Err(BatchWorkerErrorV1::MetricsUnavailable)))
+    );
     // The two legitimate grants reached Admission, but failed Phase telemetry
     // before one physical invocation or either durable nonce claim.
     assert_eq!(backend_calls.load(std::sync::atomic::Ordering::SeqCst), 0);
@@ -577,10 +578,9 @@ fn terminal_metric_failure_preserves_completed_effect_but_blocks_next_admission(
     let second = second_request(&first);
     let scalar_calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
     let backend = CountingScalarDriver(scalar_calls.clone());
-    let mut worker = runner_with_driver(&signer, dir.path(), model, backend, 2)
-        .with_metric_sink(Arc::new(FailAtPhaseMetricSink(
-            PhaseMetricKindV1::NeuronFeature,
-        )));
+    let mut worker = runner_with_driver(&signer, dir.path(), model, backend, 2).with_metric_sink(
+        Arc::new(FailAtPhaseMetricSink(PhaseMetricKindV1::NeuronFeature)),
+    );
     let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &first).unwrap();
     worker
         .enqueue(
