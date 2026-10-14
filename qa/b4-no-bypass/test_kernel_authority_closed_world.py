@@ -229,6 +229,40 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         self.assertIn("apply_governed_topology(", body)
 
 
+
+    def test_generic_runtime_split_apply_and_recovery_require_control(self) -> None:
+        path = "codex-rs/hepta-runtime/src/organs.rs"
+        code = self.lexical_code(path)
+        self.assertIn("TopologyOperationV2::Split", code)
+        helper = re.search(
+            r"\bfn\s+proposal_contains_cell_split_v1\s*\(", code
+        )
+        self.assertIsNotNone(helper, "generic Split classifier disappeared")
+        for operation in ("apply_governed_topology", "recover_governed_topology"):
+            with self.subTest(operation=operation):
+                method = re.search(
+                    rf"\bpub\(crate\)\s+fn\s+{operation}\s*\(", code
+                )
+                self.assertIsNotNone(method)
+                assert method is not None
+                opening = code.find("{", method.end())
+                closing = CALLER_PROOF._matching_delimiter(
+                    code, opening, "{", "}"
+                )
+                self.assertIsNotNone(closing)
+                assert closing is not None
+                body = code[opening + 1:closing]
+                self.assertRegex(
+                    body,
+                    r"^\s*if\s+!\s*cfg!\s*\(\s*test\s*\)\s*&&\s*"
+                    r"proposal_contains_cell_split_v1\s*\(\s*&request\s*\)\s*"
+                    r"\{\s*return\s+Err\s*\(\s*"
+                    r"RuntimeTopologyExecutionError::Binding\s*\)\s*;\s*\}",
+                    "a generic Split may not bypass physical Control B/C",
+                )
+                self.assertIn("authority.claim(", body)
+
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
