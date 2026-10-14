@@ -128,7 +128,9 @@ where
         );
     }
     if action == "reconcile" {
-        return Err("CellSplit recovery requires the explicit pending-only reconciliation API".into());
+        return Err(
+            "CellSplit recovery requires the explicit pending-only reconciliation API".into(),
+        );
     }
     run_pinned_cell_split_execution_inner_v1(
         action,
@@ -155,7 +157,9 @@ where
     F: FnMut(&CellSplitExecutionPlanV1) -> Result<(), String>,
 {
     if action == "reconcile" {
-        return Err("CellSplit recovery requires the explicit pending-only reconciliation API".into());
+        return Err(
+            "CellSplit recovery requires the explicit pending-only reconciliation API".into(),
+        );
     }
     run_pinned_cell_split_execution_inner_v1(
         action,
