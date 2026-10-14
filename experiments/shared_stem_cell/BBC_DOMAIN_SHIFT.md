@@ -47,6 +47,13 @@ source article** and verifies its previously frozen SHA-256 before accessing
 `label_text`. A changed article, missing category, or mismatched index fails
 the entire research run; no category can be associated with changed evidence.
 
+The post-seal preflight also requires the original **128 unique article
+SHA-256s, unique excerpts and BBC source indices**, the exact
+`bbc-news:test:<source_index>` case identity, and the original
+`cell = sample_position % 2` alternation. It rejects a missing/extra
+field, duplicated article or altered Cell route even when the attacker
+recomputes both JSON file hashes. It contains no gold labels.
+
 ## Fifth precommitted virtual Head route, not post-hoc BBC selection
 
 The original frozen panel executes **four physical arms**: bank, shared,

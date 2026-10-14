@@ -137,6 +137,40 @@ def public_cohort(rows):
             for row in rows]
 
 
+def validate_public_cohort(rows):
+    """Freeze the independent text-hash order and *logical* Cell inventory.
+
+    Do not let a re-hashed fifth arm silently choose a favorable Cell route by
+    changing the cohort itself. These fields have no user gold/category input.
+    """
+    required = {"case_id", "source_index", "full_source_sha256",
+                "normalized_excerpt_sha256", "cell"}
+    require(type(rows) is list and len(rows) == COUNT,
+            "complete preregistered BBC source cohort required")
+    seen_index, seen_original, seen_excerpt = set(), set(), set()
+    for position, row in enumerate(rows):
+        require(type(row) is dict and set(row) == required,
+                "unregistered label-bearing or missing source cohort field")
+        source_index = row["source_index"]
+        require(type(source_index) is int and 0 <= source_index < 1000 and
+                row["case_id"] == f"bbc-news:test:{source_index}" and
+                type(row["cell"]) is int and row["cell"] == position % 2,
+                "reordered or substituted BBC Cell assignment")
+        for key in ("full_source_sha256", "normalized_excerpt_sha256"):
+            value = row[key]
+            require(type(value) is str and len(value) == 64 and
+                    all(c in "0123456789abcdef" for c in value),
+                    "unqualified original BBC article/text fingerprint")
+        original, excerpt = row["full_source_sha256"], row["normalized_excerpt_sha256"]
+        require(source_index not in seen_index and original not in seen_original
+                and excerpt not in seen_excerpt,
+                "repeated public article, excerpt or source index")
+        seen_index.add(source_index)
+        seen_original.add(original)
+        seen_excerpt.add(excerpt)
+    return True
+
+
 def compose_frozen_hybrid(rows, physical):
     """Fixed AG-derived route: Cell 0 shared, Cell 1 shared+residual.
 
@@ -144,10 +178,8 @@ def compose_frozen_hybrid(rows, physical):
     were already generated under the four original physical comparators.
     No BBC label, optimizer step or fifth model forward is consulted.
     """
-    require(type(rows) is list and len(rows) == COUNT and
-            all(type(row) is dict and type(row.get("cell")) is int
-                and row["cell"] in (0, 1) for row in rows) and
-            type(physical) is dict and set(physical) == BASE_ARMS,
+    validate_public_cohort(rows)
+    require(type(physical) is dict and set(physical) == BASE_ARMS,
             "complete physical controls and fixed Cell routes required")
     for arm in BASE_ARMS:
         require(type(physical[arm]) is list and len(physical[arm]) == len(rows),
@@ -164,12 +196,9 @@ def preflight_frozen_predictions(rows, predictions):
     A sealed SHA alone cannot certify route selection, normalized probability
     rows or complete physical comparators. Require each BEFORE reading gold.
     """
-    require(type(rows) is list and len(rows) == COUNT and
-            type(predictions) is dict and set(predictions) == ARMS,
+    validate_public_cohort(rows)
+    require(type(predictions) is dict and set(predictions) == ARMS,
             "complete frozen five-arm probability inventory required")
-    require(all(type(row) is dict and type(row.get("cell")) is int
-                and row["cell"] in (0, 1) for row in rows),
-            "invalid frozen source Cell routing")
     for arm, samples in predictions.items():
         require(type(samples) is list and len(samples) == COUNT,
                 "incomplete frozen probability arm")

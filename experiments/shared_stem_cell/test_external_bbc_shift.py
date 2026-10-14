@@ -262,6 +262,50 @@ class ShiftTests(unittest.TestCase):
                                          b.digest(cohort_raw), rows,
                                          lambda _: self.fail("premature BBC label read"))
 
+    def test_rehashed_source_cell_mutation_rejected_before_first_label(self):
+        import copy
+        original = b.public_cohort(b.sample(self.texts()))
+        physical = {arm: [[0.1, 0.1, 0.7, 0.1] for _ in original]
+                    for arm in b.BASE_ARMS}
+        for kind in ("flipped_cell", "case_index", "duplicate_excerpt",
+                     "label_field", "reordered_source"):
+            rows = copy.deepcopy(original)
+            if kind == "flipped_cell":
+                rows[0]["cell"] = 1
+            elif kind == "case_index":
+                rows[0]["case_id"] = "bbc-news:test:9999"
+            elif kind == "duplicate_excerpt":
+                rows[0]["normalized_excerpt_sha256"] = rows[1]["normalized_excerpt_sha256"]
+            elif kind == "label_field":
+                rows[0]["label_text"] = "business"
+            else:
+                rows[0], rows[1] = rows[1], rows[0]
+            with self.subTest(kind=kind):
+                # Rebuild the fifth arm by the attacker's new routing rule
+                # instead of relying on the helper that now blocks it.
+                probability = {k: [list(x) for x in v]
+                               for k, v in physical.items()}
+                probability[b.HYBRID] = [
+                    physical["shared"][i] if r["cell"] == 0
+                    else physical["residual_corrected"][i]
+                    for i, r in enumerate(rows)]
+                cohort_raw = b.canonical(rows)
+                packet = {"schema": b.SCHEMA, "source_revision": b.REVISION,
+                          "cohort_sha256": b.digest(cohort_raw),
+                          "case_ids": [r["case_id"] for r in rows],
+                          "predictions": probability,
+                          "work": {}, "production_accepted": False}
+                prediction_raw = b.canonical(packet)
+                with tempfile.TemporaryDirectory() as root:
+                    path = Path(root)
+                    (path / "cohort.json").write_bytes(cohort_raw)
+                    (path / "predictions.json").write_bytes(prediction_raw)
+                    with self.assertRaises(b.SourceError):
+                        b.evaluate_published(
+                            path / "predictions.json", b.digest(prediction_raw),
+                            path / "cohort.json", b.digest(cohort_raw), rows,
+                            lambda _: self.fail("tampered routing read BBC labels"))
+
     def test_insufficient_or_duplicate_unlabeled_source_rejects(self):
         with self.assertRaises(b.SourceError):
             b.sample(self.texts()[:8])
