@@ -1144,6 +1144,14 @@ impl<P: CellSplitExecutionPortV1> CellSplitExecutionOwnerV1<P> {
         &mut self,
         mut revalidate: impl FnMut() -> Result<(), String>,
     ) -> Result<Option<CellSplitExecutionReceiptV1>, CellSplitExecutionErrorV1> {
+        // Internal callers must not bypass the public DENY_ALL admission gate.
+        // The only non-test continuation is pending-only reconciliation of
+        // an already prepared original operation, never a fresh effect.
+        if !cfg!(test) && !self.reconcile_only {
+            return Err(CellSplitExecutionErrorV1::Invalid(
+                "new CellSplit effects require the original verified Control owner",
+            ));
+        }
         // Inspection handles may authenticate existing evidence but must never
         // prepare an intent or invoke an external CAS/CNS/Supervisor effect.
         if self.read_only {
