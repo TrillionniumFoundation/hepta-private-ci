@@ -1,0 +1,308 @@
+name: Hepta FBSDE local-global controlled studies
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/neuron-stem/fbsde*.py"
+      - "qualification/neuron-stem/test_fbsde*.py"
+      - "qualification/neuron-stem/FBSDE*.md"
+      - ".github/workflows/hepta-neuron-fbsde-study.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  exact-mechanisms:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [head, merge]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Bind source and run existing plus new exact regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > exact-source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > fbsde-source.tar.gz
+          PYTHONPATH=qualification/neuron-stem python3 -m unittest discover \
+            -s qualification/neuron-stem -p 'test_*.py' -v 2>&1 | tee exact-tests.log
+          PYTHONPATH=qualification/neuron-stem python3 qualification/neuron-stem/fbsde_study.py \
+            --output exact-study 2>&1 | tee exact-study.log
+          PYTHONPATH=qualification/neuron-stem python3 qualification/neuron-stem/fbsde_study.py \
+            --profile coupled_nonlinear_v1 --output nonlinear-study 2>&1 | tee nonlinear-study.log
+          PYTHONPATH=qualification/neuron-stem python3 qualification/neuron-stem/fbsde_study.py \
+            --profile riccati_solver_v1 --output riccati-study 2>&1 | tee riccati-study.log
+          PYTHONPATH=qualification/neuron-stem python3 qualification/neuron-stem/fbsde_study.py \
+            --profile continuation_workspace_v1 --output workspace-study 2>&1 | tee workspace-study.log
+          PYTHONPATH=qualification/neuron-stem python3 qualification/neuron-stem/fbsde_study.py \
+            --profile global_obstruction_v1 --output obstruction-study 2>&1 | tee obstruction-study.log
+          git diff --exit-code
+      - name: Retain original source, measurements and failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fbsde-exact-${{ matrix.source }}-${{ github.run_id }}
+          path: |
+            exact-source.txt
+            fbsde-source.tar.gz
+            exact-tests.log
+            exact-study.log
+            exact-study/
+            nonlinear-study.log
+            nonlinear-study/
+            riccati-study.log
+            riccati-study/
+            workspace-study.log
+            workspace-study/
+            obstruction-study.log
+            obstruction-study/
+          if-no-files-found: error
+          retention-days: 30
+
+  real-encoder:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        profile: [label_balanced_v1, independent_targets_v2, independent_targets_composition_v3]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Fixed CPU runtime, no remote model Python
+        run: |
+          git rev-parse HEAD > real-source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > real-source.tar.gz
+          python3 -m venv /tmp/fbsde-venv
+          /tmp/fbsde-venv/bin/pip install numpy==2.2.6 psutil==7.0.0 transformers==4.57.3 huggingface-hub==0.36.0
+          /tmp/fbsde-venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          /tmp/fbsde-venv/bin/pip freeze > real-environment.txt
+      - name: Actual tensor checks and actual pinned Encoder comparison
+        shell: bash
+        env:
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          HF_HUB_DISABLE_TELEMETRY: "1"
+          TOKENIZERS_PARALLELISM: "false"
+          QUESTION_PROFILE: ${{ matrix.profile }}
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/fbsde-venv/bin/python -m unittest fbsde_tensor_checks fbsde_v2_tensor_checks fbsde_composition_tensor_checks -v 2>&1 | tee tensor-tests.log
+          /tmp/fbsde-venv/bin/python qualification/neuron-stem/fbsde_encoder.py \
+            --source-root "$PWD" --model-dir /tmp/fbsde-mmbert --output real-study \
+            --question-profile "$QUESTION_PROFILE" \
+            2>&1 | tee real-study.log
+          git diff --exit-code
+      - name: Preserve observations, never model weights or credentials
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fbsde-real-encoder-${{ matrix.profile }}-${{ github.run_id }}
+          path: |
+            real-source.txt
+            real-source.tar.gz
+            real-environment.txt
+            tensor-tests.log
+            real-study.log
+            real-study/
+          if-no-files-found: error
+          retention-days: 30
+
+
+  learned-coupled-field:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pin source and isolated actual CPU learning environment
+        run: |
+          git rev-parse HEAD > coupled-source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > coupled-source.tar.gz
+          python3 -m venv /tmp/coupled-venv
+          /tmp/coupled-venv/bin/pip install numpy==2.2.6
+          /tmp/coupled-venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          /tmp/coupled-venv/bin/pip freeze > coupled-environment.txt
+      - name: Learn field proposals and correct the original discrete problem
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/coupled-venv/bin/python -m unittest fbsde_coupled_tensor_checks -v 2>&1 | tee coupled-tests.log
+          /tmp/coupled-venv/bin/python qualification/neuron-stem/fbsde_study.py \
+            --profile learned_coupled_v1 --output learned-coupled 2>&1 | tee coupled-study.log
+          git diff --exit-code
+      - name: Retain numerical training evidence, not pretrained weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fbsde-learned-coupled-${{ github.run_id }}
+          path: |
+            coupled-source.txt
+            coupled-source.tar.gz
+            coupled-environment.txt
+            coupled-tests.log
+            coupled-study.log
+            learned-coupled/
+          if-no-files-found: error
+          retention-days: 30
+
+  semantic-acquisition:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        backend: [hashing_reference_v1, mmbert]
+        kernel_profile: [uniform_joint_v1, joint_backoff_cv_v2]
+        cohort: [banking_v1]
+        include:
+          - backend: hashing_reference_v1
+            kernel_profile: joint_backoff_cv_v2
+            cohort: travel_guard_v1
+          - backend: mmbert
+            kernel_profile: joint_backoff_cv_v2
+            cohort: travel_guard_v1
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pin exact source and CPU dependencies
+        run: |
+          git rev-parse HEAD > acquisition-source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > acquisition-source.tar.gz
+          python3 -m venv /tmp/acquisition-venv
+          /tmp/acquisition-venv/bin/pip install numpy==2.2.6 psutil==7.0.0 transformers==4.57.3 huggingface-hub==0.36.0
+          /tmp/acquisition-venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          /tmp/acquisition-venv/bin/pip freeze > acquisition-environment.txt
+      - name: Execute requested views and original-label outcome scoring
+        shell: bash
+        env:
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          HF_HUB_DISABLE_TELEMETRY: "1"
+          TOKENIZERS_PARALLELISM: "false"
+          ACQUISITION_BACKEND: ${{ matrix.backend }}
+          KERNEL_PROFILE: ${{ matrix.kernel_profile }}
+          TASK_COHORT: ${{ matrix.cohort }}
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/acquisition-venv/bin/python -m unittest fbsde_acquisition_tensor_checks fbsde_acquisition_support_tensor_checks fbsde_acquisition_guard_tensor_checks -v 2>&1 | tee acquisition-tests.log
+          /tmp/acquisition-venv/bin/python qualification/neuron-stem/fbsde_study.py \
+            --profile semantic_acquisition_v1 --backend "$ACQUISITION_BACKEND" --kernel-profile "$KERNEL_PROFILE" --cohort "$TASK_COHORT" \
+            --model-dir /tmp/acquisition-mmbert --clock-diagnostics --output acquisition-study \
+            2>&1 | tee acquisition-study.log
+          git diff --exit-code
+      - name: Diagnose retained failed view in bounded fresh processes
+        if: failure()
+        shell: bash
+        env:
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          HF_HUB_DISABLE_TELEMETRY: "1"
+          TOKENIZERS_PARALLELISM: "false"
+        run: |
+          set -euo pipefail
+          if [[ -f acquisition-study/candidate-head.pt && -f acquisition-study/physical.json && -f acquisition-study/failure.json ]]; then
+            PYTHONPATH=qualification/neuron-stem /tmp/acquisition-venv/bin/python \
+              qualification/neuron-stem/fbsde_study.py --profile cpu_tail_replay_v1 \
+              --evidence-dir acquisition-study --model-dir /tmp/acquisition-mmbert \
+              --replay-count 64 --output cpu-tail-replay 2>&1 | tee cpu-tail-replay.log
+          else
+            echo "No completed preparation and failed view available for replay."
+          fi
+      - name: Preserve all requests, failures and selected small Head; no pretrained weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fbsde-acquisition-${{ matrix.backend }}-${{ matrix.kernel_profile }}-${{ matrix.cohort }}-${{ github.run_id }}
+          path: |
+            acquisition-source.txt
+            acquisition-source.tar.gz
+            acquisition-environment.txt
+            acquisition-tests.log
+            acquisition-study.log
+            acquisition-study/
+            cpu-tail-replay.log
+            cpu-tail-replay/
+          if-no-files-found: error
+          retention-days: 30
+
+  failed-head-fusion-diagnostic:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Fixed CPU numerical microbenchmark dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/fbsde-fused-env"
+          "$RUNNER_TEMP/fbsde-fused-env/bin/pip" install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+          "$RUNNER_TEMP/fbsde-fused-env/bin/pip" install numpy==2.2.6 ruff==0.14.0
+      - name: Recheck exact historical failed material and run both bounded profiles
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OMP_NUM_THREADS: "1"
+          MKL_NUM_THREADS: "1"
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/fbsde-fused-env/bin/python"
+          git rev-parse HEAD > "$RUNNER_TEMP/fbsde-fused-source.txt"
+          "$PY" -m pip freeze >> "$RUNNER_TEMP/fbsde-fused-source.txt"
+          "$PY" -m ruff check --select F,E9 qualification/neuron-stem/fbsde_head_fusion_probe.py qualification/neuron-stem/fbsde_head_fusion_tensor_checks.py qualification/neuron-stem/fbsde_failed_view_fusion.py qualification/neuron-stem/fbsde_failed_view_tensor_checks.py
+          PYTHONPATH=qualification/neuron-stem "$PY" -m unittest -v fbsde_head_fusion_tensor_checks fbsde_failed_view_tensor_checks 2>&1 | tee "$RUNNER_TEMP/fbsde-fused-tests.log"
+          RAW="$RUNNER_TEMP/original-failed-fbsde.zip"
+          gh api "repos/$GITHUB_REPOSITORY/actions/artifacts/11875899646/zip" > "$RAW"
+          printf '%s  %s\n' cd9997b69e88b88f0817985fca00cb5b359936bcd5589fd49cc2c5ac78cb200a "$RAW" | sha256sum -c -
+          PYTHONPATH=qualification/neuron-stem "$PY" qualification/neuron-stem/fbsde_head_fusion_probe.py \
+            --archive "$RAW" --threads 1 --output "$RUNNER_TEMP/fbsde-fused-1" 2>&1 | tee "$RUNNER_TEMP/fbsde-fused-1.log"
+          PYTHONPATH=qualification/neuron-stem "$PY" qualification/neuron-stem/fbsde_head_fusion_probe.py \
+            --archive "$RAW" --threads 2 --output "$RUNNER_TEMP/fbsde-fused-2" 2>&1 | tee "$RUNNER_TEMP/fbsde-fused-2.log"
+          # Distinct follow-up: reconstruct the ORIGINAL failed view from the
+          # complete source journal, then measure the same actual input with
+          # both frozen kernels. Never rewrite the failed historical attempt.
+          PYTHONPATH=qualification/neuron-stem "$PY" qualification/neuron-stem/fbsde_failed_view_fusion.py \
+            --archive "$RAW" --threads 1 --output "$RUNNER_TEMP/fbsde-original-view-1" 2>&1 | tee "$RUNNER_TEMP/fbsde-original-view-1.log"
+          PYTHONPATH=qualification/neuron-stem "$PY" qualification/neuron-stem/fbsde_failed_view_fusion.py \
+            --archive "$RAW" --threads 2 --output "$RUNNER_TEMP/fbsde-original-view-2" 2>&1 | tee "$RUNNER_TEMP/fbsde-original-view-2.log"
+          git diff --exit-code
+      - name: Preserve numeric results and failures, never Head weights
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fbsde-frozen-head-control-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/fbsde-fused-source.txt
+            ${{ runner.temp }}/fbsde-fused-tests.log
+            ${{ runner.temp }}/fbsde-fused-1.log
+            ${{ runner.temp }}/fbsde-fused-2.log
+            ${{ runner.temp }}/fbsde-fused-1/report.json
+            ${{ runner.temp }}/fbsde-fused-2/report.json
+            ${{ runner.temp }}/fbsde-original-view-1.log
+            ${{ runner.temp }}/fbsde-original-view-2.log
+            ${{ runner.temp }}/fbsde-original-view-1/report.json
+            ${{ runner.temp }}/fbsde-original-view-2/report.json
+          if-no-files-found: warn

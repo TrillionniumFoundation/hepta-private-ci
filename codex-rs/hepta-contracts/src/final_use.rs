@@ -291,6 +291,12 @@ impl EnteredUseToken {
 }
 
 impl VerifiedUseToken {
+    /// Retained expiry from the independently signed grant. This observation
+    /// grants no authority and does not replace final-entry revalidation.
+    pub const fn expires_at_unix_ms(&self) -> u64 {
+        self.grant.expires_at_unix_ms
+    }
+
     pub const fn witness_sha256(&self) -> [u8; 32] {
         self.witness_sha256
     }
@@ -472,6 +478,12 @@ impl FinalUseAuthority {
             .iter()
             .map(|candidate| candidate.key_id.as_str())
             .collect()
+    }
+
+    /// Read the host-pinned authority clock for a bounded effect's final expiry
+    /// observation. This grants no permission and replaces no token check.
+    pub fn clock_unix_ms(&self) -> Result<u64, FinalUseError> {
+        self.now_unix_ms()
     }
 
     pub fn frontier(&self) -> Result<FinalUseFrontier, FinalUseError> {

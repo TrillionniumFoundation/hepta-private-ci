@@ -1,0 +1,178 @@
+name: Hepta verified shared tracking workspace
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/neuron-stem/fbsde_tracking*.py"
+      - "qualification/neuron-stem/test_fbsde_tracking*.py"
+      - "qualification/neuron-stem/fbsde_study.py"
+      - "qualification/neuron-stem/four_gate_pretrained.py"
+      - "qualification/neuron-stem/four_gate_common.py"
+      - "qualification/neuron-stem/FBSDE_VERIFIED_TRACKING_V1.md"
+      - "qualification/neuron-stem/FBSDE_TRACKING_FEATURES_V2.md"
+      - "qualification/neuron-stem/FBSDE_TRACKING_RECORD_RETENTION_V2.md"
+      - "qualification/neuron-stem/FBSDE_TRACKING_CONTROL_V1.md"
+      - "qualification/neuron-stem/FBSDE_TRACKING_MIXTURE_V2.md"
+      - ".github/workflows/hepta-neuron-verified-tracking.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  exact-source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [head, merge]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Execute unchanged and new source regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > source.tar.gz
+          PYTHONPATH=qualification/neuron-stem python3 -m unittest discover \
+            -s qualification/neuron-stem -p 'test_*.py' -v 2>&1 | tee tests.log
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: verified-tracking-source-${{ matrix.source }}-${{ github.run_id }}
+          path: |
+            source.txt
+            source.tar.gz
+            tests.log
+          if-no-files-found: error
+          retention-days: 30
+
+  original-benchmark:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        backend: [hashing_reference_v1, mmbert]
+        feature_profile: [ordinal_sensitive_v1, local_participant_v2]
+        record_profile: [retained_objects_v1]
+        control_profile: [all_steps_v1]
+        include:
+          - backend: hashing_reference_v1
+            feature_profile: local_participant_v2
+            record_profile: serialized_records_v2
+            control_profile: all_steps_v1
+          - backend: mmbert
+            feature_profile: local_participant_v2
+            record_profile: serialized_records_v2
+            control_profile: all_steps_v1
+          - backend: hashing_reference_v1
+            feature_profile: local_participant_v2
+            record_profile: serialized_records_v2
+            control_profile: learned_belief_v1
+          - backend: mmbert
+            feature_profile: local_participant_v2
+            record_profile: serialized_records_v2
+            control_profile: learned_belief_v1
+          - backend: hashing_reference_v1
+            feature_profile: local_participant_v2
+            record_profile: serialized_records_v2
+            control_profile: shared_head_mixture_v2
+          - backend: mmbert
+            feature_profile: local_participant_v2
+            record_profile: serialized_records_v2
+            control_profile: shared_head_mixture_v2
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pin source and isolated CPU runtime
+        run: |
+          git rev-parse HEAD > source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > source.tar.gz
+          python3 -m venv /tmp/tracking-venv
+          /tmp/tracking-venv/bin/pip install numpy==2.2.6 psutil==7.0.0 transformers==4.57.3 huggingface-hub==0.36.0
+          /tmp/tracking-venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          /tmp/tracking-venv/bin/pip freeze > environment.txt
+      - name: Train only on simulator operations then score original fixed-revision tasks
+        shell: bash
+        env:
+          HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+          HF_HUB_DISABLE_TELEMETRY: "1"
+          TOKENIZERS_PARALLELISM: "false"
+          BACKEND: ${{ matrix.backend }}
+          FEATURE_PROFILE: ${{ matrix.feature_profile }}
+          RECORD_PROFILE: ${{ matrix.record_profile }}
+          CONTROL_PROFILE: ${{ matrix.control_profile }}
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/tracking-venv/bin/python -m unittest fbsde_tracking_tensor_checks fbsde_tracking_features_tensor_checks fbsde_tracking_records_tensor_checks fbsde_tracking_control_tensor_checks -v 2>&1 | tee tensor-tests.log
+          if [ "$CONTROL_PROFILE" = "shared_head_mixture_v2" ]; then
+            /tmp/tracking-venv/bin/python -m unittest fbsde_tracking_mixture_tensor_checks -v 2>&1 | tee mixture-tests.log
+          fi
+          /tmp/tracking-venv/bin/python qualification/neuron-stem/fbsde_study.py \
+            --profile verified_tracking_v1 --tracking-source bbh --backend "$BACKEND" --tracking-feature-profile "$FEATURE_PROFILE" --tracking-record-profile "$RECORD_PROFILE" --tracking-control-profile "$CONTROL_PROFILE" \
+            --model-dir /tmp/tracking-mmbert --output tracking-study 2>&1 | tee study.log
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: verified-tracking-${{ matrix.backend }}-${{ matrix.feature_profile }}-${{ matrix.record_profile }}-${{ matrix.control_profile }}-${{ github.run_id }}
+          path: |
+            source.txt
+            source.tar.gz
+            environment.txt
+            tensor-tests.log
+            mixture-tests.log
+            study.log
+            tracking-study/
+          if-no-files-found: error
+          retention-days: 30
+
+  input-tied-challenge:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pin source and CPU test runtime
+        run: |
+          git rev-parse HEAD > tied-source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > tied-source.tar.gz
+          python3 -m venv /tmp/tied-venv
+          /tmp/tied-venv/bin/pip install numpy==2.2.6 psutil==7.0.0
+          /tmp/tied-venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          /tmp/tied-venv/bin/pip freeze > tied-environment.txt
+      - name: Independent-input mechanism and held-out syntax stress
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/tied-venv/bin/python -m unittest test_fbsde_tracking_tied fbsde_tracking_tied_tensor_checks -v 2>&1 | tee tied-tests.log
+          /tmp/tied-venv/bin/python qualification/neuron-stem/fbsde_study.py \
+            --profile input_tied_challenge_v1 --output tied-study 2>&1 | tee tied-study.log
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: input-tied-challenge-${{ github.run_id }}
+          path: |
+            tied-source.txt
+            tied-source.tar.gz
+            tied-environment.txt
+            tied-tests.log
+            tied-study.log
+            tied-study/
+          if-no-files-found: error
+          retention-days: 30

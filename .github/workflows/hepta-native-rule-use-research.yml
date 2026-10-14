@@ -1,0 +1,80 @@
+name: Hepta native RuleSlot research composition
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-learning-artifacts/**"
+      - "codex-rs/hepta-agentd/src/rule_artifact*.rs"
+      - "codex-rs/hepta-agentd/src/lib.rs"
+      - "codex-rs/hepta-agentd/Cargo.toml"
+      - "qualification/neuron-stem/fbsde_native_rule*.py"
+      - "qualification/neuron-stem/test_fbsde_native_rule.py"
+      - "qualification/neuron-stem/native-rule-use/**"
+      - ".github/workflows/hepta-native-rule-use-research.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  native-rule-use:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [head, merge]
+    env:
+      CARGO_BUILD_JOBS: "2"
+      CARGO_INCREMENTAL: "0"
+      PYTHONPATH: qualification/neuron-stem
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just,cargo-nextest
+      - name: Preserve the actual checked-out research source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > native-rule-source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem codex-rs/hepta-agentd/src/rule_artifact.rs codex-rs/hepta-agentd/src/rule_artifact_tests.rs codex-rs/hepta-learning-artifacts codex-rs/hepta-contracts codex-rs/hepta-infer-core codex-rs/hepta-types codex-rs/utils/cargo-bin codex-rs/rust-toolchain.toml codex-rs/Cargo.toml codex-rs/Cargo.lock > native-rule-source.tar.gz
+      - name: Run native owner and inference contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd codex-rs
+          just test -p codex-hepta-learning-artifacts -p codex-hepta-contracts -p codex-hepta-infer-core --cargo-profile dev-small 2>&1 | tee ../native-rule-contracts.log
+      - name: Compile the exact opt-in native composition and execute real files
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m unittest test_fbsde_native_rule -v 2>&1 | tee native-rule-adapter.log
+          python3 qualification/neuron-stem/native-rule-use/build_shadow.py --output "$RUNNER_TEMP/native-rule-build" 2>&1 | tee native-rule-build.log
+          cp "$RUNNER_TEMP/native-rule-build/provenance.json" native-rule-provenance.json
+          python3 qualification/neuron-stem/fbsde_native_rule_study.py --executable "$RUNNER_TEMP/native-rule-build/codex-rs/target/debug/native-rule-use" --output native-rule-study 2>&1 | tee native-rule-study.log
+          python3 qualification/neuron-stem/fbsde_native_rule_artifact_checks.py native-rule-study 2>&1 | tee native-rule-artifacts.log
+          git diff --exit-code
+      - name: Keep raw failures and observations without promotion
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-rule-research-${{ matrix.source }}-${{ github.run_id }}
+          path: |
+            native-rule-source.txt
+            native-rule-source.tar.gz
+            native-rule-contracts.log
+            native-rule-adapter.log
+            native-rule-build.log
+            native-rule-provenance.json
+            native-rule-study.log
+            native-rule-artifacts.log
+            native-rule-study/
+          if-no-files-found: error
+          retention-days: 30

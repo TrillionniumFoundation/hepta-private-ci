@@ -364,7 +364,14 @@ fn injected_clock_is_the_only_final_use_time_source() {
         Arc::new(FixedClock(2_000)),
     )
     .unwrap();
-    assert!(authority.claim(&signed, &signed.grant.binding).is_ok());
+    assert_eq!(authority.clock_unix_ms().unwrap(), 2_000);
+    let token = authority.claim(&signed, &signed.grant.binding).unwrap();
+    assert_eq!(token.expires_at_unix_ms(), 3_000);
+    authority
+        .with_verified_effect(token, &signed.grant.binding, || {
+            assert_eq!(authority.clock_unix_ms().unwrap(), 2_000);
+        })
+        .unwrap();
 }
 
 #[test]
@@ -783,6 +790,7 @@ fn synchronous_final_use_rejects_a_concurrent_revocation_commit() {
     let (authority, signed, _directory) = fixture().unwrap();
     let binding = signed.grant.binding.clone();
     let token = authority.claim(&signed, &binding).unwrap();
+    assert_eq!(token.expires_at_unix_ms(), signed.grant.expires_at_unix_ms);
     let updater = authority.clone();
     let grant_id = signed.grant.grant_id.clone();
 

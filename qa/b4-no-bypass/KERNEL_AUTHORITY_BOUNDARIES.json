@@ -42,7 +42,8 @@
         "issuer_key_ids",
         "frontier",
         "capacity",
-        "revocation_head"
+        "revocation_head",
+        "clock_unix_ms"
       ]
     },
     {
@@ -503,7 +504,8 @@
         "FinalUseAuthority\\s*::\\s*with_verified_effect\\s*\\("
       ],
       "allowedCallers": [
-        "codex-rs/hepta-automation/src/authorized_effect.rs"
+        "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "codex-rs/hepta-agentd/src/rule_artifact.rs"
       ]
     },
     {

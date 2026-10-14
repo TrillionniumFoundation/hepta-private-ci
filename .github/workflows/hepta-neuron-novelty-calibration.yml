@@ -1,0 +1,59 @@
+name: Hepta frozen-Head novelty calibration research
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/neuron-stem/fbsde_tracking_novelty*.py"
+      - "qualification/neuron-stem/test_fbsde_tracking_novelty.py"
+      - "qualification/neuron-stem/fbsde_study.py"
+      - ".github/workflows/hepta-neuron-novelty-calibration.yml"
+
+permissions:
+  contents: read
+
+jobs:
+
+  novelty-calibration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pin source and isolated CPU environment
+        run: |
+          git rev-parse HEAD > novelty-source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > novelty-source.tar.gz
+          python3 -m venv /tmp/novelty-venv
+          /tmp/novelty-venv/bin/pip install numpy==2.2.6 psutil==7.0.0
+          /tmp/novelty-venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          /tmp/novelty-venv/bin/pip freeze > novelty-environment.txt
+      - name: Preserve baseline, calibrate on separate frames, score new frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/novelty-venv/bin/python -m unittest test_fbsde_tracking_novelty fbsde_tracking_novelty_tensor_checks -v 2>&1 | tee novelty-tests.log
+          /tmp/novelty-venv/bin/python qualification/neuron-stem/fbsde_study.py \
+            --profile input_tied_challenge_v1 --output novelty-frozen-source 2>&1 | tee novelty-base.log
+          /tmp/novelty-venv/bin/python qualification/neuron-stem/fbsde_study.py \
+            --profile novelty_calibration_v1 --evidence-dir novelty-frozen-source \
+            --output novelty-study 2>&1 | tee novelty-study.log
+          git diff --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: novelty-calibration-${{ github.run_id }}
+          path: |
+            novelty-source.txt
+            novelty-source.tar.gz
+            novelty-environment.txt
+            novelty-tests.log
+            novelty-base.log
+            novelty-study.log
+            novelty-frozen-source/
+            novelty-study/
+          if-no-files-found: error
+          retention-days: 30

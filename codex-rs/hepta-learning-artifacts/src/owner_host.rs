@@ -257,6 +257,22 @@ impl ArtifactOwnerVerifierV1 {
             registry,
             verified.witness_digest,
             verified.trust_digest,
+            self.current_valid_until(signed_head)?,
+        ))
+    }
+
+    fn current_valid_until(
+        &self,
+        signed: &SignedCurrentArtifactHeadV1,
+    ) -> Result<u64, ArtifactOwnerHostError> {
+        let signer = self
+            .head_signers
+            .get(&signed.witness.signer_id)
+            .ok_or(ArtifactOwnerHostError::UnknownSigner)?;
+        Ok(signed.witness.expires_at.min(signer.expires_at).min(
+            signer
+                .revoked_at
+                .map_or(u64::MAX, |at| at.saturating_sub(1)),
         ))
     }
 
@@ -352,6 +368,8 @@ pub struct LearningArtifactOwnerHost {
     lease: SignedArtifactWriterLeaseV1,
     verified_lease: VerifiedArtifactWriterLeaseV1,
     required_current_head: Option<SignedCurrentArtifactHeadV1>,
+    #[cfg(test)]
+    pub(crate) acknowledgement_sync_fault: std::sync::atomic::AtomicBool,
 }
 
 impl fmt::Debug for LearningArtifactOwnerHost {
@@ -438,6 +456,8 @@ impl LearningArtifactOwnerHost {
             lease,
             verified_lease,
             required_current_head,
+            #[cfg(test)]
+            acknowledgement_sync_fault: std::sync::atomic::AtomicBool::new(false),
         })
     }
 
@@ -870,6 +890,7 @@ impl LearningArtifactOwnerHost {
             registry,
             current.witness_digest,
             current.trust_digest,
+            self.verifier.current_valid_until(&current.signed)?,
         ))
     }
 
@@ -1089,7 +1110,57 @@ impl LearningArtifactOwnerHost {
     ) -> Result<(), ArtifactOwnerHostError> {
         let checkpoint =
             checkpoint_from_snapshot(&transaction.snapshot(), self.verified_lease.lease_digest);
-        let bytes = encode_checkpoint(&checkpoint);
+        self.persist_publication_checkpoint(&checkpoint)
+    }
+
+    /// Reconcile readable acknowledgement bytes through actual file sync before
+    /// a named owner clears an uncertain-publication fence.
+    pub(crate) fn reconcile_acknowledged_publication(
+        &self,
+        checkpoint: &ArtifactOwnerPublicationCheckpointV1,
+    ) -> Result<(), ArtifactOwnerHostError> {
+        if checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+        self.persist_publication_checkpoint(checkpoint)
+    }
+
+    pub(crate) fn reconcile_readable_acknowledgements(&self) -> Result<(), ArtifactOwnerHostError> {
+        for entry in fs::read_dir(self.root.join("transactions"))? {
+            let entry = entry?;
+            if entry.path().extension().and_then(|value| value.to_str()) != Some("checkpoint") {
+                continue;
+            }
+            let checkpoint =
+                decode_checkpoint(&read_small_record(&entry.path(), MAX_SMALL_RECORD_BYTES)?)?;
+            if checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged {
+                self.reconcile_acknowledged_publication(&checkpoint)?;
+            }
+        }
+        Ok(())
+    }
+
+    fn persist_publication_checkpoint(
+        &self,
+        checkpoint: &ArtifactOwnerPublicationCheckpointV1,
+    ) -> Result<(), ArtifactOwnerHostError> {
+        let bytes = encode_checkpoint(checkpoint);
+        #[cfg(test)]
+        if checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged
+            && self
+                .acknowledgement_sync_fault
+                .swap(false, std::sync::atomic::Ordering::Relaxed)
+        {
+            return write_create_only_or_exact_with_sync(
+                &self.checkpoint_path(&checkpoint.operation_id, checkpoint.phase),
+                &bytes,
+                |_| {
+                    Err(std::io::Error::other(
+                        "injected acknowledgement sync failure",
+                    ))
+                },
+            );
+        }
         write_create_only_or_exact(
             &self.checkpoint_path(&checkpoint.operation_id, checkpoint.phase),
             &bytes,
@@ -1461,6 +1532,14 @@ fn ensure_real_directory(root: &Path, name: &str) -> Result<(), ArtifactOwnerHos
 }
 
 fn write_create_only_or_exact(path: &Path, bytes: &[u8]) -> Result<(), ArtifactOwnerHostError> {
+    write_create_only_or_exact_with_sync(path, bytes, File::sync_all)
+}
+
+fn write_create_only_or_exact_with_sync(
+    path: &Path,
+    bytes: &[u8],
+    sync: impl FnOnce(&File) -> std::io::Result<()>,
+) -> Result<(), ArtifactOwnerHostError> {
     let mut options = OpenOptions::new();
     options.read(true).write(true).create_new(true);
     #[cfg(unix)]
@@ -1468,13 +1547,14 @@ fn write_create_only_or_exact(path: &Path, bytes: &[u8]) -> Result<(), ArtifactO
     match options.open(path) {
         Ok(mut file) => {
             file.write_all(bytes)
-                .and_then(|()| file.sync_all())
+                .and_then(|()| sync(&file))
                 .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
             Ok(())
         }
         Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
             if read_small_record(path, MAX_SMALL_RECORD_BYTES)? == bytes {
-                Ok(())
+                let file = OpenOptions::new().read(true).write(true).open(path)?;
+                sync(&file).map_err(|_| ArtifactOwnerHostError::Indeterminate)
             } else {
                 Err(ArtifactOwnerHostError::IdentityConflict)
             }

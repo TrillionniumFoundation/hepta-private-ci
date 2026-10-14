@@ -1,0 +1,220 @@
+name: Hepta verified local feedback learning
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "qualification/neuron-stem/fbsde_transfer*.py"
+      - "qualification/neuron-stem/test_fbsde_transfer.py"
+      - "qualification/neuron-stem/test_fbsde_selection_roundoff.py"
+      - "qualification/neuron-stem/fbsde_tracking_feedback*.py"
+      - "qualification/neuron-stem/fbsde_depth*.py"
+      - "qualification/neuron-stem/fbsde_role*.py"
+      - "qualification/neuron-stem/test_fbsde_role_program.py"
+      - "qualification/neuron-stem/fbsde_gain*.py"
+      - "qualification/neuron-stem/test_fbsde_gain.py"
+      - "qualification/neuron-stem/fbsde_prepared_gate*.py"
+      - "qualification/neuron-stem/test_fbsde_prepared_gate.py"
+      - "qualification/neuron-stem/prepared_gate_artifact_checks.py"
+      - "qualification/neuron-stem/fbsde_outcome*.py"
+      - "qualification/neuron-stem/test_fbsde_outcome.py"
+      - "qualification/neuron-stem/fbsde_planning_workspace.py"
+      - "qualification/neuron-stem/test_fbsde_planning_workspace.py"
+      - "qualification/neuron-stem/fbsde_tracking_control.py"
+      - "qualification/neuron-stem/fbsde_tracking_tied.py"
+      - "qualification/neuron-stem/test_fbsde_depth.py"
+      - "qualification/neuron-stem/test_fbsde_tracking_feedback.py"
+      - "qualification/neuron-stem/fbsde_conditional*.py"
+      - "qualification/neuron-stem/test_fbsde_conditional_program.py"
+      - "qualification/neuron-stem/fbsde_effect*.py"
+      - "qualification/neuron-stem/test_fbsde_effect_family.py"
+      - "qualification/neuron-stem/fbsde_study.py"
+      - ".github/workflows/hepta-neuron-feedback-learning.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  feedback:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [head, merge]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Pin exact source and CPU runtime
+        run: |
+          git rev-parse HEAD > source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > source.tar.gz
+          python3 -m venv /tmp/feedback-venv
+          /tmp/feedback-venv/bin/pip install numpy==2.2.6
+          /tmp/feedback-venv/bin/pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0+cpu
+          /tmp/feedback-venv/bin/pip freeze > environment.txt
+      - name: Preserve source regressions and execute new actual tensor contracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python -m unittest discover -s qualification/neuron-stem -p 'test_*.py' -v 2>&1 | tee source-tests.log
+          /tmp/feedback-venv/bin/python -m unittest fbsde_tracking_feedback_tensor_checks -v 2>&1 | tee tensor-tests.log
+      - name: Build the unchanged source then run separate feedback candidates
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile input_tied_challenge_v1 --output base-study 2>&1 | tee base-study.log
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile verified_feedback_learning_v1 --evidence-dir base-study --output feedback-study 2>&1 | tee feedback-study.log
+          git diff --exit-code
+      - name: Learn computation depth without reusing test scores
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python -m unittest fbsde_depth_tensor_checks -v 2>&1 | tee depth-tensor-tests.log
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile learned_depth_allocation_v1 --evidence-dir base-study --output depth-study 2>&1 | tee depth-study.log
+          git diff --exit-code
+      - name: Reuse paid belief continuations without changing the policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile learned_depth_allocation_v1 --depth-planning-engine shared_continuation_v2 --evidence-dir base-study --output depth-reuse-study 2>&1 | tee depth-reuse-study.log
+          /tmp/feedback-venv/bin/python -c "from fbsde_depth_reuse_audit import compare_runs; from four_gate_common import write_once; from pathlib import Path; write_once(Path('depth-engine-comparison.json'), compare_runs('depth-study','depth-reuse-study'))"
+          git diff --exit-code
+      - name: Contrast internal gain with verified source outcomes on new frames
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python -m unittest fbsde_outcome_tensor_checks -v 2>&1 | tee outcome-tensor-tests.log
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile outcome_depth_routing_v1 --evidence-dir depth-reuse-study --output outcome-study 2>&1 | tee outcome-study.log
+          /tmp/feedback-venv/bin/python -m unittest fbsde_outcome_artifact_checks -v 2>&1 | tee outcome-artifact-tests.log
+          git diff --exit-code
+      - name: Compare prepared frozen gates without retuning policies
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile prepared_gate_execution_v1 --evidence-dir outcome-study --output prepared-gate-study 2>&1 | tee prepared-gate-study.log
+          /tmp/feedback-venv/bin/python -m unittest prepared_gate_artifact_checks -v 2>&1 | tee prepared-gate-artifact-tests.log
+          git diff --exit-code
+      - name: Learn signed computation gain without changing prior experiments
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python -m unittest fbsde_gain_tensor_checks -v 2>&1 | tee gain-tensor-tests.log
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile gain_weighted_routing_v1 --evidence-dir outcome-study --output gain-study 2>&1 | tee gain-study.log
+          HEPTA_GAIN_ARTIFACT=gain-study HEPTA_GAIN_SOURCE=outcome-study /tmp/feedback-venv/bin/python -m unittest fbsde_gain_artifact_checks -v 2>&1 | tee gain-artifact-tests.log
+          git diff --exit-code
+      - name: Expand and verify episode-local role hypotheses
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile verified_role_program_v1 --evidence-dir outcome-study --output role-study 2>&1 | tee role-study.log
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_role_artifact_checks.py --study role-study --source outcome-study 2>&1 | tee role-artifact-tests.log
+          git diff --exit-code
+      - name: Detect and revise effect families without erasing observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile effect_family_revision_v1 --output effect-study 2>&1 | tee effect-study.log
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_effect_artifact_checks.py -v effect-study 2>&1 | tee effect-artifact-checks.log
+          git diff --exit-code
+      - name: Infer conditional programs without oracle predecessor states
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=qualification/neuron-stem
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_study.py --profile conditional_program_induction_v1 --output conditional-study 2>&1 | tee conditional-study.log
+          /tmp/feedback-venv/bin/python qualification/neuron-stem/fbsde_conditional_artifact_checks.py -v conditional-study 2>&1 | tee conditional-artifact-tests.log
+          git diff --exit-code
+      - name: Preserve original outputs and failures, never grant promotion
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: feedback-learning-${{ matrix.source }}-${{ github.run_id }}
+          path: |
+            role-study.log
+            role-artifact-tests.log
+            role-study/
+            effect-study.log
+            effect-artifact-checks.log
+            effect-study/
+            conditional-study/
+            conditional-study.log
+            conditional-artifact-tests.log
+            source.txt
+            source.tar.gz
+            environment.txt
+            source-tests.log
+            tensor-tests.log
+            base-study.log
+            feedback-study.log
+            base-study/
+            feedback-study/
+            feedback-test-evidence/
+            depth-tensor-tests.log
+            depth-study.log
+            depth-study/
+            depth-reuse-study.log
+            depth-reuse-study/
+            depth-engine-comparison.json
+            gain-study/
+            gain-study.log
+            gain-tensor-tests.log
+            gain-artifact-tests.log
+            outcome-tensor-tests.log
+            outcome-artifact-tests.log
+            outcome-study.log
+            outcome-study/
+            prepared-gate-study/
+            prepared-gate-study.log
+            prepared-gate-artifact-tests.log
+          if-no-files-found: error
+          retention-days: 30
+
+  cross-state-transfer:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        source: [head, merge]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ matrix.source == 'head' && github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Execute source-bound finite transfer independently of neural jobs
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > transfer-source.txt
+          git archive --format=tar.gz HEAD qualification/neuron-stem > transfer-source.tar.gz
+          export PYTHONPATH=qualification/neuron-stem
+          python3 -m unittest test_fbsde_selection_roundoff test_fbsde_transfer -v 2>&1 | tee transfer-tests.log
+          python3 qualification/neuron-stem/fbsde_study.py --profile counterfactual_rule_transfer_v1 --output transfer-study 2>&1 | tee transfer-study.log
+          python3 qualification/neuron-stem/fbsde_transfer_artifact_checks.py -v transfer-study 2>&1 | tee transfer-artifact-tests.log
+          git diff --exit-code
+      - name: Preserve source, completed and failed experiments
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cross-state-transfer-${{ matrix.source }}-${{ github.run_id }}
+          path: |
+            transfer-source.txt
+            transfer-source.tar.gz
+            transfer-tests.log
+            transfer-study.log
+            transfer-artifact-tests.log
+            transfer-study/
+          if-no-files-found: error
+          retention-days: 30

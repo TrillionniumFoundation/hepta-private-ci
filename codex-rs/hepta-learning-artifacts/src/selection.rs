@@ -159,6 +159,12 @@ impl VerifiedArtifactSelectionV1 {
     pub const fn authority(&self) -> AuthorityPosture {
         self.authority
     }
+
+    /// Inclusive UNIX-second bound from CURRENT, the selection and selector key.
+    #[must_use]
+    pub const fn valid_until(&self) -> u64 {
+        self.expires_at
+    }
 }
 
 #[derive(Clone, Debug)]
@@ -274,6 +280,7 @@ impl ArtifactSelectionVerifierV1 {
             || signed.authority_epoch == 0
             || signed.issued_at > now
             || now > signed.expires_at
+            || now > current.valid_until()
             || signed.issued_at > signed.expires_at
             || signed.selector_credential_digest.is_zero()
             || signed.registry_head_digest.is_zero()
@@ -340,7 +347,15 @@ impl ArtifactSelectionVerifierV1 {
             selector_credential_digest: signed.selector_credential_digest,
             authority_epoch: signed.authority_epoch,
             issued_at: signed.issued_at,
-            expires_at: signed.expires_at,
+            expires_at: signed
+                .expires_at
+                .min(current.valid_until())
+                .min(selector.expires_at)
+                .min(
+                    selector
+                        .revoked_at
+                        .map_or(u64::MAX, |at| at.saturating_sub(1)),
+                ),
             trust_digest: self.trust_digest,
             authority: AuthorityPosture::DENY_ALL,
         })
@@ -556,6 +571,7 @@ mod tests {
             registry,
             digest("witness"),
             owner_verifier.trust_digest(),
+            /*valid_until*/ 100,
         )
     }
 
