@@ -16,7 +16,7 @@ import subprocess
 import sys
 from typing import Any
 
-ARMS = ("v1", "v2", "v3", "ssm")
+ARMS = ("v1", "v2", "v3", "ssm", "min_gru")
 SCALES = (64, 256, 1024, 4096)
 REPORT_SCHEMA = "hepta.neuron.mechanism-resource-probe.v1"
 EVIDENCE_KIND = "UNVERIFIED_KERNEL_ONLY_NOT_TARGET_HOST_ACCEPTANCE"
@@ -39,6 +39,7 @@ def validate_probe(
     require(value.get("evidence_kind") == EVIDENCE_KIND, "synthetic probe kind mislabeled")
     for key in (
         "production_qualification", "ndu_eligible", "trained_model",
+        "all_model_parameter_budgets_matched",
         "state_persistence_measured", "microbatch_and_gpu_measured",
         "artifact_provenance_verified",
     ):
@@ -102,6 +103,7 @@ def run(binary: Path, trace_file: Path) -> dict[str, Any]:
         "source_evidence_kind": EVIDENCE_KIND,
         "target_host_qualified": False,
         "trained_artifacts_qualified": False,
+        "parameter_budgets_matched": False,
         "ndu_eligible": False,
         "trace_sha256": digest,
         "arms": list(ARMS),
