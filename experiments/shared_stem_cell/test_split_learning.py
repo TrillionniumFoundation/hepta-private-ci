@@ -54,11 +54,31 @@ class SplitLearningTests(unittest.TestCase):
 
     def test_invalid_router_inputs_rejected(self):
         for x in (self.x.double(), self.x[:0], torch.full_like(self.x, float("nan")),
-                  torch.full_like(self.x, 1e10), torch.zeros(2, 513)):
+                  torch.full_like(self.x, 1e10), torch.zeros(2, 769)):
             with self.assertRaises(e.InputError):
                 TrainingPartition.fit(x)
         with self.assertRaises(e.InputError):
             self.partition.assign(torch.ones(2, 3))
+
+    def test_modernbert_768d_offline_routing_does_not_relax_native_profile(self):
+        # Offline FP32 training-only centroid owner may consume 768d features.
+        # It neither emits Q24 native ticks nor authorizes a production model.
+        torch.manual_seed(73)
+        features = torch.randn(16, 768, dtype=torch.float32)
+        snapshot = features.clone()
+        state = torch.get_rng_state().clone()
+        route, cost = TrainingPartition.fit(features)
+        self.assertTrue(torch.equal(state, torch.get_rng_state()))
+        self.assertTrue(torch.equal(snapshot, features))
+        self.assertEqual(route.centers.shape, (2, 768))
+        self.assertEqual(cost["centroid_bytes"], 2 * 768 * 4)
+        self.assertEqual(sum(cost["training_route_counts"]), len(features))
+        self.assertFalse(cost["labels_consumed"])
+        self.assertEqual(route.append_route(features).shape, (16, 769))
+        with self.assertRaises(e.InputError):
+            TrainingPartition.fit(torch.zeros(2, 769, dtype=torch.float32))
+        with self.assertRaises(e.InputError):
+            route.assign(torch.zeros(2, 512, dtype=torch.float32))
 
     def test_unsplit_capacity_preserves_parent_function_and_capped_parameters(self):
         count = e.parameters(self.parent)["parameters"]
