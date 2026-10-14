@@ -178,6 +178,49 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             f"kernel.authority privileged boundaries missing from privileged_inventory: {sorted(canonical - required)}",
         )
 
+    def test_cell_split_mutation_admission_has_closed_world_callers(self) -> None:
+        # The public coordinator seam takes a caller-supplied admission
+        # callback, so a hash or an always-OK closure is not an authorization.
+        # Keep production references restricted to the Agentd bridge that
+        # actually rechecks independent live Control, NDU and Selector state.
+        # This source inventory is a defense in depth, not a replacement for
+        # final-use enforcement by each durable effect owner.
+        symbol = "run_pinned_cell_split_execution_with_admission_v1"
+        expected = {
+            "codex-rs/hepta-operator-acceptance/src/lib.rs",
+            "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs",
+            "codex-rs/hepta-agentd/src/cell_split_execution.rs",
+        }
+        observed: set[str] = set()
+        for path in self.rust_sources():
+            relative = path.relative_to(ROOT).as_posix()
+            if "/tests/" in f"/{relative}" or relative.endswith("_tests.rs"):
+                continue
+            if symbol not in path.read_text(encoding="utf-8"):
+                continue
+            code = self.lexical_code(relative)
+            if re.search(rf"\b{re.escape(symbol)}\b", code):
+                observed.add(relative)
+        self.assertEqual(
+            observed,
+            expected,
+            "Cell Split admission acquired an unreviewed production caller",
+        )
+
+        owner_source = self.lexical_code(
+            "codex-rs/hepta-operator-acceptance/src/cell_split_execution_owner.rs"
+        )
+        self.assertRegex(
+            owner_source,
+            r"\bpub\(crate\)\s+fn\s+advance_with_admission\s*\(",
+            "Cell Split's raw effect coordinator must remain crate-private",
+        )
+        self.assertNotRegex(
+            owner_source,
+            r"\bpub\s+fn\s+advance_with_admission\s*\(",
+            "no public raw Cell Split effect dispatch without Agentd admission",
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()
