@@ -171,7 +171,7 @@ pub trait CellSplitEvidenceRetentionReadPortV1 {
 #[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct CellSplitEvidenceObserverReceiptV1 {
-    pub join: CellSplitObserverJoinReceiptV1,
+    pub join: CellSplitObserverDeepReceiptV1,
     pub effect_receipt_digest: String,
     pub original_sample_binding_digest: String,
     pub independently_retained_record_digest: String,
@@ -591,12 +591,21 @@ fn verify_evidence_retention_readback_v1(
 /// pinned live Unix owner port can supply the four fresh readbacks.
 #[cfg(unix)]
 #[allow(clippy::too_many_arguments)]
-pub fn verify_cell_split_evidence_retention_join_v1<R: CellSplitEvidenceRetentionReadPortV1>(
+pub fn verify_cell_split_evidence_retention_join_v1<
+    R: CellSplitEvidenceRetentionReadPortV1,
+    M: CellSplitSupervisorMinimumOnlinePortV1,
+    H: CellSplitSupervisorMonotonicFrontierPortV1,
+>(
     join: &CellSplitSignedObserverJoinV1,
     transcript: &CellSplitExecutionTranscriptV1,
     owner_trust: &CellSplitOwnerTrustV1,
     host_evidence: &CellSplitSignedTargetHostEvidenceV1,
     evidence_policy: &CellSplitTargetHostEvidenceTrustPolicyV1,
+    original_runtime_trust: &CellSplitObserverOriginalRuntimeTrustV1<'_>,
+    trusted_supervisor_minimum_key: &VerifyingKey,
+    supervisor_minimum_store: &mut M,
+    trusted_supervisor_monotonic_key: &VerifyingKey,
+    supervisor_monotonic: &mut H,
     live_owners: &mut CellSplitUnixEffectPortV1,
     step_index: usize,
     candidate: &CellSplitEvidenceMetricBindingV1,
@@ -617,6 +626,10 @@ pub fn verify_cell_split_evidence_retention_join_v1<R: CellSplitEvidenceRetentio
         || trusted_retention_domain.len() > 256
         || trusted_retention_key.is_weak()
         || owner_trust.contains_owner_key(trusted_retention_key)
+        || trusted_retention_key == original_runtime_trust.cns_original_runtime_key
+        || trusted_retention_key == original_runtime_trust.supervisor_original_journal_key
+        || trusted_retention_key == trusted_supervisor_minimum_key
+        || trusted_retention_key == trusted_supervisor_monotonic_key
         || evidence_policy
             .host_keys
             .values()
@@ -648,12 +661,17 @@ pub fn verify_cell_split_evidence_retention_join_v1<R: CellSplitEvidenceRetentio
         &first,
         trusted_retention_key,
     )?;
-    let current = verify_cell_split_observer_join_v1(
+    let current = verify_cell_split_observer_join_deep_v1(
         join,
         transcript,
         owner_trust,
         host_evidence,
         evidence_policy,
+        original_runtime_trust,
+        trusted_supervisor_minimum_key,
+        supervisor_minimum_store,
+        trusted_supervisor_monotonic_key,
+        supervisor_monotonic,
         live_owners,
     )?;
     let final_nonce = rand::random::<[u8; 32]>()
