@@ -6,6 +6,7 @@ import torch
 
 from amcn_core import Refused
 from amcn_multimodal import Span, Binding, TrainingPair, train_connector
+from experiments.shared_stem_cell.execution import tensor_digest
 
 
 def sha(text):
@@ -15,7 +16,8 @@ def sha(text):
 def span(event, modality, suffix, *, start=100, end=300, scope="lab", revoked=False):
     return Span(f"{event}-{suffix}", event, f"root-{event}", scope, "g1",
                 modality, sha("asset-"+event+suffix), sha("normalizer-v1"),
-                sha("encoder-"+modality), start, end, revoked)
+                tensor_digest(torch.tensor([1., 0.] if event == "e1" else [0., 1.], dtype=torch.float32)),
+                start, end, revoked)
 
 
 class CrossModalMechanicsTests(unittest.TestCase):
