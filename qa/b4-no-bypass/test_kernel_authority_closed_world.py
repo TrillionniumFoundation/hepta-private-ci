@@ -276,7 +276,14 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             join_body,
             "separate readback may release the lock before receipt comparison",
         )
-        self.assertRegex(join_body, r"\bstate\s*\.\s*verify_original_paths\s*\(\s*\)")
+        self.assertRegex(
+            join_body,
+            r"\bstate\s*\.\s*verify_original_paths\s*\(\s*"
+            r"state\s*\.\s*bytes\s*,\s*"
+            r"state\s*\.\s*sequence\s*,\s*"
+            r"state\s*\.\s*head\s*\)",
+            "original CNS receipt join must bind live WAL bytes, sequence and head",
+        )
         self.assertRegex(join_body, r"\bstate\s*\.\s*pending_cutover\b")
         self.assertNotIn(
             "drop(state)", join_body, "no Control lock release before joined equality"
