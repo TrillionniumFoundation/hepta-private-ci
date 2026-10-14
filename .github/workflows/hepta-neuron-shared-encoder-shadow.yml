@@ -79,7 +79,7 @@ jobs:
           DATA_SHA="$(sha256sum smoke_dataset.jsonl | cut -d' ' -f1)"
           python3 -m neuron_shared_encoder.validation_v3 e2-heads --allow-synthetic --dataset smoke_dataset.jsonl --dataset-sha256 "$DATA_SHA" --output e2_dynamic_heads.json --steps 2 --budgets 2048 16384
           python3 -m neuron_shared_encoder.validation_v3 e3-reuse --allow-synthetic --dataset smoke_dataset.jsonl --dataset-sha256 "$DATA_SHA" --output e3_input_reuse.json --batch 32
-          printf '{}\\n' > absent_host_and_model_receipts.json
+          echo '{}' > absent_host_and_model_receipts.json
           INPUT_SHA="$(sha256sum absent_host_and_model_receipts.json | cut -d' ' -f1)"
           python3 -m neuron_shared_encoder.validation_v3 e1-plan --input-json absent_host_and_model_receipts.json --input-sha256 "$INPUT_SHA" --output e1_missing_real_models.json
           python3 -m neuron_shared_encoder.validation_v3 e5-host --input-json absent_host_and_model_receipts.json --input-sha256 "$INPUT_SHA" --output e5_missing_host_receipts.json
