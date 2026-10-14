@@ -259,3 +259,124 @@ fn local_binding_is_non_authorizing_even_when_retained_readback_is_valid() {
         "fixture validates an offline signature, not live owner custody"
     );
 }
+
+#[test]
+fn live_original_evidence_owner_denies_fabricated_or_staged_candidate() {
+    use codex_hepta_evidence::metrics_group_commit::MetricsCommittedSampleQueryV1;
+    use codex_hepta_types::PhaseMetricEventV1;
+    use codex_hepta_types::PhaseMetricKindV1;
+    use codex_hepta_types::PhaseMetricSinkV1 as _;
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let (_, mut local) = candidate(0);
+    let root = tempfile::tempdir().expect("original Evidence root");
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Evidence directory");
+    let path = root.path().join("original.wal");
+    let sink = DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000)
+        .expect("genuine Evidence-owned Writer");
+    let query = MetricsCommittedSampleQueryV1 {
+        scope_digest: local.scope_digest.parse().expect("exact scope digest"),
+        operation_digest: local.operation_digest.parse().expect("exact operation digest"),
+        phase: MetricPhaseV1::Cas,
+        succeeded: true,
+    };
+    assert!(
+        verify_live_original_evidence_sample_v1(&sink, &local).is_err(),
+        "unsigned caller-supplied historical mirror is never enough"
+    );
+    sink.record(PhaseMetricEventV1 {
+        scope_digest: query.scope_digest,
+        operation_digest: query.operation_digest,
+        phase: PhaseMetricKindV1::Cas,
+        latency_micros: 1,
+        succeeded: true,
+    })
+    .expect("staged original metric");
+    assert!(
+        verify_live_original_evidence_sample_v1(&sink, &local).is_err(),
+        "in-memory staged metric is not a fsynced original-owner proof"
+    );
+    sink.flush().expect("durable original WAL and F1 frontier");
+    let live = sink
+        .read_committed_sample(query)
+        .expect("read real original group")
+        .expect("one exact committed operation");
+    local.matching_rows = live.matching_rows;
+    local.first_group_sequence = live.first_group_sequence;
+    local.last_group_sequence = live.last_group_sequence;
+    local.last_group_head_digest = live.last_group_head.to_string();
+    local.terminal_group_sequence = live.frontier.sequence;
+    local.terminal_head_digest = live.frontier.head_digest.to_string();
+    local.terminal_committed_rows = live.frontier.committed_rows;
+    local.terminal_journal_bytes = live.frontier.journal_bytes;
+    local.wal_device = live.frontier.wal_device;
+    local.wal_inode = live.frontier.wal_inode;
+    local.marker_device = live.frontier.marker_device;
+    local.marker_inode = live.frontier.marker_inode;
+    assert!(
+        verify_live_original_evidence_sample_v1(&sink, &local).is_ok(),
+        "only actual fully committed matching operation may be a candidate"
+    );
+    local.last_group_head_digest = "ff".repeat(32);
+    assert!(
+        verify_live_original_evidence_sample_v1(&sink, &local).is_err(),
+        "even a valid old mirror with a forged per-group head is rejected"
+    );
+}
+
+#[test]
+fn live_original_evidence_owner_denies_removed_wal_after_fsynced_evidence() {
+    use codex_hepta_evidence::metrics_group_commit::MetricsCommittedSampleQueryV1;
+    use codex_hepta_types::PhaseMetricEventV1;
+    use codex_hepta_types::PhaseMetricKindV1;
+    use codex_hepta_types::PhaseMetricSinkV1 as _;
+    use std::os::unix::fs::PermissionsExt as _;
+
+    let (_, mut local) = candidate(0);
+    let root = tempfile::tempdir().expect("original Evidence root");
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))
+        .expect("owner-only Evidence directory");
+    let path = root.path().join("original.wal");
+    let sink = DurablePhaseMetricSinkV1::open(&path, 8, 8, 60_000)
+        .expect("genuine Evidence-owned Writer");
+    let query = MetricsCommittedSampleQueryV1 {
+        scope_digest: local.scope_digest.parse().expect("exact scope digest"),
+        operation_digest: local.operation_digest.parse().expect("exact operation digest"),
+        phase: MetricPhaseV1::Cas,
+        succeeded: true,
+    };
+    sink.record(PhaseMetricEventV1 {
+        scope_digest: query.scope_digest,
+        operation_digest: query.operation_digest,
+        phase: PhaseMetricKindV1::Cas,
+        latency_micros: 1,
+        succeeded: true,
+    })
+    .expect("accepted real original metric");
+    sink.flush().expect("actual two-file durable fsync");
+    let live = sink
+        .read_committed_sample(query)
+        .expect("original WAL read")
+        .expect("real committed metric");
+    local.matching_rows = live.matching_rows;
+    local.first_group_sequence = live.first_group_sequence;
+    local.last_group_sequence = live.last_group_sequence;
+    local.last_group_head_digest = live.last_group_head.to_string();
+    local.terminal_group_sequence = live.frontier.sequence;
+    local.terminal_head_digest = live.frontier.head_digest.to_string();
+    local.terminal_committed_rows = live.frontier.committed_rows;
+    local.terminal_journal_bytes = live.frontier.journal_bytes;
+    local.wal_device = live.frontier.wal_device;
+    local.wal_inode = live.frontier.wal_inode;
+    local.marker_device = live.frontier.marker_device;
+    local.marker_inode = live.frontier.marker_inode;
+    assert!(verify_live_original_evidence_sample_v1(&sink, &local).is_ok());
+    std::fs::rename(&path, root.path().join("original-missing.wal"))
+        .expect("lose named original WAL while the owner is alive");
+    assert!(
+        verify_live_original_evidence_sample_v1(&sink, &local).is_err(),
+        "a former signed mirror cannot authorize after original WAL loss"
+    );
+    assert!(!sink.healthy(), "the real owner remains fail-closed");
+}
