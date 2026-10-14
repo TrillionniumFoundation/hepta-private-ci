@@ -35,13 +35,16 @@ def parse_stat(raw):
         prefix, rest = raw.rstrip().rsplit(") ", 1)
         pid, _command = prefix.split(" (", 1)
         fields = rest.split()  # begins at proc(5) field 3, state
-        return {
+        result = {
             "pid": int(pid),
             "start_time_ticks": int(fields[19]),  # field 22
             "user_cpu_ticks": int(fields[11]),   # field 14
             "system_cpu_ticks": int(fields[12]),  # field 15
             "rss_pages": int(fields[21]),       # field 24
         }
+        if any(value < 0 for value in result.values()) or result["pid"] <= 0:
+            raise CaptureError("invalid negative or zero proc counters")
+        return result
     except (ValueError, IndexError) as exc:
         raise CaptureError("malformed /proc stat") from exc
 
@@ -60,6 +63,8 @@ def parse_memory_kib(raw, fields):
                 raise CaptureError("invalid proc memory value") from exc
             if number < 0:
                 raise CaptureError("negative proc memory value")
+            if key in result:
+                raise CaptureError("duplicate proc memory field")
             result[key] = number
     return result
 
@@ -77,12 +82,17 @@ def read_memory(pid):
     except OSError as exc:
         raise CaptureError(f"cannot read process {pid} status: {exc.strerror}") from exc
     values = parse_memory_kib(status, {"VmRSS", "VmHWM"})
+    if "VmRSS" not in values:
+        raise CaptureError("process VmRSS measurement missing")
     try:
         rollup = Path(f"/proc/{pid}/smaps_rollup").read_text(encoding="utf-8")
     except OSError:
         values["smaps_rollup_available"] = False
     else:
-        values.update(parse_memory_kib(rollup, {"Rss", "Pss", "Private_Clean", "Private_Dirty", "Shared_Clean", "Shared_Dirty", "Swap"}))
+        detailed = parse_memory_kib(rollup, {"Rss", "Pss", "Private_Clean", "Private_Dirty", "Shared_Clean", "Shared_Dirty", "Swap"})
+        if "Rss" not in detailed or "Pss" not in detailed:
+            raise CaptureError("incomplete smaps_rollup Rss/Pss measurement")
+        values.update(detailed)
         values["smaps_rollup_available"] = True
     return values
 
@@ -108,6 +118,9 @@ def capture_process(pid, samples=8, interval_ms=50, sleep=time.sleep):
         after = read_process_stat(pid)
         if before["start_time_ticks"] != initial["start_time_ticks"] or after["start_time_ticks"] != initial["start_time_ticks"] or before["pid"] != pid or after["pid"] != pid:
             raise CaptureError("PID was reused or process identity changed during sample")
+        if (after["user_cpu_ticks"] < before["user_cpu_ticks"]
+                or after["system_cpu_ticks"] < before["system_cpu_ticks"]):
+            raise CaptureError("process CPU counters moved backwards")
         observations.append({
             "timestamp_utc": datetime.now(timezone.utc).isoformat(),
             "user_cpu_ticks": after["user_cpu_ticks"],
