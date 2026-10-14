@@ -143,6 +143,20 @@ class E0NumericOracleTests(unittest.TestCase):
         with self.assertRaisesRegex(m.NumericGateError, "source f32 width mismatch"):
             self.run_trial()
 
+    def test_reregistered_prefix_only_projector_cannot_masquerade_as_full_encoder(self):
+        self.projector["a_q24"][767] = 0
+        self.projector["a_q24"][0] = m.Q
+        self.f32[0] = .25
+        self.freeze()
+        with self.assertRaisesRegex(m.NumericGateError, "implicit slice"):
+            self.run_trial()
+
+    def test_tail_weight_without_live_output_is_not_a_feature_path(self):
+        self.projector["b_q24"][-1] = 0
+        self.freeze()
+        with self.assertRaisesRegex(m.NumericGateError, "implicit slice"):
+            self.run_trial()
+
     def test_wrong_head_width_is_rejected(self):
         with self.assertRaisesRegex(m.NumericGateError, "Head width mismatch"):
             self.run_trial({"head_input_width": 128})
