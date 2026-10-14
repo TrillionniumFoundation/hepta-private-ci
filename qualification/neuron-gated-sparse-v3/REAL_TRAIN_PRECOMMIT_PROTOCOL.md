@@ -13,8 +13,12 @@ Before a real trial, independently execute the existing
 signed registry, every active Cell, selected manifests/weight bytes, committed
 checkpoint/reopen, actual model invocations and host resource receipts.
 Only use a real frozen V1 artifact selected at the authenticated snapshot.
-'matched_train.py' checks its physical SHA256, but DOES NOT itself authenticate
-deployment or read the owner; A0 remains externally blocking. If there is no
+'matched_train.py' verifies the existing A0 signed registry and matching scoped
+V1 Cell evidence with an independently provided trusted Ed25519 key, current
+host ID and fresh owner snapshot. This verifies signed-file consistency, NOT
+independent physical host execution. Without these, normal training refuses
+to run. The opt-in '--synthetic-canary' permits unit-test fixtures only and
+explicitly labels them as not A0 or selected production weights. If there is no
 owner-approved baseline, do not replace it with a random model.
 
 ## A1/A2/A3: physically train four candidates, never train V1
@@ -71,6 +75,9 @@ physically executed frozen Encoder; do not call a synthetic feature generator
       --train-data /frozen/train.json --train-sha256 "$SHA_TRAIN" \
       --selected-v1 /owner-selected/v1.safetensors \
       --selected-v1-sha256 "$SHA_OWNER_BASELINE" \
+      --a0-evidence-root /owner/frozen-a0 \
+      --a0-trusted-public-key /independent/a0-owner.pem \
+      --a0-expected-host-id "$HEPTA_HOST_ID" \
       --output /new/research-four-candidate-weights \
       --steps 64 --window 32 --seed 7347
 
