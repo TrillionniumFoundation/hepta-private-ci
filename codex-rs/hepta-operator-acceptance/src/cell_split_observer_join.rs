@@ -1558,3 +1558,7 @@ mod original_checkpoint_integrity_tests {
         Ok(())
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "cell_split_evidence_retention_tests.rs"]
+mod evidence_retention_tests;
