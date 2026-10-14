@@ -1,0 +1,56 @@
+{
+  "schema": "hepta.multirc.genuine-answer-verification-receipt.v1",
+  "date": "2026-10-14",
+  "pr": 2010,
+  "base": "a7a2edc6cf36c139e348d4168a5170fcfa417aed",
+  "tested_code": "2b9535b674aaab84f3619deca854640ee55049dd",
+  "tests": {
+    "focused": 15,
+    "full_rounds": 2,
+    "planned_per_round": 612,
+    "executed_per_round": 612,
+    "distinct_ids_per_round": 612,
+    "source_test_files": 56,
+    "all_ids_and_hashes_equal": true,
+    "errors": 0,
+    "failures": 0,
+    "skips": 0,
+    "interrupted_earlier_attempts_not_counted": true,
+    "source_sha256_inventory_digest": "f281c6a8b2a0d7e14e09ee519987f76b5cb0364e89f49bee37d4178e1f59acc8"
+  },
+  "source_blobs": {
+    "qualification/stem-cell-v1/multirc_candidate_slate.py": "99d0dc1395140c85fa70837810d09073c5558dd1",
+    "qualification/stem-cell-v1/multirc_candidate_audit.py": "d3c6825a23ed7f1f0655ca719012123e7216d70a",
+    "qualification/stem-cell-v1/test_multirc_candidate_slate.py": "2a571bdcc2a8e03c7ef2fe16208553ab74299885",
+    "qualification/stem-cell-v1/hf_multirc_checks.py": "0f576482eec055e0934109813a2cefe813b36c7d",
+    ".github/workflows/hepta-real-multirc-reader.yml": "b431b515d0404424c9dad3196c5a88d432bf0425"
+  },
+  "synthetic_diagnostic": {
+    "source_passages": 2,
+    "questions": 4,
+    "real_candidates": 8,
+    "additional_physical_encoder_calls": 2,
+    "query_embeddings": 8,
+    "reader_inferences": 32,
+    "formula_work": 5048,
+    "correct_per_arm": 4,
+    "total_per_arm": 8,
+    "answer_variation_under_basic_fixture": 0,
+    "real_pretrained_model_used": false
+  },
+  "archive": {
+    "entry_count": 177,
+    "sha256": "2ee0ace877f7e5b4bc609a5d0771801135e8e92644958217e04df5611acd431e",
+    "patch_sha256": "4c7dd6749c8318609472da7bc0986676ebb494b3fe555f1d3ea679f148e9bc0b",
+    "full_local_test_receipt_sha256": "be9efe755844b0df34b153b7588ed1d3b1431fd3f3f57c7e54b58246b8c7fb57"
+  },
+  "boundaries": {
+    "installed_hf_local": false,
+    "pretrained_hf_hosted_result_observed": false,
+    "official_multirc_score": false,
+    "efficacy_claim": false,
+    "production_authorized": false,
+    "full_system_cost_measured": false,
+    "native_gpu_rust_tested": false
+  }
+}
