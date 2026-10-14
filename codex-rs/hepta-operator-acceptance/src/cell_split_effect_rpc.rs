@@ -843,7 +843,12 @@ mod tests {
             )
             .expect("four independently pinned keys");
             let operation = intent();
-            assert!(client.reconcile(&operation).expect("initial signed effect").is_some());
+            assert!(
+                client
+                    .reconcile(&operation)
+                    .expect("initial signed effect")
+                    .is_some()
+            );
             assert!(matches!(
                 client.reconcile(&operation),
                 Err(CellSplitEffectRpcErrorV1::Invalid(
