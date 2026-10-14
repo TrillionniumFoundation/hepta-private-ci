@@ -472,6 +472,61 @@ fn late_metrics_sink_cannot_certify_previously_unmetered_model_execution() {
     assert!(!worker.production_metrics_ready());
 }
 
+#[test]
+fn evidence_sink_is_write_once_and_rebinding_cannot_rehabilitate_or_dispatch() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[95; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let original = Arc::new(CapturedMetrics::default());
+    let replacement = Arc::new(CapturedMetrics::default());
+    let mut worker = runner(&signer, dir.path(), model);
+    assert_eq!(worker.bind_metric_sink(original.clone()), Ok(()));
+    assert!(worker.production_metrics_ready());
+    worker
+        .enqueue(100, "model".into(), request, key, signed(&signer, binding))
+        .unwrap();
+    assert_eq!(worker.pending(), 1);
+    assert_eq!(original.0.lock().unwrap().len(), 1);
+    assert_eq!(
+        worker.bind_metric_sink(replacement.clone()),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    );
+    assert!(!worker.production_metrics_ready());
+    assert_eq!(worker.pending(), 1);
+    assert_eq!(original.0.lock().unwrap().len(), 1);
+    assert!(replacement.0.lock().unwrap().is_empty());
+    assert!(matches!(
+        worker.poll_and_execute(106),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    ));
+    assert_eq!(worker.pending(), 1);
+    assert!(!worker.flush_production_metrics());
+    assert!(!worker.production_metrics_ready());
+}
+
+#[test]
+fn evidence_sink_builder_replacement_also_poisoned_before_first_effect() {
+    let dir = tempfile::tempdir().unwrap();
+    let signer = SigningKey::from_bytes(&[96; 32]);
+    let (model, request, key) = fixture_request();
+    let binding = neuron_batch_final_use_binding_v1("worker-one", &key, &request).unwrap();
+    let original = Arc::new(CapturedMetrics::default());
+    let replacement = Arc::new(CapturedMetrics::default());
+    let mut worker = runner(&signer, dir.path(), model)
+        .with_metric_sink(original.clone())
+        .with_metric_sink(replacement.clone());
+    assert!(!worker.production_metrics_ready());
+    assert_eq!(
+        worker.enqueue(100, "model".into(), request, key, signed(&signer, binding)),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    );
+    assert_eq!(worker.pending(), 0);
+    assert!(!worker.flush_production_metrics());
+    assert!(!worker.production_metrics_ready());
+    assert!(!Arc::ptr_eq(&original, &replacement));
+}
+
 #[derive(Debug)]
 struct UnavailableMetricSink;
 
