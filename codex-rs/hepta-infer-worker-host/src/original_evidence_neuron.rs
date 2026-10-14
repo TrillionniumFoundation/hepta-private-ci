@@ -74,8 +74,7 @@ impl std::error::Error for OriginalEvidenceWorkerBootstrapErrorV1 {}
 /// The normal library always denies. Explicit internal unit-test fixtures
 /// may exercise the full signed Worker mechanics against their fake frontier;
 /// this permission does NOT compile into the production library.
-pub fn original_control_scope_owner_preflight_v1(
-) -> Result<(), OriginalEvidenceWorkerBootstrapErrorV1> {
+pub fn require_original_control_v1() -> Result<(), OriginalEvidenceWorkerBootstrapErrorV1> {
     #[cfg(not(test))]
     {
         Err(OriginalEvidenceWorkerBootstrapErrorV1::UnverifiedOriginalControl)
@@ -114,7 +113,7 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
             // Must be the first runtime gate in production, before any WAL
             // open, queue bootstrap, authority claim or model invocation.
             // A trait object can never self-certify its original CNS owner.
-            original_control_scope_owner_preflight_v1()?;
+            require_original_control_v1()?;
 
             // The operator preprovisions this private canonical directory.
             // Relative, symlinked or aliasable ancestors cannot be used to
