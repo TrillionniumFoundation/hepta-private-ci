@@ -49,8 +49,10 @@ jobs:
           python-version: "3.13"
       - name: Install pinned CPU test dependencies
         run: |
-          python -m pip install numpy==2.3.5 safetensors==0.7.0
+          python -m pip install packaging==25.0 numpy==2.3.5 safetensors==0.7.0
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Verify serialization dependencies before discovery
+        run: python -c "import packaging.version, torch, safetensors.torch"
       - name: Record actual source and environment
         run: |
           git rev-parse HEAD > "$RUNNER_TEMP/stem-source.txt"
@@ -87,7 +89,7 @@ jobs:
           python-version: "3.13"
       - name: Install exact stock HF compatibility profile
         run: |
-          python -m pip install numpy==2.3.5 safetensors==0.7.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python -m pip install packaging==25.0 numpy==2.3.5 safetensors==0.7.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
       - name: Exercise real stock architecture offline, without pretrained claims
         shell: bash
@@ -96,6 +98,7 @@ jobs:
           git rev-parse HEAD > "$RUNNER_TEMP/hf-source.txt"
           python -m pip freeze > "$RUNNER_TEMP/hf-environment.txt"
           python qualification/stem-cell-v1/hf_profile_checks.py -v 2>&1 | tee "$RUNNER_TEMP/hf-profile.log"
+          python qualification/stem-cell-v1/causal_profile_checks.py -v 2>&1 | tee "$RUNNER_TEMP/causal-profile.log"
       - name: Retain HF architecture observations
         if: always()
         uses: actions/upload-artifact@v4
@@ -105,6 +108,7 @@ jobs:
             ${{ runner.temp }}/hf-source.txt
             ${{ runner.temp }}/hf-environment.txt
             ${{ runner.temp }}/hf-profile.log
+            ${{ runner.temp }}/causal-profile.log
           if-no-files-found: error
 
   public-encoder-canary:
@@ -126,7 +130,7 @@ jobs:
           python-version: "3.13"
       - name: Install exact CPU pretrained canary dependencies
         run: |
-          python -m pip install numpy==2.3.5 safetensors==0.7.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python -m pip install packaging==25.0 numpy==2.3.5 safetensors==0.7.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
           python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
       - name: Pin public commit, acquire safe weights, execute Encoder
         shell: bash
@@ -149,4 +153,45 @@ jobs:
             ${{ runner.temp }}/public-encoder/downloaded-material.json
             ${{ runner.temp }}/public-encoder/probe.json
             ${{ runner.temp }}/public-encoder/FAILED.json
+          if-no-files-found: error
+
+  public-causal-canary:
+    needs: [execution-regressions, hf-profile-compatibility]
+    if: github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      DO_NOT_TRACK: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install exact CPU causal generation profile
+        run: |
+          python -m pip install packaging==25.0 numpy==2.3.5 safetensors==0.7.0 transformers==4.57.1 huggingface-hub==0.36.0 tokenizers==0.22.1
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu torch==2.10.0
+      - name: Generate initial and revised outputs from pinned public weights
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD > "$RUNNER_TEMP/causal-source.txt"
+          python -m pip freeze > "$RUNNER_TEMP/causal-environment.txt"
+          python qualification/stem-cell-v1/public_causal_probe.py --acquire-public --output "$RUNNER_TEMP/public-causal" 2>&1 | tee "$RUNNER_TEMP/public-causal.log"
+      - name: Retain complete public outputs and failures, never model weights
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stem-public-causal-canary
+          path: |
+            ${{ runner.temp }}/causal-source.txt
+            ${{ runner.temp }}/causal-environment.txt
+            ${{ runner.temp }}/public-causal.log
+            ${{ runner.temp }}/public-causal/*.json
+            ${{ runner.temp }}/public-causal/capture/**/*.json
           if-no-files-found: error
