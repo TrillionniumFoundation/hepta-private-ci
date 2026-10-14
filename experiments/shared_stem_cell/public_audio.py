@@ -173,7 +173,9 @@ def acquire(root, *, _read=read_url):
     return {"path": "dataset.jsonl", "sha256": e.sha(raw)}
 
 
-def run(root, *, _acquire=acquire, _stage=stage_model, _towers=media.LocalTowers):
+def run(root, *, native_control=False, _acquire=acquire, _stage=stage_model, _towers=media.LocalTowers):
+    if type(native_control) is not bool:
+        raise e.InputError("explicit native control mode required")
     root = Path(root)
     root.mkdir(parents=True, exist_ok=False)
     plan = {"schema": "hepta.public-audio-plan.v1", "model": MODEL, "model_revision": MODEL_REVISION,
@@ -186,6 +188,8 @@ def run(root, *, _acquire=acquire, _stage=stage_model, _towers=media.LocalTowers
         "checkpoint_selection": "existing calibrated_checkpoints_v1, audio-only",
         "not_standard_fsdd_split": True, "new_speech_generation": False,
         "independent_evaluation": False, "production_accepted": False}
+    if native_control:
+        plan["native_decoder_control"] = "same Encoder output, frozen greedy 16-token budget, holdout only"
     e.write_once(root / "plan.json", plan)
     try:
         with e.measured() as acquisition:
@@ -198,7 +202,12 @@ def run(root, *, _acquire=acquire, _stage=stage_model, _towers=media.LocalTowers
             "seed": 20261014, "temporal": False, "fusion_profile": "calibrated_checkpoints_v1",
             "dataset": data, "models": {"whisper": model}}
         e.write_once(root / "manifest.json", manifest)
-        result = media.run(root / "manifest.json", root / "execution", _tower_factory=_towers)
+        control_instances = []
+        factory = _towers
+        if native_control:
+            from experiments.shared_stem_cell.speech_control import factory_for
+            factory, control_instances = factory_for(root, manifest, _towers)
+        result = media.run(root / "manifest.json", root / "execution", _tower_factory=factory)
         report = {"schema": "hepta.public-audio-executed.v1", "acquisition": acquisition,
             "execution_report_sha256": e.sha((root / "execution/report.json").read_bytes()),
             "dataset_sha256": data["sha256"], "scores": result["scores"],
@@ -206,6 +215,11 @@ def run(root, *, _acquire=acquire, _stage=stage_model, _towers=media.LocalTowers
             "not_standard_fsdd_split": True, "independent_evaluation": False,
             "general_audio_understanding_established": False, "speech_generation_completed": False,
             "production_accepted": False}
+        if native_control:
+            from experiments.shared_stem_cell.speech_control import summarize
+            if len(control_instances) != 1:
+                raise e.InputError("one shared acoustic model required")
+            report["native_control"] = summarize(root, manifest, control_instances[0])
         e.write_once(root / "report.json", report)
         return report
     except Exception as error:
@@ -217,6 +231,7 @@ def run(root, *, _acquire=acquire, _stage=stage_model, _towers=media.LocalTowers
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--native-control", action="store_true")
     arguments = parser.parse_args()
     torch.set_num_threads(2)
-    run(arguments.output)
+    run(arguments.output, native_control=arguments.native_control)

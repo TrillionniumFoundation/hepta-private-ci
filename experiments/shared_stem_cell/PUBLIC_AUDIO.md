@@ -65,3 +65,42 @@ network/weights/dependencies are failures, never synthetic fallbacks. Test fixtu
 waveforms/towers are explicitly synthetic and do not constitute model results.
 Predictions, model-load/encoding/training costs and provenance are retained;
 missing energy/FLOPs/peak-RSS remain null. No activation or production selection.
+
+
+## Same-encoder native transcription control
+
+Run the existing command with `--native-control` to evaluate the frozen original
+Whisper decoder on EXACTLY the same 40 held-out recordings as the learned Cell.
+The data/model pins, 80-step fitting, checkpoint rule and original controls do not
+change. This control never supplies a training target, digit vocabulary, speaker
+name, filename, prior transcript or task-specific prompt to generation.
+
+`speech_control.py` wraps the original tower without changing its pooling or
+forward arithmetic. On held-out rows only, a temporary forward hook retains the
+actual complete encoder output; `generate(encoder_outputs=...)` consumes it once.
+An encoder pre-hook rejects any attempt to re-encode; decoder invocations are
+counted. The saved state is discarded after the utterance, with no cross-utterance
+cache or context. The original full Whisper model remains resident (not a second
+model). Native decoding is greedy, one beam, at most 16 new tokens, no sampling,
+temperature fallback, timestamps or prior-text conditioning. A required stock-HF
+random-model test compares tokens to ordinary full generate(), counting one
+encoder invocation for each path. That is API parity, not speech quality.
+
+All native utterance records and their aggregate prediction seal are written
+before hold-out Head execution/scoring. Original raw text/tokens, per-record
+started receipts, decoder calls, latent/landmark hashes and decoding costs are
+retained. The native baseline cannot change the calibrated Cell selection.
+The scores compare the SAME rows: exact whole digit/English digit word after
+whitespace/case normalization, and a separate preregistered variant permitting
+one terminal `.`, `!` or `?`. No substring extraction, synonyms, transcript repair
+or successful-only filtering; empty/unparsed output counts wrong in the full
+denominator. No acoustic synthesis or open-domain reasoning is claimed.
+
+This is not automatically an equal-quality resource win. The end-to-end media
+`encoding` span INCLUDES native decoding in this mode and is explicitly marked
+as such; decoder-only time is reported separately. Common Encoder cost cannot
+be subtracted or omitted to claim total speedup. Full resident model parameters,
+small-Head fitting and native autoregressive work must be considered separately.
+One held-out speaker and four recordings per digit remain a small development
+profile, not independent population/retention evidence. Original mode without
+the flag retains its exact training/prediction path.
