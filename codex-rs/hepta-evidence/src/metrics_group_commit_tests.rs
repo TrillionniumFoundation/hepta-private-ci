@@ -1005,7 +1005,7 @@ fn bound_metric_readback_counts_exact_repeated_durable_rows_and_ignores_staging(
     let mut recovery = MetricsGroupCommitV1::open(&path).expect("real cold recovery");
     let proof = recovery.read_committed_sample(query).unwrap().unwrap();
     assert_eq!(proof.matching_rows, 2);
-    assert_eq!(proof.frontier.committed_groups(), 2);
+    assert_eq!(proof.frontier.sequence, 2);
 }
 
 #[cfg(unix)]
