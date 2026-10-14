@@ -160,7 +160,7 @@ class ExperimentEvidenceTests(unittest.TestCase):
         with self.assertRaisesRegex(m.EvidenceError, "invalid frozen repetitions"):
             m.freeze(self.repo, self.manifest, "E1", self.root / "bad-plan.json", repetitions=0)
 
-    def test_per_arm_command_drift_rejected_at_audit(self) -> None:
+    def test_unfrozen_arm_command_rejected_before_start(self) -> None:
         plan = self.root / "commands-plan.json"
         m.freeze(self.repo, self.manifest, "E1", plan, repetitions=2)
         first = self.root / "cmd-0.json"
@@ -243,6 +243,28 @@ class ExperimentEvidenceTests(unittest.TestCase):
                 os.environ.pop("RAYON_NUM_THREADS", None)
             else:
                 os.environ["RAYON_NUM_THREADS"] = before
+
+    def test_audit_rejects_forged_command_even_with_rehashed_receipt(self) -> None:
+        rec = self.root / "faked-command.json"
+        m.run(self.repo, self.plan, "multi_head", rec, 5,
+              [sys.executable, "-c", "pass"])
+        item = json.loads(rec.read_text())
+        item.pop("receipt_digest")
+        item["command_sha256"] = "f" * 64
+        item["receipt_digest"] = m.digest(item)
+        rec.write_text(json.dumps(item))
+        with self.assertRaisesRegex(m.EvidenceError, "receipt frozen command mismatch"):
+            m.audit(self.plan, self.repo, [rec])
+
+    def test_linked_or_oversized_untrusted_json_rejected(self) -> None:
+        alias = self.root / "alias.json"
+        alias.symlink_to(self.plan)
+        with self.assertRaisesRegex(m.EvidenceError, "linked or oversized JSON evidence"):
+            m.verify_plan(alias, self.repo)
+        huge = self.root / "huge.json"
+        huge.write_bytes(b" " * (m.MAX_JSON_BYTES + 1))
+        with self.assertRaisesRegex(m.EvidenceError, "linked or oversized JSON evidence"):
+            m.verify_plan(huge, self.repo)
 
     def test_timeout_receipt_and_no_success_laundering(self) -> None:
         rec = self.root / "timeout.json"
