@@ -372,7 +372,10 @@ def run_pinned_historical_token_pair(*, archive_path: Path, archive_sha256: str,
     report=fit_sealed_token_pair_v1(features=features,by_cell=by_cell,
          output=output,pins=pins,real_model_called=real,
          source_zip_sha256=archive_sha256,model_id=MODEL['modernbert'][1],
-         model_revision=MODEL['modernbert'][2],encoder_observation={'cells':observed},
+         model_revision=MODEL['modernbert'][2],
+         encoder_observation={'cells':observed,
+                              'capture_profile':{'max_length':max_length,
+                                                 'batch':encoder_batch}},
          rank=8,steps=steps,seeds=seeds)
     return report
 
