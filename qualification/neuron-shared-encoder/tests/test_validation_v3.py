@@ -9,7 +9,7 @@ import torch
 from neuron_shared_encoder.validation_v3 import (
     BUDGETS, ENCODERS, KINDS, SmallHead, canonical_digest, digest_bytes,
     encoder_matrix_contract, evaluate_shadow, head_trials, reuse_keys, reuse_trial,
-    scale_receipt_audit, _scores,
+    scale_receipt_audit, prequential_order_audit, _scores,
 )
 
 D = lambda c: c * 64
@@ -182,10 +182,48 @@ def test_e4_good_future_signal_never_promotes():
     baseline, candidate = make_snapshots(rows)
     result = evaluate_shadow(rows, D('d'), baseline, candidate, bootstrap_repeats=100)
     assert result['future_groups'] == 40
-    assert result['shadow_signal'] == 'POSITIVE'
+    assert result['shadow_signal'] == 'RETROSPECTIVE_POSITIVE_UNVERIFIED'
+    assert result['causal_learning_verified'] is False
+    assert result['prequential_order_audit']['status'] == 'MISSING_OR_INVALID'
     assert result['negative_transfer_group_fraction'] == 0
     assert result['bootstrap_95pct_group_mean_improvement'][0] > 0
     assert result['selection'] == 'NOT_AUTHORIZED'
+    assert result['production_admission'] == 'BLOCKED'
+
+
+def test_e4_prequential_claims_checked_but_never_authorize():
+    rows = dataset(8)
+    baseline, candidate = make_snapshots(rows)
+    future = [r for r in rows if r['split'] == 'future']
+    for row in future:
+        row['event_time'] = '2026-10-12T12:00:00Z'
+    good = {r['row_id']: '2026-10-11T23:00:00+00:00' for r in future}
+    baseline['prediction_committed_at_by_row'] = dict(good)
+    candidate['prediction_committed_at_by_row'] = dict(good)
+    audit = prequential_order_audit(rows, baseline, candidate)
+    assert audit['status'] == 'TEMPORAL_ORDER_CONSISTENT_UNVERIFIED'
+    assert audit['commitment_signature_verified'] is False
+    result = evaluate_shadow(rows, D('d'), baseline, candidate, bootstrap_repeats=100)
+    assert result['prequential_order_audit']['status'] == 'TEMPORAL_ORDER_CONSISTENT_UNVERIFIED'
+    assert result['causal_learning_verified'] is False
+    assert result['selection'] == 'NOT_AUTHORIZED'
+
+
+def test_e4_late_or_partial_predictions_never_certify_causality():
+    rows = dataset(8)
+    baseline, candidate = make_snapshots(rows)
+    future = [r for r in rows if r['split'] == 'future']
+    for row in future:
+        row['event_time'] = '2026-10-12T12:00:00Z'
+    candidate['prediction_committed_at_by_row'] = {
+        r['row_id']: '2026-10-12T12:00:00Z' for r in future}
+    baseline['prediction_committed_at_by_row'] = {
+        r['row_id']: '2026-10-11T23:00:00Z' for r in future[:-1]}
+    result = evaluate_shadow(rows, D('d'), baseline, candidate, bootstrap_repeats=100)
+    issues = result['prequential_order_audit']['issues']
+    assert any('incomplete' in s for s in issues)
+    assert any('not before outcome' in s for s in issues)
+    assert result['causal_learning_verified'] is False
     assert result['production_admission'] == 'BLOCKED'
 
 
