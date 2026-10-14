@@ -59,6 +59,7 @@ jobs:
             uv run --frozen --project scripts ruff format --diff \
               scripts/memory_cell/reader_bottleneck_ablation.py \
               scripts/memory_cell/test_reader_bottleneck_ablation.py > /tmp/reader-bottleneck-format/ruff.diff || true
+            cat /tmp/reader-bottleneck-format/ruff.diff
           fi
           (cd /tmp/reader-bottleneck-format && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
