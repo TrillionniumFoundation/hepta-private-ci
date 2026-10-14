@@ -371,6 +371,15 @@ impl CellSplitMonotonicAuthoritativeRegistryV1 for DiskAuthoritativeRegistry {
 }
 
 fn write_test_registry(root: &Path) -> PathBuf {
+    // The production sidecar writer requires a canonical private directory.
+    // tempfile does not promise Unix mode 0700 under every hosted umask;
+    // normalize only this test-owned root, never weaken write_private_new.
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(root, std::fs::Permissions::from_mode(0o700))
+            .expect("private independent monotonic registry fixture directory");
+    }
     let path = root.join("external-domain-highwater.json");
     let record = CellSplitMonotonicDurableFrontierV1 {
         journal_domain_id: DOMAIN.to_owned(),
@@ -604,6 +613,11 @@ fn same_signer_denies_rolled_back_or_equivocated_frontier() {
 
     successor.original_store_record_digest = "dd".repeat(32);
     replace_test_frontier(&file, &successor);
+    // Advancing the local registry alone cannot convince independent custody
+    // to sign a new frontier. A new durable custody floor is mandatory.
+    assert!(read_through_signed_service(&mut service, &"ed".repeat(32)).is_err());
+    let custody_floor = file.with_file_name("independently-retained-floor.json");
+    replace_test_frontier(&custody_floor, &successor);
     assert!(read_through_signed_service(&mut service, &"ee".repeat(32)).is_ok());
 
     // The previous epoch/revision cannot be accepted again, even if it
@@ -641,6 +655,11 @@ fn same_signer_allows_epoch_rollover_only_with_new_durable_source_sequence() {
     assert!(read_through_signed_service(&mut service, &"cd".repeat(32)).is_err());
     stale_rollover.original_store_record_digest = "dd".repeat(32);
     replace_test_frontier(&file, &stale_rollover);
+    // A new epoch cannot be accepted on only a caller-controlled registry
+    // update; independently retained custody must advance as a second owner.
+    assert!(read_through_signed_service(&mut service, &"cf".repeat(32)).is_err());
+    let custody_floor = file.with_file_name("independently-retained-floor.json");
+    replace_test_frontier(&custody_floor, &stale_rollover);
     assert!(read_through_signed_service(&mut service, &"ce".repeat(32)).is_ok());
     replace_test_frontier(&file, &original);
     assert!(read_through_signed_service(&mut service, &"dd".repeat(32)).is_err());
