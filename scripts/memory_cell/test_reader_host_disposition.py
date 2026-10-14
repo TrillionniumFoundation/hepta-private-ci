@@ -220,21 +220,29 @@ class HostDispositionTests(unittest.TestCase):
             Path(__file__).resolve().parents[2]
             / ".github/workflows/hepta-memory-reader-bottleneck-ablation.yml"
         ).read_text()
-        pattern = "memory-reader-bottleneck-[sq]*"
-        self.assertEqual(workflow.count(f"pattern: {pattern}"), 2)
-        self.assertNotIn("pattern: memory-reader-bottleneck-*\n", workflow)
+        patterns = (
+            "memory-reader-bottleneck-smol-1.7b-[0-7]",
+            "memory-reader-bottleneck-qwen-3b-[0-7]",
+        )
+        for pattern in patterns:
+            self.assertEqual(workflow.count(f"pattern: {pattern}"), 2)
+        self.assertNotIn("pattern: memory-reader-bottleneck-[sq]*", workflow)
+        self.assertNotIn("pattern: memory-reader-bottleneck-*\\n", workflow)
         for tier in ("smol-1.7b", "qwen-3b"):
             for case in range(8):
-                self.assertTrue(
-                    fnmatchcase(f"memory-reader-bottleneck-{tier}-{case}", pattern)
+                name = f"memory-reader-bottleneck-{tier}-{case}"
+                self.assertEqual(
+                    sum(fnmatchcase(name, pattern) for pattern in patterns), 1
                 )
         for unrelated in (
             "memory-reader-bottleneck-original-80-call-report",
             "memory-reader-bottleneck-source-diagnostics",
             "memory-reader-original-host-disposition",
+            "memory-reader-bottleneck-qwen-3b-9",
         ):
-            self.assertFalse(fnmatchcase(unrelated, pattern))
-
+            self.assertFalse(
+                any(fnmatchcase(unrelated, pattern) for pattern in patterns)
+            )
 
 if __name__ == "__main__":
     unittest.main()
