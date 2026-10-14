@@ -207,3 +207,24 @@ fn metrics_flush_timeout_poisoned_when_writer_accepts_but_never_acks() {
     drop(rx);
     drop(sink);
 }
+
+#[test]
+fn metrics_sink_drop_never_waits_on_saturated_unserved_channel() {
+    // No writer thread is scheduled: a blocking Stop send would never return.
+    let (tx, rx) = sync_channel(1);
+    let sink = DurablePhaseMetricSinkV1 {
+        channel: tx,
+        health: Arc::new(WriterHealthV1 {
+            healthy: AtomicBool::new(true),
+            dropped: AtomicU64::new(0),
+            persisted_batches: AtomicU64::new(0),
+            persisted_rows: AtomicU64::new(0),
+        }),
+        worker: Mutex::new(None),
+    };
+    sink.record(sample(PhaseMetricKindV1::Cas)).unwrap();
+    let started = std::time::Instant::now();
+    drop(sink);
+    assert!(started.elapsed() < Duration::from_secs(2));
+    drop(rx);
+}

@@ -221,9 +221,23 @@ impl PhaseMetricSinkV1 for DurablePhaseMetricSinkV1 {
 
 impl Drop for DurablePhaseMetricSinkV1 {
     fn drop(&mut self) {
+        // A failed flush can mean fsync is stuck. Never block shutdown on
+        // that failed writer; dropping JoinHandle safely detaches it, and the
+        // independent Evidence journal lock still prevents a second writer.
+        if !self.healthy() {
+            return;
+        }
         let (tx, rx) = sync_channel(1);
-        if self.channel.send(WriterCommandV1::Stop(tx)).is_ok() {
-            let _ = rx.recv();
+        // Avoid blocking on a full queue even when the worker has not yet
+        // reported its failure. A disconnected worker performs its own
+        // best-effort final flush when it can resume.
+        if self.channel.try_send(WriterCommandV1::Stop(tx)).is_err() {
+            return;
+        }
+        if rx.recv_timeout(MAX_FLUSH_WAIT).is_err() {
+            // No ACK means no durability claim. A potentially blocked worker
+            // must not hang a Split teardown or enable another effect owner.
+            return;
         }
         if let Ok(mut handle) = self.worker.lock() {
             if let Some(worker) = handle.take() {
