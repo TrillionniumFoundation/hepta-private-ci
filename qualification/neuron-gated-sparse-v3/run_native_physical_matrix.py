@@ -17,10 +17,11 @@ import time
 
 from candidate_inventory import verify_artifact
 from native_float_gap import compare as floating_gap
+from head_q24_oracle import verify_native_head
 from matched_train import CAPS, ARMS, sha_file, unique_json, require
 
 SCHEMA = 'hepta.neuron.twenty-physical-q24-mechanism-matrix.v1'
-RUN_SCHEMA = 'hepta.neuron.physical-trained-q24-mechanism-replay.v1'
+RUN_SCHEMA = 'hepta.neuron.physical-trained-q24-mechanism-replay.v2'
 MAX_STDOUT = 16 << 20
 
 
@@ -114,6 +115,8 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
                     and parsed.get('native_q24_kernel_invoked') is True
                     and parsed.get('independent_empty_state_replay_equal') is True
                     and parsed.get('f32_head_executed') is False
+                    and parsed.get('quantized_q24_head_executed_in_rust') is True
+                    and parsed.get('f32_to_q24_head_round_ties_even_profile') == 'hepta.neuron.f32-q24-head.v1'
                     and parsed.get('torch_f32_native_q24_prediction_parity_verified') is False
                     and parsed.get('crash_recovery_verified') is False
                     and parsed.get('production_qualification') is False
@@ -136,12 +139,14 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
             sha_file(path, m['weight_sha256'])
             sha_file(binary, binary_sha)
             sha_file(trace, trace_sha)
+            integer_head_oracle = verify_native_head(path, parsed)
             gap = floating_gap(path, arm=arm, width=m['width'], rank=m['rank'],
                                native_trace=frozen_trace, native_result=parsed)
             require(gap['bitwise_float_to_q24_prediction_parity_proven'] is False and
                     gap['production_qualification'] is False,
                     'float/native gap analyzer forged model qualification')
             results.append({
+                'q24_head_integer_oracle':integer_head_oracle,
                 'float_surrogate_vs_native_q24_state_gap':gap,
                 'arm': arm, 'private_parameter_cap': cap,
                 'native_process_wall_micros_not_target_host_slo': elapsed_us,
@@ -160,6 +165,7 @@ def evaluate(binary: Path, binary_sha: str, root: Path, receipt_sha: str,
         'twenty_native_physical_model_executions': len(results),
         'native_q24_temporal_replay_executed': True,
         'diagnostic_native_vs_float_gap_rows': len(results),
+        'quantized_native_head_integer_oracle_matches': len(results),
         'full_selected_model_head_executed': False,
         'floating_torch_native_q24_prediction_parity_verified': False,
         'real_target_host_attested': False, 'crash_durable_recovery_verified': False,
