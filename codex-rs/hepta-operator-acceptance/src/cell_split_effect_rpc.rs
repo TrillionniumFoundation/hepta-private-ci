@@ -15,6 +15,7 @@ use std::io::Write;
 use std::os::unix::fs::FileTypeExt;
 use std::os::unix::net::UnixStream;
 use std::path::Component;
+use std::path::Path;
 use std::path::PathBuf;
 use std::time::Duration;
 use std::time::Instant;
@@ -24,6 +25,10 @@ use ed25519_dalek::VerifyingKey;
 use serde::Deserialize;
 use serde::Serialize;
 use serde::de::DeserializeOwned;
+use socket2::Domain;
+use socket2::SockAddr;
+use socket2::Socket;
+use socket2::Type;
 use thiserror::Error;
 
 use crate::CellSplitExecutionIntentV1;
@@ -178,17 +183,17 @@ impl CellSplitUnixEffectPortV1 {
         challenge_nonce: Option<String>,
     ) -> Result<CellSplitEffectRpcResponseV1, CellSplitEffectRpcErrorV1> {
         let path = &self.endpoints[intent.step.index()];
+        // Include endpoint inspection and connect in the same deadline as
+        // request transmission and the authenticated response. A full Unix
+        // listen backlog must not block the single split coordinator forever.
+        let started_at = Instant::now();
         // Disallow socket symlinks, including a late replacement of the endpoint.
         if !std::fs::symlink_metadata(path)?.file_type().is_socket() {
             return Err(CellSplitEffectRpcErrorV1::Invalid(
                 "effect endpoint is not a Unix socket",
             ));
         }
-        // Charge the Unix connect and outbound frame against the same
-        // response deadline. A slow send must not reset the ACK/readback
-        // timeout. Blocking Unix connect itself is not cancellation-bounded.
-        let started_at = Instant::now();
-        let mut stream = UnixStream::connect(path)?;
+        let mut stream = connect_owner_with_deadline(path, started_at, self.timeout)?;
         let request = CellSplitEffectRpcRequestV1 {
             schema: CELL_SPLIT_EFFECT_RPC_SCHEMA_V1.to_owned(),
             action,
@@ -325,6 +330,23 @@ impl CellSplitUnixEffectPortV1 {
             .insert(intent.idempotency_key.clone(), floor);
         Ok(response.receipt)
     }
+}
+
+/// Use a nonblocking, polled Unix connect rather than the unbounded
+/// std::os::unix::net::UnixStream::connect. The connection alone is not
+/// authority: callers still require the original signed effect receipt and
+/// a fresh signed owner readback after committing.
+pub(crate) fn connect_owner_with_deadline(
+    path: &Path,
+    started_at: Instant,
+    total: Duration,
+) -> Result<UnixStream, CellSplitEffectRpcErrorV1> {
+    // Reject an exhausted budget before even attempting the socket operation.
+    remaining_effect_rpc_budget(started_at, total)?;
+    let address = SockAddr::unix(path)?;
+    let socket = Socket::new(Domain::UNIX, Type::STREAM, None)?;
+    socket.connect_timeout(&address, remaining_effect_rpc_budget(started_at, total)?)?;
+    Ok(socket.into())
 }
 
 /// The caller, not each frame, owns the RPC deadline. A sub-millisecond
@@ -967,6 +989,27 @@ mod tests {
                 "RPC transport deadline exceeded"
             ))
         ));
+    }
+
+    #[test]
+    fn unix_owner_connect_is_bounded_by_the_original_rpc_deadline() {
+        let root = tempfile::tempdir().expect("root");
+        let path = root.path().join("cas.sock");
+        let listener = UnixListener::bind(&path).expect("real owner socket");
+        let expired = Instant::now() - Duration::from_secs(1);
+        assert!(matches!(
+            connect_owner_with_deadline(&path, expired, Duration::from_millis(50)),
+            Err(CellSplitEffectRpcErrorV1::Invalid(
+                "RPC transport deadline exceeded"
+            ))
+        ));
+        // A live socket remains reachable with a fresh budget, without
+        // granting any effect authority or creating an owner receipt.
+        let stream = connect_owner_with_deadline(&path, Instant::now(), Duration::from_secs(1))
+            .expect("bounded Unix connect");
+        let (accepted, _) = listener.accept().expect("real listener accepted");
+        drop(accepted);
+        drop(stream);
     }
 
     #[test]

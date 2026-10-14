@@ -29,6 +29,7 @@ use crate::CELL_SPLIT_SUPERVISOR_MONOTONIC_FRONTIER_SCHEMA_V1;
 use crate::CellSplitSupervisorMonotonicFrontierPortV1;
 use crate::CellSplitSupervisorMonotonicFrontierV1;
 use crate::cell_split_effect_rpc::CellSplitEffectRpcErrorV1;
+use crate::cell_split_effect_rpc::connect_owner_with_deadline;
 use crate::cell_split_effect_rpc::receive_frame_with_deadline;
 use crate::cell_split_effect_rpc::send_frame_with_deadline;
 use crate::cell_split_supervisor_monotonic_frontier_signing_payload_v1;
@@ -128,6 +129,10 @@ impl CellSplitSupervisorMonotonicUnixPortV1 {
         {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);
         }
+        // Include endpoint inspection, connection, request and response in
+        // one RPC deadline. A saturated Supervisor listener backlog cannot
+        // block the independent custody read outside this budget.
+        let started_at = Instant::now();
         // A socket symlink can be swapped after validation; the independent
         // pinned signature must still be verified against the exact challenge.
         if !fs::symlink_metadata(&self.socket_path)?
@@ -136,11 +141,8 @@ impl CellSplitSupervisorMonotonicUnixPortV1 {
         {
             return Err(CellSplitMonotonicRpcErrorV1::Invalid);
         }
-        // A single RPC budget covers both frame directions. An apparently
-        // responsive server must not reset the deadline after receiving a
-        // request or reserve another full interval for its signed response.
-        let started_at = Instant::now();
-        let mut connection = UnixStream::connect(&self.socket_path)?;
+        let mut connection =
+            connect_owner_with_deadline(&self.socket_path, started_at, self.timeout)?;
         let request = CellSplitMonotonicRpcRequestV1 {
             schema: CELL_SPLIT_MONOTONIC_RPC_SCHEMA_V1.to_owned(),
             method: READ_METHOD.to_owned(),
