@@ -497,9 +497,18 @@ fn same_inode_marker_content_corruption_denies_live_and_recovered_owner() {
     owner.stage(sample(MetricPhaseV1::Signature)).expect("first sample");
     owner.flush().expect("original durable record");
     let mut bytes = fs::read(&marker).expect("original identity");
-    let last_digit = bytes.len() - 2;
-    bytes[last_digit] = if bytes[last_digit] == b'0' { b'1' } else { b'0' };
-    let mut opened = OpenOptions::new().write(true).open(&marker).expect("original inode");
+    // The original HEMW1 header, not the separately tested F1 high-water
+    // tail, is the subject of this identity corruption regression.
+    let last_digit = owner.owner_marker_bytes.len() - 2;
+    bytes[last_digit] = if bytes[last_digit] == b'0' {
+        b'1'
+    } else {
+        b'0'
+    };
+    let mut opened = OpenOptions::new()
+        .write(true)
+        .open(&marker)
+        .expect("original inode");
     opened.write_all(&bytes).expect("overwrite marker with same size");
     opened.sync_all().expect("persist marker corruption");
     assert!(matches!(
@@ -538,8 +547,7 @@ fn partial_or_legacy_evidence_owner_cannot_be_adopted_as_new_genesis() {
             fs::set_permissions(&marker, fs::Permissions::from_mode(0o600))
                 .expect("private marker");
         } else {
-            fs::set_permissions(&path, fs::Permissions::from_mode(0o600))
-                .expect("private old WAL");
+            fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).expect("private old WAL");
         }
         assert!(matches!(
             MetricsGroupCommitV1::open(&path),
