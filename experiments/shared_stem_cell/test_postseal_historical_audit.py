@@ -79,6 +79,11 @@ class HistoricalAuditTests(unittest.TestCase):
         self.assertEqual(receipt["cohort_sizes"], {"confirmation": 512, "evaluation": 512})
         self.assertEqual(receipt["scores"]["evaluation"]["bank"]["correct"], 512)
         self.assertEqual(receipt["chosen"], "bank")
+        self.assertEqual(
+            receipt["descriptive_paired_deltas"]["evaluation"]["shared"],
+            [{"cell": 0, "cases": 256, "gains": 0, "losses": 0, "net_correct": 0},
+             {"cell": 1, "cases": 256, "gains": 0, "losses": 0, "net_correct": 0}],
+        )
         self.assertFalse(receipt["production_accepted"])
 
     def test_rehashed_wrong_eval_score_still_rejects(self):
