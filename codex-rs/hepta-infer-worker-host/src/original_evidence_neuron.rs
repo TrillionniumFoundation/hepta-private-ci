@@ -9,7 +9,7 @@
 //! independently attest the live CNS Scope reader, signed Final-use issuer,
 //! recovery policy and immutable model artifacts before production serving.
 
-#[cfg(all(unix, test))]
+#[cfg(unix)]
 use std::path::Component;
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -69,6 +69,23 @@ impl std::fmt::Display for OriginalEvidenceWorkerBootstrapErrorV1 {
 
 impl std::error::Error for OriginalEvidenceWorkerBootstrapErrorV1 {}
 
+/// P0 DENY_ALL until the original Control/CNS signer is actually wired.
+/// This has NO caller inputs and is not a positive security attestation.
+/// The normal library always denies. Explicit internal unit-test fixtures
+/// may exercise the full signed Worker mechanics against their fake frontier;
+/// this permission does NOT compile into the production library.
+pub fn original_control_scope_owner_preflight_v1(
+) -> Result<(), OriginalEvidenceWorkerBootstrapErrorV1> {
+    #[cfg(not(test))]
+    {
+        Err(OriginalEvidenceWorkerBootstrapErrorV1::UnverifiedOriginalControl)
+    }
+    #[cfg(test)]
+    {
+        Ok(())
+    }
+}
+
 /// This is a concrete Evidence *provenance* barrier, not a Control signer.
 /// No API returns the underlying generic worker or accepts another sink.
 /// A recovered signed model effect is never automatically replayed.
@@ -85,28 +102,19 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
         live_scope_frontier: Arc<dyn MicrobatchScopeFrontierV1>,
         config: OriginalEvidenceWriterConfigV1,
     ) -> Result<Self, OriginalEvidenceWorkerBootstrapErrorV1> {
-        // The original, independently signed Control/CNS scope reader has
-        // not yet been connected to this Worker bootstrap. Accepting an
-        // arbitrary Arc<dyn MicrobatchScopeFrontierV1> would let a caller
-        // bless its own stale route and use a newly valid Final-use nonce.
-        // Fail CLOSED in every non-test Unix binary, even with an authentic
-        // original Evidence WAL. No bool/manifest hint can waive this gate.
-        // The existing signed/native fixture path remains test-only until
-        // an independently authenticated canonical Control composition is
-        // implemented, inspected and promoted through separate production CI.
-        #[cfg(all(unix, not(test)))]
-        {
-            let _ = (worker, authority, limits, live_scope_frontier, config);
-            Err(OriginalEvidenceWorkerBootstrapErrorV1::UnverifiedOriginalControl)
-        }
         #[cfg(not(unix))]
         {
             let _ = (worker, authority, limits, live_scope_frontier, config);
             Err(OriginalEvidenceWorkerBootstrapErrorV1::UnsupportedHost)
         }
-        #[cfg(all(unix, test))]
+        #[cfg(unix)]
         {
             use std::os::unix::fs::PermissionsExt as _;
+
+            // Must be the first runtime gate in production, before any WAL
+            // open, queue bootstrap, authority claim or model invocation.
+            // A trait object can never self-certify its original CNS owner.
+            original_control_scope_owner_preflight_v1()?;
 
             // The operator preprovisions this private canonical directory.
             // Relative, symlinked or aliasable ancestors cannot be used to

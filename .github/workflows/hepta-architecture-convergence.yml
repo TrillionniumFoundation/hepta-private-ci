@@ -243,6 +243,10 @@ jobs:
           # Compile the NON-TEST Worker library too: test-only research
           # fixture permissions must not exist in the release implementation.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-worker-non-test-provenance.json" --minimum-tests 0 -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib
+          # Unlike same-crate unit fixtures, this integration test links the
+          # compiled NON-TEST Worker library and proves unverified Control/CNS
+          # cannot satisfy its production bootstrap preflight.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/production-control-preflight-deny.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --test original_control_non_test_gate -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-batch-worker.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib batched_neuron -- --nocapture
           # Test the signed Worker against the ACTUAL original Evidence
           # WAL actor and fsynced marker, including cold restart readback.
