@@ -169,9 +169,9 @@ impl CellSplitUnixEffectPortV1 {
                 "effect endpoint is not a Unix socket",
             ));
         }
-        // The entire transport (connect, request write and response read)
-        // has one wall-clock budget. A slow request must never grant the owner
-        // a second full interval for acknowledging an ambiguous effect.
+        // Charge the Unix connect and outbound frame against the same
+        // response deadline. A slow send must not reset the ACK/readback
+        // timeout. Blocking Unix connect itself is not cancellation-bounded.
         let started_at = Instant::now();
         let mut stream = UnixStream::connect(path)?;
         let request = CellSplitEffectRpcRequestV1 {
