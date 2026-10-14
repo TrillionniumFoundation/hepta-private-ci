@@ -1599,6 +1599,7 @@ fn live_scope_cutover_during_terminal_fsync_denies_success_without_replay() {
     assert_eq!(calls.load(std::sync::atomic::Ordering::SeqCst), 1);
 }
 
+#[cfg(unix)]
 #[test]
 fn signed_native_batch_success_is_fsynced_in_original_evidence_wal_before_publication() {
     let dir = tempfile::tempdir().unwrap();
@@ -1672,6 +1673,7 @@ fn signed_native_batch_success_is_fsynced_in_original_evidence_wal_before_public
     assert_eq!(reopened.committed_groups(), 1);
 }
 
+#[cfg(unix)]
 #[test]
 fn real_wal_truncation_after_signed_scalar_effect_withholds_followup_success() {
     let dir = tempfile::tempdir().unwrap();
