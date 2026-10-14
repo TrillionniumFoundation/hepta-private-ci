@@ -1,0 +1,119 @@
+name: Hepta physical token paired Head research (no promotion)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/neuron-shared-encoder/**"
+      - ".github/workflows/hepta-neuron-physical-token-pair-shadow.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: hepta-real-token-research-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  modernbert-public-token-pair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 75
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      USE_TF: "0"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      SOURCE_SHA256: "1f1a463eebd130288445f5b7bf39377c0775c7cfc00a9cca4da87637a19eeff2"
+      SOURCE_ARTIFACT_ID: "11881847060"
+      SOURCE_RUN_ID: "38534349397"
+      GITHUB_TOKEN: ${{ github.token }}
+    defaults:
+      run:
+        working-directory: qualification/neuron-shared-encoder
+    steps:
+      - name: Checkout exact PR SHA with no persisted credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+
+      - name: Install isolated pinned CPU runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/hepta-token-real-env"
+          PY="$RUNNER_TEMP/hepta-token-real-env/bin/python"
+          "$PY" -m pip install --disable-pip-version-check --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          "$PY" -m pip install --disable-pip-version-check 'transformers==4.57.1' 'huggingface-hub==0.36.0' 'numpy==2.2.6' 'safetensors==0.7.0' 'pytest==9.0.2' 'cryptography==46.0.4'
+          "$PY" -c 'import torch,safetensors,transformers,huggingface_hub; print(torch.__version__, transformers.__version__)'
+
+      - name: Run all local shadow gates before real-weight acquisition
+        shell: bash
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-token-real-env/bin/python"
+          "$PY" -m pytest -q -p no:cacheprovider tests/test_physical_token_pair_v1.py tests/test_stage_modernbert_public_v1.py
+          "$PY" -m compileall -q neuron_shared_encoder/physical_token_pair_v1.py neuron_shared_encoder/stage_modernbert_public_v1.py
+
+      - name: Retrieve exact original public AG News source artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --retry 2 \
+            -H "Authorization: Bearer $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/${SOURCE_ARTIFACT_ID}/zip" \
+            --output "$RUNNER_TEMP/hepta-original-public.zip"
+          echo "${SOURCE_SHA256}  $RUNNER_TEMP/hepta-original-public.zip" | sha256sum --check
+
+      - name: Explicitly download and SHA-pin immutable ModernBERT assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-token-real-env/bin/python"
+          "$PY" -m neuron_shared_encoder.stage_modernbert_public_v1 \
+            --source-zip "$RUNNER_TEMP/hepta-original-public.zip" \
+            --source-sha256 "$SOURCE_SHA256" \
+            --destination "$RUNNER_TEMP/hepta-pinned-modernbert" \
+            --receipt "$RUNNER_TEMP/hepta-modernbert-acquisition.json"
+          BUNDLE_SHA="$($PY -c 'import json,sys; print(json.load(open(sys.argv[1]))["bundle_sha256"])' "$RUNNER_TEMP/hepta-modernbert-acquisition.json")"
+          echo "HEPTA_BUNDLE_SHA256=$BUNDLE_SHA" >> "$GITHUB_ENV"
+
+      - name: Real token Encoder → equal-parameter paired training → sealed Packed replay
+        shell: bash
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-token-real-env/bin/python"
+          "$PY" -m neuron_shared_encoder.physical_token_pair_v1 \
+            --source-zip "$RUNNER_TEMP/hepta-original-public.zip" \
+            --source-sha256 "$SOURCE_SHA256" \
+            --checkpoint-dir "$RUNNER_TEMP/hepta-pinned-modernbert" \
+            --bundle-sha256 "$HEPTA_BUNDLE_SHA256" \
+            --output "$RUNNER_TEMP/hepta-real-token-pair" \
+            --max-length 128 --encoder-batch 8 --steps 20 --seeds 11 23 47
+          "$PY" - <<'PY'
+          import json, os
+          from pathlib import Path
+          r = json.loads((Path(os.environ['RUNNER_TEMP']) / 'hepta-real-token-pair' / 'report.json').read_text())
+          assert r['schema'] == 'hepta.neuron.real-token-paired-retrospective.v1'
+          assert r['real_model_encoder_forward_observed'] is True
+          assert r['distinct_holdout_cases'] == 32 and len(r['runs']) == 3
+          assert r['no_independent_future_or_ood_window_verified'] is True
+          assert r['production_admission'] == 'BLOCKED' and r['selection_authorized'] is False
+          assert all(x['all_32_holdout_rows_for_both_arms_verified'] and x['max_packed_delta'] < 1e-5 for x in r['runs'])
+          assert len(list((Path(os.environ['RUNNER_TEMP'])/'hepta-real-token-pair').rglob('head.safetensors'))) == 12
+          print('REAL_PRETRAINED_TOKEN_RESEARCH_PASS_ONLY_NOT_PRODUCTION')
+          PY
+
+      - name: Retain only small Head weights and research receipts, never source/model/tokens
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-real-token-research-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/hepta-modernbert-acquisition.json
+            ${{ runner.temp }}/hepta-real-token-pair
+          if-no-files-found: warn
+          retention-days: 14
