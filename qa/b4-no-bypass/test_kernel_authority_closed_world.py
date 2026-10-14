@@ -515,6 +515,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "even_a_validly_signed_remote_rollback_is_denied_by_client_ratchet",
             "signed_same_sequence_cannot_rewrite_checkpoint_or_frozen_plan",
             "signed_newer_sequence_cannot_shrink_original_wal_or_lower_fences",
+            "valid_signed_control_wal_append_is_accepted_without_evicting_history",
             "malformed_denial_and_oversized_frame_are_rejected_before_positive_proof",
             "missing_or_symlinked_socket_and_unbounded_timeout_fail_closed",
             "truncated_frame_times_out_within_bounded_read_budget",

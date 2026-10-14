@@ -270,6 +270,10 @@ fn signed_newer_sequence_cannot_shrink_original_wal_or_lower_fences() {
                     if observation == 0 { 10 } else { 11 },
                 );
                 if observation == 1 {
+                    // A correct advanced WAL would be longer. Isolate the
+                    // independent minimum-byte and fence checks instead of
+                    // having both failures caused by an unchanged byte count.
+                    claim.wal_bytes = 2_048;
                     if smaller_wal {
                         claim.wal_bytes = 512;
                     } else {
@@ -298,6 +302,57 @@ fn signed_newer_sequence_cannot_shrink_original_wal_or_lower_fences() {
         );
         server.join().expect("forked signed server");
     }
+}
+
+#[test]
+fn valid_signed_control_wal_append_is_accepted_without_evicting_history() {
+    // A stricter rollback guard must still accept a genuine advanced
+    // sequence and allow a subsequent nonce-bound observation of that same
+    // committed state. All state claims are fixture-signed on an OS socket.
+    let root = tempfile::tempdir().expect("separate observer owner");
+    let (socket_path, listener) = socket(root.path());
+    let server = thread::spawn(move || {
+        for observation in 0..3 {
+            let (mut peer, _) = listener.accept().expect("bounded read-only RPC");
+            let request = read_request(&mut peer);
+            let mut claim = signed_proof(
+                &request,
+                &test_signer(),
+                if observation == 0 { 10 } else { 11 },
+            );
+            if observation > 0 {
+                claim.wal_bytes = 2_048;
+                claim.checkpoint_digest = "dd".repeat(32);
+                claim.observer_signature_bytes = test_signer()
+                    .sign(
+                        &cell_split_control_highwater_signing_bytes_v1(&claim)
+                            .expect("new durable frontier proof"),
+                    )
+                    .to_bytes()
+                    .to_vec();
+            }
+            send_response(&mut peer, &response(claim));
+        }
+    });
+    let mut verifier = client(socket_path, Duration::from_secs(2));
+    let first = verifier
+        .read_signed_highwater(SPLIT, SCOPE, &"66".repeat(32))
+        .expect("old signed committed Control state");
+    let next = verifier
+        .read_signed_highwater(SPLIT, SCOPE, &"77".repeat(32))
+        .expect("valid original WAL append");
+    let repeated = verifier
+        .read_signed_highwater(SPLIT, SCOPE, &"88".repeat(32))
+        .expect("unchanged newly committed frontier with a new challenge");
+    assert_eq!(first.sequence, 10);
+    assert_eq!(next.sequence, 11);
+    assert_eq!(next.wal_bytes, 2_048);
+    assert_eq!(next.sequence, repeated.sequence);
+    assert_eq!(next.wal_head, repeated.wal_head);
+    assert_eq!(next.checkpoint_digest, repeated.checkpoint_digest);
+    assert_ne!(next.challenge_nonce, repeated.challenge_nonce);
+    assert_ne!(next.observer_signature_bytes, repeated.observer_signature_bytes);
+    server.join().expect("signed Control test service");
 }
 
 #[test]
