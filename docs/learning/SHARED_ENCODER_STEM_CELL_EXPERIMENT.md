@@ -53,3 +53,19 @@ One record per arm × seed × future-window:
 `{experiment_id, arm_id, model_revision, source_commit, hardware_id, seed, train_cutoff, prediction_commit_time, label_available_after, future_window_id, n_examples, no_change_utility, candidate_utility, paired_delta, ci_lower, ci_upper, negative_transfer, ece, ood_false_accept_rate, shared_resident_bytes, per_cell_resident_bytes, transient_peak_bytes, tokens_encoded, batch_size, throughput_per_s, p50_us, p95_us, p99_us, checkpoint_bytes, verified_runtime_receipt_id, artifact_manifest_digest, authority_fence, status}`.
 
 Status `PASS` requires actual witnessed runtime receipts, not syntactically valid digests. Non-ready/incomplete results must remain clearly marked `INCOMPLETE` or `REJECTED`. No model downloads, eval dataset changes, production cutovers or promotion authorized by this document.
+
+## E0 process sampler (supporting evidence only)
+
+On a Linux **target host**, identify the actual inference worker PID from the independently managed process owner and its currently bound artifact manifest. Capture a short process-level sample:
+
+```sh
+python3 scripts/hepta-shared-encoder-e0.py \
+  --pid "$REAL_WORKER_PID" \
+  --manifest "$DEPLOYED_ARTIFACT_MANIFEST_PATH" \
+  --samples 16 --interval-ms 100 \
+  --out "$NEW_E0_EVIDENCE_PATH"
+```
+
+This reads `/proc/PID/stat`, `status`, and, when permitted, `smaps_rollup`; binds samples to the same PID start ticks and Linux boot identity; hashes the provided manifest/optional receipt file. It **never verifies the model was loaded**, signatures, exact active parameters, GPU usage, invocation latency, Q24 runtime receipts or NDU utility. Its status always remains `PROCESS_OBSERVED_E0_INCOMPLETE` and it never provides promotion authority. The caller must independently authenticate the model manifest, live Encoder execution, metrics and owner fence before E0 can pass.
+
+Offline contract checks: `python3 -m unittest discover -s scripts/tests -p 'test_hepta_shared_encoder_e0.py' -v` (Linux).
