@@ -99,3 +99,42 @@ The dedicated public-pretrained GitHub lane runs this check on actually
 executed, pinned public weights and original publisher records, retaining
 the report as a separate CI artifact. No signed future observations or
 real 64–4,096 Cell native owner measurements are inferred or filled in.
+
+## Independent frozen-feature -> Head-weight -> prediction replay
+
+After a real pinned public/pretrained \`execution.py\` run and the previous
+\`preflight_review.py\` score census, \`physical_head_replay.py\` performs a
+separate numerical replay with NumPy and safetensors. It never imports Torch,
+Transformers, \`execution.Head\`, an optimizer, the original Head forward path or
+the original Head fitter.
+
+The replay reopens the original scoped frozen f32 feature matrix and **all**
+learned/frozen Cell Head safetensors. It checks source-row order, feature/Head
+manifest and actual tensor SHA256, parameter count/bytes, weights, dataset and
+Stem binding, then recomputes the explicit Linear, Gated, Low-rank and
+Sparse-expert equations, normalized probabilities and choice identity. It
+rejects incomplete checkpoints, changed values even after superficial hashes
+are repaired, missing Cell/arm predictions and training-step mismatches.
+
+The public AG News smoke expects two Cells, four Head architectures, both
+learned and frozen roles: 16 physical Head checkpoints and 256 predicted
+probability vectors (32 holdout × four architectures × two roles). Tolerance
+for NumPy-vs-Torch floating arithmetic is 2e-5 absolute + 2e-4 relative.
+CI retains the full source-bound JSON replay receipt with maximum discrepancy;
+it never uploads the pretrained Encoder weight files.
+
+\`\`\`sh
+REPORT_SHA=$(sha256sum /real-study/execution/report.json | cut -d' ' -f1)
+python3 -m experiments.shared_stem_cell.physical_head_replay \
+  --manifest /real-study/manifest.json \
+  --producer /real-study/execution \
+  --report-sha256 "$REPORT_SHA" \
+  --output /new-evidence/physical-replay.json
+python3 -m unittest -v experiments.shared_stem_cell.test_physical_head_replay
+\`\`\`
+
+A clean numerical replay is **not** independent provenance of actual Encoder
+execution, signatory identity, source-family independence, external objective/NDU
+outcomes, a production no-change baseline or native 4,096-Cell capacity.
+It provides a stronger model-data-plane consistency check for E1/E2, not E1–E6
+completion and never production authority.
