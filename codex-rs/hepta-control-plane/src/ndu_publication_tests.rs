@@ -310,6 +310,29 @@ fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
         Err(NduPublicationErrorV1::Invalid),
         "a missing original receipt cannot satisfy the observer join"
     );
+
+    // Even a correctly formatted, previously signed original receipt cannot
+    // be joined to a freshly renamed/copied WAL with the same valid bytes.
+    // Replacing the original durable inode while this writer is open must
+    // permanently fence Observer success and later Control publication.
+    let former_wal = dir.path().join("original-control-history.wal");
+    std::fs::rename(&path, &former_wal).expect("simulate original WAL rename");
+    std::fs::copy(&former_wal, &path).expect("same bytes, different inode");
+    assert_eq!(
+        reopened.last_cns_original_receipt_binding(),
+        Err(NduPublicationErrorV1::Indeterminate),
+        "Observer cannot attest a replacement Control WAL"
+    );
+    assert_eq!(
+        reopened.verify_original_cns_receipt_binding(&[0x53; 96]),
+        Err(NduPublicationErrorV1::Poisoned),
+        "a previously matching original CNS receipt cannot override poisoned Control history"
+    );
+    drop(reopened);
+    assert!(matches!(
+        NduPublicationOwnerV1::open_production(&path, snapshot(4), migrated),
+        Err(NduPublicationErrorV1::Indeterminate)
+    ));
 }
 
 #[cfg(unix)]
