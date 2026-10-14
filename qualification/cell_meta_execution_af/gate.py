@@ -126,6 +126,11 @@ def common(input_data: dict[str, Any]) -> tuple[dict[str, Any], dict[str, tuple[
             "independent snapshots: at least three distinct evidence snapshots required")
     for snapshot in snapshots:
         digest(snapshot, "independent snapshot")
+    families = sequence(field(meta, "train_task_families", "candidate"), "train_task_families")
+    require(len(families) >= 1 and len(families) == len(set(families)),
+            "train task families must be a frozen unique inventory")
+    for family in families:
+        identity(family, "train task family")
     cutoff = timestamp(field(meta, "train_cutoff", "candidate"), "train_cutoff")
     frozen = timestamp(field(meta, "frozen_at", "candidate"), "frozen_at")
     require(cutoff <= frozen, "baseline must be frozen after train cutoff")
@@ -159,11 +164,29 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
         [((record(r, letter + ".row").get("arm"), r.get("window")), r) for r in records],
         {(arm, window) for arm in ARMS[letter] for window in windows}, letter)
     task_sets: dict[str, set[str]] = {k: set() for k in windows}
+    d_families: dict[str, set[tuple[str, ...]]] = {k: set() for k in windows}
+    c_graphs: set[str] = set()
+    c_policies: dict[str, set[str]] = {arm: set() for arm in ARMS["C"]}
     result: dict[tuple[str, str], dict[str, float]] = {}
     for (arm, window), r in parsed.items():
         name = f"{letter}/{arm}/{window}"
         input_sha = digest(field(r, "task_set_sha256", name), name + ".task_set_sha256")
         task_sets[window].add(input_sha)
+        if letter == "D":
+            heldout = sequence(field(r, "heldout_task_families", name), name + ".heldout_task_families")
+            require(heldout and len(set(heldout)) == len(heldout), f"{name}: missing unique heldout families")
+            for family in heldout:
+                identity(family, name + ".heldout_family")
+            require(not set(heldout).intersection(meta["train_task_families"]),
+                    f"{name}: unseen-task-family train/test overlap")
+            d_families[window].add(tuple(sorted(heldout)))
+        if letter == "C":
+            c_graphs.add(digest(field(r, "fixed_circuit_graph_sha256", name),
+                                name + ".fixed_circuit_graph_sha256"))
+            c_policies[arm].add(digest(field(r, "routing_policy_sha256", name),
+                                       name + ".routing_policy_sha256"))
+            digest(field(r, "actual_route_trace_sha256", name), name + ".actual_route_trace_sha256")
+            count(field(r, "sequential_cell_depth", name), name + ".sequential_cell_depth", positive=True)
         digest(field(r, "prediction_sha256", name), name + ".prediction_sha256")
         digest(field(r, "outcome_receipt_sha256", name), name + ".outcome_receipt_sha256")
         digest(field(r, "evaluation_receipt_sha256", name), name + ".evaluation_receipt_sha256")
@@ -200,6 +223,18 @@ def validate_study(letter: str, study: Any, meta: dict[str, Any],
         count(field(v, "inference_bytes", name), name + ".inference_bytes")
     require(all(len(s) == 1 for s in task_sets.values()), f"{letter}: unpaired future task set")
     require(task_sets["future_1"] != task_sets["future_2"], f"{letter}: reused future task set")
+    if letter == "D":
+        require(all(len(families) == 1 for families in d_families.values()),
+                "D: heldout task-family distribution drift between paired arms")
+        require(set(next(iter(d_families["future_1"]))).isdisjoint(
+                next(iter(d_families["future_2"]))),
+                "D: future task families reused between independent test windows")
+    if letter == "C":
+        require(len(c_graphs) == 1, "C: changed graph confounds routing/depth learning")
+        require(all(len(policies) == 1 for policies in c_policies.values()),
+                "C: routing policy changed between future windows")
+        require(len({next(iter(policies)) for policies in c_policies.values()}) == 3,
+                "C: fixed and learned routing/depth policies indistinguishable")
     passing: list[str] = []
     for proposed, comparators in CONTRASTS[letter].items():
         if all(
