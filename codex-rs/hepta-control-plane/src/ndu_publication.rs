@@ -17,6 +17,7 @@ use std::io::Write;
 #[cfg(unix)]
 use std::path::Component;
 use std::path::Path;
+use std::path::PathBuf;
 #[cfg(unix)]
 use std::str::FromStr;
 use std::sync::Mutex;
@@ -54,6 +55,36 @@ impl std::fmt::Display for NduPublicationErrorV1 {
     }
 }
 impl std::error::Error for NduPublicationErrorV1 {}
+
+/// A persistent writer-lock inode is independent of the append-only journal
+/// inode. Losing either path must never silently bootstrap a new Control
+/// frontier, even when the old writer held a lock on an unlinked WAL inode.
+/// This is local durability only; external custody is still mandatory.
+#[cfg(unix)]
+fn control_owner_file_identity(
+    file: &File,
+    path: &Path,
+) -> Result<(u64, u64), NduPublicationErrorV1> {
+    use std::os::unix::fs::MetadataExt;
+    use std::os::unix::fs::PermissionsExt;
+
+    let opened = file
+        .metadata()
+        .map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+    let named = fs::symlink_metadata(path).map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+    if !opened.is_file()
+        || !named.file_type().is_file()
+        || opened.dev() != named.dev()
+        || opened.ino() != named.ino()
+        || opened.nlink() != 1
+        || named.nlink() != 1
+        || opened.permissions().mode() & 0o077 != 0
+        || named.permissions().mode() & 0o077 != 0
+    {
+        return Err(NduPublicationErrorV1::Indeterminate);
+    }
+    Ok((opened.dev(), opened.ino()))
+}
 
 #[derive(Clone, Copy)]
 struct Event {
@@ -170,6 +201,10 @@ fn validate_replay(
 #[derive(Debug)]
 struct State {
     file: File,
+    // The independent persistent writer lock survives WAL deletion/replacement.
+    owner_lock: File,
+    journal_path: PathBuf,
+    lock_path: PathBuf,
     snapshot: NduSnapshotRefV1,
     checkpoint: Digest32,
     sequence: u64,
@@ -181,6 +216,24 @@ struct State {
     pending_cutover: bool,
 }
 impl State {
+    #[cfg(unix)]
+    fn verify_original_paths(&self) -> Result<(), NduPublicationErrorV1> {
+        let (device, inode) = control_owner_file_identity(&self.file, &self.journal_path)?;
+        control_owner_file_identity(&self.owner_lock, &self.lock_path)?;
+        let expected = format!("NDUW1|{device}|{inode}\n");
+        let recorded =
+            fs::read(&self.lock_path).map_err(|_| NduPublicationErrorV1::Indeterminate)?;
+        if recorded != expected.as_bytes() {
+            return Err(NduPublicationErrorV1::Indeterminate);
+        }
+        Ok(())
+    }
+
+    #[cfg(not(unix))]
+    fn verify_original_paths(&self) -> Result<(), NduPublicationErrorV1> {
+        Err(NduPublicationErrorV1::Unsupported)
+    }
+
     fn append(
         &mut self,
         kind: char,
@@ -192,6 +245,10 @@ impl State {
     ) -> Result<Digest32, NduPublicationErrorV1> {
         if self.poisoned {
             return Err(NduPublicationErrorV1::Poisoned);
+        }
+        if let Err(error) = self.verify_original_paths() {
+            self.poisoned = true;
+            return Err(error);
         }
         let sequence = self
             .sequence
@@ -227,6 +284,10 @@ impl State {
         {
             self.poisoned = true;
             return Err(error.into());
+        }
+        if let Err(error) = self.verify_original_paths() {
+            self.poisoned = true;
+            return Err(error);
         }
         self.sequence = sequence;
         self.head = e.head;
@@ -286,27 +347,67 @@ impl NduPublicationOwnerV1 {
             Err(error) if error.kind() == std::io::ErrorKind::NotFound => false,
             Err(error) => return Err(error.into()),
         };
-        let file = OpenOptions::new()
-            .create(true)
-            .read(true)
-            .append(true)
-            .mode(0o600)
-            .open(path)?;
-        let opened = file.metadata()?;
-        let named = fs::symlink_metadata(path)?;
-        if !opened.is_file()
-            || !named.file_type().is_file()
-            || opened.dev() != named.dev()
-            || opened.ino() != named.ino()
-            || opened.nlink() != 1
-            || named.nlink() != 1
-            || opened.permissions().mode() & 0o077 != 0
-            || named.permissions().mode() & 0o077 != 0
-        {
-            return Err(NduPublicationErrorV1::UnsafePath);
+        // The marker must either already accompany an existing WAL, or
+        // neither path may exist on a first bootstrap. Do not adopt a removed
+        // journal, a removed marker, or legacy history lacking identity.
+        let mut lock_name = path.as_os_str().to_os_string();
+        lock_name.push(".owner-lock");
+        let lock_path = PathBuf::from(lock_name);
+        let lock_existed = match fs::symlink_metadata(&lock_path) {
+            Ok(meta)
+                if !meta.file_type().is_file()
+                    || meta.permissions().mode() & 0o077 != 0
+                    || meta.nlink() != 1 =>
+            {
+                return Err(NduPublicationErrorV1::UnsafePath);
+            }
+            Ok(_) => true,
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => false,
+            Err(error) => return Err(error.into()),
+        };
+        if preexisting != lock_existed {
+            return Err(NduPublicationErrorV1::Indeterminate);
         }
+        let mut lock_options = OpenOptions::new();
+        lock_options.read(true).write(true).mode(0o600);
+        if !preexisting {
+            lock_options.create_new(true);
+        }
+        let mut owner_lock = lock_options.open(&lock_path)?;
+        control_owner_file_identity(&owner_lock, &lock_path)?;
+        owner_lock
+            .try_lock()
+            .map_err(|_| NduPublicationErrorV1::WriterUnavailable)?;
+        if !preexisting {
+            // Once the marker exists durably, a crash before genesis must
+            // quarantine the half-bootstrapped owner rather than reinitialize.
+            fs::File::open(parent)?.sync_all()?;
+        }
+
+        let mut journal_options = OpenOptions::new();
+        journal_options.read(true).append(true).mode(0o600);
+        if !preexisting {
+            journal_options.create_new(true);
+        }
+        let file = journal_options.open(path)?;
+        let (journal_device, journal_inode) = control_owner_file_identity(&file, path)?;
         file.try_lock()
             .map_err(|_| NduPublicationErrorV1::WriterUnavailable)?;
+        let expected_marker = format!("NDUW1|{journal_device}|{journal_inode}\n");
+        if preexisting {
+            let mut recorded = Vec::new();
+            owner_lock
+                .try_clone()?
+                .take(256)
+                .read_to_end(&mut recorded)?;
+            if recorded != expected_marker.as_bytes() {
+                return Err(NduPublicationErrorV1::Indeterminate);
+            }
+        } else {
+            owner_lock.write_all(expected_marker.as_bytes())?;
+            owner_lock.sync_all()?;
+            fs::File::open(parent)?.sync_all()?;
+        }
         let mut reader = BufReader::new(file.try_clone()?);
         let mut row = Vec::new();
         let mut sequence = 0u64;
@@ -381,6 +482,9 @@ impl NduPublicationOwnerV1 {
         }
         let mut state = State {
             file,
+            owner_lock,
+            journal_path: path.to_path_buf(),
+            lock_path,
             snapshot,
             checkpoint,
             sequence,
@@ -421,6 +525,10 @@ impl NduPublicationOwnerV1 {
             .map_err(|_| NduPublicationErrorV1::Poisoned)?;
         if state.poisoned {
             return Err(NduPublicationErrorV1::Poisoned);
+        }
+        if let Err(error) = state.verify_original_paths() {
+            state.poisoned = true;
+            return Err(error);
         }
         if state.pending_cutover {
             return Err(NduPublicationErrorV1::Indeterminate);
