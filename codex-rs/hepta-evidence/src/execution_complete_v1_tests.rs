@@ -294,6 +294,43 @@ async fn restart_preserves_quarantine_and_never_replays_physical_execution() {
 }
 
 #[tokio::test]
+async fn cold_startup_keyset_verification_crosses_multiple_bounded_pages() {
+    let temp = TempDir::new().expect("temp");
+    let sqlite = config(&temp);
+    let store = HeptaEvidenceStore::open(&sqlite).await.expect("writer");
+    let mut probes = Vec::new();
+    for i in 0..260 {
+        let source = ExecutionIntentV1 {
+            operation_id: format!("operation:page-{i:04}"),
+            ..intent()
+        };
+        let receipt = store
+            .prepare_execution_intent_v1(&source, PAYLOAD)
+            .await
+            .expect("immutable original");
+        if matches!(i, 0 | 255 | 256 | 259) {
+            probes.push((source, receipt.readback.provider_effect_key));
+        }
+    }
+    store.close().await;
+    let reopened = HeptaEvidenceStore::open_existing_read_only(&sqlite)
+        .await
+        .expect("bounded keyset full-source verification");
+    for (source, key) in probes {
+        let recovered = reopened
+            .recover_execution_preparation_by_key_v1(&key)
+            .await
+            .expect("read one exact original")
+            .expect("persisted");
+        assert_eq!(recovered.intent, source);
+        assert_eq!(
+            recovered.readback.status,
+            ExecutionPreparationReadbackStatusV1::RecordedOnly
+        );
+    }
+}
+
+#[tokio::test]
 async fn no_external_effect_or_signer_is_created_by_complete_recovery() {
     assert!(!crate::EXECUTION_PREPARE_P2A_EXECUTE_ALLOWED);
     assert!(!crate::EXECUTION_PREPARE_P2A_PRODUCTION_CALLER);
