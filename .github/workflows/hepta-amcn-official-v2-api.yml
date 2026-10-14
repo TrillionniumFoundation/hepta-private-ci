@@ -1,0 +1,83 @@
+name: Hepta AMCN official LongMemEval-V2 API smoke (non-authorizing)
+
+on:
+  pull_request:
+    paths:
+      - "qualification/amcn-v1/**"
+      - ".github/workflows/hepta-amcn-official-v2-api.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: amcn-v2-api-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  official-pinned-abi:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          path: hepta
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          repository: xiaowu0162/LongMemEval-V2
+          ref: 2cc8c540bdb87fe6761629b585e727e1c4704520
+          persist-credentials: false
+          path: upstream-v2
+      - name: Verify exact upstream identity and install official API dependencies
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-amcn-official-api
+          test "$(git -C upstream-v2 rev-parse HEAD)" = "2cc8c540bdb87fe6761629b585e727e1c4704520"
+          git -C upstream-v2 rev-parse HEAD > /tmp/hepta-amcn-official-api/upstream-sha.txt
+          git -C hepta rev-parse HEAD > /tmp/hepta-amcn-official-api/hepta-sha.txt
+          python3 -m venv /tmp/hepta-amcn-official-python
+          /tmp/hepta-amcn-official-python/bin/pip install -e ./upstream-v2 > /tmp/hepta-amcn-official-api/install.log 2>&1
+          /tmp/hepta-amcn-official-python/bin/pip check
+          /tmp/hepta-amcn-official-python/bin/pip freeze > /tmp/hepta-amcn-official-api/environment.txt
+      - name: Execute real published Memory registry and persistence ABI
+        run: |
+          set -euo pipefail
+          /tmp/hepta-amcn-official-python/bin/python hepta/qualification/amcn-v1/official_v2_smoke.py \
+            --upstream upstream-v2 \
+            --bridge hepta/qualification/amcn-v1/lme_v2_bridge.py \
+            --receipt /tmp/hepta-amcn-official-api/actual-api-smoke.json \
+            | tee /tmp/hepta-amcn-official-api/smoke.log
+          /tmp/hepta-amcn-official-python/bin/python - <<'PY'
+          import json
+          from pathlib import Path
+          receipt = json.loads(Path("/tmp/hepta-amcn-official-api/actual-api-smoke.json").read_text())
+          assert receipt["actual_official_api_roundtrip"] is True
+          assert receipt["source_tampering_rejected"] is True
+          assert receipt["real_benchmark_questions_executed"] == 0
+          assert receipt["natural_task_score"] is None
+          assert receipt["production_accepted"] is False
+          PY
+      - name: Retain all errors and exact immutable source provenance
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hepta-amcn-official-api/source
+          git -C hepta rev-parse HEAD > /tmp/hepta-amcn-official-api/source/tested-sha.txt
+          git -C hepta rev-parse HEAD^{tree} > /tmp/hepta-amcn-official-api/source/tested-tree.txt
+          cp hepta/qualification/amcn-v1/official_v2_smoke.py \
+             hepta/qualification/amcn-v1/lme_v2_bridge.py \
+             hepta/.github/workflows/hepta-amcn-official-v2-api.yml \
+             /tmp/hepta-amcn-official-api/source/
+          printf '%s\n' 'real_model_answers=0' 'published_dataset_451_question_execution=false' \
+             'multimodal_model_qualified=false' 'production_accepted=false' \
+             > /tmp/hepta-amcn-official-api/nonpromotion.txt
+          (cd /tmp/hepta-amcn-official-api && find . -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: amcn-exact-official-longmemeval-v2-api-smoke
+          path: /tmp/hepta-amcn-official-api
+          if-no-files-found: error

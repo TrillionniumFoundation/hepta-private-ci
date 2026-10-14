@@ -20,6 +20,26 @@ until the full repository CI and independent review are complete.
 | 04 Split/merge | Two genuinely trained child Heads from a detached parent and a genuinely distilled student. Initialization preserves parent output; actual per-stage parameters and training work recorded. | Same-budget unsplit control, future outcomes, old-task retention, error-free owner migration and production Selector. Refer to #1726/#1733/#1742. |
 | 05 LongMemEval-V2 | Text-only lexical control matching official Memory.insert/query and persistence interface, provenance labels, checksum verification, query-only input and explicit screenshot limitation. | Actual 451-question run, trained AMCN backend, multimodal encoder, official judged scores and full end-to-end resource measurements. |
 
+## Actual official LongMemEval-V2 API parity (separate from task efficacy)
+
+The companion pinned CI checks out the upstream LongMemEval-V2 repository at
+immutable SHA 2cc8c540bdb87fe6761629b585e727e1c4704520 (Apache-2.0),
+then exercises the *original* published Memory registry, build_memory,
+query/post_query_hook, save_memory and load_memory with the Hepta
+amcn_shadow_lexical extension. It verifies tamper refusal, scoped query
+metadata and explicit image unsupported behavior.
+
+This test executes **zero** official benchmark questions and **zero** Reader
+generations. It does not replace the full 451-question public evaluation,
+multimodal encoder validation, real citation scoring or a strong hybrid RAG
+benchmark. Exact commit identity, environment and test output are retained.
+No unpinned upstream API or arbitrary remote model code is loaded.
+
+The lexical shortlist itself has a registered 8,192-record / 32 MiB text
+bound and no silent source truncation at ranking time. The official adapter
+separately validates source byte and index limits before ingesting records;
+text truncation in that control is explicit, measurable projection loss.
+
 ## Next-stage evidence correction: source-first v2
 
 The archived LoCoMo study previously selected one publisher-annotated positive

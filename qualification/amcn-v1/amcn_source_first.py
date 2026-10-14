@@ -15,6 +15,7 @@ from amcn_core import Evidence, Refused, digest, require
 PROFILE = "hepta.amcn.source-first-candidates.v1"
 WORDS = re.compile(r"\w+", re.UNICODE)
 MAX_CANDIDATES = 8192
+MAX_TOTAL_SOURCE_BYTES = 32 * 1024 * 1024
 MAX_WORDS = 8192
 MAX_QUERY_WORDS = 256
 
@@ -37,6 +38,8 @@ def lexical_shortlist(question, sources, *, scope, generation, top_k=16):
             "invalid, revoked, stale or foreign source")
     require(len({s.evidence_id for s in ordered}) == len(ordered),
             "duplicate source identity")
+    require(sum(len(s.text.encode("utf-8")) for s in ordered)
+            <= MAX_TOTAL_SOURCE_BYTES, "source-first total text byte budget")
     words = WORDS.findall(question.casefold())
     require(0 < len(words) <= MAX_QUERY_WORDS,
             "unscorable question tokens")
@@ -100,8 +103,15 @@ def source_first_weak_score(shortlist, publisher_support_ids):
             and len(set(publisher_support_ids)) == len(publisher_support_ids),
             "noncanonical source support annotations")
     sources = shortlist["ranked_source_ids"]
-    require(len(sources) == shortlist["shortlist_size"]
-            and len(set(sources)) == len(sources), "shortlist drift")
+    scores = shortlist.get("ranked_scores")
+    require(isinstance(scores, list)
+            and len(scores) == len(sources) == shortlist["shortlist_size"]
+            and len(scores) <= 16
+            and all(type(x) in (float, int) and isfinite(x) and x >= 0
+                    for x in scores)
+            and all(scores[i] >= scores[i + 1] for i in range(len(scores) - 1)),
+            "lexical score order or bounds")
+    require(len(set(sources)) == len(sources), "shortlist drift")
     support = set(publisher_support_ids)
     hits = [x in support for x in sources]
     return {

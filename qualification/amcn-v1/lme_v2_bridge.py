@@ -58,6 +58,12 @@ class AMCNShadowMemory(Memory):
     def _append(self, record):
         require(set(record) == {"id", "trajectory_id", "index", "text", "sha256"},
                 "source-only record schema")
+        require(isinstance(record["id"], str) and 0 < len(record["id"]) <= 512
+                and all(ord(ch) >= 32 and ord(ch) != 127 for ch in record["id"])
+                and isinstance(record["trajectory_id"], str)
+                and isinstance(record["index"], int) and record["index"] >= 0,
+                "source ID and index")
+        require(isinstance(record["text"], str), "source text type")
         raw = record["text"].encode("utf-8")
         require(raw and len(raw) <= self.max_text_bytes, "text limit")
         require(record["sha256"] == sha256(raw).hexdigest(), "source digest drift")
@@ -78,7 +84,9 @@ class AMCNShadowMemory(Memory):
         require(not set(trajectory) & {"answer", "gold", "gold_answer", "question_id", "reference_answer"},
                 "benchmark evaluator labels cannot enter memory")
         tid = trajectory.get("id")
-        require(isinstance(tid, str) and 0 < len(tid) <= 256, "trajectory identity")
+        require(isinstance(tid, str) and 0 < len(tid) <= 256
+                and all(ord(ch) >= 32 and ord(ch) != 127 for ch in tid),
+                "trajectory identity")
         states = trajectory.get("states", trajectory.get("content"))
         require(isinstance(states, list) and 1 <= len(states) <= 1024, "bounded trajectory states")
         prepared = []
@@ -86,15 +94,20 @@ class AMCNShadowMemory(Memory):
         if goal is None:
             metadata = trajectory.get("metadata", {})
             goal = metadata.get("original_goal", "") if isinstance(metadata, dict) else ""
-        require(isinstance(goal, str), "public goal")
+        require(isinstance(goal, str) and len(goal.encode("utf-8")) <= 32768,
+                "bounded public goal")
         for idx, state in enumerate(states):
             require(isinstance(state, dict), "public state shape")
             observation = state.get("observation")
             value = observation.get("text") if isinstance(observation, dict) else state.get("accessibility_tree", state.get("text"))
             url = state.get("url")
             action = state.get("action")
-            require(isinstance(value, str) and isinstance(url, str)
-                    and (action is None or isinstance(action, str)), "source state fields")
+            require(isinstance(value, str)
+                    and len(value.encode("utf-8")) <= 1048576
+                    and isinstance(url, str) and len(url.encode("utf-8")) <= 8192
+                    and (action is None or
+                         isinstance(action, str) and len(action.encode("utf-8")) <= 8192),
+                    "bounded source state fields")
             # No hidden evaluator answer, no image-to-text hallucination.
             body = f"Goal: {goal}\nURL: {url}\nAction: {action or '<none>'}\nObservation: {value}"
             encoded = body.encode("utf-8")
@@ -183,7 +196,7 @@ class AMCNShadowMemory(Memory):
 
     def _load_backend(self, input_dir: Path) -> None:
         path = input_dir / "amcn-shadow.json"
-        require(path.is_file() and not path.is_symlink() and path.stat().st_size <= 1_500_000_000,
+        require(path.is_file() and not path.is_symlink() and path.stat().st_size <= min(1_500_000_000, self.max_total_bytes + 1024 * self.max_records),
                 "safe shadow inventory file required")
         with path.open(encoding="utf-8") as f:
             payload = json.load(f)
