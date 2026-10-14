@@ -221,11 +221,9 @@ fn generic_topology_final_use_and_recovery_refuse_unowned_split() -> Result<()> 
     use codex_hepta_plasticity::TopologyOperationV2;
 
     let calls = Arc::new(AtomicUsize::new(0));
-    let root = HeptaStateRoot::parse(
-        std::env::temp_dir().join("hepta-generic-split-control-denial"),
-    )?;
-    let state: Arc<dyn RuntimeStateAdapter> =
-        Arc::new(ObservedAdapter(Arc::clone(&calls)));
+    let root =
+        HeptaStateRoot::parse(std::env::temp_dir().join("hepta-generic-split-control-denial"))?;
+    let state: Arc<dyn RuntimeStateAdapter> = Arc::new(ObservedAdapter(Arc::clone(&calls)));
     let runtime = crate::HeptaRuntime::from_adapter(root.clone(), Arc::clone(&state));
     let before = runtime.topology_snapshot()?;
     let candidate = build_host_generation(root, state, before.generation().next()?)?;
@@ -1081,17 +1079,22 @@ fn cell_split_cns_runtime_port_denies_unprepared_real_governed_runtime() -> Resu
         .map_err(|e| anyhow::anyhow!("{e}"))?;
     port.verify_preconditions(&plan, &intent)
         .map_err(|e| anyhow::anyhow!("{e}"))?;
-    let denied = port.publish_once(&plan, &binding, &intent)
+    let denied = port
+        .publish_once(&plan, &binding, &intent)
         .expect_err("unprepared CNS mutation must remain unavailable");
     assert!(denied.contains("no shared durable Control/Neuron cutover transaction"));
     assert_eq!(runtime.topology_snapshot()?, before);
     assert_eq!(migration_calls.load(Ordering::SeqCst), 0);
     assert_eq!(rollback_calls.load(Ordering::SeqCst), 0);
     assert!(
-        port.read_original_commit(&intent.idempotency_key)?.is_none(),
+        port.read_original_commit(&intent.idempotency_key)?
+            .is_none(),
         "denial must never mint an original runtime commit"
     );
-    assert!(!original_path.exists(), "no fsynced success on denied cutover");
+    assert!(
+        !original_path.exists(),
+        "no fsynced success on denied cutover"
+    );
     assert_eq!(live.generation, plan.parent_generation);
     assert!(port.publish_once(&plan, &binding, &intent).is_err());
     assert_eq!(migration_calls.load(Ordering::SeqCst), 0);
