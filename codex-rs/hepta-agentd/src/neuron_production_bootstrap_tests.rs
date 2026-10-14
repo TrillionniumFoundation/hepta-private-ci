@@ -73,7 +73,10 @@ fn recovered_effect_wal_rejects_missing_or_zero_length_evidence() {
         require_existing_effect_metrics_v1(&effect, &metrics),
         Err(NeuronProductionBootstrapErrorV1::NotReady)
     ));
-    assert!(!metrics.exists(), "readiness cannot create lost Evidence history");
+    assert!(
+        !metrics.exists(),
+        "readiness cannot create lost Evidence history"
+    );
     std::fs::write(&metrics, b"").expect("empty telemetry");
     assert!(matches!(
         require_existing_effect_metrics_v1(&effect, &metrics),
