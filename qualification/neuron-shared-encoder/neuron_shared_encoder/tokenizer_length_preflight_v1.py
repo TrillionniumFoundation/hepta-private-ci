@@ -150,7 +150,6 @@ def execute_pinned_length_preflight(*, source_zip: Path, source_sha256: str,
                                allow_patterns=sorted(TOKENIZER_FILES)))
     if not archive.is_dir():
         raise ValueError('pinned original tokenizer snapshot missing')
-    sizes = {}
     total = 0
     for name in sorted(TOKENIZER_FILES):
         item = archive / name
@@ -160,7 +159,6 @@ def execute_pinned_length_preflight(*, source_zip: Path, source_sha256: str,
         if not 0 < size <= MAX_PARTIAL_BYTES - total or _digest(item) != publisher[name]:
             raise ValueError('pinned tokenizer file budget or publisher SHA mismatch')
         total += size
-        sizes[name] = size
     target.mkdir(mode=0o700)
     for name in sorted(TOKENIZER_FILES):
         dst = target / name
