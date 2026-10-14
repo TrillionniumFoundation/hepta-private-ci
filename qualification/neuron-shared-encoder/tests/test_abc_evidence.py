@@ -7,6 +7,7 @@ import pytest
 from neuron_shared_encoder.abc_evidence import (
     ROLES, STAGES, SCALES, _pinned_json, multimodal_cost_audit,
     threeway_prequential_audit, joint_abc_evidence_gate,
+    paired_media_necessity_audit,
 )
 from neuron_shared_encoder.validation_v3 import canonical_digest
 
@@ -228,6 +229,38 @@ def test_abc_missing_real_models_never_selects_winner():
     assert blocked['production_admission'] == 'BLOCKED'
 
 
+
+def media_policy():
+    return {
+        'schema': 'hepta.stem.media-review-policy.v1',
+        'protocol_sha256': D('b'),
+        'minimum_pairs_per_group': 1,
+        'minimum_distinct_source_groups_per_group': 1,
+        'minimum_both_correct_fraction': .95,
+        'maximum_unresponsive_fraction': 0,
+    }
+
+
+def media_truth_flip_report():
+    return {
+        'schema': 'hepta.stem.paired-modality-audit.v1',
+        'prediction_sha256': D('c'),
+        'observer_receipt_sha256': D('e'),
+        'actual_independent_observer_verified': False,
+        'production_accepted': False,
+        'groups': {name: {
+            'pairs': 1, 'both_correct': 1, 'original_correct': 1,
+            'changed_correct': 1, 'prediction_changed': 1,
+            'unresponsive_to_truth_flip': 0,
+            'distinct_source_groups': 1,
+        } for name in (
+            'holdout/image/media_substitution',
+            'holdout/audio/media_substitution',
+            'holdout/video/temporal_reordering',
+        )},
+    }
+
+
 def test_abc_even_self_reported_complete_never_grants_permission():
     from neuron_shared_encoder.validation_v3 import FIVE_ARM_CANDIDATES
     b_rows, b = b_fixture()
@@ -238,6 +271,8 @@ def test_abc_even_self_reported_complete_never_grants_permission():
         'B': threeway_prequential_audit(b_rows, D('d'), b,
                                         bootstrap=100, min_future_groups=2),
         'C': multimodal_cost_audit(c_fixture()),
+        'media_counterfactual': media_truth_flip_report(),
+        'media_policy': media_policy(),
     })
     assert observed['status'] == 'RESEARCH_REVIEW_CANDIDATE_UNVERIFIED'
     assert not observed['independent_ndu_and_final_use_verified']
@@ -419,3 +454,66 @@ def test_b_delayed_actual_label_arrival_blocks_premature_update():
     with pytest.raises(ValueError, match='before label availability'):
         threeway_prequential_audit(
             rows, D('d'), evidence, bootstrap=100, min_future_groups=2)
+
+
+def test_abc_without_image_audio_video_truth_flips_never_advances():
+    from neuron_shared_encoder.validation_v3 import FIVE_ARM_CANDIDATES
+    b_rows, b = b_fixture()
+    without_media = joint_abc_evidence_gate({
+        'A': {'experiment': 'A5', 'dataset_sha256': D('d'),
+              'evidence_class': 'REAL_MODEL_LOCAL_SHADOW',
+              'encoders': {name: {} for name, _, _, _ in FIVE_ARM_CANDIDATES}},
+        'B': threeway_prequential_audit(
+            b_rows, D('d'), b, bootstrap=100, min_future_groups=2),
+        'C': multimodal_cost_audit(c_fixture()),
+    })
+    assert without_media['status'] == 'BLOCKED'
+    assert without_media['media_necessity']['status'] == 'BLOCKED'
+    assert without_media['candidate_stem_selected'] is None
+
+
+def test_c_media_semantic_shadow_pass_still_no_authority():
+    result = paired_media_necessity_audit(
+        media_truth_flip_report(), media_policy(),
+        expected_protocol_sha256=D('b'))
+    assert result['status'] == 'SCHEMA_COMPLETE_UNVERIFIED'
+    assert len(result['media_groups']) == 3
+    assert result['independent_media_truth_verified'] is False
+    assert result['production_admission'] == 'BLOCKED'
+
+
+@pytest.mark.parametrize('mutation', [
+    'missing_image', 'missing_audio', 'missing_video_order',
+    'wrong_protocol', 'incorrect_truth_flip', 'unresponsive_media',
+    'inconsistent_counts', 'forged_observer', 'unbound_prediction',
+])
+def test_c_semantic_necessity_rejects_mocked_media_success(mutation):
+    report = media_truth_flip_report()
+    policy = media_policy()
+    key = 'holdout/video/temporal_reordering'
+    if mutation == 'missing_image':
+        report['groups'].pop('holdout/image/media_substitution')
+    elif mutation == 'missing_audio':
+        report['groups'].pop('holdout/audio/media_substitution')
+    elif mutation == 'missing_video_order':
+        report['groups'].pop(key)
+        report['groups']['holdout/video/media_substitution'] = {
+            'pairs': 1, 'both_correct': 1, 'original_correct': 1,
+            'changed_correct': 1, 'prediction_changed': 1,
+            'unresponsive_to_truth_flip': 0, 'distinct_source_groups': 1}
+    elif mutation == 'wrong_protocol':
+        policy['protocol_sha256'] = D('f')
+    elif mutation == 'incorrect_truth_flip':
+        report['groups'][key]['both_correct'] = 0
+    elif mutation == 'unresponsive_media':
+        report['groups'][key]['prediction_changed'] = 0
+        report['groups'][key]['unresponsive_to_truth_flip'] = 1
+    elif mutation == 'inconsistent_counts':
+        report['groups'][key]['both_correct'] = 2
+    elif mutation == 'forged_observer':
+        report['actual_independent_observer_verified'] = True
+    else:
+        report['prediction_sha256'] = 'unbound'
+    result = paired_media_necessity_audit(
+        report, policy, expected_protocol_sha256=D('b'))
+    assert result['status'] == 'BLOCKED'

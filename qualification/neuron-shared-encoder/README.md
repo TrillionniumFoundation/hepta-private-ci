@@ -437,3 +437,34 @@ misleading comparison. For tasks with per-example variable options,
 evaluate the original option-conditioned Laya decision directly or
 implement a separately qualified per-option scorer; do not assign
 variable semantic labels to fixed output neurons.
+
+
+### C semantic necessity: real media counterfactual results, not embeddings alone
+
+The A/B/C combined research review now requires the **separate,
+source-bound paired-media counterfactual scorer output from PR #1774**,
+plus an externally precommitted `media_policy` tied to the frozen C
+`protocol_sha256`. The `media-pairs` command audits its
+`hepta.stem.paired-modality-audit.v1` output and requires held-out
+image substitution, held-out audio substitution, and actual video
+*temporal reordering* with original and changed truths. Structural
+counts, distinct source groups, both-correct fraction and failure to
+respond to media changes must satisfy the policy's stated limits.
+A video retrieval score or changed embedding cosine alone does not pass.
+
+Example evaluation envelope:
+`{"report": <PR1774 output>, "policy": {"schema":
+"hepta.stem.media-review-policy.v1", "protocol_sha256": <matching-C-protocol>,
+"minimum_pairs_per_group": <frozen-int>, "minimum_distinct_source_groups_per_group":
+<frozen-int>, "minimum_both_correct_fraction": <frozen-float>,
+"maximum_unresponsive_fraction": <frozen-float>}}`.
+This is a schema example, not an authorization or recommended numeric
+threshold. The research verifier does **not** authenticate the observer,
+whether those thresholds were truly preregistered, or source media
+bytes. Even an entirely passing result remains
+`SCHEMA_COMPLETE_UNVERIFIED` and `production_admission=BLOCKED`.
+
+Missing media evidence now blocks the combined A/B/C *research review
+candidate*, even if all model/Head and four-scale resource fields are
+present. A separate authenticated Evaluator/Selector/Executor remains
+necessary for a production decision.

@@ -453,12 +453,103 @@ def multimodal_cost_audit(manifest: dict) -> dict:
         previous = stage
     return {
         'experiment': 'C-stages', 'dataset_sha256': manifest.get('dataset_sha256'),
+        'protocol_sha256': manifest.get('protocol_sha256'),
         'status': 'SCHEMA_COMPLETE_UNVERIFIED' if not problems else 'BLOCKED',
         'issues': problems, 'stage_deltas': deltas,
         'target_host_attested': False, 'independent_real_model_runs_verified': False,
         'ndu_verification_present': False,
         'production_admission': 'BLOCKED', 'selection': 'NOT_AUTHORIZED',
         'warning': 'A complete telemetry table cannot establish real hardware, worker signatures, unclean WAL recovery, or NDU.',
+    }
+
+
+
+MEDIA_SEMANTIC_REQUIRED = (
+    'holdout/image/media_substitution',
+    'holdout/audio/media_substitution',
+    'holdout/video/temporal_reordering',
+)
+
+
+def paired_media_necessity_audit(
+    report: dict, policy: dict, *, expected_protocol_sha256: str | None = None,
+) -> dict:
+    """Audit PR #1774's *self-reported* truth-flip output, never source authority.
+
+    Require all image/audio/video counterfactuals, including exact video-frame
+    temporal reordering. This prevents a C resource-only or retrieval-only
+    benchmark from pretending to prove media-conditioned decisions.
+    """
+    issues = []
+    if not isinstance(report, dict) or report.get('schema') != 'hepta.stem.paired-modality-audit.v1':
+        issues.append('PR1774 paired-media scorer output is absent/invalid')
+        report = {}
+    if not isinstance(policy, dict) or policy.get('schema') != 'hepta.stem.media-review-policy.v1':
+        issues.append('externally preregistered media policy is absent')
+        policy = {}
+    policy_digest = policy.get('protocol_sha256')
+    if (not is_digest(policy_digest) or
+            (expected_protocol_sha256 is not None and
+             policy_digest != expected_protocol_sha256)):
+        issues.append('media protocol does not match frozen A/B/C study')
+    if not all(is_digest(report.get(k)) for k in
+               ('prediction_sha256', 'observer_receipt_sha256')):
+        issues.append('paired prediction or external observer reference is unpinned')
+    if report.get('actual_independent_observer_verified') is True or report.get('production_accepted') is True:
+        issues.append('self-asserted independent authority not accepted')
+    min_pairs = policy.get('minimum_pairs_per_group')
+    min_groups = policy.get('minimum_distinct_source_groups_per_group')
+    accuracy = policy.get('minimum_both_correct_fraction')
+    unresponsive = policy.get('maximum_unresponsive_fraction')
+    if (type(min_pairs) is not int or min_pairs < 1
+            or type(min_groups) is not int or min_groups < 1
+            or min_groups > min_pairs
+            or type(accuracy) not in (int, float) or
+            not math.isfinite(accuracy) or not 0 <= accuracy <= 1
+            or type(unresponsive) not in (int, float)
+            or not math.isfinite(unresponsive) or not 0 <= unresponsive <= 1):
+        issues.append('valid precommitted pair/group/accuracy/abstention limits required')
+        min_pairs, min_groups, accuracy, unresponsive = None, None, None, None
+    groups = report.get('groups') if isinstance(report.get('groups'), dict) else {}
+    summaries = {}
+    for key in MEDIA_SEMANTIC_REQUIRED:
+        entry = groups.get(key)
+        if not isinstance(entry, dict):
+            issues.append('missing actual modality truth-flip group: ' + key)
+            continue
+        names = ('pairs', 'both_correct', 'original_correct', 'changed_correct',
+                 'prediction_changed', 'unresponsive_to_truth_flip',
+                 'distinct_source_groups')
+        counts = [entry.get(name) for name in names]
+        if any(type(v) is not int or v < 0 for v in counts):
+            issues.append(key + ': nonnegative integer cohort/response counts required')
+            continue
+        pair_count, both, original, changed, moved, ignored, families = counts
+        if (pair_count == 0 or families > pair_count or
+                max(both, original, changed, moved, ignored) > pair_count or
+                both > min(original, changed) or moved + ignored != pair_count):
+            issues.append(key + ': internally inconsistent paired truth-flip counts')
+            continue
+        summaries[key] = {
+            'pairs': pair_count, 'source_groups': families,
+            'both_correct_fraction': both / pair_count,
+            'unresponsive_to_truth_flip_fraction': ignored / pair_count,
+        }
+        if min_pairs is not None and (pair_count < min_pairs or
+                families < min_groups or both / pair_count < accuracy or
+                ignored / pair_count > unresponsive):
+            issues.append(key + ': preregistered semantic necessity threshold missed')
+    return {
+        'experiment': 'C-media-semantic-necessity',
+        'status': 'SCHEMA_COMPLETE_UNVERIFIED' if not issues else 'BLOCKED',
+        'issues': issues,
+        'media_groups': summaries,
+        'independent_media_truth_verified': False,
+        'independent_observer_verified': False,
+        'ndu_utility_verified': False, 'production_admission': 'BLOCKED',
+        'warning': ('A paired-media result and operator-authored policy do not '
+                    'authenticate the media bytes, independent truth, frozen '
+                    'pre-registration, or source/model signatures.'),
     }
 
 
@@ -472,6 +563,11 @@ def joint_abc_evidence_gate(bundle: dict) -> dict:
     if not isinstance(bundle, dict):
         bundle = {}
     a, b, c = (bundle.get(k) for k in ('A', 'B', 'C'))
+    media = paired_media_necessity_audit(
+        bundle.get('media_counterfactual'), bundle.get('media_policy'),
+        expected_protocol_sha256=c.get('protocol_sha256') if isinstance(c, dict) else None)
+    if media['status'] != 'SCHEMA_COMPLETE_UNVERIFIED':
+        issues.append('multimodal counterfactual semantic necessity not established')
     if not all(isinstance(x, dict) for x in (a, b, c)):
         issues.append('need all A5, B-threeway, C-stages reports')
     else:
@@ -490,7 +586,7 @@ def joint_abc_evidence_gate(bundle: dict) -> dict:
     return {
         'experiment': 'ABC-joint',
         'status': 'RESEARCH_REVIEW_CANDIDATE_UNVERIFIED' if not issues else 'BLOCKED',
-        'issues': issues,
+        'issues': issues, 'media_necessity': media,
         'candidate_stem_selected': None, 'production_admission': 'BLOCKED',
         'independent_ndu_and_final_use_verified': False,
         'warning': 'Even complete A/B/C files are self-reported. Only independent evaluator, selector and executor may authorize a production change.',
@@ -519,7 +615,7 @@ def _pinned_json(path: str, expected: str) -> dict:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('command', choices=('b-threeway', 'c-stages', 'abc-joint'))
+    parser.add_argument('command', choices=('b-threeway', 'c-stages', 'media-pairs', 'abc-joint'))
     parser.add_argument('--input-json', required=True)
     parser.add_argument('--input-sha256', required=True)
     parser.add_argument('--dataset')
@@ -534,6 +630,8 @@ def main() -> None:
         result = threeway_prequential_audit(rows, data['dataset_sha256'], bundle)
     elif args.command == 'c-stages':
         result = multimodal_cost_audit(bundle)
+    elif args.command == 'media-pairs':
+        result = paired_media_necessity_audit(bundle.get('report'), bundle.get('policy'))
     else:
         result = joint_abc_evidence_gate(bundle)
     output = Path(args.output)
