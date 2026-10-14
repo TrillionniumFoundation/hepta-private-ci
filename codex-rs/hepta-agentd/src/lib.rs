@@ -201,6 +201,7 @@ pub use neuron_effect_bootstrap::bootstrap_durable_neuron_effect_intent_v1;
 pub use codex_hepta_evidence::metrics_group_commit::MetricPhaseV1;
 pub use codex_hepta_evidence::metrics_group_commit::MetricsCommittedSampleQueryV1;
 pub use codex_hepta_evidence::metrics_group_commit::MetricsCommittedSampleReadbackV1;
+pub use codex_hepta_evidence::metrics_group_commit::MetricsLocalFrontierV1;
 pub use codex_hepta_evidence::metrics_sink::DurablePhaseMetricSinkV1;
 pub use neuron_runtime::AgentdNeuronOwner;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;

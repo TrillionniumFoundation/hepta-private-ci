@@ -246,6 +246,10 @@ jobs:
           # These tests must run; unrelated fixture-only tests cannot pass
           # the physical persistence boundary by themselves.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/signed-worker-original-evidence-wal.json" --minimum-tests 2 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib original_evidence_wal_ -- --nocapture
+          # Original production-like Worker composition ONLY: protected
+          # Evidence-owned WAL and one live Control frontier, with Admission
+          # fsynced before signed model dispatch. Require all five native tests.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/original-evidence-bound-neuron-worker.json" --minimum-tests 5 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib original_evidence_bound_ -- --nocapture
           # Original Evidence owner exact committed Scope/operation/phase/
           # success membership tests and poisoned read-only actor regression.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/evidence-exact-operation-membership.json" --minimum-tests 5 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-evidence --lib bound_ -- --nocapture
