@@ -96,12 +96,8 @@ fn valid_hash_chain_cannot_replay_direct_cns_commit_without_prior_begin() {
     let path = dir.path().join("unprepared-cutover.wal");
     let prior = snapshot(3);
     {
-        let control = NduPublicationOwnerV1::open_production(
-            &path,
-            prior.clone(),
-            Digest32::ZERO,
-        )
-        .expect("protected genesis");
+        let control = NduPublicationOwnerV1::open_production(&path, prior.clone(), Digest32::ZERO)
+            .expect("protected genesis");
         assert_eq!(control.current().unwrap().0, prior);
     }
     let genesis_bytes = std::fs::read_to_string(&path).expect("genesis");
@@ -139,11 +135,7 @@ fn valid_hash_chain_cannot_replay_direct_cns_commit_without_prior_begin() {
     writer.sync_all().expect("force forged durable suffix");
     drop(writer);
     assert!(matches!(
-        NduPublicationOwnerV1::open_production(
-            &path,
-            snapshot(4),
-            forged.after,
-        ),
+        NduPublicationOwnerV1::open_production(&path, snapshot(4), forged.after,),
         Err(NduPublicationErrorV1::Corrupt)
     ));
     assert_eq!(
@@ -534,7 +526,10 @@ fn lost_wal_during_real_callback_never_publishes_success_or_recreates_history() 
         NduPublicationOwnerV1::open_production(&path, original, Digest32::ZERO),
         Err(NduPublicationErrorV1::Indeterminate)
     ));
-    assert!(!path.exists(), "recovery does not invent replacement history");
+    assert!(
+        !path.exists(),
+        "recovery does not invent replacement history"
+    );
 }
 
 #[cfg(unix)]
