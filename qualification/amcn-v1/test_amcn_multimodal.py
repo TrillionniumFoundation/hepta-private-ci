@@ -16,7 +16,7 @@ def sha(text):
 def span(event, modality, suffix, *, start=100, end=300, scope="lab", revoked=False):
     return Span(f"{event}-{suffix}", event, f"root-{event}", scope, "g1",
                 modality, sha("asset-"+event+suffix), sha("normalizer-v1"),
-                tensor_digest(torch.tensor([1., 0.] if event == "e1" else [0., 1.], dtype=torch.float32)),
+                sha("encoder-"+modality), tensor_digest(torch.tensor([1., 0.] if event == "e1" else [0., 1.], dtype=torch.float32)),
                 start, end, revoked)
 
 
