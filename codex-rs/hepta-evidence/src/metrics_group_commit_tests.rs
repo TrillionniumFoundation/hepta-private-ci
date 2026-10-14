@@ -831,3 +831,47 @@ fn local_observer_frontier_is_read_only_and_never_counts_unflushed_staging() {
         original_marker
     );
 }
+
+#[cfg(unix)]
+#[test]
+fn observer_replay_does_not_mutate_original_writer_file_offset() {
+    use std::io::Seek as _;
+    use std::io::SeekFrom;
+
+    let dir = tempfile::tempdir().expect("private Evidence root");
+    let path = dir.path().join("offset.log");
+    let mut owner = MetricsGroupCommitV1::open(&path).expect("original WAL owner");
+    for phase in [MetricPhaseV1::Cas, MetricPhaseV1::Signature] {
+        owner.stage(sample(phase)).expect("stage original metric");
+        owner.flush().expect("durable original metric");
+    }
+    // Deliberately set an unrelated offset on the original owned FD. The
+    // previous cloned-descriptor seek(0) changed this shared offset.
+    let before = {
+        let mut original = &owner.file;
+        original
+            .seek(SeekFrom::Start(7))
+            .expect("test original fd offset");
+        original.stream_position().expect("original position")
+    };
+    let snapshot = owner.read_local_frontier().expect("read complete history");
+    assert_eq!(snapshot.sequence, 2);
+    let after = {
+        let mut original = &owner.file;
+        original.stream_position().expect("unchanged original offset")
+    };
+    assert_eq!(after, before, "Observer must use read_at, not shared seek");
+    // The original O_APPEND owner must still be able to commit normally.
+    owner.stage(sample(MetricPhaseV1::Cns)).expect("third metric");
+    assert_eq!(
+        owner.flush().expect("third group").expect("durable ACK").sequence,
+        3
+    );
+    drop(owner);
+    assert_eq!(
+        MetricsGroupCommitV1::open(&path)
+            .expect("verified recovery")
+            .committed_groups(),
+        3
+    );
+}
