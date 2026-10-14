@@ -1,0 +1,33 @@
+name: Hepta V9 paired physical Stem preflight contracts (NO-GO)
+on:
+  push:
+    branches: [research/multimodal-stem-bridge-20261014]
+    paths:
+      - experiments/shared_stem_cell/public_stem_material_v8.py
+      - experiments/shared_stem_cell/test_public_stem_material_v8.py
+      - experiments/shared_stem_cell/public_stem_pair_gate_v9.py
+      - experiments/shared_stem_cell/test_public_stem_pair_gate_v9.py
+      - .github/workflows/hepta-stem-pair-preflight-v9.yml
+  pull_request:
+    paths:
+      - experiments/shared_stem_cell/public_stem_pair_gate_v9.py
+      - experiments/shared_stem_cell/test_public_stem_pair_gate_v9.py
+      - .github/workflows/hepta-stem-pair-preflight-v9.yml
+permissions:
+  contents: read
+jobs:
+  pair-contract-only:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Validate frozen physical probe census and matched research receipts
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover -s experiments/shared_stem_cell -p test_public_stem_material_v8.py -v
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover -s experiments/shared_stem_cell -p test_public_stem_pair_gate_v9.py -v
+          python3 -m py_compile experiments/shared_stem_cell/public_stem_material_v8.py experiments/shared_stem_cell/public_stem_pair_gate_v9.py
