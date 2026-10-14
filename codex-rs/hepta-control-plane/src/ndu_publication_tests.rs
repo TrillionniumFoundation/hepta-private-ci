@@ -3,8 +3,10 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
 #[cfg(unix)]
-fn test_only_original_runtime_receipt() -> Result<(), &'static str> {
-    Ok(())
+fn test_only_original_runtime_receipt() -> Result<((), Vec<u8>), &'static str> {
+    // Test-only owner bytes are not a production signature or a real runtime
+    // receipt. Production still needs independently verified owner readback.
+    Ok(((), vec![0x52; 96]))
 }
 
 fn snapshot(fence: u64) -> NduSnapshotRefV1 {
@@ -263,7 +265,7 @@ fn guarded_cutover_commits_real_callback_once_and_replays_original_wal() {
                         Err(NduPublicationErrorV1::Indeterminate),
                         "a callback must not reenter the Control lane to publish a tick"
                     );
-                    Ok("original-fsynced-runtime-receipt")
+                    Ok(("original-fsynced-runtime-receipt", vec![0x53; 96]))
                 },
             )
             .expect("durable Prepare, external original receipt, Commit");
@@ -299,9 +301,9 @@ fn unsigned_ndu_owner_or_policy_change_is_denied_before_durable_begin() {
                 Digest32::ZERO,
                 successor,
                 Digest32::of_bytes(b"migrated"),
-                || -> Result<(), &'static str> {
+                || -> Result<((), Vec<u8>), &'static str> {
                     effects += 1;
-                    Ok(())
+                    Ok(((), vec![0x54; 96]))
                 },
             ),
             Err(NduPublicationErrorV1::Stale)
@@ -328,7 +330,7 @@ fn orphaned_durable_prepare_fences_model_and_cutover_after_restart() {
                 Digest32::ZERO,
                 snapshot(4),
                 Digest32::of_bytes(b"unknown-migrated"),
-                || -> Result<(), &'static str> {
+                || -> Result<((), Vec<u8>), &'static str> {
                     calls += 1;
                     Err("runtime already entered but original receipt unavailable")
                 },
@@ -406,9 +408,9 @@ fn concurrent_model_checkpoint_and_guarded_runtime_cutover_have_one_winner() {
             Digest32::ZERO,
             snapshot(4),
             migrated,
-            || -> Result<(), &'static str> {
+            || -> Result<((), Vec<u8>), &'static str> {
                 cns_calls.fetch_add(1, Ordering::SeqCst);
-                Ok(())
+                Ok(((), vec![0x54; 96]))
             },
         )
     });
