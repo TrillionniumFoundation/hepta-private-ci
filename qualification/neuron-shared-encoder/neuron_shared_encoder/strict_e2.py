@@ -50,14 +50,16 @@ def _audit_dataset(features: Tensor, labels: Tensor, rows: list[dict]) -> dict[s
     scope = (rows[0].get('principal'), rows[0].get('organ_id'), rows[0].get('cell_id'))
     if any(not isinstance(s, str) or not s for s in scope):
         raise ValueError('complete Cell scope required')
-    # Class indices have meaning only with a stable option vocabulary/order.
-    # A different option order with the same integer labels silently pollutes
-    # held-out Brier scores and the selection signal.
+    # Labels select a *position* in each question's own option list. Options
+    # may differ between questions; only class width must remain constant.
+    # Whether a supplied feature was encoded from that precise question/options
+    # requires separate pinned input/feature provenance, not a dataset-wide
+    # vocabulary equality claim.
     options = rows[0].get('options')
     if (not isinstance(options, list) or not 2 <= len(options) <= 16
-            or any(not isinstance(v, str) or not v for v in options)
+            or any(not isinstance(v, str) or not v or len(v) > 512 for v in options)
             or len(set(options)) != len(options)):
-        raise ValueError('invalid canonical option vocabulary')
+        raise ValueError('invalid first-row option geometry/content')
     seen_ids: set[str] = set()
     groups: dict[str, str] = {}
     dates: dict[str, list[datetime]] = {s: [] for s in SPLITS}
@@ -82,8 +84,9 @@ def _audit_dataset(features: Tensor, labels: Tensor, rows: list[dict]) -> dict[s
         if (not isinstance(choices, list) or len(choices) < 2 or len(choices) > 16
                 or len(choices) != len(options)):
             raise ValueError('option geometry mismatch')
-        if choices != options:
-            raise ValueError('option order/content mismatch')
+        if (any(not isinstance(v, str) or not v or len(v) > 512 for v in choices)
+                or len(set(choices)) != len(choices)):
+            raise ValueError('invalid per-question options')
         if row.get('label') != int(labels[i]) or type(row.get('label')) is not int:
             raise ValueError('tensor labels differ from pinned dataset rows')
     if any(not indices[s] for s in SPLITS):
@@ -259,6 +262,7 @@ def equal_parameter_nonlinear_trial(features: Tensor, labels: Tensor, rows: list
             'future_used_to_select_winner': False, 'validation_mean_brier': val_brier,
             'paired_validation_diagnostic': paired,
             'actual_parameters_equal_but_compute_cost_not_verified': True,
+            'joint_question_option_feature_binding_independently_verified': False,
             'runs': result,
             'warning': 'Held-out future results here are retrospective, untrusted, not independently precommitted NDU evidence.'}
 
