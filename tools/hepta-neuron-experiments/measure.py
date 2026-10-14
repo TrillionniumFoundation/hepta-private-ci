@@ -19,7 +19,7 @@ import time
 from pathlib import Path
 
 PLAN_SCHEMA = "hepta.neuron.experiment-plan.v2"
-RUN_SCHEMA = "hepta.neuron.experiment-run.v2"
+RUN_SCHEMA = "hepta.neuron.experiment-run.v3"
 ARMS = {
     "E0": ("no_change",),
     "E1": ("multi_head", "fixed_moe", "dynamic_moe", "cell_graph"),
@@ -412,7 +412,7 @@ def audit(plan_file: Path, repo: Path, receipt_paths: list[Path]) -> dict:
         }
         for arm in ARMS[plan["stage"]]
     }
-    return {"schema": "hepta.neuron.experiment-audit.v2", "stage": plan["stage"],
+    return {"schema": "hepta.neuron.experiment-audit.v3", "stage": plan["stage"],
             "plan_digest": plan["plan_digest"], "frozen_repetitions_per_arm": plan["repetitions"],
             "executed_arms": {arm: n for arm, n in found.items() if n},
             "missing_arms": sorted(arm for arm, n in found.items() if not n),
