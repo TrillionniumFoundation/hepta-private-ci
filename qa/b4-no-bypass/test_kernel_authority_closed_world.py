@@ -267,6 +267,25 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 )
                 self.assertIn("authority.claim(", body)
 
+    def test_staged_control_wal_is_not_a_production_effect_api(self) -> None:
+        source = (ROOT / "codex-rs/hepta-control-plane/src/lib.rs").read_text(
+            encoding="utf-8"
+        )
+        self.assertRegex(
+            source,
+            r"(?m)^#\[cfg\(test\)\]\s*\nmod ndu_publication;",
+            "staged original Control owner became a production module",
+        )
+        self.assertNotIn("pub use ndu_publication", source)
+        owner = (ROOT / "codex-rs/hepta-control-plane/src/ndu_publication.rs").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("Err(NduPublicationErrorV1::Unsupported)", owner)
+        self.assertIn(
+            "#[cfg(test)]\n    pub(crate) fn publish_cutover_with_external_effect",
+            owner,
+        )
+
     def test_type_anchored_callers_match_independent_closed_set(self) -> None:
         ignored = ("/tests/", "/examples/", "_tests.rs")
         rows = self.inventory()

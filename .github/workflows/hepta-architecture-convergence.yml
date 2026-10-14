@@ -165,7 +165,7 @@ jobs:
       - name: CellSplit physical Control handoff no-bypass
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/physical-cns-no-bypass.json" --minimum-tests 7 -- python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/physical-cns-no-bypass.json" --minimum-tests 8 -- python3 qa/b4-no-bypass/test_kernel_authority_closed_world.py
       - name: Prepare native prerequisites
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.native == 'true'
         run: |
@@ -263,6 +263,8 @@ jobs:
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
         run: |
           set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane -- --check
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/control-wal-shadow-compat.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane --lib ndu_publication -- --nocapture
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/stateless-lifecycle.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane repeated_read_only_add_replace_retire_preserves_dispatch_and_generation_fences
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_callback_runs_before_successor_publication
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/migration-rollback.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane migration_failure_rolls_back_and_preserves_predecessor

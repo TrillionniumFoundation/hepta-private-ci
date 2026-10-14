@@ -15,6 +15,9 @@ mod cell_split_route_fence;
 #[path = "embodiment/io.rs"]
 mod io;
 mod module_runtime;
+// Compatibility qualification only: not compiled or exported in release.
+#[cfg(test)]
+mod ndu_publication;
 mod organ_graph;
 mod organ_hierarchy;
 mod organ_registry;
