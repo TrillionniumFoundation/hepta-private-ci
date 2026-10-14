@@ -55,6 +55,9 @@ def validate_batch(part, raw, lock):
             type(lock.get("source_simulated_encoder")) is not bool or
             type(lock.get("profile")) is not dict):
         raise InputError("unqualified sequential physical-work contract")
+    scope = lock.get("scope")
+    if type(scope) is not str or not 1 <= len(scope.encode("utf-8")) <= 256:
+        raise InputError("missing bounded physical-work Scope")
     n = len(part)
     width = _integer(lock["profile"].get("width"), 1, 8192, "Stem width")
     expected_stem = _sha(lock.get("expected_stem_sha256"))
@@ -96,7 +99,7 @@ def validate_batch(part, raw, lock):
         timed[arm] = {"head_forward_calls": invocations, "head_rows_processed": requested,
                       "reported_wall_ns": item["wall_ns"],
                       "reported_process_cpu_ns": item["process_cpu_ns"]}
-    return {"schema": SCHEMA, "rows": n, "scope": lock.get("scope"),
+    return {"schema": SCHEMA, "rows": n, "scope": scope,
             "feature_sha256": feature, "model_digest": expected_stem,
             "encoder_forward_calls": forwards, "encoder_cache_reuses": reuses,
             "head_work": timed, "total_head_row_executions": sum(
