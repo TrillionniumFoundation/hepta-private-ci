@@ -15,6 +15,7 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use codex_hepta_agentd::DurablePhaseMetricSinkV1;
+use codex_hepta_agentd::MetricPhaseV1;
 use codex_hepta_agentd::MetricsCommittedSampleQueryV1;
 use codex_hepta_agentd::MetricsCommittedSampleReadbackV1;
 use codex_hepta_agentd::MetricsLocalFrontierV1;
@@ -249,6 +250,40 @@ impl<D: ModelDriver + NeuronFeatureDriver> OriginalEvidenceBoundNeuronWorkerV1<D
         if !self.original_evidence.healthy() {
             return Err(BatchWorkerErrorV1::MetricsUnavailable);
         }
+        // Verify that the ORIGINAL durable Evidence WAL contains exactly
+        // ONE successful Admission for EACH queued Scope/operation, not just
+        // that an unrelated group of metrics happened to flush. The same
+        // locally checked WAL frontier must cover all members.
+        //
+        // These are still UNSIGNED telemetry facts; this is only a necessary
+        // prerequisite to proposing a group for an independent issuer, NOT
+        // an exactly-once physical effect receipt or authority.
+        let committed = self.original_evidence.read_local_frontier()
+            .map_err(|_| BatchWorkerErrorV1::MetricsUnavailable)?;
+        if committed.sequence == 0 || committed.committed_rows == 0 {
+            return Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate);
+        }
+        for (id, key) in ordered {
+            let row = self.original_evidence
+                .read_committed_sample(MetricsCommittedSampleQueryV1 {
+                    scope_digest: codex_hepta_types::Digest32::of_bytes(
+                        key.scope_id.as_str().as_bytes(),
+                    ),
+                    operation_digest: codex_hepta_types::Digest32::of_bytes(
+                        id.as_str().as_bytes(),
+                    ),
+                    phase: MetricPhaseV1::Admission,
+                    succeeded: true,
+                })
+                .map_err(|_| BatchWorkerErrorV1::MetricsUnavailable)?;
+            if !row.is_some_and(|sample| {
+                sample.matching_rows == 1 && sample.frontier == committed
+            }) {
+                return Err(BatchWorkerErrorV1::AdmissionTelemetryIndeterminate);
+            }
+        }
+        // The original queue and live CNS are rechecked only AFTER every
+        // exact original committed Admission membership has been verified.
         self.owner
             .prepare_pending_native_group_signature_v1(now_ms, ordered)
     }
