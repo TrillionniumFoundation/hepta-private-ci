@@ -345,7 +345,15 @@ def main():
         write_json_exclusive(root/'owner-only-labels.json',lb)
         write_json_exclusive(root/'MATERIAL.json',dict(source_repo=REPO,source_revision=REVISION,
             train_sha256=args.train_sha256,val_sha256=args.val_sha256,
-            panel_id=tr['panel_id'],evaluation_labels_not_for_model=True))
+            panel_id=tr['panel_id'],material_admission=tr['material_admission'],
+            total_selected_train_passages=len(tr['rows']),
+            total_selected_validation_passages=len(ev['rows']),
+            evaluation_labels_not_for_model=True))
+        # Log ONLY aggregate row-admission statistics and source identity.
+        # Do not disclose the human labels, raw source evidence or weight bytes.
+        print(json.dumps(dict(panel_id=tr['panel_id'],
+            material_admission=tr['material_admission'],
+            model_training_started=False,production_authorized=False),sort_keys=True))
     elif args.cmd=='run':
         try:
             tr=strict_json(args.train_bundle)

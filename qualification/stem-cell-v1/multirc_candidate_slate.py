@@ -52,12 +52,16 @@ def prepare_candidate_slate(train, evaluation, source_rows, *, original_label_re
         idx = item['idx']
         if (not isinstance(idx,dict) or set(idx) != {'paragraph','question','answer'}
                 or not all(_typed_int(v) for v in idx.values())
-                or any(not _string(item[k],limit) for k,limit in
-                       (('paragraph',65536),('question',8192),('answer',4096)))
                 or type(item['label']) is not int or item['label'] not in (0,1)):
-            raise ValueError('invalid source row, labels or candidate index')
-        if item['paragraph'] not in lookup:
+            raise ValueError('invalid source row label or candidate index')
+        # Source-wide text anomalies cannot contaminate the registered panel;
+        # only its exact pinned complete paragraphs need pass strict limits.
+        # Original panel construction excluded all malformed passages.
+        if not isinstance(item['paragraph'],str) or item['paragraph'] not in lookup:
             continue
+        if any(not _string(item[k],limit) or not item[k].strip() for k,limit in
+               (('paragraph',65536),('question',8192),('answer',4096))):
+            raise ValueError('selected original MultiRC passage has invalid candidate text')
         key = idx['paragraph']
         paragraph = paragraphs.setdefault(key, {'text': item['paragraph'], 'questions': {}})
         if paragraph['text'] != item['paragraph']:

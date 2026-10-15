@@ -33,9 +33,20 @@ def _norm_text(value):
     return ' '.join(value.split()).casefold()
 
 
-def _group_inputs(rows, split, *, max_passage_chars=900):
-    """Create raw passage groups without consulting answer labels for selection."""
+def _group_inputs(rows, split, *, max_passage_chars=900, return_stats=False):
+    """Admit complete paragraphs without letting ANY answer/label select a row.
+
+    A few genuine source records have empty/missing/oversized text. A malformed
+    text record makes its entire paragraph INELIGIBLE, never just that answer.
+    Well-formed source ID and 0/1-label constraints remain mandatory for ALL
+    rows, including unselected paragraphs. No normalization/repaired text or
+    label-based quality stopping is performed.
+    """
     groups = {}
+    excluded = set()
+    distinct_passages = set()
+    seen_candidates = set()
+    invalid_fields = {'paragraph': 0, 'question': 0, 'answer': 0}
     if not isinstance(rows, list) or not 1 <= len(rows) <= 100000:
         raise ValueError('bounded materialized MultiRC rows required')
     for row in rows:
@@ -44,12 +55,31 @@ def _group_inputs(rows, split, *, max_passage_chars=900):
         idx = row['idx']
         if not isinstance(idx, dict) or set(idx) != {'paragraph', 'question', 'answer'} or not all(_typed_int(v) for v in idx.values()):
             raise ValueError('typed paragraph/question/answer identity required')
-        for field,limit in (('paragraph',65536),('question',8192),('answer',4096)):
-            if not _string(row[field],limit):
-                raise ValueError('untrusted MultiRC text or size')
-        if type(row['label']) is not int or row['label'] not in (0,1):
+        # Labels are checked but are NEVER used for admission or sample choice.
+        if type(row['label']) is not int or row['label'] not in (0, 1):
             raise ValueError('MultiRC label must be observed 0/1 in both input sources')
-        group=groups.setdefault(idx['paragraph'],dict(text=row['paragraph'],questions={}))
+        pid = idx['paragraph']
+        distinct_passages.add(pid)
+        identity = (pid, idx['question'], idx['answer'])
+        if identity in seen_candidates:
+            raise ValueError('duplicate or contradictory question/answer identity')
+        seen_candidates.add(identity)
+        malformed = False
+        for field, limit in (('paragraph', 65536), ('question', 8192), ('answer', 4096)):
+            value = row[field]
+            if value is not None and not isinstance(value, str):
+                raise ValueError('untrusted MultiRC text field type')
+            if isinstance(value, str) and len(value.encode('utf-8')) > 1048576:
+                raise ValueError('unbounded untrusted MultiRC text field')
+            if not _string(value, limit) or not value.strip():
+                invalid_fields[field] += 1
+                malformed = True
+        if malformed:
+            # Exclude the WHOLE passage, even if earlier rows were valid.
+            excluded.add(pid)
+        if pid in excluded:
+            continue
+        group=groups.setdefault(pid,dict(text=row['paragraph'],questions={}))
         if group['text']!=row['paragraph']:
             raise ValueError('one paragraph identity has conflicting evidence text')
         question=group['questions'].setdefault(idx['question'],dict(text=row['question'],answers={}))
@@ -57,11 +87,23 @@ def _group_inputs(rows, split, *, max_passage_chars=900):
             raise ValueError('duplicate or contradictory question/answer identity')
         question['answers'][idx['answer']]=dict(text=row['answer'],label=row['label'])
     eligible=[]
+    other_exclusions=dict(passage_too_long=0,too_few_questions=0,
+                          incomplete_native_answer_slate=0)
     for pid,g in groups.items():
-        if len(g['text'])>max_passage_chars or len(g['questions'])<2:
-            continue  # Fixed LABEL-BLIND length / question-count admission.
+        if pid in excluded:
+            continue
+        if len(g['text'])>max_passage_chars:
+            other_exclusions['passage_too_long']+=1
+            continue
+        if len(g['questions'])<2:
+            other_exclusions['too_few_questions']+=1
+            continue
         qids=sorted(g['questions'])[:2]
-        if any(not g['questions'][q]['answers'] for q in qids):
+        # All future same-question original human alternatives must be
+        # available. This is a fixed question/candidate-COUNT boundary and
+        # does not consult a candidate's 0/1 label or its predicted score.
+        if any(not 2<=len(g['questions'][q]['answers'])<=8 for q in qids):
+            other_exclusions['incomplete_native_answer_slate']+=1
             continue
         items=[]
         for q in qids:
@@ -70,7 +112,17 @@ def _group_inputs(rows, split, *, max_passage_chars=900):
             answer=question['answers'][answer_id]
             items.append((q,answer_id,question['text'],answer['text'],answer['label']))
         eligible.append((pid,g['text'],items))
-    return eligible
+    stats=dict(raw_rows=len(rows),raw_passages=len(distinct_passages),
+               invalid_text_passages=len(excluded),
+               invalid_text_fields=invalid_fields,
+               excluded_by_predeclared_structure=other_exclusions,
+               eligible_passages=len(eligible),
+               eligible_distinct_texts=len({_norm_text(x[1]) for x in eligible}),
+               admission='complete-valid-passage-and-native-slate-label-blind-v1')
+    if (stats['raw_passages'] != stats['invalid_text_passages']
+            + sum(other_exclusions.values()) + stats['eligible_passages']):
+        raise ValueError('nonexhaustive source admission categories')
+    return (eligible,stats) if return_stats else eligible
 
 
 def prepare_panels(train_rows,val_rows,*,dataset_sha256_train,dataset_sha256_val,
@@ -87,7 +139,8 @@ def prepare_panels(train_rows,val_rows,*,dataset_sha256_train,dataset_sha256_val
             or not 2<=train_passages<=64 or type(val_passages) is not int
             or not 2<=val_passages<=64):
         raise ValueError('bounded preregistered number of source passages required')
-    a,b=_group_inputs(train_rows,'train'),_group_inputs(val_rows,'validation')
+    a, train_admission = _group_inputs(train_rows, 'train', return_stats=True)
+    b, val_admission = _group_inputs(val_rows, 'validation', return_stats=True)
     # Deny duplicate normalized evidence across train/dev, even if ID changed.
     ca={_norm_text(text) for _,text,_ in a}
     cb={_norm_text(text) for _,text,_ in b}
@@ -113,7 +166,7 @@ def prepare_panels(train_rows,val_rows,*,dataset_sha256_train,dataset_sha256_val
     ta=select(a,train_passages,'train')
     va=select(b,val_passages,'validation')
     if len(ta)!=train_passages or len(va)!=val_passages:
-        raise ValueError('insufficient eligible distinct two-question passages')
+        raise ValueError('insufficient eligible distinct two-question passages after label-blind complete-passage admission')
     def materialize(chosen,split):
         output=[];labels={}
         for pid,text,items in chosen:
@@ -134,6 +187,7 @@ def prepare_panels(train_rows,val_rows,*,dataset_sha256_train,dataset_sha256_val
         source_sha256_validation=dataset_sha256_val,
         train_passage_count=train_passages,eval_passage_count=val_passages,
         query_selection='first-two-ids-first-answer-per-question-no-label-choice',
+        material_admission=dict(train=train_admission,validation=val_admission),
         training_data_license_approved=False,pretraining_contamination_ruled_out=False)
     train_bundle=dict(**header,split='train',rows=train)
     eval_bundle=dict(**header,split='validation',rows=evaluation)
@@ -160,6 +214,30 @@ def validate_panel_bundles(train, evaluation):
             or train.get('pretraining_contamination_ruled_out') is not False
             or train.get('query_selection')!='first-two-ids-first-answer-per-question-no-label-choice'):
         raise ValueError('benchmark provenance or research-only policy changed')
+    admission=train.get('material_admission')
+    if not isinstance(admission,dict) or set(admission)!={'train','validation'}:
+        raise ValueError('complete admission source counts required')
+    for split_name,expected_selected in (('train',train['train_passage_count']),
+                                         ('validation',train['eval_passage_count'])):
+        stats=admission.get(split_name)
+        if (not isinstance(stats,dict) or set(stats)!={
+                'raw_rows','raw_passages','invalid_text_passages',
+                'invalid_text_fields','excluded_by_predeclared_structure',
+                'eligible_passages','eligible_distinct_texts','admission'}
+                or stats.get('admission')!='complete-valid-passage-and-native-slate-label-blind-v1'
+                or any(type(stats[k]) is not int or stats[k]<0 for k in (
+                    'raw_rows','raw_passages','invalid_text_passages','eligible_passages','eligible_distinct_texts'))
+                or not expected_selected<=stats['eligible_distinct_texts']<=stats['eligible_passages']<=stats['raw_passages']<=stats['raw_rows']<=100000
+                or stats['invalid_text_passages']>stats['raw_passages']
+                or not isinstance(stats['excluded_by_predeclared_structure'],dict)
+                or set(stats['excluded_by_predeclared_structure'])!={'passage_too_long','too_few_questions','incomplete_native_answer_slate'}
+                or any(type(v) is not int or v<0 for v in stats['excluded_by_predeclared_structure'].values())
+                or stats['raw_passages']!=stats['invalid_text_passages']+stats['eligible_passages']+sum(stats['excluded_by_predeclared_structure'].values())
+                or not isinstance(stats['invalid_text_fields'],dict)
+                or set(stats['invalid_text_fields'])!={'paragraph','question','answer'}
+                or any(type(v) is not int or v<0 or v>stats['raw_rows']
+                       for v in stats['invalid_text_fields'].values())):
+            raise ValueError('invalid label-blind source admission receipt')
     groups,ids,texts=[set(),set()],[set(),set()],[set(),set()]
     for split,bundle in enumerate((train,evaluation)):
         rows=bundle['rows'];count=bundle['train_passage_count' if split==0 else 'eval_passage_count']
