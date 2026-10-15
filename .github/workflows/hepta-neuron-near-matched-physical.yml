@@ -1,0 +1,105 @@
+name: Hepta Neuron near-matched physical Adapter shadow
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-neuron/src/bin/neuron_near_matched_q24_shadow.rs"
+      - "qualification/neuron-gated-sparse-v3/near_matched_*"
+      - "qualification/neuron-gated-sparse-v3/test_near_matched_*"
+      - ".github/workflows/hepta-neuron-near-matched-physical.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-near-matched-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  native-near-matched-research:
+    name: Eight physical CPU-train + native Q24 + independent integer oracle
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      PYTHONPATH: qualification/neuron-gated-sparse-v3
+      NM_INPUT: ${{ runner.temp }}/hepta-near-matched-input
+      NM_STUDY: ${{ runner.temp }}/hepta-near-matched-trained
+      NM_RECEIPT: ${{ runner.temp }}/hepta-near-matched-audit.json
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: "3.11"
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+        with:
+          components: rustfmt,clippy
+      - name: Install pinned CPU tensor dependencies and native prerequisites
+        run: |
+          set -euo pipefail
+          python -m pip install --index-url https://download.pytorch.org/whl/cpu "torch==2.10.0"
+          python -m pip install "safetensors==0.7.0"
+          sudo apt-get update
+          sudo apt-get install -y build-essential pkg-config libcap-dev
+      - name: Native source format, all tests, strict Clippy and executable
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          cargo fmt -p codex-hepta-neuron -- --check
+          cargo test --locked -p codex-hepta-neuron --all-targets
+          cargo clippy --locked -p codex-hepta-neuron --all-targets -- -D warnings
+          cargo build --locked -p codex-hepta-neuron --bin neuron_near_matched_q24_shadow
+      - name: Physical CPU SGD and safetensors negative tests (synthetic data)
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_near_matched_physical_train.py' -v
+          python -O -m unittest discover -s qualification/neuron-gated-sparse-v3 \
+            -p 'test_near_matched_physical_train.py' -v
+      - name: Freeze create-only distinct synthetic training and native trace
+        run: |
+          set -euo pipefail
+          python qualification/neuron-gated-sparse-v3/near_matched_physical_fixture.py \
+            --output-dir "$NM_INPUT" --receipt "${{ runner.temp }}/hepta-near-matched-fixture.json"
+      - name: Physically train and reload all eight private Adapter/Head models
+        run: |
+          set -euo pipefail
+          DATA_SHA="$(sha256sum "$NM_INPUT/train.json" | awk '{print $1}')"
+          python qualification/neuron-gated-sparse-v3/near_matched_physical_train.py \
+            --train-data "$NM_INPUT/train.json" --train-sha256 "$DATA_SHA" \
+            --output "$NM_STUDY" --synthetic-canary --steps 8
+      - name: Run 16 fresh Rust processes and verify independent integer Adapter/Head parity
+        run: |
+          set -euo pipefail
+          BIN="codex-rs/target/debug/neuron_near_matched_q24_shadow"
+          BIN_SHA="$(sha256sum "$BIN" | awk '{print $1}')"
+          TRACE_SHA="$(sha256sum "$NM_INPUT/trace.json" | awk '{print $1}')"
+          python qualification/neuron-gated-sparse-v3/near_matched_physical_native_oracle.py \
+            --binary "$BIN" --binary-sha256 "$BIN_SHA" \
+            --trained-root "$NM_STUDY" \
+            --trace "$NM_INPUT/trace.json" --trace-sha256 "$TRACE_SHA" \
+            --output "$NM_RECEIPT"
+          python - "$NM_RECEIPT" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['actual_native_os_processes'] == 16
+          assert r['physically_loaded_models'] == 8
+          assert r['independent_integer_adapter_head_parity'] is True
+          assert r['production_qualification'] is False
+          assert r['ndu_eligible'] is False
+          assert r['independent_temporal_model_parity'] is False
+          PY
+      - name: Archive sanitized research receipts only, never raw weights/features
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-near-matched-deny-all-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/hepta-near-matched-audit.json
+            ${{ runner.temp }}/hepta-near-matched-fixture.json
+            ${{ runner.temp }}/hepta-near-matched-trained/training-receipt.json
+          if-no-files-found: warn
+          retention-days: 14
