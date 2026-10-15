@@ -1,0 +1,124 @@
+name: Hepta Group 2x2 Isolated OS Processes (Research)
+on:
+  push:
+    branches:
+      - research/group-factorial-process-isolation-20261015
+    paths:
+      - 'qualification/stem-cell-v1/group_factorial_process_driver.py'
+      - 'qualification/stem-cell-v1/test_group_factorial_process_driver.py'
+      - '.github/workflows/hepta-group-factorial-isolated.yml'
+  pull_request:
+    paths:
+      - 'qualification/stem-cell-v1/group_factorial_process_driver.py'
+      - 'qualification/stem-cell-v1/test_group_factorial_process_driver.py'
+      - '.github/workflows/hepta-group-factorial-isolated.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-group-isolated-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  actual-os-process-regressions:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Run actual child process and hard-stop regressions in both Python modes
+        env:
+          PYTHONPATH: qualification/stem-cell-v1
+        run: |
+          python -m py_compile qualification/stem-cell-v1/group_factorial_process_driver.py
+          python -m py_compile qualification/stem-cell-v1/test_group_factorial_process_driver.py
+          python -S -m unittest test_group_factorial_process_driver -v
+          python -S -O -m unittest test_group_factorial_process_driver -v
+
+  actual-pretrained-four-process-arm:
+    needs: actual-os-process-regressions
+    if: github.event_name == 'push'
+    strategy:
+      fail-fast: false
+      matrix:
+        seed: [41, 47, 53]
+        optimizer: [sgd_v1, adam_v1]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 190
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405
+        with:
+          python-version: '3.12'
+      - name: Install immutable CPU model dependencies
+        run: |
+          python -m pip install 'torch==2.6.0+cpu' --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install 'transformers==4.57.1' 'numpy==2.5.4' 'safetensors==0.8.0' 'huggingface_hub==0.36.0'
+      - name: Download source-pinned original Granite model only once before arm isolation
+        env:
+          SNAPSHOT: ${{ runner.temp }}/granite97-frozen
+          PYTHONPATH: qualification/stem-cell-v1
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+        run: |
+          python - <<'PY'
+          import os
+          from group_encoder import acquire
+          acquire(os.environ["SNAPSHOT"])
+          PY
+      - name: Run four distinct Python OS processes and fifth independent reviewer
+        env:
+          SNAPSHOT: ${{ runner.temp }}/granite97-frozen
+          RESULT_ROOT: ${{ runner.temp }}/factorial-os-isolated
+          OMP_NUM_THREADS: '1'
+          MKL_NUM_THREADS: '1'
+          TOKENIZERS_PARALLELISM: 'false'
+        run: |
+          python -S qualification/stem-cell-v1/group_factorial_process_driver.py \
+            --snapshot "$SNAPSHOT" --output-root "$RESULT_ROOT" \
+            --seed "${{ matrix.seed }}" --steps 120 \
+            --train-count 256 --heldout-count 96 \
+            --training-profile "${{ matrix.optimizer }}" \
+            --timeout-seconds 2700
+          python -S qualification/stem-cell-v1/group_feedback_factorial_review.py \
+            --legacy-oracle "$RESULT_ROOT/legacy_oracle" \
+            --legacy-no-verifier "$RESULT_ROOT/legacy_no_verifier" \
+            --guarded-oracle "$RESULT_ROOT/guarded_oracle" \
+            --guarded-no-verifier "$RESULT_ROOT/guarded_no_verifier" \
+            --output "$RESULT_ROOT/external-recheck.json"
+          python -S - <<'PY'
+          import json, os
+          from pathlib import Path
+          root=Path(os.environ['RESULT_ROOT'])
+          isolation=json.loads((root/'isolation-receipt.json').read_text())
+          one=json.loads((root/'factorial-independent-review.json').read_text())
+          two=json.loads((root/'external-recheck.json').read_text())
+          pids=[record['pid'] for record in isolation['model_arms'].values()]
+          if (len(pids)!=4 or len(set(pids))!=4
+                  or isolation['completed_four_isolated_model_processes'] is not True
+                  or isolation['separate_independent_audit_process'] is not True
+                  or isolation['production_promotion_permitted'] is not False
+                  or one!=two or one['passed'] is not True
+                  or one['production_promotion_permitted'] is not False):
+              raise SystemExit('independent process scientific gate rejected')
+          PY
+      - name: Archive original research Head outputs and process receipts only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-group-os-isolated-${{ matrix.seed }}-${{ matrix.optimizer }}-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/factorial-os-isolated/**/*.json
+            ${{ runner.temp }}/factorial-os-isolated/**/*.safetensors
+            ${{ runner.temp }}/factorial-os-isolated/*.json
+          if-no-files-found: warn
+          retention-days: 7
