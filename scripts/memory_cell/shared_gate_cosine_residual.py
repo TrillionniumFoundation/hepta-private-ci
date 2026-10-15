@@ -97,6 +97,21 @@ def index(rows, key):
     return out
 
 
+def _train_component(kind, owner, value):
+    """Use the original gate's TRAIN feature key, never SELECT's cache scope.
+
+    The SELECT crossed-evidence component helper intentionally hardcodes SELECT;
+    reusing it here produces nonmatching training source keys. Keep the two
+    partitions disjoint without widening the SELECT caller's API.
+    """
+    c.require(kind in ("question", "evidence") and c.text_id(owner),
+              "registered original TRAIN component required")
+    scope = ["train", owner, kind]
+    text = c.canonical(value).decode("utf-8")
+    return {"key": c.digest([gate.REPRESENTATION, scope, text]),
+            "scope": scope, "text": text}
+
+
 def build_train_rectangles(public, train_plan, public_inputs):
     """Close fixed TRAIN pairs using their already registered original sources.
 
@@ -155,12 +170,12 @@ def build_train_rectangles(public, train_plan, public_inputs):
                   and original["evidence"] != matched["evidence"]
                   and len(original["evidence"]) == len(matched["evidence"]),
                   "not the fixed TRAIN two-question/two-evidence rectangle")
-        qa = crossed.component("question", unit["family"],
+        qa = _train_component("question", unit["family"],
                                {"question": original["question"], "options": original["options"]})
-        qb = crossed.component("question", unit["donor_family"],
+        qb = _train_component("question", unit["donor_family"],
                                {"question": matched["question"], "options": matched["options"]})
-        ea = crossed.component("evidence", unit["family"], {"evidence": original["evidence"]})
-        eb = crossed.component("evidence", unit["donor_family"], {"evidence": matched["evidence"]})
+        ea = _train_component("evidence", unit["family"], {"evidence": original["evidence"]})
+        eb = _train_component("evidence", unit["donor_family"], {"evidence": matched["evidence"]})
         for feature in (qa, qb, eb):
             c.require(specs.get(feature["key"]) == feature, "old TRAIN component was not encoded under fixed scope")
         c.require(prior["variants"] == [

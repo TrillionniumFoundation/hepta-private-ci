@@ -1,18 +1,22 @@
 use super::*;
 
-use std::sync::atomic::{AtomicUsize, Ordering};
-use std::sync::mpsc::{channel, RecvTimeoutError};
+use std::sync::atomic::AtomicUsize;
+use std::sync::atomic::Ordering;
+use std::sync::mpsc::RecvTimeoutError;
+use std::sync::mpsc::channel;
 use std::thread;
-use std::time::{Duration, Instant};
+use std::time::Duration;
+use std::time::Instant;
 
-use codex_hepta_infer_core::{
-    NeuronFeatureObservationV1, NeuronFeatureRequestV1, NeuronFeatureReceiptV1,
-    NeuronFeatureTerminalStatusV1, NeuronModelRuntimeTupleV1,
-    build_neuron_feature_receipt_v1,
-};
-use crate::{
-    AmcnFencedNeuronModelPort, NeuronInferenceControlPort, NeuronModelPort,
-};
+use crate::AmcnFencedNeuronModelPort;
+use crate::NeuronInferenceControlPort;
+use crate::NeuronModelPort;
+use codex_hepta_infer_core::NeuronFeatureObservationV1;
+use codex_hepta_infer_core::NeuronFeatureReceiptV1;
+use codex_hepta_infer_core::NeuronFeatureRequestV1;
+use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
+use codex_hepta_infer_core::NeuronModelRuntimeTupleV1;
+use codex_hepta_infer_core::build_neuron_feature_receipt_v1;
 
 fn d(bytes: &str) -> Digest32 {
     Digest32::of_bytes(bytes.as_bytes())
@@ -38,9 +42,7 @@ fn header() -> AmcnEpochHeaderV1 {
             ENROLLED_DOMAIN,
             &HashSet::from([d("artifact.a"), d("artifact.b")]),
         ),
-        quarantined_manifest_set_digest: digest_manifest_set(
-            QUARANTINED_DOMAIN, &HashSet::new(),
-        ),
+        quarantined_manifest_set_digest: digest_manifest_set(QUARANTINED_DOMAIN, &HashSet::new()),
         runtime_anchor_digest: d("runtime.anchor.1"),
         event_digest: d("event.1"),
         predecessor_event_digest: Digest32::ZERO,
@@ -60,9 +62,11 @@ fn request() -> NeuronModelRequestV1 {
         expected_output_width: 3,
     }
 }
-fn binding(req: &NeuronModelRequestV1, h: &AmcnEpochHeaderV1, artifact: Digest32)
-    -> AmcnFencedModelBindingV1
-{
+fn binding(
+    req: &NeuronModelRequestV1,
+    h: &AmcnEpochHeaderV1,
+    artifact: Digest32,
+) -> AmcnFencedModelBindingV1 {
     AmcnFencedModelBindingV1 {
         scope: h.scope.clone(),
         request_id: req.request_id.clone(),
@@ -83,9 +87,8 @@ fn binding(req: &NeuronModelRequestV1, h: &AmcnEpochHeaderV1, artifact: Digest32
 }
 fn index() -> AmcnShadowEpochIndex {
     let h = header();
-    AmcnShadowEpochIndex::from_external_floor(
-        h.clone(), &h, [d("artifact.a"), d("artifact.b")], [],
-    ).expect("original current floor registered by test")
+    AmcnShadowEpochIndex::from_external_floor(h.clone(), &h, [d("artifact.a"), d("artifact.b")], [])
+        .expect("original current floor registered by test")
 }
 fn source_withdrawal_successor(prev: &AmcnEpochHeaderV1) -> AmcnEpochHeaderV1 {
     AmcnEpochHeaderV1 {
@@ -97,7 +100,8 @@ fn source_withdrawal_successor(prev: &AmcnEpochHeaderV1) -> AmcnEpochHeaderV1 {
         withdrawal_head_digest: d("withdrawal.2"),
         quarantine_head_digest: d("quarantine.2"),
         quarantined_manifest_set_digest: digest_manifest_set(
-            QUARANTINED_DOMAIN, &HashSet::from([d("artifact.a")]),
+            QUARANTINED_DOMAIN,
+            &HashSet::from([d("artifact.a")]),
         ),
         event_digest: d("event.2"),
         predecessor_event_digest: prev.event_digest,
@@ -109,12 +113,16 @@ struct ActualControl {
     shared_epoch: AmcnShadowEpochIndex,
 }
 impl NeuronInferenceControlPort for ActualControl {
-    fn execute_feature(&mut self, req: &NeuronFeatureRequestV1)
-        -> Result<NeuronFeatureReceiptV1, NeuronModelError>
-    {
+    fn execute_feature(
+        &mut self,
+        req: &NeuronFeatureRequestV1,
+    ) -> Result<NeuronFeatureReceiptV1, NeuronModelError> {
         self.called.fetch_add(1, Ordering::SeqCst);
         assert!(
-            matches!(self.shared_epoch.state.try_write(), Err(std::sync::TryLockError::WouldBlock)),
+            matches!(
+                self.shared_epoch.state.try_write(),
+                Err(std::sync::TryLockError::WouldBlock)
+            ),
             "original InferenceControl must execute WHILE the source epoch is read-locked"
         );
         build_neuron_feature_receipt_v1(
@@ -139,8 +147,9 @@ impl NeuronInferenceControlPort for ActualControl {
                 queue_age_micros: 1,
                 latency_micros: 7,
                 status: NeuronFeatureTerminalStatusV1::Succeeded,
-            }
-        ).map_err(|_| NeuronModelError::Rejected)
+            },
+        )
+        .map_err(|_| NeuronModelError::Rejected)
     }
 }
 
@@ -152,11 +161,14 @@ fn amcn_epoch_shadow_original_inference_port_holds_constant_time_read_lease() {
     let expected = binding(&req, &token, d("artifact.a"));
     let count = Arc::new(AtomicUsize::new(0));
     let mut control = ActualControl {
-        called: Arc::clone(&count), shared_epoch: shared.clone(),
+        called: Arc::clone(&count),
+        shared_epoch: shared.clone(),
     };
     let mut lease = shared.candidate_fence(token);
     let mut model = AmcnFencedNeuronModelPort::new(&mut lease, &mut control, expected);
-    let output = model.execute(&req).expect("actual receipt verified through original port");
+    let output = model
+        .execute(&req)
+        .expect("actual receipt verified through original port");
     assert_eq!(output.drive_q24, vec![1 << 24; req.expected_output_width]);
     assert_eq!(count.load(Ordering::SeqCst), 1);
     assert!(!AMCN_EPOCH_SHADOW_PRODUCTION_ACCEPTED);
@@ -169,14 +181,19 @@ fn amcn_epoch_shadow_source_withdrawal_blocks_old_head_even_if_bytes_reappear() 
     let old = shared.header().expect("old cut");
     let first_binding = binding(&req, &old, d("artifact.a"));
     let count = Arc::new(AtomicUsize::new(0));
-    let mut control = ActualControl { called: Arc::clone(&count), shared_epoch: shared.clone() };
+    let mut control = ActualControl {
+        called: Arc::clone(&count),
+        shared_epoch: shared.clone(),
+    };
     let mut initial = shared.candidate_fence(old.clone());
-    let mut port = AmcnFencedNeuronModelPort::new(&mut initial, &mut control, first_binding.clone());
+    let mut port =
+        AmcnFencedNeuronModelPort::new(&mut initial, &mut control, first_binding.clone());
     port.execute(&req).expect("initial research model");
     assert_eq!(count.load(Ordering::SeqCst), 1);
 
     let next = source_withdrawal_successor(&old);
-    shared.observe_committed_owner_change(&old, next.clone(), [], [d("artifact.a")])
+    shared
+        .observe_committed_owner_change(&old, next.clone(), [], [d("artifact.a")])
         .expect("original owner reports durable withdrawal, no power is granted");
     assert_eq!(port.execute(&req), Err(NeuronModelError::Rejected));
     assert_eq!(count.load(Ordering::SeqCst), 1);
@@ -190,7 +207,8 @@ fn amcn_epoch_shadow_source_withdrawal_blocks_old_head_even_if_bytes_reappear() 
     let mut allowed = shared.candidate_fence(next.clone());
     let valid = binding(&req, &next, d("artifact.b"));
     AmcnFencedNeuronModelPort::new(&mut allowed, &mut control, valid)
-        .execute(&req).expect("independent unaffected research Cell");
+        .execute(&req)
+        .expect("independent unaffected research Cell");
     assert_eq!(count.load(Ordering::SeqCst), 2);
 }
 
@@ -214,38 +232,53 @@ fn amcn_epoch_shadow_concurrent_owner_epoch_write_waits_for_reader_model() {
         let mut lease = for_model.candidate_fence(old);
         lease.with_fenced_candidate(&bound_thread, &req_thread, || {
             inside_tx.send(()).expect("model acquired epoch read lease");
-            release_rx.recv_timeout(Duration::from_secs(5))
+            release_rx
+                .recv_timeout(Duration::from_secs(5))
                 .map_err(|_| NeuronModelError::Indeterminate)?;
             Ok::<_, NeuronModelError>(())
         })
     });
-    inside_rx.recv_timeout(Duration::from_secs(5)).expect("read model entered");
+    inside_rx
+        .recv_timeout(Duration::from_secs(5))
+        .expect("read model entered");
     let writer = thread::spawn(move || {
         writer_begin_tx.send(()).expect("writer start");
         let result = for_writer.observe_committed_owner_change(
-            &old_writer, source_withdrawal_successor(&old_writer),
-            [], [d("artifact.a")],
+            &old_writer,
+            source_withdrawal_successor(&old_writer),
+            [],
+            [d("artifact.a")],
         );
         writer_end_tx.send(result).expect("writer done");
     });
-    writer_begin_rx.recv_timeout(Duration::from_secs(5)).expect("writer attempted epoch");
+    writer_begin_rx
+        .recv_timeout(Duration::from_secs(5))
+        .expect("writer attempted epoch");
     for _ in 0..500 {
         if shared.owner_change_pending() {
             break;
         }
         thread::sleep(Duration::from_millis(1));
     }
-    assert!(shared.owner_change_pending(),
-            "writer publishes pending withdrawal BEFORE waiting for old read leases");
     assert!(
-        matches!(writer_end_rx.recv_timeout(Duration::from_millis(80)),
-                 Err(RecvTimeoutError::Timeout)),
+        shared.owner_change_pending(),
+        "writer publishes pending withdrawal BEFORE waiting for old read leases"
+    );
+    assert!(
+        matches!(
+            writer_end_rx.recv_timeout(Duration::from_millis(80)),
+            Err(RecvTimeoutError::Timeout)
+        ),
         "an owner withdrawal must WAIT while model holds its read lease"
     );
     release_tx.send(()).expect("model released");
-    model_thread.join().expect("model thread").expect("old invocation permitted under lease");
+    model_thread
+        .join()
+        .expect("model thread")
+        .expect("old invocation permitted under lease");
     writer.join().expect("writer thread");
-    writer_end_rx.recv_timeout(Duration::from_secs(5))
+    writer_end_rx
+        .recv_timeout(Duration::from_secs(5))
         .expect("writer completes after model")
         .expect("withdrawal committed");
     assert_eq!(shared.header().expect("updated header").sequence, 2);
@@ -287,9 +320,9 @@ fn amcn_epoch_shadow_rollback_fork_and_malformed_owner_transitions_fail_closed()
     }
 
     let shared = index();
-    shared.observe_committed_owner_change(
-        &original, successor.clone(), [], [d("artifact.a")],
-    ).expect("first current withdrawal");
+    shared
+        .observe_committed_owner_change(&original, successor.clone(), [], [d("artifact.a")])
+        .expect("first current withdrawal");
     assert!(!shared.owner_change_pending());
     assert_eq!(
         shared.observe_committed_owner_change(&original, successor.clone(), [], []),
@@ -299,9 +332,7 @@ fn amcn_epoch_shadow_rollback_fork_and_malformed_owner_transitions_fail_closed()
 
     // A restored older index cannot authenticate a newer independent floor.
     assert!(matches!(
-        AmcnShadowEpochIndex::from_external_floor(
-            original, &successor, [d("artifact.a")], [],
-        ),
+        AmcnShadowEpochIndex::from_external_floor(original, &successor, [d("artifact.a")], [],),
         Err(NeuronModelError::Rejected)
     ));
 }
@@ -321,18 +352,23 @@ fn amcn_epoch_shadow_writer_pending_refuses_second_head_without_waiting_for_mode
         let mut lease = first.candidate_fence(original);
         lease.with_fenced_candidate(&bound, &req, || {
             entered_tx.send(()).expect("held read lease");
-            release_rx.recv_timeout(Duration::from_secs(5))
+            release_rx
+                .recv_timeout(Duration::from_secs(5))
                 .map_err(|_| NeuronModelError::Indeterminate)?;
             Ok::<_, NeuronModelError>(())
         })
     });
-    entered_rx.recv_timeout(Duration::from_secs(5)).expect("first Cell inside lease");
+    entered_rx
+        .recv_timeout(Duration::from_secs(5))
+        .expect("first Cell inside lease");
     let write = shared.clone();
     let base_for_writer = base.clone();
     let writer = thread::spawn(move || {
         write.observe_committed_owner_change(
-            &base_for_writer, source_withdrawal_successor(&base_for_writer),
-            [], [d("artifact.a")],
+            &base_for_writer,
+            source_withdrawal_successor(&base_for_writer),
+            [],
+            [d("artifact.a")],
         )
     });
     for _ in 0..500 {
@@ -341,7 +377,10 @@ fn amcn_epoch_shadow_writer_pending_refuses_second_head_without_waiting_for_mode
         }
         thread::sleep(Duration::from_millis(1));
     }
-    assert!(shared.owner_change_pending(), "withdrawal pending reaches all Cells");
+    assert!(
+        shared.owner_change_pending(),
+        "withdrawal pending reaches all Cells"
+    );
     // New work must be rejected. We cannot acquire a second reader on every
     // RwLock implementation while a writer is queued, so run it on another
     // thread rather than deadlocking the first model's release signal.
@@ -357,7 +396,8 @@ fn amcn_epoch_shadow_writer_pending_refuses_second_head_without_waiting_for_mode
             counter.fetch_add(1, Ordering::SeqCst);
             Ok::<_, NeuronModelError>(())
         });
-        second_done_tx.send((reply, counter.load(Ordering::SeqCst)))
+        second_done_tx
+            .send((reply, counter.load(Ordering::SeqCst)))
             .expect("second reader reports result");
     });
     // Even while the earlier invocation STILL holds its read lock and the
@@ -370,8 +410,14 @@ fn amcn_epoch_shadow_writer_pending_refuses_second_head_without_waiting_for_mode
     assert_eq!(second_reply, Err(NeuronModelError::Rejected));
     assert_eq!(new_calls, 0);
     release_tx.send(()).expect("release first reader");
-    first_thread.join().expect("first model").expect("started before withdrawal pending");
-    writer.join().expect("writer").expect("withdrawal completed");
+    first_thread
+        .join()
+        .expect("first model")
+        .expect("started before withdrawal pending");
+    writer
+        .join()
+        .expect("writer")
+        .expect("withdrawal completed");
     second.join().expect("second reader");
 }
 
@@ -383,23 +429,26 @@ fn amcn_epoch_shadow_exact_signed_floor_cannot_restore_omitted_quarantine_member
     // payload deliberately hides a withdrawn Head: its commitment differs.
     assert!(matches!(
         AmcnShadowEpochIndex::from_external_floor(
-            committed.clone(), &committed,
-            [d("artifact.a"), d("artifact.b")], [],
+            committed.clone(),
+            &committed,
+            [d("artifact.a"), d("artifact.b")],
+            [],
         ),
         Err(NeuronModelError::Rejected)
     ));
     // Deleting a registered candidate while claiming the exact current
     // floor is equally invalid.
     assert!(matches!(
-        AmcnShadowEpochIndex::from_external_floor(
-            old.clone(), &old, [d("artifact.b")], [],
-        ),
+        AmcnShadowEpochIndex::from_external_floor(old.clone(), &old, [d("artifact.b")], [],),
         Err(NeuronModelError::Rejected)
     ));
     let valid = AmcnShadowEpochIndex::from_external_floor(
-        committed.clone(), &committed,
-        [d("artifact.a"), d("artifact.b")], [d("artifact.a")],
-    ).expect("exactly signed-set-bound restore");
+        committed.clone(),
+        &committed,
+        [d("artifact.a"), d("artifact.b")],
+        [d("artifact.a")],
+    )
+    .expect("exactly signed-set-bound restore");
     let req = request();
     let b = binding(&req, &committed, d("artifact.a"));
     let mut fence = valid.candidate_fence(committed);
@@ -437,13 +486,14 @@ fn amcn_epoch_shadow_owner_update_must_commit_complete_candidate_sets() {
         ENROLLED_DOMAIN,
         &HashSet::from([d("artifact.a"), d("artifact.b"), d("artifact.c")]),
     );
-    epoch.observe_committed_owner_change(
-        &original, next.clone(), [d("artifact.c")], [],
-    ).expect("exactly committed enrollment");
+    epoch
+        .observe_committed_owner_change(&original, next.clone(), [d("artifact.c")], [])
+        .expect("exactly committed enrollment");
     let req = request();
     let bound = binding(&req, &next, d("artifact.c"));
     let mut lease = epoch.candidate_fence(next);
-    lease.with_fenced_candidate(&bound, &req, || Ok::<_, NeuronModelError>(()))
+    lease
+        .with_fenced_candidate(&bound, &req, || Ok::<_, NeuronModelError>(()))
         .expect("new enrolled candidate exists, without any production grant");
     assert!(!AMCN_EPOCH_SHADOW_PRODUCTION_ACCEPTED);
 }
@@ -471,22 +521,27 @@ fn amcn_epoch_shadow_2048_distinct_cells_share_one_bounded_encoder_epoch() {
         .map(|n| d(&format!("shared-stem-cell:{n}")))
         .collect();
     let mut current = h.clone();
-    current.enrolled_manifest_set_digest = digest_manifest_set(
-        ENROLLED_DOMAIN, &manifests.iter().copied().collect(),
-    );
+    current.enrolled_manifest_set_digest =
+        digest_manifest_set(ENROLLED_DOMAIN, &manifests.iter().copied().collect());
     let index = AmcnShadowEpochIndex::from_external_floor(
-        current.clone(), &current, manifests.iter().copied(), [],
-    ).expect("source/Artifact owner snapshot enrolled research population");
+        current.clone(),
+        &current,
+        manifests.iter().copied(),
+        [],
+    )
+    .expect("source/Artifact owner snapshot enrolled research population");
     let req = request();
     let called = AtomicUsize::new(0);
     let started = Instant::now();
     for manifest in manifests {
         let b = binding(&req, &current, manifest);
         let mut reader = index.candidate_fence(current.clone());
-        reader.with_fenced_candidate(&b, &req, || {
-            called.fetch_add(1, Ordering::Relaxed);
-            Ok::<_, NeuronModelError>(())
-        }).expect("same shared Stem epoch for independently enrolled tiny Heads");
+        reader
+            .with_fenced_candidate(&b, &req, || {
+                called.fetch_add(1, Ordering::Relaxed);
+                Ok::<_, NeuronModelError>(())
+            })
+            .expect("same shared Stem epoch for independently enrolled tiny Heads");
     }
     assert_eq!(called.load(Ordering::Relaxed), 2048);
     assert_eq!(index.header().expect("header").sequence, 1);
@@ -509,9 +564,8 @@ fn amcn_epoch_shadow_adversarial_iterators_reject_before_unbounded_allocation() 
         d(&format!("untrusted-Head-{i}"))
     });
     assert!(matches!(
-        AmcnShadowEpochIndex::from_external_floor(
-            current.clone(), &current, large, [],
-        ), Err(NeuronModelError::Rejected)
+        AmcnShadowEpochIndex::from_external_floor(current.clone(), &current, large, [],),
+        Err(NeuronModelError::Rejected)
     ));
     assert_eq!(consumed.get(), AMCN_EPOCH_MANIFEST_LIMIT + 1);
 
@@ -535,9 +589,12 @@ fn amcn_epoch_shadow_adversarial_iterators_reject_before_unbounded_allocation() 
 
     assert!(matches!(
         AmcnShadowEpochIndex::from_external_floor(
-            current.clone(), &current,
-            [d("artifact.a"), d("artifact.a")], [],
-        ), Err(NeuronModelError::Rejected)
+            current.clone(),
+            &current,
+            [d("artifact.a"), d("artifact.a")],
+            [],
+        ),
+        Err(NeuronModelError::Rejected)
     ));
 }
 
@@ -546,17 +603,20 @@ fn amcn_epoch_shadow_artifact_owner_digest_wire_contract_is_identical() {
     let registry = HashSet::from([d("artifact.a"), d("artifact.b")]);
     let withdrawn = HashSet::from([d("artifact.a")]);
     let zero = HashSet::new();
-    let enrolled: Digest32 =
-        "0f472a85e85215b6440135d42f8fd4c56d42669c3cedd3d97b4d76dcde627476"
-            .parse().expect("enrolled golden SHA256");
-    let quarantined: Digest32 =
-        "1b176c46a94ca03dbf7c3ed6b37de4095d9a1280d19b71db0fd5373c5a7a5865"
-            .parse().expect("quarantined golden SHA256");
-    let empty: Digest32 =
-        "a6b17edb4928f12990dcb277b125c56eee9d877eeeae2a20b2520e9d24db13c0"
-            .parse().expect("empty quarantine golden SHA256");
+    let enrolled: Digest32 = "0f472a85e85215b6440135d42f8fd4c56d42669c3cedd3d97b4d76dcde627476"
+        .parse()
+        .expect("enrolled golden SHA256");
+    let quarantined: Digest32 = "1b176c46a94ca03dbf7c3ed6b37de4095d9a1280d19b71db0fd5373c5a7a5865"
+        .parse()
+        .expect("quarantined golden SHA256");
+    let empty: Digest32 = "a6b17edb4928f12990dcb277b125c56eee9d877eeeae2a20b2520e9d24db13c0"
+        .parse()
+        .expect("empty quarantine golden SHA256");
     assert_eq!(digest_manifest_set(ENROLLED_DOMAIN, &registry), enrolled);
-    assert_eq!(digest_manifest_set(QUARANTINED_DOMAIN, &withdrawn), quarantined);
+    assert_eq!(
+        digest_manifest_set(QUARANTINED_DOMAIN, &withdrawn),
+        quarantined
+    );
     assert_eq!(digest_manifest_set(QUARANTINED_DOMAIN, &zero), empty);
 }
 
@@ -570,10 +630,12 @@ fn amcn_epoch_shadow_steady_state_1024_calls_are_bounded_header_checks_not_store
     let start = Instant::now();
     for _ in 0..1024 {
         let mut fence = shared.candidate_fence(token.clone());
-        fence.with_fenced_candidate(&binding, &req, || {
-            count.fetch_add(1, Ordering::Relaxed);
-            Ok::<_, NeuronModelError>(())
-        }).expect("indexed research eligibility");
+        fence
+            .with_fenced_candidate(&binding, &req, || {
+                count.fetch_add(1, Ordering::Relaxed);
+                Ok::<_, NeuronModelError>(())
+            })
+            .expect("indexed research eligibility");
     }
     let total = start.elapsed().as_micros();
     assert_eq!(count.load(Ordering::Relaxed), 1024);

@@ -515,7 +515,6 @@ fn deletion_rebuild_starts_fresh_successor_generation_without_old_state() {
     );
 }
 
-
 // This feature-only test uses the actual NeuronRuntime journal and independent
 // AnchorWitnessStore, not merely an inference.control receipt fixture.
 // A pending Journal commit may otherwise return its cached model output without
@@ -526,18 +525,20 @@ mod amcn_pending_runtime {
     // Explicit macro import prevents std prelude vs parent glob ambiguity.
     use pretty_assertions::assert_eq;
 
-    use std::sync::atomic::{AtomicUsize, Ordering};
     use std::sync::TryLockError;
+    use std::sync::atomic::AtomicUsize;
+    use std::sync::atomic::Ordering;
 
-    use codex_hepta_infer_core::{
-        NeuronFeatureObservationV1, NeuronFeatureReceiptV1, NeuronFeatureRequestV1,
-        NeuronFeatureTerminalStatusV1, NeuronModelRuntimeTupleV1,
-        build_neuron_feature_receipt_v1,
-    };
-    use crate::{
-        AmcnFencedModelBindingV1, AmcnSourceArtifactFence, NeuronInferenceControlPort,
-        NeuronModelError,
-    };
+    use crate::AmcnFencedModelBindingV1;
+    use crate::AmcnSourceArtifactFence;
+    use crate::NeuronInferenceControlPort;
+    use crate::NeuronModelError;
+    use codex_hepta_infer_core::NeuronFeatureObservationV1;
+    use codex_hepta_infer_core::NeuronFeatureReceiptV1;
+    use codex_hepta_infer_core::NeuronFeatureRequestV1;
+    use codex_hepta_infer_core::NeuronFeatureTerminalStatusV1;
+    use codex_hepta_infer_core::NeuronModelRuntimeTupleV1;
+    use codex_hepta_infer_core::build_neuron_feature_receipt_v1;
 
     struct LiveSourceGate {
         source_lease: Arc<Mutex<bool>>,
@@ -581,7 +582,9 @@ mod amcn_pending_runtime {
         where
             E: From<NeuronModelError>,
         {
-            let owner_lock = self.source_lease.lock()
+            let owner_lock = self
+                .source_lease
+                .lock()
                 .map_err(|_| E::from(NeuronModelError::Indeterminate))?;
             self.checks.fetch_add(1, Ordering::SeqCst);
             if !*owner_lock {
@@ -626,7 +629,11 @@ mod amcn_pending_runtime {
                 encoder_digest: request.encoder_digest,
                 head_digest: request.head_digest,
                 drive_q24: (0..request.expected_output_width)
-                    .map(|index| match index { 0 => Q, 1 => Q / 2, _ => 0 })
+                    .map(|index| match index {
+                        0 => Q,
+                        1 => Q / 2,
+                        _ => 0,
+                    })
                     .collect(),
                 prediction_q24: vec![0; request.expected_output_width],
                 observed_memory_bytes: 4096,
@@ -674,7 +681,12 @@ mod amcn_pending_runtime {
             cas_checks: Arc::clone(&cas_checks),
         };
         let mut runtime = checked(NeuronRuntime::bootstrap(
-            fixture.file(), native, scope(), 16, config.clone(), owned_witness,
+            fixture.file(),
+            native,
+            scope(),
+            16,
+            config.clone(),
+            owned_witness,
         ));
         let request_input = input(1, Digest32::ZERO);
         let original_request = checked(runtime.model_request(&request_input));
@@ -686,27 +698,30 @@ mod amcn_pending_runtime {
             checks: Arc::clone(&checks),
         };
         let mut control = OwnerControl {
-            config, calls: Arc::clone(&calls),
+            config,
+            calls: Arc::clone(&calls),
             source_lease: Arc::clone(&lease),
         };
 
         // Model execution and journal commit really succeed; the separately
         // held witness fails after commit and leaves a cached pending receipt.
         witness.fail_next_compare_and_swap();
-        let first = runtime.tick_amcn_fenced(
-            &mut fence, &mut control, &binding, request_input.clone(),
-        );
-        assert!(matches!(first, Err(NeuronRuntimeError::WitnessAfterCommit { .. })));
+        let first =
+            runtime.tick_amcn_fenced(&mut fence, &mut control, &binding, request_input.clone());
+        assert!(matches!(
+            first,
+            Err(NeuronRuntimeError::WitnessAfterCommit { .. })
+        ));
         assert_eq!(calls.load(Ordering::SeqCst), 1);
         assert_eq!(checked(witness.current()), None);
 
         // Revoke the original source between model execution and retry.
         *checked(lease.lock()) = false;
-        let blocked = runtime.tick_amcn_fenced(
-            &mut fence, &mut control, &binding, request_input.clone(),
-        );
+        let blocked =
+            runtime.tick_amcn_fenced(&mut fence, &mut control, &binding, request_input.clone());
         assert_eq!(
-            blocked, Err(NeuronRuntimeError::Model(NeuronModelError::Rejected)),
+            blocked,
+            Err(NeuronRuntimeError::Model(NeuronModelError::Rejected)),
         );
         assert_eq!(calls.load(Ordering::SeqCst), 1);
         assert_eq!(checked(witness.current()), None);
@@ -716,9 +731,8 @@ mod amcn_pending_runtime {
         // witness reconcile WITHOUT re-running the model or reusing an
         // unchecked cached output. Real owner tombstones must remain monotonic.
         *checked(lease.lock()) = true;
-        let reconciled = checked(runtime.tick_amcn_fenced(
-            &mut fence, &mut control, &binding, request_input,
-        ));
+        let reconciled =
+            checked(runtime.tick_amcn_fenced(&mut fence, &mut control, &binding, request_input));
         assert_eq!(calls.load(Ordering::SeqCst), 1);
         let anchor = checked(witness.current()).expect("witness reconciled");
         assert_eq!(anchor.checkpoint_digest, reconciled.tick.checkpoint_after);
@@ -733,7 +747,11 @@ mod amcn_pending_runtime {
         let native = native_config();
         let config = runtime_config(&native);
         let mut runtime = checked(NeuronRuntime::bootstrap(
-            fixture.file(), native, scope(), 16, config.clone(),
+            fixture.file(),
+            native,
+            scope(),
+            16,
+            config.clone(),
             MemoryWitness::default(),
         ));
         let request_input = input(1, Digest32::ZERO);
@@ -748,12 +766,12 @@ mod amcn_pending_runtime {
             checks: Arc::clone(&checks),
         };
         let mut control = OwnerControl {
-            config, calls: Arc::clone(&calls), source_lease,
+            config,
+            calls: Arc::clone(&calls),
+            source_lease,
         };
         assert_eq!(
-            runtime.tick_amcn_fenced(
-                &mut fence, &mut control, &bad_binding, request_input,
-            ),
+            runtime.tick_amcn_fenced(&mut fence, &mut control, &bad_binding, request_input,),
             Err(NeuronRuntimeError::Model(NeuronModelError::Rejected)),
         );
         assert_eq!(calls.load(Ordering::SeqCst), 0);
@@ -834,16 +852,12 @@ mod amcn_pending_runtime {
                 calls: Arc::clone(&calls),
                 source_lease: Arc::clone(&source_lease),
             };
-            let committed = checked(runtime.tick_amcn_fenced(
-                &mut gate,
-                &mut control,
-                &binding,
-                first_input,
-            ));
+            let committed =
+                checked(runtime.tick_amcn_fenced(&mut gate, &mut control, &binding, first_input));
             assert_eq!(calls.load(Ordering::SeqCst), 1);
             assert_eq!(cas_checks.load(Ordering::SeqCst), 1);
-            let anchor = checked(runtime.current_anchor())
-                .expect("disk Journal has a committed anchor");
+            let anchor =
+                checked(runtime.current_anchor()).expect("disk Journal has a committed anchor");
             assert_eq!(anchor.checkpoint_digest, committed.tick.checkpoint_after);
             anchor
         };
@@ -856,7 +870,8 @@ mod amcn_pending_runtime {
                 scope_identity,
                 checked(Generation::new(2)),
                 16,
-            ).err(),
+            )
+            .err(),
             Some(WitnessStoreError::ContextMismatch)
         );
         let reopened = checked(crate::FileAnchorWitnessStore::open(
@@ -905,5 +920,4 @@ mod amcn_pending_runtime {
         assert_eq!(checked(runtime.current_anchor()), Some(committed_anchor));
         assert_eq!(checks.load(Ordering::SeqCst), 2);
     }
-
 }
