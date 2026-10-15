@@ -1,7 +1,7 @@
 name: Hepta E3 five-arm same-source historical contract (DENY_ALL)
 on:
   push:
-    branches: ["research/e3-five-arm-same-source-receipts-20261015"]
+    branches: ["research/e3-five-arm-same-source-receipts-20261015", "research/e3-five-arm-gh-expression-repair-20261015"]
     paths:
       - "experiments/shared_stem_cell/e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/test_e3_five_arm_historical.py"
@@ -16,7 +16,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: hepta-e3-five-arm-contract-\${{ github.sha }}
+  group: hepta-e3-five-arm-contract-${{ github.sha }}
   cancel-in-progress: true
 jobs:
   fail-closed-source-contract:
@@ -30,7 +30,7 @@ jobs:
       - name: Checkout exact source without write token
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: \${{ github.sha }}
+          ref: ${{ github.sha }}
           persist-credentials: false
       - name: Run all five-arm normal Python fault tests
         run: |
