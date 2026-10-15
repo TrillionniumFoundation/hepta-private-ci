@@ -79,6 +79,14 @@ class FixedGeometryTruth(unittest.TestCase):
         self.assertIs(result['actual_weight_loading_verified'], False)
         self.assertIs(result['train_optimizer_work_or_cost_verified'], False)
 
+    def test_caller_cannot_forge_source_pin_with_dict_receipt(self):
+        # The source attestation flag may only come from hashing actual bytes.
+        self.assertRaises(TypeError, m.audit, width=32, pinned_source={'source_bytes_locally_bound': True})
+        with tempfile.TemporaryDirectory() as td:
+            fake = Path(td) / 'matched_train.py'
+            fake.write_text('forged trainer\n')
+            self.assertRaises(m.Invalid, m.audit, width=32, trainer_source=fake)
+
     def test_git_blob_matches_raw_bytes_not_plain_sha1(self):
         data = b'pin-test-original-source\n'
         import hashlib
