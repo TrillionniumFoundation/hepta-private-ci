@@ -55,6 +55,16 @@ class TestP5ClusterReplay(unittest.TestCase):
         self.assertIs(r['statistical_gain_claim_admitted'],False)
         self.assertIs(x['teacher_or_10t_100t_equivalence_established'],False)
 
+    def test_missing_fourth_scale_never_becomes_successful_empty_review(self):
+        source=copy.deepcopy(self.source)
+        source['rows']=source['rows'][:-1]
+        raw=(json.dumps(source,sort_keys=True,separators=(',',':'))+'\n').encode()
+        ledger=copy.deepcopy(self.group)
+        ledger['source_manifest_sha256']=c.sha(raw)
+        ledger['rows']=[r for r in ledger['rows'] if r['trial_id']!='trial-4096']
+        with self.assertRaises(c.ClusterDenied):
+            c.replay(source,raw,ledger)
+
     def test_true_source_level_sign_flip_is_descriptive(self):
         self.assertEqual(c.exact_signflip([1,1,1,1]),.125)
         self.assertEqual(c.exact_signflip([0,0,0,0]),1.)
