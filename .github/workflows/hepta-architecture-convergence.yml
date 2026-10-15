@@ -220,6 +220,20 @@ jobs:
           # Compile and execute the same negative canary cases before the
           # heavyweight learning/effect suites, retaining a separate receipt.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/cell-split-canary-preflight.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval --lib canary_ -- --nocapture
+      - name: Early original-CNS production build and physical denial regressions
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
+        run: |
+          set -euo pipefail
+          # Source-head and prospective-base-merge both run this exact pinned
+          # preflight. Do not let cfg(test) replace the non-test library build.
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime -- --check
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/original-cns-production-feature-build.json" --minimum-tests 0 -- cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime --features cell-split-cns-port --lib
+          # The signed predecessor and valid Final-use must still be denied
+          # before migration or any real CNS mutation without original Control.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/original-cns-no-control-denial.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-runtime --features cell-split-cns-port --lib cell_split_cns_runtime_port_denies_without_original_control_owner -- --nocapture --test-threads=1
+          # The same signer cannot roll forward unless independent durable
+          # custody advances; ensure the two actual negative cases execute.
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/independent-custody-ratchet-preflight.json" --minimum-tests 2 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operator-acceptance --lib same_signer_ -- --nocapture --test-threads=1
       - name: Inference owner regressions and streaming digest
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |
