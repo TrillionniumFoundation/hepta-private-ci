@@ -577,10 +577,10 @@ impl NduPublicationOwnerV1 {
         // This bootstrap check is not a substitute for independent custody
         // or kernel-anchored openat protection against privileged path races.
         if parent
-        .canonicalize()
-        .map_err(|_| NduPublicationErrorV1::UnsafePath)?
-        != parent
-    {
+            .canonicalize()
+            .map_err(|_| NduPublicationErrorV1::UnsafePath)?
+            != parent
+        {
             return Err(NduPublicationErrorV1::UnsafePath);
         }
         let dir = fs::symlink_metadata(parent)?;
