@@ -195,6 +195,9 @@ def admit(plan, originals, scored, *, plan_pin, original_pin):
                    and type(row.get("program_tests_passed")) is int
                    and 0 <= row["program_tests_passed"] <= row["program_test_count"],
                    "program verification must execute actual tests")
+            for bound in ("program_exit_code", "program_test_count", "program_tests_passed"):
+                ensure(original.get(bound) == row[bound],
+                       "program result changed after original execution")
             ensure(not row["success"] or (row["program_exit_code"] == 0
                    and row["program_tests_passed"] == row["program_test_count"]),
                    "text-only program answer falsely counted as success")

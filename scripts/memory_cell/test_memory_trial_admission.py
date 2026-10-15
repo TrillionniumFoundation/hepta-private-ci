@@ -61,7 +61,9 @@ def fixture():
                                        cost={k: (1.0 if k == "query" else 0.0) for k in COST_KEYS},
                                        diagnostic_count=1, recovery_success=False)
                     if case["task"] == "program":
-                        original["tool_trace_sha256"] = digest(text + "-executed")
+                        original.update(tool_trace_sha256=digest(text + "-executed"),
+                                        program_exit_code=0, program_test_count=3,
+                                        program_tests_passed=3)
                         observation.update(tool_trace_sha256=original["tool_trace_sha256"],
                                            program_exit_code=0, program_test_count=3,
                                            program_tests_passed=3)
@@ -129,8 +131,27 @@ class AdmissionTest(unittest.TestCase):
     def test_false_program_success(self):
         plan, raw, scored = fixture()
         i = next(i for i, r in enumerate(scored) if r["id"] == "case-3" and r["success"])
-        scored[i]["program_tests_passed"] = 2
+        scored[i]["program_tests_passed"] = raw[i]["program_tests_passed"] = 2
         with self.assertRaisesRegex(ValueError, "text-only program"):
+            self.verify(plan, raw, scored)
+
+    def test_duplicate_model_call_id(self):
+        plan, raw, scored = fixture()
+        raw[1]["model_call_id"] = raw[0]["model_call_id"]
+        with self.assertRaisesRegex(ValueError, "duplicate original model call"):
+            self.verify(plan, raw, scored)
+
+    def test_program_receipt_changes_after_original_generation(self):
+        plan, raw, scored = fixture()
+        i = next(i for i, r in enumerate(scored) if r["id"] == "case-3")
+        scored[i]["program_test_count"] = 4
+        with self.assertRaisesRegex(ValueError, "program result changed"):
+            self.verify(plan, raw, scored)
+
+    def test_combined_reader_budget(self):
+        plan, raw, scored = fixture()
+        scored[0]["generated_tokens"] = raw[0]["generated_tokens"] = 600
+        with self.assertRaisesRegex(ValueError, "total input and output"):
             self.verify(plan, raw, scored)
 
     def test_mismatched_knowledge_evidence_is_not_attributed(self):
