@@ -1,0 +1,35 @@
+name: Hepta E2 semantic multimodal causal gate (DENY_ALL)
+on:
+  push:
+    branches:
+      - research/stem-e2-semantic-task-gate-20261015
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  semantic-e2-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run independent outcome tests
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=experiments/shared_stem_cell
+          python3 -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_semantic_outcomes.py' -v
+          python3 -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_semantic_outcomes.py' -v
+          python3 -m compileall -q experiments/shared_stem_cell/e2_semantic_outcomes.py
+      - name: Reject production claims
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import sys
+          sys.path.insert(0, "experiments/shared_stem_cell")
+          from test_e2_semantic_outcomes import fixture
+          from e2_semantic_outcomes import evaluate
+          p, t = fixture()
+          r = evaluate(p, t)
+          assert r["production_accepted"] is False
+          assert r["stem_selected"] is False
+          assert r["authority"] == "DENY_ALL"
+          PY
