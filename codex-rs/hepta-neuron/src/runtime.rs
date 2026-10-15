@@ -236,11 +236,20 @@ impl<W: AnchorWitnessStore> NeuronRuntime<W> {
         Ok(())
     }
 
+    /// Reference-only legacy Tick. Product builds cannot use a caller-owned
+    /// NeuronModelPort as a substitute for independently verified NDU binding,
+    /// signed Final-use, live CNS generation, revocation and Evidence custody.
+    /// The only executable legacy path is the crate's own cfg(test) mechanism
+    /// suite. A future production API must carry and revalidate real authority
+    /// at the final point of model use; it must not flip this default-deny gate.
     pub fn tick(
         &mut self,
         model: &mut impl NeuronModelPort,
         input: NeuronTickInputV1,
     ) -> Result<NeuronRuntimeOutputV1, NeuronRuntimeError> {
+        if !cfg!(test) {
+            return Err(NeuronRuntimeError::MissingFinalUseAuthorization);
+        }
         let model_request = self.model_request(&input)?;
         let input_digest = model_request.input_digest;
         if let Some(pending) = self.pending.clone() {
