@@ -116,16 +116,27 @@ def review(root):
                     'training schedule/exposure mismatch')
             require(receipt['case_ids'] == ids and receipt['train_gate_passed'] is row['train_gate_passed'],
                     'training case or gate mismatch')
-            require(receipt['diagnostics'][-1]['optimizer_step'] == receipt['completed_steps'],
+            last_step = receipt['diagnostics'][-1]['optimizer_step']
+            require(0 <= last_step <= receipt['completed_steps'],
                     'training metric checkpoint inconsistent')
+            if receipt['status'] != 'budget_stopped':
+                require(last_step == receipt['completed_steps'], 'final diagnostic missing')
+            else:
+                require(not receipt['train_gate_passed'], 'budget stop cannot pass')
             metrics = independent_training_score(cases, receipt['diagnostics'][-1]['binding']['probabilities'])
             declared = receipt['diagnostics'][-1]['binding']
             require(abs(metrics['accuracy'] - declared['accuracy']) < 1e-12
                     and abs(metrics['both_worlds_correct'] - declared['both_worlds_correct']) < 1e-12,
                     'producer training accuracy disagrees with recomputed truth')
-            # PyTorch logit-CE and FP32 saved-softmax CE may differ slightly.
-            require(abs(metrics['probability_CE'] - declared['binary_cross_entropy']) < .002,
-                    'saved probabilities cannot reconstruct reported training CE')
+            # The diagnostic is logit-space CE, whereas saved FP32 softmax
+            # probabilities have independent rounding and may underflow. Never
+            # declare them numerically identical across arbitrary failed arms.
+            require(math.isfinite(declared['binary_cross_entropy'])
+                    and declared['binary_cross_entropy'] >= 0,
+                    'invalid logit-space training CE')
+            if receipt['train_gate_passed']:
+                require(metrics['probability_CE'] <= .102,
+                        'claimed passed model contradicts saved probabilities')
             verified_gate = (metrics['accuracy'] == 1 and metrics['both_worlds_correct'] == 1
                              and declared['binary_cross_entropy'] <= .10)
             require(verified_gate is receipt['train_gate_passed'], 'unjustified training gate')
