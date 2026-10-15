@@ -150,7 +150,14 @@ def backend_digest(backend):
     for name,param in sorted(model.named_parameters()):
         check(param.device.type=='cpu' and bool(torch.isfinite(param).all()),
               'invalid on-device Stem weight')
-        h.update(name.encode()+b'\0');h.update(param.detach().contiguous().numpy().tobytes())
+        # BF16 has no NumPy scalar conversion. Reinterpret the original
+        # contiguous CPU tensor as uint8: preserve every stored bit rather
+        # than rounding/casting a pretrained checkpoint to FP32 for hashing.
+        raw=param.detach().contiguous()
+        payload=raw.view(torch.uint8).numpy().tobytes()
+        check(len(payload)==raw.numel()*raw.element_size(),
+              'physical Stem parameter byte length drift')
+        h.update(name.encode()+b'\0');h.update(payload)
         count+=param.numel()
     check(count>0,'real physical model tensor count required')
     return h.hexdigest(),count
