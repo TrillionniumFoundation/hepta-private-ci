@@ -1,0 +1,315 @@
+name: Hepta P0 original-human MultiRC semantic four-Stem (DENY_ALL)
+'on':
+  pull_request:
+    paths:
+      - 'experiments/shared_stem_cell/p0_multirc_semantic_material.py'
+      - 'experiments/shared_stem_cell/p0_multirc_semantic_execute.py'
+      - 'experiments/shared_stem_cell/p0_multirc_semantic_review.py'
+      - 'experiments/shared_stem_cell/test_p0_multirc_semantic.py'
+      - 'experiments/shared_stem_cell/P0_MULTIRC_HUMAN_SEMANTIC.md'
+      - '.github/workflows/hepta-p0-multirc-semantic-four.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  semantic-source-tests:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pinned real CPU optimizer
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+      - name: Complete original-source, artifact and genuine-SGD fault regression
+        run: |
+          set -euo pipefail
+          python -m py_compile experiments/shared_stem_cell/p0_multirc_semantic_material.py \
+            experiments/shared_stem_cell/p0_multirc_semantic_execute.py \
+            experiments/shared_stem_cell/p0_multirc_semantic_review.py \
+            experiments/shared_stem_cell/test_p0_multirc_semantic.py
+          PYTHONPATH=experiments/shared_stem_cell python -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_multirc_semantic.py' -v
+          PYTHONPATH=experiments/shared_stem_cell python -O -m unittest discover \
+            -s experiments/shared_stem_cell -p 'test_p0_multirc_semantic.py' -v
+
+  original-human-materials:
+    needs: semantic-source-tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Acquire original fixed-revision MultiRC train and validation source
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: 'huggingface-hub==1.33.0' 'pyarrow==21.0.0'
+          mkdir -p "$RUNNER_TEMP/human-source"
+          python - <<'PY'
+          import hashlib,json,os,shutil
+          from pathlib import Path
+          from huggingface_hub import HfApi,hf_hub_download
+          rev='4e14482c58d790d467ecfb29b6790e1917bf8756'
+          repo='aps/super_glue'
+          info=HfApi().dataset_info(repo_id=repo,revision=rev,files_metadata=True)
+          assert info.sha==rev
+          original={'train':'multirc/train-00000-of-00001.parquet',
+                    'validation':'multirc/validation-00000-of-00001.parquet'}
+          out={'repository':repo,'revision':rev,'original_file_sha256':{}}
+          for split,name in original.items():
+              p=Path(hf_hub_download(repo_id=repo,repo_type='dataset',revision=rev,filename=name))
+              sha=hashlib.sha256(p.read_bytes()).hexdigest()
+              sister=next((s for s in info.siblings if s.rfilename==name),None)
+              assert sister is not None
+              lfs=sister.lfs
+              expected=lfs.get('sha256') if isinstance(lfs,dict) else getattr(lfs,'sha256',None)
+              if expected: assert sha==expected
+              target=Path(os.environ['RUNNER_TEMP'])/'human-source'/f'{split}.parquet'
+              shutil.copyfile(p,target)
+              out['original_file_sha256'][split]=sha
+          (Path(os.environ['RUNNER_TEMP'])/'human-source/source-lock.json').write_text(
+              json.dumps(out,sort_keys=True),encoding='utf-8')
+          PY
+      - name: Construct real human labels separately from model blind material
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/human-source"
+          TRAIN_SHA=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/human-source/source-lock.json"))["original_file_sha256"]["train"])')
+          VAL_SHA=$(python -c 'import json,os; print(json.load(open(os.environ["RUNNER_TEMP"]+"/human-source/source-lock.json"))["original_file_sha256"]["validation"])')
+          python experiments/shared_stem_cell/p0_multirc_semantic_material.py \
+            --train-parquet "$ROOT/train.parquet" --validation-parquet "$ROOT/validation.parquet" \
+            --train-sha256 "$TRAIN_SHA" --validation-sha256 "$VAL_SHA" \
+            --output "$ROOT/materials" > "$ROOT/preparation-summary.json"
+          python -m json.tool "$ROOT/preparation-summary.json" >/dev/null
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-human-original-fit-${{ github.run_id }}
+          path: ${{ runner.temp }}/human-source/materials/fit.json
+          if-no-files-found: warn
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-human-original-blind-${{ github.run_id }}
+          path: ${{ runner.temp }}/human-source/materials/blind.json
+          if-no-files-found: warn
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-human-owner-labels-${{ github.run_id }}
+          path: ${{ runner.temp }}/human-source/materials/owner-only-human-labels.json
+          if-no-files-found: warn
+          retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-human-original-source-lock-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/human-source/source-lock.json
+            ${{ runner.temp }}/human-source/preparation-summary.json
+          if-no-files-found: warn
+          retention-days: 7
+
+  physical-four-models:
+    needs: original-human-materials
+    runs-on: ubuntu-24.04
+    timeout-minutes: 240
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+      OMP_NUM_THREADS: '2'
+      USE_TF: '0'
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Checkout reviewed compact Encoder implementation
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          path: pinned-compact
+          ref: e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+      - name: Checkout reviewed Gemma model implementation
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          path: pinned-gemma
+          ref: f8d168a7689eb3624d97c44751791badd069e521
+      - name: Exact reviewed source identity
+        run: |
+          set -euo pipefail
+          test "$(git -C pinned-compact rev-parse HEAD)" = e05f939f65fb76f6bdbf7470eef7e63b77284dcd
+          test "$(git -C pinned-gemma rev-parse HEAD)" = f8d168a7689eb3624d97c44751791badd069e521
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-original-fit-${{ github.run_id }}
+          path: ${{ runner.temp }}/blind-model
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-original-blind-${{ github.run_id }}
+          path: ${{ runner.temp }}/blind-model
+      - name: Build genuine pinned CPU runtime
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/human-p0-venv"
+          PY="$RUNNER_TEMP/human-p0-venv/bin/python"
+          "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu \
+            'torch==2.10.0' 'torchvision==0.25.0' 'torchcodec==0.10.0'
+          "$PY" -m pip install --only-binary=:all: \
+            'transformers==5.19.0' 'sentence-transformers==6.1.0' \
+            'huggingface-hub==1.33.0' 'safetensors==0.8.0' \
+            'numpy==2.2.6' 'packaging==25.0' 'psutil==7.2.2' \
+            'pyarrow==21.0.0' 'pillow==11.3.0' 'laya==0.3.20'
+          "$PY" -m pip check
+          "$PY" -m pip freeze > "$RUNNER_TEMP/human-p0-freeze.txt"
+      - name: Pin complete source-reviewed Granite and mmBERT safetensors
+        run: |
+          set -euo pipefail
+          "$RUNNER_TEMP/human-p0-venv/bin/python" - <<'PY'
+          from pathlib import Path
+          import hashlib
+          from huggingface_hub import HfApi,snapshot_download
+          models=[('ibm-granite/granite-embedding-97m-multilingual-r2','835ad14087e140460703cf0fae09f97d469d65c2'),
+                  ('jhu-clsp/mmBERT-small','0eb3d056ec1d6333cf4e19b0966dfde342a41a3a')]
+          for name,sha in models:
+              info=HfApi().model_info(repo_id=name,revision=sha,files_metadata=True)
+              assert info.sha==sha
+              root=Path(snapshot_download(repo_id=name,revision=sha,
+                           allow_patterns=['*.json','*.safetensors','*.txt','*.model']))
+              files={p.relative_to(root).as_posix():p for p in root.rglob('*') if p.is_file()}
+              assert {'model.safetensors','tokenizer.json','config.json'}<=set(files)
+              assert not any(x.endswith(('.bin','.pkl','.pickle','.pt','.py')) for x in files)
+              for f in info.siblings:
+                  if f.rfilename not in files:continue
+                  lfs=f.lfs
+                  expected=lfs.get('sha256') if isinstance(lfs,dict) else getattr(lfs,'sha256',None)
+                  if expected: assert hashlib.sha256(files[f.rfilename].read_bytes()).hexdigest()==expected
+          PY
+      - name: Prepare pinned genuine Gemma text checkpoint
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/physical"
+          "$RUNNER_TEMP/human-p0-venv/bin/python" \
+            pinned-gemma/qualification/neuron-dynamic-learning/prepare_gemma2_snapshot.py \
+            --revision 914f7f89142e33e77833254d9c9b90c3cef7303b \
+            --destination "$RUNNER_TEMP/physical/gemma-snapshot" \
+            --profile text --dimension 256 --precision float32 \
+            > "$RUNNER_TEMP/physical/gemma-source-receipt.json"
+      - name: Four pinned original pretrained calls or preserved failures
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/human-p0-venv/bin/python"
+          ROOT="$RUNNER_TEMP/physical"
+          for model in granite_97m_r2 mmbert_small embeddinggemma_2_text laya421_nochange; do
+            if timeout --signal=TERM --kill-after=30s 3200s "$PY" \
+              experiments/shared_stem_cell/p0_multirc_semantic_execute.py \
+              --fit "$RUNNER_TEMP/blind-model/fit.json" \
+              --blind "$RUNNER_TEMP/blind-model/blind.json" \
+              --model "$model" \
+              --compact-checkout pinned-compact --gemma-checkout pinned-gemma \
+              --gemma-manifest "$ROOT/gemma-snapshot/manifest.json" \
+              --output "$ROOT/$model.json"; then
+              echo "$model original pretrained task completed"
+            else
+              echo "$model failed or timed out; do not score as completed" > "$ROOT/$model.failed.txt"
+            fi
+          done
+          for model in granite_97m_r2 mmbert_small embeddinggemma_2_text laya421_nochange; do
+            test -s "$ROOT/$model.json" || { echo "Missing real pretrained $model" >&2; exit 1; }
+          done
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-human-four-original-predictions-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/physical/*.json
+            ${{ runner.temp }}/physical/*.failed.txt
+            ${{ runner.temp }}/human-p0-freeze.txt
+          if-no-files-found: warn
+          retention-days: 7
+
+  independent-human-score:
+    needs: [original-human-materials, physical-four-models]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-original-fit-${{ github.run_id }}
+          path: ${{ runner.temp }}/score-only
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-original-blind-${{ github.run_id }}
+          path: ${{ runner.temp }}/score-only
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-owner-labels-${{ github.run_id }}
+          path: ${{ runner.temp }}/score-only
+      - uses: actions/download-artifact@v4
+        with:
+          name: hepta-human-four-original-predictions-${{ github.run_id }}
+          path: ${{ runner.temp }}/score-only
+      - name: Independently re-fetch exact original human dataset source
+        run: |
+          set -euo pipefail
+          python -m pip install --only-binary=:all: 'huggingface-hub==1.33.0' 'pyarrow==21.0.0'
+          python - <<'PY'
+          from huggingface_hub import hf_hub_download
+          from pathlib import Path
+          import json,hashlib,os,shutil
+          root=Path(os.environ['RUNNER_TEMP'])/'score-only'
+          meta=json.loads((root/'fit.json').read_text())['metadata']
+          repo,revision=meta['repo'],meta['revision']
+          for split,relative,expected in [('train','multirc/train-00000-of-00001.parquet',meta['train_sha256']),
+                                          ('validation','multirc/validation-00000-of-00001.parquet',meta['validation_sha256'])]:
+              original=Path(hf_hub_download(repo_id=repo,repo_type='dataset',revision=revision,filename=relative))
+              if hashlib.sha256(original.read_bytes()).hexdigest()!=expected:raise RuntimeError('original human source drift')
+              shutil.copyfile(original,root/f'{split}.parquet')
+          PY
+      - name: Independent original human-label scoring and lexical relation challenge
+        run: |
+          set -euo pipefail
+          ROOT="$RUNNER_TEMP/score-only"
+          python experiments/shared_stem_cell/p0_multirc_semantic_review.py \
+            --fit "$ROOT/fit.json" --blind "$ROOT/blind.json" \
+            --labels "$ROOT/owner-only-human-labels.json" \
+            --train-parquet "$ROOT/train.parquet" --validation-parquet "$ROOT/validation.parquet" \
+            --granite-97m-r2 "$ROOT/granite_97m_r2.json" \
+            --mmbert-small "$ROOT/mmbert_small.json" \
+            --embeddinggemma-2-text "$ROOT/embeddinggemma_2_text.json" \
+            --laya421-nochange "$ROOT/laya421_nochange.json" \
+            --output "$ROOT/independent-human-semantic-score.json"
+          python -m json.tool "$ROOT/independent-human-semantic-score.json" >/dev/null
+          echo 'No generated counterfactual truth, no Stem selection, no final-use.'
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hepta-human-independent-semantic-score-${{ github.run_id }}
+          path: ${{ runner.temp }}/score-only/independent-human-semantic-score.json
+          if-no-files-found: warn
+          retention-days: 7
