@@ -7,7 +7,8 @@ import unittest
 from pathlib import Path
 from e2_beans_paired_uncertainty import (
     ARMS, CLASSES, PREFIX, AuditFailure, audit, canonical, exact_mcnemar,
-    read_pinned, sha, wilson)
+    read_pinned, sha, wilson, require_original_target_seal, DATA_REVISION,
+    TRAIN_PARQUET_SHA, TEST_PARQUET_SHA, SOURCE_FILES, WITHHELD_FILES)
 
 
 def example():
@@ -130,5 +131,59 @@ class PairedUncertaintyTests(unittest.TestCase):
         for i,row in enumerate(self.p['rows']):
             row['predicted_labels']['fitted']=CLASSES[(i//8+1)%3]
         with self.assertRaises(AuditFailure):self.run_audit()
+
+    def make_seals(self):
+        self.m.update(dataset_revision=DATA_REVISION, train_parquet_sha256=TRAIN_PARQUET_SHA,
+                      stem_selected=False)
+        self.m['file_sha256s']={name:sha(name.encode()) for name in SOURCE_FILES}
+        source_sha=sha(canonical(self.m))
+        future_source_sha=self.m['file_sha256s']['future_images.jsonl']
+        target_sha=sha(b'original independent withheld labels')
+        self.target_manifest={'schema':PREFIX+'.withheld-target-plan',
+             'source_manifest_sha256':source_sha,
+             'original_test_parquet_sha256':TEST_PARQUET_SHA,
+             'file_sha256s':{'future_caption_targets.jsonl':sha(b'captions'),
+                            'future_class_targets.jsonl':target_sha},
+             'production_accepted':False,'authority':'DENY_ALL'}
+        return source_sha,sha(canonical(self.target_manifest)),future_source_sha,target_sha
+    def test_real_dataset_seal_valid_without_authority(self):
+        a,b,c,d=self.make_seals()
+        result=require_original_target_seal(self.m,a,self.target_manifest,b,c,d)
+        self.assertTrue(result['target_byte_lineage_consistent'])
+        self.assertFalse(result['independent_ground_truth_owner_attested'])
+    def test_old_unsealed_inputs_denied(self):
+        with self.assertRaises(AuditFailure):
+            require_original_target_seal(self.m,'a'*64,{},'b'*64,'c'*64,'d'*64)
+    def test_changed_future_class_manifest_denied_even_with_self_consistent_sha(self):
+        a,b,c,d=self.make_seals()
+        self.target_manifest['file_sha256s']['future_class_targets.jsonl']='f'*64
+        changed=sha(canonical(self.target_manifest))
+        with self.assertRaises(AuditFailure):
+            require_original_target_seal(self.m,a,self.target_manifest,changed,c,d)
+    def test_changed_source_manifest_denied_even_with_self_consistent_sha(self):
+        a,b,c,d=self.make_seals()
+        self.m['file_sha256s']['future_class_targets.jsonl']=d
+        changed=sha(canonical(self.m))
+        self.target_manifest['source_manifest_sha256']=changed
+        with self.assertRaises(AuditFailure):
+            require_original_target_seal(self.m,changed,self.target_manifest,
+                                         sha(canonical(self.target_manifest)),c,d)
+    def test_wrong_original_test_parquet_denied(self):
+        a,b,c,d=self.make_seals()
+        self.target_manifest['original_test_parquet_sha256']='f'*64
+        with self.assertRaises(AuditFailure):
+            require_original_target_seal(self.m,a,self.target_manifest,
+                                         sha(canonical(self.target_manifest)),c,d)
+    def test_false_target_authority_denied(self):
+        a,b,c,d=self.make_seals()
+        self.target_manifest['production_accepted']=True
+        with self.assertRaises(AuditFailure):
+            require_original_target_seal(self.m,a,self.target_manifest,
+                                         sha(canonical(self.target_manifest)),c,d)
+    def test_wrong_source_version_denied(self):
+        a,b,c,d=self.make_seals()
+        self.m['dataset_revision']='a'*40
+        with self.assertRaises(AuditFailure):
+            require_original_target_seal(self.m,sha(canonical(self.m)),self.target_manifest,b,c,d)
 
 if __name__=='__main__':unittest.main()
