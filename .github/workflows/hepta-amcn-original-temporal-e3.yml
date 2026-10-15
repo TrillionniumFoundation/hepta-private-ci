@@ -1,0 +1,60 @@
+name: Hepta original E3 temporal graph negative research source gate (DENY_ALL)
+
+on:
+  push:
+    branches: ["research/amcn-causal-three-axis-20261015"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_temporal_e3.py"
+      - "qualification/amcn-v1/amcn_original_temporal_e3_reader.py"
+      - "qualification/amcn-v1/amcn_original_temporal_e3_gate.py"
+      - "qualification/amcn-v1/test_amcn_original_temporal_e3.py"
+      - "qualification/amcn-v1/test_amcn_original_temporal_e3_gate.py"
+      - "qualification/amcn-v1/ORIGINAL_TEMPORAL_E3_20261015.json"
+      - ".github/workflows/hepta-amcn-original-temporal-e3.yml"
+  pull_request:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_temporal_e3.py"
+      - "qualification/amcn-v1/amcn_original_temporal_e3_reader.py"
+      - "qualification/amcn-v1/amcn_original_temporal_e3_gate.py"
+      - "qualification/amcn-v1/test_amcn_original_temporal_e3.py"
+      - "qualification/amcn-v1/test_amcn_original_temporal_e3_gate.py"
+      - "qualification/amcn-v1/ORIGINAL_TEMPORAL_E3_20261015.json"
+      - ".github/workflows/hepta-amcn-original-temporal-e3.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  independent-original-e3-no-go:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Compile research files and check historical negative receipt (NO-GO)
+        run: |
+          set -euo pipefail
+          python3 -m compileall -q \
+            qualification/amcn-v1/amcn_original_temporal_e3.py \
+            qualification/amcn-v1/amcn_original_temporal_e3_reader.py \
+            qualification/amcn-v1/amcn_original_temporal_e3_gate.py \
+            qualification/amcn-v1/test_amcn_original_temporal_e3_gate.py
+          PYTHONPATH=qualification/amcn-v1 python3 -m unittest discover \
+            -s qualification/amcn-v1 -p test_amcn_original_temporal_e3_gate.py -v
+          python3 qualification/amcn-v1/amcn_original_temporal_e3_gate.py \
+            qualification/amcn-v1/ORIGINAL_TEMPORAL_E3_20261015.json \
+            /tmp/hepta-e3-original-no-go.json
+          python3 - <<'PY'
+          import json
+          x=json.load(open('/tmp/hepta-e3-original-no-go.json'))
+          assert x['learned_graph_minus_fixed_weak_hit3_proxy']==-6
+          assert x['reader_independent_semantic_success'] is None
+          assert x['original_reader_attempts']==24
+          assert x['graph_learning_task_superiority_proven'] is False
+          assert x['automatic_cell_fission_fusion_eligible'] is False
+          assert x['production_accepted'] is False
+          PY
