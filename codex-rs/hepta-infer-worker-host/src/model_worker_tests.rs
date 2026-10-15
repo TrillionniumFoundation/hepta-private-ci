@@ -2090,3 +2090,98 @@ fn signed_batch_driver_failure_poison_generation_after_verified_entry() {
         Some(Error::IndeterminateLifecycle)
     );
 }
+
+
+
+#[cfg(unix)]
+#[test]
+fn signed_batch_stale_aggregate_plan_denies_before_effect_without_using_driver() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.atomic-plan".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    worker.load_model(100, manifest()).expect("Head");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (proof, verifier, _root) = verified_stem_cas_fixture(&source);
+    let members = [StemBatchMemberProposalV1 {
+        selected_head: &head,
+        authorization: &auth,
+    }];
+    let proposed = StemBatchProposalV1 {
+        source: &source,
+        access: &access,
+        cas_verifier: &verifier,
+        verified_artifacts: &proof,
+        feature_vector_q24: &features,
+        members: &members,
+    };
+    let plan = worker.prepare_stem_final_use_batch_proposal_v1(100, proposed)
+        .expect("correct original plan");
+    let (authority, tokens, _signed, _dir) =
+        signed_stem_batch_token_fixture(&plan.bindings);
+    let forged = NonAuthorizingStemBatchPlanV1 {
+        batch_digest: Digest32::of_bytes(b"tampered-order-or-members"),
+        bindings: plan.bindings.clone(),
+        authority: plan.authority,
+    };
+    assert_eq!(
+        worker.with_verified_stem_batch_effect_v1(
+            100, proposed, &forged, &authority, tokens, |current| {
+                current.driver.feature_calls += 1;
+                Ok(())
+            },
+        ),
+        Err(Error::FeatureContract)
+    );
+    assert_eq!(worker.driver.feature_calls, 0);
+    assert!(!worker.poisoned);
+}
+
+#[cfg(unix)]
+#[test]
+fn signed_batch_panicking_effect_poison_generation_and_release_original_fence() {
+    let mut worker = InferenceWorker::new(
+        100, "worker.atomic-unwind".into(), 3, grant(), Driver::default()
+    ).expect("worker");
+    worker.load_model(100, manifest()).expect("Head");
+    let (source, access, head, features, auth) = scoped_shared_stem_fixture();
+    let (proof, verifier, _root) = verified_stem_cas_fixture(&source);
+    let members = [StemBatchMemberProposalV1 {
+        selected_head: &head,
+        authorization: &auth,
+    }];
+    let proposed = StemBatchProposalV1 {
+        source: &source,
+        access: &access,
+        cas_verifier: &verifier,
+        verified_artifacts: &proof,
+        feature_vector_q24: &features,
+        members: &members,
+    };
+    let plan = worker.prepare_stem_final_use_batch_proposal_v1(100, proposed)
+        .expect("original plan");
+    let (authority, tokens, _signed, _dir) =
+        signed_stem_batch_token_fixture(&plan.bindings);
+    let caught = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        let _ = worker.with_verified_stem_batch_effect_v1(
+            100, proposed, &plan, &authority, tokens,
+            |current| -> Result<(), Error> {
+                current.driver.feature_calls += 1;
+                panic!("simulate synchronous backend panic after effect entry");
+            },
+        );
+    }));
+    assert!(caught.is_err());
+    assert_eq!(worker.driver.feature_calls, 1);
+    assert!(worker.poisoned);
+
+    // The original authority active dispatch fence must unwind correctly.
+    authority.update_revocations(codex_hepta_contracts::FinalUseRevocations {
+        authority_epoch: 2,
+        revision: 2,
+        revoked_grant_ids: std::collections::BTreeSet::new(),
+    }).expect("no stranded active effect");
+    assert_eq!(
+        worker.prepare_stem_final_use_batch_proposal_v1(100, proposed).err(),
+        Some(Error::IndeterminateLifecycle)
+    );
+}
