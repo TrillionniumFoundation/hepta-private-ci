@@ -220,6 +220,8 @@ pub enum CellSplitCnsCutoverErrorV1 {
     External(String),
     #[error("CNS route changed without a matching original durable cutover receipt")]
     Ambiguous,
+    #[error("original same-owner Control B/effect/C is not production-composed")]
+    OriginalControlUnverified,
     #[error(transparent)]
     Durable(#[from] crate::AcceptanceError),
     #[error(transparent)]
@@ -473,11 +475,25 @@ impl<P: CellSplitCnsRuntimePortV1> CellSplitDurableEffectBackendV1
         &mut self,
         intent: &CellSplitExecutionIntentV1,
     ) -> Result<(), Self::Error> {
+        // A generic caller-selected CNS port cannot prove the original
+        // fsynced same-Control Begin -> runtime effect -> Commit chain.
+        // Deny compiled product admission BEFORE invoking any caller port
+        // callback, regardless of its simulated signed route or Final-use.
+        // Crate-local cfg(test) retains reference-only mechanics.
+        if !cfg!(test) {
+            return Err(CellSplitCnsCutoverErrorV1::OriginalControlUnverified);
+        }
         let _ = self.verified_effect(intent)?;
         Ok(())
     }
 
     fn commit_once(&mut self, intent: &CellSplitExecutionIntentV1) -> Result<(), Self::Error> {
+        // The trait is public: a different port implementation could bypass
+        // the concrete CNS kernel port's non-test refusal. Block EVERY
+        // production effect owner before preflight, Final-use, or callback.
+        if !cfg!(test) {
+            return Err(CellSplitCnsCutoverErrorV1::OriginalControlUnverified);
+        }
         if self.verified_effect(intent)?.is_some() {
             // Current state may belong to another racing writer. Do not
             // acknowledge a fresh Execute for an already published route.
