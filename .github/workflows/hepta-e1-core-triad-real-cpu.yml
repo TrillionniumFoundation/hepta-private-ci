@@ -9,6 +9,12 @@ on:
       - "experiments/shared_stem_cell/e1_public_triplet_review.py"
       - "experiments/shared_stem_cell/e1e2_q24_identity.py"
       - "experiments/shared_stem_cell/test_e1_core_real_cpu.py"
+      - "experiments/shared_stem_cell/e2_token_query_ablation.py"
+      - "experiments/shared_stem_cell/e2_token_query_real_cpu.py"
+      - "experiments/shared_stem_cell/e2_token_query_review.py"
+      - "experiments/shared_stem_cell/test_e2_token_query_ablation.py"
+      - "experiments/shared_stem_cell/test_e2_token_query_real_cpu.py"
+      - "experiments/shared_stem_cell/test_e2_token_query_review.py"
       - ".github/workflows/hepta-e1-core-triad-real-cpu.yml"
   workflow_dispatch:
 
@@ -23,7 +29,7 @@ jobs:
   real-core-triad:
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-24.04
-    timeout-minutes: 140
+    timeout-minutes: 180
     permissions:
       contents: read
     env:
@@ -72,6 +78,8 @@ jobs:
           "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e1_core_real_cpu.py' -v
           "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e1_three_stem_consistency.py' -v
           "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e1_public_triplet_review.py' -v
+          "$PY" -m py_compile experiments/shared_stem_cell/e2_token_query_ablation.py experiments/shared_stem_cell/e2_token_query_real_cpu.py experiments/shared_stem_cell/e2_token_query_review.py
+          "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_token_query_*.py' -v
       - name: Independently reconstruct SHA-bound original 224-case AG News panel
         run: |
           set -euo pipefail
@@ -132,6 +140,51 @@ jobs:
           assert r['true_future_three_window_evidence_available'] is False
           assert r['authority']=='DENY_ALL'
           PY
+      - name: E2 actual frozen Token Matrix and native pooled readouts
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-core-venv/bin/python"
+          ROOT="$RUNNER_TEMP/hepta-core"
+          failed=0
+          for model in granite_97m_r2 mmbert_small modernbert_base; do
+            if timeout --signal=TERM --kill-after=30s 2400s "$PY" \
+                experiments/shared_stem_cell/e2_token_query_real_cpu.py \
+                --panel "$ROOT/panel.json" --model "$model" \
+                --stage "$ROOT/stage-$model" --e1 "$ROOT/$model.json" \
+                --output "$ROOT/$model.e2-query.json"; then
+              echo "completed SAME-forward frozen Token Matrix and matched 2K Heads: $model"
+            else
+              printf '%s\n' "$model actual E2 model or pooled/query Head failed, no synthetic fallback" \
+                  > "$ROOT/$model.e2.failed.txt"
+              failed=1
+            fi
+          done
+          test "$failed" -eq 0
+      - name: E2 independent paired score and authority denial
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-core-venv/bin/python"
+          ROOT="$RUNNER_TEMP/hepta-core"
+          "$PY" experiments/shared_stem_cell/e2_token_query_review.py \
+            --panel "$ROOT/panel.json" \
+            --granite-97m-r2-e1 "$ROOT/granite_97m_r2.json" \
+            --granite-97m-r2-e2 "$ROOT/granite_97m_r2.e2-query.json" \
+            --mmbert-small-e1 "$ROOT/mmbert_small.json" \
+            --mmbert-small-e2 "$ROOT/mmbert_small.e2-query.json" \
+            --modernbert-base-e1 "$ROOT/modernbert_base.json" \
+            --modernbert-base-e2 "$ROOT/modernbert_base.e2-query.json" \
+            --output "$ROOT/independent-e2-query-review.json"
+          "$PY" - "$ROOT/independent-e2-query-review.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1],encoding='utf8'))
+          assert len(r['models'])==3
+          assert all(set(arms)=={'pooled_linear','pooled_gated','token_query'} for arms in r['models'].values())
+          assert r['future_ndu_utility_verified'] is False
+          assert r['same_original_model_execution_independently_authenticated'] is False
+          assert r['stem_winner_selected'] is False
+          assert r['production_promotion_permitted'] is False
+          assert r['authority']=='DENY_ALL'
+          PY
       - name: Retain source, failures and sanitized complete original predictions
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -147,5 +200,9 @@ jobs:
             ${{ runner.temp }}/hepta-core/mmbert_small.json
             ${{ runner.temp }}/hepta-core/modernbert_base.json
             ${{ runner.temp }}/hepta-core/independent-core-review.json
+            ${{ runner.temp }}/hepta-core/granite_97m_r2.e2-query.json
+            ${{ runner.temp }}/hepta-core/mmbert_small.e2-query.json
+            ${{ runner.temp }}/hepta-core/modernbert_base.e2-query.json
+            ${{ runner.temp }}/hepta-core/independent-e2-query-review.json
             ${{ runner.temp }}/hepta-core/*.failed.txt
           retention-days: 14
