@@ -8,6 +8,8 @@ on:
       - 'qualification/cell_meta_execution_af/physical_router_hard*.py'
       - 'qualification/cell_meta_execution_af/physical_router_frozen_*.py'
       - 'qualification/cell_meta_execution_af/physical_router_fivearm_*.py'
+      - 'qualification/cell_meta_execution_af/physical_router_paired_screen*.py'
+      - 'qualification/cell_meta_execution_af/PAIRED_ORIGINAL_SOURCE_SCREEN.md'
       - 'qualification/cell_meta_execution_af/FIVE_ARM_GRANITE_HANDOFF.md'
       - 'qualification/cell_meta_execution_af/HARD_TRAINED_TOP1_ROUTER.md'
       - 'qualification/cell_meta_execution_af/TOP1_SPARSE_ROUTER_REALITY.md'
@@ -82,7 +84,10 @@ jobs:
             qualification/cell_meta_execution_af/physical_router_frozen_review.py \
             qualification/cell_meta_execution_af/physical_router_frozen_tests.py \
             qualification/cell_meta_execution_af/physical_router_fivearm_review.py \
-            qualification/cell_meta_execution_af/physical_router_fivearm_tests.py
+            qualification/cell_meta_execution_af/physical_router_fivearm_tests.py \
+
+            qualification/cell_meta_execution_af/physical_router_paired_screen.py \
+            qualification/cell_meta_execution_af/physical_router_paired_screen_tests.py
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_real_tests.py'
@@ -101,6 +106,9 @@ jobs:
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_fivearm_tests.py'
+          python -m unittest discover -v \
+            -s qualification/cell_meta_execution_af \
+            -p 'physical_router_paired_screen_tests.py'
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
@@ -289,6 +297,29 @@ jobs:
               --frozen-report "$ROOT/$seed-frozen-report.json" \
               --out "$ROOT/$seed-fivearm-report.json"
           done
+          # Independent source-level paired original-case effects. The same
+          # AG News case under three model seeds is ONE original case, not
+          # three independent future outcomes or independent task families.
+          python qualification/cell_meta_execution_af/physical_router_paired_screen.py \
+            --bundle-dir "$ROOT" --out "$ROOT/paired-original-source-screen.json"
+          python - "$ROOT/paired-original-source-screen.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1]))
+          assert r['authority_posture']=='DENY_ALL'
+          assert r['production_admission']=='BLOCKED'
+          assert r['seed_count_not_independent_source_multiplier']==3
+          assert r['reused_original_source_rows']==224
+          assert r['three_seeds_reuse_same_source_material'] is True
+          assert r['prospective_calendar_outcome_verified'] is False
+          assert r['valid_independent_effect_confidence_bound'] is False
+          assert r['selection_approved'] is False
+          assert r['physical_cell_split_permitted'] is False
+          for part in ('future_1','future_2'):
+              assert r['retrospective_paired'][part]['original_source_groups']==32
+              for v in r['retrospective_paired'][part]['comparisons'].values():
+                  assert v['original_family_independence_verified'] is False
+                  assert v['interval_is_valid_future_effect_CI'] is False
+          PY
           # Identical original source/features/labels in all three seed panels;
           # an apparent independent-seed gain must not count reused source as
           # three independent task families or prospective observations.
@@ -399,6 +430,7 @@ jobs:
             ${{ runner.temp }}/hepta-meta-real/*-frozen-report.json
             ${{ runner.temp }}/hepta-meta-real/*-frozen-review.json
             ${{ runner.temp }}/hepta-meta-real/*-fivearm-report.json
+            ${{ runner.temp }}/hepta-meta-real/paired-original-source-screen.json
             ${{ runner.temp }}/hepta-meta-real/descriptive-retrospective-summary.json
             ${{ runner.temp }}/hepta-meta-real/hardtop1-descriptive-retrospective-summary.json
             ${{ runner.temp }}/granite-model-environment.txt
