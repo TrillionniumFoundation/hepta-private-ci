@@ -83,6 +83,40 @@ jobs:
             --output-directory "$RUNNER_TEMP/materials" \
             > "$RUNNER_TEMP/source/source-receipt.json"
           python -m json.tool "$RUNNER_TEMP/source/source-receipt.json" >/dev/null
+      - name: Independent label-blind original source/retrieval preflight
+        env:
+          HEPTA_P0_SOURCE_MATERIALS: ${{ runner.temp }}/materials
+          HEPTA_P0_SOURCE_REPORT: ${{ runner.temp }}/source/question-only-preflight.json
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell python - <<'PYCODE'
+          import json, os
+          from pathlib import Path
+          from p0_squad_materials import canonical, digest, read
+          from p0_real_reader_cpu import validate_materials
+          from p0_reader_independent_review import independent_question_only_retrieval
+          root=Path(os.environ['HEPTA_P0_SOURCE_MATERIALS'])
+          fit=read(root/'fit.json')
+          blind=read(root/'blind.json')
+          train, held=validate_materials(fit,blind)
+          observed=independent_question_only_retrieval(train+held)
+          assert set(observed)=={'train','calibration','test'}
+          receipt={'schema':'hepta.p0.question-only-source-preflight.v1',
+                   'source_fit_sha256':digest(canonical(fit)),
+                   'source_blind_sha256':digest(canonical(blind)),
+                   'question_only_bm25_recomputed':observed,
+                   'future_semantic_evidence_established':False,
+                   'model_origin_authenticated':False,
+                   'model_selection_permitted':False,
+                   'authority':'DENY_ALL'}
+          with Path(os.environ['HEPTA_P0_SOURCE_REPORT']).open('x',encoding='utf8') as f:
+              json.dump(receipt,f,sort_keys=True,indent=2,allow_nan=False)
+              f.write('\n')
+          print(json.dumps({'source_protocol':'question-only:v2',
+                            'train_source_groups':observed['train']['questions'],
+                            'test_source_groups':observed['test']['questions'],
+                            'retrieval_other_truth_unknown':True},sort_keys=True))
+          PYCODE
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -108,7 +142,9 @@ jobs:
         if: always()
         with:
           name: hepta-p0-source-receipt-${{ github.run_id }}
-          path: ${{ runner.temp }}/source/source-receipt.json
+          path: |
+            ${{ runner.temp }}/source/source-receipt.json
+            ${{ runner.temp }}/source/question-only-preflight.json
           if-no-files-found: warn
           retention-days: 7
 

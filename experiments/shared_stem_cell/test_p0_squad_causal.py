@@ -325,6 +325,15 @@ class ReviewTest(unittest.TestCase):
 
 
 class WorkflowContractTest(unittest.TestCase):
+    def test_source_workflow_recomputes_question_only_before_model_run(self):
+        workflow=(Path(__file__).resolve().parents[2] /
+                  '.github/workflows/hepta-p0-real-four-reader.yml').read_text()
+        self.assertEqual(workflow.count('Independent label-blind original source/retrieval preflight'),1)
+        self.assertIn('independent_question_only_retrieval(train+held)',workflow)
+        self.assertIn('question-only-preflight.json',workflow)
+        self.assertLess(workflow.index('Independent label-blind original source/retrieval preflight'),
+                        workflow.index('  physical-four-models:'))
+
     def test_reviewed_checkout_ref_is_single_exact_pin(self):
         workflow=(Path(__file__).resolve().parents[2] / '.github/workflows/hepta-p0-real-four-reader.yml').read_text()
         for title, expected in (
@@ -339,5 +348,127 @@ class WorkflowContractTest(unittest.TestCase):
             refs=[line.split(':',1)[1].strip() for line in section.splitlines()
                   if line.startswith('          ref:')]
             self.assertEqual(refs,[expected], 'duplicate or mutable checkout source ref')
+
+
+
+class QuestionOnlyRetrievalIntegrityTest(unittest.TestCase):
+    """Adversarial mechanism tests only: synthetic data is NEVER model efficacy."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.fit, cls.blind, cls.labels = synthetic_material()
+
+    @staticmethod
+    def rehash(case):
+        case['view_sha256'] = source.digest(source.canonical(case['joint_input']))
+        case['evidence_sha256'] = source.digest(case['joint_input']['state'].encode())
+
+    def test_retrieval_must_be_independent_of_annotated_correct_answer(self):
+        items = [
+            {'source_id':'a','context':'eastern ridge has tall pine forest near market',
+             'question':'Which ridge is near the market?', 'answer':'pine'},
+            {'source_id':'b','context':'western ridge has a tall market building and river',
+             'question':'Which ridge is near the market?', 'answer':'market'},
+            {'source_id':'c','context':'the ridge and market are part of ancient ruins',
+             'question':'Which ridge is near the market?', 'answer':'ancient'},
+        ]
+        first=source.bm25_neighbors(items)
+        modified=copy.deepcopy(items)
+        for item in modified:
+            item['answer']='newly planted labeled answer never appearing in the passages'
+        self.assertEqual(first,source.bm25_neighbors(modified))
+
+    def test_query_answer_literal_is_excluded_from_squad_source_selection(self):
+        item=simulated_row('Q',3)
+        item['question']='What is the recorded NAMEQ003 item?'
+        self.assertIsNone(source.candidate(item))
+
+    def test_v1_retrieval_protocol_must_not_be_reinterpreted_as_v2(self):
+        fit=copy.deepcopy(self.fit);blind=copy.deepcopy(self.blind)
+        for doc in (fit,blind):
+            doc['metadata']['retriever']='bm25:k1=1.2:b=0.75:within-partition:v1'
+        with self.assertRaises(source.Invalid):worker.validate_materials(fit,blind)
+
+    def test_v1_source_selection_must_not_pass_new_frozen_rule(self):
+        fit=copy.deepcopy(self.fit);blind=copy.deepcopy(self.blind)
+        for doc in (fit,blind):doc['metadata']['sample_rule']='sha256-title-rank:v1'
+        with self.assertRaises(source.Invalid):worker.validate_materials(fit,blind)
+
+    def test_retrieved_donor_swap_rejected_even_after_all_hashes_updated(self):
+        blind=copy.deepcopy(self.blind)
+        target=next(x for x in blind['cases'] if x['condition']=='retrieved')
+        original_donor=target['retrieved_source_id']
+        other=next(x for x in blind['cases'] if x['condition']=='sufficient' and x['source_id']!=original_donor)
+        target['retrieved_source_id']=other['source_id']
+        target['joint_input']['state']=other['joint_input']['state']
+        self.rehash(target)
+        with self.assertRaises(source.Invalid):worker.validate_materials(self.fit,blind)
+
+    def test_retrieval_claim_without_donor_bytes_rejected_even_after_rehash(self):
+        blind=copy.deepcopy(self.blind)
+        target=next(x for x in blind['cases'] if x['condition']=='retrieved')
+        target['joint_input']['state']='a fabricated passage with unrelated evidence'
+        self.rehash(target)
+        with self.assertRaises(source.Invalid):worker.validate_materials(self.fit,blind)
+
+    def test_premise_removed_not_a_full_sentence_deletion_rejected_with_rehash(self):
+        blind=copy.deepcopy(self.blind)
+        target=next(x for x in blind['cases'] if x['condition']=='premise_removed')
+        target['joint_input']['state'] += ' a harmless extra sentence.'
+        self.rehash(target)
+        with self.assertRaises(source.Invalid):worker.validate_materials(self.fit,blind)
+
+    def test_no_evidence_control_not_mutable_after_rehash(self):
+        blind=copy.deepcopy(self.blind)
+        target=next(x for x in blind['cases'] if x['condition']=='none')
+        target['joint_input']['state']='no evidence except accidental cue'
+        self.rehash(target)
+        with self.assertRaises(source.Invalid):worker.validate_materials(self.fit,blind)
+
+    def test_question_cannot_drift_in_only_one_counterfactual_arm(self):
+        blind=copy.deepcopy(self.blind)
+        target=next(x for x in blind['cases'] if x['condition']=='premise_removed')
+        target['joint_input']['question'] += ' Is this safe?'
+        self.rehash(target)
+        with self.assertRaises(source.Invalid):worker.validate_materials(self.fit,blind)
+
+    def test_source_view_rewrite_and_digest_reseal_detected(self):
+        blind=copy.deepcopy(self.blind)
+        target=next(x for x in blind['cases'] if x['condition']=='sufficient')
+        target['joint_input']['state'] += ' some unrelated text'
+        target['annotated_answer_source_sha256']=source.digest(target['joint_input']['state'].encode())
+        self.rehash(target)
+        with self.assertRaises(source.Invalid):worker.validate_materials(self.fit,blind)
+
+    def test_second_source_reviewer_replays_bm25_without_producer_helper(self):
+        expected=scorer.independent_question_only_retrieval(
+            self.fit['cases']+self.blind['cases'])
+        self.assertEqual(set(expected),set(source.WANTED))
+        self.assertEqual(expected['test']['questions'],source.WANTED['test'])
+        from unittest.mock import patch
+        with patch.object(worker, 'bm25_neighbors', side_effect=RuntimeError('producer BM25 unavailable')):
+            self.assertEqual(expected,scorer.independent_question_only_retrieval(
+                self.fit['cases']+self.blind['cases']))
+
+    def test_second_source_reviewer_rejects_self_consistent_but_wrong_donor(self):
+        blind=copy.deepcopy(self.blind)
+        target=next(x for x in blind['cases'] if x['condition']=='retrieved')
+        new_donor=next(x for x in blind['cases'] if x['condition']=='sufficient' and
+                       x['source_id']!=target['retrieved_source_id'])
+        target['joint_input']['state']=new_donor['joint_input']['state']
+        target['retrieved_source_id']=new_donor['source_id']
+        self.rehash(target)
+        with self.assertRaises(source.Invalid):scorer.independent_question_only_retrieval(
+            self.fit['cases']+blind['cases'])
+
+    def test_score_reveals_retrieval_hit_rate_without_forged_nonowner_labels(self):
+        reports={name:fake_report(name,self.fit,self.blind) for name in worker.MODELS}
+        result=scorer.review(self.fit,self.blind,self.labels,reports)
+        m=result['results']['granite_97m_r2']['controls']['trained_head']
+        self.assertEqual(m['question_only_retrieval_original_source_hit_count'] +
+                         m['retrieved_unreviewed_count'],source.WANTED['test'])
+        self.assertTrue(m['nonowner_retrieval_accuracy_unavailable'])
+        self.assertTrue(0 <= m['question_only_retrieval_original_source_hit_at_1'] <= 1)
+
 
 if __name__=='__main__':unittest.main()

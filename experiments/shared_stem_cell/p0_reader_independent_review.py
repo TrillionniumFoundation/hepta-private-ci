@@ -46,6 +46,73 @@ def checked_probability(value):
     return float(value)
 
 
+def independent_question_only_retrieval(rows):
+    """Second, label-free implementation of BM25 for original receipt audit.
+
+    Do not call the producer's bm25_neighbors: independent scoring must detect
+    source-side accidental answer injection, donor swaps or drift in corpus scope.
+    This is deterministic numerical consistency, NOT independent source truth.
+    """
+    corpus=defaultdict(dict)
+    for row in rows:
+        part=row['split']; source_id=row['source_id'];condition=row['condition']
+        if condition in corpus[(part,source_id)]:
+            raise Invalid('duplicate source-condition in independent retrieval')
+        corpus[(part,source_id)][condition]=row
+    by_partition=defaultdict(dict)
+    for (part,src),arms in corpus.items():
+        if set(arms)!=set(CONDITIONS):
+            raise Invalid('incomplete independent original retrieval cohort')
+        question=arms['sufficient']['joint_input']['question']
+        m=re.fullmatch(
+            r'Can the supplied passage explicitly support the proposed answer "(.+?)" '
+            r'to the question "(.+?)"\?', question)
+        if m is None:
+            raise Invalid('unregistered original question framing')
+        by_partition[part][src]=(m.group(2), arms['sufficient']['joint_input']['state'],arms)
+    result={}
+    for part,items in by_partition.items():
+        n=len(items)
+        if n<2:
+            raise Invalid('insufficient independent BM25 corpus')
+        tokens={src:re.findall('[a-z0-9]+',context.lower()) for src,(_,context,_) in items.items()}
+        lengths={src:len(words) for src,words in tokens.items()}
+        if not all(lengths.values()):
+            raise Invalid('empty independent corpus document')
+        mean_length=sum(lengths.values())/n
+        # No source answer spans are consulted or used as search terms.
+        document_frequency=defaultdict(int)
+        for ws in tokens.values():
+            for token in set(ws): document_frequency[token]+=1
+        conditions=[]
+        for src,(question,_,arms) in items.items():
+            query=set(re.findall('[a-z0-9]+',question.lower()))
+            if not query:raise Invalid('independent question-only query empty')
+            ranked=[]
+            for donor,doc_tokens in tokens.items():
+                count={w:doc_tokens.count(w) for w in query}
+                score=0.
+                for token,count_value in count.items():
+                    if count_value:
+                        idf=math.log(1+(n-document_frequency[token]+.5)/(
+                            document_frequency[token]+.5))
+                        score += idf*count_value*2.2/(
+                            count_value+1.2*(.25+.75*lengths[donor]/mean_length))
+                ranked.append((-score,donor))
+            donor=min(ranked)[1]
+            predicted=arms['retrieved']
+            if (predicted['retrieved_source_id']!=donor or
+                    predicted['joint_input']['state']!=items[donor][1]):
+                raise Invalid('independent BM25 found unregistered donor or source text')
+            conditions.append(donor==src)
+        result[part]={'questions':len(items),'source_hits':sum(conditions),
+                      'source_hit_at_1':sum(conditions)/len(items),
+                      'other_document_is_unadjudicated':True}
+    if set(result)!=set(WANTED):
+        raise Invalid('independent scorer missing a research split')
+    return result
+
+
 def score_arm(unseen, labels, arm, *, family):
     body = arm['predictions']
     if type(body) is not list or len(body)!=len(unseen):
@@ -106,6 +173,13 @@ def score_arm(unseen, labels, arm, *, family):
     ms=[v['ms'] for v in scored.values()]
     return {'case_count':len(scored),'scored_label_count':supported_total,
             'retrieved_unreviewed_count':sum(1 for c in unseen if c['condition']=='retrieved' and labels[c['case_id']]['label'] is None),
+            'question_only_retrieval_original_source_hit_count':sum(
+                1 for c in unseen if c['condition']=='retrieved' and
+                c['retrieved_source_id']==c['source_id']),
+            'question_only_retrieval_original_source_hit_at_1':sum(
+                1 for c in unseen if c['condition']=='retrieved' and
+                c['retrieved_source_id']==c['source_id'])/WANTED['test'],
+            'nonowner_retrieval_accuracy_unavailable':True,
             'accuracy_on_annotated_and_mechanical_views':n_correct/supported_total,
             'brier_on_annotated_and_mechanical_views':brier/supported_total,
             'lexical_answer_presence_baseline_accuracy':cheap_correct/supported_total,
@@ -128,6 +202,7 @@ def score_arm(unseen, labels, arm, *, family):
 
 def review(fit, blind, label_doc, original_reports):
     _, unseen=validate_materials(fit,blind)
+    question_only_search = independent_question_only_retrieval(fit['cases']+blind['cases'])
     if (type(label_doc) is not dict or set(label_doc) != {'metadata','cases'} or
             label_doc['metadata'] != blind['metadata'] or type(label_doc['cases']) is not list or
             len(label_doc['cases']) != len(unseen)):
@@ -217,6 +292,8 @@ def review(fit, blind, label_doc, original_reports):
             'blind_material_sha256':expected_blind,
             'label_material_sha256':digest(canonical(label_doc)),
             'source_group_count':WANTED['test'],
+            'independently_recomputed_question_only_retrieval':question_only_search,
+            'retriever_and_source_selection_revised_v2':True,
             'results':reports,
             'source_data_are_not_prospective_chronological':True,
             'no_independent_semantic_verdict_for_mechanical_negative':True,
