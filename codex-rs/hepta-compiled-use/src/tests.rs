@@ -209,3 +209,50 @@
         assert_eq!(queue.len(), 0);
         assert!(matches!(queue.pop(), Err(ActionErrorV1::QueueEmpty)));
     }
+
+    #[test]
+    fn current_grant_rotation_or_narrowing_blocks_pop_without_consumption() {
+        let mut queue = SharedMemoryQueueV1::new(verifier(), 3).expect("queue");
+        queue.push_batch(&[click(1), click(2)]).expect("enqueue");
+        let original: Vec<_> = queue.frames.iter().copied().collect();
+
+        let mut rotated = verifier();
+        rotated.grant.digest = digest(b"new-current-grant");
+        assert!(matches!(
+            queue.pop_with_current_verifier(rotated),
+            Err(ActionErrorV1::CapabilityDenied)
+        ));
+
+        let mut narrowed = verifier();
+        narrowed.grant.allowed = CapabilityV1::ReadAccessibilityTree as u16;
+        assert!(matches!(
+            queue.pop_with_current_verifier(narrowed),
+            Err(ActionErrorV1::CapabilityDenied)
+        ));
+
+        let mut new_generation = verifier();
+        new_generation.generation += 1;
+        assert!(matches!(
+            queue.pop_with_current_verifier(new_generation),
+            Err(ActionErrorV1::GenerationMismatch)
+        ));
+        assert_eq!(queue.frames.iter().copied().collect::<Vec<_>>(), original);
+        assert_eq!(queue.len(), 2);
+        assert_eq!(queue.pop_with_current_verifier(verifier()).expect("current").frame(), &click(1));
+        assert_eq!(queue.pop_with_current_verifier(verifier()).expect("current").frame(), &click(2));
+    }
+
+    #[test]
+    fn malformed_latest_grant_is_rejected_without_skipping_queue_head() {
+        let mut queue = SharedMemoryQueueV1::new(verifier(), 2).expect("queue");
+        queue.push(click(1)).expect("push");
+        let original = *queue.frames.front().expect("front");
+        let mut invalid = verifier();
+        invalid.grant.allowed = u16::MAX;
+        assert!(matches!(
+            queue.pop_with_current_verifier(invalid),
+            Err(ActionErrorV1::InvalidCapabilityGrant)
+        ));
+        assert_eq!(*queue.frames.front().expect("front"), original);
+        assert_eq!(queue.len(), 1);
+    }
