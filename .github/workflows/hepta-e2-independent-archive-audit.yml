@@ -1,0 +1,35 @@
+name: Hepta E2 four-artifact independent archive source tests (DENY_ALL)
+on:
+  push:
+    branches:
+      - research/e2-four-archive-independent-audit-20261015
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  strict-archive-audit-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.11'
+      - name: Run independent archive ZIP integrity and negative gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          export PYTHONPATH=experiments/shared_stem_cell
+          python3 -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_crossmodal_archive_audit.py' -v
+          python3 -O -m unittest discover -s experiments/shared_stem_cell -p 'test_e2_crossmodal_archive_audit.py' -v
+          python3 -m py_compile experiments/shared_stem_cell/e2_crossmodal_archive_audit.py
+          python3 - <<'PY'
+          import sys
+          sys.path.insert(0,'experiments/shared_stem_cell')
+          from e2_crossmodal_archive_audit import ARMS, PREFIX
+          assert ARMS == ('fitted','rotated_target_control','unaligned_identity')
+          assert PREFIX == 'hepta.e2.crossmodal-synthetic-physical.v1'
+          PY
