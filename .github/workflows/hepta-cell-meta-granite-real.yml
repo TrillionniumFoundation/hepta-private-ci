@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'qualification/cell_meta_execution_af/physical_router_real_*.py'
+      - 'qualification/cell_meta_execution_af/physical_router_top1*.py'
+      - 'qualification/cell_meta_execution_af/TOP1_SPARSE_ROUTER_REALITY.md'
       - 'qualification/cell_meta_execution_af/PHYSICAL_ROUTER_GRANITE_HANDOFF.md'
       - '.github/workflows/hepta-cell-meta-granite-real.yml'
   workflow_dispatch:
@@ -57,13 +59,19 @@ jobs:
           python -m py_compile \
             qualification/cell_meta_execution_af/physical_router_real_bridge.py \
             qualification/cell_meta_execution_af/physical_router_real_review.py \
-            qualification/cell_meta_execution_af/physical_router_real_tests.py
+            qualification/cell_meta_execution_af/physical_router_real_tests.py \
+            qualification/cell_meta_execution_af/physical_router_top1.py \
+            qualification/cell_meta_execution_af/physical_router_top1_review.py \
+            qualification/cell_meta_execution_af/physical_router_top1_tests.py
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_real_tests.py'
           python -m unittest discover -v \
             -s qualification/cell_meta_execution_af \
             -p 'physical_router_trial_tests.py'
+          python -m unittest discover -v \
+            -s qualification/cell_meta_execution_af \
+            -p 'physical_router_top1_tests.py'
           git diff --check
           test -z "$(git status --porcelain --untracked-files=no)"
 
@@ -205,6 +213,14 @@ jobs:
             python qualification/cell_meta_execution_af/physical_router_audit.py \
               --panel "$ROOT/$seed-trial-panel.json" \
               --report "$ROOT/$seed-trial-report.json" > "$ROOT/$seed-numeric-review.json"
+            python qualification/cell_meta_execution_af/physical_router_top1.py \
+              --panel "$ROOT/$seed-trial-panel.json" \
+              --soft-report "$ROOT/$seed-trial-report.json" \
+              --out "$ROOT/$seed-top1-report.json"
+            python qualification/cell_meta_execution_af/physical_router_top1_review.py \
+              --panel "$ROOT/$seed-trial-panel.json" \
+              --soft-report "$ROOT/$seed-trial-report.json" \
+              --top1-report "$ROOT/$seed-top1-report.json" > "$ROOT/$seed-top1-review.json"
           done
           python - <<'PY'
           import json,os
@@ -248,5 +264,7 @@ jobs:
             ${{ runner.temp }}/hepta-meta-real/*-bridge-receipt.json
             ${{ runner.temp }}/hepta-meta-real/*-feature-review.json
             ${{ runner.temp }}/hepta-meta-real/*-numeric-review.json
+            ${{ runner.temp }}/hepta-meta-real/*-top1-report.json
+            ${{ runner.temp }}/hepta-meta-real/*-top1-review.json
             ${{ runner.temp }}/hepta-meta-real/descriptive-retrospective-summary.json
             ${{ runner.temp }}/granite-model-environment.txt
