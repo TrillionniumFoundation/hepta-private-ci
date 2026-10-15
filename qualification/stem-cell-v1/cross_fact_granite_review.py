@@ -120,7 +120,8 @@ def review(root):
                 and joint['arms'] == list(ARMS)
                 and joint['original_models_unchanged'] is True
                 and joint['nested_arm_costs_additive'] is False
-                and joint['production_authorized'] is False,
+                and joint['production_authorized'] is False
+                and joint['shared_input_batch_materializations'] == joint['completed_steps'],
                 'invalid matched joint-training lifecycle source')
         actual_joint_gates = []
         for arm in ARMS:
