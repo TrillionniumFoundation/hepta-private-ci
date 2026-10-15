@@ -1,0 +1,139 @@
+name: Hepta AMCN original BF16 physical numeric forward (SHADOW / DENY_ALL)
+
+on:
+  push:
+    branches: ["research/amcn-causal-three-axis-20261015"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_numeric_probe.py"
+      - "qualification/amcn-v1/test_amcn_original_numeric_probe.py"
+      - "qualification/amcn-v1/ORIGINAL_NUMERIC_PRETRAINED_PROBE.md"
+      - ".github/workflows/hepta-amcn-original-numeric-probe.yml"
+  pull_request:
+    branches: ["research/amcn-typed-budget-20261014"]
+    paths:
+      - "qualification/amcn-v1/amcn_original_numeric_probe.py"
+      - "qualification/amcn-v1/test_amcn_original_numeric_probe.py"
+      - "qualification/amcn-v1/ORIGINAL_NUMERIC_PRETRAINED_PROBE.md"
+      - ".github/workflows/hepta-amcn-original-numeric-probe.yml"
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: amcn-numeric-original-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  actual-pretrained-numeric-forward:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      HF_HUB_OFFLINE: '1'
+      TRANSFORMERS_OFFLINE: '1'
+      OMP_NUM_THREADS: '2'
+      MKL_NUM_THREADS: '2'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install deterministic CPU tensor runtime without pretrained downloads
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-numeric-original /tmp/amcn-numeric-original-model
+          python3 -m venv /tmp/amcn-numeric-py
+          P=/tmp/amcn-numeric-py/bin
+          "$P/pip" install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
+          "$P/pip" install numpy==1.26.4 safetensors==0.7.0
+          "$P/pip" check
+          "$P/pip" freeze > /tmp/amcn-numeric-original/environment.txt
+      - name: Download original source ZIP only, pinned SHA, no substitute
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11586991191/zip > /tmp/amcn-original-pretrained.zip
+          printf '%s  %s\n' '07b357cbb3362f4afa4dc1872ab7e28e8a46daaf338f2636fed8d40fbcee76af' /tmp/amcn-original-pretrained.zip | sha256sum --check -
+          stat -c '%s' /tmp/amcn-original-pretrained.zip > /tmp/amcn-numeric-original/original-archive-size.txt
+      - name: Extract ONLY enumerated original BF16 model/config bytes
+        run: |
+          set -euo pipefail
+          /tmp/amcn-numeric-py/bin/python - <<'PY'
+          from pathlib import Path
+          import zipfile, tarfile, shutil, hashlib
+          source=Path('/tmp/amcn-original-pretrained.zip')
+          base=Path('/tmp/amcn-numeric-original-model')
+          limits={
+            'memory-inputs/reader/model.safetensors':269060552,
+            'memory-inputs/reader/config.json':861,
+            'memory-inputs/encoder/model.safetensors':90868376,
+            'memory-inputs/encoder/config.json':612,
+          }
+          seen=set()
+          with zipfile.ZipFile(source) as outer:
+              assert outer.namelist()==['memory-inputs.tar.gz']
+              with outer.open('memory-inputs.tar.gz') as raw:
+                  with tarfile.open(fileobj=raw,mode='r|gz') as t:
+                      for m in t:
+                          if m.name not in limits: continue
+                          assert m.name not in seen and m.isfile() and m.size==limits[m.name]
+                          seen.add(m.name)
+                          dest=base/m.name.removeprefix('memory-inputs/')
+                          dest.parent.mkdir(parents=True,exist_ok=True)
+                          with dest.open('xb') as out:shutil.copyfileobj(t.extractfile(m),out)
+          assert seen==set(limits), 'required original model/config bytes missing'
+          PY
+      - name: Execute physically loaded original pretrained Encoder and Reader twice
+        run: |
+          set -euo pipefail
+          P=/tmp/amcn-numeric-py/bin/python
+          "$P" -m compileall -q qualification/amcn-v1/amcn_original_numeric_probe.py qualification/amcn-v1/test_amcn_original_numeric_probe.py
+          AMCN_ORIGINAL_PRETRAINED_ROOT=/tmp/amcn-numeric-original-model PYTHONPATH=qualification/amcn-v1 "$P" -m unittest discover \
+            -s qualification/amcn-v1 -p test_amcn_original_numeric_probe.py -v \
+            2>&1 | tee /tmp/amcn-numeric-original/real-weight-two-process-tests.txt
+          "$P" qualification/amcn-v1/amcn_original_numeric_probe.py \
+            --archive-root /tmp/amcn-numeric-original-model \
+            --output /tmp/amcn-numeric-original/original-numeric-receipt.json \
+            > /tmp/amcn-numeric-original/original-numeric-stdout.json
+          "$P" - <<'PY'
+          import json
+          from pathlib import Path
+          receipt=json.loads(Path('/tmp/amcn-numeric-original/original-numeric-receipt.json').read_text())
+          assert receipt['real_model_numeric_forward'] is True
+          assert receipt['reader_natural_language_task_answers']==0
+          assert receipt['reader_hf_model_parity_verified'] is False
+          assert receipt['text_tokenizer_parity_verified'] is False
+          assert receipt['production_accepted'] is False
+          assert receipt['strong_rag_compared'] is False
+          assert receipt['independent_future_windows']==0
+          PY
+      - name: Retain exact original source/host/environment and deny any promotion
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/amcn-numeric-original/source
+          git rev-parse HEAD > /tmp/amcn-numeric-original/source/head.txt
+          git rev-parse HEAD^{tree} > /tmp/amcn-numeric-original/source/tree.txt
+          cp qualification/amcn-v1/amcn_original_numeric_probe.py \
+             qualification/amcn-v1/test_amcn_original_numeric_probe.py \
+             qualification/amcn-v1/ORIGINAL_NUMERIC_PRETRAINED_PROBE.md \
+             .github/workflows/hepta-amcn-original-numeric-probe.yml \
+             /tmp/amcn-numeric-original/source/
+          printf '%s\n' 'actual_original_pretrained_tensor_forward=true' \
+            'pretrained_reader_text_generation_executions=0' \
+            'original_HF_tokenizer_model_parity=false' \
+            'matched_strong_rag_task_benefit=false' \
+            'independent_source_issuer=false' \
+            'real_calendar_future_windows=0' \
+            'production_accepted=false' \
+            > /tmp/amcn-numeric-original/negative-capability.txt
+          (cd /tmp/amcn-numeric-original && find . -type f ! -name SHA256SUMS \
+            -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: amcn-original-pretrained-numeric-physical-not-reader-efficacy
+          path: /tmp/amcn-numeric-original
+          if-no-files-found: error
