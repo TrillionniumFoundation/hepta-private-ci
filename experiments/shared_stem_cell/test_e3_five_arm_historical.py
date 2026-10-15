@@ -111,6 +111,25 @@ class FiveArmContract(unittest.TestCase):
         q=panel();q[1]["model"]["revision"]="d"*40
         with self.assertRaises(m.FiveArmError):compose(q)
 
+    def test_original_real_native_model_identity_matches_registered_gemma(self):
+        # Regression for a previously missing model argument to physical().
+        q=panel()
+        witness=compose(q)
+        self.assertEqual(witness["authority"],"DENY_ALL")
+        self.assertEqual(len(witness["cases"]),64)
+
+    def test_native_wrong_model_revision_denied(self):
+        q=panel()
+        q[2]["model"]["revision"]="0"*40
+        with self.assertRaises(m.FiveArmError):
+            compose(q)
+
+    def test_native_wrong_model_owner_denied(self):
+        q=panel()
+        q[2]["model"]["repo"]="not-original-google-model"
+        with self.assertRaises(m.FiveArmError):
+            compose(q)
+
     def test_native_image_bypass(self):
         q=panel();q[2]["native_joint_text_image"]=False
         with self.assertRaises(m.FiveArmError):compose(q)
