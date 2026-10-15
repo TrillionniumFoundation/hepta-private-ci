@@ -16,6 +16,13 @@ from group_campaign_review import _parse
 
 ARMS = ("static", "wide", "core", "attention")
 COHORTS = ("test", "long", "deleted", "composition")
+REQUIRED_SOURCES = (
+    "group_core.py", "group_training.py", "group_attention_curriculum.py",
+    "group_step_supervision.py", "group_attention_campaign.py",
+    "group_attention_campaign_review.py", "group_campaign_review.py",
+    "group_tasks.py", "group_encoder.py", "group_features.py",
+    "hf_encoder_kernel.py", "execution_meter.py", "aten_work.py",
+)
 
 
 def _digest(value):
@@ -48,6 +55,14 @@ def review(root):
             or report["natural_future_win_established"]
             or report["equal_actual_training_work"]):
         raise ValueError("unregistered protocol, authority or unsupported efficacy assertion")
+    hashes = protocol.get("source_sha256")
+    if type(hashes) is not dict or set(hashes) != set(REQUIRED_SOURCES):
+        raise ValueError("complete exact-source inventory required")
+    for filename in REQUIRED_SOURCES:
+        expected_sha = hashlib.sha256(
+            (Path(__file__).parent / filename).read_bytes()).hexdigest()
+        if hashes[filename] != expected_sha:
+            raise ValueError("campaign or independent reviewer source SHA differs")
     public, seen_groups, replay_labels = protocol["public_cases"], {}, {}
     if set(public) != {"train", *COHORTS}:
         raise ValueError("complete training and heldout cohorts required")
