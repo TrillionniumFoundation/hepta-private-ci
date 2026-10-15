@@ -78,6 +78,16 @@ pub struct NduPublicationLocalFrontierV1 {
     pub original_cns_receipt_binding: Option<Digest32>,
 }
 
+/// The original Control WAL, lock marker and pinned private parent must
+/// belong to the CURRENT effective Unix principal. Merely matching file
+/// descriptor and pathname UIDs is not enough for privileged readers.
+/// This local ownership fence is not external anti-rollback or signing proof.
+#[cfg(unix)]
+fn control_original_owner_uid_matches_euid(opened_uid: u32, named_uid: u32) -> bool {
+    let euid = rustix::process::geteuid().as_raw();
+    opened_uid == euid && named_uid == euid
+}
+
 /// A persistent writer-lock inode is independent of the append-only journal
 /// inode. Losing either path must never silently bootstrap a new Control
 /// frontier, even when the old writer held a lock on an unlinked WAL inode.
@@ -98,6 +108,7 @@ fn control_owner_file_identity(
         || !named.file_type().is_file()
         || opened.dev() != named.dev()
         || opened.ino() != named.ino()
+        || !control_original_owner_uid_matches_euid(opened.uid(), named.uid())
         || opened.nlink() != 1
         || named.nlink() != 1
         || opened.permissions().mode() & 0o077 != 0
@@ -134,7 +145,7 @@ fn control_parent_dir_identity(
         || named.file_type().is_symlink()
         || opened.dev() != named.dev()
         || opened.ino() != named.ino()
-        || opened.uid() != named.uid()
+        || !control_original_owner_uid_matches_euid(opened.uid(), named.uid())
         || opened.permissions().mode() & 0o077 != 0
         || named.permissions().mode() & 0o077 != 0
     {

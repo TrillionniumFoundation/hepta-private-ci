@@ -841,6 +841,39 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             "original Unix symlink-ancestor regression must remain present",
         )
 
+    def test_original_control_wal_custody_requires_effective_unix_uid(self) -> None:
+        # Private 0700/0600 modes and matching file/path owners alone do not
+        # prevent a privileged process adopting another principal's frontier.
+        code = self.lexical_code("codex-rs/hepta-control-plane/src/ndu_publication.rs")
+        self.assertIn(
+            "rustix::process::geteuid().as_raw()",
+            code,
+            "original Control must compare the actual process EUID",
+        )
+        self.assertEqual(
+            code.count(
+                "!control_original_owner_uid_matches_euid(opened.uid(), named.uid())"
+            ),
+            2,
+            "WAL/marker and pinned parent both need the effective-principal fence",
+        )
+        manifest = (
+            ROOT / "codex-rs/hepta-control-plane/Cargo.toml"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            'rustix = { workspace = true, features = ["fs", "process"] }',
+            manifest,
+            "Unix UID read must be safe and enabled in the locked workspace",
+        )
+        native = (
+            ROOT / "codex-rs/hepta-control-plane/src/ndu_publication_tests.rs"
+        ).read_text(encoding="utf-8")
+        self.assertIn(
+            "fn original_control_wal_requires_effective_uid_for_private_owner_and_reopen()",
+            native,
+            "must exercise real fsynced original WAL recovery and foreign UID cases",
+        )
+
     def test_original_control_marker_read_is_pinned_and_postchecked(self) -> None:
         # A path-based marker read after inode preflight can accept data
         # from a different file. This Audit protects the original locked FD
