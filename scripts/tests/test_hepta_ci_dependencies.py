@@ -394,9 +394,6 @@ class DocumentInputTests(unittest.TestCase):
         self.assertTrue(json.loads(result.stdout)["scope"]["native"])
 
 
-if __name__ == "__main__":
-    unittest.main()
-
 
 class ImpactShardTests(unittest.TestCase):
     def test_complete_impact_inventory_is_covered_once(self):
@@ -463,3 +460,7 @@ class ImpactShardTests(unittest.TestCase):
         self.assertIn('CARGO_PROFILE_TEST_DEBUG: "0"', yaml)
         self.assertIn('CARGO_INCREMENTAL: "0"', yaml)
         self.assertIn('CARGO_BUILD_JOBS: "2"', yaml)
+
+if __name__ == "__main__":
+    unittest.main()
+
