@@ -74,7 +74,7 @@ impl CellSplitEvidenceCustodyPortV1 for Fixture {
             authority_epoch: 3,
             sequence: 7,
             committed_rows: 11,
-            head_digest: Digest32::of_bytes(b"original fsynced chain head"),
+            head_digest: Digest32::of_bytes(b"original fsynced chain head").to_string(),
             wal_bytes: 1024,
             challenge_nonce: challenge_nonce.to_owned(),
             signature_bytes: Vec::new(),
@@ -82,7 +82,9 @@ impl CellSplitEvidenceCustodyPortV1 for Fixture {
         match self.reply {
             Reply::StaleSequence => proof.sequence -= 1,
             Reply::AlteredRows => proof.committed_rows += 1,
-            Reply::ChangedHead => proof.head_digest = Digest32::of_bytes(b"other WAL head"),
+            Reply::ChangedHead => {
+                proof.head_digest = Digest32::of_bytes(b"other WAL head").to_string();
+            }
             Reply::ChangedBytes => proof.wal_bytes += 1,
             Reply::WrongNonce => proof.challenge_nonce = "dd".repeat(32),
             Reply::WrongDomain => proof.journal_domain_id = "other.evidence".into(),

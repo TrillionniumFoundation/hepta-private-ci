@@ -18,8 +18,7 @@ use thiserror::Error;
 pub const CELL_SPLIT_EVIDENCE_CUSTODY_SCHEMA_V1: &str =
     "hepta.learning.cell-split.evidence-wal-custody.v1";
 
-#[derive(Clone, Debug, Eq, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase", deny_unknown_fields)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CellSplitEvidenceLocalFrontierV1 {
     pub journal_domain_id: String,
     pub sequence: u64,
@@ -36,7 +35,8 @@ pub struct CellSplitEvidenceSignedCustodyV1 {
     pub authority_epoch: u64,
     pub sequence: u64,
     pub committed_rows: u64,
-    pub head_digest: Digest32,
+    /// Canonical lowercase hex of the original Digest32; wire is serde-safe.
+    pub head_digest: String,
     pub wal_bytes: u64,
     pub challenge_nonce: String,
     pub signature_bytes: Vec<u8>,
@@ -92,6 +92,14 @@ pub fn cell_split_evidence_custody_signing_payload_v1(
     Ok(bytes)
 }
 
+fn canonical_head_digest(value: &str) -> bool {
+    value.len() == 64
+        && value
+            .bytes()
+            .all(|b| b.is_ascii_hexdigit() && !b.is_ascii_uppercase())
+        && value.bytes().any(|b| b != b'0')
+}
+
 fn valid_domain(domain: &str) -> bool {
     !domain.is_empty()
         && domain.len() <= 256
@@ -135,7 +143,8 @@ pub fn verify_cell_split_evidence_custody_v1<P: CellSplitEvidenceCustodyPortV1>(
         || proof.signature_bytes.len() != 64
         || proof.sequence != local.sequence
         || proof.committed_rows != local.committed_rows
-        || proof.head_digest != local.head_digest
+        || !canonical_head_digest(&proof.head_digest)
+        || proof.head_digest != local.head_digest.to_string()
         || proof.wal_bytes != local.wal_bytes
     {
         return Err(CellSplitEvidenceCustodyErrorV1::Invalid);
