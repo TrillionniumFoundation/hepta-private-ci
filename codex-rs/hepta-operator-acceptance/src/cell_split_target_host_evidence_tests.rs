@@ -1577,7 +1577,9 @@ fn deep_observer_rejects_signed_nonterminal_supervisor_checkpoint() {
     // the test must deny the nonterminal phase itself, not digest drift.
     assert_eq!(
         preserved_digest,
-        mutated.content_digest_v1().expect("unchanged canonical original checkpoint digest"),
+        mutated
+            .content_digest_v1()
+            .expect("unchanged canonical original checkpoint digest"),
         "the nonterminal rejection must be independent of digest corruption"
     );
     journal.original_checkpoint_bytes = serde_json::to_vec(&mutated).expect("nonterminal journal");
