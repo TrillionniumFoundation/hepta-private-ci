@@ -226,9 +226,21 @@ def admit(plan, originals, scored, *, plan_pin, original_pin):
         for reader in READERS:
             digest_set = {case[(arm, "hybrid", reader)]["prompt_digest"] for arm in ARMS}
             ensure(len(digest_set) == 1, "reader prompt changed across memory arms")
-    mismatched_knowledge = [id_ for id_, c in matrix.items()
-                            if c[("knowledge", "hybrid", "frozen")]["source_digest"]
-                            != c[("event_graph", "hybrid", "frozen")]["source_digest"]]
+    # Parameter-memory credit requires the same delivered evidence in all
+    # four conditions on both Reader tiers, not only frozen Reader / hybrid.
+    mismatched_knowledge = [
+        id_ for id_, case in matrix.items()
+        if any(
+            (
+                case[("knowledge", condition, reader)]["source_digest"],
+                case[("knowledge", condition, reader)]["raw_source_bytes"],
+            ) != (
+                case[("event_graph", condition, reader)]["source_digest"],
+                case[("event_graph", condition, reader)]["raw_source_bytes"],
+            )
+            for reader in READERS for condition in CONDITIONS
+        )
+    ]
     reader_cases = {}
     for id_, case in matrix.items():
         frozen = case[("hybrid_rag", "oracle", "frozen")]["success"]

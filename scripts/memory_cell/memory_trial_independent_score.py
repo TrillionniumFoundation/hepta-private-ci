@@ -52,6 +52,42 @@ def _answer(text):
     return match.group(1) if match else None
 
 
+def preflight_originals(plan, originals):
+    """Check raw source/model/tool provenance before opening protected gold.
+
+    A provisional all-false score matrix reuses the complete original-bound
+    factorial audit. These provisional scores are NEVER research outcomes.
+    """
+    ensure(isinstance(originals, list), "original journal array required")
+    shadow = []
+    cases = {case["id"]: case for case in plan["cases"]}
+    for original in originals:
+        ensure(isinstance(original, dict)
+               and not FORBIDDEN_ORIGINAL.intersection(original),
+               "original journal leaked scoring outcome or target")
+        ensure(isinstance(original.get("answer"), str), "missing original answer")
+        ensure(isinstance(original.get("cost"), dict), "original cost receipt required")
+        row = {field: original[field] for field in COPY_FIELDS}
+        row.update(
+            plan_sha256=sha(plan),
+            answer_digest=hashlib.sha256(original["answer"].encode()).hexdigest(),
+            verified=True,
+            success=False,
+            cost=dict(original["cost"]),
+            diagnostic_count=original["diagnostic_count"],
+            recovery_success=original["recovery_success"],
+        )
+        if cases[original["id"]]["task"] == "program":
+            row.update({field: original[field] for field in PROGRAM_FIELDS})
+        shadow.append(row)
+    receipt = admit(
+        plan, originals, shadow, plan_pin=sha(plan), original_pin=sha(originals)
+    )
+    ensure(receipt["original_attempts"] == len(originals),
+           "incomplete original prelabel verification")
+    return receipt
+
+
 def score(plan, originals, labels):
     """Return complete recomputed scored matrix plus an unpromoted audit.
 
@@ -89,6 +125,8 @@ def score(plan, originals, labels):
         ensure(type(row.get("diagnostic_count")) is int and row["diagnostic_count"] >= 0
                and type(row.get("recovery_success")) is bool, "execution counters absent")
     ensure(seen == expected, "incomplete original generation census")
+    # Validate every original receipt before accessing scorer-only target keys.
+    preflight_originals(plan, originals)
     # Labels are a separate protected input; the plan contains their pre-exposure
     # SHA digests, not the literal answers. Any mismatch rejects the whole run.
     targets, nonces = {}, set()
@@ -167,6 +205,8 @@ def main():
     plan = bound_read(args.plan, args.plan_sha256)
     originals = bound_read(args.original, args.original_sha256)
     ensure(sha(plan) and sha(originals), "canonical original journal required")
+    # The CLI must not OPEN the protected file before completing raw preflight.
+    preflight_originals(plan, originals)
     labels = bound_read(args.labels, args.labels_sha256)
     rows, audit = score(plan, originals, labels)
     audit["external_byte_pins"] = dict(plan=args.plan_sha256,

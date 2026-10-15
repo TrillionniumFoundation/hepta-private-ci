@@ -33,6 +33,11 @@ def prepare():
     return plan, raw, labels
 
 
+class UnopenedLabels(list):
+    def __iter__(self):
+        raise AssertionError("private labels accessed before raw verification")
+
+
 class ExactScoringTests(unittest.TestCase):
     def test_full_matrix_derived_not_user_supplied(self):
         plan, raw, labels = prepare()
@@ -42,6 +47,24 @@ class ExactScoringTests(unittest.TestCase):
         self.assertEqual(sum(x["success"] for x in result), 4)
         self.assertFalse(audit["human_semantic_review_performed"])
         self.assertFalse(audit["production_qualified"])
+
+    def test_reader_drift_rejected_before_private_gold(self):
+        plan, raw, _ = prepare()
+        raw[0]["reader_revision"] = "swapped-model"
+        with self.assertRaisesRegex(ValueError, "reader model revision drift"):
+            score(plan, raw, UnopenedLabels())
+
+    def test_private_gold_stays_closed_on_source_leak(self):
+        plan, raw, _ = prepare()
+        next(row for row in raw if row["arm"] == "knowledge_only")["raw_source_bytes"] = 1
+        with self.assertRaisesRegex(ValueError, "leaked raw source"):
+            score(plan, raw, UnopenedLabels())
+
+    def test_private_gold_stays_closed_on_duplicate_model_call(self):
+        plan, raw, _ = prepare()
+        raw[1]["model_call_id"] = raw[0]["model_call_id"]
+        with self.assertRaisesRegex(ValueError, "duplicate original model call"):
+            score(plan, raw, UnopenedLabels())
 
     def test_prohibit_golden_answers_in_generation(self):
         plan, raw, labels = prepare()

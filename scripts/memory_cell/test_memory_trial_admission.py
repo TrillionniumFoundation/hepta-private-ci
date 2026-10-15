@@ -37,8 +37,8 @@ def fixture():
                     if condition == "none" or arm == "knowledge_only":
                         source = hashlib.sha256(b"").hexdigest()
                         size = 0
-                    elif arm in ("event_graph", "knowledge") and condition == "hybrid":
-                        source = digest(f"organized-{case['id']}")
+                    elif arm in ("event_graph", "knowledge"):
+                        source = digest(f"organized-{condition}-{case['id']}")
                         size = 51
                     else:
                         source = digest(f"{condition}-{arm}-{case['id']}")
@@ -172,6 +172,26 @@ class AdmissionTest(unittest.TestCase):
         self.assertIsNone(arm["total_cost"]["maintenance"])
         self.assertIn("maintenance", arm["unmeasured_cost_categories"])
         self.assertIsNone(report["amortized_tco"])
+
+    def test_nonhybrid_parameter_evidence_confound(self):
+        plan, raw, scored = fixture()
+        for original, row in zip(raw, scored, strict=True):
+            if (row["id"] == "case-0" and row["arm"] == "knowledge"
+                    and row["condition"] == "oracle"):
+                original["source_digest"] = row["source_digest"] = digest("wrong-oracle")
+        report = self.verify(plan, raw, scored)
+        self.assertEqual(report["knowledge_evidence_mismatch_case_ids"], ["case-0"])
+        self.assertEqual(report["stage_gates"]["parametric_knowledge"], "evidence_confounded")
+
+    def test_equal_source_digest_but_unequal_bytes_confounded(self):
+        plan, raw, scored = fixture()
+        for original, row in zip(raw, scored, strict=True):
+            if (row["id"] == "case-0" and row["arm"] == "knowledge"
+                    and row["condition"] == "hybrid"):
+                original["raw_source_bytes"] = row["raw_source_bytes"] = 52
+        report = self.verify(plan, raw, scored)
+        self.assertFalse(report["knowledge_same_evidence_comparable"])
+        self.assertEqual(report["knowledge_evidence_mismatch_case_ids"], ["case-0"])
 
     def test_mismatched_knowledge_evidence_is_not_attributed(self):
         plan, raw, scored = fixture()
