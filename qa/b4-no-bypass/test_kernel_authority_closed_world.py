@@ -248,6 +248,9 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 "advance_selected_cell_split_v1",
                 "advance_scope_bound_selected_cell_split_v1",
                 "advance_scope_bound_selected_cell_split_with_metrics_v1",
+                # Existing read-only Evidence candidate projection, NOT
+                # a mutation, signer, Final-use grant or physical split.
+                "read_original_cell_split_metric_candidate_v1",
             },
             "Agentd Cell Split public ingress widened without security review",
         )
@@ -352,6 +355,37 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             production,
             "original CNS bytes must be bound to the durable Control C record",
         )
+
+    def test_cell_split_metric_reader_only_reads_original_evidence(self) -> None:
+        path = "codex-rs/hepta-agentd/src/cell_split_execution.rs"
+        raw = (ROOT / path).read_text(encoding="utf-8")
+        code = self.lexical_code(path)
+        symbol = "read_original_cell_split_metric_candidate_v1"
+        self.assertEqual(
+            len(re.findall(r"\bpub\s+fn\s+" + symbol + r"\s*\(", code)),
+            1,
+            "Evidence reader must remain one separately reviewed public entry",
+        )
+        declaration = re.search(
+            r"\bpub\s+fn\s+" + symbol + r"\s*\(\s*"
+            r"original_evidence\s*:\s*&\s*DurablePhaseMetricSinkV1",
+            code,
+        )
+        self.assertIsNotNone(declaration)
+        assert declaration is not None
+        opening = code.find("{", declaration.end())
+        closing = CALLER_PROOF._matching_delimiter(code, opening, "{", "}")
+        self.assertIsNotNone(closing)
+        assert closing is not None
+        body = code[opening + 1 : closing]
+        self.assertRegex(body, r"original_evidence\s*\.\s*read_committed_sample\s*\(")
+        self.assertNotRegex(
+            body,
+            r"\b(?:advance|execute|apply_governed_topology|sign|"
+            r"flush|record|reconcile_pending_only|claim_batch)\s*\(",
+            "diagnostic-only candidate reader cannot acquire an effect path",
+        )
+        self.assertIn("CellSplitEvidenceMetricBindingV1", raw)
 
     def test_split_metrics_callback_cannot_authorize_production_advance(self) -> None:
         path = "codex-rs/hepta-operator-acceptance/src/cell_split_execution_cli.rs"
