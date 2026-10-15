@@ -25,6 +25,7 @@ use super::import_granite97_token_v5;
 
 const REVIEW_SCHEMA: &str = "hepta.stem.granite97-independent-physical-review.v1";
 const MAX_REVIEW_BYTES: usize = 65_536;
+const MAX_EXPORT_BYTES: usize = 2_500_000;
 
 #[derive(Clone)]
 pub struct GraniteReviewAdmissionV6 {
@@ -121,6 +122,9 @@ pub fn read_independently_reviewed_granite_v6(
         || admission.feature.material_digest.is_zero()
     {
         return Err(ReviewedGraniteErrorV6::MissingAdmission);
+    }
+    if exported_json.is_empty() || exported_json.len() > MAX_EXPORT_BYTES {
+        return Err(ReviewedGraniteErrorV6::InvalidExportDigest);
     }
     let export_sha = Digest32::of_bytes(exported_json);
     if export_sha != admission.admitted_export_digest {

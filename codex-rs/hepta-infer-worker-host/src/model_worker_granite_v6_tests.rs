@@ -208,6 +208,8 @@ fn exact_producer_export_digest_is_required_before_tensor_parsing() {
     f = fixture();
     f.export.push(b' ');
     assert_eq!(execute(&f), Err(ReviewedGraniteErrorV6::InvalidExportDigest));
+    f.export = vec![b' '; MAX_EXPORT_BYTES + 1];
+    assert_eq!(execute(&f), Err(ReviewedGraniteErrorV6::InvalidExportDigest));
 }
 
 #[test]
