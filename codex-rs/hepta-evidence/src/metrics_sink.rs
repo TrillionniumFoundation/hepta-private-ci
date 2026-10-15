@@ -3,9 +3,9 @@
 
 use super::metrics_group_commit::MetricPhaseV1;
 use super::metrics_group_commit::MetricSampleV1;
-use super::metrics_group_commit::MetricsLocalFrontierV1;
 use super::metrics_group_commit::MetricsGroupCommitV1;
 use super::metrics_group_commit::MetricsJournalErrorV1;
+use super::metrics_group_commit::MetricsLocalFrontierV1;
 use codex_hepta_types::PhaseMetricEventV1;
 use codex_hepta_types::PhaseMetricKindV1;
 use codex_hepta_types::PhaseMetricSinkErrorV1;
