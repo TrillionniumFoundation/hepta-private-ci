@@ -204,10 +204,13 @@ def review(root):
                 raise ValueError("direct control contains fabricated System2 work")
         else:
             if (row["execution_status"] == "direct_forward"
-                    or not 1 <= row["verifier_calls"] <= row["steps"]
+                    or row["verifier_calls"] != row["steps"]
                     or type(row["search_formula_work"]) is not int
-                    or row["search_formula_work"] < 0):
-                raise ValueError("missing actual System2 call/compute observation")
+                    or row["search_formula_work"] <= 0
+                    or mode == "fixed" and row["steps"] != 4
+                    or (row["execution_status"] == "verifier_accepted_not_independent_eval")
+                        != row["success"]):
+                raise ValueError("missing or inconsistent actual System2 verifier/compute evidence")
         if any(type(row[name]) is not int or row[name] <= 0
                for name in ("wall_ns", "cpu_ns")):
             raise ValueError("missing physical observation")
