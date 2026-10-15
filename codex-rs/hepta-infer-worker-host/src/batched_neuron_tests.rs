@@ -3468,3 +3468,137 @@ fn original_pending_group_signing_denies_expired_worker_grant_even_when_requests
     );
     assert_eq!(original.pending(), 2);
 }
+
+
+
+#[test]
+fn original_pending_group_admission_requires_terminally_acknowledged_wal_before_signing() {
+    let root = tempfile::tempdir().expect("original signed owner");
+    let signer = SigningKey::from_bytes(&[96; 32]);
+    let (manifest, first, key) = fixture_request();
+    let second = second_request(&first);
+    let id_one = StableId::new(first.authorization.request_id.clone()).unwrap();
+    let id_two = StableId::new(second.authorization.request_id.clone()).unwrap();
+    let signed_one = neuron_batch_final_use_binding_v1("worker-one", &key, &first)
+        .expect("first exact signed FinalUse Binding");
+    let signed_two = neuron_batch_final_use_binding_v1("worker-one", &key, &second)
+        .expect("second exact signed FinalUse Binding");
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let sink = Arc::new(CapturedMetrics::default());
+    let mut owner = runner_with_driver(&signer, root.path(), manifest, driver, 2)
+        .with_metric_sink(sink.clone());
+    owner.enqueue(
+        100, "model".into(), first, key.clone(),
+        signed_member(&signer, signed_one, "admission-one", 96),
+    ).expect("first original signed queue entry");
+    owner.enqueue(
+        100, "model".into(), second, key.clone(),
+        signed_member(&signer, signed_two, "admission-two", 97),
+    ).expect("second original signed queue entry");
+
+    let selected = [(id_one, key.clone()), (id_two, key)];
+    assert!(!owner.production_metrics_ready());
+    assert_eq!(
+        owner.prepare_pending_native_group_signature_v1(100, &selected),
+        Err(BatchWorkerErrorV1::MetricsUnavailable),
+        "asynchronous Admission record acceptance is NOT durable original WAL confirmation"
+    );
+    assert_eq!(owner.pending(), 2);
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+
+    assert!(owner.flush_production_metrics(), "fixture acknowledged barrier");
+    let group = owner.prepare_pending_native_group_signature_v1(100, &selected)
+        .expect("only a committed Admission may become a signable cohort proposal");
+    assert_eq!(group.member_bindings.len(), 2);
+    assert!(!group.authority.grants_any());
+    assert_eq!(owner.pending(), 2);
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+    assert_eq!(
+        sink.0.lock().unwrap().iter()
+            .filter(|metric| metric.phase == PhaseMetricKindV1::Admission)
+            .count(),
+        2
+    );
+
+    // A pure non-authorizing group proposal must NOT claim any nonce. The
+    // original test-only physical backend is still invoked just once when
+    // the existing independently signed member grants are consumed later.
+    let observed = owner.poll_and_execute(101).expect("signed native test batch");
+    assert_eq!(observed.outcomes.len(), 2);
+    assert!(observed.outcomes.iter().all(|item| item.result.is_ok()));
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    assert_eq!(owner.pending(), 0);
+}
+
+#[derive(Debug)]
+struct RejectAllAdmissionFsyncV1;
+
+impl PhaseMetricSinkV1 for RejectAllAdmissionFsyncV1 {
+    fn record(
+        &self,
+        _event: PhaseMetricEventV1,
+    ) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Ok(())
+    }
+
+    fn healthy(&self) -> bool {
+        true
+    }
+
+    fn flush(&self) -> Result<(), codex_hepta_types::PhaseMetricSinkErrorV1> {
+        Err(codex_hepta_types::PhaseMetricSinkErrorV1::Unavailable)
+    }
+}
+
+#[test]
+fn original_pending_group_rejects_failed_fsync_without_claiming_or_dispatching() {
+    let root = tempfile::tempdir().expect("protected original FinalUse owner");
+    let signer = SigningKey::from_bytes(&[97; 32]);
+    let (manifest, first, key) = fixture_request();
+    let second = second_request(&first);
+    let id_one = StableId::new(first.authorization.request_id.clone()).unwrap();
+    let id_two = StableId::new(second.authorization.request_id.clone()).unwrap();
+    let binding_one = neuron_batch_final_use_binding_v1("worker-one", &key, &first)
+        .expect("first durable identity");
+    let binding_two = neuron_batch_final_use_binding_v1("worker-one", &key, &second)
+        .expect("second durable identity");
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let driver = NativeTestDriver {
+        invocations: calls.clone(),
+        truncate_outputs: false,
+        reorder_outputs: false,
+    };
+    let mut owner = runner_with_driver(&signer, root.path(), manifest, driver, 2)
+        .with_metric_sink(Arc::new(RejectAllAdmissionFsyncV1));
+    owner.enqueue(
+        100, "model".into(), first, key.clone(),
+        signed_member(&signer, binding_one, "no-ack-one", 98),
+    ).expect("asynchronously accepted first Admission");
+    owner.enqueue(
+        100, "model".into(), second, key.clone(),
+        signed_member(&signer, binding_two, "no-ack-two", 99),
+    ).expect("asynchronously accepted second Admission");
+    let selected = [(id_one, key.clone()), (id_two, key)];
+    assert_eq!(
+        owner.prepare_pending_native_group_signature_v1(100, &selected),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    );
+    assert!(!owner.flush_production_metrics(), "fsync ACK failed");
+    assert_eq!(
+        owner.prepare_pending_native_group_signature_v1(101, &selected),
+        Err(BatchWorkerErrorV1::MetricsUnavailable),
+        "poisoned original admission writer can never be rehabilitated"
+    );
+    assert_eq!(owner.pending(), 2);
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+    assert!(matches!(
+        owner.poll_and_execute(102),
+        Err(BatchWorkerErrorV1::MetricsUnavailable)
+    ));
+    assert_eq!(calls.load(Ordering::SeqCst), 0);
+}
