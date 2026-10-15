@@ -1,0 +1,117 @@
+name: Hepta full SELECT post-hoc rank fusion
+on:
+  push:
+    branches: ["research/five-causal-experiments-20261013"]
+    paths:
+      - "scripts/memory_cell/full_select_rank_fusion.py"
+      - "scripts/memory_cell/full_select_rank_fusion_trial.py"
+      - "scripts/memory_cell/test_full_select_rank_fusion.py"
+      - ".github/workflows/hepta-full-select-rank-fusion-posthoc.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: full-select-rank-fusion-posthoc-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  audit-sealed-rank-fusion:
+    if: github.repository == 'TrillionniumFoundation/hepta-private-ci'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_OFFLINE: "1"
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_DISABLE_IMPLICIT_TOKEN: "1"
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Install fixed no-model audit worker
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/full-select-rank-fusion/checks
+          python3 -m venv /tmp/full-select-rank-fusion-env
+          /tmp/full-select-rank-fusion-env/bin/pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu > /tmp/full-select-rank-fusion/checks/install-torch.log 2>&1
+          /tmp/full-select-rank-fusion-env/bin/pip install -r scripts/memory_cell/requirements.txt packaging==25.0 cryptography==46.0.4 psutil==7.0.0 regex==2024.11.6 Jinja2==3.1.6 > /tmp/full-select-rank-fusion/checks/install-worker.log 2>&1
+          /tmp/full-select-rank-fusion-env/bin/pip check
+          /tmp/full-select-rank-fusion-env/bin/pip freeze > /tmp/full-select-rank-fusion/checks/environment.txt
+      - name: Require fusion and inherited retrieval regressions
+        run: |
+          set -euo pipefail
+          failed=0
+          for pattern in test_full_select_rank_fusion.py test_full_select_retrieval.py test_shared_gate_similarity.py; do
+            name=$(printf '%s' "$pattern" | tr '*' '_')
+            if /tmp/full-select-rank-fusion-env/bin/python -m unittest discover -s scripts/memory_cell -p "$pattern" -v 2>&1 | tee "/tmp/full-select-rank-fusion/checks/$name.log"; then
+              printf '%s\tpassed\n' "$pattern" >> /tmp/full-select-rank-fusion/checks/suites.tsv
+            else
+              failed=1
+              printf '%s\tfailed\n' "$pattern" >> /tmp/full-select-rank-fusion/checks/suites.tsv
+            fi
+          done
+          /tmp/full-select-rank-fusion-env/bin/python -m py_compile \
+            scripts/memory_cell/full_select_rank_fusion.py \
+            scripts/memory_cell/full_select_rank_fusion_trial.py \
+            scripts/memory_cell/test_full_select_rank_fusion.py
+          /tmp/full-select-rank-fusion-env/bin/python \
+            scripts/memory_cell/full_select_rank_fusion_trial.py --help \
+            > /tmp/full-select-rank-fusion/checks/real-cli-help.txt
+          test "$failed" -eq 0
+      - name: Acquire exact completed full-SELECT result
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/11885366683/zip \
+            > /tmp/full-select-retrieval.zip
+          printf '%s  %s\n' \
+            6534177c6974ee0e9fe0a331891ec5cb0b2443481198ece36cfcaf754003d436 \
+            /tmp/full-select-retrieval.zip | sha256sum -c -
+      - name: Replay sealed bases and execute fixed post-hoc fusions
+        run: |
+          set -euo pipefail
+          /usr/bin/time -v -o /tmp/full-select-rank-fusion/checks/process-resources.txt \
+            /tmp/full-select-rank-fusion-env/bin/python \
+            scripts/memory_cell/full_select_rank_fusion_trial.py \
+            --archive /tmp/full-select-retrieval.zip \
+            --work /tmp/full-select-rank-fusion-material \
+            --output /tmp/full-select-rank-fusion/study \
+            2>&1 | tee /tmp/full-select-rank-fusion/checks/execution.log
+      - name: Preserve exact source and outcome distinction
+        if: always()
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/full-select-rank-fusion/source/memory_cell
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          path=Path('/tmp/full-select-rank-fusion/study/report.json')
+          report=json.loads(path.read_bytes()) if path.is_file() else None
+          value={'analysis_completed':report is not None and report.get('errors')==[],
+                 'posthoc_after_select_observation':True,'new_model_loads':0,
+                 'new_optimizer_updates':0,'new_reader_calls':0,
+                 'semantic_accuracy':None,'production_accepted':False}
+          Path('/tmp/full-select-rank-fusion/execution-disposition.json').write_text(
+              json.dumps(value,sort_keys=True))
+          print('FULL_SELECT_RANK_FUSION_DISPOSITION',json.dumps(value,sort_keys=True))
+          PY
+          git rev-parse HEAD > /tmp/full-select-rank-fusion/source/tested-commit.txt
+          git rev-parse HEAD^{tree} > /tmp/full-select-rank-fusion/source/tested-tree.txt
+          cp scripts/memory_cell/*.py scripts/memory_cell/requirements.txt \
+            /tmp/full-select-rank-fusion/source/memory_cell/
+          cp experiments/shared_stem_cell/execution.py \
+            .github/workflows/hepta-full-select-rank-fusion-posthoc.yml \
+            /tmp/full-select-rank-fusion/source/
+          (cd /tmp/full-select-rank-fusion && \
+            find . -type f ! -name SHA256SUMS -print0 | sort -z | \
+            xargs -0 sha256sum > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: hepta-full-select-rank-fusion-posthoc
+          path: /tmp/full-select-rank-fusion
+          if-no-files-found: error
