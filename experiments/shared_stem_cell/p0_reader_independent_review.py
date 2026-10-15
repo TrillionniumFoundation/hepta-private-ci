@@ -118,6 +118,7 @@ def score_arm(unseen, labels, arm, *, family):
             'oracle_minus_removed_mean_probability_gap':statistics.mean(gaps),
             'oracle_minus_removed_bootstrap_95_descriptive':[
                 quantile(bs,.025),quantile(bs,.975)],
+            'sum_original_request_local_latency_ms':sum(ms),
             'request_local_inference_latency_ms':{'p50':quantile(ms,.5),
                                                    'p95':quantile(ms,.95),
                                                    'p99':quantile(ms,.99)},
@@ -190,6 +191,8 @@ def review(fit, blind, label_doc, original_reports):
                 raise Invalid('unequal or fake actual Head training control')
             checked_positive(t.get('head_train_ms'))
             checked_positive(rep.get('physical_model_load_and_encodings_ms'))
+            if load+t['head_train_ms'] > end+1e-4:
+                raise Invalid('model load plus actual training exceeds process wall')
             if rep.get('original_e1_loader_preflight_claimed') is not True:
                 raise Invalid('original physical Encoder loader preflight absent')
             if name=='mmbert_small' and rep.get('mmbert_whole_serialized_checkpoint_byte_checked') is not True:
@@ -198,6 +201,8 @@ def review(fit, blind, label_doc, original_reports):
         sub={}
         for ctrl_name,ctrl in controls.items():
             sub[ctrl_name]=score_arm(unseen,outcomes,ctrl,family=family)
+            if sub[ctrl_name]['sum_original_request_local_latency_ms'] > end+1e-4:
+                raise Invalid('claimed request work exceeds complete physical process wall')
         reports[name]={'model_sha256_or_revision':rep['model_revision'],
                        'controls':sub,
                        'reported_process_wall_ms':end,'reported_process_cpu_ms':cpu,

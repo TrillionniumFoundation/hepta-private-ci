@@ -282,6 +282,18 @@ class ReviewTest(unittest.TestCase):
         for report in r.values():report['blind_material_sha256']=source.digest(source.canonical(b))
         with self.assertRaises(source.Invalid):scorer.review(self.fit,b,labels,r)
 
+    def test_request_work_cannot_exceed_process_wall(self):
+        r=self.reports()
+        r['laya421_nochange']['end_to_end_wall_ms']=30.
+        with self.assertRaises(source.Invalid):
+            scorer.review(self.fit,self.blind,self.labels,r)
+
+    def test_loading_plus_actual_head_learning_must_fit_process_wall(self):
+        r=self.reports()
+        r['granite_97m_r2']['training']['head_train_ms']=400.
+        with self.assertRaises(source.Invalid):
+            scorer.review(self.fit,self.blind,self.labels,r)
+
     def test_missing_duration_denied(self):
         r=self.reports();r['laya421_nochange']['control']['laya_native_nochange']['predictions'][0]['full_request_ms']=0
         with self.assertRaises(source.Invalid):scorer.review(self.fit,self.blind,self.labels,r)
