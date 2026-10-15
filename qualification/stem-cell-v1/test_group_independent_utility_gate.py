@@ -39,6 +39,14 @@ class IndependentUtilityGateTests(unittest.TestCase):
         self.assertIn("deleted", result["arms"]["ndu"]["cohort_mean_deltas"])
         self.assertFalse(result["source_group_independence_verified"])
 
+    def test_favorable_math_never_becomes_unverified_selection_authority(self):
+        result = review(observations(groups=400, improvement=True))
+        self.assertEqual(result["arms"]["ndu"]["decision"],
+                         "diagnostic_lower_bound_pass_unverified")
+        self.assertFalse(result["arms"]["ndu"]["topology_or_model_selection_authorized"])
+        self.assertFalse(result["production_promotion_permitted"])
+        self.assertFalse(result["source_group_independence_verified"])
+
     def test_reject_missing_arm(self):
         rows = observations()
         rows.pop()
