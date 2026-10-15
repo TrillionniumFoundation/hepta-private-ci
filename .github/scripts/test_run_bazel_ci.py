@@ -403,7 +403,8 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         )
         self.assertIn('*) exit "${bazel_status}" ;;', workflow)
         self.assertIn(
-            'echo "Bazel exited 37 on macOS ${TARGET}; shutting down and retrying the identical V8 build once."',
+            'echo "Bazel exited 37 on macOS ${TARGET}; '
+            'shutting down and retrying the identical V8 build once."',
             workflow,
         )
         self.assertEqual(workflow.count("\n          run_v8_bazel\n"), 2)
