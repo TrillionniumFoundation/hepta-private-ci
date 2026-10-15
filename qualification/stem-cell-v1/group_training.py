@@ -170,7 +170,8 @@ def fit_model(model, features, masks, targets, *, steps, seed, feedback=None,
             raise ValueError("complete binary per-operation evidence masks required")
     if type(terminal_guard) is not bool or (terminal_guard and operation_targets is None):
         raise ValueError("terminal guard requires complete TRAIN per-operation evidence")
-    if training_feedback_policy not in ("legacy_oracle_v1", "no_verifier_v1"):
+    if (type(training_feedback_policy) is not str
+            or training_feedback_policy not in ("legacy_oracle_v1", "no_verifier_v1")):
         raise ValueError("registered TRAIN verifier feedback policy required")
     if training_feedback_policy == "no_verifier_v1" and (
             feedback_fn is not None or feedback is not None):
