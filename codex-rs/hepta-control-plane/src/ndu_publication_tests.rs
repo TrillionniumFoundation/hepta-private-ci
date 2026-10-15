@@ -1,4 +1,6 @@
 use super::*;
+#[cfg(unix)]
+use std::fs::OpenOptions;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
