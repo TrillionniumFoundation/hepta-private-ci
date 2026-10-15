@@ -1,0 +1,150 @@
+name: Hepta E1 core Granite mmBERT ModernBERT actual CPU
+
+on:
+  pull_request:
+    paths:
+      - "experiments/shared_stem_cell/e1_core_real_cpu.py"
+      - "experiments/shared_stem_cell/e1_core_triplet_review.py"
+      - "experiments/shared_stem_cell/e1_public_triplet_real_cpu.py"
+      - "experiments/shared_stem_cell/e1_public_triplet_review.py"
+      - "experiments/shared_stem_cell/e1e2_q24_identity.py"
+      - "experiments/shared_stem_cell/test_e1_core_real_cpu.py"
+      - ".github/workflows/hepta-e1-core-triad-real-cpu.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-core-triad-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  real-core-triad:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 140
+    permissions:
+      contents: read
+    env:
+      PYTHONDONTWRITEBYTECODE: "1"
+      TOKENIZERS_PARALLELISM: "false"
+      HF_HUB_DISABLE_TELEMETRY: "1"
+      HF_HUB_DISABLE_XET: "1"
+      OMP_NUM_THREADS: "2"
+      MKL_NUM_THREADS: "2"
+    steps:
+      - name: Checkout exact candidate source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Checkout pinned original public AG News source implementation
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: f8d168a7689eb3624d97c44751791badd069e521
+          path: pinned-gemma
+          persist-credentials: false
+      - name: Freeze exact source identity
+        run: |
+          set -euo pipefail
+          test "$(git -C pinned-gemma rev-parse HEAD)" = f8d168a7689eb3624d97c44751791badd069e521
+          git diff --check
+          git rev-parse HEAD > "$RUNNER_TEMP/hepta-core-source-sha.txt"
+      - name: Install reviewed common CPU runtime for all three models
+        run: |
+          set -euo pipefail
+          python3 -m venv "$RUNNER_TEMP/hepta-core-venv"
+          PY="$RUNNER_TEMP/hepta-core-venv/bin/python"
+          "$PY" -m pip install --only-binary=:all: --index-url https://download.pytorch.org/whl/cpu 'torch==2.10.0'
+          "$PY" -m pip install --only-binary=:all: \
+            'transformers==4.57.1' 'huggingface-hub==0.36.0' \
+            'safetensors==0.7.0' 'numpy==2.2.6' \
+            'packaging==25.0' 'pyarrow==21.0.0' 'psutil==7.1.0'
+          "$PY" -m pip check
+          "$PY" -c "import torch, transformers, huggingface_hub; assert transformers.__version__ == '4.57.1'; assert torch.__version__.startswith('2.10.0')"
+          "$PY" -m pip freeze > "$RUNNER_TEMP/hepta-core-runtime.txt"
+      - name: Strict source and synthetic fault tests
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-core-venv/bin/python"
+          "$PY" -m py_compile experiments/shared_stem_cell/e1_core_real_cpu.py experiments/shared_stem_cell/e1_core_triplet_review.py experiments/shared_stem_cell/e1_public_triplet_real_cpu.py experiments/shared_stem_cell/e1_public_triplet_review.py
+          "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e1_core_real_cpu.py' -v
+          "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e1_three_stem_consistency.py' -v
+          "$PY" -m unittest discover -s experiments/shared_stem_cell -p 'test_e1_public_triplet_review.py' -v
+      - name: Independently reconstruct SHA-bound original 224-case AG News panel
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-core"
+          "$RUNNER_TEMP/hepta-core-venv/bin/python" - <<'PY'
+          import os,sys
+          from pathlib import Path
+          sys.path.insert(0, 'pinned-gemma/qualification/neuron-dynamic-learning')
+          from public_agnews_source import download_checked
+          from public_agnews_panel import prepare,canonical,sha
+          root=Path(os.environ['RUNNER_TEMP'])/'hepta-core'
+          for role in ('train','calibration_test'):
+              download_checked(role,root/(role+'.parquet'))
+          panel,receipt=prepare(root/'train.parquet',root/'calibration_test.parquet')
+          assert sha(canonical(panel))=='2f7a013648e16b60c74614b0fcf1496aa06475f7285f215adddaa51fe29e01a4'
+          assert panel['cross_sectional_not_future'] is True and panel['case_count']==224
+          (root/'panel.json').write_bytes(canonical(panel))
+          (root/'source-receipt.json').write_bytes(canonical(receipt))
+          PY
+      - name: Execute all three pinned real Encoders and 40 SGD Head steps
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-core-venv/bin/python"
+          ROOT="$RUNNER_TEMP/hepta-core"
+          failed=0
+          for model in granite_97m_r2 mmbert_small modernbert_base; do
+            if timeout --signal=TERM --kill-after=30s 2400s "$PY" \
+                experiments/shared_stem_cell/e1_core_real_cpu.py \
+                --panel "$ROOT/panel.json" --model "$model" \
+                --stage "$ROOT/stage-$model" --output "$ROOT/$model.json"; then
+              echo "completed real pinned CPU model + Head: $model"
+            else
+              echo "failed actual real pinned CPU model + Head: $model" >&2
+              printf '%s\n' "$model failed real physical run, no synthetic fallback" > "$ROOT/$model.failed.txt"
+              failed=1
+            fi
+          done
+          test "$failed" -eq 0
+      - name: Independent paired source and numerical rescoring
+        run: |
+          set -euo pipefail
+          PY="$RUNNER_TEMP/hepta-core-venv/bin/python"
+          ROOT="$RUNNER_TEMP/hepta-core"
+          "$PY" experiments/shared_stem_cell/e1_core_triplet_review.py \
+            --panel "$ROOT/panel.json" \
+            --granite-97m-r2 "$ROOT/granite_97m_r2.json" \
+            --mmbert-small "$ROOT/mmbert_small.json" \
+            --modernbert-base "$ROOT/modernbert_base.json" \
+            --output "$ROOT/independent-core-review.json"
+          "$PY" - "$ROOT/independent-core-review.json" <<'PY'
+          import json,sys
+          r=json.load(open(sys.argv[1],encoding='utf8'))
+          assert r['cases']==224 and r['registered_core_triad'] is True
+          assert len(r['scores'])==3 and len(r['pairwise_test'])==3
+          assert r['stem_winner_selected'] is False
+          assert r['production_promotion_permitted'] is False
+          assert r['production_no_change_checkpoint_authenticated'] is False
+          assert r['true_future_three_window_evidence_available'] is False
+          assert r['authority']=='DENY_ALL'
+          PY
+      - name: Retain source, failures and sanitized complete original predictions
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-e1-core-triad-${{ github.run_id }}
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/hepta-core-source-sha.txt
+            ${{ runner.temp }}/hepta-core-runtime.txt
+            ${{ runner.temp }}/hepta-core/panel.json
+            ${{ runner.temp }}/hepta-core/source-receipt.json
+            ${{ runner.temp }}/hepta-core/granite_97m_r2.json
+            ${{ runner.temp }}/hepta-core/mmbert_small.json
+            ${{ runner.temp }}/hepta-core/modernbert_base.json
+            ${{ runner.temp }}/hepta-core/independent-core-review.json
+            ${{ runner.temp }}/hepta-core/*.failed.txt
+          retention-days: 14
