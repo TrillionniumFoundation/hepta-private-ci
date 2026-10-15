@@ -8,6 +8,10 @@ on:
       - 'qualification/shared-stem-system2-architecture/e22_*.py'
       - 'qualification/shared-stem-system2-architecture/test_e22_*.py'
       - 'qualification/shared-stem-system2-architecture/E22_*.md'
+      - 'qualification/shared-stem-system2-architecture/e23_*.py'
+      - 'qualification/shared-stem-system2-architecture/test_e23_*.py'
+      - 'qualification/shared-stem-system2-architecture/E23_*.md'
+      - 'qualification/shared-stem-system2-architecture/E23_*.json'
       - '.github/workflows/hepta-e21-original-human-question-complete.yml'
   workflow_dispatch:
 permissions:
@@ -168,6 +172,10 @@ jobs:
       HEPTA_E21_FOLD_3: /tmp/hepta-e21-e15-held-fold-3.zip
       HEPTA_E21_SCORE_SOURCE: /tmp/hepta-e21-source-human-score.zip
       HEPTA_E21_SCORE_MERGE: /tmp/hepta-e21-merge-human-score.zip
+      HEPTA_E23_E14: /tmp/hepta-e23-archived-e14-original-human-score.zip
+      HEPTA_E23_E15_SOURCE: /tmp/hepta-e21-source-human-score.zip
+      HEPTA_E23_E15_MERGE: /tmp/hepta-e21-merge-human-score.zip
+      HEPTA_E23_BLIND: /tmp/hepta-e21-frozen/sealed-label-blind-predictions.json
       VAL: /tmp/hepta-e21-original-validation.parquet
       OUT: /tmp/hepta-e21-human-score-${{ matrix.profile }}
       PYTHONDONTWRITEBYTECODE: '1'
@@ -218,6 +226,7 @@ jobs:
           fetch 11948993287 6a0df6d14eb1fb5d8ddde40b448ddeb48551f214187dc056974e771c5ca28316 "$HEPTA_E21_FOLD_3"
           fetch 11950611472 f332ab92181a0e088d941dbf4c77165ab2e4c40e48e9bbda4915e8d1543aceb8 "$HEPTA_E21_SCORE_SOURCE"
           fetch 11950935731 63da90cb7da7f2f6ef478e44731e548a62a4b3c1a071593864f23b5896290acc "$HEPTA_E21_SCORE_MERGE"
+          fetch 11947358809 efd3525b6c412b1681333b1f1185a6879973ae93340b12f786139eb45a3ff0f4 "$HEPTA_E23_E14"
       - name: Run 18 original-source and human-score contract regressions in both Python modes
         shell: bash
         run: |
@@ -268,6 +277,52 @@ jobs:
             --e21-reviewed-score "$OUT/independent-original-human-question-score.json" \
             --output "$OUT/e22-human-answer-discrimination.json"
           sha256sum "$OUT/e22-human-answer-discrimination.json" > "$OUT/e22-human-answer-discrimination.sha256"
+      - name: Run twelve E23 ORIGINAL archived E14/E15 and E22 tamper tests in both Python modes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile "$ROOT/e23_mixed_question_certificate.py" "$ROOT/test_e23_mixed_question_certificate.py"
+          python -m unittest discover -s "$ROOT" -p 'test_e23_mixed_question_certificate.py' -v > "$OUT/e23-normal-tests.txt" 2>&1 \
+            || { cat "$OUT/e23-normal-tests.txt"; exit 1; }
+          python -O -m unittest discover -s "$ROOT" -p 'test_e23_mixed_question_certificate.py' -v > "$OUT/e23-optimized-tests.txt" 2>&1 \
+            || { cat "$OUT/e23-optimized-tests.txt"; exit 1; }
+          grep -F 'Ran 12 tests' "$OUT/e23-normal-tests.txt"
+          grep -F 'Ran 12 tests' "$OUT/e23-optimized-tests.txt"
+      - name: Certify original human-mixed-label upper bounds and re-check archived source numbers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python "$ROOT/e23_mixed_question_certificate.py" \
+            --e21-blind "$HEPTA_E23_BLIND" \
+            --e14-original-score-zip "$HEPTA_E23_E14" \
+            --e15-source-score-zip "$HEPTA_E23_E15_SOURCE" \
+            --e15-merge-score-zip "$HEPTA_E23_E15_MERGE" \
+            --output "$OUT/e23-original-mixed-question-certificate.json"
+          python - "$OUT/e23-original-mixed-question-certificate.json" "$ROOT/E23_REAL_ARCHIVED_MIXED_QUESTION_UPPER_BOUNDS_20261015.json" <<'PY'
+          import json, sys
+          from pathlib import Path
+          report=json.loads(Path(sys.argv[1]).read_text())
+          reference=json.loads(Path(sys.argv[2]).read_text())
+          assert report['schema']=='hepta.e23.original-human-mixed-question-hardclass-bound.v1'
+          assert report['authority_posture']==reference['authority_posture']=='DENY_ALL'
+          assert report['production_accepted'] is False
+          assert report['original_pretrained_source_sha256']==reference['original_pretrained_source_sha256']
+          assert report['original_human_validation_sha256']==reference['original_human_validation_sha256']
+          assert report['e14_original_zip_sha256']==reference['e14_original_human_zip_sha256']
+          assert report['e15_source_original_zip_sha256']==reference['e15_source_human_zip_sha256']
+          assert report['e15_merge_original_zip_sha256']==reference['e15_merge_human_zip_sha256']
+          for name, expected in reference['unchanged_policy_upper_bounds'].items():
+              got=report['arm_upper_bounds'][name]
+              assert got['questions_constant_binary_prediction']==expected['constant_hard']
+              assert got['questions_exactly_constant_full_probability']==expected['exact_constant_score']
+              assert got['current_unmodified_binary_policy_max_complete_questions']==expected['max_complete_questions']
+              assert got['current_unmodified_binary_policy_max_complete_passages']==expected['max_complete_passages']
+              assert got['historical_original_human_candidate_correct']==expected['historical_candidate_correct']
+          assert not report['whole_question_original_human_score_recomputed_here']
+          assert not report['full_NDU_system2_admitted']
+          print('ORIGINAL_E14_E15_E22_MIXED_QUESTION_UPPER_BOUND_MATCH / DENY_ALL')
+          PY
+          sha256sum "$OUT/e23-original-mixed-question-certificate.json" > "$OUT/e23-certificate.sha256"
       - name: Preserve complete independent E21 original human truth and failures without source rows
         uses: actions/upload-artifact@v4
         if: always()
