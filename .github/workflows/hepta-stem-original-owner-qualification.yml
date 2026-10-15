@@ -112,6 +112,8 @@ jobs:
         run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --lib original_native_group_
       - name: Verify original signed Worker remains compilable
         run: cargo +1.95.0 check --locked -p codex-hepta-infer-worker-host --lib
+      - name: Run original Control/CNS denial in a NON-TEST linked Worker library
+        run: cargo +1.95.0 test --locked -p codex-hepta-infer-worker-host --test original_control_non_test_gate
       - name: Check source integrity after compiler and formatter
         if: always()
         shell: bash
