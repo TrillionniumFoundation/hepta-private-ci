@@ -29,7 +29,7 @@ class OriginalProgramReaderTests(unittest.TestCase):
   cls.plan=stage1.build_plan(SRC,TESTS)
   cls.proto=stage2.protocol(digest(stage1.CANON(cls.plan)))
   cls.j1=filehash(V1);cls.j2=filehash(V2)
-  cls.verified1=stage1.score(cls.plan,V1,SRC,TESTS,cls.j1)
+  cls.verified1=stage1.score(cls.plan,V1,SRC,TESTS,cls.j1,MODEL)
   cls.verified2=stage2.rescore(cls.plan,cls.proto,V2,SRC,TESTS,MODEL,cls.j2)
 
  def test_original_genuine_model_weights_pinned(self):
@@ -148,6 +148,30 @@ class OriginalProgramReaderTests(unittest.TestCase):
   records=[json.loads(x) for x in V2.read_bytes().splitlines()]
   records[0]['inference_seconds']=-1.0
   self.reject_rows(records,'invalid model execution timing')
+
+ def test_v1_rehashed_wrong_input_token_receipt_rejected(self):
+  with tempfile.TemporaryDirectory() as td:
+   rows=[json.loads(x) for x in V1.read_bytes().splitlines()]
+   rows[0]['input_token_digest']='0'*64
+   p=Path(td)/'v1.jsonl';p.write_bytes(b''.join(stage1.CANON(x) for x in rows))
+   with self.assertRaisesRegex(ValueError,'original v1 Reader input token/prompt mismatch'):
+    stage1.score(self.plan,p,SRC,TESTS,filehash(p),MODEL)
+
+ def test_v1_rehashed_wrong_generated_tokens_rejected(self):
+  with tempfile.TemporaryDirectory() as td:
+   rows=[json.loads(x) for x in V1.read_bytes().splitlines()]
+   rows[0]['output_token_ids'][0]=999999
+   p=Path(td)/'v1.jsonl';p.write_bytes(b''.join(stage1.CANON(x) for x in rows))
+   with self.assertRaisesRegex(ValueError,'original output token IDs inconsistent'):
+    stage1.score(self.plan,p,SRC,TESTS,filehash(p),MODEL)
+
+ def test_v1_rehashed_duplicate_json_key_rejected(self):
+  with tempfile.TemporaryDirectory() as td:
+   rows=V1.read_bytes().splitlines()
+   p=Path(td)/'v1.jsonl'
+   p.write_bytes(rows[0].replace(b'{',b'{"status":"succeeded",',1)+b'\n'+b'\n'.join(rows[1:])+b'\n')
+   with self.assertRaisesRegex(ValueError,'duplicate JSON key'):
+    stage1.score(self.plan,p,SRC,TESTS,filehash(p),MODEL)
 
  def test_v2_uncited_correct_not_promoted(self):
   for r in self.verified2['original_rows']:

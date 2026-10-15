@@ -158,6 +158,7 @@ jobs:
             | tee /tmp/cpython-program-reader/receipts/test-optimized.log
           python3 scripts/memory_cell/study_program_capacity.py score \
             --plan /tmp/cpython-program-reader/plan.json \
+            --stage "$MEMORY_ORIGINAL_READER_STAGE" \
             --source "$MEMORY_ORIGINAL_HTTP_MODULE" --tests "$MEMORY_ORIGINAL_HTTP_TESTS" \
             --journal /tmp/cpython-program-reader/receipts/v1/original-generation.jsonl \
             --journal-sha256 "$(sha256sum /tmp/cpython-program-reader/receipts/v1/original-generation.jsonl | cut -d' ' -f1)" \

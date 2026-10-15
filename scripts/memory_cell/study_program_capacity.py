@@ -140,7 +140,7 @@ def parse_ans(s):
  m=re.fullmatch(r'\s*(?:HTTPConnection\.)?([a-z_]+)(?:\s+\[E([12])\])?\s*\.?\s*',s)
  return (m.group(1),int(m.group(2)) if m.group(2) else None) if m else None
 
-def score(plan,journal,source,test,sha):
+def score(plan,journal,source,test,sha,stage):
  require(verify_plan(plan,source,test),'plan invalid')
  require(filehash(journal)==sha,'original raw inference journal independently pinned SHA differs')
  data=journal.read_bytes()
@@ -150,7 +150,11 @@ def score(plan,journal,source,test,sha):
   for k,v in pairs:
    require(k not in out,'duplicate JSON key');out[k]=v
   return out
- rows=[json.loads(x,object_pairs_hook=unique) for x in data.splitlines()]
+ def no_constant(value):
+  raise ValueError('nonfinite original JSON value: '+value)
+ rows=[json.loads(x,object_pairs_hook=unique,parse_constant=no_constant)
+       for x in data.splitlines()]
+ tokenizer=ReaderTokenizer(stage/'tokenizer.json')
  census=set();results=[]
  # An independent source-backed fixed task label; not returned to model before scoring.
  originals={x[0]:x[2] for x in TASKS}
@@ -161,11 +165,25 @@ def score(plan,journal,source,test,sha):
   c=next((c for c in plan['cases'] if c['task']==row['task']),None)
   require(c is not None and row['condition'] in CONDS,'unregistered model request')
   cond=row['condition'];ev=c['conditions'][cond]
+  request_ids=tokenizer.encode(chat(c['question'],[d['text'] for d in ev]))
+  require(row.get('input_token_digest')==digest(json.dumps(request_ids,separators=(',',':')).encode())
+          and row.get('input_tokens')==len(request_ids),
+          'original v1 Reader input token/prompt mismatch')
   require(row['question_sha256']==digest(c['question'].encode()) and row['evidence_sha256']==digest(CANON(ev)), 'altered original model request')
   require(row.get('status') in ('succeeded','failed') and row.get('model_sha256')==WEIGHT_SHA and row.get('tokenizer_sha256')==TOKENIZER_SHA,'unbound model status')
   require(type(row.get('input_tokens')) is int and 0<row['input_tokens']<=1024 and row.get('max_output_tokens')==32 and type(row.get('output_tokens')) is int and 0<=row['output_tokens']<=32,'token budget drift')
+  require(type(row.get('inference_seconds')) in (float,int)
+          and 0 <= row['inference_seconds'] < 7200,
+          'invalid original model inference time')
   if row['status']=='succeeded':
-   require(type(row.get('answer')) is str and digest(row['answer'].encode())==row.get('answer_sha256') and len(row.get('output_token_ids',[]))==row['output_tokens'] and row['output_tokens']>0,'original output material inconsistent')
+   output_ids=row.get('output_token_ids')
+   require(isinstance(output_ids,list) and 0<len(output_ids)==row['output_tokens']
+           and all(type(i) is int and 0<=i<49152 for i in output_ids),
+           'original output token IDs inconsistent')
+   decoded=tokenizer.decode(output_ids)
+   require(type(row.get('answer')) is str and row['answer']==decoded
+           and digest(decoded.encode())==row.get('answer_sha256'),
+           'original output material inconsistent')
   else:require(row.get('answer') is None and row['output_tokens']==0,'failed model generation credited')
   parsed=parse_ans(row.get('answer'))
   tgt=originals[row['task']]
@@ -189,7 +207,7 @@ def main():
  p=argparse.ArgumentParser();s=p.add_subparsers(dest='cmd',required=True)
  q=s.add_parser('prepare');q.add_argument('--source',required=True,type=Path);q.add_argument('--tests',required=True,type=Path);q.add_argument('--out',required=True,type=Path)
  q=s.add_parser('generate');q.add_argument('--plan',required=True,type=Path);q.add_argument('--source',required=True,type=Path);q.add_argument('--tests',required=True,type=Path);q.add_argument('--stage',required=True,type=Path);q.add_argument('--out',required=True,type=Path)
- q=s.add_parser('score');q.add_argument('--plan',required=True,type=Path);q.add_argument('--source',required=True,type=Path);q.add_argument('--tests',required=True,type=Path);q.add_argument('--journal',required=True,type=Path);q.add_argument('--journal-sha256',required=True);q.add_argument('--out',required=True,type=Path)
+ q=s.add_parser('score');q.add_argument('--plan',required=True,type=Path);q.add_argument('--source',required=True,type=Path);q.add_argument('--tests',required=True,type=Path);q.add_argument('--stage',required=True,type=Path);q.add_argument('--journal',required=True,type=Path);q.add_argument('--journal-sha256',required=True);q.add_argument('--out',required=True,type=Path)
  a=p.parse_args()
  if a.cmd=='prepare':
   require(not a.out.exists(),'no plan overwrite');a.out.write_bytes(CANON(build_plan(a.source,a.tests)))
@@ -199,5 +217,5 @@ def main():
   receipt=run(plan,a.stage,a.out)
   (a.out/'generation-report.json').write_bytes(CANON(receipt));print(json.dumps(receipt,sort_keys=True))
  else:
-  require(not a.out.exists(),'no scorer overwrite');report=score(json.loads(a.plan.read_bytes()),a.journal,a.source,a.tests,a.journal_sha256);a.out.write_bytes(CANON(report));print(json.dumps(report['by_condition'],sort_keys=True))
+  require(not a.out.exists(),'no scorer overwrite');report=score(json.loads(a.plan.read_bytes()),a.journal,a.source,a.tests,a.journal_sha256,a.stage);a.out.write_bytes(CANON(report));print(json.dumps(report['by_condition'],sort_keys=True))
 if __name__=='__main__':main()
