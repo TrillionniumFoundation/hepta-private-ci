@@ -1,0 +1,51 @@
+name: hepta-stem-v13-original-reader-diagnostic-no-go
+
+on:
+  pull_request:
+    paths:
+      - "qualification/stem-cell-v1/v13_original_reader_followup.py"
+      - "qualification/stem-cell-v1/v13_reader_independent_review.py"
+      - "qualification/stem-cell-v1/v13_reader_public_gate.py"
+      - "qualification/stem-cell-v1/test_v13_original_reader_followup.py"
+      - "qualification/stem-cell-v1/test_v13_reader_public_gate.py"
+      - "qualification/stem-cell-v1/STEM_V13_ORIGINAL_READER_*"
+      - "qualification/stem-cell-v1/STEM_V13_READER_*"
+      - ".github/workflows/hepta-stem-v13-original-reader-negative.yml"
+  push:
+    branches:
+      - research/stem-differentiation-v7-20261015
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source-only-no-go:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify exact source and run source-only adversarial tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          git rev-parse HEAD
+          export PYTHONPATH=qualification/stem-cell-v1
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_stem_v13_cheap_retrieval.py' -v
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v13_public_gate.py' -v
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v13_original_reader_followup.py' -v
+          python -m unittest discover -s qualification/stem-cell-v1 -p 'test_v13_reader_public_gate.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_stem_v13_cheap_retrieval.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v13_public_gate.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v13_original_reader_followup.py' -v
+          python -O -m unittest discover -s qualification/stem-cell-v1 -p 'test_v13_reader_public_gate.py' -v
+          python -m compileall -q qualification/stem-cell-v1/v13_original_reader_followup.py qualification/stem-cell-v1/v13_reader_independent_review.py qualification/stem-cell-v1/v13_reader_public_gate.py
+      - name: Reject fake semantic or model superiority from sanitized observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=qualification/stem-cell-v1 python qualification/stem-cell-v1/v13_reader_public_gate.py \
+            --public qualification/stem-cell-v1/STEM_V13_ORIGINAL_READER_PANEL_20261015.json \
+            --independent qualification/stem-cell-v1/STEM_V13_READER_INDEPENDENT_RECOUNT_20261015.json
+          git diff --quiet && git diff --cached --quiet
