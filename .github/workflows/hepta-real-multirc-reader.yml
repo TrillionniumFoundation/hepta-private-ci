@@ -36,6 +36,9 @@ jobs:
             --pattern test_multirc_real_study.py --output "$RUNNER_TEMP/multirc-tests.json" \
             2>&1 | tee "$RUNNER_TEMP/multirc-tests.log"
           python qualification/stem-cell-v1/run_checked_tests.py \
+            --pattern test_multirc_material_admission.py --output "$RUNNER_TEMP/multirc-admission-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/multirc-admission-tests.log"
+          python qualification/stem-cell-v1/run_checked_tests.py \
             --pattern test_multirc_evidence_stress.py --output "$RUNNER_TEMP/multirc-stress-tests.json" \
             2>&1 | tee "$RUNNER_TEMP/multirc-stress-tests.log"
           python qualification/stem-cell-v1/run_checked_tests.py \
@@ -57,6 +60,8 @@ jobs:
             ${{ runner.temp }}/multirc-source-sha.txt
             ${{ runner.temp }}/multirc-tests.json
             ${{ runner.temp }}/multirc-tests.log
+            ${{ runner.temp }}/multirc-admission-tests.json
+            ${{ runner.temp }}/multirc-admission-tests.log
             ${{ runner.temp }}/multirc-stress-tests.json
             ${{ runner.temp }}/multirc-stress-tests.log
             ${{ runner.temp }}/multirc-factorial-tests.json
