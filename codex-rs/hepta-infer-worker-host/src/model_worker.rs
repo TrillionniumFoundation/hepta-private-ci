@@ -921,6 +921,18 @@ pub use shared_v2::SharedNeuronFeatureRequestV2;
 pub use shared_v2::SharedNeuronFeatureResultV2;
 pub use shared_v2::canonical_shared_neuron_payload_digest_v2;
 
+#[path = "model_worker_sequence_v3.rs"]
+mod sequence_cpu_v3;
+pub use sequence_cpu_v3::SequenceAttentionPolicyV3;
+pub use sequence_cpu_v3::SequenceBatchObservationV3;
+pub use sequence_cpu_v3::SequenceCellHeadV3;
+pub use sequence_cpu_v3::SequenceCellObservationV3;
+pub use sequence_cpu_v3::SequenceHeadBindingV3;
+pub use sequence_cpu_v3::SequenceHeadParametersV3;
+pub use sequence_cpu_v3::SequenceReadErrorV3;
+pub use sequence_cpu_v3::SequenceReadFenceV3;
+pub use sequence_cpu_v3::evaluate_sequence_heads_v3;
+
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
