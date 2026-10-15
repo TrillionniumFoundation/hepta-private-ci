@@ -123,6 +123,49 @@ jobs:
           write_new(e / 'same-cost-mode-check.json', {'same_recorded_cost_choices_replayed_under_optimized': n, 'fresh_clock_choices_not_required_equal': True})
           PY
           git diff --exit-code
+      - name: Verify prefix reuse and separated inference cost on original material
+        shell: bash
+        run: |
+          set -euo pipefail
+          D=experiments/ndu_tree_fbsde_gates/merton/real_head
+          E="$RUNNER_TEMP/merton-real"
+          A="$E/assets"
+          export HEPTA_MERTON_ASSETS="$A"
+          INPUTS=(--reader "$A/11946621518.zip" --labels0 "$A/11949305579.zip" --labels1 "$A/11949100961.zip" --human-score "$A/11953241456.zip")
+          for mode in normal optimized; do
+            FLAGS=()
+            if [ "$mode" = optimized ]; then FLAGS=(-O); fi
+            python "${FLAGS[@]}" -W error::ResourceWarning -m unittest discover -s "$D/efficient" -p 'test_*.py' -v 2>&1 | tee "$E/prefix-tests-$mode.log"
+            grep -F 'Ran 32 tests' "$E/prefix-tests-$mode.log"
+            python "${FLAGS[@]}" "$D/efficient/prefix.py" --material "$E/material" --output "$E/prefix-run-$mode"
+            python "${FLAGS[@]}" "$D/efficient/audit_prefix.py" "${INPUTS[@]}" --material "$E/material" --run "$E/prefix-run-$mode" --output "$E/prefix-audit-$mode.json"
+          done
+          PYTHONPATH="$D/efficient" python -O - <<'PYCODE'
+          import os
+          from fractions import Fraction
+          from pathlib import Path
+          from prefix import choose
+          from material import strict_loads, write_new
+          e = Path(os.environ['RUNNER_TEMP']) / 'merton-real'
+          counts = {}
+          for mode in ('normal', 'optimized'):
+              report = strict_loads((e / f'prefix-audit-{mode}.json').read_bytes())
+              if report['verified_lifecycles'] != 252 or report['exact_paired_independent_prefix_checkpoints'] != 432:
+                  raise ValueError('incomplete actual prefix evidence')
+              sealed = strict_loads((e / f'prefix-run-{mode}/sealed.json').read_bytes())
+              count = 0
+              for row in sealed['rows']:
+                  if row['quotes']:
+                      decision, values = choose(row['quotes'], Fraction(row['alpha']))
+                      if decision != row['selected_steps'] or values != row['values']:
+                          raise ValueError('same-recorded-cost mode drift')
+                      count += 1
+              if count != 108:
+                  raise ValueError('missing same-profile choice')
+              counts[mode] = count
+          write_new(e / 'prefix-same-cost-check.json', {'verified_choices': counts, 'fresh_clock_equality_required': False})
+          PYCODE
+          git diff --exit-code
       - uses: actions/upload-artifact@v4
         if: always()
         with:
