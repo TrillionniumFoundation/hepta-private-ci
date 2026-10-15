@@ -15,6 +15,9 @@ on:
       - "codex-rs/hepta-agentd/src/prompt_runtime.rs"
       - "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs"
       - "codex-rs/hepta-agentd/src/runtime.rs"
+      - "codex-rs/hepta-agentd/src/control.rs"
+      - "codex-rs/hepta-matrixd/src/control.rs"
+      - "codex-rs/uds/src/**"
       - "codex-rs/hepta-agentd/src/runtime_tests.rs"
       - "codex-rs/hepta-agentd/src/state.rs"
       - "codex-rs/hepta-agentd/src/state_isolation_tests.rs"
@@ -131,6 +134,36 @@ jobs:
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib prompt_runtime::tests::named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host -- --exact --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib runtime::tests:: -- --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prove Windows vanished UDS rendezvous is idempotent
+        shell: pwsh
+        run: |
+          $listed = cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-uds --lib -- --list
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not ($listed -match '^lib_tests::absent_rendezvous_is_not_stale_socket_path: test$')) {
+            throw "Windows vanished-rendezvous test must be discoverable"
+          }
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-uds --lib lib_tests::absent_rendezvous_is_not_stale_socket_path -- --exact --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Guard Windows Agentd exclusive control rendezvous
+        shell: pwsh
+        run: |
+          $listed = cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib -- --list
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not ($listed -match '^control::tests::preflight_rejects_live_control_listener: test$')) {
+            throw "Windows live-owner test must exist; filtered zero-test pass is invalid"
+          }
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib control::tests::preflight_rejects_live_control_listener -- --exact --test-threads=1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prove Windows Matrixd rejects unauthenticated UDS peers
+        shell: pwsh
+        run: |
+          $listed = cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-matrixd --lib -- --list
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          if (-not ($listed -match '^control::tests::windows_control_socket_refuses_unverified_peer_identity: test$')) {
+            throw "Windows Matrixd fail-closed peer test must be discoverable"
+          }
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-matrixd --lib control::tests::windows_control_socket_refuses_unverified_peer_identity -- --exact --test-threads=1
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Exercise actual Windows durable parent handles and append/recovery
         shell: pwsh
@@ -254,6 +287,38 @@ jobs:
           set -euo pipefail
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --lib
           cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-worker-host --lib
+      - name: Prove Unix missing-path normalization and UDS regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          uds_tests="$(cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-uds --lib -- --list)"
+          grep -Fx "lib_tests::absent_rendezvous_is_not_stale_socket_path: test" <<< "$uds_tests"
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-uds --lib
+          cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-uds --all-targets -- -D clippy::correctness
+      - name: Assert Linux socket regressions exist before filtered Cargo tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          agentd_tests="$(cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib -- --list)"
+          for test in \
+            preflight_rejects_live_control_listener \
+            preflight_preserves_unrelated_regular_file \
+            preflight_reclaims_only_stale_socket_and_permits_exclusive_rebind; do
+            grep -Fx "control::tests::$test: test" <<< "$agentd_tests"
+          done
+          matrixd_tests="$(cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-matrixd --lib -- --list)"
+          for test in \
+            control_socket_preflight_preserves_existing_regular_files \
+            control_socket_preflight_does_not_steal_live_listener \
+            control_socket_preflight_retired_server_cannot_unlink_successor; do
+            grep -Fx "control::tests::$test: test" <<< "$matrixd_tests"
+          done
+      - name: Exercise real Agentd and Matrixd UDS preflight regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib control::tests:: -- --test-threads=1
+          cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-matrixd --lib control::tests::control_socket_preflight_ -- --test-threads=1
       - name: Strict owner safety lint
         shell: bash
         run: |
@@ -264,7 +329,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-agentd --package codex-hepta-contracts --package codex-hepta-bao-adapter -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-agentd --package codex-hepta-matrixd --package codex-uds --package codex-hepta-contracts --package codex-hepta-bao-adapter -- --check
       - name: Verify no test checkout mutation
         if: always()
         shell: bash
