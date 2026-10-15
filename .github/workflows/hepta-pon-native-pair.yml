@@ -35,9 +35,9 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_PROFILE_DEV_DEBUG: "0"
       PYTHONDONTWRITEBYTECODE: "1"
-      CHAIN_SOURCE_SHA: 5eed5edb462b706f24d37255f00f5eb0883a92e2
+      CHAIN_SOURCE_SHA: 8f18a44a09aa0aaacbe0ba30e2122e2fcbb10cc9
       CHAIN_BASE_SHA: 9fedf7ecbbe07177069c030592b4e03dcffebb81
-      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '5eed5edb462b706f24d37255f00f5eb0883a92e2' || 'b3232ae0cbc91492c3bdf9b53fa55fcbb14f3cb4' }}
+      HEPTA_PON_CHAIN_SOURCE: ${{ matrix.lane == 'source-head' && '8f18a44a09aa0aaacbe0ba30e2122e2fcbb10cc9' || 'a2a8f7a3c5df4d585815b7e27aa0fa5421aab1ab' }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
@@ -301,7 +301,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-host-cgroup-layout.json" --minimum-tests 9 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --bin trnm-pon-node -- --nocapture --test-threads=2
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-shared-host-kernel.json" --minimum-tests 6 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib host_kernel_parent::kernel_parent::tests -- --nocapture --test-threads=2
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/pon-pair/chain-shared-host-kernel.json" --minimum-tests 7 -- cargo +1.95.0 test --locked --release --manifest-path ../chain/trillionnium/Cargo.toml -p trnm-pon-node --lib host_kernel_parent::kernel_parent::tests -- --nocapture --test-threads=2
       - name: Build the actual pinned native Chain executable
         run: |
           set -euo pipefail
