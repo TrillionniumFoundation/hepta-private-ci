@@ -952,6 +952,13 @@ pub use granite_v5::granite97_complete_input_digest_v5;
 pub use granite_v5::granite97_encoder_identity_v5;
 pub use granite_v5::import_granite97_token_v5;
 
+#[path = "model_worker_granite_v6.rs"]
+mod reviewed_granite_v6;
+pub use reviewed_granite_v6::GraniteReviewAdmissionV6;
+pub use reviewed_granite_v6::ReviewedGraniteBatchV6;
+pub use reviewed_granite_v6::ReviewedGraniteErrorV6;
+pub use reviewed_granite_v6::read_independently_reviewed_granite_v6;
+
 #[cfg(test)]
 #[path = "model_worker_tests.rs"]
 mod tests;
