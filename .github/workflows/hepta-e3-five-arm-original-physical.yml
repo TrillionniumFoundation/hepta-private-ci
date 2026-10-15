@@ -1,7 +1,7 @@
 name: Hepta E3 original same-source physical OCR + Gemma2 native (DENY_ALL)
 on:
   push:
-    branches: ["research/e3-five-arm-merged-admission-decongestion-20261015", "research/e3-byte-bound-model-ledger-20261015"]
+    branches: ["research/e3-five-arm-merged-admission-decongestion-20261015", "research/e3-byte-bound-model-ledger-20261015", "research/e3-race-resnapshot-20261015"]
     paths:
       - "experiments/shared_stem_cell/e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/e3_scienceqa_stage.py"
@@ -9,6 +9,8 @@ on:
       - "experiments/shared_stem_cell/test_e3_source_target_partition.py"
       - "experiments/shared_stem_cell/e3_model_entry_ledger.py"
       - "experiments/shared_stem_cell/test_e3_model_entry_ledger.py"
+      - "experiments/shared_stem_cell/e3_model_entry_resnapshot.py"
+      - "experiments/shared_stem_cell/test_e3_model_entry_resnapshot.py"
       - "experiments/shared_stem_cell/test_e3_runner_budget.py"
       - "experiments/shared_stem_cell/test_e3_converged_ci_gates.py"
       - "experiments/shared_stem_cell/E3_RUNNER_CONGESTION_CONTROL_20261015.md"
@@ -25,6 +27,8 @@ on:
       - "experiments/shared_stem_cell/e3_five_arm_historical.py"
       - "experiments/shared_stem_cell/e3_model_entry_ledger.py"
       - "experiments/shared_stem_cell/test_e3_model_entry_ledger.py"
+      - "experiments/shared_stem_cell/e3_model_entry_resnapshot.py"
+      - "experiments/shared_stem_cell/test_e3_model_entry_resnapshot.py"
       - "experiments/shared_stem_cell/test_e3_runner_budget.py"
       - "experiments/shared_stem_cell/test_e3_converged_ci_gates.py"
       - "experiments/shared_stem_cell/E3_RUNNER_CONGESTION_CONTROL_20261015.md"
@@ -74,6 +78,13 @@ jobs:
             -s experiments/shared_stem_cell -p test_e3_source_target_partition.py -v
           PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
             -s experiments/shared_stem_cell -p test_e3_source_target_partition.py -v
+      - name: Re-scan 196 original source paths and deny in-audit target writes
+        run: |
+          set -euo pipefail
+          PYTHONPATH=experiments/shared_stem_cell python3 -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_model_entry_resnapshot.py -v
+          PYTHONPATH=experiments/shared_stem_cell python3 -O -m unittest discover \
+            -s experiments/shared_stem_cell -p test_e3_model_entry_resnapshot.py -v
       - name: Model-view filetree admission and twelve physical synthetic PNG tests in both Python modes
         run: |
           set -euo pipefail

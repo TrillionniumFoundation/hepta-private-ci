@@ -11,6 +11,7 @@ PHYSICAL = ROOT / ".github/workflows/hepta-e3-five-arm-original-physical.yml"
 CONTRACT = ROOT / ".github/workflows/hepta-e3-five-arm-historical-contract.yml"
 CHILD = "research/e3-five-arm-merged-admission-decongestion-20261015"
 BYTE_CHILD = "research/e3-byte-bound-model-ledger-20261015"
+RACE_CHILD = "research/e3-race-resnapshot-20261015"
 
 def physical_job(name, text):
     # Match job-level two-space headings, never nested four-space steps.
@@ -45,6 +46,7 @@ class ExpensiveWorkGuard(unittest.TestCase):
                 self.assertNotIn(f"  group: {group}-${{{{ github.sha }}}}", raw)
                 self.assertIn(CHILD, raw)
                 self.assertIn(BYTE_CHILD, raw)
+                self.assertIn(RACE_CHILD, raw)
 
     def test_independent_held_target_boundary_not_weakened(self):
         raw = PHYSICAL.read_text(encoding="utf-8")

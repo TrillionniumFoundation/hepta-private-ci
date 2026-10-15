@@ -12,6 +12,7 @@ PHYSICAL = ROOT / ".github/workflows/hepta-e3-five-arm-original-physical.yml"
 CONTRACT = ROOT / ".github/workflows/hepta-e3-five-arm-historical-contract.yml"
 CHILD = "research/e3-five-arm-merged-admission-decongestion-20261015"
 BYTE_CHILD = "research/e3-byte-bound-model-ledger-20261015"
+RACE_CHILD = "research/e3-race-resnapshot-20261015"
 
 def sections(text):
     starts=list(re.finditer(r"(?m)^  ([a-z][a-z0-9-]*):\n",text))
@@ -23,7 +24,7 @@ class Converged(unittest.TestCase):
         for file in (PHYSICAL,CONTRACT):
             with self.subTest(file=file):
                 raw=file.read_text()
-                self.assertIn(f'branches: ["{CHILD}", "{BYTE_CHILD}"]',raw)
+                self.assertIn(f'branches: ["{CHILD}", "{BYTE_CHILD}", "{RACE_CHILD}"]',raw)
                 self.assertIn('cancel-in-progress: true',raw)
                 self.assertIn('test_e3_runner_budget.py',raw)
                 self.assertIn('test_e3_model_entry_ledger.py',raw)
