@@ -117,3 +117,48 @@ def score(receipt, combined, held):
          'is_exploratory_posthoc_control':True,'human_necessity_independently_adjudicated':False,
          'cost_matched':False,'production_accepted':False,
          'stem_winner':None,'authority':'DENY_ALL'}
+
+
+def main():
+ import argparse
+ import os
+ from pathlib import Path
+ parser=argparse.ArgumentParser(description=__doc__)
+ for name in ('combined','combined_sha256','matched','matched_sha256','held','held_sha256','output'):
+  parser.add_argument('--'+name.replace('_','-'),required=True)
+ args=parser.parse_args()
+
+ def source_bytes(name,expected):
+  path=Path(name)
+  require(sha(expected) and path.is_file() and not path.is_symlink() and
+          0<path.stat().st_size<=4*1024*1024,'untrusted or oversized file')
+  raw=path.read_bytes()
+  require(hashlib.sha256(raw).hexdigest()==expected,'data SHA256 mismatch')
+  return raw
+
+ def decode(raw):
+  def no_duplicates(items):
+   obj={}
+   for k,v in items:
+    require(k not in obj,'duplicate JSON key')
+    obj[k]=v
+   return obj
+  def no_constant(v):raise CapacityReviewError('nonfinite JSON token')
+  return json.loads(raw,object_pairs_hook=no_duplicates,parse_constant=no_constant)
+ combined=decode(source_bytes(args.combined,args.combined_sha256))
+ matched=decode(source_bytes(args.matched,args.matched_sha256))
+ raw=source_bytes(args.held,args.held_sha256)
+ require(bool(raw.splitlines()),'empty original labels')
+ labels=[decode(line) for line in raw.splitlines()]
+ result=score(matched,combined,labels)
+ out=Path(args.output)
+ require(not out.exists() and not out.is_symlink(),'cannot overwrite audit')
+ with out.open('x',encoding='utf-8') as f:
+  f.write(json.dumps(result,sort_keys=True,separators=(',',':'),allow_nan=False)+'\n')
+  f.flush()
+  os.fsync(f.fileno())
+ print('E3_NATIVE_SAME_HEAD_INDEPENDENT_REVIEW_PASS; DENY_ALL')
+
+
+if __name__=='__main__':
+ main()
